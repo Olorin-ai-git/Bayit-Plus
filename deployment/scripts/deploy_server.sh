@@ -292,6 +292,21 @@ EOF
     create_or_update_secret "bayit-librarian-id-truncate-length" "LIBRARIAN_ID_TRUNCATE_LENGTH"
     create_or_update_secret "bayit-librarian-modal-max-height" "LIBRARIAN_MODAL_MAX_HEIGHT"
 
+    # Judaism Section Configuration
+    create_or_update_secret "bayit-jewish-news-cache-ttl" "JEWISH_NEWS_CACHE_TTL_MINUTES"
+    create_or_update_secret "bayit-jewish-news-sync-interval" "JEWISH_NEWS_SYNC_INTERVAL_MINUTES"
+    create_or_update_secret "bayit-jewish-news-timeout" "JEWISH_NEWS_REQUEST_TIMEOUT_SECONDS"
+    create_or_update_secret "bayit-hebcal-api-url" "HEBCAL_API_BASE_URL"
+    create_or_update_secret "bayit-sefaria-api-url" "SEFARIA_API_BASE_URL"
+    create_or_update_secret "bayit-jewish-calendar-cache-ttl" "JEWISH_CALENDAR_CACHE_TTL_HOURS"
+    create_or_update_secret "bayit-community-search-radius" "COMMUNITY_SEARCH_RADIUS_MILES"
+    create_or_update_secret "bayit-community-default-region" "COMMUNITY_DEFAULT_REGION"
+    create_or_update_secret "bayit-us-jewish-regions" "US_JEWISH_REGIONS"
+    create_or_update_secret "bayit-community-scrape-interval" "COMMUNITY_SCRAPE_INTERVAL_HOURS"
+    create_or_update_secret "bayit-yutorah-rss-url" "YUTORAH_RSS_URL"
+    create_or_update_secret "bayit-chabad-multimedia-rss-url" "CHABAD_MULTIMEDIA_RSS_URL"
+    create_or_update_secret "bayit-torahanytime-rss-url" "TORAHANYTIME_RSS_URL"
+
     print_success "Secrets created/updated from .env"
 
     # Step 5: Grant Secret Access
@@ -314,7 +329,12 @@ EOF
                   bayit-librarian-max-iterations bayit-librarian-default-budget-usd bayit-librarian-min-budget-usd \
                   bayit-librarian-max-budget-usd bayit-librarian-budget-step-usd bayit-librarian-reports-limit \
                   bayit-librarian-actions-limit bayit-librarian-activity-page-size bayit-librarian-id-truncate-length \
-                  bayit-librarian-modal-max-height; do
+                  bayit-librarian-modal-max-height \
+                  bayit-jewish-news-cache-ttl bayit-jewish-news-sync-interval bayit-jewish-news-timeout \
+                  bayit-hebcal-api-url bayit-sefaria-api-url bayit-jewish-calendar-cache-ttl \
+                  bayit-community-search-radius bayit-community-default-region bayit-us-jewish-regions \
+                  bayit-community-scrape-interval bayit-yutorah-rss-url bayit-chabad-multimedia-rss-url \
+                  bayit-torahanytime-rss-url; do
         gcloud secrets add-iam-policy-binding "$secret" \
             --member="serviceAccount:$SERVICE_ACCOUNT" \
             --role="roles/secretmanager.secretAccessor" \
@@ -447,6 +467,7 @@ EOF
     echo "  ✓ ElevenLabs speech synthesis"
     echo "  ✓ MongoDB Atlas database"
     echo "  ✓ Twilio SMS verification (Account SID + Auth Token + Phone Number)"
+    echo "  ✓ Judaism Section (Jewish News, Calendar, Community Directory, Torah Content)"
     echo ""
     echo "Next steps:"
     echo "  1. Update OAuth redirect URIs in Google Cloud Console"

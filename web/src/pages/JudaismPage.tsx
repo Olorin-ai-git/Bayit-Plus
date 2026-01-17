@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions } from 'react-native';
 import { Link } from 'react-router-dom';
-import { Play, Clock, User } from 'lucide-react';
+import { Play, Clock, User, Newspaper, Calendar, Users, BookOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassCategoryPill } from '@bayit/shared/ui';
+import { JewishNewsFeed, JewishCalendarWidget, ShabbatTimesCard, CommunityDirectory } from '@/components/judaism';
 import logger from '@/utils/logger';
 
 const CATEGORY_ICONS: Record<string, string> = {
   all: '✡️',
+  news: '📰',
+  calendar: '📅',
+  community: '🏛️',
   shiurim: '📖',
   tefila: '🕯️',
   music: '🎵',
@@ -59,53 +63,57 @@ function JudaismCard({ item }: { item: JudaismItem }) {
         onHoverIn={() => setIsHovered(true)}
         onHoverOut={() => setIsHovered(false)}
       >
-        <GlassCard style={[styles.card, isHovered && styles.cardHovered]}>
-          <View style={styles.thumbnailContainer}>
+        <GlassCard className={`p-0 m-1 overflow-hidden ${isHovered ? 'scale-102' : ''}`}>
+          <View className="aspect-video relative">
             {item.thumbnail ? (
               <Image
                 source={{ uri: item.thumbnail }}
-                style={styles.thumbnail}
+                className="w-full h-full"
                 resizeMode="cover"
               />
             ) : (
-              <View style={styles.thumbnailPlaceholder}>
-                <Text style={styles.placeholderIcon}>{categoryIcon}</Text>
+              <View className="w-full h-full bg-purple-500/20 items-center justify-center">
+                <Text className="text-5xl">{categoryIcon}</Text>
               </View>
             )}
 
             {/* Category Badge */}
-            <View style={styles.categoryBadge}>
-              <Text style={styles.categoryIcon}>{categoryIcon}</Text>
+            <View className="absolute top-2 left-2 bg-black/70 px-2 py-1 rounded-full">
+              <Text className="text-sm">{categoryIcon}</Text>
             </View>
 
             {/* Duration Badge */}
             {item.duration && (
-              <View style={styles.durationBadge}>
+              <View className="absolute top-2 right-2 bg-blue-500/90 px-2 py-1 rounded flex-row items-center gap-1">
                 <Clock size={10} color={colors.text} />
-                <Text style={styles.durationText}>{item.duration}</Text>
+                <Text className="text-white text-xs font-bold">{item.duration}</Text>
               </View>
             )}
 
             {/* Hover Overlay */}
             {isHovered && (
-              <View style={styles.hoverOverlay}>
-                <View style={styles.playButton}>
+              <View className="absolute inset-0 bg-black/40 items-center justify-center">
+                <View className="w-14 h-14 rounded-full bg-blue-500 items-center justify-center">
                   <Play size={24} color={colors.background} fill={colors.background} />
                 </View>
               </View>
             )}
           </View>
 
-          <View style={styles.info}>
-            <Text style={styles.title} numberOfLines={1}>{getLocalizedText('title')}</Text>
+          <View className="p-3">
+            <Text className="text-white font-semibold" numberOfLines={1}>
+              {getLocalizedText('title')}
+            </Text>
             {item.rabbi && (
-              <View style={styles.rabbiRow}>
+              <View className="flex-row items-center gap-1 mt-1">
                 <User size={12} color={colors.primary} />
-                <Text style={styles.rabbiText}>{getLocalizedText('rabbi')}</Text>
+                <Text className="text-blue-400 text-sm">{getLocalizedText('rabbi')}</Text>
               </View>
             )}
             {item.description && (
-              <Text style={styles.description} numberOfLines={1}>{getLocalizedText('description')}</Text>
+              <Text className="text-gray-400 text-xs mt-1" numberOfLines={1}>
+                {getLocalizedText('description')}
+              </Text>
             )}
           </View>
         </GlassCard>
@@ -136,8 +144,8 @@ export default function JudaismPage() {
   const loadCategories = async () => {
     try {
       const response = await judaismService.getCategories();
-      if (response?.data && Array.isArray(response.data)) {
-        setCategories(response.data);
+      if (response?.categories && Array.isArray(response.categories)) {
+        setCategories(response.categories);
       }
     } catch (err) {
       logger.error('Failed to load Judaism categories', 'JudaismPage', err);
@@ -149,8 +157,8 @@ export default function JudaismPage() {
       setIsLoading(true);
       const category = selectedCategory !== 'all' ? selectedCategory : undefined;
       const response = await judaismService.getContent(category);
-      if (response?.data && Array.isArray(response.data)) {
-        setContent(response.data);
+      if (response?.content && Array.isArray(response.content)) {
+        setContent(response.content);
       }
     } catch (err) {
       logger.error('Failed to load Judaism content', 'JudaismPage', err);
@@ -167,16 +175,55 @@ export default function JudaismPage() {
     return category.name_en || category.name;
   };
 
+  // Special views for news, calendar, and community categories
+  const renderSpecialView = () => {
+    switch (selectedCategory) {
+      case 'news':
+        return (
+          <View className="gap-4">
+            <JewishNewsFeed limit={30} />
+          </View>
+        );
+      case 'calendar':
+        return (
+          <View className="gap-4">
+            <View className="flex-row gap-4 flex-wrap">
+              <View className="flex-1 min-w-80">
+                <JewishCalendarWidget />
+              </View>
+              <View className="flex-1 min-w-80">
+                <ShabbatTimesCard />
+              </View>
+            </View>
+          </View>
+        );
+      case 'community':
+        return (
+          <View className="gap-4">
+            <CommunityDirectory />
+          </View>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const showSpecialView = ['news', 'calendar', 'community'].includes(selectedCategory);
+
   return (
-    <View style={styles.container}>
+    <View className="flex-1 px-4 py-6 max-w-7xl mx-auto w-full">
       {/* Header */}
-      <View style={[styles.header, { flexDirection, justifyContent }]}>
-        <View style={styles.headerIcon}>
-          <Text style={styles.headerEmoji}>✡️</Text>
+      <View className="flex-row items-center gap-3 mb-6" style={{ flexDirection, justifyContent }}>
+        <View className="w-16 h-16 rounded-full bg-purple-500/30 items-center justify-center">
+          <Text className="text-4xl">✡️</Text>
         </View>
         <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('judaism.title')}</Text>
-          <Text style={[styles.itemCount, { textAlign }]}>{content.length} {t('judaism.items')}</Text>
+          <Text className="text-3xl font-bold text-white" style={{ textAlign }}>
+            {t('judaism.title', 'Judaism')}
+          </Text>
+          <Text className="text-gray-400 text-sm" style={{ textAlign }}>
+            {content.length} {t('judaism.items', 'items')}
+          </Text>
         </View>
       </View>
 
@@ -185,8 +232,8 @@ export default function JudaismPage() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoriesContainer}
-          style={styles.categoriesScroll}
+          className="mb-6"
+          contentContainerStyle={{ gap: spacing.sm, paddingVertical: spacing.sm }}
         >
           {categories.map((category) => (
             <GlassCategoryPill
@@ -200,9 +247,11 @@ export default function JudaismPage() {
         </ScrollView>
       )}
 
-      {/* Loading State */}
-      {isLoading ? (
-        <View style={styles.loadingContainer}>
+      {/* Special Views or Content Grid */}
+      {showSpecialView ? (
+        renderSpecialView()
+      ) : isLoading ? (
+        <View className="flex-1 items-center justify-center py-16">
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : content.length > 0 ? (
@@ -211,8 +260,8 @@ export default function JudaismPage() {
           keyExtractor={(item) => item.id}
           numColumns={numColumns}
           key={numColumns}
-          contentContainerStyle={styles.gridContent}
-          columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
+          contentContainerStyle={{ gap: spacing.md }}
+          columnWrapperStyle={numColumns > 1 ? { gap: spacing.md } : undefined}
           renderItem={({ item }) => (
             <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
               <JudaismCard item={item} />
@@ -220,186 +269,18 @@ export default function JudaismPage() {
           )}
         />
       ) : (
-        <View style={styles.emptyState}>
-          <GlassCard style={styles.emptyCard}>
-            <Text style={styles.emptyIcon}>✡️</Text>
-            <Text style={styles.emptyTitle}>{t('judaism.empty')}</Text>
-            <Text style={styles.emptyDescription}>{t('judaism.emptyHint')}</Text>
+        <View className="flex-1 items-center justify-center py-16">
+          <GlassCard className="p-8 items-center">
+            <Text className="text-6xl mb-4">✡️</Text>
+            <Text className="text-white text-xl font-semibold mb-2">
+              {t('judaism.empty', 'No content yet')}
+            </Text>
+            <Text className="text-gray-400">
+              {t('judaism.emptyHint', 'Check back soon for new Torah content')}
+            </Text>
           </GlassCard>
         </View>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.lg,
-    maxWidth: 1400,
-    marginHorizontal: 'auto',
-    width: '100%',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  headerIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerEmoji: {
-    fontSize: 32,
-  },
-  pageTitle: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  itemCount: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  categoriesScroll: {
-    marginBottom: spacing.lg,
-  },
-  categoriesContainer: {
-    gap: spacing.sm,
-    paddingVertical: spacing.sm,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: spacing.xl * 2,
-  },
-  gridContent: {
-    gap: spacing.md,
-  },
-  row: {
-    gap: spacing.md,
-  },
-  card: {
-    padding: 0,
-    margin: spacing.xs,
-    overflow: 'hidden',
-  },
-  cardHovered: {
-    transform: [{ scale: 1.02 }],
-  },
-  thumbnailContainer: {
-    aspectRatio: 16 / 9,
-    position: 'relative',
-  },
-  thumbnail: {
-    width: '100%',
-    height: '100%',
-  },
-  thumbnailPlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(107, 33, 168, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 48,
-  },
-  categoryBadge: {
-    position: 'absolute',
-    top: spacing.sm,
-    left: spacing.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-  },
-  categoryIcon: {
-    fontSize: 14,
-  },
-  durationBadge: {
-    position: 'absolute',
-    top: spacing.sm,
-    right: spacing.sm,
-    backgroundColor: 'rgba(59, 130, 246, 0.9)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  durationText: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  hoverOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#3B82F6',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  info: {
-    padding: spacing.sm,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  rabbiRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginTop: spacing.xs,
-  },
-  rabbiText: {
-    fontSize: 14,
-    color: '#60A5FA',
-  },
-  description: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: spacing.xl * 2,
-  },
-  emptyCard: {
-    padding: spacing.xl * 1.5,
-    alignItems: 'center',
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: spacing.md,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  emptyDescription: {
-    fontSize: 16,
-    color: colors.textMuted,
-  },
-});

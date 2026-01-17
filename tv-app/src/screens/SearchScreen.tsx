@@ -1,564 +1,417 @@
-import React, { useEffect, useState, useRef } from 'react';
+/**
+ * SearchScreen Component (TV)
+ *
+ * TV-optimized comprehensive search screen with:
+ * - Text and subtitle search via unified search API
+ * - Advanced filtering (genre, year, rating, language)
+ * - LLM-powered natural language search (premium)
+ * - TV-specific focus management and navigation
+ * - Remote control optimized UI with large touch targets
+ * - Spatial navigation (up/down/left/right)
+ * - Glass design system with Tailwind CSS
+ * - 6-column responsive grid
+ */
+
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  FlatList,
   TouchableOpacity,
+  Modal,
   ScrollView,
   Animated,
-  ActivityIndicator,
-  Image,
   TextInput,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { GlassView, GlassInput } from '../components';
-import { contentService, searchService } from '../services/api';
-import { colors, spacing, borderRadius } from '../theme';
-import { isTV, isWeb } from '../utils/platform';
 import { useDirection } from '@bayit/shared/hooks';
+import { chatService } from '../services/api';
 
-interface SearchResult {
-  id: string;
-  title: string;
-  subtitle?: string;
-  thumbnail?: string;
-  type: 'vod' | 'live' | 'radio' | 'podcast';
-  year?: string;
-  duration?: string;
+// Shared search components
+import { useSearch } from '../../../shared/hooks/useSearch';
+import { SearchBar } from '../../../shared/components/search/SearchBar';
+import { SearchFilters } from '../../../shared/components/search/SearchFilters';
+import { SearchResults } from '../../../shared/components/search/SearchResults';
+import { LLMSearchButton } from '../../../shared/components/search/LLMSearchButton';
+import { LLMSearchModal } from '../../../shared/components/search/LLMSearchModal';
+
+interface SearchRoute {
+  params?: {
+    query?: string;
+  };
 }
 
-interface FilterOption {
-  id: string;
-  labelKey: string;
-}
-
-const FILTER_OPTIONS: FilterOption[] = [
-  { id: 'all', labelKey: 'search.filters.all' },
-  { id: 'vod', labelKey: 'search.filters.moviesAndSeries' },
-  { id: 'live', labelKey: 'search.filters.channels' },
-  { id: 'radio', labelKey: 'search.filters.radio' },
-  { id: 'podcast', labelKey: 'search.filters.podcasts' },
+// Content type filter options
+const CONTENT_TYPE_FILTERS = [
+  { id: 'all', label: 'search.filters.all' },
+  { id: 'vod', label: 'search.filters.vod' },
+  { id: 'live', label: 'search.filters.live' },
+  { id: 'radio', label: 'search.filters.radio' },
+  { id: 'podcast', label: 'search.filters.podcast' },
 ];
-
-const getTypeIcon = (type: string): string => {
-  switch (type) {
-    case 'vod': return '🎬';
-    case 'live': return '📺';
-    case 'radio': return '📻';
-    case 'podcast': return '🎙️';
-    default: return '🎬';
-  }
-};
-
-const ResultCard: React.FC<{
-  item: SearchResult;
-  onPress: () => void;
-  index: number;
-}> = ({ item, onPress, index }) => {
-  const { textAlign } = useDirection();
-  const [isFocused, setIsFocused] = useState(false);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const handleFocus = () => {
-    setIsFocused(true);
-    Animated.spring(scaleAnim, {
-      toValue: 1.08,
-      friction: 5,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      friction: 5,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      activeOpacity={1}
-      style={styles.cardTouchable}
-    >
-      <Animated.View
-        style={[
-          styles.card,
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.cardFocused,
-        ]}
-      >
-        {item.thumbnail ? (
-          <Image
-            source={{ uri: item.thumbnail }}
-            style={styles.cardImage}
-            resizeMode="cover"
-          />
-        ) : (
-          <View style={styles.cardImagePlaceholder}>
-            <Text style={styles.placeholderIcon}>{getTypeIcon(item.type)}</Text>
-          </View>
-        )}
-        <View style={styles.cardContent}>
-          <View style={styles.typeBadge}>
-            <Text style={styles.typeBadgeText}>{getTypeIcon(item.type)}</Text>
-          </View>
-          <Text style={[styles.cardTitle, { textAlign }]} numberOfLines={1}>
-            {item.title}
-          </Text>
-          {item.subtitle && (
-            <Text style={[styles.cardSubtitle, { textAlign }]} numberOfLines={1}>
-              {item.subtitle}
-            </Text>
-          )}
-        </View>
-        {isFocused && (
-          <View style={styles.playOverlay}>
-            <View style={styles.playButton}>
-              <Text style={styles.playIcon}>▶</Text>
-            </View>
-          </View>
-        )}
-      </Animated.View>
-    </TouchableOpacity>
-  );
-};
 
 export const SearchScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
-  const route = useRoute<any>();
-  const [query, setQuery] = useState(route.params?.query || '');
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState<string>('all');
-  const [hasSearched, setHasSearched] = useState(false);
+  const route = useRoute<SearchRoute>();
+  const { isRTL } = useDirection();
+
+  // Advanced filters modal state
+  const [showFilters, setShowFilters] = useState(false);
+
+  // LLM search modal state
+  const [showLLMSearch, setShowLLMSearch] = useState(false);
+
+  // Premium user status (TODO: get from auth context)
+  const [isPremium, setIsPremium] = useState(false);
+
+  // Active content type filter
+  const [activeContentType, setActiveContentType] = useState('all');
+
+  // Focus management
+  const [focusedElement, setFocusedElement] = useState<string>('search-input');
   const searchInputRef = useRef<TextInput>(null);
-  const isHebrew = i18n.language === 'he';
 
-  // Helper to get localized title
-  const getLocalizedTitle = (item: any) => {
-    if (isHebrew) return item.title || item.name;
-    return item.title_en || item.name_en || item.title || item.name;
-  };
+  // Initialize search hook with configuration
+  const {
+    query,
+    setQuery,
+    filters,
+    setFilters,
+    results,
+    loading,
+    error,
+    suggestions,
+    recentSearches,
+    search,
+    clearSearch,
+    handleResultClick: trackResultClick,
+  } = useSearch({
+    debounceMs: 300,
+    enableLLM: isPremium,
+    autoSearch: true,
+    onResultClick: (result, index) => {
+      // Navigate to player
+      navigation.navigate('Player', {
+        id: result.id,
+        title: result.title,
+        type: result.type || 'vod',
+      });
+    },
+  });
 
+  // Initialize with route query parameter
   useEffect(() => {
     if (route.params?.query) {
       setQuery(route.params.query);
-      performSearch(route.params.query);
     }
   }, [route.params?.query]);
 
-  const performSearch = async (searchQuery: string) => {
-    if (!searchQuery.trim()) {
-      setResults([]);
-      return;
-    }
+  // Auto-focus search input on mount (TV-specific)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      searchInputRef.current?.focus();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
-    setIsLoading(true);
-    setHasSearched(true);
+  // Handle content type filter change
+  const handleContentTypeChange = useCallback((typeId: string) => {
+    setActiveContentType(typeId);
+
+    const contentTypes = typeId === 'all'
+      ? ['vod', 'live', 'radio', 'podcast']
+      : [typeId];
+
+    setFilters({ ...filters, contentTypes });
+  }, [filters, setFilters]);
+
+  // Handle voice search result (TODO: Integrate TV voice remote)
+  const handleVoiceResult = useCallback(async (audioBlob: Blob) => {
     try {
-      const params = selectedFilter !== 'all' ? { type: selectedFilter } : undefined;
-      const data = await (searchService as any).search(searchQuery, params) as any;
-      // Map results to localized titles
-      const localizedResults = (data.results || []).map((item: any) => ({
-        ...item,
-        title: getLocalizedTitle(item),
-        subtitle: isHebrew ? item.description : (item.description_en || item.description),
-      }));
-      setResults(localizedResults);
-    } catch (error) {
-      console.error('Search failed:', error);
-      setResults([]);
-    } finally {
-      setIsLoading(false);
+      const text = await chatService.transcribeAudio(audioBlob);
+      if (text.trim()) {
+        setQuery(text);
+      }
+    } catch (err) {
+      console.error('Voice search failed:', err);
     }
-  };
+  }, [setQuery]);
 
-  const handleSearch = () => {
-    performSearch(query);
-  };
+  // Handle recent search click
+  const handleRecentSearchClick = useCallback((recentQuery: string) => {
+    setQuery(recentQuery);
+  }, [setQuery]);
 
-  const handleFilterChange = (filterId: string) => {
-    setSelectedFilter(filterId);
-    if (hasSearched && query) {
-      performSearch(query);
-    }
-  };
+  // Handle LLM search
+  const handleLLMSearch = useCallback((llmQuery: string, llmResults: any) => {
+    setShowLLMSearch(false);
+    // Results are already updated via the search hook
+  }, []);
 
-  const handleResultPress = (item: SearchResult) => {
-    const screenMap: Record<string, string> = {
-      vod: 'Player',
-      live: 'Player',
-      radio: 'Player',
-      podcast: 'Player',
-    };
-    navigation.navigate(screenMap[item.type] || 'Player', {
-      id: item.id,
-      title: item.title,
-      type: item.type,
-    });
-  };
-
-  const clearSearch = () => {
-    setQuery('');
-    setResults([]);
-    setHasSearched(false);
-    searchInputRef.current?.focus();
-  };
+  const hasQuery = !!query.trim();
+  const showInitialState = !hasQuery && !loading && results.length === 0;
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-black">
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }]}>
-          <Text style={styles.headerIconText}>🔍</Text>
+      <View className="px-12 pt-10 pb-4 flex-row items-center gap-6">
+        <View className="w-16 h-16 rounded-full bg-purple-500/30 items-center justify-center">
+          <Text className="text-4xl">🔍</Text>
         </View>
-        <View>
-          <Text style={[styles.title, { textAlign }]}>{t('search.title')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>{t('search.subtitle')}</Text>
-        </View>
-      </View>
-
-      {/* Search Input */}
-      <View style={styles.searchContainer}>
-        <GlassView style={[styles.searchBox, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-          <TextInput
-            ref={searchInputRef}
-            style={[styles.searchInput, { textAlign }]}
-            value={query}
-            onChangeText={setQuery}
-            onSubmitEditing={handleSearch}
-            placeholder={t('search.placeholder')}
-            placeholderTextColor={colors.textMuted}
-            returnKeyType="search"
-            autoFocus={!isTV}
-          />
-          {query ? (
-            <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
-              <Text style={styles.clearIcon}>✕</Text>
-            </TouchableOpacity>
-          ) : null}
-          <TouchableOpacity onPress={handleSearch} style={styles.searchButton}>
-            <Text style={styles.searchButtonIcon}>🔍</Text>
-          </TouchableOpacity>
-        </GlassView>
-      </View>
-
-      {/* Filter Tabs - reversed for LTR languages so visual order matches reading direction */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filtersContainer}
-        style={styles.filtersScroll}
-      >
-        {(isRTL ? FILTER_OPTIONS : [...FILTER_OPTIONS].reverse()).map((filter, index) => (
-          <TouchableOpacity
-            key={filter.id}
-            onPress={() => handleFilterChange(filter.id)}
-            style={[
-              styles.filterButton,
-              selectedFilter === filter.id && styles.filterButtonActive,
-            ]}
-            // @ts-ignore
-            hasTVPreferredFocus={index === 0 && isTV}
-          >
-            <Text
-              style={[
-                styles.filterText,
-                selectedFilter === filter.id && styles.filterTextActive,
-              ]}
-            >
-              {t(filter.labelKey)}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      {/* Results */}
-      {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loadingText}>{t('search.searching')}</Text>
-        </View>
-      ) : results.length > 0 ? (
-        <View style={styles.resultsContainer}>
-          <Text style={[styles.resultsCount, { textAlign }]}>
-            {results.length} {t('search.resultsFor')} "{query}"
+        <View className="flex-1">
+          <Text className={`text-white text-5xl font-bold ${isRTL ? 'text-right' : 'text-left'}`}>
+            {t('search.title', { defaultValue: 'Search' })}
           </Text>
-          <FlatList
-            data={results}
-            keyExtractor={(item) => item.id}
-            numColumns={isTV ? 6 : 3}
-            key={isTV ? 'tv' : 'mobile'}
-            contentContainerStyle={styles.grid}
-            renderItem={({ item, index }) => (
-              <ResultCard
-                item={item}
-                onPress={() => handleResultPress(item)}
-                index={index}
+          <Text className={`text-white/60 text-xl mt-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+            {t('search.subtitle', { defaultValue: 'Find your favorite content' })}
+          </Text>
+        </View>
+      </View>
+
+      {/* Search Bar Section */}
+      <View className="px-12 pb-6">
+        <View className="flex-row items-center gap-4">
+          {/* Main Search Input */}
+          <View className="flex-1">
+            <View className="flex-row items-center gap-3 px-6 py-4 bg-white/5 backdrop-blur-xl rounded-2xl border-2 border-white/10">
+              <Text className="text-3xl">🔍</Text>
+              <TextInput
+                ref={searchInputRef}
+                value={query}
+                onChangeText={setQuery}
+                onSubmitEditing={() => search()}
+                onFocus={() => setFocusedElement('search-input')}
+                placeholder={t('search.placeholder')}
+                placeholderTextColor="rgba(255, 255, 255, 0.4)"
+                className="flex-1 text-white text-2xl"
+                style={{ textAlign: isRTL ? 'right' : 'left' }}
+                autoFocus={true}
+                returnKeyType="search"
               />
-            )}
-          />
-        </View>
-      ) : hasSearched ? (
-        <View style={styles.emptyState}>
-          <GlassView style={styles.emptyCard}>
-            <Text style={styles.emptyIcon}>🔍</Text>
-            <Text style={styles.emptyTitle}>{t('search.noResults')}</Text>
-            <Text style={styles.emptySubtitle}>{t('search.tryDifferent')}</Text>
-          </GlassView>
-        </View>
-      ) : (
-        <View style={styles.emptyState}>
-          <GlassView style={styles.emptyCard}>
-            <Text style={styles.emptyIcon}>🔍</Text>
-            <Text style={styles.emptyTitle}>{t('common.search')}</Text>
-            <Text style={styles.emptySubtitle}>
-              {t('search.placeholder')}
+              {query && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setQuery('');
+                    searchInputRef.current?.focus();
+                  }}
+                  onFocus={() => setFocusedElement('clear-btn')}
+                  className={`
+                    w-12 h-12 items-center justify-center rounded-full
+                    ${focusedElement === 'clear-btn' ? 'bg-white/20 border-2 border-purple-400' : 'bg-white/5'}
+                  `}
+                  activeOpacity={0.7}
+                >
+                  <Text className="text-white text-2xl">✕</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+
+          {/* LLM Search Button */}
+          <TouchableOpacity
+            onPress={() => setShowLLMSearch(true)}
+            onFocus={() => setFocusedElement('llm-search-btn')}
+            className={`
+              px-8 py-5 rounded-2xl flex-row items-center gap-3
+              bg-purple-500/30 border-2
+              ${focusedElement === 'llm-search-btn' ? 'border-purple-400 scale-105' : 'border-purple-400/50'}
+            `}
+            activeOpacity={0.7}
+          >
+            <Text className="text-4xl">🤖</Text>
+            <Text className="text-white font-semibold text-xl">
+              {t('search.smartSearch', { defaultValue: 'Smart Search' })}
             </Text>
-          </GlassView>
+            {!isPremium && (
+              <View className="px-3 py-1 bg-yellow-500/30 rounded-full">
+                <Text className="text-yellow-300 text-sm font-bold">PREMIUM</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+
+          {/* Advanced Filters Button */}
+          <TouchableOpacity
+            onPress={() => setShowFilters(true)}
+            onFocus={() => setFocusedElement('filters-btn')}
+            className={`
+              px-8 py-5 rounded-2xl flex-row items-center gap-3
+              bg-white/5 border-2
+              ${focusedElement === 'filters-btn' ? 'border-white/40 scale-105' : 'border-white/10'}
+            `}
+            activeOpacity={0.7}
+          >
+            <Text className="text-3xl">⚙️</Text>
+            <Text className="text-white font-semibold text-xl">
+              {t('search.filters', { defaultValue: 'Filters' })}
+            </Text>
+          </TouchableOpacity>
         </View>
+
+        {/* Content Type Filter Pills */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerClassName="gap-3 mt-6"
+        >
+          {CONTENT_TYPE_FILTERS.map((filter, idx) => {
+            const isActive = activeContentType === filter.id;
+            const isFocused = focusedElement === `filter-${filter.id}`;
+            return (
+              <TouchableOpacity
+                key={filter.id}
+                onPress={() => handleContentTypeChange(filter.id)}
+                onFocus={() => setFocusedElement(`filter-${filter.id}`)}
+                // @ts-ignore - TV-specific prop
+                hasTVPreferredFocus={idx === 0}
+                className={`
+                  px-7 py-4 rounded-2xl border-2
+                  ${isActive ? 'bg-purple-500 border-purple-400' : 'bg-white/5 border-white/10'}
+                  ${isFocused ? 'scale-105' : ''}
+                `}
+                activeOpacity={0.7}
+              >
+                <Text className={`
+                  text-lg font-medium
+                  ${isActive ? 'text-white' : 'text-white/70'}
+                `}>
+                  {t(filter.label, { defaultValue: filter.id.toUpperCase() })}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+
+        {/* Active Filters Summary */}
+        {(filters.genres?.length || filters.yearMin || filters.ratingMin || filters.subtitleLanguages?.length) && (
+          <View className="mt-4 flex-row items-center gap-3 flex-wrap">
+            <Text className="text-white/60 text-lg">
+              {t('search.activeFilters', { defaultValue: 'Active filters:' })}
+            </Text>
+            {filters.genres?.slice(0, 4).map((genre) => (
+              <View key={genre} className="px-4 py-2 bg-blue-500/30 rounded-full">
+                <Text className="text-blue-300 text-base">{genre}</Text>
+              </View>
+            ))}
+            {filters.genres && filters.genres.length > 4 && (
+              <View className="px-4 py-2 bg-blue-500/30 rounded-full">
+                <Text className="text-blue-300 text-base">+{filters.genres.length - 4} more</Text>
+              </View>
+            )}
+            {filters.yearMin && (
+              <View className="px-4 py-2 bg-green-500/30 rounded-full">
+                <Text className="text-green-300 text-base">
+                  {filters.yearMin}{filters.yearMax ? `-${filters.yearMax}` : '+'}
+                </Text>
+              </View>
+            )}
+            {filters.ratingMin && (
+              <View className="px-4 py-2 bg-yellow-500/30 rounded-full">
+                <Text className="text-yellow-300 text-base">{filters.ratingMin}+ ⭐</Text>
+              </View>
+            )}
+            <TouchableOpacity
+              onPress={() => setFilters({ contentTypes: filters.contentTypes })}
+              onFocus={() => setFocusedElement('clear-filters')}
+              className={`
+                px-4 py-2 rounded-full
+                ${focusedElement === 'clear-filters' ? 'bg-red-500/50 border-2 border-red-400' : 'bg-red-500/30'}
+              `}
+              activeOpacity={0.7}
+            >
+              <Text className="text-red-300 text-base font-medium">✕ Clear All</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+
+      {/* Search Results or Initial State */}
+      {showInitialState ? (
+        <ScrollView className="flex-1" contentContainerClassName="px-12 pt-8">
+          {/* Recent Searches */}
+          {recentSearches.length > 0 && (
+            <View className="mb-10">
+              <View className="flex-row items-center gap-3 mb-4">
+                <Text className="text-4xl">🕐</Text>
+                <Text className="text-white font-semibold text-2xl">
+                  {t('search.recentSearches', { defaultValue: 'Recent Searches' })}
+                </Text>
+              </View>
+              <View className="flex-row flex-wrap gap-3">
+                {recentSearches.map((recentQuery, idx) => (
+                  <TouchableOpacity
+                    key={idx}
+                    onPress={() => handleRecentSearchClick(recentQuery)}
+                    onFocus={() => setFocusedElement(`recent-${idx}`)}
+                    className={`
+                      px-6 py-4 rounded-2xl border-2
+                      ${focusedElement === `recent-${idx}`
+                        ? 'bg-white/20 border-white/40 scale-105'
+                        : 'bg-white/5 border-white/10'}
+                    `}
+                    activeOpacity={0.7}
+                  >
+                    <Text className="text-white/80 text-lg">{recentQuery}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Initial Prompt */}
+          <View className="items-center justify-center py-24">
+            <Text className="text-9xl mb-8">🔍</Text>
+            <Text className="text-white text-center font-bold text-4xl mb-4">
+              {t('search.promptTitle', { defaultValue: 'Search for Content' })}
+            </Text>
+            <Text className="text-white/60 text-center max-w-3xl text-2xl">
+              {t('search.promptDescription', {
+                defaultValue: 'Search for movies, series, live channels, podcasts, and more. Use advanced filters or smart search for best results.'
+              })}
+            </Text>
+          </View>
+        </ScrollView>
+      ) : (
+        <SearchResults
+          results={results}
+          loading={loading}
+          onResultPress={(result, index) => trackResultClick(result, index)}
+          emptyMessage={
+            error
+              ? t('search.error', { defaultValue: 'Search failed. Please try again.' })
+              : t('search.noResults', { defaultValue: 'No results found. Try different keywords.' })
+          }
+          numColumns={6}
+        />
       )}
+
+      {/* Advanced Filters Modal */}
+      <Modal
+        visible={showFilters}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowFilters(false)}
+      >
+        <View className="flex-1 bg-black/90">
+          <View className="flex-1 m-20 rounded-3xl overflow-hidden">
+            <SearchFilters
+              filters={filters}
+              onFiltersChange={setFilters}
+              onClose={() => setShowFilters(false)}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {/* LLM Search Modal */}
+      <LLMSearchModal
+        visible={showLLMSearch}
+        onClose={() => setShowLLMSearch(false)}
+        onSearch={handleLLMSearch}
+        isPremium={isPremium}
+      />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xxl,
-    paddingTop: 40,
-    paddingBottom: spacing.md,
-  },
-  headerIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: spacing.lg,
-  },
-  headerIconText: {
-    fontSize: 28,
-  },
-  title: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'right',
-  },
-  subtitle: {
-    fontSize: 18,
-    color: colors.textSecondary,
-    marginTop: 2,
-    textAlign: 'right',
-  },
-  searchContainer: {
-    paddingHorizontal: spacing.xxl,
-    paddingBottom: spacing.lg,
-  },
-  searchBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.xl,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 18,
-    color: colors.text,
-    textAlign: 'right',
-    paddingVertical: spacing.sm,
-  },
-  clearButton: {
-    padding: spacing.sm,
-    marginRight: spacing.sm,
-  },
-  clearIcon: {
-    fontSize: 18,
-    color: colors.textMuted,
-  },
-  searchButton: {
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    marginLeft: spacing.sm,
-  },
-  searchButtonIcon: {
-  },
-  filtersScroll: {
-    maxHeight: 60,
-    zIndex: 10,
-  },
-  filtersContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing.xxl,
-    paddingBottom: spacing.lg,
-    gap: spacing.sm,
-  },
-  filterButton: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.xl,
-    backgroundColor: colors.backgroundLight,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  filterButtonActive: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderColor: colors.primary,
-  },
-  filterText: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-  filterTextActive: {
-    color: colors.primary,
-    fontWeight: 'bold',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: 18,
-    marginTop: spacing.md,
-  },
-  resultsContainer: {
-    flex: 1,
-    paddingHorizontal: spacing.xl,
-  },
-  resultsCount: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    textAlign: 'right',
-    marginBottom: spacing.md,
-    paddingHorizontal: spacing.sm,
-  },
-  grid: {
-    paddingBottom: spacing.xxl,
-    paddingTop: spacing.md,
-    direction: 'ltr',
-  },
-  cardTouchable: {
-    flex: 1,
-    margin: spacing.sm,
-    maxWidth: isTV ? '16.66%' : '33.33%',
-  },
-  card: {
-    backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-  cardFocused: {
-    borderColor: colors.primary,
-    // @ts-ignore - Web CSS property for glow effect
-    boxShadow: `0 0 20px ${colors.primary}`,
-  },
-  cardImage: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-  },
-  cardImagePlaceholder: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    backgroundColor: colors.backgroundLighter,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 32,
-  },
-  cardContent: {
-    padding: spacing.sm,
-  },
-  typeBadge: {
-    position: 'absolute',
-    top: -28,
-    right: spacing.xs,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderRadius: borderRadius.sm,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  typeBadgeText: {
-    fontSize: 12,
-  },
-  cardTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  cardSubtitle: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  playOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playIcon: {
-    fontSize: 20,
-    color: colors.background,
-    marginLeft: 4,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyCard: {
-    padding: spacing.xxl,
-    alignItems: 'center',
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: spacing.md,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-});
 
 export default SearchScreen;

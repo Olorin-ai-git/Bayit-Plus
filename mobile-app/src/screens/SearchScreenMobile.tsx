@@ -1,52 +1,44 @@
 /**
- * SearchScreenMobile
+ * SearchScreenMobile Component
  *
- * Mobile-optimized search screen
- * Features:
- * - Voice search support
- * - Search history
- * - Recent searches
- * - Search suggestions
- * - Responsive results grid
- * - Filter by content type (all, live, vod, radio, podcasts)
+ * Mobile-optimized comprehensive search screen with:
+ * - Text and subtitle search via unified search API
+ * - Advanced filtering (genre, year, rating, language)
+ * - LLM-powered natural language search (premium)
+ * - Recent searches with AsyncStorage persistence
+ * - Voice search integration
+ * - Bottom sheet for advanced filters
+ * - Glass design system with Tailwind CSS
+ * - Responsive grid layout
+ * - Pull-to-refresh
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  TextInput,
-  FlatList,
-  Pressable,
-  Platform,
-  Keyboard,
+  TouchableOpacity,
+  Modal,
   ScrollView,
+  Platform,
+  RefreshControl,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@bayit/shared-hooks';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { GlassView, GlassButton, GlassCategoryPill } from '@bayit/shared';
-import { contentService } from '@bayit/shared-services';
+import { chatService } from '@bayit/shared-services';
 import { getLocalizedName } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
-import { ContentCardMobile, ChannelCardMobile } from '../components';
-import { spacing, colors, typography, touchTarget } from '../theme';
 
-interface SearchResult {
-  id: string;
-  type: 'live' | 'vod' | 'radio' | 'podcast';
-  title: string;
-  title_en?: string;
-  title_es?: string;
-  posterUrl?: string;
-  thumbnailUrl?: string;
-  number?: string; // For live channels
-  currentShow?: string; // For live channels
-  author?: string; // For podcasts
-}
+// Shared search components
+import { useSearch } from '../../../shared/hooks/useSearch';
+import { SearchBar } from '../../../shared/components/search/SearchBar';
+import { SearchFilters } from '../../../shared/components/search/SearchFilters';
+import { SearchResults } from '../../../shared/components/search/SearchResults';
+import { LLMSearchButton } from '../../../shared/components/search/LLMSearchButton';
+import { LLMSearchModal } from '../../../shared/components/search/LLMSearchModal';
 
 interface SearchRoute {
   params?: {
@@ -54,32 +46,36 @@ interface SearchRoute {
   };
 }
 
+// Content type filter options
 const CONTENT_TYPE_FILTERS = [
-  { id: 'all', label: 'search.all', icon: '🔍' },
-  { id: 'live', label: 'search.liveTV', icon: '📺' },
-  { id: 'vod', label: 'search.vod', icon: '🎬' },
-  { id: 'radio', label: 'search.radio', icon: '📻' },
-  { id: 'podcast', label: 'search.podcasts', icon: '🎙️' },
+  { id: 'all', label: 'search.filters.all' },
+  { id: 'vod', label: 'search.filters.vod' },
+  { id: 'live', label: 'search.filters.live' },
+  { id: 'radio', label: 'search.filters.radio' },
+  { id: 'podcast', label: 'search.filters.podcast' },
 ];
 
 export const SearchScreenMobile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
   const route = useRoute<SearchRoute>();
-  const { isRTL, direction } = useDirection();
+  const { isRTL } = useDirection();
   const { orientation } = useResponsive();
 
-  const [query, setQuery] = useState(route.params?.query || '');
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [filteredResults, setFilteredResults] = useState<SearchResult[]>([]);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState('all');
-  const [isSearching, setIsSearching] = useState(false);
-  const [showResults, setShowResults] = useState(false);
+  // Advanced filters bottom sheet state
+  const [showFilters, setShowFilters] = useState(false);
 
-  const inputRef = useRef<TextInput>(null);
-  const currentLang = i18n.language;
+  // LLM search modal state
+  const [showLLMSearch, setShowLLMSearch] = useState(false);
+
+  // Premium user status (TODO: get from auth context)
+  const [isPremium, setIsPremium] = useState(false);
+
+  // Refresh control
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Active content type filter
+  const [activeContentType, setActiveContentType] = useState('all');
 
   // Responsive column count
   const numColumns = getGridColumns({
@@ -87,431 +83,363 @@ export const SearchScreenMobile: React.FC = () => {
     tablet: orientation === 'landscape' ? 5 : 3,
   });
 
+  // Initialize search hook with configuration
+  const {
+    query,
+    setQuery,
+    filters,
+    setFilters,
+    results,
+    loading,
+    error,
+    suggestions,
+    recentSearches,
+    search,
+    clearSearch,
+    handleResultClick: trackResultClick,
+  } = useSearch({
+    debounceMs: 300,
+    enableLLM: isPremium,
+    autoSearch: true,
+    onResultClick: (result, index) => {
+      // Haptic feedback on iOS
+      if (Platform.OS === 'ios') {
+        ReactNativeHapticFeedback.trigger('impactLight');
+      }
+
+      // Navigate to player
+      navigation.navigate('Player', {
+        id: result.id,
+        title: getLocalizedName(result, i18n.language),
+        type: result.type || 'vod',
+      });
+    },
+  });
+
+  // Initialize with route query parameter
   useEffect(() => {
-    loadRecentSearches();
     if (route.params?.query) {
-      handleSearch(route.params.query);
+      setQuery(route.params.query);
     }
-  }, []);
+  }, [route.params?.query]);
 
-  useEffect(() => {
-    filterResults();
-  }, [selectedFilter, results]);
+  // Handle content type filter change
+  const handleContentTypeChange = useCallback((typeId: string) => {
+    setActiveContentType(typeId);
 
-  useEffect(() => {
-    if (query.length >= 2) {
-      loadSuggestions(query);
-    } else {
-      setSuggestions([]);
-    }
-  }, [query]);
+    const contentTypes = typeId === 'all'
+      ? ['vod', 'live', 'radio', 'podcast']
+      : [typeId];
 
-  const loadRecentSearches = async () => {
-    // TODO: Load from AsyncStorage
-    setRecentSearches(['Channel 13', 'Comedy movies', 'News', 'Jewish content']);
-  };
+    setFilters({ ...filters, contentTypes });
+  }, [filters, setFilters]);
 
-  const saveRecentSearch = async (searchQuery: string) => {
-    // TODO: Save to AsyncStorage
-    const updated = [searchQuery, ...recentSearches.filter(s => s !== searchQuery)].slice(0, 10);
-    setRecentSearches(updated);
-  };
-
-  const loadSuggestions = async (searchQuery: string) => {
+  // Handle voice search result
+  const handleVoiceResult = useCallback(async (audioBlob: Blob) => {
     try {
-      const response = await contentService.getSearchSuggestions(searchQuery);
-      setSuggestions(response.suggestions || []);
-    } catch (error) {
-      console.error('Error loading suggestions:', error);
+      if (Platform.OS === 'ios') {
+        ReactNativeHapticFeedback.trigger('notificationSuccess');
+      }
+
+      const text = await chatService.transcribeAudio(audioBlob);
+      if (text.trim()) {
+        setQuery(text);
+      }
+    } catch (err) {
+      console.error('Voice search failed:', err);
+      if (Platform.OS === 'ios') {
+        ReactNativeHapticFeedback.trigger('notificationError');
+      }
     }
-  };
+  }, [setQuery]);
 
-  const handleSearch = async (searchQuery: string) => {
-    if (!searchQuery.trim()) return;
-
-    Keyboard.dismiss();
-    setIsSearching(true);
-    setShowResults(true);
-    saveRecentSearch(searchQuery);
-
-    try {
-      const response = await contentService.search(searchQuery);
-      const searchResults: SearchResult[] = [
-        ...(response.live || []).map((item: any) => ({
-          ...item,
-          type: 'live' as const,
-          thumbnailUrl: item.thumbnail || item.logo,
-        })),
-        ...(response.vod || []).map((item: any) => ({
-          ...item,
-          type: 'vod' as const,
-          posterUrl: item.poster || item.thumbnail,
-        })),
-        ...(response.radio || []).map((item: any) => ({
-          ...item,
-          type: 'radio' as const,
-          thumbnailUrl: item.logo || item.thumbnail,
-        })),
-        ...(response.podcasts || []).map((item: any) => ({
-          ...item,
-          type: 'podcast' as const,
-          posterUrl: item.cover || item.thumbnail,
-        })),
-      ];
-
-      setResults(searchResults);
-    } catch (error) {
-      console.error('Error searching:', error);
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  const filterResults = () => {
-    if (selectedFilter === 'all') {
-      setFilteredResults(results);
-    } else {
-      setFilteredResults(results.filter(item => item.type === selectedFilter));
-    }
-  };
-
-  const handleResultPress = (item: SearchResult) => {
+  // Handle recent search click
+  const handleRecentSearchClick = useCallback((recentQuery: string) => {
     if (Platform.OS === 'ios') {
-      ReactNativeHapticFeedback.trigger('impactLight');
+      ReactNativeHapticFeedback.trigger('selection');
     }
+    setQuery(recentQuery);
+  }, [setQuery]);
 
-    navigation.navigate('Player', {
-      id: item.id,
-      title: getLocalizedName(item, currentLang),
-      type: item.type,
-    });
-  };
-
-  const handleSuggestionPress = (suggestion: string) => {
+  // Handle suggestion click
+  const handleSuggestionClick = useCallback((suggestion: string) => {
+    if (Platform.OS === 'ios') {
+      ReactNativeHapticFeedback.trigger('selection');
+    }
     setQuery(suggestion);
-    handleSearch(suggestion);
-  };
+  }, [setQuery]);
 
-  const handleRecentSearchPress = (recent: string) => {
-    setQuery(recent);
-    handleSearch(recent);
-  };
-
-  const handleClearSearch = () => {
-    setQuery('');
-    setShowResults(false);
-    setResults([]);
-    setFilteredResults([]);
-    inputRef.current?.focus();
-  };
-
-  const handleVoiceSearch = () => {
-    // TODO: Integrate with voice search
+  // Handle LLM search
+  const handleLLMSearch = useCallback((llmQuery: string, llmResults: any) => {
     if (Platform.OS === 'ios') {
       ReactNativeHapticFeedback.trigger('notificationSuccess');
     }
-    console.log('Voice search triggered');
-  };
+    setShowLLMSearch(false);
+    // Results are already updated via the search hook
+  }, []);
 
-  const renderResult = ({ item }: { item: SearchResult }) => {
-    if (item.type === 'live') {
-      return (
-        <ChannelCardMobile
-          channel={{
-            id: item.id,
-            number: item.number || '',
-            name: getLocalizedName(item, currentLang),
-            thumbnailUrl: item.thumbnailUrl,
-            currentShow: item.currentShow,
-            isLive: true,
-          }}
-          onPress={() => handleResultPress(item)}
-        />
-      );
+  // Handle pull-to-refresh
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await search();
+    } finally {
+      setRefreshing(false);
     }
+  }, [search]);
 
-    return (
-      <ContentCardMobile
-        content={{
-          id: item.id,
-          title: getLocalizedName(item, currentLang),
-          posterUrl: item.posterUrl || item.thumbnailUrl,
-        }}
-        onPress={() => handleResultPress(item)}
-      />
-    );
-  };
+  const hasQuery = !!query.trim();
+  const showInitialState = !hasQuery && !loading && results.length === 0;
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-black">
       {/* Search Header */}
-      <GlassView style={styles.searchHeader}>
-        <View style={styles.searchInputContainer}>
-          <Text style={styles.searchIcon}>🔍</Text>
-          <TextInput
-            ref={inputRef}
-            style={styles.searchInput}
-            placeholder={t('search.placeholder')}
-            placeholderTextColor={colors.textSecondary}
-            value={query}
-            onChangeText={setQuery}
-            onSubmitEditing={() => handleSearch(query)}
-            returnKeyType="search"
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-          {query.length > 0 && (
-            <Pressable onPress={handleClearSearch} style={styles.clearButton}>
-              <Text style={styles.clearIcon}>✕</Text>
-            </Pressable>
-          )}
-          <Pressable onPress={handleVoiceSearch} style={styles.voiceButton}>
-            <Text style={styles.voiceIcon}>🎤</Text>
-          </Pressable>
+      <View className="px-4 pt-4 pb-3 bg-black/40 backdrop-blur-xl border-b border-white/10">
+        <View className="flex-row items-center gap-3 mb-3">
+          {/* Back Button */}
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            className="w-10 h-10 items-center justify-center bg-white/10 rounded-full"
+            activeOpacity={0.7}
+          >
+            <Text className="text-white text-xl">{isRTL ? '→' : '←'}</Text>
+          </TouchableOpacity>
+
+          {/* Search Bar */}
+          <View className="flex-1">
+            <SearchBar
+              value={query}
+              onChange={setQuery}
+              suggestions={suggestions}
+              showVoiceButton={true}
+              onVoicePress={handleVoiceResult}
+              placeholder={t('search.placeholder')}
+              isRTL={isRTL}
+              autoFocus={!route.params?.query}
+            />
+          </View>
+
+          {/* LLM Search Button (compact for mobile) */}
+          <TouchableOpacity
+            onPress={() => setShowLLMSearch(true)}
+            className="w-12 h-12 items-center justify-center bg-purple-500/30 rounded-full border border-purple-400/50"
+            activeOpacity={0.7}
+          >
+            <Text className="text-2xl">🤖</Text>
+            {!isPremium && (
+              <View className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full items-center justify-center">
+                <Text className="text-white text-xs font-bold">P</Text>
+              </View>
+            )}
+          </TouchableOpacity>
         </View>
-      </GlassView>
 
-      {/* Content */}
-      {!showResults ? (
-        <ScrollView style={styles.scrollContent} contentContainerStyle={styles.scrollContentContainer}>
-          {/* Suggestions (when typing) */}
-          {suggestions.length > 0 && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{t('search.suggestions')}</Text>
-              {suggestions.map((suggestion, index) => (
-                <Pressable
-                  key={index}
-                  onPress={() => handleSuggestionPress(suggestion)}
-                  style={styles.suggestionItem}
-                >
-                  <GlassView style={styles.suggestionContent}>
-                    <Text style={styles.suggestionIcon}>🔍</Text>
-                    <Text style={styles.suggestionText}>{suggestion}</Text>
-                    <Text style={styles.suggestionArrow}>↖</Text>
-                  </GlassView>
-                </Pressable>
-              ))}
-            </View>
-          )}
+        {/* Content Type Filter Pills */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerClassName="gap-2"
+        >
+          {CONTENT_TYPE_FILTERS.map((filter) => {
+            const isActive = activeContentType === filter.id;
+            return (
+              <TouchableOpacity
+                key={filter.id}
+                onPress={() => handleContentTypeChange(filter.id)}
+                className={`
+                  px-4 py-2 rounded-full border
+                  ${isActive
+                    ? 'bg-purple-500 border-purple-400'
+                    : 'bg-white/5 border-white/10'}
+                `}
+                activeOpacity={0.7}
+              >
+                <Text className={`
+                  text-sm font-medium
+                  ${isActive ? 'text-white' : 'text-white/70'}
+                `}>
+                  {t(filter.label, { defaultValue: filter.id.toUpperCase() })}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
 
-          {/* Recent Searches */}
-          {recentSearches.length > 0 && suggestions.length === 0 && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{t('search.recent')}</Text>
-              {recentSearches.map((recent, index) => (
-                <Pressable
-                  key={index}
-                  onPress={() => handleRecentSearchPress(recent)}
-                  style={styles.recentItem}
-                >
-                  <GlassView style={styles.recentContent}>
-                    <Text style={styles.recentIcon}>🕐</Text>
-                    <Text style={styles.recentText}>{recent}</Text>
-                  </GlassView>
-                </Pressable>
-              ))}
+          {/* Advanced Filters Button */}
+          <TouchableOpacity
+            onPress={() => setShowFilters(true)}
+            className="px-4 py-2 rounded-full border border-white/20 bg-white/5"
+            activeOpacity={0.7}
+          >
+            <View className="flex-row items-center gap-1">
+              <Text className="text-base">⚙️</Text>
+              <Text className="text-white/70 text-sm font-medium">
+                {t('search.moreFilters', { defaultValue: 'More' })}
+              </Text>
+              {(filters.genres?.length || filters.yearMin || filters.ratingMin) && (
+                <View className="w-2 h-2 bg-blue-500 rounded-full ml-1" />
+              )}
             </View>
-          )}
+          </TouchableOpacity>
         </ScrollView>
-      ) : (
-        <View style={styles.resultsContainer}>
-          {/* Content Type Filters */}
+
+        {/* Active Filters Summary (compact for mobile) */}
+        {(filters.genres?.length || filters.yearMin || filters.ratingMin || filters.subtitleLanguages?.length) && (
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.filtersContent}
-            style={styles.filtersSection}
+            contentContainerClassName="gap-2 mt-2"
           >
-            {CONTENT_TYPE_FILTERS.map((filter) => (
-              <GlassCategoryPill
-                key={filter.id}
-                category={{
-                  id: filter.id,
-                  name: `${filter.icon} ${t(filter.label)}`,
-                }}
-                selected={selectedFilter === filter.id}
-                onPress={() => setSelectedFilter(filter.id)}
-              />
+            {filters.genres?.slice(0, 3).map((genre) => (
+              <View key={genre} className="px-3 py-1 bg-blue-500/30 rounded-full">
+                <Text className="text-blue-300 text-xs">{genre}</Text>
+              </View>
             ))}
+            {filters.genres && filters.genres.length > 3 && (
+              <View className="px-3 py-1 bg-blue-500/30 rounded-full">
+                <Text className="text-blue-300 text-xs">+{filters.genres.length - 3}</Text>
+              </View>
+            )}
+            {filters.yearMin && (
+              <View className="px-3 py-1 bg-green-500/30 rounded-full">
+                <Text className="text-green-300 text-xs">
+                  {filters.yearMin}{filters.yearMax ? `-${filters.yearMax}` : '+'}
+                </Text>
+              </View>
+            )}
+            {filters.ratingMin && (
+              <View className="px-3 py-1 bg-yellow-500/30 rounded-full">
+                <Text className="text-yellow-300 text-xs">{filters.ratingMin}+ ⭐</Text>
+              </View>
+            )}
+            <TouchableOpacity
+              onPress={() => setFilters({ contentTypes: filters.contentTypes })}
+              className="px-3 py-1 bg-red-500/30 rounded-full"
+              activeOpacity={0.7}
+            >
+              <Text className="text-red-300 text-xs">✕</Text>
+            </TouchableOpacity>
           </ScrollView>
+        )}
+      </View>
 
-          {/* Results Grid */}
-          {isSearching ? (
-            <View style={styles.loadingContainer}>
-              <Text style={styles.loadingText}>{t('search.searching')}</Text>
-            </View>
-          ) : filteredResults.length > 0 ? (
-            <FlatList
-              key={`grid-${numColumns}`}
-              data={filteredResults}
-              renderItem={renderResult}
-              keyExtractor={(item) => `${item.type}-${item.id}`}
-              numColumns={numColumns}
-              columnWrapperStyle={styles.row}
-              contentContainerStyle={styles.gridContent}
-            />
-          ) : (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyIcon}>🔍</Text>
-              <Text style={styles.emptyText}>{t('search.noResults')}</Text>
-              <Text style={styles.emptyHint}>
-                {t('search.tryDifferentKeywords')}
-              </Text>
+      {/* Search Results or Initial State */}
+      {showInitialState ? (
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="px-4 pt-6"
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+        >
+          {/* Recent Searches */}
+          {recentSearches.length > 0 && (
+            <View className="mb-6">
+              <View className="flex-row items-center gap-2 mb-3">
+                <Text className="text-xl">🕐</Text>
+                <Text className="text-white font-semibold text-base">
+                  {t('search.recentSearches', { defaultValue: 'Recent Searches' })}
+                </Text>
+              </View>
+              <View className="flex-row flex-wrap gap-2">
+                {recentSearches.map((recentQuery, idx) => (
+                  <TouchableOpacity
+                    key={idx}
+                    onPress={() => handleRecentSearchClick(recentQuery)}
+                    className="px-4 py-2 rounded-full bg-white/5 border border-white/10"
+                    activeOpacity={0.7}
+                  >
+                    <Text className="text-white/80 text-sm">{recentQuery}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
           )}
-        </View>
+
+          {/* Suggestions (when typing) */}
+          {suggestions.length > 0 && (
+            <View className="mb-6">
+              <View className="flex-row items-center gap-2 mb-3">
+                <Text className="text-xl">💡</Text>
+                <Text className="text-white font-semibold text-base">
+                  {t('search.suggestions', { defaultValue: 'Suggestions' })}
+                </Text>
+              </View>
+              {suggestions.map((suggestion, idx) => (
+                <TouchableOpacity
+                  key={idx}
+                  onPress={() => handleSuggestionClick(suggestion)}
+                  className="mb-2 px-4 py-3 rounded-xl bg-white/5 border border-white/10"
+                  activeOpacity={0.7}
+                >
+                  <View className="flex-row items-center gap-3">
+                    <Text className="text-lg">🔍</Text>
+                    <Text className="flex-1 text-white text-base">{suggestion}</Text>
+                    <Text className="text-white/40 text-lg">↖</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
+          {/* Initial Prompt */}
+          <View className="items-center justify-center py-12">
+            <Text className="text-7xl mb-4">🔍</Text>
+            <Text className="text-white text-center font-bold text-xl mb-2">
+              {t('search.promptTitle', { defaultValue: 'Search for Content' })}
+            </Text>
+            <Text className="text-white/60 text-center max-w-sm text-sm px-4">
+              {t('search.promptDescription', {
+                defaultValue: 'Search for movies, series, live channels, podcasts, and more. Use advanced filters or smart search for best results.'
+              })}
+            </Text>
+          </View>
+        </ScrollView>
+      ) : (
+        <SearchResults
+          results={results}
+          loading={loading}
+          onResultPress={(result, index) => trackResultClick(result, index)}
+          emptyMessage={
+            error
+              ? t('search.error', { defaultValue: 'Search failed. Please try again.' })
+              : t('search.noResults', { defaultValue: 'No results found. Try different keywords.' })
+          }
+          numColumns={numColumns}
+        />
       )}
+
+      {/* Advanced Filters Bottom Sheet Modal */}
+      <Modal
+        visible={showFilters}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowFilters(false)}
+      >
+        <View className="flex-1 bg-black/80">
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setShowFilters(false)}
+            className="flex-1"
+          />
+          <View className="h-4/5 rounded-t-3xl overflow-hidden">
+            <SearchFilters
+              filters={filters}
+              onFiltersChange={setFilters}
+              onClose={() => setShowFilters(false)}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {/* LLM Search Modal */}
+      <LLMSearchModal
+        visible={showLLMSearch}
+        onClose={() => setShowLLMSearch(false)}
+        onSearch={handleLLMSearch}
+        isPremium={isPremium}
+      />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  searchHeader: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-  },
-  searchInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    paddingHorizontal: spacing.md,
-    minHeight: touchTarget.minHeight,
-  },
-  searchIcon: {
-    fontSize: 20,
-    marginRight: spacing.sm,
-  },
-  searchInput: {
-    flex: 1,
-    ...typography.body,
-    color: colors.text,
-    paddingVertical: spacing.sm,
-  },
-  clearButton: {
-    padding: spacing.xs,
-  },
-  clearIcon: {
-    fontSize: 18,
-    color: colors.textSecondary,
-  },
-  voiceButton: {
-    padding: spacing.xs,
-    marginLeft: spacing.xs,
-  },
-  voiceIcon: {
-    fontSize: 20,
-  },
-  scrollContent: {
-    flex: 1,
-  },
-  scrollContentContainer: {
-    paddingHorizontal: spacing.lg,
-  },
-  section: {
-    marginBottom: spacing.xl,
-  },
-  sectionTitle: {
-    ...typography.h4,
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  suggestionItem: {
-    marginBottom: spacing.sm,
-  },
-  suggestionContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 8,
-    minHeight: touchTarget.minHeight,
-  },
-  suggestionIcon: {
-    fontSize: 18,
-    marginRight: spacing.md,
-  },
-  suggestionText: {
-    ...typography.body,
-    color: colors.text,
-    flex: 1,
-  },
-  suggestionArrow: {
-    fontSize: 18,
-    color: colors.textSecondary,
-  },
-  recentItem: {
-    marginBottom: spacing.sm,
-  },
-  recentContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 8,
-    minHeight: touchTarget.minHeight,
-  },
-  recentIcon: {
-    fontSize: 18,
-    marginRight: spacing.md,
-  },
-  recentText: {
-    ...typography.body,
-    color: colors.text,
-    flex: 1,
-  },
-  resultsContainer: {
-    flex: 1,
-  },
-  filtersSection: {
-    maxHeight: 60,
-  },
-  filtersContent: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    gap: spacing.sm,
-  },
-  row: {
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-  },
-  gridContent: {
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xxl,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    ...typography.body,
-    color: colors.textSecondary,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: spacing.lg,
-  },
-  emptyText: {
-    ...typography.h3,
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-  },
-  emptyHint: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-});
+export default SearchScreenMobile;

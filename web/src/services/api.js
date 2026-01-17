@@ -349,11 +349,50 @@ const apiChildrenService = {
 
 // Judaism Service (API)
 const apiJudaismService = {
+  // Content endpoints
   getContent: (category, limit) =>
     api.get('/judaism/content', { params: { category, limit } }),
   getCategories: () => api.get('/judaism/categories'),
   getLiveShiurim: () => api.get('/judaism/live'),
-  getDailyContent: () => api.get('/judaism/daily'),
+  getDailyContent: () => api.get('/judaism/daily-shiur'),
+  getFeatured: () => api.get('/judaism/featured'),
+
+  // News endpoints
+  getNews: (category, source, page = 1, limit = 20) =>
+    api.get('/judaism/news', { params: { category, source, page, limit } }),
+  getNewsSources: () => api.get('/judaism/news/sources'),
+
+  // Calendar endpoints
+  getCalendarToday: () => api.get('/judaism/calendar/today'),
+  getShabbatTimes: (city, state, geonameId) =>
+    api.get('/judaism/calendar/shabbat', { params: { city, state, geoname_id: geonameId } }),
+  getDafYomi: () => api.get('/judaism/calendar/daf-yomi'),
+  getUpcomingHolidays: (days = 30) =>
+    api.get('/judaism/calendar/holidays', { params: { days } }),
+  getAvailableCities: () => api.get('/judaism/calendar/cities'),
+
+  // Community directory endpoints
+  getRegions: () => api.get('/judaism/community/regions'),
+  getSynagogues: (region, denomination, page = 1, limit = 20) =>
+    api.get('/judaism/community/synagogues', { params: { region, denomination, page, limit } }),
+  getKosherRestaurants: (region, city, state, certification, page = 1, limit = 20) =>
+    api.get('/judaism/community/kosher', { params: { region, city, state, certification, page, limit } }),
+  getJCCs: (region, page = 1, limit = 20) =>
+    api.get('/judaism/community/jcc', { params: { region, page, limit } }),
+  getMikvaot: (region, page = 1, limit = 20) =>
+    api.get('/judaism/community/mikvaot', { params: { region, page, limit } }),
+  getCommunityEvents: (region, eventType, days = 14, page = 1, limit = 20) =>
+    api.get('/judaism/community/events', { params: { region, event_type: eventType, days, page, limit } }),
+  getOrganization: (orgId) =>
+    api.get(`/judaism/community/organization/${orgId}`),
+  searchCommunity: (params) =>
+    api.get('/judaism/community/search', { params }),
+
+  // Torah shiurim endpoints
+  getShiurim: (category, rabbi, source, page = 1, limit = 20) =>
+    api.get('/judaism/shiurim', { params: { category, rabbi, source, page, limit } }),
+  getLiveTorah: () => api.get('/judaism/shiurim/live'),
+  getDailyShiur: () => api.get('/judaism/shiurim/daily'),
 }
 
 // Flows Service (API)

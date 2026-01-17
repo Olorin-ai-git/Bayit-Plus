@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Switch,
   Modal,
   TextInput,
   Alert,
@@ -13,7 +12,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GlassView } from '../components/ui';
+import { GlassView, TVSwitch } from '../components/ui';
 import { useDirection } from '../hooks/useDirection';
 import { useAuthStore } from '../stores/authStore';
 import { useVoiceSettingsStore } from '../stores/voiceSettingsStore';
@@ -462,7 +461,7 @@ export default function SettingsScreen() {
           {t('settings.voice', 'Voice Control')}
         </Text>
         <SettingRow icon="🎤" label={t('settings.wakeWord', 'Wake Word Activation')}>
-          <Switch
+          <TVSwitch
             value={wakeWord}
             onValueChange={handleWakeWordToggle}
             trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
@@ -482,7 +481,7 @@ export default function SettingsScreen() {
           {t('settings.playback', 'Playback')}
         </Text>
         <SettingRow icon="▶️" label={t('settings.autoplay', 'Autoplay Next Episode')}>
-          <Switch
+          <TVSwitch
             value={autoplay}
             onValueChange={setAutoplay}
             trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
@@ -490,7 +489,7 @@ export default function SettingsScreen() {
           />
         </SettingRow>
         <SettingRow icon="💬" label={t('settings.subtitles', 'Subtitles')}>
-          <Switch
+          <TVSwitch
             value={subtitles}
             onValueChange={setSubtitles}
             trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
@@ -514,7 +513,7 @@ export default function SettingsScreen() {
           icon="📶"
           label={t('settings.autoAdjustQuality', 'Auto-Adjust Quality')}
         >
-          <Switch
+          <TVSwitch
             value={autoAdjustQuality}
             onValueChange={handleAutoAdjustToggle}
             trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
@@ -525,7 +524,7 @@ export default function SettingsScreen() {
           icon="📉"
           label={t('settings.dataSaver', 'Data Saver Mode')}
         >
-          <Switch
+          <TVSwitch
             value={dataSaver}
             onValueChange={handleDataSaverToggle}
             trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
@@ -543,7 +542,7 @@ export default function SettingsScreen() {
           icon="🔐"
           label={t('settings.enableParentalControls', 'Enable Parental Controls')}
         >
-          <Switch
+          <TVSwitch
             value={parentalControlsEnabled}
             onValueChange={handleParentalControlsToggle}
             trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
@@ -582,7 +581,7 @@ export default function SettingsScreen() {
           icon="📶"
           label={t('settings.wifiOnly', 'WiFi Only Downloads')}
         >
-          <Switch
+          <TVSwitch
             value={wifiOnlyDownloads}
             onValueChange={handleWifiOnlyToggle}
             trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
@@ -593,7 +592,7 @@ export default function SettingsScreen() {
           icon="⏭️"
           label={t('settings.autoDownloadNext', 'Auto-Download Next Episode')}
         >
-          <Switch
+          <TVSwitch
             value={autoDownloadNextEpisode}
             onValueChange={handleAutoDownloadToggle}
             trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
@@ -611,7 +610,7 @@ export default function SettingsScreen() {
           icon="🔤"
           label={t('settings.largeText', 'Large Text')}
         >
-          <Switch
+          <TVSwitch
             value={largeText}
             onValueChange={handleLargeTextToggle}
             trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
@@ -622,7 +621,7 @@ export default function SettingsScreen() {
           icon="🌓"
           label={t('settings.highContrast', 'High Contrast Mode')}
         >
-          <Switch
+          <TVSwitch
             value={highContrast}
             onValueChange={handleHighContrastToggle}
             trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
@@ -633,7 +632,7 @@ export default function SettingsScreen() {
           icon="👁️"
           label={t('settings.screenReader', 'Enhanced Screen Reader Support')}
         >
-          <Switch
+          <TVSwitch
             value={screenReaderEnhanced}
             onValueChange={handleScreenReaderToggle}
             trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
@@ -644,7 +643,7 @@ export default function SettingsScreen() {
           icon="🎬"
           label={t('settings.reducedMotion', 'Reduced Motion')}
         >
-          <Switch
+          <TVSwitch
             value={reducedMotion}
             onValueChange={handleReducedMotionToggle}
             trackColor={{ false: colors.backgroundLighter, true: colors.primary }}
@@ -659,7 +658,7 @@ export default function SettingsScreen() {
           {t('settings.notifications', 'Notifications')}
         </Text>
         <SettingRow icon="🔔" label={t('settings.pushNotifications', 'Push Notifications')}>
-          <Switch
+          <TVSwitch
             value={notifications}
             onValueChange={setNotifications}
             trackColor={{ false: colors.backgroundLighter, true: colors.primary }}

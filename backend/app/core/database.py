@@ -36,6 +36,9 @@ from app.models.chess import ChessGame, ChessChatMessage
 from app.models.friendship import FriendRequest, UserFriendship, GameResult, PlayerStats
 from app.models.chat_translation import ChatTranslationCacheDoc
 from app.models.direct_message import DirectMessage
+from app.models.jewish_news import JewishNewsSource, JewishNewsItem
+from app.models.jewish_calendar import JewishCalendarCache
+from app.models.jewish_community import JewishOrganization, CommunityEvent, ScrapingJob
 
 
 class Database:
@@ -126,6 +129,13 @@ async def connect_to_mongo():
             # Chat Translation models
             ChatTranslationCacheDoc,
             DirectMessage,
+            # Judaism Section models
+            JewishNewsSource,
+            JewishNewsItem,
+            JewishCalendarCache,
+            JewishOrganization,
+            CommunityEvent,
+            ScrapingJob,
         ],
     )
     print(f"Connected to MongoDB: {settings.MONGODB_DB_NAME}")

@@ -1058,6 +1058,7 @@ export const demoDownloadsService = {
 // JUDAISM SERVICE (Demo)
 // ===========================================
 export const demoJudaismService = {
+  // Content endpoints
   getContent: async (category, limit) => {
     await delay();
     let content = demoJudaismContent;
@@ -1079,7 +1080,136 @@ export const demoJudaismService = {
   },
   getDailyContent: async () => {
     await delay();
-    return { data: demoJudaismContent.slice(0, 3) };
+    return { daily_shiur: demoJudaismContent[0] || null };
+  },
+  getFeatured: async () => {
+    await delay();
+    return { featured: demoJudaismContent.slice(0, 3) };
+  },
+
+  // News endpoints
+  getNews: async (category, source, page = 1, limit = 20) => {
+    await delay();
+    return {
+      items: [],
+      pagination: { page, limit, total: 0, pages: 0 },
+      sources_count: 0,
+      last_updated: new Date().toISOString(),
+    };
+  },
+  getNewsSources: async () => {
+    await delay();
+    return { sources: [] };
+  },
+
+  // Calendar endpoints
+  getCalendarToday: async () => {
+    await delay();
+    return {
+      gregorian_date: new Date().toISOString().split('T')[0],
+      hebrew_date: "י\"ז טבת",
+      hebrew_date_full: "י\"ז טבת תשפ\"ו",
+      day_of_week: "Friday",
+      day_of_week_he: "יום שישי",
+      is_shabbat: false,
+      is_holiday: false,
+      parasha: "Vayechi",
+      parasha_he: "ויחי",
+      holidays: [],
+    };
+  },
+  getShabbatTimes: async (city, state) => {
+    await delay();
+    return {
+      city: city || "New York",
+      state: state || "NY",
+      candle_lighting: "4:28 PM",
+      havdalah: "5:33 PM",
+      parasha: "Vayechi",
+      parasha_he: "ויחי",
+    };
+  },
+  getDafYomi: async () => {
+    await delay();
+    return {
+      tractate: "Bava Kamma",
+      tractate_he: "בבא קמא",
+      page: "2a",
+      date: new Date().toISOString().split('T')[0],
+      sefaria_url: "https://www.sefaria.org/Bava_Kamma.2a",
+    };
+  },
+  getUpcomingHolidays: async (days = 30) => {
+    await delay();
+    return { holidays: [], next_major_holiday: null, days_until_next: null };
+  },
+  getAvailableCities: async () => {
+    await delay();
+    return {
+      cities: [
+        { name: "New York", state: "NY", geoname_id: 5128581, timezone: "America/New_York" },
+        { name: "Los Angeles", state: "CA", geoname_id: 5368361, timezone: "America/Los_Angeles" },
+        { name: "Chicago", state: "IL", geoname_id: 4887398, timezone: "America/Chicago" },
+      ],
+    };
+  },
+
+  // Community directory endpoints
+  getRegions: async () => {
+    await delay();
+    return {
+      regions: [
+        { id: "nyc", name: "New York City", name_he: "ניו יורק", state: "NY", organization_count: 0 },
+        { id: "la", name: "Los Angeles", name_he: "לוס אנג'לס", state: "CA", organization_count: 0 },
+      ],
+    };
+  },
+  getSynagogues: async (region, denomination, page = 1, limit = 20) => {
+    await delay();
+    return { organizations: [], pagination: { page, limit, total: 0, pages: 0 }, region, total_count: 0 };
+  },
+  getKosherRestaurants: async (region, city, state, certification, page = 1, limit = 20) => {
+    await delay();
+    return { organizations: [], pagination: { page, limit, total: 0, pages: 0 }, region, total_count: 0 };
+  },
+  getJCCs: async (region, page = 1, limit = 20) => {
+    await delay();
+    return { organizations: [], pagination: { page, limit, total: 0, pages: 0 }, region, total_count: 0 };
+  },
+  getMikvaot: async (region, page = 1, limit = 20) => {
+    await delay();
+    return { organizations: [], pagination: { page, limit, total: 0, pages: 0 }, region, total_count: 0 };
+  },
+  getCommunityEvents: async (region, eventType, days = 14, page = 1, limit = 20) => {
+    await delay();
+    return { events: [], pagination: { page, limit, total: 0, pages: 0 }, region };
+  },
+  getOrganization: async (orgId) => {
+    await delay();
+    return null;
+  },
+  searchCommunity: async (params) => {
+    await delay();
+    return { organizations: [], pagination: { page: 1, limit: 20, total: 0, pages: 0 }, total_count: 0 };
+  },
+
+  // Torah shiurim endpoints
+  getShiurim: async (category, rabbi, source, page = 1, limit = 20) => {
+    await delay();
+    return {
+      shiurim: [],
+      pagination: { page, limit, total: 0, pages: 0 },
+      sources: [],
+      last_updated: null,
+    };
+  },
+  getLiveTorah: async () => {
+    await delay();
+    return { live: [] };
+  },
+  getDailyShiur: async () => {
+    await delay();
+    return { daily_shiur: null, message: "No shiurim available" };
   },
 };
 

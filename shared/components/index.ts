@@ -10,6 +10,9 @@ export * from './theme';
 // Utils
 export * from './utils/platform';
 
+// Search Components
+export * from './search';
+
 // Composite Components
 export { AnimatedLogo } from './AnimatedLogo';
 export { ContentActionButtons } from './ContentActionButtons';

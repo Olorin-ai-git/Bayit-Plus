@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Optional, List
 from beanie import Document
 from pydantic import BaseModel, Field
+from pymongo import IndexModel, TEXT
 
 
 class SubtitleCueModel(BaseModel):
@@ -56,7 +57,13 @@ class SubtitleTrackDoc(Document):
             "content_id",
             "language",
             # Full-text search on subtitle cues for dialogue search
-            [("cues.text", "text")],
+            # Use "none" language to disable stemming (Hebrew not supported by MongoDB text search)
+            # Set language_override to a non-existent field to prevent reading "language" from documents
+            IndexModel(
+                [("cues.text", TEXT)],
+                default_language="none",
+                language_override="text_search_lang",
+            ),
         ]
 
     @classmethod

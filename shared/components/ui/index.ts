@@ -13,6 +13,7 @@ export { GlassSelect } from './GlassSelect';
 export { GlassTextarea } from './GlassTextarea';
 export { GlassCheckbox } from './GlassCheckbox';
 export { GlassToggle } from './GlassToggle';
+export { TVSwitch } from './TVSwitch';
 
 // UI components
 export { GlassModal } from './GlassModal';

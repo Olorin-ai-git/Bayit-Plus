@@ -47,7 +47,7 @@ class Settings(BaseSettings):
 
     # Speech-to-Text Provider Selection
     # Options: "google" (Google Cloud), "whisper" (OpenAI Whisper), or "elevenlabs" (ElevenLabs Scribe v2)
-    # ElevenLabs offers lowest latency (~150ms) with excellent Hebrew support (3.1% WER)
+    # ElevenLabs offers lowest latency (~150ms) with excellent Hebrew support
     SPEECH_TO_TEXT_PROVIDER: str = "google"
 
     # Live Translation Provider Selection (for translating transcribed text)

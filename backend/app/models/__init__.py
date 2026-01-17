@@ -18,6 +18,40 @@ from app.models.recording import (
     RecordingSubtitleCue,
     RecordingQuota,
 )
+from app.models.jewish_news import (
+    JewishNewsSource,
+    JewishNewsItem,
+    JewishNewsItemResponse,
+    JewishNewsSourceResponse,
+    JewishNewsAggregatedResponse,
+)
+from app.models.jewish_calendar import (
+    JewishCalendarCache,
+    HebrewDate,
+    Holiday,
+    Parasha,
+    ShabbatTimes,
+    DafYomi,
+    JewishCalendarDay,
+    US_JEWISH_CITIES,
+    ShabbatTimesResponse,
+    CalendarTodayResponse,
+    DafYomiResponse,
+    UpcomingHolidaysResponse,
+)
+from app.models.jewish_community import (
+    JewishOrganization,
+    CommunityEvent,
+    ScrapingJob,
+    OrganizationType,
+    Denomination,
+    KosherCertification,
+    USRegion,
+    OrganizationResponse,
+    EventResponse,
+    CommunitySearchResponse,
+    RegionsResponse,
+)
 
 __all__ = [
     # User
@@ -58,4 +92,35 @@ __all__ = [
     "RecordingSchedule",
     "RecordingSubtitleCue",
     "RecordingQuota",
+    # Jewish News
+    "JewishNewsSource",
+    "JewishNewsItem",
+    "JewishNewsItemResponse",
+    "JewishNewsSourceResponse",
+    "JewishNewsAggregatedResponse",
+    # Jewish Calendar
+    "JewishCalendarCache",
+    "HebrewDate",
+    "Holiday",
+    "Parasha",
+    "ShabbatTimes",
+    "DafYomi",
+    "JewishCalendarDay",
+    "US_JEWISH_CITIES",
+    "ShabbatTimesResponse",
+    "CalendarTodayResponse",
+    "DafYomiResponse",
+    "UpcomingHolidaysResponse",
+    # Jewish Community
+    "JewishOrganization",
+    "CommunityEvent",
+    "ScrapingJob",
+    "OrganizationType",
+    "Denomination",
+    "KosherCertification",
+    "USRegion",
+    "OrganizationResponse",
+    "EventResponse",
+    "CommunitySearchResponse",
+    "RegionsResponse",
 ]
