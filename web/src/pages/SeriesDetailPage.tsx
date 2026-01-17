@@ -10,6 +10,7 @@ import ContentCarousel from '@/components/content/ContentCarousel';
 import { contentService, watchlistService, favoritesService } from '@/services/api';
 import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassView, GlassBadge, GlassTooltip } from '@bayit/shared/ui';
+import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -66,6 +67,7 @@ export default function SeriesDetailPage() {
   const [episodesLoading, setEpisodesLoading] = useState(false);
   const [inWatchlist, setInWatchlist] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const openPlayer = useFullscreenPlayerStore((state) => state.openPlayer);
 
   // Video preview state
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
@@ -230,10 +232,17 @@ export default function SeriesDetailPage() {
   }, []);
 
   const handlePlay = () => {
-    if (selectedEpisode) {
-      navigate(`/vod/${selectedEpisode.id}`);
-    } else if (episodes.length > 0) {
-      navigate(`/vod/${episodes[0].id}`);
+    const episodeToPlay = selectedEpisode || episodes[0];
+    if (episodeToPlay) {
+      openPlayer({
+        id: episodeToPlay.id,
+        title: `${series?.title} - ${episodeToPlay.title}`,
+        src: '', // Will be fetched by the overlay
+        poster: episodeToPlay.thumbnail || series?.backdrop || series?.thumbnail,
+        type: 'series',
+        seriesId: series?.id,
+        episodeId: episodeToPlay.id,
+      });
     }
   };
 
@@ -242,7 +251,15 @@ export default function SeriesDetailPage() {
   };
 
   const handleEpisodePlay = (episode: Episode) => {
-    navigate(`/vod/${episode.id}`);
+    openPlayer({
+      id: episode.id,
+      title: `${series?.title} - ${episode.title}`,
+      src: '', // Will be fetched by the overlay
+      poster: episode.thumbnail || series?.backdrop || series?.thumbnail,
+      type: 'series',
+      seriesId: series?.id,
+      episodeId: episode.id,
+    });
   };
 
   const toggleWatchlist = async () => {

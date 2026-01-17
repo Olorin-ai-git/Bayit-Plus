@@ -7,9 +7,11 @@ import Hls from 'hls.js';
 import LinearGradient from 'react-native-linear-gradient';
 import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
-import { contentService, watchlistService, favoritesService } from '@/services/api';
+import { contentService, watchlistService, favoritesService, subtitlesService } from '@/services/api';
 import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { getLanguageInfo, SubtitleTrack } from '@/types/subtitle';
 import { GlassCard, GlassButton, GlassView, GlassBadge } from '@bayit/shared/ui';
+import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -48,6 +50,8 @@ export default function MovieDetailPage() {
   const [loading, setLoading] = useState(true);
   const [inWatchlist, setInWatchlist] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [availableSubtitles, setAvailableSubtitles] = useState<SubtitleTrack[]>([]);
+  const openPlayer = useFullscreenPlayerStore((state) => state.openPlayer);
 
   // Video preview state
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
@@ -64,6 +68,21 @@ export default function MovieDetailPage() {
     return () => {
       cleanup();
     };
+  }, [movieId]);
+
+  // Load available subtitles
+  useEffect(() => {
+    if (movieId) {
+      subtitlesService.getTracks(movieId)
+        .then((response) => {
+          if (response?.tracks) {
+            setAvailableSubtitles(response.tracks);
+          }
+        })
+        .catch(() => {
+          // Subtitles may not be available, ignore error
+        });
+    }
   }, [movieId]);
 
   // Get preview URL with stream fallback
@@ -178,13 +197,14 @@ export default function MovieDetailPage() {
   }, []);
 
   const handlePlay = () => {
-    console.log('handlePlay called', { movie: movie?.id, movie });
     if (movie) {
-      const path = `/vod/${movie.id}`;
-      console.log('Navigating to:', path);
-      navigate(path);
-    } else {
-      console.error('Movie object is null or undefined');
+      openPlayer({
+        id: movie.id,
+        title: movie.title,
+        src: '', // Will be fetched by the overlay
+        poster: movie.backdrop || movie.thumbnail,
+        type: 'movie',
+      });
     }
   };
 
@@ -328,6 +348,23 @@ export default function MovieDetailPage() {
                   ({formatVotes(movie.imdb_votes)} {t('content.votes')})
                 </Text>
               )}
+            </View>
+          )}
+
+          {/* Available Subtitles */}
+          {availableSubtitles.length > 0 && (
+            <View style={styles.subtitlesRow}>
+              <Text style={styles.subtitlesLabel}>{t('subtitles.available', 'Subtitles')}:</Text>
+              <View style={styles.subtitleFlags}>
+                {availableSubtitles.map((track) => {
+                  const langInfo = getLanguageInfo(track.language);
+                  return (
+                    <Text key={track.id} style={styles.subtitleFlag}>
+                      {langInfo?.flag || '🌐'}
+                    </Text>
+                  );
+                })}
+              </View>
             </View>
           )}
 
@@ -542,6 +579,30 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.lg,
     alignSelf: 'flex-start',
+  },
+  subtitlesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.lg,
+    alignSelf: 'flex-start',
+  },
+  subtitlesLabel: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    fontWeight: '500',
+  },
+  subtitleFlags: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  subtitleFlag: {
+    fontSize: 20,
   },
   imdbLogo: {
     backgroundColor: '#F5C518',

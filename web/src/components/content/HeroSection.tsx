@@ -25,6 +25,19 @@ interface HeroSectionProps {
 export default function HeroSection({ content }: HeroSectionProps) {
   const { t } = useTranslation()
   const { height: windowHeight } = useWindowDimensions()
+  const openPlayer = useFullscreenPlayerStore((state) => state.openPlayer)
+
+  const handlePlay = () => {
+    if (content) {
+      openPlayer({
+        id: content.id,
+        title: content.title,
+        src: '', // Will be fetched by the overlay
+        poster: content.backdrop || content.thumbnail,
+        type: 'movie',
+      })
+    }
+  }
 
   if (!content) return null
 
@@ -77,19 +90,18 @@ export default function HeroSection({ content }: HeroSectionProps) {
 
           {/* Actions */}
           <View style={styles.actions}>
-            <Link to={`/vod/${content.id}`} style={{ textDecoration: 'none' }}>
-              <Pressable
-                style={({ hovered }) => [
-                  styles.primaryButton,
-                  hovered && styles.primaryButtonHovered,
-                ]}
-              >
-                <Play size={20} fill={colors.background} color={colors.background} />
-                <Text style={styles.primaryButtonText}>{t('hero.watch')}</Text>
-              </Pressable>
-            </Link>
+            <Pressable
+              onPress={handlePlay}
+              style={({ hovered }) => [
+                styles.primaryButton,
+                hovered && styles.primaryButtonHovered,
+              ]}
+            >
+              <Play size={20} fill={colors.background} color={colors.background} />
+              <Text style={styles.primaryButtonText}>{t('hero.watch')}</Text>
+            </Pressable>
 
-            <Link to={`/vod/${content.id}?info=true`} style={{ textDecoration: 'none' }}>
+            <Link to={`/vod/movie/${content.id}`} style={{ textDecoration: 'none' }}>
               <Pressable
                 style={({ hovered }) => [
                   styles.secondaryButton,
