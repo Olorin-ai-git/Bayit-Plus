@@ -253,8 +253,10 @@ async def _create_indexes(db: AsyncIOMotorDatabase) -> None:
     )
 
     # Detection runs indexes (time series - automatic on timeField + metaField)
+    # Note: Time-series collections don't support unique indexes
+    # Uniqueness of run_id must be enforced at application level
     await db.detection_runs.create_index(
-        [("run_id", ASCENDING)], unique=True, background=True
+        [("metadata.run_id", ASCENDING)], background=True
     )
 
     # Anomaly events indexes
@@ -287,7 +289,9 @@ async def _create_indexes(db: AsyncIOMotorDatabase) -> None:
     )
 
     # Audit log indexes (time series - automatic on timeField + metaField)
-    await db.audit_log.create_index([("entry_id", ASCENDING)], unique=True, background=True)
+    # Note: Time-series collections don't support unique indexes
+    # Uniqueness of entry_id must be enforced at application level
+    await db.audit_log.create_index([("metadata.entry_id", ASCENDING)], background=True)
 
     # Templates indexes
     await db.templates.create_index(

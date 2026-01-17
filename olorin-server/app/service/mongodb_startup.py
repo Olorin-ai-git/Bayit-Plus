@@ -60,7 +60,11 @@ async def initialize_mongodb_on_startup() -> Tuple[bool, str]:
         # Step 2: Initialize MongoDB connection
         logger.info("🔌 Connecting to MongoDB Atlas...")
         try:
-            db = await init_mongodb()
+            # init_mongodb() is synchronous and returns None
+            init_mongodb()
+            # Get the database instance after initialization
+            from app.persistence.mongodb import get_mongodb
+            db = get_mongodb()
             logger.info(f"✅ Connected to MongoDB successfully")
         except Exception as e:
             error_msg = f"Failed to connect to MongoDB: {str(e)}"
@@ -76,7 +80,8 @@ async def initialize_mongodb_on_startup() -> Tuple[bool, str]:
         # Step 3: Create collections and indexes
         logger.info("🏗️  Creating collections and indexes...")
         try:
-            await ensure_mongodb_collections(db)
+            # ensure_mongodb_collections() doesn't take parameters - it calls get_mongodb() internally
+            await ensure_mongodb_collections()
             logger.info(f"✅ Collections and indexes created successfully")
             logger.info("   Collections:")
             logger.info("   - investigations (lifecycle tracking)")

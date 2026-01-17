@@ -487,6 +487,39 @@ async def on_startup(app: FastAPI):
             logger.error(f"❌ CRITICAL: Database initialization failed: {e}")
             raise
 
+    # Initialize MongoDB Atlas if enabled
+    if os.getenv("ENABLE_MONGODB", "false").lower() == "true":
+        logger.info("🍃 MongoDB Atlas is enabled - initializing...")
+        try:
+            from app.service.mongodb_startup import initialize_mongodb_on_startup
+
+            success, error_msg = await initialize_mongodb_on_startup()
+            if not success:
+                logger.error(f"❌ MongoDB initialization failed: {error_msg}")
+                # Check if MongoDB is required or optional
+                require_mongodb = os.getenv("REQUIRE_MONGODB", "false").lower() == "true"
+                if require_mongodb:
+                    logger.error("   REQUIRE_MONGODB=true - refusing to start")
+                    raise RuntimeError(f"MongoDB initialization required but failed: {error_msg}")
+                else:
+                    logger.warning("   MongoDB initialization failed but continuing (REQUIRE_MONGODB=false)")
+                    logger.warning("   Investigation APIs requiring MongoDB will not be available")
+                    app.state.mongodb_available = False
+            else:
+                logger.info("✅ MongoDB Atlas initialized successfully")
+                app.state.mongodb_available = True
+        except Exception as mongo_error:
+            logger.error(f"❌ Unexpected error during MongoDB initialization: {mongo_error}", exc_info=True)
+            require_mongodb = os.getenv("REQUIRE_MONGODB", "false").lower() == "true"
+            if require_mongodb:
+                raise
+            else:
+                logger.warning("   Continuing without MongoDB (REQUIRE_MONGODB=false)")
+                app.state.mongodb_available = False
+    else:
+        logger.info("🍃 MongoDB Atlas is disabled (ENABLE_MONGODB=false)")
+        app.state.mongodb_available = False
+
     # Initialize database provider (Snowflake or PostgreSQL)
     # This is optional - services can run without database provider
     logger.info("🔌 Initializing database provider...")
@@ -1640,6 +1673,21 @@ async def on_shutdown(app: FastAPI):
         )
     except Exception as e:
         logger.warning(f"⚠️ Database provider cleanup failed: {e}")
+
+    # Shutdown MongoDB Atlas if it was initialized
+    if hasattr(app.state, "mongodb_available") and app.state.mongodb_available:
+        logger.info("🍃 Shutting down MongoDB Atlas...")
+        try:
+            from app.service.mongodb_startup import shutdown_mongodb_on_shutdown
+
+            await asyncio.wait_for(shutdown_mongodb_on_shutdown(), timeout=5.0)
+            logger.info("✅ MongoDB Atlas shutdown completed")
+        except asyncio.TimeoutError:
+            logger.warning("⚠️ MongoDB shutdown timed out - connections may not be fully closed")
+        except asyncio.CancelledError:
+            logger.info("⚠️ MongoDB shutdown cancelled during shutdown - this is normal")
+        except Exception as mongo_shutdown_error:
+            logger.warning(f"⚠️ MongoDB shutdown failed: {mongo_shutdown_error}")
 
     # Cleanup async HTTP clients to prevent unclosed session warnings
     try:
