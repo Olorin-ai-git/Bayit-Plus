@@ -20,12 +20,14 @@ import { chatService } from '@/services/api';
 import logger from '@/utils/logger';
 
 // Shared search components
-import { useSearch } from '@bayit/shared/hooks/useSearch';
-import { SearchBar } from '@bayit/shared/components/search/SearchBar';
-import { SearchFilters } from '@bayit/shared/components/search/SearchFilters';
-import { SearchResults } from '@bayit/shared/components/search/SearchResults';
-import { LLMSearchButton } from '@bayit/shared/components/search/LLMSearchButton';
-import { LLMSearchModal } from '@bayit/shared/components/search/LLMSearchModal';
+import { useSearch } from '@bayit/shared-hooks';
+import {
+  SearchBar,
+  SearchFilters,
+  SearchResults,
+  LLMSearchButton,
+  LLMSearchModal,
+} from '@bayit/shared/components/search';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;

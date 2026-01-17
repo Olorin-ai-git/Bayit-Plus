@@ -5,10 +5,19 @@
  * Supports different layouts for mobile, tablet, and TV.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SearchResult } from '../../hooks/useSearch';
 import SubtitleMatchCard from './SubtitleMatchCard';
+import {
+  speakSearchResult,
+  speakSearchResults,
+  stopSearchTTS,
+  isSearchTTSPlaying,
+  pauseSearchTTS,
+  resumeSearchTTS,
+} from '../../utils/searchTTS';
 
 interface SearchResultsProps {
   results: SearchResult[];
@@ -18,6 +27,7 @@ interface SearchResultsProps {
   hasMore?: boolean;
   emptyMessage?: string;
   numColumns?: number;
+  enableTTS?: boolean; // Enable TTS controls
 }
 
 export function SearchResults({
@@ -28,7 +38,22 @@ export function SearchResults({
   hasMore = false,
   emptyMessage = 'No results found',
   numColumns = 2,
+  enableTTS = true,
 }: SearchResultsProps) {
+  const { i18n } = useTranslation();
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const handleReadAll = () => {
+    if (isSpeaking) {
+      stopSearchTTS();
+      setIsSpeaking(false);
+    } else {
+      speakSearchResults(results, i18n.language, 10);
+      setIsSpeaking(true);
+      setTimeout(() => setIsSpeaking(false), results.length * 5000);
+    }
+  };
+
   const renderItem = ({ item, index }: { item: SearchResult; index: number }) => {
     // Check if this is a subtitle search result
     if (item.subtitle_matches && item.subtitle_matches.length > 0) {
@@ -43,7 +68,10 @@ export function SearchResults({
     return (
       <ContentCard
         result={item}
+        index={index}
         onPress={() => onResultPress(item, index)}
+        onReadAloud={() => speakSearchResult(item, i18n.language, 'high')}
+        enableTTS={enableTTS}
       />
     );
   };

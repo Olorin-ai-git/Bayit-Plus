@@ -13,6 +13,7 @@ Tests cover:
 """
 
 import pytest
+import pytest_asyncio
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
 from beanie import init_beanie
@@ -21,33 +22,33 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from app.services.unified_search_service import UnifiedSearchService, SearchFilters
 from app.services.search_cache import SearchCacheService
 from app.models.content import Content
-from app.models.subtitles import SubtitleTrackDoc, SubtitleCue
+from app.models.subtitles import SubtitleTrackDoc, SubtitleCueModel
 from app.core.config import settings
 
 
 # Test Fixtures
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def db_client():
     """Create test database client."""
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     await init_beanie(
-        database=client[f"{settings.DATABASE_NAME}_test"],
+        database=client[f"{settings.MONGODB_DB_NAME}_test"],
         document_models=[Content, SubtitleTrackDoc]
     )
     yield client
     # Cleanup
-    await client.drop_database(f"{settings.DATABASE_NAME}_test")
+    await client.drop_database(f"{settings.MONGODB_DB_NAME}_test")
     client.close()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def search_service(db_client):
     """Create unified search service instance."""
     return UnifiedSearchService()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def sample_content(db_client):
     """Create sample content for testing."""
     content_items = [
@@ -136,7 +137,7 @@ async def sample_content(db_client):
     return content_items
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def sample_subtitles(db_client, sample_content):
     """Create sample subtitle tracks for testing."""
     subtitles = [
@@ -145,17 +146,17 @@ async def sample_subtitles(db_client, sample_content):
             content_id="test-movie-1",
             language="en",
             cues=[
-                SubtitleCue(
+                SubtitleCueModel(
                     start_time=10.0,
                     end_time=13.5,
                     text="Shalom, my name is Doron",
                 ),
-                SubtitleCue(
+                SubtitleCueModel(
                     start_time=15.0,
                     end_time=18.0,
                     text="We are going on a mission tonight",
                 ),
-                SubtitleCue(
+                SubtitleCueModel(
                     start_time=120.5,
                     end_time=124.0,
                     text="The target is in the building",
@@ -167,12 +168,12 @@ async def sample_subtitles(db_client, sample_content):
             content_id="test-movie-2",
             language="en",
             cues=[
-                SubtitleCue(
+                SubtitleCueModel(
                     start_time=5.0,
                     end_time=8.0,
                     text="Welcome to the family",
                 ),
-                SubtitleCue(
+                SubtitleCueModel(
                     start_time=45.0,
                     end_time=48.5,
                     text="Jerusalem is a beautiful city",
