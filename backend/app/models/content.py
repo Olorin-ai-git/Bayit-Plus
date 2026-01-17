@@ -128,6 +128,7 @@ class Content(Document):
     class Settings:
         name = "content"
         indexes = [
+            # Existing indexes
             "category_id",
             "is_featured",
             "is_published",
@@ -137,6 +138,25 @@ class Content(Document):
             "file_hash",
             ("category_id", "is_published"),
             ("is_featured", "is_published"),
+            # Search indexes (added for comprehensive search functionality)
+            [
+                ("title", "text"),
+                ("title_en", "text"),
+                ("title_es", "text"),
+                ("description", "text"),
+                ("description_en", "text"),
+                ("description_es", "text"),
+                ("cast", "text"),
+                ("director", "text"),
+                ("genres", "text"),
+            ],
+            # Filter indexes for advanced search
+            "year",
+            "genres",
+            "available_subtitle_languages",
+            "requires_subscription",
+            "is_kids_content",
+            "content_type",
         ]
 
 

@@ -89,7 +89,8 @@ async def websocket_live_subtitles(
         logger.info(f"📊 Service availability: {service_status}")
 
         if not service_status.get("speech_to_text"):
-            error_msg = f"Speech-to-text service ({translation_service.provider}) is not available"
+            stt_provider = service_status.get("stt_provider", translation_service.provider)
+            error_msg = f"Speech-to-text service ({stt_provider}) is not available"
             logger.error(f"❌ {error_msg}")
             await websocket.send_json({
                 "type": "error",
@@ -98,15 +99,22 @@ async def websocket_live_subtitles(
             await websocket.close(code=4000, reason="Speech service unavailable")
             return
 
-        # Send connection confirmation
+        # Send connection confirmation with both provider details
         await websocket.send_json({
             "type": "connected",
             "source_lang": source_lang,
             "target_lang": target_lang,
             "channel_id": channel_id,
+            "stt_provider": translation_service.provider,
+            "translation_provider": translation_service.translation_provider,
+            # Deprecated: kept for backwards compatibility
             "provider": translation_service.provider
         })
-        logger.info(f"✅ Translation service initialized successfully with provider: {translation_service.provider}")
+        logger.info(
+            f"✅ Translation service initialized: "
+            f"STT={translation_service.provider}, "
+            f"Translate={translation_service.translation_provider}"
+        )
 
         # Step 6: Create audio stream from WebSocket
         async def audio_stream_generator():

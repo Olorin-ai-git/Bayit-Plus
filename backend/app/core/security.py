@@ -96,3 +96,15 @@ async def get_optional_user(
         return await get_current_user(credentials)
     except HTTPException:
         return None
+
+
+async def get_current_premium_user(
+    current_user: User = Depends(get_current_active_user),
+) -> User:
+    """Get current user and verify they have premium access."""
+    if not current_user.can_access_premium_features():
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Premium subscription required for this feature"
+        )
+    return current_user

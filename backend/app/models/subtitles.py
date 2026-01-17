@@ -55,6 +55,8 @@ class SubtitleTrackDoc(Document):
         indexes = [
             "content_id",
             "language",
+            # Full-text search on subtitle cues for dialogue search
+            [("cues.text", "text")],
         ]
 
     @classmethod

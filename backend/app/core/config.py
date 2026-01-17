@@ -46,8 +46,13 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = ""
 
     # Speech-to-Text Provider Selection
-    # Options: "google" (Google Cloud Speech-to-Text) or "whisper" (OpenAI Whisper)
+    # Options: "google" (Google Cloud), "whisper" (OpenAI Whisper), or "elevenlabs" (ElevenLabs Scribe v2)
+    # ElevenLabs offers lowest latency (~150ms) with excellent Hebrew support (3.1% WER)
     SPEECH_TO_TEXT_PROVIDER: str = "google"
+
+    # Live Translation Provider Selection (for translating transcribed text)
+    # Options: "google" (Google Cloud Translate), "openai" (GPT-4o-mini), or "claude" (Claude)
+    LIVE_TRANSLATION_PROVIDER: str = "google"
 
     # CORS (supports JSON string from Secret Manager or list)
     BACKEND_CORS_ORIGINS: list[str] | str = [
@@ -191,6 +196,13 @@ class Settings(BaseSettings):
     # LLM Search
     LLM_SEARCH_MAX_RESULTS: int = 50
     LLM_SEARCH_TIMEOUT_SECONDS: int = 30
+
+    # Search Configuration
+    SEARCH_CACHE_TTL_SECONDS: int = 300  # 5 minutes cache for search results
+    SEARCH_SUGGESTIONS_LIMIT: int = 5  # Max autocomplete suggestions
+    SEARCH_SUBTITLE_RESULT_LIMIT: int = 50  # Max subtitle search results
+    SEARCH_DEFAULT_PAGE_SIZE: int = 20  # Default results per page
+    SEARCH_MAX_PAGE_SIZE: int = 50  # Maximum results per page
 
     # Chat Translation Configuration
     CHAT_TRANSLATION_ENABLED: bool = True

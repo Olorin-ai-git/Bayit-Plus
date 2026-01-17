@@ -1,7 +1,8 @@
 """
 Live Translation Service
 Real-time speech-to-text and translation for live streaming subtitles
-Supports both Google Cloud Speech-to-Text and OpenAI Whisper
+Supports Google Cloud, OpenAI Whisper, and ElevenLabs Scribe v2 for STT
+Supports Google Translate, OpenAI, and Claude for translation
 """
 import logging
 import time
@@ -29,6 +30,20 @@ except ImportError:
     OPENAI_AVAILABLE = False
     logger.warning("OpenAI library not available")
 
+try:
+    from app.services.elevenlabs_realtime_service import ElevenLabsRealtimeService
+    ELEVENLABS_AVAILABLE = True
+except ImportError:
+    ELEVENLABS_AVAILABLE = False
+    logger.warning("ElevenLabs realtime service not available")
+
+try:
+    from anthropic import AsyncAnthropic
+    ANTHROPIC_AVAILABLE = True
+except ImportError:
+    ANTHROPIC_AVAILABLE = False
+    logger.warning("Anthropic library not available")
+
 # Language code mapping for Google Speech-to-Text
 LANGUAGE_CODES = {
     "he": "he-IL", "en": "en-US", "ar": "ar-IL",
@@ -40,65 +55,181 @@ LANGUAGE_CODES = {
 class LiveTranslationService:
     """Service for real-time audio transcription and translation."""
 
-    def __init__(self, provider: Optional[str] = None):
+    def __init__(
+        self,
+        provider: Optional[str] = None,
+        translation_provider: Optional[str] = None
+    ):
         """
-        Initialize transcription service with specified provider.
+        Initialize transcription service with specified providers.
 
         Args:
-            provider: "google" or "whisper". If None, uses SPEECH_TO_TEXT_PROVIDER from config.
+            provider: STT provider - "google", "whisper", or "elevenlabs".
+                     If None, uses SPEECH_TO_TEXT_PROVIDER from config.
+            translation_provider: Translation provider - "google", "openai", or "claude".
+                                 If None, uses LIVE_TRANSLATION_PROVIDER from config.
         """
         self.provider = provider or settings.SPEECH_TO_TEXT_PROVIDER
+        self.translation_provider = translation_provider or settings.LIVE_TRANSLATION_PROVIDER
+
+        # Service clients
         self.speech_client = None
         self.translate_client = None
         self.whisper_service = None
         self.openai_client = None
+        self.elevenlabs_service = None
+        self.anthropic_client = None
 
-        logger.info(f"🔧 Initializing LiveTranslationService with provider: {self.provider}")
+        logger.info(
+            f"🔧 Initializing LiveTranslationService with STT: {self.provider}, "
+            f"Translation: {self.translation_provider}"
+        )
 
         try:
-            if self.provider == "google":
-                if not GOOGLE_AVAILABLE:
-                    raise ImportError("Google Cloud libraries not installed. Install: pip install google-cloud-speech google-cloud-translate")
+            # Initialize Speech-to-Text provider
+            self._init_stt_provider()
 
-                logger.info("📡 Attempting to initialize Google Cloud Speech client...")
-                self.speech_client = speech.SpeechClient()
-                logger.info("📡 Attempting to initialize Google Cloud Translate client...")
-                self.translate_client = translate.Client()
-                logger.info("✅ LiveTranslationService initialized with Google Cloud Speech-to-Text")
-
-            elif self.provider == "whisper":
-                if not OPENAI_AVAILABLE:
-                    raise ImportError("OpenAI library not installed. Install: pip install openai")
-
-                if not settings.OPENAI_API_KEY:
-                    raise ValueError("OPENAI_API_KEY not configured")
-
-                logger.info("📡 Attempting to initialize OpenAI Whisper service...")
-                from app.services.whisper_transcription_service import WhisperTranscriptionService
-                self.whisper_service = WhisperTranscriptionService()
-
-                logger.info("📡 Attempting to initialize OpenAI client for translation...")
-                self.openai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-                logger.info("✅ LiveTranslationService initialized with OpenAI Whisper + OpenAI Translation")
-
-            else:
-                raise ValueError(f"Invalid speech provider: {self.provider}. Must be 'google' or 'whisper'")
+            # Initialize Translation provider
+            self._init_translation_provider()
 
         except ImportError as e:
-            logger.error(f"❌ Import error - missing dependencies for {self.provider}: {str(e)}")
-            if self.provider == "google":
-                logger.error("💡 Install required packages: pip install google-cloud-speech google-cloud-translate")
-            elif self.provider == "whisper":
-                logger.error("💡 Install required packages: pip install openai")
+            logger.error(f"❌ Import error - missing dependencies: {str(e)}")
+            self._log_install_help()
             raise
 
         except Exception as e:
-            logger.error(f"❌ Failed to initialize {self.provider} service: {type(e).__name__}: {str(e)}")
-            if "credentials" in str(e).lower() or "authentication" in str(e).lower():
-                logger.error("💡 Set GOOGLE_APPLICATION_CREDENTIALS environment variable to your service account JSON file")
-            elif "OPENAI_API_KEY" in str(e):
-                logger.error("💡 Set OPENAI_API_KEY environment variable or add to .env file")
+            logger.error(
+                f"❌ Failed to initialize services: {type(e).__name__}: {str(e)}"
+            )
+            self._log_config_help(e)
             raise
+
+    def _init_stt_provider(self) -> None:
+        """Initialize the speech-to-text provider."""
+        if self.provider == "google":
+            if not GOOGLE_AVAILABLE:
+                raise ImportError(
+                    "Google Cloud libraries not installed. "
+                    "Install: pip install google-cloud-speech google-cloud-translate"
+                )
+
+            logger.info("📡 Initializing Google Cloud Speech client...")
+            self.speech_client = speech.SpeechClient()
+            logger.info("✅ Google Cloud Speech-to-Text initialized")
+
+        elif self.provider == "whisper":
+            if not OPENAI_AVAILABLE:
+                raise ImportError(
+                    "OpenAI library not installed. Install: pip install openai"
+                )
+
+            if not settings.OPENAI_API_KEY:
+                raise ValueError("OPENAI_API_KEY not configured")
+
+            logger.info("📡 Initializing OpenAI Whisper service...")
+            from app.services.whisper_transcription_service import WhisperTranscriptionService
+            self.whisper_service = WhisperTranscriptionService()
+            logger.info("✅ OpenAI Whisper initialized")
+
+        elif self.provider == "elevenlabs":
+            if not ELEVENLABS_AVAILABLE:
+                raise ImportError(
+                    "ElevenLabs realtime service not available. "
+                    "Install: pip install websockets"
+                )
+
+            if not settings.ELEVENLABS_API_KEY:
+                raise ValueError("ELEVENLABS_API_KEY not configured")
+
+            logger.info("📡 Initializing ElevenLabs Scribe v2 realtime service...")
+            self.elevenlabs_service = ElevenLabsRealtimeService()
+            logger.info("✅ ElevenLabs Scribe v2 initialized (~150ms latency)")
+
+        else:
+            raise ValueError(
+                f"Invalid STT provider: {self.provider}. "
+                "Must be 'google', 'whisper', or 'elevenlabs'"
+            )
+
+    def _init_translation_provider(self) -> None:
+        """Initialize the translation provider."""
+        if self.translation_provider == "google":
+            if not GOOGLE_AVAILABLE:
+                raise ImportError(
+                    "Google Cloud Translate not installed. "
+                    "Install: pip install google-cloud-translate"
+                )
+
+            logger.info("📡 Initializing Google Cloud Translate client...")
+            self.translate_client = translate.Client()
+            logger.info("✅ Google Cloud Translate initialized")
+
+        elif self.translation_provider == "openai":
+            if not OPENAI_AVAILABLE:
+                raise ImportError(
+                    "OpenAI library not installed. Install: pip install openai"
+                )
+
+            if not settings.OPENAI_API_KEY:
+                raise ValueError("OPENAI_API_KEY not configured")
+
+            logger.info("📡 Initializing OpenAI client for translation...")
+            self.openai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+            logger.info("✅ OpenAI translation initialized (GPT-4o-mini)")
+
+        elif self.translation_provider == "claude":
+            if not ANTHROPIC_AVAILABLE:
+                raise ImportError(
+                    "Anthropic library not installed. Install: pip install anthropic"
+                )
+
+            if not settings.ANTHROPIC_API_KEY:
+                raise ValueError("ANTHROPIC_API_KEY not configured")
+
+            logger.info("📡 Initializing Anthropic client for translation...")
+            self.anthropic_client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+            logger.info("✅ Claude translation initialized")
+
+        else:
+            raise ValueError(
+                f"Invalid translation provider: {self.translation_provider}. "
+                "Must be 'google', 'openai', or 'claude'"
+            )
+
+    def _log_install_help(self) -> None:
+        """Log installation help based on provider configuration."""
+        if self.provider == "google" or self.translation_provider == "google":
+            logger.error(
+                "💡 Install Google Cloud packages: "
+                "pip install google-cloud-speech google-cloud-translate"
+            )
+        if self.provider == "whisper" or self.translation_provider == "openai":
+            logger.error("💡 Install OpenAI package: pip install openai")
+        if self.provider == "elevenlabs":
+            logger.error("💡 Install websockets package: pip install websockets")
+        if self.translation_provider == "claude":
+            logger.error("💡 Install Anthropic package: pip install anthropic")
+
+    def _log_config_help(self, error: Exception) -> None:
+        """Log configuration help based on error."""
+        error_str = str(error).lower()
+        if "credentials" in error_str or "authentication" in error_str:
+            logger.error(
+                "💡 Set GOOGLE_APPLICATION_CREDENTIALS environment variable "
+                "to your service account JSON file"
+            )
+        elif "openai_api_key" in error_str:
+            logger.error(
+                "💡 Set OPENAI_API_KEY environment variable or add to .env file"
+            )
+        elif "elevenlabs_api_key" in error_str:
+            logger.error(
+                "💡 Set ELEVENLABS_API_KEY environment variable or add to .env file"
+            )
+        elif "anthropic_api_key" in error_str:
+            logger.error(
+                "💡 Set ANTHROPIC_API_KEY environment variable or add to .env file"
+            )
 
     def get_recognition_config(self, source_lang: str = "he") -> speech.StreamingRecognitionConfig:
         """Get streaming recognition configuration."""
@@ -122,7 +253,7 @@ class LiveTranslationService:
     ) -> AsyncIterator[str]:
         """
         Transcribe audio stream to text in real-time.
-        Uses configured provider (Google Cloud or OpenAI Whisper).
+        Uses configured STT provider (Google Cloud, OpenAI Whisper, or ElevenLabs).
         """
         try:
             if self.provider == "google":
@@ -149,7 +280,7 @@ class LiveTranslationService:
                         logger.error(f"❌ Error collecting audio: {str(e)}")
                     finally:
                         done_receiving.set()
-                        logger.info(f"✅ Audio collection finished")
+                        logger.info("✅ Audio collection finished")
 
                 def sync_recognition_worker():
                     """Run synchronous Google Speech API in separate thread."""
@@ -225,15 +356,48 @@ class LiveTranslationService:
                     logger.debug(f"Whisper transcribed: {transcript}")
                     yield transcript
 
+            elif self.provider == "elevenlabs":
+                # ElevenLabs Scribe v2 (true realtime WebSocket streaming)
+                logger.info(
+                    f"🎤 Starting ElevenLabs Scribe v2 realtime stream "
+                    f"for language: {source_lang} (~150ms latency)"
+                )
+                async for transcript in self.elevenlabs_service.transcribe_audio_stream(
+                    audio_stream,
+                    source_lang=source_lang
+                ):
+                    logger.info(f"📝 ElevenLabs transcribed: {transcript}")
+                    yield transcript
+
         except Exception as e:
             logger.error(f"Transcription error ({self.provider}): {str(e)}")
             raise
 
     async def translate_text(self, text: str, source_lang: str, target_lang: str) -> str:
-        """Translate text using configured provider (Google or OpenAI)."""
+        """
+        Translate text using configured translation provider.
+
+        Supports: Google Cloud Translate, OpenAI GPT-4o-mini, or Claude.
+        """
+        language_names = {
+            "he": "Hebrew",
+            "en": "English",
+            "ar": "Arabic",
+            "es": "Spanish",
+            "ru": "Russian",
+            "fr": "French",
+            "de": "German",
+            "it": "Italian",
+            "pt": "Portuguese",
+            "yi": "Yiddish"
+        }
+
+        source_name = language_names.get(source_lang, source_lang)
+        target_name = language_names.get(target_lang, target_lang)
+
         try:
-            if self.provider == "google" and self.translate_client:
-                # Google Cloud Translate (synchronous)
+            if self.translation_provider == "google" and self.translate_client:
+                # Google Cloud Translate (synchronous, fast)
                 result = self.translate_client.translate(
                     text, source_language=source_lang, target_language=target_lang
                 )
@@ -241,30 +405,18 @@ class LiveTranslationService:
                 logger.debug(f"Google Translate: {text} → {translated}")
                 return translated
 
-            elif self.provider == "whisper" and self.openai_client:
-                # OpenAI GPT-based translation (async)
-                language_names = {
-                    "he": "Hebrew",
-                    "en": "English",
-                    "ar": "Arabic",
-                    "es": "Spanish",
-                    "ru": "Russian",
-                    "fr": "French",
-                    "de": "German",
-                    "it": "Italian",
-                    "pt": "Portuguese",
-                    "yi": "Yiddish"
-                }
-
-                source_name = language_names.get(source_lang, source_lang)
-                target_name = language_names.get(target_lang, target_lang)
-
+            elif self.translation_provider == "openai" and self.openai_client:
+                # OpenAI GPT-4o-mini translation (async)
                 response = await self.openai_client.chat.completions.create(
                     model="gpt-4o-mini",
                     messages=[
                         {
                             "role": "system",
-                            "content": f"You are a professional translator. Translate the following text from {source_name} to {target_name}. Return ONLY the translated text, nothing else."
+                            "content": (
+                                f"You are a professional translator. "
+                                f"Translate the following text from {source_name} to {target_name}. "
+                                f"Return ONLY the translated text, nothing else."
+                            )
                         },
                         {
                             "role": "user",
@@ -279,12 +431,35 @@ class LiveTranslationService:
                 logger.debug(f"OpenAI Translate: {text} → {translated}")
                 return translated
 
+            elif self.translation_provider == "claude" and self.anthropic_client:
+                # Claude translation (async)
+                response = await self.anthropic_client.messages.create(
+                    model=settings.CLAUDE_MODEL,
+                    max_tokens=500,
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": (
+                                f"Translate the following text from {source_name} to {target_name}. "
+                                f"Return ONLY the translated text, nothing else.\n\n"
+                                f"Text to translate: {text}"
+                            )
+                        }
+                    ]
+                )
+
+                translated = response.content[0].text.strip()
+                logger.debug(f"Claude Translate: {text} → {translated}")
+                return translated
+
             else:
-                logger.warning(f"No translation client available for provider: {self.provider}")
+                logger.warning(
+                    f"No translation client available for provider: {self.translation_provider}"
+                )
                 return text
 
         except Exception as e:
-            logger.error(f"Translation error ({self.provider}): {str(e)}")
+            logger.error(f"Translation error ({self.translation_provider}): {str(e)}")
             return text
 
     async def process_live_audio_to_subtitles(
@@ -332,26 +507,34 @@ class LiveTranslationService:
         status = {
             "speech_to_text": False,
             "translate": False,
-            "provider": self.provider
+            "stt_provider": self.provider,
+            "translation_provider": self.translation_provider
         }
 
+        # Check STT provider
         try:
             if self.provider == "google":
                 self.speech_client.list_models(parent="global")
                 status["speech_to_text"] = True
             elif self.provider == "whisper":
                 status["speech_to_text"] = self.whisper_service.verify_service_availability()
+            elif self.provider == "elevenlabs":
+                status["speech_to_text"] = self.elevenlabs_service.verify_service_availability()
         except Exception as e:
             logger.error(f"Speech-to-Text ({self.provider}) unavailable: {str(e)}")
 
+        # Check translation provider
         try:
-            if self.provider == "google" and self.translate_client:
+            if self.translation_provider == "google" and self.translate_client:
                 self.translate_client.translate("test", target_language="en")
                 status["translate"] = True
-            elif self.provider == "whisper" and self.openai_client:
+            elif self.translation_provider == "openai" and self.openai_client:
                 # OpenAI client is already initialized, just check it exists
                 status["translate"] = True
+            elif self.translation_provider == "claude" and self.anthropic_client:
+                # Anthropic client is already initialized, just check it exists
+                status["translate"] = True
         except Exception as e:
-            logger.error(f"Translate unavailable: {str(e)}")
+            logger.error(f"Translate ({self.translation_provider}) unavailable: {str(e)}")
 
         return status
