@@ -5,16 +5,49 @@ Handles WebSocket connections, chess moves, and chat messages.
 from typing import Optional
 from datetime import datetime
 import json
+import logging
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
 from jose import jwt, JWTError
 
 from app.core.config import settings
 from app.models.user import User
 from app.models.chess import ChessGame, ChessChatMessage
-from app.services.connection_manager import connection_manager
 from app.services.chess_service import chess_service
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
+
+# Track active WebSocket connections per game
+# Format: {game_code: [websocket1, websocket2]}
+active_game_connections: dict[str, list[WebSocket]] = {}
+
+
+async def broadcast_to_game(game_code: str, message: dict) -> int:
+    """Broadcast a message to all connections in a game. Returns number of successful sends."""
+    if game_code not in active_game_connections:
+        return 0
+
+    connections = active_game_connections[game_code]
+    success_count = 0
+    failed_connections = []
+
+    for ws in connections:
+        try:
+            await ws.send_json(message)
+            success_count += 1
+        except Exception as e:
+            logger.warning(f"[Chess] Failed to send to connection: {e}")
+            failed_connections.append(ws)
+
+    # Remove failed connections
+    for ws in failed_connections:
+        connections.remove(ws)
+
+    # Clean up empty game connection list
+    if not connections:
+        del active_game_connections[game_code]
+
+    return success_count
 
 
 async def get_user_from_token(token: str) -> Optional[User]:
@@ -62,15 +95,21 @@ async def chess_websocket(
     - {"type": "error", "message": "..."}
     - {"type": "pong"}
     """
+    # IMPORTANT: Accept WebSocket first before any validation
+    await websocket.accept()
+    logger.info(f"[Chess] WebSocket connection accepted for game {game_code}")
+
     # Authenticate user
     user = await get_user_from_token(token)
     if not user:
+        logger.warning(f"[Chess] Invalid token for game {game_code}")
         await websocket.close(code=4001, reason="Invalid token")
         return
 
     # Verify game exists
     game = await ChessGame.find_one(ChessGame.game_code == game_code)
     if not game:
+        logger.warning(f"[Chess] Game {game_code} not found")
         await websocket.close(code=4004, reason="Game not found")
         return
 
@@ -81,37 +120,36 @@ async def chess_websocket(
     is_black_player = game.black_player and game.black_player.user_id == user_id
 
     if not is_white_player and not is_black_player:
+        logger.warning(f"[Chess] User {user_id} ({user.name}) not a player in game {game_code}")
         await websocket.close(code=4003, reason="You are not a player in this game")
         return
 
-    # Connect to WebSocket
-    connection_id = await connection_manager.connect(
-        websocket=websocket,
-        user_id=user_id,
-        user_name=user.name,
-        party_id=game_code  # Use game_code as party_id for connection management
-    )
+    logger.info(f"[Chess] User {user.name} ({user_id}) ready to receive messages")
+
+    # Add connection to active game connections
+    if game_code not in active_game_connections:
+        active_game_connections[game_code] = []
+    active_game_connections[game_code].append(websocket)
+    logger.info(f"[Chess] Added connection to game {game_code}. Total connections: {len(active_game_connections[game_code])}")
 
     try:
-        # Send initial game state
-        await connection_manager.send_personal_message(
-            {
-                "type": "game_state",
-                "data": {
-                    "id": str(game.id),
-                    "game_code": game.game_code,
-                    "white_player": game.white_player.dict() if game.white_player else None,
-                    "black_player": game.black_player.dict() if game.black_player else None,
-                    "current_turn": game.current_turn,
-                    "status": game.status,
-                    "board_fen": game.board_fen,
-                    "move_history": [move.dict() for move in game.move_history],
-                    "chat_enabled": game.chat_enabled,
-                    "voice_enabled": game.voice_enabled
-                }
-            },
-            connection_id
-        )
+        # Send initial game state directly
+        await websocket.send_json({
+            "type": "game_state",
+            "data": {
+                "id": str(game.id),
+                "game_code": game.game_code,
+                "white_player": game.white_player.dict() if game.white_player else None,
+                "black_player": game.black_player.dict() if game.black_player else None,
+                "current_turn": game.current_turn,
+                "status": game.status,
+                "board_fen": game.board_fen,
+                "move_history": [move.dict() for move in game.move_history],
+                "chat_enabled": game.chat_enabled,
+                "voice_enabled": game.voice_enabled
+            }
+        })
+        logger.info(f"[Chess] Sent initial game state to {user.name}")
 
         # Message loop
         while True:
@@ -122,9 +160,8 @@ async def chess_websocket(
                 msg_type = message.get("type")
 
                 if msg_type == "ping":
-                    await connection_manager.send_personal_message(
-                        {"type": "pong", "timestamp": datetime.utcnow().isoformat()},
-                        connection_id
+                    await websocket.send_json(
+                        {"type": "pong", "timestamp": datetime.utcnow().isoformat()}
                     )
 
                 elif msg_type == "move":
@@ -139,7 +176,7 @@ async def chess_websocket(
                         )
 
                         # Broadcast move to both players
-                        await connection_manager.broadcast_to_party(
+                        await broadcast_to_game(
                             game_code,
                             {
                                 "type": "move",
@@ -159,7 +196,7 @@ async def chess_websocket(
                                 # The player who just moved wins
                                 winner = "white" if move_record.player == "white" else "black"
 
-                            await connection_manager.broadcast_to_party(
+                            await broadcast_to_game(
                                 game_code,
                                 {
                                     "type": "game_end",
@@ -171,10 +208,7 @@ async def chess_websocket(
                             )
 
                     except ValueError as e:
-                        await connection_manager.send_personal_message(
-                            {"type": "error", "message": str(e)},
-                            connection_id
-                        )
+                        await websocket.send_json({"type": "error", "message": str(e)})
 
                 elif msg_type == "chat":
                     # Handle chat message
@@ -202,7 +236,7 @@ async def chess_websocket(
                     await chat_msg.insert()
 
                     # Broadcast chat to both players
-                    await connection_manager.broadcast_to_party(
+                    await broadcast_to_game(
                         game_code,
                         {
                             "type": "chat",
@@ -221,7 +255,7 @@ async def chess_websocket(
                         else:
                             winner = "white"
 
-                        await connection_manager.broadcast_to_party(
+                        await broadcast_to_game(
                             game_code,
                             {
                                 "type": "game_end",
@@ -232,17 +266,14 @@ async def chess_websocket(
                             }
                         )
                     except ValueError as e:
-                        await connection_manager.send_personal_message(
-                            {"type": "error", "message": str(e)},
-                            connection_id
-                        )
+                        await websocket.send_json({"type": "error", "message": str(e)})
 
                 elif msg_type == "offer_draw":
                     # Handle draw offer (auto-accepts for now)
                     try:
                         game = await chess_service.offer_draw(str(game.id), user_id)
 
-                        await connection_manager.broadcast_to_party(
+                        await broadcast_to_game(
                             game_code,
                             {
                                 "type": "game_end",
@@ -253,32 +284,30 @@ async def chess_websocket(
                             }
                         )
                     except ValueError as e:
-                        await connection_manager.send_personal_message(
-                            {"type": "error", "message": str(e)},
-                            connection_id
-                        )
+                        await websocket.send_json({"type": "error", "message": str(e)})
 
             except json.JSONDecodeError:
-                await connection_manager.send_personal_message(
-                    {"type": "error", "message": "Invalid JSON"},
-                    connection_id
-                )
+                await websocket.send_json({"type": "error", "message": "Invalid JSON"})
             except KeyError as e:
-                await connection_manager.send_personal_message(
-                    {"type": "error", "message": f"Missing required field: {str(e)}"},
-                    connection_id
-                )
+                await websocket.send_json({"type": "error", "message": f"Missing required field: {str(e)}"})
             except Exception as e:
-                await connection_manager.send_personal_message(
-                    {"type": "error", "message": str(e)},
-                    connection_id
-                )
+                await websocket.send_json({"type": "error", "message": str(e)})
 
     except WebSocketDisconnect:
-        pass
+        logger.info(f"[Chess] User {user.name} disconnected from game {game_code}")
     finally:
-        # Clean up connection
-        await connection_manager.disconnect(connection_id)
+        # Remove connection from active game connections
+        if game_code in active_game_connections:
+            try:
+                active_game_connections[game_code].remove(websocket)
+                logger.info(f"[Chess] Removed connection from game {game_code}. Remaining: {len(active_game_connections[game_code])}")
+
+                # Clean up empty game connection list
+                if not active_game_connections[game_code]:
+                    del active_game_connections[game_code]
+                    logger.info(f"[Chess] Removed empty connection list for game {game_code}")
+            except ValueError:
+                logger.warning(f"[Chess] Connection not found in game {game_code} during cleanup")
 
         # Update player connection status
         game = await ChessGame.find_one(ChessGame.game_code == game_code)
@@ -290,3 +319,4 @@ async def chess_websocket(
 
             game.updated_at = datetime.utcnow()
             await game.save()
+            logger.info(f"[Chess] Updated player connection status for {user.name} in game {game_code}")

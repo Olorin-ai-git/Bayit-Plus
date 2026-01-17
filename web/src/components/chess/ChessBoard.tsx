@@ -4,7 +4,7 @@
  * Features 3D glassmorphic chess pieces and board design.
  * Fully localized with RTL/LTR support.
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, useWindowDimensions, Platform, Image, Animated } from 'react-native';
 import { Chess } from 'chess.js';
 import { colors, spacing } from '@bayit/shared/theme';
@@ -58,19 +58,79 @@ export default function ChessBoard({
   const [lastMove, setLastMove] = useState<{from: string; to: string} | null>(null);
   const [animatingPiece, setAnimatingPiece] = useState<AnimatingPiece | null>(null);
   const animationProgress = useRef(new Animated.Value(0)).current;
+  const [checkState, setCheckState] = useState<{
+    isInCheck: boolean;
+    kingSquare: string | null;
+    attackingSquares: string[];
+  }>({ isInCheck: false, kingSquare: null, attackingSquares: [] });
+  const glowAnimation = useRef(new Animated.Value(0)).current;
 
   const isRTL = checkIsRTL();
+
+  // Detect check and find attacking pieces
+  const updateCheckState = useCallback(() => {
+    if (!chess.isCheck()) {
+      setCheckState({ isInCheck: false, kingSquare: null, attackingSquares: [] });
+      return;
+    }
+
+    // Find the king's position
+    const currentTurn = chess.turn();
+    const board = chess.board();
+    let kingSquare: string | null = null;
+
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const piece = board[row][col];
+        if (piece && piece.type === 'k' && piece.color === currentTurn) {
+          const file = String.fromCharCode(97 + col); // a-h
+          const rank = 8 - row; // 1-8
+          kingSquare = `${file}${rank}`;
+          break;
+        }
+      }
+      if (kingSquare) break;
+    }
+
+    if (!kingSquare) {
+      setCheckState({ isInCheck: false, kingSquare: null, attackingSquares: [] });
+      return;
+    }
+
+    // Find all pieces attacking the king
+    const attackingSquares: string[] = [];
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const piece = board[row][col];
+        if (piece && piece.color !== currentTurn) {
+          const file = String.fromCharCode(97 + col);
+          const rank = 8 - row;
+          const square = `${file}${rank}`;
+
+          // Check if this piece can attack the king
+          const moves = chess.moves({ square, verbose: true });
+          if (moves.some(m => m.to === kingSquare)) {
+            attackingSquares.push(square);
+          }
+        }
+      }
+    }
+
+    console.log('[Chess] Check detected! King at', kingSquare, 'attacked by', attackingSquares);
+    setCheckState({ isInCheck: true, kingSquare, attackingSquares });
+  }, [chess]);
 
   // Update chess instance when game state changes
   useEffect(() => {
     if (game?.board_fen) {
       try {
         chess.load(game.board_fen);
+        updateCheckState();
       } catch (err) {
         console.error('[ChessBoard] Failed to load FEN:', err);
       }
     }
-  }, [game?.board_fen, chess]);
+  }, [game?.board_fen, chess, updateCheckState]);
 
   // Track last move for highlighting
   useEffect(() => {
@@ -82,6 +142,34 @@ export default function ChessBoard({
       });
     }
   }, [game?.move_history]);
+
+  // Animate glow when in check
+  useEffect(() => {
+    console.log('[Chess] Check state changed:', checkState);
+    if (checkState.isInCheck) {
+      console.log('[Chess] Starting check glow animation');
+      // Start pulsing animation
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(glowAnimation, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: Platform.OS !== 'web',
+          }),
+          Animated.timing(glowAnimation, {
+            toValue: 0,
+            duration: 600,
+            useNativeDriver: Platform.OS !== 'web',
+          }),
+        ])
+      ).start();
+    } else {
+      console.log('[Chess] Stopping check glow animation');
+      // Stop animation and reset
+      glowAnimation.stopAnimation();
+      glowAnimation.setValue(0);
+    }
+  }, [checkState.isInCheck, glowAnimation]);
 
   // Helper function to animate piece movement
   const animateMove = (from: string, to: string, piece: { type: string; color: string }, callback: () => void) => {
@@ -179,8 +267,26 @@ export default function ChessBoard({
     const isLegalMove = legalMoves.includes(square);
     const isLastMoveSquare = lastMove && (lastMove.from === square || lastMove.to === square);
 
+    // Check if this square is part of the check scenario
+    const isKingInCheck = checkState.isInCheck && checkState.kingSquare === square;
+    const isAttackingPiece = checkState.isInCheck && checkState.attackingSquares.includes(square);
+
     // Calculate square size based on playable area (94% of board)
     const squareSize = playableSize / 8;
+
+    // Calculate glow for squares involved in check
+    const squareGlowStyle = (isKingInCheck || isAttackingPiece) ? {
+      backgroundColor: isKingInCheck
+        ? 'rgba(239, 68, 68, 0.3)'  // Red glow for king's square
+        : 'rgba(251, 191, 36, 0.3)', // Amber glow for attacker's square
+      ...Platform.select({
+        web: {
+          boxShadow: isKingInCheck
+            ? '0 0 30px rgba(239, 68, 68, 0.8), inset 0 0 20px rgba(239, 68, 68, 0.6)'
+            : '0 0 30px rgba(251, 191, 36, 0.8), inset 0 0 20px rgba(251, 191, 36, 0.6)',
+        },
+      }),
+    } : {};
 
     return (
       <Pressable
@@ -191,6 +297,7 @@ export default function ChessBoard({
           isLight ? styles.lightSquare : styles.darkSquare,
           isSelected && styles.selectedSquare,
           isLastMoveSquare && styles.lastMoveSquare,
+          squareGlowStyle,
         ]}
         onPress={() => handleSquarePress(square)}
       >
@@ -199,13 +306,48 @@ export default function ChessBoard({
           const pieceKey = `${piece.color}${piece.type}`;
           const pieceImage = PIECE_IMAGES[pieceKey];
 
-          // Pawns are smaller - use 75% height
+          // Size pieces by importance: King/Queen largest, then others, then pawns
           const isPawn = piece.type === 'p';
-          const pieceWidth = squareSize * 1.4;
-          const pieceHeight = isPawn ? squareSize * 1.2 : squareSize * 1.6;
-          const marginTop = isPawn ? -squareSize * 0.1 : -squareSize * 0.3;
+          const isKingOrQueen = piece.type === 'k' || piece.type === 'q';
 
-          return (
+          let pieceWidth, pieceHeight;
+
+          if (isKingOrQueen) {
+            // King and Queen are largest and most prominent
+            pieceWidth = squareSize * 1.5;
+            pieceHeight = squareSize * 1.8;
+          } else if (isPawn) {
+            // Pawns are smallest
+            pieceWidth = squareSize * 1.4;
+            pieceHeight = squareSize * 1.2;
+          } else {
+            // Rooks, Knights, Bishops are medium
+            pieceWidth = squareSize * 1.4;
+            pieceHeight = squareSize * 1.6;
+          }
+
+          // All pieces anchor from bottom of square
+          const bottomOffset = squareSize * 0.05; // Small lift from bottom edge
+
+          // Calculate glow intensity based on animation value
+          const glowIntensity = glowAnimation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 1],
+          });
+
+          // Different glow colors for king vs attacking piece
+          const glowColor = isKingInCheck
+            ? 'rgba(239, 68, 68, 0.9)'  // Red for king in check
+            : 'rgba(251, 191, 36, 0.9)'; // Amber for attacking piece
+
+          const animatedGlowStyle = {
+            shadowColor: glowColor,
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: glowIntensity,
+            shadowRadius: Animated.multiply(glowIntensity, 25),
+          };
+
+          const pieceElement = (
             <Image
               source={{ uri: pieceImage }}
               style={[
@@ -213,12 +355,23 @@ export default function ChessBoard({
                 {
                   width: pieceWidth,
                   height: pieceHeight,
-                  marginTop, // Pull up to center vertically
+                  marginBottom: bottomOffset, // Small lift from square bottom
                 }
               ]}
               resizeMode="contain"
             />
           );
+
+          // Wrap with animated glow if this piece is involved in check
+          if (isKingInCheck || isAttackingPiece) {
+            return (
+              <Animated.View style={[styles.glowContainer, animatedGlowStyle]}>
+                {pieceElement}
+              </Animated.View>
+            );
+          }
+
+          return pieceElement;
         })()}
 
         {/* Legal move indicator - only show if hints enabled */}
@@ -279,11 +432,28 @@ export default function ChessBoard({
     const pieceKey = `${animatingPiece.piece.color}${animatingPiece.piece.type}`;
     const pieceImage = PIECE_IMAGES[pieceKey];
 
-    // Pawns are smaller - use 75% height
+    // Size pieces by importance: King/Queen largest, then others, then pawns
     const isPawn = animatingPiece.piece.type === 'p';
-    const pieceWidth = squareSize * 1.4;
-    const pieceHeight = isPawn ? squareSize * 1.2 : squareSize * 1.6;
-    const marginTop = isPawn ? -squareSize * 0.1 : -squareSize * 0.3;
+    const isKingOrQueen = animatingPiece.piece.type === 'k' || animatingPiece.piece.type === 'q';
+
+    let pieceWidth, pieceHeight;
+
+    if (isKingOrQueen) {
+      // King and Queen are largest and most prominent
+      pieceWidth = squareSize * 1.5;
+      pieceHeight = squareSize * 1.8;
+    } else if (isPawn) {
+      // Pawns are smallest
+      pieceWidth = squareSize * 1.4;
+      pieceHeight = squareSize * 1.2;
+    } else {
+      // Rooks, Knights, Bishops are medium
+      pieceWidth = squareSize * 1.4;
+      pieceHeight = squareSize * 1.6;
+    }
+
+    // All pieces anchor from bottom of square
+    const bottomOffset = squareSize * 0.05;
 
     return (
       <Animated.View
@@ -306,7 +476,7 @@ export default function ChessBoard({
             {
               width: pieceWidth,
               height: pieceHeight,
-              marginTop,
+              marginBottom: bottomOffset, // Match static piece positioning
             }
           ]}
           resizeMode="contain"
@@ -350,7 +520,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   square: {
-    justifyContent: 'center',
+    justifyContent: 'flex-end', // Align pieces from bottom
     alignItems: 'center',
     position: 'relative',
     overflow: 'visible', // Allow pieces to overflow
@@ -400,7 +570,6 @@ const styles = StyleSheet.create({
     }),
   },
   piece: {
-    position: 'absolute',
     zIndex: 10, // Ensure pieces render above squares
     ...Platform.select({
       web: {
@@ -410,10 +579,18 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  glowContainer: {
+    zIndex: 15, // Above regular pieces
+    ...Platform.select({
+      web: {
+        filter: 'drop-shadow(0 0 30px currentColor)',
+      },
+    }),
+  },
   animatingPieceContainer: {
     position: 'absolute',
     zIndex: 100, // Above everything
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
   },
   animatingPiece: {

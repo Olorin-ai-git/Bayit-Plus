@@ -45,13 +45,18 @@ class ConnectionManager:
         websocket: WebSocket,
         user_id: str,
         user_name: str,
-        party_id: Optional[str] = None
+        party_id: Optional[str] = None,
+        skip_accept: bool = False
     ) -> str:
         """
         Accept a new WebSocket connection.
         Returns the connection ID.
+
+        Args:
+            skip_accept: If True, skip calling websocket.accept() (useful if already accepted)
         """
-        await websocket.accept()
+        if not skip_accept:
+            await websocket.accept()
 
         async with self._lock:
             # Disconnect existing connection for this user if any
