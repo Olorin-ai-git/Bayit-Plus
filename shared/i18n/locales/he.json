@@ -720,6 +720,9 @@
       "he": "עברית",
       "es": "Español"
     },
+    "chatTranslation": "תרגום צ'אט",
+    "autoTranslate": "תרגום אוטומטי של הודעות",
+    "autoTranslateDescription": "תרגם אוטומטית הודעות צ'אט לשפה המועדפת עליך",
     "notifications": "התראות",
     "pushNotifications": "התראות פוש",
     "playback": "ניגון",

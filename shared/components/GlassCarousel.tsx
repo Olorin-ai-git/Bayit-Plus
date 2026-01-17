@@ -12,6 +12,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { GlassView } from './ui';
+import { SubtitleFlags } from './SubtitleFlags';
 import { colors, borderRadius, spacing } from '../theme';
 import { useDirection } from '../hooks/useDirection';
 
@@ -25,6 +26,7 @@ interface CarouselItem {
   image?: string;
   badge?: string;
   contentType?: ContentType;
+  available_subtitle_languages?: string[];
 }
 
 interface FavoritesService {
@@ -271,6 +273,16 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                   </Text>
                 )}
               </View>
+
+              {/* Subtitle Flags */}
+              {currentItem.available_subtitle_languages && currentItem.available_subtitle_languages.length > 0 && (
+                <SubtitleFlags
+                  languages={currentItem.available_subtitle_languages}
+                  size="medium"
+                  position={isRTL ? 'bottom-left' : 'bottom-right'}
+                  isRTL={isRTL}
+                />
+              )}
 
               {/* Play Button - Right for RTL, Left for LTR */}
               <View style={[styles.playButtonContainer, isRTL ? styles.playButtonRight : styles.playButtonLeft]}>

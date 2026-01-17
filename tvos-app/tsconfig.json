@@ -14,5 +14,12 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "../shared/**/*.ts", "../shared/**/*.tsx"],
-  "exclude": ["**/node_modules", "**/Pods"]
+  "exclude": [
+    "**/node_modules",
+    "**/Pods",
+    "../shared/components/admin/**",
+    "../shared/screens/admin/**",
+    "../shared/components/ui/web/**",
+    "../shared/hooks/voice/**"
+  ]
 }

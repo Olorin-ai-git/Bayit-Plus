@@ -723,6 +723,9 @@
       "he": "עברית",
       "es": "Español"
     },
+    "chatTranslation": "Chat Translation",
+    "autoTranslate": "Auto-translate messages",
+    "autoTranslateDescription": "Automatically translate chat messages to your preferred language",
     "notifications": "Notifications",
     "pushNotifications": "Push Notifications",
     "playback": "Playback",

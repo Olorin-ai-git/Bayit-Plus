@@ -90,17 +90,57 @@ async def get_user_public_info(
 ):
     """
     Get public information about a specific user.
-    
+
     Returns minimal public information (id, name, avatar).
     Requires authentication.
     """
     user = await User.get(user_id)
-    
+
     if not user or not user.is_active:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     return PublicUserInfo(
         id=str(user.id),
         name=user.name,
         avatar=user.avatar if hasattr(user, 'avatar') else None,
     )
+
+
+class UpdatePreferencesRequest(BaseModel):
+    """Request model for updating user preferences."""
+    auto_translate_enabled: Optional[bool] = None
+    # Add other preference fields as needed
+
+
+@router.get("/me/preferences")
+async def get_my_preferences(
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Get current user's preferences.
+    """
+    return {
+        "preferences": current_user.preferences,
+        "preferred_language": current_user.preferred_language,
+    }
+
+
+@router.patch("/me/preferences")
+async def update_my_preferences(
+    request: UpdatePreferencesRequest,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Update current user's preferences.
+
+    Allows updating individual preference fields without overwriting others.
+    """
+    if request.auto_translate_enabled is not None:
+        current_user.preferences["auto_translate_enabled"] = request.auto_translate_enabled
+
+    await current_user.save()
+
+    return {
+        "success": True,
+        "preferences": current_user.preferences,
+    }

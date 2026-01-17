@@ -244,7 +244,9 @@ class RoomManager:
         user_name: str,
         data: ChatMessageCreate
     ) -> Optional[ChatMessage]:
-        """Send a chat message in a watch party"""
+        """Send a chat message in a watch party with translation support"""
+        from app.services.chat_translation_service import chat_translation_service
+
         party = await self.get_party(party_id)
         if not party or not party.chat_enabled:
             return None
@@ -253,30 +255,91 @@ class RoomManager:
         if not any(p.user_id == user_id for p in party.participants):
             return None
 
+        # Detect language
+        detection = await chat_translation_service.detect_language(data.message)
+        source_lang = detection.detected_language
+
         message = ChatMessage(
             party_id=party_id,
             user_id=user_id,
             user_name=user_name,
             message=data.message,
-            message_type=data.message_type
+            message_type=data.message_type,
+            source_language=source_lang
         )
+
+        # Get recipient user IDs (all participants except sender)
+        recipient_ids = [p.user_id for p in party.participants if p.user_id != user_id]
+
+        # Translate for recipients based on their preferences
+        translations_result = await chat_translation_service.translate_for_recipients(
+            data.message, source_lang, recipient_ids
+        )
+
+        # Store translations in message
+        translations = {}
+        for recipient_id, result in translations_result.items():
+            if result.translated_text != data.message:
+                translations[result.target_language] = result.translated_text
+
+        if translations:
+            message.translations = translations
+            message.has_translations = True
+
         await message.insert()
 
-        # Broadcast to all participants
-        await connection_manager.broadcast_to_party(
-            {
-                "type": "chat_message",
-                "message": {
-                    "id": str(message.id),
-                    "user_id": user_id,
-                    "user_name": user_name,
-                    "message": message.message,
-                    "message_type": message.message_type,
-                    "timestamp": message.timestamp.isoformat()
+        # Send personalized messages to each participant via connection_manager
+        # First, get all connections for this party
+        party_connections = connection_manager.get_party_connections(party_id)
+
+        for ws, ws_user_id in party_connections:
+            if ws_user_id == user_id:
+                # Sender sees original
+                msg_data = {
+                    "type": "chat_message",
+                    "message": {
+                        "id": str(message.id),
+                        "user_id": user_id,
+                        "user_name": user_name,
+                        "message": data.message,
+                        "display_message": data.message,
+                        "message_type": message.message_type,
+                        "source_language": source_lang,
+                        "is_translated": False,
+                        "translation_available": message.has_translations,
+                        "timestamp": message.timestamp.isoformat()
+                    }
                 }
-            },
-            party_id
-        )
+            else:
+                # Recipient sees translated if available
+                translation = translations_result.get(ws_user_id)
+                if translation and translation.translated_text != data.message:
+                    display_msg = translation.translated_text
+                    is_translated = True
+                else:
+                    display_msg = data.message
+                    is_translated = False
+
+                msg_data = {
+                    "type": "chat_message",
+                    "message": {
+                        "id": str(message.id),
+                        "user_id": user_id,
+                        "user_name": user_name,
+                        "message": data.message,
+                        "display_message": display_msg,
+                        "message_type": message.message_type,
+                        "source_language": source_lang,
+                        "is_translated": is_translated,
+                        "translation_available": message.has_translations,
+                        "timestamp": message.timestamp.isoformat()
+                    }
+                }
+
+            try:
+                await ws.send_json(msg_data)
+            except Exception:
+                pass  # Connection will be cleaned up by disconnect handler
 
         return message
 

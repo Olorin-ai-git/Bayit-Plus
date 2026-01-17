@@ -4,6 +4,7 @@ import { Play, Info, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassBadge } from '@bayit/shared/ui'
+import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore'
 
 interface Content {
   id: string

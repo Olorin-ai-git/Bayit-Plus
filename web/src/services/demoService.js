@@ -720,6 +720,20 @@ export const demoSubtitlesService = {
     await delay();
     return { nikud_cache_size: 150, translation_cache_size: 500, max_size: 10000 };
   },
+  fetchExternal: async (contentId, languages) => {
+    await delay(2000);
+    return {
+      message: 'Demo mode - simulated subtitle fetch',
+      imported: [
+        { language: 'en', language_name: 'English', cue_count: 100, track_id: 'demo-en' },
+      ],
+      skipped: [],
+      failed: [
+        { language: 'he', reason: 'Demo mode' },
+      ],
+      quota_remaining: 100,
+    };
+  },
 };
 
 // ===========================================

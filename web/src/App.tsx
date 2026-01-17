@@ -5,6 +5,7 @@ import { useDirection } from '@/hooks/useDirection'
 import { VoiceListeningProvider } from '@bayit/shared-contexts'
 import { ModalProvider } from '@/contexts/ModalContext'
 import Layout from './components/layout/Layout'
+import FullscreenVideoOverlay from './components/player/FullscreenVideoOverlay'
 
 // Loading fallback component
 const LoadingFallback = () => (
@@ -90,8 +91,9 @@ function App() {
   }, [])
 
   return (
-    <Suspense fallback={<LoadingFallback />}>
-      <Routes>
+    <>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
         {/* Auth Routes (no layout) */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -164,8 +166,12 @@ function App() {
           <Route path="/help" element={<HelpPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
-      </Routes>
-    </Suspense>
+        </Routes>
+      </Suspense>
+
+      {/* Fullscreen Video Player Overlay - can be triggered from anywhere */}
+      <FullscreenVideoOverlay />
+    </>
   )
 }
 

@@ -23,6 +23,7 @@ export { default as SeriesDetailScreen } from './SeriesDetailScreen';
 export { default as SettingsScreen } from './SettingsScreen';
 export { default as RecordingsScreen } from './RecordingsScreen';
 export { default as HelpScreen } from './HelpScreen';
+export { SubscribeScreen } from './SubscribeScreen';
 
 // Admin screens are in a separate export to avoid bundling web-only dependencies in TV apps
 // Import from '@bayit/shared-screens/admin' instead

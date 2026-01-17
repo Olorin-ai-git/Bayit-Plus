@@ -69,6 +69,11 @@ class ChatMessage(Document):
     message: str
     message_type: str = "text"  # text, emoji, system
 
+    # Translation fields
+    source_language: str = "he"
+    has_translations: bool = False
+    translations: dict = Field(default_factory=dict)  # {"en": "translated text", "es": "texto traducido"}
+
     # For reactions
     reactions: dict = Field(default_factory=dict)  # {"emoji": ["user_id1", "user_id2"]}
 
@@ -130,7 +135,11 @@ class ChatMessageResponse(BaseModel):
     user_id: str
     user_name: str
     message: str
+    display_message: str  # translated text if available for recipient
     message_type: str
+    source_language: str = "he"
+    is_translated: bool = False
+    translation_available: bool = False
     reactions: dict
     timestamp: datetime
 

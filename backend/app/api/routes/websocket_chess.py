@@ -308,16 +308,24 @@ async def chess_websocket(
                         await websocket.send_json({"type": "error", "message": str(e)})
 
                 elif msg_type == "chat":
-                    # Handle chat message
+                    # Handle chat message with translation
                     chat_text = message.get("message", "")
                     is_bot_request = "@bot" in chat_text.lower()
+
+                    # Import translation service
+                    from app.services.chat_translation_service import chat_translation_service
+
+                    # Detect language
+                    detection = await chat_translation_service.detect_language(chat_text)
+                    source_lang = detection.detected_language
 
                     chat_msg = ChessChatMessage(
                         game_id=str(game.id),
                         user_id=user_id,
                         user_name=user.name,
                         message=chat_text,
-                        is_bot_request=is_bot_request
+                        is_bot_request=is_bot_request,
+                        source_language=source_lang
                     )
 
                     # Get AI advice if bot is tagged
@@ -330,16 +338,61 @@ async def chess_websocket(
                         except Exception as e:
                             chat_msg.bot_response = f"Sorry, I couldn't provide advice: {str(e)}"
 
+                    # Get opponent info for translation
+                    opponent_id = None
+                    if game.white_player and game.white_player.user_id == user_id:
+                        opponent_id = game.black_player.user_id if game.black_player else None
+                    elif game.black_player and game.black_player.user_id == user_id:
+                        opponent_id = game.white_player.user_id if game.white_player else None
+
+                    # Translate for opponent if needed
+                    if opponent_id:
+                        should_translate, target_lang = await chat_translation_service.should_translate_for_user(opponent_id)
+                        if should_translate and source_lang != target_lang:
+                            result = await chat_translation_service.translate_message(
+                                chat_text, source_lang, target_lang
+                            )
+                            if result.translated_text != chat_text:
+                                chat_msg.translations = {target_lang: result.translated_text}
+                                chat_msg.has_translations = True
+
                     await chat_msg.insert()
 
-                    # Broadcast chat to both players
-                    await broadcast_to_game(
-                        game_code,
-                        {
-                            "type": "chat",
-                            "data": chat_msg.dict()
-                        }
-                    )
+                    # Build personalized messages for each player
+                    # For the sender - show original
+                    sender_data = chat_msg.dict()
+                    sender_data["display_message"] = chat_text
+                    sender_data["is_translated"] = False
+                    sender_data["translation_available"] = chat_msg.has_translations
+
+                    await websocket.send_json({
+                        "type": "chat",
+                        "data": sender_data
+                    })
+
+                    # For the opponent - show translated if available
+                    if opponent_id and game_code in active_game_connections:
+                        opponent_data = chat_msg.dict()
+                        if chat_msg.has_translations and chat_msg.translations:
+                            # Get the first translation (there should only be one for the opponent)
+                            translated = list(chat_msg.translations.values())[0]
+                            opponent_data["display_message"] = translated
+                            opponent_data["is_translated"] = True
+                        else:
+                            opponent_data["display_message"] = chat_text
+                            opponent_data["is_translated"] = False
+                        opponent_data["translation_available"] = chat_msg.has_translations
+
+                        # Broadcast to opponent only
+                        for ws in active_game_connections[game_code]:
+                            if ws != websocket:
+                                try:
+                                    await ws.send_json({
+                                        "type": "chat",
+                                        "data": opponent_data
+                                    })
+                                except Exception as e:
+                                    logger.warning(f"[Chess] Failed to send chat to opponent: {e}")
 
                 elif msg_type == "resign":
                     # Handle resignation

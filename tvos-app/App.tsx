@@ -31,12 +31,12 @@ import {
   SettingsScreen,
   RecordingsScreen,
   HelpScreen,
+  SubscribeScreen,
 } from '@bayit/shared-screens';
 import ProfileFormScreen from './src/screens/ProfileFormScreen';
-import SubscribeScreen from './src/screens/SubscribeScreen';
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';
-import { DemoBanner, SoundwaveVisualizer } from '@bayit/shared';
+import { DemoBanner, SoundwaveVisualizer, ErrorBoundary } from '@bayit/shared';
 import { Chatbot } from '@bayit/shared/chat';
 import { useChatbotStore, useVoiceSettingsStore } from '@bayit/shared-stores';
 import { chatService } from '@bayit/shared-services';
@@ -501,13 +501,15 @@ function App(): React.JSX.Element {
         {showSplash ? (
           <SplashScreen onComplete={handleSplashComplete} minimumDuration={3000} />
         ) : (
-          <ModalProvider>
-            <ProfileProvider>
-              <NavigationContainer>
-                <AppContentWithHandlers />
-              </NavigationContainer>
-            </ProfileProvider>
-          </ModalProvider>
+          <ErrorBoundary>
+            <ModalProvider>
+              <ProfileProvider>
+                <NavigationContainer>
+                  <AppContentWithHandlers />
+                </NavigationContainer>
+              </ProfileProvider>
+            </ModalProvider>
+          </ErrorBoundary>
         )}
       </SafeAreaProvider>
     </I18nextProvider>

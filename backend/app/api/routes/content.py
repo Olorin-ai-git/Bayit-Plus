@@ -478,6 +478,8 @@ async def get_content(
         "director": content.director,
         "is_series": content.is_series,
         "type": "series" if content.is_series else "movie",
+        "available_subtitle_languages": content.available_subtitle_languages or [],
+        "has_subtitles": bool(content.available_subtitle_languages and len(content.available_subtitle_languages) > 0),
         "related": [
             {
                 "id": str(item.id),
@@ -636,6 +638,8 @@ async def get_series_details(
         "preview_url": series.preview_url,
         "tmdb_id": series.tmdb_id,
         "imdb_id": series.imdb_id,
+        "available_subtitle_languages": series.available_subtitle_languages or [],
+        "has_subtitles": bool(series.available_subtitle_languages and len(series.available_subtitle_languages) > 0),
         "seasons": seasons,
         "related": [
             {
@@ -773,6 +777,8 @@ async def get_movie_details(
         "imdb_id": movie.imdb_id,
         "imdb_rating": movie.imdb_rating,
         "imdb_votes": movie.imdb_votes,
+        "available_subtitle_languages": movie.available_subtitle_languages or [],
+        "has_subtitles": bool(movie.available_subtitle_languages and len(movie.available_subtitle_languages) > 0),
         "related": [
             {
                 "id": str(item.id),

@@ -361,7 +361,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                       styles.houseLogo,
                       styles.houseLogoExpanded,
                     ]}
-                    resizeMode="contain"
+                    resizeMode="cover"
                   />
                 </Link>
                 <Animated.View
@@ -570,8 +570,8 @@ const styles = StyleSheet.create({
     transition: 'width 0.3s, height 0.3s',
   } as any,
   houseLogoExpanded: {
-    width: 100,
-    height: 100,
+    width: 140,
+    height: 140,
   },
   logoPlaceholder: {
     width: 48,

@@ -94,6 +94,12 @@ class ChessChatMessage(Document):
     message: str
     is_bot_request: bool = False  # True if message tags @bot
     bot_response: Optional[str] = None
+
+    # Translation fields
+    source_language: str = "he"
+    has_translations: bool = False
+    translations: dict = {}  # {"en": "translated text", "es": "texto traducido"}
+
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
     class Settings:

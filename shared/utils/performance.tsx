@@ -8,6 +8,9 @@
  * - Code-splitting helpers
  */
 
+import React from 'react';
+import { Platform, View, Text, ActivityIndicator } from 'react-native';
+
 // Re-export list optimization utilities
 export * from './listOptimization';
 
@@ -132,10 +135,6 @@ export function createLazyRoutes(routeImports: Record<string, () => Promise<any>
   }));
 }
 
-// Import necessary dependencies
-import React, { Platform } from 'react-native';
-import { View, Text, ActivityIndicator } from 'react-native';
-
 /**
  * Performance monitoring hook
  *
@@ -196,30 +195,30 @@ export function createMemoComponent<P extends object>(
  */
 export const performanceBestPractices = {
   images: [
-    '✅ Use OptimizedImage for all remote images',
-    '✅ Enable lazy loading for offscreen images',
-    '✅ Use appropriate image sizes (web: 300x450, tv: 600x900)',
-    '✅ Implement image caching with LRU cache',
+    'Use OptimizedImage for all remote images',
+    'Enable lazy loading for offscreen images',
+    'Use appropriate image sizes (web: 300x450, tv: 600x900)',
+    'Implement image caching with LRU cache',
   ],
   lists: [
-    '✅ Use FlatList optimization props (windowSize, maxToRenderPerBatch)',
-    '✅ Implement getItemLayout for consistent item heights',
-    '✅ Use removeClippedSubviews on native platforms',
-    '✅ Memoize renderItem components',
-    '✅ Use unique, stable keys',
+    'Use FlatList optimization props (windowSize, maxToRenderPerBatch)',
+    'Implement getItemLayout for consistent item heights',
+    'Use removeClippedSubviews on native platforms',
+    'Memoize renderItem components',
+    'Use unique, stable keys',
   ],
   bundleSize: [
-    '✅ Use React.lazy for route-based code splitting',
-    '✅ Avoid importing entire libraries (use named imports)',
-    '✅ Remove unused dependencies',
-    '✅ Use lighter alternatives (date-fns vs moment)',
-    '✅ Tree-shake unused code',
+    'Use React.lazy for route-based code splitting',
+    'Avoid importing entire libraries (use named imports)',
+    'Remove unused dependencies',
+    'Use lighter alternatives (date-fns vs moment)',
+    'Tree-shake unused code',
   ],
   rendering: [
-    '✅ Use React.memo for expensive components',
-    '✅ Avoid inline functions in render',
-    '✅ Use useCallback and useMemo appropriately',
-    '✅ Keep component files <200 lines',
-    '✅ Monitor render performance with useRenderPerformance',
+    'Use React.memo for expensive components',
+    'Avoid inline functions in render',
+    'Use useCallback and useMemo appropriately',
+    'Keep component files <200 lines',
+    'Monitor render performance with useRenderPerformance',
   ],
 };

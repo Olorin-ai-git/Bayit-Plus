@@ -236,6 +236,22 @@ class ConnectionManager:
             return 0
         return len(self._party_connections[party_id])
 
+    def get_party_connections(self, party_id: str) -> List[tuple]:
+        """
+        Get list of (websocket, user_id) tuples for all connections in a party.
+        Used for personalized message broadcasting.
+        """
+        if party_id not in self._party_connections:
+            return []
+
+        connections = []
+        for conn_id in self._party_connections[party_id]:
+            if conn_id in self._connections:
+                conn = self._connections[conn_id]
+                connections.append((conn.websocket, conn.user_id))
+
+        return connections
+
     def get_connection_info(self, connection_id: str) -> Optional[dict]:
         """Get info about a connection"""
         if connection_id not in self._connections:

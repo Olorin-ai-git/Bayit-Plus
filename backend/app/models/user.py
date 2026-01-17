@@ -186,6 +186,9 @@ class User(Document):
         # Watch party settings
         "auto_join_audio": False,
         "push_to_talk": False,
+
+        # Translation settings
+        "auto_translate_enabled": True,
     })
 
     # Device management

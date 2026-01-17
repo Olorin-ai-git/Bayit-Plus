@@ -34,6 +34,8 @@ from app.api.routes.favorites import Favorite
 from app.api.routes.downloads import Download
 from app.models.chess import ChessGame, ChessChatMessage
 from app.models.friendship import FriendRequest, UserFriendship, GameResult, PlayerStats
+from app.models.chat_translation import ChatTranslationCacheDoc
+from app.models.direct_message import DirectMessage
 
 
 class Database:
@@ -121,6 +123,9 @@ async def connect_to_mongo():
             UserFriendship,
             GameResult,
             PlayerStats,
+            # Chat Translation models
+            ChatTranslationCacheDoc,
+            DirectMessage,
         ],
     )
     print(f"Connected to MongoDB: {settings.MONGODB_DB_NAME}")

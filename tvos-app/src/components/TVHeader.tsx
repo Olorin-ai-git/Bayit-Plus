@@ -54,7 +54,6 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
   const { preferences } = useVoiceSettingsStore();
   const { width } = useWindowDimensions();
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
-  const isAdmin = user?.role === 'admin';
 
   // Focus states for TV navigation
   const [focusedNav, setFocusedNav] = useState<string | null>(null);
@@ -202,22 +201,6 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
       >
         <Text style={styles.iconText}>⚙️</Text>
       </Pressable>
-
-      {/* Admin Button */}
-      {isAdmin && (
-        <Pressable
-          onPress={() => onNavigate('Admin')}
-          onFocus={() => setFocusedAction('admin')}
-          onBlur={() => setFocusedAction(null)}
-          style={({ focused }) => [
-            styles.adminButton,
-            focused && styles.adminButtonFocused,
-          ]}
-        >
-          <Text style={styles.adminIcon}>🛡️</Text>
-          <Text style={styles.adminButtonText}>{t('nav.admin', 'Admin')}</Text>
-        </Pressable>
-      )}
 
       {/* Profile/Login */}
       {isAuthenticated ? (
@@ -400,29 +383,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '500',
     color: colors.text,
-  },
-  adminButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderRadius: 8,
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-    borderWidth: 2,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
-  },
-  adminButtonFocused: {
-    borderColor: '#ef4444',
-    backgroundColor: 'rgba(239, 68, 68, 0.3)',
-  },
-  adminIcon: {
-    fontSize: 20,
-  },
-  adminButtonText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#ef4444',
   },
   soundwaveContainer: {
     height: 60,

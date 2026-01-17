@@ -36,6 +36,9 @@ export { VoiceStatusOverlay } from './VoiceStatusOverlay';
 export { VoiceVideoIndicator } from './VoiceVideoIndicator';
 export { VisualFeedbackSystem } from './VisualFeedbackSystem';
 
+// Error handling
+export { ErrorBoundary } from './ErrorBoundary';
+
 // Note: Admin, WatchParty, and Chat components are web-only
 // They use lucide-react icons which are not available in React Native
 // Import them directly in web app if needed:

@@ -32,6 +32,7 @@ import {
   SettingsScreen,
   RecordingsScreen,
   HelpScreen,
+  SubscribeScreen,
 } from '@bayit/shared-screens';
 import { useAuthStore, useChatbotStore } from '@bayit/shared-stores';
 import { ProfileProvider } from '@bayit/shared-contexts';
@@ -325,6 +326,7 @@ const AppContent: React.FC = () => {
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="Recordings" component={RecordingsScreen} />
             <Stack.Screen name="Help" component={HelpScreen} />
+            <Stack.Screen name="Subscribe" component={SubscribeScreen} />
           </Stack.Navigator>
         </View>
       </View>
