@@ -338,10 +338,10 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
 
   if (loading) {
     const loadingContent = (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
-      </View>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        </View>
     );
     
     if (noCard) return loadingContent;
@@ -353,43 +353,43 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
     <View style={noCard ? undefined : styles.container}>
       {/* Header with Stats - only show if not hidden */}
       {!hideHeader && (
-        <View style={styles.header}>
-          <View style={[styles.headerTop, { flexDirection: directionFlex }]}>
-            <Text style={[styles.title, { textAlign }]}>
-              {t('admin.uploads.queueStatus', 'Upload Queue')}
-            </Text>
-            <View style={[styles.statsRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{stats.total_jobs}</Text>
-                <Text style={styles.statLabel}>{t('admin.uploads.totalJobs', 'Total')}</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={[styles.statValue, { color: colors.warning }]}>{stats.queued}</Text>
-                <Text style={styles.statLabel}>{t('admin.uploads.queued', 'Queued')}</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={[styles.statValue, { color: colors.primary }]}>{stats.processing}</Text>
-                <Text style={styles.statLabel}>{t('admin.uploads.processing', 'Active')}</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={[styles.statValue, { color: colors.success }]}>{stats.completed}</Text>
-                <Text style={styles.statLabel}>{t('admin.uploads.completed', 'Done')}</Text>
-              </View>
-              {skippedCount > 0 && (
-                <View style={styles.statItem}>
-                  <Text style={[styles.statValue, { color: colors.info }]}>{skippedCount}</Text>
-                  <Text style={styles.statLabel}>{t('admin.uploads.skipped', 'Skipped')}</Text>
-                </View>
-              )}
-              {actualFailures > 0 && (
-                <View style={styles.statItem}>
-                  <Text style={[styles.statValue, { color: colors.error }]}>{actualFailures}</Text>
-                  <Text style={styles.statLabel}>{t('admin.uploads.failed', 'Failed')}</Text>
-                </View>
-              )}
+      <View style={styles.header}>
+        <View style={[styles.headerTop, { flexDirection: directionFlex }]}>
+          <Text style={[styles.title, { textAlign }]}>
+            {t('admin.uploads.queueStatus', 'Upload Queue')}
+          </Text>
+          <View style={[styles.statsRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{stats.total_jobs}</Text>
+              <Text style={styles.statLabel}>{t('admin.uploads.totalJobs', 'Total')}</Text>
             </View>
+            <View style={styles.statItem}>
+              <Text style={[styles.statValue, { color: colors.warning }]}>{stats.queued}</Text>
+              <Text style={styles.statLabel}>{t('admin.uploads.queued', 'Queued')}</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={[styles.statValue, { color: colors.primary }]}>{stats.processing}</Text>
+              <Text style={styles.statLabel}>{t('admin.uploads.processing', 'Active')}</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={[styles.statValue, { color: colors.success }]}>{stats.completed}</Text>
+              <Text style={styles.statLabel}>{t('admin.uploads.completed', 'Done')}</Text>
+            </View>
+            {skippedCount > 0 && (
+              <View style={styles.statItem}>
+                <Text style={[styles.statValue, { color: colors.info }]}>{skippedCount}</Text>
+                <Text style={styles.statLabel}>{t('admin.uploads.skipped', 'Skipped')}</Text>
+              </View>
+            )}
+            {actualFailures > 0 && (
+              <View style={styles.statItem}>
+                <Text style={[styles.statValue, { color: colors.error }]}>{actualFailures}</Text>
+                <Text style={styles.statLabel}>{t('admin.uploads.failed', 'Failed')}</Text>
+              </View>
+            )}
           </View>
         </View>
+      </View>
       )}
 
       {/* Queue Paused Warning */}

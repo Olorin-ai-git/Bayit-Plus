@@ -6,6 +6,7 @@ Handles file upload queue management, processing, and GCS uploads.
 import os
 import asyncio
 import hashlib
+import httpx
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
@@ -1092,37 +1093,84 @@ class UploadService:
             year = content.year  # Content model uses 'year' not 'release_year'
             
             if title:
-                # Search TMDB for the movie
+                details = None
+                is_tv_series = False
+                
+                # First try movie search
                 search_results = await self.tmdb_service.search_movie(title, year=year)
                 
                 if search_results:
                     best_match = search_results[0]
                     tmdb_id = best_match.get("id")
-                    
                     if tmdb_id:
-                        # Get detailed info
                         details = await self.tmdb_service.get_movie_details(tmdb_id)
+                
+                # If no movie found, try TV series (for series like "1883")
+                if not details:
+                    logger.info(f"[Background] No movie match for '{title}', trying TV series...")
+                    tv_result = await self.tmdb_service.search_tv_series(title, year=year)
+                    
+                    if tv_result:
+                        is_tv_series = True
+                        tmdb_id = tv_result.get("id")
+                        logger.info(f"[Background] Found TV series match: {tv_result.get('name')} (TMDB ID: {tmdb_id})")
                         
-                        if details:
-                            # Update content with enriched data
-                            if details.get("overview") and not content.description:
-                                content.description = details["overview"]
-                            if details.get("poster_path"):
-                                content.thumbnail_url = f"https://image.tmdb.org/t/p/w500{details['poster_path']}"
-                            if details.get("backdrop_path") and not content.banner_url:
-                                content.banner_url = f"https://image.tmdb.org/t/p/original{details['backdrop_path']}"
-                            if details.get("genres"):
-                                content.genres = [g["name"] for g in details["genres"]]
-                            if details.get("vote_average"):
-                                content.rating = details["vote_average"]
-                            if details.get("runtime"):
-                                content.duration = details["runtime"] * 60  # Convert to seconds
-                            if details.get("imdb_id"):
-                                content.metadata = content.metadata or {}
-                                content.metadata["imdb_id"] = details["imdb_id"]
-                            
-                            await content.save()
-                            logger.info(f"[Background] Updated content with TMDB data for job {job_id}")
+                        # Get TV series details
+                        if tmdb_id:
+                            try:
+                                async with httpx.AsyncClient() as client:
+                                    response = await client.get(
+                                        f"https://api.themoviedb.org/3/tv/{tmdb_id}",
+                                        params={"api_key": self.tmdb_service.api_key, "language": "en-US"}
+                                    )
+                                    if response.status_code == 200:
+                                        details = response.json()
+                            except Exception as e:
+                                logger.warning(f"[Background] Failed to get TV details: {e}")
+                
+                if details:
+                    # Update content with enriched data
+                    if details.get("overview") and not content.description:
+                        content.description = details["overview"]
+                    
+                    # Poster path
+                    if details.get("poster_path"):
+                        content.thumbnail_url = f"https://image.tmdb.org/t/p/w500{details['poster_path']}"
+                    
+                    # Backdrop path
+                    if details.get("backdrop_path") and not content.banner_url:
+                        content.banner_url = f"https://image.tmdb.org/t/p/original{details['backdrop_path']}"
+                    
+                    # Genres
+                    if details.get("genres"):
+                        content.genres = [g["name"] for g in details["genres"]]
+                    
+                    # Rating
+                    if details.get("vote_average"):
+                        content.rating = details["vote_average"]
+                    
+                    # Runtime (movies) or episode_run_time (TV)
+                    if details.get("runtime"):
+                        content.duration = details["runtime"] * 60
+                    elif details.get("episode_run_time") and len(details["episode_run_time"]) > 0:
+                        content.duration = details["episode_run_time"][0] * 60
+                    
+                    # Store TMDB metadata
+                    content.metadata = content.metadata or {}
+                    if details.get("imdb_id"):
+                        content.metadata["imdb_id"] = details["imdb_id"]
+                    content.metadata["tmdb_id"] = tmdb_id
+                    content.metadata["tmdb_type"] = "tv" if is_tv_series else "movie"
+                    
+                    # For TV series, store additional info
+                    if is_tv_series:
+                        content.metadata["series_name"] = details.get("name") or details.get("original_name")
+                        content.metadata["first_air_date"] = details.get("first_air_date")
+                        if details.get("number_of_seasons"):
+                            content.metadata["total_seasons"] = details["number_of_seasons"]
+                    
+                    await content.save()
+                    logger.info(f"[Background] Updated content with TMDB {'TV' if is_tv_series else 'movie'} data for job {job_id}")
             
             # Mark stage as completed
             if job:

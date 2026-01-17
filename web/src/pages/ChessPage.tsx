@@ -8,6 +8,7 @@ import { useLocation } from 'react-router-dom';
 import { useDirection } from '../hooks/useDirection';
 import { useAuthStore } from '../stores/authStore';
 import { colors, spacing } from '@bayit/shared/theme';
+import { GlassResizablePanel } from '@bayit/shared/ui';
 import { Gamepad2 } from 'lucide-react';
 import axios from 'axios';
 
@@ -155,7 +156,7 @@ export default function ChessPage() {
     return (
       <Animated.View style={[styles.splashContainer, { opacity: fadeAnim }]}>
         <Image
-          source={{ uri: '/chess/Games-splash.png' }}
+          source={{ uri: '/assets/games/chess/splash.png' }}
           style={styles.splashImage}
           resizeMode="cover"
         />
@@ -301,7 +302,12 @@ export default function ChessPage() {
         </View>
 
         {/* Right Panel - Chat & History */}
-        <View style={styles.sidePanel}>
+        <GlassResizablePanel
+          defaultWidth={400}
+          minWidth={320}
+          maxWidth={600}
+          position="right"
+        >
           <MoveHistory moves={game.move_history} />
           <ChessChat
             gameCode={game.game_code}
@@ -309,7 +315,7 @@ export default function ChessPage() {
             onSendMessage={sendChatMessage}
             voiceEnabled={game.voice_enabled}
           />
-        </View>
+        </GlassResizablePanel>
       </View>
     </ScrollView>
   );

@@ -211,14 +211,10 @@ module.exports = (env, argv) => {
       new CopyWebpackPlugin({
         patterns: [
           {
-            // Copy logo for favicon
-            from: path.resolve(__dirname, 'public/logo.png'),
-            to: path.resolve(getOutputPath(), 'logo.png'),
-          },
-          {
-            // Copy main sidebar logo
-            from: path.resolve(__dirname, 'public/Bayit-Plus-Logo-Transparent.png'),
-            to: path.resolve(getOutputPath(), 'Bayit-Plus-Logo-Transparent.png'),
+            // Copy all assets (images, audio, video, games)
+            from: path.resolve(__dirname, 'public/assets'),
+            to: path.resolve(getOutputPath(), 'assets'),
+            noErrorOnMissing: true,
           },
           {
             // Copy favicon files
@@ -231,12 +227,6 @@ module.exports = (env, argv) => {
             to: path.resolve(getOutputPath(), 'apple-touch-icon.png'),
           },
           {
-            // Copy splash screen videos
-            from: path.resolve(__dirname, 'public/Bayit_Intro_*.mp4'),
-            to: path.resolve(getOutputPath(), '[name][ext]'),
-            noErrorOnMissing: true,
-          },
-          {
             // Copy Vosk WebAssembly files from root node_modules
             from: path.resolve(__dirname, '../node_modules/vosk-browser/dist'),
             to: path.resolve(getOutputPath(), 'vosk'),
@@ -246,12 +236,6 @@ module.exports = (env, argv) => {
             // Copy Vosk model if available (needs to be downloaded manually)
             from: path.resolve(__dirname, '../shared/models/vosk-model-wakeword-en-us'),
             to: path.resolve(getOutputPath(), 'vosk/model'),
-            noErrorOnMissing: true,
-          },
-          {
-            // Copy chess assets (images, pieces, etc.)
-            from: path.resolve(__dirname, 'public/chess'),
-            to: path.resolve(getOutputPath(), 'chess'),
             noErrorOnMissing: true,
           },
         ],

@@ -88,12 +88,7 @@ class ExternalSubtitleService:
         language: str
     ) -> Optional[SubtitleTrackDoc]:
         """Try to fetch subtitle from OpenSubtitles"""
-        # Check if content has IMDB ID
-        if not content.imdb_id:
-            logger.warning(f"⚠️ No IMDB ID for {content.id} - cannot search OpenSubtitles")
-            return None
-
-        # Check quota
+        # Check quota first
         quota = await self.opensubtitles.check_quota_available()
         if not quota["available"]:
             logger.warning(
@@ -101,12 +96,48 @@ class ExternalSubtitleService:
             )
             return None
 
-        # Search for subtitles
-        results = await self.opensubtitles.search_subtitles(
-            imdb_id=content.imdb_id,
-            language=language,
-            content_id=str(content.id)
-        )
+        # Extract TV series episode info from metadata if available
+        metadata = content.metadata or {}
+        season_number = metadata.get("season_number") or metadata.get("season")
+        episode_number = metadata.get("episode_number") or metadata.get("episode")
+        parent_imdb_id = metadata.get("series_imdb_id") or metadata.get("parent_imdb_id")
+        is_tv_series = metadata.get("tmdb_type") == "tv" or season_number is not None
+        
+        # Determine search strategy
+        if is_tv_series and parent_imdb_id and season_number and episode_number:
+            # TV series with series IMDB ID + season/episode
+            logger.info(f"📺 TV episode search: {content.title} S{season_number}E{episode_number}")
+            results = await self.opensubtitles.search_subtitles(
+                imdb_id=None,
+                language=language,
+                content_id=str(content.id),
+                parent_imdb_id=parent_imdb_id,
+                season_number=int(season_number),
+                episode_number=int(episode_number)
+            )
+        elif content.imdb_id:
+            # Movie or content with specific IMDB ID
+            results = await self.opensubtitles.search_subtitles(
+                imdb_id=content.imdb_id,
+                language=language,
+                content_id=str(content.id),
+                season_number=int(season_number) if season_number else None,
+                episode_number=int(episode_number) if episode_number else None
+            )
+        elif content.title:
+            # Fallback to title search
+            logger.info(f"🔍 Fallback to title search for: {content.title}")
+            results = await self.opensubtitles.search_subtitles(
+                imdb_id=None,
+                language=language,
+                content_id=str(content.id),
+                query=content.title,
+                season_number=int(season_number) if season_number else None,
+                episode_number=int(episode_number) if episode_number else None
+            )
+        else:
+            logger.warning(f"⚠️ No IMDB ID or title for {content.id} - cannot search OpenSubtitles")
+            return None
 
         if not results:
             return None
@@ -417,14 +448,25 @@ class ExternalSubtitleService:
         available_sources = []
 
         # Search OpenSubtitles
-        if "opensubtitles" in sources and content.imdb_id:
-            results = await self.opensubtitles.search_subtitles(
-                imdb_id=content.imdb_id,
-                language=language,
-                content_id=content_id
-            )
-            if results:
-                available_sources.append("opensubtitles")
+        if "opensubtitles" in sources:
+            # Extract TV series info
+            metadata = content.metadata or {}
+            season_number = metadata.get("season_number") or metadata.get("season")
+            episode_number = metadata.get("episode_number") or metadata.get("episode")
+            parent_imdb_id = metadata.get("series_imdb_id") or metadata.get("parent_imdb_id")
+            
+            if content.imdb_id or parent_imdb_id or content.title:
+                results = await self.opensubtitles.search_subtitles(
+                    imdb_id=content.imdb_id,
+                    language=language,
+                    content_id=content_id,
+                    parent_imdb_id=parent_imdb_id,
+                    season_number=int(season_number) if season_number else None,
+                    episode_number=int(episode_number) if episode_number else None,
+                    query=content.title if not content.imdb_id and not parent_imdb_id else None
+                )
+                if results:
+                    available_sources.append("opensubtitles")
 
         # Search TMDB (placeholder)
         if "tmdb" in sources and content.tmdb_id:

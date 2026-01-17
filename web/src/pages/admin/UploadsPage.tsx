@@ -644,12 +644,12 @@ const UploadsPage: React.FC = () => {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Page Header */}
       <View style={styles.pageHeader}>
-        <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.nav.uploads')}</Text>
-        <Text style={[styles.subtitle, { textAlign }]}>
-          {t('admin.uploads.systemInfoText')}
-        </Text>
-      </View>
-
+          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.nav.uploads')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>
+            {t('admin.uploads.systemInfoText')}
+          </Text>
+        </View>
+        
       {/* Status Banners */}
       {!isAuthenticated && (
         <View style={[styles.statusBanner, styles.statusBannerError, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -694,154 +694,154 @@ const UploadsPage: React.FC = () => {
               <View style={styles.sectionIconContainer}>
                 <Upload size={24} color={colors.primary} />
               </View>
-              <View style={{ flex: 1 }}>
+                <View style={{ flex: 1 }}>
                 <Text style={[styles.sectionTitle, { textAlign }]}>
                   {t('admin.uploads.manualUpload.title')}
-                </Text>
+                  </Text>
                 <Text style={[styles.sectionSubtitle, { textAlign }]}>
                   {t('admin.uploads.manualUpload.subtitle')}
-                </Text>
+                  </Text>
+                </View>
               </View>
-            </View>
 
             {/* Large Drop Zone */}
-            <View
-              {...getRootProps()}
-              style={[
+          <View
+            {...getRootProps()}
+            style={[
                 styles.largeDropZone,
-                isDragActive && styles.dropZoneActive,
-                isUploading && styles.dropZoneDisabled,
-              ]}
-            >
-              <input {...getInputProps()} />
-              <View style={styles.dropZoneContent}>
+              isDragActive && styles.dropZoneActive,
+              isUploading && styles.dropZoneDisabled,
+            ]}
+          >
+            <input {...getInputProps()} />
+            <View style={styles.dropZoneContent}>
                 <View style={[styles.dropZoneIconLarge, isDragActive && styles.dropZoneIconActive]}>
                   <FolderOpen size={48} color={isDragActive ? colors.primary : colors.textSecondary} />
-                </View>
-                <Text style={styles.dropZoneTextLarge}>
-                  {isDragActive
-                    ? t('admin.uploads.manualUpload.dropHereActive')
-                    : t('admin.uploads.manualUpload.dropHere')}
-                </Text>
-                <Text style={styles.dropZoneSubtext}>
-                  {t('admin.uploads.manualUpload.supportedFormats')}
-                </Text>
               </View>
+                <Text style={styles.dropZoneTextLarge}>
+                {isDragActive
+                  ? t('admin.uploads.manualUpload.dropHereActive')
+                  : t('admin.uploads.manualUpload.dropHere')}
+              </Text>
+                <Text style={styles.dropZoneSubtext}>
+                {t('admin.uploads.manualUpload.supportedFormats')}
+              </Text>
             </View>
+          </View>
 
             {/* Selected Files */}
-            {pendingFiles.length > 0 && (
+          {pendingFiles.length > 0 && (
               <View style={styles.selectedFilesContainer}>
-                <View style={[styles.fileListHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                  <Text style={[styles.fileListTitle, { textAlign }]}>
-                    {t('admin.uploads.manualUpload.selectedFiles')} ({pendingFiles.length})
-                  </Text>
-                  <GlassButton
-                    title={t('admin.uploads.manualUpload.clearAll')}
-                    variant="ghost"
-                    onPress={handleClearFiles}
-                    disabled={isUploading}
-                    icon={<X size={14} color={colors.textMuted} />}
-                  />
-                </View>
+              <View style={[styles.fileListHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <Text style={[styles.fileListTitle, { textAlign }]}>
+                  {t('admin.uploads.manualUpload.selectedFiles')} ({pendingFiles.length})
+                </Text>
+                <GlassButton
+                  title={t('admin.uploads.manualUpload.clearAll')}
+                  variant="ghost"
+                  onPress={handleClearFiles}
+                  disabled={isUploading}
+                  icon={<X size={14} color={colors.textMuted} />}
+                />
+              </View>
 
-                <ScrollView style={styles.fileList} nestedScrollEnabled>
-                  {pendingFiles.map((file, index) => (
-                    <View
-                      key={`${file.name}-${index}`}
-                      style={[styles.fileItem, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
-                    >
-                      <View style={[styles.fileIcon, { marginEnd: spacing.sm }]}>
-                        <File size={20} color={colors.primary} />
-                      </View>
-                      <View style={styles.fileInfo}>
-                        <Text style={[styles.fileName, { textAlign }]} numberOfLines={1}>
-                          {file.name}
-                        </Text>
-                        <Text style={[styles.fileSizeText, { textAlign }]}>
-                          {formatFileSize(file.size)}
-                        </Text>
-                      </View>
-                      {uploadProgress[index] !== undefined && (
-                        <View style={styles.fileProgress}>
-                          <View
-                            style={[
-                              styles.fileProgressBar,
-                              { width: `${uploadProgress[index]}%` },
-                            ]}
-                          />
-                          <Text style={styles.fileProgressText}>
-                            {uploadProgress[index]}%
-                          </Text>
-                        </View>
-                      )}
-                      {!isUploading && (
-                        <Pressable
-                          onPress={() => handleRemoveFile(index)}
-                          style={styles.removeFileButton}
-                        >
-                          <X size={16} color={colors.error} />
-                        </Pressable>
-                      )}
+              <ScrollView style={styles.fileList} nestedScrollEnabled>
+                {pendingFiles.map((file, index) => (
+                  <View
+                    key={`${file.name}-${index}`}
+                    style={[styles.fileItem, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+                  >
+                    <View style={[styles.fileIcon, { marginEnd: spacing.sm }]}>
+                      <File size={20} color={colors.primary} />
                     </View>
-                  ))}
-                </ScrollView>
+                    <View style={styles.fileInfo}>
+                      <Text style={[styles.fileName, { textAlign }]} numberOfLines={1}>
+                        {file.name}
+                      </Text>
+                      <Text style={[styles.fileSizeText, { textAlign }]}>
+                        {formatFileSize(file.size)}
+                      </Text>
+                    </View>
+                    {uploadProgress[index] !== undefined && (
+                      <View style={styles.fileProgress}>
+                        <View
+                          style={[
+                            styles.fileProgressBar,
+                            { width: `${uploadProgress[index]}%` },
+                          ]}
+                        />
+                        <Text style={styles.fileProgressText}>
+                          {uploadProgress[index]}%
+                        </Text>
+                      </View>
+                    )}
+                    {!isUploading && (
+                      <Pressable
+                        onPress={() => handleRemoveFile(index)}
+                        style={styles.removeFileButton}
+                      >
+                        <X size={16} color={colors.error} />
+                      </Pressable>
+                    )}
+                  </View>
+                ))}
+              </ScrollView>
 
                 {/* Content Type + Upload */}
                 <View style={[styles.uploadActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <View style={styles.contentTypeSelect}>
-                    <GlassSelect
-                      value={manualContentType}
-                      onChange={setManualContentType}
-                      options={[
-                        { value: 'movie', label: t('admin.uploads.contentTypes.movie') },
-                        { value: 'series', label: t('admin.uploads.contentTypes.series') },
-                        { value: 'audiobook', label: t('admin.uploads.contentTypes.audiobook') },
-                      ]}
-                      disabled={isUploading}
+                <GlassSelect
+                  value={manualContentType}
+                  onChange={setManualContentType}
+                  options={[
+                    { value: 'movie', label: t('admin.uploads.contentTypes.movie') },
+                    { value: 'series', label: t('admin.uploads.contentTypes.series') },
+                    { value: 'audiobook', label: t('admin.uploads.contentTypes.audiobook') },
+                  ]}
+                  disabled={isUploading}
                       placeholder={t('admin.uploads.manualUpload.selectContentType')}
-                    />
-                  </View>
-                  <GlassButton
-                    title={
-                      isUploading
-                        ? t('admin.uploads.manualUpload.uploadingFiles', { count: pendingFiles.length })
-                        : t('admin.uploads.manualUpload.uploadSelected')
-                    }
-                    variant="primary"
-                    onPress={handleUploadFiles}
-                    disabled={isUploading || pendingFiles.length === 0}
-                    icon={isUploading ? null : <Upload size={18} color="white" />}
+                />
+              </View>
+                <GlassButton
+                  title={
+                    isUploading
+                      ? t('admin.uploads.manualUpload.uploadingFiles', { count: pendingFiles.length })
+                      : t('admin.uploads.manualUpload.uploadSelected')
+                  }
+                  variant="primary"
+                  onPress={handleUploadFiles}
+                  disabled={isUploading || pendingFiles.length === 0}
+                  icon={isUploading ? null : <Upload size={18} color="white" />}
                     style={styles.uploadButton}
-                  >
-                    {isUploading && (
-                      <ActivityIndicator size="small" color="white" style={{ marginRight: spacing.sm }} />
-                    )}
-                  </GlassButton>
-                </View>
+                >
+                  {isUploading && (
+                    <ActivityIndicator size="small" color="white" style={{ marginRight: spacing.sm }} />
+                  )}
+                </GlassButton>
+              </View>
 
-                {/* Upload Result */}
-                {uploadResult && (
-                  <View
+              {/* Upload Result */}
+              {uploadResult && (
+                <View
+                  style={[
+                    styles.uploadResult,
+                    uploadResult.failed > 0 ? styles.uploadResultWarning : styles.uploadResultSuccess,
+                  ]}
+                >
+                  <CheckCircle size={18} color={uploadResult.failed > 0 ? colors.warning : colors.success} />
+                  <Text
                     style={[
-                      styles.uploadResult,
-                      uploadResult.failed > 0 ? styles.uploadResultWarning : styles.uploadResultSuccess,
+                      styles.uploadResultText,
+                      { color: uploadResult.failed > 0 ? colors.warning : colors.success },
                     ]}
                   >
-                    <CheckCircle size={18} color={uploadResult.failed > 0 ? colors.warning : colors.success} />
-                    <Text
-                      style={[
-                        styles.uploadResultText,
-                        { color: uploadResult.failed > 0 ? colors.warning : colors.success },
-                      ]}
-                    >
-                      {t('admin.uploads.manualUpload.uploadSuccess', { count: uploadResult.successful })}
-                      {uploadResult.failed > 0 && ` (${uploadResult.failed} failed)`}
-                    </Text>
-                  </View>
-                )}
-              </View>
-            )}
+                    {t('admin.uploads.manualUpload.uploadSuccess', { count: uploadResult.successful })}
+                    {uploadResult.failed > 0 && ` (${uploadResult.failed} failed)`}
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
           </GlassCard>
 
         </View>
@@ -863,9 +863,9 @@ const UploadsPage: React.FC = () => {
               {(queueStats.processing > 0 || queueStats.queued > 0) && (
                 <View style={styles.queueActiveBadge}>
                   <ActivityIndicator size="small" color={colors.primary} />
-                </View>
-              )}
             </View>
+          )}
+        </View>
 
             {/* Stats Grid */}
             <View style={styles.statsGrid}>
@@ -1024,7 +1024,7 @@ const UploadsPage: React.FC = () => {
                 </ScrollView>
               )}
             </View>
-          </GlassDraggableExpander>
+      </GlassDraggableExpander>
         </GlassResizablePanel>
       </View>
 

@@ -147,12 +147,14 @@ export default function AdminLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: '100%' as any,
     flexDirection: 'row',
     position: 'relative',
     backgroundColor: colors.background,
   },
   content: {
     flex: 1,
+    height: '100%' as any,
     overflow: 'auto' as any,
     transition: 'margin 0.3s ease' as any,
     position: 'relative',

@@ -1,11 +1,15 @@
 /**
  * Chess board component with interactive piece movement.
  * Uses chess.js for game logic and move validation.
+ * Features 3D glassmorphic chess pieces and board design.
+ * Fully localized with RTL/LTR support.
  */
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, useWindowDimensions, Platform } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Pressable, useWindowDimensions, Platform, Image, Animated } from 'react-native';
 import { Chess } from 'chess.js';
 import { colors, spacing } from '@bayit/shared/theme';
+import { useTranslation } from 'react-i18next';
+import { isRTL as checkIsRTL } from '@bayit/shared-i18n';
 
 interface ChessBoardProps {
   game: any;
@@ -14,11 +18,29 @@ interface ChessBoardProps {
   isPlayerTurn?: boolean;
 }
 
-// Unicode chess pieces
-const PIECE_SYMBOLS: Record<string, string> = {
-  'wp': '♙', 'wn': '♘', 'wb': '♗', 'wr': '♖', 'wq': '♕', 'wk': '♔',
-  'bp': '♟', 'bn': '♞', 'bb': '♝', 'br': '♜', 'bq': '♛', 'bk': '♚',
+interface AnimatingPiece {
+  from: string;
+  to: string;
+  piece: { type: string; color: string };
+}
+
+// 3D Chess piece individual asset paths
+const PIECE_IMAGES: Record<string, string> = {
+  'wk': '/assets/games/chess/pieces/King-White.png',
+  'wq': '/assets/games/chess/pieces/Queen-white.png',
+  'wr': '/assets/games/chess/pieces/Rook-white.png',
+  'wb': '/assets/games/chess/pieces/Bishop-white.png',
+  'wn': '/assets/games/chess/pieces/Knigh-white.png', // Note: typo in filename
+  'wp': '/assets/games/chess/pieces/Pawn-white.png',
+  'bk': '/assets/games/chess/pieces/King-black.png',
+  'bq': '/assets/games/chess/pieces/Queen-black.png',
+  'br': '/assets/games/chess/pieces/Rook-black.png',
+  'bb': '/assets/games/chess/pieces/Bishop-black.png',
+  'bn': '/assets/games/chess/pieces/Knight-black.png',
+  'bp': '/assets/games/chess/pieces/Pawn-black.png',
 };
+
+// Not using background image - will create programmatic board
 
 export default function ChessBoard({
   game,
@@ -26,11 +48,16 @@ export default function ChessBoard({
   isFlipped = false,
   isPlayerTurn = true
 }: ChessBoardProps) {
+  const { t } = useTranslation();
   const { width } = useWindowDimensions();
   const [chess] = useState(new Chess());
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [legalMoves, setLegalMoves] = useState<string[]>([]);
   const [lastMove, setLastMove] = useState<{from: string; to: string} | null>(null);
+  const [animatingPiece, setAnimatingPiece] = useState<AnimatingPiece | null>(null);
+  const animationProgress = useRef(new Animated.Value(0)).current;
+
+  const isRTL = checkIsRTL();
 
   // Update chess instance when game state changes
   useEffect(() => {
@@ -54,6 +81,21 @@ export default function ChessBoard({
     }
   }, [game?.move_history]);
 
+  // Helper function to animate piece movement
+  const animateMove = (from: string, to: string, piece: { type: string; color: string }, callback: () => void) => {
+    setAnimatingPiece({ from, to, piece });
+    animationProgress.setValue(0);
+
+    Animated.timing(animationProgress, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: Platform.OS !== 'web',
+    }).start(() => {
+      setAnimatingPiece(null);
+      callback();
+    });
+  };
+
   const handleSquarePress = (square: string) => {
     if (!isPlayerTurn) {
       return; // Not player's turn
@@ -62,15 +104,19 @@ export default function ChessBoard({
     if (selectedSquare) {
       // Attempting to make a move
       try {
+        const piece = chess.get(selectedSquare);
         const move = chess.move({
           from: selectedSquare,
           to: square,
           promotion: 'q' // Auto-promote to queen
         });
 
-        if (move) {
-          // Valid move
-          onMove(selectedSquare, square, move.promotion);
+        if (move && piece) {
+          // Valid move - animate it
+          const fromSquare = selectedSquare;
+          animateMove(fromSquare, square, piece, () => {
+            onMove(fromSquare, square, move.promotion);
+          });
           setSelectedSquare(null);
           setLegalMoves([]);
         } else {
@@ -104,20 +150,35 @@ export default function ChessBoard({
     }
   };
 
-  const renderSquare = (row: number, col: number) => {
+  // Helper to get square coordinates
+  const getSquareCoordinates = (square: string) => {
+    const file = square.charCodeAt(0) - 97; // a=0, b=1, etc.
+    const rank = parseInt(square[1]) - 1; // 1=0, 2=1, etc.
+
+    const row = isFlipped ? rank : 7 - rank;
+    const col = isRTL ? 7 - file : file;
+
+    return { row, col };
+  };
+
+  const renderSquare = (row: number, col: number, playableSize: number) => {
     const file = String.fromCharCode(97 + col); // a-h
     const rank = isFlipped ? row + 1 : 8 - row; // 1-8
     const square = `${file}${rank}`;
 
     const piece = chess.get(square);
+
+    // Don't render piece if it's currently being animated from this square
+    const isAnimatingFrom = animatingPiece?.from === square;
+    const shouldRenderPiece = piece && !isAnimatingFrom;
+
     const isLight = (row + col) % 2 === 0;
     const isSelected = selectedSquare === square;
     const isLegalMove = legalMoves.includes(square);
     const isLastMoveSquare = lastMove && (lastMove.from === square || lastMove.to === square);
 
-    // Calculate responsive square size
-    const boardSize = Math.min(width * 0.9, 600);
-    const squareSize = boardSize / 8;
+    // Calculate square size based on playable area (94% of board)
+    const squareSize = playableSize / 8;
 
     return (
       <Pressable
@@ -131,16 +192,32 @@ export default function ChessBoard({
         ]}
         onPress={() => handleSquarePress(square)}
       >
-        {/* Piece */}
-        {piece && (
-          <Text style={[
-            styles.piece,
-            { fontSize: squareSize * 0.7 },
-            piece.color === 'w' ? styles.whitePiece : styles.blackPiece
-          ]}>
-            {PIECE_SYMBOLS[`${piece.color}${piece.type}`]}
-          </Text>
-        )}
+        {/* 3D Glass Chess Piece - Allow overflow to show full detail */}
+        {shouldRenderPiece && (() => {
+          const pieceKey = `${piece.color}${piece.type}`;
+          const pieceImage = PIECE_IMAGES[pieceKey];
+
+          // Pawns are smaller - use 75% height
+          const isPawn = piece.type === 'p';
+          const pieceWidth = squareSize * 1.4;
+          const pieceHeight = isPawn ? squareSize * 1.2 : squareSize * 1.6;
+          const marginTop = isPawn ? -squareSize * 0.1 : -squareSize * 0.3;
+
+          return (
+            <Image
+              source={{ uri: pieceImage }}
+              style={[
+                styles.piece,
+                {
+                  width: pieceWidth,
+                  height: pieceHeight,
+                  marginTop, // Pull up to center vertically
+                }
+              ]}
+              resizeMode="contain"
+            />
+          );
+        })()}
 
         {/* Legal move indicator */}
         {isLegalMove && (
@@ -150,28 +227,18 @@ export default function ChessBoard({
             piece ? styles.captureMoveIndicator : null
           ]} />
         )}
-
-        {/* Square label (coordinates) */}
-        {row === 7 && (
-          <Text style={[styles.fileLabel, { fontSize: squareSize * 0.15 }]}>
-            {file}
-          </Text>
-        )}
-        {col === 0 && (
-          <Text style={[styles.rankLabel, { fontSize: squareSize * 0.15 }]}>
-            {rank}
-          </Text>
-        )}
       </Pressable>
     );
   };
 
-  const renderBoard = () => {
+  const renderBoard = (playableSize: number) => {
     const rows = [];
     for (let row = 0; row < 8; row++) {
       const cols = [];
       for (let col = 0; col < 8; col++) {
-        cols.push(renderSquare(row, col));
+        // Reverse column order for RTL
+        const actualCol = isRTL ? 7 - col : col;
+        cols.push(renderSquare(row, actualCol, playableSize));
       }
       rows.push(
         <View key={row} style={styles.row}>
@@ -182,10 +249,78 @@ export default function ChessBoard({
     return rows;
   };
 
+  // Render the animating piece that moves across the board
+  const renderAnimatingPiece = (playableSize: number) => {
+    if (!animatingPiece) return null;
+
+    const fromCoords = getSquareCoordinates(animatingPiece.from);
+    const toCoords = getSquareCoordinates(animatingPiece.to);
+    const squareSize = playableSize / 8;
+
+    // Calculate positions
+    const fromLeft = fromCoords.col * squareSize;
+    const fromTop = fromCoords.row * squareSize;
+    const toLeft = toCoords.col * squareSize;
+    const toTop = toCoords.row * squareSize;
+
+    // Interpolate position based on animation progress
+    const animatedLeft = animationProgress.interpolate({
+      inputRange: [0, 1],
+      outputRange: [fromLeft, toLeft],
+    });
+
+    const animatedTop = animationProgress.interpolate({
+      inputRange: [0, 1],
+      outputRange: [fromTop, toTop],
+    });
+
+    const pieceKey = `${animatingPiece.piece.color}${animatingPiece.piece.type}`;
+    const pieceImage = PIECE_IMAGES[pieceKey];
+
+    // Pawns are smaller - use 75% height
+    const isPawn = animatingPiece.piece.type === 'p';
+    const pieceWidth = squareSize * 1.4;
+    const pieceHeight = isPawn ? squareSize * 1.2 : squareSize * 1.6;
+    const marginTop = isPawn ? -squareSize * 0.1 : -squareSize * 0.3;
+
+    return (
+      <Animated.View
+        style={[
+          styles.animatingPieceContainer,
+          {
+            left: animatedLeft,
+            top: animatedTop,
+            width: squareSize,
+            height: squareSize,
+          },
+        ]}
+        pointerEvents="none"
+      >
+        <Image
+          source={{ uri: pieceImage }}
+          style={[
+            styles.piece,
+            styles.animatingPiece,
+            {
+              width: pieceWidth,
+              height: pieceHeight,
+              marginTop,
+            }
+          ]}
+          resizeMode="contain"
+        />
+      </Animated.View>
+    );
+  };
+
+  // Calculate responsive board size
+  const boardSize = Math.min(width * 0.95, 800);
+
   return (
     <View style={styles.container}>
-      <View style={styles.board}>
-        {renderBoard()}
+      <View style={[styles.board, { width: boardSize, height: boardSize }]}>
+        {renderBoard(boardSize)}
+        {renderAnimatingPiece(boardSize)}
       </View>
     </View>
   );
@@ -198,12 +333,14 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   board: {
-    borderRadius: 12,
-    overflow: 'hidden',
-    backgroundColor: colors.dark,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(168, 85, 247, 0.3)',
+    backgroundColor: 'rgba(10, 10, 20, 0.4)',
+    backdropFilter: 'blur(30px)',
     ...Platform.select({
       web: {
-        boxShadow: '0 10px 40px rgba(168, 85, 247, 0.3)',
+        boxShadow: '0 25px 70px rgba(168, 85, 247, 0.25), 0 15px 40px rgba(79, 70, 229, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
       },
     }),
   },
@@ -214,67 +351,98 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
+    overflow: 'visible', // Allow pieces to overflow
   },
   lightSquare: {
-    backgroundColor: '#f0d9b5',
+    backgroundColor: 'rgba(168, 85, 247, 0.08)', // Light glassmorphic purple
+    backdropFilter: 'blur(10px)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(168, 85, 247, 0.15)',
+    ...Platform.select({
+      web: {
+        boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.03)',
+      },
+    }),
   },
   darkSquare: {
-    backgroundColor: '#b58863',
+    backgroundColor: 'rgba(10, 10, 20, 0.6)', // Dark glassmorphic black
+    backdropFilter: 'blur(10px)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(79, 70, 229, 0.2)',
+    ...Platform.select({
+      web: {
+        boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.3)',
+      },
+    }),
   },
   selectedSquare: {
     backgroundColor: 'rgba(168, 85, 247, 0.5)',
+    backdropFilter: 'blur(15px)',
+    borderColor: 'rgba(168, 85, 247, 0.8)',
+    borderWidth: 2,
     ...Platform.select({
       web: {
-        boxShadow: 'inset 0 0 10px rgba(168, 85, 247, 0.8)',
+        boxShadow: 'inset 0 0 25px rgba(168, 85, 247, 0.6), 0 0 25px rgba(168, 85, 247, 0.5), 0 0 50px rgba(168, 85, 247, 0.3)',
       },
     }),
   },
   lastMoveSquare: {
-    backgroundColor: 'rgba(255, 255, 0, 0.3)',
+    backgroundColor: 'rgba(34, 197, 94, 0.25)',
+    backdropFilter: 'blur(12px)',
+    borderColor: 'rgba(34, 197, 94, 0.5)',
+    borderWidth: 1.5,
+    ...Platform.select({
+      web: {
+        boxShadow: 'inset 0 0 20px rgba(34, 197, 94, 0.4), 0 0 15px rgba(34, 197, 94, 0.3)',
+      },
+    }),
   },
   piece: {
-    fontWeight: '400',
-    textAlign: 'center',
+    position: 'absolute',
+    zIndex: 10, // Ensure pieces render above squares
     ...Platform.select({
       web: {
         userSelect: 'none',
         cursor: 'pointer',
+        filter: 'drop-shadow(0 10px 25px rgba(0, 0, 0, 0.8)) drop-shadow(0 5px 15px rgba(168, 85, 247, 0.4)) drop-shadow(0 2px 8px rgba(79, 70, 229, 0.5))',
       },
     }),
   },
-  whitePiece: {
-    color: '#ffffff',
-    textShadowColor: 'rgba(0, 0, 0, 0.8)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+  animatingPieceContainer: {
+    position: 'absolute',
+    zIndex: 100, // Above everything
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  blackPiece: {
-    color: '#000000',
-    textShadowColor: 'rgba(255, 255, 255, 0.5)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+  animatingPiece: {
+    zIndex: 100,
+    ...Platform.select({
+      web: {
+        filter: 'drop-shadow(0 15px 35px rgba(0, 0, 0, 0.9)) drop-shadow(0 8px 25px rgba(168, 85, 247, 0.6)) drop-shadow(0 4px 15px rgba(79, 70, 229, 0.7))',
+      },
+    }),
   },
   legalMoveIndicator: {
     position: 'absolute',
-    backgroundColor: 'rgba(0, 255, 0, 0.4)',
+    backgroundColor: 'rgba(34, 197, 94, 0.35)',
+    backdropFilter: 'blur(10px)',
+    borderWidth: 2,
+    borderColor: 'rgba(34, 197, 94, 0.7)',
+    ...Platform.select({
+      web: {
+        boxShadow: '0 0 20px rgba(34, 197, 94, 0.5), inset 0 0 10px rgba(34, 197, 94, 0.3)',
+      },
+    }),
   },
   captureMoveIndicator: {
-    backgroundColor: 'rgba(255, 0, 0, 0.5)',
+    backgroundColor: 'rgba(239, 68, 68, 0.4)',
+    backdropFilter: 'blur(10px)',
     borderWidth: 3,
-    borderColor: 'rgba(255, 0, 0, 0.8)',
-  },
-  fileLabel: {
-    position: 'absolute',
-    bottom: 2,
-    right: 2,
-    color: 'rgba(0, 0, 0, 0.5)',
-    fontWeight: '600',
-  },
-  rankLabel: {
-    position: 'absolute',
-    top: 2,
-    left: 2,
-    color: 'rgba(0, 0, 0, 0.5)',
-    fontWeight: '600',
+    borderColor: 'rgba(239, 68, 68, 0.9)',
+    ...Platform.select({
+      web: {
+        boxShadow: '0 0 25px rgba(239, 68, 68, 0.7), inset 0 0 15px rgba(239, 68, 68, 0.4)',
+      },
+    }),
   },
 });

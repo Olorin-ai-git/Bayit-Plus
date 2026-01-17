@@ -857,6 +857,8 @@
     "ep": "Ep",
     "selectSeason": "Select Season",
     "noEpisodes": "No episodes available",
+    "noEpisodesAvailable": "No episodes available to play",
+    "loadingSeries": "Loading series information...",
     "votes": "votes",
     "rating": "Rating",
     "imdbRating": "IMDB Rating",

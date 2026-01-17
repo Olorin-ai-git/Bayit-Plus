@@ -4,6 +4,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
 import { colors, spacing } from '@bayit/shared/theme';
+import { useTranslation } from 'react-i18next';
 
 interface Move {
   san: string;
@@ -15,6 +16,7 @@ interface MoveHistoryProps {
 }
 
 export default function MoveHistory({ moves }: MoveHistoryProps) {
+  const { t } = useTranslation();
   // Group moves into pairs (white, black)
   const movePairs: Array<{ moveNumber: number; white?: Move; black?: Move }> = [];
 
@@ -28,7 +30,7 @@ export default function MoveHistory({ moves }: MoveHistoryProps) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Move History</Text>
+      <Text style={styles.title}>{t('chess.moveHistory')}</Text>
 
       <ScrollView style={styles.movesList} contentContainerStyle={styles.movesListContent}>
         {movePairs.map((pair, idx) => (
@@ -40,7 +42,7 @@ export default function MoveHistory({ moves }: MoveHistoryProps) {
         ))}
 
         {moves.length === 0 && (
-          <Text style={styles.emptyText}>No moves yet</Text>
+          <Text style={styles.emptyText}>{t('chess.noMoves')}</Text>
         )}
       </ScrollView>
     </View>

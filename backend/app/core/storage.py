@@ -56,12 +56,18 @@ class LocalStorageProvider(StorageProvider):
         if len(content) > 5 * 1024 * 1024:
             raise ValueError("Image too large (max 5MB)")
 
-        # Optimize image
-        optimized = await self._optimize_image(content)
+        # Determine if we should preserve transparency (PNG/WebP)
+        preserve_alpha = file.content_type in {"image/png", "image/webp"}
 
-        # Generate filename
-        file_ext = Path(file.filename).suffix.lower()
-        if not file_ext:
+        # Optimize image
+        optimized, output_format = await self._optimize_image(content, preserve_alpha)
+
+        # Generate filename with correct extension
+        if output_format == "PNG":
+            file_ext = ".png"
+        elif output_format == "WEBP":
+            file_ext = ".webp"
+        else:
             file_ext = ".jpg"
         filename = f"{uuid4()}{file_ext}"
 
@@ -77,10 +83,11 @@ class LocalStorageProvider(StorageProvider):
         # Return relative path for serving
         return f"/uploads/{image_type}/{filename}"
 
-    async def _optimize_image(self, image_bytes: bytes) -> bytes:
-        """Resize and compress image using Pillow"""
+    async def _optimize_image(self, image_bytes: bytes, preserve_alpha: bool = False) -> Tuple[bytes, str]:
+        """Resize and compress image using Pillow. Returns (bytes, format)"""
         try:
             img = Image.open(BytesIO(image_bytes))
+            original_format = img.format or "JPEG"
 
             # Resize if too large (max 1920px width)
             max_width = 1920
@@ -89,22 +96,38 @@ class LocalStorageProvider(StorageProvider):
                 new_height = int(img.height * ratio)
                 img = img.resize((max_width, new_height), Image.Resampling.LANCZOS)
 
-            # Convert RGBA to RGB if needed
-            if img.mode in ("RGBA", "LA", "P"):
-                background = Image.new("RGB", img.size, (255, 255, 255))
+            output = BytesIO()
+
+            # Check if image has transparency
+            has_alpha = img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info)
+
+            if preserve_alpha and has_alpha:
+                # Keep PNG format to preserve transparency
                 if img.mode == "P":
                     img = img.convert("RGBA")
-                background.paste(img, mask=img.split()[-1] if img.mode in ("RGBA", "LA") else None)
-                img = background
+                img.save(output, format="PNG", optimize=True)
+                return output.getvalue(), "PNG"
+            else:
+                # Convert to RGB and save as JPEG for better compression
+                if img.mode in ("RGBA", "LA", "P"):
+                    background = Image.new("RGB", img.size, (255, 255, 255))
+                    if img.mode == "P":
+                        img = img.convert("RGBA")
+                    if img.mode in ("RGBA", "LA"):
+                        background.paste(img, mask=img.split()[-1])
+                    else:
+                        background.paste(img)
+                    img = background
+                elif img.mode != "RGB":
+                    img = img.convert("RGB")
 
-            # Save optimized
-            output = BytesIO()
-            img.save(output, format="JPEG", quality=85, optimize=True)
-            return output.getvalue()
+                img.save(output, format="JPEG", quality=85, optimize=True)
+                return output.getvalue(), "JPEG"
+
         except Exception as e:
             # If optimization fails, return original
             print(f"Image optimization failed: {e}")
-            return image_bytes
+            return image_bytes, "JPEG"
 
     async def validate_url(self, url: str) -> bool:
         """Validate URL (for local, just check if it's a valid format)"""
@@ -173,11 +196,24 @@ class S3StorageProvider(StorageProvider):
         if len(content) > 5 * 1024 * 1024:
             raise ValueError("Image too large (max 5MB)")
 
-        # Optimize image
-        optimized = await self._optimize_image(content)
+        # Determine if we should preserve transparency (PNG/WebP)
+        preserve_alpha = file.content_type in {"image/png", "image/webp"}
 
-        # Generate key
-        filename = f"{uuid4()}.jpg"
+        # Optimize image
+        optimized, output_format = await self._optimize_image(content, preserve_alpha)
+
+        # Generate key with correct extension
+        if output_format == "PNG":
+            ext = ".png"
+            content_type = "image/png"
+        elif output_format == "WEBP":
+            ext = ".webp"
+            content_type = "image/webp"
+        else:
+            ext = ".jpg"
+            content_type = "image/jpeg"
+
+        filename = f"{uuid4()}{ext}"
         key = f"images/{image_type}/{filename}"
 
         try:
@@ -186,7 +222,7 @@ class S3StorageProvider(StorageProvider):
                 Bucket=self.bucket,
                 Key=key,
                 Body=optimized,
-                ContentType="image/jpeg",
+                ContentType=content_type,
                 CacheControl="max-age=31536000",  # 1 year
             )
 
@@ -198,8 +234,8 @@ class S3StorageProvider(StorageProvider):
         except self.ClientError as e:
             raise ValueError(f"S3 upload failed: {e}")
 
-    async def _optimize_image(self, image_bytes: bytes) -> bytes:
-        """Resize and compress image using Pillow"""
+    async def _optimize_image(self, image_bytes: bytes, preserve_alpha: bool = False) -> Tuple[bytes, str]:
+        """Resize and compress image using Pillow. Returns (bytes, format)"""
         try:
             img = Image.open(BytesIO(image_bytes))
 
@@ -210,21 +246,37 @@ class S3StorageProvider(StorageProvider):
                 new_height = int(img.height * ratio)
                 img = img.resize((max_width, new_height), Image.Resampling.LANCZOS)
 
-            # Convert RGBA to RGB if needed
-            if img.mode in ("RGBA", "LA", "P"):
-                background = Image.new("RGB", img.size, (255, 255, 255))
+            output = BytesIO()
+
+            # Check if image has transparency
+            has_alpha = img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info)
+
+            if preserve_alpha and has_alpha:
+                # Keep PNG format to preserve transparency
                 if img.mode == "P":
                     img = img.convert("RGBA")
-                background.paste(img, mask=img.split()[-1] if img.mode in ("RGBA", "LA") else None)
-                img = background
+                img.save(output, format="PNG", optimize=True)
+                return output.getvalue(), "PNG"
+            else:
+                # Convert to RGB and save as JPEG for better compression
+                if img.mode in ("RGBA", "LA", "P"):
+                    background = Image.new("RGB", img.size, (255, 255, 255))
+                    if img.mode == "P":
+                        img = img.convert("RGBA")
+                    if img.mode in ("RGBA", "LA"):
+                        background.paste(img, mask=img.split()[-1])
+                    else:
+                        background.paste(img)
+                    img = background
+                elif img.mode != "RGB":
+                    img = img.convert("RGB")
 
-            # Save optimized
-            output = BytesIO()
-            img.save(output, format="JPEG", quality=85, optimize=True)
-            return output.getvalue()
+                img.save(output, format="JPEG", quality=85, optimize=True)
+                return output.getvalue(), "JPEG"
+
         except Exception as e:
             print(f"Image optimization failed: {e}")
-            return image_bytes
+            return image_bytes, "JPEG"
 
     async def validate_url(self, url: str) -> bool:
         """Validate that URL is accessible"""
@@ -321,11 +373,24 @@ class GCSStorageProvider(StorageProvider):
         if len(content) > 5 * 1024 * 1024:  # 5MB
             raise ValueError("Image too large (max 5MB)")
 
-        # Optimize image
-        optimized = await self._optimize_image(content)
+        # Determine if we should preserve transparency (PNG/WebP)
+        preserve_alpha = file.content_type in {"image/png", "image/webp"}
 
-        # Generate blob path
-        filename = f"{uuid4()}.jpg"
+        # Optimize image
+        optimized, output_format = await self._optimize_image(content, preserve_alpha)
+
+        # Generate blob path with correct extension
+        if output_format == "PNG":
+            ext = ".png"
+            content_type = "image/png"
+        elif output_format == "WEBP":
+            ext = ".webp"
+            content_type = "image/webp"
+        else:
+            ext = ".jpg"
+            content_type = "image/jpeg"
+
+        filename = f"{uuid4()}{ext}"
         blob_name = f"images/{image_type}/{filename}"
 
         try:
@@ -333,7 +398,7 @@ class GCSStorageProvider(StorageProvider):
             blob = self.bucket.blob(blob_name)
             blob.upload_from_string(
                 optimized,
-                content_type="image/jpeg",
+                content_type=content_type,
                 timeout=60
             )
 
@@ -351,8 +416,8 @@ class GCSStorageProvider(StorageProvider):
         except self.exceptions.GoogleAPIError as e:
             raise ValueError(f"GCS upload failed: {e}")
 
-    async def _optimize_image(self, image_bytes: bytes) -> bytes:
-        """Resize and compress image using Pillow"""
+    async def _optimize_image(self, image_bytes: bytes, preserve_alpha: bool = False) -> Tuple[bytes, str]:
+        """Resize and compress image using Pillow. Returns (bytes, format)"""
         try:
             img = Image.open(BytesIO(image_bytes))
 
@@ -363,21 +428,37 @@ class GCSStorageProvider(StorageProvider):
                 new_height = int(img.height * ratio)
                 img = img.resize((max_width, new_height), Image.Resampling.LANCZOS)
 
-            # Convert RGBA to RGB if needed
-            if img.mode in ("RGBA", "LA", "P"):
-                background = Image.new("RGB", img.size, (255, 255, 255))
+            output = BytesIO()
+
+            # Check if image has transparency
+            has_alpha = img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info)
+
+            if preserve_alpha and has_alpha:
+                # Keep PNG format to preserve transparency
                 if img.mode == "P":
                     img = img.convert("RGBA")
-                background.paste(img, mask=img.split()[-1] if img.mode in ("RGBA", "LA") else None)
-                img = background
+                img.save(output, format="PNG", optimize=True)
+                return output.getvalue(), "PNG"
+            else:
+                # Convert to RGB and save as JPEG for better compression
+                if img.mode in ("RGBA", "LA", "P"):
+                    background = Image.new("RGB", img.size, (255, 255, 255))
+                    if img.mode == "P":
+                        img = img.convert("RGBA")
+                    if img.mode in ("RGBA", "LA"):
+                        background.paste(img, mask=img.split()[-1])
+                    else:
+                        background.paste(img)
+                    img = background
+                elif img.mode != "RGB":
+                    img = img.convert("RGB")
 
-            # Save optimized
-            output = BytesIO()
-            img.save(output, format="JPEG", quality=85, optimize=True)
-            return output.getvalue()
+                img.save(output, format="JPEG", quality=85, optimize=True)
+                return output.getvalue(), "JPEG"
+
         except Exception as e:
             print(f"Image optimization failed: {e}")
-            return image_bytes
+            return image_bytes, "JPEG"
 
     async def validate_url(self, url: str) -> bool:
         """Validate URL accessibility"""

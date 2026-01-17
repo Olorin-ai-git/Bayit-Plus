@@ -913,7 +913,7 @@ const LibrarianAgentPage = () => {
       <View style={[styles.twoColumnLayout, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         {/* LEFT COLUMN - Main Content */}
         <View style={styles.mainColumn}>
-          {/* Quick Actions */}
+      {/* Quick Actions */}
       <GlassDraggableExpander
         title={t('admin.librarian.quickActions.title')}
         subtitle={t('admin.librarian.quickActions.subtitle', 'Configure and trigger audits')}
@@ -1119,7 +1119,7 @@ const LibrarianAgentPage = () => {
         </View>
       </GlassDraggableExpander>
 
-          {/* Live Audit Log Panel */}
+      {/* Live Audit Log Panel */}
       <GlassDraggableExpander
         title={t('admin.librarian.logs.liveAuditLog')}
         subtitle={livePanelReport ? `${t('admin.librarian.logs.auditType')}: ${t(`admin.librarian.auditTypes.${livePanelReport.audit_type}`, livePanelReport.audit_type.replace('_', ' '))}` : undefined}
@@ -1360,7 +1360,7 @@ const LibrarianAgentPage = () => {
             </Text>
           </View>
         )}
-          </GlassDraggableExpander>
+      </GlassDraggableExpander>
         </View>
 
         {/* RIGHT COLUMN - Sidebar */}
@@ -1417,67 +1417,67 @@ const LibrarianAgentPage = () => {
             isMuted={isVoiceMuted}
           />
 
-          {/* Schedule Information */}
-          <GlassDraggableExpander
-            title={t('admin.librarian.schedules.title')}
+      {/* Schedule Information */}
+      <GlassDraggableExpander
+        title={t('admin.librarian.schedules.title')}
             subtitle={t('admin.librarian.schedules.subtitle', 'Automated audit schedules')}
             icon={<Calendar size={18} color={colors.primary} />}
-            defaultExpanded={false}
-          >
+        defaultExpanded={false}
+      >
             <View style={styles.schedulesColumn}>
-              <LibrarianScheduleCard
-                title={t('admin.librarian.schedules.dailyTitle')}
-                cron={config.daily_schedule.cron}
-                time={config.daily_schedule.time}
-                mode={config.daily_schedule.mode}
-                cost={config.daily_schedule.cost}
-                status={config.daily_schedule.status}
-                description={config.daily_schedule.description}
-                gcpProjectId={config.gcp_project_id}
-                onUpdate={handleScheduleUpdate}
-              />
-              <LibrarianScheduleCard
-                title={t('admin.librarian.schedules.weeklyTitle')}
-                cron={config.weekly_schedule.cron}
-                time={config.weekly_schedule.time}
-                mode={config.weekly_schedule.mode}
-                cost={config.weekly_schedule.cost}
-                status={config.weekly_schedule.status}
-                description={config.weekly_schedule.description}
-                gcpProjectId={config.gcp_project_id}
-                onUpdate={handleScheduleUpdate}
-              />
-            </View>
-          </GlassDraggableExpander>
+          <LibrarianScheduleCard
+            title={t('admin.librarian.schedules.dailyTitle')}
+            cron={config.daily_schedule.cron}
+            time={config.daily_schedule.time}
+            mode={config.daily_schedule.mode}
+            cost={config.daily_schedule.cost}
+            status={config.daily_schedule.status}
+            description={config.daily_schedule.description}
+            gcpProjectId={config.gcp_project_id}
+            onUpdate={handleScheduleUpdate}
+          />
+          <LibrarianScheduleCard
+            title={t('admin.librarian.schedules.weeklyTitle')}
+            cron={config.weekly_schedule.cron}
+            time={config.weekly_schedule.time}
+            mode={config.weekly_schedule.mode}
+            cost={config.weekly_schedule.cost}
+            status={config.weekly_schedule.status}
+            description={config.weekly_schedule.description}
+            gcpProjectId={config.gcp_project_id}
+            onUpdate={handleScheduleUpdate}
+          />
+        </View>
+      </GlassDraggableExpander>
 
-          {/* Recent Reports */}
-          <GlassDraggableExpander
-            title={t('admin.librarian.reports.title')}
+      {/* Recent Reports */}
+      <GlassDraggableExpander
+        title={t('admin.librarian.reports.title')}
             subtitle={`${reports.length} ${t('admin.librarian.reports.reports', 'reports')}`}
             icon={<FileText size={18} color={colors.primary} />}
             defaultExpanded={false}
           >
             <View style={styles.sidebarSection}>
               {reports.length > 0 && (
-                <GlassButton
-                  title={t('admin.librarian.reports.clearAll')}
-                  variant="ghost"
-                  size="sm"
-                  icon={<Trash2 size={14} color={colors.textMuted} />}
-                  onPress={handleClearReportsClick}
-                  loading={clearingReports}
-                  disabled={clearingReports}
+            <GlassButton
+              title={t('admin.librarian.reports.clearAll')}
+              variant="ghost"
+              size="sm"
+              icon={<Trash2 size={14} color={colors.textMuted} />}
+              onPress={handleClearReportsClick}
+              loading={clearingReports}
+              disabled={clearingReports}
                   style={styles.clearButtonSidebar}
-                />
+            />
               )}
-              {reports.length === 0 ? (
+        {reports.length === 0 ? (
                 <View style={styles.emptyStateSidebar}>
                   <FileText size={32} color={colors.textMuted} />
                   <Text style={styles.emptyStateTextSidebar}>
-                    {t('admin.librarian.reports.emptyMessage')}
-                  </Text>
-                </View>
-              ) : (
+              {t('admin.librarian.reports.emptyMessage')}
+            </Text>
+          </View>
+        ) : (
                 <ScrollView style={styles.reportsList} nestedScrollEnabled>
                   {reports.slice(0, 10).map((report) => (
                     <Pressable
@@ -1523,7 +1523,7 @@ const LibrarianAgentPage = () => {
                 </ScrollView>
               )}
             </View>
-          </GlassDraggableExpander>
+      </GlassDraggableExpander>
         </GlassResizablePanel>
       </View>
 

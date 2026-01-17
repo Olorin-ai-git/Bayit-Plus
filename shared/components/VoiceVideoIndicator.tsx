@@ -19,8 +19,8 @@ export function VoiceVideoIndicator({
   isListening,
   isProcessing,
   isSpeaking,
-  requestVideoUrl = '/request.mp4',
-  responseVideoUrl = '/response.mp4',
+  requestVideoUrl = '/assets/video/voice/request.mp4',
+  responseVideoUrl = '/assets/video/voice/response.mp4',
 }: VoiceVideoIndicatorProps) {
   const isActive = isListening || isProcessing || isSpeaking;
   const isRequest = isListening;

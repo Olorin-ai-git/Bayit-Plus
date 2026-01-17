@@ -356,7 +356,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
               <>
                 <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Image
-                    source={{ uri: '/Bayit-Plus-Logo-Transparent.png' }}
+                    source={{ uri: '/assets/images/Bayit-Plus-Logo-Transparent.png' }}
                     style={[
                       styles.houseLogo,
                       styles.houseLogoExpanded,
@@ -563,22 +563,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: spacing.xs,
-    paddingTop: spacing.xl + spacing.sm,
+    paddingTop: spacing.md,
     marginBottom: spacing.xs,
   },
   houseLogo: {
     transition: 'width 0.3s, height 0.3s',
   } as any,
   houseLogoExpanded: {
-    width: 180,
-    height: 180,
+    width: 100,
+    height: 100,
   },
   logoPlaceholder: {
     width: 48,
     height: 180, // Same height as expanded logo to maintain spacing
   },
   sloganContainer: {
-    marginTop: spacing.sm,
+    marginTop: spacing.xs,
     backgroundColor: 'rgba(168, 85, 247, 0.15)',
     borderWidth: 2,
     borderColor: 'rgba(147, 51, 234, 0.4)',

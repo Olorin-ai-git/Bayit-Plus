@@ -124,39 +124,39 @@ export function GlassTable<T extends Record<string, any>>({
           data.map((row, rowIndex) => {
             const rowKey = getRowKey(row, rowIndex);
             const rowContent = (
-              <Pressable
-                onPress={onRowPress ? () => onRowPress(row, rowIndex) : undefined}
-                style={[
-                  styles.dataRow,
-                  rowIndex < data.length - 1 && styles.dataRowBorder,
-                ]}
-              >
-                <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', flex: 1 }}>
-                  {columns.map((column) => (
-                    <View
-                      key={column.key}
-                      style={[
-                        styles.dataCell,
-                        column.width ? { width: column.width as any, flex: undefined } : { flex: 1 },
-                      ]}
-                    >
-                      {column.render ? (
-                        column.render(row[column.key], row, rowIndex)
-                      ) : (
-                        <Text
-                          style={[
-                            styles.cellText,
-                            { textAlign: getTextAlign(column) },
-                          ]}
-                          numberOfLines={1}
-                        >
-                          {row[column.key]?.toString() || '-'}
-                        </Text>
-                      )}
-                    </View>
-                  ))}
-                </View>
-              </Pressable>
+            <Pressable
+              onPress={onRowPress ? () => onRowPress(row, rowIndex) : undefined}
+              style={[
+                styles.dataRow,
+                rowIndex < data.length - 1 && styles.dataRowBorder,
+              ]}
+            >
+              <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', flex: 1 }}>
+                {columns.map((column) => (
+                  <View
+                    key={column.key}
+                    style={[
+                      styles.dataCell,
+                      column.width ? { width: column.width as any, flex: undefined } : { flex: 1 },
+                    ]}
+                  >
+                    {column.render ? (
+                      column.render(row[column.key], row, rowIndex)
+                    ) : (
+                      <Text
+                        style={[
+                          styles.cellText,
+                          { textAlign: getTextAlign(column) },
+                        ]}
+                        numberOfLines={1}
+                      >
+                        {row[column.key]?.toString() || '-'}
+                      </Text>
+                    )}
+                  </View>
+                ))}
+              </View>
+            </Pressable>
             );
 
             // Wrap in animated div on web

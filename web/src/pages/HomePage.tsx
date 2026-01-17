@@ -309,15 +309,6 @@ export default function HomePage() {
         />
       </View>
 
-      {/* Content Filters */}
-      <View style={styles.filterSection}>
-        <GlassCheckbox
-          label={t('home.showOnlyWithSubtitles', 'Show only with subtitles')}
-          checked={showOnlyWithSubtitles}
-          onChange={setShowOnlyWithSubtitles}
-        />
-      </View>
-
       {/* Continue Watching */}
       {continueWatching.length > 0 && (() => {
         const filteredContinueWatching = showOnlyWithSubtitles
@@ -378,6 +369,15 @@ export default function HomePage() {
       {/* Trending */}
       <View style={styles.section}>
         <TrendingRow />
+      </View>
+
+      {/* Content Filters - Below Top Story */}
+      <View style={styles.filterSection}>
+        <GlassCheckbox
+          label={t('home.showOnlyWithSubtitles', 'Show only with subtitles')}
+          checked={showOnlyWithSubtitles}
+          onChange={setShowOnlyWithSubtitles}
+        />
       </View>
 
       {/* Categories */}

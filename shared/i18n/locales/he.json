@@ -854,6 +854,8 @@
     "ep": "פרק",
     "selectSeason": "בחר עונה",
     "noEpisodes": "אין פרקים זמינים",
+    "noEpisodesAvailable": "אין פרקים זמינים לצפייה",
+    "loadingSeries": "טוען מידע על הסדרה...",
     "votes": "הצבעות",
     "rating": "דירוג",
     "imdbRating": "דירוג IMDB",

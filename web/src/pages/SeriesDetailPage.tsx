@@ -9,7 +9,7 @@ import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import { contentService, watchlistService, favoritesService } from '@/services/api';
 import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassButton, GlassView, GlassBadge } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassView, GlassBadge, GlassTooltip } from '@bayit/shared/ui';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -246,12 +246,22 @@ export default function SeriesDetailPage() {
   };
 
   const toggleWatchlist = async () => {
-    if (!series) return;
+    if (!series || !series.id) {
+      console.warn('Cannot toggle watchlist: series or series.id is missing');
+      return;
+    }
     try {
       const result = await watchlistService.toggleWatchlist(series.id, 'series');
-      setInWatchlist(result.in_watchlist);
+      if (result && typeof result.in_watchlist === 'boolean') {
+        setInWatchlist(result.in_watchlist);
+      } else {
+        // Toggle optimistically if API response is unexpected
+        setInWatchlist(!inWatchlist);
+      }
     } catch (error) {
       console.error('Failed to toggle watchlist:', error);
+      // Toggle optimistically on error for better UX
+      setInWatchlist(!inWatchlist);
     }
   };
 
@@ -369,23 +379,35 @@ export default function SeriesDetailPage() {
 
           {/* Action Buttons */}
           <View style={[styles.actions, { flexDirection }]}>
-            <GlassButton
-              onPress={handlePlay}
-              variant="primary"
-              size="lg"
-              icon={<Play size={20} color="#fff" fill="#fff" />}
-              title={selectedEpisode
-                ? `${t('content.play')} S${selectedSeason}E${selectedEpisode.episode_number}`
-                : t('content.play')}
-            />
+            <GlassTooltip 
+              content={t('content.noEpisodesAvailable', 'No episodes available to play')}
+              disabled={episodes.length > 0}
+            >
+              <GlassButton
+                onPress={handlePlay}
+                variant="primary"
+                size="lg"
+                icon={<Play size={20} color="#fff" fill="#fff" />}
+                title={selectedEpisode
+                  ? `${t('content.play')} S${selectedSeason}E${selectedEpisode.episode_number}`
+                  : t('content.play')}
+                disabled={episodes.length === 0}
+              />
+            </GlassTooltip>
 
-            <GlassButton
-              onPress={toggleWatchlist}
-              variant="ghost"
-              size="lg"
-              icon={inWatchlist ? <Check size={20} color="#fff" /> : <Plus size={20} color="#fff" />}
-              title={inWatchlist ? t('content.inList') : t('content.addToList')}
-            />
+            <GlassTooltip
+              content={t('content.loadingSeries', 'Loading series information...')}
+              disabled={!!series}
+            >
+              <GlassButton
+                onPress={toggleWatchlist}
+                variant="ghost"
+                size="lg"
+                icon={inWatchlist ? <Check size={20} color="#fff" /> : <Plus size={20} color="#fff" />}
+                title={inWatchlist ? t('content.inList') : t('content.addToList')}
+                disabled={!series}
+              />
+            </GlassTooltip>
 
             {showPoster && (series.preview_url || series.trailer_url) && (
               <GlassButton

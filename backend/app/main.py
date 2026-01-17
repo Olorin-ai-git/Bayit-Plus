@@ -531,13 +531,41 @@ app.include_router(friends.router, prefix=f"{settings.API_V1_PREFIX}", tags=["fr
 app.include_router(stats.router, prefix=f"{settings.API_V1_PREFIX}", tags=["stats"])
 app.include_router(users.router, prefix=f"{settings.API_V1_PREFIX}/users", tags=["users"])
 
-# Proxy uploads from GCS
+# Serve uploads - local files or proxy to GCS
 @app.api_route("/uploads/{path:path}", methods=["GET", "HEAD"])
-async def proxy_uploads(path: str):
-    """Proxy upload requests to GCS bucket"""
-    from fastapi.responses import RedirectResponse
-    gcs_url = f"https://storage.googleapis.com/bayit-plus-media-new/uploads/{path}"
-    return RedirectResponse(url=gcs_url, status_code=307)
+async def serve_uploads(path: str):
+    """Serve uploaded files - local storage or GCS proxy"""
+    from fastapi.responses import FileResponse, RedirectResponse
+    import os
+    
+    if settings.STORAGE_TYPE == "local":
+        # Serve from local uploads directory
+        file_path = Path(settings.UPLOAD_DIR) / path
+        if file_path.exists() and file_path.is_file():
+            # Determine content type
+            content_type = "application/octet-stream"
+            suffix = file_path.suffix.lower()
+            if suffix in (".jpg", ".jpeg"):
+                content_type = "image/jpeg"
+            elif suffix == ".png":
+                content_type = "image/png"
+            elif suffix == ".gif":
+                content_type = "image/gif"
+            elif suffix == ".webp":
+                content_type = "image/webp"
+            
+            return FileResponse(
+                path=str(file_path),
+                media_type=content_type,
+                headers={"Cache-Control": "public, max-age=31536000"}
+            )
+        else:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=404, detail="File not found")
+    else:
+        # Proxy to GCS for cloud storage
+        gcs_url = f"https://storage.googleapis.com/{settings.GCS_BUCKET_NAME}/uploads/{path}"
+        return RedirectResponse(url=gcs_url, status_code=307)
 
 
 if __name__ == "__main__":

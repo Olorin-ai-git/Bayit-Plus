@@ -213,10 +213,21 @@ class OpenSubtitlesService:
         self,
         imdb_id: str,
         language: str,
-        content_id: Optional[str] = None
+        content_id: Optional[str] = None,
+        season_number: Optional[int] = None,
+        episode_number: Optional[int] = None,
+        parent_imdb_id: Optional[str] = None,
+        query: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """
         Search for subtitles by IMDB ID.
+        Supports both movies and TV series episodes.
+        
+        For TV series, you can provide:
+        - imdb_id: Episode's IMDB ID (if available)
+        - OR parent_imdb_id + season_number + episode_number
+        - OR query (title search) + season_number + episode_number
+        
         Checks cache first, then API.
         Returns list of subtitle matches with file_id, download_url, rating, etc.
         """
@@ -236,14 +247,41 @@ class OpenSubtitlesService:
                     # Cached negative result
                     return []
 
-        # Format IMDB ID (remove 'tt' prefix if present)
-        imdb_id_clean = imdb_id.replace("tt", "")
-
-        # Search OpenSubtitles API
+        # Build search params
         params = {
-            "imdb_id": imdb_id_clean,
             "languages": language,
         }
+        
+        # Determine search strategy based on available info
+        if parent_imdb_id and season_number is not None and episode_number is not None:
+            # TV series episode search with series IMDB ID
+            parent_clean = parent_imdb_id.replace("tt", "")
+            params["parent_imdb_id"] = parent_clean
+            params["season_number"] = season_number
+            params["episode_number"] = episode_number
+            logger.info(f"🔍 Searching OpenSubtitles for series IMDB {parent_clean} S{season_number:02d}E{episode_number:02d}")
+        elif imdb_id:
+            # Movie or episode-specific IMDB ID
+            imdb_id_clean = imdb_id.replace("tt", "")
+            params["imdb_id"] = imdb_id_clean
+            # Add season/episode if this is a TV episode search
+            if season_number is not None and episode_number is not None:
+                params["season_number"] = season_number
+                params["episode_number"] = episode_number
+                logger.info(f"🔍 Searching OpenSubtitles for IMDB {imdb_id_clean} S{season_number:02d}E{episode_number:02d}")
+            else:
+                logger.info(f"🔍 Searching OpenSubtitles for IMDB {imdb_id_clean}")
+        elif query:
+            # Fallback to title search
+            params["query"] = query
+            if season_number is not None:
+                params["season_number"] = season_number
+            if episode_number is not None:
+                params["episode_number"] = episode_number
+            logger.info(f"🔍 Searching OpenSubtitles by query: '{query}'")
+        else:
+            logger.warning("⚠️ No valid search criteria provided for OpenSubtitles")
+            return []
 
         data = await self._make_request("/subtitles", params)
 

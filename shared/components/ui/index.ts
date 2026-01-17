@@ -29,6 +29,7 @@ export { GlassLog } from './GlassLog';
 export { GlassDraggableExpander } from './GlassDraggableExpander';
 export { GlassResizablePanel } from './GlassResizablePanel';
 export { GlassSplitterHandle } from './GlassSplitterHandle';
+export { GlassTooltip } from './GlassTooltip';
 
 // Voice-first conversational interface components (Phases 10)
 export { GlassParticleLayer } from './GlassParticleLayer';

@@ -82,7 +82,7 @@ export default function ChessChat({
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('chess.chat')}</Text>
+        <Text style={styles.headerTitle}>{t('chess.title')}</Text>
 
         {/* Voice controls */}
         {voiceEnabled && (
@@ -100,7 +100,7 @@ export default function ChessChat({
 
             {voiceConnected && participants.length > 0 && (
               <Text style={styles.participantCount}>
-                {participants.length} {t('chess.inCall')}
+                {participants.length} {t('chess.speaking')}
               </Text>
             )}
           </View>
@@ -127,7 +127,7 @@ export default function ChessChat({
               <View style={styles.botResponse}>
                 <View style={styles.botHeader}>
                   <Text style={styles.botIcon}>🤖</Text>
-                  <Text style={styles.botLabel}>{t('chess.chessBot')}</Text>
+                  <Text style={styles.botLabel}>{t('chess.bot')}</Text>
                 </View>
                 <Text style={styles.botText}>{msg.bot_response}</Text>
               </View>
@@ -137,7 +137,7 @@ export default function ChessChat({
 
         {messages.length === 0 && (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>{t('chess.noMessages')}</Text>
+            <Text style={styles.emptyText}>{t('chess.noMoves')}</Text>
             <Text style={styles.emptyHint}>{t('chess.botHint')}</Text>
           </View>
         )}
@@ -167,7 +167,7 @@ export default function ChessChat({
 
       {/* Hint text */}
       <Text style={styles.hint}>
-        {t('chess.tagBotForAdvice')}
+        {t('chess.botHint')}
       </Text>
     </View>
   );

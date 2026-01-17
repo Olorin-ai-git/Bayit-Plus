@@ -52,6 +52,10 @@
 
 /* Direction is controlled by JavaScript via document.documentElement.dir */
 
+html, body, #root {
+  height: 100%;
+}
+
 body {
   @apply text-white;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
