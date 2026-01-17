@@ -1,3 +1,4 @@
+import asyncio
 from typing import Optional, List
 from fastapi import APIRouter, HTTPException, status, Depends, Query
 from app.models.content import Content, Category
@@ -85,86 +86,143 @@ def convert_to_proxy_url(url: str, base_url: str = "https://api.bayit.tv/api/v1/
 @router.get("/featured")
 async def get_featured(current_user: Optional[User] = Depends(get_optional_user)):
     """Get featured content for homepage - OPTIMIZED for performance."""
-    # Get featured content for hero
-    hero_content = await Content.find_one(
-        Content.is_featured == True,
-        Content.is_published == True,
+    import time
+    start_time = time.time()
+
+    # Run initial queries in parallel for better performance
+    # Use aggregation with projection to exclude large base64 fields
+    async def get_hero():
+        pipeline = [
+            {"$match": {"is_featured": True, "is_published": True}},
+            {"$project": {"thumbnail_data": 0, "backdrop_data": 0}},
+            {"$limit": 1}
+        ]
+        collection = Content.get_settings().pymongo_collection
+        cursor = collection.aggregate(pipeline)
+        results = await cursor.to_list(length=1)
+        return results[0] if results else None
+
+    async def get_featured_content():
+        pipeline = [
+            {"$match": {
+                "is_featured": True,
+                "is_published": True,
+                "$or": [
+                    {"series_id": None},
+                    {"series_id": {"$exists": False}},
+                    {"series_id": ""},
+                ]
+            }},
+            {"$project": {"thumbnail_data": 0, "backdrop_data": 0}},
+            {"$limit": 10}
+        ]
+        collection = Content.get_settings().pymongo_collection
+        cursor = collection.aggregate(pipeline)
+        return await cursor.to_list(length=None)
+
+    async def get_categories():
+        return await Category.find(Category.is_active == True).sort("order").limit(6).to_list()
+
+    # Await all initial queries in parallel
+    hero_content, featured_content, categories = await asyncio.gather(
+        get_hero(), get_featured_content(), get_categories()
     )
+    logger.info(f"⏱️ Featured: Initial queries took {time.time() - start_time:.2f}s")
 
-    # Get spotlight items - featured series and movies (limit to 10 for performance)
-    featured_content = await Content.find(
-        Content.is_featured == True,
-        Content.is_published == True,
-        {"$or": [
-            {"series_id": None},
-            {"series_id": {"$exists": False}},
-            {"series_id": ""},
-        ]},
-    ).limit(10).to_list()
-
-    # Build spotlight items (NO extra queries - use existing data)
+    # Build spotlight items from raw dicts (NO extra queries - use existing data)
     spotlight_items = [
         {
-            "id": str(item.id),
-            "title": item.title,
-            "description": item.description,
-            # Use stored image data if available, otherwise fall back to URLs
-            "backdrop": item.backdrop_data or item.backdrop or item.thumbnail_data or item.thumbnail or item.poster_url,
-            "thumbnail": item.thumbnail_data or item.thumbnail or item.poster_url,
-            "category": item.category_name,
-            "year": item.year,
-            "duration": item.duration,
-            "rating": item.rating,
-            "is_series": item.is_series,
-            # Use pre-calculated total_episodes, don't query for first episode
-            "total_episodes": item.total_episodes if item.is_series else None,
+            "id": str(item.get("_id")),
+            "title": item.get("title"),
+            "description": item.get("description"),
+            "backdrop": item.get("backdrop") or item.get("thumbnail") or item.get("poster_url"),
+            "thumbnail": item.get("thumbnail") or item.get("poster_url"),
+            "category": item.get("category_name"),
+            "year": item.get("year"),
+            "duration": item.get("duration"),
+            "rating": item.get("rating"),
+            "is_series": item.get("is_series", False),
+            "total_episodes": item.get("total_episodes") if item.get("is_series") else None,
         }
         for item in featured_content
     ]
 
-    # Get only top 6 categories for homepage (performance optimization)
-    categories = await Category.find(Category.is_active == True).sort("order").limit(6).to_list()
+    # Fetch category content with LIMIT per category at DB level
+    cat_query_start = time.time()
+    category_ids = [str(cat.id) for cat in categories]
+    category_name_map = {str(cat.id): cat.name for cat in categories}
 
-    # Build category items
-    category_items_map = {}
-
-    for cat in categories:
-        # Exclude episodes (items with series_id set) - only show movies and parent series
-        items = await Content.find(
-            Content.category_id == str(cat.id),
-            Content.is_published == True,
-            {"$or": [
+    # Optimized pipeline: only fetch needed fields, group by category, limit 10 per category
+    pipeline = [
+        {"$match": {
+            "category_id": {"$in": category_ids},
+            "is_published": True,
+            "$or": [
                 {"series_id": None},
                 {"series_id": {"$exists": False}},
                 {"series_id": ""},
-            ]},
-        ).limit(10).to_list()
+            ]
+        }},
+        # Only project fields we actually need
+        {"$project": {
+            "_id": 1,
+            "title": 1,
+            "thumbnail": 1,
+            "duration": 1,
+            "year": 1,
+            "category_id": 1,
+            "is_series": 1,
+            "total_episodes": 1,
+        }},
+        # Sort for consistent ordering
+        {"$sort": {"_id": -1}},
+        # Group by category and take first 10
+        {"$group": {
+            "_id": "$category_id",
+            "items": {"$push": {
+                "_id": "$_id",
+                "title": "$title",
+                "thumbnail": "$thumbnail",
+                "duration": "$duration",
+                "year": "$year",
+                "is_series": "$is_series",
+                "total_episodes": "$total_episodes",
+            }}
+        }},
+        # Limit to 10 items per category
+        {"$project": {
+            "_id": 1,
+            "items": {"$slice": ["$items", 10]}
+        }}
+    ]
+    cursor = Content.get_settings().pymongo_collection.aggregate(pipeline)
+    grouped_content = await cursor.to_list(length=None)
+    logger.info(f"⏱️ Featured: Category content query took {time.time() - cat_query_start:.2f}s")
 
-        # Build items list
-        category_items = []
-        for item in items:
-            item_data = {
-                "id": str(item.id),
-                "title": item.title,
-                "thumbnail": item.thumbnail,
-                "duration": item.duration,
-                "year": item.year,
-                "category": cat.name,
-                "type": "series" if item.is_series else "movie",
-                "is_series": item.is_series,
+    # Build category items map from grouped results
+    category_items_map = {}
+    for group in grouped_content:
+        cat_id = group["_id"]
+        cat_name = category_name_map.get(cat_id, "")
+        category_items_map[cat_id] = [
+            {
+                "id": str(item["_id"]),
+                "title": item.get("title"),
+                "thumbnail": item.get("thumbnail"),
+                "duration": item.get("duration"),
+                "year": item.get("year"),
+                "category": cat_name,
+                "type": "series" if item.get("is_series") else "movie",
+                "is_series": item.get("is_series", False),
+                **({"total_episodes": item.get("total_episodes") or 0} if item.get("is_series") else {})
             }
+            for item in group["items"]
+        ]
 
-            # Use pre-calculated episode count (no extra queries)
-            if item.is_series:
-                item_data["total_episodes"] = item.total_episodes or 0
+    # NOTE: Subtitle enrichment removed from featured endpoint for performance
+    # Subtitle data can be fetched separately via /content/{id} if needed
 
-            category_items.append(item_data)
-
-        # Enrich with subtitle languages (batched operation)
-        category_items = await enrich_content_items_with_subtitles(category_items)
-        category_items_map[str(cat.id)] = category_items
-
-    # Build final category data
+    # Build final category data (preserve category order)
     category_data = [
         {
             "id": str(cat.id),
@@ -174,17 +232,19 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
         for cat in categories
     ]
 
+    logger.info(f"⏱️ Featured: TOTAL took {time.time() - start_time:.2f}s")
+
     return {
         "hero": {
-            "id": str(hero_content.id) if hero_content else None,
-            "title": hero_content.title if hero_content else None,
-            "description": hero_content.description if hero_content else None,
-            "backdrop": hero_content.backdrop if hero_content else None,
-            "thumbnail": hero_content.thumbnail if hero_content else None,
-            "category": hero_content.category_name if hero_content else None,
-            "year": hero_content.year if hero_content else None,
-            "duration": hero_content.duration if hero_content else None,
-            "rating": hero_content.rating if hero_content else None,
+            "id": str(hero_content.get("_id")) if hero_content else None,
+            "title": hero_content.get("title") if hero_content else None,
+            "description": hero_content.get("description") if hero_content else None,
+            "backdrop": hero_content.get("backdrop") if hero_content else None,
+            "thumbnail": hero_content.get("thumbnail") if hero_content else None,
+            "category": hero_content.get("category_name") if hero_content else None,
+            "year": hero_content.get("year") if hero_content else None,
+            "duration": hero_content.get("duration") if hero_content else None,
+            "rating": hero_content.get("rating") if hero_content else None,
         } if hero_content else None,
         "spotlight": spotlight_items,
         "categories": category_data,

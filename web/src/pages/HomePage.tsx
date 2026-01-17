@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { RefreshCw } from 'lucide-react';
@@ -17,20 +17,6 @@ import logger from '@/utils/logger';
 
 declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
-
-interface FeaturedContent {
-  id: string;
-  title: string;
-  description?: string;
-  thumbnail?: string;
-  videoUrl?: string;
-  type?: string;
-  year?: string;
-  duration?: string;
-  rating?: string;
-  available_subtitle_languages?: string[];
-  has_subtitles?: boolean;
-}
 
 interface CarouselItem {
   id: string;
@@ -78,26 +64,77 @@ interface Category {
   items: ContentItem[];
 }
 
+// Section skeleton component for individual sections
+function SectionSkeleton() {
+  return (
+    <View style={styles.skeletonSection}>
+      <View style={styles.skeletonTitle} />
+      <View style={styles.skeletonRow}>
+        {[1, 2, 3, 4, 5].map((j) => (
+          <View key={j} style={styles.skeletonCard} />
+        ))}
+      </View>
+    </View>
+  );
+}
+
+// Hero skeleton with Avatar placeholder
+function HeroSkeleton() {
+  const placeholderImage = 'https://image.tmdb.org/t/p/original/s16H6tpK2utvwDtzZ8Qy4qm5Emw.jpg';
+
+  return (
+    <View style={styles.skeletonHero}>
+      <img
+        src={placeholderImage}
+        alt="Loading..."
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+        }}
+      />
+      <View style={styles.skeletonHeroOverlay} />
+      <View style={styles.skeletonLoadingContainer}>
+        <div className="loading-spinner" style={{
+          width: IS_TV_BUILD ? 32 : 24,
+          height: IS_TV_BUILD ? 32 : 24,
+          borderRadius: '50%',
+          border: '3px solid rgba(107, 33, 168, 0.3)',
+          borderTopColor: '#7e22ce',
+        }} />
+        <Text style={styles.skeletonLoadingText}>Loading...</Text>
+      </View>
+    </View>
+  );
+}
+
 export default function HomePage() {
   const { t, i18n } = useTranslation();
   const { isRTL } = useDirection();
   const navigate = useNavigate();
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Guard against React StrictMode double-invocation
   const hasInitialized = useRef(false);
 
-  const [featured, setFeatured] = useState<FeaturedContent[]>([]);
+  // Independent loading states for each section
   const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
-  const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
+  const [carouselLoading, setCarouselLoading] = useState(true);
+
   const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+
   const [liveChannels, setLiveChannels] = useState<Channel[]>([]);
+  const [liveLoading, setLiveLoading] = useState(true);
+
   const [continueWatching, setContinueWatching] = useState<ContentItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [continueLoading, setContinueLoading] = useState(true);
+
   const [syncing, setSyncing] = useState(false);
   const [showMorningRitual, setShowMorningRitual] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [isMuted, setIsMuted] = useState(true);
   const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false);
 
   // Update clock every minute
@@ -108,46 +145,18 @@ export default function HomePage() {
     return () => clearInterval(timer);
   }, []);
 
-  // Auto-rotate featured content
+  // Load content on mount - each section loads independently
   useEffect(() => {
-    if (featured.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentFeaturedIndex((prev) => (prev + 1) % featured.length);
-    }, 10000); // 10 seconds per item
-    return () => clearInterval(interval);
-  }, [featured]); // Fixed: depend on featured array, not just length
-
-  // Load content and sync on mount
-  useEffect(() => {
-    // Guard against React StrictMode double-invocation
-    if (hasInitialized.current) {
-      return;
-    }
+    if (hasInitialized.current) return;
     hasInitialized.current = true;
 
-    const initializeHome = async () => {
-      checkMorningRitual();
+    checkMorningRitual();
 
-      // Load all content in parallel (no waterfall, no unnecessary sync)
-      await loadHomeContent();
-    };
-
-    initializeHome();
+    // Launch all fetches independently - they don't block each other
+    loadFeaturedContent();
+    loadLiveChannels();
+    loadContinueWatching();
   }, []);
-
-  // Background sync without reloading (for initial load)
-  const syncContentInBackground = async () => {
-    try {
-      setSyncing(true);
-      logger.info('Background sync: Refreshing podcasts...', 'HomePage');
-      await contentService.syncContent();
-      logger.info('Background sync complete', 'HomePage');
-    } catch (error) {
-      logger.error('Background sync failed', 'HomePage', error);
-    } finally {
-      setSyncing(false);
-    }
-  };
 
   const checkMorningRitual = async () => {
     try {
@@ -158,20 +167,12 @@ export default function HomePage() {
     }
   };
 
-  const loadHomeContent = async () => {
+  // Load featured content (hero carousel + categories)
+  const loadFeaturedContent = async () => {
     try {
-      // Load ALL content in parallel for maximum performance
-      const [featuredData, liveData, continueData] = await Promise.all([
-        contentService.getFeatured(),
-        liveService.getChannels().catch(() => ({ channels: [] })),
-        historyService.getContinueWatching().catch(() => ({ items: [] })),
-      ]);
+      const featuredData = await contentService.getFeatured();
 
-      // Process featured content
-      const featuredItems = featuredData.items || (featuredData.hero ? [featuredData.hero] : []);
-      setFeatured(featuredItems);
-
-      // Build carousel items from spotlight data (series items for rotation)
+      // Build carousel items from spotlight data
       const spotlightItems = featuredData.spotlight || [];
       setCarouselItems(spotlightItems.map((item: any, index: number) => ({
         id: item.id,
@@ -184,19 +185,39 @@ export default function HomePage() {
         available_subtitle_languages: item.available_subtitle_languages,
         has_subtitles: item.has_subtitles,
       })));
+      setCarouselLoading(false);
 
-      // Use categories from featured data - they include items with thumbnails
+      // Categories from featured data
       setCategories(featuredData.categories || []);
-
-      // Set secondary content
-      setLiveChannels(liveData.channels || []);
-      setContinueWatching(continueData.items || []);
-
-      // Hide spinner after all content is loaded
-      setLoading(false);
+      setCategoriesLoading(false);
     } catch (error) {
-      logger.error('Failed to load home content', 'HomePage', error);
-      setLoading(false);
+      logger.error('Failed to load featured content', 'HomePage', error);
+      setCarouselLoading(false);
+      setCategoriesLoading(false);
+    }
+  };
+
+  // Load live channels independently
+  const loadLiveChannels = async () => {
+    try {
+      const liveData = await liveService.getChannels();
+      setLiveChannels(liveData.channels || []);
+    } catch (error) {
+      logger.error('Failed to load live channels', 'HomePage', error);
+    } finally {
+      setLiveLoading(false);
+    }
+  };
+
+  // Load continue watching independently
+  const loadContinueWatching = async () => {
+    try {
+      const continueData = await historyService.getContinueWatching();
+      setContinueWatching(continueData.items || []);
+    } catch (error) {
+      logger.error('Failed to load continue watching', 'HomePage', error);
+    } finally {
+      setContinueLoading(false);
     }
   };
 
@@ -204,36 +225,16 @@ export default function HomePage() {
     try {
       setSyncing(true);
       logger.info('Syncing home content...', 'HomePage');
-      const result = await contentService.syncContent();
-      logger.info(`Content synced`, 'HomePage', result);
+      await contentService.syncContent();
 
-      // Reload content after syncing to show any new items
-      await loadHomeContent();
+      // Reload all sections
+      loadFeaturedContent();
+      loadLiveChannels();
+      loadContinueWatching();
     } catch (error) {
       logger.error('Failed to sync content', 'HomePage', error);
     } finally {
       setSyncing(false);
-    }
-  };
-
-  const currentFeatured = featured[currentFeaturedIndex];
-
-  const handlePlayFeatured = () => {
-    if (currentFeatured) {
-      navigate(`/watch/${currentFeatured.id}`);
-    }
-  };
-
-  const handleMoreInfo = () => {
-    if (currentFeatured) {
-      navigate(`/details/${currentFeatured.id}`);
-    }
-  };
-
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
     }
   };
 
@@ -249,10 +250,6 @@ export default function HomePage() {
 
   const israelTime = formatTime(currentTime, 'Asia/Jerusalem');
   const localTime = formatTime(currentTime);
-
-  if (loading) {
-    return <HomePageSkeleton />;
-  }
 
   if (showMorningRitual) {
     return (
@@ -301,16 +298,22 @@ export default function HomePage() {
 
       {/* Hero Carousel Section */}
       <View style={styles.carouselSection}>
-        <GlassCarousel
-          items={carouselItems}
-          onItemPress={handleCarouselPress}
-          height={IS_TV_BUILD ? 450 : 400}
-          autoPlayInterval={6000}
-        />
+        {carouselLoading ? (
+          <HeroSkeleton />
+        ) : (
+          <GlassCarousel
+            items={carouselItems}
+            onItemPress={handleCarouselPress}
+            height={IS_TV_BUILD ? 450 : 400}
+            autoPlayInterval={6000}
+          />
+        )}
       </View>
 
-      {/* Continue Watching */}
-      {continueWatching.length > 0 && (() => {
+      {/* Continue Watching - loads independently */}
+      {continueLoading ? (
+        <SectionSkeleton />
+      ) : continueWatching.length > 0 && (() => {
         const filteredContinueWatching = showOnlyWithSubtitles
           ? continueWatching.filter(item =>
               item.available_subtitle_languages &&
@@ -327,8 +330,10 @@ export default function HomePage() {
         ) : null;
       })()}
 
-      {/* Live TV */}
-      {liveChannels.length > 0 && (
+      {/* Live TV - loads independently */}
+      {liveLoading ? (
+        <SectionSkeleton />
+      ) : liveChannels.length > 0 && (
         <View style={styles.section}>
           <View style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={[styles.sectionTitleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -366,12 +371,12 @@ export default function HomePage() {
         </View>
       )}
 
-      {/* Trending */}
+      {/* Trending - always renders (has its own loading state) */}
       <View style={styles.section}>
         <TrendingRow />
       </View>
 
-      {/* Content Filters - Below Top Story */}
+      {/* Content Filters */}
       <View style={styles.filterSection}>
         <GlassCheckbox
           label={t('home.showOnlyWithSubtitles', 'Show only with subtitles')}
@@ -380,9 +385,14 @@ export default function HomePage() {
         />
       </View>
 
-      {/* Categories */}
-      {categories.map((category) => {
-        // Filter items by subtitle availability if enabled
+      {/* Categories - loads independently */}
+      {categoriesLoading ? (
+        <>
+          <SectionSkeleton />
+          <SectionSkeleton />
+          <SectionSkeleton />
+        </>
+      ) : categories.map((category) => {
         const filteredItems = showOnlyWithSubtitles
           ? category.items.filter(item =>
               item.available_subtitle_languages &&
@@ -390,7 +400,6 @@ export default function HomePage() {
             )
           : category.items;
 
-        // Don't render empty categories
         if (filteredItems.length === 0) return null;
 
         return (
@@ -404,24 +413,6 @@ export default function HomePage() {
         );
       })}
     </ScrollView>
-  );
-}
-
-function HomePageSkeleton() {
-  return (
-    <View style={styles.page}>
-      <View style={styles.skeletonHero} />
-      {[1, 2, 3].map((i) => (
-        <View key={i} style={styles.skeletonSection}>
-          <View style={styles.skeletonTitle} />
-          <View style={styles.skeletonRow}>
-            {[1, 2, 3, 4, 5].map((j) => (
-              <View key={j} style={styles.skeletonCard} />
-            ))}
-          </View>
-        </View>
-      ))}
-    </View>
   );
 }
 
@@ -460,7 +451,7 @@ const styles = StyleSheet.create({
     cursor: 'not-allowed',
   },
   spinning: {
-    // Visual feedback for spinning state (animation removed for React Native Web compatibility)
+    // Visual feedback for spinning state
   },
   // Carousel Section
   carouselSection: {
@@ -506,145 +497,6 @@ const styles = StyleSheet.create({
     width: 1,
     height: IS_TV_BUILD ? 40 : 32,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  heroContent: {
-    position: 'absolute',
-    bottom: IS_TV_BUILD ? 80 : 60,
-    left: IS_TV_BUILD ? spacing.xl * 2 : spacing.lg,
-    right: IS_TV_BUILD ? spacing.xl * 2 : spacing.lg,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-  },
-  heroContentRTL: {
-    flexDirection: 'row-reverse',
-  },
-  heroInfo: {
-    flex: 1,
-    maxWidth: IS_TV_BUILD ? 700 : 500,
-  },
-  heroBadges: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  typeBadge: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  typeBadgeText: {
-    fontSize: IS_TV_BUILD ? 14 : 12,
-    fontWeight: '600',
-    color: colors.text,
-    textTransform: 'uppercase',
-  },
-  ratingBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  ratingText: {
-    fontSize: IS_TV_BUILD ? 14 : 12,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  heroTitle: {
-    fontSize: IS_TV_BUILD ? 48 : 36,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  heroMeta: {
-    fontSize: IS_TV_BUILD ? 18 : 14,
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-  },
-  heroDescription: {
-    fontSize: IS_TV_BUILD ? 18 : 15,
-    color: colors.textSecondary,
-    lineHeight: IS_TV_BUILD ? 28 : 22,
-    marginBottom: spacing.lg,
-  },
-  heroActions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  playButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: '#fff',
-    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.lg,
-    paddingVertical: IS_TV_BUILD ? spacing.md : spacing.sm,
-    borderRadius: IS_TV_BUILD ? 12 : 8,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  playButtonText: {
-    fontSize: IS_TV_BUILD ? 20 : 16,
-    fontWeight: '600',
-    color: '#000',
-  },
-  infoButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.lg,
-    paddingVertical: IS_TV_BUILD ? spacing.md : spacing.sm,
-    borderRadius: IS_TV_BUILD ? 12 : 8,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  infoButtonFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  infoButtonText: {
-    fontSize: IS_TV_BUILD ? 20 : 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  buttonFocused: {
-    borderColor: colors.primary,
-    transform: [{ scale: 1.05 }],
-  },
-  muteButton: {
-    width: IS_TV_BUILD ? 56 : 44,
-    height: IS_TV_BUILD ? 56 : 44,
-    borderRadius: IS_TV_BUILD ? 28 : 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  muteButtonFocused: {
-    borderColor: colors.primary,
-  },
-  indicators: {
-    position: 'absolute',
-    bottom: IS_TV_BUILD ? 30 : 20,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: spacing.sm,
-  },
-  indicator: {
-    width: IS_TV_BUILD ? 40 : 30,
-    height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: 2,
-  },
-  indicatorActive: {
-    backgroundColor: colors.primary,
-  },
-  textRTL: {
-    textAlign: 'right',
   },
   // Sections
   section: {
@@ -701,8 +553,35 @@ const styles = StyleSheet.create({
   },
   // Skeleton
   skeletonHero: {
-    height: IS_TV_BUILD ? 600 : 500,
+    height: IS_TV_BUILD ? 450 : 400,
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    position: 'relative',
+    overflow: 'hidden',
+    borderRadius: 16,
+  },
+  skeletonHeroOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'linear-gradient(to bottom, rgba(10, 10, 20, 0.3) 0%, rgba(10, 10, 20, 0.6) 50%, rgba(10, 10, 20, 0.95) 100%)',
+  },
+  skeletonLoadingContainer: {
+    position: 'absolute',
+    bottom: IS_TV_BUILD ? 120 : 80,
+    left: IS_TV_BUILD ? spacing.xl * 2 : spacing.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  skeletonLoadingText: {
+    fontSize: IS_TV_BUILD ? 28 : 22,
+    fontWeight: '600',
+    color: colors.text,
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   skeletonSection: {
     marginTop: spacing.xl,

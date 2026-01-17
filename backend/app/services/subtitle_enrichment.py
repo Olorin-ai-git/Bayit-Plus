@@ -25,27 +25,36 @@ async def get_subtitle_languages_for_contents(content_ids: List[str]) -> Dict[st
         return {}
 
     try:
-        # Batch fetch all subtitle tracks for the requested content IDs
-        all_subtitle_tracks = await SubtitleTrackDoc.find(
-            {"content_id": {"$in": content_ids}}
-        ).to_list()
+        # Use aggregation pipeline to fetch ONLY content_id and language fields
+        # This avoids fetching the huge 'cues' array which contains thousands of entries per track
+        pipeline = [
+            {"$match": {"content_id": {"$in": content_ids}}},
+            {"$project": {"content_id": 1, "language": 1, "_id": 0}},
+        ]
+
+        # Run aggregation
+        cursor = SubtitleTrackDoc.get_settings().pymongo_collection.aggregate(pipeline)
+        all_subtitle_tracks = await cursor.to_list(length=None)
 
         # Build subtitle map: content_id -> list of unique language codes
-        subtitle_map = {}
+        subtitle_map: Dict[str, set] = {}
         for track in all_subtitle_tracks:
-            if track.content_id not in subtitle_map:
-                subtitle_map[track.content_id] = set()
-            subtitle_map[track.content_id].add(track.language)
+            content_id = track.get("content_id")
+            language = track.get("language")
+            if content_id and language:
+                if content_id not in subtitle_map:
+                    subtitle_map[content_id] = set()
+                subtitle_map[content_id].add(language)
 
         # Convert sets to lists for JSON serialization
-        subtitle_map = {
+        result = {
             content_id: list(languages)
             for content_id, languages in subtitle_map.items()
         }
 
-        logger.debug(f"Fetched subtitle languages for {len(subtitle_map)} content items out of {len(content_ids)} requested")
+        logger.debug(f"Fetched subtitle languages for {len(result)} content items out of {len(content_ids)} requested")
 
-        return subtitle_map
+        return result
 
     except Exception as e:
         logger.error(f"Error fetching subtitle languages: {e}", exc_info=True)
