@@ -34,10 +34,12 @@
     "build:fraud": "npm run build -w packages/portal-fraud",
     "build:streaming": "npm run build -w packages/portal-streaming",
     "build:radio": "npm run build -w packages/portal-radio",
+    "build:omen": "npm run build -w packages/portal-omen",
     "dev:main": "npm run start -w packages/portal-main",
     "dev:fraud": "npm run start -w packages/portal-fraud",
     "dev:streaming": "npm run start -w packages/portal-streaming",
     "dev:radio": "npm run start -w packages/portal-radio",
+    "dev:omen": "npm run start -w packages/portal-omen",
     "test:all": "npm run test --workspaces",
     "release": "./scripts/release.sh",
     "release:win": "bash ./scripts/release.sh"

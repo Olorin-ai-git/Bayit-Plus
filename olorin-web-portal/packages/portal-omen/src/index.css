@@ -1,0 +1,12 @@
+/**
+ * Portal Omen Styles
+ * Imports Tailwind and wizard theme styles
+ */
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@import './styles/wizard-theme.css';
+
+/* Omen-specific overrides can go here */

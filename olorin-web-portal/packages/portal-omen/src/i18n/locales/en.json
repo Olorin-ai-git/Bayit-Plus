@@ -1,0 +1,84 @@
+{
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "predictions": "Predictions",
+    "pricing": "Pricing",
+    "demo": "Live Demo",
+    "contact": "Contact",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "title": "AI-POWERED",
+    "titleHighlight": "PREDICTIVE INTELLIGENCE",
+    "subtitle": "Transform data into actionable forecasts with AI",
+    "description": "Unlock the power of predictive analytics and intelligent forecasting for data-driven decisions",
+    "ctaExplore": "Learn More",
+    "ctaDemo": "Request Demo"
+  },
+  "features": {
+    "sectionTitle": "Predictive Intelligence Features",
+    "aiPredictions": {
+      "title": "AI-Driven Predictions",
+      "description": "Advanced machine learning models that anticipate trends and outcomes with exceptional accuracy"
+    },
+    "forecasting": {
+      "title": "Intelligent Forecasting",
+      "description": "Real-time forecasting engines that adapt to changing patterns and deliver actionable insights"
+    },
+    "insights": {
+      "title": "Actionable Insights",
+      "description": "Transform complex predictions into clear, actionable recommendations for strategic decisions"
+    }
+  },
+  "workflow": {
+    "sectionTitle": "How It Works",
+    "sectionSubtitle": "AI-powered predictive intelligence in 4 steps",
+    "step1": {
+      "title": "Data Integration",
+      "description": "Seamlessly connect your data sources for comprehensive analysis"
+    },
+    "step2": {
+      "title": "AI Model Training",
+      "description": "Advanced algorithms learn patterns and relationships in your data"
+    },
+    "step3": {
+      "title": "Prediction Generation",
+      "description": "Generate accurate forecasts and identify emerging trends"
+    },
+    "step4": {
+      "title": "Actionable Delivery",
+      "description": "Deliver insights through dashboards and automated alerts"
+    }
+  },
+  "capabilities": {
+    "title": "Core Capabilities",
+    "realTime": {
+      "title": "Real-Time Analysis",
+      "description": "Continuous monitoring and instant predictions as data changes"
+    },
+    "riskAssessment": {
+      "title": "Risk Assessment",
+      "description": "Identify and quantify potential risks before they materialize"
+    },
+    "earlyWarning": {
+      "title": "Early Warning System",
+      "description": "Proactive alerts for anomalies and emerging patterns"
+    },
+    "trendAnalysis": {
+      "title": "Trend Analysis",
+      "description": "Uncover hidden patterns and long-term trend predictions"
+    }
+  },
+  "stats": {
+    "accuracy": "95% Prediction Accuracy",
+    "speed": "10x Faster Insights",
+    "coverage": "360° Data Coverage",
+    "reduction": "60% Risk Reduction"
+  },
+  "cta": {
+    "title": "Ready to Predict the Future?",
+    "subtitle": "Join forward-thinking organizations leveraging AI-powered predictive intelligence with Olorin.AI",
+    "button": "Request a Demo"
+  }
+}

@@ -9,7 +9,7 @@ export interface FooterLink {
 }
 
 export interface FooterProps {
-  domain?: 'main' | 'fraud' | 'streaming' | 'radio';
+  domain?: 'main' | 'fraud' | 'streaming' | 'radio' | 'omen';
   companyDescription?: string;
   quickLinks?: FooterLink[];
   email?: string;

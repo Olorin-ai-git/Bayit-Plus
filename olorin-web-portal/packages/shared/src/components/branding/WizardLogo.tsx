@@ -1,7 +1,7 @@
 import React from 'react';
 
 export interface WizardLogoProps {
-  variant?: 'main' | 'fraud' | 'streaming' | 'radio';
+  variant?: 'main' | 'fraud' | 'streaming' | 'radio' | 'omen';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   showText?: boolean;
@@ -11,13 +11,14 @@ export interface WizardLogoProps {
  * WizardLogo Component
  *
  * Displays the Olorin wizard mascot logo with domain-specific variants.
- * Each variant represents a different subdomain (main, fraud, streaming, radio).
+ * Each variant represents a different subdomain (main, fraud, streaming, radio, omen).
  *
  * Variants:
  * - main: Olorin.AI (parent portal)
  * - fraud: Olorin.AI Fraud (fraud detection)
  * - streaming: Olorin.AI Streaming (media streaming)
  * - radio: Olorin.AI Radio (radio management)
+ * - omen: Olorin.AI Omen (predictive intelligence)
  *
  * @example
  * <WizardLogo variant="fraud" size="lg" showText />
@@ -45,6 +46,7 @@ export const WizardLogo: React.FC<WizardLogoProps> = ({
     fraud: 'OLORIN.AI FRAUD',
     streaming: 'OLORIN.AI STREAMING',
     radio: 'OLORIN.AI RADIO',
+    omen: 'OLORIN.AI OMEN',
   };
 
   // Wizard logo from organized logos directory (transparent purple wizard)

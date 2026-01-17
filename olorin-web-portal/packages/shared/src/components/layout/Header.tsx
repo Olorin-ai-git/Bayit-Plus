@@ -16,7 +16,7 @@ export interface NavDropdownGroup {
 }
 
 export interface HeaderProps {
-  domain?: 'main' | 'fraud' | 'streaming' | 'radio';
+  domain?: 'main' | 'fraud' | 'streaming' | 'radio' | 'omen';
   navigation?: NavItem[];
   dropdowns?: NavDropdownGroup[];
   showDemo?: boolean;
