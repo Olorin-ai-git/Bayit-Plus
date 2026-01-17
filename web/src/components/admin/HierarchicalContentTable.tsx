@@ -10,7 +10,7 @@ import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-nati
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ChevronDown, ChevronRight, ChevronLeft, Star, Eye, Trash2, Film, Tv } from 'lucide-react'
-import { GlassTable, GlassTableColumn, GlassTableCell } from '@bayit/shared/ui'
+import { GlassTable, GlassTableColumn, GlassTableCell } from '@bayit/shared/ui/web'
 import { useDirection } from '@/hooks/useDirection'
 import { adminContentService } from '@/services/adminApi'
 import logger from '@/utils/logger'

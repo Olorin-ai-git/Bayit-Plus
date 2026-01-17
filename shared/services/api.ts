@@ -323,6 +323,10 @@ const apiSubtitlesService = {
     }),
   addNikudToText: (text: string) =>
     api.post('/subtitles/nikud/text', null, { params: { text } }),
+  fetchExternal: (contentId: string, languages?: string[]) =>
+    api.post(`/subtitles/${contentId}/fetch-external`, null, {
+      params: languages ? { languages: languages.join(',') } : undefined
+    }),
 };
 
 // Subtitle Preferences Service (API)

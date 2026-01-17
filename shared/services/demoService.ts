@@ -691,6 +691,21 @@ export const demoSubtitlesService = {
       with_nikud: text,
     };
   },
+  fetchExternal: async (contentId: string, languages?: string[]) => {
+    await delay(2000);
+    // Demo mode - simulate finding some subtitles
+    return {
+      message: 'Demo mode - simulated subtitle fetch',
+      imported: [
+        { language: 'en', language_name: 'English', cue_count: 100, track_id: 'demo-en' },
+      ],
+      skipped: [],
+      failed: [
+        { language: 'he', reason: 'Demo mode' },
+      ],
+      quota_remaining: 100,
+    };
+  },
 };
 
 // ===========================================

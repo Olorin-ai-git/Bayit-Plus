@@ -1,4 +1,4 @@
-// Main screens
+// Main screens - safe for all platforms (web, TV, mobile)
 export { HomeScreen } from './HomeScreen';
 export { PlayerScreen } from './PlayerScreen';
 export { LoginScreen } from './LoginScreen';
@@ -24,20 +24,5 @@ export { default as SettingsScreen } from './SettingsScreen';
 export { default as RecordingsScreen } from './RecordingsScreen';
 export { default as HelpScreen } from './HelpScreen';
 
-// Admin screens
-export { AdminDashboardScreen } from './admin/AdminDashboardScreen';
-export { UsersListScreen } from './admin/UsersListScreen';
-export { UserDetailScreen } from './admin/UserDetailScreen';
-export { SubscriptionsScreen } from './admin/SubscriptionsScreen';
-export { TransactionsScreen } from './admin/TransactionsScreen';
-export { BillingOverviewScreen } from './admin/BillingOverviewScreen';
-export { RefundsScreen } from './admin/RefundsScreen';
-export { PlanManagementScreen } from './admin/PlanManagementScreen';
-export { CampaignsListScreen } from './admin/CampaignsListScreen';
-export { CampaignDetailScreen } from './admin/CampaignDetailScreen';
-export { EmailCampaignsScreen } from './admin/EmailCampaignsScreen';
-export { PushNotificationsScreen } from './admin/PushNotificationsScreen';
-export { MarketingDashboardScreen } from './admin/MarketingDashboardScreen';
-export { UploadsScreen } from './admin/UploadsScreen';
-export { AuditLogsScreen } from './admin/AuditLogsScreen';
-export { SettingsScreen as AdminSettingsScreen } from './admin/SettingsScreen';
+// Admin screens are in a separate export to avoid bundling web-only dependencies in TV apps
+// Import from '@bayit/shared-screens/admin' instead

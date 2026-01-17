@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput, Image } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -8,7 +8,7 @@ import {
 import { useFriendsStore } from '../stores/friendsStore';
 import { useAuthStore } from '../stores/authStore';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassView, GlassButton, GlassCard, GlassTabs, GlassModal, GlassInput } from '@bayit/shared/ui';
+import { GlassView, GlassButton, GlassCard, GlassTabs, GlassModal, GlassInput, GlassAvatar, GlassStatCard } from '@bayit/shared/ui';
 
 type TabId = 'friends' | 'requests' | 'search';
 
@@ -194,15 +194,11 @@ export default function FriendsPage() {
     <GlassCard style={styles.userCard}>
       <Pressable onPress={() => viewProfile(userId)} style={[styles.userCardContent, isRTL && styles.userCardContentRTL]}>
         {/* Avatar */}
-        <View style={styles.avatarContainer}>
-          {avatar ? (
-            <Image source={{ uri: avatar }} style={styles.avatar} />
-          ) : (
-            <View style={styles.avatarPlaceholder}>
-              <Text style={styles.avatarInitial}>{name.charAt(0).toUpperCase()}</Text>
-            </View>
-          )}
-        </View>
+        <GlassAvatar
+          uri={avatar}
+          name={name}
+          size="medium"
+        />
 
         {/* User Info */}
         <View style={styles.userInfo}>
@@ -261,32 +257,40 @@ export default function FriendsPage() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Header */}
-      <View style={[styles.header, isRTL && styles.headerRTL]}>
-        <View style={[styles.headerIcon, { backgroundColor: 'rgba(107, 33, 168, 0.2)' }]}>
-          <Users size={32} color={colors.primary} />
+      <GlassView style={styles.headerGlass} intensity="low">
+        <View style={[styles.header, isRTL && styles.headerRTL]}>
+          <View style={styles.headerIcon}>
+            <Users size={32} color={colors.primary} />
+          </View>
+          <View style={styles.headerText}>
+            <Text style={[styles.title, isRTL && styles.textRTL]}>
+              {t('friends.title', 'Friends & Opponents')}
+            </Text>
+            <Text style={[styles.subtitle, isRTL && styles.textRTL]}>
+              {t('friends.subtitle', 'Connect with players and challenge friends')}
+            </Text>
+          </View>
         </View>
-        <View style={styles.headerText}>
-          <Text style={[styles.title, isRTL && styles.textRTL]}>
-            {t('friends.title', 'Friends & Opponents')}
-          </Text>
-          <Text style={[styles.subtitle, isRTL && styles.textRTL]}>
-            {t('friends.subtitle', 'Connect with players and challenge friends')}
-          </Text>
-        </View>
-      </View>
+      </GlassView>
 
       {/* Stats */}
       <View style={styles.statsRow}>
-        <GlassCard style={styles.statCard}>
-          <UserCheck size={24} color={colors.success} />
-          <Text style={styles.statValue}>{friends.length}</Text>
-          <Text style={styles.statLabel}>{t('friends.friendsLabel', 'Friends')}</Text>
-        </GlassCard>
-        <GlassCard style={styles.statCard}>
-          <Clock size={24} color={colors.warning} />
-          <Text style={styles.statValue}>{incomingRequests.length}</Text>
-          <Text style={styles.statLabel}>{t('friends.pendingLabel', 'Pending')}</Text>
-        </GlassCard>
+        <GlassStatCard
+          icon={<UserCheck size={24} color={colors.success} />}
+          iconColor={colors.success}
+          label={t('friends.friendsLabel', 'Friends')}
+          value={friends.length}
+          compact
+          style={styles.statCard}
+        />
+        <GlassStatCard
+          icon={<Clock size={24} color={colors.warning} />}
+          iconColor={colors.warning}
+          label={t('friends.pendingLabel', 'Pending')}
+          value={incomingRequests.length}
+          compact
+          style={styles.statCard}
+        />
       </View>
 
       {/* Tabs */}
@@ -358,17 +362,11 @@ export default function FriendsPage() {
                 <GlassCard key={request.id} style={styles.requestCard}>
                   <View style={[styles.requestContent, isRTL && styles.requestContentRTL]}>
                     {/* Avatar */}
-                    <View style={styles.avatarContainer}>
-                      {request.sender_avatar ? (
-                        <Image source={{ uri: request.sender_avatar }} style={styles.avatar} />
-                      ) : (
-                        <View style={styles.avatarPlaceholder}>
-                          <Text style={styles.avatarInitial}>
-                            {request.sender_name.charAt(0).toUpperCase()}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
+                    <GlassAvatar
+                      uri={request.sender_avatar}
+                      name={request.sender_name}
+                      size="medium"
+                    />
 
                     {/* Request Info */}
                     <View style={styles.requestInfo}>
@@ -389,13 +387,21 @@ export default function FriendsPage() {
                     <View style={[styles.requestActions, isRTL && styles.requestActionsRTL]}>
                       <Pressable
                         onPress={() => handleAcceptRequest(request.id)}
-                        style={[styles.requestActionButton, styles.acceptButton]}
+                        style={({ pressed }) => [
+                          styles.glassIconButton,
+                          styles.successButton,
+                          pressed && styles.buttonPressed,
+                        ]}
                       >
                         <Check size={20} color={colors.success} />
                       </Pressable>
                       <Pressable
                         onPress={() => handleRejectRequest(request.id)}
-                        style={[styles.requestActionButton, styles.rejectButton]}
+                        style={({ pressed }) => [
+                          styles.glassIconButton,
+                          styles.dangerButton,
+                          pressed && styles.buttonPressed,
+                        ]}
                       >
                         <X size={20} color={colors.error} />
                       </Pressable>
@@ -548,12 +554,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
     width: '100%',
   },
-  // Header
+  // Header with glass
+  headerGlass: {
+    marginBottom: spacing.lg,
+    padding: spacing.md,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    marginBottom: spacing.lg,
   },
   headerRTL: {
     flexDirection: 'row-reverse',
@@ -562,8 +571,11 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: borderRadius.lg,
+    backgroundColor: colors.glassPurpleLight,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
   },
   headerText: {
     flex: 1,
@@ -586,18 +598,6 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    padding: spacing.md,
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: colors.textMuted,
   },
   // Tabs
   tabsContainer: {
@@ -632,28 +632,6 @@ const styles = StyleSheet.create({
   },
   userCardContentRTL: {
     flexDirection: 'row-reverse',
-  },
-  avatarContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    overflow: 'hidden',
-  },
-  avatar: {
-    width: '100%',
-    height: '100%',
-  },
-  avatarPlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarInitial: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.primary,
   },
   userInfo: {
     flex: 1,
@@ -692,7 +670,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: colors.glassBorderWhite,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -707,6 +685,26 @@ const styles = StyleSheet.create({
   actionButtonText: {
     fontSize: 13,
     fontWeight: '600',
+  },
+  // Glass icon buttons for request actions
+  glassIconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  successButton: {
+    backgroundColor: colors.glassPurpleLight,
+  },
+  dangerButton: {
+    backgroundColor: colors.glassPurpleLight,
+  },
+  buttonPressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.95 }],
   },
   // Request Card
   requestCard: {
@@ -747,17 +745,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
   },
   requestActionButton: {
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  acceptButton: {
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-  },
-  rejectButton: {
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    marginHorizontal: spacing.xs,
   },
   // Search
   searchContainer: {

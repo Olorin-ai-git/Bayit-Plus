@@ -1,3 +1,4 @@
+// Platform-agnostic hooks - safe for all platforms (web, TV, mobile)
 export { useDirection } from './useDirection';
 export { useDeviceLayout } from './useDeviceLayout';
 export { usePermissions } from './usePermissions';
@@ -9,9 +10,5 @@ export { useWakeWordListening } from './useWakeWordListening';
 export type { UseWakeWordListeningOptions, UseWakeWordListeningReturn } from './useWakeWordListening';
 
 // Voice-first conversational interface hooks (Phases 4-10)
-export { useVoiceResponseCoordinator } from './useVoiceResponseCoordinator';
-export { useConversationContext } from './useConversationContext';
-export type { ConversationContextData } from './useConversationContext';
-export { useInteractionFeedback } from './useInteractionFeedback';
-export { useProactiveConversation } from './useProactiveConversation';
-export { usePresenceAwarePlayback } from './usePresenceAwarePlayback';
+// These hooks depend on react-router-dom and are in a separate export for TV apps
+// Import from '@bayit/shared-hooks/voice' for web-only usage

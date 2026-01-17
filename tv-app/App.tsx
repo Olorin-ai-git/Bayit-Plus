@@ -26,11 +26,16 @@ import {
   ChildrenScreen,
   FlowsScreen,
   JudaismScreen,
+  EPGScreen,
+  MovieDetailScreen,
+  SeriesDetailScreen,
+  SettingsScreen,
+  RecordingsScreen,
+  HelpScreen,
 } from '@bayit/shared-screens';
 import { useAuthStore, useChatbotStore } from '@bayit/shared-stores';
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';
-import { AdminNavigator } from './src/navigation/AdminNavigator';
 import { GlassTopBar, GlassSidebar, DemoBanner } from '@bayit/shared';
 import { isWeb } from './src/utils/platform';
 
@@ -47,7 +52,6 @@ export type RootStackParamList = {
   CreateProfile: undefined;
   EditProfile: { profileId: string };
   Main: undefined;
-  Admin: undefined;
   MorningRitual: undefined;
   Judaism: undefined;
   Children: undefined;
@@ -55,13 +59,19 @@ export type RootStackParamList = {
   Player: {
     id: string;
     title: string;
-    type: 'vod' | 'live' | 'radio' | 'podcast';
+    type: 'vod' | 'live' | 'radio' | 'podcast' | 'catchup' | 'recording';
   };
   Search: { query?: string };
   Subscribe: undefined;
   Favorites: undefined;
   Downloads: undefined;
   Watchlist: undefined;
+  EPG: undefined;
+  MovieDetail: { movieId: string };
+  SeriesDetail: { seriesId: string };
+  Settings: undefined;
+  Recordings: undefined;
+  Help: undefined;
 };
 
 export type MainTabParamList = {
@@ -309,7 +319,12 @@ const AppContent: React.FC = () => {
             <Stack.Screen name="Favorites" component={FavoritesScreen} />
             <Stack.Screen name="Downloads" component={DownloadsScreen} />
             <Stack.Screen name="Watchlist" component={WatchlistScreen} />
-            <Stack.Screen name="Admin" component={AdminNavigator} />
+            <Stack.Screen name="EPG" component={EPGScreen} />
+            <Stack.Screen name="MovieDetail" component={MovieDetailScreen} />
+            <Stack.Screen name="SeriesDetail" component={SeriesDetailScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="Recordings" component={RecordingsScreen} />
+            <Stack.Screen name="Help" component={HelpScreen} />
           </Stack.Navigator>
         </View>
       </View>

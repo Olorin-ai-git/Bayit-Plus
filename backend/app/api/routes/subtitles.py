@@ -44,26 +44,29 @@ async def get_supported_languages():
 async def get_subtitle_tracks(
     content_id: str,
     language: Optional[str] = None
-) -> List[dict]:
+) -> dict:
     """
     Get available subtitle tracks for content.
     Optionally filter by language.
     """
     tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
 
-    return [
-        {
-            "id": str(track.id),
-            "content_id": track.content_id,
-            "language": track.language,
-            "language_name": track.language_name,
-            "format": track.format,
-            "has_nikud_version": track.has_nikud_version,
-            "is_default": track.is_default,
-            "cue_count": len(track.cues),
-        }
-        for track in tracks
-    ]
+    return {
+        "tracks": [
+            {
+                "id": str(track.id),
+                "content_id": track.content_id,
+                "language": track.language,
+                "language_name": track.language_name,
+                "format": track.format,
+                "has_nikud_version": track.has_nikud_version,
+                "is_default": track.is_default,
+                "is_auto_generated": getattr(track, 'is_auto_generated', False),
+                "cue_count": len(track.cues),
+            }
+            for track in tracks
+        ]
+    }
 
 
 @router.get("/{content_id}/cues")
@@ -331,6 +334,195 @@ async def add_nikud_to_text(
         "original": text,
         "with_nikud": nikud_text,
     }
+
+
+@router.post("/{content_id}/fetch-external")
+async def fetch_external_subtitles(
+    content_id: str,
+    languages: Optional[List[str]] = Query(default=None, description="Languages to fetch (e.g., ['en', 'es', 'he']). If not provided, fetches common languages."),
+) -> dict:
+    """
+    Search OpenSubtitles for available subtitles and download them.
+    Immediately imports successful downloads so user can watch with subtitles.
+
+    Returns list of successfully imported languages.
+    """
+    from app.models.content import Content
+    from app.services.opensubtitles_service import get_opensubtitles_service
+    from app.services.subtitle_service import parse_srt
+    import logging
+
+    logger = logging.getLogger(__name__)
+
+    # Get content to find IMDB ID
+    content = await Content.get(content_id)
+    if not content:
+        raise HTTPException(status_code=404, detail="Content not found")
+
+    imdb_id = content.imdb_id
+    if not imdb_id:
+        raise HTTPException(
+            status_code=400,
+            detail="Content does not have IMDB ID. Cannot search OpenSubtitles."
+        )
+
+    # Default languages if not specified
+    if not languages:
+        languages = ["en", "he", "es", "ar", "ru", "fr", "de", "pt", "it"]
+
+    # Language name mapping
+    language_names = {
+        "en": "English",
+        "he": "עברית",
+        "es": "Español",
+        "ar": "العربية",
+        "ru": "Русский",
+        "fr": "Français",
+        "de": "Deutsch",
+        "pt": "Português",
+        "it": "Italiano",
+        "yi": "ייִדיש",
+        "zh": "中文",
+        "ja": "日本語",
+        "ko": "한국어",
+    }
+
+    # Get existing subtitle languages to skip
+    existing_tracks = await SubtitleTrackDoc.get_for_content(content_id)
+    existing_languages = {t.language for t in existing_tracks}
+
+    # Filter out already existing languages
+    languages_to_fetch = [lang for lang in languages if lang not in existing_languages]
+
+    if not languages_to_fetch:
+        return {
+            "message": "All requested languages already available",
+            "imported": [],
+            "skipped": list(existing_languages),
+            "failed": [],
+        }
+
+    opensubtitles = get_opensubtitles_service()
+
+    # Check quota
+    quota = await opensubtitles.check_quota_available()
+    if not quota["available"]:
+        raise HTTPException(
+            status_code=429,
+            detail=f"OpenSubtitles daily quota exhausted ({quota['used']}/{quota['daily_limit']}). Resets at {quota['resets_at']}."
+        )
+
+    imported = []
+    failed = []
+
+    # Determine if this is a series episode
+    season_number = getattr(content, 'season', None)
+    episode_number = getattr(content, 'episode', None)
+    parent_imdb_id = getattr(content, 'series_imdb_id', None) or (
+        getattr(content, 'series_id', None) and await _get_series_imdb_id(content.series_id)
+    )
+
+    for lang in languages_to_fetch:
+        try:
+            logger.info(f"🔍 Searching subtitles for {content.title} ({lang})")
+
+            # Search for subtitles
+            results = await opensubtitles.search_subtitles(
+                imdb_id=imdb_id,
+                language=lang,
+                content_id=content_id,
+                season_number=season_number,
+                episode_number=episode_number,
+                parent_imdb_id=parent_imdb_id,
+                query=content.title if not imdb_id else None,
+            )
+
+            if not results:
+                logger.info(f"❌ No subtitles found for {content.title} ({lang})")
+                failed.append({"language": lang, "reason": "Not found"})
+                continue
+
+            # Get the best result (first one, usually highest rated)
+            best_result = results[0]
+            file_id = best_result.get("file_id")
+
+            if not file_id:
+                failed.append({"language": lang, "reason": "No file ID in result"})
+                continue
+
+            # Download subtitle content
+            subtitle_content = await opensubtitles.download_subtitle(
+                file_id=file_id,
+                content_id=content_id,
+                language=lang,
+            )
+
+            if not subtitle_content:
+                failed.append({"language": lang, "reason": "Download failed"})
+                continue
+
+            # Parse SRT content
+            parsed = parse_srt(subtitle_content)
+
+            if not parsed.cues:
+                failed.append({"language": lang, "reason": "No cues parsed"})
+                continue
+
+            # Save to database
+            track = SubtitleTrackDoc(
+                content_id=content_id,
+                content_type="vod",
+                language=lang,
+                language_name=language_names.get(lang, lang.upper()),
+                format="srt",
+                source="opensubtitles",
+                external_id=file_id,
+                external_url=best_result.get("download_url"),
+                download_date=datetime.utcnow(),
+                cues=[
+                    SubtitleCueModel(
+                        index=cue.index,
+                        start_time=cue.start_time,
+                        end_time=cue.end_time,
+                        text=cue.text,
+                    )
+                    for cue in parsed.cues
+                ],
+                is_default=False,
+                is_auto_generated=False,
+            )
+            await track.insert()
+
+            imported.append({
+                "language": lang,
+                "language_name": language_names.get(lang, lang.upper()),
+                "cue_count": len(parsed.cues),
+                "track_id": str(track.id),
+            })
+
+            logger.info(f"✅ Imported {lang} subtitles for {content.title} ({len(parsed.cues)} cues)")
+
+        except Exception as e:
+            logger.error(f"❌ Error fetching {lang} subtitles: {e}")
+            failed.append({"language": lang, "reason": str(e)})
+
+    return {
+        "message": f"Imported {len(imported)} subtitle tracks",
+        "imported": imported,
+        "skipped": list(existing_languages),
+        "failed": failed,
+        "quota_remaining": (await opensubtitles.check_quota_available())["remaining"],
+    }
+
+
+async def _get_series_imdb_id(series_id: str) -> Optional[str]:
+    """Helper to get IMDB ID from parent series"""
+    from app.models.content import Content
+    try:
+        series = await Content.get(series_id)
+        return series.imdb_id if series else None
+    except Exception:
+        return None
 
 
 @router.get("/cache/stats")

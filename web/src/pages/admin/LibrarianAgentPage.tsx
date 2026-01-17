@@ -12,7 +12,8 @@ import { RefreshCw, Bot, Play, Zap, FileText, Eye, ScrollText, Trash2, Calendar,
 import StatCard from '@/components/admin/StatCard';
 import LibrarianScheduleCard from '@/components/admin/LibrarianScheduleCard';
 import { VoiceLibrarianControl } from '@/components/admin/VoiceLibrarianControl';
-import { GlassCard, GlassButton, GlassModal, GlassBadge, GlassTable, GlassTableColumn, GlassLog, LogEntry, GlassDraggableExpander, GlassResizablePanel } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal, GlassBadge, GlassResizablePanel } from '@bayit/shared/ui';
+import { GlassTable, GlassLog, GlassDraggableExpander, type GlassTableColumn, type LogEntry } from '@bayit/shared/ui/web';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
 import {

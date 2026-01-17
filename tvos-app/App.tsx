@@ -32,14 +32,13 @@ import {
   RecordingsScreen,
   HelpScreen,
 } from '@bayit/shared-screens';
-import { AdminNavigator } from './src/navigation/AdminNavigator';
 import ProfileFormScreen from './src/screens/ProfileFormScreen';
 import SubscribeScreen from './src/screens/SubscribeScreen';
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';
 import { DemoBanner, SoundwaveVisualizer } from '@bayit/shared';
 import { Chatbot } from '@bayit/shared/chat';
-import { useChatbotStore, useAuthStore, useVoiceSettingsStore } from '@bayit/shared-stores';
+import { useChatbotStore, useVoiceSettingsStore } from '@bayit/shared-stores';
 import { chatService } from '@bayit/shared-services';
 import { TVHeader } from './src/components/TVHeader';
 import { useTVConstantListening } from './src/hooks/useTVConstantListening';
@@ -146,7 +145,6 @@ export type RootStackParamList = {
   };
   Search: { query?: string };
   Subscribe: undefined;
-  Admin: undefined;
   Favorites: undefined;
   Downloads: undefined;
   Watchlist: undefined;
@@ -298,7 +296,6 @@ const AppContent: React.FC = () => {
           <Stack.Screen name="Player" component={PlayerScreen} />
           <Stack.Screen name="Search" component={SearchScreen} />
           <Stack.Screen name="Subscribe" component={SubscribeScreen} />
-          <Stack.Screen name="Admin" component={AdminNavigator} />
           <Stack.Screen name="Favorites" component={FavoritesScreen} />
           <Stack.Screen name="Downloads" component={DownloadsScreen} />
           <Stack.Screen name="Watchlist" component={WatchlistScreen} />
@@ -337,7 +334,6 @@ const AppContent: React.FC = () => {
 const AppContentWithHandlers: React.FC = () => {
   const navigation = useNavigation<any>();
   const { registerActionHandler, unregisterActionHandler } = useChatbotStore();
-  const { user } = useAuthStore();
   const { t, i18n } = useTranslation();
 
   // Register chatbot action handlers
@@ -400,15 +396,6 @@ const AppContentWithHandlers: React.FC = () => {
     // Manage profiles
     registerActionHandler('manage_profiles', () => {
       navigation.navigate('ProfileSelection');
-    });
-
-    // Open admin (only for admin users)
-    registerActionHandler('open_admin', () => {
-      if (user?.role === 'admin') {
-        navigation.navigate('Admin');
-      } else {
-        console.log('[Chatbot] Admin access denied - user is not admin');
-      }
     });
 
     // Show Multiple - display multiple content items
@@ -487,11 +474,10 @@ const AppContentWithHandlers: React.FC = () => {
       unregisterActionHandler('add_to_watchlist');
       unregisterActionHandler('subscribe');
       unregisterActionHandler('manage_profiles');
-      unregisterActionHandler('open_admin');
       unregisterActionHandler('show_multiple');
       unregisterActionHandler('chess_invite');
     };
-  }, [navigation, registerActionHandler, unregisterActionHandler, user?.role, t, i18n.language]);
+  }, [navigation, registerActionHandler, unregisterActionHandler, t, i18n.language]);
 
   return <AppContent />;
 };

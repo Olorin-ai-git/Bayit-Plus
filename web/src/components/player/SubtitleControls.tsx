@@ -5,9 +5,9 @@
 
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Subtitles, Settings as SettingsIcon, X } from 'lucide-react'
+import { Subtitles, Settings as SettingsIcon, X, Download, Check, AlertCircle } from 'lucide-react'
 import {
   SubtitleTrack,
   SubtitleSettings,
@@ -16,6 +16,7 @@ import {
 } from '@/types/subtitle'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassView } from '@bayit/shared/ui'
+import { subtitlesService } from '@/services/api'
 
 interface SubtitleControlsProps {
   contentId: string
@@ -26,6 +27,7 @@ interface SubtitleControlsProps {
   onLanguageChange: (language: string | null) => void
   onToggle: (enabled: boolean) => void
   onSettingsChange: (settings: SubtitleSettings) => void
+  onSubtitlesRefresh?: () => void
 }
 
 export default function SubtitleControls({
@@ -37,10 +39,66 @@ export default function SubtitleControls({
   onLanguageChange,
   onToggle,
   onSettingsChange,
+  onSubtitlesRefresh,
 }: SubtitleControlsProps) {
   const { t } = useTranslation()
   const [showLanguageMenu, setShowLanguageMenu] = useState(false)
   const [showSettingsPanel, setShowSettingsPanel] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
+  const [downloadResult, setDownloadResult] = useState<{
+    type: 'success' | 'error' | 'partial'
+    message: string
+    imported?: string[]
+  } | null>(null)
+
+  // Handle download more subtitles
+  const handleDownloadSubtitles = async () => {
+    if (isDownloading) return
+
+    setIsDownloading(true)
+    setDownloadResult(null)
+
+    try {
+      const response = await subtitlesService.fetchExternal(contentId)
+
+      if (response.imported && response.imported.length > 0) {
+        const importedNames = response.imported.map((item: any) => item.language_name)
+        setDownloadResult({
+          type: response.failed?.length > 0 ? 'partial' : 'success',
+          message: t('subtitles.downloadSuccess', { count: response.imported.length }),
+          imported: importedNames,
+        })
+
+        // Refresh the subtitles list
+        if (onSubtitlesRefresh) {
+          onSubtitlesRefresh()
+        }
+
+        // Auto-select first imported language if none selected
+        if (!currentLanguage && response.imported.length > 0) {
+          onLanguageChange(response.imported[0].language)
+          onToggle(true)
+        }
+      } else {
+        setDownloadResult({
+          type: 'error',
+          message: t('subtitles.noSubtitlesFound', 'No subtitles found for this content'),
+        })
+      }
+
+      // Clear result after 5 seconds
+      setTimeout(() => setDownloadResult(null), 5000)
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.detail || error?.message || 'Download failed'
+      setDownloadResult({
+        type: 'error',
+        message: errorMessage,
+      })
+      setTimeout(() => setDownloadResult(null), 5000)
+    } finally {
+      setIsDownloading(false)
+    }
+  }
 
   // Handle subtitle button click - always opens language selector
   const handleSubtitleButtonClick = () => {
@@ -180,6 +238,68 @@ export default function SubtitleControls({
                     </Text>
               </View>
             )}
+
+            {/* Divider */}
+            <View style={styles.menuDivider} />
+
+            {/* Download Result Message */}
+            {downloadResult && (
+              <View style={[
+                styles.downloadResultContainer,
+                downloadResult.type === 'success' && styles.downloadResultSuccess,
+                downloadResult.type === 'error' && styles.downloadResultError,
+                downloadResult.type === 'partial' && styles.downloadResultPartial,
+              ]}>
+                {downloadResult.type === 'success' ? (
+                  <Check size={16} color={colors.success} />
+                ) : downloadResult.type === 'error' ? (
+                  <AlertCircle size={16} color={colors.error} />
+                ) : (
+                  <AlertCircle size={16} color={colors.warning} />
+                )}
+                <View style={styles.downloadResultContent}>
+                  <Text style={styles.downloadResultText}>{downloadResult.message}</Text>
+                  {downloadResult.imported && downloadResult.imported.length > 0 && (
+                    <Text style={styles.downloadResultSubtext}>
+                      {downloadResult.imported.join(', ')}
+                    </Text>
+                  )}
+                </View>
+              </View>
+            )}
+
+            {/* Download More Subtitles Button */}
+            <Pressable
+              onPress={(e) => {
+                e?.stopPropagation?.()
+                handleDownloadSubtitles()
+              }}
+              onClick={(e: any) => e.stopPropagation()}
+              onMouseDown={(e: any) => e.stopPropagation()}
+              disabled={isDownloading}
+              style={({ pressed }) => [
+                styles.menuItem,
+                styles.downloadMenuItem,
+                pressed && styles.menuItemPressed,
+                isDownloading && styles.menuItemDisabled,
+              ]}
+            >
+              {isDownloading ? (
+                <ActivityIndicator size="small" color={colors.primary} style={{ marginRight: spacing.md }} />
+              ) : (
+                <Download size={20} color={colors.primary} style={{ marginRight: spacing.md }} />
+              )}
+              <View style={styles.menuItemContent}>
+                <Text style={[styles.menuItemText, styles.downloadMenuText]}>
+                  {isDownloading
+                    ? t('subtitles.downloading', 'Searching OpenSubtitles...')
+                    : t('subtitles.downloadMore', 'Download more subtitles...')}
+                </Text>
+                <Text style={styles.menuItemSubtext}>
+                  {t('subtitles.opensubtitlesSource', 'From OpenSubtitles.com')}
+                </Text>
+              </View>
+            </Pressable>
           </ScrollView>
         </GlassView>
       </>
@@ -387,5 +507,58 @@ const styles = StyleSheet.create({
     marginRight: spacing.xs,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  // Download subtitle styles
+  menuDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    marginVertical: spacing.sm,
+  },
+  downloadMenuItem: {
+    borderBottomWidth: 0,
+    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+    borderRadius: borderRadius.md,
+    marginHorizontal: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  downloadMenuText: {
+    color: colors.primary,
+  },
+  downloadResultContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    padding: spacing.md,
+    marginHorizontal: spacing.sm,
+    marginBottom: spacing.sm,
+    borderRadius: borderRadius.md,
+    gap: spacing.sm,
+  },
+  downloadResultSuccess: {
+    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.3)',
+  },
+  downloadResultError: {
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+  },
+  downloadResultPartial: {
+    backgroundColor: 'rgba(234, 179, 8, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(234, 179, 8, 0.3)',
+  },
+  downloadResultContent: {
+    flex: 1,
+  },
+  downloadResultText: {
+    color: colors.text,
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  downloadResultSubtext: {
+    color: colors.textSecondary,
+    fontSize: 11,
+    marginTop: 2,
   },
 })

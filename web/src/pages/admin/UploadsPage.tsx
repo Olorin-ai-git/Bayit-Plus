@@ -8,7 +8,8 @@ import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Pressable } from
 import { useTranslation } from 'react-i18next';
 import { useDropzone } from 'react-dropzone';
 import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
-import { GlassCard, GlassButton, GlassInput, GlassModal, GlassSelect, GlassToggle, GlassDraggableExpander, GlassCheckbox, GlassResizablePanel } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassInput, GlassModal, GlassSelect, GlassToggle, GlassCheckbox, GlassResizablePanel } from '@bayit/shared/ui';
+import { GlassDraggableExpander } from '@bayit/shared/ui/web';
 import { Plus, Edit2, Trash2, FolderOpen, AlertCircle, X, Folder, Upload, XCircle, File, CheckCircle, List } from 'lucide-react';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';

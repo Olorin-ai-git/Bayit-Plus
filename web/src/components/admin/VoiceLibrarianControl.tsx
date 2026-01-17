@@ -2,7 +2,8 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
-import { GlassDraggableExpander, GlassButton } from '@bayit/shared/ui';
+import { GlassButton } from '@bayit/shared/ui';
+import { GlassDraggableExpander } from '@bayit/shared/ui/web';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import logger from '@/utils/logger';
 

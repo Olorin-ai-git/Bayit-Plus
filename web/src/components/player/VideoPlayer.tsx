@@ -306,53 +306,54 @@ export default function VideoPlayer({
     }
   }, [])
 
-  // Fetch available subtitles when contentId changes
-  useEffect(() => {
+  // Function to fetch available subtitles (extracted for reuse)
+  const fetchAvailableSubtitles = async () => {
     if (!contentId || isLive) return
 
-    const fetchSubtitles = async () => {
-      try {
-        const response = await subtitlesService.getTracks(contentId)
-        setAvailableSubtitles(response.tracks || [])
+    try {
+      const response = await subtitlesService.getTracks(contentId)
+      setAvailableSubtitles(response.tracks || [])
 
-        // Auto-select subtitle language if enabled and not already set
-        if (subtitlesEnabled && !currentSubtitleLang && response.tracks?.length > 0) {
-          const availableLanguages = response.tracks.map(t => t.language)
+      // Auto-select subtitle language if enabled and not already set
+      if (subtitlesEnabled && !currentSubtitleLang && response.tracks?.length > 0) {
+        const availableLanguages = response.tracks.map((t: any) => t.language)
 
-          // Priority: 1. User preference, 2. Hebrew, 3. English, 4. Default, 5. First available
-          let selectedLanguage: string | null = null
+        // Priority: 1. User preference, 2. Hebrew, 3. English, 4. Default, 5. First available
+        let selectedLanguage: string | null = null
 
-          // Try to get user's saved preference for this content
-          try {
-            const prefResponse = await subtitlePreferencesService.getPreference(contentId)
-            if (prefResponse.preferred_language && availableLanguages.includes(prefResponse.preferred_language)) {
-              selectedLanguage = prefResponse.preferred_language
-            }
-          } catch (error) {
-            // Preference not found or error - continue with fallback
+        // Try to get user's saved preference for this content
+        try {
+          const prefResponse = await subtitlePreferencesService.getPreference(contentId)
+          if (prefResponse.preferred_language && availableLanguages.includes(prefResponse.preferred_language)) {
+            selectedLanguage = prefResponse.preferred_language
           }
-
-          // Fallback to Hebrew > English if no preference
-          if (!selectedLanguage) {
-            if (availableLanguages.includes('he')) {
-              selectedLanguage = 'he'
-            } else if (availableLanguages.includes('en')) {
-              selectedLanguage = 'en'
-            } else {
-              // Fallback to default or first available
-              const defaultTrack = response.tracks.find(t => t.is_default) || response.tracks[0]
-              selectedLanguage = defaultTrack.language
-            }
-          }
-
-          setCurrentSubtitleLang(selectedLanguage)
+        } catch (error) {
+          // Preference not found or error - continue with fallback
         }
-      } catch (error) {
-        logger.error('Failed to fetch subtitle tracks', 'VideoPlayer', error)
-      }
-    }
 
-    fetchSubtitles()
+        // Fallback to Hebrew > English if no preference
+        if (!selectedLanguage) {
+          if (availableLanguages.includes('he')) {
+            selectedLanguage = 'he'
+          } else if (availableLanguages.includes('en')) {
+            selectedLanguage = 'en'
+          } else {
+            // Fallback to default or first available
+            const defaultTrack = response.tracks.find((t: any) => t.is_default) || response.tracks[0]
+            selectedLanguage = defaultTrack.language
+          }
+        }
+
+        setCurrentSubtitleLang(selectedLanguage)
+      }
+    } catch (error) {
+      logger.error('Failed to fetch subtitle tracks', 'VideoPlayer', error)
+    }
+  }
+
+  // Fetch available subtitles when contentId changes
+  useEffect(() => {
+    fetchAvailableSubtitles()
   }, [contentId, isLive])
 
   // Fetch subtitle cues when language changes
@@ -943,6 +944,7 @@ export default function VideoPlayer({
                   onLanguageChange={handleSubtitleLanguageChange}
                   onToggle={handleSubtitleToggle}
                   onSettingsChange={handleSubtitleSettingsChange}
+                  onSubtitlesRefresh={fetchAvailableSubtitles}
                 />
               )}
               {/* Live Subtitle Controls (Premium) */}

@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { UserPlus, Edit, Ban, Key, Trash2, X } from 'lucide-react';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassButton, GlassTable, GlassTableCell, GlassTableColumn, GlassModal, GlassInput } from '@bayit/shared/ui';
+import { GlassButton, GlassModal, GlassInput } from '@bayit/shared/ui';
+import { GlassTable, GlassTableCell, type GlassTableColumn } from '@bayit/shared/ui/web';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 

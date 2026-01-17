@@ -192,6 +192,12 @@ class Settings(BaseSettings):
     LLM_SEARCH_MAX_RESULTS: int = 50
     LLM_SEARCH_TIMEOUT_SECONDS: int = 30
 
+    # Chat Translation Configuration
+    CHAT_TRANSLATION_ENABLED: bool = True
+    CHAT_TRANSLATION_TIMEOUT_SECONDS: float = 2.0
+    CHAT_TRANSLATION_CACHE_TTL_DAYS: int = 7
+    TRANSLATION_MEMORY_CACHE_SIZE: int = 1000
+
     class Config:
         env_file = ".env"
         case_sensitive = True

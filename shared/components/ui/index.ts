@@ -1,5 +1,5 @@
 // Bayit+ Shared Glass UI Components
-// Used by both web and TV apps
+// Platform-agnostic components - safe for all platforms (web, TV, mobile)
 
 // Core glass components
 export { GlassView } from './GlassView';
@@ -23,10 +23,7 @@ export { GlassBreadcrumbs } from './GlassBreadcrumbs';
 export { AnalogClock } from './AnalogClock';
 export { GlassAvatar } from './GlassAvatar';
 export { GlassStatCard } from './GlassStatCard';
-export { GlassTable, GlassTableCell } from './GlassTable';
 export { GlassLiveChannelCard } from './GlassLiveChannelCard';
-export { GlassLog } from './GlassLog';
-export { GlassDraggableExpander } from './GlassDraggableExpander';
 export { GlassResizablePanel } from './GlassResizablePanel';
 export { GlassSplitterHandle } from './GlassSplitterHandle';
 export { GlassTooltip } from './GlassTooltip';
@@ -40,5 +37,7 @@ export type { AnalogClockProps } from './AnalogClock';
 export type { GlassAvatarProps } from './GlassAvatar';
 export type { GlassToggleProps } from './GlassToggle';
 export type { GlassStatCardProps } from './GlassStatCard';
-export type { GlassTableColumn, GlassTablePagination, GlassTableProps } from './GlassTable';
-export type { LogLevel, LogEntry } from './GlassLog';
+
+// Web-only components (depend on lucide-react) are in a separate export
+// Import from '@bayit/shared/ui/web' for web-only usage:
+// GlassTable, GlassTableCell, GlassLog, GlassDraggableExpander

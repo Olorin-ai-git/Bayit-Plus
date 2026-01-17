@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Download, Eye, FileText } from 'lucide-react';
-import { GlassTable, GlassTableCell } from '@bayit/shared/ui';
+import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web';
 import { billingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassModal } from '@bayit/shared/ui';
