@@ -116,8 +116,8 @@ echo "  Granting Access to Cloud Run Service Account"
 echo "=================================================="
 echo ""
 
-# Get Cloud Run service account (adjust if different)
-SERVICE_ACCOUNT="${GCP_PROJECT}@appspot.gserviceaccount.com"
+# Get Cloud Run service account (olorin-detection service account)
+SERVICE_ACCOUNT="olorin-detection@olorin-fraud-detection.iam.gserviceaccount.com"
 
 echo "Granting access to: ${SERVICE_ACCOUNT}"
 
