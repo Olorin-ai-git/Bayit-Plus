@@ -180,7 +180,14 @@ EOF
     # Step 4: Create/Update Secrets
     print_header "Step 4: Creating Secrets in Secret Manager"
 
-    print_info "Reading secrets from .env file..."
+    print_info "Reading secrets from backend/.env file..."
+
+    # Get repository root and .env path
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+    ENV_FILE="$REPO_ROOT/backend/.env"
+    
+    print_info "Looking for .env at: $ENV_FILE"
 
     # Function to create or update secret
     create_or_update_secret() {
@@ -188,9 +195,9 @@ EOF
         local env_key=$2
         local value=""
 
-        # Try to read from .env
-        if [[ -f ".env" ]]; then
-            value=$(grep "^${env_key}=" .env 2>/dev/null | cut -d'=' -f2-)
+        # Try to read from backend/.env
+        if [[ -f "$ENV_FILE" ]]; then
+            value=$(grep "^${env_key}=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2-)
         fi
 
         # Try from environment variable

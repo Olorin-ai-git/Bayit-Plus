@@ -104,3 +104,4 @@ webvtt-py==0.4.6
 wrapt==2.0.1
 xmltodict==0.14.2
 yarl==1.22.0
+chess==1.10.0
