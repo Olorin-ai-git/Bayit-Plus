@@ -210,6 +210,27 @@ class Settings(BaseSettings):
     CHAT_TRANSLATION_CACHE_TTL_DAYS: int = 7
     TRANSLATION_MEMORY_CACHE_SIZE: int = 1000
 
+    # Jewish News Aggregation Configuration
+    JEWISH_NEWS_CACHE_TTL_MINUTES: int = 15
+    JEWISH_NEWS_SYNC_INTERVAL_MINUTES: int = 30
+    JEWISH_NEWS_REQUEST_TIMEOUT_SECONDS: float = 10.0
+
+    # Jewish Calendar Integration (HebCal & Sefaria APIs)
+    HEBCAL_API_BASE_URL: str = "https://www.hebcal.com"
+    SEFARIA_API_BASE_URL: str = "https://www.sefaria.org/api"
+    JEWISH_CALENDAR_CACHE_TTL_HOURS: int = 6
+
+    # Jewish Community Directory Configuration
+    COMMUNITY_SEARCH_RADIUS_MILES: int = 25
+    COMMUNITY_DEFAULT_REGION: str = "nyc"
+    US_JEWISH_REGIONS: str = "nyc,la,chicago,miami,boston,philadelphia,atlanta,dallas,denver,seattle"
+    COMMUNITY_SCRAPE_INTERVAL_HOURS: int = 168  # Weekly scrape
+
+    # Torah Content RSS Configuration
+    YUTORAH_RSS_URL: str = "https://www.yutorah.org/rss/"
+    CHABAD_MULTIMEDIA_RSS_URL: str = "https://www.chabad.org/multimedia/rss.xml"
+    TORAHANYTIME_RSS_URL: str = "https://www.torahanytime.com/feed"
+
     class Config:
         env_file = ".env"
         case_sensitive = True

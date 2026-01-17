@@ -1,29 +1,42 @@
-# Speech-to-Text Provider Configuration
+# Speech-to-Text & Translation Provider Configuration
 
 ## Overview
 
-Bayit+ now supports **two speech-to-text providers** for live subtitle transcription:
+Bayit+ supports **three speech-to-text providers** and **three translation providers** for live subtitle transcription:
 
-1. **Google Cloud Speech-to-Text** (default)
-2. **OpenAI Whisper** (new)
+### Speech-to-Text Providers
+1. **ElevenLabs Scribe v2** (recommended) - Ultra-low latency, best Hebrew accuracy
+2. **Google Cloud Speech-to-Text** - Reliable, auto-configured on Cloud Run
+3. **OpenAI Whisper** - Good accuracy but buffered (not real-time)
 
-You can switch between providers using a single configuration variable.
+### Translation Providers
+1. **Google Cloud Translate** (recommended) - Fast, reliable, battle-tested
+2. **OpenAI GPT-4o-mini** - Context-aware, high quality
+3. **Claude** - Excellent for nuanced translations
 
 ---
 
 ## 🔄 Provider Comparison
 
-| Feature | Google Cloud Speech-to-Text | OpenAI Whisper |
-|---------|----------------------------|----------------|
-| **Streaming** | ✅ True streaming (real-time) | ⚠️ Buffered streaming (5s chunks) |
-| **Latency** | 🟢 Very Low (~200-500ms) | 🟡 Moderate (~5-7s) |
-| **Accuracy (Hebrew)** | 🟡 Good | 🟢 Excellent |
-| **Accuracy (English)** | 🟢 Excellent | 🟢 Excellent |
-| **Accuracy (Arabic)** | 🟡 Good | 🟢 Excellent |
-| **Setup Complexity** | 🟡 Moderate (requires GCP credentials) | 🟢 Simple (just API key) |
-| **Cost** | $0.024/min (standard), $0.048/min (enhanced) | $0.006/min |
-| **Authentication** | Application Default Credentials | API key |
-| **Deployment** | Auto-configured on Cloud Run | Requires OPENAI_API_KEY env var |
+### Speech-to-Text Providers
+
+| Feature | ElevenLabs Scribe v2 | Google Cloud STT | OpenAI Whisper |
+|---------|---------------------|------------------|----------------|
+| **Streaming** | ✅ True WebSocket streaming | ✅ True streaming | ⚠️ Buffered (5s chunks) |
+| **Latency** | 🟢 Ultra-low (~150ms) | 🟢 Low (~500ms) | 🟡 Moderate (~5-7s) |
+| **Accuracy (Hebrew)** | 🟢 Best (3.1% WER) | 🟡 Good | 🟢 Excellent |
+| **Accuracy (English)** | 🟢 Excellent | 🟢 Excellent | 🟢 Excellent |
+| **Setup Complexity** | 🟢 Simple (API key) | 🟡 Moderate (GCP creds) | 🟢 Simple (API key) |
+| **Cost** | ~$0.02/min | $0.024/min | $0.006/min |
+
+### Translation Providers
+
+| Feature | Google Translate | OpenAI GPT-4o-mini | Claude |
+|---------|-----------------|-------------------|--------|
+| **Speed** | 🟢 Very Fast | 🟢 Fast | 🟡 Moderate |
+| **Quality** | 🟢 Good | 🟢 Excellent | 🟢 Excellent |
+| **Context Awareness** | 🟡 Basic | 🟢 High | 🟢 High |
+| **Cost** | ~$0.002/1K chars | $0.15/1M tokens | $0.25/1M tokens |
 
 ---
 
@@ -34,30 +47,58 @@ You can switch between providers using a single configuration variable.
 Add these to your `.env` file:
 
 ```bash
-# OpenAI API Key (required for Whisper)
-OPENAI_API_KEY=sk-proj-...
+# API Keys
+ELEVENLABS_API_KEY=your-elevenlabs-key    # Required for ElevenLabs STT
+OPENAI_API_KEY=sk-proj-...                 # Required for Whisper STT or OpenAI translation
+ANTHROPIC_API_KEY=sk-ant-...               # Required for Claude translation
 
-# Provider Selection
-SPEECH_TO_TEXT_PROVIDER=google  # Options: "google" or "whisper"
+# Speech-to-Text Provider Selection
+# Options: "elevenlabs" (recommended), "google", or "whisper"
+SPEECH_TO_TEXT_PROVIDER=elevenlabs
+
+# Live Translation Provider Selection
+# Options: "google" (recommended), "openai", or "claude"
+LIVE_TRANSLATION_PROVIDER=google
 ```
+
+### Recommended Configuration (Production)
+
+```bash
+SPEECH_TO_TEXT_PROVIDER=elevenlabs
+LIVE_TRANSLATION_PROVIDER=google
+```
+- 🟢 Ultra-low latency (~150ms) with ElevenLabs
+- 🟢 Best Hebrew accuracy (3.1% WER)
+- 🟢 Fast, reliable translation with Google
+- 🟢 Estimated cost: ~$1.30/hour of live content
 
 ### Provider Selection
 
-**Option 1: Google Cloud Speech-to-Text (Default)**
+**Option 1: ElevenLabs Scribe v2 (Recommended)**
+```bash
+SPEECH_TO_TEXT_PROVIDER=elevenlabs
+ELEVENLABS_API_KEY=your-key
+```
+- ✅ Ultra-low latency (~150ms)
+- ✅ Best Hebrew accuracy (3.1% WER)
+- ✅ True WebSocket streaming
+- ✅ Simple API key authentication
+
+**Option 2: Google Cloud Speech-to-Text**
 ```bash
 SPEECH_TO_TEXT_PROVIDER=google
 ```
 - ✅ Auto-configured on Google Cloud Run
-- ✅ Lowest latency
+- ✅ Low latency (~500ms)
 - ✅ True real-time streaming
 - ❌ Requires Google Cloud credentials locally
 
-**Option 2: OpenAI Whisper**
+**Option 3: OpenAI Whisper**
 ```bash
 SPEECH_TO_TEXT_PROVIDER=whisper
 OPENAI_API_KEY=sk-proj-...
 ```
-- ✅ Better accuracy for Hebrew/Arabic
+- ✅ Good accuracy for Hebrew/Arabic
 - ✅ Simpler setup (just API key)
 - ✅ Lower cost ($0.006/min vs $0.024/min)
 - ❌ Higher latency (~5s buffering)
