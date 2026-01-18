@@ -219,6 +219,7 @@
     "recordings": "Mis Grabaciones",
     "widgets": "Widgets",
     "help": "Ayuda y Soporte",
+    "support": "Soporte",
     "discover": "Descubrir",
     "account": "Cuenta",
     "subscribe": "Suscribir",
@@ -2763,5 +2764,215 @@
     "theirWins": "Sus Victorias",
     "totalGamesPlayed": "Total: {{count}} partidas",
     "recentGames": "Juegos Recientes"
+  },
+  "support": {
+    "title": "Centro de Soporte",
+    "subtitle": "¿Cómo podemos ayudarte hoy?",
+    "tabs": {
+      "docs": "Documentación",
+      "faq": "Preguntas Frecuentes",
+      "contact": "Contacto",
+      "tickets": "Mis Tickets"
+    },
+    "categories": {
+      "title": "Explorar Documentación",
+      "loading": "Cargando documentación...",
+      "loadError": "Error al cargar categorías",
+      "articleCount": "{{count}} artículos",
+      "gettingStarted": "Primeros Pasos",
+      "features": "Características",
+      "troubleshooting": "Solución de Problemas",
+      "account": "Cuenta"
+    },
+    "docs": {
+      "loading": "Cargando documento...",
+      "loadError": "Error al cargar documento",
+      "backToList": "Volver a documentación"
+    },
+    "search": {
+      "placeholder": "Buscar en documentación...",
+      "noResults": "Sin resultados"
+    },
+    "faq": {
+      "title": "Preguntas Frecuentes",
+      "loading": "Cargando FAQ...",
+      "loadError": "Error al cargar FAQ",
+      "empty": "No hay preguntas en esta categoría",
+      "categories": {
+        "all": "Todos los Temas",
+        "general": "General",
+        "billing": "Facturación",
+        "technical": "Técnico",
+        "features": "Características"
+      }
+    },
+    "contact": {
+      "voiceTitle": "Soporte por Voz",
+      "voiceDescription": "Haz clic en el botón del avatar o di \"Hey Bayit\" para iniciar una conversación con nuestro asistente de IA.",
+      "ticketTitle": "Crear Ticket de Soporte",
+      "ticketDescription": "¿Necesitas asistencia humana? Crea un ticket y nuestro equipo responderá en 24 horas.",
+      "createTicket": "Crear Ticket",
+      "emailTitle": "Soporte por Email",
+      "emailDescription": "¿Prefieres email? Contáctanos en support@bayit.tv para cualquier pregunta."
+    },
+    "ticket": {
+      "title": "Crear Ticket de Soporte",
+      "subject": "Asunto",
+      "subjectPlaceholder": "Descripción breve del problema",
+      "message": "Mensaje",
+      "messagePlaceholder": "Describe tu problema en detalle...",
+      "categoryLabel": "Categoría",
+      "priorityLabel": "Prioridad",
+      "submit": "Enviar Ticket",
+      "category": {
+        "billing": "Facturación",
+        "technical": "Técnico",
+        "feature": "Solicitud de Función",
+        "general": "General"
+      },
+      "priority": {
+        "low": "Baja",
+        "medium": "Media",
+        "high": "Alta",
+        "urgent": "Urgente"
+      },
+      "status": {
+        "open": "Abierto",
+        "in_progress": "En Progreso",
+        "resolved": "Resuelto",
+        "closed": "Cerrado"
+      },
+      "created": "Creado",
+      "error": {
+        "required": "Por favor completa todos los campos requeridos",
+        "submit": "Error al crear ticket. Intenta de nuevo."
+      }
+    },
+    "tickets": {
+      "title": "Mis Tickets de Soporte",
+      "loading": "Cargando tickets...",
+      "loadError": "Error al cargar tickets",
+      "empty": "No hay tickets todavía",
+      "emptyFilter": "No hay tickets con este estado",
+      "create": "Nuevo Ticket",
+      "createFirst": "Crea tu Primer Ticket",
+      "filter": {
+        "all": "Todos",
+        "open": "Abiertos",
+        "inProgress": "En Progreso",
+        "resolved": "Resueltos"
+      }
+    },
+    "voice": {
+      "title": "Asistente de Voz",
+      "status": {
+        "idle": "Toca para hablar",
+        "listening": "Escuchando...",
+        "processing": "Procesando",
+        "speaking": "Hablando...",
+        "error": "Ocurrió un error"
+      },
+      "action": {
+        "start": "Toca para Hablar",
+        "stop": "Toca para Detener",
+        "processing": "Procesando...",
+        "interrupt": "Toca para Interrumpir",
+        "retry": "Toca para Reintentar"
+      },
+      "help": {
+        "idle": "Pregúntame sobre Bayit+",
+        "listening": "Habla claro, te escucho...",
+        "speaking": "Toca para otra pregunta"
+      },
+      "lastResponse": "Última Respuesta",
+      "quickActions": "Intenta decir...",
+      "example": {
+        "help": "\"¿Cómo veo TV en vivo?\"",
+        "billing": "\"Cuéntame sobre las suscripciones\""
+      }
+    }
+  },
+  "admin": {
+    "support": {
+      "title": "Panel de Soporte",
+      "subtitle": "Gestionar tickets de soporte al cliente",
+      "loading": "Cargando panel...",
+      "loadError": "Error al cargar datos",
+      "empty": "No hay tickets que coincidan con los filtros",
+      "stats": {
+        "total": "Total",
+        "open": "Abiertos",
+        "inProgress": "En Progreso",
+        "resolved": "Resueltos",
+        "highPriority": "Alta Prioridad"
+      },
+      "filter": {
+        "all": "Todos",
+        "open": "Abiertos",
+        "inProgress": "En Progreso",
+        "resolved": "Resueltos",
+        "closed": "Cerrados"
+      },
+      "priority": {
+        "all": "Todas las Prioridades",
+        "urgent": "Urgente",
+        "high": "Alta",
+        "medium": "Media",
+        "low": "Baja"
+      },
+      "status": {
+        "open": "Abierto",
+        "inProgress": "En Progreso",
+        "resolved": "Resuelto",
+        "closed": "Cerrado"
+      },
+      "category": {
+        "billing": "Facturación",
+        "technical": "Técnico",
+        "feature": "Función",
+        "general": "General"
+      },
+      "time": {
+        "justNow": "Ahora mismo",
+        "hoursAgo": "hace {{count}}h",
+        "daysAgo": "hace {{count}}d"
+      },
+      "detail": {
+        "user": "Usuario",
+        "category": "Categoría",
+        "priority": "Prioridad",
+        "created": "Creado",
+        "language": "Idioma",
+        "message": "Mensaje del Cliente",
+        "updateStatus": "Actualizar Estado",
+        "notes": "Notas Internas",
+        "noNotes": "Sin notas aún",
+        "addNote": "Agregar Nota",
+        "notePlaceholder": "Escribe una nota...",
+        "saveNote": "Guardar Nota",
+        "useTemplate": "Usar Plantilla"
+      },
+      "action": {
+        "resolve": "Marcar Resuelto"
+      }
+    },
+    "templates": {
+      "title": "Plantillas de Respuesta",
+      "category": {
+        "acknowledgment": "Confirmación",
+        "billing": "Facturación",
+        "technical": "Técnico",
+        "resolution": "Resolución"
+      },
+      "received": "Ticket Recibido",
+      "investigating": "Investigando",
+      "refundProcessed": "Reembolso Procesado",
+      "subscriptionInfo": "Info de Suscripción",
+      "clearCache": "Limpiar Caché",
+      "updateApp": "Actualizar App",
+      "checkConnection": "Verificar Conexión",
+      "issueResolved": "Problema Resuelto",
+      "escalated": "Escalado"
+    }
   }
 }

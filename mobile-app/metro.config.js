@@ -40,6 +40,7 @@ function getExtraNodeModules() {
     modules['@bayit/shared-config'] = path.resolve(sharedRoot, 'config');
     modules['@bayit/shared-types'] = path.resolve(sharedRoot, 'types');
     modules['@bayit/shared-utils'] = path.resolve(sharedRoot, 'utils');
+    modules['@bayit/shared-assets'] = path.resolve(sharedRoot, 'assets');
   }
 
   // Map all node_modules from mobile-app

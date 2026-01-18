@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, Animated, Easing } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../hooks/useDirection';
 
-const logo = require('../assets/logo.png');
+const logo = require('../assets/images/logos/logo.png');
 
 interface AnimatedLogoProps {
   onAnimationComplete?: () => void;

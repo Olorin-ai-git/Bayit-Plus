@@ -19,6 +19,7 @@ function getExtraNodeModules() {
   modules['@bayit/shared-hooks'] = path.resolve(sharedRoot, 'hooks');
   modules['@bayit/shared-contexts'] = path.resolve(sharedRoot, 'contexts');
   modules['@bayit/shared-i18n'] = path.resolve(sharedRoot, 'i18n');
+  modules['@bayit/shared-assets'] = path.resolve(sharedRoot, 'assets');
 
   // Shim Expo packages to React Native alternatives
   modules['expo-linear-gradient'] = path.resolve(shimsRoot, 'expo-linear-gradient.ts');

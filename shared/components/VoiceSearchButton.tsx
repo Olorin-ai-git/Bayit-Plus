@@ -85,8 +85,8 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
     wakeWordReady,
   } = useWakeWordListening({
     enabled: shouldEnableConstantListening,
-    wakeWordEnabled: false,
-    wakeWord: 'hi bayit',
+    wakeWordEnabled: preferences.wake_word_enabled ?? true,
+    wakeWord: preferences.wake_word || 'hey buyit',
     wakeWordSensitivity: 0.7,
     wakeWordCooldownMs: 2000,
     silenceThresholdMs: preferences.silence_threshold_ms || 2000,

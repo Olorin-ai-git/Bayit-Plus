@@ -21,6 +21,7 @@ import {
   WatchlistScreen,
   FavoritesScreen,
   DownloadsScreen,
+  SupportScreen,
 } from '@bayit/shared-screens';
 
 // Import mobile-optimized screens
@@ -95,6 +96,9 @@ export const RootNavigator: React.FC = () => {
         component={VoiceOnboardingScreen}
         options={{ title: 'Voice Setup' }}
       />
+
+      {/* Support - Using shared SupportScreen */}
+      <Stack.Screen name="Support" component={SupportScreen} />
 
       {/* Admin (Conditional) */}
       {/* <Stack.Screen name="Admin" component={AdminNavigator} /> */}

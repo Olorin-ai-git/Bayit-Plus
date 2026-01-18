@@ -95,7 +95,7 @@ export const RegisterScreen: React.FC = () => {
         {/* Logo */}
         <View style={styles.logoContainer}>
           <Image
-            source={require('../assets/logo.png')}
+            source={require('../assets/images/logos/logo.png')}
             style={styles.logo}
             resizeMode="contain"
           />

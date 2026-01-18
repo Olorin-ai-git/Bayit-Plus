@@ -235,6 +235,38 @@ class Settings(BaseSettings):
     # Access key from https://console.picovoice.ai/
     PICOVOICE_ACCESS_KEY: str = ""
 
+    # Support System Configuration
+    SUPPORT_CHAT_MAX_TOKENS: int = 300
+    SUPPORT_CONTEXT_MAX_DOCS: int = 3
+    SUPPORT_ESCALATION_THRESHOLD: float = 0.5
+    SUPPORT_TICKET_ADMIN_EMAILS: str = ""
+
+    # Kids Content Configuration
+    # YouTube Data API v3 key for importing kids channel content
+    YOUTUBE_API_KEY: str = ""
+
+    # JSON list of YouTube channel IDs to sync for kids content
+    # e.g., '["UCxxxxxxx", "UCyyyyyyy"]'
+    KIDS_YOUTUBE_CHANNEL_IDS: str = ""
+
+    # JSON list of kids podcast RSS feed URLs
+    # e.g., '["https://rss.example.com/kids1", "https://rss.example.com/kids2"]'
+    KIDS_PODCAST_RSS_FEEDS: str = ""
+
+    # Enable Archive.org public domain kids content import
+    KIDS_ARCHIVE_ORG_ENABLED: bool = True
+
+    # Comma-separated age ratings for kids content (used for filtering)
+    KIDS_CONTENT_AGE_RATINGS: str = "3,5,7,10,12"
+
+    # Kids content moderation settings
+    KIDS_CONTENT_AUTO_APPROVE_THRESHOLD: float = 0.9
+    KIDS_CONTENT_REQUIRE_MODERATION: bool = True
+
+    # Kids librarian audit schedule (runs after main daily audit)
+    KIDS_LIBRARIAN_AUDIT_CRON: str = "0 3 * * *"
+    KIDS_LIBRARIAN_AUDIT_ENABLED: bool = True
+
     class Config:
         env_file = ".env"
         case_sensitive = True

@@ -221,6 +221,7 @@
     "recordings": "My Recordings",
     "widgets": "Widgets",
     "help": "Help & Support",
+    "support": "Support",
     "discover": "Discover",
     "account": "Account",
     "subscribe": "Subscribe",
@@ -2875,5 +2876,215 @@
     "theirWins": "Their Wins",
     "totalGamesPlayed": "Total: {{count}} games",
     "recentGames": "Recent Games"
+  },
+  "support": {
+    "title": "Support Center",
+    "subtitle": "How can we help you today?",
+    "tabs": {
+      "docs": "Documentation",
+      "faq": "FAQ",
+      "contact": "Contact",
+      "tickets": "My Tickets"
+    },
+    "categories": {
+      "title": "Browse Documentation",
+      "loading": "Loading documentation...",
+      "loadError": "Failed to load categories",
+      "articleCount": "{{count}} articles",
+      "gettingStarted": "Getting Started",
+      "features": "Features",
+      "troubleshooting": "Troubleshooting",
+      "account": "Account"
+    },
+    "docs": {
+      "loading": "Loading document...",
+      "loadError": "Failed to load document",
+      "backToList": "Back to documentation"
+    },
+    "search": {
+      "placeholder": "Search documentation...",
+      "noResults": "No results found"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "loading": "Loading FAQ...",
+      "loadError": "Failed to load FAQ",
+      "empty": "No FAQ items in this category",
+      "categories": {
+        "all": "All Topics",
+        "general": "General",
+        "billing": "Billing",
+        "technical": "Technical",
+        "features": "Features"
+      }
+    },
+    "contact": {
+      "voiceTitle": "Voice Support",
+      "voiceDescription": "Click the avatar button or say \"Hey Bayit\" to start a voice conversation with our AI assistant.",
+      "ticketTitle": "Create Support Ticket",
+      "ticketDescription": "Need human assistance? Create a support ticket and our team will respond within 24 hours.",
+      "createTicket": "Create Ticket",
+      "emailTitle": "Email Support",
+      "emailDescription": "Prefer email? Reach us at support@bayit.tv for any questions or concerns."
+    },
+    "ticket": {
+      "title": "Create Support Ticket",
+      "subject": "Subject",
+      "subjectPlaceholder": "Brief description of your issue",
+      "message": "Message",
+      "messagePlaceholder": "Describe your issue in detail...",
+      "categoryLabel": "Category",
+      "priorityLabel": "Priority",
+      "submit": "Submit Ticket",
+      "category": {
+        "billing": "Billing",
+        "technical": "Technical",
+        "feature": "Feature Request",
+        "general": "General"
+      },
+      "priority": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "urgent": "Urgent"
+      },
+      "status": {
+        "open": "Open",
+        "in_progress": "In Progress",
+        "resolved": "Resolved",
+        "closed": "Closed"
+      },
+      "created": "Created",
+      "error": {
+        "required": "Please fill in all required fields",
+        "submit": "Failed to create ticket. Please try again."
+      }
+    },
+    "tickets": {
+      "title": "My Support Tickets",
+      "loading": "Loading tickets...",
+      "loadError": "Failed to load tickets",
+      "empty": "No support tickets yet",
+      "emptyFilter": "No tickets with this status",
+      "create": "New Ticket",
+      "createFirst": "Create Your First Ticket",
+      "filter": {
+        "all": "All",
+        "open": "Open",
+        "inProgress": "In Progress",
+        "resolved": "Resolved"
+      }
+    },
+    "voice": {
+      "title": "Voice Assistant",
+      "status": {
+        "idle": "Tap to speak",
+        "listening": "Listening...",
+        "processing": "Processing",
+        "speaking": "Speaking...",
+        "error": "Error occurred"
+      },
+      "action": {
+        "start": "Tap to Speak",
+        "stop": "Tap to Stop",
+        "processing": "Processing...",
+        "interrupt": "Tap to Interrupt",
+        "retry": "Tap to Retry"
+      },
+      "help": {
+        "idle": "Ask me anything about Bayit+",
+        "listening": "Speak clearly, I'm listening...",
+        "speaking": "Tap to ask another question"
+      },
+      "lastResponse": "Last Response",
+      "quickActions": "Try saying...",
+      "example": {
+        "help": "\"How do I watch live TV?\"",
+        "billing": "\"Tell me about subscriptions\""
+      }
+    }
+  },
+  "admin": {
+    "support": {
+      "title": "Support Dashboard",
+      "subtitle": "Manage customer support tickets",
+      "loading": "Loading dashboard...",
+      "loadError": "Failed to load dashboard data",
+      "empty": "No tickets match your filters",
+      "stats": {
+        "total": "Total",
+        "open": "Open",
+        "inProgress": "In Progress",
+        "resolved": "Resolved",
+        "highPriority": "High Priority"
+      },
+      "filter": {
+        "all": "All",
+        "open": "Open",
+        "inProgress": "In Progress",
+        "resolved": "Resolved",
+        "closed": "Closed"
+      },
+      "priority": {
+        "all": "All Priorities",
+        "urgent": "Urgent",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      },
+      "status": {
+        "open": "Open",
+        "inProgress": "In Progress",
+        "resolved": "Resolved",
+        "closed": "Closed"
+      },
+      "category": {
+        "billing": "Billing",
+        "technical": "Technical",
+        "feature": "Feature",
+        "general": "General"
+      },
+      "time": {
+        "justNow": "Just now",
+        "hoursAgo": "{{count}}h ago",
+        "daysAgo": "{{count}}d ago"
+      },
+      "detail": {
+        "user": "User",
+        "category": "Category",
+        "priority": "Priority",
+        "created": "Created",
+        "language": "Language",
+        "message": "Customer Message",
+        "updateStatus": "Update Status",
+        "notes": "Internal Notes",
+        "noNotes": "No notes yet",
+        "addNote": "Add Note",
+        "notePlaceholder": "Write a note...",
+        "saveNote": "Save Note",
+        "useTemplate": "Use Template"
+      },
+      "action": {
+        "resolve": "Mark Resolved"
+      }
+    },
+    "templates": {
+      "title": "Response Templates",
+      "category": {
+        "acknowledgment": "Acknowledgment",
+        "billing": "Billing",
+        "technical": "Technical",
+        "resolution": "Resolution"
+      },
+      "received": "Ticket Received",
+      "investigating": "Investigating",
+      "refundProcessed": "Refund Processed",
+      "subscriptionInfo": "Subscription Info",
+      "clearCache": "Clear Cache",
+      "updateApp": "Update App",
+      "checkConnection": "Check Connection",
+      "issueResolved": "Issue Resolved",
+      "escalated": "Escalated"
+    }
   }
 }

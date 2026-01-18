@@ -54,7 +54,8 @@ interface Category {
 function JudaismCard({ item }: { item: JudaismItem }) {
   const { i18n } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
-  const [imageError, setImageError] = useState(false);
+  // Track which thumbnail quality we're trying: 0=maxres, 1=hqdefault, 2=failed
+  const [thumbnailAttempt, setThumbnailAttempt] = useState(0);
   const categoryIcon = CATEGORY_ICONS[item.category] || '✡️';
 
   const getLocalizedText = (field: 'title' | 'description' | 'rabbi') => {
@@ -64,13 +65,23 @@ function JudaismCard({ item }: { item: JudaismItem }) {
     return item[`${field}_en` as keyof JudaismItem] || item[field] || '';
   };
 
-  // Try different YouTube thumbnail qualities
-  const getThumbnailUrl = () => {
+  // Try different YouTube thumbnail qualities with proper fallback
+  const getThumbnailUrl = (): string | null => {
     if (!item.thumbnail) return null;
+    // If YouTube maxresdefault failed, try hqdefault
     if (item.thumbnail.includes('maxresdefault')) {
-      return imageError ? item.thumbnail.replace('maxresdefault', 'hqdefault') : item.thumbnail;
+      if (thumbnailAttempt === 0) return item.thumbnail;
+      if (thumbnailAttempt === 1) return item.thumbnail.replace('maxresdefault', 'hqdefault');
+      return null; // Both failed
     }
-    return item.thumbnail;
+    return thumbnailAttempt < 2 ? item.thumbnail : null;
+  };
+
+  const handleImageError = () => {
+    // Try next fallback quality
+    if (thumbnailAttempt < 2) {
+      setThumbnailAttempt(prev => prev + 1);
+    }
   };
 
   const thumbnailUrl = getThumbnailUrl();
@@ -85,12 +96,12 @@ function JudaismCard({ item }: { item: JudaismItem }) {
         <GlassCard className={`p-0 overflow-hidden transition-transform ${isHovered ? 'scale-105' : ''}`}>
           {/* Thumbnail Container - fixed aspect ratio */}
           <View className="w-full relative" style={{ paddingBottom: '56.25%', backgroundColor: colors.glassLight }}>
-            {thumbnailUrl && !imageError ? (
+            {thumbnailUrl ? (
               <Image
                 source={{ uri: thumbnailUrl }}
                 className="absolute inset-0 w-full h-full"
                 resizeMode="cover"
-                onError={() => setImageError(true)}
+                onError={handleImageError}
               />
             ) : (
               <View className="absolute inset-0 items-center justify-center">

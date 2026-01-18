@@ -19,11 +19,11 @@ interface SplashScreenProps {
   minimumDuration?: number; // Minimum time to show splash in ms
 }
 
-// Video sources - bundled with app
+// Video sources - from shared assets
 const VIDEO_SOURCES = {
-  he: require('../assets/videos/Bayit_Intro_Hebrew.mp4'),
-  en: require('../assets/videos/Bayit_Intro_English.mp4'),
-  es: require('../assets/videos/Bayit_Intro_English.mp4'), // Use English for Spanish
+  he: require('../../../shared/assets/video/intro/Bayit_Intro_Hebrew.mp4'),
+  en: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
+  es: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'), // Use English for Spanish
 };
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({

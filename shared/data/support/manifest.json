@@ -1,0 +1,163 @@
+{
+  "version": "1.0.0",
+  "defaultLanguage": "en",
+  "languages": ["en", "he", "es"],
+  "categories": [
+    {
+      "id": "getting-started",
+      "title_key": "support.categories.gettingStarted",
+      "icon": "🚀",
+      "order": 1
+    },
+    {
+      "id": "features",
+      "title_key": "support.categories.features",
+      "icon": "✨",
+      "order": 2
+    },
+    {
+      "id": "troubleshooting",
+      "title_key": "support.categories.troubleshooting",
+      "icon": "🔧",
+      "order": 3
+    },
+    {
+      "id": "account",
+      "title_key": "support.categories.account",
+      "icon": "👤",
+      "order": 4
+    }
+  ],
+  "articles": [
+    {
+      "id": "welcome",
+      "slug": "getting-started/welcome",
+      "title_key": "docs.gettingStarted.welcome.title",
+      "category": "getting-started",
+      "languages": ["en", "he", "es"],
+      "order": 1
+    },
+    {
+      "id": "quick-start",
+      "slug": "getting-started/quick-start",
+      "title_key": "docs.gettingStarted.quickStart.title",
+      "category": "getting-started",
+      "languages": ["en", "he", "es"],
+      "order": 2
+    },
+    {
+      "id": "live-tv",
+      "slug": "features/live-tv",
+      "title_key": "docs.features.liveTv.title",
+      "category": "features",
+      "languages": ["en", "he", "es"],
+      "order": 1
+    },
+    {
+      "id": "vod",
+      "slug": "features/vod",
+      "title_key": "docs.features.vod.title",
+      "category": "features",
+      "languages": ["en", "he", "es"],
+      "order": 2
+    },
+    {
+      "id": "voice-control",
+      "slug": "features/voice-control",
+      "title_key": "docs.features.voiceControl.title",
+      "category": "features",
+      "languages": ["en", "he", "es"],
+      "order": 3
+    },
+    {
+      "id": "streaming-issues",
+      "slug": "troubleshooting/streaming-issues",
+      "title_key": "docs.troubleshooting.streaming.title",
+      "category": "troubleshooting",
+      "languages": ["en", "he", "es"],
+      "order": 1
+    },
+    {
+      "id": "login-problems",
+      "slug": "troubleshooting/login-problems",
+      "title_key": "docs.troubleshooting.login.title",
+      "category": "troubleshooting",
+      "languages": ["en", "he", "es"],
+      "order": 2
+    },
+    {
+      "id": "manage-subscription",
+      "slug": "account/manage-subscription",
+      "title_key": "docs.account.subscription.title",
+      "category": "account",
+      "languages": ["en", "he", "es"],
+      "order": 1
+    },
+    {
+      "id": "profile-settings",
+      "slug": "account/profile-settings",
+      "title_key": "docs.account.profile.title",
+      "category": "account",
+      "languages": ["en", "he", "es"],
+      "order": 2
+    }
+  ],
+  "faq": [
+    {
+      "id": "faq-1",
+      "category": "general",
+      "question_key": "help.faq.whatIsBayit.question",
+      "answer_key": "help.faq.whatIsBayit.answer",
+      "languages": ["en", "he", "es"]
+    },
+    {
+      "id": "faq-2",
+      "category": "general",
+      "question_key": "help.faq.howToWatch.question",
+      "answer_key": "help.faq.howToWatch.answer",
+      "languages": ["en", "he", "es"]
+    },
+    {
+      "id": "faq-3",
+      "category": "billing",
+      "question_key": "help.faq.subscription.question",
+      "answer_key": "help.faq.subscription.answer",
+      "languages": ["en", "he", "es"]
+    },
+    {
+      "id": "faq-4",
+      "category": "billing",
+      "question_key": "help.faq.cancelSubscription.question",
+      "answer_key": "help.faq.cancelSubscription.answer",
+      "languages": ["en", "he", "es"]
+    },
+    {
+      "id": "faq-5",
+      "category": "technical",
+      "question_key": "help.faq.devices.question",
+      "answer_key": "help.faq.devices.answer",
+      "languages": ["en", "he", "es"]
+    },
+    {
+      "id": "faq-6",
+      "category": "technical",
+      "question_key": "help.faq.downloads.question",
+      "answer_key": "help.faq.downloads.answer",
+      "languages": ["en", "he", "es"]
+    },
+    {
+      "id": "faq-7",
+      "category": "features",
+      "question_key": "help.faq.voiceControl.question",
+      "answer_key": "help.faq.voiceControl.answer",
+      "languages": ["en", "he", "es"]
+    },
+    {
+      "id": "faq-8",
+      "category": "features",
+      "question_key": "help.faq.recordings.question",
+      "answer_key": "help.faq.recordings.answer",
+      "languages": ["en", "he", "es"]
+    }
+  ]
+}

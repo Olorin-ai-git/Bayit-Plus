@@ -42,6 +42,7 @@ function getExtraNodeModules() {
   modules['@bayit/shared-hooks'] = path.resolve(sharedRoot, 'hooks');
   modules['@bayit/shared-contexts'] = path.resolve(sharedRoot, 'contexts');
   modules['@bayit/shared-i18n'] = path.resolve(sharedRoot, 'i18n');
+  modules['@bayit/shared-assets'] = path.resolve(sharedRoot, 'assets');
 
   // Add tv-app admin screens alias
   modules['@bayit/admin-screens'] = path.resolve(tvAppRoot, 'src/screens/admin');

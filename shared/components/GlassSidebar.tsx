@@ -79,7 +79,7 @@ const baseMenuSections: MenuSection[] = [
     titleKey: 'nav.settings',
     items: [
       { id: 'settings', icon: '⚙️', labelKey: 'nav.settings', route: 'Settings' },
-      { id: 'help', icon: '❓', labelKey: 'nav.help', route: 'Help' },
+      { id: 'support', icon: '🎧', labelKey: 'nav.support', route: 'Support' },
     ],
   },
 ];

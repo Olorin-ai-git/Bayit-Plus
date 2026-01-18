@@ -25,13 +25,13 @@ interface AnimatingPiece {
   piece: { type: string; color: string };
 }
 
-// 3D Chess piece individual asset paths
+// 3D Chess piece individual asset paths (from shared assets)
 const PIECE_IMAGES: Record<string, string> = {
-  'wk': '/assets/games/chess/pieces/King-White.png',
+  'wk': '/assets/games/chess/pieces/King-white.png',
   'wq': '/assets/games/chess/pieces/Queen-white.png',
   'wr': '/assets/games/chess/pieces/Rook-white.png',
   'wb': '/assets/games/chess/pieces/Bishop-white.png',
-  'wn': '/assets/games/chess/pieces/Knigh-white.png', // Note: typo in filename
+  'wn': '/assets/games/chess/pieces/Knight-white.png',
   'wp': '/assets/games/chess/pieces/Pawn-white.png',
   'bk': '/assets/games/chess/pieces/King-black.png',
   'bq': '/assets/games/chess/pieces/Queen-black.png',

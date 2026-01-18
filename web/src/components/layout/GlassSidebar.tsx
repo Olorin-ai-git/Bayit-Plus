@@ -356,7 +356,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
               <>
                 <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Image
-                    source={{ uri: '/assets/images/Bayit-Plus-Logo-Transparent.png' }}
+                    source={{ uri: '/assets/images/logos/logo-transparent.png' }}
                     style={[
                       styles.houseLogo,
                       styles.houseLogoExpanded,

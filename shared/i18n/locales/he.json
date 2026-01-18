@@ -214,6 +214,7 @@
     "recordings": "ההקלטות שלי",
     "widgets": "וידג'טים",
     "help": "עזרה ותמיכה",
+    "support": "תמיכה",
     "discover": "גילוי",
     "account": "חשבון",
     "subscribe": "הרשמה למנוי",
@@ -2860,5 +2861,215 @@
     "theirWins": "הניצחונות שלהם",
     "totalGamesPlayed": "סה״כ: {{count}} משחקים",
     "recentGames": "משחקים אחרונים"
+  },
+  "support": {
+    "title": "מרכז תמיכה",
+    "subtitle": "איך נוכל לעזור לך היום?",
+    "tabs": {
+      "docs": "תיעוד",
+      "faq": "שאלות נפוצות",
+      "contact": "צור קשר",
+      "tickets": "הפניות שלי"
+    },
+    "categories": {
+      "title": "עיין בתיעוד",
+      "loading": "טוען תיעוד...",
+      "loadError": "טעינת קטגוריות נכשלה",
+      "articleCount": "{{count}} מאמרים",
+      "gettingStarted": "מתחילים",
+      "features": "תכונות",
+      "troubleshooting": "פתרון בעיות",
+      "account": "חשבון"
+    },
+    "docs": {
+      "loading": "טוען מסמך...",
+      "loadError": "טעינת מסמך נכשלה",
+      "backToList": "חזרה לתיעוד"
+    },
+    "search": {
+      "placeholder": "חפש בתיעוד...",
+      "noResults": "לא נמצאו תוצאות"
+    },
+    "faq": {
+      "title": "שאלות נפוצות",
+      "loading": "טוען שאלות נפוצות...",
+      "loadError": "טעינת שאלות נכשלה",
+      "empty": "אין שאלות בקטגוריה זו",
+      "categories": {
+        "all": "כל הנושאים",
+        "general": "כללי",
+        "billing": "חיובים",
+        "technical": "טכני",
+        "features": "תכונות"
+      }
+    },
+    "contact": {
+      "voiceTitle": "תמיכה קולית",
+      "voiceDescription": "לחץ על כפתור האווטאר או אמור \"היי בית\" כדי להתחיל שיחה קולית עם העוזר החכם שלנו.",
+      "ticketTitle": "צור פנייה לתמיכה",
+      "ticketDescription": "צריך עזרה אנושית? צור פנייה לתמיכה וצוות שלנו יגיב תוך 24 שעות.",
+      "createTicket": "צור פנייה",
+      "emailTitle": "תמיכה באימייל",
+      "emailDescription": "מעדיף אימייל? פנה אלינו בכתובת support@bayit.tv לכל שאלה או בעיה."
+    },
+    "ticket": {
+      "title": "צור פנייה לתמיכה",
+      "subject": "נושא",
+      "subjectPlaceholder": "תיאור קצר של הבעיה",
+      "message": "הודעה",
+      "messagePlaceholder": "תאר את הבעיה בפירוט...",
+      "categoryLabel": "קטגוריה",
+      "priorityLabel": "עדיפות",
+      "submit": "שלח פנייה",
+      "category": {
+        "billing": "חיובים",
+        "technical": "טכני",
+        "feature": "בקשת תכונה",
+        "general": "כללי"
+      },
+      "priority": {
+        "low": "נמוכה",
+        "medium": "בינונית",
+        "high": "גבוהה",
+        "urgent": "דחופה"
+      },
+      "status": {
+        "open": "פתוחה",
+        "in_progress": "בטיפול",
+        "resolved": "נפתרה",
+        "closed": "סגורה"
+      },
+      "created": "נוצרה",
+      "error": {
+        "required": "אנא מלא את כל השדות הנדרשים",
+        "submit": "יצירת הפנייה נכשלה. אנא נסה שוב."
+      }
+    },
+    "tickets": {
+      "title": "הפניות שלי לתמיכה",
+      "loading": "טוען פניות...",
+      "loadError": "טעינת פניות נכשלה",
+      "empty": "אין פניות עדיין",
+      "emptyFilter": "אין פניות בסטטוס זה",
+      "create": "פנייה חדשה",
+      "createFirst": "צור את הפנייה הראשונה שלך",
+      "filter": {
+        "all": "הכל",
+        "open": "פתוחות",
+        "inProgress": "בטיפול",
+        "resolved": "נפתרו"
+      }
+    },
+    "voice": {
+      "title": "עוזר קולי",
+      "status": {
+        "idle": "הקש כדי לדבר",
+        "listening": "מקשיב...",
+        "processing": "מעבד",
+        "speaking": "מדבר...",
+        "error": "אירעה שגיאה"
+      },
+      "action": {
+        "start": "הקש כדי לדבר",
+        "stop": "הקש כדי לעצור",
+        "processing": "מעבד...",
+        "interrupt": "הקש להפסקה",
+        "retry": "הקש לנסות שוב"
+      },
+      "help": {
+        "idle": "שאל אותי כל דבר על Bayit+",
+        "listening": "דבר בבירור, אני מקשיב...",
+        "speaking": "הקש לשאול שאלה נוספת"
+      },
+      "lastResponse": "תשובה אחרונה",
+      "quickActions": "נסה לומר...",
+      "example": {
+        "help": "\"איך אני צופה בטלוויזיה חיה?\"",
+        "billing": "\"ספר לי על מנויים\""
+      }
+    }
+  },
+  "admin": {
+    "support": {
+      "title": "לוח בקרה לתמיכה",
+      "subtitle": "ניהול פניות תמיכה לקוחות",
+      "loading": "טוען לוח בקרה...",
+      "loadError": "טעינת נתונים נכשלה",
+      "empty": "אין פניות התואמות את המסננים",
+      "stats": {
+        "total": "סה״כ",
+        "open": "פתוחות",
+        "inProgress": "בטיפול",
+        "resolved": "נפתרו",
+        "highPriority": "עדיפות גבוהה"
+      },
+      "filter": {
+        "all": "הכל",
+        "open": "פתוחות",
+        "inProgress": "בטיפול",
+        "resolved": "נפתרו",
+        "closed": "סגורות"
+      },
+      "priority": {
+        "all": "כל העדיפויות",
+        "urgent": "דחופה",
+        "high": "גבוהה",
+        "medium": "בינונית",
+        "low": "נמוכה"
+      },
+      "status": {
+        "open": "פתוחה",
+        "inProgress": "בטיפול",
+        "resolved": "נפתרה",
+        "closed": "סגורה"
+      },
+      "category": {
+        "billing": "חיובים",
+        "technical": "טכני",
+        "feature": "תכונה",
+        "general": "כללי"
+      },
+      "time": {
+        "justNow": "הרגע",
+        "hoursAgo": "לפני {{count}} שעות",
+        "daysAgo": "לפני {{count}} ימים"
+      },
+      "detail": {
+        "user": "משתמש",
+        "category": "קטגוריה",
+        "priority": "עדיפות",
+        "created": "נוצרה",
+        "language": "שפה",
+        "message": "הודעת הלקוח",
+        "updateStatus": "עדכן סטטוס",
+        "notes": "הערות פנימיות",
+        "noNotes": "אין הערות עדיין",
+        "addNote": "הוסף הערה",
+        "notePlaceholder": "כתוב הערה...",
+        "saveNote": "שמור הערה",
+        "useTemplate": "השתמש בתבנית"
+      },
+      "action": {
+        "resolve": "סמן כנפתרה"
+      }
+    },
+    "templates": {
+      "title": "תבניות תשובה",
+      "category": {
+        "acknowledgment": "אישור קבלה",
+        "billing": "חיובים",
+        "technical": "טכני",
+        "resolution": "פתרון"
+      },
+      "received": "פנייה התקבלה",
+      "investigating": "בבדיקה",
+      "refundProcessed": "החזר כספי עובד",
+      "subscriptionInfo": "מידע על מנוי",
+      "clearCache": "ניקוי מטמון",
+      "updateApp": "עדכן אפליקציה",
+      "checkConnection": "בדוק חיבור",
+      "issueResolved": "בעיה נפתרה",
+      "escalated": "הועבר לטיפול בכיר"
+    }
   }
 }

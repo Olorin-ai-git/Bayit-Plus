@@ -20,7 +20,7 @@ from app.api.routes import (
     device_pairing, onboarding, widgets, favorites, downloads, user_system_widgets, news, librarian,
     admin_content_vod_read, admin_content_vod_write, admin_content_vod_toggles, admin_categories, admin_live_channels,
     admin_radio_stations, admin_podcasts, admin_podcast_episodes, admin_content_importer, admin_widgets, verification,
-    recordings, epg, password_reset, chess, users, friends, stats, direct_messages, websocket_dm, search
+    recordings, epg, password_reset, chess, users, friends, stats, direct_messages, websocket_dm, search, support
 )
 from app.api.routes.admin.recordings import router as admin_recordings_router
 
@@ -658,6 +658,7 @@ app.include_router(stats.router, prefix=f"{settings.API_V1_PREFIX}", tags=["stat
 app.include_router(users.router, prefix=f"{settings.API_V1_PREFIX}/users", tags=["users"])
 app.include_router(direct_messages.router, prefix=f"{settings.API_V1_PREFIX}", tags=["direct-messages"])
 app.include_router(websocket_dm.router, prefix=f"{settings.API_V1_PREFIX}", tags=["websocket", "direct-messages"])
+app.include_router(support.router, prefix=f"{settings.API_V1_PREFIX}/support", tags=["support"])
 
 # Serve uploads - local files or proxy to GCS
 @app.api_route("/uploads/{path:path}", methods=["GET", "HEAD"])

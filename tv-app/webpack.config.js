@@ -154,6 +154,19 @@ module.exports = {
     hot: true,
     historyApiFallback: true,
     open: true,
+    // Explicitly set permissive headers to avoid COEP blocking external images
+    // Note: SharedArrayBuffer won't work without COEP, but Porcupine falls back to ArrayBuffer
+    headers: {
+      'Cross-Origin-Opener-Policy': 'unsafe-none',
+      'Cross-Origin-Embedder-Policy': 'unsafe-none',
+    },
+    proxy: [
+      {
+        context: ['/api', '/uploads'],
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+    ],
   },
   performance: {
     hints: false,

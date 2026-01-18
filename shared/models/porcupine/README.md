@@ -49,6 +49,7 @@ Picovoice free tier includes:
 
 | File | Platform | Status |
 |------|----------|--------|
+| `porcupine_params.pv` | All (language model) | **Required** - Downloaded from Picovoice SDK |
 | `hey_buyit_wasm.ppn` | Web/WASM | **Download Web version from Picovoice Console** |
 | `hey_buyit_ios.ppn` | iOS | Pending |
 | `hey_buyit_mac.ppn` | macOS | Available (not used for web) |

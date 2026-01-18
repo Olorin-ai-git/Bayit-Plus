@@ -98,6 +98,7 @@ module.exports = (env, argv) => {
         '@bayit/shared/chat': path.resolve(sharedPath, 'components/chat'),
         '@bayit/shared/admin': path.resolve(sharedPath, 'components/admin'),
         '@bayit/shared': path.resolve(sharedPath, 'components'),
+        '@bayit/shared-assets': path.resolve(sharedPath, 'assets'),
       },
       symlinks: true,
     },
@@ -222,20 +223,24 @@ module.exports = (env, argv) => {
       new CopyWebpackPlugin({
         patterns: [
           {
-            // Copy all assets (images, audio, video, games)
-            from: path.resolve(__dirname, 'public/assets'),
+            // Copy all assets from shared location (images, audio, video, games)
+            from: path.resolve(sharedPath, 'assets'),
             to: path.resolve(getOutputPath(), 'assets'),
             noErrorOnMissing: true,
           },
           {
-            // Copy favicon files
-            from: path.resolve(__dirname, 'public/favicon*.{png,ico}'),
+            // Copy favicon files from shared assets to root
+            from: '*.{png,ico}',
             to: path.resolve(getOutputPath(), '[name][ext]'),
+            context: path.resolve(sharedPath, 'assets/images/icons'),
+            noErrorOnMissing: true,
           },
           {
-            // Copy Apple touch icon
-            from: path.resolve(__dirname, 'public/apple-touch-icon.png'),
+            // Copy Apple touch icon from shared assets
+            from: 'apple-touch-icon.png',
             to: path.resolve(getOutputPath(), 'apple-touch-icon.png'),
+            context: path.resolve(sharedPath, 'assets/images/icons'),
+            noErrorOnMissing: true,
           },
           {
             // Copy Vosk WebAssembly files from root node_modules

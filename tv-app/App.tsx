@@ -32,6 +32,7 @@ import {
   SettingsScreen,
   RecordingsScreen,
   HelpScreen,
+  SupportScreen,
   SubscribeScreen,
 } from '@bayit/shared-screens';
 import { useAuthStore, useChatbotStore } from '@bayit/shared-stores';
@@ -73,6 +74,7 @@ export type RootStackParamList = {
   Settings: undefined;
   Recordings: undefined;
   Help: undefined;
+  Support: undefined;
 };
 
 export type MainTabParamList = {
@@ -326,6 +328,7 @@ const AppContent: React.FC = () => {
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="Recordings" component={RecordingsScreen} />
             <Stack.Screen name="Help" component={HelpScreen} />
+            <Stack.Screen name="Support" component={SupportScreen} />
             <Stack.Screen name="Subscribe" component={SubscribeScreen} />
           </Stack.Navigator>
         </View>

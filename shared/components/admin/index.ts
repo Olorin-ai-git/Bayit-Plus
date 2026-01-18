@@ -1,11 +1,9 @@
 /**
- * Admin Components
- * Shared admin UI components
+ * Admin Components Index
+ * Barrel export for admin dashboard components
  */
-export { AdminLayout } from './AdminLayout';
-export { AdminSidebar } from './AdminSidebar';
-export { AdminTopBar } from './AdminTopBar';
-export { DataTable } from './DataTable';
-export type { Column, DataTableProps } from './DataTable';
-export { PermissionGate } from './PermissionGate';
-export { StatCard } from './StatCard';
+
+// Support Dashboard
+export { SupportTicketCard } from './SupportTicketCard';
+export { SupportTicketDetail } from './SupportTicketDetail';
+export { SupportResponseTemplates } from './SupportResponseTemplates';

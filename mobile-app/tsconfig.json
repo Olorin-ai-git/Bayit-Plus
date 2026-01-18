@@ -33,7 +33,9 @@
       "@bayit/shared-types": ["../shared/types"],
       "@bayit/shared-types/*": ["../shared/types/*"],
       "@bayit/shared-utils": ["../shared/utils"],
-      "@bayit/shared-utils/*": ["../shared/utils/*"]
+      "@bayit/shared-utils/*": ["../shared/utils/*"],
+      "@bayit/shared-assets": ["../shared/assets"],
+      "@bayit/shared-assets/*": ["../shared/assets/*"]
     }
   },
   "include": [

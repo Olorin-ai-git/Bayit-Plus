@@ -251,7 +251,7 @@ export default function ProfileSelectionPage() {
         {/* Logo */}
         <View style={styles.logoContainer}>
           <Image
-            source={{ uri: '/assets/images/logo.png' }}
+            source={{ uri: '/assets/images/logos/logo.png' }}
             style={styles.logo}
             resizeMode="contain"
           />

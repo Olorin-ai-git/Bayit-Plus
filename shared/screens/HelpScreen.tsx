@@ -1,3 +1,17 @@
+/**
+ * Help Screen
+ * Legacy export - redirects to SupportScreen
+ * This file is kept for backwards compatibility
+ */
+
+import SupportScreen from './SupportScreen';
+
+// Re-export SupportScreen as default for backwards compatibility
+export default SupportScreen;
+
+// Legacy implementation below (kept for reference, not used)
+// =============================================================
+
 import React, { useState } from 'react';
 import {
   View,

@@ -98,7 +98,8 @@ const JudaismCard: React.FC<{
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const { isRTL, textAlign } = useDirection();
-  const [imageError, setImageError] = useState(false);
+  // Track which thumbnail quality we're trying: 0=maxres, 1=hqdefault, 2=failed
+  const [thumbnailAttempt, setThumbnailAttempt] = useState(0);
   const categoryIcon = CATEGORY_ICONS[item.category] || '✡️';
 
   const handleFocus = () => {
@@ -119,13 +120,25 @@ const JudaismCard: React.FC<{
     }).start();
   };
 
-  const getThumbnailUrl = () => {
+  const getThumbnailUrl = (): string | null => {
     if (!item.thumbnail) return null;
-    if (item.thumbnail.includes('maxresdefault') && imageError) {
-      return item.thumbnail.replace('maxresdefault', 'hqdefault');
+    // If YouTube maxresdefault failed, try hqdefault
+    if (item.thumbnail.includes('maxresdefault')) {
+      if (thumbnailAttempt === 0) return item.thumbnail;
+      if (thumbnailAttempt === 1) return item.thumbnail.replace('maxresdefault', 'hqdefault');
+      return null; // Both failed
     }
-    return item.thumbnail;
+    return thumbnailAttempt < 2 ? item.thumbnail : null;
   };
+
+  const handleImageError = () => {
+    // Try next fallback quality
+    if (thumbnailAttempt < 2) {
+      setThumbnailAttempt(prev => prev + 1);
+    }
+  };
+
+  const thumbnailUrl = getThumbnailUrl();
 
   return (
     <TouchableOpacity
@@ -144,12 +157,12 @@ const JudaismCard: React.FC<{
           isFocused && styles.cardFocused,
         ]}
       >
-        {getThumbnailUrl() && !imageError ? (
+        {thumbnailUrl ? (
           <Image
-            source={{ uri: getThumbnailUrl()! }}
+            source={{ uri: thumbnailUrl }}
             style={styles.cardImage}
             resizeMode="cover"
-            onError={() => setImageError(true)}
+            onError={handleImageError}
           />
         ) : (
           <View style={styles.cardImagePlaceholder}>

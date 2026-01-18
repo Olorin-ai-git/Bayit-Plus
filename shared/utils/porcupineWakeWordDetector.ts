@@ -101,21 +101,54 @@ export class PorcupineWakeWordDetector {
         // Fallback to built-in "Computer" for testing
         // User's Picovoice free tier training limit reached - using built-in keyword
         console.log('[PorcupineWakeWord] Custom model not found, using built-in "Computer" (say "Computer" to activate)');
+        // Use the enum value properly with sensitivity
         keyword = {
-          builtin: 'Computer' as BuiltInKeyword,
+          builtin: BuiltInKeyword.Computer,
           sensitivity: this.sensitivity,
         };
       }
 
-      // Create Porcupine worker
+      // Define the model configuration
+      // The model file must be served from the public directory
+      const modelPath = '/porcupine/porcupine_params.pv';
+
+      // Verify model file is accessible
+      try {
+        const modelCheck = await fetch(modelPath, { method: 'HEAD' });
+        if (!modelCheck.ok) {
+          throw new Error(`Model file not found at ${modelPath} (status: ${modelCheck.status})`);
+        }
+        console.log('[PorcupineWakeWord] Model file verified at:', modelPath);
+      } catch (fetchError) {
+        console.error('[PorcupineWakeWord] Cannot access model file:', fetchError);
+        throw new Error(`Porcupine model file not accessible at ${modelPath}`);
+      }
+
+      const porcupineModel = {
+        publicPath: modelPath,
+        forceWrite: false,
+        version: 1,
+      };
+
+      // Create Porcupine worker with model
+      console.log('[PorcupineWakeWord] Creating PorcupineWorker with:', {
+        keywordType: useCustomModel ? 'custom' : 'built-in Computer',
+        modelPath: porcupineModel.publicPath,
+        sensitivity: this.sensitivity,
+      });
+
       this.porcupine = await PorcupineWorker.create(
         this.accessKey,
         [keyword],
-        (detection) => this.handleDetection(detection.index)
+        (detection) => {
+          console.log('[PorcupineWakeWord] 🎉 Detection callback fired:', detection);
+          this.handleDetection(detection.index);
+        },
+        porcupineModel
       );
 
       this.isInitialized = true;
-      console.log('[PorcupineWakeWord] Initialized successfully');
+      console.log('[PorcupineWakeWord] ✅ Initialized successfully - say "Computer" to test');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       console.error('[PorcupineWakeWord] Failed to initialize:', errorMessage);
@@ -161,13 +194,30 @@ export class PorcupineWakeWordDetector {
     this.detectionCallback = onDetection;
 
     try {
-      console.log('[PorcupineWakeWord] Starting audio capture...');
+      console.log('[PorcupineWakeWord] Starting audio capture via WebVoiceProcessor...');
+
+      // Check if microphone is accessible first
+      try {
+        const testStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const tracks = testStream.getAudioTracks();
+        console.log('[PorcupineWakeWord] Microphone test passed:', {
+          tracks: tracks.length,
+          label: tracks[0]?.label,
+          enabled: tracks[0]?.enabled,
+        });
+        // Stop test stream before WebVoiceProcessor takes over
+        testStream.getTracks().forEach(t => t.stop());
+      } catch (micError) {
+        const errorMsg = micError instanceof Error ? micError.message : String(micError);
+        console.error('[PorcupineWakeWord] Microphone access failed:', errorMsg);
+        throw new Error(`Microphone access denied: ${errorMsg}`);
+      }
 
       // Start WebVoiceProcessor to capture microphone audio
       await WebVoiceProcessor.subscribe(this.porcupine);
 
       this.isListening = true;
-      console.log('[PorcupineWakeWord] Listening for wake word...');
+      console.log('[PorcupineWakeWord] ✅ Listening for wake word "Computer"...');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       console.error('[PorcupineWakeWord] Failed to start listening:', errorMessage);
@@ -258,12 +308,16 @@ export class PorcupineWakeWordDetector {
 export function getPicovoiceAccessKey(): string {
   // Try Vite env first (web apps)
   if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_PICOVOICE_ACCESS_KEY) {
-    return import.meta.env.VITE_PICOVOICE_ACCESS_KEY;
+    const key = import.meta.env.VITE_PICOVOICE_ACCESS_KEY;
+    console.log('[PorcupineWakeWord] Access key found (Vite):', key ? `${key.slice(0, 10)}...` : 'empty');
+    return key;
   }
 
   // Try process.env (Node/build time)
   if (typeof process !== 'undefined' && process.env?.VITE_PICOVOICE_ACCESS_KEY) {
-    return process.env.VITE_PICOVOICE_ACCESS_KEY;
+    const key = process.env.VITE_PICOVOICE_ACCESS_KEY;
+    console.log('[PorcupineWakeWord] Access key found (process.env):', key ? `${key.slice(0, 10)}...` : 'empty');
+    return key;
   }
 
   console.warn('[PorcupineWakeWord] No Picovoice access key found in environment');
@@ -276,6 +330,7 @@ export function getPicovoiceAccessKey(): string {
 export function isPorcupineSupported(): boolean {
   // Check for browser environment
   if (typeof window === 'undefined') {
+    console.log('[PorcupineWakeWord] Not browser environment');
     return false;
   }
 
@@ -290,6 +345,27 @@ export function isPorcupineSupported(): boolean {
   const hasMediaDevices = typeof navigator !== 'undefined' &&
     !!navigator.mediaDevices &&
     !!navigator.mediaDevices.getUserMedia;
+
+  // Check for SharedArrayBuffer (required for optimal performance)
+  const hasSharedArrayBuffer = typeof SharedArrayBuffer !== 'undefined';
+
+  // Check secure context
+  const isSecureContext = window.isSecureContext;
+
+  console.log('[PorcupineWakeWord] Support check:', {
+    hasAudioContext,
+    hasWorkers,
+    hasMediaDevices,
+    hasSharedArrayBuffer,
+    isSecureContext,
+    crossOriginIsolated: (window as any).crossOriginIsolated,
+  });
+
+  // SharedArrayBuffer is preferred but not strictly required (falls back to ArrayBuffer)
+  if (!hasSharedArrayBuffer) {
+    console.warn('[PorcupineWakeWord] SharedArrayBuffer not available - Porcupine will use slower ArrayBuffer fallback');
+    console.warn('[PorcupineWakeWord] To enable SharedArrayBuffer, server must send COOP/COEP headers');
+  }
 
   return hasAudioContext && hasWorkers && hasMediaDevices;
 }

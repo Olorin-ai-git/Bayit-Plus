@@ -89,7 +89,12 @@ export function GlassLiveChannelCard({
           {/* Live Badge with Pulse Animation */}
           <View style={styles.liveBadgeContainer}>
             <View style={[styles.liveBadge, isWeb && styles.liveBadgeWeb]}>
-              <View style={[styles.livePulse, isWeb && styles.livePulseWeb]} />
+              {/* Use CSS class for web animation, style for native */}
+              <View
+                style={styles.livePulse}
+                // @ts-ignore - web-only className for CSS animation
+                className={isWeb ? 'live-pulse-dot' : undefined}
+              />
               <Text style={styles.liveText}>{liveLabel}</Text>
             </View>
           </View>
@@ -257,13 +262,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: '#fff',
   },
-  livePulseWeb: {
-    // @ts-ignore - Web animation
-    animationName: 'livePulse',
-    animationDuration: '1.5s',
-    animationIterationCount: 'infinite',
-    animationTimingFunction: 'ease-in-out',
-  },
+  // Note: Web animation handled via CSS className 'live-pulse-dot' in globals.css
   liveText: {
     fontSize: 10,
     fontWeight: '700',

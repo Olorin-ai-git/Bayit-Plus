@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, List, Callable
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
@@ -108,3 +108,35 @@ async def get_current_premium_user(
             detail="Premium subscription required for this feature"
         )
     return current_user
+
+
+def require_role(allowed_roles: List[str]) -> Callable:
+    """
+    Create a dependency that requires the user to have one of the specified roles.
+
+    Args:
+        allowed_roles: List of role names that are allowed (e.g., ['admin', 'support'])
+
+    Returns:
+        A FastAPI dependency function that validates user role.
+
+    Usage:
+        @router.get('/admin/endpoint')
+        async def admin_endpoint(current_user: User = Depends(require_role(['admin']))):
+            ...
+    """
+    async def role_checker(
+        current_user: User = Depends(get_current_active_user),
+    ) -> User:
+        # super_admin has access to everything
+        if current_user.role == "super_admin":
+            return current_user
+
+        if current_user.role not in allowed_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Access denied. Required role: {', '.join(allowed_roles)}"
+            )
+        return current_user
+
+    return role_checker
