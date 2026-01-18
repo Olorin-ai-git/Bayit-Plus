@@ -1,28 +1,22 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw } from 'lucide-react';
-import { GlassButton, GlassResizablePanel } from '@bayit/shared/ui';
-import { colors, spacing } from '@bayit/shared/theme';
+import { RefreshCw, Activity, DollarSign, Clock, Play, Bot, FileText, Eye, Minus, Plus } from 'lucide-react';
+import { GlassButton, GlassToggle, GlassStatCard, GlassBadge } from '@bayit/shared/ui';
+import { GlassLog, GlassTable, GlassDraggableExpander } from '@bayit/shared/ui/web';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
 import {
   getAuditReportDetails,
   clearAuditReports,
   AuditReportDetail,
+  AuditReport,
 } from '@/services/librarianService';
-import { VoiceLibrarianControl } from '@/components/admin/VoiceLibrarianControl';
 import logger from '@/utils/logger';
+import { format } from 'date-fns';
 
 import { useLibrarianData } from './hooks/useLibrarianData';
 import { useAuditControl } from './hooks/useAuditControl';
-import { useVoiceLibrarian } from './hooks/useVoiceLibrarian';
-
-import { AuditControlsPanel } from './components/AuditControlsPanel';
-import { LiveAuditLogPanel } from './components/LiveAuditLogPanel';
-import { SystemStatusStats } from './components/SystemStatusStats';
-import { ScheduleInformation } from './components/ScheduleInformation';
-import { RecentReportsList } from './components/RecentReportsList';
-import { KidsContentDashboard } from './components/KidsContentDashboard';
 
 import { AuditConfirmationModal } from './modals/AuditConfirmationModal';
 import { ClearReportsModal } from './modals/ClearReportsModal';
@@ -34,35 +28,40 @@ import { BatchProgress, AuditConfigState } from './types';
 
 const LibrarianAgentPage = () => {
   const { t } = useTranslation();
-  const { isRTL, textAlign } = useDirection();
+  const { isRTL, textAlign, flexDirection } = useDirection();
 
+  // Audit configuration state - toggles default ON except dryRun
   const [dryRun, setDryRun] = useState(false);
   const [budgetLimit, setBudgetLimit] = useState(0);
-  const [last24HoursOnly, setLast24HoursOnly] = useState(false);
-  const [cybTitlesOnly, setCybTitlesOnly] = useState(false);
-  const [tmdbPostersOnly, setTmdbPostersOnly] = useState(false);
-  const [openSubtitlesEnabled, setOpenSubtitlesEnabled] = useState(false);
-  const [classifyOnly, setClassifyOnly] = useState(false);
+  const [last24HoursOnly, setLast24HoursOnly] = useState(true);
+  const [cybTitlesOnly, setCybTitlesOnly] = useState(true);
+  const [tmdbPostersOnly, setTmdbPostersOnly] = useState(true);
+  const [openSubtitlesEnabled, setOpenSubtitlesEnabled] = useState(true);
+  const [classifyOnly, setClassifyOnly] = useState(true);
 
-  const [livePanelExpanded, setLivePanelExpanded] = useState(true);
+  // Live panel state
   const [livePanelReport, setLivePanelReport] = useState<AuditReportDetail | null>(null);
   const [connectingToLiveLog, setConnectingToLiveLog] = useState(false);
   const [lastPolledAt, setLastPolledAt] = useState<Date | null>(null);
 
+  // Report detail modal state
   const [selectedReport, setSelectedReport] = useState<AuditReportDetail | null>(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [detailModalLoading, setDetailModalLoading] = useState(false);
   const [loadingAuditId, setLoadingAuditId] = useState<string | null>(null);
 
+  // Modal states
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [clearReportsModalOpen, setClearReportsModalOpen] = useState(false);
   const [clearingReports, setClearingReports] = useState(false);
 
+  // Error/success modals
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Data hook
   const {
     config,
     status,
@@ -79,6 +78,7 @@ const LibrarianAgentPage = () => {
     setErrorModalOpen: setDataErrorModalOpen,
   } = useLibrarianData();
 
+  // Initialize budget from config
   useEffect(() => {
     if (config) {
       setBudgetLimit(config.audit_limits.default_budget_usd);
@@ -96,6 +96,7 @@ const LibrarianAgentPage = () => {
     classifyOnly,
   };
 
+  // Audit control hook
   const {
     triggering,
     pausingAudit,
@@ -114,7 +115,7 @@ const LibrarianAgentPage = () => {
     budgetUsed,
     auditConfig,
     setLivePanelReport,
-    setLivePanelExpanded,
+    setLivePanelExpanded: () => {},
     loadData,
     setErrorMessage,
     setErrorModalOpen,
@@ -122,20 +123,7 @@ const LibrarianAgentPage = () => {
     setSuccessModalOpen,
   });
 
-  const {
-    voiceProcessing,
-    isSpeaking,
-    isVoiceMuted,
-    handleVoiceCommand,
-    toggleVoiceMute,
-  } = useVoiceLibrarian({
-    loadData,
-    setSuccessMessage,
-    setSuccessModalOpen,
-    setErrorMessage,
-    setErrorModalOpen,
-  });
-
+  // Batch progress calculation
   const batchProgress = useMemo((): BatchProgress | null => {
     if (!livePanelReport?.execution_logs) {
       return null;
@@ -192,6 +180,7 @@ const LibrarianAgentPage = () => {
     return null;
   }, [livePanelReport?.execution_logs, livePanelReport?.status]);
 
+  // Auto-load running audit
   useEffect(() => {
     if (reports.length === 0 || livePanelReport) {
       return;
@@ -206,7 +195,6 @@ const LibrarianAgentPage = () => {
           setConnectingToLiveLog(true);
           const details = await getAuditReportDetails(inProgressAudit.audit_id);
           setLivePanelReport(details);
-          setLivePanelExpanded(true);
         } catch (error) {
           logger.error('Failed to auto-load running audit:', error);
         } finally {
@@ -218,6 +206,7 @@ const LibrarianAgentPage = () => {
     }
   }, [reports, livePanelReport]);
 
+  // Poll for audit updates
   useEffect(() => {
     const inProgressAudit = reports.find(r => r.status === 'in_progress');
 
@@ -232,19 +221,13 @@ const LibrarianAgentPage = () => {
       return;
     }
 
-    logger.info(`[Polling] Found in-progress audit: ${inProgressAudit.audit_id}`);
-
     const pollInterval = setInterval(async () => {
       try {
         const details = await getAuditReportDetails(inProgressAudit.audit_id);
-        const logCount = details.execution_logs?.length || 0;
-
-        logger.info(`[Polling] Fetched audit ${inProgressAudit.audit_id} - Status: ${details.status}, Logs: ${logCount}`);
 
         if (livePanelReport && livePanelReport.audit_id === inProgressAudit.audit_id) {
           setLivePanelReport(details);
           setLastPolledAt(new Date());
-          logger.info(`[Polling] Updated live panel - ${logCount} logs`);
         }
 
         if (selectedReport && selectedReport.audit_id === inProgressAudit.audit_id) {
@@ -252,7 +235,6 @@ const LibrarianAgentPage = () => {
         }
 
         if (details.status === 'completed' || details.status === 'failed' || details.status === 'partial') {
-          logger.info(`[Polling] Audit ${inProgressAudit.audit_id} completed with status: ${details.status}`);
           clearInterval(pollInterval);
           await loadData();
         }
@@ -266,6 +248,7 @@ const LibrarianAgentPage = () => {
     };
   }, [reports, selectedReport, livePanelReport, loadData]);
 
+  // Handle audit trigger
   const handleTriggerAudit = (auditType: 'daily_incremental' | 'ai_agent') => {
     setPendingAuditType(auditType);
     if (auditType === 'ai_agent') {
@@ -275,6 +258,7 @@ const LibrarianAgentPage = () => {
     }
   };
 
+  // Handle view report
   const handleViewReport = async (auditId: string) => {
     setLoadingAuditId(auditId);
     await new Promise(resolve => setTimeout(resolve, 50));
@@ -297,34 +281,7 @@ const LibrarianAgentPage = () => {
     }
   };
 
-  const handleViewLogsInPanel = async (auditId: string) => {
-    setLoadingAuditId(auditId);
-    setConnectingToLiveLog(true);
-
-    try {
-      const details = await getAuditReportDetails(auditId);
-      setLivePanelReport(details);
-      setLivePanelExpanded(true);
-    } catch (error) {
-      logger.error('Failed to load report details for live panel:', error);
-      setErrorMessage(t('admin.librarian.errors.failedToLoadDetails'));
-      setErrorModalOpen(true);
-    } finally {
-      setLoadingAuditId(null);
-      setTimeout(() => setConnectingToLiveLog(false), 300);
-    }
-  };
-
-  const handleScheduleUpdate = async (newCron: string, newStatus: 'ENABLED' | 'DISABLED') => {
-    setErrorMessage(t('admin.librarian.schedules.editNotAvailableMessage'));
-    setErrorModalOpen(true);
-    throw new Error('Schedule editing requires Cloud Console');
-  };
-
-  const handleClearReportsClick = () => {
-    setClearReportsModalOpen(true);
-  };
-
+  // Handle clear reports
   const handleClearReportsConfirm = async () => {
     setClearReportsModalOpen(false);
     setClearingReports(true);
@@ -344,21 +301,35 @@ const LibrarianAgentPage = () => {
     }
   };
 
-  const getHealthColor = useCallback((health: string) => {
-    switch (health) {
-      case 'excellent':
-        return colors.success;
-      case 'good':
-        return '#10B981';
-      case 'fair':
-        return colors.warning;
-      case 'poor':
-        return colors.error;
-      default:
-        return colors.textMuted;
+  // Budget adjustment handlers
+  const handleBudgetDecrease = () => {
+    if (config) {
+      setBudgetLimit(Math.max(config.audit_limits.min_budget_usd, budgetLimit - config.audit_limits.budget_step_usd));
     }
-  }, []);
+  };
 
+  const handleBudgetIncrease = () => {
+    if (config) {
+      setBudgetLimit(Math.min(config.audit_limits.max_budget_usd, budgetLimit + config.audit_limits.budget_step_usd));
+    }
+  };
+
+  // Get status display values
+  const getStatusValue = () => {
+    const inProgress = reports.find(r => r.status === 'in_progress');
+    if (inProgress) return t('admin.librarian.status.running', 'Running');
+    if (triggering) return t('admin.librarian.status.pending', 'Starting...');
+    return t('admin.librarian.status.disabled', 'Idle');
+  };
+
+  const getLastRunValue = () => {
+    const completed = reports.filter(r => r.status === 'completed' || r.status === 'failed');
+    if (completed.length === 0) return t('admin.librarian.audit.status.never', 'Never');
+    const lastReport = completed[0];
+    return format(new Date(lastReport.audit_date), 'MMM d, HH:mm');
+  };
+
+  // Loading state
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -368,14 +339,12 @@ const LibrarianAgentPage = () => {
     );
   }
 
+  // Error state
   if (configError) {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorTitle}>{t('admin.librarian.errors.configError')}</Text>
         <Text style={styles.errorText}>{configError}</Text>
-        <Text style={styles.errorSubtext}>
-          {t('admin.librarian.errors.contactAdmin')}
-        </Text>
         <GlassButton
           title={t('admin.librarian.modal.retry')}
           variant="primary"
@@ -395,107 +364,346 @@ const LibrarianAgentPage = () => {
     );
   }
 
+  const isAuditRunning = reports.some(r => r.status === 'in_progress');
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
-        <View style={[styles.titleContainer, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+      {/* Header */}
+      <View style={[styles.header, { flexDirection }]}>
+        <View style={styles.titleContainer}>
           <Text style={[styles.title, { textAlign }]}>
             {t('admin.librarian.title')}
           </Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
-            {t('admin.librarian.subtitle')}
-          </Text>
         </View>
         <GlassButton
-          title={t('admin.librarian.refresh')}
-          variant="secondary"
-          icon={<RefreshCw size={16} color={colors.text} />}
+          variant="ghost"
+          icon={<RefreshCw size={18} color={colors.text} />}
           onPress={handleRefresh}
           loading={refreshing}
         />
       </View>
 
-      <View style={[styles.twoColumnLayout, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        <View style={styles.mainColumn}>
-          <AuditControlsPanel
-            config={config}
-            reports={reports}
-            auditConfig={auditConfig}
-            triggering={triggering}
-            pendingAuditType={pendingAuditType}
-            onDryRunChange={setDryRun}
-            onLast24HoursChange={setLast24HoursOnly}
-            onCybTitlesChange={setCybTitlesOnly}
-            onTmdbPostersChange={setTmdbPostersOnly}
-            onOpenSubtitlesChange={setOpenSubtitlesEnabled}
-            onClassifyChange={setClassifyOnly}
-            onBudgetChange={setBudgetLimit}
-            onTriggerAudit={handleTriggerAudit}
-          />
-
-          <LiveAuditLogPanel
-            report={livePanelReport}
-            expanded={livePanelExpanded}
-            connectingToLog={connectingToLiveLog}
-            refreshing={refreshing}
-            pausingAudit={pausingAudit}
-            resumingAudit={resumingAudit}
-            cancellingAudit={cancellingAudit}
-            auditPaused={auditPaused}
-            batchProgress={batchProgress}
-            lastPolledAt={lastPolledAt}
-            isRTL={isRTL}
-            onExpandChange={setLivePanelExpanded}
-            onRefresh={handleRefresh}
-            onPause={() => handlePauseAudit(livePanelReport?.audit_id)}
-            onResume={() => handleResumeAudit(livePanelReport?.audit_id)}
-            onCancel={() => handleCancelAudit(livePanelReport?.audit_id)}
-          />
-        </View>
-
-        <GlassResizablePanel
-          defaultWidth={420}
-          minWidth={340}
-          maxWidth={600}
-          position="right"
-          style={styles.sidebarColumn}
-        >
-          <SystemStatusStats
-            status={status}
-            textAlign={textAlign}
-            getHealthColor={getHealthColor}
-          />
-
-          <VoiceLibrarianControl
-            onCommand={handleVoiceCommand}
-            isProcessing={voiceProcessing}
-            isSpeaking={isSpeaking}
-            onToggleMute={toggleVoiceMute}
-            isMuted={isVoiceMuted}
-          />
-
-          <KidsContentDashboard
-            status={status}
-            triggering={triggering}
-            reports={reports}
-            onTriggerAudit={handleTriggerAudit}
-          />
-
-          <ScheduleInformation
-            config={config}
-            onUpdate={handleScheduleUpdate}
-          />
-
-          <RecentReportsList
-            reports={reports}
-            clearingReports={clearingReports}
-            isRTL={isRTL}
-            onViewReport={handleViewReport}
-            onClearReports={handleClearReportsClick}
-          />
-        </GlassResizablePanel>
+      {/* Status Bar - 3 stat cards inline */}
+      <View style={[styles.statsRow, { flexDirection }]}>
+        <GlassStatCard
+          icon={<Activity size={20} color={isAuditRunning ? colors.warning : colors.success} />}
+          label={t('admin.librarian.reports.columns.status', 'Status')}
+          value={getStatusValue()}
+          compact
+          style={styles.statCard}
+        />
+        <GlassStatCard
+          icon={<DollarSign size={20} color={colors.primary} />}
+          label={t('admin.librarian.quickActions.monthlyBudgetUsed', 'Budget Used')}
+          value={`$${budgetUsed.toFixed(2)}`}
+          subtitle={`/ $${(config.audit_limits.max_budget_usd * 30).toFixed(0)} monthly`}
+          compact
+          style={styles.statCard}
+        />
+        <GlassStatCard
+          icon={<Clock size={20} color={colors.textMuted} />}
+          label={t('admin.librarian.logs.lastLog', 'Last Run')}
+          value={getLastRunValue()}
+          compact
+          style={styles.statCard}
+        />
       </View>
 
+      {/* Audit Configuration Section */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.librarian.quickActions.title', 'Audit Configuration')}</Text>
+
+        {/* Toggles Grid - 2 columns */}
+        <View style={styles.toggleGrid}>
+          <View style={styles.toggleItem}>
+            <GlassToggle
+              value={last24HoursOnly}
+              onValueChange={setLast24HoursOnly}
+              label={t('admin.librarian.quickActions.last24Hours', 'Last 24 Hours Only')}
+              size="small"
+              isRTL={isRTL}
+            />
+          </View>
+          <View style={styles.toggleItem}>
+            <GlassToggle
+              value={cybTitlesOnly}
+              onValueChange={setCybTitlesOnly}
+              label={t('admin.librarian.quickActions.cybTitlesOnly', 'CYB Titles Only')}
+              size="small"
+              isRTL={isRTL}
+            />
+          </View>
+          <View style={styles.toggleItem}>
+            <GlassToggle
+              value={tmdbPostersOnly}
+              onValueChange={setTmdbPostersOnly}
+              label={t('admin.librarian.quickActions.tmdbPostersOnly', 'TMDB Posters Only')}
+              size="small"
+              isRTL={isRTL}
+            />
+          </View>
+          <View style={styles.toggleItem}>
+            <GlassToggle
+              value={openSubtitlesEnabled}
+              onValueChange={setOpenSubtitlesEnabled}
+              label={t('admin.librarian.quickActions.openSubtitlesEnabled', 'OpenSubtitles')}
+              size="small"
+              isRTL={isRTL}
+            />
+          </View>
+          <View style={styles.toggleItem}>
+            <GlassToggle
+              value={classifyOnly}
+              onValueChange={setClassifyOnly}
+              label={t('admin.librarian.quickActions.classifyOnly', 'Classify Content')}
+              size="small"
+              isRTL={isRTL}
+            />
+          </View>
+          <View style={styles.toggleItem}>
+            <GlassToggle
+              value={dryRun}
+              onValueChange={setDryRun}
+              label={t('admin.librarian.quickActions.dryRun', 'Dry Run')}
+              size="small"
+              isRTL={isRTL}
+            />
+          </View>
+        </View>
+
+        {/* Action Buttons Row */}
+        <View style={[styles.actionsRow, { flexDirection }]}>
+          <GlassButton
+            title={t('admin.librarian.quickActions.dailyAudit', 'Daily Audit')}
+            variant="primary"
+            icon={<Play size={16} color={colors.background} />}
+            onPress={() => handleTriggerAudit('daily_incremental')}
+            loading={triggering && pendingAuditType === 'daily_incremental'}
+            disabled={triggering || isAuditRunning}
+          />
+          <GlassButton
+            title={t('admin.librarian.quickActions.aiAgentAudit', 'AI Agent Audit')}
+            variant="secondary"
+            icon={<Bot size={16} color={colors.text} />}
+            onPress={() => handleTriggerAudit('ai_agent')}
+            loading={triggering && pendingAuditType === 'ai_agent'}
+            disabled={triggering || isAuditRunning}
+          />
+
+          {/* Budget Control */}
+          <View style={[styles.budgetControl, { flexDirection, marginLeft: isRTL ? 0 : 'auto', marginRight: isRTL ? 'auto' : 0 }]}>
+            <Text style={[styles.budgetLabel, { textAlign }]}>
+              {t('admin.librarian.quickActions.budgetPerAudit', 'Budget:')} ${budgetLimit.toFixed(2)}
+            </Text>
+            <View style={[styles.budgetButtons, { flexDirection }]}>
+              <Pressable
+                style={styles.budgetButton}
+                onPress={handleBudgetDecrease}
+              >
+                <Minus size={14} color={colors.text} />
+              </Pressable>
+              <Pressable
+                style={styles.budgetButton}
+                onPress={handleBudgetIncrease}
+              >
+                <Plus size={14} color={colors.text} />
+              </Pressable>
+            </View>
+          </View>
+        </View>
+
+        {/* Running notice */}
+        {isAuditRunning && !triggering && (
+          <View style={[styles.runningNotice, { flexDirection }]}>
+            <ActivityIndicator size="small" color={colors.warning} />
+            <Text style={[styles.runningNoticeText, { textAlign }]}>
+              {t('admin.librarian.quickActions.auditRunningNotice', 'An audit is currently running')}
+            </Text>
+          </View>
+        )}
+      </View>
+
+      {/* Live Audit Log */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.librarian.logs.liveAuditLog', 'Live Audit Log')}</Text>
+
+        {connectingToLiveLog ? (
+          <View style={styles.connectingState}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={[styles.connectingText, { textAlign }]}>
+              {t('admin.librarian.logs.connecting', 'Connecting...')}
+            </Text>
+          </View>
+        ) : livePanelReport ? (
+          <View>
+            {/* Progress bar if running */}
+            {livePanelReport.status === 'in_progress' && batchProgress && (
+              <View style={styles.progressContainer}>
+                <View style={[styles.progressBar, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                  <View style={[styles.progressFill, { width: `${batchProgress.percentage}%` }]} />
+                </View>
+                <Text style={[styles.progressText, { textAlign }]}>
+                  {batchProgress.percentage}% - {batchProgress.itemsProcessed}/{batchProgress.totalItems} {t('admin.librarian.logs.items', 'items')}
+                </Text>
+              </View>
+            )}
+
+            <GlassLog
+              logs={[...livePanelReport.execution_logs].reverse()}
+              title=""
+              searchPlaceholder={t('admin.librarian.logs.searchPlaceholder', 'Search logs...')}
+              emptyMessage={t('admin.librarian.logs.noLogs', 'No logs yet')}
+              levelLabels={{
+                debug: t('admin.librarian.logs.levels.debug', 'DEBUG'),
+                info: t('admin.librarian.logs.levels.info', 'INFO'),
+                warn: t('admin.librarian.logs.levels.warn', 'WARN'),
+                error: t('admin.librarian.logs.levels.error', 'ERROR'),
+                success: t('admin.librarian.logs.levels.success', 'SUCCESS'),
+                trace: t('admin.librarian.logs.levels.trace', 'TRACE'),
+              }}
+              showSearch
+              showLevelFilter
+              showDownload
+              showClear
+              autoScroll
+              maxHeight={400}
+              animateEntries={false}
+              onClear={() => setLivePanelReport(null)}
+            />
+
+            {/* Audit controls if running */}
+            {livePanelReport.status === 'in_progress' && (
+              <View style={[styles.auditControlsRow, { flexDirection, justifyContent: isRTL ? 'flex-start' : 'flex-end' }]}>
+                {auditPaused ? (
+                  <GlassButton
+                    title={t('admin.librarian.audit.resume', 'Resume')}
+                    variant="primary"
+                    onPress={() => handleResumeAudit(livePanelReport.audit_id)}
+                    loading={resumingAudit}
+                    disabled={resumingAudit}
+                    size="sm"
+                  />
+                ) : (
+                  <GlassButton
+                    title={t('admin.librarian.audit.pause', 'Pause')}
+                    variant="secondary"
+                    onPress={() => handlePauseAudit(livePanelReport.audit_id)}
+                    loading={pausingAudit}
+                    disabled={pausingAudit}
+                    size="sm"
+                  />
+                )}
+                <GlassButton
+                  title={t('admin.librarian.audit.cancel', 'Cancel')}
+                  variant="ghost"
+                  onPress={() => handleCancelAudit(livePanelReport.audit_id)}
+                  loading={cancellingAudit}
+                  disabled={cancellingAudit}
+                  size="sm"
+                />
+              </View>
+            )}
+          </View>
+        ) : (
+          <View style={styles.emptyLogState}>
+            <Text style={[styles.emptyLogText, { textAlign }]}>
+              {t('admin.librarian.logs.triggerAuditToSee', 'No active audit. Trigger an audit to see live logs.')}
+            </Text>
+          </View>
+        )}
+      </View>
+
+      {/* Recent Reports - Collapsible */}
+      <GlassDraggableExpander
+        title={t('admin.librarian.reports.title', 'Recent Reports')}
+        subtitle={t('admin.librarian.reports.totalReports', '{{count}} report(s)', { count: reports.length })}
+        icon={<FileText size={18} color={colors.primary} />}
+        defaultExpanded={false}
+        draggable={false}
+        minHeight={300}
+        maxHeight={500}
+        headerActions={
+          reports.length > 0 ? (
+            <GlassButton
+              title={t('admin.librarian.reports.clearAll', 'Clear All')}
+              variant="ghost"
+              size="sm"
+              onPress={() => setClearReportsModalOpen(true)}
+              loading={clearingReports}
+              disabled={clearingReports}
+            />
+          ) : undefined
+        }
+        style={styles.section}
+      >
+        {reports.length === 0 ? (
+          <View style={styles.emptyReportsState}>
+            <FileText size={32} color={colors.textMuted} />
+            <Text style={[styles.emptyReportsText, { textAlign }]}>
+              {t('admin.librarian.reports.emptyMessage', 'No audit reports yet')}
+            </Text>
+          </View>
+        ) : (
+          <GlassTable
+            columns={[
+              {
+                key: 'audit_date',
+                label: t('admin.librarian.reports.columns.date', 'Date'),
+                render: (value) => (
+                  <Text style={styles.cellText}>
+                    {format(new Date(value), 'MMM d, yyyy HH:mm')}
+                  </Text>
+                ),
+              },
+              {
+                key: 'audit_type',
+                label: t('admin.librarian.reports.columns.type', 'Type'),
+                render: (value) => (
+                  <Text style={styles.cellText}>
+                    {t(`admin.librarian.auditTypes.${value}`, value)}
+                  </Text>
+                ),
+              },
+              {
+                key: 'status',
+                label: t('admin.librarian.reports.columns.status', 'Status'),
+                render: (value) => (
+                  <GlassBadge
+                    variant={
+                      value === 'completed' ? 'success' :
+                      value === 'failed' ? 'danger' :
+                      value === 'in_progress' ? 'warning' : 'default'
+                    }
+                    size="sm"
+                  >
+                    {t(`admin.librarian.status.${value}`, value)}
+                  </GlassBadge>
+                ),
+              },
+              {
+                key: 'actions',
+                label: '',
+                width: 80,
+                render: (_, row: AuditReport) => (
+                  <GlassButton
+                    title=""
+                    variant="ghost"
+                    size="sm"
+                    icon={<Eye size={16} color={colors.primary} />}
+                    onPress={() => handleViewReport(row.audit_id)}
+                    loading={loadingAuditId === row.audit_id}
+                  />
+                ),
+              },
+            ]}
+            data={reports.slice(0, 10)}
+            emptyMessage={t('admin.librarian.reports.emptyMessage', 'No reports')}
+            isRTL={isRTL}
+          />
+        )}
+      </GlassDraggableExpander>
+
+      {/* Modals */}
       <AuditConfirmationModal
         visible={confirmModalVisible}
         budgetLimit={budgetLimit}
@@ -519,7 +727,13 @@ const LibrarianAgentPage = () => {
         report={selectedReport}
         config={config}
         onClose={() => setDetailModalVisible(false)}
-        onViewLogs={handleViewLogsInPanel}
+        onViewLogs={(auditId) => {
+          setDetailModalVisible(false);
+          // Load audit into live panel
+          getAuditReportDetails(auditId).then(details => {
+            setLivePanelReport(details);
+          });
+        }}
       />
 
       <ErrorModal
@@ -553,40 +767,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.textMuted,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-    gap: spacing.md,
-  },
-  titleContainer: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  twoColumnLayout: {
-    flexDirection: 'row',
-    gap: spacing.lg,
-    alignItems: 'flex-start',
-  },
-  mainColumn: {
-    flex: 1,
-    minWidth: 0,
-    gap: spacing.md,
-  },
-  sidebarColumn: {
-    gap: spacing.md,
-    paddingLeft: spacing.md,
-  },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -603,14 +783,167 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 16,
     color: colors.text,
-    marginBottom: spacing.md,
     textAlign: 'center',
   },
-  errorSubtext: {
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  titleContainer: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  statCard: {
+    flex: 1,
+  },
+  section: {
+    marginBottom: spacing.lg,
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    padding: spacing.lg,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  toggleGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    columnGap: spacing.xl,
+    rowGap: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  toggleItem: {
+    width: 'calc(50% - 16px)',
+    minWidth: 220,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingTop: spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: colors.glassBorder,
+    flexWrap: 'wrap',
+  },
+  budgetControl: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  budgetLabel: {
+    fontSize: 14,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  budgetButtons: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+  },
+  budgetButton: {
+    width: 28,
+    height: 28,
+    borderRadius: borderRadius.sm,
+    backgroundColor: colors.glassLight,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  runningNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+    backgroundColor: colors.warning + '20',
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.warning + '40',
+    marginTop: spacing.md,
+  },
+  runningNoticeText: {
+    fontSize: 13,
+    color: colors.warning,
+  },
+  connectingState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl,
+    minHeight: 200,
+    gap: spacing.md,
+  },
+  connectingText: {
+    fontSize: 16,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+  progressContainer: {
+    marginBottom: spacing.md,
+  },
+  progressBar: {
+    height: 8,
+    backgroundColor: colors.glassLight,
+    borderRadius: borderRadius.full,
+    overflow: 'hidden',
+    marginBottom: spacing.xs,
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.full,
+  },
+  progressText: {
+    fontSize: 12,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+  auditControlsRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginTop: spacing.md,
+  },
+  emptyLogState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl,
+    minHeight: 150,
+    backgroundColor: colors.glassLight,
+    borderRadius: borderRadius.md,
+  },
+  emptyLogText: {
     fontSize: 14,
     color: colors.textMuted,
     textAlign: 'center',
-    lineHeight: 20,
+  },
+  emptyReportsState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl,
+    gap: spacing.sm,
+  },
+  emptyReportsText: {
+    fontSize: 14,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+  cellText: {
+    fontSize: 14,
+    color: colors.text,
   },
 });
 

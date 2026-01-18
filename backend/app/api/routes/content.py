@@ -15,6 +15,17 @@ import logging
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+# Series category indicators (Hebrew and English) - used to detect series by category name
+SERIES_CATEGORY_KEYWORDS = ["series", "סדרות", "סדרה", "tv shows", "shows"]
+
+
+def is_series_by_category(category_name: str) -> bool:
+    """Check if category name indicates series content."""
+    if not category_name:
+        return False
+    category_lower = category_name.lower()
+    return any(keyword in category_lower for keyword in SERIES_CATEGORY_KEYWORDS)
+
 
 def generate_signed_url_if_needed(url: str) -> str:
     """Generate signed URL for GCS files, return other URLs as-is."""
@@ -130,22 +141,23 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
     logger.info(f"⏱️ Featured: Initial queries took {time.time() - start_time:.2f}s")
 
     # Build spotlight items from raw dicts (NO extra queries - use existing data)
-    spotlight_items = [
-        {
+    spotlight_items = []
+    for item in featured_content:
+        category_name = item.get("category_name")
+        is_series = item.get("is_series", False) or is_series_by_category(category_name)
+        spotlight_items.append({
             "id": str(item.get("_id")),
             "title": item.get("title"),
             "description": item.get("description"),
             "backdrop": item.get("backdrop") or item.get("thumbnail") or item.get("poster_url"),
             "thumbnail": item.get("thumbnail") or item.get("poster_url"),
-            "category": item.get("category_name"),
+            "category": category_name,
             "year": item.get("year"),
             "duration": item.get("duration"),
             "rating": item.get("rating"),
-            "is_series": item.get("is_series", False),
-            "total_episodes": item.get("total_episodes") if item.get("is_series") else None,
-        }
-        for item in featured_content
-    ]
+            "is_series": is_series,
+            "total_episodes": item.get("total_episodes") if is_series else None,
+        })
 
     # Fetch category content with LIMIT per category at DB level
     cat_query_start = time.time()
@@ -204,20 +216,24 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
     for group in grouped_content:
         cat_id = group["_id"]
         cat_name = category_name_map.get(cat_id, "")
-        category_items_map[cat_id] = [
-            {
+        category_items = []
+        for item in group["items"]:
+            # Check both is_series flag and category name
+            is_series = item.get("is_series", False) or is_series_by_category(cat_name)
+            item_data = {
                 "id": str(item["_id"]),
                 "title": item.get("title"),
                 "thumbnail": item.get("thumbnail"),
                 "duration": item.get("duration"),
                 "year": item.get("year"),
                 "category": cat_name,
-                "type": "series" if item.get("is_series") else "movie",
-                "is_series": item.get("is_series", False),
-                **({"total_episodes": item.get("total_episodes") or 0} if item.get("is_series") else {})
+                "type": "series" if is_series else "movie",
+                "is_series": is_series,
             }
-            for item in group["items"]
-        ]
+            if is_series:
+                item_data["total_episodes"] = item.get("total_episodes") or 0
+            category_items.append(item_data)
+        category_items_map[cat_id] = category_items
 
     # NOTE: Subtitle enrichment removed from featured endpoint for performance
     # Subtitle data can be fetched separately via /content/{id} if needed
@@ -302,6 +318,10 @@ async def get_all_content(
     if avatar:
         logger.info(f"Avatar found in /content/all: id={avatar.id}, thumbnail={avatar.thumbnail}, thumbnail_data={bool(avatar.thumbnail_data)}, poster_url={avatar.poster_url}")
 
+    def is_series_content(item) -> bool:
+        """Determine if content is a series based on is_series flag OR category name."""
+        return item.is_series or is_series_by_category(item.category_name)
+
     # Build content items
     content_items = [
         {
@@ -314,8 +334,8 @@ async def get_all_content(
             "category": item.category_name,
             "year": item.year,
             "duration": item.duration,
-            "is_series": item.is_series or False,
-            "type": "series" if item.is_series else "movie",
+            "is_series": is_series_content(item),
+            "type": "series" if is_series_content(item) else "movie",
         }
         for item in items
     ]
@@ -405,6 +425,9 @@ async def get_by_category(
     # Build items with episode counts for series
     result_items = []
     for item in items:
+        # Determine if series based on is_series flag OR category name
+        is_series = item.is_series or is_series_by_category(category.name)
+
         item_data = {
             "id": str(item.id),
             "title": item.title,
@@ -413,12 +436,12 @@ async def get_by_category(
             "duration": item.duration,
             "year": item.year,
             "category": category.name,
-            "type": "series" if item.is_series else "movie",
-            "is_series": item.is_series,
+            "type": "series" if is_series else "movie",
+            "is_series": is_series,
         }
 
         # Calculate episode count for series if not already set
-        if item.is_series:
+        if is_series:
             if item.total_episodes:
                 item_data["total_episodes"] = item.total_episodes
             else:

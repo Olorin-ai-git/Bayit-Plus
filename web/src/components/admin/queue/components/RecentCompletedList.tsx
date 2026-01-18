@@ -187,6 +187,6 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   jobList: {
-    maxHeight: 300,
+    maxHeight: 600,
   },
 });

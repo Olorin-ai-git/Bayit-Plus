@@ -47,6 +47,17 @@ const api = axios.create({
   },
 });
 
+// Separate API instance for content endpoints that involve web scraping
+// These endpoints call backend services that scrape Israeli news sites
+// and require longer timeouts to complete
+const contentApi = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 30000,  // 30 second timeout for content scraping endpoints
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 // Request interceptor to add auth token
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token;
@@ -83,6 +94,22 @@ api.interceptors.response.use(
         useAuthStore.getState().logout();
       }
     }
+    return Promise.reject(error.response?.data || error);
+  }
+);
+
+// Content API interceptors (same as main api)
+contentApi.interceptors.request.use((config) => {
+  const token = useAuthStore.getState().token;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+contentApi.interceptors.response.use(
+  (response) => response.data,
+  (error) => {
     return Promise.reject(error.response?.data || error);
   }
 );
@@ -454,20 +481,20 @@ const apiChildrenService = {
   }) => api.put('/children/settings', settings),
 };
 
-// Jerusalem Content Service (API)
+// Jerusalem Content Service (API) - uses contentApi for longer timeout
 const apiJerusalemService = {
   getContent: (category?: string, page?: number, limit?: number) =>
-    api.get('/jerusalem/content', { params: { category, page, limit } }),
-  getFeatured: () => api.get('/jerusalem/featured'),
-  getCategories: () => api.get('/jerusalem/categories'),
+    contentApi.get('/jerusalem/content', { params: { category, page, limit } }),
+  getFeatured: () => contentApi.get('/jerusalem/featured'),
+  getCategories: () => contentApi.get('/jerusalem/categories'),
   getKotelContent: (page?: number, limit?: number) =>
-    api.get('/jerusalem/kotel', { params: { page, limit } }),
-  getKotelEvents: () => api.get('/jerusalem/kotel/events'),
+    contentApi.get('/jerusalem/kotel', { params: { page, limit } }),
+  getKotelEvents: () => contentApi.get('/jerusalem/kotel/events'),
   getIDFCeremonies: (page?: number, limit?: number) =>
-    api.get('/jerusalem/idf-ceremonies', { params: { page, limit } }),
+    contentApi.get('/jerusalem/idf-ceremonies', { params: { page, limit } }),
   getDiasporaConnection: (page?: number, limit?: number) =>
-    api.get('/jerusalem/diaspora', { params: { page, limit } }),
-  getSources: () => api.get('/jerusalem/sources'),
+    contentApi.get('/jerusalem/diaspora', { params: { page, limit } }),
+  getSources: () => contentApi.get('/jerusalem/sources'),
 };
 
 // Demo Jerusalem Content Service
@@ -584,21 +611,21 @@ const demoJerusalemService = {
   },
 };
 
-// Tel Aviv Content Service (API)
+// Tel Aviv Content Service (API) - uses contentApi for longer timeout
 const apiTelAvivService = {
   getContent: (category?: string, page?: number, limit?: number) =>
-    api.get('/tel-aviv/content', { params: { category, page, limit } }),
-  getFeatured: () => api.get('/tel-aviv/featured'),
-  getCategories: () => api.get('/tel-aviv/categories'),
+    contentApi.get('/tel-aviv/content', { params: { category, page, limit } }),
+  getFeatured: () => contentApi.get('/tel-aviv/featured'),
+  getCategories: () => contentApi.get('/tel-aviv/categories'),
   getBeachesContent: (page?: number, limit?: number) =>
-    api.get('/tel-aviv/beaches', { params: { page, limit } }),
+    contentApi.get('/tel-aviv/beaches', { params: { page, limit } }),
   getNightlifeContent: (page?: number, limit?: number) =>
-    api.get('/tel-aviv/nightlife', { params: { page, limit } }),
+    contentApi.get('/tel-aviv/nightlife', { params: { page, limit } }),
   getCultureContent: (page?: number, limit?: number) =>
-    api.get('/tel-aviv/culture', { params: { page, limit } }),
+    contentApi.get('/tel-aviv/culture', { params: { page, limit } }),
   getMusicContent: (page?: number, limit?: number) =>
-    api.get('/tel-aviv/music', { params: { page, limit } }),
-  getSources: () => api.get('/tel-aviv/sources'),
+    contentApi.get('/tel-aviv/music', { params: { page, limit } }),
+  getSources: () => contentApi.get('/tel-aviv/sources'),
 };
 
 // Demo Tel Aviv Content Service

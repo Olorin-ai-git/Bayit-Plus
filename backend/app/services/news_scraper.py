@@ -367,6 +367,133 @@ def headlines_to_dict(headlines: List[HeadlineItem]) -> List[Dict[str, Any]]:
     ]
 
 
+async def search_news_for_location(
+    location: str,
+    language: str = "he",
+    max_results: int = 10,
+) -> List[HeadlineItem]:
+    """
+    Search for location-specific news using DuckDuckGo.
+    Provides fresh, targeted results when RSS/HTML scraping doesn't find matches.
+
+    Args:
+        location: Location to search for (e.g., "Jerusalem", "Tel Aviv", "ירושלים")
+        language: Language code for search ("he" for Hebrew, "en" for English)
+        max_results: Maximum number of results to return
+
+    Returns:
+        List of HeadlineItem with fresh news about the location
+    """
+    headlines = []
+
+    # Search queries in both Hebrew and English for better coverage
+    queries = []
+    if location.lower() in ["jerusalem", "ירושלים"]:
+        queries = [
+            "ירושלים חדשות היום",
+            "Jerusalem news today",
+            "כותל המערבי חדשות",
+        ]
+    elif location.lower() in ["tel aviv", "תל אביב"]:
+        queries = [
+            "תל אביב חדשות היום",
+            "Tel Aviv news today",
+            "חיי לילה תל אביב",
+        ]
+    else:
+        queries = [f"{location} חדשות", f"{location} news"]
+
+    seen_urls = set()
+
+    for query in queries:
+        if len(headlines) >= max_results:
+            break
+
+        try:
+            # Use DuckDuckGo HTML search (no API key needed)
+            search_url = f"https://html.duckduckgo.com/html/?q={query}"
+
+            async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
+                response = await client.get(search_url, headers={
+                    **HEADERS,
+                    "Accept": "text/html",
+                })
+
+                if response.status_code != 200:
+                    continue
+
+                soup = BeautifulSoup(response.text, "html.parser")
+
+                # DuckDuckGo HTML results structure
+                results = soup.select(".result__a")
+
+                for result in results:
+                    if len(headlines) >= max_results:
+                        break
+
+                    title = result.get_text(strip=True)
+                    href = result.get("href", "")
+
+                    # Skip if no title or URL
+                    if not title or len(title) < 10 or not href:
+                        continue
+
+                    # DuckDuckGo uses redirect URLs, extract actual URL
+                    if "uddg=" in href:
+                        import urllib.parse
+                        parsed = urllib.parse.parse_qs(urllib.parse.urlparse(href).query)
+                        if "uddg" in parsed:
+                            href = parsed["uddg"][0]
+
+                    # Skip duplicate URLs
+                    if href in seen_urls:
+                        continue
+                    seen_urls.add(href)
+
+                    # Skip non-news URLs
+                    skip_domains = ["facebook.com", "twitter.com", "instagram.com", "youtube.com", "wikipedia.org"]
+                    if any(domain in href.lower() for domain in skip_domains):
+                        continue
+
+                    # Get snippet/summary from sibling element
+                    summary = None
+                    snippet_elem = result.find_next_sibling("a", class_="result__snippet")
+                    if snippet_elem:
+                        summary = snippet_elem.get_text(strip=True)
+
+                    headlines.append(
+                        HeadlineItem(
+                            title=title,
+                            url=href,
+                            source="web_search",
+                            category="news",
+                            summary=summary,
+                        )
+                    )
+
+        except Exception as e:
+            print(f"Error searching for {query}: {e}")
+            continue
+
+    return headlines
+
+
+async def scrape_jerusalem_news() -> List[HeadlineItem]:
+    """
+    Scrape Jerusalem-specific news using web search.
+    Returns fresh headlines about Jerusalem from multiple sources.
+    """
+    return await search_news_for_location("Jerusalem", "he", max_results=15)
+
+
+async def scrape_tel_aviv_news() -> List[HeadlineItem]:
+    """
+    Scrape Tel Aviv-specific news using web search.
+    Returns fresh headlines about Tel Aviv from multiple sources.
+    """
+    return await search_news_for_location("Tel Aviv", "he", max_results=15)
+
+
 # Simple in-memory cache
 _cache: Dict[str, Any] = {}
 _cache_ttl = timedelta(minutes=30)

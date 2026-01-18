@@ -32,6 +32,7 @@ from app.services.news_scraper import (
     scrape_ynet,
     scrape_walla,
     scrape_mako,
+    scrape_tel_aviv_news,
     HeadlineItem,
 )
 
@@ -225,6 +226,85 @@ DEFAULT_TEL_AVIV_SOURCES = [
         "website_url": "https://www.geektime.co.il",
         "content_type": "tech",
         "language": "he",
+    },
+]
+
+# Seed content - always available when no scraped content found
+SEED_TEL_AVIV_CONTENT = [
+    {
+        "source_name": "Tel Aviv Municipality",
+        "title": "חופי תל אביב - נופש וים",
+        "title_he": "חופי תל אביב - נופש וים",
+        "title_en": "Tel Aviv Beaches - Sun and Sea",
+        "url": "https://www.tel-aviv.gov.il/",
+        "published_at": datetime.utcnow(),
+        "summary": "חופי תל אביב מציעים חוויית רחצה מושלמת עם שמש, חול וים תכלת",
+        "summary_he": "חופי תל אביב מציעים חוויית רחצה מושלמת",
+        "summary_en": "Tel Aviv beaches offer a perfect swimming experience",
+        "image_url": None,
+        "category": TelAvivContentCategory.BEACHES,
+        "tags": ["חוף", "תל אביב", "ים"],
+        "relevance_score": 10.0,
+    },
+    {
+        "source_name": "Tel Aviv Nightlife",
+        "title": "חיי הלילה של תל אביב - העיר שלא ישנה",
+        "title_he": "חיי הלילה של תל אביב - העיר שלא ישנה",
+        "title_en": "Tel Aviv Nightlife - The City That Never Sleeps",
+        "url": "https://www.tel-aviv.gov.il/",
+        "published_at": datetime.utcnow(),
+        "summary": "תל אביב מציעה חיי לילה תוססים עם ברים, מועדונים והופעות חיות",
+        "summary_he": "תל אביב מציעה חיי לילה תוססים",
+        "summary_en": "Tel Aviv offers vibrant nightlife with bars and clubs",
+        "image_url": None,
+        "category": TelAvivContentCategory.NIGHTLIFE,
+        "tags": ["לילה", "ברים", "מועדונים"],
+        "relevance_score": 9.5,
+    },
+    {
+        "source_name": "Tel Aviv Culture",
+        "title": "העיר הלבנה - אדריכלות באוהאוס בתל אביב",
+        "title_he": "העיר הלבנה - אדריכלות באוהאוס בתל אביב",
+        "title_en": "The White City - Bauhaus Architecture in Tel Aviv",
+        "url": "https://www.tel-aviv.gov.il/",
+        "published_at": datetime.utcnow(),
+        "summary": "תל אביב מוכרת כאתר מורשת עולמית בזכות אוסף מבני הבאוהאוס הגדול בעולם",
+        "summary_he": "תל אביב מוכרת כאתר מורשת עולמית בזכות הבאוהאוס",
+        "summary_en": "Tel Aviv is a UNESCO World Heritage Site for Bauhaus architecture",
+        "image_url": None,
+        "category": TelAvivContentCategory.CULTURE,
+        "tags": ["באוהאוס", "תרבות", "אדריכלות"],
+        "relevance_score": 9.0,
+    },
+    {
+        "source_name": "Tel Aviv Music",
+        "title": "הופעות ופסטיבלים בתל אביב",
+        "title_he": "הופעות ופסטיבלים בתל אביב",
+        "title_en": "Concerts and Festivals in Tel Aviv",
+        "url": "https://www.tel-aviv.gov.il/",
+        "published_at": datetime.utcnow(),
+        "summary": "תל אביב היא מרכז המוסיקה של ישראל עם מועדונים, במות והופעות חיות",
+        "summary_he": "תל אביב היא מרכז המוסיקה של ישראל",
+        "summary_en": "Tel Aviv is Israel's music hub with venues and live shows",
+        "image_url": None,
+        "category": TelAvivContentCategory.MUSIC,
+        "tags": ["מוסיקה", "הופעות", "פסטיבל"],
+        "relevance_score": 8.5,
+    },
+    {
+        "source_name": "Startup Nation",
+        "title": "תל אביב - עיר הסטארטאפים",
+        "title_he": "תל אביב - עיר הסטארטאפים",
+        "title_en": "Tel Aviv - The Startup City",
+        "url": "https://www.tel-aviv.gov.il/",
+        "published_at": datetime.utcnow(),
+        "summary": "תל אביב היא אחת מערי ההייטק המובילות בעולם עם אלפי סטארטאפים",
+        "summary_he": "תל אביב היא אחת מערי ההייטק המובילות בעולם",
+        "summary_en": "Tel Aviv is a leading tech hub with thousands of startups",
+        "image_url": None,
+        "category": TelAvivContentCategory.TECH,
+        "tags": ["סטארטאפ", "הייטק", "יזמות"],
+        "relevance_score": 8.0,
     },
 ]
 
@@ -444,15 +524,53 @@ class TelAvivContentService:
             # Filter for Tel Aviv content
             all_items = self._filter_tel_aviv_content(all_headlines)
 
+            # If keyword filtering returned empty, use web search for fresh Tel Aviv news
+            if not all_items:
+                logger.info("No Tel Aviv content from RSS feeds, using web search")
+                try:
+                    search_headlines = await scrape_tel_aviv_news()
+                    if search_headlines:
+                        # Convert web search results to content items
+                        all_items = [
+                            {
+                                "source_name": h.source,
+                                "title": h.title,
+                                "title_he": h.title,
+                                "url": h.url,
+                                "published_at": h.published_at or h.scraped_at,
+                                "summary": h.summary,
+                                "image_url": h.image_url,
+                                "category": TelAvivContentCategory.GENERAL,
+                                "tags": ["תל אביב", "חדשות"],
+                                "relevance_score": 8.0,
+                            }
+                            for h in search_headlines
+                        ]
+                        logger.info(f"Web search found {len(all_items)} Tel Aviv items")
+                except Exception as e:
+                    logger.error(f"Web search failed: {e}")
+
             # Sort by relevance score then publication date
             all_items.sort(
                 key=lambda x: (x["relevance_score"], x.get("published_at", datetime.min)),
                 reverse=True,
             )
 
-            # Cache the results
-            self._cache.set(cache_key, all_items)
-            cached_items = all_items
+            # Only update cache if we found content - never replace with empty
+            if all_items:
+                self._cache.set(cache_key, all_items)
+                cached_items = all_items
+            else:
+                # Try to get stale cache (ignore TTL) if no new content found
+                stale_items = self._cache._cache.get(cache_key)
+                if stale_items:
+                    cached_items = stale_items[0]  # Get items from tuple (items, timestamp)
+                    logger.warning("No new Tel Aviv content found, using stale cache")
+                else:
+                    # Use seed content as fallback - content must always be available
+                    cached_items = SEED_TEL_AVIV_CONTENT
+                    self._cache.set(cache_key, cached_items)
+                    logger.info("Using seed Tel Aviv content as fallback")
 
         # Apply category filter
         filtered_items = cached_items

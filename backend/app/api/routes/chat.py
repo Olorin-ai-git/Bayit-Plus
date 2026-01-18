@@ -16,6 +16,7 @@ from app.models.watchlist import Conversation
 from app.models.content import Content, LiveChannel, Podcast, PodcastEpisode, RadioStation
 from app.core.config import settings
 from app.core.security import get_current_active_user
+from app.services.chat_search_tool import CHAT_TOOLS, execute_chat_tool
 
 router = APIRouter()
 
@@ -41,16 +42,14 @@ ELEVENLABS_TTS_URL = "https://api.elevenlabs.io/v1/text-to-speech"
 
 async def build_media_context() -> dict:
     """
-    Build a comprehensive media library context for the LLM.
-    Fetches and formats all available content from the database.
+    Build a minimal media library context for the LLM.
+    Reduced size since search_content tool handles content discovery.
     Results are cached to avoid excessive database queries.
 
     Returns dict with:
-    - channels: Available live TV channels
-    - podcasts: Available podcasts with episode counts
-    - featured_content: Popular/featured VOD content
-    - categories: Content categories
-    - radio_stations: Available radio stations (if applicable)
+    - channels: Top 5 live TV channels (for quick reference)
+    - podcasts: Top 5 podcasts (for quick reference)
+    - summary: Stats about total available content
     """
     global _media_context_cache, _media_context_cache_ts
 
@@ -65,63 +64,51 @@ async def build_media_context() -> dict:
     print("[CHAT] Building fresh media context from database...")
 
     try:
-        # Fetch active live channels
+        # Fetch active live channels (limit to 5 for context - search handles full catalog)
         channels = await LiveChannel.find(
             LiveChannel.is_active == True
-        ).to_list()
+        ).limit(5).to_list()
 
-        # Fetch active podcasts with episode counts
+        # Fetch active podcasts (limit to 5 for context - search handles full catalog)
         podcasts = await Podcast.find(
             Podcast.is_active == True
-        ).to_list()
+        ).limit(5).to_list()
 
-        # Fetch featured/popular published content (limit to 30 for context size)
-        featured_content = await Content.find(
-            Content.is_published == True,
-            Content.is_featured == True
-        ).limit(30).to_list()
+        # Get total counts for summary stats (search handles actual content discovery)
+        total_channels = await LiveChannel.find(
+            LiveChannel.is_active == True
+        ).count()
 
-        # If not enough featured content, add popular published content
-        if len(featured_content) < 20:
-            all_published = await Content.find(
-                Content.is_published == True
-            ).limit(50).to_list()
-            featured_content = all_published[:50]
+        total_podcasts = await Podcast.find(
+            Podcast.is_active == True
+        ).count()
 
-        # Build formatted context
+        total_content = await Content.find(
+            Content.is_published == True
+        ).count()
+
+        # Get unique categories for summary
+        all_content = await Content.find(
+            Content.is_published == True
+        ).limit(100).to_list()
+        categories = list(set([c.category_name or "General" for c in all_content if c.category_name]))[:10]
+
+        # Build formatted context (minimal - search tool handles discovery)
         context = {
             "channels": [
-                {
-                    "name": ch.name,
-                    "description": ch.description or "",
-                    "logo": ch.logo
-                }
+                {"name": ch.name}
                 for ch in channels
             ],
             "podcasts": [
-                {
-                    "title": p.title,
-                    "author": p.author or "Unknown",
-                    "description": p.description or "",
-                    "category": p.category or "General"
-                }
+                {"title": p.title}
                 for p in podcasts
             ],
-            "featured_content": [
-                {
-                    "title": c.title,
-                    "type": "series" if c.is_series else "movie",
-                    "genre": c.genre or "General",
-                    "year": c.year,
-                    "description": c.description[:100] + "..." if c.description and len(c.description) > 100 else c.description or ""
-                }
-                for c in featured_content
-            ],
+            "featured_content": [],  # Removed - search tool handles content discovery
             "summary": {
-                "total_channels": len(channels),
-                "total_podcasts": len(podcasts),
-                "total_content_items": len(featured_content),
-                "categories": list(set([c.category_name or "General" for c in featured_content if c.category_name]))
+                "total_channels": total_channels,
+                "total_podcasts": total_podcasts,
+                "total_content_items": total_content,
+                "categories": categories
             }
         }
 
@@ -219,13 +206,47 @@ SYSTEM_PROMPT = """אתה עוזר של בית+ (מבוטא "בויית").
 
 **חובה: תשיב בעברית בלבד. כל התשובות שלך חייבות להיות בעברית.**
 
-עקוב אחרי הכללים הבאים:
+**כלי חיפוש תוכן (search_content):**
+יש לך גישה לכלי search_content לחיפוש בקטלוג התוכן המלא שלנו.
+
+**מתי להשתמש ב-search_content:**
+- כשהמשתמש שואל "יש לכם...", "מה יש לכם...", "האם יש..."
+- כשהמשתמש מבקש המלצות לפי ז'אנר, שנה, או נושא
+- כשהמשתמש מחפש סרט או סדרה ספציפיים
+- כשהמשתמש שואל על תוכן ישראלי, דוקומנטרים, קומדיות וכו'
+- כשהמשתמש מבקש "תראה לי", "חפש לי", "מצא לי"
+
+**כלי מדריך למשתמש (lookup_user_guide):**
+יש לך גישה לכלי lookup_user_guide לחיפוש במדריך ובתיעוד העזרה שלנו.
+
+**מתי להשתמש ב-lookup_user_guide:**
+- כשהמשתמש שואל "איך..." או "כיצד..."
+- שאלות על מנויים, מחירים, תוכניות
+- שאלות על שליטה קולית ופקודות
+- בעיות טכניות וסטרימינג
+- הגדרות חשבון ופרופיל
+- פתרון בעיות ותקלות
+
+**מתי לא להשתמש בכלים:**
+- פקודות ניווט ("עבור לסרטים", "חזור הביתה")
+- פקודות הפעלה ("תנגן", "השהה", "דלג")
+- שיחה חופשית ללא שאלה ספציפית
+
+**איך להציג תוצאות:**
+- תן תשובה טבעית וקצרה (1-2 משפטים)
+- הזכר 2-3 תוצאות מובילות בשם (לחיפוש תוכן)
+- תמצת את ההוראות בצורה ברורה (למדריך)
+
+דוגמאות תשובות:
+✓ "מצאתי כמה סרטים על צה״ל - 'וולס', 'בופור' ו'לבנון'. רוצה שאנגן אחד מהם?"
+✓ "כדי להפעיל שליטה קולית, אמור 'היי בית' או לחץ על כפתור המיקרופון."
+✓ "יש לנו 3 תוכניות מנוי: בסיסי, סטנדרט ופרימיום. הפרימיום כולל 4K ו-4 מכשירים."
+
+**כללי תשובה:**
 - תשובות קצרות בלבד (1-2 משפטים בעברית)
 - תשובה ישירה לבקשה ללא הצעות נוספות
 - כלול מילות פעולה בתשובתך
-- אל תמחייק או תציע עזרה
 - אל תתרגם לאנגלית
-- **אל תהבטח הפעלה או חיפוש - רק הכריז מה אתה עומד לעשות**
 
 **מהם פעולות:**
 אם המשתמש מבקש:
@@ -233,21 +254,6 @@ SYSTEM_PROMPT = """אתה עוזר של בית+ (מבוטא "בויית").
 - הפעלת תוכן ספציפי - השתמש בפעולת "play" (רק אם בקשה ברורה להפעל)
 - חיפוש לתוכן - השתמש בפעולת "search" (כשהשם לא בטוח או שחיפוש בו)
 - שליטה בהפעלה (השהיה, המשך, דלג) - השתמש בפעולות "pause", "resume", "skip"
-
-אם המשתמש:
-- רק שואל שאלה או מחפש המלצה - אל תשתמש בפעולה, רק תענה
-- משוחח בדברים כלליים - אל תשתמש בפעולה, רק תענה
-
-דוגמאות:
-✓ "תמליץ לי על סרט?" → רק תשובה (אין פעולה)
-✓ "עבור לסרטים" → navigate action (תשובה: "עוברת לסרטים")
-✓ "תנגן את אסקימו לימון" → play action (תשובה: "מנסה לנגן אסקימו לימון")
-✓ "חפש סרטי אקשן" → search action (תשובה: "מחפשת סרטי אקשן")
-
-**חשוב: התשובה שלך חייבת להתאים לפעולה:**
-- אם play action → התשובה צריכה לומר "מנסה לנגן" או "מחדלת"
-- אם search action → התשובה צריכה לומר "מחפשת" או "משודרגת"
-- אל תומר "מנגן" אם הפעולה היא search!
 
 לא תהיה עזרה עודפת או הצעות. רק תענה לבקשה הספציפית בעברית."""
 
@@ -404,23 +410,23 @@ def get_system_prompt(language: Optional[str] = None, media_context: Optional[di
     """
     lang = (language or "he").lower()
 
-    # Format media context for inclusion in prompt
+    # Format media context for inclusion in prompt (minimal - search handles discovery)
     context_str = ""
     if media_context:
         try:
             context_str = f"""
-**קטלוג הערוצים שלנו ({media_context['summary']['total_channels']} ערוצים):**
-{json.dumps([ch['name'] for ch in media_context['channels'][:10]], ensure_ascii=False)}
+**סטטיסטיקת קטלוג:**
+- {media_context['summary']['total_content_items']} סרטים וסדרות
+- {media_context['summary']['total_channels']} ערוצים
+- {media_context['summary']['total_podcasts']} פודקאסטים
 
-**הפודקאסטים הזמינים ({media_context['summary']['total_podcasts']} פודקאסטים):**
-{json.dumps([p['title'] for p in media_context['podcasts'][:10]], ensure_ascii=False)}
+**דוגמאות ערוצים:**
+{json.dumps([ch['name'] for ch in media_context['channels']], ensure_ascii=False)}
 
-**סדרות וסרטים פופולריים ({media_context['summary']['total_content_items']} פריטים):**
-{json.dumps([c['title'] for c in media_context['featured_content'][:15]], ensure_ascii=False)}
+**קטגוריות:**
+{json.dumps(media_context['summary']['categories'], ensure_ascii=False)}
 
-**קטגוריות זמינות:**
-{json.dumps(media_context['summary']['categories'][:10], ensure_ascii=False)}
-"""
+השתמש בכלי search_content לחיפוש תוכן מלא בקטלוג."""
         except Exception as e:
             print(f"[CHAT] Error formatting media context: {e}")
             context_str = ""
@@ -430,18 +436,47 @@ def get_system_prompt(language: Optional[str] = None, media_context: Optional[di
 
 **REQUIREMENT: You MUST respond in English only. All your responses must be in English.**
 
-Follow these rules:
+**Content Search Tool (search_content):**
+You have access to the search_content tool to search our full content catalog.
+
+**When to use search_content:**
+- When user asks "Do you have...", "What do you have...", "Is there..."
+- When user wants recommendations by genre, year, or topic
+- When user searches for a specific movie or series
+- When user asks about Israeli content, documentaries, comedies, etc.
+- When user says "Show me", "Find me", "Search for"
+
+**User Guide Tool (lookup_user_guide):**
+You have access to the lookup_user_guide tool to search our help documentation.
+
+**When to use lookup_user_guide:**
+- When user asks "How do I...", "How to..."
+- Questions about subscriptions, pricing, plans
+- Questions about voice control and commands
+- Technical issues and streaming problems
+- Account and profile settings
+- Troubleshooting and errors
+
+**When NOT to use tools:**
+- Navigation commands ("Go to movies", "Go home")
+- Playback commands ("Play", "Pause", "Skip")
+- Casual conversation without a specific question
+
+**How to present results:**
+- Give a natural, short response (1-2 sentences)
+- Mention 2-3 top results by name (for content search)
+- Summarize instructions clearly (for user guide)
+
+Example responses:
+✓ "Found some IDF movies - 'Waltz with Bashir', 'Beaufort' and 'Lebanon'. Want me to play one?"
+✓ "To use voice control, say 'Hey Bayit' or tap the microphone button."
+✓ "We have 3 subscription plans: Basic, Standard, and Premium. Premium includes 4K and 4 devices."
+
+**Response rules:**
 - Short responses only (1-2 sentences in English)
 - Direct answer to the request with no extra offers
 - Include action keywords in your response
-- No excessive politeness or help offers
 - Do NOT translate to Hebrew
-- When recommending content, choose from the available catalog
-
-Example responses (English only):
-✓ "Going to movies"
-✓ "Searching for documentaries"
-✓ "Playing radio"
 
 Actions:
 - Navigation: "Go to movies" / "Go to series" / "Go to channels" / "Go to radio" / "Go to podcasts" / "Go to flows" / "Go to judaism" / "Go to children" / "Go home"
@@ -461,18 +496,47 @@ No extra help or suggestions. Only answer the specific request in English."""
 
 **REQUISITO: DEBES responder SOLO en español. Todas tus respuestas deben estar en español.**
 
-Sigue estas reglas:
+**Herramienta de búsqueda de contenido (search_content):**
+Tienes acceso a la herramienta search_content para buscar en nuestro catálogo completo de contenido.
+
+**Cuándo usar search_content:**
+- Cuando el usuario pregunta "¿Tienen...", "¿Qué tienen...", "¿Hay..."
+- Cuando el usuario quiere recomendaciones por género, año o tema
+- Cuando el usuario busca una película o serie específica
+- Cuando el usuario pregunta sobre contenido israelí, documentales, comedias, etc.
+- Cuando el usuario dice "Muéstrame", "Búscame", "Encuentra"
+
+**Herramienta de guía de usuario (lookup_user_guide):**
+Tienes acceso a la herramienta lookup_user_guide para buscar en nuestra documentación de ayuda.
+
+**Cuándo usar lookup_user_guide:**
+- Cuando el usuario pregunta "¿Cómo...?", "¿Cómo puedo...?"
+- Preguntas sobre suscripciones, precios, planes
+- Preguntas sobre control de voz y comandos
+- Problemas técnicos y de streaming
+- Configuración de cuenta y perfil
+- Solución de problemas y errores
+
+**Cuándo NO usar herramientas:**
+- Comandos de navegación ("Ir a películas", "Ir al inicio")
+- Comandos de reproducción ("Reproducir", "Pausar", "Saltar")
+- Conversación casual sin pregunta específica
+
+**Cómo presentar resultados:**
+- Da una respuesta natural y corta (1-2 frases)
+- Menciona 2-3 resultados principales por nombre (para búsqueda de contenido)
+- Resume las instrucciones claramente (para guía de usuario)
+
+Ejemplos de respuestas:
+✓ "Encontré películas sobre el ejército israelí - 'Vals con Bashir', 'Beaufort' y 'Líbano'. ¿Reproduzco una?"
+✓ "Para usar el control de voz, di 'Hey Bayit' o toca el botón del micrófono."
+✓ "Tenemos 3 planes de suscripción: Básico, Estándar y Premium. Premium incluye 4K y 4 dispositivos."
+
+**Reglas de respuesta:**
 - Respuestas cortas solamente (1-2 frases en español)
 - Respuesta directa a la solicitud sin ofertas adicionales
 - Incluye palabras de acción en tu respuesta
-- Sin cortesía excesiva u ofertas de ayuda
 - NO traduzcas al hebreo o inglés
-- Cuando recomiendes contenido, elige del catálogo disponible
-
-Ejemplos de respuestas (solo en español):
-✓ "Yendo a películas"
-✓ "Buscando documentales"
-✓ "Reproduciendo radio"
 
 Acciones:
 - Navegación: "Ir a películas" / "Ir a series" / "Ir a canales" / "Ir a radio" / "Ir a podcasts" / "Ir a flows" / "Ir a judaísmo" / "Ir a niños" / "Ir al inicio"
@@ -549,15 +613,75 @@ async def send_message(
 
         print(f"[CHAT] System prompt includes {media_context['summary']['total_channels']} channels, {media_context['summary']['total_podcasts']} podcasts, {media_context['summary']['total_content_items']} content items")
 
-        # Call Claude API
+        # Call Claude API with search tools
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=1024,
             system=system_prompt,
             messages=messages,
+            tools=CHAT_TOOLS,
         )
 
-        raw_response = response.content[0].text
+        # Handle tool use loop - Claude may call search_content tool
+        tool_use_messages = list(messages)  # Copy for tool loop
+        max_tool_iterations = 3  # Prevent infinite loops
+
+        while response.stop_reason == "tool_use" and max_tool_iterations > 0:
+            max_tool_iterations -= 1
+
+            # Extract tool use blocks from response
+            tool_use_blocks = [block for block in response.content if block.type == "tool_use"]
+            text_blocks = [block for block in response.content if block.type == "text"]
+
+            if text_blocks:
+                print(f"[CHAT] Claude text before tool use: {text_blocks[0].text[:100]}...")
+
+            # Execute each tool
+            tool_results = []
+            for tool_use in tool_use_blocks:
+                print(f"[CHAT] Tool called: {tool_use.name} with input: {tool_use.input}")
+                try:
+                    result = await execute_chat_tool(tool_use.name, tool_use.input)
+                    tool_results.append({
+                        "type": "tool_result",
+                        "tool_use_id": tool_use.id,
+                        "content": json.dumps(result, ensure_ascii=False)
+                    })
+                    print(f"[CHAT] Tool result: {len(result.get('results', []))} items found")
+                except Exception as e:
+                    print(f"[CHAT] Tool error: {e}")
+                    tool_results.append({
+                        "type": "tool_result",
+                        "tool_use_id": tool_use.id,
+                        "content": json.dumps({"error": str(e)}),
+                        "is_error": True
+                    })
+
+            # Add assistant response (with tool use) and tool results to messages
+            tool_use_messages.append({
+                "role": "assistant",
+                "content": [{"type": block.type, **block.model_dump()} for block in response.content]
+            })
+            tool_use_messages.append({
+                "role": "user",
+                "content": tool_results
+            })
+
+            # Continue conversation with tool results
+            response = client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=1024,
+                system=system_prompt,
+                messages=tool_use_messages,
+                tools=CHAT_TOOLS,
+            )
+
+        # Extract final text response
+        raw_response = ""
+        for block in response.content:
+            if block.type == "text":
+                raw_response = block.text
+                break
 
         # Log Claude raw response
         print(f"[CHAT] Claude raw response (first 200 chars): {raw_response[:200]}")

@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Animated } from 'react-native';
-import { Search, X, ChevronDown, ChevronUp, Download, Trash2, Copy, CheckCircle, XCircle, Film } from 'lucide-react';
+import { Search, X, ChevronDown, ChevronUp, Download, Trash2, Copy, CheckCircle, XCircle, Film, Layers } from 'lucide-react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { colors, spacing, borderRadius } from '../../theme';
 import { GlassView } from './GlassView';
@@ -30,12 +30,15 @@ interface GlassLogProps {
   showLevelFilter?: boolean;
   showClear?: boolean;
   showDownload?: boolean;
+  showGroupByContent?: boolean;
+  defaultGroupByContent?: boolean;
   onClear?: () => void;
   onDownload?: () => void;
   title?: string;
   searchPlaceholder?: string;
   emptyMessage?: string;
   levelLabels?: Record<LogLevel, string>;
+  groupByContentLabel?: string;
   isRTL?: boolean;
   animateEntries?: boolean;
   typewriterSpeed?: number;
@@ -69,12 +72,15 @@ export const GlassLog: React.FC<GlassLogProps> = ({
   showLevelFilter = true,
   showClear = true,
   showDownload = true,
+  showGroupByContent = true,
+  defaultGroupByContent = false,
   onClear,
   onDownload,
   title = 'Logs',
   searchPlaceholder = 'Search logs...',
   emptyMessage = 'No logs to display',
   levelLabels = DEFAULT_LEVEL_LABELS,
+  groupByContentLabel = 'Group by content',
   isRTL = false,
   animateEntries = false,
   typewriterSpeed = 50,
@@ -84,6 +90,7 @@ export const GlassLog: React.FC<GlassLogProps> = ({
     new Set(['debug', 'info', 'warn', 'error', 'success', 'trace'])
   );
   const [isExpanded, setIsExpanded] = useState(true);
+  const [groupByContent, setGroupByContent] = useState(defaultGroupByContent);
   const scrollViewRef = useRef<ScrollView>(null);
   const [displayedText, setDisplayedText] = useState<Record<string, string>>({});
   const [logAnimations, setLogAnimations] = useState<Record<string, {
@@ -230,6 +237,66 @@ export const GlassLog: React.FC<GlassLogProps> = ({
 
     return true;
   });
+
+  // Group logs by content item when grouping is enabled
+  interface LogGroup {
+    contentId: string | null;
+    itemName: string | null;
+    logs: LogEntry[];
+    latestTimestamp: Date | string;
+    hasErrors: boolean;
+    hasSuccess: boolean;
+  }
+
+  const groupedLogs = React.useMemo((): LogGroup[] => {
+    if (!groupByContent) return [];
+
+    const groups: Map<string, LogGroup> = new Map();
+    const NO_CONTENT_KEY = '__no_content__';
+
+    filteredLogs.forEach((log) => {
+      const key = log.contentId || NO_CONTENT_KEY;
+
+      if (!groups.has(key)) {
+        groups.set(key, {
+          contentId: log.contentId || null,
+          itemName: log.itemName || null,
+          logs: [],
+          latestTimestamp: log.timestamp,
+          hasErrors: false,
+          hasSuccess: false,
+        });
+      }
+
+      const group = groups.get(key)!;
+      group.logs.push(log);
+
+      // Update item name if we find one
+      if (log.itemName && !group.itemName) {
+        group.itemName = log.itemName;
+      }
+
+      // Track error/success status
+      if (log.level === 'error') group.hasErrors = true;
+      if (log.level === 'success') group.hasSuccess = true;
+
+      // Update latest timestamp
+      const logTime = typeof log.timestamp === 'string' ? new Date(log.timestamp) : log.timestamp;
+      const groupTime = typeof group.latestTimestamp === 'string' ? new Date(group.latestTimestamp) : group.latestTimestamp;
+      if (logTime > groupTime) {
+        group.latestTimestamp = log.timestamp;
+      }
+    });
+
+    // Convert to array and sort by latest timestamp (most recent first)
+    const result = Array.from(groups.values()).sort((a, b) => {
+      const timeA = typeof a.latestTimestamp === 'string' ? new Date(a.latestTimestamp) : a.latestTimestamp;
+      const timeB = typeof b.latestTimestamp === 'string' ? new Date(b.latestTimestamp) : b.latestTimestamp;
+      return timeB.getTime() - timeA.getTime();
+    });
+
+    return result;
+  }, [filteredLogs, groupByContent]);
 
   const formatTimestamp = (timestamp: Date | string) => {
     const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
@@ -438,6 +505,28 @@ export const GlassLog: React.FC<GlassLogProps> = ({
                     </Pressable>
                   )
                 )}
+
+                {/* Group by Content Toggle */}
+                {showGroupByContent && (
+                  <Pressable
+                    onPress={() => setGroupByContent(!groupByContent)}
+                    style={[
+                      styles.levelButton,
+                      styles.groupToggleButton,
+                      groupByContent && styles.groupToggleButtonActive,
+                    ]}
+                  >
+                    <Layers size={12} color={groupByContent ? colors.primary : colors.textMuted} />
+                    <Text
+                      style={[
+                        styles.levelButtonText,
+                        { color: groupByContent ? colors.primary : colors.textMuted, marginLeft: 4 },
+                      ]}
+                    >
+                      {groupByContentLabel}
+                    </Text>
+                  </Pressable>
+                )}
               </View>
             )}
           </View>
@@ -456,7 +545,24 @@ export const GlassLog: React.FC<GlassLogProps> = ({
               <View style={styles.emptyState}>
                 <Text style={styles.emptyText}>{emptyMessage}</Text>
               </View>
+            ) : groupByContent ? (
+              // Grouped View
+              groupedLogs.map((group) => (
+                <LogGroupItem
+                  key={group.contentId || '__no_content__'}
+                  group={group}
+                  showTimestamp={showTimestamp}
+                  showSource={showSource}
+                  isRTL={isRTL}
+                  levelLabels={levelLabels}
+                  animateEntries={animateEntries}
+                  displayedText={displayedText}
+                  logAnimations={logAnimations}
+                  newLogIds={newLogIds}
+                />
+              ))
             ) : (
+              // Flat View
               filteredLogs.map((log) => (
                 <LogEntryItem
                   key={log.id}
@@ -603,6 +709,117 @@ const LogEntryItem: React.FC<LogEntryItemProps> = ({
       </View>
     </Pressable>
     </Animated.View>
+  );
+};
+
+// Log Group Item for grouped view
+interface LogGroupItemProps {
+  group: {
+    contentId: string | null;
+    itemName: string | null;
+    logs: LogEntry[];
+    latestTimestamp: Date | string;
+    hasErrors: boolean;
+    hasSuccess: boolean;
+  };
+  showTimestamp: boolean;
+  showSource: boolean;
+  isRTL: boolean;
+  levelLabels: Record<LogLevel, string>;
+  animateEntries: boolean;
+  displayedText: Record<string, string>;
+  logAnimations: Record<string, { translateY: Animated.Value; opacity: Animated.Value }>;
+  newLogIds: Set<string>;
+}
+
+const LogGroupItem: React.FC<LogGroupItemProps> = ({
+  group,
+  showTimestamp,
+  showSource,
+  isRTL,
+  levelLabels,
+  animateEntries,
+  displayedText,
+  logAnimations,
+  newLogIds,
+}) => {
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  const formatTimestamp = (timestamp: Date | string) => {
+    const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+  };
+
+  // Determine group status color
+  const statusColor = group.hasErrors ? colors.error : group.hasSuccess ? colors.success : colors.primary;
+
+  return (
+    <View style={styles.groupContainer}>
+      {/* Group Header */}
+      <Pressable
+        onPress={() => setIsExpanded(!isExpanded)}
+        style={[styles.groupHeader, { borderLeftColor: statusColor }]}
+      >
+        <View style={[styles.groupHeaderContent, isRTL && { flexDirection: 'row-reverse' }]}>
+          {isExpanded ? (
+            <ChevronUp size={16} color={colors.textMuted} />
+          ) : (
+            <ChevronDown size={16} color={colors.textMuted} />
+          )}
+
+          {group.itemName ? (
+            <View style={[styles.groupItemBadge, { borderColor: statusColor }]}>
+              <Film size={14} color={statusColor} />
+              <Text style={[styles.groupItemName, { color: statusColor }]}>
+                {group.itemName}
+              </Text>
+            </View>
+          ) : (
+            <Text style={styles.groupNoContent}>General Logs</Text>
+          )}
+
+          <View style={styles.groupMeta}>
+            <Text style={styles.groupCount}>{group.logs.length} logs</Text>
+            <Text style={styles.groupTimestamp}>{formatTimestamp(group.latestTimestamp)}</Text>
+          </View>
+
+          {/* Status indicators */}
+          <View style={styles.groupStatusIndicators}>
+            {group.hasErrors && (
+              <View style={[styles.groupStatusDot, { backgroundColor: colors.error }]} />
+            )}
+            {group.hasSuccess && (
+              <View style={[styles.groupStatusDot, { backgroundColor: colors.success }]} />
+            )}
+          </View>
+        </View>
+      </Pressable>
+
+      {/* Group Logs */}
+      {isExpanded && (
+        <View style={styles.groupLogs}>
+          {group.logs.map((log) => (
+            <LogEntryItem
+              key={log.id}
+              log={log}
+              showTimestamp={showTimestamp}
+              showSource={showSource}
+              isRTL={isRTL}
+              levelLabels={levelLabels}
+              animateEntries={animateEntries}
+              displayedText={displayedText[log.id] || ''}
+              animations={logAnimations[log.id]}
+              isNew={newLogIds.has(log.id)}
+            />
+          ))}
+        </View>
+      )}
+    </View>
   );
 };
 
@@ -883,5 +1100,92 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: colors.background,
+  },
+  // Group toggle button
+  groupToggleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: spacing.md,
+    paddingHorizontal: spacing.md,
+  } as any,
+  groupToggleButtonActive: {
+    backgroundColor: colors.primary + '20',
+    borderColor: colors.primary,
+  },
+  // Group container styles
+  groupContainer: {
+    marginBottom: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    overflow: 'hidden',
+  },
+  groupHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderLeftWidth: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  } as any,
+  groupHeaderContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    gap: spacing.sm,
+  } as any,
+  groupItemBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+  } as any,
+  groupItemName: {
+    fontSize: 13,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+    maxWidth: 300,
+  } as any,
+  groupNoContent: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.textMuted,
+    fontStyle: 'italic',
+  },
+  groupMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginLeft: 'auto',
+  } as any,
+  groupCount: {
+    fontSize: 11,
+    color: colors.textMuted,
+    fontFamily: 'monospace',
+  },
+  groupTimestamp: {
+    fontSize: 11,
+    color: colors.textMuted,
+    fontFamily: 'monospace',
+  },
+  groupStatusIndicators: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  } as any,
+  groupStatusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  groupLogs: {
+    paddingLeft: spacing.md,
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(255, 255, 255, 0.1)',
+    marginLeft: spacing.sm,
   },
 });

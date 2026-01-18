@@ -1681,6 +1681,12 @@
           "aiAgent": "סוכן AI",
           "dailyIncremental": "יומי מצטבר"
         },
+        "status": {
+          "running": "פעיל",
+          "starting": "מתחיל...",
+          "idle": "לא פעיל",
+          "never": "אף פעם"
+        },
         "pause": "השהה",
         "resume": "המשך",
         "cancel": "בטל",

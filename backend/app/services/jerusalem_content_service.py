@@ -33,6 +33,7 @@ from app.services.news_scraper import (
     scrape_ynet,
     scrape_walla,
     scrape_mako,
+    scrape_jerusalem_news,
     HeadlineItem,
     HEADERS,
 )
@@ -163,6 +164,85 @@ DEFAULT_JERUSALEM_SOURCES = [
         "website_url": "https://www.kan.org.il/news",
         "content_type": "news",
         "language": "he",
+    },
+]
+
+# Seed content - always available when no scraped content found
+SEED_JERUSALEM_CONTENT = [
+    {
+        "source_name": "Kotel Heritage",
+        "title": "הכותל המערבי - אתר המורשת של עם ישראל",
+        "title_he": "הכותל המערבי - אתר המורשת של עם ישראל",
+        "title_en": "The Western Wall - Heritage Site of the Jewish People",
+        "url": "https://english.thekotel.org/",
+        "published_at": datetime.utcnow(),
+        "summary": "הכותל המערבי הוא המקום הקדוש ביותר ליהודים בעולם, מקום תפילה ועלייה לרגל מזה אלפי שנים",
+        "summary_he": "הכותל המערבי הוא המקום הקדוש ביותר ליהודים בעולם",
+        "summary_en": "The Western Wall is the holiest site in Judaism",
+        "image_url": None,
+        "category": JerusalemContentCategory.KOTEL,
+        "tags": ["כותל", "ירושלים", "מורשת"],
+        "relevance_score": 10.0,
+    },
+    {
+        "source_name": "IDF Spokesman",
+        "title": "טקסי השבעה בכותל המערבי",
+        "title_he": "טקסי השבעה בכותל המערבי",
+        "title_en": "IDF Swearing-In Ceremonies at the Western Wall",
+        "url": "https://www.idf.il/",
+        "published_at": datetime.utcnow(),
+        "summary": "חיילי צה\"ל נשבעים אמונים למדינת ישראל בטקסים מרגשים ברחבת הכותל המערבי",
+        "summary_he": "חיילי צה\"ל נשבעים אמונים למדינת ישראל בכותל",
+        "summary_en": "IDF soldiers swear allegiance at the Western Wall",
+        "image_url": None,
+        "category": JerusalemContentCategory.IDF_CEREMONY,
+        "tags": ["צהל", "השבעה", "כותל"],
+        "relevance_score": 9.5,
+    },
+    {
+        "source_name": "Jewish Agency",
+        "title": "עולים חדשים מגיעים לישראל",
+        "title_he": "עולים חדשים מגיעים לישראל",
+        "title_en": "New Immigrants Arrive in Israel",
+        "url": "https://www.jewishagency.org/",
+        "published_at": datetime.utcnow(),
+        "summary": "יהודים מרחבי העולם עולים לישראל ומתחברים למורשת העם היהודי",
+        "summary_he": "יהודים מרחבי העולם עולים לישראל",
+        "summary_en": "Jews from around the world make Aliyah to Israel",
+        "image_url": None,
+        "category": JerusalemContentCategory.DIASPORA,
+        "tags": ["עלייה", "תפוצות", "ישראל"],
+        "relevance_score": 9.0,
+    },
+    {
+        "source_name": "Jerusalem Municipality",
+        "title": "אירועים ופסטיבלים בירושלים",
+        "title_he": "אירועים ופסטיבלים בירושלים",
+        "title_en": "Events and Festivals in Jerusalem",
+        "url": "https://www.jerusalem.muni.il/",
+        "published_at": datetime.utcnow(),
+        "summary": "ירושלים מציעה מגוון אירועים תרבותיים, פסטיבלים וחגיגות לאורך כל השנה",
+        "summary_he": "ירושלים מציעה מגוון אירועים תרבותיים",
+        "summary_en": "Jerusalem offers diverse cultural events year-round",
+        "image_url": None,
+        "category": JerusalemContentCategory.JERUSALEM_EVENTS,
+        "tags": ["ירושלים", "אירועים", "תרבות"],
+        "relevance_score": 8.5,
+    },
+    {
+        "source_name": "Israel Antiquities",
+        "title": "עיר דוד - חפירות ארכיאולוגיות",
+        "title_he": "עיר דוד - חפירות ארכיאולוגיות",
+        "title_en": "City of David - Archaeological Excavations",
+        "url": "https://www.cityofdavid.org.il/",
+        "published_at": datetime.utcnow(),
+        "summary": "גילויים ארכיאולוגיים חדשים בעיר דוד חושפים את ההיסטוריה העתיקה של ירושלים",
+        "summary_he": "גילויים ארכיאולוגיים בעיר דוד",
+        "summary_en": "Archaeological discoveries in the City of David",
+        "image_url": None,
+        "category": JerusalemContentCategory.HOLY_SITES,
+        "tags": ["עיר דוד", "ארכיאולוגיה", "ירושלים"],
+        "relevance_score": 8.0,
     },
 ]
 
@@ -374,15 +454,53 @@ class JerusalemContentService:
             # Filter for Jerusalem content
             all_items = self._filter_jerusalem_content(all_headlines)
 
+            # If keyword filtering returned empty, use web search for fresh Jerusalem news
+            if not all_items:
+                logger.info("No Jerusalem content from RSS feeds, using web search")
+                try:
+                    search_headlines = await scrape_jerusalem_news()
+                    if search_headlines:
+                        # Convert web search results to content items
+                        all_items = [
+                            {
+                                "source_name": h.source,
+                                "title": h.title,
+                                "title_he": h.title,
+                                "url": h.url,
+                                "published_at": h.published_at or h.scraped_at,
+                                "summary": h.summary,
+                                "image_url": h.image_url,
+                                "category": JerusalemContentCategory.GENERAL,
+                                "tags": ["ירושלים", "חדשות"],
+                                "relevance_score": 8.0,
+                            }
+                            for h in search_headlines
+                        ]
+                        logger.info(f"Web search found {len(all_items)} Jerusalem items")
+                except Exception as e:
+                    logger.error(f"Web search failed: {e}")
+
             # Sort by relevance score then publication date
             all_items.sort(
                 key=lambda x: (x["relevance_score"], x.get("published_at", datetime.min)),
                 reverse=True,
             )
 
-            # Cache the results
-            self._cache.set(cache_key, all_items)
-            cached_items = all_items
+            # Only update cache if we found content - never replace with empty
+            if all_items:
+                self._cache.set(cache_key, all_items)
+                cached_items = all_items
+            else:
+                # Try to get stale cache (ignore TTL) if no new content found
+                stale_items = self._cache._cache.get(cache_key)
+                if stale_items:
+                    cached_items = stale_items[0]  # Get items from tuple (items, timestamp)
+                    logger.warning("No new Jerusalem content found, using stale cache")
+                else:
+                    # Use seed content as fallback - content must always be available
+                    cached_items = SEED_JERUSALEM_CONTENT
+                    self._cache.set(cache_key, cached_items)
+                    logger.info("Using seed Jerusalem content as fallback")
 
         # Apply category filter
         filtered_items = cached_items

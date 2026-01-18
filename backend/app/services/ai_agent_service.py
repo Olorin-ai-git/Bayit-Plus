@@ -35,7 +35,7 @@ from app.models.librarian import AuditReport, LibrarianAction
 from app.services.stream_validator import validate_stream_url
 from app.services.auto_fixer import fix_missing_metadata as auto_fix_metadata, fix_misclassification
 from app.services.audit_task_manager import audit_task_manager
-from app.services.ai_agent.logger import log_to_database
+from app.services.ai_agent.logger import log_to_database, clear_title_cache
 
 # Initialize logger
 logger = logging.getLogger(__name__)
@@ -555,6 +555,77 @@ TOOLS = [
         "input_schema": {
             "type": "object",
             "properties": {},
+            "required": []
+        }
+    },
+    {
+        "name": "check_api_configuration",
+        "description": "Check the configuration status of external APIs (TMDB, OpenSubtitles). Returns which APIs are configured and ready to use. Use this at the start of an audit to know what capabilities are available.",
+        "input_schema": {
+            "type": "object",
+            "properties": {},
+            "required": []
+        }
+    },
+    {
+        "name": "find_duplicates",
+        "description": "Scan the content library for duplicate entries. Detects duplicates based on: file hash (exact duplicates), TMDB ID, IMDB ID, and title similarity. Returns groups of duplicate items that can be cleaned up.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "detection_type": {
+                    "type": "string",
+                    "description": "Type of duplicate detection to run",
+                    "enum": ["all", "hash", "tmdb", "imdb", "title"],
+                    "default": "all"
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "resolve_duplicates",
+        "description": "Resolve a group of duplicate content items by keeping one and handling the rest. Use after find_duplicates to clean up detected duplicates.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_ids": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "List of all content IDs in the duplicate group"
+                },
+                "keep_id": {
+                    "type": "string",
+                    "description": "ID of the content item to keep (usually the oldest or most complete)"
+                },
+                "action": {
+                    "type": "string",
+                    "description": "Action to take on duplicates: 'unpublish' (hide but keep), 'delete' (permanent), or 'flag' (mark for review)",
+                    "enum": ["unpublish", "delete", "flag"],
+                    "default": "unpublish"
+                }
+            },
+            "required": ["content_ids", "keep_id"]
+        }
+    },
+    {
+        "name": "find_missing_metadata",
+        "description": "Find content items that are missing important metadata (description, poster, TMDB/IMDB IDs, etc.). Returns a list of items that need enrichment.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum number of items to return (default 100)",
+                    "default": 100
+                },
+                "missing_fields": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Specific fields to check for: description, poster_url, thumbnail, tmdb_id, imdb_id, year, genre",
+                    "default": ["description", "poster_url", "thumbnail"]
+                }
+            },
             "required": []
         }
     },
@@ -2212,6 +2283,205 @@ async def execute_check_subtitle_quota() -> Dict[str, Any]:
         return {"success": False, "error": str(e)}
 
 
+async def execute_check_api_configuration() -> Dict[str, Any]:
+    """Check which external APIs are configured and ready to use."""
+    from app.core.config import settings
+
+    try:
+        api_status = {
+            "tmdb": {
+                "configured": bool(settings.TMDB_API_KEY),
+                "description": "The Movie Database - metadata, posters, ratings"
+            },
+            "opensubtitles": {
+                "configured": bool(settings.OPENSUBTITLES_API_KEY),
+                "description": "OpenSubtitles - subtitle downloads"
+            },
+            "anthropic": {
+                "configured": bool(settings.ANTHROPIC_API_KEY),
+                "description": "Claude AI - content analysis"
+            },
+            "sendgrid": {
+                "configured": bool(settings.SENDGRID_API_KEY),
+                "description": "Email notifications"
+            }
+        }
+
+        configured_count = sum(1 for api in api_status.values() if api["configured"])
+        total_count = len(api_status)
+
+        recommendations = []
+        if not api_status["tmdb"]["configured"]:
+            recommendations.append(
+                "TMDB_API_KEY is not configured. Without it, metadata enrichment and poster "
+                "retrieval will not work. Get a free API key at https://www.themoviedb.org/settings/api"
+            )
+        if not api_status["opensubtitles"]["configured"]:
+            recommendations.append(
+                "OPENSUBTITLES_API_KEY is not configured. Without it, automatic subtitle "
+                "downloads will not work. Register at https://www.opensubtitles.com/consumers"
+            )
+
+        return {
+            "success": True,
+            "configured_apis": configured_count,
+            "total_apis": total_count,
+            "apis": api_status,
+            "recommendations": recommendations,
+            "message": f"{configured_count}/{total_count} APIs configured"
+        }
+    except Exception as e:
+        logger.error(f"Error checking API configuration: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_find_duplicates(detection_type: str = "all") -> Dict[str, Any]:
+    """Find duplicate content items in the library."""
+    from app.services.duplicate_detection_service import get_duplicate_detection_service
+
+    try:
+        service = get_duplicate_detection_service()
+
+        if detection_type == "all":
+            result = await service.find_all_duplicates()
+            return {
+                "success": True,
+                **result
+            }
+        elif detection_type == "hash":
+            duplicates = await service.find_hash_duplicates()
+            return {
+                "success": True,
+                "detection_type": "hash",
+                "duplicate_groups": len(duplicates),
+                "duplicates": duplicates[:20]  # Limit response size
+            }
+        elif detection_type == "tmdb":
+            duplicates = await service.find_tmdb_duplicates()
+            return {
+                "success": True,
+                "detection_type": "tmdb",
+                "duplicate_groups": len(duplicates),
+                "duplicates": duplicates[:20]
+            }
+        elif detection_type == "imdb":
+            duplicates = await service.find_imdb_duplicates()
+            return {
+                "success": True,
+                "detection_type": "imdb",
+                "duplicate_groups": len(duplicates),
+                "duplicates": duplicates[:20]
+            }
+        elif detection_type == "title":
+            duplicates = await service.find_title_duplicates()
+            return {
+                "success": True,
+                "detection_type": "title",
+                "duplicate_groups": len(duplicates),
+                "duplicates": duplicates[:20]
+            }
+        else:
+            return {
+                "success": False,
+                "error": f"Unknown detection type: {detection_type}"
+            }
+
+    except Exception as e:
+        logger.error(f"Error finding duplicates: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_resolve_duplicates(
+    content_ids: List[str],
+    keep_id: str,
+    action: str = "unpublish"
+) -> Dict[str, Any]:
+    """Resolve a group of duplicate content items."""
+    from app.services.duplicate_detection_service import get_duplicate_detection_service
+
+    try:
+        service = get_duplicate_detection_service()
+        result = await service.resolve_duplicate_group(
+            content_ids=content_ids,
+            keep_id=keep_id,
+            action=action
+        )
+        return {
+            "success": result["success"],
+            **result
+        }
+    except Exception as e:
+        logger.error(f"Error resolving duplicates: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_find_missing_metadata(
+    limit: int = 100,
+    missing_fields: List[str] = None
+) -> Dict[str, Any]:
+    """Find content items missing important metadata."""
+    if missing_fields is None:
+        missing_fields = ["description", "poster_url", "thumbnail"]
+
+    try:
+        # Build query for missing fields
+        or_conditions = []
+        for field in missing_fields:
+            or_conditions.append({field: {"$in": [None, ""]}})
+            or_conditions.append({field: {"$exists": False}})
+
+        items = await Content.find(
+            {"$or": or_conditions, "is_published": True}
+        ).sort([("created_at", -1)]).limit(limit).to_list()
+
+        # Analyze what's missing for each item
+        results = []
+        for item in items:
+            missing = []
+            if "description" in missing_fields and not item.description:
+                missing.append("description")
+            if "poster_url" in missing_fields and not item.poster_url:
+                missing.append("poster_url")
+            if "thumbnail" in missing_fields and not item.thumbnail:
+                missing.append("thumbnail")
+            if "tmdb_id" in missing_fields and not item.tmdb_id:
+                missing.append("tmdb_id")
+            if "imdb_id" in missing_fields and not item.imdb_id:
+                missing.append("imdb_id")
+            if "year" in missing_fields and not item.year:
+                missing.append("year")
+            if "genre" in missing_fields and not item.genre:
+                missing.append("genre")
+
+            if missing:
+                results.append({
+                    "id": str(item.id),
+                    "title": item.title,
+                    "title_en": item.title_en,
+                    "missing_fields": missing,
+                    "created_at": item.created_at.isoformat() if item.created_at else None
+                })
+
+        # Count by missing field
+        field_counts = {field: 0 for field in missing_fields}
+        for r in results:
+            for field in r["missing_fields"]:
+                if field in field_counts:
+                    field_counts[field] += 1
+
+        return {
+            "success": True,
+            "total_found": len(results),
+            "items": results,
+            "missing_field_counts": field_counts,
+            "message": f"Found {len(results)} items with missing metadata"
+        }
+
+    except Exception as e:
+        logger.error(f"Error finding missing metadata: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
 async def execute_manage_podcast_episodes(
     audit_id: str,
     podcast_id: Optional[str] = None,
@@ -2456,6 +2726,18 @@ async def execute_tool(
 
         elif tool_name == "check_subtitle_quota":
             return await execute_check_subtitle_quota()
+
+        elif tool_name == "check_api_configuration":
+            return await execute_check_api_configuration()
+
+        elif tool_name == "find_duplicates":
+            return await execute_find_duplicates(**tool_input)
+
+        elif tool_name == "resolve_duplicates":
+            return await execute_resolve_duplicates(**tool_input)
+
+        elif tool_name == "find_missing_metadata":
+            return await execute_find_missing_metadata(**tool_input)
 
         elif tool_name == "manage_podcast_episodes":
             return await execute_manage_podcast_episodes(**tool_input)
@@ -2744,7 +3026,10 @@ async def run_ai_agent_audit(
     """
 
     start_time = datetime.utcnow()
-    
+
+    # Clear the content title cache for fresh lookups
+    clear_title_cache()
+
     # Get or create audit report
     if audit_id:
         try:

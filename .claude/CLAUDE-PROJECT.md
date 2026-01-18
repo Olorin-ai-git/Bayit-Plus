@@ -40,6 +40,119 @@
 
 ## Project-Specific Rules
 
+### MANDATORY: Frontend Development Requirements
+
+**ALL frontend development across ALL platforms (Web, Mobile, TV) MUST adhere to these requirements:**
+
+#### 1. Shared-First Development
+
+**ALWAYS use `/shared` resources FIRST. Only create additional components if absolutely necessary.**
+
+```
+Priority Order:
+1. shared/components/      → Reusable Glass UI components
+2. shared/ui/              → Glass design system components
+3. shared/theme/           → Theme configuration and tokens
+4. shared/assets/          → Images, icons, fonts
+5. shared/utils/           → Utility functions
+6. shared/services/        → API and service abstractions
+7. shared/i18n/            → Localization resources
+8. shared/hooks/           → Reusable React hooks
+
+ONLY THEN → Create platform-specific components if shared cannot fulfill the need
+```
+
+**Forbidden:**
+- Creating new components that duplicate `/shared` functionality
+- Creating platform-specific versions of existing shared components
+- Copying shared component code instead of importing
+- Ignoring shared assets and creating duplicates
+
+**Example - Correct:**
+```typescript
+// Import from shared - ALWAYS FIRST
+import { GlassCard, GlassButton } from '@bayit/shared/ui'
+import { useLocalizedContent } from '@bayit/shared/hooks'
+import { formatDate } from '@bayit/shared/utils'
+```
+
+**Example - Incorrect:**
+```typescript
+// ❌ WRONG - Creating local component when shared exists
+import { MyLocalCard } from './components/MyLocalCard'
+
+// ❌ WRONG - Duplicating shared utility
+const formatDate = (date) => { ... }
+```
+
+#### 2. Glass Design System Compliance
+
+**NO DEVIATION from Glass components and glassmorphic styling is permitted.**
+
+**Mandatory Style Characteristics:**
+- Dark mode backgrounds (`bg-black/20`, `bg-gray-900`)
+- Backdrop blur effects (`backdrop-blur-xl`, `backdrop-blur-2xl`)
+- Semi-transparent layers with proper opacity
+- Glass component library for ALL UI elements
+- Tailwind CSS ONLY for styling
+
+**Forbidden:**
+- Custom CSS files
+- StyleSheet.create() for UI styling
+- Non-Glass component libraries
+- Light mode themes (unless specifically configured)
+- Any styling that breaks glassmorphic consistency
+
+**Design Tokens (from shared/theme):**
+```typescript
+// Use theme tokens - NEVER hardcode values
+import { colors, spacing, blur } from '@bayit/shared/theme'
+```
+
+#### 3. Full Localization - Paved Road (MANDATORY)
+
+**ALL text, content, and UI elements MUST use the localization paved road.**
+
+**i18n Requirements:**
+```typescript
+// ALWAYS use translation hooks
+import { useTranslation } from 'react-i18next'
+import { getLocalizedName } from '@bayit/shared/utils/contentLocalization'
+
+const { t, i18n } = useTranslation()
+
+// Static text
+<Text>{t('common.submit')}</Text>
+
+// Dynamic content from database
+const title = getLocalizedName(item, i18n.language)
+```
+
+**RTL/LTR Support (MANDATORY):**
+```typescript
+// Use RTL-aware utilities from shared
+import { useDirection, DirectionProvider } from '@bayit/shared/i18n'
+
+// Apply direction-aware classes
+<View className={isRTL ? 'flex-row-reverse' : 'flex-row'}>
+
+// Use Tailwind RTL utilities
+<View className="ltr:ml-4 rtl:mr-4">
+```
+
+**Forbidden:**
+- Hardcoded strings in UI
+- Left/right directional assumptions without RTL consideration
+- Skipping translation keys for "temporary" text
+- Using margin-left/right without RTL alternatives
+
+**Language Support:**
+- Hebrew (he) - Primary, RTL
+- English (en) - LTR
+- Spanish (es) - LTR
+
+---
+
 ### 1. UI/UX Standards
 
 **MANDATORY: Glass UI Design System**

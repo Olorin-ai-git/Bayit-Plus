@@ -1,0 +1,195 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-01-18",
+  "articles": [
+    {
+      "path": "getting-started/welcome.md",
+      "language": "en",
+      "title": "Welcome to Bayit+",
+      "category": "getting-started",
+      "keywords": ["welcome", "introduction", "start", "begin", "new user", "first time"]
+    },
+    {
+      "path": "getting-started/quick-start.md",
+      "language": "en",
+      "title": "Quick Start Guide",
+      "category": "getting-started",
+      "keywords": ["quick start", "setup", "install", "download", "account", "subscription", "profile", "watch", "stream"]
+    },
+    {
+      "path": "features/voice-control.md",
+      "language": "en",
+      "title": "Voice Control Guide",
+      "category": "features",
+      "keywords": ["voice", "speech", "microphone", "hey bayit", "wake word", "commands", "hands-free", "speak"]
+    },
+    {
+      "path": "features/live-tv.md",
+      "language": "en",
+      "title": "Live TV Guide",
+      "category": "features",
+      "keywords": ["live", "tv", "channels", "guide", "epg", "program", "schedule", "broadcast"]
+    },
+    {
+      "path": "features/vod.md",
+      "language": "en",
+      "title": "Video on Demand",
+      "category": "features",
+      "keywords": ["vod", "movies", "series", "shows", "on demand", "streaming", "watch", "browse"]
+    },
+    {
+      "path": "account/manage-subscription.md",
+      "language": "en",
+      "title": "Manage Subscription",
+      "category": "account",
+      "keywords": ["subscription", "plan", "billing", "payment", "cancel", "upgrade", "downgrade", "price", "basic", "standard", "premium", "family", "devices", "4k", "hd", "sd", "cost", "how much", "tiers", "pricing"]
+    },
+    {
+      "path": "account/profile-settings.md",
+      "language": "en",
+      "title": "Profile Settings",
+      "category": "account",
+      "keywords": ["profile", "settings", "preferences", "language", "parental", "password", "email"]
+    },
+    {
+      "path": "troubleshooting/streaming-issues.md",
+      "language": "en",
+      "title": "Streaming Issues",
+      "category": "troubleshooting",
+      "keywords": ["buffer", "buffering", "slow", "quality", "lag", "freeze", "not playing", "error", "connection"]
+    },
+    {
+      "path": "troubleshooting/login-problems.md",
+      "language": "en",
+      "title": "Login Problems",
+      "category": "troubleshooting",
+      "keywords": ["login", "sign in", "password", "forgot", "reset", "access", "locked", "account"]
+    },
+    {
+      "path": "getting-started/welcome.md",
+      "language": "he",
+      "title": "ברוכים הבאים ל-Bayit+",
+      "category": "getting-started",
+      "keywords": ["ברוכים הבאים", "התחלה", "חדש", "משתמש חדש", "פעם ראשונה"]
+    },
+    {
+      "path": "getting-started/quick-start.md",
+      "language": "he",
+      "title": "מדריך התחלה מהירה",
+      "category": "getting-started",
+      "keywords": ["התחלה מהירה", "הגדרה", "התקנה", "הורדה", "חשבון", "מנוי", "פרופיל", "צפייה", "סטרימינג"]
+    },
+    {
+      "path": "features/voice-control.md",
+      "language": "he",
+      "title": "מדריך שליטה קולית",
+      "category": "features",
+      "keywords": ["קול", "דיבור", "מיקרופון", "היי בית", "פקודות קוליות", "ללא ידיים", "לדבר"]
+    },
+    {
+      "path": "features/live-tv.md",
+      "language": "he",
+      "title": "מדריך טלוויזיה חיה",
+      "category": "features",
+      "keywords": ["חי", "טלוויזיה", "ערוצים", "מדריך", "לוח שידורים", "תוכניות", "שידור"]
+    },
+    {
+      "path": "features/vod.md",
+      "language": "he",
+      "title": "וידאו לפי דרישה",
+      "category": "features",
+      "keywords": ["סרטים", "סדרות", "תוכניות", "לפי דרישה", "סטרימינג", "צפייה", "דפדוף"]
+    },
+    {
+      "path": "account/manage-subscription.md",
+      "language": "he",
+      "title": "ניהול מנוי",
+      "category": "account",
+      "keywords": ["מנוי", "תוכנית", "חיוב", "תשלום", "ביטול", "שדרוג", "מחיר", "בסיסי", "סטנדרט", "פרימיום", "משפחתי", "מכשירים", "עלות", "כמה עולה", "תוכניות"]
+    },
+    {
+      "path": "account/profile-settings.md",
+      "language": "he",
+      "title": "הגדרות פרופיל",
+      "category": "account",
+      "keywords": ["פרופיל", "הגדרות", "העדפות", "שפה", "בקרת הורים", "סיסמה", "אימייל"]
+    },
+    {
+      "path": "troubleshooting/streaming-issues.md",
+      "language": "he",
+      "title": "בעיות סטרימינג",
+      "category": "troubleshooting",
+      "keywords": ["באפר", "איטי", "איכות", "לג", "קופא", "לא מנגן", "שגיאה", "חיבור"]
+    },
+    {
+      "path": "troubleshooting/login-problems.md",
+      "language": "he",
+      "title": "בעיות כניסה",
+      "category": "troubleshooting",
+      "keywords": ["כניסה", "התחברות", "סיסמה", "שכחתי", "איפוס", "גישה", "נעול", "חשבון"]
+    },
+    {
+      "path": "getting-started/welcome.md",
+      "language": "es",
+      "title": "Bienvenido a Bayit+",
+      "category": "getting-started",
+      "keywords": ["bienvenido", "introduccion", "comenzar", "nuevo usuario", "primera vez"]
+    },
+    {
+      "path": "getting-started/quick-start.md",
+      "language": "es",
+      "title": "Guia de Inicio Rapido",
+      "category": "getting-started",
+      "keywords": ["inicio rapido", "configuracion", "instalacion", "descargar", "cuenta", "suscripcion", "perfil", "ver", "streaming"]
+    },
+    {
+      "path": "features/voice-control.md",
+      "language": "es",
+      "title": "Control por Voz",
+      "category": "features",
+      "keywords": ["voz", "hablar", "microfono", "hey bayit", "comandos de voz", "manos libres"]
+    },
+    {
+      "path": "features/live-tv.md",
+      "language": "es",
+      "title": "Television en Vivo",
+      "category": "features",
+      "keywords": ["vivo", "television", "canales", "guia", "programacion", "transmision"]
+    },
+    {
+      "path": "features/vod.md",
+      "language": "es",
+      "title": "Video bajo Demanda",
+      "category": "features",
+      "keywords": ["peliculas", "series", "programas", "bajo demanda", "streaming", "ver", "explorar"]
+    },
+    {
+      "path": "account/manage-subscription.md",
+      "language": "es",
+      "title": "Administrar Suscripcion",
+      "category": "account",
+      "keywords": ["suscripcion", "plan", "facturacion", "pago", "cancelar", "mejorar", "precio", "basico", "estandar", "premium", "familiar", "dispositivos", "costo", "cuanto cuesta", "planes", "precios"]
+    },
+    {
+      "path": "account/profile-settings.md",
+      "language": "es",
+      "title": "Configuracion del Perfil",
+      "category": "account",
+      "keywords": ["perfil", "configuracion", "preferencias", "idioma", "control parental", "contrasena", "correo"]
+    },
+    {
+      "path": "troubleshooting/streaming-issues.md",
+      "language": "es",
+      "title": "Problemas de Streaming",
+      "category": "troubleshooting",
+      "keywords": ["buffer", "lento", "calidad", "lag", "congelado", "no reproduce", "error", "conexion"]
+    },
+    {
+      "path": "troubleshooting/login-problems.md",
+      "language": "es",
+      "title": "Problemas de Inicio de Sesion",
+      "category": "troubleshooting",
+      "keywords": ["inicio de sesion", "contrasena", "olvide", "restablecer", "acceso", "bloqueado", "cuenta"]
+    }
+  ]
+}

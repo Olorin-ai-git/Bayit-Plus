@@ -248,6 +248,7 @@ EOF
     create_or_update_secret "bayit-twilio-auth-token" "TWILIO_AUTH_TOKEN"
     create_or_update_secret "bayit-twilio-phone-number" "TWILIO_PHONE_NUMBER"
     create_or_update_secret "opensubtitles-api-key" "OPENSUBTITLES_API_KEY"
+    create_or_update_secret "picovoice-access-key" "PICOVOICE_ACCESS_KEY"
 
     # Google redirect URI
     GOOGLE_REDIRECT_URI="${GOOGLE_REDIRECT_URI:-https://bayit.tv/auth/google/callback}"
@@ -330,7 +331,7 @@ EOF
                   bayit-google-client-id bayit-google-client-secret bayit-google-redirect-uri \
                   bayit-elevenlabs-api-key bayit-gcs-bucket-name bayit-cors-origins bayit-gcp-project-id \
                   bayit-twilio-account-sid bayit-twilio-auth-token bayit-twilio-phone-number \
-                  opensubtitles-api-key \
+                  opensubtitles-api-key picovoice-access-key \
                   bayit-librarian-daily-audit-cron bayit-librarian-daily-audit-time bayit-librarian-daily-audit-mode \
                   bayit-librarian-daily-audit-cost bayit-librarian-daily-audit-status bayit-librarian-daily-audit-description \
                   bayit-librarian-weekly-audit-cron bayit-librarian-weekly-audit-time bayit-librarian-weekly-audit-mode \
