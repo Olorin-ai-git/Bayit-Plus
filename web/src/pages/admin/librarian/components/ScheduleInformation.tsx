@@ -1,7 +1,7 @@
 import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Calendar } from 'lucide-react';
-import { GlassDraggableExpander } from '@bayit/shared/ui';
+import { GlassDraggableExpander } from '@bayit/shared/ui/web';
 import { colors, spacing } from '@bayit/shared/theme';
 import LibrarianScheduleCard from '@/components/admin/LibrarianScheduleCard';
 import { LibrarianConfig } from '@/services/librarianService';

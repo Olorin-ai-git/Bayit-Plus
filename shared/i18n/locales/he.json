@@ -47,7 +47,11 @@
     "previous": "הקודם",
     "actions": "פעולות",
     "pageOf": "עמוד {{page}} מתוך {{total}}",
-    "noData": "אין נתונים זמינים"
+    "noData": "אין נתונים זמינים",
+    "clear": "נקה",
+    "clearSelection": "נקה",
+    "expand": "הרחב",
+    "collapse": "כווץ"
   },
   "demo": {
     "banner": "מצב הדמו",
@@ -1319,7 +1323,18 @@
       "uploads": "העלאות",
       "settings": "הגדרות",
       "auditLogs": "יומן פעילות",
-      "librarian": "סוכן הספרן"
+      "librarian": "סוכן הספרן",
+      "featured": "מובחר"
+    },
+    "featured": {
+      "title": "תוכן מובחר",
+      "subtitle": "נהל את סדר הקרוסלה על ידי גרירת פריטים",
+      "empty": "אין תוכן מובחר",
+      "emptyHint": "הוסף תוכן למובחר מספריית התוכן",
+      "count": "{{count}} פריטים",
+      "confirmUnfeature": "להסיר מהמובחר?",
+      "remove": "הסר",
+      "unsavedChanges": "יש לך שינויים שלא נשמרו"
     },
     "recordings": {
       "title": "ניהול הקלטות",
@@ -1447,7 +1462,9 @@
         "fileSize": "גודל",
         "removeFile": "הסר",
         "invalidFileType": "סוג קובץ לא חוקי. רק קבצי וידאו נתמכים.",
-        "filesCount": "{{count}} קבצים נבחרו"
+        "filesCount": "{{count}} קבצים נבחרו",
+        "pendingRestore": "{{count}} קבצים ממתינים מהפעלה קודמת",
+        "pendingRestoreHint": "גרור או בחר את אותם קבצים לשחזור תור ההעלאות"
       }
     },
     "librarian": {
@@ -1886,6 +1903,10 @@
       "searchPlaceholder": "חפש תוכן...",
       "emptyMessage": "לא נמצא תוכן",
       "confirmDelete": "למחוק תוכן זה?",
+      "confirmBatchDelete": "האם אתה בטוח שברצונך למחוק {{count}} פריטים?",
+      "selectedItems": "{{count}} פריטים נבחרו",
+      "batchFeature": "הוסף למובחרים",
+      "batchUnfeature": "הסר ממובחרים",
       "import": {
         "pageTitle": "ייבא תוכן חינמי",
         "subtitle": "עיין והיבא תוכן ציבורי ממקורות חינמיים",

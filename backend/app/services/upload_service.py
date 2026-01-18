@@ -577,63 +577,81 @@ class UploadService:
             await job.save()
             await self._broadcast_queue_update()
             
-            # Create a progress tracking wrapper
-            class ProgressFileWrapper:
-                def __init__(self, file_obj, job_ref, service_ref, file_size):
-                    self.file = file_obj
-                    self.job = job_ref
-                    self.service = service_ref
-                    self.file_size = file_size
+            # Create a progress tracking wrapper with shared state for thread-safe updates
+            class ProgressState:
+                def __init__(self):
                     self.bytes_read = 0
-                    self.last_update = datetime.utcnow()
+                    self.progress = 25.0
+                    self.upload_speed = 0.0
+                    self.eta_seconds = None
+                    self.done = False
+
+            progress_state = ProgressState()
+
+            class ProgressFileWrapper:
+                def __init__(self, file_obj, state, file_size, start_time):
+                    self.file = file_obj
+                    self.state = state
+                    self.file_size = file_size
                     self.start_time = start_time
-                    
+
                 def read(self, size=-1):
                     chunk = self.file.read(size)
                     if chunk:
-                        self.bytes_read += len(chunk)
-                        
-                        # Update progress every 2MB or every 2 seconds
-                        now = datetime.utcnow()
-                        time_since_update = (now - self.last_update).total_seconds()
-                        
-                        if self.bytes_read % (2 * 1024 * 1024) < len(chunk) or time_since_update >= 2:
-                            # Calculate progress (25% to 95% range for upload)
-                            upload_progress = (self.bytes_read / self.file_size) * 70.0
-                            self.job.progress = 25.0 + upload_progress
-                            self.job.bytes_uploaded = self.bytes_read
-                            
-                            # Calculate speed and ETA
-                            elapsed = (now - self.start_time).total_seconds()
-                            if elapsed > 0:
-                                self.job.upload_speed = self.bytes_read / elapsed
-                                remaining_bytes = self.file_size - self.bytes_read
-                                self.job.eta_seconds = int(remaining_bytes / self.job.upload_speed) if self.job.upload_speed > 0 else None
-                            
-                            # Schedule async update
-                            asyncio.create_task(self._async_update())
-                            self.last_update = now
-                    
+                        self.state.bytes_read += len(chunk)
+
+                        # Calculate progress (25% to 95% range for upload)
+                        upload_progress = (self.state.bytes_read / self.file_size) * 70.0
+                        self.state.progress = 25.0 + upload_progress
+
+                        # Calculate speed and ETA
+                        elapsed = (datetime.utcnow() - self.start_time).total_seconds()
+                        if elapsed > 0:
+                            self.state.upload_speed = self.state.bytes_read / elapsed
+                            remaining_bytes = self.file_size - self.state.bytes_read
+                            self.state.eta_seconds = int(remaining_bytes / self.state.upload_speed) if self.state.upload_speed > 0 else None
+
                     return chunk
-                
-                async def _async_update(self):
-                    await self.job.save()
-                    await self.service._broadcast_queue_update()
-                
+
                 def seek(self, pos, whence=0):
                     return self.file.seek(pos, whence)
-                
+
                 def tell(self):
                     return self.file.tell()
-            
-            # Upload with progress wrapper
-            with open(job.source_path, 'rb') as file_obj:
-                progress_wrapper = ProgressFileWrapper(file_obj, job, self, file_size)
-                blob.upload_from_file(
-                    progress_wrapper,
-                    content_type=content_type,
-                    size=file_size,
-                )
+
+            # Async task to periodically save progress to DB while upload runs in executor
+            async def progress_updater():
+                last_bytes = 0
+                while not progress_state.done:
+                    if progress_state.bytes_read > last_bytes:
+                        job.progress = progress_state.progress
+                        job.bytes_uploaded = progress_state.bytes_read
+                        job.upload_speed = progress_state.upload_speed
+                        job.eta_seconds = progress_state.eta_seconds
+                        await job.save()
+                        await self._broadcast_queue_update()
+                        last_bytes = progress_state.bytes_read
+                    await asyncio.sleep(1)  # Update every second
+
+            # Function to run in thread pool (blocking GCS upload)
+            def blocking_upload():
+                with open(job.source_path, 'rb') as file_obj:
+                    progress_wrapper = ProgressFileWrapper(file_obj, progress_state, file_size, start_time)
+                    blob.upload_from_file(
+                        progress_wrapper,
+                        content_type=content_type,
+                        size=file_size,
+                    )
+                progress_state.done = True
+
+            # Run upload in thread pool while progress updater runs in event loop
+            loop = asyncio.get_event_loop()
+            updater_task = asyncio.create_task(progress_updater())
+            try:
+                await loop.run_in_executor(None, blocking_upload)
+            finally:
+                progress_state.done = True
+                await updater_task  # Wait for final update
             
             # Final progress update after successful upload
             job.progress = 95.0

@@ -36,6 +36,7 @@ interface ChatbotStore {
   // Action handlers registration
   actionHandlers: Record<string, (payload: any) => void>;
   registerActionHandler: (type: string, handler: (payload: any) => void) => void;
+  unregisterActionHandler: (type: string) => void;
   executeAction: (action: ChatbotAction) => void;
 }
 
@@ -113,6 +114,13 @@ export const useChatbotStore = create<ChatbotStore>((set, get) => ({
     set((state) => ({
       actionHandlers: { ...state.actionHandlers, [type]: handler },
     }));
+  },
+
+  unregisterActionHandler: (type) => {
+    set((state) => {
+      const { [type]: removed, ...remaining } = state.actionHandlers;
+      return { actionHandlers: remaining };
+    });
   },
 
   executeAction: (action) => {

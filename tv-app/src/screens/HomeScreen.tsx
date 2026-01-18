@@ -15,6 +15,7 @@ import {
   DualClock,
   TrendingRow,
   JerusalemRow,
+  TelAvivRow,
 } from '../components';
 import { contentService, liveService, historyService, ritualService } from '../services/api';
 import { colors, spacing } from '../theme';
@@ -235,6 +236,11 @@ export const HomeScreen: React.FC = () => {
       {/* Jerusalem Connection */}
       <View style={styles.trendingSection}>
         <JerusalemRow />
+      </View>
+
+      {/* Tel Aviv Connection */}
+      <View style={styles.trendingSection}>
+        <TelAvivRow />
       </View>
 
       {/* Continue Watching */}

@@ -223,6 +223,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(10, 10, 20, 0.8)',
     position: 'relative' as any,
     overflow: 'hidden' as any,
+    // Ensure content isn't clipped at the top edge of viewport
+    marginTop: 0,
+    paddingTop: 0,
   },
   statusOverlay: {
     position: 'absolute' as any,

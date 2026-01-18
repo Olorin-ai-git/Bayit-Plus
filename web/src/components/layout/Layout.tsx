@@ -35,24 +35,21 @@ export default function Layout() {
     voiceState,
     isVoiceModalOpen,
     isSupported: voiceSupported,
-    openVoiceModal,
     closeVoiceModal,
     startListening,
     stopListening,
     interrupt,
+    activateVoiceAssistant,
   } = useVoiceSupport();
 
   const handleVoiceAvatarPress = useCallback(() => {
     // Dispatch custom event to toggle topbar microphone button state
-    console.log('[Layout] Wizard avatar pressed - toggling voice');
+    console.log('[Layout] Wizard avatar pressed - activating voice assistant');
     window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
 
-    // Also open voice modal and start listening
-    openVoiceModal();
-    setTimeout(() => {
-      startListening();
-    }, 300);
-  }, [openVoiceModal, startListening]);
+    // Activate voice assistant (handles intro + modal + listening)
+    activateVoiceAssistant();
+  }, [activateVoiceAssistant]);
 
   const toggleSidebar = useCallback(() => {
     setIsSidebarExpanded(prev => !prev);
@@ -258,6 +255,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     minHeight: '100vh' as any,
     transition: 'margin-left 0.3s ease-out',
+    // Ensure content isn't clipped at the top edge
+    paddingTop: 'env(safe-area-inset-top, 0px)',
   } as any,
   blurContainer: {
     position: 'absolute',

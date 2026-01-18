@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ScrollText } from 'lucide-react';
-import { GlassDraggableExpander, GlassBadge } from '@bayit/shared/ui';
-import { GlassLog } from '@bayit/shared/ui/web';
+import { GlassBadge } from '@bayit/shared/ui';
+import { GlassDraggableExpander, GlassLog } from '@bayit/shared/ui/web';
 import { colors, spacing } from '@bayit/shared/theme';
 import { AuditReportDetail } from '@/services/librarianService';
 import { BatchProgress } from '../types';

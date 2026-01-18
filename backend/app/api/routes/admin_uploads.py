@@ -574,12 +574,14 @@ async def get_active_browser_sessions(
     from datetime import timedelta
 
     try:
+        from beanie.operators import In
+
         # Find all non-completed sessions for this user (within 48 hours)
         cutoff_time = datetime.utcnow() - timedelta(hours=48)
 
         sessions = await BrowserUploadSession.find(
             BrowserUploadSession.user_id == str(current_user.id),
-            BrowserUploadSession.status.is_in(["initialized", "uploading"]),
+            In(BrowserUploadSession.status, ["initialized", "uploading"]),
             BrowserUploadSession.started_at >= cutoff_time,
         ).sort("-started_at").to_list()
 

@@ -39,19 +39,17 @@ export const AppContent: React.FC = () => {
   const {
     isVoiceModalOpen,
     isSupported: voiceSupported,
-    openVoiceModal,
     closeVoiceModal,
     startListening: startSupportListening,
     stopListening: stopSupportListening,
     interrupt,
+    activateVoiceAssistant,
   } = useVoiceSupport();
 
   const handleVoiceAvatarPress = useCallback(() => {
-    openVoiceModal();
-    setTimeout(() => {
-      startSupportListening();
-    }, 300);
-  }, [openVoiceModal, startSupportListening]);
+    // Activate voice assistant (handles intro + modal + listening)
+    activateVoiceAssistant();
+  }, [activateVoiceAssistant]);
 
   const handleVoicePress = async () => {
     if (isListening) {

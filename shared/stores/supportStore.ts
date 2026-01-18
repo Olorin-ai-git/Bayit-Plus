@@ -112,6 +112,13 @@ interface SupportStore {
   isWakeWordEnabled: boolean;
   wakeWordDetected: boolean;
 
+  // Wizard intro state
+  hasSeenWizardIntro: boolean;
+  /** Whether wizard intro has been played this session (not persisted, resets on app close) */
+  hasPlayedSessionIntro: boolean;
+  /** Current intro text being spoken (for display in modal) */
+  currentIntroText: string | null;
+
   // Error state
   lastError: string | null;
 
@@ -147,6 +154,13 @@ interface SupportStore {
   onWakeWordDetected: () => void;
   resetWakeWordDetected: () => void;
 
+  // Wizard intro actions
+  markWizardIntroSeen: () => void;
+  /** Mark session intro as played (session-only, not persisted) */
+  setSessionIntroPlayed: (played: boolean) => void;
+  /** Set current intro text being spoken */
+  setCurrentIntroText: (text: string | null) => void;
+
   // Error actions
   setError: (error: string | null) => void;
   clearError: () => void;
@@ -181,6 +195,11 @@ const initialState = {
   // Wake word state
   isWakeWordEnabled: true,
   wakeWordDetected: false,
+
+  // Wizard intro state
+  hasSeenWizardIntro: false,
+  hasPlayedSessionIntro: false,
+  currentIntroText: null as string | null,
 
   // Error state
   lastError: null as string | null,
@@ -282,6 +301,11 @@ export const useSupportStore = create<SupportStore>()(
 
       resetWakeWordDetected: () => set({ wakeWordDetected: false }),
 
+      // Wizard intro actions
+      markWizardIntroSeen: () => set({ hasSeenWizardIntro: true }),
+      setSessionIntroPlayed: (played: boolean) => set({ hasPlayedSessionIntro: played }),
+      setCurrentIntroText: (text: string | null) => set({ currentIntroText: text }),
+
       // Error actions
       setError: (error: string | null) => set({
         lastError: error,
@@ -296,10 +320,11 @@ export const useSupportStore = create<SupportStore>()(
     {
       name: 'bayit-support',
       storage: createJSONStorage(() => localStorage),
-      partialState: {
-        // Only persist user preferences, not transient state
-        isWakeWordEnabled: true,
-      } as Partial<SupportStore>,
+      // Only persist user preferences, not transient state like modal visibility
+      partialize: (state) => ({
+        isWakeWordEnabled: state.isWakeWordEnabled,
+        hasSeenWizardIntro: state.hasSeenWizardIntro,
+      }),
     }
   )
 );

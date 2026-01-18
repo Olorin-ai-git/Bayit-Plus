@@ -22,7 +22,10 @@ import {
   FavoritesScreen,
   DownloadsScreen,
   SupportScreen,
+  RecordingsScreen,
+  EPGScreen,
 } from '@bayit/shared-screens';
+import { colors } from '../theme';
 
 // Import mobile-optimized screens
 import {
@@ -47,7 +50,7 @@ export const RootNavigator: React.FC = () => {
       screenOptions={{
         headerShown: false,
         animation: 'fade',
-        contentStyle: { backgroundColor: '#0d0d1a' },
+        contentStyle: { backgroundColor: colors.background },
       }}
       initialRouteName="Main"
     >
@@ -84,6 +87,8 @@ export const RootNavigator: React.FC = () => {
       <Stack.Screen name="Watchlist" component={WatchlistScreen} />
       <Stack.Screen name="Favorites" component={FavoritesScreen} />
       <Stack.Screen name="Downloads" component={DownloadsScreen} />
+      <Stack.Screen name="Recordings" component={RecordingsScreen} />
+      <Stack.Screen name="EPG" component={EPGScreen} />
 
       {/* Settings - Mobile-specific */}
       <Stack.Screen name="Settings" component={SettingsScreenMobile} />

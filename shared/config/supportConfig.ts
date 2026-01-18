@@ -64,6 +64,30 @@ export interface VoiceConfig {
 }
 
 /**
+ * Wizard Intro Configuration
+ */
+export interface WizardIntroConfig {
+  /** English intro message */
+  en: string;
+  /** Hebrew intro message */
+  he: string;
+  /** Spanish intro message */
+  es: string;
+}
+
+/**
+ * Wizard Intro Audio Configuration
+ */
+export interface WizardIntroAudioConfig {
+  /** English intro audio path */
+  en: string;
+  /** Hebrew intro audio path */
+  he: string;
+  /** Spanish intro audio path */
+  es: string;
+}
+
+/**
  * Voice Assistant Configuration
  */
 export interface VoiceAssistantConfig {
@@ -95,6 +119,12 @@ export interface VoiceAssistantConfig {
   useStreamingMode: boolean;
   /** Whether to prewarm the streaming pipeline on app load */
   prewarmPipeline: boolean;
+  /** Wizard intro messages for first-time session interaction */
+  wizardIntro: WizardIntroConfig;
+  /** Pre-recorded intro audio files (faster than live TTS) */
+  wizardIntroAudio: WizardIntroAudioConfig;
+  /** Whether to use pre-recorded audio files for intro */
+  usePrerecordedIntro: boolean;
 }
 
 /**
@@ -236,11 +266,11 @@ export const supportConfig: SupportConfig = {
       customModelPath: '/porcupine/hey_buyit_wasm.ppn',
     },
 
-    // Support System Voice (Olorin) - deep, authoritative male voice
+    // Support System Voice (Olorin) - custom cloned voice for the wizard
     supportVoice: {
-      voiceId: getEnvVar('VITE_ELEVENLABS_SUPPORT_VOICE_ID', 'pNInz6obpgDQGcFmaJgB'),
-      name: 'Adam',
-      description: 'Deep, authoritative male voice for Olorin support wizard',
+      voiceId: getEnvVar('VITE_ELEVENLABS_SUPPORT_VOICE_ID', 'iwNTMolqpkQ3cGUnKlX8'),
+      name: 'Olorin',
+      description: 'Custom cloned voice for the Olorin support wizard',
     },
 
     // Voice Search Voice - multilingual female voice
@@ -258,6 +288,32 @@ export const supportConfig: SupportConfig = {
     // Streaming mode for ultra-low latency voice interactions (~3-5s vs ~20s)
     useStreamingMode: getEnvVarBool('VITE_SUPPORT_STREAMING_MODE', true),
     prewarmPipeline: getEnvVarBool('VITE_SUPPORT_PREWARM_PIPELINE', true),
+
+    // Wizard intro messages for first-time session interaction
+    wizardIntro: {
+      en: getEnvVar(
+        'VITE_WIZARD_INTRO_EN',
+        "Hi, My name is Olorin. I'm here to help you navigate and discover content. Just speak naturally and I'll assist you."
+      ),
+      he: getEnvVar(
+        'VITE_WIZARD_INTRO_HE',
+        'שלום, שמי אולורין. אני כאן כדי לעזור לך לנווט ולגלות תוכן. פשוט דבר באופן טבעי ואני אסייע לך.'
+      ),
+      es: getEnvVar(
+        'VITE_WIZARD_INTRO_ES',
+        'Hola, mi nombre es Olorin. Estoy aquí para ayudarte a navegar y descubrir contenido. Simplemente habla naturalmente y te ayudaré.'
+      ),
+    },
+
+    // Pre-recorded intro audio files (faster than live TTS generation)
+    // Empty string means fall back to live TTS for that language
+    wizardIntroAudio: {
+      en: getEnvVar('VITE_WIZARD_INTRO_AUDIO_EN', '/assets/audio/intro/Olorin-deep.mp3'),
+      he: getEnvVar('VITE_WIZARD_INTRO_AUDIO_HE', '/assets/audio/intro/Olorin-Hebrew-Intro.mp3'),
+      es: getEnvVar('VITE_WIZARD_INTRO_AUDIO_ES', ''),
+    },
+    /** Whether to use pre-recorded audio files for intro (faster) or live TTS */
+    usePrerecordedIntro: getEnvVarBool('VITE_WIZARD_USE_PRERECORDED_INTRO', true),
   },
 
   documentation: {

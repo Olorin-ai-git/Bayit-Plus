@@ -145,7 +145,7 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
   );
 };
 
-export default function HelpScreen() {
+function LegacyHelpScreen() {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
   const [expandedId, setExpandedId] = useState<string | null>(null);

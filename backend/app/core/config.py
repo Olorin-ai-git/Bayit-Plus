@@ -41,8 +41,8 @@ class Settings(BaseSettings):
     ELEVENLABS_API_KEY: str = ""
     ELEVENLABS_WEBHOOK_SECRET: str = ""
     ELEVENLABS_DEFAULT_VOICE_ID: str = "EXAVITQu4vr4xnSDxMaL"  # Rachel - multilingual female voice for general TTS
-    # Olorin Support Avatar - confident, mature male voice for support/guidance
-    ELEVENLABS_SUPPORT_VOICE_ID: str = "pNInz6obpgDQGcFmaJgB"  # Adam - deep, authoritative male voice
+    # Olorin Support Avatar - custom cloned voice for support wizard
+    ELEVENLABS_SUPPORT_VOICE_ID: str = "iwNTMolqpkQ3cGUnKlX8"  # Olorin - custom cloned voice
 
     # OpenAI (Whisper speech-to-text)
     OPENAI_API_KEY: str = ""

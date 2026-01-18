@@ -36,6 +36,10 @@ export {
   demoWatchParties,
 } from './watchData';
 
+// User favorites and watchlist
+export { demoFavorites, type FavoriteItem } from './favorites';
+export { demoWatchlist, type WatchlistItem } from './watchlist';
+
 // Search
 export { demoSearchResults } from './search';
 
@@ -57,6 +61,8 @@ import {
   demoWatchParties,
 } from './watchData';
 import { demoSearchResults } from './search';
+import { demoFavorites } from './favorites';
+import { demoWatchlist } from './watchlist';
 
 export default {
   user: demoUser,
@@ -77,4 +83,6 @@ export default {
   featured: demoFeatured,
   watchParties: demoWatchParties,
   searchResults: demoSearchResults,
+  favorites: demoFavorites,
+  watchlist: demoWatchlist,
 };

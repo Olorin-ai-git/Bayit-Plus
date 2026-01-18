@@ -7,7 +7,7 @@ import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
 import { colors, spacing } from '@bayit/shared/theme';
 import { GlassCard, GlassCategoryPill } from '@bayit/shared/ui';
-import { JerusalemRow } from '@bayit/shared';
+import { JerusalemRow, TelAvivRow } from '@bayit/shared';
 import {
   JewishNewsFeed,
   JewishCalendarWidget,
@@ -256,6 +256,11 @@ export default function JudaismPage() {
           <JerusalemRow />
         </View>
 
+        {/* Tel Aviv Connection Section */}
+        <View>
+          <TelAvivRow />
+        </View>
+
         {/* Calendar and Shabbat Times Row */}
         <View className="flex-row gap-4 flex-wrap">
           <View className="flex-1 min-w-80">
@@ -334,6 +339,12 @@ export default function JudaismPage() {
           <>
             {/* Show Shabbat Eve Section at top when viewing content */}
             <ShabbatEveSection />
+
+            {/* Jerusalem and Tel Aviv Connection Sections */}
+            <View className="gap-4 my-4">
+              <JerusalemRow />
+              <TelAvivRow />
+            </View>
 
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginTop: spacing.md }}>
               {content.map((item) => (

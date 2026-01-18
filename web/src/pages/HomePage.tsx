@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import AnimatedCard from '@/components/common/AnimatedCard';
-import { TrendingRow, JerusalemRow, GlassCarousel } from '@bayit/shared';
+import { TrendingRow, JerusalemRow, TelAvivRow, GlassCarousel } from '@bayit/shared';
 import { GlassLiveChannelCard, GlassCheckbox } from '@bayit/shared/ui';
 import MorningRitual from '@/components/ritual/MorningRitual';
 import { contentService, liveService, historyService, ritualService } from '@/services/api';
@@ -311,7 +311,7 @@ export default function HomePage() {
           <GlassCarousel
             items={carouselItems}
             onItemPress={handleCarouselPress}
-            height={IS_TV_BUILD ? 450 : 400}
+            height={IS_TV_BUILD ? 550 : 600}
             autoPlayInterval={6000}
           />
         )}
@@ -386,6 +386,11 @@ export default function HomePage() {
       {/* Jerusalem Connection - always renders (has its own loading state) */}
       <View style={styles.section}>
         <JerusalemRow />
+      </View>
+
+      {/* Tel Aviv Connection - always renders (has its own loading state) */}
+      <View style={styles.section}>
+        <TelAvivRow />
       </View>
 
       {/* Content Filters */}
@@ -565,7 +570,7 @@ const styles = StyleSheet.create({
   },
   // Skeleton
   skeletonHero: {
-    height: IS_TV_BUILD ? 450 : 400,
+    height: IS_TV_BUILD ? 550 : 600,
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     position: 'relative',
     overflow: 'hidden',

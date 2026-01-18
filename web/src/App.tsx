@@ -82,6 +82,7 @@ const WidgetsPage = lazy(() => import('./pages/admin/WidgetsPage'))
 const LibrarianAgentPage = lazy(() => import('./pages/admin/LibrarianAgentPage'))
 const RecordingsManagementPage = lazy(() => import('./pages/admin/RecordingsManagementPage'))
 const UploadsPage = lazy(() => import('./pages/admin/UploadsPage'))
+const FeaturedManagementPage = lazy(() => import('./pages/admin/FeaturedManagementPage'))
 
 function App() {
   // Set document direction based on language (RTL for Hebrew/Arabic, LTR for others)
@@ -125,6 +126,7 @@ function App() {
           <Route path="content" element={<ContentLibraryPage />} />
           <Route path="content/new" element={<ContentEditorPage />} />
           <Route path="content/:contentId/edit" element={<ContentEditorPage />} />
+          <Route path="featured" element={<FeaturedManagementPage />} />
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="live-channels" element={<LiveChannelsPage />} />
           <Route path="radio-stations" element={<RadioStationsPage />} />

@@ -81,6 +81,8 @@ class ElevenLabsRealtimeService:
         self.api_key = settings.ELEVENLABS_API_KEY
         self.websocket: Optional[ClientConnection] = None
         self._connected = False
+        self._session_confirmed = False
+        self._session_event: asyncio.Event = asyncio.Event()
         self._receive_task: Optional[asyncio.Task] = None
         self._transcript_queue: asyncio.Queue = asyncio.Queue()
         self._error_queue: asyncio.Queue = asyncio.Queue()
@@ -88,6 +90,8 @@ class ElevenLabsRealtimeService:
         self._source_lang: str = "he"
         self._reconnect_attempts = 0
         self._audio_buffer: list[bytes] = []
+        self._reconnect_lock: asyncio.Lock = asyncio.Lock()
+        self._pending_reconnect: bool = False
 
         # Time-based forced commit tracking for fast speech
         self._last_commit_time: float = 0.0
@@ -97,19 +101,22 @@ class ElevenLabsRealtimeService:
 
         logger.info("ElevenLabsRealtimeService initialized")
 
-    async def connect(self, source_lang: str = "auto") -> None:
+    async def connect(self, source_lang: str = "auto", timeout: float = 10.0) -> None:
         """
         Establish WebSocket connection to ElevenLabs realtime STT.
 
         Args:
             source_lang: Source language code (he, en, ar, es, etc.)
                         Use "auto" for automatic language detection.
+            timeout: Maximum seconds to wait for session confirmation.
         """
-        if self._connected:
+        if self._connected and self._session_confirmed:
             logger.warning("Already connected to ElevenLabs realtime STT")
             return
 
         self._source_lang = source_lang
+        self._session_event.clear()
+        self._session_confirmed = False
 
         # Build WebSocket URL with authentication and configuration
         # model_id: scribe_v2_realtime = the realtime streaming model
@@ -139,6 +146,7 @@ class ElevenLabsRealtimeService:
             logger.info("🌍 Language auto-detection enabled (no hint provided)")
 
         try:
+            logger.info(f"🔌 Connecting to ElevenLabs WebSocket...")
             # Connect with API key in headers
             # Note: websockets v11+ uses 'additional_headers' instead of 'extra_headers'
             self.websocket = await websockets.connect(
@@ -162,11 +170,34 @@ class ElevenLabsRealtimeService:
             # Start receive task to handle incoming transcripts
             self._receive_task = asyncio.create_task(self._receive_loop())
 
-            logger.info(f"Connected to ElevenLabs realtime STT (language: {lang_code})")
+            logger.info(f"🔌 WebSocket connected, waiting for session confirmation...")
 
+            # Wait for session_started message to confirm connection is ready
+            try:
+                await asyncio.wait_for(self._session_event.wait(), timeout=timeout)
+                logger.info(f"✅ ElevenLabs session confirmed (language: {lang_code})")
+            except asyncio.TimeoutError:
+                logger.error(
+                    f"❌ Timeout waiting for ElevenLabs session confirmation after {timeout}s"
+                )
+                # Check if there was an error message
+                try:
+                    error = self._error_queue.get_nowait()
+                    logger.error(f"❌ Connection error: {error}")
+                except asyncio.QueueEmpty:
+                    pass
+                await self.close()
+                raise ConnectionError(
+                    f"ElevenLabs session confirmation timeout after {timeout}s - "
+                    "check API key and network connectivity"
+                )
+
+        except ConnectionError:
+            raise
         except Exception as e:
-            logger.error(f"Failed to connect to ElevenLabs realtime STT: {str(e)}")
+            logger.error(f"❌ Failed to connect to ElevenLabs realtime STT: {str(e)}")
             self._connected = False
+            self._session_confirmed = False
             raise
 
     async def _attempt_reconnect(self) -> bool:
@@ -214,8 +245,9 @@ class ElevenLabsRealtimeService:
                 self.websocket = None
 
             self._connected = False
+            self._session_confirmed = False
 
-            # Reconnect
+            # Reconnect (this waits for session confirmation)
             await self.connect(self._source_lang)
 
             # Replay buffered audio if any
@@ -234,6 +266,33 @@ class ElevenLabsRealtimeService:
         except Exception as e:
             logger.error(f"Reconnection attempt {self._reconnect_attempts} failed: {str(e)}")
             return False
+
+    async def _background_reconnect(self) -> None:
+        """
+        Background task to handle reconnection when audio is being sent but connection is lost.
+
+        This is triggered by send_audio_chunk when it detects the connection is down.
+        """
+        async with self._reconnect_lock:
+            try:
+                if self._connected and self._session_confirmed:
+                    # Already reconnected by another task
+                    return
+
+                logger.info("🔄 Starting background reconnection to ElevenLabs...")
+                reconnected = await self._attempt_reconnect()
+
+                if not reconnected:
+                    logger.error(
+                        "❌ Background reconnection failed after all attempts - "
+                        "audio will continue to be buffered"
+                    )
+                    await self._error_queue.put({
+                        "type": "connection_failed",
+                        "message": "Failed to reconnect to ElevenLabs after multiple attempts"
+                    })
+            finally:
+                self._pending_reconnect = False
 
     async def _receive_loop(self) -> None:
         """Background task to receive transcripts from WebSocket."""
@@ -324,6 +383,9 @@ class ElevenLabsRealtimeService:
                         # Reset commit tracking on session start
                         self._last_commit_time = time.time()
                         self._chunk_count_since_commit = 0
+                        # Signal that session is confirmed and ready for audio
+                        self._session_confirmed = True
+                        self._session_event.set()
 
                     elif msg_type == "session_ended":
                         logger.info("ElevenLabs session ended by server")
@@ -354,9 +416,11 @@ class ElevenLabsRealtimeService:
             logger.error(f"Error in ElevenLabs receive loop: {str(e)}")
             if self._running:
                 self._connected = False
+                self._session_confirmed = False
                 await self._attempt_reconnect()
         finally:
             self._connected = False
+            self._session_confirmed = False
 
     async def send_audio_chunk(self, audio_data: bytes, buffer: bool = True) -> None:
         """
@@ -372,8 +436,15 @@ class ElevenLabsRealtimeService:
             if len(self._audio_buffer) > 100:
                 self._audio_buffer.pop(0)
 
-        if not self._connected or not self.websocket:
-            logger.warning("Not connected to ElevenLabs - buffering audio")
+        if not self._connected or not self.websocket or not self._session_confirmed:
+            # Trigger reconnection if we're supposed to be running but aren't connected
+            if self._running and not self._pending_reconnect:
+                logger.warning(
+                    "Not connected to ElevenLabs - triggering reconnection "
+                    f"(connected={self._connected}, session={self._session_confirmed})"
+                )
+                self._pending_reconnect = True
+                asyncio.create_task(self._background_reconnect())
             return
 
         try:
@@ -486,6 +557,9 @@ class ElevenLabsRealtimeService:
             self.websocket = None
 
         self._connected = False
+        self._session_confirmed = False
+        self._session_event.clear()
+        self._pending_reconnect = False
         self._audio_buffer.clear()
         logger.info("ElevenLabs realtime connection closed")
 
@@ -566,8 +640,8 @@ class ElevenLabsRealtimeService:
 
     @property
     def is_connected(self) -> bool:
-        """Check if currently connected to ElevenLabs WebSocket."""
-        return self._connected
+        """Check if currently connected to ElevenLabs WebSocket with session confirmed."""
+        return self._connected and self._session_confirmed
 
     @property
     def reconnect_attempts(self) -> int:

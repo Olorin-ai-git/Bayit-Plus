@@ -70,6 +70,14 @@ const fontLoaderConfiguration = {
   type: 'asset/resource',
 };
 
+const videoLoaderConfiguration = {
+  test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)$/,
+  type: 'asset/resource',
+  generator: {
+    filename: 'media/[name][ext]',
+  },
+};
+
 const cssLoaderConfiguration = {
   test: /\.css$/,
   use: ['style-loader', 'css-loader', 'postcss-loader'],
@@ -103,6 +111,7 @@ module.exports = {
       '@bayit/shared/components': path.resolve(__dirname, '../shared/components'),
       '@bayit/shared/components/ai': path.resolve(__dirname, '../shared/components/ai'),
       '@bayit/shared/components/ui': path.resolve(__dirname, '../shared/components/ui'),
+      '@bayit/shared/components/support': path.resolve(__dirname, '../shared/components/support'),
       '@bayit/shared/ui': path.resolve(__dirname, '../shared/components/ui'),
       '@bayit/shared/theme': path.resolve(__dirname, '../shared/theme'),
       '@bayit/shared/stores': path.resolve(__dirname, '../shared/stores'),
@@ -110,11 +119,13 @@ module.exports = {
       '@bayit/shared/hooks': path.resolve(__dirname, '../shared/hooks'),
       '@bayit/shared/admin': path.resolve(__dirname, '../shared/components/admin'),
       '@bayit/shared-screens': path.resolve(__dirname, '../shared/screens'),
+      '@bayit/shared-assets': path.resolve(__dirname, '../shared/assets'),
       '@bayit/shared-services': path.resolve(__dirname, '../shared/services'),
       '@bayit/shared-stores': path.resolve(__dirname, '../shared/stores'),
       '@bayit/shared-hooks': path.resolve(__dirname, '../shared/hooks'),
       '@bayit/shared-contexts': path.resolve(__dirname, '../shared/contexts'),
       '@bayit/shared-i18n': path.resolve(__dirname, '../shared/i18n'),
+      '@bayit/shared-config': path.resolve(__dirname, '../shared/config'),
     },
     // Allow shared components to resolve node_modules from this directory
     modules: [
@@ -124,10 +135,13 @@ module.exports = {
   },
   module: {
     rules: [
-      babelLoaderConfiguration,
-      nodeModulesConfiguration,
+      // Media assets first - before any other loaders
+      videoLoaderConfiguration,
       imageLoaderConfiguration,
       fontLoaderConfiguration,
+      // Code transpilation
+      babelLoaderConfiguration,
+      nodeModulesConfiguration,
       cssLoaderConfiguration,
       esmFixConfiguration,
     ],

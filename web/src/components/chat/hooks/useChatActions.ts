@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useChatbotStore, type ChatbotAction } from '@/stores/chatbotStore'
@@ -14,8 +14,10 @@ interface UseChatActionsOptions {
 export function useChatActions(options: UseChatActionsOptions = {}) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
-  const { registerActionHandler, setOpen } = useChatbotStore()
-  const { createVoiceWidgets } = useWidgetStore()
+
+  // Use refs for callbacks to avoid dependency changes
+  const optionsRef = useRef(options)
+  optionsRef.current = options
 
   const convertBackendActionToChatbotAction = (backendAction: any): ChatbotAction | null => {
     if (!backendAction) return null
@@ -60,6 +62,10 @@ export function useChatActions(options: UseChatActionsOptions = {}) {
   }
 
   useEffect(() => {
+    // Get store methods without subscribing to state changes
+    const { registerActionHandler, unregisterActionHandler, setOpen } = useChatbotStore.getState()
+    const { createVoiceWidgets } = useWidgetStore.getState()
+
     // Navigation
     registerActionHandler('navigate', (payload) => {
       const navigationMap: Record<string, string> = {
@@ -74,14 +80,14 @@ export function useChatActions(options: UseChatActionsOptions = {}) {
       }
       navigate(navigationMap[payload.target] || '/')
       setOpen(false)
-      options.onClose?.()
+      optionsRef.current.onClose?.()
     })
 
     // Search
     registerActionHandler('search', (payload) => {
       navigate(`/search?q=${encodeURIComponent(payload.query)}`)
       setOpen(false)
-      options.onClose?.()
+      optionsRef.current.onClose?.()
     })
 
     // Playback
@@ -90,7 +96,7 @@ export function useChatActions(options: UseChatActionsOptions = {}) {
         navigate(`/vod/${payload.content_id}`)
       }
       setOpen(false)
-      options.onClose?.()
+      optionsRef.current.onClose?.()
     })
 
     registerActionHandler('pause', () => {
@@ -141,13 +147,13 @@ export function useChatActions(options: UseChatActionsOptions = {}) {
     registerActionHandler('create_flow', (payload) => {
       navigate('/flows', { state: { createFlow: true, template: payload.template } })
       setOpen(false)
-      options.onClose?.()
+      optionsRef.current.onClose?.()
     })
 
     registerActionHandler('start_flow', (payload) => {
       navigate('/flows', { state: { startFlowId: payload.flowId } })
       setOpen(false)
-      options.onClose?.()
+      optionsRef.current.onClose?.()
     })
 
     // Show Multiple
@@ -177,24 +183,24 @@ export function useChatActions(options: UseChatActionsOptions = {}) {
             confidence: item.confidence,
           }))
 
-          createVoiceWidgets(voiceItems)
+          useWidgetStore.getState().createVoiceWidgets(voiceItems)
 
-          options.onSuccess?.(t('chatbot.showMultipleSuccess', {
+          optionsRef.current.onSuccess?.(t('chatbot.showMultipleSuccess', {
             count: voiceItems.length,
             defaultValue: `Showing ${voiceItems.length} content items`,
           }))
         } else {
-          options.onError?.(t('chatbot.showMultipleNotFound', {
+          optionsRef.current.onError?.(t('chatbot.showMultipleNotFound', {
             defaultValue: 'Could not find the requested content. Please try different names.',
           }))
         }
       } catch (error) {
         console.error('[useChatActions] Error resolving content:', error)
-        options.onError?.(t('chatbot.errors.general'))
+        optionsRef.current.onError?.(t('chatbot.errors.general'))
       }
 
-      setOpen(false)
-      options.onClose?.()
+      useChatbotStore.getState().setOpen(false)
+      optionsRef.current.onClose?.()
     })
 
     // Chess Invite
@@ -205,10 +211,21 @@ export function useChatActions(options: UseChatActionsOptions = {}) {
           inviteFriend: payload.friendName
         }
       })
-      setOpen(false)
-      options.onClose?.()
+      useChatbotStore.getState().setOpen(false)
+      optionsRef.current.onClose?.()
     })
-  }, [registerActionHandler, navigate, setOpen, createVoiceWidgets, i18n.language, t, options])
+
+    // Cleanup: unregister all handlers on unmount
+    return () => {
+      const actionTypes = [
+        'navigate', 'search', 'play', 'pause', 'resume', 'skip',
+        'add_to_watchlist', 'add_to_favorites', 'volume', 'language',
+        'subtitles', 'info', 'help', 'create_flow', 'start_flow',
+        'show_multiple', 'chess_invite'
+      ]
+      actionTypes.forEach(type => unregisterActionHandler(type))
+    }
+  }, [navigate, i18n.language, t])
 
   return {
     convertBackendActionToChatbotAction,

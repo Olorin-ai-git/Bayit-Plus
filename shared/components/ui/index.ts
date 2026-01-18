@@ -28,6 +28,7 @@ export { GlassLiveChannelCard } from './GlassLiveChannelCard';
 export { GlassResizablePanel } from './GlassResizablePanel';
 export { GlassSplitterHandle } from './GlassSplitterHandle';
 export { GlassTooltip } from './GlassTooltip';
+export { GlassChevron } from './GlassChevron';
 
 // Voice-first conversational interface components (Phases 10)
 export { GlassParticleLayer } from './GlassParticleLayer';

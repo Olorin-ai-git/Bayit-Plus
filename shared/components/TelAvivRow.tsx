@@ -8,6 +8,7 @@ import {
   Animated,
   ActivityIndicator,
   Linking,
+  ImageBackground,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui/GlassView';
@@ -15,6 +16,9 @@ import { colors, spacing, fontSize, borderRadius } from '../theme';
 import { telAvivService } from '../services/api';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
+
+// Import Tel Aviv panoramic background
+const TelAvivBackground = require('../assets/images/Scenery/TelAviv.png');
 
 interface TelAvivContentItem {
   id: string;
@@ -81,11 +85,18 @@ export const TelAvivRow: React.FC<TelAvivRowProps> = ({
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const currentLang = i18n.language;
 
-  // Helper to get localized text
-  const getLocalizedText = (heText: string, enText?: string, esText?: string) => {
-    if (currentLang === 'he') return heText;
-    if (currentLang === 'es') return esText || enText || heText;
-    return enText || heText;
+  // Helper to get localized text from an item's localized fields
+  const getLocalizedField = (
+    item: { [key: string]: any },
+    field: string
+  ): string => {
+    const heValue = item[`${field}_he`] || item[field];
+    const enValue = item[`${field}_en`] || item[field];
+    const esValue = item[`${field}_es`] || enValue || heValue;
+
+    if (currentLang === 'he') return heValue;
+    if (currentLang === 'es') return esValue;
+    return enValue;
   };
 
   const fetchContent = async () => {
@@ -120,33 +131,53 @@ export const TelAvivRow: React.FC<TelAvivRowProps> = ({
 
   if (loading) {
     return (
-      <GlassView style={styles.container} intensity="light">
-        {showTitle && (
-          <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row', direction: 'ltr' }]}>
-            <Text style={styles.headerTitle}>{t('telAviv.title')}</Text>
-            <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>🌆</Text>
+      <View style={styles.container}>
+        <ImageBackground
+          source={TelAvivBackground}
+          style={styles.backgroundImage}
+          imageStyle={styles.backgroundImageStyle}
+          resizeMode="cover"
+        >
+          <View style={styles.backgroundOverlay} />
+          <View style={styles.contentWrapper}>
+            {showTitle && (
+              <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row', direction: 'ltr' }]}>
+                <Text style={styles.headerTitle}>{t('telAviv.title')}</Text>
+                <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>🌆</Text>
+              </View>
+            )}
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator color={colors.primary} size="large" />
+            </View>
           </View>
-        )}
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator color={colors.primary} size="large" />
-        </View>
-      </GlassView>
+        </ImageBackground>
+      </View>
     );
   }
 
   if (!data?.items?.length) {
     return (
-      <GlassView style={styles.container} intensity="light">
-        {showTitle && (
-          <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row', direction: 'ltr' }]}>
-            <Text style={styles.headerTitle}>{t('telAviv.title')}</Text>
-            <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>🌆</Text>
+      <View style={styles.container}>
+        <ImageBackground
+          source={TelAvivBackground}
+          style={styles.backgroundImage}
+          imageStyle={styles.backgroundImageStyle}
+          resizeMode="cover"
+        >
+          <View style={styles.backgroundOverlay} />
+          <View style={styles.contentWrapper}>
+            {showTitle && (
+              <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row', direction: 'ltr' }]}>
+                <Text style={styles.headerTitle}>{t('telAviv.title')}</Text>
+                <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>🌆</Text>
+              </View>
+            )}
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>{t('telAviv.noContent')}</Text>
+            </View>
           </View>
-        )}
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>{t('telAviv.noContent')}</Text>
-        </View>
-      </GlassView>
+        </ImageBackground>
+      </View>
     );
   }
 
@@ -170,47 +201,61 @@ export const TelAvivRow: React.FC<TelAvivRowProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      {showTitle && (
-        <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row', direction: 'ltr' }]}>
-          <Text style={styles.headerTitle}>{t('telAviv.title')}</Text>
-          <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>🌆</Text>
-        </View>
-      )}
-
-      {/* Subtitle */}
-      <Text style={[styles.subtitle, { textAlign: isRTL ? 'right' : 'left' }]}>
-        {t('telAviv.subtitle')}
-      </Text>
-
-      {/* Content ScrollView */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[styles.itemsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+      {/* Background Image */}
+      <ImageBackground
+        source={TelAvivBackground}
+        style={styles.backgroundImage}
+        imageStyle={styles.backgroundImageStyle}
+        resizeMode="cover"
       >
-        {data.items.map((item, index) => (
-          <ContentCard
-            key={item.id}
-            item={item}
-            title={getLocalizedText(item.title, item.title_en)}
-            summary={item.summary ? getLocalizedText(item.summary, item.summary_en) : undefined}
-            categoryLabel={getCategoryLabel(item)}
-            isFocused={focusedIndex === index}
-            onFocus={() => setFocusedIndex(index)}
-            onBlur={() => setFocusedIndex(-1)}
-            onPress={() => handleItemPress(item)}
-          />
-        ))}
-      </ScrollView>
+        {/* Semi-transparent overlay */}
+        <View style={styles.backgroundOverlay} />
 
-      {/* Sources */}
-      <View style={[styles.sourcesContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        <Text style={styles.sourcesLabel}>{t('telAviv.sources')}: </Text>
-        <Text style={styles.sourcesText}>
-          {Array.from(new Set(data.items.map(item => item.source_name))).join(', ')}
-        </Text>
-      </View>
+        {/* Content */}
+        <View style={styles.contentWrapper}>
+          {/* Header */}
+          {showTitle && (
+            <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row', direction: 'ltr' }]}>
+              <Text style={styles.headerTitle}>{t('telAviv.title')}</Text>
+              <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>🌆</Text>
+            </View>
+          )}
+
+          {/* Subtitle */}
+          <Text style={[styles.subtitle, { textAlign: isRTL ? 'right' : 'left' }]}>
+            {t('telAviv.subtitle')}
+          </Text>
+
+          {/* Content ScrollView */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={[styles.itemsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+          >
+            {data.items.map((item, index) => (
+              <ContentCard
+                key={item.id}
+                item={item}
+                title={getLocalizedField(item, 'title')}
+                summary={item.summary ? getLocalizedField(item, 'summary') : undefined}
+                categoryLabel={getCategoryLabel(item)}
+                isFocused={focusedIndex === index}
+                onFocus={() => setFocusedIndex(index)}
+                onBlur={() => setFocusedIndex(-1)}
+                onPress={() => handleItemPress(item)}
+              />
+            ))}
+          </ScrollView>
+
+          {/* Sources */}
+          <View style={[styles.sourcesContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <Text style={styles.sourcesLabel}>{t('telAviv.sources')}: </Text>
+            <Text style={styles.sourcesText}>
+              {Array.from(new Set(data.items.map(item => item.source_name))).join(', ')}
+            </Text>
+          </View>
+        </View>
+      </ImageBackground>
     </View>
   );
 };
@@ -320,6 +365,27 @@ const ContentCard: React.FC<ContentCardProps> = ({
 const styles = StyleSheet.create({
   container: {
     marginVertical: spacing.md,
+    borderRadius: borderRadius.xl,
+    overflow: 'hidden',
+    marginHorizontal: spacing.md,
+  },
+  backgroundImage: {
+    width: '100%',
+    minHeight: 320,
+  },
+  backgroundImageStyle: {
+    opacity: 0.6,
+    borderRadius: borderRadius.xl,
+  },
+  backgroundOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(10, 10, 30, 0.5)',
+    borderRadius: borderRadius.xl,
+  },
+  contentWrapper: {
+    position: 'relative',
+    zIndex: 1,
+    paddingVertical: spacing.md,
   },
   header: {
     flexDirection: 'row',

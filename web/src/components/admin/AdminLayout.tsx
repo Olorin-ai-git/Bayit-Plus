@@ -83,6 +83,8 @@ export default function AdminLayout() {
           styles.content,
           sidebarOpen && !isMobile && (isRTL ? { marginRight: sidebarWidth } : { marginLeft: sidebarWidth }),
           isDragging && styles.contentDragging,
+          // Extra padding on sidebar side to clear toggle button
+          isRTL ? { paddingRight: 56, paddingLeft: spacing.lg } : { paddingLeft: 56, paddingRight: spacing.lg },
         ]}
       >
         {/* Mobile Menu Toggle */}
@@ -158,6 +160,7 @@ const styles = StyleSheet.create({
     overflow: 'auto' as any,
     transition: 'margin 0.3s ease' as any,
     position: 'relative',
+    paddingTop: spacing.md,
   },
   contentDragging: {
     transition: 'none' as any,

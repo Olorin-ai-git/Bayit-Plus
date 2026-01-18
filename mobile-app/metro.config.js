@@ -41,6 +41,22 @@ function getExtraNodeModules() {
     modules['@bayit/shared-types'] = path.resolve(sharedRoot, 'types');
     modules['@bayit/shared-utils'] = path.resolve(sharedRoot, 'utils');
     modules['@bayit/shared-assets'] = path.resolve(sharedRoot, 'assets');
+
+    // Subpath aliases for @bayit/shared/* imports
+    modules['@bayit/shared/components/support'] = path.resolve(sharedRoot, 'components/support');
+    modules['@bayit/shared/components/ui'] = path.resolve(sharedRoot, 'components/ui');
+    modules['@bayit/shared/components/ai'] = path.resolve(sharedRoot, 'components/ai');
+    modules['@bayit/shared/theme'] = path.resolve(sharedRoot, 'theme');
+    modules['@bayit/shared/hooks'] = path.resolve(sharedRoot, 'hooks');
+    modules['@bayit/shared/stores'] = path.resolve(sharedRoot, 'stores');
+    modules['@bayit/shared/services'] = path.resolve(sharedRoot, 'services');
+    modules['@bayit/shared/contexts'] = path.resolve(sharedRoot, 'contexts');
+    modules['@bayit/shared/utils'] = path.resolve(sharedRoot, 'utils');
+    modules['@bayit/shared/design-tokens'] = path.resolve(sharedRoot, 'design-tokens');
+
+    // Add Picovoice stubs to extraNodeModules for shared utils
+    modules['@picovoice/porcupine-web'] = path.resolve(projectRoot, 'src/stubs/porcupine-web.ts');
+    modules['@picovoice/web-voice-processor'] = path.resolve(projectRoot, 'src/stubs/porcupine-web.ts');
   }
 
   // Map all node_modules from mobile-app
@@ -120,6 +136,13 @@ const config = {
           filePath: path.resolve(projectRoot, 'src/stubs/lucide-react.ts'),
         };
       }
+      // Stub out web-only Picovoice packages
+      if (moduleName === '@picovoice/porcupine-web' || moduleName === '@picovoice/web-voice-processor') {
+        return {
+          type: 'sourceFile',
+          filePath: path.resolve(projectRoot, 'src/stubs/porcupine-web.ts'),
+        };
+      }
       // Stub out web-specific voice services that use import.meta or browser APIs
       if (moduleName.endsWith('/ttsService') || moduleName.endsWith('/ttsService.ts')) {
         return {
@@ -130,6 +153,60 @@ const config = {
       if (moduleName.endsWith('/gazeDetectionService') || moduleName.endsWith('/gazeDetectionService.ts')) {
         return { type: 'empty' };
       }
+
+      // Handle @bayit/shared/X subpath imports
+      const sharedSubpaths = {
+        '@bayit/shared/components/support': path.resolve(sharedRoot, 'components/support'),
+        '@bayit/shared/components/ui': path.resolve(sharedRoot, 'components/ui'),
+        '@bayit/shared/components/ai': path.resolve(sharedRoot, 'components/ai'),
+        '@bayit/shared/theme': path.resolve(sharedRoot, 'theme'),
+        '@bayit/shared/hooks': path.resolve(sharedRoot, 'hooks'),
+        '@bayit/shared/stores': path.resolve(sharedRoot, 'stores'),
+        '@bayit/shared/services': path.resolve(sharedRoot, 'services'),
+        '@bayit/shared/contexts': path.resolve(sharedRoot, 'contexts'),
+        '@bayit/shared/utils': path.resolve(sharedRoot, 'utils'),
+      };
+
+      if (sharedSubpaths[moduleName]) {
+        return {
+          filePath: path.resolve(sharedSubpaths[moduleName], 'index.ts'),
+          type: 'sourceFile',
+        };
+      }
+
+      // Handle @bayit/shared/design-tokens/* imports (direct file imports)
+      if (moduleName.startsWith('@bayit/shared/design-tokens/')) {
+        const tokenFile = moduleName.replace('@bayit/shared/design-tokens/', '');
+        return {
+          filePath: path.resolve(sharedRoot, 'design-tokens', tokenFile),
+          type: 'sourceFile',
+        };
+      }
+
+      // Handle @bayit/shared/components/* imports (single component files)
+      if (moduleName.startsWith('@bayit/shared/components/') && !sharedSubpaths[moduleName]) {
+        const componentPath = moduleName.replace('@bayit/shared/components/', '');
+        // Try .tsx first, then .ts
+        const tsxPath = path.resolve(sharedRoot, 'components', `${componentPath}.tsx`);
+        const tsPath = path.resolve(sharedRoot, 'components', `${componentPath}.ts`);
+        const indexPath = path.resolve(sharedRoot, 'components', componentPath, 'index.ts');
+        const indexTsxPath = path.resolve(sharedRoot, 'components', componentPath, 'index.tsx');
+
+        const fs = require('fs');
+        if (fs.existsSync(tsxPath)) {
+          return { filePath: tsxPath, type: 'sourceFile' };
+        }
+        if (fs.existsSync(tsPath)) {
+          return { filePath: tsPath, type: 'sourceFile' };
+        }
+        if (fs.existsSync(indexPath)) {
+          return { filePath: indexPath, type: 'sourceFile' };
+        }
+        if (fs.existsSync(indexTsxPath)) {
+          return { filePath: indexTsxPath, type: 'sourceFile' };
+        }
+      }
+
       return context.resolveRequest(context, moduleName, platform);
     },
   },

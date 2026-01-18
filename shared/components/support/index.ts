@@ -19,3 +19,4 @@ export { VoiceAvatarFAB } from './VoiceAvatarFAB';
 export { VoiceChatModal } from './VoiceChatModal';
 export { VoiceWaveform } from './VoiceWaveform';
 export { VoiceStatusIndicator } from './VoiceStatusIndicator';
+export { WizardIntroVideo } from './WizardIntroVideo';

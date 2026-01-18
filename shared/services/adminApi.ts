@@ -526,6 +526,7 @@ export interface Content {
   stream_type?: string;
   is_published?: boolean;
   is_featured?: boolean;
+  featured_order?: number;
   requires_subscription?: boolean;
   is_kids_content?: boolean;
   age_rating?: string;
@@ -559,6 +560,33 @@ export const adminContentService = {
 
   featureContent: (contentId: string): Promise<Content> =>
     adminApi.post(`/admin/content/${contentId}/feature`),
+
+  getSeriesEpisodes: (seriesId: string): Promise<{
+    series_id: string;
+    series_title: string;
+    total_episodes: number;
+    episodes: Array<{
+      id: string;
+      title: string;
+      thumbnail?: string;
+      duration?: string;
+      season?: number;
+      episode?: number;
+      is_published: boolean;
+      is_featured: boolean;
+    }>;
+  }> =>
+    adminApi.get(`/admin/content/${seriesId}/episodes`),
+
+  // Batch operations
+  batchDeleteContent: (contentIds: string[]): Promise<{ deleted_count: number }> =>
+    adminApi.post('/admin/content/batch/delete', { content_ids: contentIds }),
+
+  batchFeatureContent: (contentIds: string[], featured: boolean): Promise<{ updated_count: number }> =>
+    adminApi.post('/admin/content/batch/feature', { content_ids: contentIds, featured }),
+
+  batchPublishContent: (contentIds: string[], published: boolean): Promise<{ updated_count: number }> =>
+    adminApi.post('/admin/content/batch/publish', { content_ids: contentIds, published }),
 };
 
 // ============================================

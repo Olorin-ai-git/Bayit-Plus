@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { GlassView, GlassCategoryPill, JerusalemRow } from '../../components';
+import { GlassView, GlassCategoryPill, JerusalemRow, TelAvivRow } from '../../components';
 import { colors, spacing } from '../../theme';
 import { isTV } from '../../utils/platform';
 import { useDirection } from '@bayit/shared/hooks';
@@ -209,6 +209,11 @@ export const JudaismScreen: React.FC = () => {
       {/* Jerusalem Connection */}
       <View style={styles.jerusalemSection}>
         <JerusalemRow showTitle={false} />
+      </View>
+
+      {/* Tel Aviv Connection */}
+      <View style={styles.jerusalemSection}>
+        <TelAvivRow showTitle={false} />
       </View>
 
       {/* Categories */}

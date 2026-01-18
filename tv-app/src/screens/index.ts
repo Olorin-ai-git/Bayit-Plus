@@ -1,6 +1,10 @@
+/**
+ * TV App Screens Barrel Export
+ * Note: Most screens are imported from @bayit/shared-screens in App.tsx
+ * These are local screen overrides or TV-specific implementations
+ */
+
 export { HomeScreen } from './HomeScreen';
-export { PlayerScreen } from './PlayerScreen';
-export { LoginScreen } from './LoginScreen';
 export { LiveTVScreen } from './LiveTVScreen';
 export { RadioScreen } from './RadioScreen';
 export { VODScreen } from './VODScreen';
@@ -11,5 +15,5 @@ export { ProfileScreen } from './profile';
 export { FavoritesScreen } from './FavoritesScreen';
 export { DownloadsScreen } from './DownloadsScreen';
 export { WatchlistScreen } from './WatchlistScreen';
-export { SubscribeScreen } from './SubscribeScreen';
 export { NotFoundScreen } from './NotFoundScreen';
+export { JudaismScreen } from './judaism';

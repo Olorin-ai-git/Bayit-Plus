@@ -1,7 +1,8 @@
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { FileText, Trash2 } from 'lucide-react';
-import { GlassDraggableExpander, GlassButton, GlassBadge } from '@bayit/shared/ui';
+import { GlassButton, GlassBadge } from '@bayit/shared/ui';
+import { GlassDraggableExpander } from '@bayit/shared/ui/web';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { AuditReport } from '@/services/librarianService';
 import { format } from 'date-fns';

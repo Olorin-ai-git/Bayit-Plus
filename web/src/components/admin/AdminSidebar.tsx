@@ -21,6 +21,7 @@ import {
   Check,
   Video,
   Upload,
+  Star,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
@@ -100,6 +101,7 @@ const NAV_ITEMS: NavItem[] = [
     icon: Film,
     children: [
       { key: 'content-library', labelKey: 'admin.nav.contentLibrary', route: '/admin/content' },
+      { key: 'featured', labelKey: 'admin.nav.featured', route: '/admin/featured' },
       { key: 'categories', labelKey: 'admin.nav.categories', route: '/admin/categories' },
       { key: 'live-channels', labelKey: 'admin.nav.liveChannels', route: '/admin/live-channels' },
       { key: 'radio-stations', labelKey: 'admin.nav.radioStations', route: '/admin/radio-stations' },

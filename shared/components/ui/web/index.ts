@@ -5,6 +5,8 @@
 export { GlassTable, GlassTableCell } from '../GlassTable';
 export { GlassLog } from '../GlassLog';
 export { GlassDraggableExpander } from '../GlassDraggableExpander';
+export { GlassCheckbox } from '../GlassCheckbox';
+export { GlassChevron } from '../GlassChevron';
 
 // Types
 export type { GlassTableColumn, GlassTablePagination, GlassTableProps } from '../GlassTable';

@@ -19,14 +19,13 @@ import { supportConfig } from '../config/supportConfig';
 
 export default function SupportScreen() {
   const {
-    voiceState,
     isVoiceModalOpen,
     isSupported: voiceSupported,
-    openVoiceModal,
     closeVoiceModal,
     startListening,
     stopListening,
     interrupt,
+    activateVoiceAssistant,
   } = useVoiceSupport();
 
   // Initialize wake word detection
@@ -34,15 +33,14 @@ export default function SupportScreen() {
     enabled: supportConfig.voiceAssistant.wakeWordEnabled,
     onWakeWordDetected: () => {
       console.log('[SupportScreen] Wake word detected');
+      // Activate voice assistant when wake word is detected
+      activateVoiceAssistant();
     },
   });
 
   const handleVoiceAvatarPress = () => {
-    openVoiceModal();
-    // Start listening after a brief delay for modal animation
-    setTimeout(() => {
-      startListening();
-    }, 300);
+    // Activate voice assistant (handles intro + modal + listening)
+    activateVoiceAssistant();
   };
 
   return (

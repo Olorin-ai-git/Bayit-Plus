@@ -47,7 +47,11 @@
     "previous": "Anterior",
     "actions": "Acciones",
     "pageOf": "Página {{page}} de {{total}}",
-    "noData": "No hay datos disponibles"
+    "noData": "No hay datos disponibles",
+    "clear": "Limpiar",
+    "clearSelection": "Limpiar",
+    "expand": "Expandir",
+    "collapse": "Contraer"
   },
   "demo": {
     "banner": "MODO DEMOSTRACIÓN",
@@ -1214,6 +1218,10 @@
         "year": "Año"
       },
       "confirmDelete": "¿Eliminar este contenido?",
+      "confirmBatchDelete": "¿Está seguro de que desea eliminar {{count}} elemento(s)?",
+      "selectedItems": "{{count}} elemento(s) seleccionado(s)",
+      "batchFeature": "Destacar",
+      "batchUnfeature": "Quitar destacado",
       "emptyMessage": "No se encontró contenido",
       "episodes_one": "episodio",
       "episodes_other": "episodios",
@@ -1728,7 +1736,18 @@
       "podcasts": "Pódcasts",
       "widgets": "Widgets",
       "recordings": "Grabaciones",
-      "uploads": "Cargas"
+      "uploads": "Cargas",
+      "featured": "Destacado"
+    },
+    "featured": {
+      "title": "Contenido Destacado",
+      "subtitle": "Administrar el orden del carrusel arrastrando elementos",
+      "empty": "Sin contenido destacado",
+      "emptyHint": "Agregar contenido a destacado desde la Biblioteca de Contenido",
+      "count": "{{count}} elementos",
+      "confirmUnfeature": "¿Quitar de destacado?",
+      "remove": "Quitar",
+      "unsavedChanges": "Tienes cambios sin guardar"
     },
     "recordings": {
       "title": "Gestión de Grabaciones",
@@ -1826,7 +1845,9 @@
         "fileSize": "Tamaño",
         "removeFile": "Eliminar",
         "invalidFileType": "Tipo de archivo no válido. Solo se admiten archivos de video.",
-        "filesCount": "{{count}} archivo(s) seleccionado(s)"
+        "filesCount": "{{count}} archivo(s) seleccionado(s)",
+        "pendingRestore": "{{count}} archivo(s) pendiente(s) de sesión anterior",
+        "pendingRestoreHint": "Arrastra o selecciona los mismos archivos para restaurar la cola de carga"
       }
     },
     "librarian": {

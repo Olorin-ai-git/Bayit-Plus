@@ -5,7 +5,7 @@
  * Uses LLM for real conversations, activated by "Jarvis" wake word
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -18,17 +18,22 @@ import {
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius } from '../../theme';
 import { useDirection } from '../../hooks/useDirection';
-import { useSupportStore } from '../../stores/supportStore';
+import { useSupportStore, VoiceState } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
 
 // Wizard avatar images for different states
-const WIZARD_AVATARS = {
-  idle: require('../../assets/images/characters/wizard/idle/256x256.png'),
+const WIZARD_AVATARS: Record<VoiceState, any> = {
+  idle: require('../../assets/images/characters/wizard/idle/512x512.png'),
   listening: require('../../assets/images/characters/wizard/listening/256x256.png'),
   speaking: require('../../assets/images/characters/wizard/speaking/256x256.png'),
   processing: require('../../assets/images/characters/wizard/thinking/256x256.png'),
-  error: require('../../assets/images/characters/wizard/idle/256x256.png'),
+  error: require('../../assets/images/characters/wizard/idle/512x512.png'),
 };
+
+// Fixed dimensions for consistent modal size
+const WIZARD_SIZE = isTV ? 180 : 160;
+const PANEL_WIDTH = isTV ? 280 : 240;
+const SPEECH_BUBBLE_HEIGHT = isTV ? 90 : 80;
 
 interface VoiceChatModalProps {
   visible: boolean;
@@ -47,16 +52,57 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { isRTL } = useDirection();
-  const { voiceState } = useSupportStore();
+  const { voiceState, currentIntroText, currentTranscript, lastResponse } = useSupportStore();
+
+  // Track previous state for crossfade
+  const [prevState, setPrevState] = useState<VoiceState>(voiceState);
+  const [currentState, setCurrentState] = useState<VoiceState>(voiceState);
 
   // Animations
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const wizardBreathing = useRef(new Animated.Value(1)).current;
 
+  // Crossfade animations for wizard images
+  const currentImageOpacity = useRef(new Animated.Value(1)).current;
+  const prevImageOpacity = useRef(new Animated.Value(0)).current;
+
+  // Handle state changes with crossfade
+  useEffect(() => {
+    if (voiceState !== currentState) {
+      // Store current as previous
+      setPrevState(currentState);
+
+      // Reset opacities for crossfade
+      prevImageOpacity.setValue(1);
+      currentImageOpacity.setValue(0);
+
+      // Update current state
+      setCurrentState(voiceState);
+
+      // Animate crossfade
+      Animated.parallel([
+        Animated.timing(currentImageOpacity, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(prevImageOpacity, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [voiceState, currentState]);
+
   // Animate panel in/out
   useEffect(() => {
     if (visible) {
+      // Reset crossfade when opening
+      currentImageOpacity.setValue(1);
+      prevImageOpacity.setValue(0);
+
       // Pop in animation
       Animated.parallel([
         Animated.spring(scaleAnim, {
@@ -108,15 +154,11 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
     ).start();
   };
 
-  // Get wizard avatar based on voice state
-  const getWizardAvatar = () => {
-    return WIZARD_AVATARS[voiceState] || WIZARD_AVATARS.idle;
-  };
+  // Get display text
+  const displayText = currentIntroText || lastResponse || currentTranscript;
+  const hasText = Boolean(displayText);
 
   if (!visible) return null;
-
-  // Compact sizes
-  const wizardSize = isTV ? 180 : 140;
 
   return (
     <View style={styles.container}>
@@ -125,7 +167,7 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
         <View style={styles.backdrop} />
       </TouchableWithoutFeedback>
 
-      {/* Compact Panel */}
+      {/* Fixed-size Panel */}
       <Animated.View
         style={[
           styles.panel,
@@ -133,27 +175,76 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
           {
             opacity: opacityAnim,
             transform: [{ scale: scaleAnim }],
+            width: PANEL_WIDTH,
           },
         ]}
       >
-        {/* Wizard Character */}
-        <Animated.View
-          style={[
-            styles.wizardContainer,
-            { transform: [{ scale: wizardBreathing }] },
-          ]}
-        >
-          <Image
-            source={getWizardAvatar()}
-            style={[styles.wizardImage, { width: wizardSize, height: wizardSize }]}
-            resizeMode="contain"
-          />
-        </Animated.View>
+        {/* Fixed-size Wizard Container with Crossfade */}
+        <View style={styles.wizardContainer}>
+          <Animated.View
+            style={[
+              styles.wizardImageWrapper,
+              { transform: [{ scale: wizardBreathing }] },
+            ]}
+          >
+            {/* Previous state image (fading out) */}
+            <Animated.Image
+              source={WIZARD_AVATARS[prevState]}
+              style={[
+                styles.wizardImage,
+                styles.wizardImageAbsolute,
+                { opacity: prevImageOpacity },
+              ]}
+              resizeMode="contain"
+            />
+            {/* Current state image (fading in) */}
+            <Animated.Image
+              source={WIZARD_AVATARS[currentState]}
+              style={[
+                styles.wizardImage,
+                { opacity: currentImageOpacity },
+              ]}
+              resizeMode="contain"
+            />
+          </Animated.View>
+        </View>
 
         {/* Name Badge */}
         <View style={styles.nameBadge}>
           <Text style={styles.nameText}>Olorin</Text>
           <Text style={styles.roleText}>{t('support.wizard.role', 'Your Guide')}</Text>
+        </View>
+
+        {/* Speech Text Display - Fixed height container */}
+        <View style={[styles.speechBubbleContainer, !hasText && styles.speechBubbleHidden]}>
+          <View style={styles.speechBubble}>
+            <Text
+              style={[
+                styles.speechText,
+                isRTL && styles.speechTextRTL,
+              ]}
+              numberOfLines={3}
+            >
+              {displayText || ' '}
+            </Text>
+          </View>
+        </View>
+
+        {/* State Indicator */}
+        <View style={styles.stateIndicator}>
+          <Text style={styles.stateText}>
+            {voiceState === 'speaking' && currentIntroText
+              ? t('support.wizard.introducing', 'Introducing...')
+              : voiceState === 'listening'
+              ? t('support.wizard.listening', 'Listening...')
+              : voiceState === 'processing'
+              ? t('support.wizard.thinking', 'Thinking...')
+              : voiceState === 'speaking'
+              ? t('support.wizard.speaking', 'Speaking...')
+              : voiceState === 'error'
+              ? t('support.wizard.error', 'Error occurred')
+              : t('support.wizard.ready', 'Ready to help')}
+          </Text>
         </View>
       </Animated.View>
     </View>
@@ -203,11 +294,26 @@ const styles = StyleSheet.create({
     left: isTV ? spacing.xl * 2 : spacing.lg,
   },
   wizardContainer: {
+    width: WIZARD_SIZE,
+    height: WIZARD_SIZE,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  wizardImageWrapper: {
+    width: WIZARD_SIZE,
+    height: WIZARD_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
   },
   wizardImage: {
-    // Wizard image - no additional styling needed
+    width: WIZARD_SIZE,
+    height: WIZARD_SIZE,
+  },
+  wizardImageAbsolute: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
   },
   nameBadge: {
     alignItems: 'center',
@@ -222,6 +328,49 @@ const styles = StyleSheet.create({
     fontSize: isTV ? 12 : 10,
     color: colors.primary,
     fontWeight: '500',
+  },
+  speechBubbleContainer: {
+    width: '100%',
+    minHeight: SPEECH_BUBBLE_HEIGHT,
+    marginTop: spacing.md,
+    justifyContent: 'center',
+  },
+  speechBubbleHidden: {
+    minHeight: 0,
+    height: 0,
+    marginTop: 0,
+    overflow: 'hidden',
+  },
+  speechBubble: {
+    backgroundColor: 'rgba(168, 85, 247, 0.15)',
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: 'rgba(168, 85, 247, 0.2)',
+  },
+  speechText: {
+    fontSize: isTV ? 14 : 12,
+    color: colors.text,
+    textAlign: 'center',
+    lineHeight: isTV ? 20 : 16,
+  },
+  speechTextRTL: {
+    textAlign: 'right',
+  },
+  stateIndicator: {
+    marginTop: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+    borderRadius: borderRadius.sm,
+  },
+  stateText: {
+    fontSize: isTV ? 11 : 9,
+    color: colors.primary,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
 });
 

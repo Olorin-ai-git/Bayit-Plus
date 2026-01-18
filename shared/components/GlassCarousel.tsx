@@ -352,7 +352,13 @@ const styles = StyleSheet.create({
   },
   carouselWrapper: {
     borderRadius: borderRadius.lg,
-    overflow: 'visible' as any,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(10, 10, 10, 0.5)',
+    // @ts-ignore - Web CSS property
+    ...(Platform.OS === 'web' && {
+      backdropFilter: 'blur(8px)',
+      WebkitBackdropFilter: 'blur(8px)',
+    }),
   },
   emptyContainer: {
     flex: 1,
@@ -382,15 +388,24 @@ const styles = StyleSheet.create({
   itemContainer: {
     flex: 1,
     position: 'relative',
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
   },
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
     width: '100%',
     height: '100%',
+    borderRadius: borderRadius.lg,
+    // Web: position image to show more of the center-top
+    ...(Platform.OS === 'web' && {
+      objectFit: 'cover',
+      objectPosition: 'center 20%',
+    }),
   },
   gradientOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(13, 13, 26, 0.5)',
+    backgroundColor: 'rgba(13, 13, 26, 0.3)',
+    borderRadius: borderRadius.lg,
   },
   contentContainer: {
     ...StyleSheet.absoluteFillObject,

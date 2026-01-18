@@ -47,6 +47,9 @@ export { ErrorBoundary } from './ErrorBoundary';
 // Settings Components
 export * from './settings';
 
+// Judaism Components (Shabbat features)
+export * from './judaism';
+
 // Note: Admin, WatchParty, and Chat components are web-only
 // They use lucide-react icons which are not available in React Native
 // Import them directly in web app if needed:

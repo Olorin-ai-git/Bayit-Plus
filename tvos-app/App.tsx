@@ -204,19 +204,17 @@ const AppContent: React.FC = () => {
   const {
     isVoiceModalOpen,
     isSupported: voiceSupported,
-    openVoiceModal,
     closeVoiceModal,
     startListening: startVoiceListening,
     stopListening: stopVoiceListening,
     interrupt,
+    activateVoiceAssistant,
   } = useVoiceSupport();
 
   const handleVoiceAvatarPress = useCallback(() => {
-    openVoiceModal();
-    setTimeout(() => {
-      startVoiceListening();
-    }, 300);
-  }, [openVoiceModal, startVoiceListening]);
+    // Activate voice assistant (handles intro + modal + listening)
+    activateVoiceAssistant();
+  }, [activateVoiceAssistant]);
 
   // Voice control - constant listening for TV
   const handleVoiceTranscript = useCallback((text: string) => {

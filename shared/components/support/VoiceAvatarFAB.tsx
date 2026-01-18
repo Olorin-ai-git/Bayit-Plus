@@ -12,24 +12,15 @@ import {
   Easing,
   Image,
 } from 'react-native';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors, spacing } from '../../theme';
 import { useDirection } from '../../hooks/useDirection';
-import { useSupportStore, VoiceState } from '../../stores/supportStore';
+import { useSupportStore } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
 
 // Wizard hat images for FAB button
 const WIZARD_HAT = {
   mobile: require('../../assets/images/characters/hat/48x48.png'),
   tv: require('../../assets/images/characters/hat/64x64.png'),
-};
-
-// Wizard avatar images for different voice states (used when modal is active)
-const WIZARD_AVATARS = {
-  idle: require('../../assets/images/characters/wizard/idle/64x64.png'),
-  listening: require('../../assets/images/characters/wizard/listening/64x64.png'),
-  speaking: require('../../assets/images/characters/wizard/speaking/64x64.png'),
-  processing: require('../../assets/images/characters/wizard/thinking/64x64.png'),
-  error: require('../../assets/images/characters/wizard/idle/64x64.png'),
 };
 
 interface VoiceAvatarFABProps {
@@ -61,6 +52,8 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({
 
   // Idle floating animation
   useEffect(() => {
+    if (!visible) return;
+
     const bounce = Animated.loop(
       Animated.sequence([
         Animated.timing(bounceAnim, {
@@ -79,7 +72,7 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({
     );
     bounce.start();
     return () => bounce.stop();
-  }, [bounceAnim]);
+  }, [visible, bounceAnim]);
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
@@ -99,6 +92,8 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({
   const fabSize = isTV ? 96 : 64;
   const hatSize = isTV ? 72 : 48;
 
+  if (!visible) return null;
+
   return (
     <Animated.View
       style={[
@@ -113,7 +108,6 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({
         },
       ]}
     >
-      {/* FAB Button */}
       <TouchableOpacity
         onPress={onPress}
         onPressIn={handlePressIn}
@@ -131,7 +125,6 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({
           isFocused && styles.fabFocused,
         ]}
       >
-        {/* Wizard Hat */}
         <Image
           source={isTV ? WIZARD_HAT.tv : WIZARD_HAT.mobile}
           style={[
@@ -141,7 +134,6 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({
           resizeMode="contain"
         />
 
-        {/* Processing spinner overlay */}
         {voiceState === 'processing' && <ProcessingOverlay />}
       </TouchableOpacity>
     </Animated.View>
@@ -210,7 +202,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
   },
   wizardHat: {
-    // Wizard hat image - transparent background
+    // Wizard hat image
   },
   processingOverlay: {
     position: 'absolute',

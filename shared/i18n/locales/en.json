@@ -50,6 +50,9 @@
     "noData": "No data available",
     "filters": "Filters",
     "clear": "Clear",
+    "clearSelection": "Clear",
+    "expand": "Expand",
+    "collapse": "Collapse",
     "upgrade": "Upgrade to Premium"
   },
   "demo": {
@@ -1450,7 +1453,18 @@
       "uploads": "Uploads",
       "settings": "Settings",
       "auditLogs": "Audit Logs",
-      "librarian": "Librarian Agent"
+      "librarian": "Librarian Agent",
+      "featured": "Featured"
+    },
+    "featured": {
+      "title": "Featured Content",
+      "subtitle": "Manage carousel order by dragging items",
+      "empty": "No featured content",
+      "emptyHint": "Add content to featured from the Content Library",
+      "count": "{{count}} items",
+      "confirmUnfeature": "Remove from featured?",
+      "remove": "Remove",
+      "unsavedChanges": "You have unsaved changes"
     },
     "recordings": {
       "title": "Recordings Management",
@@ -1578,7 +1592,9 @@
         "fileSize": "Size",
         "removeFile": "Remove",
         "invalidFileType": "Invalid file type. Only video files are supported.",
-        "filesCount": "{{count}} file(s) selected"
+        "filesCount": "{{count}} file(s) selected",
+        "pendingRestore": "{{count}} file(s) pending from previous session",
+        "pendingRestoreHint": "Drop or select the same files to restore your upload queue"
       }
     },
     "librarian": {
@@ -2017,6 +2033,10 @@
       "searchPlaceholder": "Search content...",
       "emptyMessage": "No content found",
       "confirmDelete": "Delete this content?",
+      "confirmBatchDelete": "Are you sure you want to delete {{count}} item(s)?",
+      "selectedItems": "{{count}} item(s) selected",
+      "batchFeature": "Feature",
+      "batchUnfeature": "Unfeature",
       "import": {
         "pageTitle": "Import Free Content",
         "subtitle": "Browse and import public content from free sources",

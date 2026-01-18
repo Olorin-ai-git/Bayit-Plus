@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from 'react'
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Search, X, AlertCircle, RefreshCw } from 'lucide-react'
+import { Search, X, AlertCircle, RefreshCw, Trash2, Star, StarOff } from 'lucide-react'
 import HierarchicalContentTable from '@/components/admin/HierarchicalContentTable'
 import { adminContentService } from '@/services/adminApi'
 import { GlassInput, GlassSelect, GlassButton, GlassCheckbox } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
-import { spacing } from '@bayit/shared/theme'
+import { spacing, borderRadius } from '@bayit/shared/theme'
 
 interface ContentItem {
   id: string
@@ -46,6 +46,10 @@ export default function ContentLibraryPage() {
     search: '',
     is_published: undefined as boolean | undefined,
   })
+
+  // Selection state for batch operations
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [isBatchProcessing, setIsBatchProcessing] = useState(false)
 
   const loadContent = useCallback(async () => {
     setIsLoading(true)
@@ -108,8 +112,13 @@ export default function ContentLibraryPage() {
 
   const handleTogglePublish = async (id: string) => {
     try {
-      await adminContentService.publishContent(id)
-      await loadContent()
+      const updatedContent = await adminContentService.publishContent(id)
+      // Update local state instead of reloading entire collection
+      setItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === id ? { ...item, is_published: updatedContent.is_published ?? !item.is_published } : item
+        )
+      )
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to update content'
       logger.error(msg, 'ContentLibraryPage', err)
@@ -119,13 +128,66 @@ export default function ContentLibraryPage() {
 
   const handleToggleFeatured = async (id: string) => {
     try {
-      await adminContentService.featureContent(id)
-      await loadContent()
+      const updatedContent = await adminContentService.featureContent(id)
+      // Update local state instead of reloading entire collection
+      setItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === id ? { ...item, is_featured: updatedContent.is_featured ?? !item.is_featured } : item
+        )
+      )
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to update content'
       logger.error(msg, 'ContentLibraryPage', err)
       setError(msg)
     }
+  }
+
+  // Batch operations
+  const handleBatchDelete = () => {
+    if (selectedIds.length === 0) return
+
+    showConfirm(
+      t('admin.content.confirmBatchDelete', {
+        count: selectedIds.length,
+        defaultValue: `Are you sure you want to delete ${selectedIds.length} item(s)?`,
+      }),
+      async () => {
+        setIsBatchProcessing(true)
+        try {
+          await adminContentService.batchDeleteContent(selectedIds)
+          setSelectedIds([])
+          await loadContent()
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : 'Failed to delete content'
+          logger.error(msg, 'ContentLibraryPage', err)
+          setError(msg)
+        } finally {
+          setIsBatchProcessing(false)
+        }
+      },
+      { destructive: true, confirmText: t('common.delete', 'Delete') }
+    )
+  }
+
+  const handleBatchFeature = async (featured: boolean) => {
+    if (selectedIds.length === 0) return
+
+    setIsBatchProcessing(true)
+    try {
+      await adminContentService.batchFeatureContent(selectedIds, featured)
+      setSelectedIds([])
+      await loadContent()
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to update content'
+      logger.error(msg, 'ContentLibraryPage', err)
+      setError(msg)
+    } finally {
+      setIsBatchProcessing(false)
+    }
+  }
+
+  const handleClearSelection = () => {
+    setSelectedIds([])
   }
 
   return (
@@ -198,9 +260,55 @@ export default function ContentLibraryPage() {
           </View>
         )}
 
+        {/* Batch Action Bar - shows when items are selected */}
+        {selectedIds.length > 0 && (
+          <View style={[styles.batchActionBar, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View style={[styles.batchActionInfo, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <Text style={[styles.batchSelectedText, { textAlign: isRTL ? 'right' : 'left' }]}>
+                {t('admin.content.selectedItems', {
+                  count: selectedIds.length,
+                  defaultValue: `${selectedIds.length} item(s) selected`,
+                })}
+              </Text>
+              <Pressable onPress={handleClearSelection} style={styles.clearSelectionButton}>
+                <X size={16} color="rgba(255,255,255,0.7)" />
+                <Text style={styles.clearSelectionText}>
+                  {t('common.clearSelection', 'Clear')}
+                </Text>
+              </Pressable>
+            </View>
+            <View style={[styles.batchActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <GlassButton
+                title={t('admin.content.batchFeature', 'Feature')}
+                onPress={() => handleBatchFeature(true)}
+                variant="secondary"
+                icon={<Star size={16} color="#f59e0b" />}
+                disabled={isBatchProcessing}
+                style={styles.batchButton}
+              />
+              <GlassButton
+                title={t('admin.content.batchUnfeature', 'Unfeature')}
+                onPress={() => handleBatchFeature(false)}
+                variant="ghost"
+                icon={<StarOff size={16} color="#9ca3af" />}
+                disabled={isBatchProcessing}
+                style={styles.batchButton}
+              />
+              <GlassButton
+                title={t('common.delete', 'Delete')}
+                onPress={handleBatchDelete}
+                variant="danger"
+                icon={<Trash2 size={16} color="#ffffff" />}
+                disabled={isBatchProcessing}
+                style={styles.batchButton}
+              />
+            </View>
+          </View>
+        )}
+
         {/* Hierarchical Content Table */}
         <HierarchicalContentTable
-          items={showOnlyWithSubtitles 
+          items={showOnlyWithSubtitles
             ? items.filter(item => item.available_subtitles && item.available_subtitles.length > 0)
             : items
           }
@@ -211,6 +319,8 @@ export default function ContentLibraryPage() {
           pagination={pagination}
           onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
           emptyMessage={t('admin.content.emptyMessage', { defaultValue: 'No content found' })}
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
         />
       </View>
     </ScrollView>
@@ -278,5 +388,50 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#ef4444',
     fontSize: 14,
+  },
+  batchActionBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.3)',
+    borderRadius: borderRadius.xl,
+    // @ts-ignore - Web CSS
+    backdropFilter: 'blur(24px)',
+    WebkitBackdropFilter: 'blur(24px)',
+  },
+  batchActionInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  batchSelectedText: {
+    color: '#93c5fd',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  clearSelectionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: borderRadius.md,
+  },
+  clearSelectionText: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 12,
+  },
+  batchActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  batchButton: {
+    minWidth: 100,
   },
 })

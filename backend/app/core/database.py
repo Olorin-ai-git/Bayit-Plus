@@ -40,6 +40,8 @@ from app.models.jewish_news import JewishNewsSource, JewishNewsItem
 from app.models.jewish_calendar import JewishCalendarCache
 from app.models.jewish_community import JewishOrganization, CommunityEvent, ScrapingJob
 from app.models.jerusalem_content import JerusalemContentSource, JerusalemContentItem
+from app.models.tel_aviv_content import TelAvivContentSource, TelAvivContentItem
+from app.models.support import SupportTicket, SupportConversation, SupportAnalytics
 
 
 class Database:
@@ -140,6 +142,13 @@ async def connect_to_mongo():
             # Jerusalem Content models
             JerusalemContentSource,
             JerusalemContentItem,
+            # Tel Aviv Content models
+            TelAvivContentSource,
+            TelAvivContentItem,
+            # Support system models
+            SupportTicket,
+            SupportConversation,
+            SupportAnalytics,
         ],
     )
     print(f"Connected to MongoDB: {settings.MONGODB_DB_NAME}")

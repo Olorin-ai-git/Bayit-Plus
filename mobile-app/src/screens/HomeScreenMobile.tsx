@@ -26,7 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { ContentRow } from '@bayit/shared-components';
 import { GlassCarousel } from '@bayit/shared-components';
 // import { DualClock } from '@bayit/shared-components';
-import { TrendingRow, JerusalemRow } from '@bayit/shared-components';
+import { TrendingRow, JerusalemRow, TelAvivRow, ShabbatModeBanner, ShabbatEveSection, GlassCheckbox } from '@bayit/shared-components';
 import { contentService, liveService, historyService, ritualService } from '@bayit/shared-services';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
@@ -65,6 +65,7 @@ export const HomeScreenMobile: React.FC = () => {
   const [featured, setFeatured] = useState<ContentItem[]>([]);
   const [liveChannels, setLiveChannels] = useState<ContentItem[]>([]);
   const [categories, setCategories] = useState<{ name: string; items: ContentItem[] }[]>([]);
+  const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false);
 
   const currentLang = i18n.language;
 
@@ -210,6 +211,12 @@ export const HomeScreenMobile: React.FC = () => {
         />
       </View>
 
+      {/* Shabbat Mode Banner - appears during Shabbat */}
+      <ShabbatModeBanner />
+
+      {/* Shabbat Eve Section - appears on Friday before candle lighting */}
+      <ShabbatEveSection onNavigate={(route) => navigation.navigate(route.split('?')[0] as never)} />
+
       {/* Hero carousel */}
       {carouselItems.length > 0 && (
         <View style={styles.section}>
@@ -246,6 +253,20 @@ export const HomeScreenMobile: React.FC = () => {
       {/* Jerusalem Connection */}
       <View style={styles.section}>
         <JerusalemRow />
+      </View>
+
+      {/* Tel Aviv Connection */}
+      <View style={styles.section}>
+        <TelAvivRow />
+      </View>
+
+      {/* Content Filters */}
+      <View style={styles.filterSection}>
+        <GlassCheckbox
+          label={t('home.showOnlyWithSubtitles', 'Show only with subtitles')}
+          checked={showOnlyWithSubtitles}
+          onChange={setShowOnlyWithSubtitles}
+        />
       </View>
 
       {/* Live channels */}
@@ -319,6 +340,10 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: spacing.xl,
+  },
+  filterSection: {
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
   },
   sectionTitle: {
     ...typography.h3,

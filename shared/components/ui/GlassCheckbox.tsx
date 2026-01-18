@@ -1,15 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   Animated,
-  Platform,
 } from 'react-native';
 import { colors, borderRadius, spacing } from '../theme';
 import { isTV } from '../utils/platform';
 import { useTVFocus } from '../hooks/useTVFocus';
+import { useDirection } from '../../hooks/useDirection';
 
 interface GlassCheckboxProps {
   label?: string;
@@ -28,7 +28,8 @@ export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({
   disabled = false,
   hasTVPreferredFocus = false,
 }) => {
-  const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
+  const { isRTL } = useDirection();
+  const { handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
     styleType: 'button',
   });
 
@@ -41,7 +42,7 @@ export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={styles.row}
+        style={[styles.row, isRTL && styles.rowRTL]}
         onPress={handlePress}
         onFocus={handleFocus}
         onBlur={handleBlur}
@@ -53,6 +54,7 @@ export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({
         <Animated.View
           style={[
             styles.checkbox,
+            isRTL ? styles.checkboxRTL : styles.checkboxLTR,
             checked && styles.checkboxChecked,
             focusStyle,
             disabled && styles.checkboxDisabled,
@@ -63,36 +65,53 @@ export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({
         </Animated.View>
 
         {label && (
-          <Text style={[styles.label, disabled && styles.labelDisabled]}>
+          <Text
+            style={[
+              styles.label,
+              isRTL ? styles.labelRTL : styles.labelLTR,
+              disabled && styles.labelDisabled,
+            ]}
+          >
             {label}
           </Text>
         )}
       </TouchableOpacity>
 
-      {error && <Text style={styles.error}>{error}</Text>}
+      {error && (
+        <Text style={[styles.error, isRTL && styles.errorRTL]}>
+          {error}
+        </Text>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    //width: '100%',
+    // Container adapts to content
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
   },
+  rowRTL: {
+    flexDirection: 'row-reverse',
+  },
   checkbox: {
-    width: 24,
-    height: 24,
+    width: isTV ? 32 : 24,
+    height: isTV ? 32 : 24,
     borderRadius: borderRadius.sm,
     borderWidth: 2,
     borderColor: colors.glassBorder,
     backgroundColor: colors.glassLight,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: spacing.md,
+  },
+  checkboxLTR: {
     marginRight: spacing.sm,
+  },
+  checkboxRTL: {
+    marginLeft: spacing.sm,
   },
   checkboxChecked: {
     backgroundColor: colors.primary,
@@ -102,14 +121,18 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   checkmark: {
-    fontSize: 14,
+    fontSize: isTV ? 18 : 14,
     fontWeight: 'bold',
     color: colors.background,
   },
   label: {
-    fontSize: 16,
+    fontSize: isTV ? 18 : 16,
     color: colors.text,
-    flex: 1,
+  },
+  labelLTR: {
+    textAlign: 'left',
+  },
+  labelRTL: {
     textAlign: 'right',
   },
   labelDisabled: {
@@ -119,6 +142,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.error,
     marginTop: spacing.xs,
+    textAlign: 'left',
+  },
+  errorRTL: {
     textAlign: 'right',
   },
 });

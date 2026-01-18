@@ -6,7 +6,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSupportStore } from '../stores/supportStore';
 import { voiceSupportService } from '../services/voiceSupportService';
+import { ttsService } from '../services/ttsService';
 import { supportConfig } from '../config/supportConfig';
+import i18n from '../i18n';
 
 interface UseVoiceSupportReturn {
   // State
@@ -16,6 +18,8 @@ interface UseVoiceSupportReturn {
   isVoiceModalOpen: boolean;
   isSupported: boolean;
   hasPermission: boolean;
+  hasPlayedSessionIntro: boolean;
+  currentIntroText: string | null;
 
   // Actions
   startListening: () => Promise<void>;
@@ -25,6 +29,10 @@ interface UseVoiceSupportReturn {
   closeVoiceModal: () => void;
   resetConversation: () => void;
   requestPermission: () => Promise<boolean>;
+  /** Play wizard intro message (first-time session interaction) */
+  playIntro: () => Promise<void>;
+  /** Activate voice assistant with optional intro (called when FAB is pressed) */
+  activateVoiceAssistant: () => Promise<void>;
 }
 
 export function useVoiceSupport(): UseVoiceSupportReturn {
@@ -33,9 +41,13 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
     currentTranscript,
     lastResponse,
     isVoiceModalOpen,
+    hasPlayedSessionIntro,
+    currentIntroText,
     setVoiceState,
     openVoiceModal,
     closeVoiceModal,
+    setSessionIntroPlayed,
+    setCurrentIntroText,
   } = useSupportStore();
 
   const [hasPermission, setHasPermission] = useState(false);
@@ -137,10 +149,117 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
       interrupt();
     }
 
+    // Clear intro text if present
+    setCurrentIntroText(null);
+
     // Reset state
     setVoiceState('idle');
     closeVoiceModal();
-  }, [voiceState, stopListening, interrupt, setVoiceState, closeVoiceModal]);
+  }, [voiceState, stopListening, interrupt, setVoiceState, closeVoiceModal, setCurrentIntroText]);
+
+  // Helper function to play intro with TTS (defined first to avoid circular dependency)
+  const playIntroWithTTS = useCallback((introText: string, resolve: () => void, reject: (error: unknown) => void) => {
+    const supportVoiceId = supportConfig.voiceAssistant.supportVoice.voiceId;
+
+    ttsService.speak(introText, 'high', supportVoiceId, {
+      onStart: () => {
+        console.log('[VoiceSupport] Intro TTS started');
+      },
+      onComplete: () => {
+        console.log('[VoiceSupport] Intro TTS completed');
+        setSessionIntroPlayed(true);
+        setCurrentIntroText(null);
+        setVoiceState('idle');
+        resolve();
+      },
+      onError: (error) => {
+        console.error('[VoiceSupport] Intro TTS error:', error);
+        setCurrentIntroText(null);
+        setVoiceState('error');
+        setTimeout(() => {
+          setVoiceState('idle');
+        }, 3000);
+        reject(error);
+      },
+    });
+  }, [setVoiceState, setCurrentIntroText, setSessionIntroPlayed]);
+
+  // Play wizard intro message
+  const playIntro = useCallback(async (): Promise<void> => {
+    // Get intro message for current language
+    const currentLang = (i18n.language || 'en') as 'en' | 'he' | 'es';
+    const introMessages = supportConfig.voiceAssistant.wizardIntro;
+    const introText = introMessages[currentLang] || introMessages.en;
+
+    console.log('[VoiceSupport] Playing intro:', { language: currentLang, text: introText.substring(0, 50) });
+
+    // Set speaking state and intro text for modal display
+    setVoiceState('speaking');
+    setCurrentIntroText(introText);
+
+    // Check if we should use pre-recorded audio
+    const introAudioPaths = supportConfig.voiceAssistant.wizardIntroAudio;
+    const audioPath = introAudioPaths[currentLang] || '';
+
+    if (supportConfig.voiceAssistant.usePrerecordedIntro && audioPath) {
+      console.log('[VoiceSupport] Using pre-recorded intro audio:', audioPath);
+
+      return new Promise<void>((resolve, reject) => {
+        const audio = new Audio(audioPath);
+
+        audio.onplay = () => {
+          console.log('[VoiceSupport] Pre-recorded intro started');
+        };
+
+        audio.onended = () => {
+          console.log('[VoiceSupport] Pre-recorded intro completed');
+          setSessionIntroPlayed(true);
+          setCurrentIntroText(null);
+          setVoiceState('idle');
+          resolve();
+        };
+
+        audio.onerror = (error) => {
+          console.error('[VoiceSupport] Pre-recorded intro error:', error);
+          // Fallback to TTS if pre-recorded audio fails
+          console.log('[VoiceSupport] Falling back to TTS');
+          playIntroWithTTS(introText, resolve, reject);
+        };
+
+        audio.play().catch((error) => {
+          console.error('[VoiceSupport] Failed to play pre-recorded audio:', error);
+          // Fallback to TTS
+          playIntroWithTTS(introText, resolve, reject);
+        });
+      });
+    }
+
+    // Use live TTS generation
+    return new Promise<void>((resolve, reject) => {
+      playIntroWithTTS(introText, resolve, reject);
+    });
+  }, [setVoiceState, setCurrentIntroText, setSessionIntroPlayed, playIntroWithTTS]);
+
+  // Activate voice assistant with optional intro (called when FAB is pressed)
+  const activateVoiceAssistant = useCallback(async (): Promise<void> => {
+    console.log('[VoiceSupport] Activating voice assistant', { hasPlayedSessionIntro });
+
+    // Open the voice modal first
+    openVoiceModal();
+
+    // Check if first time this session
+    if (!hasPlayedSessionIntro) {
+      // Play intro message
+      await playIntro();
+      // After intro, start listening for user input
+      console.log('[VoiceSupport] Intro complete, starting to listen');
+      await startListening();
+    } else {
+      // Start listening immediately (no intro needed)
+      console.log('[VoiceSupport] No intro needed, starting to listen');
+      await startListening();
+    }
+  }, [hasPlayedSessionIntro, openVoiceModal, playIntro, startListening]);
 
   return {
     voiceState,
@@ -149,6 +268,8 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
     isVoiceModalOpen,
     isSupported,
     hasPermission,
+    hasPlayedSessionIntro,
+    currentIntroText,
     startListening,
     stopListening,
     interrupt,
@@ -156,6 +277,8 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
     closeVoiceModal: handleCloseVoiceModal,
     resetConversation,
     requestPermission,
+    playIntro,
+    activateVoiceAssistant,
   };
 }
 

@@ -20,7 +20,7 @@ import {
   demoChaptersService,
   demoPartyService,
   demoChatService,
-} from './demoService';
+} from './demoServices';
 
 // Get correct API URL based on platform
 const getApiBaseUrl = () => {

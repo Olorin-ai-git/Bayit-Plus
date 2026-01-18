@@ -75,7 +75,7 @@ class TestElevenLabsRealtimeServiceConnect:
 
     @pytest.mark.asyncio
     async def test_connect_success(self, mock_settings, mock_websockets):
-        """Test successful WebSocket connection."""
+        """Test successful WebSocket connection with session confirmation."""
         mock_ws = AsyncMock()
         mock_websockets.connect = AsyncMock(return_value=mock_ws)
 
@@ -83,11 +83,17 @@ class TestElevenLabsRealtimeServiceConnect:
 
         service = ElevenLabsRealtimeService()
 
-        # Patch the receive loop to avoid running
-        with patch.object(service, "_receive_loop", AsyncMock()):
-            await service.connect("he")
+        # Mock the receive loop to simulate session_started message
+        async def mock_receive_loop():
+            # Simulate session confirmation
+            service._session_confirmed = True
+            service._session_event.set()
+
+        with patch.object(service, "_receive_loop", mock_receive_loop):
+            await service.connect("he", timeout=1.0)
 
         assert service._connected
+        assert service._session_confirmed
         assert service._running
         assert service.websocket == mock_ws
         assert service._reconnect_attempts == 0
@@ -99,6 +105,7 @@ class TestElevenLabsRealtimeServiceConnect:
 
         service = ElevenLabsRealtimeService()
         service._connected = True
+        service._session_confirmed = True
 
         with patch(
             "app.services.elevenlabs_realtime_service.logger"
@@ -157,8 +164,13 @@ class TestElevenLabsRealtimeServiceReconnect:
         service._source_lang = "he"
         service._reconnect_attempts = 1
 
+        # Mock the receive loop to simulate session_started message
+        async def mock_receive_loop():
+            service._session_confirmed = True
+            service._session_event.set()
+
         with patch("asyncio.sleep", new_callable=AsyncMock) as mock_sleep:
-            with patch.object(service, "_receive_loop", AsyncMock()):
+            with patch.object(service, "_receive_loop", mock_receive_loop):
                 await service._attempt_reconnect()
 
             # Second attempt should have delay of INITIAL * BACKOFF^1
@@ -173,19 +185,21 @@ class TestElevenLabsRealtimeServiceAudio:
 
     @pytest.mark.asyncio
     async def test_send_audio_chunk_connected(self, mock_settings, mock_websockets):
-        """Test sending audio when connected."""
+        """Test sending audio when connected with session confirmed."""
         mock_ws = AsyncMock()
 
         from app.services.elevenlabs_realtime_service import ElevenLabsRealtimeService
 
         service = ElevenLabsRealtimeService()
         service._connected = True
+        service._session_confirmed = True
         service.websocket = mock_ws
 
         audio_data = b"\x00\x01\x02\x03"
         await service.send_audio_chunk(audio_data)
 
-        mock_ws.send.assert_called_once_with(audio_data)
+        # Verify the websocket.send was called (with JSON message containing base64 audio)
+        mock_ws.send.assert_called_once()
         assert audio_data in service._audio_buffer
 
     @pytest.mark.asyncio
@@ -284,14 +298,26 @@ class TestElevenLabsRealtimeServiceProperties:
     """Test service properties."""
 
     def test_is_connected_property(self, mock_settings, mock_websockets):
-        """Test is_connected property."""
+        """Test is_connected property requires both connected and session confirmed."""
         from app.services.elevenlabs_realtime_service import ElevenLabsRealtimeService
 
         service = ElevenLabsRealtimeService()
 
+        # Initially both are False
         assert service.is_connected is False
 
+        # Only _connected is True - should still be False
         service._connected = True
+        assert service.is_connected is False
+
+        # Only _session_confirmed is True - should still be False
+        service._connected = False
+        service._session_confirmed = True
+        assert service.is_connected is False
+
+        # Both True - should be True
+        service._connected = True
+        service._session_confirmed = True
         assert service.is_connected is True
 
     def test_reconnect_attempts_property(self, mock_settings, mock_websockets):

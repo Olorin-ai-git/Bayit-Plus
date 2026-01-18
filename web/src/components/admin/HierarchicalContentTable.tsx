@@ -9,8 +9,8 @@ import { useState, useCallback, useMemo } from 'react'
 import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronDown, ChevronRight, ChevronLeft, Star, Eye, Trash2, Film, Tv } from 'lucide-react'
-import { GlassTable, GlassTableColumn, GlassTableCell } from '@bayit/shared/ui/web'
+import { Star, Eye, Trash2, Film, Tv } from 'lucide-react'
+import { GlassTable, GlassTableColumn, GlassTableCell, GlassCheckbox, GlassChevron } from '@bayit/shared/ui/web'
 import { useDirection } from '@/hooks/useDirection'
 import { adminContentService } from '@/services/adminApi'
 import logger from '@/utils/logger'
@@ -64,6 +64,9 @@ interface HierarchicalContentTableProps {
   pagination: Pagination
   onPageChange: (page: number) => void
   emptyMessage?: string
+  // Selection props for batch operations
+  selectedIds?: string[]
+  onSelectionChange?: (selectedIds: string[]) => void
 }
 
 // Language flag mapping
@@ -113,6 +116,8 @@ export default function HierarchicalContentTable({
   pagination,
   onPageChange,
   emptyMessage,
+  selectedIds = [],
+  onSelectionChange,
 }: HierarchicalContentTableProps) {
   const { t } = useTranslation()
   const { isRTL, textAlign, flexDirection } = useDirection()
@@ -123,6 +128,50 @@ export default function HierarchicalContentTable({
   const [episodeCache, setEpisodeCache] = useState<Record<string, Episode[]>>({})
   // Track loading states
   const [loadingEpisodes, setLoadingEpisodes] = useState<Set<string>>(new Set())
+
+  // Selection helpers
+  const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds])
+
+  const handleSelectRow = useCallback((id: string) => {
+    if (!onSelectionChange) return
+
+    const newSelected = new Set(selectedSet)
+    if (newSelected.has(id)) {
+      newSelected.delete(id)
+    } else {
+      newSelected.add(id)
+    }
+    onSelectionChange(Array.from(newSelected))
+  }, [selectedSet, onSelectionChange])
+
+  const handleSelectAll = useCallback(() => {
+    if (!onSelectionChange) return
+
+    // Only select content items, not episodes
+    const contentIds = items.map(item => item.id)
+    const allSelected = contentIds.every(id => selectedSet.has(id))
+
+    if (allSelected) {
+      // Deselect all content items from this page
+      const newSelected = new Set(selectedSet)
+      contentIds.forEach(id => newSelected.delete(id))
+      onSelectionChange(Array.from(newSelected))
+    } else {
+      // Select all content items on this page
+      const newSelected = new Set([...selectedSet, ...contentIds])
+      onSelectionChange(Array.from(newSelected))
+    }
+  }, [items, selectedSet, onSelectionChange])
+
+  // Check if all items on current page are selected
+  const allPageSelected = useMemo(() => {
+    if (items.length === 0) return false
+    return items.every(item => selectedSet.has(item.id))
+  }, [items, selectedSet])
+
+  const somePageSelected = useMemo(() => {
+    return items.some(item => selectedSet.has(item.id)) && !allPageSelected
+  }, [items, selectedSet, allPageSelected])
 
   const toggleExpand = useCallback(
     async (seriesId: string) => {
@@ -188,6 +237,38 @@ export default function HierarchicalContentTable({
   // Define table columns
   const columns = useMemo<GlassTableColumn<TableRow>[]>(
     () => [
+      // Selection checkbox column
+      ...(onSelectionChange ? [{
+        key: 'select',
+        label: '',
+        width: 50,
+        align: 'center' as const,
+        headerRender: () => (
+          <View style={styles.checkboxCell}>
+            <GlassCheckbox
+              checked={allPageSelected}
+              onChange={handleSelectAll}
+            />
+            {somePageSelected && (
+              <View style={styles.indeterminateIndicator} />
+            )}
+          </View>
+        ),
+        render: (_: unknown, row: TableRow) => {
+          // Only show checkbox for content items, not episodes
+          if (row.rowType === 'episode') {
+            return <View style={styles.checkboxCell} />
+          }
+          return (
+            <View style={styles.checkboxCell}>
+              <GlassCheckbox
+                checked={selectedSet.has(row.id)}
+                onChange={() => handleSelectRow(row.id)}
+              />
+            </View>
+          )
+        },
+      }] : []),
       {
         key: 'expand',
         label: '',
@@ -195,22 +276,19 @@ export default function HierarchicalContentTable({
         align: 'center',
         render: (_, row) => {
           if (row.rowType === 'episode') {
-            return <View style={{ width: 40, height: '100%' }} />
+            return <View style={styles.expandPlaceholder} />
           }
           const item = row as ContentItem & { rowType: 'content' }
           if (!item.is_series) {
-            return <View style={{ width: 20 }} />
+            return <View style={styles.expandPlaceholder} />
           }
           return (
-            <Pressable onPress={() => toggleExpand(item.id)} style={styles.expandButton}>
-              {expandedSeries.has(item.id) ? (
-                <ChevronDown size={20} color="#3b82f6" />
-              ) : isRTL ? (
-                <ChevronLeft size={20} color="#3b82f6" />
-              ) : (
-                <ChevronRight size={20} color="#3b82f6" />
-              )}
-            </Pressable>
+            <GlassChevron
+              expanded={expandedSeries.has(item.id)}
+              onPress={() => toggleExpand(item.id)}
+              size="sm"
+              accessibilityLabel={expandedSeries.has(item.id) ? t('common.collapse', 'Collapse') : t('common.expand', 'Expand')}
+            />
           )
         },
       },
@@ -405,7 +483,7 @@ export default function HierarchicalContentTable({
         },
       },
     ],
-    [t, textAlign, flexDirection, expandedSeries, toggleExpand, onToggleFeatured, onTogglePublish, onDelete]
+    [t, textAlign, flexDirection, expandedSeries, toggleExpand, onToggleFeatured, onTogglePublish, onDelete, onSelectionChange, selectedSet, allPageSelected, somePageSelected, handleSelectAll, handleSelectRow, isRTL]
   )
 
   return (
@@ -424,13 +502,9 @@ export default function HierarchicalContentTable({
 }
 
 const styles = StyleSheet.create({
-  expandButton: {
-    padding: spacing.sm,
-    backgroundColor: 'rgba(59, 130, 246, 0.15)',
-    // @ts-ignore - Web CSS
-    backdropFilter: 'blur(16px)',
-    WebkitBackdropFilter: 'blur(16px)',
-    borderRadius: borderRadius.md,
+  expandPlaceholder: {
+    width: 28,
+    height: 28,
   },
   episodeThumbnailWrapper: {
     width: 60,
@@ -604,5 +678,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     overflow: 'hidden',
+  },
+  checkboxCell: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 40,
+    position: 'relative',
+  },
+  indeterminateIndicator: {
+    position: 'absolute',
+    bottom: 4,
+    width: 12,
+    height: 2,
+    backgroundColor: '#3b82f6',
+    borderRadius: 1,
   },
 })

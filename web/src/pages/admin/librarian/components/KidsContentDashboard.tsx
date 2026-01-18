@@ -1,7 +1,8 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Bot } from 'lucide-react';
-import { GlassDraggableExpander, GlassButton } from '@bayit/shared/ui';
+import { GlassButton } from '@bayit/shared/ui';
+import { GlassDraggableExpander } from '@bayit/shared/ui/web';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { LibrarianStatus, AuditReport } from '@/services/librarianService';
 

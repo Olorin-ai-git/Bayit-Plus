@@ -206,15 +206,17 @@ export default function Chatbot() {
   })
 
   // Share listening states with Layout via context
+  // Use individual audioLevel values as dependencies to prevent infinite loops
+  // (audioLevel object reference changes even when values are same)
   useEffect(() => {
     const contextIsProcessing = isProcessing || isLoading
     setListeningState({
       isListening,
       isAwake,
       isProcessing: contextIsProcessing,
-      audioLevel,
+      audioLevel: { average: audioLevel.average, peak: audioLevel.peak },
     })
-  }, [isListening, isAwake, isProcessing, isLoading, audioLevel, setListeningState])
+  }, [isListening, isAwake, isProcessing, isLoading, audioLevel.average, audioLevel.peak, setListeningState])
 
   // Load context and preferences
   useEffect(() => {

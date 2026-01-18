@@ -15,11 +15,13 @@ export type RootStackParamList = {
   };
   Search: { query?: string };
   MorningRitual: undefined;
-  Judaism: undefined;
+  Judaism: { category?: string };
   Children: undefined;
   Watchlist: undefined;
   Favorites: undefined;
   Downloads: undefined;
+  Recordings: undefined;
+  EPG: { channelId?: string };
   Settings: { section?: string };
   LanguageSettings: undefined;
   NotificationSettings: undefined;

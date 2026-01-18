@@ -39,9 +39,9 @@ import { useAuthStore, useChatbotStore } from '@bayit/shared-stores';
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';
 import { GlassTopBar, GlassSidebar, DemoBanner } from '@bayit/shared';
-import { VoiceAvatarFAB, VoiceChatModal } from '@bayit/shared/components/support';
+import { VoiceAvatarFAB, VoiceChatModal } from '../shared/components/support';
 import { useVoiceSupport } from '@bayit/shared-hooks';
-import { supportConfig } from '@bayit/shared-config/supportConfig';
+import { supportConfig } from '../shared/config/supportConfig';
 import { isWeb } from './src/utils/platform';
 
 // Ignore specific warnings for TV
@@ -258,18 +258,16 @@ const AppContent: React.FC = () => {
   const {
     isVoiceModalOpen,
     isSupported: voiceSupported,
-    openVoiceModal,
     closeVoiceModal,
     startListening,
     stopListening,
     interrupt,
+    activateVoiceAssistant,
   } = useVoiceSupport();
 
   const handleVoiceAvatarPress = () => {
-    openVoiceModal();
-    setTimeout(() => {
-      startListening();
-    }, 300);
+    // Activate voice assistant (handles intro + modal + listening)
+    activateVoiceAssistant();
   };
 
   return (
