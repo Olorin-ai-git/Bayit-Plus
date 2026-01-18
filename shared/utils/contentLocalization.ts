@@ -1,12 +1,35 @@
 /**
  * Content Localization Utility
  * Provides reusable functions to get localized content names, descriptions, and titles
- * across all languages (Hebrew, English, Spanish)
+ * across all supported languages
  */
 
 /**
+ * List of supported languages for content localization
+ * Note: 'he' is the default/fallback language and doesn't need a suffix
+ */
+const SUPPORTED_LANGUAGES = ['en', 'es', 'zh', 'fr', 'it', 'hi', 'ta', 'bn', 'ja'];
+
+/**
+ * Get a localized field value from a content object
+ * @param content The content object
+ * @param fieldBase The base field name (e.g., 'name', 'title', 'description')
+ * @param language The target language code
+ * @returns The localized field value or null if not found
+ */
+const getLocalizedField = (
+  content: any,
+  fieldBase: string,
+  language: string,
+): string | null => {
+  if (!content || !SUPPORTED_LANGUAGES.includes(language)) return null;
+  const localizedField = `${fieldBase}_${language}`;
+  return content[localizedField] || null;
+};
+
+/**
  * Get localized name from a content object
- * Supports: name, name_en, name_es, title, title_en, title_es
+ * Supports: name, name_xx, title, title_xx where xx is the language code
  * Falls back to default 'name' field if localized version doesn't exist
  */
 export const getLocalizedName = (
@@ -15,14 +38,13 @@ export const getLocalizedName = (
 ): string => {
   if (!content) return '';
 
-  // Try language-specific fields first
-  if (language === 'en') {
-    if (content.name_en) return content.name_en;
-    if (content.title_en) return content.title_en;
-  } else if (language === 'es') {
-    if (content.name_es) return content.name_es;
-    if (content.title_es) return content.title_es;
-  }
+  // Try language-specific name field first
+  const localizedName = getLocalizedField(content, 'name', language);
+  if (localizedName) return localizedName;
+
+  // Try language-specific title field
+  const localizedTitle = getLocalizedField(content, 'title', language);
+  if (localizedTitle) return localizedTitle;
 
   // Fall back to default fields
   return content.name || content.title || '';
@@ -30,7 +52,7 @@ export const getLocalizedName = (
 
 /**
  * Get localized description from a content object
- * Supports: description, description_en, description_es
+ * Supports: description, description_xx where xx is the language code
  */
 export const getLocalizedDescription = (
   content: any,
@@ -38,15 +60,15 @@ export const getLocalizedDescription = (
 ): string => {
   if (!content) return '';
 
-  if (language === 'en' && content.description_en) return content.description_en;
-  if (language === 'es' && content.description_es) return content.description_es;
+  const localizedDesc = getLocalizedField(content, 'description', language);
+  if (localizedDesc) return localizedDesc;
 
   return content.description || '';
 };
 
 /**
  * Get localized current program/show name for channels/stations
- * Supports: current_program, current_program_en, current_program_es, current_show, current_show_en, current_show_es
+ * Supports: current_program, current_program_xx, current_show, current_show_xx
  */
 export const getLocalizedCurrentProgram = (
   content: any,
@@ -55,13 +77,13 @@ export const getLocalizedCurrentProgram = (
   if (!content) return '';
 
   // Try current_program fields
-  if (language === 'en' && content.current_program_en) return content.current_program_en;
-  if (language === 'es' && content.current_program_es) return content.current_program_es;
+  const localizedProgram = getLocalizedField(content, 'current_program', language);
+  if (localizedProgram) return localizedProgram;
   if (content.current_program) return content.current_program;
 
   // Try current_show fields (alternative naming)
-  if (language === 'en' && content.current_show_en) return content.current_show_en;
-  if (language === 'es' && content.current_show_es) return content.current_show_es;
+  const localizedShow = getLocalizedField(content, 'current_show', language);
+  if (localizedShow) return localizedShow;
   if (content.current_show) return content.current_show;
 
   return '';
@@ -69,7 +91,7 @@ export const getLocalizedCurrentProgram = (
 
 /**
  * Get localized category label from a content object
- * Supports: category_name_en, category_name_es, category_label field with language-specific entries
+ * Supports: category_name_xx, category_label object with language-specific entries
  */
 export const getLocalizedCategory = (
   content: any,
@@ -78,24 +100,19 @@ export const getLocalizedCategory = (
   if (!content) return '';
 
   // Check for direct category_name_XX fields first (from API response)
-  if (language === 'en' && content.category_name_en) {
-    return content.category_name_en;
-  }
-  if (language === 'es' && content.category_name_es) {
-    return content.category_name_es;
-  }
+  const localizedCategoryName = getLocalizedField(content, 'category_name', language);
+  if (localizedCategoryName) return localizedCategoryName;
 
   // Handle category_label object structure
   if (content.category_label) {
     if (typeof content.category_label === 'object') {
-      if (language === 'en' && content.category_label.en) {
-        return content.category_label.en;
+      // Try the specific language
+      if (content.category_label[language]) {
+        return content.category_label[language];
       }
-      if (language === 'es' && content.category_label.es) {
-        return content.category_label.es;
-      }
-      if (content.category_label.he || content.category_label[language]) {
-        return content.category_label.he || content.category_label[language] || '';
+      // Fall back to Hebrew or any available language
+      if (content.category_label.he) {
+        return content.category_label.he;
       }
     }
     // If it's a string, return as is

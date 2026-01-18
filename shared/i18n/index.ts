@@ -6,6 +6,13 @@ import { Platform } from 'react-native';
 import he from './locales/he.json';
 import en from './locales/en.json';
 import es from './locales/es.json';
+import zh from './locales/zh.json';
+import fr from './locales/fr.json';
+import it from './locales/it.json';
+import hi from './locales/hi.json';
+import ta from './locales/ta.json';
+import bn from './locales/bn.json';
+import ja from './locales/ja.json';
 
 const LANGUAGE_KEY = '@bayit_language';
 const isWeb = Platform.OS === 'web';
@@ -16,7 +23,7 @@ const getInitialLanguage = (): string => {
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
       const saved = window.localStorage.getItem(LANGUAGE_KEY);
-      if (saved && ['he', 'en', 'es'].includes(saved)) {
+      if (saved && ['he', 'en', 'es', 'zh', 'fr', 'it', 'hi', 'ta', 'bn', 'ja'].includes(saved)) {
         return saved;
       }
     }
@@ -30,12 +37,26 @@ export const languages = [
   { code: 'he', name: 'עברית', flag: '🇮🇱', rtl: true },
   { code: 'en', name: 'English', flag: '🇺🇸', rtl: false },
   { code: 'es', name: 'Español', flag: '🇪🇸', rtl: false },
+  { code: 'zh', name: '中文', flag: '🇨🇳', rtl: false },
+  { code: 'fr', name: 'Français', flag: '🇫🇷', rtl: false },
+  { code: 'it', name: 'Italiano', flag: '🇮🇹', rtl: false },
+  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳', rtl: false },
+  { code: 'ta', name: 'தமிழ்', flag: '🇮🇳', rtl: false },
+  { code: 'bn', name: 'বাংলা', flag: '🇧🇩', rtl: false },
+  { code: 'ja', name: '日本語', flag: '🇯🇵', rtl: false },
 ];
 
 const resources = {
   he: { translation: he },
   en: { translation: en },
   es: { translation: es },
+  zh: { translation: zh },
+  fr: { translation: fr },
+  it: { translation: it },
+  hi: { translation: hi },
+  ta: { translation: ta },
+  bn: { translation: bn },
+  ja: { translation: ja },
 };
 
 // Initialize i18n with saved language (or default to Hebrew)
@@ -76,7 +97,7 @@ export const loadSavedLanguage = async () => {
       savedLang = await AsyncStorage.getItem(LANGUAGE_KEY);
     }
 
-    if (savedLang && ['he', 'en', 'es'].includes(savedLang)) {
+    if (savedLang && ['he', 'en', 'es', 'zh', 'fr', 'it', 'hi', 'ta', 'bn', 'ja'].includes(savedLang)) {
       i18n.changeLanguage(savedLang);
     }
   } catch (error) {

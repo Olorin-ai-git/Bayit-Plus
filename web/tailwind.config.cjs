@@ -118,8 +118,12 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'Heebo', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'Heebo', 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans Devanagari', 'Noto Sans Tamil', 'Noto Sans Bengali', 'system-ui', 'sans-serif'],
         hebrew: ['Heebo', 'Inter', 'sans-serif'],
+        cjk: ['Noto Sans SC', 'Noto Sans JP', 'Inter', 'sans-serif'],
+        devanagari: ['Noto Sans Devanagari', 'Inter', 'sans-serif'],
+        tamil: ['Noto Sans Tamil', 'Inter', 'sans-serif'],
+        bengali: ['Noto Sans Bengali', 'Inter', 'sans-serif'],
       },
       spacing: {
         '18': '4.5rem',

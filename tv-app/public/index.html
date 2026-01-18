@@ -6,6 +6,21 @@
   <meta name="theme-color" content="#0d0d1a">
   <meta name="description" content="Bayit+ - Your home for Israeli content in the USA">
   <title>Bayit+ | בית+</title>
+
+  <!-- Hebrew Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- CJK fonts (Chinese, Japanese) -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Indic script fonts (Hindi, Tamil, Bengali) -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
     * {
       margin: 0;
@@ -16,7 +31,7 @@
       width: 100%;
       height: 100%;
       background-color: #0d0d1a;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Heebo', 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans Devanagari', 'Noto Sans Tamil', 'Noto Sans Bengali', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       overflow: hidden;
     }
     #root {
@@ -113,7 +128,14 @@
     var translations = {
       en: { poweredBy: 'Powered by' },
       he: { poweredBy: 'מופעל על ידי' },
-      es: { poweredBy: 'Desarrollado por' }
+      es: { poweredBy: 'Desarrollado por' },
+      zh: { poweredBy: '技术支持' },
+      fr: { poweredBy: 'Propulsé par' },
+      it: { poweredBy: 'Powered by' },
+      hi: { poweredBy: 'द्वारा संचालित' },
+      ta: { poweredBy: 'மூலம் இயக்கப்படுகிறது' },
+      bn: { poweredBy: 'দ্বারা চালিত' },
+      ja: { poweredBy: '提供元' }
     };
     
     // Get saved language from localStorage

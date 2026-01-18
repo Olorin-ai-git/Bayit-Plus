@@ -758,7 +758,14 @@
     "languages": {
       "en": "English",
       "he": "עברית",
-      "es": "Español"
+      "es": "Español",
+      "zh": "中文",
+      "fr": "Français",
+      "it": "Italiano",
+      "hi": "हिन्दी",
+      "ta": "தமிழ்",
+      "bn": "বাংলা",
+      "ja": "日本語"
     },
     "chatTranslation": "תרגום צ'אט",
     "autoTranslate": "תרגום אוטומטי של הודעות",

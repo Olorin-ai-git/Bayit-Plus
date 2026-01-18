@@ -145,9 +145,18 @@ FIREBASE_PROJECT="${FIREBASE_PROJECT:-bayit-plus}"
 GCP_PROJECT_ID="${GCP_PROJECT_ID:-bayit-plus}"
 GCP_REGION="${GCP_REGION:-us-east1}"
 
-# Track deployment results
-declare -A DEPLOYMENT_RESULTS
-declare -A DEPLOYMENT_TIMES
+# Track deployment results (using simple variables for bash 3.x compatibility)
+RESULT_WEB_BUILD="SKIPPED"
+RESULT_FIREBASE_HOSTING="SKIPPED"
+RESULT_CLOUD_RUN_BACKEND="SKIPPED"
+RESULT_IOS_APP="SKIPPED"
+RESULT_TVOS_APP="SKIPPED"
+
+TIME_WEB_BUILD=0
+TIME_FIREBASE_HOSTING=0
+TIME_CLOUD_RUN_BACKEND=0
+TIME_IOS_APP=0
+TIME_TVOS_APP=0
 
 # Main deployment
 main() {
@@ -235,16 +244,16 @@ main() {
         # Verify build output
         if [[ ! -d "$REPO_ROOT/web/dist" ]]; then
             print_error "Build failed - dist directory not found"
-            DEPLOYMENT_RESULTS["Web Build"]="FAILED"
+            RESULT_WEB_BUILD="FAILED"
         else
             print_success "Build output verified at web/dist"
-            DEPLOYMENT_RESULTS["Web Build"]="SUCCESS"
+            RESULT_WEB_BUILD="SUCCESS"
         fi
 
-        DEPLOYMENT_TIMES["Web Build"]=$(($(date +%s) - STEP_START))
+        TIME_WEB_BUILD=$(($(date +%s) - STEP_START))
     elif [[ "$SKIP_BUILD" == "true" ]]; then
         print_info "Skipping web build (using existing dist)"
-        DEPLOYMENT_RESULTS["Web Build"]="SKIPPED"
+        RESULT_WEB_BUILD="SKIPPED"
     fi
 
     # ============================================================
@@ -259,16 +268,16 @@ main() {
         print_info "Deploying to Firebase Hosting..."
         if firebase deploy --only hosting --project "$FIREBASE_PROJECT"; then
             print_success "Firebase Hosting deployed"
-            DEPLOYMENT_RESULTS["Firebase Hosting"]="SUCCESS"
+            RESULT_FIREBASE_HOSTING="SUCCESS"
         else
             print_error "Firebase Hosting deployment failed"
-            DEPLOYMENT_RESULTS["Firebase Hosting"]="FAILED"
+            RESULT_FIREBASE_HOSTING="FAILED"
         fi
 
-        DEPLOYMENT_TIMES["Firebase Hosting"]=$(($(date +%s) - STEP_START))
+        TIME_FIREBASE_HOSTING=$(($(date +%s) - STEP_START))
     else
         print_info "Skipping Firebase frontend deployment"
-        DEPLOYMENT_RESULTS["Firebase Hosting"]="SKIPPED"
+        RESULT_FIREBASE_HOSTING="SKIPPED"
     fi
 
     # ============================================================
@@ -289,25 +298,25 @@ main() {
         if [[ -x "$SCRIPT_DIR/deploy_server.sh" ]]; then
             if "$SCRIPT_DIR/deploy_server.sh"; then
                 print_success "Backend deployment complete"
-                DEPLOYMENT_RESULTS["Cloud Run Backend"]="SUCCESS"
+                RESULT_CLOUD_RUN_BACKEND="SUCCESS"
             else
                 print_error "Backend deployment failed"
-                DEPLOYMENT_RESULTS["Cloud Run Backend"]="FAILED"
+                RESULT_CLOUD_RUN_BACKEND="FAILED"
             fi
         else
             if bash "$SCRIPT_DIR/deploy_server.sh"; then
                 print_success "Backend deployment complete"
-                DEPLOYMENT_RESULTS["Cloud Run Backend"]="SUCCESS"
+                RESULT_CLOUD_RUN_BACKEND="SUCCESS"
             else
                 print_error "Backend deployment failed"
-                DEPLOYMENT_RESULTS["Cloud Run Backend"]="FAILED"
+                RESULT_CLOUD_RUN_BACKEND="FAILED"
             fi
         fi
 
-        DEPLOYMENT_TIMES["Cloud Run Backend"]=$(($(date +%s) - STEP_START))
+        TIME_CLOUD_RUN_BACKEND=$(($(date +%s) - STEP_START))
     else
         print_info "Skipping Cloud Run backend deployment"
-        DEPLOYMENT_RESULTS["Cloud Run Backend"]="SKIPPED"
+        RESULT_CLOUD_RUN_BACKEND="SKIPPED"
     fi
 
     # ============================================================
@@ -330,25 +339,25 @@ main() {
         if [[ -x "$SCRIPT_DIR/deploy_ios.sh" ]]; then
             if "$SCRIPT_DIR/deploy_ios.sh" $IOS_ARGS; then
                 print_success "iOS deployment complete"
-                DEPLOYMENT_RESULTS["iOS App"]="SUCCESS"
+                RESULT_IOS_APP="SUCCESS"
             else
                 print_error "iOS deployment failed"
-                DEPLOYMENT_RESULTS["iOS App"]="FAILED"
+                RESULT_IOS_APP="FAILED"
             fi
         else
             if bash "$SCRIPT_DIR/deploy_ios.sh" $IOS_ARGS; then
                 print_success "iOS deployment complete"
-                DEPLOYMENT_RESULTS["iOS App"]="SUCCESS"
+                RESULT_IOS_APP="SUCCESS"
             else
                 print_error "iOS deployment failed"
-                DEPLOYMENT_RESULTS["iOS App"]="FAILED"
+                RESULT_IOS_APP="FAILED"
             fi
         fi
 
-        DEPLOYMENT_TIMES["iOS App"]=$(($(date +%s) - STEP_START))
+        TIME_IOS_APP=$(($(date +%s) - STEP_START))
     else
         print_info "Skipping iOS mobile app deployment"
-        DEPLOYMENT_RESULTS["iOS App"]="SKIPPED"
+        RESULT_IOS_APP="SKIPPED"
     fi
 
     # ============================================================
@@ -371,25 +380,25 @@ main() {
         if [[ -x "$SCRIPT_DIR/deploy_tvos.sh" ]]; then
             if "$SCRIPT_DIR/deploy_tvos.sh" $TVOS_ARGS; then
                 print_success "tvOS deployment complete"
-                DEPLOYMENT_RESULTS["tvOS App"]="SUCCESS"
+                RESULT_TVOS_APP="SUCCESS"
             else
                 print_error "tvOS deployment failed"
-                DEPLOYMENT_RESULTS["tvOS App"]="FAILED"
+                RESULT_TVOS_APP="FAILED"
             fi
         else
             if bash "$SCRIPT_DIR/deploy_tvos.sh" $TVOS_ARGS; then
                 print_success "tvOS deployment complete"
-                DEPLOYMENT_RESULTS["tvOS App"]="SUCCESS"
+                RESULT_TVOS_APP="SUCCESS"
             else
                 print_error "tvOS deployment failed"
-                DEPLOYMENT_RESULTS["tvOS App"]="FAILED"
+                RESULT_TVOS_APP="FAILED"
             fi
         fi
 
-        DEPLOYMENT_TIMES["tvOS App"]=$(($(date +%s) - STEP_START))
+        TIME_TVOS_APP=$(($(date +%s) - STEP_START))
     else
         print_info "Skipping tvOS app deployment"
-        DEPLOYMENT_RESULTS["tvOS App"]="SKIPPED"
+        RESULT_TVOS_APP="SKIPPED"
     fi
 
     # ============================================================
@@ -412,31 +421,33 @@ main() {
     echo "│ Platform                │ Status   │ Time     │"
     echo "├─────────────────────────┼──────────┼──────────┤"
 
-    for platform in "Web Build" "Firebase Hosting" "Cloud Run Backend" "iOS App" "tvOS App"; do
-        status="${DEPLOYMENT_RESULTS[$platform]:-SKIPPED}"
-        time="${DEPLOYMENT_TIMES[$platform]:-0}"
+    # Helper function to print a row
+    print_row() {
+        local platform="$1"
+        local status="$2"
+        local time="$3"
+        local time_str="-"
+        local status_colored
 
         if [[ "$time" -gt 0 ]]; then
             time_str="${time}s"
-        else
-            time_str="-"
         fi
 
         case "$status" in
-            SUCCESS)
-                status_colored="${GREEN}SUCCESS${NC}"
-                ;;
-            FAILED)
-                status_colored="${RED}FAILED${NC}"
-                ;;
-            SKIPPED)
-                status_colored="${YELLOW}SKIPPED${NC}"
-                ;;
+            SUCCESS) status_colored="${GREEN}SUCCESS${NC}" ;;
+            FAILED)  status_colored="${RED}FAILED${NC}" ;;
+            *)       status_colored="${YELLOW}SKIPPED${NC}" ;;
         esac
 
         printf "│ %-23s │ " "$platform"
         echo -e "$status_colored │ $(printf '%-8s' "$time_str") │"
-    done
+    }
+
+    print_row "Web Build" "$RESULT_WEB_BUILD" "$TIME_WEB_BUILD"
+    print_row "Firebase Hosting" "$RESULT_FIREBASE_HOSTING" "$TIME_FIREBASE_HOSTING"
+    print_row "Cloud Run Backend" "$RESULT_CLOUD_RUN_BACKEND" "$TIME_CLOUD_RUN_BACKEND"
+    print_row "iOS App" "$RESULT_IOS_APP" "$TIME_IOS_APP"
+    print_row "tvOS App" "$RESULT_TVOS_APP" "$TIME_TVOS_APP"
 
     echo "└─────────────────────────┴──────────┴──────────┘"
     echo ""
@@ -445,29 +456,28 @@ main() {
 
     # Show URLs
     echo "Deployed URLs:"
-    if [[ "${DEPLOYMENT_RESULTS["Firebase Hosting"]}" == "SUCCESS" ]]; then
+    if [[ "$RESULT_FIREBASE_HOSTING" == "SUCCESS" ]]; then
         echo "  Web:     https://$FIREBASE_PROJECT.web.app"
         echo "           https://bayit.tv (if custom domain configured)"
     fi
-    if [[ "${DEPLOYMENT_RESULTS["Cloud Run Backend"]}" == "SUCCESS" ]]; then
+    if [[ "$RESULT_CLOUD_RUN_BACKEND" == "SUCCESS" ]]; then
         SERVICE_URL=$(gcloud run services describe bayit-plus-backend --region "$GCP_REGION" --format 'value(status.url)' 2>/dev/null || echo "Unknown")
         echo "  API:     $SERVICE_URL"
     fi
-    if [[ "${DEPLOYMENT_RESULTS["iOS App"]}" == "SUCCESS" ]]; then
+    if [[ "$RESULT_IOS_APP" == "SUCCESS" ]]; then
         echo "  iOS:     Check App Store Connect for TestFlight build"
     fi
-    if [[ "${DEPLOYMENT_RESULTS["tvOS App"]}" == "SUCCESS" ]]; then
+    if [[ "$RESULT_TVOS_APP" == "SUCCESS" ]]; then
         echo "  tvOS:    Check App Store Connect for TestFlight build"
     fi
     echo ""
 
     # Count failures
     FAILURES=0
-    for platform in "Firebase Hosting" "Cloud Run Backend" "iOS App" "tvOS App"; do
-        if [[ "${DEPLOYMENT_RESULTS[$platform]}" == "FAILED" ]]; then
-            ((FAILURES++))
-        fi
-    done
+    [[ "$RESULT_FIREBASE_HOSTING" == "FAILED" ]] && ((FAILURES++))
+    [[ "$RESULT_CLOUD_RUN_BACKEND" == "FAILED" ]] && ((FAILURES++))
+    [[ "$RESULT_IOS_APP" == "FAILED" ]] && ((FAILURES++))
+    [[ "$RESULT_TVOS_APP" == "FAILED" ]] && ((FAILURES++))
 
     if [[ $FAILURES -gt 0 ]]; then
         print_warning "$FAILURES deployment(s) failed. Check logs above for details."
