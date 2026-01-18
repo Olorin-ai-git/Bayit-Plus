@@ -161,6 +161,13 @@ class Settings(BaseSettings):
     # Google Cloud Project
     GCP_PROJECT_ID: str
 
+    # Apple Sign In / Push Notifications
+    APPLE_KEY_ID: str = ""
+    APPLE_TEAM_ID: str = ""
+    APPLE_KEY_PATH: str = ""
+    APPLE_BUNDLE_ID_IOS: str = ""
+    APPLE_BUNDLE_ID_TVOS: str = ""
+
     # Librarian Agent Configuration
     # Daily Audit Schedule
     LIBRARIAN_DAILY_AUDIT_CRON: str
