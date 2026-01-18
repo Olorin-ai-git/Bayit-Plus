@@ -72,3 +72,6 @@ credentials/
 *.p8
 AuthKey_*.p8
 **/AuthKey_*.p8
+*.mobileprovision
+ios/profiles/
+provisioning-profiles/
