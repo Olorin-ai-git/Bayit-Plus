@@ -14,8 +14,12 @@ import logging
 from uuid import uuid4
 
 from google.cloud import storage as gcs_storage
+from google.api_core import retry as gcs_retry
+from google.api_core.exceptions import ServiceUnavailable, TooManyRequests, InternalServerError
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
+import requests.exceptions
+import urllib3.exceptions
 
 from app.models.upload import (
     UploadJob,
@@ -524,21 +528,69 @@ class UploadService:
             'title': filename,
         }
 
+    def _is_retryable_upload_error(self, exception: Exception) -> bool:
+        """
+        Check if an upload exception is retryable (transient network/server error).
+        """
+        # Check for Google Cloud API transient errors
+        if isinstance(exception, (ServiceUnavailable, TooManyRequests, InternalServerError)):
+            return True
+
+        # Check for network-level errors
+        error_str = str(exception).lower()
+        retryable_patterns = [
+            "timeout",
+            "timed out",
+            "connection aborted",
+            "connection reset",
+            "broken pipe",
+            "ssl error",
+            "connection refused",
+            "temporary failure",
+            "service unavailable",
+            "503",
+            "502",
+            "504",
+        ]
+
+        if any(pattern in error_str for pattern in retryable_patterns):
+            return True
+
+        # Check for urllib3/requests exceptions
+        if isinstance(exception, (
+            requests.exceptions.Timeout,
+            requests.exceptions.ConnectionError,
+            urllib3.exceptions.TimeoutError,
+            urllib3.exceptions.ProtocolError,
+            TimeoutError,
+            ConnectionError,
+            BrokenPipeError,
+        )):
+            return True
+
+        # Check the cause chain
+        cause = getattr(exception, '__cause__', None)
+        if cause and cause is not exception:
+            return self._is_retryable_upload_error(cause)
+
+        return False
+
     async def _upload_to_gcs(self, job: UploadJob) -> Optional[str]:
         """
         Upload file to Google Cloud Storage with progress tracking.
-        
+        Includes retry logic with exponential backoff for transient errors.
+
         Returns:
             Public URL of uploaded file
         """
         try:
             client = await self._get_gcs_client()
             bucket = client.bucket(settings.GCS_BUCKET_NAME)
-            
+
             # Generate destination path
             content_type_path = job.type.value + "s"  # movies, podcasts, etc.
             filename = Path(job.filename).name
-            
+
             # Create a safe folder name from the title (if available)
             import re
             if job.metadata.get('title'):
@@ -549,12 +601,14 @@ class UploadService:
                 # Fallback: use first 8 chars of file hash for uniqueness
                 file_hash = job.file_hash[:8] if job.file_hash else hashlib.md5(job.source_path.encode()).hexdigest()[:8]
                 destination_blob_name = f"{content_type_path}/{file_hash}_{filename}"
-            
+
             job.gcs_path = destination_blob_name
             await job.save()
-            
-            blob = bucket.blob(destination_blob_name)
-            
+
+            # Configure blob with chunk size for resumable uploads
+            chunk_size_bytes = settings.GCS_UPLOAD_CHUNK_SIZE_MB * 1024 * 1024
+            blob = bucket.blob(destination_blob_name, chunk_size=chunk_size_bytes)
+
             # Check if already exists
             if blob.exists():
                 logger.info(f"File already exists in GCS: {destination_blob_name}")
@@ -563,20 +617,20 @@ class UploadService:
                 job.bytes_uploaded = job.file_size or 0
                 await job.save()
                 return public_url
-            
+
             # Determine content type
             content_type = self._get_content_type(job.filename)
-            
+
             # Upload with progress tracking
             start_time = datetime.utcnow()
             file_size = job.file_size or Path(job.source_path).stat().st_size
-            
+
             # Show upload starting progress
             job.progress = 25.0
             job.bytes_uploaded = 0
             await job.save()
             await self._broadcast_queue_update()
-            
+
             # Create a progress tracking wrapper with shared state for thread-safe updates
             class ProgressState:
                 def __init__(self):
@@ -585,6 +639,8 @@ class UploadService:
                     self.upload_speed = 0.0
                     self.eta_seconds = None
                     self.done = False
+                    self.retry_count = 0
+                    self.last_error = None
 
             progress_state = ProgressState()
 
@@ -633,45 +689,94 @@ class UploadService:
                         last_bytes = progress_state.bytes_read
                     await asyncio.sleep(1)  # Update every second
 
-            # Function to run in thread pool (blocking GCS upload)
-            def blocking_upload():
-                with open(job.source_path, 'rb') as file_obj:
-                    progress_wrapper = ProgressFileWrapper(file_obj, progress_state, file_size, start_time)
-                    blob.upload_from_file(
-                        progress_wrapper,
-                        content_type=content_type,
-                        size=file_size,
-                    )
-                progress_state.done = True
+            # Function to run in thread pool (blocking GCS upload with retry)
+            def blocking_upload_with_retry():
+                import time
+
+                max_retries = settings.GCS_UPLOAD_MAX_RETRIES
+                initial_delay = settings.GCS_UPLOAD_RETRY_INITIAL_DELAY_SECONDS
+                max_delay = settings.GCS_UPLOAD_RETRY_MAX_DELAY_SECONDS
+                timeout = settings.GCS_UPLOAD_TIMEOUT_SECONDS
+
+                last_exception = None
+
+                for attempt in range(max_retries + 1):
+                    try:
+                        with open(job.source_path, 'rb') as file_obj:
+                            progress_wrapper = ProgressFileWrapper(file_obj, progress_state, file_size, start_time)
+                            blob.upload_from_file(
+                                progress_wrapper,
+                                content_type=content_type,
+                                size=file_size,
+                                timeout=timeout,
+                            )
+                        progress_state.done = True
+                        return  # Success
+
+                    except Exception as e:
+                        last_exception = e
+                        progress_state.last_error = str(e)
+
+                        # Check if this is a retryable error
+                        if not self._is_retryable_upload_error(e):
+                            logger.error(f"Non-retryable upload error: {e}")
+                            raise
+
+                        if attempt < max_retries:
+                            # Calculate exponential backoff delay
+                            delay = min(initial_delay * (2 ** attempt), max_delay)
+                            progress_state.retry_count = attempt + 1
+
+                            logger.warning(
+                                f"Upload attempt {attempt + 1}/{max_retries + 1} failed: {e}. "
+                                f"Retrying in {delay:.1f}s..."
+                            )
+
+                            # Reset progress for retry (file will be re-read from start)
+                            progress_state.bytes_read = 0
+                            progress_state.progress = 25.0
+
+                            time.sleep(delay)
+                        else:
+                            logger.error(f"Upload failed after {max_retries + 1} attempts: {e}")
+                            raise
+
+                # Should not reach here, but just in case
+                if last_exception:
+                    raise last_exception
 
             # Run upload in thread pool while progress updater runs in event loop
             loop = asyncio.get_event_loop()
             updater_task = asyncio.create_task(progress_updater())
             try:
-                await loop.run_in_executor(None, blocking_upload)
+                await loop.run_in_executor(None, blocking_upload_with_retry)
             finally:
                 progress_state.done = True
                 await updater_task  # Wait for final update
-            
+
+            # Log retry info if retries occurred
+            if progress_state.retry_count > 0:
+                logger.info(f"Upload succeeded after {progress_state.retry_count} retries")
+
             # Final progress update after successful upload
             job.progress = 95.0
             job.bytes_uploaded = file_size
-            
+
             # Calculate final upload speed
             elapsed = (datetime.utcnow() - start_time).total_seconds()
             if elapsed > 0:
                 job.upload_speed = file_size / elapsed
-            
+
             job.eta_seconds = None
             await job.save()
             await self._broadcast_queue_update()
-            
+
             # Get public URL
             public_url = f"https://storage.googleapis.com/{settings.GCS_BUCKET_NAME}/{destination_blob_name}"
             logger.info(f"Uploaded to GCS: {public_url}")
-            
+
             return public_url
-            
+
         except Exception as e:
             logger.error(f"GCS upload failed: {e}", exc_info=True)
             return None

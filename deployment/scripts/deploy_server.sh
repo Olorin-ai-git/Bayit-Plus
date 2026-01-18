@@ -292,6 +292,15 @@ EOF
     create_or_update_secret "bayit-librarian-id-truncate-length" "LIBRARIAN_ID_TRUNCATE_LENGTH"
     create_or_update_secret "bayit-librarian-modal-max-height" "LIBRARIAN_MODAL_MAX_HEIGHT"
 
+    # GCS Upload Configuration (for large file uploads)
+    # Note: These are set as env vars in cloudbuild.yaml by default
+    # Uncomment below to manage via Secret Manager instead
+    # create_or_update_secret "bayit-gcs-upload-timeout" "GCS_UPLOAD_TIMEOUT_SECONDS"
+    # create_or_update_secret "bayit-gcs-upload-chunk-size" "GCS_UPLOAD_CHUNK_SIZE_MB"
+    # create_or_update_secret "bayit-gcs-upload-max-retries" "GCS_UPLOAD_MAX_RETRIES"
+    # create_or_update_secret "bayit-gcs-upload-retry-initial-delay" "GCS_UPLOAD_RETRY_INITIAL_DELAY_SECONDS"
+    # create_or_update_secret "bayit-gcs-upload-retry-max-delay" "GCS_UPLOAD_RETRY_MAX_DELAY_SECONDS"
+
     # Judaism Section Configuration
     create_or_update_secret "bayit-jewish-news-cache-ttl" "JEWISH_NEWS_CACHE_TTL_MINUTES"
     create_or_update_secret "bayit-jewish-news-sync-interval" "JEWISH_NEWS_SYNC_INTERVAL_MINUTES"
@@ -468,6 +477,7 @@ EOF
     echo "  ✓ MongoDB Atlas database"
     echo "  ✓ Twilio SMS verification (Account SID + Auth Token + Phone Number)"
     echo "  ✓ Judaism Section (Jewish News, Calendar, Community Directory, Torah Content)"
+    echo "  ✓ GCS Upload (10min timeout, 5 retries, 8MB chunks)"
     echo ""
     echo "Next steps:"
     echo "  1. Update OAuth redirect URIs in Google Cloud Console"

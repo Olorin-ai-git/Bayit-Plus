@@ -97,6 +97,13 @@ class Settings(BaseSettings):
     GCS_PROJECT_ID: str = ""  # Optional, auto-detected from Cloud Run
     GOOGLE_APPLICATION_CREDENTIALS: str = ""  # Path to service account key JSON file for local development
 
+    # GCS Upload Configuration (for large file uploads)
+    GCS_UPLOAD_TIMEOUT_SECONDS: int = 600  # 10 minutes timeout per chunk
+    GCS_UPLOAD_CHUNK_SIZE_MB: int = 8  # 8MB chunks for resumable uploads
+    GCS_UPLOAD_MAX_RETRIES: int = 5  # Maximum retry attempts for transient failures
+    GCS_UPLOAD_RETRY_INITIAL_DELAY_SECONDS: float = 1.0  # Initial delay for exponential backoff
+    GCS_UPLOAD_RETRY_MAX_DELAY_SECONDS: float = 60.0  # Maximum delay between retries
+
     # CDN (optional, works with both S3 CloudFront and GCS Cloud CDN)
     CDN_BASE_URL: str = ""
 
