@@ -47,6 +47,7 @@ const MorningRitualPage = lazy(() => import('./pages/MorningRitualPage'))
 const TVLoginPage = lazy(() => import('./pages/TVLoginPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const HelpPage = lazy(() => import('./pages/HelpPage'))
+const SupportPage = lazy(() => import('./pages/SupportPage'))
 const UserWidgetsPage = lazy(() => import('./pages/UserWidgetsPage'))
 const EPGPage = lazy(() => import('./pages/EPGPage'))
 const ChessPage = lazy(() => import('./pages/ChessPage'))
@@ -164,6 +165,7 @@ function App() {
           <Route path="/widgets" element={<UserWidgetsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/help" element={<HelpPage />} />
+          <Route path="/support" element={<SupportPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
         </Routes>

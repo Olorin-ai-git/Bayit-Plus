@@ -379,6 +379,19 @@ export interface VoicePreferences {
   tts_volume: number;
 }
 
+// Home Page Configuration Types
+export interface HomeSectionConfigAPI {
+  id: string;
+  labelKey: string;
+  visible: boolean;
+  order: number;
+  icon: string;
+}
+
+export interface HomePagePreferencesAPI {
+  sections: HomeSectionConfigAPI[];
+}
+
 // Profiles Service (API)
 const apiProfilesService = {
   getProfiles: () => api.get('/profiles'),
@@ -413,6 +426,11 @@ const apiProfilesService = {
   getVoicePreferences: (): Promise<VoicePreferences> => api.get('/profiles/preferences/voice'),
   updateVoicePreferences: (prefs: VoicePreferences): Promise<{ message: string; preferences: VoicePreferences }> =>
     api.put('/profiles/preferences/voice', prefs),
+  // Home Page Preferences
+  getHomePagePreferences: (): Promise<HomePagePreferencesAPI> =>
+    api.get('/profiles/preferences/home_page'),
+  updateHomePagePreferences: (prefs: HomePagePreferencesAPI): Promise<{ message: string; preferences: HomePagePreferencesAPI }> =>
+    api.put('/profiles/preferences/home_page', prefs),
 };
 
 // Children Service (API)
@@ -434,6 +452,274 @@ const apiChildrenService = {
     bedtime_start?: string;
     bedtime_end?: string;
   }) => api.put('/children/settings', settings),
+};
+
+// Jerusalem Content Service (API)
+const apiJerusalemService = {
+  getContent: (category?: string, page?: number, limit?: number) =>
+    api.get('/jerusalem/content', { params: { category, page, limit } }),
+  getFeatured: () => api.get('/jerusalem/featured'),
+  getCategories: () => api.get('/jerusalem/categories'),
+  getKotelContent: (page?: number, limit?: number) =>
+    api.get('/jerusalem/kotel', { params: { page, limit } }),
+  getKotelEvents: () => api.get('/jerusalem/kotel/events'),
+  getIDFCeremonies: (page?: number, limit?: number) =>
+    api.get('/jerusalem/idf-ceremonies', { params: { page, limit } }),
+  getDiasporaConnection: (page?: number, limit?: number) =>
+    api.get('/jerusalem/diaspora', { params: { page, limit } }),
+  getSources: () => api.get('/jerusalem/sources'),
+};
+
+// Demo Jerusalem Content Service
+const demoJerusalemService = {
+  getContent: async (category?: string, _page?: number, _limit?: number) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const items = [
+      {
+        id: 'jrslm-1',
+        source_name: 'ynet',
+        title: 'טקס השבעה מרגש בכותל המערבי',
+        title_he: 'טקס השבעה מרגש בכותל המערבי',
+        title_en: 'Moving Swearing-In Ceremony at the Western Wall',
+        url: 'https://www.ynet.co.il/example',
+        published_at: new Date().toISOString(),
+        summary: 'מאות חיילים הושבעו הלילה בטקס מרגש ברחבת הכותל המערבי',
+        category: 'idf-ceremony',
+        category_label: { he: 'טקסי צה"ל', en: 'IDF Ceremonies' },
+        tags: ['כותל', 'צהל', 'השבעה'],
+        relevance_score: 8.5,
+      },
+      {
+        id: 'jrslm-2',
+        source_name: 'walla',
+        title: 'אלפי מבקרים בכותל לקראת החגים',
+        title_he: 'אלפי מבקרים בכותל לקראת החגים',
+        title_en: 'Thousands of Visitors at the Western Wall Before the Holidays',
+        url: 'https://news.walla.co.il/example',
+        published_at: new Date().toISOString(),
+        summary: 'הכותל המערבי מלא במבקרים מכל העולם לקראת תקופת החגים',
+        category: 'kotel',
+        category_label: { he: 'הכותל המערבי', en: 'Western Wall' },
+        tags: ['כותל', 'חגים', 'ירושלים'],
+        relevance_score: 7.2,
+      },
+      {
+        id: 'jrslm-3',
+        source_name: 'mako',
+        title: 'משלחת תגלית מגיעה לישראל',
+        title_he: 'משלחת תגלית מגיעה לישראל',
+        title_en: 'Birthright Delegation Arrives in Israel',
+        url: 'https://www.mako.co.il/example',
+        published_at: new Date().toISOString(),
+        summary: 'צעירים יהודים מארה"ב הגיעו לביקור ראשון בארץ הקודש',
+        category: 'diaspora-connection',
+        category_label: { he: 'קשר לתפוצות', en: 'Diaspora Connection' },
+        tags: ['תגלית', 'תפוצות', 'עלייה'],
+        relevance_score: 6.8,
+      },
+    ];
+
+    const filtered = category ? items.filter(item => item.category === category) : items;
+    return {
+      items: filtered,
+      pagination: { page: 1, limit: 20, total: filtered.length, pages: 1 },
+      sources_count: 3,
+      last_updated: new Date().toISOString(),
+      category,
+    };
+  },
+  getFeatured: async () => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const content = await demoJerusalemService.getContent();
+    return {
+      featured: content.items.slice(0, 6),
+      kotel_live: {
+        name: 'Western Wall Live',
+        name_he: 'שידור חי מהכותל',
+        url: 'https://www.kotel.org/en/kotel-live',
+        icon: '🕎',
+      },
+      upcoming_ceremonies: [],
+      last_updated: new Date().toISOString(),
+    };
+  },
+  getCategories: async () => {
+    await new Promise(resolve => setTimeout(resolve, 200));
+    return [
+      { id: 'kotel', name: 'Western Wall', name_he: 'הכותל המערבי', icon: '🕎' },
+      { id: 'idf-ceremony', name: 'IDF Ceremonies', name_he: 'טקסי צה"ל', icon: '🎖️' },
+      { id: 'diaspora-connection', name: 'Diaspora Connection', name_he: 'קשר לתפוצות', icon: '🌍' },
+      { id: 'holy-sites', name: 'Holy Sites', name_he: 'מקומות קדושים', icon: '✡️' },
+      { id: 'jerusalem-events', name: 'Jerusalem Events', name_he: 'אירועים בירושלים', icon: '🇮🇱' },
+    ];
+  },
+  getKotelContent: async (page?: number, limit?: number) =>
+    demoJerusalemService.getContent('kotel', page, limit),
+  getKotelEvents: async () => {
+    await new Promise(resolve => setTimeout(resolve, 200));
+    return {
+      events: [],
+      kotel_live: {
+        name: 'Western Wall Live',
+        name_he: 'שידור חי מהכותל',
+        url: 'https://www.kotel.org/en/kotel-live',
+        icon: '🕎',
+      },
+    };
+  },
+  getIDFCeremonies: async (page?: number, limit?: number) =>
+    demoJerusalemService.getContent('idf-ceremony', page, limit),
+  getDiasporaConnection: async (page?: number, limit?: number) =>
+    demoJerusalemService.getContent('diaspora-connection', page, limit),
+  getSources: async () => {
+    await new Promise(resolve => setTimeout(resolve, 200));
+    return {
+      sources: [
+        { id: '1', name: 'Ynet Jerusalem', name_he: 'ynet ירושלים', website_url: 'https://www.ynet.co.il', is_active: true },
+        { id: '2', name: 'Walla Jerusalem', name_he: 'וואלה ירושלים', website_url: 'https://news.walla.co.il', is_active: true },
+        { id: '3', name: 'Mako Jerusalem', name_he: 'mako ירושלים', website_url: 'https://www.mako.co.il', is_active: true },
+      ],
+      total: 3,
+    };
+  },
+};
+
+// Tel Aviv Content Service (API)
+const apiTelAvivService = {
+  getContent: (category?: string, page?: number, limit?: number) =>
+    api.get('/tel-aviv/content', { params: { category, page, limit } }),
+  getFeatured: () => api.get('/tel-aviv/featured'),
+  getCategories: () => api.get('/tel-aviv/categories'),
+  getBeachesContent: (page?: number, limit?: number) =>
+    api.get('/tel-aviv/beaches', { params: { page, limit } }),
+  getNightlifeContent: (page?: number, limit?: number) =>
+    api.get('/tel-aviv/nightlife', { params: { page, limit } }),
+  getCultureContent: (page?: number, limit?: number) =>
+    api.get('/tel-aviv/culture', { params: { page, limit } }),
+  getMusicContent: (page?: number, limit?: number) =>
+    api.get('/tel-aviv/music', { params: { page, limit } }),
+  getSources: () => api.get('/tel-aviv/sources'),
+};
+
+// Demo Tel Aviv Content Service
+const demoTelAvivService = {
+  getContent: async (category?: string, _page?: number, _limit?: number) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const items = [
+      {
+        id: 'tlv-1',
+        source_name: 'ynet',
+        title: 'פסטיבל חוף תל אביב - אלפי משתתפים',
+        title_he: 'פסטיבל חוף תל אביב - אלפי משתתפים',
+        title_en: 'Tel Aviv Beach Festival - Thousands of Participants',
+        url: 'https://www.ynet.co.il/example',
+        published_at: new Date().toISOString(),
+        summary: 'אלפי אנשים השתתפו בפסטיבל המוזיקה השנתי על חוף גורדון',
+        category: 'beaches',
+        category_label: { he: 'חופים', en: 'Beaches' },
+        tags: ['חוף', 'פסטיבל', 'תל אביב'],
+        relevance_score: 8.5,
+      },
+      {
+        id: 'tlv-2',
+        source_name: 'walla',
+        title: 'פתיחת מסעדה חדשה בשרונה מרקט',
+        title_he: 'פתיחת מסעדה חדשה בשרונה מרקט',
+        title_en: 'New Restaurant Opens at Sarona Market',
+        url: 'https://news.walla.co.il/example',
+        published_at: new Date().toISOString(),
+        summary: 'שף ידוע פותח מסעדה ים תיכונית חדשה בלב שרונה',
+        category: 'food',
+        category_label: { he: 'אוכל ומסעדות', en: 'Food & Dining' },
+        tags: ['מסעדה', 'שרונה', 'אוכל'],
+        relevance_score: 7.2,
+      },
+      {
+        id: 'tlv-3',
+        source_name: 'mako',
+        title: 'מופע חדש בברבי קלאב',
+        title_he: 'מופע חדש בברבי קלאב',
+        title_en: 'New Show at Barby Club',
+        url: 'https://www.mako.co.il/example',
+        published_at: new Date().toISOString(),
+        summary: 'להקה מקומית חוגגת אלבום חדש במופע מיוחד',
+        category: 'music',
+        category_label: { he: 'מוזיקה', en: 'Music Scene' },
+        tags: ['מוזיקה', 'הופעה', 'ברבי'],
+        relevance_score: 6.8,
+      },
+      {
+        id: 'tlv-4',
+        source_name: 'geektime',
+        title: 'סטארטאפ תל אביבי גייס 50 מיליון דולר',
+        title_he: 'סטארטאפ תל אביבי גייס 50 מיליון דולר',
+        title_en: 'Tel Aviv Startup Raises $50 Million',
+        url: 'https://www.geektime.co.il/example',
+        published_at: new Date().toISOString(),
+        summary: 'חברת AI מתל אביב סגרה סבב גיוס משמעותי',
+        category: 'tech',
+        category_label: { he: 'סטארטאפים והייטק', en: 'Tech & Startups' },
+        tags: ['סטארטאפ', 'הייטק', 'גיוס'],
+        relevance_score: 7.5,
+      },
+    ];
+
+    const filtered = category ? items.filter(item => item.category === category) : items;
+    return {
+      items: filtered,
+      pagination: { page: 1, limit: 20, total: filtered.length, pages: 1 },
+      sources_count: 4,
+      last_updated: new Date().toISOString(),
+      category,
+    };
+  },
+  getFeatured: async () => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const content = await demoTelAvivService.getContent();
+    return {
+      featured: content.items.slice(0, 6),
+      beach_webcam: {
+        name: 'Tel Aviv Beach Live',
+        name_he: 'חוף תל אביב בשידור חי',
+        url: 'https://www.skylinewebcams.com/en/webcam/israel/tel-aviv-district/tel-aviv/tel-aviv-beach.html',
+        icon: '🏖️',
+      },
+      upcoming_events: [],
+      last_updated: new Date().toISOString(),
+    };
+  },
+  getCategories: async () => {
+    await new Promise(resolve => setTimeout(resolve, 200));
+    return [
+      { id: 'beaches', name: 'Beaches', name_he: 'חופים', icon: '🏖️' },
+      { id: 'nightlife', name: 'Nightlife', name_he: 'חיי לילה', icon: '🌃' },
+      { id: 'culture', name: 'Culture & Art', name_he: 'תרבות ואמנות', icon: '🎭' },
+      { id: 'music', name: 'Music Scene', name_he: 'מוזיקה', icon: '🎵' },
+      { id: 'food', name: 'Food & Dining', name_he: 'אוכל ומסעדות', icon: '🍽️' },
+      { id: 'tech', name: 'Tech & Startups', name_he: 'סטארטאפים והייטק', icon: '💻' },
+      { id: 'events', name: 'Events', name_he: 'אירועים', icon: '🎉' },
+    ];
+  },
+  getBeachesContent: async (page?: number, limit?: number) =>
+    demoTelAvivService.getContent('beaches', page, limit),
+  getNightlifeContent: async (page?: number, limit?: number) =>
+    demoTelAvivService.getContent('nightlife', page, limit),
+  getCultureContent: async (page?: number, limit?: number) =>
+    demoTelAvivService.getContent('culture', page, limit),
+  getMusicContent: async (page?: number, limit?: number) =>
+    demoTelAvivService.getContent('music', page, limit),
+  getSources: async () => {
+    await new Promise(resolve => setTimeout(resolve, 200));
+    return {
+      sources: [
+        { id: '1', name: 'Ynet Tel Aviv', name_he: 'ynet תל אביב', website_url: 'https://www.ynet.co.il', is_active: true },
+        { id: '2', name: 'Walla Tel Aviv', name_he: 'וואלה תל אביב', website_url: 'https://news.walla.co.il', is_active: true },
+        { id: '3', name: 'Time Out Tel Aviv', name_he: 'טיים אאוט תל אביב', website_url: 'https://www.timeout.co.il', is_active: true },
+        { id: '4', name: 'Geektime', name_he: 'גיקטיים', website_url: 'https://www.geektime.co.il', is_active: true },
+      ],
+      total: 4,
+    };
+  },
 };
 
 // Judaism Service (API)
@@ -820,5 +1106,7 @@ export const profilesService = apiProfilesService; // No demo mode for profiles 
 export const childrenService = apiChildrenService; // No demo mode for children
 export const judaismService = apiJudaismService; // No demo mode for judaism
 export const flowsService = apiFlowsService; // No demo mode for flows
+export const jerusalemService = isDemo ? demoJerusalemService : apiJerusalemService;
+export const telAvivService = isDemo ? demoTelAvivService : apiTelAvivService;
 
 export default api;

@@ -16,12 +16,19 @@ const uploadsApi = axios.create({
   },
 });
 
-// Add auth token to requests
+// Add auth token to requests and handle FormData properly
 uploadsApi.interceptors.request.use((config) => {
   const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}');
   if (authData?.state?.token) {
     config.headers.Authorization = `Bearer ${authData.state.token}`;
   }
+
+  // When uploading FormData, delete Content-Type header so axios sets it
+  // automatically with the correct multipart boundary
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+
   return config;
 });
 
@@ -132,6 +139,14 @@ export const clearUploadQueue = async (): Promise<{ success: boolean; cancelled_
 };
 
 /**
+ * Clear completed jobs from the queue history
+ * Removes all completed, failed, and cancelled jobs
+ */
+export const clearCompletedJobs = async (): Promise<{ success: boolean; cleared_count: number; message: string }> => {
+  return uploadsApi.post('/admin/uploads/queue/clear-completed');
+};
+
+/**
  * Get monitored folders
  */
 export const getMonitoredFolders = async (): Promise<MonitoredFolder[]> => {
@@ -189,6 +204,53 @@ export const resetFolderCache = async (folderId?: string): Promise<{ success: bo
   return uploadsApi.post('/admin/uploads/reset-cache', null, { params });
 };
 
+/**
+ * Active browser upload session (in-progress uploads)
+ */
+export interface ActiveBrowserSession {
+  upload_id: string;
+  filename: string;
+  file_size: number;
+  content_type: string;
+  total_chunks: number;
+  chunks_received: number;
+  missing_chunks: number[];
+  bytes_received: number;
+  progress: number;
+  status: string;
+  started_at: string;
+  last_activity: string;
+  job_id: string | null;
+}
+
+/**
+ * Get all active browser upload sessions for the current user
+ * Used to reconnect to in-progress uploads after page refresh
+ */
+export const getActiveBrowserSessions = async (): Promise<{ sessions: ActiveBrowserSession[]; count: number }> => {
+  return uploadsApi.get('/admin/uploads/browser-upload/active');
+};
+
+/**
+ * Get resume info for a specific upload session
+ */
+export const getUploadResumeInfo = async (uploadId: string): Promise<{
+  upload_id: string;
+  filename: string;
+  total_chunks: number;
+  chunks_received: number[];
+  missing_chunks: number[];
+  bytes_received: number;
+  total_size: number;
+  progress: number;
+  status: string;
+  can_resume: boolean;
+  started_at: string;
+  last_activity: string;
+}> => {
+  return uploadsApi.get(`/admin/uploads/browser-upload/${uploadId}/resume-info`);
+};
+
 const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks
 
 interface UploadSession {
@@ -223,6 +285,8 @@ const initUploadSession = async (
 
 /**
  * Upload a single chunk
+ * Note: Do NOT set Content-Type header manually when using FormData.
+ * Axios will automatically set it with the correct multipart boundary.
  */
 const uploadChunk = async (
   uploadId: string,
@@ -234,7 +298,6 @@ const uploadChunk = async (
 
   return uploadsApi.post(`/admin/uploads/browser-upload/${uploadId}/chunk`, formData, {
     params: { chunk_index: chunkIndex },
-    headers: { 'Content-Type': 'multipart/form-data' },
     timeout: 60000, // 60s timeout per chunk
   });
 };
@@ -323,4 +386,57 @@ export const uploadBrowserFiles = async (
   }
 
   return { successful, failed };
+};
+
+/**
+ * Resume an existing upload session by uploading missing chunks
+ * @param file - The original file (user must re-select it)
+ * @param session - The active session info from getActiveBrowserSessions
+ * @param onProgress - Optional progress callback (0-100)
+ */
+export const resumeBrowserUpload = async (
+  file: File,
+  session: ActiveBrowserSession,
+  onProgress?: (progress: number) => void
+): Promise<UploadJob> => {
+  // Verify file matches session
+  if (file.name !== session.filename || file.size !== session.file_size) {
+    throw new Error(`File mismatch. Expected "${session.filename}" (${session.file_size} bytes)`);
+  }
+
+  // Get current resume info with missing chunks
+  const resumeInfo = await getUploadResumeInfo(session.upload_id);
+
+  if (!resumeInfo.can_resume) {
+    throw new Error('Session cannot be resumed');
+  }
+
+  // Upload only the missing chunks
+  const missingChunks = resumeInfo.missing_chunks;
+  let uploadedCount = resumeInfo.chunks_received.length;
+  const totalChunks = resumeInfo.total_chunks;
+
+  for (const chunkIndex of missingChunks) {
+    const start = chunkIndex * CHUNK_SIZE;
+    const end = Math.min(start + CHUNK_SIZE, file.size);
+    const chunk = file.slice(start, end);
+
+    await uploadChunk(session.upload_id, chunkIndex, chunk);
+    uploadedCount++;
+
+    // Report progress
+    if (onProgress) {
+      const progress = (uploadedCount / totalChunks) * 100;
+      onProgress(progress);
+    }
+  }
+
+  // Complete upload and get the job
+  const job = await completeUpload(session.upload_id);
+
+  if (onProgress) {
+    onProgress(100);
+  }
+
+  return job;
 };

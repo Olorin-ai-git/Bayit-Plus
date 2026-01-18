@@ -498,6 +498,18 @@ export default function SettingsScreen() {
         </SettingRow>
       </GlassView>
 
+      {/* Display Settings */}
+      <GlassView style={styles.section}>
+        <Text style={[styles.sectionTitle, { textAlign }]}>
+          {t('settings.display', 'Display')}
+        </Text>
+        <SettingRow
+          icon="🏠"
+          label={t('settings.homePageSections', 'Home Page Sections')}
+          onPress={() => navigation.navigate('HomeSectionConfiguration' as never)}
+        />
+      </GlassView>
+
       {/* Video & Audio Settings */}
       <GlassView style={styles.section}>
         <Text style={[styles.sectionTitle, { textAlign }]}>

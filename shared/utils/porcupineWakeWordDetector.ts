@@ -15,6 +15,12 @@ import {
   BuiltInKeyword,
 } from '@picovoice/porcupine-web';
 import { WebVoiceProcessor } from '@picovoice/web-voice-processor';
+import { supportConfig, WakeWordSystemConfig } from '../config/supportConfig';
+
+/**
+ * Voice system types for wake word detection
+ */
+export type VoiceSystemType = 'support' | 'voiceSearch';
 
 export interface PorcupineWakeWordConfig {
   accessKey: string;
@@ -28,15 +34,65 @@ export interface PorcupineWakeWordResult {
   detected: boolean;
   keywordIndex: number;
   timestamp: number;
+  system: VoiceSystemType;
 }
 
-type DetectionCallback = (keywordIndex: number) => void;
+/**
+ * Detection callback with system information
+ */
+type DetectionCallback = (keywordIndex: number, system: VoiceSystemType) => void;
+
+/**
+ * Get wake word config for a specific system
+ */
+export function getWakeWordConfig(system: VoiceSystemType): WakeWordSystemConfig {
+  return system === 'support'
+    ? supportConfig.voiceAssistant.supportWakeWord
+    : supportConfig.voiceAssistant.voiceSearchWakeWord;
+}
+
+/**
+ * Get the active wake word for a system (custom if available, built-in otherwise)
+ */
+export function getActiveWakeWord(system: VoiceSystemType): string {
+  const config = getWakeWordConfig(system);
+  // For now, always use built-in until custom models are trained
+  return config.builtInKeyword;
+}
+
+/**
+ * Map wake word string to BuiltInKeyword enum
+ */
+function getBuiltInKeyword(wakeWord: string): BuiltInKeyword {
+  const wakeWordMap: Record<string, BuiltInKeyword> = {
+    'Alexa': BuiltInKeyword.Alexa,
+    'Americano': BuiltInKeyword.Americano,
+    'Blueberry': BuiltInKeyword.Blueberry,
+    'Bumblebee': BuiltInKeyword.Bumblebee,
+    'Computer': BuiltInKeyword.Computer,
+    'Grapefruit': BuiltInKeyword.Grapefruit,
+    'Grasshopper': BuiltInKeyword.Grasshopper,
+    'Hey Google': BuiltInKeyword.HeyGoogle,
+    'HeyGoogle': BuiltInKeyword.HeyGoogle,
+    'Hey Siri': BuiltInKeyword.HeySiri,
+    'HeySiri': BuiltInKeyword.HeySiri,
+    'Jarvis': BuiltInKeyword.Jarvis,
+    'Okay Google': BuiltInKeyword.OkayGoogle,
+    'OkayGoogle': BuiltInKeyword.OkayGoogle,
+    'Picovoice': BuiltInKeyword.Picovoice,
+    'Porcupine': BuiltInKeyword.Porcupine,
+    'Terminator': BuiltInKeyword.Terminator,
+  };
+
+  return wakeWordMap[wakeWord] || BuiltInKeyword.Jarvis;
+}
 
 /**
  * PorcupineWakeWordDetector class
  *
  * Handles wake word detection using Picovoice Porcupine SDK.
  * Runs locally in the browser via WebAssembly for privacy.
+ * Supports separate wake words for Support (Olorin) and Voice Search systems.
  */
 export class PorcupineWakeWordDetector {
   private porcupine: PorcupineWorker | null = null;
@@ -48,17 +104,20 @@ export class PorcupineWakeWordDetector {
   private sensitivity: number = 0.5;
   private lastDetectionTime: number = 0;
   private cooldownMs: number = 2000;
+  private systemType: VoiceSystemType = 'voiceSearch';
 
   /**
    * Initialize the Porcupine wake word detector
    * @param accessKey - Picovoice access key from console.picovoice.ai
    * @param keywordPath - Path to custom wake word .ppn model (optional, uses built-in if not provided)
    * @param sensitivity - Wake word sensitivity 0-1 (default 0.5)
+   * @param system - Voice system type: 'support' (Olorin) or 'voiceSearch' (default)
    */
   async initialize(
     accessKey: string,
     keywordPath?: string,
-    sensitivity: number = 0.5
+    sensitivity: number = 0.5,
+    system: VoiceSystemType = 'voiceSearch'
   ): Promise<void> {
     if (this.isInitialized) {
       console.log('[PorcupineWakeWord] Already initialized');
@@ -71,6 +130,7 @@ export class PorcupineWakeWordDetector {
 
     this.accessKey = accessKey;
     this.sensitivity = Math.max(0, Math.min(1, sensitivity));
+    this.systemType = system;
 
     try {
       console.log('[PorcupineWakeWord] Initializing Porcupine...');
@@ -98,12 +158,15 @@ export class PorcupineWakeWordDetector {
           sensitivity: this.sensitivity,
         };
       } else {
-        // Fallback to built-in "Computer" for testing
-        // User's Picovoice free tier training limit reached - using built-in keyword
-        console.log('[PorcupineWakeWord] Custom model not found, using built-in "Computer" (say "Computer" to activate)');
-        // Use the enum value properly with sensitivity
+        // Fallback to configured built-in wake word based on system type
+        const wakeWordConfig = getWakeWordConfig(this.systemType);
+        const configuredWakeWord = wakeWordConfig.builtInKeyword;
+        const builtInKeyword = getBuiltInKeyword(configuredWakeWord);
+        const systemLabel = this.systemType === 'support' ? 'Support (Olorin)' : 'Voice Search';
+        console.log(`[PorcupineWakeWord] ${systemLabel}: Using built-in "${configuredWakeWord}" (say "${configuredWakeWord}" to activate)`);
+        console.log(`[PorcupineWakeWord] ${systemLabel}: Custom phrase will be "${wakeWordConfig.customPhrase}" once trained`);
         keyword = {
-          builtin: BuiltInKeyword.Computer,
+          builtin: builtInKeyword,
           sensitivity: this.sensitivity,
         };
       }
@@ -148,7 +211,10 @@ export class PorcupineWakeWordDetector {
       );
 
       this.isInitialized = true;
-      console.log('[PorcupineWakeWord] ✅ Initialized successfully - say "Computer" to test');
+      const wakeWordConfig = getWakeWordConfig(this.systemType);
+      const activeWakeWord = wakeWordConfig.builtInKeyword;
+      const systemLabel = this.systemType === 'support' ? 'Support (Olorin)' : 'Voice Search';
+      console.log(`[PorcupineWakeWord] ✅ ${systemLabel} initialized - say "${activeWakeWord}" to activate`);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       console.error('[PorcupineWakeWord] Failed to initialize:', errorMessage);
@@ -170,10 +236,12 @@ export class PorcupineWakeWordDetector {
     }
 
     this.lastDetectionTime = now;
-    console.log('[PorcupineWakeWord] Wake word detected! Index:', keywordIndex);
+    const systemLabel = this.systemType === 'support' ? 'Support (Olorin)' : 'Voice Search';
+    const wakeWordConfig = getWakeWordConfig(this.systemType);
+    console.log(`[PorcupineWakeWord] 🎤 ${systemLabel} wake word "${wakeWordConfig.builtInKeyword}" detected!`);
 
     if (this.detectionCallback) {
-      this.detectionCallback(keywordIndex);
+      this.detectionCallback(keywordIndex, this.systemType);
     }
   }
 
@@ -217,7 +285,9 @@ export class PorcupineWakeWordDetector {
       await WebVoiceProcessor.subscribe(this.porcupine);
 
       this.isListening = true;
-      console.log('[PorcupineWakeWord] ✅ Listening for wake word "Computer"...');
+      const wakeWordConfig = getWakeWordConfig(this.systemType);
+      const systemLabel = this.systemType === 'support' ? 'Support (Olorin)' : 'Voice Search';
+      console.log(`[PorcupineWakeWord] ✅ ${systemLabel} listening for "${wakeWordConfig.builtInKeyword}"...`);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       console.error('[PorcupineWakeWord] Failed to start listening:', errorMessage);
@@ -300,6 +370,20 @@ export class PorcupineWakeWordDetector {
     if (this.lastDetectionTime === 0) return Infinity;
     return Date.now() - this.lastDetectionTime;
   }
+
+  /**
+   * Get the system type this detector is configured for
+   */
+  getSystemType(): VoiceSystemType {
+    return this.systemType;
+  }
+
+  /**
+   * Get the active wake word for this detector
+   */
+  getActiveWakeWord(): string {
+    return getActiveWakeWord(this.systemType);
+  }
 }
 
 /**
@@ -371,10 +455,27 @@ export function isPorcupineSupported(): boolean {
 }
 
 /**
- * Create a Porcupine wake word detector instance
+ * Create a Porcupine wake word detector instance for a specific system
+ * @param system - Voice system type: 'support' (Olorin) or 'voiceSearch' (default)
  */
-export function createPorcupineDetector(): PorcupineWakeWordDetector {
-  return new PorcupineWakeWordDetector();
+export function createPorcupineDetector(system: VoiceSystemType = 'voiceSearch'): PorcupineWakeWordDetector {
+  const detector = new PorcupineWakeWordDetector();
+  // System type will be set during initialize() call
+  return detector;
+}
+
+/**
+ * Create a Porcupine detector for the Support system (Olorin wizard)
+ */
+export function createSupportDetector(): PorcupineWakeWordDetector {
+  return createPorcupineDetector('support');
+}
+
+/**
+ * Create a Porcupine detector for Voice Search
+ */
+export function createVoiceSearchDetector(): PorcupineWakeWordDetector {
+  return createPorcupineDetector('voiceSearch');
 }
 
 export default PorcupineWakeWordDetector;

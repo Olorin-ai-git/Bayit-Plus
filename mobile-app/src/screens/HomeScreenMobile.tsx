@@ -26,7 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { ContentRow } from '@bayit/shared-components';
 import { GlassCarousel } from '@bayit/shared-components';
 // import { DualClock } from '@bayit/shared-components';
-import { TrendingRow } from '@bayit/shared-components';
+import { TrendingRow, JerusalemRow } from '@bayit/shared-components';
 import { contentService, liveService, historyService, ritualService } from '@bayit/shared-services';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
@@ -241,6 +241,11 @@ export const HomeScreenMobile: React.FC = () => {
           onItemPress={handleContentPress}
           columns={contentColumns}
         />
+      </View>
+
+      {/* Jerusalem Connection */}
+      <View style={styles.section}>
+        <JerusalemRow />
       </View>
 
       {/* Live channels */}

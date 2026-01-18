@@ -6,15 +6,18 @@
 
 /**
  * Get environment variable with fallback
+ * Works across Vite (web), React Native, and Node environments
  */
 function getEnvVar(key: string, fallback: string): string {
-  // Try Vite env first (web apps)
-  if (typeof import.meta !== 'undefined' && import.meta.env?.[key]) {
-    return import.meta.env[key];
-  }
-  // Try process.env (Node/build time)
+  // Try process.env first (Node/React Native/build time)
   if (typeof process !== 'undefined' && process.env?.[key]) {
     return process.env[key];
+  }
+  // Try globalThis.__VITE_ENV__ for Vite apps (set by vite.config.ts)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const viteEnv = (globalThis as any).__VITE_ENV__;
+  if (viteEnv?.[key]) {
+    return viteEnv[key];
   }
   return fallback;
 }
@@ -37,6 +40,30 @@ function getEnvVarBool(key: string, fallback: boolean): boolean {
 }
 
 /**
+ * Wake Word Configuration for each voice system
+ */
+export interface WakeWordSystemConfig {
+  /** Built-in Porcupine keyword to use (temporary until custom trained) */
+  builtInKeyword: string;
+  /** Custom wake word phrase (intended, requires Picovoice training) */
+  customPhrase: string;
+  /** Path to custom trained .ppn model file (if available) */
+  customModelPath?: string;
+}
+
+/**
+ * Voice Configuration for TTS
+ */
+export interface VoiceConfig {
+  /** ElevenLabs voice ID */
+  voiceId: string;
+  /** Voice name for display */
+  name: string;
+  /** Voice description */
+  description: string;
+}
+
+/**
  * Voice Assistant Configuration
  */
 export interface VoiceAssistantConfig {
@@ -44,8 +71,16 @@ export interface VoiceAssistantConfig {
   enabled: boolean;
   /** Whether wake word detection is enabled */
   wakeWordEnabled: boolean;
-  /** Wake word phrase (currently "Computer" due to free tier) */
+  /** @deprecated Use supportWakeWord or voiceSearchWakeWord instead */
   wakeWord: string;
+  /** Wake word for Support System (Olorin wizard) - "Jarvis" temporarily, intended "Olorin" */
+  supportWakeWord: WakeWordSystemConfig;
+  /** Wake word for Voice Search - "Computer" temporarily, intended "Hey Buyit" */
+  voiceSearchWakeWord: WakeWordSystemConfig;
+  /** Voice for Support System (Olorin) - mature male voice */
+  supportVoice: VoiceConfig;
+  /** Voice for Voice Search - female multilingual voice */
+  voiceSearchVoice: VoiceConfig;
   /** Maximum recording duration in milliseconds */
   maxRecordingDuration: number;
   /** Silence timeout before auto-stop in milliseconds */
@@ -182,7 +217,39 @@ export const supportConfig: SupportConfig = {
   voiceAssistant: {
     enabled: getEnvVarBool('VITE_SUPPORT_VOICE_ENABLED', true),
     wakeWordEnabled: getEnvVarBool('VITE_SUPPORT_WAKE_WORD_ENABLED', true),
-    wakeWord: getEnvVar('VITE_SUPPORT_WAKE_WORD', 'Computer'), // Default to built-in
+    // @deprecated - kept for backward compatibility, use supportWakeWord/voiceSearchWakeWord
+    wakeWord: getEnvVar('VITE_SUPPORT_WAKE_WORD', 'Jarvis'),
+
+    // Support System (Olorin wizard) - for guidance and support
+    // Temporary: "Jarvis" | Intended: "Olorin" (requires Picovoice training)
+    supportWakeWord: {
+      builtInKeyword: getEnvVar('VITE_SUPPORT_WAKE_WORD', 'Jarvis'),
+      customPhrase: 'Olorin',
+      customModelPath: '/porcupine/olorin_wasm.ppn',
+    },
+
+    // Voice Search - for search and routine commands
+    // Temporary: "Computer" | Intended: "Hey Buyit" (requires Picovoice training)
+    voiceSearchWakeWord: {
+      builtInKeyword: getEnvVar('VITE_VOICE_SEARCH_WAKE_WORD', 'Computer'),
+      customPhrase: 'Hey Buyit',
+      customModelPath: '/porcupine/hey_buyit_wasm.ppn',
+    },
+
+    // Support System Voice (Olorin) - deep, authoritative male voice
+    supportVoice: {
+      voiceId: getEnvVar('VITE_ELEVENLABS_SUPPORT_VOICE_ID', 'pNInz6obpgDQGcFmaJgB'),
+      name: 'Adam',
+      description: 'Deep, authoritative male voice for Olorin support wizard',
+    },
+
+    // Voice Search Voice - multilingual female voice
+    voiceSearchVoice: {
+      voiceId: getEnvVar('VITE_ELEVENLABS_DEFAULT_VOICE_ID', 'EXAVITQu4vr4xnSDxMaL'),
+      name: 'Rachel',
+      description: 'Multilingual female voice for general voice search',
+    },
+
     maxRecordingDuration: getEnvVarNumber('VITE_SUPPORT_MAX_RECORDING_MS', 15000),
     silenceTimeout: getEnvVarNumber('VITE_SUPPORT_SILENCE_TIMEOUT_MS', 2000),
     sampleRate: getEnvVarNumber('VITE_SUPPORT_SAMPLE_RATE', 16000),

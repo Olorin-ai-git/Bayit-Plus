@@ -87,7 +87,7 @@ const baseMenuSections: MenuSection[] = [
     titleKey: 'nav.settings',
     items: [
       { id: 'settings', icon: '⚙️', labelKey: 'nav.settings', path: '/settings' },
-      { id: 'help', icon: '❓', labelKey: 'nav.help', path: '/help' },
+      { id: 'support', icon: '🎧', labelKey: 'nav.support', path: '/support' },
     ],
   },
 ];
@@ -562,9 +562,9 @@ const styles = StyleSheet.create({
   logoSection: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing.xs,
-    paddingTop: spacing.md,
-    marginBottom: spacing.xs,
+    paddingTop: 0,
+    paddingBottom: spacing.xs,
+    marginBottom: 0,
   },
   houseLogo: {
     transition: 'width 0.3s, height 0.3s',
@@ -578,7 +578,8 @@ const styles = StyleSheet.create({
     height: 180, // Same height as expanded logo to maintain spacing
   },
   sloganContainer: {
-    marginTop: spacing.xs,
+    marginTop: -35,
+    marginBottom: 20,
     backgroundColor: 'rgba(168, 85, 247, 0.15)',
     borderWidth: 2,
     borderColor: 'rgba(147, 51, 234, 0.4)',
@@ -618,29 +619,28 @@ const styles = StyleSheet.create({
     borderWidth: 3,
   },
   userAvatar: {
-    width: IS_TV_BUILD ? 48 : 40,
-    height: IS_TV_BUILD ? 48 : 40,
-    borderRadius: IS_TV_BUILD ? 24 : 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    width: IS_TV_BUILD ? 56 : 48,
+    height: IS_TV_BUILD ? 56 : 48,
+    borderRadius: IS_TV_BUILD ? 28 : 24,
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderWidth: 3,
+    borderColor: colors.primary,
     position: 'relative',
+    overflow: 'hidden',
   },
   userAvatarAuthenticated: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    // Keep same styling for authenticated users
   },
   userAvatarText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.text,
+    fontSize: IS_TV_BUILD ? 24 : 20,
+    fontWeight: '700',
+    color: colors.primary,
   },
   userAvatarImage: {
-    width: IS_TV_BUILD ? 44 : 36,
-    height: IS_TV_BUILD ? 44 : 36,
-    borderRadius: IS_TV_BUILD ? 22 : 18,
+    width: '100%',
+    height: '100%',
   },
   onlineBadge: {
     position: 'absolute',

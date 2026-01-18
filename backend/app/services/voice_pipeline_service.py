@@ -106,7 +106,8 @@ class VoicePipelineService:
         self.user = user
         self.language = language
         self.conversation_id = conversation_id
-        self.voice_id = voice_id or settings.ELEVENLABS_DEFAULT_VOICE_ID
+        # Use Olorin's voice (Adam - deep, authoritative male) for support system
+        self.voice_id = voice_id or settings.ELEVENLABS_SUPPORT_VOICE_ID
 
         # Service instances
         self.stt_service: Optional[ElevenLabsRealtimeService] = None

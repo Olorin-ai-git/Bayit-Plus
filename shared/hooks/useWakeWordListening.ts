@@ -20,6 +20,8 @@ import {
   createPorcupineDetector,
   getPicovoiceAccessKey,
   isPorcupineSupported,
+  VoiceSystemType,
+  getWakeWordConfig,
 } from '../utils/porcupineWakeWordDetector';
 
 // Type for transcription service
@@ -133,8 +135,15 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
   /**
    * Handle wake word detection from Porcupine
    */
-  const handlePorcupineDetection = useCallback((keywordIndex: number) => {
-    console.log('[WakeWordListening] Porcupine wake word detected! Index:', keywordIndex);
+  const handlePorcupineDetection = useCallback((keywordIndex: number, system: VoiceSystemType) => {
+    // Only respond to voiceSearch system wake word
+    if (system !== 'voiceSearch') {
+      console.log('[WakeWordListening] Ignoring wake word - not for voiceSearch system:', system);
+      return;
+    }
+
+    const wakeWordConfig = getWakeWordConfig('voiceSearch');
+    console.log(`[WakeWordListening] Voice Search wake word "${wakeWordConfig.builtInKeyword}" detected!`);
 
     // Set wake word detected state
     setWakeWordDetected(true);
@@ -156,7 +165,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
   }, [onWakeWordDetected, playWakeWordFeedback]);
 
   /**
-   * Initialize wake word detector (Porcupine)
+   * Initialize wake word detector (Porcupine) for Voice Search system
    */
   const initializeWakeWord = useCallback(async () => {
     // Skip if already initialized
@@ -185,21 +194,23 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
     }
 
     try {
-      console.log('[WakeWordListening] Initializing Porcupine wake word detector...');
+      // Get Voice Search wake word config
+      const voiceSearchConfig = getWakeWordConfig('voiceSearch');
+      console.log('[WakeWordListening] Initializing Porcupine for Voice Search system...');
+      console.log(`[WakeWordListening] Wake word: "${voiceSearchConfig.builtInKeyword}" (intended: "${voiceSearchConfig.customPhrase}")`);
 
       // Create Porcupine detector
-      porcupineDetectorRef.current = createPorcupineDetector();
+      porcupineDetectorRef.current = createPorcupineDetector('voiceSearch');
 
-      // Determine model path - use custom model if available, otherwise built-in
-      // Custom model path: /porcupine/hey_buyit_wasm.ppn
-      const customModelPath = '/porcupine/hey_buyit_wasm.ppn';
+      // Use custom model path from config if available
+      const customModelPath = voiceSearchConfig.customModelPath || '/porcupine/hey_buyit_wasm.ppn';
 
-      // Initialize with access key and custom model (if available)
-      // The detector will fall back to built-in keyword if custom model not found
+      // Initialize with access key, model path, sensitivity, and system type
       await porcupineDetectorRef.current.initialize(
         accessKey,
         customModelPath,
-        wakeWordSensitivity
+        wakeWordSensitivity,
+        'voiceSearch'
       );
 
       // Set cooldown
@@ -210,7 +221,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
 
       porcupineInitializedRef.current = true;
       setWakeWordReady(true);
-      console.log('[WakeWordListening] Porcupine initialized successfully, listening for "Hey Buyit"');
+      console.log(`[WakeWordListening] Voice Search ready - say "${voiceSearchConfig.builtInKeyword}" to activate`);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       console.warn('[WakeWordListening] Failed to initialize Porcupine:', errorMessage);

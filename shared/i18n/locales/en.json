@@ -221,7 +221,6 @@
     "recordings": "My Recordings",
     "widgets": "Widgets",
     "help": "Help & Support",
-    "support": "Support",
     "discover": "Discover",
     "account": "Account",
     "subscribe": "Subscribe",
@@ -290,6 +289,10 @@
     "documentaries": "Documentaries",
     "loadingContent": "Loading content...",
     "liveNow": "Live Now",
+    "trendingInIsrael": "Trending in Israel",
+    "jerusalemConnection": "Jerusalem Connection",
+    "telAvivConnection": "Tel Aviv Connection",
+    "categories": "Categories",
     "carousel": {
       "fauda": {
         "title": "Fauda",
@@ -770,7 +773,19 @@
     "privacy": "Privacy",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
-    "about": "About"
+    "about": "About",
+    "display": "Display",
+    "homePageSections": "Home Page Sections",
+    "configureSections": "Configure which sections appear on your home page",
+    "visibleSections": "Visible Sections",
+    "hiddenSections": "Hidden Sections",
+    "dragToReorder": "Drag to reorder",
+    "tapToHide": "Tap to hide",
+    "tapToShow": "Tap to show",
+    "resetToDefault": "Reset to Default",
+    "resetConfirmMessage": "Are you sure you want to reset home page sections to their default configuration?",
+    "sectionHidden": "Section hidden",
+    "sectionShown": "Section shown"
   },
   "help": {
     "subtitle": "How can we help you?",
@@ -2664,13 +2679,45 @@
   "children": {
     "title": "Kids",
     "items": "items",
+    "empty": "No content available",
+    "emptyHint": "Try another category",
     "exitKidsMode": "Exit Kids Mode",
     "exitDescription": "Enter parent code to exit",
     "parentCode": "Parent code",
     "confirm": "Confirm",
     "wrongCode": "Incorrect code",
     "noContent": "No content available",
-    "tryAnotherCategory": "Try selecting another category"
+    "tryAnotherCategory": "Try selecting another category",
+    "categories": {
+      "all": "All",
+      "cartoons": "Cartoons",
+      "educational": "Educational",
+      "music": "Music",
+      "hebrew": "Hebrew",
+      "stories": "Stories",
+      "jewish": "Jewish"
+    },
+    "ageRatings": {
+      "3": "Ages 3+",
+      "5": "Ages 5+",
+      "7": "Ages 7+",
+      "10": "Ages 10+",
+      "12": "Ages 12+"
+    },
+    "moderation": {
+      "pending": "Pending Review",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "admin": {
+      "stats": "Kids Content Manager",
+      "seedContent": "Seed Content",
+      "importArchive": "Import Archive.org",
+      "syncPodcasts": "Sync Podcasts",
+      "syncYouTube": "Sync YouTube",
+      "tagVod": "Tag VOD",
+      "pendingModeration": "Pending Moderation"
+    }
   },
   "chatbot": {
     "title": "Bayit+ Assistant",
@@ -2920,7 +2967,7 @@
     },
     "contact": {
       "voiceTitle": "Voice Support",
-      "voiceDescription": "Click the avatar button or say \"Hey Bayit\" to start a voice conversation with our AI assistant.",
+      "voiceDescription": "Click the avatar button or say \"Jarvis\" to start a voice conversation with our AI assistant.",
       "ticketTitle": "Create Support Ticket",
       "ticketDescription": "Need human assistance? Create a support ticket and our team will respond within 24 hours.",
       "createTicket": "Create Ticket",
@@ -2977,114 +3024,48 @@
     },
     "voice": {
       "title": "Voice Assistant",
-      "status": {
-        "idle": "Tap to speak",
-        "listening": "Listening...",
-        "processing": "Processing",
-        "speaking": "Speaking...",
-        "error": "Error occurred"
-      },
-      "action": {
-        "start": "Tap to Speak",
-        "stop": "Tap to Stop",
-        "processing": "Processing...",
-        "interrupt": "Tap to Interrupt",
-        "retry": "Tap to Retry"
-      },
-      "help": {
-        "idle": "Ask me anything about Bayit+",
-        "listening": "Speak clearly, I'm listening...",
-        "speaking": "Tap to ask another question"
-      },
-      "lastResponse": "Last Response",
-      "quickActions": "Try saying...",
-      "example": {
-        "help": "\"How do I watch live TV?\"",
-        "billing": "\"Tell me about subscriptions\""
-      }
+      "listening": "I'm listening...",
+      "thinking": "Let me think about that...",
+      "speaking": "Speaking...",
+      "error": "Sorry, I didn't catch that. Try again?",
+      "ready": "What would you like to know?",
+      "listeningNow": "Listening...",
+      "wakeWordHint": "Say \"Jarvis\" to speak"
+    },
+    "wizard": {
+      "role": "Your Guide"
     }
   },
-  "admin": {
-    "support": {
-      "title": "Support Dashboard",
-      "subtitle": "Manage customer support tickets",
-      "loading": "Loading dashboard...",
-      "loadError": "Failed to load dashboard data",
-      "empty": "No tickets match your filters",
-      "stats": {
-        "total": "Total",
-        "open": "Open",
-        "inProgress": "In Progress",
-        "resolved": "Resolved",
-        "highPriority": "High Priority"
-      },
-      "filter": {
-        "all": "All",
-        "open": "Open",
-        "inProgress": "In Progress",
-        "resolved": "Resolved",
-        "closed": "Closed"
-      },
-      "priority": {
-        "all": "All Priorities",
-        "urgent": "Urgent",
-        "high": "High",
-        "medium": "Medium",
-        "low": "Low"
-      },
-      "status": {
-        "open": "Open",
-        "inProgress": "In Progress",
-        "resolved": "Resolved",
-        "closed": "Closed"
-      },
-      "category": {
-        "billing": "Billing",
-        "technical": "Technical",
-        "feature": "Feature",
-        "general": "General"
-      },
-      "time": {
-        "justNow": "Just now",
-        "hoursAgo": "{{count}}h ago",
-        "daysAgo": "{{count}}d ago"
-      },
-      "detail": {
-        "user": "User",
-        "category": "Category",
-        "priority": "Priority",
-        "created": "Created",
-        "language": "Language",
-        "message": "Customer Message",
-        "updateStatus": "Update Status",
-        "notes": "Internal Notes",
-        "noNotes": "No notes yet",
-        "addNote": "Add Note",
-        "notePlaceholder": "Write a note...",
-        "saveNote": "Save Note",
-        "useTemplate": "Use Template"
-      },
-      "action": {
-        "resolve": "Mark Resolved"
-      }
-    },
-    "templates": {
-      "title": "Response Templates",
-      "category": {
-        "acknowledgment": "Acknowledgment",
-        "billing": "Billing",
-        "technical": "Technical",
-        "resolution": "Resolution"
-      },
-      "received": "Ticket Received",
-      "investigating": "Investigating",
-      "refundProcessed": "Refund Processed",
-      "subscriptionInfo": "Subscription Info",
-      "clearCache": "Clear Cache",
-      "updateApp": "Update App",
-      "checkConnection": "Check Connection",
-      "issueResolved": "Issue Resolved",
-      "escalated": "Escalated"
+  "jerusalem": {
+    "title": "Jerusalem Connection",
+    "subtitle": "Stay connected to the heart of Israel",
+    "noContent": "No Jerusalem content available",
+    "sources": "Sources",
+    "kotelLive": "Western Wall Live",
+    "categories": {
+      "kotel": "Western Wall",
+      "idf-ceremony": "IDF Ceremonies",
+      "diaspora-connection": "Diaspora Connection",
+      "holy-sites": "Holy Sites",
+      "jerusalem-events": "Jerusalem Events",
+      "general": "Jerusalem"
+    }
+  },
+  "telAviv": {
+    "title": "Tel Aviv Connection",
+    "subtitle": "The city that never stops",
+    "noContent": "No Tel Aviv content available",
+    "sources": "Sources",
+    "beachLive": "Beach Webcam",
+    "categories": {
+      "beaches": "Beaches",
+      "nightlife": "Nightlife",
+      "culture": "Culture & Art",
+      "music": "Music Scene",
+      "food": "Food & Dining",
+      "tech": "Tech & Startups",
+      "events": "Events",
+      "general": "Tel Aviv"
     }
   }
 }

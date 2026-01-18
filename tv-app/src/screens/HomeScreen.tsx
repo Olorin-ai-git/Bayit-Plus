@@ -14,6 +14,7 @@ import {
   GlassCarousel,
   DualClock,
   TrendingRow,
+  JerusalemRow,
 } from '../components';
 import { contentService, liveService, historyService, ritualService } from '../services/api';
 import { colors, spacing } from '../theme';
@@ -229,6 +230,11 @@ export const HomeScreen: React.FC = () => {
             navigation.navigate('Search', { query: localizedTitle });
           }}
         />
+      </View>
+
+      {/* Jerusalem Connection */}
+      <View style={styles.trendingSection}>
+        <JerusalemRow />
       </View>
 
       {/* Continue Watching */}

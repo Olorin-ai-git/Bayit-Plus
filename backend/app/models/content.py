@@ -116,6 +116,11 @@ class Content(Document):
     content_rating: Optional[str] = None  # G, PG, etc.
     educational_tags: List[str] = Field(default_factory=list)  # ["hebrew", "math", "music"]
 
+    # Kids content moderation
+    kids_moderation_status: Optional[str] = None  # "pending", "approved", "rejected"
+    kids_moderated_by: Optional[str] = None  # User ID who moderated
+    kids_moderated_at: Optional[datetime] = None  # When moderation occurred
+
     # Analytics
     view_count: int = 0
     avg_rating: float = 0.0

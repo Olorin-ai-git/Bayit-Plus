@@ -7,6 +7,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { profilesService } from '@/services/api';
 import logger from '@/utils/logger';
+import { VoiceMode } from '@bayit/shared-types/voiceModes';
 
 export type VoiceLanguage = 'he' | 'en' | 'es';
 export type TextSize = 'small' | 'medium' | 'large';
@@ -14,18 +15,21 @@ export type VADSensitivity = 'low' | 'medium' | 'high';
 
 export interface VoicePreferences {
   voice_search_enabled: boolean;
-  // Note: voice_language is now derived from i18n.language instead of stored
   auto_subtitle: boolean;
   high_contrast_mode: boolean;
   text_size: TextSize;
   hold_button_mode: boolean;
   silence_threshold_ms: number;
   vad_sensitivity: VADSensitivity;
-  // Wake word activation (mutually exclusive with always-listening - we use wake word only)
   wake_word_enabled: boolean;
   wake_word: string;
   wake_word_sensitivity: number;
   wake_word_cooldown_ms: number;
+  voice_mode: VoiceMode;
+  tts_enabled: boolean;
+  tts_volume: number;
+  tts_speed: number;
+  voice_feedback_enabled: boolean;
 }
 
 const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
@@ -36,11 +40,15 @@ const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   hold_button_mode: false,
   silence_threshold_ms: 2000,
   vad_sensitivity: 'low',
-  // Wake word activation (mutually exclusive with always-listening - we use wake word only)
-  wake_word_enabled: true,           // Wake word detection ENABLED by default - listen for "Buyit"
+  wake_word_enabled: true,
   wake_word: 'buyit',
   wake_word_sensitivity: 0.7,
   wake_word_cooldown_ms: 2000,
+  voice_mode: VoiceMode.HYBRID,
+  tts_enabled: true,
+  tts_volume: 1.0,
+  tts_speed: 1.0,
+  voice_feedback_enabled: true,
 };
 
 interface VoiceSettingsStore {
@@ -56,7 +64,8 @@ interface VoiceSettingsStore {
     'auto_subtitle' |
     'high_contrast_mode' |
     'hold_button_mode' |
-    'wake_word_enabled'
+    'wake_word_enabled' |
+    'tts_enabled'
   >) => Promise<void>;
   setTextSize: (size: TextSize) => Promise<void>;
   setVADSensitivity: (sensitivity: VADSensitivity) => Promise<void>;
@@ -64,6 +73,10 @@ interface VoiceSettingsStore {
   setWakeWordEnabled: (enabled: boolean) => Promise<void>;
   setWakeWordSensitivity: (sensitivity: number) => Promise<void>;
   setWakeWordCooldown: (ms: number) => Promise<void>;
+  setMode: (mode: VoiceMode) => Promise<void>;
+  setVoiceFeedbackEnabled: (enabled: boolean) => Promise<void>;
+  setTTSVolume: (volume: number) => Promise<void>;
+  setTTSSpeed: (speed: number) => Promise<void>;
   resetToDefaults: () => void;
 }
 

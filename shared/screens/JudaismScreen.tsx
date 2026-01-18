@@ -18,6 +18,8 @@ import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
 import { getLocalizedName, getLocalizedDescription } from '../utils/contentLocalization';
 import { judaismService } from '../services/api';
+import { JerusalemRow } from '../components/JerusalemRow';
+import { TelAvivRow } from '../components/TelAvivRow';
 
 interface JudaismItem {
   id: string;
@@ -255,6 +257,16 @@ export const JudaismScreen: React.FC = () => {
         numColumns={isTV ? 5 : 3}
         key={isTV ? 'tv' : 'mobile'}
         contentContainerStyle={styles.grid}
+        ListHeaderComponent={
+          <View>
+            <View style={styles.jerusalemSection}>
+              <JerusalemRow showTitle={false} />
+            </View>
+            <View style={styles.telAvivSection}>
+              <TelAvivRow showTitle={false} />
+            </View>
+          </View>
+        }
         renderItem={({ item, index }) => (
           <JudaismCard
             item={item}
@@ -445,6 +457,14 @@ const styles = StyleSheet.create({
   emptySubtitle: {
     fontSize: 16,
     color: colors.textSecondary,
+  },
+  jerusalemSection: {
+    marginBottom: spacing.lg,
+    marginHorizontal: -spacing.md,
+  },
+  telAvivSection: {
+    marginBottom: spacing.lg,
+    marginHorizontal: -spacing.md,
   },
 });
 

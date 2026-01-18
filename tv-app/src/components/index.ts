@@ -14,6 +14,7 @@ export {
   GlassSidebar,
   GlassTopBar,
   InteractiveSubtitles,
+  JerusalemRow,
   LanguageSelector,
   SideMenu,
   TrendingRow,

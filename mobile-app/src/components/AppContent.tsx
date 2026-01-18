@@ -3,12 +3,15 @@
  * Wraps components that need navigation context
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, StyleSheet, StatusBar } from 'react-native';
 import { RootNavigator } from '../navigation/RootNavigator';
 import VoiceCommandButton from './voice/VoiceCommandButton';
 import ProactiveSuggestionBanner from './voice/ProactiveSuggestionBanner';
 import { useVoiceMobile, useProactiveVoice } from '../hooks';
+import { VoiceAvatarFAB, VoiceChatModal } from '@bayit/shared/components/support';
+import { useVoiceSupport } from '@bayit/shared-hooks';
+import { supportConfig } from '@bayit/shared-config/supportConfig';
 
 export const AppContent: React.FC = () => {
   // Voice integration (now inside NavigationContainer)
@@ -31,6 +34,24 @@ export const AppContent: React.FC = () => {
     speakSuggestions: true,
     minInterval: 300000, // 5 minutes
   });
+
+  // Voice Support for floating wizard hat FAB
+  const {
+    isVoiceModalOpen,
+    isSupported: voiceSupported,
+    openVoiceModal,
+    closeVoiceModal,
+    startListening: startSupportListening,
+    stopListening: stopSupportListening,
+    interrupt,
+  } = useVoiceSupport();
+
+  const handleVoiceAvatarPress = useCallback(() => {
+    openVoiceModal();
+    setTimeout(() => {
+      startSupportListening();
+    }, 300);
+  }, [openVoiceModal, startSupportListening]);
 
   const handleVoicePress = async () => {
     if (isListening) {
@@ -70,6 +91,23 @@ export const AppContent: React.FC = () => {
         onLongPress={handleVoiceLongPress}
         isListening={isListening || isProcessing}
         isDisabled={!hasPermissions && !isListening}
+      />
+
+      {/* Voice Avatar FAB - Floating wizard hat for voice support */}
+      {voiceSupported && supportConfig.voiceAssistant.enabled && (
+        <VoiceAvatarFAB
+          onPress={handleVoiceAvatarPress}
+          visible={!isVoiceModalOpen}
+        />
+      )}
+
+      {/* Voice Chat Modal - Full-screen voice interaction */}
+      <VoiceChatModal
+        visible={isVoiceModalOpen}
+        onClose={closeVoiceModal}
+        onStartListening={startSupportListening}
+        onStopListening={stopSupportListening}
+        onInterrupt={interrupt}
       />
     </View>
   );

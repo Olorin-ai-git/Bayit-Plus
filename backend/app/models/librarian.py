@@ -59,6 +59,17 @@ class AuditReport(Document):
     # AI insights
     ai_insights: List[str] = Field(default_factory=list)
 
+    # Kids content audit results
+    kids_audit_results: Optional[Dict[str, Any]] = None
+    # {
+    #   "total_kids_items": int,
+    #   "healthy_items": int,
+    #   "age_rating_issues": List,
+    #   "category_issues": List,
+    #   "inappropriate_flags": List,
+    #   "missing_educational_tags": List
+    # }
+
     # Execution logs (for real-time streaming to UI)
     execution_logs: List[Dict[str, Any]] = Field(default_factory=list)
     # Each log entry: {

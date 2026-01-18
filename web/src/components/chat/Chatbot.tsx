@@ -1,40 +1,27 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  ScrollView,
-  Image,
-  Animated,
-  ActivityIndicator,
-} from 'react-native'
-
-// Check if this is a TV build (set by webpack)
-declare const __TV__: boolean;
+import { View, Text, StyleSheet, Pressable, Animated } from 'react-native'
 import { useNavigate } from 'react-router-dom'
-import { X, Send, Sparkles, Mic, Square } from 'lucide-react'
+import { X, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useVoiceListeningContext } from '@bayit/shared-contexts'
-import { chatService } from '@/services/api'
-import { SoundwaveVisualizer, VoiceStatusOverlay } from '@bayit/shared'
 import { useAuthStore } from '@/stores/authStore'
-import { useChatbotStore, type ChatbotAction } from '@/stores/chatbotStore'
+import { useChatbotStore } from '@/stores/chatbotStore'
 import { useVoiceSettingsStore, VoiceMode } from '@bayit/shared-stores/voiceSettingsStore'
 import { useModeEnforcement, useWakeWordListening } from '@bayit/shared-hooks'
-import { useVoiceResponseCoordinator, useConversationContext } from '@bayit/shared-hooks/voice'
+import { useVoiceResponseCoordinator } from '@bayit/shared-hooks/voice'
+import { chatService } from '@/services/api'
 import logger from '@/utils/logger'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassView, GlassCard, GlassButton, GlassBadge, GlassInput } from '@bayit/shared/ui'
-import { useWidgetStore, type VoiceContentItem } from '@/stores/widgetStore'
-import { useChessGame } from '@/hooks/useChessGame'
+import { colors, spacing } from '@bayit/shared/theme'
+import { GlassView } from '@bayit/shared/ui'
+import { ChatMessageList } from './ChatMessageList'
+import { ChatInputBar } from './ChatInputBar'
+import { ChatSuggestionsPanel } from './ChatSuggestionsPanel'
+import { useChatMessages } from './hooks/useChatMessages'
+import { useChatVoice } from './hooks/useChatVoice'
+import { useChatActions } from './hooks/useChatActions'
 
-interface Message {
-  role: 'user' | 'assistant'
-  content: string | Array<{ id: string; title: string; thumbnail: string }>
-  type?: 'recommendations'
-  isError?: boolean
-}
+declare const __TV__: boolean
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__
 
 export default function Chatbot() {
   const { t, i18n } = useTranslation()
@@ -43,590 +30,45 @@ export default function Chatbot() {
   const { preferences, loadPreferences } = useVoiceSettingsStore()
   const { currentMode } = useModeEnforcement()
   const { setListeningState } = useVoiceListeningContext()
-
-  // Debug logging (only log when mode changes, don't include preferences to avoid infinite loops)
-  useEffect(() => {
-    console.log('[Chatbot] Current mode changed:', currentMode)
-  }, [currentMode])
-
-  // Debug voice listening state (reduced logging to avoid infinite loops)
-  useEffect(() => {
-    if (isProcessing || isAwake) {
-      console.log('[Chatbot] Processing state changed:', {
-        isProcessing,
-        isAwake,
-        isTTSSpeaking,
-      })
-    }
-  }, [isProcessing, isAwake, isTTSSpeaking])
-
-  // Share listening states with Layout via context
-  // Include isLoading so soundwave shows "Processing" while waiting for API response
-  useEffect(() => {
-    const contextIsProcessing = isProcessing || isLoading;
-    if (contextIsProcessing || isAwake) {
-      console.log('[Chatbot] ✓ CONTEXT UPDATE - isProcessing:', {
-        hookIsProcessing: isProcessing,
-        isLoading,
-        contextIsProcessing,
-        isAwake,
-        audioLevel,
-      });
-    }
-    setListeningState({
-      isListening,
-      isAwake,
-      isProcessing: contextIsProcessing,
-      audioLevel,
-    })
-  }, [isListening, isAwake, isProcessing, isLoading, audioLevel])
   const {
     isOpen,
     setOpen,
     pendingMessage,
     clearPendingMessage,
-    context,
     loadContext,
-    registerActionHandler,
     executeAction,
   } = useChatbotStore()
 
-  // Voice response orchestration hooks
-  const {
-    isProcessing: isVoiceProcessing,
-    handleVoiceResponse,
-  } = useVoiceResponseCoordinator({
-    onNavigate: (path) => navigate(path),
-    onSearch: (query) => navigate(`/search?q=${encodeURIComponent(query)}`),
-    onPlay: (contentId) => navigate(`/vod/${contentId}`),
-    onProcessingStart: () => setIsLoading(true),
-    onProcessingEnd: () => setIsLoading(false),
-  })
-
-  const {
-    registerVisibleContent,
-    mentionContent,
-    recordCommand,
-    recordSearchQuery,
-  } = useConversationContext()
-
-  // Memoize the transcript handler for wake word listening
-  const handleWakeWordTranscript = useCallback(async (transcript: string, language?: string) => {
-    // Hook has already transcribed the audio - just process the result
-    if (transcript && transcript.trim()) {
-      console.log('[Chatbot] handleWakeWordTranscript called with:', {
-        transcript,
-        language,
-        currentMode,
-      })
-
-      // Deduplication: Skip if same transcript received within 2 seconds
-      const now = Date.now()
-      if (
-        lastTranscriptRef.current &&
-        lastTranscriptRef.current.text === transcript &&
-        now - lastTranscriptRef.current.timestamp < 2000
-      ) {
-        console.log('[Chatbot] Skipping duplicate transcript:', transcript)
-        return
-      }
-
-      lastTranscriptRef.current = { text: transcript, timestamp: now }
-
-      setCurrentTranscript(transcript)
-      setCurrentLanguage(language || null)
-      console.log('[Chatbot] Sending message with language:', language)
-      setVoiceStatusVisible(true)
-      recordCommand(transcript)
-
-      // In Voice Only mode: don't add text to chat, just process voice
-      // In other modes: add messages to chat display
-      if (currentMode !== VoiceMode.VOICE_ONLY) {
-        setMessages((prev) => [...prev, { role: 'user', content: transcript }])
-      }
-      setIsLoading(true)
-
-      try {
-        console.log('[Chatbot] Calling chatService.sendMessage...')
-        const chatResponse = await chatService.sendMessage(
-          transcript,
-          conversationId,
-          context,
-          language
-        )
-        console.log('[Chatbot] chatService.sendMessage response:', chatResponse)
-        setConversationId(chatResponse.conversation_id)
-
-        // Only add assistant message in non-Voice Only modes
-        if (currentMode !== VoiceMode.VOICE_ONLY) {
-          setMessages((prev) => [
-            ...prev,
-            { role: 'assistant', content: chatResponse.message },
-          ])
-        }
-
-        if (chatResponse.content_ids && chatResponse.content_ids.length > 0) {
-          mentionContent(chatResponse.content_ids)
-        }
-
-        if (chatResponse.action?.type === 'search' && chatResponse.action?.payload?.query) {
-          recordSearchQuery(chatResponse.action.payload.query)
-        }
-
-        console.log('[Chatbot] Full chatResponse from backend:', JSON.stringify(chatResponse, null, 2))
-        console.log('[Chatbot] Action from response:', chatResponse.action)
-        console.log('[Chatbot] Calling handleVoiceResponse with:', {
-          spoken_response: chatResponse.spoken_response,
-          action: chatResponse.action?.type,
-          actionPayload: chatResponse.action?.payload,
-          message: chatResponse.message?.substring(0, 50),
-        })
-        await handleVoiceResponse({
-          message: chatResponse.message,
-          conversation_id: chatResponse.conversation_id,
-          recommendations: chatResponse.recommendations,
-          spoken_response: chatResponse.spoken_response,
-          action: chatResponse.action,
-          content_ids: chatResponse.content_ids,
-          visual_action: chatResponse.visual_action,
-          confidence: chatResponse.confidence,
-        })
-        console.log('[Chatbot] handleVoiceResponse completed')
-      } catch (error) {
-        console.error('[Chatbot] Error in catch block:', error)
-        logger.error('Failed to process voice command:', 'Chatbot', error)
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: 'assistant',
-            content: t('chatbot.errors.general'),
-            isError: true,
-          },
-        ])
-      } finally {
-        setIsLoading(false)
-      }
-    }
-  }, [conversationId, context, recordCommand, mentionContent, recordSearchQuery, handleVoiceResponse, t, currentMode])
-
-  // Memoize callbacks for useWakeWordListening to prevent infinite loop
-  const handleWakeWordDetected = useCallback(() => {
-    console.log('[Chatbot] Wake word detected!')
-    setVoiceStatusVisible(true)
-  }, [])
-
-  const handleListeningError = useCallback((error: Error) => {
-    console.error('[Chatbot] Wake word listening error:', error)
-    logger.error('Wake word listening error:', 'Chatbot', error)
-  }, [])
-
-  const transcribeAudioBlob = useCallback(async (audioBlob: Blob) => {
-    try {
-      console.log('[Chatbot] Transcribing audio blob, size:', audioBlob.size)
-      // Use current i18n language for transcription (defaults to Hebrew)
-      const transcriptionLanguage = i18n.language || 'he'
-      console.log('[Chatbot] Using language for transcription:', transcriptionLanguage)
-      const response = await chatService.transcribeAudio(audioBlob, transcriptionLanguage)
-      console.log('[Chatbot] Transcription result:', response)
-      console.log('[Chatbot] Detected language:', response.language, 'Text:', response.text)
-      // Store language for use when sending message
-      if (response.language) {
-        setCurrentLanguage(response.language)
-        console.log('[Chatbot] Set current language to:', response.language)
-      }
-      return response
-    } catch (error) {
-      console.error('[Chatbot] Transcription error:', error)
-      throw error
-    }
-  }, [i18n.language])
-
-  // Initialize wake word listening - disabled here since toggle button in header controls it
-  const {
-    isListening,
-    isAwake,
-    isProcessing,
-    wakeWordDetected,
-    audioLevel,
-    isTTSSpeaking,
-    error: wakeWordError,
-  } = useWakeWordListening({
-    enabled: false, // Voice listening is controlled by toggle button in header
-    wakeWordEnabled: false,
-    wakeWord: preferences?.wake_word ?? 'hi bayit',
-    wakeWordSensitivity: preferences?.wake_word_sensitivity ?? 0.7,
-    wakeWordCooldownMs: preferences?.wake_word_cooldown_ms ?? 2000,
-    onTranscript: handleWakeWordTranscript,
-    onWakeWordDetected: handleWakeWordDetected,
-    onError: handleListeningError,
-    silenceThresholdMs: preferences?.silence_threshold_ms ?? 2000,
-    vadSensitivity: preferences?.vad_sensitivity ?? 'low',
-    transcribeAudio: transcribeAudioBlob,
-  })
+  const inputRef = useRef<any>(null)
+  const slideAnim = useRef(new Animated.Value(100)).current
+  const opacityAnim = useRef(new Animated.Value(0)).current
+  const lastTranscriptRef = useRef<{ text: string; timestamp: number } | null>(null)
+  const [voiceStatusVisible, setVoiceStatusVisible] = useState(false)
 
   const isRTL = i18n.language === 'he' || i18n.language === 'ar'
   const isVoiceOnlyMode = currentMode === VoiceMode.VOICE_ONLY
-  const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [conversationId, setConversationId] = useState<string | null>(null)
-  const [isRecording, setIsRecording] = useState(false)
-  const [isTranscribing, setIsTranscribing] = useState(false)
-  const [currentTranscript, setCurrentTranscript] = useState('')
-  const [voiceStatusVisible, setVoiceStatusVisible] = useState(false)
-  const [currentLanguage, setCurrentLanguage] = useState<string | null>(null)
-  const messagesEndRef = useRef<ScrollView>(null)
-  const inputRef = useRef<any>(null)
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-  const audioChunksRef = useRef<Blob[]>([])
-  const slideAnim = useRef(new Animated.Value(100)).current
-  const opacityAnim = useRef(new Animated.Value(0)).current
-  // Deduplication for transcription results
-  const lastTranscriptRef = useRef<{ text: string; timestamp: number } | null>(null)
 
-  // Initialize welcome message with translation
-  useEffect(() => {
-    setMessages([
-      {
-        role: 'assistant',
-        content: t('chatbot.welcome'),
-      },
-    ])
-  }, [t])
+  // Voice response orchestration
+  const { handleVoiceResponse } = useVoiceResponseCoordinator({
+    onNavigate: (path) => navigate(path),
+    onSearch: (query) => navigate(`/search?q=${encodeURIComponent(query)}`),
+    onPlay: (contentId) => navigate(`/vod/${contentId}`),
+    onProcessingStart: () => {},
+    onProcessingEnd: () => {},
+  })
 
-  // Load context and preferences when component mounts
-  useEffect(() => {
-    loadContext()
-    loadPreferences()
-  }, [loadContext, loadPreferences])
-
-  // Convert backend action format to ChatbotAction format
-  const convertBackendActionToChatbotAction = (backendAction: any): ChatbotAction | null => {
-    if (!backendAction) return null
-
-    console.log('[Chatbot] Converting backend action:', backendAction)
-
-    // Backend action structure: { type, payload, confidence }
-    const { type, payload } = backendAction
-
-    switch (type) {
-      // Navigation actions
-      case 'navigate':
-        return {
-          type: 'navigate',
-          payload: { target: payload?.target || 'home' },
-        }
-
-      // Content playback
-      case 'play':
-        return {
-          type: 'play',
-          payload: { content_id: payload?.content_id },
-        }
-
-      // Playback controls
-      case 'pause':
-        return {
-          type: 'pause',
-          payload: {},
-        }
-
-      case 'resume':
-        return {
-          type: 'resume',
-          payload: {},
-        }
-
-      case 'skip':
-        return {
-          type: 'skip',
-          payload: {},
-        }
-
-      // Search
-      case 'search':
-        return {
-          type: 'search',
-          payload: { query: payload?.query },
-        }
-
-      // Watchlist & Favorites
-      case 'add_to_watchlist':
-        return {
-          type: 'add_to_watchlist',
-          payload: {},
-        }
-
-      case 'add_to_favorites':
-        return {
-          type: 'add_to_favorites',
-          payload: {},
-        }
-
-      // Settings
-      case 'volume':
-        return {
-          type: 'volume',
-          payload: { change: payload?.change },
-        }
-
-      case 'language':
-        return {
-          type: 'language',
-          payload: { language: payload?.language },
-        }
-
-      case 'subtitles':
-        return {
-          type: 'subtitles',
-          payload: { enabled: payload?.enabled },
-        }
-
-      // Info & Help
-      case 'info':
-        return {
-          type: 'info',
-          payload: { query: payload?.query },
-        }
-
-      case 'help':
-        return {
-          type: 'help',
-          payload: {},
-        }
-
-      // Multi-content display
-      case 'show_multiple':
-        return {
-          type: 'show_multiple',
-          payload: { items: payload?.items || [] },
-        }
-
-      // Chess game invite
-      case 'chess_invite':
-        return {
-          type: 'chess_invite',
-          payload: { friendName: payload?.friend_name || payload?.friendName },
-        }
-
-      default:
-        console.warn(`[Chatbot] Unknown action type: ${type}`)
-        return null
-    }
-  }
-
-  // Get widget store functions for voice widgets
-  const createVoiceWidgets = useWidgetStore((state) => state.createVoiceWidgets)
-  const clearVoiceWidgets = useWidgetStore((state) => state.clearVoiceWidgets)
-
-  // Register action handlers for chatbot actions
-  useEffect(() => {
-    // Navigation
-    registerActionHandler('navigate', (payload) => {
-      const navigationMap: Record<string, string> = {
-        movies: '/vod?category=movies',
-        series: '/vod?category=series',
-        channels: '/live',
-        radio: '/radio',
-        podcasts: '/podcasts',
-        home: '/',
-        chess: '/games/chess',
-        games: '/games',
-      }
-      navigate(navigationMap[payload.target] || '/')
-      setOpen(false)
-    })
-
-    // Search
-    registerActionHandler('search', (payload) => {
-      navigate(`/search?q=${encodeURIComponent(payload.query)}`)
-      setOpen(false)
-    })
-
-    // Playback
-    registerActionHandler('play', (payload) => {
-      if (payload.content_id) {
-        navigate(`/vod/${payload.content_id}`)
-      }
-      setOpen(false)
-    })
-
-    registerActionHandler('pause', () => {
-      console.log('[Chatbot] Pause action triggered')
-      // This would typically be handled by the player component
-      // Dispatch to player store or emit event
-    })
-
-    registerActionHandler('resume', () => {
-      console.log('[Chatbot] Resume action triggered')
-      // This would typically be handled by the player component
-    })
-
-    registerActionHandler('skip', () => {
-      console.log('[Chatbot] Skip action triggered')
-      // This would typically be handled by the player component
-    })
-
-    // Watchlist/Favorites
-    registerActionHandler('add_to_watchlist', () => {
-      console.log('[Chatbot] Added to watchlist')
-      // This would typically update the user's watchlist
-    })
-
-    registerActionHandler('add_to_favorites', () => {
-      console.log('[Chatbot] Added to favorites')
-      // This would typically update the user's favorites
-    })
-
-    // Settings
-    registerActionHandler('volume', (payload) => {
-      console.log('[Chatbot] Volume', payload.change)
-      // This would typically adjust the volume
-    })
-
-    registerActionHandler('language', (payload) => {
-      console.log('[Chatbot] Switching to language:', payload.language)
-      // This would typically switch the language
-    })
-
-    registerActionHandler('subtitles', (payload) => {
-      console.log('[Chatbot] Subtitles', payload.enabled ? 'enabled' : 'disabled')
-      // This would typically toggle subtitles
-    })
-
-    // Info
-    registerActionHandler('info', (payload) => {
-      console.log('[Chatbot] Getting info for:', payload.query)
-      // This would typically show detailed info
-    })
-
-    // Help
-    registerActionHandler('help', () => {
-      console.log('[Chatbot] Help requested')
-      // This would typically show help content
-    })
-
-    // Flows (from original)
-    registerActionHandler('create_flow', (payload) => {
-      navigate('/flows', { state: { createFlow: true, template: payload.template } })
-      setOpen(false)
-    })
-
-    registerActionHandler('start_flow', (payload) => {
-      navigate('/flows', { state: { startFlowId: payload.flowId } })
-      setOpen(false)
-    })
-
-    // Show Multiple - display multiple content items in widgets side by side
-    registerActionHandler('show_multiple', async (payload) => {
-      console.log('[Chatbot] show_multiple action with items:', payload.items)
-      
-      if (!payload.items || payload.items.length === 0) {
-        console.warn('[Chatbot] show_multiple called with no items')
-        return
-      }
-
-      try {
-        // Call the resolve-content API to get stream URLs
-        const resolveResponse = await chatService.resolveContent(
-          payload.items.map((item: any) => ({
-            name: item.name,
-            type: item.type || 'any'
-          })),
-          i18n.language
-        )
-
-        if (resolveResponse.items && resolveResponse.items.length > 0) {
-          // Convert to VoiceContentItem format
-          const voiceItems: VoiceContentItem[] = resolveResponse.items.map((item: any) => ({
-            id: item.id,
-            name: item.name,
-            type: item.type as VoiceContentItem['type'],
-            thumbnail: item.thumbnail,
-            streamUrl: item.stream_url,
-            matchedName: item.matched_name,
-            confidence: item.confidence,
-          }))
-
-          // Create widgets
-          createVoiceWidgets(voiceItems)
-
-          // Add success message
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: 'assistant',
-              content: t('chatbot.showMultipleSuccess', {
-                count: voiceItems.length,
-                defaultValue: `Showing ${voiceItems.length} content items`,
-              }),
-            },
-          ])
-        } else {
-          // No items resolved
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: 'assistant',
-              content: t('chatbot.showMultipleNotFound', {
-                defaultValue: 'Could not find the requested content. Please try different names.',
-              }),
-              isError: true,
-            },
-          ])
-        }
-      } catch (error) {
-        console.error('[Chatbot] Error resolving content:', error)
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: 'assistant',
-            content: t('chatbot.errors.general'),
-            isError: true,
-          },
-        ])
-      }
-
-      setOpen(false)
-    })
-
-    // Chess Invite - start a chess game and invite a friend
-    registerActionHandler('chess_invite', async (payload) => {
-      console.log('[Chatbot] chess_invite action for friend:', payload.friendName)
-      
-      // Navigate to chess page with invite state
-      navigate('/games/chess', { 
-        state: { 
-          startGame: true, 
-          inviteFriend: payload.friendName 
-        } 
-      })
-      setOpen(false)
-    })
-  }, [registerActionHandler, navigate, setOpen, createVoiceWidgets, i18n.language, t])
-
-  // Handle pending messages from voice input or external triggers
-  useEffect(() => {
-    if (pendingMessage) {
-      handleExternalMessage(pendingMessage)
-      clearPendingMessage()
-    }
-  }, [pendingMessage, clearPendingMessage])
-
-  // Handle external message (from voice button)
-  const handleExternalMessage = async (message: string) => {
-    setMessages((prev) => [...prev, { role: 'user', content: message }])
-    setIsLoading(true)
-
-    try {
-      const response = await chatService.sendMessage(message, conversationId, context, i18n.language)
-      setConversationId(response.conversation_id)
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: response.message },
-      ])
-
-      // Handle actions from the chatbot response
+  // Chat messages hook
+  const {
+    messages,
+    setMessages,
+    input,
+    setInput,
+    isLoading,
+    sendMessage,
+    sendVoiceMessage,
+    addErrorMessage,
+  } = useChatMessages({
+    onResponse: async (response) => {
       if (response.action) {
         const chatbotAction = convertBackendActionToChatbotAction(response.action)
         if (chatbotAction) {
@@ -634,19 +76,6 @@ export default function Chatbot() {
         }
       }
 
-      if (response.recommendations) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: 'assistant',
-            type: 'recommendations',
-            content: response.recommendations,
-          },
-        ])
-      }
-
-      // Trigger voice response with TTS playback for external voice messages
-      console.log('[Chatbot] Handling external message, calling handleVoiceResponse')
       await handleVoiceResponse({
         message: response.message,
         conversation_id: response.conversation_id,
@@ -657,20 +86,160 @@ export default function Chatbot() {
         visual_action: response.visual_action,
         confidence: response.confidence,
       })
-    } catch {
+    },
+    onError: (error) => {
+      logger.error('Chat error:', 'Chatbot', error)
+    },
+  })
+
+  // Chat voice hook
+  const {
+    isRecording,
+    isTranscribing,
+    currentTranscript,
+    currentLanguage,
+    toggleRecording,
+  } = useChatVoice({
+    onTranscript: async (text, language) => {
+      setVoiceStatusVisible(true)
+      setInput('')
+
+      if (currentMode !== VoiceMode.VOICE_ONLY) {
+        setMessages((prev) => [...prev, { role: 'user', content: text }])
+      }
+
+      try {
+        const response = await sendVoiceMessage(text, language)
+        if (!response) return
+
+        if (currentMode !== VoiceMode.VOICE_ONLY && response.recommendations) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              type: 'recommendations',
+              content: response.recommendations,
+            },
+          ])
+        }
+      } catch (error) {
+        logger.error('Voice message error:', 'Chatbot', error)
+      }
+    },
+    onError: (error) => {
+      addErrorMessage(t('chatbot.errors.micPermission'))
+    },
+  })
+
+  // Chat actions hook
+  const { convertBackendActionToChatbotAction } = useChatActions({
+    onClose: () => setOpen(false),
+    onSuccess: (message) => {
       setMessages((prev) => [
         ...prev,
-        {
-          role: 'assistant',
-          content: t('chatbot.errors.general'),
-          isError: true,
-        },
+        { role: 'assistant', content: message },
       ])
-    } finally {
-      setIsLoading(false)
+    },
+    onError: (message) => {
+      addErrorMessage(message)
+    },
+  })
+
+  // Wake word transcript handler
+  const handleWakeWordTranscript = useCallback(async (transcript: string, language?: string) => {
+    if (!transcript || !transcript.trim()) return
+
+    const now = Date.now()
+    if (
+      lastTranscriptRef.current &&
+      lastTranscriptRef.current.text === transcript &&
+      now - lastTranscriptRef.current.timestamp < 2000
+    ) {
+      console.log('[Chatbot] Skipping duplicate transcript:', transcript)
+      return
+    }
+
+    lastTranscriptRef.current = { text: transcript, timestamp: now }
+    setVoiceStatusVisible(true)
+
+    if (currentMode !== VoiceMode.VOICE_ONLY) {
+      setMessages((prev) => [...prev, { role: 'user', content: transcript }])
+    }
+
+    try {
+      await sendVoiceMessage(transcript, language)
+    } catch (error) {
+      logger.error('Wake word message error:', 'Chatbot', error)
+    }
+  }, [currentMode, sendVoiceMessage, setMessages])
+
+  // Transcribe audio for wake word
+  const transcribeAudioBlob = useCallback(async (audioBlob: Blob) => {
+    try {
+      const transcriptionLanguage = i18n.language || 'he'
+      const response = await chatService.transcribeAudio(audioBlob, transcriptionLanguage)
+      return response
+    } catch (error) {
+      console.error('[Chatbot] Transcription error:', error)
+      throw error
+    }
+  }, [i18n.language])
+
+  // Wake word listening
+  const {
+    isListening,
+    isAwake,
+    isProcessing,
+    audioLevel,
+  } = useWakeWordListening({
+    enabled: false,
+    wakeWordEnabled: false,
+    wakeWord: preferences?.wake_word ?? 'hi bayit',
+    wakeWordSensitivity: preferences?.wake_word_sensitivity ?? 0.7,
+    wakeWordCooldownMs: preferences?.wake_word_cooldown_ms ?? 2000,
+    onTranscript: handleWakeWordTranscript,
+    onWakeWordDetected: () => setVoiceStatusVisible(true),
+    onError: (error) => logger.error('Wake word error:', 'Chatbot', error),
+    silenceThresholdMs: preferences?.silence_threshold_ms ?? 2000,
+    vadSensitivity: preferences?.vad_sensitivity ?? 'low',
+    transcribeAudio: transcribeAudioBlob,
+  })
+
+  // Share listening states with Layout via context
+  useEffect(() => {
+    const contextIsProcessing = isProcessing || isLoading
+    setListeningState({
+      isListening,
+      isAwake,
+      isProcessing: contextIsProcessing,
+      audioLevel,
+    })
+  }, [isListening, isAwake, isProcessing, isLoading, audioLevel, setListeningState])
+
+  // Load context and preferences
+  useEffect(() => {
+    loadContext()
+    loadPreferences()
+  }, [loadContext, loadPreferences])
+
+  // Handle pending messages
+  useEffect(() => {
+    if (pendingMessage) {
+      handleExternalMessage(pendingMessage)
+      clearPendingMessage()
+    }
+  }, [pendingMessage, clearPendingMessage])
+
+  const handleExternalMessage = async (message: string) => {
+    setMessages((prev) => [...prev, { role: 'user', content: message }])
+    try {
+      await sendMessage(message)
+    } catch (error) {
+      logger.error('External message error:', 'Chatbot', error)
     }
   }
 
+  // Open/close animations
   useEffect(() => {
     if (isOpen) {
       Animated.parallel([
@@ -690,236 +259,32 @@ export default function Chatbot() {
       slideAnim.setValue(100)
       opacityAnim.setValue(0)
     }
-  }, [isOpen])
-
-  // Voice recording functions
-  const startRecording = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus',
-      })
-
-      audioChunksRef.current = []
-      mediaRecorderRef.current = mediaRecorder
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data)
-        }
-      }
-
-      mediaRecorder.onstop = async () => {
-        stream.getTracks().forEach((track) => track.stop())
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
-        await transcribeAudio(audioBlob)
-      }
-
-      mediaRecorder.start()
-      setIsRecording(true)
-    } catch (error) {
-      logger.error('Failed to start recording', 'Chatbot', error)
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: t('chatbot.errors.micPermission'),
-          isError: true,
-        },
-      ])
-    }
-  }, [t])
-
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop()
-      setIsRecording(false)
-    }
-  }, [isRecording])
-
-  const transcribeAudio = async (audioBlob: Blob) => {
-    setIsTranscribing(true)
-    try {
-      const response = await chatService.transcribeAudio(audioBlob)
-      const transcribedText = response.text
-
-      if (transcribedText) {
-        setCurrentTranscript(transcribedText)
-        setVoiceStatusVisible(true)
-        setInput('')
-
-        // Record the voice command for context tracking
-        recordCommand(transcribedText)
-
-        // Add user message to chat
-        setMessages((prev) => [...prev, { role: 'user', content: transcribedText }])
-        setIsLoading(true)
-
-        try {
-          // Get response from backend (with enhanced voice fields from Phase 5)
-          const chatResponse = await chatService.sendMessage(
-            transcribedText,
-            conversationId,
-            context,
-            i18n.language
-          )
-          setConversationId(chatResponse.conversation_id)
-
-          // Add assistant message to chat
-          setMessages((prev) => [
-            ...prev,
-            { role: 'assistant', content: chatResponse.message },
-          ])
-
-          // Track mentioned content for context (for "play that one" commands, etc.)
-          if (chatResponse.content_ids && chatResponse.content_ids.length > 0) {
-            mentionContent(chatResponse.content_ids)
-          }
-
-          // Track search queries for context
-          if (chatResponse.action?.type === 'search' && chatResponse.action?.payload?.query) {
-            recordSearchQuery(chatResponse.action.payload.query)
-          }
-
-          // Use voice response coordinator to orchestrate the full response
-          // This handles: visual actions, TTS speaking, command execution
-          await handleVoiceResponse({
-            message: chatResponse.message,
-            conversation_id: chatResponse.conversation_id,
-            recommendations: chatResponse.recommendations,
-            spoken_response: chatResponse.spoken_response,
-            action: chatResponse.action,
-            content_ids: chatResponse.content_ids,
-            visual_action: chatResponse.visual_action,
-            confidence: chatResponse.confidence,
-          })
-
-          // Display recommendations if provided
-          if (chatResponse.recommendations) {
-            setMessages((prev) => [
-              ...prev,
-              {
-                role: 'assistant',
-                type: 'recommendations',
-                content: chatResponse.recommendations,
-              },
-            ])
-          }
-        } catch (error) {
-          logger.error('Failed to process voice command:', 'Chatbot', error)
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: 'assistant',
-              content: t('chatbot.errors.general'),
-              isError: true,
-            },
-          ])
-        } finally {
-          setIsLoading(false)
-        }
-      }
-    } catch (error) {
-      logger.error('Failed to transcribe audio:', 'Chatbot', error)
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: t('chatbot.errors.transcribeFailed'),
-          isError: true,
-        },
-      ])
-    } finally {
-      setIsTranscribing(false)
-    }
-  }
-
-  const toggleRecording = useCallback(() => {
-    if (isRecording) {
-      stopRecording()
-    } else {
-      startRecording()
-    }
-  }, [isRecording, startRecording, stopRecording])
+  }, [isOpen, slideAnim, opacityAnim])
 
   const handleSubmit = async () => {
     if (!input.trim() || isLoading) return
-
-    const userMessage = input.trim()
-    setInput('')
-    setMessages((prev) => [...prev, { role: 'user', content: userMessage }])
-    setIsLoading(true)
-
-    try {
-      const response = await chatService.sendMessage(userMessage, conversationId, context, i18n.language)
-      setConversationId(response.conversation_id)
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: response.message },
-      ])
-
-      // Handle actions from the chatbot response
-      if (response.action) {
-        const chatbotAction = convertBackendActionToChatbotAction(response.action)
-        if (chatbotAction) {
-          executeAction(chatbotAction)
-        }
-      }
-
-      if (response.recommendations) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: 'assistant',
-            type: 'recommendations',
-            content: response.recommendations,
-          },
-        ])
-      }
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: t('chatbot.errors.general'),
-          isError: true,
-        },
-      ])
-    } finally {
-      setIsLoading(false)
-    }
+    await sendMessage(input)
   }
-
-  const suggestedQuestions = [
-    t('chatbot.suggestions.whatToWatch'),
-    t('chatbot.suggestions.israeliMovies'),
-    t('chatbot.suggestions.whatsOnNow'),
-    t('chatbot.suggestions.popularPodcasts'),
-  ]
 
   const handleSuggestion = (question: string) => {
     setInput(question)
     inputRef.current?.focus()
   }
 
-  // Check if this is a TV build (set by webpack)
-  const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+  const handleRecommendationPress = (id: string) => {
+    navigate(`/vod/${id}`)
+  }
 
-  // On TV, show chatbot even without auth for voice interaction
   if (!isAuthenticated && !IS_TV_BUILD) {
     return null
   }
 
-  // Voice Only Mode: Keep component active for voice processing, but don't render UI
-  // The hook still needs to be mounted to process voice responses
   if (isVoiceOnlyMode) {
-    return <></>  // Render empty fragment instead of null to keep component mounted
+    return <></>
   }
 
-  // Hybrid/Classic Mode: Show full chat UI
   return (
     <>
-      {/* Chat Button */}
       {!isOpen && (
         <Pressable
           onPress={() => setOpen(true)}
@@ -935,7 +300,6 @@ export default function Chatbot() {
         </Pressable>
       )}
 
-      {/* Chat Window */}
       {isOpen && (
         <Animated.View
           style={[
@@ -947,7 +311,6 @@ export default function Chatbot() {
           ]}
         >
           <GlassView style={styles.chatContainer} intensity="high">
-            {/* Header */}
             <View style={[styles.header, isRTL && styles.headerRTL]}>
               <View style={[styles.headerLeft, isRTL && styles.headerLeftRTL]}>
                 <View style={styles.headerIcon}>
@@ -966,179 +329,30 @@ export default function Chatbot() {
               </Pressable>
             </View>
 
-            {/* Messages */}
-            <ScrollView
-              ref={messagesEndRef}
-              style={styles.messagesContainer}
-              contentContainerStyle={styles.messagesContent}
-            >
-              {messages.map((message, i) => (
-                <View
-                  key={i}
-                  style={[
-                    styles.messageRow,
-                    message.role === 'user' ? styles.messageRowUser : styles.messageRowAssistant,
-                  ]}
-                >
-                  {message.type === 'recommendations' ? (
-                    <View style={styles.recommendationsContainer}>
-                      <Text style={[styles.recommendationsTitle, isRTL && styles.textRTL]}>{t('chatbot.recommendations')}</Text>
-                      <View style={styles.recommendationsGrid}>
-                        {Array.isArray(message.content) && message.content.map((item) => (
-                          <Pressable
-                            key={item.id}
-                            onPress={() => window.location.href = `/vod/${item.id}`}
-                            style={styles.recommendationCard}
-                          >
-                            <GlassCard style={styles.recommendationCardInner}>
-                              <Image
-                                source={{ uri: item.thumbnail }}
-                                style={styles.recommendationImage}
-                                resizeMode="cover"
-                              />
-                              <Text style={styles.recommendationTitle} numberOfLines={1}>
-                                {item.title}
-                              </Text>
-                            </GlassCard>
-                          </Pressable>
-                        ))}
-                      </View>
-                    </View>
-                  ) : (
-                    <View
-                      style={[
-                        styles.messageBubble,
-                        message.role === 'user' && styles.messageBubbleUser,
-                        message.role === 'assistant' && !message.isError && styles.messageBubbleAssistant,
-                        message.isError && styles.messageBubbleError,
-                      ]}
-                    >
-                      <Text style={[
-                        styles.messageText,
-                        message.isError && styles.messageTextError,
-                      ]}>
-                        {typeof message.content === 'string' ? message.content : ''}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-              ))}
+            <ChatMessageList
+              messages={messages}
+              isLoading={isLoading}
+              isRTL={isRTL}
+              onRecommendationPress={handleRecommendationPress}
+            />
 
-              {isLoading && (
-                <View style={[styles.messageRow, styles.messageRowAssistant]}>
-                  <View style={styles.loadingBubble}>
-                    <ActivityIndicator size="small" color={colors.primary} />
-                  </View>
-                </View>
-              )}
-            </ScrollView>
-
-            {/* Suggestions */}
             {messages.length <= 1 && (
-              <View style={styles.suggestionsContainer}>
-                <View style={styles.suggestionsList}>
-                  {suggestedQuestions.map((q, i) => (
-                    <Pressable
-                      key={i}
-                      onPress={() => handleSuggestion(q)}
-                      style={({ hovered }) => [
-                        styles.suggestionButton,
-                        hovered && styles.suggestionButtonHovered,
-                      ]}
-                    >
-                      <Text style={styles.suggestionText}>{q}</Text>
-                    </Pressable>
-                  ))}
-                </View>
-              </View>
+              <ChatSuggestionsPanel onSuggestionPress={handleSuggestion} />
             )}
 
-            {/* Input - TV uses constant listening, web uses manual input */}
-            {IS_TV_BUILD ? (
-              /* TV: Show listening status with soundwave animation */
-              <View style={styles.tvListeningContainer}>
-                <View style={styles.tvListeningIndicator}>
-                  <SoundwaveVisualizer
-                    audioLevel={0.5}
-                    isListening={true}
-                    isProcessing={isLoading}
-                    isSendingToServer={isLoading}
-                    compact={false}
-                  />
-                  <Text style={styles.tvListeningText}>
-                    {isLoading ? t('chatbot.processing', 'Processing...') : t('chatbot.listening', 'Listening...')}
-                  </Text>
-                </View>
-              </View>
-            ) : (
-              /* Web: Full input controls */
-              <View style={styles.inputContainer}>
-                {/* Recording/Transcribing Status */}
-                {(isRecording || isTranscribing) && (
-                  <View style={styles.statusContainer}>
-                    {isRecording && (
-                      <GlassBadge variant="danger" dot dotColor="danger" size="sm">
-                        {t('chatbot.recording')}
-                      </GlassBadge>
-                    )}
-                    {isTranscribing && (
-                      <GlassBadge
-                        variant="primary"
-                        size="sm"
-                        icon={<ActivityIndicator size="small" color={colors.primary} />}
-                      >
-                        {t('chatbot.transcribing')}
-                      </GlassBadge>
-                    )}
-                  </View>
-                )}
-
-                <View style={[styles.inputRow, isRTL && styles.inputRowRTL]}>
-                  {/* Microphone Button */}
-                  <Pressable
-                    onPress={toggleRecording}
-                    disabled={isLoading || isTranscribing}
-                    style={({ hovered }) => [
-                      styles.micButton,
-                      isRecording && styles.micButtonRecording,
-                      hovered && !isRecording && styles.micButtonHovered,
-                    ]}
-                    accessibilityLabel={isRecording ? t('chatbot.stopRecording') : t('chatbot.startRecording')}
-                  >
-                    {isRecording ? (
-                      <Square size={16} fill={colors.text} color={colors.text} />
-                    ) : (
-                      <Mic size={18} color={colors.text} />
-                    )}
-                  </Pressable>
-
-                  {/* Text Input */}
-                  <GlassInput
-                    ref={inputRef}
-                    value={input}
-                    onChangeText={setInput}
-                    placeholder={t('chatbot.placeholder')}
-                    editable={!isLoading && !isRecording && !isTranscribing}
-                    onSubmitEditing={handleSubmit}
-                    containerStyle={styles.textInputContainer}
-                    inputStyle={[styles.textInput, isRTL && styles.textInputRTL]}
-                  />
-
-                  {/* Send Button */}
-                  <Pressable
-                    onPress={handleSubmit}
-                    disabled={!input.trim() || isLoading || isRecording || isTranscribing}
-                    style={({ hovered }) => [
-                      styles.sendButton,
-                      (!input.trim() || isLoading) && styles.sendButtonDisabled,
-                      hovered && input.trim() && !isLoading && styles.sendButtonHovered,
-                    ]}
-                  >
-                    <Send size={16} color={colors.text} />
-                  </Pressable>
-                </View>
-              </View>
-            )}
+            <ChatInputBar
+              input={input}
+              isLoading={isLoading}
+              isRecording={isRecording}
+              isTranscribing={isTranscribing}
+              isRTL={isRTL}
+              isTVMode={IS_TV_BUILD}
+              audioLevel={audioLevel}
+              inputRef={inputRef}
+              onInputChange={setInput}
+              onSubmit={handleSubmit}
+              onToggleRecording={toggleRecording}
+            />
           </GlassView>
         </Animated.View>
       )}
@@ -1146,18 +360,15 @@ export default function Chatbot() {
   )
 }
 
-// Check if this is a TV build
-const IS_TV = typeof __TV__ !== 'undefined' && __TV__;
-
 const styles = StyleSheet.create({
   chatButton: {
     position: 'fixed' as any,
-    bottom: IS_TV ? spacing.xl : spacing.lg,
-    left: IS_TV ? spacing.xl : spacing.lg,
+    bottom: IS_TV_BUILD ? spacing.xl : spacing.lg,
+    left: IS_TV_BUILD ? spacing.xl : spacing.lg,
     zIndex: 50,
-    width: IS_TV ? 80 : 56,
-    height: IS_TV ? 80 : 56,
-    borderRadius: IS_TV ? 40 : 28,
+    width: IS_TV_BUILD ? 80 : 56,
+    height: IS_TV_BUILD ? 80 : 56,
+    borderRadius: IS_TV_BUILD ? 40 : 28,
     backgroundColor: colors.secondary,
     shadowColor: colors.secondary,
     shadowOffset: { width: 0, height: 4 },
@@ -1176,13 +387,13 @@ const styles = StyleSheet.create({
   },
   chatWindow: {
     position: 'fixed' as any,
-    bottom: IS_TV ? spacing.xl : spacing.lg,
-    left: IS_TV ? spacing.xl : spacing.lg,
+    bottom: IS_TV_BUILD ? spacing.xl : spacing.lg,
+    left: IS_TV_BUILD ? spacing.xl : spacing.lg,
     zIndex: 50,
-    width: IS_TV ? 600 : 384,
+    width: IS_TV_BUILD ? 600 : 384,
     maxWidth: 'calc(100vw - 3rem)' as any,
-    height: IS_TV ? 700 : 500,
-    maxHeight: IS_TV ? '80vh' as any : '70vh' as any,
+    height: IS_TV_BUILD ? 700 : 500,
+    maxHeight: IS_TV_BUILD ? '80vh' as any : '70vh' as any,
   },
   chatContainer: {
     flex: 1,
@@ -1210,224 +421,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
   },
   headerIcon: {
-    width: IS_TV ? 48 : 32,
-    height: IS_TV ? 48 : 32,
-    borderRadius: IS_TV ? 24 : 16,
+    width: IS_TV_BUILD ? 48 : 32,
+    height: IS_TV_BUILD ? 48 : 32,
+    borderRadius: IS_TV_BUILD ? 24 : 16,
     backgroundColor: colors.secondary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerTitle: {
-    fontSize: IS_TV ? 24 : 16,
+    fontSize: IS_TV_BUILD ? 24 : 16,
     fontWeight: '600',
     color: colors.text,
   },
   closeButton: {
     padding: spacing.sm,
-    borderRadius: borderRadius.md,
+    borderRadius: 8,
   },
   closeButtonHovered: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  messagesContainer: {
-    flex: 1,
-  },
-  messagesContent: {
-    padding: spacing.md,
-    gap: spacing.md,
-  },
-  messageRow: {
-    marginBottom: spacing.sm,
-  },
-  messageRowUser: {
-    alignItems: 'flex-start',
-  },
-  messageRowAssistant: {
-    alignItems: 'flex-end',
-  },
-  messageBubble: {
-    maxWidth: '80%',
-    paddingHorizontal: IS_TV ? spacing.lg : spacing.md,
-    paddingVertical: IS_TV ? spacing.md : spacing.sm + 2,
-    borderRadius: borderRadius.lg,
-  },
-  messageBubbleUser: {
-    backgroundColor: colors.primary,
-    borderTopRightRadius: borderRadius.sm,
-  },
-  messageBubbleAssistant: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderTopLeftRadius: borderRadius.sm,
-  },
-  messageBubbleError: {
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-    borderTopLeftRadius: borderRadius.sm,
-  },
-  messageText: {
-    fontSize: IS_TV ? 22 : 14,
-    color: colors.text,
-    lineHeight: IS_TV ? 32 : 20,
-  },
-  messageTextError: {
-    color: colors.error,
-  },
-  loadingBubble: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
-    borderRadius: borderRadius.lg,
-    borderTopLeftRadius: borderRadius.sm,
-  },
-  recommendationsContainer: {
-    width: '100%',
-  },
-  recommendationsTitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-  recommendationsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  recommendationCard: {
-    width: '48%',
-  },
-  recommendationCardInner: {
-    padding: spacing.sm,
-  },
-  recommendationImage: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.xs,
-  },
-  recommendationTitle: {
-    fontSize: 14,
-    color: colors.text,
-  },
-  suggestionsContainer: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.sm,
-  },
-  suggestionsList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  suggestionButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
-    borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  suggestionButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderColor: colors.primary,
-  },
-  suggestionText: {
-    fontSize: IS_TV ? 18 : 12,
-    color: colors.textSecondary,
-  },
-  inputContainer: {
-    padding: IS_TV ? spacing.lg : spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  statusContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: spacing.sm,
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  inputRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  micButton: {
-    width: IS_TV ? 64 : 48,
-    height: IS_TV ? 56 : 40,
-    borderRadius: IS_TV ? 28 : 20,
-    backgroundColor: colors.secondary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  micButtonRecording: {
-    backgroundColor: colors.error,
-    shadowColor: colors.error,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-  },
-  micButtonHovered: {
-    shadowColor: colors.secondary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-  },
-  textInputContainer: {
-    flex: 1,
-    height: IS_TV ? 56 : 40,
-    borderRadius: IS_TV ? 28 : 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: IS_TV ? 2 : 1,
-    borderColor: colors.glassBorder,
-    paddingHorizontal: IS_TV ? spacing.lg : spacing.md,
-    justifyContent: 'center',
-  },
-  textInput: {
-    fontSize: IS_TV ? 20 : 14,
-    color: colors.text,
-  },
-  textInputRTL: {
-    textAlign: 'right',
-  },
-  sendButton: {
-    width: IS_TV ? 56 : 40,
-    height: IS_TV ? 56 : 40,
-    borderRadius: IS_TV ? 28 : 20,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sendButtonDisabled: {
-    opacity: 0.5,
-  },
-  sendButtonHovered: {
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-  },
-  // TV Listening Mode Styles
-  tvListeningContainer: {
-    padding: spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tvListeningIndicator: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.md,
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.xl,
-  },
-  tvListeningText: {
-    fontSize: 22,
-    color: colors.primary,
-    fontWeight: '600',
-    marginTop: spacing.sm,
   },
 })

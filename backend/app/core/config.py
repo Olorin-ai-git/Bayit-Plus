@@ -40,7 +40,9 @@ class Settings(BaseSettings):
     # ElevenLabs (speech-to-text and text-to-speech)
     ELEVENLABS_API_KEY: str = ""
     ELEVENLABS_WEBHOOK_SECRET: str = ""
-    ELEVENLABS_DEFAULT_VOICE_ID: str = "EXAVITQu4vr4xnSDxMaL"  # Rachel - multilingual voice, excellent for Hebrew
+    ELEVENLABS_DEFAULT_VOICE_ID: str = "EXAVITQu4vr4xnSDxMaL"  # Rachel - multilingual female voice for general TTS
+    # Olorin Support Avatar - confident, mature male voice for support/guidance
+    ELEVENLABS_SUPPORT_VOICE_ID: str = "pNInz6obpgDQGcFmaJgB"  # Adam - deep, authoritative male voice
 
     # OpenAI (Whisper speech-to-text)
     OPENAI_API_KEY: str = ""
@@ -240,6 +242,16 @@ class Settings(BaseSettings):
     SUPPORT_CONTEXT_MAX_DOCS: int = 3
     SUPPORT_ESCALATION_THRESHOLD: float = 0.5
     SUPPORT_TICKET_ADMIN_EMAILS: str = ""
+
+    # Jerusalem Content Configuration
+    JERUSALEM_CONTENT_CACHE_TTL_MINUTES: int = 15
+    JERUSALEM_CONTENT_REQUEST_TIMEOUT_SECONDS: float = 10.0
+    JERUSALEM_CONTENT_MIN_RELEVANCE_SCORE: float = 0.3
+
+    # Tel Aviv Content Configuration
+    TEL_AVIV_CONTENT_CACHE_TTL_MINUTES: int = 15
+    TEL_AVIV_CONTENT_REQUEST_TIMEOUT_SECONDS: float = 10.0
+    TEL_AVIV_CONTENT_MIN_RELEVANCE_SCORE: float = 0.3
 
     # Kids Content Configuration
     # YouTube Data API v3 key for importing kids channel content

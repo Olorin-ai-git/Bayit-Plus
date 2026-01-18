@@ -43,6 +43,7 @@ function getExtraNodeModules() {
   modules['@bayit/shared-contexts'] = path.resolve(sharedRoot, 'contexts');
   modules['@bayit/shared-i18n'] = path.resolve(sharedRoot, 'i18n');
   modules['@bayit/shared-assets'] = path.resolve(sharedRoot, 'assets');
+  modules['@bayit/shared-config'] = path.resolve(sharedRoot, 'config');
 
   // Add tv-app admin screens alias
   modules['@bayit/admin-screens'] = path.resolve(tvAppRoot, 'src/screens/admin');
@@ -58,14 +59,19 @@ function getExtraNodeModules() {
   modules['@bayit/shared/chat'] = path.resolve(sharedRoot, 'components/chat');
   modules['@bayit/shared/ui'] = path.resolve(sharedRoot, 'components/ui');
   modules['@bayit/shared/watchparty'] = path.resolve(sharedRoot, 'components/watchparty');
+  modules['@bayit/shared/components/support'] = path.resolve(sharedRoot, 'components/support');
   modules['@bayit/shared-shims'] = path.resolve(sharedRoot, 'shims');
 
   // Shim Expo packages to React Native alternatives
   modules['expo-linear-gradient'] = path.resolve(shimsRoot, 'expo-linear-gradient.ts');
   modules['@expo/vector-icons'] = path.resolve(shimsRoot, 'expo-vector-icons.ts');
-  
+
   // Shim web-specific linear gradient package
   modules['react-native-web-linear-gradient'] = path.resolve(shimsRoot, 'react-native-web-linear-gradient.ts');
+
+  // Shim Picovoice Porcupine (web-only wake word detection)
+  modules['@picovoice/porcupine-web'] = path.resolve(shimsRoot, 'porcupine-web.ts');
+  modules['@picovoice/web-voice-processor'] = path.resolve(shimsRoot, 'porcupine-web.ts');
 
   return modules;
 }
@@ -148,6 +154,7 @@ const config = {
         '@bayit/shared/chat': path.resolve(sharedRoot, 'components/chat'),
         '@bayit/shared/ui': path.resolve(sharedRoot, 'components/ui'),
         '@bayit/shared/watchparty': path.resolve(sharedRoot, 'components/watchparty'),
+        '@bayit/shared/components/support': path.resolve(sharedRoot, 'components/support'),
       };
 
       // Handle single-file imports (not folders)

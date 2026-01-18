@@ -23,7 +23,7 @@ import {
   demoFeatured,
   demoWatchParties,
   demoSearchResults,
-} from '../data/demoData';
+} from '../demo';
 
 // Simulate network delay
 const delay = (ms: number = config.mock.delay): Promise<void> =>

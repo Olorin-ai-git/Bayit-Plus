@@ -30,6 +30,8 @@ export { LanguageSelector } from './LanguageSelector';
 export { SideMenu } from './SideMenu';
 export { SubtitleFlags } from './SubtitleFlags';
 export { TrendingRow } from './TrendingRow';
+export { JerusalemRow } from './JerusalemRow';
+export { TelAvivRow } from './TelAvivRow';
 export { UserAccountMenu } from './UserAccountMenu';
 export { VoiceSearchButton } from './VoiceSearchButton';
 export { SoundwaveVisualizer } from './SoundwaveVisualizer';
@@ -41,6 +43,9 @@ export { VisualFeedbackSystem } from './VisualFeedbackSystem';
 
 // Error handling
 export { ErrorBoundary } from './ErrorBoundary';
+
+// Settings Components
+export * from './settings';
 
 // Note: Admin, WatchParty, and Chat components are web-only
 // They use lucide-react icons which are not available in React Native

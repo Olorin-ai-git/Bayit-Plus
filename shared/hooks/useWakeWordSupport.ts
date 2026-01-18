@@ -1,13 +1,14 @@
 /**
  * Wake Word Support Hook
- * Integrates wake word detection with voice support
- * Automatically opens voice modal when "Hey Bayit" is detected
+ * Integrates wake word detection with voice support (Olorin wizard)
+ * Automatically opens voice modal when "Jarvis" (temporary) / "Olorin" (intended) is detected
  */
 
 import { useEffect, useCallback, useRef, useState } from 'react';
 import { useSupportStore } from '../stores/supportStore';
 import { voiceSupportService } from '../services/voiceSupportService';
 import { supportConfig } from '../config/supportConfig';
+import { VoiceSystemType, getWakeWordConfig } from '../utils/porcupineWakeWordDetector';
 
 interface UseWakeWordSupportOptions {
   enabled?: boolean;
@@ -40,7 +41,7 @@ export function useWakeWordSupport(
   const isSupported = typeof window !== 'undefined' &&
     supportConfig.platforms[getCurrentPlatform()]?.wakeWord === true;
 
-  // Initialize wake word detector
+  // Initialize wake word detector for Support system (Olorin)
   const initializeDetector = useCallback(async () => {
     if (!enabled || !isSupported || isInitializedRef.current) {
       return;
@@ -48,43 +49,63 @@ export function useWakeWordSupport(
 
     try {
       // Dynamically import to avoid loading on unsupported platforms
-      const { PorcupineWakeWordDetector } = await import('../utils/porcupineWakeWordDetector');
+      const {
+        PorcupineWakeWordDetector,
+        getPicovoiceAccessKey,
+        getWakeWordConfig: getConfig,
+      } = await import('../utils/porcupineWakeWordDetector');
 
-      const accessKey = process.env.PICOVOICE_ACCESS_KEY || '';
+      const accessKey = getPicovoiceAccessKey();
       if (!accessKey) {
         console.warn('[WakeWordSupport] No Picovoice access key configured');
         return;
       }
 
-      detectorRef.current = new PorcupineWakeWordDetector({
+      // Get Support system wake word config (Jarvis temporarily, Olorin intended)
+      const supportConfig = getConfig('support');
+      console.log(`[WakeWordSupport] Initializing for Support system (Olorin)...`);
+      console.log(`[WakeWordSupport] Wake word: "${supportConfig.builtInKeyword}" (intended: "${supportConfig.customPhrase}")`);
+
+      // Create detector for support system
+      detectorRef.current = new PorcupineWakeWordDetector();
+
+      // Initialize with support system type
+      await detectorRef.current.initialize(
         accessKey,
-        keyword: 'hey-bayit',
-        sensitivity: 0.6,
-        onDetection: handleWakeWordDetected,
-        onError: handleDetectorError,
-      });
+        supportConfig.customModelPath,
+        0.6, // sensitivity
+        'support'
+      );
 
       isInitializedRef.current = true;
-      console.log('[WakeWordSupport] Detector initialized');
+      console.log(`[WakeWordSupport] Support system ready - say "${supportConfig.builtInKeyword}" to activate Olorin`);
     } catch (error) {
       console.error('[WakeWordSupport] Failed to initialize detector:', error);
       onError?.(error instanceof Error ? error : new Error('Failed to initialize wake word detector'));
     }
   }, [enabled, isSupported, onError]);
 
-  // Handle wake word detection
-  const handleWakeWordDetected = useCallback(() => {
-    console.log('[WakeWordSupport] Wake word detected!');
+  // Handle wake word detection for Support system
+  const handleWakeWordDetected = useCallback((keywordIndex: number, system: VoiceSystemType) => {
+    // Only respond to support system wake word
+    if (system !== 'support') {
+      console.log('[WakeWordSupport] Ignoring wake word - not for support system:', system);
+      return;
+    }
+
+    const supportWakeWord = getWakeWordConfig('support');
+    console.log(`[WakeWordSupport] Olorin wake word "${supportWakeWord.builtInKeyword}" detected!`);
 
     // Don't activate if already in voice interaction
     if (voiceState !== 'idle' || isVoiceModalOpen) {
+      console.log('[WakeWordSupport] Already in voice interaction, ignoring');
       return;
     }
 
     // Stop listening for wake word during interaction
     stopWakeWordDetection();
 
-    // Open voice modal
+    // Open voice modal for Olorin support
     openVoiceModal();
 
     // Start listening immediately
@@ -105,7 +126,7 @@ export function useWakeWordSupport(
     [onError]
   );
 
-  // Start wake word detection
+  // Start wake word detection for Support system
   const startWakeWordDetection = useCallback(async () => {
     if (!isSupported || isListeningForWakeWord) {
       return;
@@ -118,15 +139,16 @@ export function useWakeWordSupport(
       }
 
       if (detectorRef.current) {
-        await detectorRef.current.start();
+        await detectorRef.current.start(handleWakeWordDetected);
         setIsListeningForWakeWord(true);
-        console.log('[WakeWordSupport] Started listening for wake word');
+        const supportWakeWord = getWakeWordConfig('support');
+        console.log(`[WakeWordSupport] Listening for Olorin wake word "${supportWakeWord.builtInKeyword}"...`);
       }
     } catch (error) {
       console.error('[WakeWordSupport] Failed to start detection:', error);
       onError?.(error instanceof Error ? error : new Error('Failed to start wake word detection'));
     }
-  }, [isSupported, isListeningForWakeWord, initializeDetector, onError]);
+  }, [isSupported, isListeningForWakeWord, initializeDetector, handleWakeWordDetected, onError]);
 
   // Stop wake word detection
   const stopWakeWordDetection = useCallback(() => {

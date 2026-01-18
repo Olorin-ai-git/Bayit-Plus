@@ -214,7 +214,6 @@
     "recordings": "ההקלטות שלי",
     "widgets": "וידג'טים",
     "help": "עזרה ותמיכה",
-    "support": "תמיכה",
     "discover": "גילוי",
     "account": "חשבון",
     "subscribe": "הרשמה למנוי",
@@ -283,6 +282,10 @@
     "documentaries": "דוקומנטרים",
     "loadingContent": "טוען תוכן...",
     "liveNow": "עכשיו בשידור",
+    "trendingInIsrael": "פופולרי בישראל",
+    "jerusalemConnection": "חיבור ירושלים",
+    "telAvivConnection": "חיבור תל אביב",
+    "categories": "קטגוריות",
     "carousel": {
       "fauda": {
         "title": "פאודה",
@@ -767,7 +770,19 @@
     "privacy": "פרטיות",
     "privacyPolicy": "מדיניות פרטיות",
     "termsOfService": "תנאי שימוש",
-    "about": "אודות"
+    "about": "אודות",
+    "display": "תצוגה",
+    "homePageSections": "סעיפי דף הבית",
+    "configureSections": "הגדר אילו סעיפים יופיעו בדף הבית שלך",
+    "visibleSections": "סעיפים גלויים",
+    "hiddenSections": "סעיפים מוסתרים",
+    "dragToReorder": "גרור לסידור מחדש",
+    "tapToHide": "לחץ להסתרה",
+    "tapToShow": "לחץ להצגה",
+    "resetToDefault": "אפס לברירת מחדל",
+    "resetConfirmMessage": "האם אתה בטוח שברצונך לאפס את סעיפי דף הבית לתצורה המקורית?",
+    "sectionHidden": "הסעיף הוסתר",
+    "sectionShown": "הסעיף מוצג"
   },
   "help": {
     "subtitle": "איך נוכל לעזור לך?",
@@ -1638,7 +1653,6 @@
         "orphanedItemsFound": "נמצאו {{count}} פריט(ים) נטוש(ים)",
         "fixesApplied": "בוצעו {{count}} תיקון(ים)",
         "auditCompleted": "הביקורת {{status}} ב-{{duration}}s",
-        "connecting": "מתחבר ללוג ביקורת חי...",
         "auditInitializing": "🚀 מאתחל ביקורת {{auditType}}...",
         "dryRunMode": "⚠️ רץ במצב ניסיון - לא ייעשו שינויים",
         "liveMode": "✅ רץ במצב חי - שינויים יבוצעו",
@@ -2649,13 +2663,45 @@
   "children": {
     "title": "ילדים",
     "items": "פריטים",
+    "empty": "אין תוכן זמין",
+    "emptyHint": "נסה קטגוריה אחרת",
     "exitKidsMode": "יציאה ממצב ילדים",
     "exitDescription": "הזן את קוד ההורה כדי לצאת",
     "parentCode": "קוד הורה",
     "confirm": "אישור",
     "wrongCode": "קוד PIN שגוי",
     "noContent": "אין תוכן זמין",
-    "tryAnotherCategory": "נסה לבחור קטגוריה אחרת"
+    "tryAnotherCategory": "נסה לבחור קטגוריה אחרת",
+    "categories": {
+      "all": "הכל",
+      "cartoons": "סרטים מצוירים",
+      "educational": "חינוכי",
+      "music": "מוזיקה",
+      "hebrew": "עברית",
+      "stories": "סיפורים",
+      "jewish": "יהודי"
+    },
+    "ageRatings": {
+      "3": "גילאי 3+",
+      "5": "גילאי 5+",
+      "7": "גילאי 7+",
+      "10": "גילאי 10+",
+      "12": "גילאי 12+"
+    },
+    "moderation": {
+      "pending": "ממתין לבדיקה",
+      "approved": "אושר",
+      "rejected": "נדחה"
+    },
+    "admin": {
+      "stats": "מנהל תוכן ילדים",
+      "seedContent": "הזנת תוכן",
+      "importArchive": "ייבוא מ-Archive.org",
+      "syncPodcasts": "סנכרון פודקאסטים",
+      "syncYouTube": "סנכרון יוטיוב",
+      "tagVod": "תיוג VOD",
+      "pendingModeration": "ממתין למודרציה"
+    }
   },
   "chatbot": {
     "title": "עוזר בית+",
@@ -2893,27 +2939,27 @@
     "faq": {
       "title": "שאלות נפוצות",
       "loading": "טוען שאלות נפוצות...",
-      "loadError": "טעינת שאלות נכשלה",
-      "empty": "אין שאלות בקטגוריה זו",
+      "loadError": "טעינת שאלות נפוצות נכשלה",
+      "empty": "אין פריטים בקטגוריה זו",
       "categories": {
         "all": "כל הנושאים",
         "general": "כללי",
-        "billing": "חיובים",
+        "billing": "חיוב",
         "technical": "טכני",
         "features": "תכונות"
       }
     },
     "contact": {
       "voiceTitle": "תמיכה קולית",
-      "voiceDescription": "לחץ על כפתור האווטאר או אמור \"היי בית\" כדי להתחיל שיחה קולית עם העוזר החכם שלנו.",
-      "ticketTitle": "צור פנייה לתמיכה",
-      "ticketDescription": "צריך עזרה אנושית? צור פנייה לתמיכה וצוות שלנו יגיב תוך 24 שעות.",
+      "voiceDescription": "לחץ על כפתור האווטאר או אמור \"ג'רביס\" כדי להתחיל שיחה קולית עם העוזר שלנו.",
+      "ticketTitle": "צור פנייה",
+      "ticketDescription": "צריך עזרה אנושית? צור פנייה והצוות שלנו יגיב תוך 24 שעות.",
       "createTicket": "צור פנייה",
       "emailTitle": "תמיכה באימייל",
-      "emailDescription": "מעדיף אימייל? פנה אלינו בכתובת support@bayit.tv לכל שאלה או בעיה."
+      "emailDescription": "מעדיף אימייל? פנה אלינו ב-support@bayit.tv לכל שאלה."
     },
     "ticket": {
-      "title": "צור פנייה לתמיכה",
+      "title": "צור פנייה חדשה",
       "subject": "נושא",
       "subjectPlaceholder": "תיאור קצר של הבעיה",
       "message": "הודעה",
@@ -2922,7 +2968,7 @@
       "priorityLabel": "עדיפות",
       "submit": "שלח פנייה",
       "category": {
-        "billing": "חיובים",
+        "billing": "חיוב",
         "technical": "טכני",
         "feature": "בקשת תכונה",
         "general": "כללי"
@@ -2934,19 +2980,19 @@
         "urgent": "דחופה"
       },
       "status": {
-        "open": "פתוחה",
+        "open": "פתוח",
         "in_progress": "בטיפול",
-        "resolved": "נפתרה",
-        "closed": "סגורה"
+        "resolved": "נפתר",
+        "closed": "סגור"
       },
-      "created": "נוצרה",
+      "created": "נוצר",
       "error": {
-        "required": "אנא מלא את כל השדות הנדרשים",
-        "submit": "יצירת הפנייה נכשלה. אנא נסה שוב."
+        "required": "נא למלא את כל השדות הנדרשים",
+        "submit": "יצירת הפנייה נכשלה. נסה שוב."
       }
     },
     "tickets": {
-      "title": "הפניות שלי לתמיכה",
+      "title": "הפניות שלי",
       "loading": "טוען פניות...",
       "loadError": "טעינת פניות נכשלה",
       "empty": "אין פניות עדיין",
@@ -2955,121 +3001,55 @@
       "createFirst": "צור את הפנייה הראשונה שלך",
       "filter": {
         "all": "הכל",
-        "open": "פתוחות",
+        "open": "פתוח",
         "inProgress": "בטיפול",
-        "resolved": "נפתרו"
+        "resolved": "נפתר"
       }
     },
     "voice": {
       "title": "עוזר קולי",
-      "status": {
-        "idle": "הקש כדי לדבר",
-        "listening": "מקשיב...",
-        "processing": "מעבד",
-        "speaking": "מדבר...",
-        "error": "אירעה שגיאה"
-      },
-      "action": {
-        "start": "הקש כדי לדבר",
-        "stop": "הקש כדי לעצור",
-        "processing": "מעבד...",
-        "interrupt": "הקש להפסקה",
-        "retry": "הקש לנסות שוב"
-      },
-      "help": {
-        "idle": "שאל אותי כל דבר על Bayit+",
-        "listening": "דבר בבירור, אני מקשיב...",
-        "speaking": "הקש לשאול שאלה נוספת"
-      },
-      "lastResponse": "תשובה אחרונה",
-      "quickActions": "נסה לומר...",
-      "example": {
-        "help": "\"איך אני צופה בטלוויזיה חיה?\"",
-        "billing": "\"ספר לי על מנויים\""
-      }
+      "listening": "אני מקשיב...",
+      "thinking": "תן לי לחשוב על זה...",
+      "speaking": "מדבר...",
+      "error": "סליחה, לא שמעתי. נסה שוב?",
+      "ready": "מה תרצה לדעת?",
+      "listeningNow": "מקשיב...",
+      "wakeWordHint": "אמור \"ג'רביס\" כדי לדבר"
+    },
+    "wizard": {
+      "role": "המדריך שלך"
     }
   },
-  "admin": {
-    "support": {
-      "title": "לוח בקרה לתמיכה",
-      "subtitle": "ניהול פניות תמיכה לקוחות",
-      "loading": "טוען לוח בקרה...",
-      "loadError": "טעינת נתונים נכשלה",
-      "empty": "אין פניות התואמות את המסננים",
-      "stats": {
-        "total": "סה״כ",
-        "open": "פתוחות",
-        "inProgress": "בטיפול",
-        "resolved": "נפתרו",
-        "highPriority": "עדיפות גבוהה"
-      },
-      "filter": {
-        "all": "הכל",
-        "open": "פתוחות",
-        "inProgress": "בטיפול",
-        "resolved": "נפתרו",
-        "closed": "סגורות"
-      },
-      "priority": {
-        "all": "כל העדיפויות",
-        "urgent": "דחופה",
-        "high": "גבוהה",
-        "medium": "בינונית",
-        "low": "נמוכה"
-      },
-      "status": {
-        "open": "פתוחה",
-        "inProgress": "בטיפול",
-        "resolved": "נפתרה",
-        "closed": "סגורה"
-      },
-      "category": {
-        "billing": "חיובים",
-        "technical": "טכני",
-        "feature": "תכונה",
-        "general": "כללי"
-      },
-      "time": {
-        "justNow": "הרגע",
-        "hoursAgo": "לפני {{count}} שעות",
-        "daysAgo": "לפני {{count}} ימים"
-      },
-      "detail": {
-        "user": "משתמש",
-        "category": "קטגוריה",
-        "priority": "עדיפות",
-        "created": "נוצרה",
-        "language": "שפה",
-        "message": "הודעת הלקוח",
-        "updateStatus": "עדכן סטטוס",
-        "notes": "הערות פנימיות",
-        "noNotes": "אין הערות עדיין",
-        "addNote": "הוסף הערה",
-        "notePlaceholder": "כתוב הערה...",
-        "saveNote": "שמור הערה",
-        "useTemplate": "השתמש בתבנית"
-      },
-      "action": {
-        "resolve": "סמן כנפתרה"
-      }
-    },
-    "templates": {
-      "title": "תבניות תשובה",
-      "category": {
-        "acknowledgment": "אישור קבלה",
-        "billing": "חיובים",
-        "technical": "טכני",
-        "resolution": "פתרון"
-      },
-      "received": "פנייה התקבלה",
-      "investigating": "בבדיקה",
-      "refundProcessed": "החזר כספי עובד",
-      "subscriptionInfo": "מידע על מנוי",
-      "clearCache": "ניקוי מטמון",
-      "updateApp": "עדכן אפליקציה",
-      "checkConnection": "בדוק חיבור",
-      "issueResolved": "בעיה נפתרה",
-      "escalated": "הועבר לטיפול בכיר"
+  "jerusalem": {
+    "title": "חיבור לירושלים",
+    "subtitle": "הישארו מחוברים ללב של ישראל",
+    "noContent": "אין תוכן ירושלים זמין",
+    "sources": "מקורות",
+    "kotelLive": "הכותל בשידור חי",
+    "categories": {
+      "kotel": "הכותל המערבי",
+      "idf-ceremony": "טקסי צה\"ל",
+      "diaspora-connection": "קשר התפוצות",
+      "holy-sites": "אתרים קדושים",
+      "jerusalem-events": "אירועים בירושלים",
+      "general": "ירושלים"
+    }
+  },
+  "telAviv": {
+    "title": "חיבור לתל אביב",
+    "subtitle": "העיר שלא נחה לרגע",
+    "noContent": "אין תוכן תל אביב זמין",
+    "sources": "מקורות",
+    "beachLive": "מצלמת חוף",
+    "categories": {
+      "beaches": "חופים",
+      "nightlife": "חיי לילה",
+      "culture": "תרבות ואמנות",
+      "music": "מוזיקה",
+      "food": "אוכל ומסעדות",
+      "tech": "סטארטאפים והייטק",
+      "events": "אירועים",
+      "general": "תל אביב"
     }
   }
 }

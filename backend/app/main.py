@@ -20,7 +20,8 @@ from app.api.routes import (
     device_pairing, onboarding, widgets, favorites, downloads, user_system_widgets, news, librarian,
     admin_content_vod_read, admin_content_vod_write, admin_content_vod_toggles, admin_categories, admin_live_channels,
     admin_radio_stations, admin_podcasts, admin_podcast_episodes, admin_content_importer, admin_widgets, verification,
-    recordings, epg, password_reset, chess, users, friends, stats, direct_messages, websocket_dm, search, support
+    recordings, epg, password_reset, chess, users, friends, stats, direct_messages, websocket_dm, search, support,
+    admin_kids_content, jerusalem, tel_aviv
 )
 from app.api.routes.admin.recordings import router as admin_recordings_router
 
@@ -633,6 +634,7 @@ app.include_router(admin_content_importer.router, prefix=f"{settings.API_V1_PREF
 app.include_router(admin_widgets.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-widgets"])
 app.include_router(admin_uploads.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-uploads"])
 app.include_router(admin_recordings_router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-recordings"])
+app.include_router(admin_kids_content.router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["admin-kids-content"])
 app.include_router(widgets.router, prefix=f"{settings.API_V1_PREFIX}/widgets", tags=["widgets"])
 app.include_router(user_system_widgets.router, prefix=f"{settings.API_V1_PREFIX}/widgets/system", tags=["user-system-widgets"])
 app.include_router(party.router, prefix=f"{settings.API_V1_PREFIX}/party", tags=["party"])
@@ -659,6 +661,8 @@ app.include_router(users.router, prefix=f"{settings.API_V1_PREFIX}/users", tags=
 app.include_router(direct_messages.router, prefix=f"{settings.API_V1_PREFIX}", tags=["direct-messages"])
 app.include_router(websocket_dm.router, prefix=f"{settings.API_V1_PREFIX}", tags=["websocket", "direct-messages"])
 app.include_router(support.router, prefix=f"{settings.API_V1_PREFIX}/support", tags=["support"])
+app.include_router(jerusalem.router, prefix=f"{settings.API_V1_PREFIX}/jerusalem", tags=["jerusalem"])
+app.include_router(tel_aviv.router, prefix=f"{settings.API_V1_PREFIX}/tel-aviv", tags=["tel-aviv"])
 
 # Serve uploads - local files or proxy to GCS
 @app.api_route("/uploads/{path:path}", methods=["GET", "HEAD"])

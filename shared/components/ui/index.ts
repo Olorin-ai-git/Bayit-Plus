@@ -32,6 +32,10 @@ export { GlassTooltip } from './GlassTooltip';
 // Voice-first conversational interface components (Phases 10)
 export { GlassParticleLayer } from './GlassParticleLayer';
 
+// Reorderable List Components
+export { GlassReorderableList } from './GlassReorderableList';
+export { GlassSectionItem } from './GlassSectionItem';
+
 // Types
 export type { GlassModalProps, ModalType, ModalButton } from './GlassModal';
 export type { AnalogClockProps } from './AnalogClock';

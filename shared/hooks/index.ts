@@ -9,6 +9,8 @@ export { useModeEnforcement } from './useModeEnforcement';
 export { useWakeWordListening } from './useWakeWordListening';
 export type { UseWakeWordListeningOptions, UseWakeWordListeningReturn } from './useWakeWordListening';
 export { useSearch } from './useSearch';
+export { useVoiceSupport } from './useVoiceSupport';
+export { useWakeWordSupport } from './useWakeWordSupport';
 
 // Voice-first conversational interface hooks (Phases 4-10)
 // These hooks depend on react-router-dom and are in a separate export for TV apps

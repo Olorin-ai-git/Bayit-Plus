@@ -52,6 +52,15 @@ from app.models.jewish_community import (
     CommunitySearchResponse,
     RegionsResponse,
 )
+from app.models.jerusalem_content import (
+    JerusalemContentSource,
+    JerusalemContentItem,
+    JerusalemContentCategory,
+    JerusalemContentItemResponse,
+    JerusalemContentSourceResponse,
+    JerusalemContentAggregatedResponse,
+    JerusalemFeaturedResponse,
+)
 
 __all__ = [
     # User
@@ -123,4 +132,12 @@ __all__ = [
     "EventResponse",
     "CommunitySearchResponse",
     "RegionsResponse",
+    # Jerusalem Content
+    "JerusalemContentSource",
+    "JerusalemContentItem",
+    "JerusalemContentCategory",
+    "JerusalemContentItemResponse",
+    "JerusalemContentSourceResponse",
+    "JerusalemContentAggregatedResponse",
+    "JerusalemFeaturedResponse",
 ]

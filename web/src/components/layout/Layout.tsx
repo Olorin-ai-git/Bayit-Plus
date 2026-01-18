@@ -17,6 +17,9 @@ import { useSamsungVoice } from '@/hooks/useSamsungVoice';
 import { useChatbotStore } from '@/stores/chatbotStore';
 import { useDirection } from '@/hooks/useDirection';
 import { useFlowStore } from '@/stores/flowStore';
+import { VoiceAvatarFAB, VoiceChatModal } from '@bayit/shared/components/support';
+import { useVoiceSupport } from '@bayit/shared-hooks';
+import { supportConfig } from '@bayit/shared-config/supportConfig';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
@@ -26,6 +29,30 @@ export default function Layout() {
   // Sidebar state: always expanded by default on both web and TV
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const { isRTL } = useDirection();
+
+  // Voice Support for floating wizard hat FAB
+  const {
+    voiceState,
+    isVoiceModalOpen,
+    isSupported: voiceSupported,
+    openVoiceModal,
+    closeVoiceModal,
+    startListening,
+    stopListening,
+    interrupt,
+  } = useVoiceSupport();
+
+  const handleVoiceAvatarPress = useCallback(() => {
+    // Dispatch custom event to toggle topbar microphone button state
+    console.log('[Layout] Wizard avatar pressed - toggling voice');
+    window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
+
+    // Also open voice modal and start listening
+    openVoiceModal();
+    setTimeout(() => {
+      startListening();
+    }, 300);
+  }, [openVoiceModal, startListening]);
 
   const toggleSidebar = useCallback(() => {
     setIsSidebarExpanded(prev => !prev);
@@ -194,6 +221,23 @@ export default function Layout() {
 
       {/* Chatbot enabled on both web and TV for voice interaction */}
       <Chatbot />
+
+      {/* Voice Avatar FAB - Floating wizard hat for voice support */}
+      {voiceSupported && supportConfig.voiceAssistant.enabled && (
+        <VoiceAvatarFAB
+          onPress={handleVoiceAvatarPress}
+          visible={!isVoiceModalOpen}
+        />
+      )}
+
+      {/* Voice Chat Modal - Full-screen voice interaction */}
+      <VoiceChatModal
+        visible={isVoiceModalOpen}
+        onClose={closeVoiceModal}
+        onStartListening={startListening}
+        onStopListening={stopListening}
+        onInterrupt={interrupt}
+      />
 
       {/* Widget Manager - renders floating overlay widgets */}
       <WidgetManager />

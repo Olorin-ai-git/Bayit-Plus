@@ -393,6 +393,37 @@ class VoicePreferences(BaseModel):
     tts_volume: float = 1.0  # 0-1
 
 
+# Home page section configuration
+class HomeSectionConfig(BaseModel):
+    """Configuration for a single home page section."""
+    id: str  # Section identifier (continue_watching, live_tv, trending, jerusalem, featured, categories)
+    labelKey: str  # i18n label key
+    visible: bool = True  # Whether section is visible
+    order: int  # Display order (0-based)
+    icon: str  # Emoji icon for display
+
+
+class HomePagePreferences(BaseModel):
+    """Home page section visibility and ordering preferences."""
+    sections: List[HomeSectionConfig]
+
+
+# Default home page sections configuration
+DEFAULT_HOME_SECTIONS = [
+    {"id": "continue_watching", "labelKey": "home.continueWatching", "visible": True, "order": 0, "icon": "▶️"},
+    {"id": "live_tv", "labelKey": "home.liveTV", "visible": True, "order": 1, "icon": "📺"},
+    {"id": "trending", "labelKey": "home.trendingInIsrael", "visible": True, "order": 2, "icon": "🔥"},
+    {"id": "jerusalem", "labelKey": "home.jerusalemConnection", "visible": True, "order": 3, "icon": "🕌"},
+    {"id": "tel_aviv", "labelKey": "home.telAvivConnection", "visible": True, "order": 4, "icon": "🏙️"},
+    {"id": "featured", "labelKey": "home.featuredContent", "visible": True, "order": 5, "icon": "⭐"},
+    {"id": "categories", "labelKey": "home.categories", "visible": True, "order": 6, "icon": "📂"},
+]
+
+DEFAULT_HOME_PAGE_SETTINGS = {
+    "sections": DEFAULT_HOME_SECTIONS,
+}
+
+
 @router.get("/preferences/ai")
 async def get_ai_preferences(
     current_user: User = Depends(get_current_active_user),
@@ -435,6 +466,42 @@ async def update_voice_preferences(
     current_user.updated_at = datetime.utcnow()
     await current_user.save()
     return {"message": "Voice preferences updated", "preferences": current_user.preferences["voice_settings"]}
+
+
+@router.get("/preferences/home_page")
+async def get_home_page_preferences(
+    current_user: User = Depends(get_current_active_user),
+):
+    """Get home page section configuration preferences for current user."""
+    # Get saved settings and merge with defaults (so new sections get default values)
+    saved_settings = current_user.preferences.get("home_page_settings", {})
+    saved_sections = saved_settings.get("sections", [])
+
+    # Merge saved sections with defaults to handle new sections
+    saved_section_ids = {s.get("id") for s in saved_sections}
+    merged_sections = list(saved_sections)
+
+    # Add any new default sections that weren't saved
+    for default_section in DEFAULT_HOME_SECTIONS:
+        if default_section["id"] not in saved_section_ids:
+            merged_sections.append({
+                **default_section,
+                "order": len(merged_sections),  # Place new sections at the end
+            })
+
+    return {"sections": merged_sections}
+
+
+@router.put("/preferences/home_page")
+async def update_home_page_preferences(
+    preferences: HomePagePreferences,
+    current_user: User = Depends(get_current_active_user),
+):
+    """Update home page section configuration preferences."""
+    current_user.preferences["home_page_settings"] = preferences.model_dump()
+    current_user.updated_at = datetime.utcnow()
+    await current_user.save()
+    return {"message": "Home page preferences updated", "preferences": current_user.preferences["home_page_settings"]}
 
 
 @router.post("/avatar/upload")

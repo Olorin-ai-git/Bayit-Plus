@@ -12,6 +12,8 @@ import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ContentRow } from '../components/ContentRow';
 import { GlassCarousel } from '../components/GlassCarousel';
 import { TrendingRow } from '../components/TrendingRow';
+import { JerusalemRow } from '../components/JerusalemRow';
+import { TelAvivRow } from '../components/TelAvivRow';
 import { GlassLiveChannelCard } from '../components/ui/GlassLiveChannelCard';
 import { contentService, liveService, historyService, ritualService } from '../services/api';
 import { colors, spacing, fontSize, borderRadius } from '../theme';
@@ -19,6 +21,8 @@ import { getLocalizedName, getLocalizedDescription } from '../utils/contentLocal
 import { formatContentMetadata } from '../utils/metadataFormatters';
 import { useDirection } from '../hooks/useDirection';
 import { isTV } from '../utils/platform';
+import { useHomePageConfigStore } from '../stores/homePageConfigStore';
+import type { HomeSectionId } from '../types/homePageConfig';
 
 interface ContentItem {
   id: string;
@@ -50,6 +54,7 @@ export const HomeScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
   const { isRTL } = useDirection();
+  const { getVisibleSections, loadPreferences } = useHomePageConfigStore();
   const [isLoading, setIsLoading] = useState(true);
   const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
   const [continueWatching, setContinueWatching] = useState<ContentItem[]>([]);
@@ -107,7 +112,8 @@ export const HomeScreen: React.FC = () => {
   useEffect(() => {
     checkMorningRitual();
     loadContent();
-  }, [i18n.language]);
+    loadPreferences();
+  }, [i18n.language, loadPreferences]);
 
   const checkMorningRitual = async () => {
     try {
@@ -222,6 +228,123 @@ export const HomeScreen: React.FC = () => {
     });
   };
 
+  // Render section based on ID
+  const renderSection = (sectionId: HomeSectionId): React.ReactNode => {
+    switch (sectionId) {
+      case 'continue_watching':
+        return continueWatching.length > 0 ? (
+          <ContentRow
+            key="continue_watching"
+            title={t('home.continueWatching')}
+            items={continueWatching}
+            onItemPress={handleItemPress}
+          />
+        ) : null;
+
+      case 'live_tv':
+        return liveChannels.length > 0 ? (
+          <View key="live_tv" style={styles.section}>
+            <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
+              <View style={[styles.sectionTitleRow, isRTL && styles.sectionTitleRowRTL]}>
+                <View style={styles.liveBadge}>
+                  <View style={styles.liveDot} />
+                  <Text style={styles.liveBadgeText}>{t('common.live')}</Text>
+                </View>
+                <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>{t('home.liveTV')}</Text>
+              </View>
+              <Pressable
+                onPress={() => navigation.navigate('LiveTV')}
+                style={({ focused }) => [
+                  styles.seeAllButton,
+                  focused && styles.seeAllButtonFocused,
+                ]}
+              >
+                <Text style={styles.seeAllText}>{t('home.allChannels')}</Text>
+              </Pressable>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={[styles.liveRow, isRTL && styles.liveRowRTL]}
+            >
+              {liveChannels.slice(0, 8).map((channel) => (
+                <View key={channel.id} style={styles.liveCardWrapper}>
+                  <GlassLiveChannelCard
+                    channel={channel}
+                    liveLabel={t('common.live')}
+                    onPress={() => handleLiveChannelPress(channel)}
+                  />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        ) : null;
+
+      case 'trending':
+        return (
+          <View key="trending" style={styles.section}>
+            <TrendingRow
+              onTopicPress={(topic) => {
+                const lang = i18n.language;
+                const localizedTitle = lang === 'he'
+                  ? topic.title
+                  : lang === 'es'
+                    ? (topic.title_es || topic.title_en || topic.title)
+                    : (topic.title_en || topic.title);
+                navigation.navigate('Search', { query: localizedTitle });
+              }}
+            />
+          </View>
+        );
+
+      case 'jerusalem':
+        return (
+          <View key="jerusalem" style={styles.section}>
+            <JerusalemRow />
+          </View>
+        );
+
+      case 'tel_aviv':
+        return (
+          <View key="tel_aviv" style={styles.section}>
+            <TelAvivRow />
+          </View>
+        );
+
+      case 'featured':
+        return featured.length > 0 ? (
+          <ContentRow
+            key="featured"
+            title={t('home.featuredContent')}
+            items={featured}
+            onItemPress={handleItemPress}
+          />
+        ) : null;
+
+      case 'categories':
+        return (
+          <React.Fragment key="categories">
+            {categories.map((category) => (
+              category.items.length > 0 && (
+                <ContentRow
+                  key={category.name}
+                  title={t(`home.${category.name}`, category.name)}
+                  items={category.items}
+                  onItemPress={handleItemPress}
+                />
+              )
+            ))}
+          </React.Fragment>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  // Get visible sections sorted by order
+  const visibleSections = getVisibleSections();
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Header Bar - Digital Clocks (matching web design) */}
@@ -240,7 +363,7 @@ export const HomeScreen: React.FC = () => {
         </View>
       </View>
 
-      {/* Hero Carousel */}
+      {/* Hero Carousel - Always visible, always first */}
       <View style={styles.carouselSection}>
         <GlassCarousel
           items={carouselItems}
@@ -250,89 +373,8 @@ export const HomeScreen: React.FC = () => {
         />
       </View>
 
-      {/* Continue Watching */}
-      {continueWatching.length > 0 && (
-        <ContentRow
-          title={t('home.continueWatching')}
-          items={continueWatching}
-          onItemPress={handleItemPress}
-        />
-      )}
-
-      {/* Live TV - with GlassLiveChannelCard */}
-      {liveChannels.length > 0 && (
-        <View style={styles.section}>
-          <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
-            <View style={[styles.sectionTitleRow, isRTL && styles.sectionTitleRowRTL]}>
-              <View style={styles.liveBadge}>
-                <View style={styles.liveDot} />
-                <Text style={styles.liveBadgeText}>{t('common.live')}</Text>
-              </View>
-              <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>{t('home.liveTV')}</Text>
-            </View>
-            <Pressable
-              onPress={() => navigation.navigate('LiveTV')}
-              style={({ focused }) => [
-                styles.seeAllButton,
-                focused && styles.seeAllButtonFocused,
-              ]}
-            >
-              <Text style={styles.seeAllText}>{t('home.allChannels')}</Text>
-            </Pressable>
-          </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={[styles.liveRow, isRTL && styles.liveRowRTL]}
-          >
-            {liveChannels.slice(0, 8).map((channel) => (
-              <View key={channel.id} style={styles.liveCardWrapper}>
-                <GlassLiveChannelCard
-                  channel={channel}
-                  liveLabel={t('common.live')}
-                  onPress={() => handleLiveChannelPress(channel)}
-                />
-              </View>
-            ))}
-          </ScrollView>
-        </View>
-      )}
-
-      {/* Trending in Israel */}
-      <View style={styles.section}>
-        <TrendingRow
-          onTopicPress={(topic) => {
-            const lang = i18n.language;
-            const localizedTitle = lang === 'he'
-              ? topic.title
-              : lang === 'es'
-                ? (topic.title_es || topic.title_en || topic.title)
-                : (topic.title_en || topic.title);
-            navigation.navigate('Search', { query: localizedTitle });
-          }}
-        />
-      </View>
-
-      {/* Featured */}
-      {featured.length > 0 && (
-        <ContentRow
-          title={t('home.featuredContent')}
-          items={featured}
-          onItemPress={handleItemPress}
-        />
-      )}
-
-      {/* Categories */}
-      {categories.map((category) => (
-        category.items.length > 0 && (
-          <ContentRow
-            key={category.name}
-            title={t(`home.${category.name}`, category.name)}
-            items={category.items}
-            onItemPress={handleItemPress}
-          />
-        )
-      ))}
+      {/* Dynamic Sections - Rendered based on user configuration */}
+      {visibleSections.map((section) => renderSection(section.id))}
     </ScrollView>
   );
 };

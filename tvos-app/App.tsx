@@ -38,6 +38,9 @@ import ProfileFormScreen from './src/screens/ProfileFormScreen';
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';
 import { DemoBanner, SoundwaveVisualizer, ErrorBoundary } from '@bayit/shared';
+import { VoiceAvatarFAB, VoiceChatModal } from '@bayit/shared/components/support';
+import { useVoiceSupport } from '@bayit/shared-hooks';
+import { supportConfig } from '@bayit/shared-config/supportConfig';
 import { Chatbot } from '@bayit/shared/chat';
 import { useChatbotStore, useVoiceSettingsStore } from '@bayit/shared-stores';
 import { chatService } from '@bayit/shared-services';
@@ -197,6 +200,24 @@ const AppContent: React.FC = () => {
   const { sendMessage, toggleOpen } = useChatbotStore();
   const { preferences } = useVoiceSettingsStore();
 
+  // Voice Support for floating wizard hat FAB
+  const {
+    isVoiceModalOpen,
+    isSupported: voiceSupported,
+    openVoiceModal,
+    closeVoiceModal,
+    startListening: startVoiceListening,
+    stopListening: stopVoiceListening,
+    interrupt,
+  } = useVoiceSupport();
+
+  const handleVoiceAvatarPress = useCallback(() => {
+    openVoiceModal();
+    setTimeout(() => {
+      startVoiceListening();
+    }, 300);
+  }, [openVoiceModal, startVoiceListening]);
+
   // Voice control - constant listening for TV
   const handleVoiceTranscript = useCallback((text: string) => {
     if (text) {
@@ -328,6 +349,23 @@ const AppContent: React.FC = () => {
       <Chatbot
         visible={chatbotVisible}
         onClose={() => setChatbotVisible(false)}
+      />
+
+      {/* Voice Avatar FAB - Floating wizard hat for voice support */}
+      {voiceSupported && supportConfig.voiceAssistant.enabled && (
+        <VoiceAvatarFAB
+          onPress={handleVoiceAvatarPress}
+          visible={!isVoiceModalOpen}
+        />
+      )}
+
+      {/* Voice Chat Modal - Full-screen voice interaction */}
+      <VoiceChatModal
+        visible={isVoiceModalOpen}
+        onClose={closeVoiceModal}
+        onStartListening={startVoiceListening}
+        onStopListening={stopVoiceListening}
+        onInterrupt={interrupt}
       />
     </View>
   );

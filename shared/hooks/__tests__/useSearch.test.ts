@@ -405,7 +405,7 @@ describe('useSearch Hook', () => {
 
       await act(async () => {
         result.current.setQuery('Fauda');
-        jest.advanceTimers ByTime(300);
+        jest.advanceTimersByTime(300);
       });
 
       await waitFor(() => {

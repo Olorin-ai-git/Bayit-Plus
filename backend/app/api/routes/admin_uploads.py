@@ -561,6 +561,67 @@ async def get_resume_info(
         )
 
 
+@router.get("/uploads/browser-upload/active")
+async def get_active_browser_sessions(
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """
+    Get all active browser upload sessions for the current user.
+    Returns sessions that are in progress and can be resumed.
+    Used by frontend to reconnect to active uploads on page load.
+    """
+    from app.models.upload import BrowserUploadSession
+    from datetime import timedelta
+
+    try:
+        # Find all non-completed sessions for this user (within 48 hours)
+        cutoff_time = datetime.utcnow() - timedelta(hours=48)
+
+        sessions = await BrowserUploadSession.find(
+            BrowserUploadSession.user_id == str(current_user.id),
+            BrowserUploadSession.status.is_in(["initialized", "uploading"]),
+            BrowserUploadSession.started_at >= cutoff_time,
+        ).sort("-started_at").to_list()
+
+        result = []
+        for session in sessions:
+            # Calculate missing chunks
+            missing_chunks = [
+                i for i in range(session.total_chunks)
+                if i not in session.chunks_received
+            ]
+
+            progress = (session.bytes_received / session.file_size) * 100 if session.file_size > 0 else 0
+
+            result.append({
+                "upload_id": session.upload_id,
+                "filename": session.filename,
+                "file_size": session.file_size,
+                "content_type": session.content_type.value if hasattr(session.content_type, 'value') else session.content_type,
+                "total_chunks": session.total_chunks,
+                "chunks_received": len(session.chunks_received),
+                "missing_chunks": missing_chunks,
+                "bytes_received": session.bytes_received,
+                "progress": round(progress, 1),
+                "status": session.status,
+                "started_at": session.started_at.isoformat(),
+                "last_activity": session.last_activity.isoformat(),
+                "job_id": session.job_id,
+            })
+
+        return {
+            "sessions": result,
+            "count": len(result),
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to get active sessions: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get active sessions: {str(e)}"
+        )
+
+
 @router.post("/uploads/enqueue")
 async def enqueue_upload(
     source_path: str,
@@ -722,6 +783,44 @@ async def clear_upload_queue(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to clear queue: {str(e)}"
+        )
+
+
+@router.post("/uploads/queue/clear-completed")
+async def clear_completed_jobs(
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+):
+    """
+    Clear completed, failed, and cancelled jobs from the queue history.
+    Does not affect queued or processing jobs.
+    """
+    try:
+        from app.models.upload import UploadJob, UploadStatus
+        from beanie.operators import In
+
+        # Delete all completed/failed/cancelled jobs
+        result = await UploadJob.find(
+            In(UploadJob.status, [
+                UploadStatus.COMPLETED,
+                UploadStatus.FAILED,
+                UploadStatus.CANCELLED,
+            ])
+        ).delete()
+
+        deleted_count = result.deleted_count if result else 0
+        logger.info(f"Cleared {deleted_count} completed jobs from queue history")
+
+        return {
+            "success": True,
+            "deleted_count": deleted_count,
+            "message": f"Cleared {deleted_count} completed jobs",
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to clear completed jobs: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to clear completed jobs: {str(e)}"
         )
 
 

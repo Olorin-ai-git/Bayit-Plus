@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import AnimatedCard from '@/components/common/AnimatedCard';
-import { TrendingRow, GlassCarousel } from '@bayit/shared';
+import { TrendingRow, JerusalemRow, GlassCarousel } from '@bayit/shared';
 import { GlassLiveChannelCard, GlassCheckbox } from '@bayit/shared/ui';
 import MorningRitual from '@/components/ritual/MorningRitual';
 import { contentService, liveService, historyService, ritualService } from '@/services/api';
@@ -381,6 +381,11 @@ export default function HomePage() {
       {/* Trending - always renders (has its own loading state) */}
       <View style={styles.section}>
         <TrendingRow />
+      </View>
+
+      {/* Jerusalem Connection - always renders (has its own loading state) */}
+      <View style={styles.section}>
+        <JerusalemRow />
       </View>
 
       {/* Content Filters */}

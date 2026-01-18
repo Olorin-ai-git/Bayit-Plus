@@ -219,7 +219,6 @@
     "recordings": "Mis Grabaciones",
     "widgets": "Widgets",
     "help": "Ayuda y Soporte",
-    "support": "Soporte",
     "discover": "Descubrir",
     "account": "Cuenta",
     "subscribe": "Suscribir",
@@ -288,6 +287,10 @@
     "documentaries": "Documentales",
     "loadingContent": "Cargando contenido...",
     "liveNow": "En Vivo",
+    "trendingInIsrael": "Tendencias en Israel",
+    "jerusalemConnection": "Conexión Jerusalén",
+    "telAvivConnection": "Conexión Tel Aviv",
+    "categories": "Categorías",
     "carousel": {
       "fauda": {
         "title": "Fauda",
@@ -768,7 +771,19 @@
     "darkMode": "Modo Oscuro",
     "privacy": "Privacidad",
     "privacyPolicy": "Política de Privacidad",
-    "termsOfService": "Términos de Servicio"
+    "termsOfService": "Términos de Servicio",
+    "display": "Pantalla",
+    "homePageSections": "Secciones de Inicio",
+    "configureSections": "Configurar secciones de la página de inicio",
+    "visibleSections": "Secciones Visibles",
+    "hiddenSections": "Secciones Ocultas",
+    "dragToReorder": "Arrastra para reordenar",
+    "tapToHide": "Toca para ocultar",
+    "tapToShow": "Toca para mostrar",
+    "resetToDefault": "Restablecer Predeterminado",
+    "resetConfirmMessage": "¿Restablecer todas las secciones a la configuración predeterminada?",
+    "sectionHidden": "Sección oculta",
+    "sectionShown": "Sección visible"
   },
   "voice": {
     "listening": "Escuchando...",
@@ -2553,13 +2568,45 @@
   "children": {
     "title": "Niños",
     "items": "elementos",
+    "empty": "Sin contenido disponible",
+    "emptyHint": "Prueba otra categoría",
     "exitKidsMode": "Salir del modo niños",
     "exitDescription": "Ingresa el código de padre para salir",
     "parentCode": "Código de padre",
     "confirm": "Confirmar",
     "wrongCode": "Código incorrecto",
     "noContent": "Sin contenido disponible",
-    "tryAnotherCategory": "Intenta seleccionar otra categoría"
+    "tryAnotherCategory": "Intenta seleccionar otra categoría",
+    "categories": {
+      "all": "Todo",
+      "cartoons": "Dibujos animados",
+      "educational": "Educativo",
+      "music": "Música",
+      "hebrew": "Hebreo",
+      "stories": "Historias",
+      "jewish": "Judío"
+    },
+    "ageRatings": {
+      "3": "Edades 3+",
+      "5": "Edades 5+",
+      "7": "Edades 7+",
+      "10": "Edades 10+",
+      "12": "Edades 12+"
+    },
+    "moderation": {
+      "pending": "Pendiente de revisión",
+      "approved": "Aprobado",
+      "rejected": "Rechazado"
+    },
+    "admin": {
+      "stats": "Administrador de contenido infantil",
+      "seedContent": "Sembrar contenido",
+      "importArchive": "Importar de Archive.org",
+      "syncPodcasts": "Sincronizar podcasts",
+      "syncYouTube": "Sincronizar YouTube",
+      "tagVod": "Etiquetar VOD",
+      "pendingModeration": "Pendiente de moderación"
+    }
   },
   "chatbot": {
     "title": "Asistente Bayit+",
@@ -2779,8 +2826,8 @@
       "loading": "Cargando documentación...",
       "loadError": "Error al cargar categorías",
       "articleCount": "{{count}} artículos",
-      "gettingStarted": "Primeros Pasos",
-      "features": "Características",
+      "gettingStarted": "Comenzar",
+      "features": "Funciones",
       "troubleshooting": "Solución de Problemas",
       "account": "Cuenta"
     },
@@ -2791,34 +2838,34 @@
     },
     "search": {
       "placeholder": "Buscar en documentación...",
-      "noResults": "Sin resultados"
+      "noResults": "No se encontraron resultados"
     },
     "faq": {
       "title": "Preguntas Frecuentes",
-      "loading": "Cargando FAQ...",
+      "loading": "Cargando preguntas frecuentes...",
       "loadError": "Error al cargar FAQ",
-      "empty": "No hay preguntas en esta categoría",
+      "empty": "No hay elementos en esta categoría",
       "categories": {
         "all": "Todos los Temas",
         "general": "General",
         "billing": "Facturación",
         "technical": "Técnico",
-        "features": "Características"
+        "features": "Funciones"
       }
     },
     "contact": {
       "voiceTitle": "Soporte por Voz",
-      "voiceDescription": "Haz clic en el botón del avatar o di \"Hey Bayit\" para iniciar una conversación con nuestro asistente de IA.",
+      "voiceDescription": "Haz clic en el botón del avatar o di \"Jarvis\" para iniciar una conversación con nuestro asistente.",
       "ticketTitle": "Crear Ticket de Soporte",
       "ticketDescription": "¿Necesitas asistencia humana? Crea un ticket y nuestro equipo responderá en 24 horas.",
       "createTicket": "Crear Ticket",
       "emailTitle": "Soporte por Email",
-      "emailDescription": "¿Prefieres email? Contáctanos en support@bayit.tv para cualquier pregunta."
+      "emailDescription": "¿Prefieres email? Contáctanos en support@bayit.tv para cualquier consulta."
     },
     "ticket": {
       "title": "Crear Ticket de Soporte",
       "subject": "Asunto",
-      "subjectPlaceholder": "Descripción breve del problema",
+      "subjectPlaceholder": "Breve descripción del problema",
       "message": "Mensaje",
       "messagePlaceholder": "Describe tu problema en detalle...",
       "categoryLabel": "Categoría",
@@ -2852,127 +2899,61 @@
       "title": "Mis Tickets de Soporte",
       "loading": "Cargando tickets...",
       "loadError": "Error al cargar tickets",
-      "empty": "No hay tickets todavía",
+      "empty": "No tienes tickets aún",
       "emptyFilter": "No hay tickets con este estado",
       "create": "Nuevo Ticket",
-      "createFirst": "Crea tu Primer Ticket",
+      "createFirst": "Crea Tu Primer Ticket",
       "filter": {
         "all": "Todos",
-        "open": "Abiertos",
+        "open": "Abierto",
         "inProgress": "En Progreso",
-        "resolved": "Resueltos"
+        "resolved": "Resuelto"
       }
     },
     "voice": {
       "title": "Asistente de Voz",
-      "status": {
-        "idle": "Toca para hablar",
-        "listening": "Escuchando...",
-        "processing": "Procesando",
-        "speaking": "Hablando...",
-        "error": "Ocurrió un error"
-      },
-      "action": {
-        "start": "Toca para Hablar",
-        "stop": "Toca para Detener",
-        "processing": "Procesando...",
-        "interrupt": "Toca para Interrumpir",
-        "retry": "Toca para Reintentar"
-      },
-      "help": {
-        "idle": "Pregúntame sobre Bayit+",
-        "listening": "Habla claro, te escucho...",
-        "speaking": "Toca para otra pregunta"
-      },
-      "lastResponse": "Última Respuesta",
-      "quickActions": "Intenta decir...",
-      "example": {
-        "help": "\"¿Cómo veo TV en vivo?\"",
-        "billing": "\"Cuéntame sobre las suscripciones\""
-      }
+      "listening": "Estoy escuchando...",
+      "thinking": "Déjame pensar en eso...",
+      "speaking": "Hablando...",
+      "error": "Lo siento, no entendí. ¿Puedes repetir?",
+      "ready": "¿Qué te gustaría saber?",
+      "listeningNow": "Escuchando...",
+      "wakeWordHint": "Di \"Jarvis\" para hablar"
+    },
+    "wizard": {
+      "role": "Tu Guía"
     }
   },
-  "admin": {
-    "support": {
-      "title": "Panel de Soporte",
-      "subtitle": "Gestionar tickets de soporte al cliente",
-      "loading": "Cargando panel...",
-      "loadError": "Error al cargar datos",
-      "empty": "No hay tickets que coincidan con los filtros",
-      "stats": {
-        "total": "Total",
-        "open": "Abiertos",
-        "inProgress": "En Progreso",
-        "resolved": "Resueltos",
-        "highPriority": "Alta Prioridad"
-      },
-      "filter": {
-        "all": "Todos",
-        "open": "Abiertos",
-        "inProgress": "En Progreso",
-        "resolved": "Resueltos",
-        "closed": "Cerrados"
-      },
-      "priority": {
-        "all": "Todas las Prioridades",
-        "urgent": "Urgente",
-        "high": "Alta",
-        "medium": "Media",
-        "low": "Baja"
-      },
-      "status": {
-        "open": "Abierto",
-        "inProgress": "En Progreso",
-        "resolved": "Resuelto",
-        "closed": "Cerrado"
-      },
-      "category": {
-        "billing": "Facturación",
-        "technical": "Técnico",
-        "feature": "Función",
-        "general": "General"
-      },
-      "time": {
-        "justNow": "Ahora mismo",
-        "hoursAgo": "hace {{count}}h",
-        "daysAgo": "hace {{count}}d"
-      },
-      "detail": {
-        "user": "Usuario",
-        "category": "Categoría",
-        "priority": "Prioridad",
-        "created": "Creado",
-        "language": "Idioma",
-        "message": "Mensaje del Cliente",
-        "updateStatus": "Actualizar Estado",
-        "notes": "Notas Internas",
-        "noNotes": "Sin notas aún",
-        "addNote": "Agregar Nota",
-        "notePlaceholder": "Escribe una nota...",
-        "saveNote": "Guardar Nota",
-        "useTemplate": "Usar Plantilla"
-      },
-      "action": {
-        "resolve": "Marcar Resuelto"
-      }
-    },
-    "templates": {
-      "title": "Plantillas de Respuesta",
-      "category": {
-        "acknowledgment": "Confirmación",
-        "billing": "Facturación",
-        "technical": "Técnico",
-        "resolution": "Resolución"
-      },
-      "received": "Ticket Recibido",
-      "investigating": "Investigando",
-      "refundProcessed": "Reembolso Procesado",
-      "subscriptionInfo": "Info de Suscripción",
-      "clearCache": "Limpiar Caché",
-      "updateApp": "Actualizar App",
-      "checkConnection": "Verificar Conexión",
-      "issueResolved": "Problema Resuelto",
-      "escalated": "Escalado"
+  "jerusalem": {
+    "title": "Conexión con Jerusalén",
+    "subtitle": "Mantente conectado al corazón de Israel",
+    "noContent": "No hay contenido de Jerusalén disponible",
+    "sources": "Fuentes",
+    "kotelLive": "Muro Occidental en Vivo",
+    "categories": {
+      "kotel": "Muro Occidental",
+      "idf-ceremony": "Ceremonias de las FDI",
+      "diaspora-connection": "Conexión con la Diáspora",
+      "holy-sites": "Sitios Sagrados",
+      "jerusalem-events": "Eventos en Jerusalén",
+      "general": "Jerusalén"
+    }
+  },
+  "telAviv": {
+    "title": "Conexión con Tel Aviv",
+    "subtitle": "La ciudad que nunca duerme",
+    "noContent": "No hay contenido de Tel Aviv disponible",
+    "sources": "Fuentes",
+    "beachLive": "Cámara de Playa",
+    "categories": {
+      "beaches": "Playas",
+      "nightlife": "Vida Nocturna",
+      "culture": "Cultura y Arte",
+      "music": "Escena Musical",
+      "food": "Gastronomía",
+      "tech": "Tecnología",
+      "events": "Eventos",
+      "general": "Tel Aviv"
     }
   }
 }

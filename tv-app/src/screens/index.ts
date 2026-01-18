@@ -7,7 +7,7 @@ export { VODScreen } from './VODScreen';
 export { PodcastsScreen } from './PodcastsScreen';
 export { SearchScreen } from './SearchScreen';
 export { RegisterScreen } from './RegisterScreen';
-export { ProfileScreen } from './ProfileScreen';
+export { ProfileScreen } from './profile';
 export { FavoritesScreen } from './FavoritesScreen';
 export { DownloadsScreen } from './DownloadsScreen';
 export { WatchlistScreen } from './WatchlistScreen';

@@ -39,6 +39,7 @@ from app.models.direct_message import DirectMessage
 from app.models.jewish_news import JewishNewsSource, JewishNewsItem
 from app.models.jewish_calendar import JewishCalendarCache
 from app.models.jewish_community import JewishOrganization, CommunityEvent, ScrapingJob
+from app.models.jerusalem_content import JerusalemContentSource, JerusalemContentItem
 
 
 class Database:
@@ -136,6 +137,9 @@ async def connect_to_mongo():
             JewishOrganization,
             CommunityEvent,
             ScrapingJob,
+            # Jerusalem Content models
+            JerusalemContentSource,
+            JerusalemContentItem,
         ],
     )
     print(f"Connected to MongoDB: {settings.MONGODB_DB_NAME}")

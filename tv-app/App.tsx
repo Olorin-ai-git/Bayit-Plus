@@ -39,6 +39,9 @@ import { useAuthStore, useChatbotStore } from '@bayit/shared-stores';
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';
 import { GlassTopBar, GlassSidebar, DemoBanner } from '@bayit/shared';
+import { VoiceAvatarFAB, VoiceChatModal } from '@bayit/shared/components/support';
+import { useVoiceSupport } from '@bayit/shared-hooks';
+import { supportConfig } from '@bayit/shared-config/supportConfig';
 import { isWeb } from './src/utils/platform';
 
 // Ignore specific warnings for TV
@@ -251,6 +254,24 @@ const AppContent: React.FC = () => {
   const { isRTL } = useDirection();
   const sidebarWidth = sidebarExpanded ? SIDEBAR_EXPANDED_WIDTH : SIDEBAR_COLLAPSED_WIDTH;
 
+  // Voice Support for floating wizard hat FAB
+  const {
+    isVoiceModalOpen,
+    isSupported: voiceSupported,
+    openVoiceModal,
+    closeVoiceModal,
+    startListening,
+    stopListening,
+    interrupt,
+  } = useVoiceSupport();
+
+  const handleVoiceAvatarPress = () => {
+    openVoiceModal();
+    setTimeout(() => {
+      startListening();
+    }, 300);
+  };
+
   return (
     <View style={appStyles.container}>
       <StatusBar hidden />
@@ -333,6 +354,23 @@ const AppContent: React.FC = () => {
           </Stack.Navigator>
         </View>
       </View>
+
+      {/* Voice Avatar FAB - Floating wizard hat for voice support */}
+      {voiceSupported && supportConfig.voiceAssistant.enabled && (
+        <VoiceAvatarFAB
+          onPress={handleVoiceAvatarPress}
+          visible={!isVoiceModalOpen}
+        />
+      )}
+
+      {/* Voice Chat Modal - Full-screen voice interaction */}
+      <VoiceChatModal
+        visible={isVoiceModalOpen}
+        onClose={closeVoiceModal}
+        onStartListening={startListening}
+        onStopListening={stopListening}
+        onInterrupt={interrupt}
+      />
     </View>
   );
 };
