@@ -12,7 +12,7 @@
  */
 
 import React, { useCallback, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Dimensions, Platform } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Dimensions, Platform, Linking } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -226,11 +226,15 @@ export default function PiPWidgetContainer({ widgetId, streamUrl }: PiPWidgetCon
     };
   });
 
-  // Handle refresh
+  // Handle refresh - triggers content reload
   const handleRefresh = useCallback(() => {
-    // TODO: Implement refresh logic
-    console.log('Refresh widget:', widgetId);
-  }, [widgetId]);
+    setLoading(true);
+    setError(null);
+    // Small delay then reset loading to trigger content re-render
+    setTimeout(() => {
+      setLoading(!streamUrl);
+    }, 100);
+  }, [streamUrl]);
 
   // Render loading state
   const renderLoading = () => (
@@ -325,15 +329,20 @@ export default function PiPWidgetContainer({ widgetId, streamUrl }: PiPWidgetCon
         }
         return (
           <View style={styles.playerWrapper}>
-            <Text style={styles.placeholderText}>WebView TODO</Text>
-            {/* TODO: Add react-native-webview
-            <WebView source={{ uri: widget.content.iframe_url }} /> */}
+            <View style={styles.iframeContainer}>
+              <Text style={styles.iframeText}>External content</Text>
+              <Pressable
+                style={styles.iframeButton}
+                onPress={() => Linking.openURL(widget.content.iframe_url!)}
+              >
+                <Text style={styles.iframeButtonText}>Open in browser</Text>
+              </Pressable>
+            </View>
           </View>
         );
 
       case 'custom':
-        // TODO: Render custom components based on component_name
-        return renderError(`Custom component: ${widget.content.component_name}`);
+        return renderError(`Component "${widget.content.component_name}" not available`);
 
       default:
         return renderError('No content configured');
@@ -498,11 +507,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  placeholderText: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.5)',
-    fontWeight: '500',
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -531,5 +535,29 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 12,
     color: 'rgba(255, 255, 255, 0.6)',
+  },
+  iframeContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  iframeText: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginBottom: 12,
+  },
+  iframeButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  iframeButtonText: {
+    fontSize: 12,
+    color: '#fff',
+    fontWeight: '500',
   },
 });

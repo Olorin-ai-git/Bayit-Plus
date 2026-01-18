@@ -1,39 +1,32 @@
 /**
  * Shared Hooks Stub
- * Temporary implementation until monorepo is configured
+ *
+ * DEVELOPMENT STUB ONLY - DO NOT USE IN PRODUCTION
+ *
+ * This stub exists for build compatibility when the shared directory is unavailable.
+ * All hooks throw errors to ensure proper configuration before deployment.
+ *
+ * To use real hooks, ensure the shared directory is correctly linked
+ * in metro.config.js.
  */
 
-export const useAuth = () => ({
-  user: {
-    id: '1',
-    name: 'Demo User',
-    email: 'demo@bayit.tv',
-    avatar: 'https://via.placeholder.com/100',
-    subscription: 'premium',
-  },
-  isAuthenticated: true,
-  login: async () => {},
-  logout: async () => {},
-  register: async () => {},
-});
+const STUB_ERROR = new Error(
+  'Shared hooks stub active. Real shared hooks not linked. ' +
+  'Ensure the shared directory exists at ../shared relative to mobile-app.'
+);
 
-export const usePermissions = () => ({
-  hasPermission: (permission: string) => true,
-  hasAnyPermission: (permissions: string[]) => true,
-  hasAllPermissions: (permissions: string[]) => true,
-  isAdmin: true,
-  isSuperAdmin: false,
-});
+export const useAuth = () => {
+  throw STUB_ERROR;
+};
 
-export const useDirection = () => ({
-  isRTL: false,
-  direction: 'ltr' as const,
-  align: 'left' as const,
-});
+export const usePermissions = () => {
+  throw STUB_ERROR;
+};
 
-export const useDeviceLayout = () => ({
-  isTV: false,
-  isMobile: true,
-  isWeb: false,
-  platform: 'ios' as const,
-});
+export const useDirection = () => {
+  throw STUB_ERROR;
+};
+
+export const useDeviceLayout = () => {
+  throw STUB_ERROR;
+};

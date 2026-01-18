@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { VoiceSearchButton } from '@bayit/shared';
 import { chatService } from '@/services/api';
+import { useAuthStore } from '@bayit/shared-stores';
 import logger from '@/utils/logger';
 
 // Shared search components
@@ -54,8 +55,8 @@ export default function SearchPage() {
   // LLM search modal state
   const [showLLMSearch, setShowLLMSearch] = useState(false);
 
-  // Premium user status (TODO: get from auth context)
-  const [isPremium, setIsPremium] = useState(false);
+  // Premium user status from auth store
+  const isPremium = useAuthStore((state) => state.isPremium());
 
   // Active content type filter
   const [activeContentType, setActiveContentType] = useState(

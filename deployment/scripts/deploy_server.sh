@@ -317,6 +317,12 @@ EOF
     create_or_update_secret "bayit-chabad-multimedia-rss-url" "CHABAD_MULTIMEDIA_RSS_URL"
     create_or_update_secret "bayit-torahanytime-rss-url" "TORAHANYTIME_RSS_URL"
 
+    # Apple Push Notifications (APNs)
+    create_or_update_secret "bayit-apple-key-id" "APPLE_KEY_ID"
+    create_or_update_secret "bayit-apple-team-id" "APPLE_TEAM_ID"
+    create_or_update_secret "bayit-apple-bundle-id-ios" "APPLE_BUNDLE_ID_IOS"
+    create_or_update_secret "bayit-apple-bundle-id-tvos" "APPLE_BUNDLE_ID_TVOS"
+
     print_success "Secrets created/updated from .env"
 
     # Step 5: Grant Secret Access
@@ -344,7 +350,8 @@ EOF
                   bayit-hebcal-api-url bayit-sefaria-api-url bayit-jewish-calendar-cache-ttl \
                   bayit-community-search-radius bayit-community-default-region bayit-us-jewish-regions \
                   bayit-community-scrape-interval bayit-yutorah-rss-url bayit-chabad-multimedia-rss-url \
-                  bayit-torahanytime-rss-url; do
+                  bayit-torahanytime-rss-url \
+                  bayit-apple-key-id bayit-apple-team-id bayit-apple-bundle-id-ios bayit-apple-bundle-id-tvos; do
         gcloud secrets add-iam-policy-binding "$secret" \
             --member="serviceAccount:$SERVICE_ACCOUNT" \
             --role="roles/secretmanager.secretAccessor" \
@@ -479,6 +486,7 @@ EOF
     echo "  ✓ Twilio SMS verification (Account SID + Auth Token + Phone Number)"
     echo "  ✓ Judaism Section (Jewish News, Calendar, Community Directory, Torah Content)"
     echo "  ✓ GCS Upload (10min timeout, 5 retries, 8MB chunks)"
+    echo "  ✓ Apple Push Notifications (APNs for iOS + tvOS)"
     echo ""
     echo "Next steps:"
     echo "  1. Update OAuth redirect URIs in Google Cloud Console"

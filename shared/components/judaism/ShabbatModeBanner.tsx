@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   contentRTL: {
-    direction: 'rtl',
+    writingDirection: 'rtl',
   },
   header: {
     flexDirection: 'row',

@@ -1,69 +1,55 @@
 /**
  * Shared Services Stub
- * Temporary implementation with mock data until real API is connected
+ *
+ * DEVELOPMENT STUB ONLY - DO NOT USE IN PRODUCTION
+ *
+ * This stub exists for build compatibility when the shared directory is unavailable.
+ * All methods throw errors to ensure proper configuration before deployment.
+ *
+ * To use real services, ensure the shared directory is correctly linked
+ * in metro.config.js.
  */
 
-// Mock data
-const mockChannels = [
-  { id: '1', number: '13', name: 'Channel 13', name_en: 'Channel 13', logo: 'https://via.placeholder.com/100', currentProgram: 'News', current_program: 'News', category: 'news' },
-  { id: '2', number: '12', name: 'Channel 12', name_en: 'Channel 12', logo: 'https://via.placeholder.com/100', currentProgram: 'Drama', current_program: 'Drama', category: 'entertainment' },
-  { id: '3', number: '11', name: 'Channel 11', name_en: 'Channel 11', logo: 'https://via.placeholder.com/100', currentProgram: 'Talk Show', current_program: 'Talk Show', category: 'talk' },
-];
-
-const mockContent = [
-  { id: '1', title: 'Israeli Movie 1', title_en: 'Israeli Movie 1', poster: 'https://via.placeholder.com/200x300', year: 2023, rating: 8.5, category: 'movies' },
-  { id: '2', title: 'Israeli Series 1', title_en: 'Israeli Series 1', poster: 'https://via.placeholder.com/200x300', year: 2024, rating: 9.0, category: 'series' },
-  { id: '3', title: 'Documentary 1', title_en: 'Documentary 1', poster: 'https://via.placeholder.com/200x300', year: 2023, rating: 7.8, category: 'documentary' },
-];
-
-const mockCategories = [
-  { id: 'all', name: 'All', name_en: 'All' },
-  { id: 'news', name: 'News', name_en: 'News' },
-  { id: 'entertainment', name: 'Entertainment', name_en: 'Entertainment' },
-  { id: 'movies', name: 'Movies', name_en: 'Movies' },
-  { id: 'series', name: 'Series', name_en: 'Series' },
-];
+const STUB_ERROR = new Error(
+  'Shared services stub active. Real shared services not linked. ' +
+  'Ensure the shared directory exists at ../shared relative to mobile-app.'
+);
 
 export const contentService = {
-  getFeatured: async () => ({
-    items: mockContent,
-    hero: mockContent[0],
-    spotlight: mockContent,
-    picks: mockContent,
-  }),
-  getVOD: async () => ({ items: mockContent }),
-  getPodcasts: async () => ({ podcasts: [] }),
-  getPodcastEpisodes: async (id: string) => ({ episodes: [] }),
-  getRadioStations: async () => ({ stations: [] }),
-  getCategories: async () => ({ categories: mockCategories }),
-  search: async (query: string) => ({ live: [], vod: mockContent, radio: [], podcasts: [] }),
-  getSearchSuggestions: async (query: string) => ({ suggestions: ['Israeli Movies', 'News', 'Comedy'] }),
+  getFeatured: async () => { throw STUB_ERROR; },
+  getVOD: async () => { throw STUB_ERROR; },
+  getPodcasts: async () => { throw STUB_ERROR; },
+  getPodcastEpisodes: async (_id: string) => { throw STUB_ERROR; },
+  getRadioStations: async () => { throw STUB_ERROR; },
+  getCategories: async () => { throw STUB_ERROR; },
+  search: async (_query: string) => { throw STUB_ERROR; },
+  getSearchSuggestions: async (_query: string) => { throw STUB_ERROR; },
 };
 
 export const liveService = {
-  getChannels: async () => ({ channels: mockChannels }),
-  getChannel: async (id: string) => mockChannels[0],
-  getStreamUrl: async (id: string) => 'https://test-stream.m3u8',
-  getCategories: async () => ({ categories: mockCategories }),
+  getChannels: async () => { throw STUB_ERROR; },
+  getChannel: async (_id: string) => { throw STUB_ERROR; },
+  getStreamUrl: async (_id: string) => { throw STUB_ERROR; },
+  getCategories: async () => { throw STUB_ERROR; },
 };
 
 export const historyService = {
-  getContinueWatching: async () => ({ items: [] }),
-  addToHistory: async (contentId: string) => {},
-  getWatchProgress: async (contentId: string) => ({ progress: 0 }),
+  getContinueWatching: async () => { throw STUB_ERROR; },
+  addToHistory: async (_contentId: string) => { throw STUB_ERROR; },
+  getWatchProgress: async (_contentId: string) => { throw STUB_ERROR; },
 };
 
 export const ritualService = {
-  getMorningRitual: async () => ({
-    greeting: 'Good morning!',
-    hebrewDate: 'Hebrew Date',
-    zmanim: {},
-    todayInHistory: 'Today in Jewish history...',
-  }),
-  checkShouldShowRitual: async () => false,
+  getMorningRitual: async () => { throw STUB_ERROR; },
+  checkShouldShowRitual: async () => { throw STUB_ERROR; },
 };
 
 export const api = {
-  get: async (url: string) => ({ data: {} }),
-  post: async (url: string, data: any) => ({ data: {} }),
+  get: async (_url: string) => { throw STUB_ERROR; },
+  post: async (_url: string, _data: unknown) => { throw STUB_ERROR; },
+};
+
+export const profilesService = {
+  getProfiles: async () => { throw STUB_ERROR; },
+  getStats: async () => { throw STUB_ERROR; },
 };

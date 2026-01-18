@@ -26,6 +26,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@bayit/shared/hooks';
 import { chatService } from '../services/api';
+import { useAuthStore } from '../../../shared/stores/authStore';
 
 // Shared search components
 import { useSearch } from '../../../shared/hooks/useSearch';
@@ -62,8 +63,8 @@ export const SearchScreen: React.FC = () => {
   // LLM search modal state
   const [showLLMSearch, setShowLLMSearch] = useState(false);
 
-  // Premium user status (TODO: get from auth context)
-  const [isPremium, setIsPremium] = useState(false);
+  // Premium user status from auth store
+  const isPremium = useAuthStore((state) => state.isPremium());
 
   // Active content type filter
   const [activeContentType, setActiveContentType] = useState('all');

@@ -30,7 +30,9 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
   loading = false,
   onResumeQueue,
   onClearCompleted,
+  onCancelJob,
   clearingCompleted = false,
+  cancellingJob = false,
   noCard = false,
   hideHeader = false,
 }) => {
@@ -78,6 +80,8 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
           job={activeJob}
           isRTL={isRTL}
           textAlign={textAlign}
+          onCancelJob={onCancelJob}
+          cancellingJob={cancellingJob}
         />
       )}
 

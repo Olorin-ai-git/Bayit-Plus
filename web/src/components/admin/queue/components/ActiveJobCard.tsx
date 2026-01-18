@@ -4,8 +4,9 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { XCircle } from 'lucide-react';
 import { GlassBadge } from '@bayit/shared/ui';
 import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 import { QueueJob } from '../types';
@@ -18,16 +19,48 @@ interface ActiveJobCardProps {
   job: QueueJob;
   isRTL: boolean;
   textAlign: 'left' | 'right' | 'center';
+  onCancelJob?: (jobId: string) => void;
+  cancellingJob?: boolean;
 }
 
-export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({ job, isRTL, textAlign }) => {
+export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
+  job,
+  isRTL,
+  textAlign,
+  onCancelJob,
+  cancellingJob = false,
+}) => {
   const { t } = useTranslation();
+
+  const handleCancel = () => {
+    if (onCancelJob && !cancellingJob) {
+      onCancelJob(job.job_id);
+    }
+  };
 
   return (
     <View style={styles.section}>
-      <Text style={[styles.sectionTitle, { textAlign }]}>
-        {t('admin.uploads.activeUpload', 'Active Upload')}
-      </Text>
+      <View style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        <Text style={[styles.sectionTitle, { textAlign }]}>
+          {t('admin.uploads.activeUpload', 'Active Upload')}
+        </Text>
+        {onCancelJob && (
+          <Pressable
+            onPress={handleCancel}
+            style={styles.cancelButton}
+            disabled={cancellingJob}
+          >
+            {cancellingJob ? (
+              <ActivityIndicator size="small" color={colors.error} />
+            ) : (
+              <XCircle size={20} color={colors.error} />
+            )}
+            <Text style={styles.cancelText}>
+              {t('admin.uploads.cancelUpload', 'Cancel')}
+            </Text>
+          </Pressable>
+        )}
+      </View>
       <View style={styles.jobCard}>
         <View style={[styles.jobHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <StatusIcon status={job.status} job={job} />
@@ -87,11 +120,30 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.glassBorder,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
   sectionTitle: {
     fontSize: fontSize.lg,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: spacing.md,
+  },
+  cancelButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    borderRadius: borderRadius.sm,
+    backgroundColor: colors.error + '15',
+  },
+  cancelText: {
+    fontSize: fontSize.sm,
+    color: colors.error,
+    fontWeight: '500',
   },
   jobCard: {
     backgroundColor: colors.backgroundLight,

@@ -9,9 +9,13 @@ import logging
 from fastapi import APIRouter, HTTPException, status, Request
 from pydantic import BaseModel, EmailStr
 from app.models.user import User
-from app.core.security import get_password_hash
+from app.core.security import get_password_hash, verify_password
 from app.core.rate_limiter import limiter
+from app.core.config import settings
 from app.services.audit_logger import audit_logger
+from app.services.email_service import send_email
+from fastapi import Depends
+from app.core.security import get_current_user
 
 
 logger = logging.getLogger(__name__)
@@ -26,6 +30,12 @@ class PasswordResetRequest(BaseModel):
 class PasswordResetConfirm(BaseModel):
     """Confirm model for password reset."""
     token: str
+    new_password: str
+
+
+class ChangePasswordRequest(BaseModel):
+    """Request model for password change."""
+    current_password: str
     new_password: str
 
 
@@ -54,12 +64,56 @@ async def request_password_reset(request: Request, reset_request: PasswordResetR
         user.password_reset_token = reset_token
         user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=1)
         await user.save()
-        
-        # TODO: Send email with reset link
-        # reset_url = f"{settings.FRONTEND_URL}/reset-password?token={reset_token}"
-        # await send_password_reset_email(user.email, reset_url)
-        
-        logger.info(f"Password reset requested for: {user.email}")
+
+        # Send email with reset link
+        reset_url = f"{settings.FRONTEND_URL}/reset-password?token={reset_token}"
+        html_content = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background-color: #1a1a2e; padding: 40px; border-radius: 12px;">
+                <h1 style="color: #ffffff; margin: 0 0 20px 0;">Password Reset Request</h1>
+                <p style="color: #b8b8d1; line-height: 1.6;">
+                    Hi {user.name or 'there'},
+                </p>
+                <p style="color: #b8b8d1; line-height: 1.6;">
+                    We received a request to reset your password for your Bayit+ account.
+                    Click the button below to reset your password:
+                </p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{reset_url}"
+                       style="background: linear-gradient(135deg, #4f46e5, #7c3aed);
+                              color: white;
+                              padding: 14px 32px;
+                              text-decoration: none;
+                              border-radius: 8px;
+                              font-weight: bold;
+                              display: inline-block;">
+                        Reset Password
+                    </a>
+                </div>
+                <p style="color: #b8b8d1; font-size: 14px;">
+                    Or copy and paste this link into your browser:<br>
+                    <a href="{reset_url}" style="color: #818cf8;">{reset_url}</a>
+                </p>
+                <p style="color: #6b7280; font-size: 12px; margin-top: 30px;">
+                    This link will expire in 1 hour. If you didn't request this password reset,
+                    you can safely ignore this email.
+                </p>
+            </div>
+        </body>
+        </html>
+        """
+
+        email_sent = await send_email(
+            to_emails=[user.email],
+            subject="Reset your Bayit+ password",
+            html_content=html_content
+        )
+
+        if email_sent:
+            logger.info(f"Password reset email sent to: {user.email}")
+        else:
+            logger.warning(f"Password reset email could not be sent to: {user.email}")
         
         # ✅ Audit log: password reset requested
         await audit_logger.log_password_reset_request(user.email, request)
@@ -153,21 +207,40 @@ async def confirm_password_reset(request: Request, reset_confirm: PasswordResetC
 @limiter.limit("5/minute")
 async def change_password(
     request: Request,
-    current_password: str,
-    new_password: str,
-    user: User = None  # TODO: Add dependency for current user
+    change_request: ChangePasswordRequest,
+    current_user: User = Depends(get_current_user)
 ):
     """
     Change password for authenticated user.
-    
+
     Security features:
     - Requires current password verification
     - Rate limited
     - Password strength validated
     - Audit logged
     """
-    # TODO: Implement after adding get_current_user dependency
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Password change endpoint not yet implemented. Use password reset flow.",
-    )
+    # Verify current password
+    if not verify_password(change_request.current_password, current_user.hashed_password):
+        logger.warning(f"Invalid current password for user: {current_user.email}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect",
+        )
+
+    # Ensure new password is different from current
+    if change_request.current_password == change_request.new_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be different from current password",
+        )
+
+    # Update password
+    current_user.hashed_password = get_password_hash(change_request.new_password)
+    await current_user.save()
+
+    logger.info(f"Password changed for user: {current_user.email}")
+
+    # Audit log
+    await audit_logger.log_password_change(current_user, request)
+
+    return {"message": "Password changed successfully"}

@@ -53,6 +53,7 @@ interface AuthState {
   needsVerification: () => boolean;
   canWatchVOD: () => boolean;
   canCreateWidgets: () => boolean;
+  isPremium: () => boolean;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -234,6 +235,16 @@ export const useAuthStore = create<AuthState>()(
         // Admins always can
         if (get().isAdminRole()) return true;
         // Regular users need verification AND premium/family subscription
+        const premiumPlans = ['premium', 'family'];
+        return get().isVerified() && premiumPlans.includes(user.subscription?.plan || '');
+      },
+
+      isPremium: () => {
+        const { user } = get();
+        if (!user) return false;
+        // Admins are always considered premium
+        if (get().isAdminRole()) return true;
+        // Check for premium or family subscription
         const premiumPlans = ['premium', 'family'];
         return get().isVerified() && premiumPlans.includes(user.subscription?.plan || '');
       },

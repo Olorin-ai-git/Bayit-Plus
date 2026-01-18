@@ -147,6 +147,14 @@ export const clearCompletedJobs = async (): Promise<{ success: boolean; cleared_
 };
 
 /**
+ * Cancel a specific upload job
+ * Works for both active (processing) and queued jobs
+ */
+export const cancelUploadJob = async (jobId: string): Promise<{ status: string; job_id: string }> => {
+  return uploadsApi.delete(`/admin/uploads/job/${jobId}`);
+};
+
+/**
  * Get monitored folders
  */
 export const getMonitoredFolders = async (): Promise<MonitoredFolder[]> => {

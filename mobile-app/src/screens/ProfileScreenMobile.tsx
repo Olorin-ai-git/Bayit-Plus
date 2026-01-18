@@ -29,6 +29,7 @@ import { VerificationModal } from '@bayit/shared/components/VerificationModal';
 import { UpgradeButton } from '@bayit/shared/components/UpgradeButton';
 import { usePermissions, useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
+import { profilesService } from '@bayit/shared-services';
 import { spacing, colors, typography, touchTarget } from '../theme';
 import { useResponsive } from '../hooks/useResponsive';
 
@@ -60,13 +61,20 @@ export const ProfileScreenMobile: React.FC = () => {
   }, [user?.id]);
 
   const loadProfileStats = async () => {
-    // TODO: Load actual stats from API
-    setStats({
-      watchlistCount: 12,
-      favoritesCount: 24,
-      downloadsCount: 5,
-      watchTimeMinutes: 1250,
-    });
+    if (!user?.id) return;
+
+    try {
+      const response = await profilesService.getStats();
+      setStats({
+        watchlistCount: response.watchlist_count ?? 0,
+        favoritesCount: response.favorites_count ?? 0,
+        downloadsCount: response.downloads_count ?? 0,
+        watchTimeMinutes: response.watch_time_minutes ?? 0,
+      });
+    } catch (error) {
+      // Keep default values on error (already initialized to 0)
+      console.warn('Failed to load profile stats:', error);
+    }
   };
 
   const handlePress = (action: () => void) => {

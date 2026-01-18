@@ -168,7 +168,7 @@ export const CultureClock: React.FC<CultureClockProps> = ({
     },
   };
 
-  const sizes = variantStyles[variant];
+  const sizes = variantStyles[variant] || variantStyles.medium;
 
   if (!time) {
     return (

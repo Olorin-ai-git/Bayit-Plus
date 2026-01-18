@@ -66,3 +66,9 @@ backend/gcs-service-account-key.json
 client_secret_*.json
 **/google-oauth-client-secret.json
 backend/google-oauth-client-secret.json
+
+# Apple Credentials
+credentials/
+*.p8
+AuthKey_*.p8
+**/AuthKey_*.p8

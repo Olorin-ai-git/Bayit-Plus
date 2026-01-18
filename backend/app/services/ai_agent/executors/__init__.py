@@ -15,6 +15,8 @@ from .metadata import (
     execute_fix_missing_poster,
     execute_fix_missing_metadata,
     execute_recategorize_content,
+    execute_reclassify_as_series,
+    execute_reclassify_as_movie,
     execute_flag_for_manual_review,
     execute_clean_title,
 )
@@ -47,6 +49,15 @@ from .podcasts import (
     execute_manage_podcast_episodes,
 )
 
+from .diagnostics import (
+    execute_check_api_configuration,
+    execute_find_duplicates,
+    execute_resolve_duplicates,
+    execute_find_quality_variants,
+    execute_link_quality_variants,
+    execute_find_missing_metadata,
+)
+
 __all__ = [
     # Content
     "execute_list_content_items",
@@ -57,6 +68,8 @@ __all__ = [
     "execute_fix_missing_poster",
     "execute_fix_missing_metadata",
     "execute_recategorize_content",
+    "execute_reclassify_as_series",
+    "execute_reclassify_as_movie",
     "execute_flag_for_manual_review",
     "execute_clean_title",
     # Stream
@@ -77,4 +90,11 @@ __all__ = [
     "execute_send_email_notification",
     # Podcasts
     "execute_manage_podcast_episodes",
+    # Diagnostics
+    "execute_check_api_configuration",
+    "execute_find_duplicates",
+    "execute_resolve_duplicates",
+    "execute_find_quality_variants",
+    "execute_link_quality_variants",
+    "execute_find_missing_metadata",
 ]

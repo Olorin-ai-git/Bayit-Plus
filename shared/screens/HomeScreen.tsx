@@ -131,13 +131,28 @@ export const HomeScreen: React.FC = () => {
     try {
       setIsLoading(true);
 
-      // Load all content in parallel - demo service handles mock data
-      const [featuredRes, liveRes, historyRes, categoriesRes] = await Promise.all([
+      // Load all content in parallel using allSettled to handle individual failures gracefully
+      // This ensures public content loads even if authenticated endpoints fail
+      const results = await Promise.allSettled([
         contentService.getFeatured(),
         liveService.getChannels(),
         historyService.getContinueWatching(),
         contentService.getCategories(),
-      ]) as [any, any, any, any];
+      ]);
+
+      // Extract successful results, using empty defaults for failed calls
+      const featuredRes = results[0].status === 'fulfilled' ? results[0].value : { hero: null, spotlight: [], items: [] };
+      const liveRes = results[1].status === 'fulfilled' ? results[1].value : { channels: [] };
+      const historyRes = results[2].status === 'fulfilled' ? results[2].value : { items: [] };
+      const categoriesRes = results[3].status === 'fulfilled' ? results[3].value : { categories: [] };
+
+      // Log any failed requests for debugging
+      results.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          const endpoints = ['featured', 'channels', 'history', 'categories'];
+          console.log(`[HomeScreen] ${endpoints[index]} request failed:`, result.reason?.message || result.reason);
+        }
+      });
 
       // Set carousel from featured hero items
       const heroItems = featuredRes.hero ? [featuredRes.hero] : [];
@@ -166,7 +181,7 @@ export const HomeScreen: React.FC = () => {
         currentShow: getLocalizedField(ch, 'current_program') || t('home.liveNow'),
       })));
 
-      // Set continue watching from history
+      // Set continue watching from history (may be empty if not authenticated)
       setContinueWatching((historyRes.items || []).map((item: any) => ({
         id: item.id,
         title: getLocalizedTitle(item),
@@ -368,7 +383,7 @@ export const HomeScreen: React.FC = () => {
         <GlassCarousel
           items={carouselItems}
           onItemPress={handleCarouselPress}
-          height={isTV ? 450 : 400}
+          height={isTV ? 600 : 400}
           autoPlayInterval={6000}
         />
       </View>

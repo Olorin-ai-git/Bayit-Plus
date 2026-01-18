@@ -181,6 +181,16 @@ create_or_update_secret "bayit-yutorah-rss-url" "YUTORAH_RSS_URL"
 create_or_update_secret "bayit-chabad-multimedia-rss-url" "CHABAD_MULTIMEDIA_RSS_URL"
 create_or_update_secret "bayit-torahanytime-rss-url" "TORAHANYTIME_RSS_URL"
 
+# Apple Push Notifications (APNs)
+print_info "Apple Push Notifications..."
+create_or_update_secret "bayit-apple-key-id" "APPLE_KEY_ID"
+create_or_update_secret "bayit-apple-team-id" "APPLE_TEAM_ID"
+create_or_update_secret "bayit-apple-bundle-id-ios" "APPLE_BUNDLE_ID_IOS"
+create_or_update_secret "bayit-apple-bundle-id-tvos" "APPLE_BUNDLE_ID_TVOS"
+
+# Note: The APNs .p8 key file (APPLE_KEY_PATH) should be stored separately
+# as a file-based secret or mounted as a volume in Cloud Run/GKE
+
 print_header "Granting Secret Access to Service Account"
 
 ALL_SECRETS=(
@@ -209,6 +219,8 @@ ALL_SECRETS=(
     "bayit-community-default-region" "bayit-us-jewish-regions"
     "bayit-community-scrape-interval" "bayit-yutorah-rss-url"
     "bayit-chabad-multimedia-rss-url" "bayit-torahanytime-rss-url"
+    "bayit-apple-key-id" "bayit-apple-team-id"
+    "bayit-apple-bundle-id-ios" "bayit-apple-bundle-id-tvos"
 )
 
 for secret in "${ALL_SECRETS[@]}"; do
@@ -236,6 +248,7 @@ echo "  - SMS (Twilio)"
 echo "  - Voice (Picovoice)"
 echo "  - Librarian Agent"
 echo "  - Judaism Section"
+echo "  - Apple Push Notifications (APNs)"
 echo ""
 echo "Service account with access: $SERVICE_ACCOUNT"
 echo ""

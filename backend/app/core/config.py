@@ -117,6 +117,9 @@ class Settings(BaseSettings):
     UPLOAD_SESSION_CLEANUP_INTERVAL_SECONDS: int = 3600  # Cleanup task interval (1 hour)
     UPLOAD_SESSION_TIMEOUT_HOURS: int = 2  # Timeout for inactive upload sessions
 
+    # Frontend URL (for password reset links, email verification, etc.)
+    FRONTEND_URL: str = "https://bayit.tv"
+
     # Email Service (for Librarian AI Agent notifications)
     SENDGRID_API_KEY: str = ""
     SENDGRID_FROM_EMAIL: str = "noreply@bayitplus.com"

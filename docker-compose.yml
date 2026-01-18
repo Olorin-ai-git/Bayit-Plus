@@ -82,6 +82,12 @@ services:
       - GCS_UPLOAD_MAX_RETRIES=${GCS_UPLOAD_MAX_RETRIES:-5}
       - GCS_UPLOAD_RETRY_INITIAL_DELAY_SECONDS=${GCS_UPLOAD_RETRY_INITIAL_DELAY_SECONDS:-1.0}
       - GCS_UPLOAD_RETRY_MAX_DELAY_SECONDS=${GCS_UPLOAD_RETRY_MAX_DELAY_SECONDS:-60.0}
+      # Apple Push Notifications (APNs)
+      - APPLE_KEY_ID=${APPLE_KEY_ID}
+      - APPLE_TEAM_ID=${APPLE_TEAM_ID}
+      - APPLE_KEY_PATH=${APPLE_KEY_PATH}
+      - APPLE_BUNDLE_ID_IOS=${APPLE_BUNDLE_ID_IOS:-com.bayitplus.ios}
+      - APPLE_BUNDLE_ID_TVOS=${APPLE_BUNDLE_ID_TVOS:-com.bayitplus.tvos}
     env_file:
       - ./backend/.env
     depends_on:

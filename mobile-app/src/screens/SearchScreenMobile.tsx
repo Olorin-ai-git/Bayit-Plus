@@ -28,6 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@bayit/shared-hooks';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { chatService } from '@bayit/shared-services';
+import { useAuthStore } from '@bayit/shared-stores';
 import { getLocalizedName } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
@@ -68,8 +69,8 @@ export const SearchScreenMobile: React.FC = () => {
   // LLM search modal state
   const [showLLMSearch, setShowLLMSearch] = useState(false);
 
-  // Premium user status (TODO: get from auth context)
-  const [isPremium, setIsPremium] = useState(false);
+  // Premium user status from auth store
+  const isPremium = useAuthStore((state) => state.isPremium());
 
   // Refresh control
   const [refreshing, setRefreshing] = useState(false);

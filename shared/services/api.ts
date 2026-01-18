@@ -22,26 +22,35 @@ import {
   demoRecordingService,
 } from './demoService';
 
+// Cloud Run production API URL
+const CLOUD_RUN_API_URL = 'https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1';
+
 // Get correct API URL based on platform
 const getApiBaseUrl = () => {
+  // Production builds always use the production API
   if (!__DEV__) {
     return 'https://api.bayit.tv/api/v1';
   }
+
   // In development:
+  // Web can use localhost for local backend development
   if (Platform.OS === 'web') {
     return 'http://localhost:8000/api/v1';
   }
-  if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:8000/api/v1';  // Android emulator localhost
-  }
-  return 'http://localhost:8000/api/v1';  // iOS simulator
+
+  // Mobile/TV platforms use Cloud Run API in development
+  // since they can't easily reach localhost
+  // For Android emulator: could use 'http://10.0.2.2:8000/api/v1' for local backend
+  // For iOS/tvOS simulator: localhost works but requires local backend running
+  // Using Cloud Run ensures consistent production data for testing
+  return CLOUD_RUN_API_URL;
 };
 
 const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 5000,  // 5 second timeout for faster fallback to demo data
+  timeout: 15000,  // 15 second timeout for Cloud Run cold starts
   headers: {
     'Content-Type': 'application/json',
   },
@@ -426,6 +435,7 @@ export interface HomePagePreferencesAPI {
 // Profiles Service (API)
 const apiProfilesService = {
   getProfiles: () => api.get('/profiles'),
+  getStats: () => api.get('/profile/stats'),
   createProfile: (data: {
     name: string;
     avatar?: string;
