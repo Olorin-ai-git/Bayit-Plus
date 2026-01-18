@@ -17,9 +17,11 @@ import {
   SkipForward,
   RotateCcw,
   List,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { PlayerState, PlayerControls as PlayerControlsType } from './types'
+import { PlayerState, PlayerControls as PlayerControlsType, Chapter } from './types'
 
 interface PlayerControlsProps {
   state: PlayerState
@@ -28,6 +30,7 @@ interface PlayerControlsProps {
   showChaptersPanel?: boolean
   showSettings?: boolean
   hasChapters?: boolean
+  chapters?: Chapter[]
   onChaptersPanelToggle?: () => void
   onSettingsToggle?: () => void
   renderWatchPartyButton?: () => React.ReactNode
@@ -43,6 +46,7 @@ export default function PlayerControls({
   showChaptersPanel = false,
   showSettings = false,
   hasChapters = false,
+  chapters = [],
   onChaptersPanelToggle,
   onSettingsToggle,
   renderWatchPartyButton,
@@ -51,6 +55,9 @@ export default function PlayerControls({
   renderRecordButton,
 }: PlayerControlsProps) {
   const { t } = useTranslation()
+
+  // Format playback speed display
+  const speedDisplay = state.playbackSpeed !== 1 ? `${state.playbackSpeed}x` : null
 
   return (
     <View style={styles.controlsRow}>
@@ -65,21 +72,53 @@ export default function PlayerControls({
 
         {!isLive && (
           <>
+            {/* Chapter Navigation - Previous */}
+            {hasChapters && chapters.length > 0 && (
+              <Pressable
+                onPress={(e) => { e.stopPropagation?.(); controls.skipToPreviousChapter(chapters, state.currentTime) }}
+                style={({ hovered }) => [styles.controlButton, hovered && styles.controlButtonHovered]}
+                accessibilityLabel={t('player.previousChapter')}
+              >
+                <ChevronLeft size={20} color={colors.text} />
+              </Pressable>
+            )}
+
+            {/* Skip Backward 30s */}
             <Pressable
-              onPress={(e) => { e.stopPropagation?.(); controls.skip(-10) }}
-              style={({ hovered }) => [styles.controlButton, hovered && styles.controlButtonHovered]}
+              onPress={(e) => { e.stopPropagation?.(); controls.skip(-30) }}
+              style={({ hovered }) => [styles.controlButton, styles.skipButton, hovered && styles.controlButtonHovered]}
+              accessibilityLabel={t('player.skipBackward')}
             >
-              <SkipBack size={18} color={colors.text} />
+              <SkipBack size={16} color={colors.text} />
+              <Text style={styles.skipText}>30</Text>
             </Pressable>
+
+            {/* Skip Forward 30s */}
             <Pressable
-              onPress={(e) => { e.stopPropagation?.(); controls.skip(10) }}
-              style={({ hovered }) => [styles.controlButton, hovered && styles.controlButtonHovered]}
+              onPress={(e) => { e.stopPropagation?.(); controls.skip(30) }}
+              style={({ hovered }) => [styles.controlButton, styles.skipButton, hovered && styles.controlButtonHovered]}
+              accessibilityLabel={t('player.skipForward')}
             >
-              <SkipForward size={18} color={colors.text} />
+              <SkipForward size={16} color={colors.text} />
+              <Text style={styles.skipText}>30</Text>
             </Pressable>
+
+            {/* Chapter Navigation - Next */}
+            {hasChapters && chapters.length > 0 && (
+              <Pressable
+                onPress={(e) => { e.stopPropagation?.(); controls.skipToNextChapter(chapters, state.currentTime) }}
+                style={({ hovered }) => [styles.controlButton, hovered && styles.controlButtonHovered]}
+                accessibilityLabel={t('player.nextChapter')}
+              >
+                <ChevronRight size={20} color={colors.text} />
+              </Pressable>
+            )}
+
+            {/* Restart */}
             <Pressable
               onPress={(e) => { e.stopPropagation?.(); controls.handleRestart() }}
               style={({ hovered }) => [styles.controlButton, hovered && styles.controlButtonHovered]}
+              accessibilityLabel={t('player.restart')}
             >
               <RotateCcw size={18} color={colors.text} />
             </Pressable>
@@ -106,9 +145,14 @@ export default function PlayerControls({
         </View>
 
         {!isLive && (
-          <Text style={styles.timeText}>
-            {controls.formatTime(state.currentTime)} / {controls.formatTime(state.duration)}
-          </Text>
+          <View style={styles.timeContainer}>
+            <Text style={styles.timeText}>
+              {controls.formatTime(state.currentTime)} / {controls.formatTime(state.duration)}
+            </Text>
+            {speedDisplay && (
+              <Text style={styles.speedBadge}>{speedDisplay}</Text>
+            )}
+          </View>
         )}
       </View>
 
@@ -196,14 +240,38 @@ const styles = StyleSheet.create({
   controlButtonActive: {
     backgroundColor: colors.glassPurpleLight,
   },
+  skipButton: {
+    flexDirection: 'row',
+    gap: 2,
+    width: 44,
+  },
+  skipText: {
+    fontSize: 10,
+    color: colors.text,
+    fontWeight: '600',
+  },
   volumeControls: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
   },
+  timeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
   timeText: {
     fontSize: 14,
     color: colors.textSecondary,
     fontVariant: ['tabular-nums'],
+  },
+  speedBadge: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.primary,
+    backgroundColor: colors.glassPurpleLight,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
   },
 })

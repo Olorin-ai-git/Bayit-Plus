@@ -24,6 +24,7 @@ export interface AuditConfigState {
   tmdbPostersOnly: boolean;
   openSubtitlesEnabled: boolean;
   classifyOnly: boolean;
+  purgeDuplicates: boolean;
 }
 
 export interface VoiceState {

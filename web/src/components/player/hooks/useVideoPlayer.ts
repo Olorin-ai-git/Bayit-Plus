@@ -2,10 +2,11 @@
  * Custom hook for video player state and controls
  */
 
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import Hls from 'hls.js'
 import logger from '@/utils/logger'
-import { PlayerState, PlayerControls } from '../types'
+import { PlayerState, PlayerControls, QualityOption, Chapter } from '../types'
+import api, { contentService } from '@bayit/shared/services/api'
 
 interface UseVideoPlayerOptions {
   src: string
@@ -14,6 +15,14 @@ interface UseVideoPlayerOptions {
   onProgress?: (currentTime: number, duration: number) => void
   onEnded?: () => void
   contentId?: string
+}
+
+interface StreamResponse {
+  url: string
+  type: string
+  quality?: string
+  available_qualities?: QualityOption[]
+  is_drm_protected?: boolean
 }
 
 export function useVideoPlayer({
@@ -38,21 +47,58 @@ export function useVideoPlayer({
     duration: 0,
     showControls: true,
     loading: true,
+    currentQuality: undefined,
+    availableQualities: [],
+    playbackSpeed: 1,
   })
+  const [currentStreamUrl, setCurrentStreamUrl] = useState(src)
+
+  // Fetch available qualities when contentId changes
+  useEffect(() => {
+    if (!contentId) return
+
+    const fetchQualities = async () => {
+      try {
+        const response = await contentService.getStreamUrl(contentId)
+        if (response.data) {
+          const qualities = response.data.available_qualities || []
+          // Add labels to quality options
+          const qualitiesWithLabels = qualities.map((q) => ({
+            ...q,
+            label: q.quality === '4k' ? '4K Ultra HD' :
+                   q.quality === '1080p' ? '1080p Full HD' :
+                   q.quality === '720p' ? '720p HD' :
+                   q.quality === '480p' ? '480p SD' :
+                   q.quality?.toUpperCase() || 'Unknown',
+          }))
+
+          setState((prev) => ({
+            ...prev,
+            currentQuality: response.data.quality,
+            availableQualities: qualitiesWithLabels,
+          }))
+        }
+      } catch (error) {
+        logger.error('Failed to fetch quality options', 'useVideoPlayer', error)
+      }
+    }
+
+    fetchQualities()
+  }, [contentId])
 
   // Initialize HLS player
   useEffect(() => {
-    if (!src || !videoRef.current) return
+    if (!currentStreamUrl || !videoRef.current) return
 
     const video = videoRef.current
 
-    if (Hls.isSupported() && src.includes('.m3u8')) {
+    if (Hls.isSupported() && currentStreamUrl.includes('.m3u8')) {
       const hls = new Hls({
         enableWorker: true,
         lowLatencyMode: isLive,
       })
       hlsRef.current = hls
-      hls.loadSource(src)
+      hls.loadSource(currentStreamUrl)
       hls.attachMedia(video)
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         setState((prev) => ({ ...prev, loading: false }))
@@ -64,13 +110,13 @@ export function useVideoPlayer({
         }
       })
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = src
+      video.src = currentStreamUrl
       video.addEventListener('loadedmetadata', () => {
         setState((prev) => ({ ...prev, loading: false }))
         if (autoPlay) video.play()
       })
     } else {
-      video.src = src
+      video.src = currentStreamUrl
       video.addEventListener('loadeddata', () => {
         setState((prev) => ({ ...prev, loading: false }))
         if (autoPlay) video.play()
@@ -82,7 +128,12 @@ export function useVideoPlayer({
         hlsRef.current.destroy()
       }
     }
-  }, [src, isLive, autoPlay])
+  }, [currentStreamUrl, isLive, autoPlay])
+
+  // Update currentStreamUrl when src prop changes
+  useEffect(() => {
+    setCurrentStreamUrl(src)
+  }, [src])
 
   // Video event listeners
   useEffect(() => {
@@ -228,6 +279,106 @@ export function useVideoPlayer({
       const minutes = Math.floor(time / 60)
       const seconds = Math.floor(time % 60)
       return `${minutes}:${seconds.toString().padStart(2, '0')}`
+    },
+
+    setPlaybackSpeed: (speed: number) => {
+      if (videoRef.current) {
+        videoRef.current.playbackRate = speed
+        setState((prev) => ({ ...prev, playbackSpeed: speed }))
+      }
+    },
+
+    changeQuality: async (quality: string) => {
+      if (!contentId) return
+
+      try {
+        setState((prev) => ({ ...prev, loading: true }))
+
+        // Save current playback position and playing state
+        const savedTime = videoRef.current?.currentTime || 0
+        const wasPlaying = state.isPlaying
+
+        // Fetch stream URL for the requested quality
+        const response = await api.get<StreamResponse>(
+          `/content/${contentId}/stream?quality=${quality}`
+        )
+
+        if (response.data?.url) {
+          // Destroy current HLS instance
+          if (hlsRef.current) {
+            hlsRef.current.destroy()
+            hlsRef.current = null
+          }
+
+          // Update current stream URL (this triggers the HLS re-initialization effect)
+          setCurrentStreamUrl(response.data.url)
+
+          // Update quality state
+          setState((prev) => ({
+            ...prev,
+            currentQuality: quality,
+            loading: true,
+          }))
+
+          // Wait for video to be ready and restore position
+          const checkReady = setInterval(() => {
+            if (videoRef.current && videoRef.current.readyState >= 2) {
+              clearInterval(checkReady)
+              videoRef.current.currentTime = savedTime
+              if (wasPlaying) {
+                videoRef.current.play()
+              }
+              setState((prev) => ({ ...prev, loading: false }))
+            }
+          }, 100)
+
+          // Timeout safety
+          setTimeout(() => clearInterval(checkReady), 10000)
+        }
+      } catch (error) {
+        logger.error('Failed to change quality', 'useVideoPlayer', error)
+        setState((prev) => ({ ...prev, loading: false }))
+      }
+    },
+
+    skipToNextChapter: (chapters: Chapter[], currentTime: number) => {
+      if (!videoRef.current || chapters.length === 0) return
+
+      // Find the next chapter that starts after current time
+      const nextChapter = chapters.find((ch) => ch.start_time > currentTime + 0.5)
+      if (nextChapter) {
+        videoRef.current.currentTime = nextChapter.start_time
+      }
+    },
+
+    skipToPreviousChapter: (chapters: Chapter[], currentTime: number) => {
+      if (!videoRef.current || chapters.length === 0) return
+
+      // Find current chapter index
+      const currentIndex = chapters.findIndex(
+        (ch) => currentTime >= ch.start_time && currentTime < ch.end_time
+      )
+
+      // If we're more than 3 seconds into the current chapter, go to its start
+      // Otherwise, go to the previous chapter
+      if (currentIndex >= 0) {
+        const currentChapter = chapters[currentIndex]
+        if (currentTime - currentChapter.start_time > 3) {
+          videoRef.current.currentTime = currentChapter.start_time
+        } else if (currentIndex > 0) {
+          videoRef.current.currentTime = chapters[currentIndex - 1].start_time
+        } else {
+          videoRef.current.currentTime = 0
+        }
+      } else if (chapters.length > 0) {
+        // If not in any chapter, go to the last chapter that started before current time
+        const prevChapters = chapters.filter((ch) => ch.start_time < currentTime)
+        if (prevChapters.length > 0) {
+          videoRef.current.currentTime = prevChapters[prevChapters.length - 1].start_time
+        } else {
+          videoRef.current.currentTime = 0
+        }
+      }
     },
   }
 

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Play, Star, Bookmark } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassBadge } from '@bayit/shared/ui';
-import { SubtitleFlags } from '@bayit/shared';
+import { SubtitleFlags, ContentBadges } from '@bayit/shared';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import { useDirection } from '@/hooks/useDirection';
 import { favoritesService, watchlistService } from '@/services/api';
@@ -27,6 +27,7 @@ interface Content {
   total_episodes?: number;
   has_subtitles?: boolean;
   available_subtitle_languages?: string[];
+  quality_tier?: string;
 }
 
 interface ContentCardProps {
@@ -220,6 +221,17 @@ export default function ContentCard({ content, showProgress = false, showActions
                 isRTL={isRTL}
                 size="small"
               />
+            )}
+
+            {/* Quality Badge */}
+            {content.quality_tier && content.type !== 'live' && (
+              <View style={[styles.qualityBadge, isRTL ? { right: 'auto', left: spacing.sm } : {}]}>
+                <ContentBadges
+                  qualityTier={content.quality_tier}
+                  compact
+                  showSubtitles={false}
+                />
+              </View>
             )}
 
             {/* Live Badge - positioned to avoid action buttons */}
@@ -435,5 +447,10 @@ const styles = StyleSheet.create({
   metaDivider: {
     fontSize: 12,
     color: colors.backgroundLighter,
+  },
+  qualityBadge: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
   },
 });

@@ -569,14 +569,14 @@ TOOLS = [
     },
     {
         "name": "find_duplicates",
-        "description": "Scan the content library for duplicate entries. Detects duplicates based on: file hash (exact duplicates), TMDB ID, IMDB ID, and title similarity. Returns groups of duplicate items that can be cleaned up.",
+        "description": "Scan the content library for duplicate entries. Detects duplicates based on: file hash (exact duplicates), TMDB ID, IMDB ID, exact name matches (e.g. multiple 'Bugranim s01e01'), and title similarity. Returns groups of duplicate items that can be cleaned up.",
         "input_schema": {
             "type": "object",
             "properties": {
                 "detection_type": {
                     "type": "string",
-                    "description": "Type of duplicate detection to run",
-                    "enum": ["all", "hash", "tmdb", "imdb", "title"],
+                    "description": "Type of duplicate detection to run. Use 'exact_name' to find stale duplicates with identical titles.",
+                    "enum": ["all", "hash", "tmdb", "imdb", "exact_name", "title"],
                     "default": "all"
                 }
             },
@@ -662,6 +662,45 @@ TOOLS = [
                 }
             },
             "required": ["summary", "items_checked", "issues_found", "issues_fixed"]
+        }
+    },
+    {
+        "name": "find_quality_variants",
+        "description": "Find content items that are quality variants of each other (same content at different resolutions). Groups content by TMDB ID and finds items with multiple different video resolutions. Use this to identify duplicate uploads at different qualities (4K, 1080p, 720p, 480p) that can be linked together.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum number of variant groups to return (default 50)",
+                    "default": 50
+                },
+                "unlinked_only": {
+                    "type": "boolean",
+                    "description": "If true, only return groups that haven't been linked yet (default true)",
+                    "default": True
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "link_quality_variants",
+        "description": "Link multiple content items as quality variants of the same content. The highest quality version becomes the primary, and others become variants. Use this after find_quality_variants to organize multiple resolution versions of the same content.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_ids": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "List of content IDs to link as quality variants"
+                },
+                "primary_id": {
+                    "type": "string",
+                    "description": "Optional: ID of the content item to be the primary (highest quality). If not specified, the highest resolution item will be chosen automatically."
+                }
+            },
+            "required": ["content_ids"]
         }
     }
 ]
@@ -2372,6 +2411,14 @@ async def execute_find_duplicates(detection_type: str = "all") -> Dict[str, Any]
                 "duplicate_groups": len(duplicates),
                 "duplicates": duplicates[:20]
             }
+        elif detection_type == "exact_name":
+            duplicates = await service.find_exact_name_duplicates()
+            return {
+                "success": True,
+                "detection_type": "exact_name",
+                "duplicate_groups": len(duplicates),
+                "duplicates": duplicates[:20]
+            }
         elif detection_type == "title":
             duplicates = await service.find_title_duplicates()
             return {
@@ -2412,6 +2459,50 @@ async def execute_resolve_duplicates(
         }
     except Exception as e:
         logger.error(f"Error resolving duplicates: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_find_quality_variants(
+    limit: int = 50,
+    unlinked_only: bool = True
+) -> Dict[str, Any]:
+    """Find content items that are quality variants of each other."""
+    from app.services.duplicate_detection_service import get_duplicate_detection_service
+
+    try:
+        service = get_duplicate_detection_service()
+        variants = await service.find_quality_variants(
+            limit=limit,
+            unlinked_only=unlinked_only
+        )
+
+        return {
+            "success": True,
+            "variant_groups": len(variants),
+            "groups": variants[:20],  # Limit response size for Claude
+            "message": f"Found {len(variants)} groups of content with multiple quality versions"
+        }
+    except Exception as e:
+        logger.error(f"Error finding quality variants: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_link_quality_variants(
+    content_ids: List[str],
+    primary_id: Optional[str] = None
+) -> Dict[str, Any]:
+    """Link multiple content items as quality variants."""
+    from app.services.duplicate_detection_service import get_duplicate_detection_service
+
+    try:
+        service = get_duplicate_detection_service()
+        result = await service.link_quality_variants(
+            content_ids=content_ids,
+            primary_id=primary_id
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error linking quality variants: {str(e)}")
         return {"success": False, "error": str(e)}
 
 
@@ -2735,6 +2826,12 @@ async def execute_tool(
 
         elif tool_name == "resolve_duplicates":
             return await execute_resolve_duplicates(**tool_input)
+
+        elif tool_name == "find_quality_variants":
+            return await execute_find_quality_variants(**tool_input)
+
+        elif tool_name == "link_quality_variants":
+            return await execute_link_quality_variants(**tool_input)
 
         elif tool_name == "find_missing_metadata":
             return await execute_find_missing_metadata(**tool_input)

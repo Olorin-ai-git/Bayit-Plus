@@ -5,3 +5,4 @@ export { EpisodesList } from './EpisodesList';
 export { IMDBFactsCard } from './IMDBFactsCard';
 export { CastCarousel } from './CastCarousel';
 export { RecommendationsCarousel } from './RecommendationsCarousel';
+export { ContentBadges } from './ContentBadges';

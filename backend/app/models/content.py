@@ -87,6 +87,13 @@ class Content(Document):
     #   "fps": 23.976
     # }
 
+    # Quality variant fields (for multi-resolution content)
+    quality_tier: Optional[str] = None  # "480p", "720p", "1080p", "4k"
+    primary_content_id: Optional[str] = None  # ID of primary (highest quality) version
+    quality_variants: List[Dict[str, Any]] = Field(default_factory=list)
+    # [{"content_id": "...", "quality_tier": "720p", "resolution_height": 720, "stream_url": "..."}]
+    is_quality_variant: bool = False  # True if linked as variant of another content
+
     # Series info
     is_series: bool = False
     season: Optional[int] = None
@@ -344,3 +351,16 @@ class PodcastEpisode(Document):
             ("podcast_id", "published_at"),
             "guid",  # Index GUID for fast duplicate detection
         ]
+
+
+def determine_quality_tier(height: int) -> str:
+    """Determine quality tier based on video resolution height."""
+    if height >= 2160:
+        return "4k"
+    if height >= 1080:
+        return "1080p"
+    if height >= 720:
+        return "720p"
+    if height >= 480:
+        return "480p"
+    return "unknown"

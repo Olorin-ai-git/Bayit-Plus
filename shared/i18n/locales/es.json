@@ -1893,6 +1893,8 @@
         "openSubtitlesEnabled": "Habilitar Recuperación de OpenSubtitles",
         "classifyOnly": "Clasificar Contenido",
         "classifyOnlyHelp": "Verificar y corregir categorización de contenido",
+        "purgeDuplicates": "Eliminar Duplicados",
+        "purgeDuplicatesHelp": "Identificar y eliminar elementos duplicados de la biblioteca",
         "triggerDaily": "Activar Auditoría Diaria",
         "triggerAI": "Activar Auditoría de Agente IA",
         "budgetLabel": "Límite de Presupuesto del Agente IA: ${{budget}}",

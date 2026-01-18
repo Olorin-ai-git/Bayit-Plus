@@ -5,9 +5,10 @@
 
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { X } from 'lucide-react'
+import { X, Check } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassView } from '@bayit/shared/ui'
+import type { QualityOption } from './types'
 
 interface SettingsPanelProps {
   isOpen: boolean
@@ -15,8 +16,13 @@ interface SettingsPanelProps {
   videoRef: React.RefObject<HTMLVideoElement>
   availableSubtitleLanguages?: string[]
   liveSubtitleLang?: string
+  availableQualities?: QualityOption[]
+  currentQuality?: string
+  currentPlaybackSpeed?: number
   onClose: () => void
   onLiveSubtitleLangChange?: (lang: string) => void
+  onQualityChange?: (quality: string) => void
+  onPlaybackSpeedChange?: (speed: number) => void
 }
 
 export default function SettingsPanel({
@@ -25,8 +31,13 @@ export default function SettingsPanel({
   videoRef,
   availableSubtitleLanguages = [],
   liveSubtitleLang = 'en',
+  availableQualities = [],
+  currentQuality,
+  currentPlaybackSpeed = 1,
   onClose,
   onLiveSubtitleLangChange,
+  onQualityChange,
+  onPlaybackSpeedChange,
 }: SettingsPanelProps) {
   const { t } = useTranslation()
 
@@ -99,29 +110,34 @@ export default function SettingsPanel({
           <View style={styles.section}>
             <Text style={styles.label}>{t('player.playbackSpeed')}</Text>
             <View style={styles.options}>
-              {[0.5, 0.75, 1, 1.25, 1.5, 2].map((speed) => (
-                <Pressable
-                  key={speed}
-                  style={[
-                    styles.option,
-                    videoRef.current?.playbackRate === speed && styles.optionActive,
-                  ]}
-                  onPress={() => {
-                    if (videoRef.current) {
-                      videoRef.current.playbackRate = speed
-                    }
-                  }}
-                >
-                  <Text
+              {[0.5, 0.75, 1, 1.25, 1.5, 2].map((speed) => {
+                const isActive = currentPlaybackSpeed === speed
+                return (
+                  <Pressable
+                    key={speed}
                     style={[
-                      styles.optionText,
-                      videoRef.current?.playbackRate === speed && styles.optionTextActive,
+                      styles.option,
+                      isActive && styles.optionActive,
                     ]}
+                    onPress={() => {
+                      if (onPlaybackSpeedChange) {
+                        onPlaybackSpeedChange(speed)
+                      } else if (videoRef.current) {
+                        videoRef.current.playbackRate = speed
+                      }
+                    }}
                   >
-                    {speed}x
-                  </Text>
-                </Pressable>
-              ))}
+                    <Text
+                      style={[
+                        styles.optionText,
+                        isActive && styles.optionTextActive,
+                      ]}
+                    >
+                      {speed}x
+                    </Text>
+                  </Pressable>
+                )
+              })}
             </View>
           </View>
         )}
@@ -129,12 +145,57 @@ export default function SettingsPanel({
         {/* Quality */}
         <View style={styles.section}>
           <Text style={styles.label}>{t('player.quality')}</Text>
-          <View style={styles.options}>
-            <Pressable style={[styles.option, styles.optionActive]}>
-              <Text style={[styles.optionText, styles.optionTextActive]}>
-                {t('player.auto')}
-              </Text>
-            </Pressable>
+          <View style={styles.optionsList}>
+            {availableQualities.length > 0 ? (
+              availableQualities.map((quality) => {
+                const isActive = currentQuality === quality.quality
+                const displayLabel = quality.quality === '4k'
+                  ? '4K Ultra HD'
+                  : quality.quality === '1080p'
+                  ? '1080p Full HD'
+                  : quality.quality === '720p'
+                  ? '720p HD'
+                  : quality.quality === '480p'
+                  ? '480p SD'
+                  : quality.quality?.toUpperCase() || t('player.auto')
+
+                return (
+                  <Pressable
+                    key={quality.content_id}
+                    style={[
+                      styles.optionFull,
+                      isActive && styles.optionActive,
+                    ]}
+                    onPress={() => onQualityChange?.(quality.quality)}
+                  >
+                    <View style={styles.optionContent}>
+                      <Text
+                        style={[
+                          styles.optionText,
+                          isActive && styles.optionTextActive,
+                        ]}
+                      >
+                        {displayLabel}
+                      </Text>
+                      {quality.resolution_height > 0 && (
+                        <Text style={styles.resolutionText}>
+                          {quality.resolution_height}p
+                        </Text>
+                      )}
+                    </View>
+                    {isActive && (
+                      <Check size={16} color={colors.primary} />
+                    )}
+                  </Pressable>
+                )
+              })
+            ) : (
+              <Pressable style={[styles.option, styles.optionActive]}>
+                <Text style={[styles.optionText, styles.optionTextActive]}>
+                  {t('player.auto')}
+                </Text>
+              </Pressable>
+            )}
           </View>
         </View>
       </View>
@@ -232,6 +293,11 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: colors.primary,
+    marginLeft: spacing.sm,
+  },
+  resolutionText: {
+    fontSize: 12,
+    color: colors.textMuted,
     marginLeft: spacing.sm,
   },
 })

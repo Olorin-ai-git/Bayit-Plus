@@ -9,6 +9,13 @@ export interface Chapter {
   summary?: string
 }
 
+export interface QualityOption {
+  quality: string
+  resolution_height: number
+  content_id: string
+  label?: string
+}
+
 export interface VideoPlayerProps {
   src: string
   poster?: string
@@ -34,6 +41,9 @@ export interface PlayerState {
   duration: number
   showControls: boolean
   loading: boolean
+  currentQuality?: string
+  availableQualities?: QualityOption[]
+  playbackSpeed: number
 }
 
 export interface PlayerControls {
@@ -46,4 +56,8 @@ export interface PlayerControls {
   seekToTime: (time: number) => void
   handleRestart: () => Promise<void>
   formatTime: (time: number) => string
+  changeQuality?: (quality: string) => Promise<void>
+  setPlaybackSpeed: (speed: number) => void
+  skipToNextChapter: (chapters: Chapter[], currentTime: number) => void
+  skipToPreviousChapter: (chapters: Chapter[], currentTime: number) => void
 }

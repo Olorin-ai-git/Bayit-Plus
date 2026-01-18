@@ -180,8 +180,13 @@ export default function VideoPlayer({
         videoRef={videoRef}
         availableSubtitleLanguages={availableSubtitleLanguages}
         liveSubtitleLang={liveSubtitleLang}
+        availableQualities={state.availableQualities}
+        currentQuality={state.currentQuality}
+        currentPlaybackSpeed={state.playbackSpeed}
         onClose={() => setShowSettings(false)}
         onLiveSubtitleLangChange={setLiveSubtitleLang}
+        onQualityChange={controls.changeQuality}
+        onPlaybackSpeedChange={controls.setPlaybackSpeed}
       />
 
       {/* Controls Overlay */}
@@ -218,8 +223,25 @@ export default function VideoPlayer({
           )}
         </View>
 
-        {/* Center Play Button */}
+        {/* Center Controls - Play/Pause with Skip Buttons */}
         <View style={styles.centerControls}>
+          {/* Skip Backward 30s */}
+          {!isLive && (
+            <View
+              onClick={(e: any) => {
+                e?.stopPropagation?.()
+                controls.skip(-30)
+              }}
+              style={styles.centerSkipButton}
+            >
+              <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.text} strokeWidth={2}>
+                <path d="M12 5V1L7 6l5 5V7a6 6 0 11-6 6" />
+              </svg>
+              <Text style={styles.centerSkipText}>30</Text>
+            </View>
+          )}
+
+          {/* Play/Pause Button */}
           <View
             onClick={(e: any) => {
               e?.stopPropagation?.()
@@ -238,6 +260,22 @@ export default function VideoPlayer({
               </svg>
             )}
           </View>
+
+          {/* Skip Forward 30s */}
+          {!isLive && (
+            <View
+              onClick={(e: any) => {
+                e?.stopPropagation?.()
+                controls.skip(30)
+              }}
+              style={styles.centerSkipButton}
+            >
+              <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.text} strokeWidth={2}>
+                <path d="M12 5V1l5 5-5 5V7a6 6 0 106 6" />
+              </svg>
+              <Text style={styles.centerSkipText}>30</Text>
+            </View>
+          )}
         </View>
 
         {/* Bottom Controls */}
@@ -261,6 +299,7 @@ export default function VideoPlayer({
             showChaptersPanel={showChaptersPanel}
             showSettings={showSettings}
             hasChapters={chapters.length > 0}
+            chapters={chapters}
             onChaptersPanelToggle={() => setShowChaptersPanel(!showChaptersPanel)}
             onSettingsToggle={() => setShowSettings(!showSettings)}
             renderWatchPartyButton={() =>
@@ -457,8 +496,28 @@ const styles = StyleSheet.create({
   },
   centerControls: {
     ...StyleSheet.absoluteFillObject,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: spacing.xl,
+  },
+  centerSkipButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.glass,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    cursor: 'pointer',
+    opacity: 0.9,
+  },
+  centerSkipText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: colors.text,
+    marginTop: -4,
   },
   centerPlayButton: {
     width: 80,

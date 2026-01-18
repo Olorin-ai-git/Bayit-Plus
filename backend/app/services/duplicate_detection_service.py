@@ -181,6 +181,45 @@ class DuplicateDetectionService:
         logger.info(f"Found {len(duplicates)} groups of IMDB duplicates")
         return duplicates
 
+    async def find_exact_name_duplicates(self) -> List[Dict[str, Any]]:
+        """
+        Find duplicates with exact same title (case-insensitive).
+        This catches stale duplicates like multiple "Bugranim s01e01" entries.
+        """
+        logger.info("Scanning for exact name duplicates...")
+
+        pipeline = [
+            {"$match": {"title": {"$ne": None, "$exists": True}}},
+            {"$group": {
+                "_id": {"$toLower": "$title"},
+                "count": {"$sum": 1},
+                "items": {"$push": {
+                    "id": {"$toString": "$_id"},
+                    "title": "$title",
+                    "title_en": "$title_en",
+                    "year": "$year",
+                    "created_at": "$created_at",
+                    "file_size": "$file_size",
+                    "is_published": "$is_published",
+                    "content_type": "$content_type"
+                }}
+            }},
+            {"$match": {"count": {"$gt": 1}}},
+            {"$sort": {"count": -1}}
+        ]
+
+        duplicates = []
+        async for group in Content.get_motor_collection().aggregate(pipeline):
+            duplicates.append({
+                "exact_title": group["_id"],
+                "count": group["count"],
+                "items": group["items"],
+                "duplicate_type": "exact_name"
+            })
+
+        logger.info(f"Found {len(duplicates)} groups of exact name duplicates")
+        return duplicates
+
     async def find_title_duplicates(
         self,
         check_year: bool = True,
@@ -241,6 +280,237 @@ class DuplicateDetectionService:
         logger.info(f"Found {len(duplicates)} groups of title duplicates")
         return duplicates
 
+    async def find_quality_variants(
+        self,
+        limit: int = 50,
+        unlinked_only: bool = True
+    ) -> List[Dict[str, Any]]:
+        """
+        Find content items that are quality variants of each other.
+        Groups content by TMDB ID and filters to groups with multiple different resolutions.
+
+        Args:
+            limit: Maximum number of groups to return
+            unlinked_only: If True, only return groups that haven't been linked yet
+
+        Returns:
+            List of quality variant groups, sorted by resolution (highest first)
+        """
+        logger.info("Scanning for quality variants (same content at different resolutions)...")
+
+        # Build match condition
+        match_condition: Dict[str, Any] = {
+            "tmdb_id": {"$ne": None, "$exists": True},
+            "video_metadata.height": {"$ne": None, "$exists": True},
+        }
+
+        if unlinked_only:
+            match_condition["is_quality_variant"] = {"$ne": True}
+            match_condition["primary_content_id"] = {"$eq": None}
+
+        pipeline = [
+            {"$match": match_condition},
+            {"$group": {
+                "_id": "$tmdb_id",
+                "count": {"$sum": 1},
+                "distinct_heights": {"$addToSet": "$video_metadata.height"},
+                "items": {"$push": {
+                    "id": {"$toString": "$_id"},
+                    "title": "$title",
+                    "title_en": "$title_en",
+                    "resolution_height": "$video_metadata.height",
+                    "resolution_width": "$video_metadata.width",
+                    "stream_url": "$stream_url",
+                    "file_size": "$file_size",
+                    "created_at": "$created_at",
+                    "is_published": "$is_published",
+                    "quality_tier": "$quality_tier",
+                    "is_quality_variant": "$is_quality_variant"
+                }}
+            }},
+            # Filter to groups with multiple different resolutions
+            {"$match": {
+                "count": {"$gt": 1},
+                "$expr": {"$gt": [{"$size": "$distinct_heights"}, 1]}
+            }},
+            {"$sort": {"count": -1}},
+            {"$limit": limit}
+        ]
+
+        quality_variants = []
+        async for group in Content.get_motor_collection().aggregate(pipeline):
+            # Sort items by resolution height (highest first)
+            sorted_items = sorted(
+                group["items"],
+                key=lambda x: x.get("resolution_height") or 0,
+                reverse=True
+            )
+
+            # Determine quality tier for each item
+            for item in sorted_items:
+                height = item.get("resolution_height") or 0
+                if height >= 2160:
+                    item["quality_tier"] = "4k"
+                elif height >= 1080:
+                    item["quality_tier"] = "1080p"
+                elif height >= 720:
+                    item["quality_tier"] = "720p"
+                elif height >= 480:
+                    item["quality_tier"] = "480p"
+                else:
+                    item["quality_tier"] = "unknown"
+
+            quality_variants.append({
+                "tmdb_id": group["_id"],
+                "count": group["count"],
+                "distinct_resolutions": len(group["distinct_heights"]),
+                "items": sorted_items,
+                "primary_candidate": sorted_items[0] if sorted_items else None,
+                "variant_type": "quality_resolution"
+            })
+
+        logger.info(f"Found {len(quality_variants)} groups of quality variants")
+        return quality_variants
+
+    async def link_quality_variants(
+        self,
+        content_ids: List[str],
+        primary_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Link multiple content items as quality variants of each other.
+        The highest quality item becomes the primary if not specified.
+
+        Args:
+            content_ids: List of content IDs to link
+            primary_id: Optional ID of the primary (highest quality) version
+
+        Returns:
+            Summary of linking operation
+        """
+        if len(content_ids) < 2:
+            return {
+                "success": False,
+                "error": "At least 2 content IDs required to link variants"
+            }
+
+        logger.info(f"Linking {len(content_ids)} content items as quality variants")
+
+        # Fetch all content items
+        items = []
+        errors = []
+        for cid in content_ids:
+            try:
+                content = await Content.get(PydanticObjectId(cid))
+                if content:
+                    items.append(content)
+                else:
+                    errors.append({"id": cid, "error": "Content not found"})
+            except Exception as e:
+                errors.append({"id": cid, "error": str(e)})
+
+        if len(items) < 2:
+            return {
+                "success": False,
+                "error": "Less than 2 valid content items found",
+                "errors": errors
+            }
+
+        # Sort by resolution height to find primary (highest quality)
+        items.sort(
+            key=lambda x: (x.video_metadata or {}).get("height", 0),
+            reverse=True
+        )
+
+        # Determine primary content
+        if primary_id:
+            primary = next((c for c in items if str(c.id) == primary_id), None)
+            if not primary:
+                primary = items[0]  # Fallback to highest quality
+        else:
+            primary = items[0]  # Highest quality becomes primary
+
+        primary_id_str = str(primary.id)
+        variants = [c for c in items if str(c.id) != primary_id_str]
+
+        # Build quality variants array for primary
+        quality_variants_data = []
+        for item in items:
+            height = (item.video_metadata or {}).get("height", 0)
+            if height >= 2160:
+                tier = "4k"
+            elif height >= 1080:
+                tier = "1080p"
+            elif height >= 720:
+                tier = "720p"
+            elif height >= 480:
+                tier = "480p"
+            else:
+                tier = "unknown"
+
+            quality_variants_data.append({
+                "content_id": str(item.id),
+                "quality_tier": tier,
+                "resolution_height": height,
+                "resolution_width": (item.video_metadata or {}).get("width", 0),
+                "stream_url": item.stream_url,
+            })
+
+        # Sort variants by resolution (highest first)
+        quality_variants_data.sort(
+            key=lambda x: x.get("resolution_height", 0),
+            reverse=True
+        )
+
+        # Update primary content
+        primary_height = (primary.video_metadata or {}).get("height", 0)
+        primary.quality_variants = quality_variants_data
+        primary.is_quality_variant = False
+        primary.primary_content_id = None
+        primary.quality_tier = quality_variants_data[0]["quality_tier"]
+        primary.updated_at = datetime.utcnow()
+        await primary.save()
+
+        # Update variant content items
+        updated_variants = []
+        for variant in variants:
+            variant_height = (variant.video_metadata or {}).get("height", 0)
+            if variant_height >= 2160:
+                tier = "4k"
+            elif variant_height >= 1080:
+                tier = "1080p"
+            elif variant_height >= 720:
+                tier = "720p"
+            elif variant_height >= 480:
+                tier = "480p"
+            else:
+                tier = "unknown"
+
+            variant.is_quality_variant = True
+            variant.primary_content_id = primary_id_str
+            variant.quality_tier = tier
+            variant.quality_variants = []  # Variants don't store the full list
+            variant.updated_at = datetime.utcnow()
+            await variant.save()
+            updated_variants.append({
+                "id": str(variant.id),
+                "title": variant.title,
+                "quality_tier": tier
+            })
+
+        return {
+            "success": True,
+            "primary": {
+                "id": primary_id_str,
+                "title": primary.title,
+                "quality_tier": quality_variants_data[0]["quality_tier"]
+            },
+            "variants_linked": len(updated_variants),
+            "variants": updated_variants,
+            "quality_options": quality_variants_data,
+            "errors": errors if errors else None
+        }
+
     async def find_all_duplicates(self) -> Dict[str, Any]:
         """
         Run all duplicate detection methods and return comprehensive results.
@@ -250,6 +520,7 @@ class DuplicateDetectionService:
         hash_duplicates = await self.find_hash_duplicates()
         tmdb_duplicates = await self.find_tmdb_duplicates()
         imdb_duplicates = await self.find_imdb_duplicates()
+        exact_name_duplicates = await self.find_exact_name_duplicates()
         title_duplicates = await self.find_title_duplicates()
 
         # Calculate totals
@@ -257,12 +528,13 @@ class DuplicateDetectionService:
             len(hash_duplicates) +
             len(tmdb_duplicates) +
             len(imdb_duplicates) +
+            len(exact_name_duplicates) +
             len(title_duplicates)
         )
 
         total_duplicate_items = sum(
             d["count"] - 1  # Subtract 1 because one item is the "original"
-            for d in hash_duplicates + tmdb_duplicates + imdb_duplicates + title_duplicates
+            for d in hash_duplicates + tmdb_duplicates + imdb_duplicates + exact_name_duplicates + title_duplicates
         )
 
         return {
@@ -272,12 +544,14 @@ class DuplicateDetectionService:
                 "hash_duplicate_groups": len(hash_duplicates),
                 "tmdb_duplicate_groups": len(tmdb_duplicates),
                 "imdb_duplicate_groups": len(imdb_duplicates),
+                "exact_name_duplicate_groups": len(exact_name_duplicates),
                 "title_duplicate_groups": len(title_duplicates),
                 "scanned_at": datetime.utcnow().isoformat()
             },
             "hash_duplicates": hash_duplicates,
             "tmdb_duplicates": tmdb_duplicates,
             "imdb_duplicates": imdb_duplicates,
+            "exact_name_duplicates": exact_name_duplicates,
             "title_duplicates": title_duplicates
         }
 

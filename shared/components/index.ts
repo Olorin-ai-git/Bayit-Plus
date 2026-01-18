@@ -29,6 +29,7 @@ export { LanguageSelector } from './LanguageSelector';
 // Import directly from './ProfileDropdown' in web app
 export { SideMenu } from './SideMenu';
 export { SubtitleFlags } from './SubtitleFlags';
+export { ContentBadges } from './content/ContentBadges';
 export { TrendingRow } from './TrendingRow';
 export { JerusalemRow } from './JerusalemRow';
 export { TelAvivRow } from './TelAvivRow';

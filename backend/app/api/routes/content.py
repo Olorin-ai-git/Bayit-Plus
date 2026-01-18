@@ -568,9 +568,10 @@ async def get_content(
 @router.get("/{content_id}/stream")
 async def get_stream_url(
     content_id: str,
+    quality: Optional[str] = Query(None, description="Quality tier to request (4k, 1080p, 720p, 480p)"),
     current_user: User = Depends(get_current_active_user),
 ):
-    """Get stream URL for content (requires authentication)."""
+    """Get stream URL for content (requires authentication). Supports quality selection."""
     content = await Content.get(content_id)
     if not content or not content.is_published:
         raise HTTPException(status_code=404, detail="Content not found")
@@ -593,10 +594,74 @@ async def get_stream_url(
                     detail="Subscription upgrade required",
                 )
 
-    # Bucket is now public, no need for signed URLs
+    # Build available qualities from quality_variants or current content
+    available_qualities = []
+    stream_url = content.stream_url
+    current_quality = content.quality_tier
+
+    # If this content has quality variants, use them
+    if content.quality_variants:
+        for variant in content.quality_variants:
+            available_qualities.append({
+                "quality": variant.get("quality_tier"),
+                "resolution_height": variant.get("resolution_height"),
+                "content_id": variant.get("content_id"),
+            })
+
+        # If specific quality requested, find the matching variant
+        if quality:
+            matching_variant = next(
+                (v for v in content.quality_variants if v.get("quality_tier") == quality),
+                None
+            )
+            if matching_variant:
+                stream_url = matching_variant.get("stream_url", content.stream_url)
+                current_quality = matching_variant.get("quality_tier")
+
+    # If this is a variant pointing to a primary, fetch primary's variants
+    elif content.primary_content_id:
+        primary = await Content.get(content.primary_content_id)
+        if primary and primary.quality_variants:
+            for variant in primary.quality_variants:
+                available_qualities.append({
+                    "quality": variant.get("quality_tier"),
+                    "resolution_height": variant.get("resolution_height"),
+                    "content_id": variant.get("content_id"),
+                })
+
+            # If specific quality requested, find the matching variant
+            if quality:
+                matching_variant = next(
+                    (v for v in primary.quality_variants if v.get("quality_tier") == quality),
+                    None
+                )
+                if matching_variant:
+                    stream_url = matching_variant.get("stream_url", content.stream_url)
+                    current_quality = matching_variant.get("quality_tier")
+
+    # If no variants exist, just report current quality based on video_metadata
+    if not available_qualities and content.video_metadata:
+        height = content.video_metadata.get("height", 0)
+        if height >= 2160:
+            current_quality = "4k"
+        elif height >= 1080:
+            current_quality = "1080p"
+        elif height >= 720:
+            current_quality = "720p"
+        elif height >= 480:
+            current_quality = "480p"
+
+        available_qualities.append({
+            "quality": current_quality,
+            "resolution_height": height,
+            "content_id": str(content.id),
+        })
+
     return {
-        "url": content.stream_url,
+        "url": stream_url,
         "type": content.stream_type,
+        "quality": current_quality,
+        "available_qualities": available_qualities,
         "is_drm_protected": content.is_drm_protected,
         "drm_key_id": content.drm_key_id if content.is_drm_protected else None,
     }

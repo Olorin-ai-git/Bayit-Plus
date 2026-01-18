@@ -38,6 +38,7 @@ const LibrarianAgentPage = () => {
   const [tmdbPostersOnly, setTmdbPostersOnly] = useState(true);
   const [openSubtitlesEnabled, setOpenSubtitlesEnabled] = useState(true);
   const [classifyOnly, setClassifyOnly] = useState(true);
+  const [purgeDuplicates, setPurgeDuplicates] = useState(true);
 
   // Live panel state
   const [livePanelReport, setLivePanelReport] = useState<AuditReportDetail | null>(null);
@@ -94,6 +95,7 @@ const LibrarianAgentPage = () => {
     tmdbPostersOnly,
     openSubtitlesEnabled,
     classifyOnly,
+    purgeDuplicates,
   };
 
   // Audit control hook
@@ -456,6 +458,15 @@ const LibrarianAgentPage = () => {
               value={classifyOnly}
               onValueChange={setClassifyOnly}
               label={t('admin.librarian.quickActions.classifyOnly', 'Classify Content')}
+              size="small"
+              isRTL={isRTL}
+            />
+          </View>
+          <View style={styles.toggleItem}>
+            <GlassToggle
+              value={purgeDuplicates}
+              onValueChange={setPurgeDuplicates}
+              label={t('admin.librarian.quickActions.purgeDuplicates', 'Purge Duplicates')}
               size="small"
               isRTL={isRTL}
             />
