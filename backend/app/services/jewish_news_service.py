@@ -22,6 +22,7 @@ from app.models.jewish_news import (
     JewishNewsSourceResponse,
     JewishNewsAggregatedResponse,
 )
+from app.services.news_scraper import scrape_judaism_news, HeadlineItem
 
 logger = logging.getLogger(__name__)
 
@@ -352,7 +353,8 @@ class JewishNewsService:
         """
         Fetch aggregated news from all active sources.
 
-        Uses caching to reduce RSS feed calls.
+        Uses RSS feeds as primary source and supplements with web search
+        for fresh content.
         """
         await self.initialize_sources()
 
@@ -364,7 +366,7 @@ class JewishNewsService:
             sources = await JewishNewsSource.find({"is_active": True}).to_list()
             all_items: List[Dict[str, Any]] = []
 
-            # Fetch all sources concurrently
+            # Fetch all RSS sources concurrently
             tasks = [self.fetch_rss_feed(source) for source in sources]
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -373,6 +375,32 @@ class JewishNewsService:
                     logger.error(f"Error fetching source: {result}")
                     continue
                 all_items.extend(result)
+
+            # Supplement with web search for fresh content
+            logger.info("Supplementing Jewish news with web search")
+            try:
+                web_headlines = await scrape_judaism_news()
+                seen_urls = {item.get("link", "") for item in all_items}
+
+                for headline in web_headlines:
+                    if headline.url not in seen_urls:
+                        all_items.append({
+                            "source_id": "web_search",
+                            "source_name": headline.source or "Web Search",
+                            "title": headline.title,
+                            "link": headline.url,
+                            "published_at": headline.published_at or headline.scraped_at,
+                            "summary": headline.summary,
+                            "author": None,
+                            "image_url": headline.image_url,
+                            "category": headline.category or "news",
+                            "guid": headline.url,
+                        })
+                        seen_urls.add(headline.url)
+
+                logger.info(f"Added {len(web_headlines)} items from web search")
+            except Exception as e:
+                logger.error(f"Web search supplement failed: {e}")
 
             # Sort by publication date (newest first)
             all_items.sort(key=lambda x: x.get("published_at", datetime.min), reverse=True)

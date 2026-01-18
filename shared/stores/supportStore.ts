@@ -17,6 +17,19 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 export type VoiceState = 'idle' | 'listening' | 'processing' | 'speaking' | 'error';
 
 /**
+ * Gesture states for wizard expressive animations
+ * These overlay on top of VoiceState for emotional/contextual responses
+ */
+export type GestureState =
+  | 'browsing'   // When searching/browsing content catalog
+  | 'cheering'   // Positive response, success, celebration
+  | 'clapping'   // Applause, congratulations
+  | 'conjuring'  // Processing magic, loading
+  | 'crying'     // Sad response, error, not found
+  | 'shrugging'  // Don't know, can't help, uncertain
+  | 'facepalm';  // Frustration, mistake
+
+/**
  * Support portal tabs
  */
 export type SupportTab = 'docs' | 'faq' | 'contact' | 'tickets';
@@ -119,6 +132,11 @@ interface SupportStore {
   /** Current intro text being spoken (for display in modal) */
   currentIntroText: string | null;
 
+  // Gesture state for expressive wizard animations
+  gestureState: GestureState | null;
+  /** Whether spritesheet animation is currently playing */
+  isAnimatingGesture: boolean;
+
   // Error state
   lastError: string | null;
 
@@ -161,6 +179,14 @@ interface SupportStore {
   /** Set current intro text being spoken */
   setCurrentIntroText: (text: string | null) => void;
 
+  // Gesture actions
+  /** Set the current gesture state (overlay on voice state) */
+  setGestureState: (state: GestureState | null) => void;
+  /** Set whether gesture animation is playing */
+  setIsAnimatingGesture: (isAnimating: boolean) => void;
+  /** Clear gesture state and animation */
+  clearGesture: () => void;
+
   // Error actions
   setError: (error: string | null) => void;
   clearError: () => void;
@@ -200,6 +226,10 @@ const initialState = {
   hasSeenWizardIntro: false,
   hasPlayedSessionIntro: false,
   currentIntroText: null as string | null,
+
+  // Gesture state
+  gestureState: null as GestureState | null,
+  isAnimatingGesture: false,
 
   // Error state
   lastError: null as string | null,
@@ -305,6 +335,11 @@ export const useSupportStore = create<SupportStore>()(
       markWizardIntroSeen: () => set({ hasSeenWizardIntro: true }),
       setSessionIntroPlayed: (played: boolean) => set({ hasPlayedSessionIntro: played }),
       setCurrentIntroText: (text: string | null) => set({ currentIntroText: text }),
+
+      // Gesture actions
+      setGestureState: (state: GestureState | null) => set({ gestureState: state }),
+      setIsAnimatingGesture: (isAnimating: boolean) => set({ isAnimatingGesture: isAnimating }),
+      clearGesture: () => set({ gestureState: null, isAnimatingGesture: false }),
 
       // Error actions
       setError: (error: string | null) => set({

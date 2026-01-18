@@ -391,6 +391,70 @@ class JerusalemContentService:
 
         return normalized_score, matched_keywords, max_category
 
+    def _categorize_content(self, title: str, summary: Optional[str] = None) -> str:
+        """Categorize content based on title and summary keywords."""
+        text = f"{title} {summary or ''}".lower()
+
+        # Check for Kotel/Western Wall
+        kotel_keywords = ["כותל", "kotel", "western wall", "הכותל"]
+        if any(kw in text for kw in kotel_keywords):
+            return JerusalemContentCategory.KOTEL
+
+        # Check for IDF ceremonies
+        idf_keywords = ["צה\"ל", "צהל", "idf", "השבעה", "גיוס", "חיילים", "soldiers"]
+        if any(kw in text for kw in idf_keywords):
+            return JerusalemContentCategory.IDF_CEREMONY
+
+        # Check for diaspora
+        diaspora_keywords = ["תפוצות", "diaspora", "עלייה", "aliyah", "עולים", "olim"]
+        if any(kw in text for kw in diaspora_keywords):
+            return JerusalemContentCategory.DIASPORA
+
+        # Check for holy sites
+        holy_keywords = ["מערת המכפלה", "קבר רחל", "הר הבית", "temple mount", "holy site"]
+        if any(kw in text for kw in holy_keywords):
+            return JerusalemContentCategory.HOLY_SITES
+
+        # Check for events
+        event_keywords = ["אירוע", "פסטיבל", "event", "festival", "חגיגה"]
+        if any(kw in text for kw in event_keywords):
+            return JerusalemContentCategory.JERUSALEM_EVENTS
+
+        return JerusalemContentCategory.GENERAL
+
+    def _extract_tags(self, title: str, summary: Optional[str] = None) -> List[str]:
+        """Extract relevant tags from content."""
+        text = f"{title} {summary or ''}".lower()
+        tags = []
+
+        # Hebrew tags
+        if "ירושלים" in text:
+            tags.append("ירושלים")
+        if "כותל" in text or "הכותל" in text:
+            tags.append("כותל")
+        if "צה\"ל" in text or "צהל" in text:
+            tags.append("צהל")
+        if "עלייה" in text or "עולים" in text:
+            tags.append("עלייה")
+        if "תפוצות" in text:
+            tags.append("תפוצות")
+        if "העיר העתיקה" in text:
+            tags.append("העיר העתיקה")
+
+        # English tags
+        if "jerusalem" in text and "ירושלים" not in tags:
+            tags.append("Jerusalem")
+        if "kotel" in text and "כותל" not in tags:
+            tags.append("Kotel")
+        if "idf" in text and "צהל" not in tags:
+            tags.append("IDF")
+
+        # Default tags if none found
+        if not tags:
+            tags = ["ירושלים", "חדשות"]
+
+        return tags[:5]
+
     def _filter_jerusalem_content(
         self, headlines: List[HeadlineItem]
     ) -> List[Dict[str, Any]]:
@@ -428,7 +492,8 @@ class JerusalemContentService:
         """
         Fetch aggregated Jerusalem content from all sources.
 
-        Uses caching to reduce scraping frequency.
+        Uses web search as PRIMARY source for fresh location-specific content,
+        then supplements with keyword-filtered general news.
         """
         await self.initialize_sources()
 
@@ -436,49 +501,58 @@ class JerusalemContentService:
         cached_items = self._cache.get(cache_key)
 
         if cached_items is None:
-            # Fetch from all scrapers in parallel
-            results = await asyncio.gather(
-                scrape_ynet(),
-                scrape_walla(),
-                scrape_mako(),
-                return_exceptions=True,
-            )
+            all_items = []
 
-            all_headlines: List[HeadlineItem] = []
-            for result in results:
-                if isinstance(result, Exception):
-                    logger.error(f"Error scraping source: {result}")
-                    continue
-                all_headlines.extend(result)
+            # PRIMARY: Use web search for fresh Jerusalem-specific news
+            logger.info("Fetching fresh Jerusalem content via web search")
+            try:
+                search_headlines = await scrape_jerusalem_news()
+                if search_headlines:
+                    for h in search_headlines:
+                        # Categorize based on title/summary content
+                        item_category = self._categorize_content(h.title, h.summary)
+                        all_items.append({
+                            "source_name": h.source,
+                            "title": h.title,
+                            "title_he": h.title,
+                            "url": h.url,
+                            "published_at": h.published_at or h.scraped_at,
+                            "summary": h.summary,
+                            "image_url": h.image_url,
+                            "category": item_category,
+                            "tags": self._extract_tags(h.title, h.summary),
+                            "relevance_score": 8.0,
+                        })
+                    logger.info(f"Web search found {len(all_items)} Jerusalem items")
+            except Exception as e:
+                logger.error(f"Web search failed: {e}")
 
-            # Filter for Jerusalem content
-            all_items = self._filter_jerusalem_content(all_headlines)
+            # SECONDARY: Supplement with keyword-filtered general news
+            if len(all_items) < 10:
+                logger.info("Supplementing with keyword-filtered news")
+                results = await asyncio.gather(
+                    scrape_ynet(),
+                    scrape_walla(),
+                    scrape_mako(),
+                    return_exceptions=True,
+                )
 
-            # If keyword filtering returned empty, use web search for fresh Jerusalem news
-            if not all_items:
-                logger.info("No Jerusalem content from RSS feeds, using web search")
-                try:
-                    search_headlines = await scrape_jerusalem_news()
-                    if search_headlines:
-                        # Convert web search results to content items
-                        all_items = [
-                            {
-                                "source_name": h.source,
-                                "title": h.title,
-                                "title_he": h.title,
-                                "url": h.url,
-                                "published_at": h.published_at or h.scraped_at,
-                                "summary": h.summary,
-                                "image_url": h.image_url,
-                                "category": JerusalemContentCategory.GENERAL,
-                                "tags": ["ירושלים", "חדשות"],
-                                "relevance_score": 8.0,
-                            }
-                            for h in search_headlines
-                        ]
-                        logger.info(f"Web search found {len(all_items)} Jerusalem items")
-                except Exception as e:
-                    logger.error(f"Web search failed: {e}")
+                all_headlines: List[HeadlineItem] = []
+                for result in results:
+                    if isinstance(result, Exception):
+                        logger.error(f"Error scraping source: {result}")
+                        continue
+                    all_headlines.extend(result)
+
+                # Filter for Jerusalem content
+                filtered_items = self._filter_jerusalem_content(all_headlines)
+
+                # Add unique items
+                existing_urls = {item["url"] for item in all_items}
+                for item in filtered_items:
+                    if item["url"] not in existing_urls:
+                        all_items.append(item)
+                        existing_urls.add(item["url"])
 
             # Sort by relevance score then publication date
             all_items.sort(

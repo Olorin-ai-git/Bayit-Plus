@@ -17,6 +17,8 @@ interface ContentItem {
   duration?: string;
   year?: string;
   category?: string;
+  category_name_en?: string;
+  category_name_es?: string;
   available_subtitle_languages?: string[];
   has_subtitles?: boolean;
 }

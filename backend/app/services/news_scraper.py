@@ -367,115 +367,253 @@ def headlines_to_dict(headlines: List[HeadlineItem]) -> List[Dict[str, Any]]:
     ]
 
 
-async def search_news_for_location(
-    location: str,
-    language: str = "he",
+async def search_google_news_rss(
+    query: str,
     max_results: int = 10,
 ) -> List[HeadlineItem]:
     """
-    Search for location-specific news using DuckDuckGo.
-    Provides fresh, targeted results when RSS/HTML scraping doesn't find matches.
+    Search Google News RSS for fresh news content.
+    More reliable than HTML scraping.
 
     Args:
-        location: Location to search for (e.g., "Jerusalem", "Tel Aviv", "ירושלים")
+        query: Search query (Hebrew or English)
+        max_results: Maximum number of results
+
+    Returns:
+        List of HeadlineItem from Google News
+    """
+    headlines = []
+    import urllib.parse
+
+    # URL encode the query for Google News RSS
+    encoded_query = urllib.parse.quote(query)
+    rss_url = f"https://news.google.com/rss/search?q={encoded_query}&hl=he&gl=IL&ceid=IL:he"
+
+    try:
+        async with httpx.AsyncClient(timeout=12.0, follow_redirects=True) as client:
+            response = await client.get(rss_url, headers={
+                **HEADERS,
+                "Accept": "application/rss+xml,application/xml,text/xml",
+            })
+
+            if response.status_code != 200:
+                return headlines
+
+            soup = BeautifulSoup(response.text, "lxml-xml")
+            items = soup.find_all("item")[:max_results]
+
+            for item in items:
+                title_elem = item.find("title")
+                link_elem = item.find("link")
+                pubdate_elem = item.find("pubDate")
+                source_elem = item.find("source")
+
+                if not title_elem or not link_elem:
+                    continue
+
+                title = title_elem.get_text(strip=True)
+                url = link_elem.get_text(strip=True)
+
+                # Skip if title too short
+                if len(title) < 10:
+                    continue
+
+                # Extract source name
+                source_name = "Google News"
+                if source_elem:
+                    source_name = source_elem.get_text(strip=True)
+
+                # Parse publication date
+                pub_date = None
+                if pubdate_elem:
+                    try:
+                        from email.utils import parsedate_to_datetime
+                        pub_date = parsedate_to_datetime(pubdate_elem.get_text(strip=True))
+                    except Exception:
+                        pub_date = datetime.utcnow()
+
+                headlines.append(
+                    HeadlineItem(
+                        title=title,
+                        url=url,
+                        source=source_name,
+                        category="news",
+                        published_at=pub_date,
+                    )
+                )
+
+    except Exception as e:
+        print(f"Error fetching Google News RSS for '{query}': {e}")
+
+    return headlines
+
+
+async def search_duckduckgo(
+    query: str,
+    max_results: int = 10,
+) -> List[HeadlineItem]:
+    """
+    Search DuckDuckGo HTML for news content.
+    Fallback when Google News doesn't work.
+
+    Args:
+        query: Search query
+        max_results: Maximum number of results
+
+    Returns:
+        List of HeadlineItem from DuckDuckGo
+    """
+    headlines = []
+    import urllib.parse
+
+    try:
+        search_url = f"https://html.duckduckgo.com/html/?q={urllib.parse.quote(query)}"
+
+        async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
+            response = await client.get(search_url, headers={
+                **HEADERS,
+                "Accept": "text/html",
+            })
+
+            if response.status_code != 200:
+                return headlines
+
+            soup = BeautifulSoup(response.text, "html.parser")
+            results = soup.select(".result__a")
+
+            seen_urls = set()
+
+            for result in results:
+                if len(headlines) >= max_results:
+                    break
+
+                title = result.get_text(strip=True)
+                href = result.get("href", "")
+
+                if not title or len(title) < 10 or not href:
+                    continue
+
+                # Extract actual URL from DuckDuckGo redirect
+                if "uddg=" in href:
+                    parsed = urllib.parse.parse_qs(urllib.parse.urlparse(href).query)
+                    if "uddg" in parsed:
+                        href = parsed["uddg"][0]
+
+                if href in seen_urls:
+                    continue
+                seen_urls.add(href)
+
+                # Skip social media and non-news
+                skip_domains = [
+                    "facebook.com", "twitter.com", "instagram.com",
+                    "youtube.com", "wikipedia.org", "tiktok.com",
+                ]
+                if any(domain in href.lower() for domain in skip_domains):
+                    continue
+
+                # Get summary from snippet
+                summary = None
+                snippet_elem = result.find_next_sibling("a", class_="result__snippet")
+                if snippet_elem:
+                    summary = snippet_elem.get_text(strip=True)
+
+                headlines.append(
+                    HeadlineItem(
+                        title=title,
+                        url=href,
+                        source="web_search",
+                        category="news",
+                        summary=summary,
+                    )
+                )
+
+    except Exception as e:
+        print(f"Error searching DuckDuckGo for '{query}': {e}")
+
+    return headlines
+
+
+async def search_news_for_location(
+    location: str,
+    language: str = "he",
+    max_results: int = 15,
+) -> List[HeadlineItem]:
+    """
+    Search for location-specific news using multiple sources.
+    Uses Google News RSS as primary, DuckDuckGo as fallback.
+
+    Args:
+        location: Location to search for (e.g., "Jerusalem", "Tel Aviv")
         language: Language code for search ("he" for Hebrew, "en" for English)
         max_results: Maximum number of results to return
 
     Returns:
         List of HeadlineItem with fresh news about the location
     """
-    headlines = []
-
-    # Search queries in both Hebrew and English for better coverage
+    # Define comprehensive search queries for each location
     queries = []
+
     if location.lower() in ["jerusalem", "ירושלים"]:
         queries = [
-            "ירושלים חדשות היום",
-            "Jerusalem news today",
-            "כותל המערבי חדשות",
+            # Hebrew news queries
+            "ירושלים חדשות",
+            "הכותל המערבי",
+            "העיר העתיקה ירושלים",
+            "אירועים בירושלים",
+            # English news queries
+            "Jerusalem Israel news",
+            "Western Wall Kotel",
+            "Old City Jerusalem",
         ]
     elif location.lower() in ["tel aviv", "תל אביב"]:
         queries = [
-            "תל אביב חדשות היום",
-            "Tel Aviv news today",
-            "חיי לילה תל אביב",
+            # Hebrew news queries
+            "תל אביב חדשות",
+            "אירועים תל אביב",
+            "תרבות תל אביב",
+            "הופעות תל אביב",
+            "מסעדות תל אביב",
+            # English news queries
+            "Tel Aviv Israel news",
+            "Tel Aviv events",
+            "Tel Aviv nightlife",
         ]
     else:
         queries = [f"{location} חדשות", f"{location} news"]
 
+    all_headlines = []
     seen_urls = set()
 
+    # First try Google News RSS for each query
     for query in queries:
-        if len(headlines) >= max_results:
+        if len(all_headlines) >= max_results:
             break
 
         try:
-            # Use DuckDuckGo HTML search (no API key needed)
-            search_url = f"https://html.duckduckgo.com/html/?q={query}"
-
-            async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
-                response = await client.get(search_url, headers={
-                    **HEADERS,
-                    "Accept": "text/html",
-                })
-
-                if response.status_code != 200:
-                    continue
-
-                soup = BeautifulSoup(response.text, "html.parser")
-
-                # DuckDuckGo HTML results structure
-                results = soup.select(".result__a")
-
-                for result in results:
-                    if len(headlines) >= max_results:
-                        break
-
-                    title = result.get_text(strip=True)
-                    href = result.get("href", "")
-
-                    # Skip if no title or URL
-                    if not title or len(title) < 10 or not href:
-                        continue
-
-                    # DuckDuckGo uses redirect URLs, extract actual URL
-                    if "uddg=" in href:
-                        import urllib.parse
-                        parsed = urllib.parse.parse_qs(urllib.parse.urlparse(href).query)
-                        if "uddg" in parsed:
-                            href = parsed["uddg"][0]
-
-                    # Skip duplicate URLs
-                    if href in seen_urls:
-                        continue
-                    seen_urls.add(href)
-
-                    # Skip non-news URLs
-                    skip_domains = ["facebook.com", "twitter.com", "instagram.com", "youtube.com", "wikipedia.org"]
-                    if any(domain in href.lower() for domain in skip_domains):
-                        continue
-
-                    # Get snippet/summary from sibling element
-                    summary = None
-                    snippet_elem = result.find_next_sibling("a", class_="result__snippet")
-                    if snippet_elem:
-                        summary = snippet_elem.get_text(strip=True)
-
-                    headlines.append(
-                        HeadlineItem(
-                            title=title,
-                            url=href,
-                            source="web_search",
-                            category="news",
-                            summary=summary,
-                        )
-                    )
-
+            results = await search_google_news_rss(query, max_results=5)
+            for item in results:
+                if item.url not in seen_urls:
+                    seen_urls.add(item.url)
+                    all_headlines.append(item)
         except Exception as e:
-            print(f"Error searching for {query}: {e}")
-            continue
+            print(f"Google News search failed for '{query}': {e}")
 
-    return headlines
+    # If we don't have enough results, try DuckDuckGo
+    if len(all_headlines) < max_results // 2:
+        for query in queries[:3]:  # Try first 3 queries
+            if len(all_headlines) >= max_results:
+                break
+
+            try:
+                results = await search_duckduckgo(query, max_results=5)
+                for item in results:
+                    if item.url not in seen_urls:
+                        seen_urls.add(item.url)
+                        all_headlines.append(item)
+            except Exception as e:
+                print(f"DuckDuckGo search failed for '{query}': {e}")
+
+    return all_headlines[:max_results]
 
 
 async def scrape_jerusalem_news() -> List[HeadlineItem]:
@@ -492,6 +630,93 @@ async def scrape_tel_aviv_news() -> List[HeadlineItem]:
     Returns fresh headlines about Tel Aviv from multiple sources.
     """
     return await search_news_for_location("Tel Aviv", "he", max_results=15)
+
+
+async def scrape_judaism_news() -> List[HeadlineItem]:
+    """
+    Scrape Judaism and Jewish community news using web search.
+    Supplements RSS feeds with fresh content from web search.
+
+    Returns:
+        List of HeadlineItem with fresh Jewish news
+    """
+    queries = [
+        # English queries
+        "Jewish news today",
+        "Jewish community news",
+        "Torah shiur lecture",
+        "Israel Jewish news",
+        # Hebrew queries
+        "חדשות יהודיות",
+        "קהילה יהודית",
+        "שיעור תורה",
+    ]
+
+    all_headlines = []
+    seen_urls = set()
+
+    # First try Google News RSS for each query
+    for query in queries:
+        if len(all_headlines) >= 15:
+            break
+
+        try:
+            results = await search_google_news_rss(query, max_results=4)
+            for item in results:
+                if item.url not in seen_urls:
+                    seen_urls.add(item.url)
+                    # Categorize the content
+                    category = _categorize_jewish_content(item.title, item.summary)
+                    item.category = category
+                    all_headlines.append(item)
+        except Exception as e:
+            print(f"Google News search failed for '{query}': {e}")
+
+    # Supplement with DuckDuckGo if needed
+    if len(all_headlines) < 8:
+        for query in queries[:3]:
+            if len(all_headlines) >= 15:
+                break
+
+            try:
+                results = await search_duckduckgo(query, max_results=4)
+                for item in results:
+                    if item.url not in seen_urls:
+                        seen_urls.add(item.url)
+                        category = _categorize_jewish_content(item.title, item.summary)
+                        item.category = category
+                        all_headlines.append(item)
+            except Exception as e:
+                print(f"DuckDuckGo search failed for '{query}': {e}")
+
+    return all_headlines[:15]
+
+
+def _categorize_jewish_content(title: str, summary: Optional[str] = None) -> str:
+    """Categorize Jewish content based on keywords."""
+    text = f"{title} {summary or ''}".lower()
+
+    # Torah/religious content
+    torah_keywords = ["torah", "shiur", "parsha", "talmud", "halacha", "rabbi", "שיעור", "תורה", "הלכה", "רב"]
+    if any(kw in text for kw in torah_keywords):
+        return "torah"
+
+    # Community news
+    community_keywords = ["community", "synagogue", "shul", "congregation", "קהילה", "בית כנסת"]
+    if any(kw in text for kw in community_keywords):
+        return "community"
+
+    # Israel news
+    israel_keywords = ["israel", "jerusalem", "tel aviv", "idf", "knesset", "ישראל", "ירושלים"]
+    if any(kw in text for kw in israel_keywords):
+        return "israel"
+
+    # Culture
+    culture_keywords = ["culture", "art", "music", "festival", "תרבות", "אמנות"]
+    if any(kw in text for kw in culture_keywords):
+        return "culture"
+
+    return "news"
 
 
 # Simple in-memory cache

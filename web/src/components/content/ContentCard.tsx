@@ -9,6 +9,7 @@ import { SubtitleFlags } from '@bayit/shared';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import { useDirection } from '@/hooks/useDirection';
 import { favoritesService, watchlistService } from '@/services/api';
+import { getLocalizedCategory } from '@bayit/shared-utils/contentLocalization';
 import LinearGradient from 'react-native-linear-gradient';
 
 interface Content {
@@ -21,6 +22,8 @@ interface Content {
   progress?: number;
   year?: string;
   category?: string;
+  category_name_en?: string;
+  category_name_es?: string;
   total_episodes?: number;
   has_subtitles?: boolean;
   available_subtitle_languages?: string[];
@@ -33,10 +36,13 @@ interface ContentCardProps {
 }
 
 export default function ContentCard({ content, showProgress = false, showActions = true }: ContentCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
   const [isHovered, setIsHovered] = useState(false);
   const { isUIInteractionEnabled } = useModeEnforcement();
+
+  // Get localized category name based on current language
+  const localizedCategory = getLocalizedCategory(content, i18n.language);
 
   // Action button states
   const [isFavorite, setIsFavorite] = useState(false);
@@ -244,10 +250,10 @@ export default function ContentCard({ content, showProgress = false, showActions
             </Text>
             <View style={[styles.meta, { flexDirection }]}>
               {content.year && <Text style={styles.metaText}>{content.year}</Text>}
-              {content.year && content.category && (
+              {content.year && localizedCategory && (
                 <Text style={styles.metaDivider}>|</Text>
               )}
-              {content.category && <Text style={styles.metaText}>{content.category}</Text>}
+              {localizedCategory && <Text style={styles.metaText}>{localizedCategory}</Text>}
             </View>
           </View>
         </GlassCard>

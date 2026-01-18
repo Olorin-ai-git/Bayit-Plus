@@ -461,6 +461,78 @@ class TelAvivContentService:
 
         return normalized_score, matched_keywords, max_category
 
+    def _categorize_content(self, title: str, summary: Optional[str] = None) -> str:
+        """Categorize content based on title and summary keywords."""
+        text = f"{title} {summary or ''}".lower()
+
+        # Check for beaches
+        beach_keywords = ["חוף", "beach", "ים", "sea", "טיילת", "promenade"]
+        if any(kw in text for kw in beach_keywords):
+            return TelAvivContentCategory.BEACHES
+
+        # Check for nightlife
+        nightlife_keywords = ["לילה", "nightlife", "בר", "bar", "מועדון", "club", "רוטשילד", "פלורנטין"]
+        if any(kw in text for kw in nightlife_keywords):
+            return TelAvivContentCategory.NIGHTLIFE
+
+        # Check for culture
+        culture_keywords = ["מוזיאון", "museum", "גלריה", "gallery", "תיאטרון", "theater", "אמנות", "art", "באוהאוס"]
+        if any(kw in text for kw in culture_keywords):
+            return TelAvivContentCategory.CULTURE
+
+        # Check for music
+        music_keywords = ["הופעה", "concert", "מוסיקה", "music", "פסטיבל", "festival", "זמר"]
+        if any(kw in text for kw in music_keywords):
+            return TelAvivContentCategory.MUSIC
+
+        # Check for food
+        food_keywords = ["מסעדה", "restaurant", "אוכל", "food", "שוק", "market", "בית קפה", "cafe"]
+        if any(kw in text for kw in food_keywords):
+            return TelAvivContentCategory.FOOD
+
+        # Check for tech
+        tech_keywords = ["סטארטאפ", "startup", "הייטק", "tech", "יזמות", "entrepreneur"]
+        if any(kw in text for kw in tech_keywords):
+            return TelAvivContentCategory.TECH
+
+        # Check for events
+        event_keywords = ["אירוע", "event", "פריד", "pride", "לילה לבן"]
+        if any(kw in text for kw in event_keywords):
+            return TelAvivContentCategory.EVENTS
+
+        return TelAvivContentCategory.GENERAL
+
+    def _extract_tags(self, title: str, summary: Optional[str] = None) -> List[str]:
+        """Extract relevant tags from content."""
+        text = f"{title} {summary or ''}".lower()
+        tags = []
+
+        # Hebrew tags
+        if "תל אביב" in text:
+            tags.append("תל אביב")
+        if "חוף" in text:
+            tags.append("חוף")
+        if "לילה" in text or "בר" in text:
+            tags.append("חיי לילה")
+        if "מוסיקה" in text or "הופעה" in text:
+            tags.append("מוסיקה")
+        if "אוכל" in text or "מסעדה" in text:
+            tags.append("אוכל")
+        if "סטארטאפ" in text or "הייטק" in text:
+            tags.append("הייטק")
+        if "תרבות" in text or "אמנות" in text:
+            tags.append("תרבות")
+
+        # English tags
+        if "tel aviv" in text and "תל אביב" not in tags:
+            tags.append("Tel Aviv")
+
+        # Default tags if none found
+        if not tags:
+            tags = ["תל אביב", "חדשות"]
+
+        return tags[:5]
+
     def _filter_tel_aviv_content(
         self, headlines: List[HeadlineItem]
     ) -> List[Dict[str, Any]]:
@@ -498,7 +570,8 @@ class TelAvivContentService:
         """
         Fetch aggregated Tel Aviv content from all sources.
 
-        Uses caching to reduce scraping frequency.
+        Uses web search as PRIMARY source for fresh location-specific content,
+        then supplements with keyword-filtered general news.
         """
         await self.initialize_sources()
 
@@ -506,49 +579,58 @@ class TelAvivContentService:
         cached_items = self._cache.get(cache_key)
 
         if cached_items is None:
-            # Fetch from all scrapers in parallel
-            results = await asyncio.gather(
-                scrape_ynet(),
-                scrape_walla(),
-                scrape_mako(),
-                return_exceptions=True,
-            )
+            all_items = []
 
-            all_headlines: List[HeadlineItem] = []
-            for result in results:
-                if isinstance(result, Exception):
-                    logger.error(f"Error scraping source: {result}")
-                    continue
-                all_headlines.extend(result)
+            # PRIMARY: Use web search for fresh Tel Aviv-specific news
+            logger.info("Fetching fresh Tel Aviv content via web search")
+            try:
+                search_headlines = await scrape_tel_aviv_news()
+                if search_headlines:
+                    for h in search_headlines:
+                        # Categorize based on title/summary content
+                        item_category = self._categorize_content(h.title, h.summary)
+                        all_items.append({
+                            "source_name": h.source,
+                            "title": h.title,
+                            "title_he": h.title,
+                            "url": h.url,
+                            "published_at": h.published_at or h.scraped_at,
+                            "summary": h.summary,
+                            "image_url": h.image_url,
+                            "category": item_category,
+                            "tags": self._extract_tags(h.title, h.summary),
+                            "relevance_score": 8.0,
+                        })
+                    logger.info(f"Web search found {len(all_items)} Tel Aviv items")
+            except Exception as e:
+                logger.error(f"Web search failed: {e}")
 
-            # Filter for Tel Aviv content
-            all_items = self._filter_tel_aviv_content(all_headlines)
+            # SECONDARY: Supplement with keyword-filtered general news
+            if len(all_items) < 10:
+                logger.info("Supplementing with keyword-filtered news")
+                results = await asyncio.gather(
+                    scrape_ynet(),
+                    scrape_walla(),
+                    scrape_mako(),
+                    return_exceptions=True,
+                )
 
-            # If keyword filtering returned empty, use web search for fresh Tel Aviv news
-            if not all_items:
-                logger.info("No Tel Aviv content from RSS feeds, using web search")
-                try:
-                    search_headlines = await scrape_tel_aviv_news()
-                    if search_headlines:
-                        # Convert web search results to content items
-                        all_items = [
-                            {
-                                "source_name": h.source,
-                                "title": h.title,
-                                "title_he": h.title,
-                                "url": h.url,
-                                "published_at": h.published_at or h.scraped_at,
-                                "summary": h.summary,
-                                "image_url": h.image_url,
-                                "category": TelAvivContentCategory.GENERAL,
-                                "tags": ["תל אביב", "חדשות"],
-                                "relevance_score": 8.0,
-                            }
-                            for h in search_headlines
-                        ]
-                        logger.info(f"Web search found {len(all_items)} Tel Aviv items")
-                except Exception as e:
-                    logger.error(f"Web search failed: {e}")
+                all_headlines: List[HeadlineItem] = []
+                for result in results:
+                    if isinstance(result, Exception):
+                        logger.error(f"Error scraping source: {result}")
+                        continue
+                    all_headlines.extend(result)
+
+                # Filter for Tel Aviv content
+                filtered_items = self._filter_tel_aviv_content(all_headlines)
+
+                # Add unique items
+                existing_urls = {item["url"] for item in all_items}
+                for item in filtered_items:
+                    if item["url"] not in existing_urls:
+                        all_items.append(item)
+                        existing_urls.add(item["url"])
 
             # Sort by relevance score then publication date
             all_items.sort(

@@ -69,13 +69,21 @@ export const getLocalizedCurrentProgram = (
 
 /**
  * Get localized category label from a content object
- * Supports: category_label field with language-specific entries
+ * Supports: category_name_en, category_name_es, category_label field with language-specific entries
  */
 export const getLocalizedCategory = (
   content: any,
   language: string,
 ): string => {
   if (!content) return '';
+
+  // Check for direct category_name_XX fields first (from API response)
+  if (language === 'en' && content.category_name_en) {
+    return content.category_name_en;
+  }
+  if (language === 'es' && content.category_name_es) {
+    return content.category_name_es;
+  }
 
   // Handle category_label object structure
   if (content.category_label) {

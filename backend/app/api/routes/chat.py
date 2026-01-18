@@ -1839,3 +1839,130 @@ async def get_transcription_status(
         error=data.get("error"),
         processed=data.get("processed")
     )
+
+
+# Sound Effects Generation
+class SFXRequest(BaseModel):
+    """Request for sound effect generation."""
+    gesture: str  # One of: conjuring, thinking, clapping, cheering
+    # Optional custom description (overrides pre-defined gesture sounds)
+    custom_description: Optional[str] = None
+    duration_seconds: Optional[float] = None
+
+
+class SFXResponse(BaseModel):
+    """Response metadata for SFX (audio returned as stream)."""
+    gesture: str
+    description: str
+    cached: bool
+
+
+@router.post("/sound-effect/{gesture}")
+async def get_wizard_sfx(
+    gesture: str,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Get a sound effect for a wizard gesture animation.
+
+    Supported gestures:
+    - conjuring: Magical sparkle/whoosh for spell casting
+    - thinking: Gentle mystical hum for contemplation
+    - clapping: Magical applause with sparkles
+    - cheering: Triumphant celebration sound
+
+    Returns audio stream (audio/mpeg) that can be played with the animation.
+    Results are cached for 24 hours to minimize API calls.
+    """
+    from app.services.elevenlabs_sfx_service import get_sfx_service, WIZARD_SFX_DESCRIPTIONS
+
+    # Validate gesture
+    valid_gestures = list(WIZARD_SFX_DESCRIPTIONS.keys())
+    if gesture not in valid_gestures:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid gesture: {gesture}. Valid options: {valid_gestures}"
+        )
+
+    try:
+        sfx_service = get_sfx_service()
+        audio_bytes = await sfx_service.get_wizard_sfx(gesture)
+
+        return StreamingResponse(
+            iter([audio_bytes]),
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": f'inline; filename="wizard_{gesture}.mp3"',
+                "Cache-Control": "public, max-age=86400",  # Cache for 24 hours
+                "X-SFX-Gesture": gesture,
+            }
+        )
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        print(f"[SFX] Error generating sound effect: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to generate sound effect: {str(e)}"
+        )
+
+
+@router.post("/sound-effect")
+async def generate_custom_sfx(
+    request: SFXRequest,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Generate a custom sound effect from a text description.
+
+    This endpoint allows generating any sound effect using ElevenLabs Sound Generation API.
+    Use the gesture-specific endpoint (/sound-effect/{gesture}) for pre-defined wizard sounds.
+    """
+    from app.services.elevenlabs_sfx_service import get_sfx_service
+
+    if not request.custom_description:
+        raise HTTPException(
+            status_code=400,
+            detail="custom_description is required for custom SFX generation"
+        )
+
+    # Limit description length
+    if len(request.custom_description) > 500:
+        raise HTTPException(
+            status_code=400,
+            detail="custom_description must be 500 characters or less"
+        )
+
+    # Validate duration if provided
+    if request.duration_seconds is not None:
+        if not 0.5 <= request.duration_seconds <= 22:
+            raise HTTPException(
+                status_code=400,
+                detail="duration_seconds must be between 0.5 and 22"
+            )
+
+    try:
+        sfx_service = get_sfx_service()
+        audio_bytes = await sfx_service.generate_sfx(
+            text=request.custom_description,
+            duration_seconds=request.duration_seconds,
+        )
+
+        return StreamingResponse(
+            iter([audio_bytes]),
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": 'inline; filename="custom_sfx.mp3"',
+                "Cache-Control": "public, max-age=3600",  # Cache for 1 hour
+            }
+        )
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        print(f"[SFX] Error generating custom sound effect: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to generate sound effect: {str(e)}"
+        )

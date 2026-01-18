@@ -162,6 +162,15 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
     # Fetch category content with LIMIT per category at DB level
     cat_query_start = time.time()
     category_ids = [str(cat.id) for cat in categories]
+    # Build category map with all localized names
+    category_info_map = {
+        str(cat.id): {
+            "name": cat.name,
+            "name_en": cat.name_en,
+            "name_es": cat.name_es,
+        }
+        for cat in categories
+    }
     category_name_map = {str(cat.id): cat.name for cat in categories}
 
     # Optimized pipeline: only fetch needed fields, group by category, limit 10 per category
@@ -215,7 +224,8 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
     category_items_map = {}
     for group in grouped_content:
         cat_id = group["_id"]
-        cat_name = category_name_map.get(cat_id, "")
+        cat_info = category_info_map.get(cat_id, {})
+        cat_name = cat_info.get("name", "")
         category_items = []
         for item in group["items"]:
             # Check both is_series flag and category name
@@ -227,6 +237,8 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
                 "duration": item.get("duration"),
                 "year": item.get("year"),
                 "category": cat_name,
+                "category_name_en": cat_info.get("name_en"),
+                "category_name_es": cat_info.get("name_es"),
                 "type": "series" if is_series else "movie",
                 "is_series": is_series,
             }
@@ -238,11 +250,13 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
     # NOTE: Subtitle enrichment removed from featured endpoint for performance
     # Subtitle data can be fetched separately via /content/{id} if needed
 
-    # Build final category data (preserve category order)
+    # Build final category data (preserve category order) with localized names
     category_data = [
         {
             "id": str(cat.id),
             "name": cat.name,
+            "name_en": cat.name_en,
+            "name_es": cat.name_es,
             "items": category_items_map.get(str(cat.id), []),
         }
         for cat in categories
@@ -294,24 +308,43 @@ async def get_all_content(
     """Get all published content (movies and series, excluding episodes)."""
     skip = (page - 1) * limit
 
-    # Get all published content, excluding episodes
-    items = await Content.find(
-        Content.is_published == True,
-        {"$or": [
-            {"series_id": None},
-            {"series_id": {"$exists": False}},
-            {"series_id": ""},
-        ]},
-    ).skip(skip).limit(limit).to_list()
+    # Fetch content and categories in parallel
+    async def get_content():
+        return await Content.find(
+            Content.is_published == True,
+            {"$or": [
+                {"series_id": None},
+                {"series_id": {"$exists": False}},
+                {"series_id": ""},
+            ]},
+        ).skip(skip).limit(limit).to_list()
 
-    total = await Content.find(
-        Content.is_published == True,
-        {"$or": [
-            {"series_id": None},
-            {"series_id": {"$exists": False}},
-            {"series_id": ""},
-        ]},
-    ).count()
+    async def get_total():
+        return await Content.find(
+            Content.is_published == True,
+            {"$or": [
+                {"series_id": None},
+                {"series_id": {"$exists": False}},
+                {"series_id": ""},
+            ]},
+        ).count()
+
+    async def get_all_categories():
+        return await Category.find().to_list()
+
+    items, total, categories = await asyncio.gather(
+        get_content(), get_total(), get_all_categories()
+    )
+
+    # Build category localization map: category_id -> {name, name_en, name_es}
+    category_map = {
+        str(cat.id): {
+            "name": cat.name,
+            "name_en": cat.name_en,
+            "name_es": cat.name_es,
+        }
+        for cat in categories
+    }
 
     # Debug logging for Avatar
     avatar = next((item for item in items if item.title == "Avatar"), None)
@@ -322,23 +355,25 @@ async def get_all_content(
         """Determine if content is a series based on is_series flag OR category name."""
         return item.is_series or is_series_by_category(item.category_name)
 
-    # Build content items
-    content_items = [
-        {
+    # Build content items with localized category names
+    content_items = []
+    for item in items:
+        cat_info = category_map.get(item.category_id, {})
+        is_series = is_series_content(item)
+        content_items.append({
             "id": str(item.id),
             "title": item.title,
             "description": item.description,
-            # Use stored image data if available, otherwise fall back to URL or poster_url
             "thumbnail": item.thumbnail_data or convert_to_proxy_url(item.thumbnail or item.poster_url) if (item.thumbnail_data or item.thumbnail or item.poster_url) else None,
             "backdrop": item.backdrop_data or convert_to_proxy_url(item.backdrop) if (item.backdrop_data or item.backdrop) else None,
             "category": item.category_name,
+            "category_name_en": cat_info.get("name_en"),
+            "category_name_es": cat_info.get("name_es"),
             "year": item.year,
             "duration": item.duration,
-            "is_series": is_series_content(item),
-            "type": "series" if is_series_content(item) else "movie",
-        }
-        for item in items
-    ]
+            "is_series": is_series,
+            "type": "series" if is_series else "movie",
+        })
 
     # Enrich with subtitle languages
     content_items = await enrich_content_items_with_subtitles(content_items)
@@ -436,6 +471,8 @@ async def get_by_category(
             "duration": item.duration,
             "year": item.year,
             "category": category.name,
+            "category_name_en": category.name_en,
+            "category_name_es": category.name_es,
             "type": "series" if is_series else "movie",
             "is_series": is_series,
         }
@@ -461,6 +498,8 @@ async def get_by_category(
         "category": {
             "id": str(category.id),
             "name": category.name,
+            "name_en": category.name_en,
+            "name_es": category.name_es,
         },
         "items": result_items,
         "total": total,
