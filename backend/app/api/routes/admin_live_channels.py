@@ -17,7 +17,8 @@ router = APIRouter()
 def _channel_dict(ch):
     return {
         "id": str(ch.id), "name": ch.name, "description": ch.description, "thumbnail": ch.thumbnail,
-        "logo": ch.logo, "stream_url": ch.stream_url, "stream_type": ch.stream_type,
+        "logo": ch.logo, "category": ch.category, "culture_id": ch.culture_id,
+        "stream_url": ch.stream_url, "stream_type": ch.stream_type,
         "is_drm_protected": ch.is_drm_protected, "epg_source": ch.epg_source, "current_show": ch.current_show,
         "next_show": ch.next_show, "is_active": ch.is_active, "order": ch.order,
         "requires_subscription": ch.requires_subscription, "supports_live_subtitles": ch.supports_live_subtitles,
@@ -57,14 +58,15 @@ async def create_live_channel(data: LiveChannelCreateRequest, request: Request,
                               current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))):
     """Create new live channel."""
     channel = LiveChannel(name=data.name, description=data.description, thumbnail=data.thumbnail,
-        logo=data.logo, stream_url=data.stream_url, stream_type=data.stream_type,
+        logo=data.logo, category=data.category, culture_id=data.culture_id,
+        stream_url=data.stream_url, stream_type=data.stream_type,
         is_drm_protected=data.is_drm_protected, epg_source=data.epg_source, current_show=data.current_show,
         next_show=data.next_show, is_active=data.is_active, order=data.order,
         requires_subscription=data.requires_subscription, supports_live_subtitles=data.supports_live_subtitles,
         primary_language=data.primary_language, available_translation_languages=data.available_translation_languages)
     await channel.insert()
     await log_audit(str(current_user.id), AuditAction.LIVE_CHANNEL_CREATED, "live_channel",
-                    str(channel.id), {"name": channel.name}, request)
+                    str(channel.id), {"name": channel.name, "culture_id": channel.culture_id}, request)
     return {"id": str(channel.id), "name": channel.name}
 
 @router.patch("/live-channels/{channel_id}")
@@ -90,6 +92,12 @@ async def update_live_channel(channel_id: str, data: LiveChannelUpdateRequest, r
     if data.logo is not None:
         changes["logo"] = {"changed": True}
         channel.logo = data.logo
+    if data.category is not None:
+        changes["category"] = {"old": channel.category, "new": data.category}
+        channel.category = data.category
+    if data.culture_id is not None:
+        changes["culture_id"] = {"old": channel.culture_id, "new": data.culture_id}
+        channel.culture_id = data.culture_id
     if data.stream_url is not None:
         changes["stream_url"] = {"changed": True}
         channel.stream_url = data.stream_url

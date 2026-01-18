@@ -201,6 +201,9 @@ class LiveChannel(Document):
     logo: Optional[str] = None
     category: Optional[str] = None  # news, entertainment, sports, kids, music
 
+    # Culture association (Global Cultures feature)
+    culture_id: str = "israeli"  # Default for backward compatibility
+
     # Stream
     stream_url: str
     stream_type: str = "hls"
@@ -230,6 +233,9 @@ class LiveChannel(Document):
             "order",
             "is_active",
             "created_at",
+            "culture_id",
+            ("culture_id", "is_active"),
+            ("culture_id", "category"),
         ]
 
 
@@ -272,6 +278,9 @@ class RadioStation(Document):
     genre_en: Optional[str] = None
     genre_es: Optional[str] = None
 
+    # Culture association (Global Cultures feature)
+    culture_id: str = "israeli"  # Default for backward compatibility
+
     stream_url: str
     stream_type: str = "audio"  # audio, hls
 
@@ -289,6 +298,9 @@ class RadioStation(Document):
             "order",
             "is_active",
             "genre",
+            "culture_id",
+            ("culture_id", "is_active"),
+            ("culture_id", "genre"),
         ]
 
 
@@ -306,6 +318,9 @@ class Podcast(Document):
     category: Optional[str] = None
     category_en: Optional[str] = None
     category_es: Optional[str] = None
+
+    # Culture association (Global Cultures feature)
+    culture_id: str = "israeli"  # Default for backward compatibility
 
     rss_feed: Optional[str] = None
     website: Optional[str] = None
@@ -325,6 +340,9 @@ class Podcast(Document):
             "category",
             "is_active",
             "latest_episode_date",
+            "culture_id",
+            ("culture_id", "is_active"),
+            ("culture_id", "category"),
         ]
 
 

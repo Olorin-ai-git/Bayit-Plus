@@ -95,6 +95,7 @@ class LiveChannelCreateRequest(BaseModel):
     thumbnail: Optional[str] = None
     logo: Optional[str] = None
     category: Optional[str] = None  # news, entertainment, sports, kids, music
+    culture_id: str = "israeli"  # Culture association (Global Cultures feature)
     stream_url: str
     stream_type: str = "hls"
     is_drm_protected: bool = False
@@ -115,6 +116,7 @@ class LiveChannelUpdateRequest(BaseModel):
     thumbnail: Optional[str] = None
     logo: Optional[str] = None
     category: Optional[str] = None  # news, entertainment, sports, kids, music
+    culture_id: Optional[str] = None  # Culture association (Global Cultures feature)
     stream_url: Optional[str] = None
     stream_type: Optional[str] = None
     is_drm_protected: Optional[bool] = None
@@ -135,6 +137,7 @@ class RadioStationCreateRequest(BaseModel):
     description: Optional[str] = None
     logo: Optional[str] = None
     genre: Optional[str] = None
+    culture_id: str = "israeli"  # Culture association (Global Cultures feature)
     stream_url: str
     stream_type: str = "audio"
     current_show: Optional[str] = None
@@ -148,6 +151,7 @@ class RadioStationUpdateRequest(BaseModel):
     description: Optional[str] = None
     logo: Optional[str] = None
     genre: Optional[str] = None
+    culture_id: Optional[str] = None  # Culture association (Global Cultures feature)
     stream_url: Optional[str] = None
     stream_type: Optional[str] = None
     current_show: Optional[str] = None
@@ -163,6 +167,7 @@ class PodcastCreateRequest(BaseModel):
     author: Optional[str] = None
     cover: Optional[str] = None
     category: Optional[str] = None
+    culture_id: str = "israeli"  # Culture association (Global Cultures feature)
     rss_feed: Optional[str] = None
     website: Optional[str] = None
     episode_count: int = 0
@@ -177,6 +182,7 @@ class PodcastUpdateRequest(BaseModel):
     author: Optional[str] = None
     cover: Optional[str] = None
     category: Optional[str] = None
+    culture_id: Optional[str] = None  # Culture association (Global Cultures feature)
     rss_feed: Optional[str] = None
     website: Optional[str] = None
     episode_count: Optional[int] = None

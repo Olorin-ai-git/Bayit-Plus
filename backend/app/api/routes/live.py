@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from app.models.content import LiveChannel, EPGEntry
 from app.models.user import User
 from app.core.security import get_optional_user, get_current_active_user
@@ -9,11 +9,22 @@ router = APIRouter()
 
 
 @router.get("/channels")
-async def get_channels(current_user: Optional[User] = Depends(get_optional_user)):
-    """Get all live TV channels."""
-    channels = await LiveChannel.find(
-        LiveChannel.is_active == True
-    ).sort("order").to_list()
+async def get_channels(
+    culture_id: Optional[str] = Query(None, description="Filter by culture ID"),
+    category: Optional[str] = Query(None, description="Filter by category"),
+    current_user: Optional[User] = Depends(get_optional_user),
+):
+    """Get live TV channels, optionally filtered by culture and category."""
+    # Build query conditions
+    query_conditions = [LiveChannel.is_active == True]
+
+    if culture_id:
+        query_conditions.append(LiveChannel.culture_id == culture_id)
+
+    if category:
+        query_conditions.append(LiveChannel.category == category)
+
+    channels = await LiveChannel.find(*query_conditions).sort("order").to_list()
 
     return {
         "channels": [
@@ -24,11 +35,13 @@ async def get_channels(current_user: Optional[User] = Depends(get_optional_user)
                 "thumbnail": channel.thumbnail,
                 "logo": channel.logo,
                 "category": channel.category,
+                "culture_id": channel.culture_id,
                 "currentShow": channel.current_show,
                 "nextShow": channel.next_show,
             }
             for channel in channels
-        ]
+        ],
+        "total": len(channels),
     }
 
 

@@ -5,7 +5,7 @@
  * Uses LLM for real conversations, activated by "Jarvis" wake word
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -21,6 +21,7 @@ import { useDirection } from '../../hooks/useDirection';
 import { useSupportStore, VoiceState, GestureState } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
 import { WizardSprite, SpritesheetType } from './WizardSprite';
+import { WizardEffects } from './WizardEffects';
 import { sfxService, WizardGesture } from '../../services/sfxService';
 
 // Gestures that have associated sound effects
@@ -97,6 +98,9 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
     isAnimatingGesture,
     setIsAnimatingGesture,
     clearGesture,
+    audioLevel,
+    voiceError,
+    clearVoiceError,
   } = useSupportStore();
 
   // Track previous state for crossfade
@@ -211,6 +215,16 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
     }
   }, [visible]);
 
+  // Auto-dismiss voice error toast after 5 seconds
+  useEffect(() => {
+    if (voiceError) {
+      const timer = setTimeout(() => {
+        clearVoiceError();
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [voiceError, clearVoiceError]);
+
   // Wizard breathing animation (subtle scale pulse)
   const startBreathingAnimation = () => {
     Animated.loop(
@@ -256,6 +270,13 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
       >
         {/* Fixed-size Wizard Container with Crossfade */}
         <View style={styles.wizardContainer}>
+          {/* Voice state effects overlay */}
+          <WizardEffects
+            voiceState={voiceState}
+            size={WIZARD_SIZE}
+            audioLevel={audioLevel}
+          />
+
           <Animated.View
             style={[
               styles.wizardImageWrapper,
@@ -368,6 +389,31 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
               : t('support.wizard.ready', 'Ready to help')}
           </Text>
         </View>
+
+        {/* Voice Error Toast */}
+        {voiceError && (
+          <TouchableWithoutFeedback onPress={clearVoiceError}>
+            <View style={[
+              styles.errorToast,
+              voiceError.type === 'mic' && styles.errorToastMic,
+              voiceError.type === 'connection' && styles.errorToastConnection,
+            ]}>
+              <Text style={styles.errorToastIcon}>
+                {voiceError.type === 'mic' ? '🎤' : voiceError.type === 'connection' ? '📡' : '⚠️'}
+              </Text>
+              <Text style={styles.errorToastText} numberOfLines={2}>
+                {voiceError.message}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+        )}
+
+        {/* Audio Level Indicator (debug) */}
+        {voiceState === 'listening' && audioLevel > 0.01 && (
+          <View style={styles.audioLevelDebug}>
+            <View style={[styles.audioLevelBarDebug, { width: `${Math.min(100, audioLevel * 200)}%` }]} />
+          </View>
+        )}
       </Animated.View>
     </View>
   );
@@ -493,6 +539,49 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 1,
+  },
+  // Error toast styles
+  errorToast: {
+    marginTop: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.sm,
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.4)',
+    width: '100%',
+  },
+  errorToastMic: {
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    borderColor: 'rgba(245, 158, 11, 0.4)',
+  },
+  errorToastConnection: {
+    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    borderColor: 'rgba(59, 130, 246, 0.4)',
+  },
+  errorToastIcon: {
+    fontSize: isTV ? 18 : 14,
+    marginRight: spacing.xs,
+  },
+  errorToastText: {
+    flex: 1,
+    fontSize: isTV ? 12 : 10,
+    color: colors.text,
+  },
+  // Audio level debug indicator
+  audioLevelDebug: {
+    marginTop: spacing.xs,
+    width: '100%',
+    height: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  audioLevelBarDebug: {
+    height: '100%',
+    backgroundColor: colors.primary,
+    borderRadius: 2,
   },
 });
 

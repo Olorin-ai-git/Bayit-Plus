@@ -1,15 +1,26 @@
-from fastapi import APIRouter, HTTPException
+from typing import Optional
+from fastapi import APIRouter, HTTPException, Query
 from app.models.content import RadioStation
 
 router = APIRouter()
 
 
 @router.get("/stations")
-async def get_stations():
-    """Get all radio stations."""
-    stations = await RadioStation.find(
-        RadioStation.is_active == True
-    ).sort("order").to_list()
+async def get_stations(
+    culture_id: Optional[str] = Query(None, description="Filter by culture ID"),
+    genre: Optional[str] = Query(None, description="Filter by genre"),
+):
+    """Get radio stations, optionally filtered by culture and genre."""
+    # Build query conditions
+    query_conditions = [RadioStation.is_active == True]
+
+    if culture_id:
+        query_conditions.append(RadioStation.culture_id == culture_id)
+
+    if genre:
+        query_conditions.append(RadioStation.genre == genre)
+
+    stations = await RadioStation.find(*query_conditions).sort("order").to_list()
 
     return {
         "stations": [
@@ -19,11 +30,13 @@ async def get_stations():
                 "description": station.description,
                 "logo": station.logo,
                 "genre": station.genre,
+                "culture_id": station.culture_id,
                 "currentShow": station.current_show,
                 "currentSong": station.current_song,
             }
             for station in stations
-        ]
+        ],
+        "total": len(stations),
     }
 
 

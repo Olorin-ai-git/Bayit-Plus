@@ -1051,6 +1051,78 @@
       "general": "General"
     }
   },
+  "cultures": {
+    "title": "Select Your Culture",
+    "select": "Select Culture",
+    "selectCulture": "Choose Your Culture",
+    "selectCultureDescription": "Select your cultural community to personalize your experience",
+    "changeCulture": "Change Culture",
+    "israeli": {
+      "name": "Israeli",
+      "description": "Israeli expat community content"
+    },
+    "chinese": {
+      "name": "Chinese",
+      "description": "Chinese community content"
+    },
+    "japanese": {
+      "name": "Japanese",
+      "description": "Japanese community content"
+    },
+    "korean": {
+      "name": "Korean",
+      "description": "Korean community content"
+    },
+    "indian": {
+      "name": "Indian",
+      "description": "Indian community content"
+    }
+  },
+  "cultureTrending": {
+    "whatsHotIn": "What's Hot in {{location}}",
+    "noTopics": "No trending topics available",
+    "sources": "Sources",
+    "categories": {
+      "security": "Security",
+      "politics": "Politics",
+      "tech": "Tech",
+      "technology": "Technology",
+      "culture": "Culture",
+      "sports": "Sports",
+      "economy": "Economy",
+      "finance": "Finance",
+      "entertainment": "Entertainment",
+      "weather": "Weather",
+      "health": "Health",
+      "food": "Food",
+      "fashion": "Fashion",
+      "travel": "Travel",
+      "history": "History",
+      "expat": "Expat Life",
+      "general": "General"
+    }
+  },
+  "cultureClock": {
+    "timeIn": "Time in {{location}}",
+    "shabbat": "Shabbat",
+    "weekend": "Weekend"
+  },
+  "cultureCities": {
+    "connectionTo": "{{city}} Connection",
+    "explore": "Explore {{city}}",
+    "noContent": "No content available for this city",
+    "categories": {
+      "all": "All",
+      "history": "History",
+      "culture": "Culture",
+      "finance": "Finance",
+      "tech": "Tech",
+      "food": "Food",
+      "expat": "Expat Life",
+      "news": "News",
+      "entertainment": "Entertainment"
+    }
+  },
   "clock": {
     "israel": "Israel",
     "local": "Local",

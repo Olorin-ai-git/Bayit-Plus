@@ -9,11 +9,17 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/categories")
-async def get_podcast_categories():
-    """Get all unique podcast categories - fast endpoint."""
+async def get_podcast_categories(
+    culture_id: Optional[str] = Query(None, description="Filter by culture ID"),
+):
+    """Get all unique podcast categories, optionally filtered by culture."""
     try:
-        # Use distinct() for efficient category retrieval
-        all_podcasts = await Podcast.find(Podcast.is_active == True).to_list()
+        # Build query conditions
+        query_conditions = [Podcast.is_active == True]
+        if culture_id:
+            query_conditions.append(Podcast.culture_id == culture_id)
+
+        all_podcasts = await Podcast.find(*query_conditions).to_list()
         categories = sorted(list(set(p.category for p in all_podcasts if p.category)))
 
         return {
@@ -78,23 +84,29 @@ async def refresh_all_content():
 
 @router.get("")
 async def get_podcasts(
+    culture_id: Optional[str] = Query(None, description="Filter by culture ID"),
     category: Optional[str] = None,
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
 ):
-    """Get all podcasts with pagination."""
+    """Get podcasts with pagination, optionally filtered by culture and category."""
     try:
         skip = (page - 1) * limit
 
         query = {"is_active": True}
+        if culture_id:
+            query["culture_id"] = culture_id
         if category:
             query["category"] = category
 
         shows = await Podcast.find(query).sort("-latest_episode_date").skip(skip).limit(limit).to_list()
         total = await Podcast.find(query).count()
 
-        # Get unique categories
-        all_podcasts = await Podcast.find(Podcast.is_active == True).to_list()
+        # Get unique categories (filtered by culture if specified)
+        category_query = {"is_active": True}
+        if culture_id:
+            category_query["culture_id"] = culture_id
+        all_podcasts = await Podcast.find(category_query).to_list()
         categories = sorted(list(set(p.category for p in all_podcasts if p.category)))
 
         return {
@@ -105,6 +117,7 @@ async def get_podcasts(
                     "author": show.author,
                     "cover": show.cover,
                     "category": show.category,
+                    "culture_id": show.culture_id,
                     "episodeCount": show.episode_count,
                     "latestEpisode": show.latest_episode_date.strftime("%d/%m/%Y") if show.latest_episode_date else None,
                 }

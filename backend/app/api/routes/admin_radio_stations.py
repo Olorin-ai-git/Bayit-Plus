@@ -46,10 +46,11 @@ async def get_radio_stations(
     return {
         "items": [{
             "id": str(item.id), "name": item.name, "description": item.description,
-            "logo": item.logo, "genre": item.genre, "stream_url": item.stream_url,
-            "stream_type": item.stream_type, "current_show": item.current_show,
-            "current_song": item.current_song, "is_active": item.is_active,
-            "order": item.order, "created_at": item.created_at.isoformat(),
+            "logo": item.logo, "genre": item.genre, "culture_id": item.culture_id,
+            "stream_url": item.stream_url, "stream_type": item.stream_type,
+            "current_show": item.current_show, "current_song": item.current_song,
+            "is_active": item.is_active, "order": item.order,
+            "created_at": item.created_at.isoformat(),
         } for item in items],
         "total": total, "page": page, "page_size": page_size,
         "total_pages": (total + page_size - 1) // page_size,
@@ -70,10 +71,11 @@ async def get_radio_station(
         raise HTTPException(status_code=404, detail="Station not found")
     return {
         "id": str(station.id), "name": station.name, "description": station.description,
-        "logo": station.logo, "genre": station.genre, "stream_url": station.stream_url,
-        "stream_type": station.stream_type, "current_show": station.current_show,
-        "current_song": station.current_song, "is_active": station.is_active,
-        "order": station.order, "created_at": station.created_at.isoformat(),
+        "logo": station.logo, "genre": station.genre, "culture_id": station.culture_id,
+        "stream_url": station.stream_url, "stream_type": station.stream_type,
+        "current_show": station.current_show, "current_song": station.current_song,
+        "is_active": station.is_active, "order": station.order,
+        "created_at": station.created_at.isoformat(),
     }
 
 
@@ -86,12 +88,13 @@ async def create_radio_station(
     """Create new radio station."""
     station = RadioStation(
         name=data.name, description=data.description, logo=data.logo, genre=data.genre,
-        stream_url=data.stream_url, stream_type=data.stream_type, current_show=data.current_show,
-        current_song=data.current_song, is_active=data.is_active, order=data.order,
+        culture_id=data.culture_id, stream_url=data.stream_url, stream_type=data.stream_type,
+        current_show=data.current_show, current_song=data.current_song,
+        is_active=data.is_active, order=data.order,
     )
     await station.insert()
     await log_audit(str(current_user.id), AuditAction.RADIO_STATION_CREATED, "radio_station",
-                    str(station.id), {"name": station.name, "genre": station.genre}, request)
+                    str(station.id), {"name": station.name, "genre": station.genre, "culture_id": station.culture_id}, request)
     return {"id": str(station.id), "name": station.name}
 
 
@@ -125,6 +128,9 @@ async def update_radio_station(
     if data.genre is not None:
         changes["genre"] = {"old": station.genre, "new": data.genre}
         station.genre = data.genre
+    if data.culture_id is not None:
+        changes["culture_id"] = {"old": station.culture_id, "new": data.culture_id}
+        station.culture_id = data.culture_id
     if data.stream_url is not None:
         changes["stream_url"] = {"changed": True}
         station.stream_url = data.stream_url

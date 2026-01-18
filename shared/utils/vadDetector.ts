@@ -21,14 +21,16 @@ export interface VADConfig {
 }
 
 // Energy thresholds by sensitivity level
+// LOWERED: Previous thresholds were too strict and missed speech
 const ENERGY_THRESHOLDS: Record<VADSensitivity, number> = {
-  low: 0.025,     // Less sensitive - requires louder speech (fewer false positives)
-  medium: 0.015,  // Balanced - good for normal speaking volume
-  high: 0.008,    // More sensitive - detects quieter speech (more false positives possible)
+  low: 0.018,     // Less sensitive - requires louder speech (fewer false positives)
+  medium: 0.010,  // Balanced - good for normal speaking volume (lowered from 0.015)
+  high: 0.005,    // More sensitive - detects quieter speech (lowered from 0.008)
 };
 
 // Minimum speech duration to consider valid (prevents noise triggers)
-const MIN_SPEECH_DURATION_MS = 200;
+// LOWERED: 100ms is enough to detect short words like "Hey"
+const MIN_SPEECH_DURATION_MS = 100;
 
 export class VADDetector {
   private config: VADConfig;

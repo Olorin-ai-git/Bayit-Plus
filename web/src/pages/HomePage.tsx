@@ -6,7 +6,16 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import AnimatedCard from '@/components/common/AnimatedCard';
-import { TrendingRow, JerusalemRow, TelAvivRow, GlassCarousel } from '@bayit/shared';
+import {
+  TrendingRow,
+  JerusalemRow,
+  TelAvivRow,
+  GlassCarousel,
+  CultureCityRow,
+  CultureClock,
+  CultureTrendingRow,
+} from '@bayit/shared';
+import { useCultureStore } from '@bayit/shared-contexts/CultureContext';
 import { GlassLiveChannelCard, GlassCheckbox } from '@bayit/shared/ui';
 import MorningRitual from '@/components/ritual/MorningRitual';
 import { contentService, liveService, historyService, ritualService } from '@/services/api';
@@ -119,6 +128,14 @@ export default function HomePage() {
   const { isRTL } = useDirection();
   const navigate = useNavigate();
 
+  // Culture store for dynamic culture-based content
+  const {
+    currentCulture,
+    cultureCities,
+    fetchCultures,
+    isLoading: cultureLoading,
+  } = useCultureStore();
+
   // Guard against React StrictMode double-invocation
   const hasInitialized = useRef(false);
 
@@ -137,16 +154,7 @@ export default function HomePage() {
 
   const [syncing, setSyncing] = useState(false);
   const [showMorningRitual, setShowMorningRitual] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false);
-
-  // Update clock every minute
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000);
-    return () => clearInterval(timer);
-  }, []);
 
   // Load content on mount - each section loads independently
   useEffect(() => {
@@ -159,6 +167,9 @@ export default function HomePage() {
     loadFeaturedContent();
     loadLiveChannels();
     loadContinueWatching();
+
+    // Fetch cultures for dynamic content
+    fetchCultures();
   }, []);
 
   const checkMorningRitual = async () => {
@@ -241,19 +252,6 @@ export default function HomePage() {
     }
   };
 
-  // Format time for display
-  const formatTime = (date: Date, timeZone?: string) => {
-    return date.toLocaleTimeString(i18n.language === 'he' ? 'he-IL' : 'en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-      timeZone,
-    });
-  };
-
-  const israelTime = formatTime(currentTime, 'Asia/Jerusalem');
-  const localTime = formatTime(currentTime);
-
   if (showMorningRitual) {
     return (
       <MorningRitual
@@ -274,20 +272,14 @@ export default function HomePage() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
-      {/* Header Bar - Clocks and Refresh Button */}
+      {/* Header Bar - Dynamic Culture Clock and Refresh Button */}
       <View style={[styles.headerBar, isRTL && styles.headerBarRTL]}>
-        {/* Dual Clock Display */}
-        <View style={[styles.clockContainer, isRTL && styles.clockContainerRTL]}>
-          <View style={styles.clockItem}>
-            <Text style={styles.flagIcon}>🇮🇱</Text>
-            <Text style={styles.clockTime}>{israelTime}</Text>
-          </View>
-          <View style={styles.clockDivider} />
-          <View style={styles.clockItem}>
-            <Text style={styles.flagIcon}>🇺🇸</Text>
-            <Text style={styles.clockTime}>{localTime}</Text>
-          </View>
-        </View>
+        {/* Dynamic Culture Clock - shows culture time + local time */}
+        <CultureClock
+          cultureId={currentCulture?.culture_id}
+          showLocalTime
+          variant="dual"
+        />
 
         {/* Refresh Button */}
         <Pressable
@@ -380,20 +372,32 @@ export default function HomePage() {
         </View>
       )}
 
-      {/* Trending - always renders (has its own loading state) */}
+      {/* Dynamic Culture Trending - shows trending topics for selected culture */}
       <View style={styles.section}>
-        <TrendingRow />
+        <CultureTrendingRow cultureId={currentCulture?.culture_id} />
       </View>
 
-      {/* Jerusalem Connection - always renders (has its own loading state) */}
-      <View style={styles.section}>
-        <JerusalemRow />
-      </View>
+      {/* Dynamic Culture City Rows - shows cities based on selected culture */}
+      {cultureCities.map((city) => (
+        <View key={city.city_id} style={styles.section}>
+          <CultureCityRow
+            cityId={city.city_id}
+            cultureId={currentCulture?.culture_id}
+          />
+        </View>
+      ))}
 
-      {/* Tel Aviv Connection - always renders (has its own loading state) */}
-      <View style={styles.section}>
-        <TelAvivRow />
-      </View>
+      {/* Fallback to hardcoded rows if no culture cities loaded yet */}
+      {cultureCities.length === 0 && !cultureLoading && (
+        <>
+          <View style={styles.section}>
+            <JerusalemRow />
+          </View>
+          <View style={styles.section}>
+            <TelAvivRow />
+          </View>
+        </>
+      )}
 
       {/* Content Filters */}
       <View style={styles.filterSection}>
@@ -482,40 +486,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
     marginVertical: spacing.md,
     alignItems: 'flex-start',
-  },
-  // Dual Clock
-  clockContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(10, 10, 20, 0.8)',
-    paddingHorizontal: IS_TV_BUILD ? spacing.lg : spacing.md,
-    paddingVertical: IS_TV_BUILD ? spacing.sm : spacing.xs,
-    borderRadius: IS_TV_BUILD ? 16 : 12,
-    borderWidth: 1,
-    borderColor: 'rgba(107, 33, 168, 0.3)',
-    gap: IS_TV_BUILD ? spacing.md : spacing.sm,
-  },
-  clockContainerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  clockItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: IS_TV_BUILD ? spacing.sm : spacing.xs,
-  },
-  flagIcon: {
-    fontSize: IS_TV_BUILD ? 32 : 24,
-  },
-  clockTime: {
-    fontSize: IS_TV_BUILD ? 28 : 20,
-    fontWeight: '700',
-    color: colors.text,
-    fontVariant: ['tabular-nums'] as any,
-  },
-  clockDivider: {
-    width: 1,
-    height: IS_TV_BUILD ? 40 : 32,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   // Sections
   section: {

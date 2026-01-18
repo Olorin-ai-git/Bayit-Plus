@@ -260,6 +260,16 @@ class Settings(BaseSettings):
     TEL_AVIV_CONTENT_REQUEST_TIMEOUT_SECONDS: float = 10.0
     TEL_AVIV_CONTENT_MIN_RELEVANCE_SCORE: float = 0.3
 
+    # Global Cultures Configuration
+    CULTURES_ENABLED: bool = True
+    CULTURES_CACHE_TTL_MINUTES: int = 15
+    CULTURES_REQUEST_TIMEOUT_SECONDS: float = 10.0
+    CULTURES_MIN_RELEVANCE_SCORE: float = 0.3
+    CULTURES_DEFAULT_LIMIT: int = 20
+    CULTURES_MAX_LIMIT: int = 50
+    CULTURES_DEFAULT_ID: str = "israeli"  # Backward compatibility default
+    CULTURES_SUPPORTED: str = "israeli,chinese,japanese,korean,indian"  # Comma-separated
+
     # Kids Content Configuration
     # YouTube Data API v3 key for importing kids channel content
     YOUTUBE_API_KEY: str = ""

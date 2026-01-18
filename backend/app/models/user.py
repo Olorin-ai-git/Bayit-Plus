@@ -189,6 +189,11 @@ class User(Document):
 
         # Translation settings
         "auto_translate_enabled": True,
+
+        # Culture settings (Global Cultures feature)
+        "culture_id": "israeli",  # Default for backward compatibility
+        "show_culture_clock": True,  # Show clock for selected culture's timezone
+        "culture_cities_enabled": True,  # Show city rows for selected culture
     })
 
     # Device management

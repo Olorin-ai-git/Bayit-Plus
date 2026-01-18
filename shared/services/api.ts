@@ -188,24 +188,28 @@ const apiContentService = {
 
 // Live TV Service (API)
 const apiLiveService = {
-  getChannels: () => api.get('/live/channels'),
+  getChannels: (cultureId?: string, category?: string) =>
+    api.get('/live/channels', { params: { culture_id: cultureId, category } }),
   getChannel: (channelId: string) => api.get(`/live/${channelId}`),
   getStreamUrl: (channelId: string) => api.get(`/live/${channelId}/stream`),
 };
 
 // Radio Service (API)
 const apiRadioService = {
-  getStations: () => api.get('/radio/stations'),
+  getStations: (cultureId?: string, genre?: string) =>
+    api.get('/radio/stations', { params: { culture_id: cultureId, genre } }),
   getStation: (stationId: string) => api.get(`/radio/${stationId}`),
   getStreamUrl: (stationId: string) => api.get(`/radio/${stationId}/stream`),
 };
 
 // Podcast Service (API)
 const apiPodcastService = {
-  getShows: (categoryId?: string) => api.get('/podcasts', { params: categoryId ? { category: categoryId } : {} }),
+  getShows: (cultureId?: string, categoryId?: string) =>
+    api.get('/podcasts', { params: { culture_id: cultureId, category: categoryId } }),
   getShow: (showId: string) => api.get(`/podcasts/${showId}`),
   getEpisodes: (showId: string) => api.get(`/podcasts/${showId}/episodes`),
-  getCategories: () => api.get('/podcasts/categories'),
+  getCategories: (cultureId?: string) =>
+    api.get('/podcasts/categories', { params: { culture_id: cultureId } }),
   syncPodcasts: () => api.post('/podcasts/sync'),
 };
 
@@ -749,6 +753,204 @@ const demoTelAvivService = {
   },
 };
 
+// Culture Service (API) - Generic multi-culture content
+const apiCultureService = {
+  // Culture list
+  getCultures: () => contentApi.get('/cultures'),
+  getCulture: (cultureId: string) => contentApi.get(`/cultures/${cultureId}`),
+  getDefaultCulture: () => contentApi.get('/cultures/default'),
+
+  // Cities
+  getCultureCities: (cultureId: string, featuredOnly: boolean = true) =>
+    contentApi.get(`/cultures/${cultureId}/cities`, { params: { featured_only: featuredOnly } }),
+  getCity: (cultureId: string, cityId: string) =>
+    contentApi.get(`/cultures/${cultureId}/cities/${cityId}`),
+
+  // Content
+  getCityContent: (cultureId: string, cityId: string, category?: string, page?: number, limit?: number) =>
+    contentApi.get(`/cultures/${cultureId}/cities/${cityId}/content`, { params: { category, page, limit } }),
+  getTrending: (cultureId: string, limit?: number) =>
+    contentApi.get(`/cultures/${cultureId}/trending`, { params: { limit } }),
+  getFeatured: (cultureId: string) =>
+    contentApi.get(`/cultures/${cultureId}/featured`),
+
+  // Metadata
+  getCategories: (cultureId: string, cityId?: string) =>
+    contentApi.get(`/cultures/${cultureId}/categories`, { params: { city_id: cityId } }),
+  getSources: (cultureId: string, cityId?: string) =>
+    contentApi.get(`/cultures/${cultureId}/sources`, { params: { city_id: cityId } }),
+
+  // Time
+  getCultureTime: (cultureId: string) =>
+    contentApi.get(`/cultures/${cultureId}/time`),
+};
+
+// Demo Culture Service
+const demoCultureService = {
+  getCultures: async () => {
+    await new Promise(resolve => setTimeout(resolve, 200));
+    return [
+      {
+        id: '1',
+        culture_id: 'israeli',
+        name: 'Israeli',
+        name_localized: { he: 'ישראלי', en: 'Israeli', es: 'Israelí' },
+        flag_emoji: '🇮🇱',
+        country_code: 'IL',
+        primary_timezone: 'Asia/Jerusalem',
+        primary_language: 'he',
+        has_shabbat_mode: true,
+        has_lunar_calendar: false,
+        display_order: 0,
+        is_active: true,
+        is_default: true,
+      },
+      {
+        id: '2',
+        culture_id: 'chinese',
+        name: 'Chinese',
+        name_localized: { zh: '中国', he: 'סיני', en: 'Chinese', es: 'Chino' },
+        flag_emoji: '🇨🇳',
+        country_code: 'CN',
+        primary_timezone: 'Asia/Shanghai',
+        primary_language: 'zh',
+        has_shabbat_mode: false,
+        has_lunar_calendar: true,
+        display_order: 1,
+        is_active: true,
+        is_default: false,
+      },
+    ];
+  },
+  getCulture: async (cultureId: string) => {
+    const cultures = await demoCultureService.getCultures();
+    return cultures.find(c => c.culture_id === cultureId) || cultures[0];
+  },
+  getDefaultCulture: async () => {
+    const cultures = await demoCultureService.getCultures();
+    return cultures.find(c => c.is_default) || cultures[0];
+  },
+  getCultureCities: async (cultureId: string, _featuredOnly: boolean = true) => {
+    await new Promise(resolve => setTimeout(resolve, 200));
+    if (cultureId === 'israeli') {
+      return [
+        {
+          id: '1',
+          city_id: 'jerusalem',
+          culture_id: 'israeli',
+          name: 'Jerusalem',
+          name_localized: { he: 'ירושלים', en: 'Jerusalem' },
+          name_native: 'ירושלים',
+          timezone: 'Asia/Jerusalem',
+          display_order: 0,
+          is_featured: true,
+          accent_color: '#C5A03A',
+        },
+        {
+          id: '2',
+          city_id: 'tel-aviv',
+          culture_id: 'israeli',
+          name: 'Tel Aviv',
+          name_localized: { he: 'תל אביב', en: 'Tel Aviv' },
+          name_native: 'תל אביב',
+          timezone: 'Asia/Jerusalem',
+          display_order: 1,
+          is_featured: true,
+          accent_color: '#F97316',
+        },
+      ];
+    }
+    return [
+      {
+        id: '3',
+        city_id: 'beijing',
+        culture_id: 'chinese',
+        name: 'Beijing',
+        name_localized: { zh: '北京', en: 'Beijing' },
+        name_native: '北京',
+        timezone: 'Asia/Shanghai',
+        display_order: 0,
+        is_featured: true,
+        accent_color: '#FFD700',
+      },
+      {
+        id: '4',
+        city_id: 'shanghai',
+        culture_id: 'chinese',
+        name: 'Shanghai',
+        name_localized: { zh: '上海', en: 'Shanghai' },
+        name_native: '上海',
+        timezone: 'Asia/Shanghai',
+        display_order: 1,
+        is_featured: true,
+        accent_color: '#00BFFF',
+      },
+    ];
+  },
+  getCity: async (cultureId: string, cityId: string) => {
+    const cities = await demoCultureService.getCultureCities(cultureId);
+    return cities.find(c => c.city_id === cityId) || cities[0];
+  },
+  getCityContent: async (cultureId: string, cityId: string, _category?: string, _page?: number, _limit?: number) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    // Return content from existing services based on culture/city
+    if (cultureId === 'israeli' && cityId === 'jerusalem') {
+      return demoJerusalemService.getContent(_category, _page, _limit);
+    }
+    if (cultureId === 'israeli' && cityId === 'tel-aviv') {
+      return demoTelAvivService.getContent(_category, _page, _limit);
+    }
+    return { items: [], pagination: { page: 1, limit: 20, total: 0, pages: 0 }, sources_count: 0, last_updated: new Date().toISOString() };
+  },
+  getTrending: async (cultureId: string, _limit?: number) => {
+    await new Promise(resolve => setTimeout(resolve, 200));
+    const content = cultureId === 'israeli'
+      ? await demoJerusalemService.getContent()
+      : { items: [] };
+    return content.items.slice(0, _limit || 10);
+  },
+  getFeatured: async (cultureId: string) => {
+    await new Promise(resolve => setTimeout(resolve, 200));
+    const content = cultureId === 'israeli'
+      ? await demoJerusalemService.getContent()
+      : { items: [] };
+    return {
+      featured: content.items.slice(0, 6),
+      trending: content.items.slice(0, 10),
+      last_updated: new Date().toISOString(),
+      culture_id: cultureId,
+    };
+  },
+  getCategories: async (cultureId: string, _cityId?: string) => {
+    if (cultureId === 'israeli') {
+      return demoJerusalemService.getCategories();
+    }
+    return [
+      { id: 'general', name: 'General', name_localized: { en: 'General', zh: '综合' } },
+    ];
+  },
+  getSources: async (cultureId: string, _cityId?: string) => {
+    if (cultureId === 'israeli') {
+      return demoJerusalemService.getSources();
+    }
+    return { sources: [], total: 0 };
+  },
+  getCultureTime: async (cultureId: string) => {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const now = new Date();
+    const timezone = cultureId === 'israeli' ? 'Asia/Jerusalem' : 'Asia/Shanghai';
+    return {
+      culture_id: cultureId,
+      timezone,
+      current_time: now.toISOString(),
+      display_time: now.toLocaleTimeString('en-US', { timeZone: timezone, hour: '2-digit', minute: '2-digit' }),
+      display_date: now.toLocaleDateString('en-US', { timeZone: timezone, month: 'long', day: 'numeric', year: 'numeric' }),
+      day_of_week: now.toLocaleDateString('en-US', { timeZone: timezone, weekday: 'long' }),
+      is_weekend: cultureId === 'israeli' ? [5, 6].includes(now.getDay()) : [0, 6].includes(now.getDay()),
+    };
+  },
+};
+
 // Judaism Service (API)
 const apiJudaismService = {
   // Content
@@ -1135,5 +1337,6 @@ export const judaismService = apiJudaismService; // No demo mode for judaism
 export const flowsService = apiFlowsService; // No demo mode for flows
 export const jerusalemService = isDemo ? demoJerusalemService : apiJerusalemService;
 export const telAvivService = isDemo ? demoTelAvivService : apiTelAvivService;
+export const cultureService = isDemo ? demoCultureService : apiCultureService;
 
 export default api;

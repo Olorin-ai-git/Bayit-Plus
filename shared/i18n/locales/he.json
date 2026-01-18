@@ -1055,6 +1055,78 @@
       "general": "כללי"
     }
   },
+  "cultures": {
+    "title": "בחר את התרבות שלך",
+    "select": "בחר תרבות",
+    "selectCulture": "בחר את הקהילה שלך",
+    "selectCultureDescription": "בחר את הקהילה התרבותית שלך כדי להתאים אישית את החוויה",
+    "changeCulture": "שנה תרבות",
+    "israeli": {
+      "name": "ישראלי",
+      "description": "תוכן לקהילת היוצאים הישראלית"
+    },
+    "chinese": {
+      "name": "סיני",
+      "description": "תוכן לקהילה הסינית"
+    },
+    "japanese": {
+      "name": "יפני",
+      "description": "תוכן לקהילה היפנית"
+    },
+    "korean": {
+      "name": "קוריאני",
+      "description": "תוכן לקהילה הקוריאנית"
+    },
+    "indian": {
+      "name": "הודי",
+      "description": "תוכן לקהילה ההודית"
+    }
+  },
+  "cultureTrending": {
+    "whatsHotIn": "מה חם ב{{location}}",
+    "noTopics": "אין נושאים חמים כרגע",
+    "sources": "מקורות",
+    "categories": {
+      "security": "ביטחון",
+      "politics": "פוליטיקה",
+      "tech": "טכנולוגיה",
+      "technology": "טכנולוגיה",
+      "culture": "תרבות",
+      "sports": "ספורט",
+      "economy": "כלכלה",
+      "finance": "פיננסים",
+      "entertainment": "בידור",
+      "weather": "מזג אוויר",
+      "health": "בריאות",
+      "food": "אוכל",
+      "fashion": "אופנה",
+      "travel": "טיולים",
+      "history": "היסטוריה",
+      "expat": "חיי גולים",
+      "general": "כללי"
+    }
+  },
+  "cultureClock": {
+    "timeIn": "השעה ב{{location}}",
+    "shabbat": "שבת",
+    "weekend": "סוף שבוע"
+  },
+  "cultureCities": {
+    "connectionTo": "חיבור ל{{city}}",
+    "explore": "גלה את {{city}}",
+    "noContent": "אין תוכן זמין לעיר זו",
+    "categories": {
+      "all": "הכל",
+      "history": "היסטוריה",
+      "culture": "תרבות",
+      "finance": "פיננסים",
+      "tech": "טכנולוגיה",
+      "food": "אוכל",
+      "expat": "חיי גולים",
+      "news": "חדשות",
+      "entertainment": "בידור"
+    }
+  },
   "clock": {
     "israel": "ישראל",
     "local": "מקומי",

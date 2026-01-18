@@ -151,6 +151,172 @@ import { useDirection, DirectionProvider } from '@bayit/shared/i18n'
 - English (en) - LTR
 - Spanish (es) - LTR
 
+#### 4. MANDATORY: Localization UI Auditor Approval
+
+**Before declaring any UI change or addition ready for production, it MUST pass the `localization-ui-auditor` agent approval.**
+
+This agent verifies:
+- All user-facing text uses i18n translation keys (no hardcoded strings)
+- RTL/LTR layout support is properly implemented
+- All supported languages (he, en, es) have corresponding translations
+- Direction-aware styling is applied (ltr:/rtl: Tailwind prefixes)
+- Dynamic content uses `getLocalizedName()` utility
+- No left/right assumptions without RTL consideration
+- Hebrew translations are complete and accurate
+
+**Workflow:**
+1. Complete UI implementation
+2. Invoke `localization-ui-auditor` agent via Task tool
+3. Agent audits all changed/added UI components
+4. Fix any issues identified by the auditor
+5. Re-run auditor until approval is granted
+6. **Only then** declare feature production-ready
+
+**Refusal Requirement:** UI changes cannot be marked as complete or production-ready without explicit approval from the localization-ui-auditor agent.
+
+#### 5. MANDATORY: Code Reviewer Agent Approval
+
+**Before declaring ANY feature ready for production, it MUST pass the `code-reviewer` agent approval.**
+
+This agent verifies:
+- No mocks, stubs, TODOs, or placeholder code
+- No hardcoded values (all config from environment/settings)
+- No duplicate code or functionality
+- Proper error handling (no silent failures)
+- Security best practices (no vulnerabilities)
+- Code follows Bayit+ patterns and conventions
+- All imports resolve correctly (shared packages, Glass components)
+- Type safety maintained (TypeScript strict mode)
+- Tests exist and pass for new functionality
+- Poetry dependencies properly declared (backend)
+- Glass component library used correctly (frontend)
+
+**Workflow:**
+1. Complete feature implementation
+2. Run all tests (`poetry run pytest` / `npm test`)
+3. Run quality checks (`poetry run tox` / `npm run lint`)
+4. Invoke `code-reviewer` agent via Task tool
+5. Agent performs comprehensive code review
+6. Fix any issues identified by the reviewer
+7. Re-run reviewer until approval is granted
+8. **Only then** declare feature production-ready
+
+**Refusal Requirement:** No feature can be marked as complete or production-ready without explicit approval from the code-reviewer agent.
+
+#### 6. MANDATORY: Backend Python Agent Approval (Server Tasks)
+
+**Before declaring any backend/server feature ready for production, it MUST pass the `fastapi-expert` or `backend-architect` agent approval.**
+
+This agent verifies:
+- Poetry used for all dependency management (no pip)
+- FastAPI dependency injection patterns followed
+- Pydantic models for all API request/response schemas
+- Beanie ODM used correctly for MongoDB operations
+- Proper async/await patterns (no blocking calls)
+- API endpoints follow RESTful conventions
+- Permission decorators used (`has_permission()`)
+- Error handling returns appropriate HTTP status codes
+- All config from `app.core.config.settings`
+- No secrets or credentials in code
+- Proper logging with `logger` utility
+- Type hints on all functions and methods
+- Localized fields returned from API (title, title_en, title_es)
+
+**Workflow:**
+1. Complete backend implementation
+2. Run tests (`poetry run pytest`) - minimum 87% coverage
+3. Run quality checks (`poetry run tox`)
+4. Verify server starts (`poetry run uvicorn app.main:app --reload`)
+5. Invoke `fastapi-expert` or `backend-architect` agent via Task tool
+6. Agent performs backend-specific code review
+7. Fix any issues identified
+8. Re-run agent until approval is granted
+9. **Only then** declare backend feature production-ready
+
+**Refusal Requirement:** No backend/server feature can be marked as complete or production-ready without explicit approval from the fastapi-expert or backend-architect agent.
+
+#### 7. MANDATORY: Database Agent Approval (MongoDB/Atlas Changes)
+
+**Before declaring any database-related change ready for production, it MUST pass the `database-architect` agent approval.**
+
+This agent verifies:
+- Beanie ODM models follow best practices
+- MongoDB schema design optimized for query patterns
+- Indexes exist for frequently queried fields (category_id, tmdb_id, etc.)
+- No N+1 query patterns in Beanie operations
+- Proper use of aggregation pipelines
+- Localized fields structured correctly (_en, _es suffixes)
+- MongoDB Atlas configuration appropriate
+- Connection pooling configured in `app.core.database`
+- No hardcoded connection strings (use `settings.mongodb_url`)
+- Proper error handling for database operations
+- Data validation in Pydantic/Beanie models
+- References between collections handled correctly
+
+**Applies to:**
+- New Beanie Document models
+- Schema modifications (adding/removing fields)
+- Index creation (`class Settings: indexes = [...]`)
+- Query optimization changes
+- Aggregation pipeline changes
+- MongoDB Atlas configuration
+- Collection relationships
+
+**Workflow:**
+1. Complete database changes
+2. Test with local MongoDB or Atlas dev cluster
+3. Verify query performance
+4. Invoke `database-architect` agent via Task tool
+5. Agent reviews Beanie models, indexes, queries
+6. Fix any issues identified
+7. Re-run agent until approval is granted
+8. **Only then** declare database changes production-ready
+
+**Refusal Requirement:** No database-related change can be marked as complete or production-ready without explicit approval from the database-architect agent.
+
+#### 8. MANDATORY: Voice Technician Agent Approval (Audio/Voice Changes)
+
+**Before declaring any voice, audio, or sound-related change ready for production, it MUST pass the `voice-technician` agent approval.**
+
+This agent verifies:
+- TTS provider integration (ElevenLabs, OpenAI TTS, etc.)
+- STT implementation for Hebrew, English, Spanish
+- Real-time audio latency meets targets (<1500ms round-trip)
+- Microphone permissions handled correctly:
+  - **Web**: MediaDevices API, HTTPS required
+  - **iOS**: expo-av, AVAudioSession configuration
+  - **tvOS**: Siri Remote mic, focus-based controls
+- Audio streams properly managed (no leaks)
+- Picovoice wake word detection configured
+- AI voice agent integration with chat system
+- Audio quality standards (16kHz+ for speech)
+- Echo cancellation and noise suppression
+- Error handling for device unavailability
+- Fallback when audio features unavailable
+
+**Applies to:**
+- Text-to-Speech (TTS) for content narration
+- Speech-to-Text (STT) for voice search
+- Microphone access and recording
+- Voice-controlled navigation
+- AI voice assistant features
+- Wake word detection (Picovoice)
+- Audio streaming for radio/podcasts
+- Sound effects and notifications
+
+**Workflow:**
+1. Complete audio/voice implementation
+2. Test on all platforms (Web, iOS, tvOS)
+3. Verify latency and audio quality
+4. Test permission flows
+5. Invoke `voice-technician` agent via Task tool
+6. Agent reviews implementation across platforms
+7. Fix any issues identified
+8. Re-run agent until approval is granted
+9. **Only then** declare audio/voice feature production-ready
+
+**Refusal Requirement:** No voice, audio, or sound-related change can be marked as complete or production-ready without explicit approval from the voice-technician agent.
+
 ---
 
 ### 1. UI/UX Standards

@@ -224,6 +224,9 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
         style,
       ]}
     >
+      {/* Subtle glass background to mask sprite transparency - no visible border */}
+      <View style={styles.glassBackground} />
+
       <Animated.Image
         source={config.source}
         style={[
@@ -245,6 +248,17 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
+    borderRadius: 999, // Full circle to match sprite shape
+  },
+  glassBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(10, 10, 10, 0.7)', // glass.bg - blends with panel
+    borderRadius: 999, // Full circle
+    // No visible border - transparent masking only
   },
   spritesheet: {
     position: 'absolute',

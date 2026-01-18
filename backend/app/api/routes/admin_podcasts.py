@@ -30,6 +30,7 @@ def _podcast_dict(p):
         "category": p.category,
         "category_en": p.category_en,
         "category_es": p.category_es,
+        "culture_id": p.culture_id,
         "rss_feed": p.rss_feed,
         "website": p.website,
         "episode_count": p.episode_count,
@@ -82,18 +83,19 @@ async def create_podcast(data: PodcastCreateRequest, request: Request,
     """Create new podcast."""
     podcast = Podcast(
         title=data.title,
-        title_en=data.title_en,
-        title_es=data.title_es,
+        title_en=getattr(data, 'title_en', None),
+        title_es=getattr(data, 'title_es', None),
         description=data.description,
-        description_en=data.description_en,
-        description_es=data.description_es,
+        description_en=getattr(data, 'description_en', None),
+        description_es=getattr(data, 'description_es', None),
         author=data.author,
-        author_en=data.author_en,
-        author_es=data.author_es,
+        author_en=getattr(data, 'author_en', None),
+        author_es=getattr(data, 'author_es', None),
         cover=data.cover,
         category=data.category,
-        category_en=data.category_en,
-        category_es=data.category_es,
+        category_en=getattr(data, 'category_en', None),
+        category_es=getattr(data, 'category_es', None),
+        culture_id=data.culture_id,
         rss_feed=data.rss_feed,
         website=data.website,
         episode_count=data.episode_count,
@@ -103,7 +105,7 @@ async def create_podcast(data: PodcastCreateRequest, request: Request,
     )
     await podcast.insert()
     await log_audit(str(current_user.id), AuditAction.PODCAST_CREATED, "podcast",
-                    str(podcast.id), {"title": podcast.title, "author": podcast.author}, request)
+                    str(podcast.id), {"title": podcast.title, "author": podcast.author, "culture_id": podcast.culture_id}, request)
     return {"id": str(podcast.id), "title": podcast.title}
 
 @router.patch("/podcasts/{podcast_id}")
@@ -148,6 +150,9 @@ async def update_podcast(podcast_id: str, data: PodcastUpdateRequest, request: R
         podcast.category_en = data.category_en
     if data.category_es is not None:
         podcast.category_es = data.category_es
+    if data.culture_id is not None:
+        changes["culture_id"] = {"old": podcast.culture_id, "new": data.culture_id}
+        podcast.culture_id = data.culture_id
     if data.rss_feed is not None:
         changes["rss_feed"] = {"changed": True}
         podcast.rss_feed = data.rss_feed

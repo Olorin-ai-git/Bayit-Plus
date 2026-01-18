@@ -24,6 +24,22 @@ import {
   getWakeWordConfig,
 } from '../utils/porcupineWakeWordDetector';
 
+/**
+ * Log audio context state for debugging
+ */
+function logAudioContextState(context: AudioContext | null, label: string): void {
+  if (!context) {
+    console.log(`[WakeWordListening] ${label}: AudioContext is null`);
+    return;
+  }
+  console.log(`[WakeWordListening] ${label}:`, {
+    state: context.state,
+    sampleRate: context.sampleRate,
+    baseLatency: context.baseLatency,
+    currentTime: context.currentTime.toFixed(3),
+  });
+}
+
 // Type for transcription service
 type TranscribeFunction = (audioBlob: Blob) => Promise<{ text: string; language?: string }>;
 
@@ -52,9 +68,11 @@ export interface UseWakeWordListeningReturn {
   audioLevel: AudioLevel;
   start: () => Promise<void>;
   stop: () => void;
+  resumeAudioContext: () => Promise<void>; // Call on user tap to resume suspended audio
   error: Error | null;
   isSupported: boolean;
   wakeWordReady: boolean;       // Vosk model loaded and ready
+  audioContextState: AudioContextState | null; // Current audio context state for debugging
 }
 
 /**
@@ -89,6 +107,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
   const [error, setError] = useState<Error | null>(null);
   const [wakeWordReady, setWakeWordReady] = useState(false);
   const [isTTSSpeaking, setIsTTSSpeaking] = useState(false);
+  const [audioContextState, setAudioContextState] = useState<AudioContextState | null>(null);
 
   // Refs for audio capture
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -524,7 +543,24 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
         audioContext = new AudioContext();
       }
       audioContextRef.current = audioContext;
-      console.log('[WakeWordListening] Audio context created, state:', audioContext.state);
+      logAudioContextState(audioContext, 'AudioContext created');
+
+      // CRITICAL: Resume audio context if suspended (browsers suspend until user interaction)
+      if (audioContext.state === 'suspended') {
+        console.log('[WakeWordListening] AudioContext is suspended, attempting to resume...');
+        try {
+          await audioContext.resume();
+          logAudioContextState(audioContext, 'AudioContext after resume()');
+        } catch (resumeErr) {
+          console.error('[WakeWordListening] Failed to resume AudioContext:', resumeErr);
+          throw new Error('AudioContext could not be resumed. Please tap the screen to enable voice.');
+        }
+      }
+
+      // Double-check context is running
+      if (audioContext.state !== 'running') {
+        console.warn('[WakeWordListening] AudioContext state is not running:', audioContext.state);
+      }
 
       // Create analyser for visualization
       const analyser = audioContext.createAnalyser();
@@ -807,6 +843,52 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
     }
   }, [vadSensitivity, silenceThresholdMs]);
 
+  // Track audio context state changes
+  useEffect(() => {
+    const context = audioContextRef.current;
+    if (!context) {
+      setAudioContextState(null);
+      return;
+    }
+
+    // Update state on context state change
+    const handleStateChange = () => {
+      logAudioContextState(context, 'AudioContext state changed');
+      setAudioContextState(context.state);
+    };
+
+    context.addEventListener('statechange', handleStateChange);
+    setAudioContextState(context.state);
+
+    return () => {
+      context.removeEventListener('statechange', handleStateChange);
+    };
+  }, [isListening]);
+
+  /**
+   * Resume audio context after user interaction
+   * Call this when user taps the screen/modal to ensure audio works
+   */
+  const resumeAudioContext = useCallback(async () => {
+    const context = audioContextRef.current;
+    if (!context) {
+      console.log('[WakeWordListening] resumeAudioContext: No audio context');
+      return;
+    }
+
+    logAudioContextState(context, 'resumeAudioContext called');
+
+    if (context.state === 'suspended') {
+      try {
+        await context.resume();
+        logAudioContextState(context, 'resumeAudioContext: After resume()');
+        setAudioContextState(context.state);
+      } catch (err) {
+        console.error('[WakeWordListening] Failed to resume audio context:', err);
+      }
+    }
+  }, []);
+
   return {
     isListening,
     isAwake,
@@ -817,9 +899,11 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
     audioLevel,
     start,
     stop,
+    resumeAudioContext,
     error,
     isSupported,
     wakeWordReady,
+    audioContextState,
   };
 }
 

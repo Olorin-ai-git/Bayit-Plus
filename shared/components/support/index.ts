@@ -20,3 +20,5 @@ export { VoiceChatModal } from './VoiceChatModal';
 export { VoiceWaveform } from './VoiceWaveform';
 export { VoiceStatusIndicator } from './VoiceStatusIndicator';
 export { WizardIntroVideo } from './WizardIntroVideo';
+export { WizardSprite } from './WizardSprite';
+export { WizardEffects } from './WizardEffects';

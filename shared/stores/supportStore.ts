@@ -137,8 +137,14 @@ interface SupportStore {
   /** Whether spritesheet animation is currently playing */
   isAnimatingGesture: boolean;
 
+  // Audio level for visual feedback (0-1)
+  audioLevel: number;
+
   // Error state
   lastError: string | null;
+
+  // Voice error toast (for mic/connection issues)
+  voiceError: { message: string; type: 'mic' | 'connection' | 'general' } | null;
 
   // Voice actions
   setVoiceState: (state: VoiceState) => void;
@@ -187,6 +193,20 @@ interface SupportStore {
   /** Clear gesture state and animation */
   clearGesture: () => void;
 
+  // Audio level actions
+  /** Set audio level for visual feedback (0-1) */
+  setAudioLevel: (level: number) => void;
+
+  // Voice error actions (for toast notifications)
+  /** Set voice error for toast display */
+  setVoiceError: (error: { message: string; type: 'mic' | 'connection' | 'general' } | null) => void;
+  /** Show mic error toast */
+  showMicError: (message: string) => void;
+  /** Show connection error toast */
+  showConnectionError: (message: string) => void;
+  /** Clear voice error toast */
+  clearVoiceError: () => void;
+
   // Error actions
   setError: (error: string | null) => void;
   clearError: () => void;
@@ -231,8 +251,14 @@ const initialState = {
   gestureState: null as GestureState | null,
   isAnimatingGesture: false,
 
+  // Audio level
+  audioLevel: 0,
+
   // Error state
   lastError: null as string | null,
+
+  // Voice error toast
+  voiceError: null as { message: string; type: 'mic' | 'connection' | 'general' } | null,
 };
 
 export const useSupportStore = create<SupportStore>()(
@@ -340,6 +366,18 @@ export const useSupportStore = create<SupportStore>()(
       setGestureState: (state: GestureState | null) => set({ gestureState: state }),
       setIsAnimatingGesture: (isAnimating: boolean) => set({ isAnimatingGesture: isAnimating }),
       clearGesture: () => set({ gestureState: null, isAnimatingGesture: false }),
+
+      // Audio level actions
+      setAudioLevel: (level: number) => set({ audioLevel: Math.max(0, Math.min(1, level)) }),
+
+      // Voice error actions
+      setVoiceError: (error: { message: string; type: 'mic' | 'connection' | 'general' } | null) =>
+        set({ voiceError: error }),
+      showMicError: (message: string) =>
+        set({ voiceError: { message, type: 'mic' } }),
+      showConnectionError: (message: string) =>
+        set({ voiceError: { message, type: 'connection' } }),
+      clearVoiceError: () => set({ voiceError: null }),
 
       // Error actions
       setError: (error: string | null) => set({

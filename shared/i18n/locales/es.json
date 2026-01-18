@@ -1025,6 +1025,78 @@
       "general": "General"
     }
   },
+  "cultures": {
+    "title": "Selecciona tu Cultura",
+    "select": "Seleccionar Cultura",
+    "selectCulture": "Elige tu Comunidad",
+    "selectCultureDescription": "Selecciona tu comunidad cultural para personalizar tu experiencia",
+    "changeCulture": "Cambiar Cultura",
+    "israeli": {
+      "name": "Israeli",
+      "description": "Contenido para la comunidad israeli"
+    },
+    "chinese": {
+      "name": "Chino",
+      "description": "Contenido para la comunidad china"
+    },
+    "japanese": {
+      "name": "Japones",
+      "description": "Contenido para la comunidad japonesa"
+    },
+    "korean": {
+      "name": "Coreano",
+      "description": "Contenido para la comunidad coreana"
+    },
+    "indian": {
+      "name": "Indio",
+      "description": "Contenido para la comunidad india"
+    }
+  },
+  "cultureTrending": {
+    "whatsHotIn": "Tendencias en {{location}}",
+    "noTopics": "No hay temas de tendencia disponibles",
+    "sources": "Fuentes",
+    "categories": {
+      "security": "Seguridad",
+      "politics": "Politica",
+      "tech": "Tecnologia",
+      "technology": "Tecnologia",
+      "culture": "Cultura",
+      "sports": "Deportes",
+      "economy": "Economia",
+      "finance": "Finanzas",
+      "entertainment": "Entretenimiento",
+      "weather": "Clima",
+      "health": "Salud",
+      "food": "Comida",
+      "fashion": "Moda",
+      "travel": "Viajes",
+      "history": "Historia",
+      "expat": "Vida de Expatriados",
+      "general": "General"
+    }
+  },
+  "cultureClock": {
+    "timeIn": "Hora en {{location}}",
+    "shabbat": "Shabat",
+    "weekend": "Fin de Semana"
+  },
+  "cultureCities": {
+    "connectionTo": "Conexion con {{city}}",
+    "explore": "Explorar {{city}}",
+    "noContent": "No hay contenido disponible para esta ciudad",
+    "categories": {
+      "all": "Todo",
+      "history": "Historia",
+      "culture": "Cultura",
+      "finance": "Finanzas",
+      "tech": "Tecnologia",
+      "food": "Comida",
+      "expat": "Vida de Expatriados",
+      "news": "Noticias",
+      "entertainment": "Entretenimiento"
+    }
+  },
   "clock": {
     "israel": "Israel",
     "local": "Local",
