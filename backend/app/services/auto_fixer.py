@@ -4,14 +4,19 @@ Safe automated issue resolution with rollback capability
 """
 import logging
 import re
+import httpx
+from io import BytesIO
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
+from uuid import uuid4
 
 from beanie import PydanticObjectId
+from PIL import Image
 from app.models.content import Content, Category
 from app.models.librarian import LibrarianAction
 from app.services.tmdb_service import tmdb_service
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +117,134 @@ def clean_title(title: str) -> str:
     return title
 
 
+def is_youtube_thumbnail_url(url: str) -> bool:
+    """Check if a URL is a YouTube thumbnail URL."""
+    if not url:
+        return False
+    return "img.youtube.com" in url or "i.ytimg.com" in url
+
+
+async def download_and_upload_youtube_thumbnail(
+    youtube_url: str,
+    content_id: str,
+    image_type: str = "thumbnail"
+) -> Optional[str]:
+    """
+    Download a YouTube thumbnail and upload it to storage.
+
+    Args:
+        youtube_url: The YouTube thumbnail URL (e.g., https://img.youtube.com/vi/{id}/maxresdefault.jpg)
+        content_id: The content ID for organizing storage
+        image_type: Type of image ("thumbnail" or "backdrop")
+
+    Returns:
+        The new storage URL, or None if failed
+    """
+    try:
+        # Download the image from YouTube
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get(youtube_url)
+            response.raise_for_status()
+            image_bytes = response.content
+
+        # Validate it's a real image
+        try:
+            img = Image.open(BytesIO(image_bytes))
+            img.verify()
+            # Reopen after verify (verify closes the file)
+            img = Image.open(BytesIO(image_bytes))
+        except Exception as e:
+            logger.warning(f"Invalid image from YouTube URL {youtube_url}: {e}")
+            return None
+
+        # Check minimum image dimensions (skip placeholder images)
+        if img.width < 120 or img.height < 90:
+            logger.warning(f"Image too small ({img.width}x{img.height}), likely a placeholder")
+            return None
+
+        # Optimize and convert to JPEG for storage
+        output = BytesIO()
+        if img.mode in ("RGBA", "LA", "P"):
+            background = Image.new("RGB", img.size, (0, 0, 0))  # Black background for video thumbnails
+            if img.mode == "P":
+                img = img.convert("RGBA")
+            if img.mode in ("RGBA", "LA"):
+                background.paste(img, mask=img.split()[-1])
+            else:
+                background.paste(img)
+            img = background
+        elif img.mode != "RGB":
+            img = img.convert("RGB")
+
+        # Resize if too large
+        max_width = 1920
+        if img.width > max_width:
+            ratio = max_width / img.width
+            new_height = int(img.height * ratio)
+            img = img.resize((max_width, new_height), Image.Resampling.LANCZOS)
+
+        img.save(output, format="JPEG", quality=85, optimize=True)
+        optimized_bytes = output.getvalue()
+
+        # Upload to storage (GCS)
+        if settings.STORAGE_TYPE == "gcs" and settings.GCS_BUCKET_NAME:
+            from google.cloud import storage as gcs_storage
+
+            client = gcs_storage.Client(project=settings.GCS_PROJECT_ID or None)
+            bucket = client.bucket(settings.GCS_BUCKET_NAME)
+
+            # Generate storage path
+            filename = f"{uuid4()}.jpg"
+            blob_name = f"images/judaism/{image_type}/{filename}"
+
+            blob = bucket.blob(blob_name)
+
+            # Set cache control before upload
+            blob.cache_control = "public, max-age=31536000"
+
+            blob.upload_from_string(
+                optimized_bytes,
+                content_type="image/jpeg",
+                timeout=60
+            )
+
+            # Note: With uniform bucket-level access, we don't call make_public()
+            # The bucket itself should be configured to allow public access
+
+            # Return the public URL
+            if settings.CDN_BASE_URL:
+                new_url = f"{settings.CDN_BASE_URL}/{blob_name}"
+            else:
+                new_url = f"https://storage.googleapis.com/{settings.GCS_BUCKET_NAME}/{blob_name}"
+
+            logger.info(f"✅ Uploaded YouTube thumbnail to storage: {new_url}")
+            return new_url
+
+        else:
+            # Local storage fallback
+            from pathlib import Path
+
+            upload_dir = Path(settings.UPLOAD_DIR) / "images" / "judaism" / image_type
+            upload_dir.mkdir(parents=True, exist_ok=True)
+
+            filename = f"{uuid4()}.jpg"
+            file_path = upload_dir / filename
+
+            with open(file_path, "wb") as f:
+                f.write(optimized_bytes)
+
+            new_url = f"/uploads/images/judaism/{image_type}/{filename}"
+            logger.info(f"✅ Saved YouTube thumbnail locally: {new_url}")
+            return new_url
+
+    except httpx.HTTPStatusError as e:
+        logger.warning(f"Failed to download YouTube thumbnail {youtube_url}: HTTP {e.response.status_code}")
+        return None
+    except Exception as e:
+        logger.error(f"Error downloading YouTube thumbnail {youtube_url}: {e}")
+        return None
+
+
 @dataclass
 class FixResult:
     """Result of a fix operation"""
@@ -141,6 +274,7 @@ async def fix_content_issues(
 
     results = {
         "metadata_fixes": 0,
+        "youtube_thumbnails_downloaded": 0,
         "reclassifications": 0,
         "failed_fixes": 0,
     }
@@ -155,6 +289,12 @@ async def fix_content_issues(
             )
             if fix_result.success:
                 results["metadata_fixes"] += 1
+                # Count YouTube thumbnail downloads separately
+                if fix_result.fields_updated:
+                    if "downloaded_youtube_thumbnail" in fix_result.fields_updated:
+                        results["youtube_thumbnails_downloaded"] += 1
+                    if "downloaded_youtube_backdrop" in fix_result.fields_updated:
+                        results["youtube_thumbnails_downloaded"] += 1
             else:
                 results["failed_fixes"] += 1
         except Exception as e:
@@ -185,6 +325,8 @@ async def fix_content_issues(
             logger.info(f"   Skipping reclassification (confidence {confidence:.0%} < 90%)")
 
     logger.info(f"   ✅ Fixed {results['metadata_fixes']} metadata issues")
+    if results["youtube_thumbnails_downloaded"] > 0:
+        logger.info(f"   📥 Downloaded {results['youtube_thumbnails_downloaded']} YouTube thumbnails")
     logger.info(f"   ✅ Reclassified {results['reclassifications']} items")
     logger.info(f"   ❌ Failed to fix {results['failed_fixes']} issues")
 
@@ -336,6 +478,38 @@ async def fix_missing_metadata(
                 content.trailer_url = enriched["trailer_url"]
                 after_state["trailer_url"] = enriched["trailer_url"]
                 changes_made.append("added_trailer_url")
+
+        # Download and upload YouTube thumbnails to our storage
+        if "external_youtube_thumbnail" in issues:
+            if is_youtube_thumbnail_url(content.thumbnail):
+                logger.info(f"   📥 Downloading YouTube thumbnail for '{content.title}'")
+                new_thumbnail_url = await download_and_upload_youtube_thumbnail(
+                    content.thumbnail,
+                    content_id,
+                    "thumbnail"
+                )
+                if new_thumbnail_url:
+                    content.thumbnail = new_thumbnail_url
+                    after_state["thumbnail"] = new_thumbnail_url
+                    changes_made.append("downloaded_youtube_thumbnail")
+
+                    # Also update poster_url if it was the same YouTube URL
+                    if is_youtube_thumbnail_url(content.poster_url):
+                        content.poster_url = new_thumbnail_url
+                        after_state["poster_url"] = new_thumbnail_url
+
+        if "external_youtube_backdrop" in issues:
+            if is_youtube_thumbnail_url(content.backdrop):
+                logger.info(f"   📥 Downloading YouTube backdrop for '{content.title}'")
+                new_backdrop_url = await download_and_upload_youtube_thumbnail(
+                    content.backdrop,
+                    content_id,
+                    "backdrop"
+                )
+                if new_backdrop_url:
+                    content.backdrop = new_backdrop_url
+                    after_state["backdrop"] = new_backdrop_url
+                    changes_made.append("downloaded_youtube_backdrop")
 
         # Set content type if missing
         if not content.content_type:

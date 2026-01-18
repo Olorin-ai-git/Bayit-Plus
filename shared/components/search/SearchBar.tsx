@@ -151,7 +151,9 @@ export function SearchBar({
 
 const styles = StyleSheet.create({
   input: {
-    outline: 'none' as any, // Web-only property
+    // Use long-form outline properties for React Native Web compatibility
+    outlineStyle: 'none' as any,
+    outlineWidth: 0 as any,
   },
 });
 

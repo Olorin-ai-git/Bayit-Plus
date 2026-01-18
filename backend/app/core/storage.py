@@ -403,22 +403,26 @@ class GCSStorageProvider(StorageProvider):
         try:
             # Create blob and upload
             blob = self.bucket.blob(blob_name)
+
+            # Set cache control metadata before upload
+            blob.cache_control = "public, max-age=31536000"  # 1 year
+
             blob.upload_from_string(
                 optimized,
                 content_type=content_type,
                 timeout=60
             )
 
-            # Set cache control and make public
-            blob.cache_control = "public, max-age=31536000"  # 1 year
-            blob.make_public()
-            blob.patch()
+            # Note: With uniform bucket-level access, we don't call make_public()
+            # The bucket itself should be configured to allow public access
+            # or use signed URLs for private content
 
-            # Return URL
+            # Return URL - use CDN if configured, otherwise construct public URL
             if self.cdn_base:
                 return f"{self.cdn_base}/{blob_name}"
             else:
-                return blob.public_url
+                # Standard GCS public URL format
+                return f"https://storage.googleapis.com/{self.bucket_name}/{blob_name}"
 
         except self.exceptions.GoogleAPIError as e:
             raise ValueError(f"GCS upload failed: {e}")

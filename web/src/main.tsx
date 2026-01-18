@@ -5,6 +5,9 @@ import App from './App'
 import '../../shared/styles/globals.css'
 import '@bayit/shared-i18n'
 
+// Load microphone diagnostics for debugging (exposes window.runMicDiagnostics)
+import '@bayit/shared/utils/microphoneDiagnostics'
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>

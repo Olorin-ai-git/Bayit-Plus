@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, ScrollView, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useDirection } from '@/hooks/useDirection';
 import { Radio } from 'lucide-react';
 import { liveService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassCard, GlassCategoryPill, GlassLiveChannelCard } from '@bayit/shared/ui';
+import AnimatedCard from '@/components/common/AnimatedCard';
 import logger from '@/utils/logger';
 
 interface Channel {
@@ -53,32 +55,32 @@ export default function LivePage() {
     return (
       <View style={styles.container}>
         <View style={styles.skeletonHeader} />
-        <FlatList
-          data={[...Array(10)]}
-          keyExtractor={(_, i) => `skeleton-${i}`}
-          numColumns={numColumns}
-          key={numColumns}
-          contentContainerStyle={styles.gridContent}
-          columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
-          renderItem={() => (
-            <View style={{ flex: 1, maxWidth: `${100 / numColumns}%`, padding: spacing.xs }}>
+        <View style={styles.grid}>
+          {[...Array(10)].map((_, index) => (
+            <View key={`skeleton-${index}`} style={{ width: `${100 / numColumns}%`, padding: spacing.xs }}>
               <View style={styles.skeletonCard} />
             </View>
-          )}
-        />
+          ))}
+        </View>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={[styles.header, { flexDirection, justifyContent }]}>
-        <GlassView style={styles.headerIcon}>
-          <Radio size={24} color={colors.error} />
-        </GlassView>
-        <Text style={[styles.title, { textAlign }]}>{t('live.title')}</Text>
-      </View>
+    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={[styles.header, { flexDirection, justifyContent }]}>
+          <GlassView style={styles.headerIcon}>
+            <Radio size={24} color={colors.error} />
+          </GlassView>
+          <Text style={[styles.title, { textAlign }]}>{t('live.title')}</Text>
+          {filteredChannels.length > 0 && (
+            <View style={styles.countBadge}>
+              <Text style={styles.countText}>{filteredChannels.length}</Text>
+            </View>
+          )}
+        </View>
 
       {/* Category Filter */}
       <ScrollView
@@ -89,74 +91,76 @@ export default function LivePage() {
       >
         <GlassCategoryPill
           label={t('live.categories.all')}
-          emoji="📺"
           isActive={selectedCategory === 'all'}
           onPress={() => setSelectedCategory('all')}
         />
         <GlassCategoryPill
           label={t('live.categories.news')}
-          emoji="📰"
           isActive={selectedCategory === 'news'}
           onPress={() => setSelectedCategory('news')}
         />
         <GlassCategoryPill
           label={t('live.categories.entertainment')}
-          emoji="🎬"
           isActive={selectedCategory === 'entertainment'}
           onPress={() => setSelectedCategory('entertainment')}
         />
         <GlassCategoryPill
           label={t('live.categories.sports')}
-          emoji="⚽"
           isActive={selectedCategory === 'sports'}
           onPress={() => setSelectedCategory('sports')}
         />
         <GlassCategoryPill
           label={t('live.categories.kids')}
-          emoji="👶"
           isActive={selectedCategory === 'kids'}
           onPress={() => setSelectedCategory('kids')}
         />
         <GlassCategoryPill
           label={t('live.categories.music')}
-          emoji="🎵"
           isActive={selectedCategory === 'music'}
           onPress={() => setSelectedCategory('music')}
         />
       </ScrollView>
 
       {/* Channels Grid */}
-      <FlatList
-        data={filteredChannels}
-        keyExtractor={(item) => item.id}
-        numColumns={numColumns}
-        key={numColumns}
-        contentContainerStyle={styles.gridContent}
-        columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
-        renderItem={({ item }) => (
-          <View style={{ flex: 1, maxWidth: `${100 / numColumns}%`, padding: spacing.xs }}>
-            <GlassLiveChannelCard
-              channel={item}
-              liveLabel={liveLabel}
-              onPress={() => window.location.href = `/live/${item.id}`}
-            />
-          </View>
-        )}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <GlassCard style={styles.emptyCard}>
-              <Radio size={64} color={colors.textMuted} />
-              <Text style={styles.emptyTitle}>{t('live.noChannels')}</Text>
-              <Text style={styles.emptyDescription}>{t('live.tryLater')}</Text>
-            </GlassCard>
-          </View>
-        }
-      />
-    </View>
+      {filteredChannels.length > 0 ? (
+        <View style={styles.grid}>
+          {filteredChannels.map((channel, index) => (
+            <AnimatedCard
+              key={channel.id}
+              index={index}
+              variant="grid"
+              style={{ width: `${100 / numColumns}%`, padding: spacing.xs } as any}
+            >
+              <Link to={`/live/${channel.id}`} style={{ textDecoration: 'none' }}>
+                <GlassLiveChannelCard
+                  channel={channel}
+                  liveLabel={liveLabel}
+                />
+              </Link>
+            </AnimatedCard>
+          ))}
+        </View>
+      ) : (
+        <View style={styles.emptyState}>
+          <GlassCard style={styles.emptyCard}>
+            <Radio size={64} color={colors.textMuted} />
+            <Text style={styles.emptyTitle}>{t('live.noChannels')}</Text>
+            <Text style={styles.emptyDescription}>{t('live.tryLater')}</Text>
+          </GlassCard>
+        </View>
+      )}
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     paddingHorizontal: spacing.md,
@@ -183,6 +187,20 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     color: colors.text,
+    flex: 1,
+  },
+  countBadge: {
+    backgroundColor: colors.glass,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.full,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  countText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.textSecondary,
   },
   categoriesScroll: {
     marginBottom: spacing.lg,
@@ -191,11 +209,9 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     paddingBottom: spacing.sm,
   },
-  gridContent: {
-    gap: spacing.md,
-  },
-  row: {
-    gap: spacing.md,
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   emptyState: {
     flex: 1,

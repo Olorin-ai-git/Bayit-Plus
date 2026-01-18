@@ -147,6 +147,7 @@ class ShabbatTimesResponse(BaseModel):
     parasha: Optional[str] = None
     parasha_he: Optional[str] = None
     hebrew_date: Optional[str] = None
+    timezone: Optional[str] = None  # IANA timezone (e.g., "America/New_York")
 
 
 class CalendarTodayResponse(BaseModel):

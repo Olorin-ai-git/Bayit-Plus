@@ -644,3 +644,72 @@ input[type="range"]::-moz-range-thumb {
 .loading-spinner {
   animation: spin 1s linear infinite;
 }
+
+/* ==================== */
+/* LIVE CHANNEL CARDS   */
+/* ==================== */
+
+/* Live Badge Pulse Animation (Enhanced) */
+@keyframes livePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0);
+  }
+}
+
+.live-pulse-dot {
+  animation: livePulse 1.5s ease-in-out infinite;
+}
+
+/* Live Channel Card Hover Effects */
+.live-channel-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border-white);
+  transition: all 0.2s ease;
+}
+
+.live-channel-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(107, 33, 168, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.live-channel-card:hover .channel-name {
+  color: var(--primary-light);
+}
+
+/* Live Channel Card Thumbnail Gradient */
+.live-channel-gradient {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.5) 40%, transparent 100%);
+}
+
+/* Live Play Button */
+.live-play-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.95), rgba(147, 51, 234, 0.95));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.live-play-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 32px rgba(168, 85, 247, 0.7);
+}

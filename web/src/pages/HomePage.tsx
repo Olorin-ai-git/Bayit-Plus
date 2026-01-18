@@ -10,7 +10,7 @@ import { TrendingRow, GlassCarousel } from '@bayit/shared';
 import { GlassLiveChannelCard, GlassCheckbox } from '@bayit/shared/ui';
 import MorningRitual from '@/components/ritual/MorningRitual';
 import { contentService, liveService, historyService, ritualService } from '@/services/api';
-import { ShabbatModeBanner } from '@/components/judaism';
+import { ShabbatModeBanner, ShabbatEveSection } from '@/components/judaism';
 import { colors, spacing } from '@bayit/shared/theme';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
@@ -300,6 +300,9 @@ export default function HomePage() {
       {/* Shabbat Mode Banner - appears during Shabbat */}
       <ShabbatModeBanner />
 
+      {/* Shabbat Eve Section - appears on Friday before candle lighting */}
+      <ShabbatEveSection />
+
       {/* Hero Carousel Section */}
       <View style={styles.carouselSection}>
         {carouselLoading ? (
@@ -569,7 +572,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'linear-gradient(to bottom, rgba(10, 10, 20, 0.3) 0%, rgba(10, 10, 20, 0.6) 50%, rgba(10, 10, 20, 0.95) 100%)',
+    // Use backgroundImage instead of background shorthand for React Native Web
+    backgroundImage: 'linear-gradient(to bottom, rgba(10, 10, 20, 0.3) 0%, rgba(10, 10, 20, 0.6) 50%, rgba(10, 10, 20, 0.95) 100%)' as any,
   },
   skeletonLoadingContainer: {
     position: 'absolute',

@@ -85,12 +85,20 @@ async def audit_content_items(
     return results
 
 
+def is_external_youtube_url(url: str) -> bool:
+    """Check if a URL is an external YouTube thumbnail URL that should be downloaded."""
+    if not url:
+        return False
+    return "img.youtube.com" in url or "i.ytimg.com" in url
+
+
 async def check_metadata_completeness(contents: List[Content]) -> List[Dict[str, Any]]:
     """
     Check for missing or incomplete metadata.
 
     Checks:
     - Missing thumbnail/backdrop
+    - External YouTube thumbnails (should be downloaded to storage)
     - Missing TMDB/IMDB data
     - Missing description
     - Empty cast/director for movies
@@ -105,10 +113,16 @@ async def check_metadata_completeness(contents: List[Content]) -> List[Dict[str,
         # Check thumbnail (None, empty string, or whitespace)
         if not content.thumbnail or not content.thumbnail.strip():
             issues.append("missing_thumbnail")
+        elif is_external_youtube_url(content.thumbnail):
+            # YouTube thumbnail URLs should be downloaded to our storage
+            issues.append("external_youtube_thumbnail")
 
         # Check backdrop (None, empty string, or whitespace)
         if not content.backdrop or not content.backdrop.strip():
             issues.append("missing_backdrop")
+        elif is_external_youtube_url(content.backdrop):
+            # YouTube backdrop URLs should be downloaded to our storage
+            issues.append("external_youtube_backdrop")
 
         # Check TMDB ID
         if not content.tmdb_id:

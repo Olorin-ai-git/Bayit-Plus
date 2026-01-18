@@ -231,6 +231,10 @@ class Settings(BaseSettings):
     CHABAD_MULTIMEDIA_RSS_URL: str = "https://www.chabad.org/multimedia/rss.xml"
     TORAHANYTIME_RSS_URL: str = "https://www.torahanytime.com/feed"
 
+    # Picovoice Porcupine (Wake Word Detection)
+    # Access key from https://console.picovoice.ai/
+    PICOVOICE_ACCESS_KEY: str = ""
+
     class Config:
         env_file = ".env"
         case_sensitive = True

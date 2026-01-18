@@ -1,13 +1,19 @@
 import { useState, useEffect } from 'react';
-import { View, Text, FlatList, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions } from 'react-native';
+import { View, Text, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions } from 'react-native';
 import { Link } from 'react-router-dom';
-import { Play, Clock, User, Newspaper, Calendar, Users, BookOpen } from 'lucide-react';
+import { Play, Clock, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing } from '@bayit/shared/theme';
 import { GlassCard, GlassCategoryPill } from '@bayit/shared/ui';
-import { JewishNewsFeed, JewishCalendarWidget, ShabbatTimesCard, CommunityDirectory } from '@/components/judaism';
+import {
+  JewishNewsFeed,
+  JewishCalendarWidget,
+  ShabbatTimesCard,
+  CommunityDirectory,
+  ShabbatEveSection,
+} from '@/components/judaism';
 import logger from '@/utils/logger';
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -48,6 +54,7 @@ interface Category {
 function JudaismCard({ item }: { item: JudaismItem }) {
   const { i18n } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const categoryIcon = CATEGORY_ICONS[item.category] || '✡️';
 
   const getLocalizedText = (field: 'title' | 'description' | 'rabbi') => {
@@ -57,61 +64,76 @@ function JudaismCard({ item }: { item: JudaismItem }) {
     return item[`${field}_en` as keyof JudaismItem] || item[field] || '';
   };
 
+  // Try different YouTube thumbnail qualities
+  const getThumbnailUrl = () => {
+    if (!item.thumbnail) return null;
+    if (item.thumbnail.includes('maxresdefault')) {
+      return imageError ? item.thumbnail.replace('maxresdefault', 'hqdefault') : item.thumbnail;
+    }
+    return item.thumbnail;
+  };
+
+  const thumbnailUrl = getThumbnailUrl();
+
   return (
-    <Link to={`/vod/${item.id}`} style={{ textDecoration: 'none', flex: 1 }}>
+    <Link to={`/vod/${item.id}`} style={{ textDecoration: 'none', width: '100%' }}>
       <Pressable
         onHoverIn={() => setIsHovered(true)}
         onHoverOut={() => setIsHovered(false)}
+        style={{ width: '100%' }}
       >
-        <GlassCard className={`p-0 m-1 overflow-hidden ${isHovered ? 'scale-102' : ''}`}>
-          <View className="aspect-video relative">
-            {item.thumbnail ? (
+        <GlassCard className={`p-0 overflow-hidden transition-transform ${isHovered ? 'scale-105' : ''}`}>
+          {/* Thumbnail Container - fixed aspect ratio */}
+          <View className="w-full relative" style={{ paddingBottom: '56.25%', backgroundColor: colors.glassLight }}>
+            {thumbnailUrl && !imageError ? (
               <Image
-                source={{ uri: item.thumbnail }}
-                className="w-full h-full"
+                source={{ uri: thumbnailUrl }}
+                className="absolute inset-0 w-full h-full"
                 resizeMode="cover"
+                onError={() => setImageError(true)}
               />
             ) : (
-              <View className="w-full h-full bg-purple-500/20 items-center justify-center">
+              <View className="absolute inset-0 items-center justify-center">
                 <Text className="text-5xl">{categoryIcon}</Text>
               </View>
             )}
 
             {/* Category Badge */}
-            <View className="absolute top-2 left-2 bg-black/70 px-2 py-1 rounded-full">
+            <View className="absolute top-2 left-2 px-2 py-1 rounded-full" style={{ backgroundColor: colors.overlayDark }}>
               <Text className="text-sm">{categoryIcon}</Text>
             </View>
 
             {/* Duration Badge */}
             {item.duration && (
-              <View className="absolute top-2 right-2 bg-blue-500/90 px-2 py-1 rounded flex-row items-center gap-1">
-                <Clock size={10} color={colors.text} />
-                <Text className="text-white text-xs font-bold">{item.duration}</Text>
+              <View className="absolute bottom-2 right-2 px-2 py-1 rounded flex-row items-center gap-1" style={{ backgroundColor: colors.primary }}>
+                <Clock size={12} color={colors.text} />
+                <Text style={{ color: colors.text, fontSize: 12, fontWeight: 'bold' }}>{item.duration}</Text>
               </View>
             )}
 
             {/* Hover Overlay */}
             {isHovered && (
-              <View className="absolute inset-0 bg-black/40 items-center justify-center">
-                <View className="w-14 h-14 rounded-full bg-blue-500 items-center justify-center">
-                  <Play size={24} color={colors.background} fill={colors.background} />
+              <View className="absolute inset-0 items-center justify-center" style={{ backgroundColor: colors.overlay }}>
+                <View className="w-14 h-14 rounded-full items-center justify-center" style={{ backgroundColor: colors.primary }}>
+                  <Play size={24} color={colors.text} fill={colors.text} />
                 </View>
               </View>
             )}
           </View>
 
+          {/* Content Info */}
           <View className="p-3">
-            <Text className="text-white font-semibold" numberOfLines={1}>
+            <Text className="font-semibold text-sm" style={{ color: colors.text }} numberOfLines={2}>
               {getLocalizedText('title')}
             </Text>
             {item.rabbi && (
               <View className="flex-row items-center gap-1 mt-1">
-                <User size={12} color={colors.primary} />
-                <Text className="text-blue-400 text-sm">{getLocalizedText('rabbi')}</Text>
+                <User size={14} color={colors.primary} />
+                <Text className="text-sm" style={{ color: colors.primaryLight }}>{getLocalizedText('rabbi')}</Text>
               </View>
             )}
             {item.description && (
-              <Text className="text-gray-400 text-xs mt-1" numberOfLines={1}>
+              <Text className="text-xs mt-1" style={{ color: colors.textSecondary }} numberOfLines={2}>
                 {getLocalizedText('description')}
               </Text>
             )}
@@ -124,7 +146,7 @@ function JudaismCard({ item }: { item: JudaismItem }) {
 
 export default function JudaismPage() {
   const { t, i18n } = useTranslation();
-  const { isRTL, textAlign, flexDirection, justifyContent, alignItems } = useDirection();
+  const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [content, setContent] = useState<JudaismItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -210,77 +232,111 @@ export default function JudaismPage() {
 
   const showSpecialView = ['news', 'calendar', 'community'].includes(selectedCategory);
 
-  return (
-    <View className="flex-1 px-4 py-6 max-w-7xl mx-auto w-full">
-      {/* Header */}
-      <View className="flex-row items-center gap-3 mb-6" style={{ flexDirection, justifyContent }}>
-        <View className="w-16 h-16 rounded-full bg-purple-500/30 items-center justify-center">
-          <Text className="text-4xl">✡️</Text>
+  // Default view when "All" is selected and no content - show dashboard
+  const renderDashboardView = () => {
+    return (
+      <View className="gap-6">
+        {/* Shabbat Eve Section - prominent at top */}
+        <ShabbatEveSection />
+
+        {/* Calendar and Shabbat Times Row */}
+        <View className="flex-row gap-4 flex-wrap">
+          <View className="flex-1 min-w-80">
+            <JewishCalendarWidget />
+          </View>
+          <View className="flex-1 min-w-80">
+            <ShabbatTimesCard />
+          </View>
         </View>
+
+        {/* News Section */}
         <View>
-          <Text className="text-3xl font-bold text-white" style={{ textAlign }}>
-            {t('judaism.title', 'Judaism')}
+          <Text className="text-xl font-bold mb-4" style={{ color: colors.text, textAlign }}>
+            📰 {t('judaism.categories.news', 'Jewish News')}
           </Text>
-          <Text className="text-gray-400 text-sm" style={{ textAlign }}>
-            {content.length} {t('judaism.items', 'items')}
+          <JewishNewsFeed limit={10} />
+        </View>
+
+        {/* Community Section */}
+        <View>
+          <Text className="text-xl font-bold mb-4" style={{ color: colors.text, textAlign }}>
+            🏛️ {t('judaism.categories.community', 'Community')}
           </Text>
+          <CommunityDirectory />
         </View>
       </View>
+    );
+  };
 
-      {/* Categories */}
-      {categories.length > 0 && (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          className="mb-6"
-          contentContainerStyle={{ gap: spacing.sm, paddingVertical: spacing.sm }}
-        >
-          {categories.map((category) => (
-            <GlassCategoryPill
-              key={category.id}
-              label={getCategoryName(category)}
-              emoji={CATEGORY_ICONS[category.id] || '✡️'}
-              isActive={selectedCategory === category.id}
-              onPress={() => setSelectedCategory(category.id)}
-            />
-          ))}
-        </ScrollView>
-      )}
-
-      {/* Special Views or Content Grid */}
-      {showSpecialView ? (
-        renderSpecialView()
-      ) : isLoading ? (
-        <View className="flex-1 items-center justify-center py-16">
-          <ActivityIndicator size="large" color={colors.primary} />
+  return (
+    <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 40 }}>
+      <View className="flex-1 px-4 py-6 max-w-7xl mx-auto w-full">
+        {/* Header */}
+        <View className="flex-row items-center gap-3 mb-6" style={{ flexDirection, justifyContent }}>
+          <View className="w-16 h-16 rounded-full items-center justify-center" style={{ backgroundColor: colors.glassLight }}>
+            <Text className="text-4xl">✡️</Text>
+          </View>
+          <View>
+            <Text className="text-3xl font-bold" style={{ color: colors.text, textAlign }}>
+              {t('judaism.title', 'Judaism')}
+            </Text>
+            <Text className="text-sm" style={{ color: colors.textSecondary, textAlign }}>
+              {content.length > 0 ? `${content.length} ${t('judaism.items', 'items')}` : t('judaism.dashboard', 'Your Jewish Dashboard')}
+            </Text>
+          </View>
         </View>
-      ) : content.length > 0 ? (
-        <FlatList
-          data={content}
-          keyExtractor={(item) => item.id}
-          numColumns={numColumns}
-          key={numColumns}
-          contentContainerStyle={{ gap: spacing.md }}
-          columnWrapperStyle={numColumns > 1 ? { gap: spacing.md } : undefined}
-          renderItem={({ item }) => (
-            <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
-              <JudaismCard item={item} />
+
+        {/* Categories */}
+        {categories.length > 0 && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="mb-6"
+            contentContainerStyle={{ gap: spacing.sm, paddingVertical: spacing.sm }}
+          >
+            {categories.map((category) => (
+              <GlassCategoryPill
+                key={category.id}
+                label={getCategoryName(category)}
+                emoji={CATEGORY_ICONS[category.id] || '✡️'}
+                isActive={selectedCategory === category.id}
+                onPress={() => setSelectedCategory(category.id)}
+              />
+            ))}
+          </ScrollView>
+        )}
+
+        {/* Content Area */}
+        {showSpecialView ? (
+          renderSpecialView()
+        ) : isLoading ? (
+          <View className="flex-1 items-center justify-center py-16">
+            <ActivityIndicator size="large" color={colors.primary} />
+          </View>
+        ) : content.length > 0 ? (
+          <>
+            {/* Show Shabbat Eve Section at top when viewing content */}
+            <ShabbatEveSection />
+
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginTop: spacing.md }}>
+              {content.map((item) => (
+                <View
+                  key={item.id}
+                  style={{
+                    width: `calc(${100 / numColumns}% - ${(numColumns - 1) * spacing.md / numColumns}px)`,
+                    minWidth: 200,
+                  }}
+                >
+                  <JudaismCard item={item} />
+                </View>
+              ))}
             </View>
-          )}
-        />
-      ) : (
-        <View className="flex-1 items-center justify-center py-16">
-          <GlassCard className="p-8 items-center">
-            <Text className="text-6xl mb-4">✡️</Text>
-            <Text className="text-white text-xl font-semibold mb-2">
-              {t('judaism.empty', 'No content yet')}
-            </Text>
-            <Text className="text-gray-400">
-              {t('judaism.emptyHint', 'Check back soon for new Torah content')}
-            </Text>
-          </GlassCard>
-        </View>
-      )}
-    </View>
+          </>
+        ) : (
+          // No content - show the dashboard view with all widgets
+          renderDashboardView()
+        )}
+      </View>
+    </ScrollView>
   );
 }

@@ -207,6 +207,8 @@ module.exports = (env, argv) => {
         'import.meta.env.VITE_APP_MODE': JSON.stringify(isTV ? 'demo' : process.env.VITE_APP_MODE),
         // Use environment variable for API URL (Firebase Hosting rewrites handle routing)
         'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || '/api/v1'),
+        // Picovoice Porcupine wake word access key
+        'import.meta.env.VITE_PICOVOICE_ACCESS_KEY': JSON.stringify(process.env.VITE_PICOVOICE_ACCESS_KEY || ''),
       }),
       new webpack.ProvidePlugin({
         process: 'process/browser',
@@ -247,6 +249,19 @@ module.exports = (env, argv) => {
             to: path.resolve(getOutputPath(), 'vosk/model'),
             noErrorOnMissing: true,
           },
+          {
+            // Copy Porcupine WebAssembly files for wake word detection
+            from: path.resolve(__dirname, '../node_modules/@picovoice/porcupine-web/dist'),
+            to: path.resolve(getOutputPath(), 'porcupine'),
+            noErrorOnMissing: true,
+          },
+          {
+            // Copy custom Porcupine wake word model if available
+            // Needs to be trained at https://console.picovoice.ai/ and downloaded
+            from: path.resolve(__dirname, '../shared/models/porcupine'),
+            to: path.resolve(getOutputPath(), 'porcupine'),
+            noErrorOnMissing: true,
+          },
         ],
       }),
     ],
@@ -258,11 +273,29 @@ module.exports = (env, argv) => {
       hot: true,
       historyApiFallback: true,
       open: true,
+      // Note: COEP/COOP headers are needed for SharedArrayBuffer (Porcupine WASM)
+      // but they block cross-origin resources (like GCS images) without CORP headers.
+      // For production, use Cloud CDN to add 'Cross-Origin-Resource-Policy: cross-origin'
+      // For development, we disable these headers to allow GCS images to load.
+      // headers: {
+      //   'Cross-Origin-Opener-Policy': 'same-origin',
+      //   'Cross-Origin-Embedder-Policy': 'require-corp',
+      // },
       proxy: [
         {
           context: ['/api', '/uploads'],
           target: 'http://localhost:8000',
           changeOrigin: true,
+        },
+        {
+          // Proxy GCS images to add CORP headers for COEP compatibility
+          context: ['/gcs-proxy'],
+          target: 'https://storage.googleapis.com',
+          changeOrigin: true,
+          pathRewrite: { '^/gcs-proxy': '' },
+          onProxyRes: (proxyRes) => {
+            proxyRes.headers['Cross-Origin-Resource-Policy'] = 'cross-origin';
+          },
         },
       ],
     },

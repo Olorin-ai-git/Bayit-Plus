@@ -66,6 +66,8 @@ services:
       - YUTORAH_RSS_URL=${YUTORAH_RSS_URL:-https://www.yutorah.org/rss/}
       - CHABAD_MULTIMEDIA_RSS_URL=${CHABAD_MULTIMEDIA_RSS_URL:-https://www.chabad.org/multimedia/rss.xml}
       - TORAHANYTIME_RSS_URL=${TORAHANYTIME_RSS_URL:-https://www.torahanytime.com/feed}
+      # Picovoice Wake Word Detection
+      - PICOVOICE_ACCESS_KEY=${PICOVOICE_ACCESS_KEY}
     env_file:
       - ./backend/.env
     depends_on:

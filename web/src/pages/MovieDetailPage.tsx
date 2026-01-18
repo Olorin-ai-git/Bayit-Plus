@@ -127,10 +127,21 @@ export default function MovieDetailPage() {
     }
   };
 
+  // Check if URL is a YouTube URL (can't be previewed inline)
+  const isYouTubeUrl = useCallback((url: string | null): boolean => {
+    if (!url) return false;
+    return url.includes('youtube.com/embed/') || url.includes('youtu.be/') || url.includes('youtube.com/watch');
+  }, []);
+
   // Video preview functions
   const startPreview = useCallback(() => {
     const previewUrl = getPreviewUrl();
     if (!previewUrl) return;
+
+    // Skip preview for YouTube URLs - they can't be played inline
+    if (isYouTubeUrl(previewUrl)) {
+      return;
+    }
 
     // Ensure video element exists
     if (!videoRef.current) {

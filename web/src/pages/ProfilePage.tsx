@@ -198,18 +198,38 @@ export default function ProfilePage() {
     return date.toLocaleDateString();
   };
 
-  // Toggle component
+  // Toggle component with RTL support
   const Toggle = ({ value, onToggle, disabled }: { value: boolean; onToggle: () => void; disabled?: boolean }) => (
     <Pressable
       onPress={onToggle}
       disabled={disabled}
       style={[styles.toggle, value && styles.toggleActive, disabled && styles.toggleDisabled]}
     >
-      <View style={[styles.toggleKnob, value && styles.toggleKnobActive]} />
+      <View style={[
+        styles.toggleKnob,
+        value && (isRTL ? styles.toggleKnobActiveRTL : styles.toggleKnobActive)
+      ]} />
     </Pressable>
   );
 
-  // Setting row component
+  // Info row component with RTL support - swaps element order for RTL
+  const InfoRow = ({ label, value }: { label: string; value: string }) => (
+    <View style={styles.infoRow}>
+      {isRTL ? (
+        <>
+          <Text style={[styles.infoValue, { textAlign: 'left' }]}>{value}</Text>
+          <Text style={[styles.infoLabel, { textAlign: 'right' }]}>{label}</Text>
+        </>
+      ) : (
+        <>
+          <Text style={[styles.infoLabel, { textAlign: 'left' }]}>{label}</Text>
+          <Text style={[styles.infoValue, { textAlign: 'right' }]}>{value}</Text>
+        </>
+      )}
+    </View>
+  );
+
+  // Setting row component with RTL support - swaps element order for RTL
   const SettingRow = ({
     icon: Icon,
     iconColor = colors.primary,
@@ -230,19 +250,38 @@ export default function ProfilePage() {
     <Pressable
       onPress={onToggle}
       disabled={disabled || !onToggle}
-      style={[styles.settingRow, isRTL && styles.settingRowRTL, disabled && styles.settingRowDisabled]}
+      style={[styles.settingRow, disabled && styles.settingRowDisabled]}
     >
-      <View style={[styles.settingIcon, { backgroundColor: `${iconColor}15` }]}>
-        <Icon size={20} color={iconColor} />
-      </View>
-      <View style={styles.settingContent}>
-        <Text style={[styles.settingLabel, isRTL && styles.textRTL]}>{label}</Text>
-        {description && (
-          <Text style={[styles.settingDesc, isRTL && styles.textRTL]}>{description}</Text>
-        )}
-      </View>
-      {value !== undefined && onToggle && (
-        <Toggle value={value} onToggle={onToggle} disabled={disabled} />
+      {isRTL ? (
+        <>
+          {value !== undefined && onToggle && (
+            <Toggle value={value} onToggle={onToggle} disabled={disabled} />
+          )}
+          <View style={styles.settingContent}>
+            <Text style={[styles.settingLabel, { textAlign: 'right' }]}>{label}</Text>
+            {description && (
+              <Text style={[styles.settingDesc, { textAlign: 'right' }]}>{description}</Text>
+            )}
+          </View>
+          <View style={[styles.settingIcon, { backgroundColor: `${iconColor}15` }]}>
+            <Icon size={20} color={iconColor} />
+          </View>
+        </>
+      ) : (
+        <>
+          <View style={[styles.settingIcon, { backgroundColor: `${iconColor}15` }]}>
+            <Icon size={20} color={iconColor} />
+          </View>
+          <View style={styles.settingContent}>
+            <Text style={[styles.settingLabel, { textAlign: 'left' }]}>{label}</Text>
+            {description && (
+              <Text style={[styles.settingDesc, { textAlign: 'left' }]}>{description}</Text>
+            )}
+          </View>
+          {value !== undefined && onToggle && (
+            <Toggle value={value} onToggle={onToggle} disabled={disabled} />
+          )}
+        </>
       )}
     </Pressable>
   );
@@ -293,7 +332,10 @@ export default function ProfilePage() {
   );
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       {/* Hero Section */}
       <GlassView style={styles.heroSection} intensity="medium">
         <View style={[styles.heroContent, isRTL && styles.heroContentRTL]}>
@@ -366,7 +408,7 @@ export default function ProfilePage() {
         </View>
 
         {/* Quick Stats - Only showing stats with real API support */}
-        <View style={styles.statsRow}>
+        <View style={[styles.statsRow, isRTL && styles.statsRowRTL]}>
           <StatCard
             icon={Star}
             iconColor={colors.warning}
@@ -385,7 +427,7 @@ export default function ProfilePage() {
       </GlassView>
 
       {/* Quick Actions */}
-      <View style={styles.quickActions}>
+      <View style={[styles.quickActions, isRTL && styles.quickActionsRTL]}>
         <ActionButton
           icon={MessageSquare}
           iconColor={colors.primary}
@@ -422,30 +464,50 @@ export default function ProfilePage() {
           <View style={styles.sectionGrid}>
             {/* Recent Activity - Real data from history API */}
             <GlassView style={styles.section}>
-              <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
+              <Text style={[styles.sectionTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
                 {t('profile.recentActivity', 'Recent Activity')}
               </Text>
               <View style={styles.activityList}>
                 {recentActivity.length > 0 ? (
                   recentActivity.map((activity) => (
-                    <View key={activity.id} style={[styles.activityItem, isRTL && styles.activityItemRTL]}>
-                      {activity.type === 'watched' ? (
-                        <PlayCircle size={20} color={colors.primary} />
+                    <View key={activity.id} style={styles.activityItem}>
+                      {isRTL ? (
+                        <>
+                          <View style={styles.activityContent}>
+                            <Text style={[styles.activityTitle, { textAlign: 'right' }]} numberOfLines={1}>
+                              {activity.title}
+                            </Text>
+                            <Text style={[styles.activityTime, { textAlign: 'right' }]}>
+                              {formatTimestamp(activity.timestamp)}
+                            </Text>
+                          </View>
+                          {activity.type === 'watched' ? (
+                            <PlayCircle size={20} color={colors.primary} />
+                          ) : (
+                            <Star size={20} color={colors.warning} />
+                          )}
+                        </>
                       ) : (
-                        <Star size={20} color={colors.warning} />
+                        <>
+                          {activity.type === 'watched' ? (
+                            <PlayCircle size={20} color={colors.primary} />
+                          ) : (
+                            <Star size={20} color={colors.warning} />
+                          )}
+                          <View style={styles.activityContent}>
+                            <Text style={[styles.activityTitle, { textAlign: 'left' }]} numberOfLines={1}>
+                              {activity.title}
+                            </Text>
+                            <Text style={[styles.activityTime, { textAlign: 'left' }]}>
+                              {formatTimestamp(activity.timestamp)}
+                            </Text>
+                          </View>
+                        </>
                       )}
-                      <View style={styles.activityContent}>
-                        <Text style={[styles.activityTitle, isRTL && styles.textRTL]} numberOfLines={1}>
-                          {activity.title}
-                        </Text>
-                        <Text style={[styles.activityTime, isRTL && styles.textRTL]}>
-                          {formatTimestamp(activity.timestamp)}
-                        </Text>
-                      </View>
                     </View>
                   ))
                 ) : (
-                  <Text style={[styles.emptyText, isRTL && styles.textRTL]}>
+                  <Text style={[styles.emptyText, { textAlign: isRTL ? 'right' : 'left' }]}>
                     {t('profile.noRecentActivity', 'No recent activity')}
                   </Text>
                 )}
@@ -454,22 +516,13 @@ export default function ProfilePage() {
 
             {/* Account Info */}
             <GlassView style={styles.section}>
-              <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
+              <Text style={[styles.sectionTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
                 {t('profile.accountInfo', 'Account Information')}
               </Text>
               <View style={styles.infoList}>
-                <View style={[styles.infoRow, isRTL && styles.infoRowRTL]}>
-                  <Text style={styles.infoLabel}>{t('profile.name', 'Name')}</Text>
-                  <Text style={styles.infoValue}>{user?.name || '-'}</Text>
-                </View>
-                <View style={[styles.infoRow, isRTL && styles.infoRowRTL]}>
-                  <Text style={styles.infoLabel}>{t('profile.email', 'Email')}</Text>
-                  <Text style={styles.infoValue}>{user?.email || '-'}</Text>
-                </View>
-                <View style={[styles.infoRow, isRTL && styles.infoRowRTL]}>
-                  <Text style={styles.infoLabel}>{t('profile.role', 'Role')}</Text>
-                  <Text style={styles.infoValue}>{user?.role || 'user'}</Text>
-                </View>
+                <InfoRow label={t('profile.name', 'Name')} value={user?.name || '-'} />
+                <InfoRow label={t('profile.email', 'Email')} value={user?.email || '-'} />
+                <InfoRow label={t('profile.role', 'Role')} value={user?.role || 'user'} />
               </View>
             </GlassView>
           </View>
@@ -480,18 +533,36 @@ export default function ProfilePage() {
           <View style={styles.sectionGrid}>
             {/* AI Assistant - Connected to aiSettingsStore */}
             <GlassView style={styles.section}>
-              <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
-                <View style={[styles.sectionIconContainer, { backgroundColor: 'rgba(139, 92, 246, 0.15)' }]}>
-                  <Brain size={24} color="#8B5CF6" />
-                </View>
-                <View style={styles.sectionHeaderText}>
-                  <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
-                    {t('profile.ai.assistant', 'AI Assistant')}
-                  </Text>
-                  <Text style={[styles.sectionSubtitle, isRTL && styles.textRTL]}>
-                    {t('profile.ai.assistantDesc', 'Personalized recommendations and help')}
-                  </Text>
-                </View>
+              <View style={styles.sectionHeader}>
+                {isRTL ? (
+                  <>
+                    <View style={styles.sectionHeaderText}>
+                      <Text style={[styles.sectionTitle, { textAlign: 'right' }]}>
+                        {t('profile.ai.assistant', 'AI Assistant')}
+                      </Text>
+                      <Text style={[styles.sectionSubtitle, { textAlign: 'right' }]}>
+                        {t('profile.ai.assistantDesc', 'Personalized recommendations and help')}
+                      </Text>
+                    </View>
+                    <View style={[styles.sectionIconContainer, { backgroundColor: 'rgba(139, 92, 246, 0.15)' }]}>
+                      <Brain size={24} color="#8B5CF6" />
+                    </View>
+                  </>
+                ) : (
+                  <>
+                    <View style={[styles.sectionIconContainer, { backgroundColor: 'rgba(139, 92, 246, 0.15)' }]}>
+                      <Brain size={24} color="#8B5CF6" />
+                    </View>
+                    <View style={styles.sectionHeaderText}>
+                      <Text style={[styles.sectionTitle, { textAlign: 'left' }]}>
+                        {t('profile.ai.assistant', 'AI Assistant')}
+                      </Text>
+                      <Text style={[styles.sectionSubtitle, { textAlign: 'left' }]}>
+                        {t('profile.ai.assistantDesc', 'Personalized recommendations and help')}
+                      </Text>
+                    </View>
+                  </>
+                )}
               </View>
 
               <SettingRow
@@ -525,18 +596,36 @@ export default function ProfilePage() {
 
             {/* Voice Settings - Connected to voiceSettingsStore */}
             <GlassView style={styles.section}>
-              <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
-                <View style={[styles.sectionIconContainer, { backgroundColor: 'rgba(107, 33, 168, 0.3)' }]}>
-                  <Mic size={24} color={colors.primary} />
-                </View>
-                <View style={styles.sectionHeaderText}>
-                  <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
-                    {t('profile.voice.title', 'Voice Control')}
-                  </Text>
-                  <Text style={[styles.sectionSubtitle, isRTL && styles.textRTL]}>
-                    {t('profile.voice.description', 'Hands-free navigation')}
-                  </Text>
-                </View>
+              <View style={styles.sectionHeader}>
+                {isRTL ? (
+                  <>
+                    <View style={styles.sectionHeaderText}>
+                      <Text style={[styles.sectionTitle, { textAlign: 'right' }]}>
+                        {t('profile.voice.title', 'Voice Control')}
+                      </Text>
+                      <Text style={[styles.sectionSubtitle, { textAlign: 'right' }]}>
+                        {t('profile.voice.description', 'Hands-free navigation')}
+                      </Text>
+                    </View>
+                    <View style={[styles.sectionIconContainer, { backgroundColor: 'rgba(107, 33, 168, 0.3)' }]}>
+                      <Mic size={24} color={colors.primary} />
+                    </View>
+                  </>
+                ) : (
+                  <>
+                    <View style={[styles.sectionIconContainer, { backgroundColor: 'rgba(107, 33, 168, 0.3)' }]}>
+                      <Mic size={24} color={colors.primary} />
+                    </View>
+                    <View style={styles.sectionHeaderText}>
+                      <Text style={[styles.sectionTitle, { textAlign: 'left' }]}>
+                        {t('profile.voice.title', 'Voice Control')}
+                      </Text>
+                      <Text style={[styles.sectionSubtitle, { textAlign: 'left' }]}>
+                        {t('profile.voice.description', 'Hands-free navigation')}
+                      </Text>
+                    </View>
+                  </>
+                )}
               </View>
 
               <SettingRow
@@ -570,18 +659,36 @@ export default function ProfilePage() {
 
             {/* Privacy - Connected to aiSettingsStore */}
             <GlassView style={styles.section}>
-              <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
-                <View style={[styles.sectionIconContainer, { backgroundColor: 'rgba(34, 197, 94, 0.15)' }]}>
-                  <Shield size={24} color={colors.success} />
-                </View>
-                <View style={styles.sectionHeaderText}>
-                  <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
-                    {t('profile.ai.privacy', 'Privacy & Data')}
-                  </Text>
-                  <Text style={[styles.sectionSubtitle, isRTL && styles.textRTL]}>
-                    {t('profile.ai.privacyDesc', 'Your data is encrypted and secure')}
-                  </Text>
-                </View>
+              <View style={styles.sectionHeader}>
+                {isRTL ? (
+                  <>
+                    <View style={styles.sectionHeaderText}>
+                      <Text style={[styles.sectionTitle, { textAlign: 'right' }]}>
+                        {t('profile.ai.privacy', 'Privacy & Data')}
+                      </Text>
+                      <Text style={[styles.sectionSubtitle, { textAlign: 'right' }]}>
+                        {t('profile.ai.privacyDesc', 'Your data is encrypted and secure')}
+                      </Text>
+                    </View>
+                    <View style={[styles.sectionIconContainer, { backgroundColor: 'rgba(34, 197, 94, 0.15)' }]}>
+                      <Shield size={24} color={colors.success} />
+                    </View>
+                  </>
+                ) : (
+                  <>
+                    <View style={[styles.sectionIconContainer, { backgroundColor: 'rgba(34, 197, 94, 0.15)' }]}>
+                      <Shield size={24} color={colors.success} />
+                    </View>
+                    <View style={styles.sectionHeaderText}>
+                      <Text style={[styles.sectionTitle, { textAlign: 'left' }]}>
+                        {t('profile.ai.privacy', 'Privacy & Data')}
+                      </Text>
+                      <Text style={[styles.sectionSubtitle, { textAlign: 'left' }]}>
+                        {t('profile.ai.privacyDesc', 'Your data is encrypted and secure')}
+                      </Text>
+                    </View>
+                  </>
+                )}
               </View>
 
               <SettingRow
@@ -602,22 +709,44 @@ export default function ProfilePage() {
           <View style={styles.sectionGrid}>
             {/* Account Security Info - Read only, no actions without backend */}
             <GlassView style={styles.section}>
-              <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
+              <Text style={[styles.sectionTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
                 {t('profile.accountSecurity', 'Account Security')}
               </Text>
               <View style={styles.securityInfo}>
-                <View style={[styles.securityInfoRow, isRTL && styles.securityInfoRowRTL]}>
-                  <Shield size={20} color={colors.success} />
-                  <Text style={[styles.securityInfoText, isRTL && styles.textRTL]}>
-                    {t('profile.securityNote', 'Your account is secured with encrypted authentication')}
-                  </Text>
+                <View style={styles.securityInfoRow}>
+                  {isRTL ? (
+                    <>
+                      <Text style={[styles.securityInfoText, { textAlign: 'right' }]}>
+                        {t('profile.securityNote', 'Your account is secured with encrypted authentication')}
+                      </Text>
+                      <Shield size={20} color={colors.success} />
+                    </>
+                  ) : (
+                    <>
+                      <Shield size={20} color={colors.success} />
+                      <Text style={[styles.securityInfoText, { textAlign: 'left' }]}>
+                        {t('profile.securityNote', 'Your account is secured with encrypted authentication')}
+                      </Text>
+                    </>
+                  )}
                 </View>
                 {user?.last_login && (
-                  <View style={[styles.securityInfoRow, isRTL && styles.securityInfoRowRTL]}>
-                    <Clock size={20} color={colors.textMuted} />
-                    <Text style={[styles.securityInfoText, isRTL && styles.textRTL]}>
-                      {t('profile.lastLogin', 'Last login')}: {new Date(user.last_login).toLocaleString()}
-                    </Text>
+                  <View style={styles.securityInfoRow}>
+                    {isRTL ? (
+                      <>
+                        <Text style={[styles.securityInfoText, { textAlign: 'right' }]}>
+                          {t('profile.lastLogin', 'Last login')}: {new Date(user.last_login).toLocaleString()}
+                        </Text>
+                        <Clock size={20} color={colors.textMuted} />
+                      </>
+                    ) : (
+                      <>
+                        <Clock size={20} color={colors.textMuted} />
+                        <Text style={[styles.securityInfoText, { textAlign: 'left' }]}>
+                          {t('profile.lastLogin', 'Last login')}: {new Date(user.last_login).toLocaleString()}
+                        </Text>
+                      </>
+                    )}
                   </View>
                 )}
               </View>
@@ -625,12 +754,21 @@ export default function ProfilePage() {
 
             {/* Danger Zone */}
             <GlassView style={[styles.section, styles.dangerSection]}>
-              <Text style={[styles.sectionTitle, { color: colors.error }, isRTL && styles.textRTL]}>
+              <Text style={[styles.sectionTitle, { color: colors.error, textAlign: isRTL ? 'right' : 'left' }]}>
                 {t('profile.dangerZone', 'Danger Zone')}
               </Text>
-              <Pressable onPress={handleLogout} style={[styles.logoutButton, isRTL && styles.logoutButtonRTL]}>
-                <LogOut size={20} color={colors.error} />
-                <Text style={styles.logoutText}>{t('account.logout', 'Sign Out')}</Text>
+              <Pressable onPress={handleLogout} style={styles.logoutButton}>
+                {isRTL ? (
+                  <>
+                    <Text style={[styles.logoutText, { textAlign: 'right' }]}>{t('account.logout', 'Sign Out')}</Text>
+                    <LogOut size={20} color={colors.error} />
+                  </>
+                ) : (
+                  <>
+                    <LogOut size={20} color={colors.error} />
+                    <Text style={[styles.logoutText, { textAlign: 'left' }]}>{t('account.logout', 'Sign Out')}</Text>
+                  </>
+                )}
               </Pressable>
             </GlassView>
           </View>
@@ -654,12 +792,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  containerRTL: {
+    // @ts-ignore - direction works on web via react-native-web
+    direction: 'rtl',
+  },
   contentContainer: {
     padding: spacing.lg,
     paddingBottom: spacing.xl * 2,
     maxWidth: 1200,
     marginHorizontal: 'auto',
     width: '100%',
+  },
+  contentContainerRTL: {
+    // @ts-ignore - direction works on web via react-native-web
+    direction: 'rtl',
   },
   // Hero Section
   heroSection: {
@@ -811,6 +957,9 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     flexWrap: 'wrap',
   },
+  statsRowRTL: {
+    flexDirection: 'row-reverse',
+  },
   statCard: {
     flex: 1,
     minWidth: 120,
@@ -842,6 +991,9 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     marginBottom: spacing.lg,
     flexWrap: 'wrap',
+  },
+  quickActionsRTL: {
+    flexDirection: 'row-reverse',
   },
   actionButton: {
     flex: 1,
@@ -969,6 +1121,9 @@ const styles = StyleSheet.create({
   toggleKnobActive: {
     alignSelf: 'flex-end',
   },
+  toggleKnobActiveRTL: {
+    alignSelf: 'flex-start',
+  },
   // Activity
   activityList: {
     gap: spacing.md,
@@ -1012,11 +1167,19 @@ const styles = StyleSheet.create({
   infoLabel: {
     fontSize: 14,
     color: colors.textMuted,
+    textAlign: 'left',
+  },
+  infoLabelRTL: {
+    textAlign: 'right',
   },
   infoValue: {
     fontSize: 14,
     color: colors.text,
     fontWeight: '500',
+    textAlign: 'right',
+  },
+  infoValueRTL: {
+    textAlign: 'left',
   },
   // Security
   securityInfo: {

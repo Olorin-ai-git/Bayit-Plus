@@ -86,24 +86,55 @@ class LiveSubtitleService {
   }
 
   /**
-   * Capture audio from video element and send to WebSocket.
+   * Capture audio DIRECTLY from video element (not microphone).
+   * Uses captureStream() to get the video's internal audio track.
    */
   private async startAudioCapture(videoElement: HTMLVideoElement): Promise<void> {
     try {
+      // Use 16kHz sample rate for ElevenLabs Scribe
       this.audioContext = new AudioContext({ sampleRate: 16000 })
       console.log('🎤 [LiveSubtitle] AudioContext created with sampleRate: 16000Hz')
 
-      const stream = (videoElement as any).captureStream?.() || (videoElement as any).mozCaptureStream?.()
-      if (!stream) {
-        throw new Error('Audio capture not supported by this browser')
+      // IMPORTANT: captureStream() gets audio DIRECTLY from video element
+      // This does NOT use the microphone - it captures the video's audio track
+      const captureMethod = (videoElement as any).captureStream || (videoElement as any).mozCaptureStream
+      if (!captureMethod) {
+        throw new Error('captureStream() not supported - cannot capture video audio directly')
       }
-      console.log('📹 [LiveSubtitle] Video stream captured')
+
+      const stream = captureMethod.call(videoElement)
+      if (!stream) {
+        throw new Error('captureStream() returned null - video may have CORS restrictions')
+      }
+
+      // Verify we have audio tracks from the video
+      const audioTracks = stream.getAudioTracks()
+      console.log(`📹 [LiveSubtitle] Video stream captured with ${audioTracks.length} audio track(s)`)
+
+      if (audioTracks.length === 0) {
+        console.error('❌ [LiveSubtitle] No audio tracks in video stream!')
+        console.error('   This usually means:')
+        console.error('   1. The video has no audio, OR')
+        console.error('   2. CORS is blocking audio capture (cross-origin video)')
+        console.error('   3. The video element is muted')
+        throw new Error('No audio tracks available from video element')
+      }
+
+      // Log audio track details for debugging
+      audioTracks.forEach((track, i) => {
+        console.log(`   Track ${i}: ${track.label || 'unnamed'}, enabled=${track.enabled}, muted=${track.muted}`)
+      })
 
       this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream)
-      this.processor = this.audioContext.createScriptProcessor(4096, 1, 1)
-      console.log('🔧 [LiveSubtitle] Audio processor created (buffer size: 4096)')
+
+      // Use smaller buffer (2048) for lower latency (~128ms vs ~256ms)
+      // 2048 samples at 16kHz = 128ms per chunk
+      this.processor = this.audioContext.createScriptProcessor(2048, 1, 1)
+      console.log('🔧 [LiveSubtitle] Audio processor created (buffer size: 2048, ~128ms latency)')
 
       let chunkCount = 0
+      let silentChunks = 0
+
       this.processor.onaudioprocess = (e) => {
         if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
           if (chunkCount % 100 === 0) {
@@ -113,8 +144,26 @@ class LiveSubtitleService {
         }
 
         const inputData = e.inputBuffer.getChannelData(0)
-        const int16Data = new Int16Array(inputData.length)
 
+        // Check if audio is silent (all zeros = likely CORS blocked or muted)
+        let maxAmplitude = 0
+        for (let i = 0; i < inputData.length; i++) {
+          maxAmplitude = Math.max(maxAmplitude, Math.abs(inputData[i]))
+        }
+
+        if (maxAmplitude < 0.001) {
+          silentChunks++
+          // Warn if we're getting only silence
+          if (silentChunks === 100) {
+            console.warn('⚠️ [LiveSubtitle] 100 consecutive silent chunks detected!')
+            console.warn('   Audio may be blocked by CORS or video is muted')
+          }
+        } else {
+          silentChunks = 0
+        }
+
+        // Convert float32 to int16 PCM
+        const int16Data = new Int16Array(inputData.length)
         for (let i = 0; i < inputData.length; i++) {
           const s = Math.max(-1, Math.min(1, inputData[i]))
           int16Data[i] = s < 0 ? s * 0x8000 : s * 0x7fff
@@ -123,15 +172,16 @@ class LiveSubtitleService {
         this.ws.send(int16Data.buffer)
         chunkCount++
 
-        // Log every 100 chunks to avoid console spam
+        // Log every 100 chunks with audio level info
         if (chunkCount % 100 === 0) {
-          console.log(`📦 [LiveSubtitle] Sent ${chunkCount} audio chunks (${int16Data.length} samples/chunk, ${int16Data.length * 2} bytes/chunk)`)
+          const dbLevel = maxAmplitude > 0 ? 20 * Math.log10(maxAmplitude) : -100
+          console.log(`📦 [LiveSubtitle] Sent ${chunkCount} chunks, level: ${dbLevel.toFixed(1)}dB`)
         }
       }
 
       this.mediaStreamSource.connect(this.processor)
       this.processor.connect(this.audioContext.destination)
-      console.log('✅ [LiveSubtitle] Audio capture started successfully')
+      console.log('✅ [LiveSubtitle] Audio capture started - capturing DIRECTLY from video (not microphone)')
     } catch (error) {
       console.error('❌ [LiveSubtitle] Audio capture error:', error)
       throw error

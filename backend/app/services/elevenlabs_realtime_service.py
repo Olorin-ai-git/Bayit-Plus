@@ -7,8 +7,10 @@ Includes automatic reconnection with exponential backoff for production reliabil
 """
 
 import asyncio
+import base64
 import json
 import logging
+import time
 from typing import AsyncIterator, Optional
 from app.core.config import settings
 
@@ -87,34 +89,61 @@ class ElevenLabsRealtimeService:
         self._reconnect_attempts = 0
         self._audio_buffer: list[bytes] = []
 
+        # Time-based forced commit tracking for fast speech
+        self._last_commit_time: float = 0.0
+        self._forced_commit_interval_sec: float = 2.0  # Force commit every 2 seconds
+        self._chunk_count_since_commit: int = 0
+        self._max_chunks_before_commit: int = 30  # ~2 seconds at 16kHz with 2048 buffer
+
         logger.info("ElevenLabsRealtimeService initialized")
 
-    async def connect(self, source_lang: str = "he") -> None:
+    async def connect(self, source_lang: str = "auto") -> None:
         """
         Establish WebSocket connection to ElevenLabs realtime STT.
 
         Args:
             source_lang: Source language code (he, en, ar, es, etc.)
+                        Use "auto" for automatic language detection.
         """
         if self._connected:
             logger.warning("Already connected to ElevenLabs realtime STT")
             return
 
         self._source_lang = source_lang
-        lang_code = ELEVENLABS_LANGUAGE_CODES.get(source_lang, source_lang)
 
         # Build WebSocket URL with authentication and configuration
+        # model_id: scribe_v2_realtime = the realtime streaming model
+        # audio_format: pcm_16000 = 16kHz PCM audio (what browsers typically capture)
+        # commit_strategy: vad = use voice activity detection for automatic commits
+        # include_language_detection: true = auto-detect spoken language
+        # vad_silence_threshold_secs: 0.3s minimum allowed by API (was 0.5s)
+        # vad_threshold: 0.25 for quick voice detection (was 0.3)
         ws_url = (
             f"{ELEVENLABS_REALTIME_STT_URL}"
-            f"?model_id=scribe_v2"
-            f"&language_code={lang_code}"
+            f"?model_id=scribe_v2_realtime"
+            f"&audio_format=pcm_16000"
+            f"&sample_rate=16000"
+            f"&commit_strategy=vad"
+            f"&include_language_detection=true"
+            f"&vad_silence_threshold_secs=0.3"
+            f"&vad_threshold=0.25"
         )
+
+        # Only add language_code hint if specified (not required - API will auto-detect)
+        lang_code = "auto"
+        if source_lang and source_lang != "auto":
+            lang_code = ELEVENLABS_LANGUAGE_CODES.get(source_lang, source_lang)
+            ws_url += f"&language_code={lang_code}"
+            logger.info(f"🌍 Language hint provided: {lang_code}")
+        else:
+            logger.info("🌍 Language auto-detection enabled (no hint provided)")
 
         try:
             # Connect with API key in headers
+            # Note: websockets v11+ uses 'additional_headers' instead of 'extra_headers'
             self.websocket = await websockets.connect(
                 ws_url,
-                extra_headers={
+                additional_headers={
                     "xi-api-key": self.api_key,
                 },
                 ping_interval=20,
@@ -125,6 +154,10 @@ class ElevenLabsRealtimeService:
             self._connected = True
             self._running = True
             self._reconnect_attempts = 0
+
+            # Reset commit tracking for new connection
+            self._last_commit_time = 0.0
+            self._chunk_count_since_commit = 0
 
             # Start receive task to handle incoming transcripts
             self._receive_task = asyncio.create_task(self._receive_loop())
@@ -163,6 +196,15 @@ class ElevenLabsRealtimeService:
         await asyncio.sleep(delay)
 
         try:
+            # Cancel existing receive task to avoid concurrent recv
+            if self._receive_task and not self._receive_task.done():
+                self._receive_task.cancel()
+                try:
+                    await self._receive_task
+                except asyncio.CancelledError:
+                    pass
+                self._receive_task = None
+
             # Close existing connection if any
             if self.websocket:
                 try:
@@ -198,47 +240,97 @@ class ElevenLabsRealtimeService:
         if not self.websocket:
             return
 
+        logger.info("👂 ElevenLabs receive loop started")
         try:
+            message_count = 0
             async for message in self.websocket:
                 if not self._running:
                     break
 
+                message_count += 1
                 try:
                     data = json.loads(message)
 
-                    # Handle different message types from ElevenLabs
-                    msg_type = data.get("type", "")
+                    # Handle different message types from ElevenLabs Scribe v2 API
+                    # Note: ElevenLabs uses "message_type" not "type" in responses
+                    msg_type = data.get("message_type", "")
 
-                    if msg_type == "transcript":
-                        # Final transcript
+                    # Log full message for debugging (truncate if too long)
+                    msg_preview = str(data)[:300]
+                    logger.info(f"📥 ElevenLabs message #{message_count} [{msg_type}]: {msg_preview}")
+
+                    if msg_type == "committed_transcript":
+                        # Final committed transcript (no language info)
+                        # Skip this - wait for committed_transcript_with_timestamps which has language
                         transcript_text = data.get("text", "").strip()
                         if transcript_text:
-                            await self._transcript_queue.put(transcript_text)
-                            logger.debug(f"ElevenLabs final transcript: {transcript_text}")
+                            logger.debug(f"ElevenLabs committed (waiting for timestamps): {transcript_text}")
 
-                    elif msg_type == "partial":
+                    elif msg_type == "committed_transcript_with_timestamps":
+                        # Final transcript with word-level timestamps and detected language
+                        # This is the primary message we use for the pipeline
+                        transcript_text = data.get("text", "").strip()
+                        detected_lang = data.get("language_code", "auto")
+
+                        # Filter out very short transcripts (likely noise/fragments)
+                        # Minimum 2 characters to avoid single-letter false positives
+                        if transcript_text and len(transcript_text) >= 2:
+                            # Put tuple of (transcript, detected_language) in queue
+                            await self._transcript_queue.put((transcript_text, detected_lang))
+                            logger.info(
+                                f"✅ ElevenLabs transcript [{detected_lang}]: {transcript_text}"
+                            )
+                        elif transcript_text:
+                            logger.debug(
+                                f"⏭️ Skipping short transcript [{detected_lang}]: '{transcript_text}'"
+                            )
+
+                    elif msg_type == "partial_transcript":
                         # Partial transcript (interim results)
-                        # Skip partial results for now, only emit finals
-                        pass
+                        # Log but don't emit - wait for committed transcript
+                        partial_text = data.get("text", "").strip()
+                        if partial_text:
+                            logger.debug(f"ElevenLabs partial: {partial_text}")
 
-                    elif msg_type == "error":
-                        error_msg = data.get("message", "Unknown error")
-                        error_code = data.get("code", "unknown")
-                        logger.error(
-                            f"ElevenLabs realtime error [{error_code}]: {error_msg}"
-                        )
+                    elif msg_type in ("error", "auth_error", "quota_exceeded", "rate_limited",
+                                       "resource_exhausted", "commit_throttled",
+                                       "unaccepted_terms", "queue_overflow",
+                                       "session_time_limit_exceeded", "input_error",
+                                       "chunk_size_exceeded", "insufficient_audio_activity",
+                                       "transcriber_error"):
+                        # Error message types - ElevenLabs uses "error" field, not "message"
+                        error_msg = data.get("error", msg_type)
+                        logger.error(f"ElevenLabs error [{msg_type}]: {error_msg}")
                         await self._error_queue.put({
                             "type": "error",
-                            "code": error_code,
+                            "code": msg_type,
                             "message": error_msg
                         })
 
                     elif msg_type == "session_started":
                         session_id = data.get("session_id", "unknown")
-                        logger.info(f"ElevenLabs session started: {session_id}")
+                        config = data.get("config", {})
+                        lang_mode = config.get("language_code", "auto")
+                        vad_silence = config.get("vad_silence_threshold_secs", "unknown")
+                        vad_thresh = config.get("vad_threshold", "unknown")
+                        logger.info(
+                            f"✅ ElevenLabs session started: {session_id}\n"
+                            f"   📋 Config: model={config.get('model_id')}, "
+                            f"sample_rate={config.get('sample_rate')}\n"
+                            f"   🌍 Language: {'AUTO-DETECT (multilingual)' if lang_mode == 'auto' else lang_mode}\n"
+                            f"   🎤 VAD: silence_threshold={vad_silence}s, threshold={vad_thresh}\n"
+                            f"   ⚡ Forced commits: every {self._forced_commit_interval_sec}s or {self._max_chunks_before_commit} chunks"
+                        )
+                        # Reset commit tracking on session start
+                        self._last_commit_time = time.time()
+                        self._chunk_count_since_commit = 0
 
                     elif msg_type == "session_ended":
                         logger.info("ElevenLabs session ended by server")
+
+                    else:
+                        # Log unknown message types for debugging
+                        logger.debug(f"ElevenLabs unknown message type: {msg_type}")
 
                 except json.JSONDecodeError:
                     logger.warning(f"Invalid JSON from ElevenLabs: {message[:100]}")
@@ -285,8 +377,49 @@ class ElevenLabsRealtimeService:
             return
 
         try:
-            # ElevenLabs expects raw PCM audio as binary
-            await self.websocket.send(audio_data)
+            current_time = time.time()
+            self._chunk_count_since_commit += 1
+
+            # Determine if we should force a commit
+            # This prevents huge text blocks with fast speech that has no natural pauses
+            should_force_commit = False
+            force_reason = ""
+
+            # Force commit based on time elapsed since last commit
+            if self._last_commit_time > 0:
+                time_since_commit = current_time - self._last_commit_time
+                if time_since_commit >= self._forced_commit_interval_sec:
+                    should_force_commit = True
+                    force_reason = f"time ({time_since_commit:.1f}s)"
+            else:
+                # Initialize on first chunk
+                self._last_commit_time = current_time
+
+            # Force commit based on chunk count (backup for fast audio)
+            if self._chunk_count_since_commit >= self._max_chunks_before_commit:
+                should_force_commit = True
+                force_reason = f"chunks ({self._chunk_count_since_commit})"
+
+            # ElevenLabs InputAudioChunk message format
+            audio_b64 = base64.b64encode(audio_data).decode("utf-8")
+            message = {
+                "message_type": "input_audio_chunk",
+                "audio_base_64": audio_b64,
+                "commit": should_force_commit,  # Force commit when thresholds exceeded
+                "sample_rate": 16000
+            }
+            msg_json = json.dumps(message)
+            await self.websocket.send(msg_json)
+
+            # Reset counters if we forced a commit
+            if should_force_commit:
+                logger.info(f"⚡ Forced commit due to {force_reason}")
+                self._last_commit_time = current_time
+                self._chunk_count_since_commit = 0
+
+            # Log first chunk for debugging
+            if len(self._audio_buffer) == 1:
+                logger.info(f"📤 First audio chunk sent: {len(audio_data)} bytes, base64: {len(audio_b64)} chars")
 
         except ConnectionClosed:
             logger.warning("Connection closed while sending audio")
@@ -297,12 +430,12 @@ class ElevenLabsRealtimeService:
             logger.error(f"Error sending audio to ElevenLabs: {str(e)}")
             raise
 
-    async def receive_transcripts(self) -> AsyncIterator[str]:
+    async def receive_transcripts(self) -> AsyncIterator[tuple[str, str]]:
         """
         Async iterator to receive transcripts from ElevenLabs.
 
         Yields:
-            Transcribed text segments as they arrive
+            Tuple of (transcript_text, detected_language_code) as they arrive
         """
         while self._running or not self._transcript_queue.empty():
             try:
@@ -359,17 +492,17 @@ class ElevenLabsRealtimeService:
     async def transcribe_audio_stream(
         self,
         audio_stream: AsyncIterator[bytes],
-        source_lang: str = "he"
-    ) -> AsyncIterator[str]:
+        source_lang: str = "auto"
+    ) -> AsyncIterator[tuple[str, str]]:
         """
         Transcribe streaming audio in real-time using ElevenLabs WebSocket.
 
         Args:
             audio_stream: Async iterator yielding audio chunks (PCM, 16kHz, mono)
-            source_lang: Source language code
+            source_lang: Source language hint (or "auto" for auto-detection)
 
         Yields:
-            Transcribed text segments with ultra-low latency (~150ms)
+            Tuple of (transcript_text, detected_language_code) with ultra-low latency (~150ms)
         """
         sender_task = None
         try:
@@ -388,9 +521,9 @@ class ElevenLabsRealtimeService:
                         chunk_count += 1
                         total_bytes += len(audio_chunk)
 
-                        if chunk_count % 100 == 0:
-                            logger.debug(
-                                f"ElevenLabs: sent {chunk_count} chunks ({total_bytes} bytes)"
+                        if chunk_count % 50 == 0:
+                            logger.info(
+                                f"📤 ElevenLabs: sent {chunk_count} chunks ({total_bytes} bytes)"
                             )
 
                 except Exception as e:

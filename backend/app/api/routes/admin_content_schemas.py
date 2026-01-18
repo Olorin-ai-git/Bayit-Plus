@@ -94,6 +94,7 @@ class LiveChannelCreateRequest(BaseModel):
     description: Optional[str] = None
     thumbnail: Optional[str] = None
     logo: Optional[str] = None
+    category: Optional[str] = None  # news, entertainment, sports, kids, music
     stream_url: str
     stream_type: str = "hls"
     is_drm_protected: bool = False
@@ -113,6 +114,7 @@ class LiveChannelUpdateRequest(BaseModel):
     description: Optional[str] = None
     thumbnail: Optional[str] = None
     logo: Optional[str] = None
+    category: Optional[str] = None  # news, entertainment, sports, kids, music
     stream_url: Optional[str] = None
     stream_type: Optional[str] = None
     is_drm_protected: Optional[bool] = None

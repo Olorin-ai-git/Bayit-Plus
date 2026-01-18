@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, ActivityIndicator, Linking } from 'react-native';
-import { Building2, Utensils, Users, MapPin, Phone, Globe, ChevronDown, Search } from 'lucide-react';
+import { Building2, Utensils, Users, MapPin, Phone, Globe, ChevronDown, Search, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
 import { GlassCard } from '@bayit/shared/ui';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 import logger from '@/utils/logger';
 
 interface Organization {
@@ -43,7 +42,7 @@ type DirectoryTab = 'synagogues' | 'kosher' | 'jcc' | 'mikvaot';
 
 export function CommunityDirectory() {
   const { t, i18n } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { isRTL } = useDirection();
   const [activeTab, setActiveTab] = useState<DirectoryTab>('synagogues');
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [regions, setRegions] = useState<Region[]>([]);
@@ -89,16 +88,16 @@ export function CommunityDirectory() {
 
       switch (activeTab) {
         case 'synagogues':
-          response = await judaismService.getSynagogues(selectedRegion);
+          response = await judaismService.getSynagogues(selectedRegion || undefined);
           break;
         case 'kosher':
-          response = await judaismService.getKosherRestaurants(selectedRegion);
+          response = await judaismService.getKosherRestaurants(selectedRegion || undefined);
           break;
         case 'jcc':
-          response = await judaismService.getJCCs(selectedRegion);
+          response = await judaismService.getJCCs(selectedRegion || undefined);
           break;
         case 'mikvaot':
-          response = await judaismService.getMikvaot(selectedRegion);
+          response = await judaismService.getMikvaot(selectedRegion || undefined);
           break;
       }
 
@@ -121,208 +120,223 @@ export function CommunityDirectory() {
     switch (type) {
       case 'synagogue':
       case 'chabad':
-        return <Building2 size={20} color="#8B5CF6" />;
+        return <Building2 size={20} color={colors.primary} />;
       case 'restaurant':
       case 'bakery':
       case 'grocery':
-        return <Utensils size={20} color="#F59E0B" />;
+        return <Utensils size={20} color={colors.warning} />;
       case 'jcc':
       case 'community_center':
-        return <Users size={20} color="#3B82F6" />;
+        return <Users size={20} color={colors.primaryLight} />;
       case 'mikvah':
-        return <MapPin size={20} color="#10B981" />;
+        return <MapPin size={20} color={colors.success} />;
       default:
         return <Building2 size={20} color={colors.primary} />;
     }
   };
 
   const getDenominationColor = (denom?: string) => {
-    const colors: Record<string, string> = {
-      orthodox: '#8B5CF6',
-      modern_orthodox: '#7C3AED',
-      conservative: '#3B82F6',
-      reform: '#10B981',
-      chabad: '#F59E0B',
+    const denomColors: Record<string, string> = {
+      orthodox: colors.primary,
+      modern_orthodox: colors.primaryDark,
+      conservative: colors.primaryLight,
+      reform: colors.success,
+      chabad: colors.warning,
     };
-    return colors[denom || ''] || '#6B7280';
+    return denomColors[denom || ''] || colors.textMuted;
   };
 
   return (
     <GlassCard className="p-4">
+      <div dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Header */}
-      <View className="flex-row items-center justify-between mb-4" style={{ flexDirection }}>
-        <View className="flex-row items-center gap-2" style={{ flexDirection }}>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
           <Search size={24} color={colors.primary} />
-          <Text className="text-xl font-bold text-white" style={{ textAlign }}>
+          <h3
+            className="text-xl font-bold"
+            style={{ textAlign: isRTL ? 'right' : 'left', color: colors.text }}
+          >
             {t('judaism.community.title', 'Community Directory')}
-          </Text>
-        </View>
+          </h3>
+        </div>
 
         {/* Region Picker */}
-        <Pressable
-          onPress={() => setShowRegionPicker(!showRegionPicker)}
-          className="flex-row items-center gap-1 bg-white/10 px-3 py-1.5 rounded-full"
-          style={{ flexDirection }}
+        <button
+          onClick={() => setShowRegionPicker(!showRegionPicker)}
+          className={`flex items-center gap-1 px-3 py-1.5 rounded-full cursor-pointer hover:opacity-80 transition-opacity `}
+          style={{ backgroundColor: colors.glassLight }}
         >
           <MapPin size={14} color={colors.textMuted} />
-          <Text className="text-white text-sm">
+          <span className="text-sm" style={{ color: colors.text }}>
             {selectedRegion
               ? getRegionName(regions.find((r) => r.id === selectedRegion) || regions[0])
               : t('common.selectRegion', 'Select Region')}
-          </Text>
+          </span>
           <ChevronDown size={14} color={colors.textMuted} />
-        </Pressable>
-      </View>
+        </button>
+      </div>
 
       {/* Region Dropdown */}
       {showRegionPicker && (
-        <View className="bg-black/50 rounded-lg p-2 mb-4 max-h-40 overflow-auto">
+        <div
+          className="rounded-lg p-2 mb-4 max-h-40 overflow-auto"
+          style={{ backgroundColor: colors.glassStrong }}
+        >
           {regions.map((region) => (
-            <Pressable
+            <button
               key={region.id}
-              onPress={() => {
+              onClick={() => {
                 setSelectedRegion(region.id);
                 setShowRegionPicker(false);
               }}
-              className={`flex-row justify-between items-center p-2 rounded ${selectedRegion === region.id ? 'bg-blue-500/30' : ''}`}
+              className="w-full flex justify-between items-center p-2 rounded cursor-pointer hover:opacity-80 transition-opacity"
+              style={{ backgroundColor: selectedRegion === region.id ? `${colors.primary}4D` : 'transparent' }}
             >
-              <Text className="text-white">{getRegionName(region)}</Text>
-              <Text className="text-gray-400 text-sm">({region.organization_count})</Text>
-            </Pressable>
+              <span style={{ color: colors.text }}>{getRegionName(region)}</span>
+              <span className="text-sm" style={{ color: colors.textMuted }}>({region.organization_count})</span>
+            </button>
           ))}
-        </View>
+        </div>
       )}
 
       {/* Tabs */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        className="mb-4"
-        contentContainerStyle={{ gap: spacing.sm }}
-      >
+      <div className="flex gap-2 overflow-x-auto mb-4 pb-2">
         {tabs.map((tab) => (
-          <Pressable
+          <button
             key={tab.id}
-            onPress={() => setActiveTab(tab.id)}
-            className={`flex-row items-center gap-2 px-4 py-2 rounded-full ${
-              activeTab === tab.id ? 'bg-blue-500' : 'bg-white/10'
-            }`}
+            onClick={() => setActiveTab(tab.id)}
+            className="flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap cursor-pointer hover:opacity-80 transition-opacity"
+            style={{ backgroundColor: activeTab === tab.id ? colors.primary : colors.glassLight }}
           >
             {tab.icon}
-            <Text className="text-white text-sm">{tab.label}</Text>
-          </Pressable>
+            <span className="text-sm" style={{ color: colors.text }}>{tab.label}</span>
+          </button>
         ))}
-      </ScrollView>
+      </div>
 
       {/* Organizations List */}
       {isLoading ? (
-        <View className="py-8 items-center">
-          <ActivityIndicator size="large" color={colors.primary} />
-        </View>
+        <div className="py-8 flex justify-center">
+          <Loader2 size={32} color={colors.primary} className="animate-spin" />
+        </div>
       ) : organizations.length > 0 ? (
-        <ScrollView className="max-h-96">
+        <div className="max-h-96 overflow-y-auto">
           {organizations.map((org, index) => (
-            <View
+            <div
               key={org.id}
-              className={`py-4 ${index > 0 ? 'border-t border-white/10' : ''}`}
+              className="py-4"
+              style={{ borderTopWidth: index > 0 ? 1 : 0, borderTopColor: colors.glassBorderWhite }}
             >
-              <View className="flex-row items-start gap-3" style={{ flexDirection }}>
-                <View className="w-10 h-10 bg-white/10 rounded-lg items-center justify-center">
+              <div className={`flex items-start gap-3 `}>
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{ backgroundColor: colors.glassLight }}
+                >
                   {getTypeIcon(org.organization_type)}
-                </View>
-                <View className="flex-1">
-                  <View className="flex-row items-center gap-2" style={{ flexDirection }}>
-                    <Text className="text-white font-semibold" style={{ textAlign }}>
+                </div>
+                <div className="flex-1">
+                  <div className={`flex items-center gap-2 `}>
+                    <span
+                      className="font-semibold"
+                      style={{ textAlign: isRTL ? 'right' : 'left', color: colors.text }}
+                    >
                       {i18n.language === 'he' && org.name_he ? org.name_he : org.name}
-                    </Text>
+                    </span>
                     {org.is_verified && (
-                      <View className="bg-green-500/30 px-1.5 py-0.5 rounded">
-                        <Text className="text-green-400 text-xs">✓</Text>
-                      </View>
+                      <span
+                        className="px-1.5 py-0.5 rounded"
+                        style={{ backgroundColor: `${colors.success}4D` }}
+                      >
+                        <span className="text-xs" style={{ color: colors.success }}>✓</span>
+                      </span>
                     )}
-                  </View>
+                  </div>
 
                   {/* Denomination/Certification Badge */}
                   {(org.denomination || org.kosher_certification) && (
-                    <View className="flex-row mt-1" style={{ flexDirection }}>
-                      <View
+                    <div className={`flex mt-1 `}>
+                      <span
                         className="px-2 py-0.5 rounded"
                         style={{
-                          backgroundColor: `${getDenominationColor(org.denomination)}30`,
+                          backgroundColor: `${getDenominationColor(org.denomination)}4D`,
                         }}
                       >
-                        <Text
+                        <span
                           className="text-xs"
                           style={{ color: getDenominationColor(org.denomination) }}
                         >
                           {org.denomination?.replace('_', ' ') || org.kosher_certification}
-                        </Text>
-                      </View>
+                        </span>
+                      </span>
                       {org.cuisine_type && (
-                        <View className="bg-yellow-500/20 px-2 py-0.5 rounded ml-2">
-                          <Text className="text-yellow-400 text-xs">{org.cuisine_type}</Text>
-                        </View>
+                        <span className="px-2 py-0.5 rounded ml-2" style={{ backgroundColor: `${colors.warning}33` }}>
+                          <span className="text-xs" style={{ color: colors.warning }}>{org.cuisine_type}</span>
+                        </span>
                       )}
-                    </View>
+                    </div>
                   )}
 
                   {/* Address */}
-                  <View className="flex-row items-center gap-1 mt-2" style={{ flexDirection }}>
+                  <div className={`flex items-center gap-1 mt-2 `}>
                     <MapPin size={12} color={colors.textMuted} />
-                    <Text className="text-gray-400 text-sm">
+                    <span className="text-sm" style={{ color: colors.textMuted }}>
                       {org.address}, {org.city}, {org.state} {org.zip_code}
-                    </Text>
-                  </View>
+                    </span>
+                  </div>
 
                   {/* Contact Info */}
-                  <View className="flex-row gap-4 mt-2" style={{ flexDirection }}>
+                  <div className={`flex gap-4 mt-2 `}>
                     {org.phone && (
-                      <Pressable
-                        onPress={() => Linking.openURL(`tel:${org.phone}`)}
-                        className="flex-row items-center gap-1"
+                      <a
+                        href={`tel:${org.phone}`}
+                        className="flex items-center gap-1 hover:opacity-80 transition-opacity"
                       >
-                        <Phone size={12} color="#3B82F6" />
-                        <Text className="text-blue-400 text-sm">{org.phone}</Text>
-                      </Pressable>
+                        <Phone size={12} color={colors.primaryLight} />
+                        <span className="text-sm" style={{ color: colors.primaryLight }}>{org.phone}</span>
+                      </a>
                     )}
                     {org.website && (
-                      <Pressable
-                        onPress={() => Linking.openURL(org.website!)}
-                        className="flex-row items-center gap-1"
+                      <a
+                        href={org.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 hover:opacity-80 transition-opacity"
                       >
-                        <Globe size={12} color="#3B82F6" />
-                        <Text className="text-blue-400 text-sm">
+                        <Globe size={12} color={colors.primaryLight} />
+                        <span className="text-sm" style={{ color: colors.primaryLight }}>
                           {t('common.website', 'Website')}
-                        </Text>
-                      </Pressable>
+                        </span>
+                      </a>
                     )}
-                  </View>
+                  </div>
 
                   {/* Services */}
                   {org.services && org.services.length > 0 && (
-                    <View className="flex-row flex-wrap gap-1 mt-2" style={{ flexDirection }}>
+                    <div className={`flex flex-wrap gap-1 mt-2 `}>
                       {org.services.slice(0, 3).map((service, idx) => (
-                        <View key={idx} className="bg-white/5 px-2 py-0.5 rounded">
-                          <Text className="text-gray-400 text-xs">{service}</Text>
-                        </View>
+                        <span key={idx} className="px-2 py-0.5 rounded" style={{ backgroundColor: colors.glassLight }}>
+                          <span className="text-xs" style={{ color: colors.textMuted }}>{service}</span>
+                        </span>
                       ))}
-                    </View>
+                    </div>
                   )}
-                </View>
-              </View>
-            </View>
+                </div>
+              </div>
+            </div>
           ))}
-        </ScrollView>
+        </div>
       ) : (
-        <View className="py-8 items-center">
-          <Text className="text-gray-400">
+        <div className="py-8 flex flex-col items-center">
+          <span style={{ color: colors.textMuted }}>
             {t('judaism.community.empty', 'No organizations found')}
-          </Text>
-          <Text className="text-gray-500 text-sm mt-1">
+          </span>
+          <span className="text-sm mt-1" style={{ color: colors.textDimmed }}>
             {t('judaism.community.emptyHint', 'Try selecting a different region')}
-          </Text>
-        </View>
+          </span>
+        </div>
       )}
+      </div>
     </GlassCard>
   );
 }

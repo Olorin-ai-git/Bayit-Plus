@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator, Pressable } from 'react-native';
-import { Flame, Moon, MapPin, ChevronDown } from 'lucide-react';
+import { Flame, Moon, MapPin, ChevronDown, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
 import { GlassCard } from '@bayit/shared/ui';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 import logger from '@/utils/logger';
 
 interface ShabbatTimes {
@@ -32,7 +31,7 @@ interface ShabbatTimesCardProps {
 
 export function ShabbatTimesCard({ defaultCity = 'New York', defaultState = 'NY' }: ShabbatTimesCardProps) {
   const { t, i18n } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { isRTL } = useDirection();
   const [shabbatTimes, setShabbatTimes] = useState<ShabbatTimes | null>(null);
   const [cities, setCities] = useState<City[]>([]);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
@@ -89,10 +88,13 @@ export function ShabbatTimesCard({ defaultCity = 'New York', defaultState = 'NY'
     if (!timeStr) return '--:--';
     try {
       const date = new Date(timeStr);
-      return date.toLocaleTimeString(i18n.language === 'he' ? 'he-IL' : 'en-US', {
+      // Use the selected city's timezone to display the correct local time
+      const options: Intl.DateTimeFormatOptions = {
         hour: '2-digit',
         minute: '2-digit',
-      });
+        timeZone: selectedCity?.timezone || 'America/New_York',
+      };
+      return date.toLocaleTimeString(i18n.language === 'he' ? 'he-IL' : 'en-US', options);
     } catch {
       return timeStr;
     }
@@ -105,105 +107,122 @@ export function ShabbatTimesCard({ defaultCity = 'New York', defaultState = 'NY'
 
   return (
     <GlassCard className="p-4">
+      <div dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Header */}
-      <View className="flex-row items-center justify-between mb-4" style={{ flexDirection }}>
-        <View className="flex-row items-center gap-2" style={{ flexDirection }}>
-          <Flame size={24} color="#F59E0B" />
-          <Text className="text-xl font-bold text-white" style={{ textAlign }}>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Flame size={24} color={colors.warning} />
+          <h3
+            className="text-xl font-bold"
+            style={{ textAlign: isRTL ? 'right' : 'left', color: colors.text }}
+          >
             {t('judaism.shabbat.title', 'Shabbat Times')}
-          </Text>
-        </View>
+          </h3>
+        </div>
 
         {/* City Picker */}
-        <Pressable
-          onPress={() => setShowCityPicker(!showCityPicker)}
-          className="flex-row items-center gap-1 bg-white/10 px-3 py-1.5 rounded-full"
-          style={{ flexDirection }}
+        <button
+          onClick={() => setShowCityPicker(!showCityPicker)}
+          className={`flex items-center gap-1 px-3 py-1.5 rounded-full cursor-pointer hover:opacity-80 transition-opacity `}
+          style={{ backgroundColor: colors.glassLight }}
         >
           <MapPin size={14} color={colors.textMuted} />
-          <Text className="text-white text-sm">
+          <span className="text-sm" style={{ color: colors.text }}>
             {selectedCity ? `${selectedCity.name}, ${selectedCity.state}` : 'Select City'}
-          </Text>
+          </span>
           <ChevronDown size={14} color={colors.textMuted} />
-        </Pressable>
-      </View>
+        </button>
+      </div>
 
       {/* City Dropdown */}
       {showCityPicker && (
-        <View className="bg-black/50 rounded-lg p-2 mb-4 max-h-40 overflow-auto">
+        <div
+          className="rounded-lg p-2 mb-4 max-h-40 overflow-auto"
+          style={{ backgroundColor: colors.glassStrong }}
+        >
           {cities.map((city) => (
-            <Pressable
+            <button
               key={city.geoname_id}
-              onPress={() => {
+              onClick={() => {
                 setSelectedCity(city);
                 setShowCityPicker(false);
               }}
-              className={`p-2 rounded ${selectedCity?.geoname_id === city.geoname_id ? 'bg-blue-500/30' : ''}`}
+              className="w-full p-2 rounded text-left cursor-pointer hover:opacity-80 transition-opacity"
+              style={{
+                backgroundColor: selectedCity?.geoname_id === city.geoname_id ? `${colors.primary}4D` : 'transparent',
+              }}
             >
-              <Text className="text-white">
+              <span style={{ color: colors.text }}>
                 {city.name}, {city.state}
-              </Text>
-            </Pressable>
+              </span>
+            </button>
           ))}
-        </View>
+        </div>
       )}
 
       {isLoading ? (
-        <View className="py-8 items-center">
-          <ActivityIndicator size="large" color="#F59E0B" />
-        </View>
+        <div className="py-8 flex justify-center">
+          <Loader2 size={32} color={colors.warning} className="animate-spin" />
+        </div>
       ) : shabbatTimes ? (
         <>
           {/* Parasha */}
           {getParasha() && (
-            <View className="bg-purple-500/20 rounded-lg p-3 mb-4">
-              <Text className="text-purple-300 text-sm text-center">
+            <div className="rounded-lg p-3 mb-4" style={{ backgroundColor: `${colors.primary}33` }}>
+              <p className="text-sm text-center" style={{ color: colors.primaryLight }}>
                 {t('judaism.shabbat.parashat', 'Parashat')}
-              </Text>
-              <Text className="text-white text-xl font-bold text-center mt-1">
+              </p>
+              <p className="text-xl font-bold text-center mt-1" style={{ color: colors.text }}>
                 {getParasha()}
-              </Text>
-            </View>
+              </p>
+            </div>
           )}
 
           {/* Times */}
-          <View className="flex-row gap-4">
+          <div className="flex gap-4">
             {/* Candle Lighting */}
-            <View className="flex-1 bg-orange-500/20 rounded-xl p-4 items-center">
-              <Flame size={32} color="#F59E0B" />
-              <Text className="text-orange-300 text-sm mt-2">
+            <div
+              className="flex-1 rounded-xl p-4 flex flex-col items-center"
+              style={{ backgroundColor: `${colors.warning}33` }}
+            >
+              <Flame size={32} color={colors.warning} />
+              <span className="text-sm mt-2" style={{ color: colors.warning }}>
                 {t('judaism.shabbat.candleLighting', 'Candle Lighting')}
-              </Text>
-              <Text className="text-white text-2xl font-bold mt-1">
+              </span>
+              <span className="text-2xl font-bold mt-1" style={{ color: colors.text }}>
                 {formatTime(shabbatTimes.candle_lighting)}
-              </Text>
-              <Text className="text-gray-400 text-xs mt-1">
+              </span>
+              <span className="text-xs mt-1" style={{ color: colors.textMuted }}>
                 {t('judaism.shabbat.friday', 'Friday')}
-              </Text>
-            </View>
+              </span>
+            </div>
 
             {/* Havdalah */}
-            <View className="flex-1 bg-indigo-500/20 rounded-xl p-4 items-center">
-              <Moon size={32} color="#818CF8" />
-              <Text className="text-indigo-300 text-sm mt-2">
+            <div
+              className="flex-1 rounded-xl p-4 flex flex-col items-center"
+              style={{ backgroundColor: `${colors.primary}33` }}
+            >
+              <Moon size={32} color={colors.primaryLight} />
+              <span className="text-sm mt-2" style={{ color: colors.primaryLight }}>
                 {t('judaism.shabbat.havdalah', 'Havdalah')}
-              </Text>
-              <Text className="text-white text-2xl font-bold mt-1">
+              </span>
+              <span className="text-2xl font-bold mt-1" style={{ color: colors.text }}>
                 {formatTime(shabbatTimes.havdalah)}
-              </Text>
-              <Text className="text-gray-400 text-xs mt-1">
+              </span>
+              <span className="text-xs mt-1" style={{ color: colors.textMuted }}>
                 {t('judaism.shabbat.saturday', 'Saturday')}
-              </Text>
-            </View>
-          </View>
+              </span>
+            </div>
+          </div>
         </>
       ) : (
-        <View className="py-4 items-center">
-          <Text className="text-gray-400">
+        <div className="py-4 flex justify-center">
+          <span style={{ color: colors.textMuted }}>
             {t('judaism.shabbat.noData', 'Unable to load Shabbat times')}
-          </Text>
-        </View>
+          </span>
+        </div>
       )}
+      </div>
     </GlassCard>
   );
 }

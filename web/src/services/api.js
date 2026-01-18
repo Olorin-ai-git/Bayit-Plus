@@ -393,6 +393,11 @@ const apiJudaismService = {
     api.get('/judaism/shiurim', { params: { category, rabbi, source, page, limit } }),
   getLiveTorah: () => api.get('/judaism/shiurim/live'),
   getDailyShiur: () => api.get('/judaism/shiurim/daily'),
+
+  // Shabbat endpoints
+  getShabbatFeatured: () => api.get('/judaism/shabbat/featured'),
+  getShabbatStatus: (city = 'New York', state = 'NY') =>
+    api.get('/judaism/shabbat/status', { params: { city, state } }),
 }
 
 // Flows Service (API)

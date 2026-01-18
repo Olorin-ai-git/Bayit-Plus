@@ -2,8 +2,10 @@
  * useWakeWordListening Hook
  *
  * Enhanced constant listening with wake word detection.
- * Wraps useConstantListening to add "Hi Bayit" wake word activation.
+ * Uses Picovoice Porcupine for "Hey Buyit" wake word activation.
  * Audio is only sent to transcription API after wake word is detected.
+ *
+ * Wake word: "Hey Buyit" (English) - phonetically identical to "הי בית" (Hebrew)
  */
 
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
@@ -13,6 +15,12 @@ import { VADDetector, AudioLevel, calculateAudioLevel, createVADDetector } from 
 import { AudioBufferManager, createAudioBuffer } from '../utils/audioBufferManager';
 import { VADSensitivity } from '../services/api';
 import { ttsService } from '../services/ttsService';
+import {
+  PorcupineWakeWordDetector,
+  createPorcupineDetector,
+  getPicovoiceAccessKey,
+  isPorcupineSupported,
+} from '../utils/porcupineWakeWordDetector';
 
 // Type for transcription service
 type TranscribeFunction = (audioBlob: Blob) => Promise<{ text: string; language?: string }>;
@@ -57,7 +65,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
   const {
     enabled,
     wakeWordEnabled,
-    wakeWord = 'hi bayit',
+    wakeWord = 'hey buyit',
     wakeWordSensitivity = 0.7,
     wakeWordCooldownMs = 2000,
     onTranscript,
@@ -88,6 +96,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
 
   // Refs for wake word, VAD, and buffering
   const wakeWordDetectorRef = useRef<WakeWordDetector | null>(null);
+  const porcupineDetectorRef = useRef<PorcupineWakeWordDetector | null>(null);
   const vadRef = useRef<VADDetector | null>(null);
   const bufferRef = useRef<AudioBufferManager | null>(null);
   const isListeningRef = useRef(false);
@@ -97,6 +106,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
   const lastTTSLogRef = useRef<number>(0);
   const pendingTranscriptionRef = useRef<Promise<any> | null>(null);
   const lastTranscribedBlobRef = useRef<Blob | null>(null);
+  const porcupineInitializedRef = useRef(false);
 
   // Check platform support with verbose logging
   const isWeb = Platform.OS === 'web';
@@ -121,12 +131,95 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
   }, []);
 
   /**
-   * Initialize wake word detector
+   * Handle wake word detection from Porcupine
+   */
+  const handlePorcupineDetection = useCallback((keywordIndex: number) => {
+    console.log('[WakeWordListening] Porcupine wake word detected! Index:', keywordIndex);
+
+    // Set wake word detected state
+    setWakeWordDetected(true);
+    setIsAwake(true);
+    isAwakeRef.current = true;
+
+    // Play feedback sound
+    playWakeWordFeedback();
+
+    // Callback to parent
+    if (onWakeWordDetected) {
+      onWakeWordDetected();
+    }
+
+    // Reset wake word visual feedback after a delay
+    setTimeout(() => {
+      setWakeWordDetected(false);
+    }, 1500);
+  }, [onWakeWordDetected, playWakeWordFeedback]);
+
+  /**
+   * Initialize wake word detector (Porcupine)
    */
   const initializeWakeWord = useCallback(async () => {
-    // Wake word detection disabled
-    return;
-  }, []);
+    // Skip if already initialized
+    if (porcupineInitializedRef.current) {
+      console.log('[WakeWordListening] Porcupine already initialized');
+      return;
+    }
+
+    // Skip if wake word detection is disabled
+    if (!wakeWordEnabled) {
+      console.log('[WakeWordListening] Wake word detection disabled');
+      return;
+    }
+
+    // Check if Porcupine is supported
+    if (!isPorcupineSupported()) {
+      console.warn('[WakeWordListening] Porcupine not supported in this environment, using VAD-only mode');
+      return;
+    }
+
+    // Get Picovoice access key
+    const accessKey = getPicovoiceAccessKey();
+    if (!accessKey) {
+      console.warn('[WakeWordListening] Picovoice access key not configured, using VAD-only mode');
+      return;
+    }
+
+    try {
+      console.log('[WakeWordListening] Initializing Porcupine wake word detector...');
+
+      // Create Porcupine detector
+      porcupineDetectorRef.current = createPorcupineDetector();
+
+      // Determine model path - use custom model if available, otherwise built-in
+      // Custom model path: /porcupine/hey_buyit_wasm.ppn
+      const customModelPath = '/porcupine/hey_buyit_wasm.ppn';
+
+      // Initialize with access key and custom model (if available)
+      // The detector will fall back to built-in keyword if custom model not found
+      await porcupineDetectorRef.current.initialize(
+        accessKey,
+        customModelPath,
+        wakeWordSensitivity
+      );
+
+      // Set cooldown
+      porcupineDetectorRef.current.setCooldown(wakeWordCooldownMs);
+
+      // Start listening for wake word
+      await porcupineDetectorRef.current.start(handlePorcupineDetection);
+
+      porcupineInitializedRef.current = true;
+      setWakeWordReady(true);
+      console.log('[WakeWordListening] Porcupine initialized successfully, listening for "Hey Buyit"');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.warn('[WakeWordListening] Failed to initialize Porcupine:', errorMessage);
+      console.warn('[WakeWordListening] Falling back to VAD-only mode');
+      // Don't throw - allow VAD-only fallback
+      porcupineInitializedRef.current = false;
+      setWakeWordReady(false);
+    }
+  }, [wakeWordEnabled, wakeWordSensitivity, wakeWordCooldownMs, handlePorcupineDetection]);
 
   /**
    * Initialize VAD and buffer
@@ -265,9 +358,15 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
       return;
     }
 
-    // Wake word detection disabled - skip wake word processing
+    // If Porcupine is active, only process audio when wake word has been detected
+    // This prevents transcription until user says "Hey Buyit"
+    if (porcupineInitializedRef.current && wakeWordEnabled && !isAwakeRef.current) {
+      // Porcupine handles wake word detection separately via WebVoiceProcessor
+      // Just update audio level for visualization but don't buffer or transcribe
+      return;
+    }
 
-    // Add samples to buffer
+    // Add samples to buffer (only after wake word detected or if wake word disabled)
     if (samples) {
       bufferRef.current.addChunk(samples);
     }
@@ -316,18 +415,27 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
     try {
       console.log('[WakeWordListening] Requesting microphone permission...');
 
+      // Check secure context (HTTPS or localhost required for getUserMedia)
+      const isSecureContext = typeof window !== 'undefined' && window.isSecureContext;
+      console.log('[WakeWordListening] Secure context:', isSecureContext);
+      console.log('[WakeWordListening] Current URL:', typeof window !== 'undefined' ? window.location.href : 'N/A');
+
+      if (!isSecureContext) {
+        throw new Error('Microphone requires HTTPS. Please access this page over HTTPS or localhost.');
+      }
+
       // Check if mediaDevices API is available
       if (!navigator.mediaDevices) {
-        throw new Error('mediaDevices API not available');
+        throw new Error('mediaDevices API not available. Your browser may not support microphone access.');
       }
       if (!navigator.mediaDevices.getUserMedia) {
-        throw new Error('getUserMedia not available');
+        throw new Error('getUserMedia not available. Your browser may not support microphone access.');
       }
 
       console.log('[WakeWordListening] mediaDevices available, requesting mic...');
 
-      // Get microphone stream - try with constraints first, fall back to simple audio: true
-      // Samsung TVs may not support all audio constraints
+      // First, try to get microphone permission - this triggers the browser permission prompt
+      // Device enumeration may be empty until permission is granted
       let stream: MediaStream;
       try {
         stream = await navigator.mediaDevices.getUserMedia({
@@ -340,18 +448,60 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
         });
         console.log('[WakeWordListening] Got stream with constraints');
       } catch (constraintErr: any) {
-        console.warn('[WakeWordListening] Constraints failed:', constraintErr?.message || constraintErr);
+        console.warn('[WakeWordListening] Constraints failed:', constraintErr?.message || constraintErr, 'name:', constraintErr?.name);
+
+        // Enumerate devices to provide better diagnostics
+        try {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          const audioInputs = devices.filter(d => d.kind === 'audioinput');
+          console.log('[WakeWordListening] Available audio input devices:', audioInputs.length);
+          audioInputs.forEach((device, i) => {
+            console.log(`[WakeWordListening] Device ${i}: ${device.label || '(no label - permission not granted yet)'} (${device.deviceId ? device.deviceId.slice(0, 8) + '...' : 'no-id'})`);
+          });
+
+          if (audioInputs.length === 0) {
+            console.warn('[WakeWordListening] No audio input devices detected. This could mean:');
+            console.warn('  - No microphone is connected');
+            console.warn('  - The browser does not have permission to access microphone');
+            console.warn('  - The microphone is in use by another application');
+          }
+        } catch (enumErr) {
+          console.warn('[WakeWordListening] Could not enumerate devices:', enumErr);
+        }
+
         // Fallback for devices that don't support specific constraints (e.g., Samsung TV)
         try {
           stream = await navigator.mediaDevices.getUserMedia({ audio: true });
           console.log('[WakeWordListening] Got stream with simple audio:true');
         } catch (simpleErr: any) {
-          console.error('[WakeWordListening] Simple audio also failed:', simpleErr?.message || simpleErr);
-          throw new Error(`Mic access denied: ${simpleErr?.message || 'Permission denied'}`);
+          console.error('[WakeWordListening] Simple audio also failed:', simpleErr?.message || simpleErr, 'name:', simpleErr?.name);
+
+          // Provide more specific error message based on error type
+          const errorName = simpleErr?.name || '';
+          const errorMessage = simpleErr?.message || '';
+
+          if (errorName === 'NotFoundError' || errorMessage.includes('not found') || errorMessage.includes('Requested device')) {
+            throw new Error('No microphone detected. Please ensure a microphone is connected, enabled in system settings, and not in use by another application. Then refresh the page.');
+          } else if (errorName === 'NotAllowedError' || errorName === 'PermissionDeniedError') {
+            throw new Error('Microphone access denied. Please click the lock icon in the address bar and allow microphone access, then refresh.');
+          } else if (errorName === 'NotReadableError' || errorName === 'AbortError') {
+            throw new Error('Microphone is in use by another application. Please close other apps using the microphone and try again.');
+          } else if (errorName === 'OverconstrainedError') {
+            throw new Error('Microphone does not support required settings. Try a different microphone.');
+          } else {
+            throw new Error(`Microphone error: ${errorMessage || errorName || 'Unknown error'}. Please check your microphone and browser settings.`);
+          }
         }
       }
 
       console.log('[WakeWordListening] Microphone granted, stream active:', stream.active);
+
+      // Log successful stream info
+      const audioTracks = stream.getAudioTracks();
+      console.log('[WakeWordListening] Audio tracks:', audioTracks.length);
+      audioTracks.forEach((track, i) => {
+        console.log(`[WakeWordListening] Track ${i}: ${track.label} (enabled: ${track.enabled}, muted: ${track.muted})`);
+      });
       streamRef.current = stream;
 
       // Create audio context - use default sample rate if 16kHz not supported
@@ -541,15 +691,25 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
       stopWebAudio();
     }
 
-    // Cleanup wake word detector
+    // Cleanup wake word detector (Vosk)
     if (wakeWordDetectorRef.current) {
       wakeWordDetectorRef.current.destroy();
       wakeWordDetectorRef.current = null;
     }
 
+    // Cleanup Porcupine wake word detector
+    if (porcupineDetectorRef.current) {
+      porcupineDetectorRef.current.release().catch((err) => {
+        console.warn('[WakeWordListening] Error releasing Porcupine:', err);
+      });
+      porcupineDetectorRef.current = null;
+      porcupineInitializedRef.current = false;
+    }
+
     // Reset VAD and clear buffer
     vadRef.current?.reset();
     bufferRef.current?.clear();
+    setWakeWordReady(false);
 
     console.log('[WakeWordListening] Stopped listening');
   }, [isWeb, stopWebAudio]);
@@ -612,6 +772,7 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
 
   // Update wake word config when settings change
   useEffect(() => {
+    // Update Vosk wake word detector (legacy)
     if (wakeWordDetectorRef.current) {
       wakeWordDetectorRef.current.setConfig({
         wakeWord,
@@ -619,6 +780,11 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
         cooldownMs: wakeWordCooldownMs,
         enabled: wakeWordEnabled,
       });
+    }
+
+    // Update Porcupine wake word detector cooldown
+    if (porcupineDetectorRef.current) {
+      porcupineDetectorRef.current.setCooldown(wakeWordCooldownMs);
     }
   }, [wakeWord, wakeWordSensitivity, wakeWordCooldownMs, wakeWordEnabled]);
 

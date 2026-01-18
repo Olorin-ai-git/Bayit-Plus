@@ -19,10 +19,12 @@ from app.models.jewish_community import (
     Denomination,
     KosherCertification,
 )
+from app.models.jewish_calendar import US_JEWISH_CITIES
 from app.services.jewish_news_service import jewish_news_service
 from app.services.jewish_calendar_service import jewish_calendar_service
 from app.services.community_directory_service import community_directory_service
 from app.services.torah_content_service import torah_content_service
+from app.services.judaism_content_seeder import judaism_content_seeder
 
 
 # Judaism content categories (matching TV app)
@@ -76,12 +78,16 @@ async def get_judaism_content(
     limit: int = Query(20, ge=1, le=50),
 ):
     """Get Judaism-related content with optional category filter."""
-    # Build query for Jewish/religious content
+    # Build query for Jewish/religious content - more specific matching
     query = {
         "is_published": True,
         "$or": [
-            {"genre": {"$regex": "jewish|torah|religious|prayer", "$options": "i"}},
-            {"category_name": {"$regex": "jewish|judaism|torah|שיעור|תפילה|יהדות", "$options": "i"}},
+            # Match specific Judaism genres
+            {"genre": {"$regex": "^(Torah Classes|Prayer|Jewish Music|Holidays|Documentaries)$", "$options": "i"}},
+            # Match Jewish keywords in title/description
+            {"title": {"$regex": "torah|shabbat|שבת|פרשת|דף יומי|תפילה|הלכות|משניות|ניגון|זמירות|חנוכה|פורים|פסח|ראש השנה|יהוד|jewish|rabbi|kosher", "$options": "i"}},
+            # Match category names used in seeding
+            {"category_name": {"$regex": "shiurim|tefila|music|holidays|documentaries", "$options": "i"}},
         ],
     }
 
@@ -202,6 +208,158 @@ async def get_daily_shiur():
             rabbi=shiur.director,
             category="shiurim",
         )
+    }
+
+
+@router.get("/shabbat/featured")
+async def get_shabbat_featured():
+    """
+    Get featured Shabbat content for Erev Shabbat display.
+
+    Returns content related to: parasha, Shabbat songs, candle lighting,
+    kiddush, challah, Shabbat preparation, and related Torah content.
+    """
+    # Get calendar info for current parasha
+    calendar = await jewish_calendar_service.get_today()
+    parasha = calendar.get("parasha", "")
+    parasha_he = calendar.get("parasha_he", "")
+
+    # Query for Shabbat-related content
+    shabbat_query = {
+        "is_published": True,
+        "$or": [
+            # Parasha-specific content
+            {"title": {"$regex": parasha, "$options": "i"}} if parasha else {"_id": None},
+            {"title": {"$regex": parasha_he, "$options": "i"}} if parasha_he else {"_id": None},
+            # Shabbat keywords
+            {"title": {"$regex": "shabbat|שבת|shabbos|sabbath", "$options": "i"}},
+            {"genre": {"$regex": "shabbat|שבת|shabbos|sabbath", "$options": "i"}},
+            # Shabbat activities
+            {"title": {"$regex": "candle|נרות|kiddush|קידוש|challah|חלה", "$options": "i"}},
+            {"title": {"$regex": "havdalah|הבדלה|zmiros|זמירות", "$options": "i"}},
+            # Jewish music for Shabbat
+            {"genre": {"$regex": "jewish.*music|מוזיקה.*יהודית", "$options": "i"}},
+        ],
+    }
+
+    content = await Content.find(shabbat_query).limit(12).to_list()
+
+    # Build response with categories
+    featured_items = []
+    parasha_content = []
+    music_content = []
+    preparation_content = []
+
+    for c in content:
+        item = JudaismContentResponse(
+            id=str(c.id),
+            title=c.title,
+            title_en=c.title_en,
+            description=c.description,
+            thumbnail=c.thumbnail or c.backdrop,
+            duration=c.duration,
+            rabbi=c.director,
+            category="shabbat",
+            type=c.content_type or "vod",
+        )
+
+        # Categorize content
+        title_lower = (c.title or "").lower()
+        genre_lower = (c.genre or "").lower()
+
+        if parasha and parasha.lower() in title_lower:
+            parasha_content.append(item)
+        elif "music" in genre_lower or "song" in title_lower or "זמירות" in title_lower:
+            music_content.append(item)
+        elif any(kw in title_lower for kw in ["candle", "נרות", "challah", "חלה", "prep"]):
+            preparation_content.append(item)
+        else:
+            featured_items.append(item)
+
+    return {
+        "parasha": parasha,
+        "parasha_he": parasha_he,
+        "is_shabbat": calendar.get("is_shabbat", False),
+        "sections": {
+            "parasha_content": parasha_content[:4],
+            "shabbat_music": music_content[:4],
+            "preparation": preparation_content[:4],
+            "featured": featured_items[:4],
+        },
+        "all_content": [*parasha_content, *music_content, *preparation_content, *featured_items][:12],
+    }
+
+
+@router.get("/shabbat/status")
+async def get_shabbat_status(
+    city: str = Query("New York", description="City name"),
+    state: str = Query("NY", description="State code"),
+):
+    """
+    Get current Shabbat status - whether it's Erev Shabbat, Shabbat, or regular day.
+
+    Returns timing information for Shabbat mode detection on frontend.
+    """
+    from datetime import datetime, timedelta
+    import pytz
+
+    # Get Shabbat times
+    shabbat_times = await jewish_calendar_service.get_shabbat_times(city=city, state=state)
+    calendar = await jewish_calendar_service.get_today()
+
+    now = datetime.now(pytz.UTC)
+
+    # Parse times
+    candle_lighting = None
+    havdalah = None
+
+    if shabbat_times.candle_lighting:
+        try:
+            candle_lighting = datetime.fromisoformat(
+                shabbat_times.candle_lighting.replace("Z", "+00:00")
+            )
+        except (ValueError, TypeError):
+            pass
+
+    if shabbat_times.havdalah:
+        try:
+            havdalah = datetime.fromisoformat(
+                shabbat_times.havdalah.replace("Z", "+00:00")
+            )
+        except (ValueError, TypeError):
+            pass
+
+    # Determine status
+    status = "regular"
+    if candle_lighting and havdalah:
+        # Erev Shabbat: Friday, before candle lighting (within 6 hours)
+        erev_start = candle_lighting - timedelta(hours=6)
+        if erev_start <= now < candle_lighting:
+            status = "erev_shabbat"
+        # During Shabbat
+        elif candle_lighting <= now <= havdalah:
+            status = "shabbat"
+
+    # Look up timezone from city config
+    timezone = "America/New_York"  # Default
+    city_lower = city.lower()
+    state_upper = state.upper()
+    for c in US_JEWISH_CITIES:
+        if c.name.lower() == city_lower and c.state.upper() == state_upper:
+            timezone = c.timezone
+            break
+
+    return {
+        "status": status,
+        "is_erev_shabbat": status == "erev_shabbat",
+        "is_shabbat": status == "shabbat",
+        "candle_lighting": shabbat_times.candle_lighting,
+        "havdalah": shabbat_times.havdalah,
+        "parasha": calendar.parasha,
+        "parasha_he": calendar.parasha_he,
+        "city": city,
+        "state": state,
+        "timezone": timezone,
     }
 
 
@@ -547,3 +705,26 @@ async def refresh_shiurim_cache():
     """
     torah_content_service.clear_cache()
     return {"message": "Shiurim cache cleared"}
+
+
+@router.post("/admin/content/seed")
+async def seed_judaism_content():
+    """
+    Seed Judaism content with Torah videos from public sources.
+
+    Creates sample content for Torah classes, prayers, Jewish music,
+    holidays, and documentaries using publicly available YouTube videos.
+
+    Admin endpoint - requires authentication in production.
+    """
+    return await judaism_content_seeder.seed_content()
+
+
+@router.delete("/admin/content/clear")
+async def clear_judaism_content():
+    """
+    Remove all seeded Judaism content.
+
+    Admin endpoint - requires authentication in production.
+    """
+    return await judaism_content_seeder.clear_judaism_content()

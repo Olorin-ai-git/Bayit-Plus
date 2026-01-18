@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { Flame, Moon, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
@@ -15,6 +14,7 @@ interface ShabbatTimes {
   havdalah: string;
   parasha?: string;
   parasha_he?: string;
+  timezone?: string;
 }
 
 interface ShabbatModeBannerProps {
@@ -29,7 +29,7 @@ export function ShabbatModeBanner({
   onDismiss,
 }: ShabbatModeBannerProps) {
   const { t, i18n } = useTranslation();
-  const { isRTL, flexDirection } = useDirection();
+  const { isRTL } = useDirection();
   const [shabbatTimes, setShabbatTimes] = useState<ShabbatTimes | null>(null);
   const [isShabbatMode, setIsShabbatMode] = useState(false);
   const [countdown, setCountdown] = useState<string>('');
@@ -40,8 +40,6 @@ export function ShabbatModeBanner({
     const now = new Date();
     const candleLighting = new Date(times.candle_lighting);
     const havdalah = new Date(times.havdalah);
-
-    // Check if current time is between candle lighting and havdalah
     return now >= candleLighting && now <= havdalah;
   }, []);
 
@@ -50,9 +48,7 @@ export function ShabbatModeBanner({
     const havdalah = new Date(havdalahTime);
     const diff = havdalah.getTime() - now.getTime();
 
-    if (diff <= 0) {
-      return '';
-    }
+    if (diff <= 0) return '';
 
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -71,17 +67,14 @@ export function ShabbatModeBanner({
   useEffect(() => {
     if (!shabbatTimes) return;
 
-    // Update Shabbat mode status and countdown every second
     const interval = setInterval(() => {
       const inShabbat = checkShabbatMode(shabbatTimes);
       setIsShabbatMode(inShabbat);
-
       if (inShabbat) {
         setCountdown(calculateCountdown(shabbatTimes.havdalah));
       }
     }, 1000);
 
-    // Initial check
     const inShabbat = checkShabbatMode(shabbatTimes);
     setIsShabbatMode(inShabbat);
     if (inShabbat) {
@@ -115,100 +108,94 @@ export function ShabbatModeBanner({
     return i18n.language === 'he' ? shabbatTimes.parasha_he : shabbatTimes.parasha;
   };
 
-  // Don't render if loading, not in Shabbat mode, or dismissed
   if (isLoading || !isShabbatMode || dismissed) {
     return null;
   }
 
   return (
-    <GlassCard className="mx-4 mb-4 overflow-hidden">
+    <GlassCard className="mx-4 mb-4 overflow-hidden relative">
       {/* Animated background gradient */}
-      <View
+      <div
         className="absolute inset-0"
         style={{
-          background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, rgba(168, 85, 247, 0.15) 50%, rgba(59, 130, 246, 0.15) 100%)',
+          background: `linear-gradient(135deg, ${colors.warning}26 0%, ${colors.primary}26 50%, ${colors.primaryDark}26 100%)`,
         }}
       />
 
-      <View className="relative p-4">
+      <div className="relative p-4" dir={isRTL ? 'rtl' : 'ltr'}>
         {/* Header with dismiss button */}
-        <View className="flex-row items-center justify-between mb-3" style={{ flexDirection }}>
-          <View className="flex-row items-center gap-3" style={{ flexDirection }}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
             {/* Animated candles */}
-            <View className="flex-row gap-1">
-              <View className="items-center">
-                <Text className="text-2xl animate-pulse">🕯️</Text>
-              </View>
-              <View className="items-center">
-                <Text className="text-2xl animate-pulse" style={{ animationDelay: '0.5s' }}>🕯️</Text>
-              </View>
-            </View>
+            <div className="flex gap-1">
+              <span className="text-2xl animate-pulse">🕯️</span>
+              <span className="text-2xl animate-pulse" style={{ animationDelay: '0.5s' }}>🕯️</span>
+            </div>
 
-            <View>
-              <Text className="text-xl font-bold text-white">
+            <div>
+              <p className="text-xl font-bold" style={{ color: colors.text }}>
                 {t('judaism.shabbat.shabbatShalom', 'Shabbat Shalom!')}
-              </Text>
-              <Text className="text-amber-300 text-sm font-medium">
+              </p>
+              <p className="text-sm font-medium" style={{ color: colors.warning }}>
                 {t('judaism.shabbat.shabbatMode', 'Shabbat Mode')}
-              </Text>
-            </View>
+              </p>
+            </div>
 
             {/* Challah */}
-            <Text className="text-2xl">🍞</Text>
-          </View>
+            <span className="text-2xl">🍞</span>
+          </div>
 
           {/* Dismiss button */}
-          <Pressable
-            onPress={handleDismiss}
-            className="w-8 h-8 rounded-full bg-white/10 items-center justify-center"
-            style={{ cursor: 'pointer' }}
+          <button
+            onClick={handleDismiss}
+            className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"
           >
             <X size={16} color={colors.textMuted} />
-          </Pressable>
-        </View>
+          </button>
+        </div>
 
         {/* Parasha display */}
         {getParasha() && (
-          <View className="bg-purple-500/20 rounded-lg px-3 py-2 mb-3">
-            <Text className="text-purple-300 text-center text-sm">
+          <div className="rounded-lg px-3 py-2 mb-3" style={{ backgroundColor: `${colors.primary}33` }}>
+            <p className="text-center text-sm" style={{ color: colors.primaryLight }}>
               {t('judaism.shabbat.parashat', 'Parashat')} {getParasha()}
-            </Text>
-          </View>
+            </p>
+          </div>
         )}
 
         {/* Countdown section */}
-        <View
-          className="flex-row items-center justify-between bg-black/30 rounded-xl p-3"
-          style={{ flexDirection }}
+        <div
+          className="flex items-center justify-between rounded-xl p-3"
+          style={{ backgroundColor: colors.glassStrong }}
         >
-          <View className="flex-row items-center gap-2" style={{ flexDirection }}>
-            <Moon size={20} color="#818CF8" />
-            <Text className="text-indigo-300 text-sm">
+          <div className="flex items-center gap-2">
+            <Moon size={20} color={colors.primaryLight} />
+            <span className="text-sm" style={{ color: colors.primaryLight }}>
               {t('judaism.shabbat.endsIn', 'Shabbat ends in')}
-            </Text>
-          </View>
+            </span>
+          </div>
 
-          <View className="flex-row items-center gap-2" style={{ flexDirection }}>
-            <Text className="text-white text-2xl font-bold font-mono">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl font-bold font-mono" style={{ color: colors.text }}>
               {countdown}
-            </Text>
-            <View className="flex-row items-center gap-1" style={{ flexDirection }}>
-              <Flame size={14} color="#F59E0B" />
-              <Text className="text-amber-400 text-xs">
+            </span>
+            <div className="flex items-center gap-1">
+              <Flame size={14} color={colors.warning} />
+              <span className="text-xs" style={{ color: colors.warning }}>
                 {t('judaism.shabbat.havdalah', 'Havdalah')}
-              </Text>
-            </View>
-          </View>
-        </View>
+              </span>
+            </div>
+          </div>
+        </div>
 
-        {/* Decorative stars */}
-        <View className="absolute top-2 right-12 opacity-50">
-          <Text className="text-lg">✨</Text>
-        </View>
-        <View className="absolute bottom-2 left-2 opacity-30">
-          <Text className="text-sm">⭐</Text>
-        </View>
-      </View>
+        {/* Decorative stars - position based on RTL */}
+        <div className={`absolute top-2 ${isRTL ? 'left-12' : 'right-12'} opacity-50`}>
+          <span className="text-lg">✨</span>
+        </div>
+        <div className={`absolute bottom-2 ${isRTL ? 'right-2' : 'left-2'} opacity-30`}>
+          <span className="text-sm">⭐</span>
+        </div>
+      </div>
     </GlassCard>
   );
 }

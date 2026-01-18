@@ -4,7 +4,9 @@ Real-time speech-to-text and translation for live streaming subtitles
 Supports Google Cloud, OpenAI Whisper, and ElevenLabs Scribe v2 for STT
 Supports Google Translate, OpenAI, and Claude for translation
 """
+import html
 import logging
+import os
 import time
 import asyncio
 import queue
@@ -13,6 +15,11 @@ from typing import AsyncIterator, Dict, Any, Optional
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
+
+# Set Google Cloud credentials from settings if not already in environment
+if not os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") and settings.GOOGLE_APPLICATION_CREDENTIALS:
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = settings.GOOGLE_APPLICATION_CREDENTIALS
+    logger.info(f"Set GOOGLE_APPLICATION_CREDENTIALS from settings")
 
 # Conditional imports based on provider
 try:
@@ -50,6 +57,60 @@ LANGUAGE_CODES = {
     "es": "es-ES", "ru": "ru-RU", "fr": "fr-FR",
     "de": "de-DE", "it": "it-IT", "pt": "pt-PT", "yi": "yi"
 }
+
+# Maximum characters per subtitle line for readability
+MAX_SUBTITLE_LENGTH = 80
+# Preferred chunk length for splitting
+PREFERRED_SUBTITLE_LENGTH = 60
+
+
+def chunk_text_for_subtitles(text: str, max_length: int = MAX_SUBTITLE_LENGTH) -> list[str]:
+    """
+    Split long text into smaller chunks suitable for subtitles.
+
+    Splits at natural breakpoints (punctuation, then spaces) to maintain readability.
+    Returns a list of text chunks, each under max_length characters.
+    """
+    if len(text) <= max_length:
+        return [text]
+
+    chunks = []
+    remaining = text.strip()
+
+    while remaining:
+        if len(remaining) <= max_length:
+            chunks.append(remaining)
+            break
+
+        # Find best split point within max_length
+        split_point = max_length
+
+        # Priority 1: Split at sentence-ending punctuation (. ! ?)
+        for punct in ['. ', '! ', '? ', '। ', '。', '؟ ']:
+            pos = remaining.rfind(punct, 0, max_length)
+            if pos > PREFERRED_SUBTITLE_LENGTH // 2:
+                split_point = pos + len(punct)
+                break
+        else:
+            # Priority 2: Split at comma or semicolon
+            for punct in [', ', '; ', '، ', '、']:
+                pos = remaining.rfind(punct, 0, max_length)
+                if pos > PREFERRED_SUBTITLE_LENGTH // 2:
+                    split_point = pos + len(punct)
+                    break
+            else:
+                # Priority 3: Split at space
+                pos = remaining.rfind(' ', PREFERRED_SUBTITLE_LENGTH // 2, max_length)
+                if pos > 0:
+                    split_point = pos + 1
+                # If no space found, just hard cut at max_length
+
+        chunk = remaining[:split_point].strip()
+        if chunk:
+            chunks.append(chunk)
+        remaining = remaining[split_point:].strip()
+
+    return chunks
 
 
 class LiveTranslationService:
@@ -358,16 +419,19 @@ class LiveTranslationService:
 
             elif self.provider == "elevenlabs":
                 # ElevenLabs Scribe v2 (true realtime WebSocket streaming)
+                # Use Hebrew as primary language hint to avoid misdetection issues
+                # (Arabic was being confused with Amharic in auto-detect mode)
                 logger.info(
                     f"🎤 Starting ElevenLabs Scribe v2 realtime stream "
-                    f"for language: {source_lang} (~150ms latency)"
+                    f"(Hebrew mode, ~150ms latency)"
                 )
-                async for transcript in self.elevenlabs_service.transcribe_audio_stream(
+                async for transcript, detected_lang in self.elevenlabs_service.transcribe_audio_stream(
                     audio_stream,
-                    source_lang=source_lang
+                    source_lang="he"  # Use Hebrew hint - more reliable than auto-detect
                 ):
-                    logger.info(f"📝 ElevenLabs transcribed: {transcript}")
-                    yield transcript
+                    logger.info(f"📝 ElevenLabs transcribed [{detected_lang}]: {transcript}")
+                    # Yield tuple with detected language for translation pipeline
+                    yield (transcript, detected_lang)
 
         except Exception as e:
             logger.error(f"Transcription error ({self.provider}): {str(e)}")
@@ -401,7 +465,8 @@ class LiveTranslationService:
                 result = self.translate_client.translate(
                     text, source_language=source_lang, target_language=target_lang
                 )
-                translated = result['translatedText']
+                # Decode HTML entities (Google Translate returns &#39; for apostrophes, etc.)
+                translated = html.unescape(result['translatedText'])
                 logger.debug(f"Google Translate: {text} → {translated}")
                 return translated
 
@@ -472,31 +537,61 @@ class LiveTranslationService:
         """
         Complete pipeline: Audio → Transcription → Translation → Subtitle cues.
 
+        For ElevenLabs provider, uses auto-detected language for translation.
+        For other providers, uses the configured source_lang.
+
         Yields subtitle cues with format:
         {"text": "...", "original_text": "...", "timestamp": 123.45, ...}
         """
         session_start = time.time()
 
         try:
-            async for transcript in self.transcribe_audio_stream(audio_stream, source_lang):
+            async for result in self.transcribe_audio_stream(audio_stream, source_lang):
+                # Handle different result formats:
+                # - ElevenLabs: tuple of (transcript, detected_lang)
+                # - Google/Whisper: just transcript string
+                if isinstance(result, tuple):
+                    transcript, detected_lang = result
+                    # Use auto-detected language for translation
+                    actual_source_lang = detected_lang if detected_lang != "auto" else source_lang
+                else:
+                    transcript = result
+                    actual_source_lang = source_lang
+
                 if not transcript.strip():
                     continue
 
                 # Translate (skip if same language)
-                translated = transcript if source_lang == target_lang else \
-                    await self.translate_text(transcript, source_lang, target_lang)
+                if actual_source_lang == target_lang:
+                    translated = transcript
+                else:
+                    translated = await self.translate_text(transcript, actual_source_lang, target_lang)
+                    logger.info(f"🌍 Translated [{actual_source_lang}→{target_lang}]: {translated[:50]}...")
 
-                # Calculate timestamp
+                # Calculate base timestamp
                 current_time = time.time() - session_start + start_timestamp
 
-                yield {
-                    "text": translated,
-                    "original_text": transcript,
-                    "timestamp": current_time,
-                    "source_lang": source_lang,
-                    "target_lang": target_lang,
-                    "confidence": 0.95
-                }
+                # Chunk long transcripts for better subtitle readability
+                # This prevents large blocks of text from appearing all at once
+                translated_chunks = chunk_text_for_subtitles(translated)
+                original_chunks = chunk_text_for_subtitles(transcript)
+
+                # Yield each chunk as a separate subtitle cue with slight time offset
+                for i, trans_chunk in enumerate(translated_chunks):
+                    orig_chunk = original_chunks[i] if i < len(original_chunks) else ""
+                    # Stagger chunks by 0.3 seconds each for natural reading
+                    chunk_timestamp = current_time + (i * 0.3)
+
+                    yield {
+                        "text": trans_chunk,
+                        "original_text": orig_chunk,
+                        "timestamp": chunk_timestamp,
+                        "source_lang": actual_source_lang,
+                        "target_lang": target_lang,
+                        "confidence": 0.95,
+                        "chunk_index": i,
+                        "total_chunks": len(translated_chunks)
+                    }
 
         except Exception as e:
             logger.error(f"Live subtitle pipeline error: {str(e)}")

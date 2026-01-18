@@ -173,8 +173,9 @@ export const JudaismScreen: React.FC = () => {
   const loadCategories = async () => {
     try {
       const response = await judaismService.getCategories();
-      if (response?.data && Array.isArray(response.data)) {
-        setCategories(response.data);
+      // Response is already unwrapped by axios interceptor
+      if (response?.categories && Array.isArray(response.categories)) {
+        setCategories(response.categories);
       }
     } catch (err) {
       console.error('Failed to load Judaism categories:', err);
@@ -186,8 +187,9 @@ export const JudaismScreen: React.FC = () => {
       setIsLoading(true);
       const category = selectedCategory !== 'all' ? selectedCategory : undefined;
       const response = await judaismService.getContent(category);
-      if (response?.data && Array.isArray(response.data)) {
-        setContent(response.data);
+      // Response is already unwrapped by axios interceptor
+      if (response?.content && Array.isArray(response.content)) {
+        setContent(response.content);
       }
     } catch (err) {
       console.error('Failed to load Judaism content:', err);
@@ -302,7 +304,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'rgba(70, 130, 180, 0.2)',
+    backgroundColor: colors.glassPurple,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: spacing.lg,
@@ -343,7 +345,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   cardFocused: {
-    borderColor: '#4682b4',
+    borderColor: colors.primary,
   },
   cardImage: {
     width: '100%',
@@ -373,14 +375,14 @@ const styles = StyleSheet.create({
   durationBadge: {
     position: 'absolute',
     top: 8,
-    backgroundColor: 'rgba(70, 130, 180, 0.9)',
+    backgroundColor: colors.primary,
     borderRadius: 8,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
   durationText: {
     fontSize: 10,
-    color: '#ffffff',
+    color: colors.text,
     fontWeight: 'bold',
   },
   cardContent: {
@@ -393,7 +395,7 @@ const styles = StyleSheet.create({
   },
   cardRabbi: {
     fontSize: 12,
-    color: '#4682b4',
+    color: colors.primaryLight,
     marginTop: 2,
   },
   cardSubtitle: {
@@ -403,7 +405,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: colors.overlay,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -411,13 +413,13 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#4682b4',
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   playIcon: {
     fontSize: 24,
-    color: '#ffffff',
+    color: colors.text,
     marginLeft: 4,
   },
   emptyState: {

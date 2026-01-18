@@ -187,6 +187,7 @@ class LiveChannel(Document):
     description_es: Optional[str] = None
     thumbnail: Optional[str] = None
     logo: Optional[str] = None
+    category: Optional[str] = None  # news, entertainment, sports, kids, music
 
     # Stream
     stream_url: str

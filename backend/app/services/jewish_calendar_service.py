@@ -238,6 +238,7 @@ class JewishCalendarService:
                 parasha=parasha_name,
                 parasha_he=parasha_he,
                 hebrew_date=hebrew_date,
+                timezone=target_city.timezone,
             )
 
             await self._set_cache(cache_key, result.model_dump(), "hebcal")
@@ -250,6 +251,7 @@ class JewishCalendarService:
                 state=target_city.state,
                 candle_lighting="",
                 havdalah="",
+                timezone=target_city.timezone,
             )
 
     async def get_today(self) -> CalendarTodayResponse:

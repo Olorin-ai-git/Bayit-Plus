@@ -23,6 +23,7 @@ async def get_channels(current_user: Optional[User] = Depends(get_optional_user)
                 "description": channel.description,
                 "thumbnail": channel.thumbnail,
                 "logo": channel.logo,
+                "category": channel.category,
                 "currentShow": channel.current_show,
                 "nextShow": channel.next_show,
             }

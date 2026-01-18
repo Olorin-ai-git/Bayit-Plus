@@ -19,6 +19,33 @@ interface Chapter {
   title?: string
 }
 
+/**
+ * Check if a URL is a YouTube embed URL
+ */
+function isYouTubeUrl(url: string | null): boolean {
+  if (!url) return false
+  return url.includes('youtube.com/embed/') || url.includes('youtu.be/')
+}
+
+/**
+ * Extract YouTube video ID from URL
+ */
+function getYouTubeVideoId(url: string): string | null {
+  // Match youtube.com/embed/VIDEO_ID
+  const embedMatch = url.match(/youtube\.com\/embed\/([^?&]+)/)
+  if (embedMatch) return embedMatch[1]
+
+  // Match youtu.be/VIDEO_ID
+  const shortMatch = url.match(/youtu\.be\/([^?&]+)/)
+  if (shortMatch) return shortMatch[1]
+
+  // Match youtube.com/watch?v=VIDEO_ID
+  const watchMatch = url.match(/youtube\.com\/watch\?v=([^&]+)/)
+  if (watchMatch) return watchMatch[1]
+
+  return null
+}
+
 export default function FullscreenVideoOverlay() {
   const { isOpen, content, startTime, closePlayer } = useFullscreenPlayerStore()
   const [streamUrl, setStreamUrl] = useState<string | null>(null)
@@ -177,21 +204,35 @@ export default function FullscreenVideoOverlay() {
         </View>
       )}
 
-      {/* Video Player */}
+      {/* Video Player - YouTube iframe or native player */}
       {streamUrl && !loading && !error && (
-        <VideoPlayer
-          src={streamUrl}
-          poster={content.poster}
-          title={content.title}
-          contentId={content.id}
-          contentType={content.type}
-          isLive={content.type === 'live'}
-          autoPlay={true}
-          chapters={chapters}
-          chaptersLoading={chaptersLoading}
-          onProgress={handleProgress}
-          onEnded={handleEnded}
-        />
+        isYouTubeUrl(streamUrl) ? (
+          // YouTube content - use iframe embed
+          <div style={webStyles.youtubeContainer}>
+            <iframe
+              src={`https://www.youtube.com/embed/${getYouTubeVideoId(streamUrl)}?autoplay=1&rel=0&modestbranding=1`}
+              style={webStyles.youtubeIframe}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              allowFullScreen
+              title={content.title}
+            />
+          </div>
+        ) : (
+          // Regular video content - use native player
+          <VideoPlayer
+            src={streamUrl}
+            poster={content.poster}
+            title={content.title}
+            contentId={content.id}
+            contentType={content.type}
+            isLive={content.type === 'live'}
+            autoPlay={true}
+            chapters={chapters}
+            chaptersLoading={chaptersLoading}
+            onProgress={handleProgress}
+            onEnded={handleEnded}
+          />
+        )
       )}
     </div>
   )
@@ -211,6 +252,21 @@ const webStyles: Record<string, React.CSSProperties> = {
     bottom: 0,
     backgroundColor: '#000',
     zIndex: 10000,
+  },
+  youtubeContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  youtubeIframe: {
+    width: '100%',
+    height: '100%',
+    border: 'none',
   },
 }
 

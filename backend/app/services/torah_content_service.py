@@ -41,20 +41,27 @@ class TorahShiur:
     link: str
 
 
-# Torah content RSS sources
+# Torah content RSS sources - using working public feeds
 TORAH_RSS_SOURCES = [
     {
-        "name": "YU Torah",
-        "name_he": "תורה מישיבה",
-        "rss_url": settings.YUTORAH_RSS_URL,
-        "source_id": "yutorah",
+        "name": "TorahAnytime Lessons",
+        "name_he": "שיעורי TorahAnytime",
+        "rss_url": "https://feeds.transistor.fm/torah-anytime-lessons",
+        "source_id": "torahanytime",
         "category": "shiurim",
     },
     {
-        "name": "Chabad Multimedia",
-        "name_he": "חב\"ד מולטימדיה",
-        "rss_url": settings.CHABAD_MULTIMEDIA_RSS_URL,
-        "source_id": "chabad",
+        "name": "TorahWeb Live Events",
+        "name_he": "אירועי TorahWeb",
+        "rss_url": "https://media.rss.com/torahweb-live-events/feed.xml",
+        "source_id": "torahweb",
+        "category": "shiurim",
+    },
+    {
+        "name": "Torah Cafe",
+        "name_he": "Torah Cafe",
+        "rss_url": "https://www.torahcafe.com/rss.php",
+        "source_id": "torahcafe",
         "category": "shiurim",
     },
 ]

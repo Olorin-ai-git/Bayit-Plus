@@ -24,8 +24,9 @@ const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   silence_threshold_ms: 2000,        // 2 seconds of silence before sending
   vad_sensitivity: 'low',            // Low sensitivity - fewer false positives from static/noise
   // Wake word activation (mutually exclusive with always-listening - we use wake word only)
-  wake_word_enabled: true,           // Wake word detection ENABLED by default - listen for "Buyit"
-  wake_word: 'buyit',                // Default wake phrase (pronounced "Buyit")
+  // Uses Picovoice Porcupine for "Hey Buyit" detection (phonetically identical to Hebrew "הי בית")
+  wake_word_enabled: true,           // Wake word detection ENABLED by default - listen for "Hey Buyit"
+  wake_word: 'hey buyit',            // Default wake phrase - sounds like Hebrew "הי בית" (hi bayit)
   wake_word_sensitivity: 0.7,        // 0-1 sensitivity (0.7 balanced)
   wake_word_cooldown_ms: 2000,       // Cooldown between detections
   // Three-mode system
