@@ -34,6 +34,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
 import { BottomSheet } from '../components';
+import { ChapterListMobile, ChapterMarkers, Chapter } from '../components/player';
 import { GlassView, GlassButton } from '@bayit/shared';
 import { spacing, colors, typography, touchTarget } from '../theme';
 import type { RootStackParamList } from '../navigation/types';
@@ -45,6 +46,7 @@ import {
   RotateCcw,
   X,
   Settings,
+  List,
 } from 'lucide-react-native';
 
 type PlayerRoute = RouteProp<RootStackParamList, 'Player'>;
@@ -61,9 +63,11 @@ export const PlayerScreenMobile: React.FC = () => {
   const videoRef = useRef<VideoRef>(null);
   const [showControls, setShowControls] = useState(true);
   const [settingsVisible, setSettingsVisible] = useState(false);
+  const [chaptersVisible, setChaptersVisible] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [progressBarWidth, setProgressBarWidth] = useState(0);
 
   // Settings state
   const [quality, setQuality] = useState('auto');
@@ -71,6 +75,10 @@ export const PlayerScreenMobile: React.FC = () => {
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
   const [availableSubtitles, setAvailableSubtitles] = useState<any[]>([]);
   const [subtitleTracks, setSubtitleTracks] = useState<any[]>([]);
+
+  // Chapters state
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [chaptersLoading, setChaptersLoading] = useState(false);
 
   const translateY = useSharedValue(0);
 
@@ -101,6 +109,28 @@ export const PlayerScreenMobile: React.FC = () => {
       fetchSubtitles();
     }
   }, [id]);
+
+  // Fetch chapters
+  useEffect(() => {
+    const fetchChapters = async () => {
+      try {
+        setChaptersLoading(true);
+        const response = await fetch(`${API_BASE_URL}/chapters/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setChapters(data.chapters || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch chapters:', error);
+      } finally {
+        setChaptersLoading(false);
+      }
+    };
+
+    if (id && type === 'vod') {
+      fetchChapters();
+    }
+  }, [id, type]);
 
   // Swipe down to close gesture (phone only)
   const gestureHandler = useAnimatedGestureHandler({
@@ -142,6 +172,14 @@ export const PlayerScreenMobile: React.FC = () => {
     const newTime = Math.max(0, Math.min(duration, currentTime + seconds));
     videoRef.current?.seek(newTime);
     setCurrentTime(newTime);
+  };
+
+  const handleSeekToTime = (time: number) => {
+    videoRef.current?.seek(time);
+    setCurrentTime(time);
+    if (Platform.OS === 'ios') {
+      ReactNativeHapticFeedback.trigger('impactLight');
+    }
   };
 
   const handleRestart = () => {
@@ -263,24 +301,53 @@ export const PlayerScreenMobile: React.FC = () => {
                       {formatTime(currentTime)} / {formatTime(duration)}
                     </Text>
 
-                    {/* Progress bar */}
-                    <View style={styles.progressBarContainer}>
+                    {/* Progress bar with chapter markers */}
+                    <View
+                      style={styles.progressBarContainer}
+                      onLayout={(e) => setProgressBarWidth(e.nativeEvent.layout.width)}
+                    >
                       <View
                         style={[
                           styles.progressBar,
                           { width: `${(currentTime / duration) * 100}%` },
                         ]}
                       />
+                      {chapters.length > 0 && progressBarWidth > 0 && (
+                        <ChapterMarkers
+                          chapters={chapters}
+                          duration={duration}
+                          currentTime={currentTime}
+                          onSeek={handleSeekToTime}
+                          progressBarWidth={progressBarWidth}
+                        />
+                      )}
                     </View>
 
-                    {/* Settings button */}
-                    <Pressable
-                      onPress={() => setSettingsVisible(true)}
-                      style={styles.settingsButton}
-                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                    >
-                      <Settings size={24} color={colors.text} />
-                    </Pressable>
+                    {/* Bottom buttons row */}
+                    <View style={styles.bottomButtonsRow}>
+                      {/* Chapters button */}
+                      {chapters.length > 0 && (
+                        <Pressable
+                          onPress={() => setChaptersVisible(true)}
+                          style={styles.bottomButton}
+                          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                        >
+                          <List size={20} color={colors.text} />
+                          <Text style={styles.bottomButtonText}>
+                            {t('player.chapters')} ({chapters.length})
+                          </Text>
+                        </Pressable>
+                      )}
+
+                      {/* Settings button */}
+                      <Pressable
+                        onPress={() => setSettingsVisible(true)}
+                        style={styles.settingsButton}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      >
+                        <Settings size={24} color={colors.text} />
+                      </Pressable>
+                    </View>
                   </GlassView>
                 </View>
               )}
@@ -292,6 +359,22 @@ export const PlayerScreenMobile: React.FC = () => {
             onPress={toggleControls}
           />
         )}
+
+        {/* Chapters bottom sheet */}
+        <BottomSheet
+          visible={chaptersVisible}
+          onClose={() => setChaptersVisible(false)}
+          height={450}
+        >
+          <Text style={styles.sheetTitle}>{t('player.chapters')}</Text>
+          <ChapterListMobile
+            chapters={chapters}
+            currentTime={currentTime}
+            isLoading={chaptersLoading}
+            onSeek={handleSeekToTime}
+            onClose={() => setChaptersVisible(false)}
+          />
+        </BottomSheet>
 
         {/* Settings bottom sheet */}
         <BottomSheet
@@ -454,15 +537,32 @@ const styles = StyleSheet.create({
     height: 4,
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
     borderRadius: 2,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
+    position: 'relative',
   },
   progressBar: {
     height: '100%',
     backgroundColor: colors.primary,
     borderRadius: 2,
   },
+  bottomButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  bottomButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+  },
+  bottomButtonText: {
+    ...typography.caption,
+    color: colors.text,
+    fontSize: 12,
+  },
   settingsButton: {
-    alignSelf: 'flex-end',
     width: touchTarget.minWidth,
     height: touchTarget.minHeight,
     justifyContent: 'center',

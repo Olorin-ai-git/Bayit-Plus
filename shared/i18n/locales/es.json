@@ -1961,6 +1961,10 @@
         "failedToTrigger": "Error al activar auditoría. Por favor, inténtalo de nuevo.",
         "failedToLoadDetails": "Error al cargar detalles del informe.",
         "failedToRollback": "Error al revertir acción.",
+        "failedToPause": "Error al pausar auditoría",
+        "failedToResume": "Error al reanudar auditoría",
+        "failedToCancel": "Error al cancelar auditoría",
+        "failedToInterject": "Error al enviar mensaje al agente AI",
         "budgetExceeded": "Límite de presupuesto mensual excedido. No se puede ejecutar auditoría.",
         "contactAdmin": "La página del Bibliotecario no puede cargarse sin la configuración adecuada.\nPor favor, contacta a tu administrador."
       },
@@ -2144,7 +2148,16 @@
         },
         "pause": "Pausar",
         "resume": "Reanudar",
-        "cancel": "Cancelar"
+        "cancel": "Cancelar",
+        "interject": "Intervenir",
+        "interjectTitle": "Enviar Mensaje al Agente AI",
+        "interjectHint": "Este mensaje se inyectará en la conversación del agente AI en la próxima iteración. Úsalo para proporcionar contexto adicional, redirigir el enfoque o dar instrucciones específicas.",
+        "interjectPlaceholder": "ej., Enfócate solo en películas, omite series por ahora...",
+        "sendInterject": "Enviar",
+        "interjectSuccess": "Mensaje enviado al agente AI exitosamente",
+        "pauseSuccess": "Auditoría pausada exitosamente",
+        "resumeSuccess": "Auditoría reanudada exitosamente",
+        "cancelSuccess": "Auditoría cancelada exitosamente"
       },
       "progress": {
         "batch": "Lote {{current}} de {{total}}",

@@ -33,10 +33,11 @@ Before fixing metadata, posters, or subtitles, you MUST validate content integri
    - Content must have a valid `content_type` (movie or series)
    - Content must belong to a valid category
 
-3. **Track Integrity Issues:**
+3. **Handle Broken Streams:**
    - Count items with broken streams
-   - Count items with missing required fields
-   - Flag broken content for manual review using `flag_for_manual_review`
+   - **DELETE broken content** using `delete_broken_content(content_id, reason)`
+   - Do NOT flag for manual review - just delete it immediately
+   - Broken content is useless and should be removed
 
 4. **Skip Invalid Content:**
    - DO NOT fetch TMDB metadata for content with broken streams
@@ -45,7 +46,7 @@ Before fixing metadata, posters, or subtitles, you MUST validate content integri
 
 **Workflow:**
 - For each content item: check_stream_url FIRST
-- If stream is broken → flag_for_manual_review and SKIP all other processing
+- If stream is broken → delete_broken_content and SKIP all other processing
 - If stream is valid → proceed with other enabled capabilities
 """,
 
@@ -66,6 +67,10 @@ Your task includes fetching missing posters and metadata from TMDB:
 - Fix missing posters using `fix_missing_poster(content_id, tmdb_id)`
 - Fix missing metadata (description, year, genres, cast, director) using `fix_missing_metadata(content_id, tmdb_id)`
 - IMPORTANT: Clean dirty titles FIRST before searching TMDB (dirty titles won't match)
+- CRITICAL FOR SERIES: When searching TMDB for series/TV shows, use ONLY the series name - strip all season and episode indicators (S01E01, S02E03, "Season 1", "Episode 5", etc.)
+  - Example: "Spy Master S01E01" → search for "Spy Master"
+  - Example: "Breaking Bad S05E16" → search for "Breaking Bad"
+  - Example: "The Office Season 3 Episode 12" → search for "The Office"
 """,
 
     "subtitles": """
@@ -335,14 +340,23 @@ def build_comprehensive_initial_prompt(
 4. **IMPORTANT - Logging:** Always document what you're checking and what you found
 5. **CRITICAL:** Always clean titles BEFORE trying to fix posters/metadata (TMDB needs clean titles to search!)
 6. Fix issues you're confident about (>90% confidence for recategorization, 100% for poster/metadata)
-7. Flag items for manual review when uncertain
-8. **IMPORTANT:** If you find severe or critical issues - send email alert to admins
-9. Adapt your strategy based on what you discover
-10. At the end, call complete_audit with a comprehensive summary
+7. **DELETE broken content** - use delete_broken_content tool for items with broken streams (don't flag for review)
+8. Flag items for manual review only when uncertain about non-stream issues
+9. **IMPORTANT:** If you find severe or critical issues - send email alert to admins
+10. Adapt your strategy based on what you discover
+11. At the end, call complete_audit with a comprehensive summary
 
 **CRITICAL WORKFLOW:**
 - Dirty title "Avatar p - MX]" → clean_title FIRST → then search_tmdb → then fix_missing_poster
 - Never try to fix poster/metadata without cleaning the title first!
+
+**CRITICAL FOR SERIES TMDB SEARCHES:**
+- When searching TMDB for series/TV shows, use ONLY the series name
+- Strip ALL season and episode indicators before searching (S01E01, S02E03, "Season 1", "Episode 5", etc.)
+- Example: "Spy Master S01E01" → search for "Spy Master"
+- Example: "Breaking Bad S05E16" → search for "Breaking Bad"
+- Example: "The Office Season 3 Episode 12" → search for "The Office"
+- TMDB returns the TV show, not individual episodes - so episode numbers will cause search failures!
 
 **CRITICAL DISTINCTION - 2 Types of Issues:**
 
@@ -380,7 +394,8 @@ These will ONLY appear in AI Insights in complete_audit, NOT as fixes_applied!
 - search_external_subtitles - Search OpenSubtitles/TMDB without downloading
 - download_external_subtitle - Download subtitle from OpenSubtitles/TMDB
 - batch_download_subtitles - Batch download subtitles for multiple items
-- flag_for_manual_review - Flag for manual review
+- flag_for_manual_review - Flag for manual review (NOT for broken streams)
+- delete_broken_content - Delete content with broken/inaccessible streams
 
 **Available Tools - Storage Monitoring:**
 - check_storage_usage - Check storage usage (total size, file count, breakdown by type)

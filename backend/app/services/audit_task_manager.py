@@ -1,9 +1,9 @@
 """
 Audit Task Manager
-Manages running audit tasks, allowing pause, resume, and cancellation.
+Manages running audit tasks, allowing pause, resume, cancellation, and message injection.
 """
 import asyncio
-from typing import Dict, Optional, Set
+from typing import Dict, Optional, Set, List, Any
 from datetime import datetime
 import logging
 
@@ -12,22 +12,23 @@ logger = logging.getLogger(__name__)
 
 class AuditTaskManager:
     """Singleton manager for tracking and controlling running audit tasks."""
-    
+
     _instance = None
-    
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialized = False
         return cls._instance
-    
+
     def __init__(self):
         if self._initialized:
             return
-            
+
         self._running_tasks: Dict[str, asyncio.Task] = {}
         self._task_states: Dict[str, str] = {}  # audit_id -> state (running, paused, cancelled)
         self._pause_events: Dict[str, asyncio.Event] = {}  # audit_id -> event to wait when paused
+        self._pending_messages: Dict[str, List[Dict[str, Any]]] = {}  # audit_id -> list of messages
         self._initialized = True
         logger.info("AuditTaskManager initialized")
     
@@ -47,6 +48,8 @@ class AuditTaskManager:
             del self._task_states[audit_id]
         if audit_id in self._pause_events:
             del self._pause_events[audit_id]
+        if audit_id in self._pending_messages:
+            del self._pending_messages[audit_id]
         logger.info(f"Unregistered audit task: {audit_id}")
     
     def get_task_state(self, audit_id: str) -> Optional[str]:
@@ -164,6 +167,67 @@ class AuditTaskManager:
         ]
         for audit_id in completed:
             self.unregister_task(audit_id)
+
+    def queue_message(
+        self,
+        audit_id: str,
+        message: str,
+        source: str = "admin"
+    ) -> bool:
+        """
+        Queue a message for injection into the audit conversation.
+
+        Args:
+            audit_id: The audit ID to queue the message for
+            message: The message content to inject
+            source: The source of the message (e.g., "admin")
+
+        Returns:
+            True if message was queued successfully, False if audit not found
+        """
+        if audit_id not in self._running_tasks:
+            logger.warning(f"Cannot queue message: audit {audit_id} not found")
+            return False
+
+        if audit_id not in self._pending_messages:
+            self._pending_messages[audit_id] = []
+
+        self._pending_messages[audit_id].append({
+            "content": message,
+            "source": source,
+            "timestamp": datetime.utcnow()
+        })
+        logger.info(f"Queued message for audit {audit_id}: {message[:100]}...")
+        return True
+
+    def get_pending_messages(self, audit_id: str) -> List[Dict[str, Any]]:
+        """
+        Get and clear pending messages for an audit.
+
+        Args:
+            audit_id: The audit ID to get messages for
+
+        Returns:
+            List of pending messages (cleared after retrieval)
+        """
+        if audit_id not in self._pending_messages:
+            return []
+
+        messages = self._pending_messages[audit_id]
+        self._pending_messages[audit_id] = []
+        return messages
+
+    def has_pending_messages(self, audit_id: str) -> bool:
+        """
+        Check if there are pending messages for an audit.
+
+        Args:
+            audit_id: The audit ID to check
+
+        Returns:
+            True if there are pending messages, False otherwise
+        """
+        return bool(self._pending_messages.get(audit_id))
 
 
 # Global singleton instance

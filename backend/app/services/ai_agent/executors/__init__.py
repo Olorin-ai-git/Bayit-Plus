@@ -18,6 +18,7 @@ from .metadata import (
     execute_reclassify_as_series,
     execute_reclassify_as_movie,
     execute_flag_for_manual_review,
+    execute_delete_broken_content,
     execute_clean_title,
 )
 
@@ -90,6 +91,7 @@ __all__ = [
     "execute_reclassify_as_series",
     "execute_reclassify_as_movie",
     "execute_flag_for_manual_review",
+    "execute_delete_broken_content",
     "execute_clean_title",
     # Stream
     "execute_check_stream_url",

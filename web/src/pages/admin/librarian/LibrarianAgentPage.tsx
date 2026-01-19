@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Activity, DollarSign, Clock, Play, Bot, FileText, Eye, Minus, Plus } from 'lucide-react';
-import { GlassButton, GlassToggle, GlassStatCard, GlassBadge, GlassModal } from '@bayit/shared/ui';
+import { RefreshCw, Activity, DollarSign, Clock, Play, Bot, FileText, Eye, Minus, Plus, MessageSquare } from 'lucide-react';
+import { GlassButton, GlassToggle, GlassStatCard, GlassBadge, GlassModal, GlassTextarea } from '@bayit/shared/ui';
 import { GlassLog, GlassTable, GlassDraggableExpander } from '@bayit/shared/ui/web';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
@@ -107,6 +107,13 @@ const LibrarianAgentPage = () => {
     handlePauseAudit,
     handleResumeAudit,
     handleCancelAudit,
+    // Interject
+    interjectModalVisible,
+    setInterjectModalVisible,
+    interjectMessage,
+    setInterjectMessage,
+    interjectingAudit,
+    handleInterjectAudit,
   } = useAuditControl({
     config,
     reports,
@@ -582,6 +589,14 @@ const LibrarianAgentPage = () => {
             {/* Audit controls if running */}
             {livePanelReport.status === 'in_progress' && (
               <View style={[styles.auditControlsRow, { flexDirection, justifyContent: isRTL ? 'flex-start' : 'flex-end' }]}>
+                <GlassButton
+                  title={t('admin.librarian.audit.interject', 'Interject')}
+                  variant="secondary"
+                  icon={<MessageSquare size={16} color={colors.text} />}
+                  onPress={() => setInterjectModalVisible(true)}
+                  disabled={interjectingAudit || auditPaused}
+                  size="sm"
+                />
                 {auditPaused ? (
                   <GlassButton
                     title={t('admin.librarian.audit.resume', 'Resume')}
@@ -792,6 +807,43 @@ const LibrarianAgentPage = () => {
         buttons={[{ text: t('common.ok'), style: 'default' }]}
         dismissable
       />
+
+      {/* Interject Modal */}
+      <GlassModal
+        visible={interjectModalVisible}
+        type="info"
+        title={t('admin.librarian.audit.interjectTitle', 'Send Message to AI Agent')}
+        onClose={() => {
+          setInterjectModalVisible(false);
+          setInterjectMessage('');
+        }}
+        buttons={[
+          {
+            text: t('common.cancel'),
+            style: 'cancel',
+          },
+          {
+            text: t('admin.librarian.audit.sendInterject', 'Send'),
+            style: 'default',
+            onPress: () => handleInterjectAudit(livePanelReport?.audit_id, interjectMessage),
+            disabled: !interjectMessage.trim() || interjectingAudit,
+          },
+        ]}
+        dismissable
+      >
+        <View style={styles.interjectModalContent}>
+          <Text style={[styles.interjectHint, { textAlign }]}>
+            {t('admin.librarian.audit.interjectHint', 'This message will be injected into the AI agent conversation at the next iteration. Use it to provide additional context, redirect focus, or give specific instructions.')}
+          </Text>
+          <GlassTextarea
+            value={interjectMessage}
+            onChangeText={setInterjectMessage}
+            placeholder={t('admin.librarian.audit.interjectPlaceholder', 'e.g., Focus only on movies, skip series for now...')}
+            rows={4}
+            maxLength={1000}
+          />
+        </View>
+      </GlassModal>
     </ScrollView>
   );
 };
@@ -989,6 +1041,16 @@ const styles = StyleSheet.create({
   cellText: {
     fontSize: 14,
     color: colors.text,
+  },
+  interjectModalContent: {
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.md,
+    gap: spacing.md,
+  },
+  interjectHint: {
+    fontSize: 13,
+    color: colors.textMuted,
+    lineHeight: 18,
   },
 });
 

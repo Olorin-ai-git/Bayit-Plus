@@ -128,6 +128,13 @@ class Content(Document):
     kids_moderated_by: Optional[str] = None  # User ID who moderated
     kids_moderated_at: Optional[datetime] = None  # When moderation occurred
 
+    # Manual review flags (set by AI agent for broken streams, integrity issues, etc.)
+    needs_review: bool = False
+    review_reason: Optional[str] = None
+    review_priority: Optional[str] = None  # "low", "medium", "high", "critical"
+    review_issue_type: Optional[str] = None  # "broken_stream", "missing_metadata", "duplicate", etc.
+    review_flagged_at: Optional[datetime] = None
+
     # Analytics
     view_count: int = 0
     avg_rating: float = 0.0
@@ -160,6 +167,9 @@ class Content(Document):
             "age_rating",
             ("is_kids_content", "age_rating"),
             ("is_kids_content", "is_published", "age_rating"),
+            # Manual review indexes
+            "needs_review",
+            ("needs_review", "review_priority"),
         ]
 
 

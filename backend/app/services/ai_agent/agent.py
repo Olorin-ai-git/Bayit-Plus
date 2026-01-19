@@ -125,6 +125,28 @@ async def run_ai_agent_audit(
         if audit_id:
             await audit_task_manager.check_should_continue(audit_id)
 
+            # Check for and inject any pending admin messages
+            pending_messages = audit_task_manager.get_pending_messages(audit_id)
+            if pending_messages:
+                for msg in pending_messages:
+                    interjection = f"""
+[ADMIN INTERJECTION]
+The administrator has provided the following context:
+
+"{msg['content']}"
+
+Please acknowledge this interjection and adjust your approach accordingly.
+[END INTERJECTION]
+"""
+                    conversation_history.append({"role": "user", "content": interjection})
+                    await log_to_database(
+                        audit_report,
+                        "info",
+                        f"Admin interjection: {msg['content'][:200]}",
+                        "Admin"
+                    )
+                    logger.info(f"Injected admin message: {msg['content'][:100]}...")
+
         logger.info(f"\nIteration {iteration}/{max_iterations}")
 
         try:

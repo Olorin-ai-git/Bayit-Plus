@@ -5,6 +5,7 @@ import {
   pauseAudit,
   resumeAudit,
   cancelAudit,
+  interjectAuditMessage,
   getAuditReports,
   getAuditReportDetails,
   LibrarianConfig,
@@ -48,6 +49,11 @@ export const useAuditControl = ({
   const [cancellingAudit, setCancellingAudit] = useState(false);
   const [auditPaused, setAuditPaused] = useState(false);
   const [pendingAuditType, setPendingAuditType] = useState<'daily_incremental' | 'ai_agent' | null>(null);
+
+  // Interject state
+  const [interjectModalVisible, setInterjectModalVisible] = useState(false);
+  const [interjectMessage, setInterjectMessage] = useState('');
+  const [interjectingAudit, setInterjectingAudit] = useState(false);
 
   const executeAudit = useCallback(async (auditType: 'daily_incremental' | 'ai_agent') => {
     if (!config) {
@@ -229,6 +235,25 @@ export const useAuditControl = ({
     }
   }, [t, setLivePanelReport, setSuccessMessage, setSuccessModalOpen, setErrorMessage, setErrorModalOpen, loadData]);
 
+  const handleInterjectAudit = useCallback(async (auditId: string | undefined, message: string) => {
+    if (!auditId || !message.trim()) return;
+
+    setInterjectingAudit(true);
+    try {
+      await interjectAuditMessage(auditId, message.trim());
+      setInterjectMessage('');
+      setInterjectModalVisible(false);
+      setSuccessMessage(t('admin.librarian.audit.interjectSuccess', 'Message sent successfully'));
+      setSuccessModalOpen(true);
+    } catch (error) {
+      logger.error('Failed to interject audit:', error);
+      setErrorMessage(t('admin.librarian.errors.failedToInterject', 'Failed to send message'));
+      setErrorModalOpen(true);
+    } finally {
+      setInterjectingAudit(false);
+    }
+  }, [t, setSuccessMessage, setSuccessModalOpen, setErrorMessage, setErrorModalOpen]);
+
   return {
     triggering,
     pausingAudit,
@@ -241,5 +266,12 @@ export const useAuditControl = ({
     handlePauseAudit,
     handleResumeAudit,
     handleCancelAudit,
+    // Interject
+    interjectModalVisible,
+    setInterjectModalVisible,
+    interjectMessage,
+    setInterjectMessage,
+    interjectingAudit,
+    handleInterjectAudit,
   };
 };

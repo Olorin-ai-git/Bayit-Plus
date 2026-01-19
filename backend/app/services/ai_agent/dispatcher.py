@@ -20,6 +20,7 @@ from app.services.ai_agent.executors import (
     execute_reclassify_as_series,
     execute_reclassify_as_movie,
     execute_flag_for_manual_review,
+    execute_delete_broken_content,
     execute_clean_title,
     # Stream
     execute_check_stream_url,
@@ -109,6 +110,9 @@ async def execute_tool(
 
         elif tool_name == "flag_for_manual_review":
             return await execute_flag_for_manual_review(**tool_input)
+
+        elif tool_name == "delete_broken_content":
+            return await execute_delete_broken_content(**tool_input, audit_id=audit_id, dry_run=dry_run)
 
         elif tool_name == "clean_title":
             return await execute_clean_title(**tool_input, audit_id=audit_id, dry_run=dry_run)

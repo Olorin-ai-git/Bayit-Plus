@@ -185,6 +185,19 @@ class LibrarianConfigResponse(BaseModel):
     gcp_project_id: str
 
 
+class InterjectMessageRequest(BaseModel):
+    """Request model for injecting a message into a running audit."""
+    message: str
+    source: str = "admin"
+
+
+class InterjectMessageResponse(BaseModel):
+    """Response model for interject message endpoint."""
+    success: bool
+    message: str
+    audit_id: str
+
+
 # ============ API ENDPOINTS ============
 
 @router.get("/admin/librarian/config", response_model=LibrarianConfigResponse)
@@ -824,13 +837,85 @@ async def cancel_audit(
         await audit.save()
         
         return {"status": "cancelled", "message": "Audit cancelled successfully"}
-    
+
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to cancel audit: {str(e)}"
+        )
+
+
+@router.post("/admin/librarian/audits/{audit_id}/interject", response_model=InterjectMessageResponse)
+async def interject_audit_message(
+    audit_id: str,
+    request: InterjectMessageRequest,
+    current_user: User = Depends(require_admin())
+):
+    """
+    Inject a message into a running audit's conversation with Claude.
+
+    The message will be delivered to the AI agent at the next iteration,
+    allowing admins to provide additional context or redirect the agent's focus.
+    """
+    try:
+        # Find the audit to validate it exists
+        try:
+            object_id = PydanticObjectId(audit_id)
+            audit = await AuditReport.get(object_id)
+        except Exception:
+            audit = await AuditReport.find_one({"audit_id": audit_id})
+
+        if not audit:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Audit not found"
+            )
+
+        # Validate audit is in a state where messages can be injected
+        if audit.status not in ["in_progress", "paused"]:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Cannot interject: audit status is '{audit.status}'. "
+                       f"Messages can only be sent to in_progress or paused audits."
+            )
+
+        # Validate message is not empty
+        if not request.message or not request.message.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Message cannot be empty"
+            )
+
+        # Queue the message for delivery
+        success = audit_task_manager.queue_message(
+            audit_id=audit_id,
+            message=request.message.strip(),
+            source=request.source
+        )
+
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Running audit task not found. The audit may have completed."
+            )
+
+        logger.info(f"Admin interjection queued for audit {audit_id}: {request.message[:100]}...")
+
+        return InterjectMessageResponse(
+            success=True,
+            message="Interjection queued successfully. It will be delivered at the next agent iteration.",
+            audit_id=audit_id
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to interject message for audit {audit_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to interject message: {str(e)}"
         )
 
 

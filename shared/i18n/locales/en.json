@@ -1721,6 +1721,7 @@
         "failedToPause": "Failed to pause audit",
         "failedToResume": "Failed to resume audit",
         "failedToCancel": "Failed to cancel audit",
+        "failedToInterject": "Failed to send message to AI agent",
         "auditAlreadyRunning": "An audit is already running. Please wait for it to complete or cancel it before starting a new one.",
         "budgetExceeded": "Monthly budget limit exceeded. Cannot run audit.",
         "contactAdmin": "The Librarian page cannot load without proper configuration.\nPlease contact your administrator."
@@ -1923,6 +1924,12 @@
         "pause": "Pause",
         "resume": "Resume",
         "cancel": "Cancel",
+        "interject": "Interject",
+        "interjectTitle": "Send Message to AI Agent",
+        "interjectHint": "This message will be injected into the AI agent conversation at the next iteration. Use it to provide additional context, redirect focus, or give specific instructions.",
+        "interjectPlaceholder": "e.g., Focus only on movies, skip series for now...",
+        "sendInterject": "Send",
+        "interjectSuccess": "Message sent to AI agent successfully",
         "pauseSuccess": "Audit paused successfully",
         "resumeSuccess": "Audit resumed successfully",
         "cancelSuccess": "Audit cancelled successfully"

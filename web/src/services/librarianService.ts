@@ -308,6 +308,33 @@ export const cancelAudit = async (auditId: string): Promise<{ status: string; me
   return response.json();
 };
 
+export interface InterjectMessageResponse {
+  success: boolean;
+  message: string;
+  audit_id: string;
+}
+
+export const interjectAuditMessage = async (
+  auditId: string,
+  message: string
+): Promise<InterjectMessageResponse> => {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/librarian/audits/${auditId}/interject`,
+    {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ message, source: 'admin' }),
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ detail: 'Failed to send interjection' }));
+    throw new Error(errorData.detail || 'Failed to send interjection');
+  }
+
+  return response.json();
+};
+
 export const getLibrarianActions = async (
   auditId?: string,
   actionType?: string,

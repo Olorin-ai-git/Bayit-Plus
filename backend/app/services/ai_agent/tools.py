@@ -162,7 +162,7 @@ TOOLS = [
     },
     {
         "name": "flag_for_manual_review",
-        "description": "Flag a content item for manual human review. Use this when you find an issue but aren't confident about the fix, or when the issue requires human judgment.",
+        "description": "Flag a content item for manual human review. Use this when you find an issue but aren't confident about the fix, or when the issue requires human judgment. NOTE: Do NOT use this for broken streams - use delete_broken_content instead.",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -173,7 +173,7 @@ TOOLS = [
                 "issue_type": {
                     "type": "string",
                     "description": "Type of issue",
-                    "enum": ["broken_stream", "missing_metadata", "misclassification", "duplicate", "quality_issue", "other"]
+                    "enum": ["missing_metadata", "misclassification", "duplicate", "quality_issue", "other"]
                 },
                 "reason": {
                     "type": "string",
@@ -187,6 +187,28 @@ TOOLS = [
                 }
             },
             "required": ["content_id", "issue_type", "reason"]
+        }
+    },
+    {
+        "name": "delete_broken_content",
+        "description": "Delete a content item that has a broken or inaccessible stream URL. Use this when check_stream_url confirms the stream is broken/inaccessible. This permanently removes the content from the database and its associated GCS files. IMPORTANT: Only use after confirming stream is broken with check_stream_url.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_id": {
+                    "type": "string",
+                    "description": "The ID of the content item to delete"
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Reason for deletion (e.g., 'Stream URL returned 404', 'File not found in GCS')"
+                },
+                "stream_check_result": {
+                    "type": "string",
+                    "description": "The result from check_stream_url that confirms the stream is broken"
+                }
+            },
+            "required": ["content_id", "reason"]
         }
     },
     {

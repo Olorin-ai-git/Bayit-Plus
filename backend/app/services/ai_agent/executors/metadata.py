@@ -403,6 +403,7 @@ async def execute_flag_for_manual_review(
         content.review_reason = reason
         content.review_priority = priority
         content.review_issue_type = issue_type
+        content.review_flagged_at = datetime.utcnow()
         content.updated_at = datetime.utcnow()
         await content.save()
 
@@ -417,6 +418,87 @@ async def execute_flag_for_manual_review(
 
     except Exception as e:
         logger.error(f"Error in flag_for_manual_review: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_delete_broken_content(
+    content_id: str,
+    reason: str,
+    audit_id: str,
+    stream_check_result: Optional[str] = None,
+    dry_run: bool = False
+) -> Dict[str, Any]:
+    """
+    Delete a content item with a broken/inaccessible stream.
+
+    This permanently removes the content from the database.
+    GCS files will be cleaned up by the orphaned data cleanup process.
+    """
+    try:
+        content = await Content.get(PydanticObjectId(content_id))
+        if not content:
+            return {"success": False, "error": "Content not found"}
+
+        title = content.title
+        content_type = content.content_type
+        stream_url = content.stream_url
+
+        if dry_run:
+            return {
+                "success": True,
+                "dry_run": True,
+                "message": f"[DRY RUN] Would delete broken content '{title}'",
+                "title": title,
+                "content_type": content_type,
+                "stream_url": stream_url,
+                "reason": reason
+            }
+
+        # Store info for the action log before deletion
+        before_state = {
+            "title": title,
+            "content_type": content_type,
+            "stream_url": stream_url,
+            "exists": True
+        }
+
+        # Delete the content from database
+        await content.delete()
+
+        after_state = {
+            "deleted": True,
+            "reason": reason,
+            "stream_check_result": stream_check_result
+        }
+
+        # Log the action
+        action = LibrarianAction(
+            audit_id=audit_id,
+            action_type="delete_broken_content",
+            content_id=content_id,
+            content_title=title,
+            before_state=before_state,
+            after_state=after_state,
+            confidence=1.0,
+            auto_approved=True,
+            reason=reason,
+            issue_type="broken_stream"
+        )
+        await action.insert()
+
+        logger.info(f"Deleted broken content: {title} (ID: {content_id}). Reason: {reason}")
+
+        return {
+            "success": True,
+            "deleted": True,
+            "message": f"Deleted broken content '{title}'",
+            "title": title,
+            "content_type": content_type,
+            "reason": reason
+        }
+
+    except Exception as e:
+        logger.error(f"Error in delete_broken_content: {str(e)}")
         return {"success": False, "error": str(e)}
 
 
