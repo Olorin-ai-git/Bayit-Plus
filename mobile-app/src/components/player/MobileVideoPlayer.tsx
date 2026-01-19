@@ -83,7 +83,7 @@ export default function MobileVideoPlayer({
         repeat={false}
         playInBackground={false} // Video stops in background (use audio widgets for background audio)
         playWhenInactive={false}
-        pictureInPicture={true} // Enable iOS native PiP
+        // PiP is handled by react-native-video automatically on iOS
         onLoad={handleLoad}
         onError={handleError}
         onBuffer={handleBuffer}

@@ -22,3 +22,7 @@ export * from './SearchScreenMobile';
 export * from './SettingsScreenMobile';
 export * from './LanguageSettingsScreen';
 export * from './NotificationSettingsScreen';
+
+// User content screens
+export * from './FavoritesScreenMobile';
+export * from './WatchlistScreenMobile';

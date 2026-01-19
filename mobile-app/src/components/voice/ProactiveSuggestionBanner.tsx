@@ -138,8 +138,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 16,
     elevation: 12,
-    // Add backdrop blur effect
-    backdropFilter: 'blur(20px)',
+    // Note: backdropFilter is web-only, RN uses opacity for similar effect
   },
   iconContainer: {
     width: 48,

@@ -992,6 +992,7 @@
     },
     "title": "Watchlist",
     "items": "items",
+    "watched": "watched",
     "empty": "Your watchlist is empty",
     "emptyHint": "Start watching and items will appear here"
   },

@@ -88,10 +88,22 @@ export const RadioScreenMobile: React.FC = () => {
     try {
       setIsLoading(true);
 
-      const [stationsRes, categoriesRes] = await Promise.all([
+      // Use Promise.allSettled for graceful partial failure handling
+      const results = await Promise.allSettled([
         radioService.getStations(),
         contentService.getCategories(),
-      ]) as [any, any];
+      ]);
+
+      const stationsRes = results[0].status === 'fulfilled' ? results[0].value : { stations: [] };
+      const categoriesRes = results[1].status === 'fulfilled' ? results[1].value : { categories: [] };
+
+      // Log any failures for debugging
+      if (results[0].status === 'rejected') {
+        console.warn('Failed to load radio stations:', results[0].reason);
+      }
+      if (results[1].status === 'rejected') {
+        console.warn('Failed to load categories:', results[1].reason);
+      }
 
       const stationsData = (stationsRes.stations || []).map((station: any) => ({
         ...station,

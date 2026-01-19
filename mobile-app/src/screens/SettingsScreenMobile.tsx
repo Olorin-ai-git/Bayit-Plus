@@ -29,6 +29,38 @@ import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
 import { spacing, colors, typography, touchTarget } from '../theme';
 
+type SettingsItemBase = {
+  id: string;
+  title: string;
+  subtitle?: string;
+};
+
+type SettingsItemPress = SettingsItemBase & {
+  onPress: () => void;
+  showChevron: boolean;
+  showToggle?: never;
+  value?: never;
+  onToggle?: never;
+};
+
+type SettingsItemToggle = SettingsItemBase & {
+  value: boolean;
+  onToggle: (value: boolean) => void;
+  showToggle: boolean;
+  onPress?: never;
+  showChevron?: never;
+};
+
+type SettingsItemInfo = SettingsItemBase & {
+  onPress?: never;
+  showChevron?: never;
+  showToggle?: never;
+  value?: never;
+  onToggle?: never;
+};
+
+type SettingsItem = SettingsItemPress | SettingsItemToggle | SettingsItemInfo;
+
 export const SettingsScreenMobile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
@@ -49,12 +81,12 @@ export const SettingsScreenMobile: React.FC = () => {
 
   const handleToggle = (setter: (value: boolean) => void, value: boolean) => {
     if (Platform.OS === 'ios') {
-      ReactNativeHapticFeedback.trigger('selectionClick');
+      ReactNativeHapticFeedback.trigger('selection');
     }
     setter(value);
   };
 
-  const settingsSections = [
+  const settingsSections: { title: string; items: SettingsItem[] }[] = [
     {
       title: t('settings.general'),
       items: [
@@ -182,11 +214,11 @@ export const SettingsScreenMobile: React.FC = () => {
         <View key={section.title} style={styles.section}>
           <Text style={styles.sectionTitle}>{section.title}</Text>
 
-          {section.items.map((item, itemIndex) => (
+          {section.items.map((item) => (
             <Pressable
               key={item.id}
-              onPress={item.onPress}
-              disabled={!item.onPress && !item.onToggle}
+              onPress={'onPress' in item && item.onPress ? item.onPress : undefined}
+              disabled={!('onPress' in item) && !('onToggle' in item)}
               style={({ pressed }) => [pressed && styles.itemPressed]}
             >
               <GlassView style={styles.item}>
@@ -197,15 +229,15 @@ export const SettingsScreenMobile: React.FC = () => {
                   )}
                 </View>
                 <View style={styles.itemRight}>
-                  {item.showToggle && item.onToggle && (
+                  {'showToggle' in item && item.showToggle && 'onToggle' in item && item.onToggle && (
                     <Switch
-                      value={item.value}
+                      value={'value' in item ? item.value : false}
                       onValueChange={item.onToggle}
                       trackColor={{ false: colors.backgroundElevated, true: colors.primary }}
                       thumbColor={colors.text}
                     />
                   )}
-                  {item.showChevron && (
+                  {'showChevron' in item && item.showChevron && (
                     <Text style={styles.chevron}>{isRTL ? '‹' : '›'}</Text>
                   )}
                 </View>

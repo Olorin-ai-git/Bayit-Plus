@@ -16,6 +16,8 @@
       "@/*": ["./src/*"],
       "@bayit/shared": ["../shared/components"],
       "@bayit/shared/*": ["../shared/components/*"],
+      "@bayit/shared-components": ["../shared/components"],
+      "@bayit/shared-components/*": ["../shared/components/*"],
       "@bayit/shared-screens": ["../shared/screens"],
       "@bayit/shared-screens/*": ["../shared/screens/*"],
       "@bayit/shared-services": ["../shared/services"],
@@ -35,18 +37,24 @@
       "@bayit/shared-utils": ["../shared/utils"],
       "@bayit/shared-utils/*": ["../shared/utils/*"],
       "@bayit/shared-assets": ["../shared/assets"],
-      "@bayit/shared-assets/*": ["../shared/assets/*"]
+      "@bayit/shared-assets/*": ["../shared/assets/*"],
+      "@bayit/shared/components/*": ["../shared/components/*"],
+      "@bayit/shared/hooks/*": ["../shared/hooks/*"],
+      "@bayit/shared/services/*": ["../shared/services/*"],
+      "@bayit/shared/utils/*": ["../shared/utils/*"],
+      "@bayit/shared/stores/*": ["../shared/stores/*"]
     }
   },
   "include": [
     "src/**/*",
     "App.tsx",
-    "index.js",
-    "../shared/**/*"
+    "index.js"
   ],
   "exclude": [
     "node_modules",
     "ios",
-    "android"
+    "android",
+    "src/stubs",
+    "demo"
   ]
 }

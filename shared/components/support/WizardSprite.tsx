@@ -10,6 +10,8 @@ import { View, Image, Animated, StyleSheet, Platform } from 'react-native';
 import { isTV } from '../../utils/platform';
 
 // Spritesheet configurations
+// Note: FPS reduced for smoother animations
+// totalFrames set to 35 to skip corrupt last frame in 6x6 grids
 const SPRITESHEET_CONFIG = {
   clapping: {
     source: require('../../assets/images/characters/wizard/spritesheets/clapping/spritesheet.png'),
@@ -17,8 +19,8 @@ const SPRITESHEET_CONFIG = {
     frameHeight: 362,
     columns: 6,
     rows: 6,
-    totalFrames: 36,
-    fps: 12,
+    totalFrames: 35, // Skip corrupt frame 35
+    fps: 8,
     loop: false,
   },
   speaking: {
@@ -27,8 +29,8 @@ const SPRITESHEET_CONFIG = {
     frameHeight: 362,
     columns: 6,
     rows: 6,
-    totalFrames: 36,
-    fps: 12,
+    totalFrames: 35, // Skip corrupt frame 35
+    fps: 6,
     loop: true,
   },
   conjuring: {
@@ -38,7 +40,7 @@ const SPRITESHEET_CONFIG = {
     columns: 6,
     rows: 4,
     totalFrames: 24,
-    fps: 12,
+    fps: 8,
     loop: true,
   },
   thinking: {
@@ -47,8 +49,8 @@ const SPRITESHEET_CONFIG = {
     frameHeight: 362,
     columns: 6,
     rows: 6,
-    totalFrames: 36,
-    fps: 12,
+    totalFrames: 35, // Skip corrupt frame 35
+    fps: 6,
     loop: true,
   },
   listening: {
@@ -57,8 +59,8 @@ const SPRITESHEET_CONFIG = {
     frameHeight: 362,
     columns: 6,
     rows: 6,
-    totalFrames: 36,
-    fps: 12,
+    totalFrames: 35, // Skip corrupt frame 35
+    fps: 6,
     loop: true,
   },
   crying: {
@@ -67,8 +69,8 @@ const SPRITESHEET_CONFIG = {
     frameHeight: 362,
     columns: 6,
     rows: 6,
-    totalFrames: 36,
-    fps: 8,
+    totalFrames: 35, // Skip corrupt frame 35
+    fps: 6,
     loop: true,
   },
   facepalm: {
@@ -77,8 +79,8 @@ const SPRITESHEET_CONFIG = {
     frameHeight: 362,
     columns: 6,
     rows: 6,
-    totalFrames: 36,
-    fps: 10,
+    totalFrames: 35, // Skip corrupt frame 35
+    fps: 8,
     loop: false,
   },
 } as const;
@@ -213,9 +215,8 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
         style,
       ]}
     >
-      {/* Subtle glass background to mask sprite transparency - no visible border */}
-      <View style={styles.glassBackground} />
-
+      {/* Round dark background only */}
+      <View style={[styles.roundBackground, { width: scaledWidth, height: scaledHeight }]} />
       <Image
         source={config.source}
         style={[
@@ -237,17 +238,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
-    borderRadius: 999, // Full circle to match sprite shape
+    borderRadius: 999, // Circular clip
   },
-  glassBackground: {
+  roundBackground: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(10, 10, 10, 0.7)', // glass.bg - blends with panel
-    borderRadius: 999, // Full circle
-    // No visible border - transparent masking only
+    backgroundColor: '#0a0a0f',
+    borderRadius: 999,
   },
   spritesheet: {
     position: 'absolute',

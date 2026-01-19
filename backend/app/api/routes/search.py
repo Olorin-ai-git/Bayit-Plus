@@ -49,7 +49,7 @@ class ClickTrackingRequest(BaseModel):
     time_to_click_ms: int = Field(..., ge=0, description="Time from search to click")
 
 
-@router.post("/unified", response_model=SearchResults)
+@router.get("/unified", response_model=SearchResults)
 async def unified_search_endpoint(
     query: str = Query("", description="Search query text"),
     content_types: List[str] = Query(["vod"], description="Content types: vod, live, radio, podcast"),
@@ -125,7 +125,7 @@ async def unified_search_endpoint(
         )
 
 
-@router.post("/subtitles")
+@router.get("/subtitles")
 async def search_in_subtitles(
     query: str = Query(..., min_length=2, description="Text to search in subtitles"),
     content_types: List[str] = Query(["vod"], description="Content types to search"),

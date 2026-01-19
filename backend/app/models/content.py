@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional, List, Union, Dict, Any
 from beanie import Document
 from pydantic import BaseModel, Field
+from pymongo import IndexModel, ASCENDING
 
 
 class ContentBase(BaseModel):
@@ -147,9 +148,16 @@ class Content(Document):
             "series_id",
             "created_at",
             "updated_at",
-            # Unique sparse index on file_hash to prevent duplicate uploads
-            # Sparse allows multiple null values (for content without hash)
-            {"keys": [("file_hash", 1)], "unique": True, "sparse": True},
+            # Unique index on file_hash to prevent duplicate uploads
+            # partialFilterExpression excludes null values
+            IndexModel(
+                [("file_hash", ASCENDING)],
+                unique=True,
+                name="file_hash_unique",
+                partialFilterExpression={
+                    "file_hash": {"$exists": True, "$type": "string"}
+                }
+            ),
             ("category_id", "is_published"),
             ("is_featured", "is_published"),
             # Search indexes (added for comprehensive search functionality)
@@ -173,17 +181,17 @@ class Content(Document):
             "content_type",
             # Compound unique index for episode uniqueness
             # Prevents duplicate episodes (same series + season + episode)
-            # Sparse to allow nulls - only enforces when all three fields are present
-            {
-                "keys": [("series_id", 1), ("season", 1), ("episode", 1)],
-                "unique": True,
-                "sparse": True,
-                "partialFilterExpression": {
-                    "series_id": {"$ne": None},
-                    "season": {"$ne": None},
-                    "episode": {"$ne": None}
+            # partialFilterExpression ensures index only applies when all fields are present
+            IndexModel(
+                [("series_id", ASCENDING), ("season", ASCENDING), ("episode", ASCENDING)],
+                unique=True,
+                name="episode_uniqueness",
+                partialFilterExpression={
+                    "series_id": {"$exists": True, "$type": "string"},
+                    "season": {"$exists": True, "$type": "int"},
+                    "episode": {"$exists": True, "$type": "int"}
                 }
-            },
+            ),
         ]
 
 

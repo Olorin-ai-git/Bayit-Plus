@@ -966,6 +966,7 @@
     },
     "title": "Mi lista",
     "items": "elementos",
+    "watched": "visto",
     "empty": "Tu lista está vacía",
     "emptyHint": "Comienza a ver y los elementos aparecerán aquí"
   },

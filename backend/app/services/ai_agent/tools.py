@@ -887,6 +887,26 @@ TOOLS = [
             },
             "required": []
         }
+    },
+    {
+        "name": "run_full_cleanup",
+        "description": "Run a comprehensive cleanup of all integrity issues: orphaned GCS files, orphaned Content records, and stuck upload jobs. Use dry_run=true first to preview all actions.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "dry_run": {
+                    "type": "boolean",
+                    "description": "If true, only report what would be cleaned up (default true)",
+                    "default": True
+                },
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum number of items to clean per category (default 100)",
+                    "default": 100
+                }
+            },
+            "required": []
+        }
     }
 ]
 

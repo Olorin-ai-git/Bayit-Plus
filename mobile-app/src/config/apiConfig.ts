@@ -20,9 +20,10 @@ export const Config = {
     production: 'https://api.bayit.tv/api/v1',
 
     // Development - Local backend
-    // Make sure your backend is running on http://localhost:8000
+    // For physical iPhone: use your Mac's local IP address
+    // For simulator: localhost works
     development: {
-      ios: 'http://localhost:8000/api/v1',
+      ios: 'http://192.168.1.160:8000/api/v1', // Your Mac's IP for physical device
       android: 'http://10.0.2.2:8000/api/v1', // Android emulator special address
     },
   },

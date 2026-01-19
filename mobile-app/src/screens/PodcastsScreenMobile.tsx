@@ -106,10 +106,22 @@ export const PodcastsScreenMobile: React.FC = () => {
     try {
       setIsLoading(true);
 
-      const [podcastsRes, categoriesRes] = await Promise.all([
+      // Use Promise.allSettled for graceful partial failure handling
+      const results = await Promise.allSettled([
         podcastService.getShows(),
         contentService.getCategories(),
-      ]) as [any, any];
+      ]);
+
+      const podcastsRes = results[0].status === 'fulfilled' ? results[0].value : { shows: [] };
+      const categoriesRes = results[1].status === 'fulfilled' ? results[1].value : { categories: [] };
+
+      // Log any failures for debugging
+      if (results[0].status === 'rejected') {
+        console.warn('Failed to load podcasts:', results[0].reason);
+      }
+      if (results[1].status === 'rejected') {
+        console.warn('Failed to load categories:', results[1].reason);
+      }
 
       const podcastsData = (podcastsRes.shows || []).map((podcast: any) => ({
         ...podcast,
@@ -150,7 +162,7 @@ export const PodcastsScreenMobile: React.FC = () => {
     setLoadingEpisodes(true);
 
     try {
-      const episodesRes = await contentService.getPodcastEpisodes(podcast.id);
+      const episodesRes = await podcastService.getEpisodes(podcast.id);
       setEpisodes(episodesRes.episodes || []);
     } catch (error) {
       console.error('Error loading episodes:', error);

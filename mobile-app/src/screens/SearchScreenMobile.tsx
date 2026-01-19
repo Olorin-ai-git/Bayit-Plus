@@ -24,7 +24,7 @@ import {
   RefreshControl,
   StyleSheet,
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@bayit/shared-hooks';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -34,6 +34,7 @@ import { getLocalizedName } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { colors, spacing } from '../theme';
+import type { RootStackParamList } from '../navigation/types';
 
 // Shared search components
 import { useSearch } from '../../../shared/hooks/useSearch';
@@ -42,10 +43,13 @@ import { SearchFilters } from '../../../shared/components/search/SearchFilters';
 import { SearchResults } from '../../../shared/components/search/SearchResults';
 import { LLMSearchModal } from '../../../shared/components/search/LLMSearchModal';
 
-interface SearchRoute {
-  params?: {
-    query?: string;
-  };
+type SearchRoute = RouteProp<RootStackParamList, 'Search'>;
+
+interface SearchResult {
+  id: string;
+  type?: string;
+  title?: string;
+  [key: string]: unknown;
 }
 
 // Content type filter options
@@ -61,6 +65,7 @@ export const SearchScreenMobile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
   const route = useRoute<SearchRoute>();
+  const routeParams = route.params;
   const { isRTL } = useDirection();
   const { orientation } = useResponsive();
 
@@ -71,7 +76,7 @@ export const SearchScreenMobile: React.FC = () => {
   const [showLLMSearch, setShowLLMSearch] = useState(false);
 
   // Premium user status from auth store
-  const isPremium = useAuthStore((state) => state.isPremium());
+  const isPremium = useAuthStore((state: { isPremium: () => boolean }) => state.isPremium());
 
   // Refresh control
   const [refreshing, setRefreshing] = useState(false);
@@ -103,7 +108,7 @@ export const SearchScreenMobile: React.FC = () => {
     debounceMs: 300,
     enableLLM: isPremium,
     autoSearch: true,
-    onResultClick: (result, index) => {
+    onResultClick: (result: SearchResult, index: number) => {
       // Haptic feedback on iOS
       if (Platform.OS === 'ios') {
         ReactNativeHapticFeedback.trigger('impactLight');
@@ -113,17 +118,17 @@ export const SearchScreenMobile: React.FC = () => {
       navigation.navigate('Player', {
         id: result.id,
         title: getLocalizedName(result, i18n.language),
-        type: result.type || 'vod',
+        type: (result.type as 'vod' | 'live' | 'radio' | 'podcast') || 'vod',
       });
     },
   });
 
   // Initialize with route query parameter
   useEffect(() => {
-    if (route.params?.query) {
-      setQuery(route.params.query);
+    if (routeParams?.query) {
+      setQuery(routeParams.query);
     }
-  }, [route.params?.query]);
+  }, [routeParams?.query]);
 
   // Handle content type filter change
   const handleContentTypeChange = useCallback((typeId: string) => {
@@ -218,7 +223,7 @@ export const SearchScreenMobile: React.FC = () => {
               onVoicePress={handleVoiceResult}
               placeholder={t('search.placeholder')}
               isRTL={isRTL}
-              autoFocus={!route.params?.query}
+              autoFocus={!routeParams?.query}
             />
           </View>
 
@@ -290,7 +295,7 @@ export const SearchScreenMobile: React.FC = () => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.activeFiltersContainer}
           >
-            {filters.genres?.slice(0, 3).map((genre) => (
+            {filters.genres?.slice(0, 3).map((genre: string) => (
               <View key={genre} style={styles.genreTag}>
                 <Text style={styles.genreTagText}>{genre}</Text>
               </View>
@@ -342,7 +347,7 @@ export const SearchScreenMobile: React.FC = () => {
                 </Text>
               </View>
               <View style={styles.recentSearchesContainer}>
-                {recentSearches.map((recentQuery, idx) => (
+                {recentSearches.map((recentQuery: string, idx: number) => (
                   <TouchableOpacity
                     key={idx}
                     onPress={() => handleRecentSearchClick(recentQuery)}
@@ -365,7 +370,7 @@ export const SearchScreenMobile: React.FC = () => {
                   {t('search.suggestions', { defaultValue: 'Suggestions' })}
                 </Text>
               </View>
-              {suggestions.map((suggestion, idx) => (
+              {suggestions.map((suggestion: string, idx: number) => (
                 <TouchableOpacity
                   key={idx}
                   onPress={() => handleSuggestionClick(suggestion)}

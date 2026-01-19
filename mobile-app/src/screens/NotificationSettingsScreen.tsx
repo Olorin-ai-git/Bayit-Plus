@@ -96,7 +96,7 @@ export const NotificationSettingsScreen: React.FC = () => {
 
   const handleMasterToggle = async (value: boolean) => {
     if (Platform.OS === 'ios') {
-      ReactNativeHapticFeedback.trigger('selectionClick');
+      ReactNativeHapticFeedback.trigger('selection');
     }
 
     if (value && !masterNotifications) {
@@ -121,7 +121,7 @@ export const NotificationSettingsScreen: React.FC = () => {
 
   const handleToggle = (settingId: string, value: boolean) => {
     if (Platform.OS === 'ios') {
-      ReactNativeHapticFeedback.trigger('selectionClick');
+      ReactNativeHapticFeedback.trigger('selection');
     }
 
     setSettings((prev) =>

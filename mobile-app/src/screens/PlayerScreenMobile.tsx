@@ -18,8 +18,8 @@ import {
   Text,
   Platform,
 } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedGestureHandler,
@@ -27,7 +27,7 @@ import Animated, {
   withSpring,
   runOnJS,
 } from 'react-native-reanimated';
-import Video, { TextTrackType } from 'react-native-video';
+import Video, { TextTrackType, VideoRef } from 'react-native-video';
 import { API_BASE_URL } from '../config/appConfig';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useTranslation } from 'react-i18next';
@@ -36,14 +36,9 @@ import { useResponsive } from '../hooks/useResponsive';
 import { BottomSheet } from '../components';
 import { GlassView, GlassButton } from '@bayit/shared';
 import { spacing, colors, typography, touchTarget } from '../theme';
+import type { RootStackParamList } from '../navigation/types';
 
-interface PlayerRoute {
-  params: {
-    id: string;
-    title: string;
-    type: 'vod' | 'live' | 'radio' | 'podcast';
-  };
-}
+type PlayerRoute = RouteProp<RootStackParamList, 'Player'>;
 
 export const PlayerScreenMobile: React.FC = () => {
   const route = useRoute<PlayerRoute>();
@@ -54,7 +49,7 @@ export const PlayerScreenMobile: React.FC = () => {
 
   const { id, title, type } = route.params;
 
-  const videoRef = useRef<Video>(null);
+  const videoRef = useRef<VideoRef>(null);
   const [showControls, setShowControls] = useState(true);
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -182,7 +177,7 @@ export const PlayerScreenMobile: React.FC = () => {
           textTracks={subtitleTracks}
           selectedTextTrack={
             subtitles === 'off'
-              ? { type: 'disabled' }
+              ? undefined
               : { type: 'language', value: subtitles }
           }
         />

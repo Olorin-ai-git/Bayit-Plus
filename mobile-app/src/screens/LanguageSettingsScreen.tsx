@@ -67,7 +67,7 @@ export const LanguageSettingsScreen: React.FC = () => {
 
   const handleLanguageChange = async (languageCode: string) => {
     if (Platform.OS === 'ios') {
-      ReactNativeHapticFeedback.trigger('selectionClick');
+      ReactNativeHapticFeedback.trigger('selection');
     }
 
     setSelectedLanguage(languageCode);
@@ -81,14 +81,14 @@ export const LanguageSettingsScreen: React.FC = () => {
 
   const handleSubtitleLanguageChange = (languageCode: string) => {
     if (Platform.OS === 'ios') {
-      ReactNativeHapticFeedback.trigger('selectionClick');
+      ReactNativeHapticFeedback.trigger('selection');
     }
     setSelectedSubtitleLanguage(languageCode);
   };
 
   const handleAudioLanguageChange = (languageCode: string) => {
     if (Platform.OS === 'ios') {
-      ReactNativeHapticFeedback.trigger('selectionClick');
+      ReactNativeHapticFeedback.trigger('selection');
     }
     setSelectedAudioLanguage(languageCode);
   };

@@ -18,8 +18,6 @@ import {
   MorningRitualScreen,
   JudaismScreen,
   ChildrenScreen,
-  WatchlistScreen,
-  FavoritesScreen,
   DownloadsScreen,
   SupportScreen,
   RecordingsScreen,
@@ -34,6 +32,8 @@ import {
   SettingsScreenMobile,
   LanguageSettingsScreen,
   NotificationSettingsScreen,
+  FavoritesScreenMobile,
+  WatchlistScreenMobile,
 } from '../screens';
 
 // Import mobile-specific screens (to be created)
@@ -80,12 +80,12 @@ export const RootNavigator: React.FC = () => {
         }}
       />
 
-      {/* Content Screens - Reused from shared (can be mobile-optimized later) */}
+      {/* Content Screens - Mobile-optimized where available */}
       <Stack.Screen name="MorningRitual" component={MorningRitualScreen} />
       <Stack.Screen name="Judaism" component={JudaismScreen} />
       <Stack.Screen name="Children" component={ChildrenScreen} />
-      <Stack.Screen name="Watchlist" component={WatchlistScreen} />
-      <Stack.Screen name="Favorites" component={FavoritesScreen} />
+      <Stack.Screen name="Watchlist" component={WatchlistScreenMobile} />
+      <Stack.Screen name="Favorites" component={FavoritesScreenMobile} />
       <Stack.Screen name="Downloads" component={DownloadsScreen} />
       <Stack.Screen name="Recordings" component={RecordingsScreen} />
       <Stack.Screen name="EPG" component={EPGScreen} />

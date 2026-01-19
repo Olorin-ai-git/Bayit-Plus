@@ -85,10 +85,22 @@ export const LiveTVScreenMobile: React.FC = () => {
     try {
       setIsLoading(true);
 
-      const [channelsRes, categoriesRes] = await Promise.all([
+      // Use Promise.allSettled for graceful partial failure handling
+      const results = await Promise.allSettled([
         liveService.getChannels(),
         contentService.getCategories(),
-      ]) as [any, any];
+      ]);
+
+      const channelsRes = results[0].status === 'fulfilled' ? results[0].value : { channels: [] };
+      const categoriesRes = results[1].status === 'fulfilled' ? results[1].value : { categories: [] };
+
+      // Log any failures for debugging
+      if (results[0].status === 'rejected') {
+        console.warn('Failed to load channels:', results[0].reason);
+      }
+      if (results[1].status === 'rejected') {
+        console.warn('Failed to load categories:', results[1].reason);
+      }
 
       const channelsData = (channelsRes.channels || []).map((channel: any) => ({
         ...channel,

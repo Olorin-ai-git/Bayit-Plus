@@ -87,10 +87,22 @@ export const VODScreenMobile: React.FC = () => {
     try {
       setIsLoading(true);
 
-      const [featuredRes, categoriesRes] = await Promise.all([
+      // Use Promise.allSettled for graceful partial failure handling
+      const results = await Promise.allSettled([
         contentService.getFeatured(),
         contentService.getCategories(),
-      ]) as [any, any];
+      ]);
+
+      const featuredRes = results[0].status === 'fulfilled' ? results[0].value : { spotlight: [], categories: [] };
+      const categoriesRes = results[1].status === 'fulfilled' ? results[1].value : { categories: [] };
+
+      // Log any failures for debugging
+      if (results[0].status === 'rejected') {
+        console.warn('Failed to load featured content:', results[0].reason);
+      }
+      if (results[1].status === 'rejected') {
+        console.warn('Failed to load categories:', results[1].reason);
+      }
 
       // Extract content from featured response
       // API returns { hero, spotlight, categories: [{id, name, items: [...]}] }

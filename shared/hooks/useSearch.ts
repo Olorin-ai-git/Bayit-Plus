@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface SearchFilters {
@@ -103,23 +104,19 @@ export function useSearch(options: UseSearchOptions = {}) {
 
   /**
    * Get API base URL based on environment
+   * Consistent with adminApi.ts pattern
    */
   const getApiBaseUrl = useCallback(() => {
-    // For React Native, detect platform
-    if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
-      // @ts-ignore - Platform is only available in React Native
-      const Platform = require('react-native').Platform;
-
-      if (__DEV__) {
-        // Development mode
-        if (Platform.OS === 'android') {
-          return 'http://10.0.2.2:8000/api/v1'; // Android emulator
-        }
+    if (__DEV__) {
+      if (Platform.OS === 'web') {
+        return 'http://localhost:8000/api/v1';
+      } else if (Platform.OS === 'android') {
+        return 'http://10.0.2.2:8000/api/v1'; // Android emulator
+      } else {
         return 'http://localhost:8000/api/v1'; // iOS simulator
       }
     }
-
-    // Web or production
+    // Production - use environment variable or default
     return process.env.NEXT_PUBLIC_API_URL || 'https://api.bayit.tv/api/v1';
   }, []);
 

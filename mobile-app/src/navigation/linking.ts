@@ -50,41 +50,8 @@ export const linking: LinkingOptions<RootStackParamList> = {
         },
       },
 
-      // Live channel (direct link)
-      'live/:channelId': {
-        path: 'live/:channelId',
-        parse: {
-          channelId: (channelId: string) => channelId,
-        },
-        // Navigate to Player screen
-        stringify: {
-          channelId: (channelId: string) => channelId,
-        },
-      },
-
-      // VOD content (direct link)
-      'vod/:contentId': {
-        path: 'vod/:contentId',
-        parse: {
-          contentId: (contentId: string) => contentId,
-        },
-      },
-
-      // Podcast (direct link)
-      'podcast/:podcastId': {
-        path: 'podcast/:podcastId',
-        parse: {
-          podcastId: (podcastId: string) => podcastId,
-        },
-      },
-
-      // Radio station (direct link)
-      'radio/:stationId': {
-        path: 'radio/:stationId',
-        parse: {
-          stationId: (stationId: string) => stationId,
-        },
-      },
+      // Note: Direct content links (live/:channelId, vod/:contentId, etc.)
+      // are handled through the Player screen with id/type params
 
       // Search with query
       Search: {
@@ -97,10 +64,7 @@ export const linking: LinkingOptions<RootStackParamList> = {
         },
       },
 
-      // Continue watching
-      'continue': {
-        path: 'continue',
-      },
+      // Continue watching - handled via Home screen
 
       // Content screens
       MorningRitual: 'morning-ritual',
@@ -117,12 +81,7 @@ export const linking: LinkingOptions<RootStackParamList> = {
       VoiceOnboarding: 'voice-onboarding',
 
       // Admin
-      Admin: {
-        path: 'admin',
-      },
-
-      // Fallback
-      NotFound: '*',
+      Admin: 'admin',
     },
   },
 

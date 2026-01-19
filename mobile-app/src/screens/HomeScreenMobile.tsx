@@ -95,12 +95,27 @@ export const HomeScreenMobile: React.FC = () => {
     try {
       setIsLoading(true);
 
-      const [featuredRes, liveRes, historyRes, categoriesRes] = await Promise.all([
+      // Use Promise.allSettled for graceful partial failure handling
+      const results = await Promise.allSettled([
         contentService.getFeatured(),
         liveService.getChannels(),
         historyService.getContinueWatching(),
         contentService.getCategories(),
-      ]) as [any, any, any, any];
+      ]);
+
+      // Extract results with fallbacks for failed requests
+      const featuredRes = results[0].status === 'fulfilled' ? results[0].value : { items: [], hero: null };
+      const liveRes = results[1].status === 'fulfilled' ? results[1].value : { channels: [] };
+      const historyRes = results[2].status === 'fulfilled' ? results[2].value : { items: [] };
+      const categoriesRes = results[3].status === 'fulfilled' ? results[3].value : { categories: [] };
+
+      // Log any failures for debugging
+      results.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          const serviceNames = ['featured', 'live', 'history', 'categories'];
+          console.warn(`Failed to load ${serviceNames[index]}:`, result.reason);
+        }
+      });
 
       // Set carousel from featured hero items
       const heroItems = featuredRes.hero ? [featuredRes.hero] : [];
@@ -215,14 +230,14 @@ export const HomeScreenMobile: React.FC = () => {
       <ShabbatModeBanner />
 
       {/* Shabbat Eve Section - appears on Friday before candle lighting */}
-      <ShabbatEveSection onNavigate={(route) => navigation.navigate(route.split('?')[0] as never)} />
+      <ShabbatEveSection onNavigate={(route: string) => navigation.navigate(route.split('?')[0] as never)} />
 
       {/* Hero carousel */}
       {carouselItems.length > 0 && (
         <View style={styles.section}>
           <GlassCarousel
             items={carouselItems}
-            onItemPress={(item) => handleContentPress(item as any)}
+            onItemPress={(item: CarouselItem) => handleContentPress(item as ContentItem)}
             autoPlay={true}
             height={isPhone ? 200 : 300}
           />
