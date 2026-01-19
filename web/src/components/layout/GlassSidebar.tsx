@@ -578,7 +578,6 @@ const styles = StyleSheet.create({
     height: 180, // Same height as expanded logo to maintain spacing
   },
   sloganContainer: {
-    marginTop: -35,
     marginBottom: 20,
     backgroundColor: 'rgba(168, 85, 247, 0.15)',
     borderWidth: 2,
