@@ -167,20 +167,22 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[styles.topicsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+        contentContainerStyle={styles.topicsContainer}
+        style={isRTL ? { transform: [{ scaleX: -1 }] } : undefined}
       >
-        {data.topics.map((topic, index) => (
-          <TopicCard
-            key={index}
-            topic={topic}
-            title={getLocalizedText(topic.title, topic.title_en, topic.title_es)}
-            summary={topic.summary ? getLocalizedText(topic.summary, topic.summary_en, topic.summary_es) : undefined}
-            categoryLabel={getCategoryLabel(topic)}
-            isFocused={focusedIndex === index}
-            onFocus={() => setFocusedIndex(index)}
-            onBlur={() => setFocusedIndex(-1)}
-            onPress={() => onTopicPress?.(topic)}
-          />
+        {data.topics.slice(0, isMobilePhone ? 4 : data.topics.length).map((topic, index) => (
+          <View key={index} style={isRTL ? { transform: [{ scaleX: -1 }] } : undefined}>
+            <TopicCard
+              topic={topic}
+              title={getLocalizedText(topic.title, topic.title_en, topic.title_es)}
+              summary={isMobilePhone ? undefined : (topic.summary ? getLocalizedText(topic.summary, topic.summary_en, topic.summary_es) : undefined)}
+              categoryLabel={getCategoryLabel(topic)}
+              isFocused={focusedIndex === index}
+              onFocus={() => setFocusedIndex(index)}
+              onBlur={() => setFocusedIndex(-1)}
+              onPress={() => onTopicPress?.(topic)}
+            />
+          </View>
         ))}
       </ScrollView>
 
@@ -265,28 +267,30 @@ const TopicCard: React.FC<TopicCardProps> = ({
             </View>
           </View>
 
-          <Text style={[styles.topicTitle, { textAlign: isRTL ? 'right' : 'left', writingDirection: 'auto' }]} numberOfLines={3}>
+          <Text style={[styles.topicTitle, { textAlign: isRTL ? 'right' : 'left', writingDirection: 'auto' }]} numberOfLines={isMobilePhone ? 2 : 3}>
             {title}
           </Text>
 
-          {summary && (
+          {summary && !isMobilePhone && (
             <Text style={[styles.topicSummary, { textAlign: isRTL ? 'right' : 'left', writingDirection: 'auto' }]} numberOfLines={3}>
               {summary}
             </Text>
           )}
 
-          {/* Importance indicator */}
-          <View style={[styles.importanceContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            {[...Array(5)].map((_, i) => (
-              <View
-                key={i}
-                style={[
-                  styles.importanceDot,
-                  i < Math.ceil(topic.importance / 2) && styles.importanceDotActive,
-                ]}
-              />
-            ))}
-          </View>
+          {/* Importance indicator - hide on mobile phones */}
+          {!isMobilePhone && (
+            <View style={[styles.importanceContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              {[...Array(5)].map((_, i) => (
+                <View
+                  key={i}
+                  style={[
+                    styles.importanceDot,
+                    i < Math.ceil(topic.importance / 2) && styles.importanceDotActive,
+                  ]}
+                />
+              ))}
+            </View>
+          )}
         </GlassView>
       </Animated.View>
     </TouchableOpacity>
@@ -335,17 +339,17 @@ const styles = StyleSheet.create({
     marginBottom: isMobilePhone ? spacing.sm : spacing.md,
   },
   topicsContainer: {
-    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
-    gap: isMobilePhone ? spacing.sm : spacing.md,
+    paddingHorizontal: isMobilePhone ? spacing.md : spacing.md,
+    paddingVertical: spacing.xs,
   },
   topicCard: {
-    width: isMobilePhone ? 180 : 280,
-    minHeight: isMobilePhone ? 140 : 240,
-    padding: isMobilePhone ? spacing.md : spacing.lg,
-    borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
+    width: isMobilePhone ? 160 : 280,
+    minHeight: isMobilePhone ? 100 : 240,
+    padding: isMobilePhone ? spacing.sm : spacing.lg,
+    borderRadius: borderRadius.lg,
     borderWidth: 2,
     borderColor: 'transparent',
-    marginRight: isMobilePhone ? spacing.sm : spacing.md,
+    marginRight: spacing.md,
     backgroundColor: 'rgba(30, 30, 50, 0.6)',
   },
   topicCardFocused: {
@@ -363,7 +367,7 @@ const styles = StyleSheet.create({
     marginBottom: isMobilePhone ? spacing.xs : spacing.md,
   },
   categoryEmoji: {
-    fontSize: isMobilePhone ? 20 : 28,
+    fontSize: isMobilePhone ? 16 : 28,
   },
   categoryBadge: {
     backgroundColor: 'rgba(107, 33, 168, 0.3)',
@@ -379,12 +383,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   topicTitle: {
-    fontSize: isMobilePhone ? fontSize.sm : fontSize.md,
+    fontSize: isMobilePhone ? 14 : fontSize.md,
     fontWeight: '700',
     color: colors.text,
     marginBottom: isMobilePhone ? spacing.xs : spacing.sm,
-    lineHeight: isMobilePhone ? 18 : 22,
-    flexShrink: 1,
+    lineHeight: isMobilePhone ? 20 : 22,
+    flex: 1,
   },
   topicSummary: {
     fontSize: isMobilePhone ? 11 : fontSize.sm,

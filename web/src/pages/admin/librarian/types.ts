@@ -20,6 +20,8 @@ export interface AuditConfigState {
   budgetLimit: number;
   budgetUsed: number;
   last24HoursOnly: boolean;
+  // Capability options (ADDITIVE - multiple can be enabled together)
+  // NOTE: Content integrity validation is MANDATORY and always runs first (not configurable)
   cybTitlesOnly: boolean;
   tmdbPostersOnly: boolean;
   openSubtitlesEnabled: boolean;

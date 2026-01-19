@@ -85,6 +85,9 @@ class TriggerAuditRequest(BaseModel):
     # Scope filter
     last_24_hours_only: bool = False  # Only scan content added/modified in last 24 hours
 
+    # Integrity validation (RUNS FIRST - validates content exists before other work)
+    validate_integrity: bool = True  # Check stream URLs and database records are valid
+
     # Capability options (ADDITIVE - multiple can be enabled together)
     cyb_titles_only: bool = False  # Clean dirty titles (file extensions, quality markers)
     tmdb_posters_only: bool = False  # Fetch missing posters and metadata from TMDB
@@ -395,6 +398,7 @@ async def trigger_librarian_audit(
                 "use_ai_agent": request.use_ai_agent or request.audit_type == "ai_agent",
                 "language": language,
                 "last_24_hours_only": request.last_24_hours_only,
+                "validate_integrity": request.validate_integrity,
                 "cyb_titles_only": request.cyb_titles_only,
                 "tmdb_posters_only": request.tmdb_posters_only,
                 "opensubtitles_enabled": request.opensubtitles_enabled,
@@ -419,6 +423,7 @@ async def trigger_librarian_audit(
                     budget_limit_usd=request.budget_limit_usd,
                     language=language,
                     last_24_hours_only=request.last_24_hours_only,
+                    validate_integrity=request.validate_integrity,
                     cyb_titles_only=request.cyb_titles_only,
                     tmdb_posters_only=request.tmdb_posters_only,
                     opensubtitles_enabled=request.opensubtitles_enabled,

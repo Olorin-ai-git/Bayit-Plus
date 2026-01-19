@@ -79,6 +79,8 @@ export interface TriggerAuditRequest {
   max_iterations?: number;
   budget_limit_usd?: number;
   last_24_hours_only?: boolean;
+  // Integrity validation (RUNS FIRST - validates content before other work)
+  validate_integrity?: boolean;   // Check stream URLs and database records are valid
   // Capability options (ADDITIVE - multiple can be enabled together)
   cyb_titles_only?: boolean;      // Clean dirty titles
   tmdb_posters_only?: boolean;    // Fetch TMDB posters & metadata

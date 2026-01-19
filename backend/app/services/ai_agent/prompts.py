@@ -15,7 +15,40 @@ LANGUAGE_INSTRUCTIONS: Dict[str, str] = {
 }
 
 # Individual capability prompts (to be combined additively)
+# NOTE: validate_integrity ALWAYS runs first when any capability is enabled
 CAPABILITY_PROMPTS: Dict[str, str] = {
+    "validate_integrity": """
+## Content Integrity Validation (MANDATORY FIRST STEP)
+**THIS MUST BE DONE BEFORE ANY OTHER TASK!**
+
+Before fixing metadata, posters, or subtitles, you MUST validate content integrity:
+
+1. **Check Stream URL Works:**
+   - Use `check_stream_url(content_id)` for each item
+   - A broken stream means the video file doesn't exist or is inaccessible
+   - DO NOT process items with broken streams for metadata/posters/subtitles
+
+2. **Verify Database Record Integrity:**
+   - Content must have a valid `stream_url` field
+   - Content must have a valid `content_type` (movie or series)
+   - Content must belong to a valid category
+
+3. **Track Integrity Issues:**
+   - Count items with broken streams
+   - Count items with missing required fields
+   - Flag broken content for manual review using `flag_for_manual_review`
+
+4. **Skip Invalid Content:**
+   - DO NOT fetch TMDB metadata for content with broken streams
+   - DO NOT download subtitles for content with broken streams
+   - DO NOT waste API calls on non-existent content
+
+**Workflow:**
+- For each content item: check_stream_url FIRST
+- If stream is broken → flag_for_manual_review and SKIP all other processing
+- If stream is valid → proceed with other enabled capabilities
+""",
+
     "clean_titles": """
 ## Title Cleaning
 Your task includes finding and cleaning dirty titles:
@@ -164,9 +197,23 @@ def get_enabled_capabilities(
     opensubtitles_enabled: bool,
     classify_only: bool,
     remove_duplicates: bool,
+    validate_integrity: bool = True,
 ) -> List[str]:
-    """Get list of enabled capability keys based on configuration."""
+    """
+    Get list of enabled capability keys based on configuration.
+
+    IMPORTANT: validate_integrity ALWAYS runs first when enabled (default: True)
+    This ensures content integrity is verified before wasting API calls on
+    broken streams or non-existent content.
+    """
     enabled = []
+
+    # Integrity validation ALWAYS runs first when enabled
+    # This prevents wasting API calls on broken content
+    if validate_integrity:
+        enabled.append("validate_integrity")
+
+    # Then add other capabilities in order
     if cyb_titles_only:
         enabled.append("clean_titles")
     if tmdb_posters_only:
@@ -177,6 +224,7 @@ def get_enabled_capabilities(
         enabled.append("verify_classification")
     if remove_duplicates:
         enabled.append("remove_duplicates")
+
     return enabled
 
 

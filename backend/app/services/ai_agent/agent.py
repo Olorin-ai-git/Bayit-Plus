@@ -41,6 +41,7 @@ async def run_ai_agent_audit(
     budget_limit_usd: float = 1.0,
     language: str = "en",
     last_24_hours_only: bool = False,
+    validate_integrity: bool = True,
     cyb_titles_only: bool = False,
     tmdb_posters_only: bool = False,
     opensubtitles_enabled: bool = False,
@@ -98,6 +99,7 @@ async def run_ai_agent_audit(
         max_iterations=max_iterations,
         budget_limit_usd=budget_limit_usd,
         last_24_hours_only=last_24_hours_only,
+        validate_integrity=validate_integrity,
         cyb_titles_only=cyb_titles_only,
         tmdb_posters_only=tmdb_posters_only,
         opensubtitles_enabled=opensubtitles_enabled,
@@ -277,6 +279,7 @@ def _build_initial_prompt(
     max_iterations: int,
     budget_limit_usd: float,
     last_24_hours_only: bool,
+    validate_integrity: bool,
     cyb_titles_only: bool,
     tmdb_posters_only: bool,
     opensubtitles_enabled: bool,
@@ -288,16 +291,21 @@ def _build_initial_prompt(
 
     Uses ADDITIVE capability model where multiple capabilities can be combined.
     If no capabilities are enabled, runs a comprehensive audit.
+
+    NOTE: validate_integrity runs FIRST when enabled to ensure we don't waste
+    API calls on content with broken streams or missing database records.
     """
     language_instruction = LANGUAGE_INSTRUCTIONS.get(language, "Communicate in English.")
 
     # Get list of enabled capabilities using the additive model
+    # validate_integrity runs FIRST to check content exists before other work
     enabled_capabilities = get_enabled_capabilities(
         cyb_titles_only=cyb_titles_only,
         tmdb_posters_only=tmdb_posters_only,
         opensubtitles_enabled=opensubtitles_enabled,
         classify_only=classify_only,
         remove_duplicates=remove_duplicates,
+        validate_integrity=validate_integrity,
     )
 
     # If any capabilities are enabled, use task-specific (focused) mode

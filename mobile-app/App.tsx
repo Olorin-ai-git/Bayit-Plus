@@ -3,7 +3,7 @@
  * Main app entry point with navigation and context providers
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { StatusBar, View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -21,6 +21,9 @@ import { linking } from './src/navigation/linking';
 // App Content (contains voice hooks and navigation)
 import { AppContent } from './src/components/AppContent';
 
+// Splash Screen
+import { SplashScreen } from './src/components/SplashScreen';
+
 // Import stores to initialize them
 import { useAuthStore } from '@bayit/shared-stores';
 
@@ -29,6 +32,7 @@ import { errorHandler, accessibilityService } from './src/utils';
 
 function App(): React.JSX.Element {
   const [isReady, setIsReady] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     // Initialize app
@@ -54,21 +58,30 @@ function App(): React.JSX.Element {
     initializeApp();
   }, []);
 
+  const handleSplashComplete = useCallback(() => {
+    console.log('[App] Splash complete, showing main app');
+    setShowSplash(false);
+  }, []);
+
   if (!isReady) {
-    return null; // Or a splash screen component
+    return null;
   }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <I18nextProvider i18n={i18n}>
         <SafeAreaProvider>
-          <ModalProvider>
-            <ProfileProvider>
-              <NavigationContainer linking={linking}>
-                <AppContent />
-              </NavigationContainer>
-            </ProfileProvider>
-          </ModalProvider>
+          {showSplash ? (
+            <SplashScreen onComplete={handleSplashComplete} minimumDuration={2000} />
+          ) : (
+            <ModalProvider>
+              <ProfileProvider>
+                <NavigationContainer linking={linking}>
+                  <AppContent />
+                </NavigationContainer>
+              </ProfileProvider>
+            </ModalProvider>
+          )}
         </SafeAreaProvider>
       </I18nextProvider>
     </GestureHandlerRootView>
