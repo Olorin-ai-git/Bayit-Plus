@@ -873,23 +873,34 @@ async def interject_audit_message(
             if not audit:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"Audit '{audit_id}' not found"
+                    detail=f"Audit not found. It may have been deleted or cleared. Check the reports list for available audits."
                 )
 
-            # Determine the actual status
-            if audit.status in ["completed", "failed", "cancelled"]:
+            # Determine the actual status and provide helpful error messages
+            if audit.status == "completed":
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Cannot interject: audit has already {audit.status}"
+                    detail="This audit has already completed. You can view the results in the audit report. To send messages, start a new audit."
+                )
+            elif audit.status == "failed":
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="This audit failed before completion. Check the audit report for error details. Start a new audit to try again."
+                )
+            elif audit.status == "cancelled":
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="This audit was cancelled. Start a new audit to continue working."
                 )
             else:
                 # Database shows in_progress/paused but task isn't running
                 # This means the task just completed - update the database
                 audit.status = "completed"
+                audit.completed_at = datetime.utcnow()
                 await audit.save()
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Cannot interject: the audit task has just completed"
+                    detail="This audit just finished while you were typing. Refresh to see the results, or start a new audit to continue."
                 )
 
         # Find the audit to validate it exists
@@ -902,14 +913,14 @@ async def interject_audit_message(
         if not audit:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Audit '{audit_id}' not found"
+                detail="Audit not found. It may have been deleted or cleared. Check the reports list for available audits."
             )
 
         # Validate message is not empty
         if not request.message or not request.message.strip():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Message cannot be empty"
+                detail="Please enter a message to send to the AI agent."
             )
 
         # Queue the message for delivery
@@ -923,7 +934,7 @@ async def interject_audit_message(
             # This shouldn't happen since we checked is_running() above, but handle it
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Failed to queue message. The audit may have just completed."
+                detail="Unable to send message - the audit just finished. Refresh to see results."
             )
 
         logger.info(f"Admin interjection queued for audit {audit_id}: {request.message[:100]}...")
