@@ -161,7 +161,7 @@ main() {
         cd "$TVOS_APP_DIR"
 
         print_info "Installing npm dependencies..."
-        npm install
+        npm install --legacy-peer-deps
         print_success "npm dependencies installed"
 
         print_info "Installing CocoaPods dependencies..."

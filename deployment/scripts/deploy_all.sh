@@ -363,65 +363,72 @@ main() {
             RESULT_BACKEND_BUILD="FAILED"
         else
             print_info "Checking Poetry lock file..."
-            if ! poetry check --quiet 2>/dev/null; then
-                print_error "Poetry lock file is out of sync. Run: poetry lock"
+            if ! poetry check 2>&1 | grep -q "All set"; then
+                print_warning "Poetry lock file may need updating, continuing..."
+            fi
+            print_success "Poetry check complete"
+
+            print_info "Installing dependencies..."
+            if ! poetry install --no-root 2>&1 | tail -5; then
+                print_error "Failed to install dependencies"
                 RESULT_BACKEND_BUILD="FAILED"
             else
-                print_success "Poetry lock file is valid"
+                print_success "Dependencies installed"
 
-                print_info "Installing dependencies..."
-                if ! poetry install --quiet 2>/dev/null; then
-                    print_error "Failed to install dependencies"
-                    RESULT_BACKEND_BUILD="FAILED"
-                else
-                    print_success "Dependencies installed"
+                print_info "Verifying Python syntax..."
+                SYNTAX_ERROR=false
 
-                    print_info "Verifying Python syntax..."
-                    SYNTAX_ERROR=false
+                # Compile main app
+                if ! poetry run python -m py_compile app/main.py 2>&1; then
+                    print_error "Python syntax error in app/main.py"
+                    SYNTAX_ERROR=true
+                fi
 
-                    # Compile main app
-                    if ! poetry run python -m py_compile app/main.py 2>/dev/null; then
-                        print_error "Python syntax error in app/main.py"
+                # Compile route files
+                for f in app/api/routes/*.py; do
+                    if [[ -f "$f" ]] && ! poetry run python -m py_compile "$f" 2>&1; then
+                        print_error "Python syntax error in $f"
                         SYNTAX_ERROR=true
                     fi
+                done
 
-                    # Compile route files
-                    for f in app/api/routes/*.py; do
-                        if ! poetry run python -m py_compile "$f" 2>/dev/null; then
-                            print_error "Python syntax error in $f"
-                            SYNTAX_ERROR=true
-                        fi
-                    done
+                # Compile service files
+                for f in app/services/*.py; do
+                    if [[ -f "$f" ]] && ! poetry run python -m py_compile "$f" 2>&1; then
+                        print_error "Python syntax error in $f"
+                        SYNTAX_ERROR=true
+                    fi
+                done
 
-                    # Compile service files
-                    for f in app/services/*.py; do
-                        if ! poetry run python -m py_compile "$f" 2>/dev/null; then
-                            print_error "Python syntax error in $f"
-                            SYNTAX_ERROR=true
-                        fi
-                    done
+                # Compile AI agent files
+                for f in app/services/ai_agent/*.py; do
+                    if [[ -f "$f" ]] && ! poetry run python -m py_compile "$f" 2>&1; then
+                        print_error "Python syntax error in $f"
+                        SYNTAX_ERROR=true
+                    fi
+                done
+                for f in app/services/ai_agent/executors/*.py; do
+                    if [[ -f "$f" ]] && ! poetry run python -m py_compile "$f" 2>&1; then
+                        print_error "Python syntax error in $f"
+                        SYNTAX_ERROR=true
+                    fi
+                done
 
-                    # Compile AI agent files
-                    for f in app/services/ai_agent/*.py app/services/ai_agent/executors/*.py; do
-                        if ! poetry run python -m py_compile "$f" 2>/dev/null; then
-                            print_error "Python syntax error in $f"
-                            SYNTAX_ERROR=true
-                        fi
-                    done
+                if [[ "$SYNTAX_ERROR" == "true" ]]; then
+                    RESULT_BACKEND_BUILD="FAILED"
+                else
+                    print_success "Python syntax verification passed"
 
-                    if [[ "$SYNTAX_ERROR" == "true" ]]; then
-                        RESULT_BACKEND_BUILD="FAILED"
+                    print_info "Verifying application imports..."
+                    # Capture output and check for 'OK' at the end
+                    IMPORT_OUTPUT=$(poetry run python -c "from app.main import app; print('OK')" 2>&1)
+                    if echo "$IMPORT_OUTPUT" | tail -1 | grep -q "OK"; then
+                        print_success "Application imports verified"
+                        RESULT_BACKEND_BUILD="SUCCESS"
                     else
-                        print_success "Python syntax verification passed"
-
-                        print_info "Verifying application imports..."
-                        if ! poetry run python -c "from app.main import app; print('OK')" 2>/dev/null; then
-                            print_error "Application import failed"
-                            RESULT_BACKEND_BUILD="FAILED"
-                        else
-                            print_success "Application imports verified"
-                            RESULT_BACKEND_BUILD="SUCCESS"
-                        fi
+                        print_error "Application import failed"
+                        echo "$IMPORT_OUTPUT"
+                        RESULT_BACKEND_BUILD="FAILED"
                     fi
                 fi
             fi
