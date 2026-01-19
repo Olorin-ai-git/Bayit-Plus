@@ -54,6 +54,9 @@ from app.services.ai_agent.executors import (
     execute_find_duplicate_episodes,
     execute_resolve_duplicate_episodes,
     execute_create_series_from_episode,
+    execute_sync_series_posters_to_episodes,
+    execute_find_misclassified_episodes,
+    execute_fix_misclassified_series,
     # Integrity Tools
     execute_get_integrity_status,
     execute_find_orphaned_gcs_files,
@@ -189,6 +192,15 @@ async def execute_tool(
 
         elif tool_name == "create_series_from_episode":
             return await execute_create_series_from_episode(**tool_input, audit_id=audit_id, dry_run=dry_run)
+
+        elif tool_name == "sync_series_posters_to_episodes":
+            return await execute_sync_series_posters_to_episodes(**tool_input, audit_id=audit_id, dry_run=dry_run)
+
+        elif tool_name == "find_misclassified_episodes":
+            return await execute_find_misclassified_episodes(**tool_input)
+
+        elif tool_name == "fix_misclassified_series":
+            return await execute_fix_misclassified_series(**tool_input, audit_id=audit_id, dry_run=dry_run)
 
         # Integrity Tools
         elif tool_name == "get_integrity_status":

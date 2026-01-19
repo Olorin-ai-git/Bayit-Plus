@@ -118,11 +118,14 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
             {"$match": {
                 "is_featured": True,
                 "is_published": True,
+                # Exclude episodes - only include items WITHOUT a series_id
                 "$or": [
                     {"series_id": None},
                     {"series_id": {"$exists": False}},
                     {"series_id": ""},
-                ]
+                ],
+                # Exclude quality variants
+                "is_quality_variant": {"$ne": True},
             }},
             {"$project": {"thumbnail_data": 0, "backdrop_data": 0}},
             {"$limit": 10}
@@ -132,7 +135,11 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
         return await cursor.to_list(length=None)
 
     async def get_categories():
-        return await Category.find(Category.is_active == True).sort("order").limit(6).to_list()
+        # Only fetch categories that should appear on homepage
+        return await Category.find(
+            Category.is_active == True,
+            Category.show_on_homepage == True
+        ).sort("order").limit(6).to_list()
 
     # Await all initial queries in parallel
     hero_content, featured_content, categories = await asyncio.gather(
@@ -174,15 +181,19 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
     category_name_map = {str(cat.id): cat.name for cat in categories}
 
     # Optimized pipeline: only fetch needed fields, group by category, limit 10 per category
+    # Exclude episodes (series_id set) and quality variants (is_quality_variant=True)
     pipeline = [
         {"$match": {
             "category_id": {"$in": category_ids},
             "is_published": True,
+            # Exclude episodes - only include items WITHOUT a series_id
             "$or": [
                 {"series_id": None},
                 {"series_id": {"$exists": False}},
                 {"series_id": ""},
-            ]
+            ],
+            # Exclude quality variants
+            "is_quality_variant": {"$ne": True},
         }},
         # Only project fields we actually need (include poster_url and thumbnail_data for fallback)
         {"$project": {
@@ -251,6 +262,19 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
             if is_series:
                 item_data["total_episodes"] = item.get("total_episodes") or 0
             category_items.append(item_data)
+
+        # Sort to show available content first (movies, then series with episodes, then empty series)
+        def availability_sort_key(item):
+            is_series = item.get("is_series", False)
+            total_episodes = item.get("total_episodes", 0) or 0
+            if not is_series:
+                return (0, 0)
+            elif total_episodes > 0:
+                return (1, -total_episodes)
+            else:
+                return (2, 0)
+
+        category_items.sort(key=availability_sort_key)
         category_items_map[cat_id] = category_items
 
     # NOTE: Subtitle enrichment removed from featured endpoint for performance
@@ -314,26 +338,27 @@ async def get_all_content(
     """Get all published content (movies and series, excluding episodes)."""
     skip = (page - 1) * limit
 
+    # Combined filter to exclude episodes and quality variants
+    # Episodes have series_id pointing to parent series
+    # Quality variants have is_quality_variant=True
+    content_filter = {
+        "is_published": True,
+        # Exclude episodes - only include items WITHOUT a series_id
+        "$or": [
+            {"series_id": None},
+            {"series_id": {"$exists": False}},
+            {"series_id": ""},
+        ],
+        # Exclude quality variants
+        "is_quality_variant": {"$ne": True},
+    }
+
     # Fetch content and categories in parallel
     async def get_content():
-        return await Content.find(
-            Content.is_published == True,
-            {"$or": [
-                {"series_id": None},
-                {"series_id": {"$exists": False}},
-                {"series_id": ""},
-            ]},
-        ).skip(skip).limit(limit).to_list()
+        return await Content.find(content_filter).skip(skip).limit(limit).to_list()
 
     async def get_total():
-        return await Content.find(
-            Content.is_published == True,
-            {"$or": [
-                {"series_id": None},
-                {"series_id": {"$exists": False}},
-                {"series_id": ""},
-            ]},
-        ).count()
+        return await Content.find(content_filter).count()
 
     async def get_all_categories():
         return await Category.find().to_list()
@@ -361,12 +386,12 @@ async def get_all_content(
         """Determine if content is a series based on is_series flag OR category name."""
         return item.is_series or is_series_by_category(item.category_name)
 
-    # Build content items with localized category names
+    # Build content items with localized category names and episode counts
     content_items = []
     for item in items:
         cat_info = category_map.get(item.category_id, {})
         is_series = is_series_content(item)
-        content_items.append({
+        item_data = {
             "id": str(item.id),
             "title": item.title,
             "description": item.description,
@@ -379,7 +404,36 @@ async def get_all_content(
             "duration": item.duration,
             "is_series": is_series,
             "type": "series" if is_series else "movie",
-        })
+        }
+
+        # Calculate episode count for series
+        if is_series:
+            if item.total_episodes:
+                item_data["total_episodes"] = item.total_episodes
+            else:
+                episode_count = await Content.find(
+                    Content.series_id == str(item.id),
+                    Content.is_published == True,
+                ).count()
+                item_data["total_episodes"] = episode_count
+
+        content_items.append(item_data)
+
+    # Sort to show available content first:
+    # - Movies (non-series) always available
+    # - Series with episodes (total_episodes > 0) available
+    # - Series without episodes (total_episodes = 0) last
+    def availability_sort_key(item):
+        is_series = item.get("is_series", False)
+        total_episodes = item.get("total_episodes", 0) or 0
+        if not is_series:
+            return (0, 0)
+        elif total_episodes > 0:
+            return (1, -total_episodes)
+        else:
+            return (2, 0)
+
+    content_items.sort(key=availability_sort_key)
 
     # Enrich with subtitle languages
     content_items = await enrich_content_items_with_subtitles(content_items)
@@ -442,26 +496,22 @@ async def get_by_category(
     # Use the actual category ID from the found category object
     category_obj_id = str(category.id)
 
-    # Exclude episodes (items with series_id set) - only show movies and parent series
-    items = await Content.find(
-        Content.category_id == category_obj_id,
-        Content.is_published == True,
-        {"$or": [
+    # Exclude episodes (items with series_id set) and quality variants - only show movies and parent series
+    content_filter = {
+        "category_id": category_obj_id,
+        "is_published": True,
+        # Exclude episodes - only include items WITHOUT a series_id
+        "$or": [
             {"series_id": None},
             {"series_id": {"$exists": False}},
             {"series_id": ""},
-        ]},
-    ).skip(skip).limit(limit).to_list()
+        ],
+        # Exclude quality variants
+        "is_quality_variant": {"$ne": True},
+    }
 
-    total = await Content.find(
-        Content.category_id == category_obj_id,
-        Content.is_published == True,
-        {"$or": [
-            {"series_id": None},
-            {"series_id": {"$exists": False}},
-            {"series_id": ""},
-        ]},
-    ).count()
+    items = await Content.find(content_filter).skip(skip).limit(limit).to_list()
+    total = await Content.find(content_filter).count()
 
     # Build items with episode counts for series
     result_items = []
@@ -496,6 +546,23 @@ async def get_by_category(
                 item_data["total_episodes"] = episode_count
 
         result_items.append(item_data)
+
+    # Sort to show available content first:
+    # - Movies (non-series) always available
+    # - Series with episodes (total_episodes > 0) available
+    # - Series without episodes (total_episodes = 0) last
+    def availability_sort_key(item):
+        is_series = item.get("is_series", False)
+        total_episodes = item.get("total_episodes", 0) or 0
+        # Non-series (movies) get priority 0, series with episodes get 1, empty series get 2
+        if not is_series:
+            return (0, 0)
+        elif total_episodes > 0:
+            return (1, -total_episodes)  # More episodes = higher priority
+        else:
+            return (2, 0)
+
+    result_items.sort(key=availability_sort_key)
 
     # Enrich with subtitle languages
     result_items = await enrich_content_items_with_subtitles(result_items)

@@ -860,6 +860,38 @@ async def interject_audit_message(
     allowing admins to provide additional context or redirect the agent's focus.
     """
     try:
+        # First check if the task is actually running in the task manager
+        # This is the authoritative source - database status may be stale
+        if not audit_task_manager.is_running(audit_id):
+            # Task not running - check database to provide accurate error message
+            try:
+                object_id = PydanticObjectId(audit_id)
+                audit = await AuditReport.get(object_id)
+            except Exception:
+                audit = await AuditReport.find_one({"audit_id": audit_id})
+
+            if not audit:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Audit '{audit_id}' not found"
+                )
+
+            # Determine the actual status
+            if audit.status in ["completed", "failed", "cancelled"]:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Cannot interject: audit has already {audit.status}"
+                )
+            else:
+                # Database shows in_progress/paused but task isn't running
+                # This means the task just completed - update the database
+                audit.status = "completed"
+                await audit.save()
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Cannot interject: the audit task has just completed"
+                )
+
         # Find the audit to validate it exists
         try:
             object_id = PydanticObjectId(audit_id)
@@ -870,15 +902,7 @@ async def interject_audit_message(
         if not audit:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Audit not found"
-            )
-
-        # Validate audit is in a state where messages can be injected
-        if audit.status not in ["in_progress", "paused"]:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Cannot interject: audit status is '{audit.status}'. "
-                       f"Messages can only be sent to in_progress or paused audits."
+                detail=f"Audit '{audit_id}' not found"
             )
 
         # Validate message is not empty
@@ -896,9 +920,10 @@ async def interject_audit_message(
         )
 
         if not success:
+            # This shouldn't happen since we checked is_running() above, but handle it
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Running audit task not found. The audit may have completed."
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Failed to queue message. The audit may have just completed."
             )
 
         logger.info(f"Admin interjection queued for audit {audit_id}: {request.message[:100]}...")

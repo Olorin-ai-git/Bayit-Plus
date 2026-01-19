@@ -36,7 +36,10 @@ async def get_categories(
         "items": [{
             "id": str(item.id), "name": item.name, "name_en": item.name_en, "slug": item.slug,
             "description": item.description, "thumbnail": item.thumbnail, "order": item.order,
-            "is_active": item.is_active, "created_at": item.created_at.isoformat(),
+            "is_active": item.is_active,
+            "show_on_homepage": getattr(item, "show_on_homepage", True),
+            "parent_category_id": getattr(item, "parent_category_id", None),
+            "created_at": item.created_at.isoformat(),
         } for item in items],
         "total": total, "page": page, "page_size": page_size,
         "total_pages": (total + page_size - 1) // page_size,
@@ -55,7 +58,10 @@ async def get_category(category_id: str, current_user: User = Depends(has_permis
     return {
         "id": str(category.id), "name": category.name, "name_en": category.name_en, "slug": category.slug,
         "description": category.description, "thumbnail": category.thumbnail, "order": category.order,
-        "is_active": category.is_active, "created_at": category.created_at.isoformat(),
+        "is_active": category.is_active,
+        "show_on_homepage": getattr(category, "show_on_homepage", True),
+        "parent_category_id": getattr(category, "parent_category_id", None),
+        "created_at": category.created_at.isoformat(),
     }
 
 
@@ -65,8 +71,12 @@ async def create_category(data: CategoryCreateRequest, request: Request,
     """Create new category."""
     if await Category.find_one(Category.slug == data.slug):
         raise HTTPException(status_code=400, detail="Slug already exists")
-    category = Category(name=data.name, name_en=data.name_en, slug=data.slug,
-        description=data.description, thumbnail=data.thumbnail, order=data.order, is_active=data.is_active)
+    category = Category(
+        name=data.name, name_en=data.name_en, slug=data.slug,
+        description=data.description, thumbnail=data.thumbnail, order=data.order,
+        is_active=data.is_active, show_on_homepage=data.show_on_homepage,
+        parent_category_id=data.parent_category_id
+    )
     await category.insert()
     await log_audit(str(current_user.id), AuditAction.CATEGORY_CREATED, "category",
                     str(category.id), {"name": category.name, "slug": category.slug}, request)
@@ -107,6 +117,12 @@ async def update_category(category_id: str, data: CategoryUpdateRequest, request
     if data.is_active is not None:
         changes["is_active"] = {"old": category.is_active, "new": data.is_active}
         category.is_active = data.is_active
+    if data.show_on_homepage is not None:
+        changes["show_on_homepage"] = {"old": getattr(category, "show_on_homepage", True), "new": data.show_on_homepage}
+        category.show_on_homepage = data.show_on_homepage
+    if data.parent_category_id is not None:
+        changes["parent_category_id"] = {"old": getattr(category, "parent_category_id", None), "new": data.parent_category_id}
+        category.parent_category_id = data.parent_category_id
     await category.save()
     await log_audit(str(current_user.id), AuditAction.CATEGORY_UPDATED, "category", category_id, changes, request)
     return {"message": "Category updated", "id": category_id}

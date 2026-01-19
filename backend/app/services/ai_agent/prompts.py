@@ -103,6 +103,58 @@ Your task includes finding and removing duplicate content:
 - When resolving duplicates, keep the highest quality version (resolution, file size)
 - Use `resolve_duplicates` tool to handle duplicate groups
 - Log all duplicate resolutions with clear reasoning
+""",
+
+    "fix_series_structure": """
+## Series Structure & Episode Management
+Your task includes fixing series structure issues:
+
+**1. Find Misclassified Episodes:**
+- Use `find_misclassified_episodes` to discover items incorrectly marked as series containers
+- These are items with `is_series=True` but have stream URLs with episode patterns (S01E01, etc.)
+- They should be proper episodes linked to a parent series, not standalone series containers
+
+**2. Fix Each Misclassified Series:**
+For each series group found:
+- Use `fix_misclassified_series(series_name="Series Name")` to fix all episodes at once
+- This tool will:
+  - Create or find a proper parent series container
+  - Fetch TMDB metadata (poster, description, rating) with a SINGLE API call
+  - Convert all misclassified items to proper episodes
+  - Link them to the parent series
+  - Apply the poster to all episodes
+
+**3. Sync Series Posters:**
+- Use `sync_series_posters_to_episodes` to ensure all episodes have the same poster as their parent series
+- This prevents visual inconsistency in the UI
+
+**4. Link Orphan Episodes:**
+- Use `find_unlinked_episodes` to find episodes not linked to any series
+- Use `auto_link_episodes` to automatically link them using title matching
+
+**Example Workflow:**
+```
+Step 1: find_misclassified_episodes()
+        → Returns: {series_groups: [{series_name: "1883", episode_count: 4}, ...]}
+
+Step 2: fix_misclassified_series(series_name="1883")
+        → Creates parent series, converts episodes, applies TMDB metadata
+
+Step 3: sync_series_posters_to_episodes()
+        → Ensures all episodes have matching posters
+
+Step 4: find_unlinked_episodes()
+        → Check for any remaining orphan episodes
+
+Step 5: auto_link_episodes()
+        → Link remaining orphans automatically
+```
+
+**Why This Matters:**
+- Episodes displayed as individual "series" confuse users
+- Missing parent series means no proper series navigation
+- Inconsistent posters look unprofessional
+- Proper series structure enables "Continue Watching" and episode navigation
 """
 }
 
@@ -199,6 +251,7 @@ def get_enabled_capabilities(
     classify_only: bool,
     remove_duplicates: bool,
     validate_integrity: bool = True,
+    fix_series_structure: bool = False,
 ) -> List[str]:
     """
     Get list of enabled capability keys based on configuration.
@@ -225,6 +278,8 @@ def get_enabled_capabilities(
         enabled.append("verify_classification")
     if remove_duplicates:
         enabled.append("remove_duplicates")
+    if fix_series_structure:
+        enabled.append("fix_series_structure")
 
     return enabled
 
@@ -327,9 +382,12 @@ def build_comprehensive_initial_prompt(
    - OpenSubtitles quota: 1500 downloads/day = ~150-200 movies (3 languages each)
 
 3. **MANDATORY - Check each item for (IN THIS ORDER):**
+   - **HIGHEST PRIORITY:** Misclassified episodes (items marked as series but are actually episodes)
    - **HIGHEST PRIORITY:** Missing thumbnail/poster image
    - **HIGHEST PRIORITY:** Missing metadata (description, genre, imdb_id, tmdb_id, cast, director)
    - **HIGHEST PRIORITY:** Missing required subtitles (English, Hebrew, Spanish)
+   - **SERIES STRUCTURE:** Episodes not linked to parent series (orphan episodes)
+   - **SERIES POSTERS:** Episodes with different poster than parent series
    - **PODCAST MANAGEMENT:** Ensure podcasts have latest episodes (max 3 per podcast)
    - Dirty titles (must clean BEFORE fixing poster/metadata!)
    - Missing backdrop (wide background image)
@@ -404,6 +462,16 @@ These will ONLY appear in AI Insights in complete_audit, NOT as fixes_applied!
 
 **Available Tools - Podcast Management:**
 - manage_podcast_episodes - Sync latest podcast episodes from RSS feeds and keep only 3 most recent per podcast
+
+**Available Tools - Series Management:**
+- find_misclassified_episodes - Find items incorrectly marked as series containers (is_series=True with stream URLs)
+- fix_misclassified_series - Fix all misclassified episodes for a series: creates parent container, fetches TMDB metadata, converts to proper episodes
+- sync_series_posters_to_episodes - Apply series poster to all linked episodes for visual consistency
+- find_unlinked_episodes - Find episodes not linked to any parent series
+- auto_link_episodes - Automatically link orphan episodes to parent series using title matching
+- create_series_from_episode - Create a new series container from an episode's information
+- find_duplicate_episodes - Find duplicate episodes (same series + season + episode)
+- resolve_duplicate_episodes - Resolve duplicate episodes by keeping best quality version
 
 **Available Tools - Notifications:**
 - send_email_notification - Send email alert to admins (only for severe issues!)

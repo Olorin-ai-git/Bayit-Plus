@@ -765,6 +765,63 @@ TOOLS = [
             "required": ["episode_id", "series_title"]
         }
     },
+    {
+        "name": "sync_series_posters_to_episodes",
+        "description": "Synchronize series posters/thumbnails/backdrops to all linked episodes. When a series has artwork, this applies the same poster to all its episodes, ensuring visual consistency. If a series lacks a poster but has a TMDB ID, fetches artwork from TMDB (single call per series). Use this to fix episodes with missing or inconsistent artwork.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "series_id": {
+                    "type": "string",
+                    "description": "Optional: Specific series ID to process. If not provided, processes all series."
+                },
+                "fetch_from_tmdb": {
+                    "type": "boolean",
+                    "description": "If true, fetch missing posters from TMDB when tmdb_id is available (default true)",
+                    "default": True
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "find_misclassified_episodes",
+        "description": "Find content items that are misclassified as series containers but are actually episodes. These are items with is_series=True but have a stream_url and episode patterns (S01E01) in their filename. Returns grouped by series name. Use this to discover episodes that were incorrectly uploaded as series containers.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum number of misclassified episodes to find (default 100)",
+                    "default": 100
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "fix_misclassified_series",
+        "description": "Fix misclassified episodes for a specific series. This is a powerful tool that: (1) Finds all items marked as series containers but are actually episodes, (2) Creates or finds a proper parent series container, (3) Fetches TMDB metadata (poster, description, rating, etc.) if available, (4) Converts misclassified items to proper episodes, (5) Links them to the parent series and applies the poster. Use this after find_misclassified_episodes identifies series that need fixing.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "series_name": {
+                    "type": "string",
+                    "description": "Name of the series to fix (e.g., '1883', 'Breaking Bad'). Must match exactly."
+                },
+                "tmdb_id": {
+                    "type": "integer",
+                    "description": "Optional: TMDB ID for the series. If not provided, will search TMDB by series name."
+                },
+                "fetch_tmdb_metadata": {
+                    "type": "boolean",
+                    "description": "If true, fetch poster/metadata from TMDB (default true)",
+                    "default": True
+                }
+            },
+            "required": ["series_name"]
+        }
+    },
     # Episode Deduplication Tools
     {
         "name": "find_duplicate_episodes",

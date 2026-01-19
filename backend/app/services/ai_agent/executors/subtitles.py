@@ -275,7 +275,7 @@ async def _extract_with_audit(
             content_id=content_id,
             content_type="content",
             issue_type="missing_subtitles",
-            description=f"Extracted {saved_count} subtitle tracks: {', '.join(saved_languages)}",
+            description=f"Extracted {saved_count} subtitle tracks for '{content.title}': {', '.join(saved_languages)}",
             auto_approved=True
         )
         await action.insert()
@@ -374,7 +374,7 @@ async def execute_download_external_subtitle(
                 content_id=content_id,
                 content_type="content",
                 issue_type="missing_subtitles",
-                description=f"Downloaded {language} subtitle from {track.source} ({len(track.cues)} cues)",
+                description=f"Downloaded {language} subtitle for '{content.title}' from {track.source} ({len(track.cues)} cues)",
                 auto_approved=True
             )
             await action.insert()
@@ -466,19 +466,25 @@ async def execute_batch_download_subtitles(
                         }
                     )
 
+        success_items = [d for d in results["details"] if d["status"] == "success"]
+
         if audit_id:
+            # Build detailed description with affected titles
+            titles_affected = [d.get("title", d.get("content_id", "unknown")) for d in success_items[:5]]
+            titles_str = ", ".join(f"'{t}'" for t in titles_affected)
+            if len(success_items) > 5:
+                titles_str += f" +{len(success_items) - 5} more"
+
             action = LibrarianAction(
                 audit_id=audit_id,
                 action_type="batch_subtitle_download",
                 content_id="batch_operation",
                 content_type="batch",
                 issue_type="missing_subtitles",
-                description=f"Batch downloaded subtitles: {results['success']}/{results['processed']} successful",
+                description=f"Batch downloaded subtitles: {results['success']}/{results['processed']} successful. Items: {titles_str}",
                 auto_approved=True
             )
             await action.insert()
-
-        success_items = [d for d in results["details"] if d["status"] == "success"]
         summary_parts = []
         if success_items:
             summary_parts.append(f"{len(success_items)} subtitles downloaded:")

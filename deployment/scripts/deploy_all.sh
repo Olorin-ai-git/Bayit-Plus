@@ -232,35 +232,93 @@ main() {
     fi
 
     # ============================================================
-    # STEP 1: Build Web Frontend
+    # STEP 1: Build and Verify Web Frontend
     # ============================================================
     if [[ "$SKIP_FRONTEND" != "true" && "$SKIP_BUILD" != "true" ]]; then
-        print_section "Building Web Frontend"
+        print_section "Building and Verifying Web Frontend"
         STEP_START=$(date +%s)
 
         cd "$REPO_ROOT/web"
 
+        # Step 1a: Install dependencies
         print_info "Installing dependencies..."
-        npm install
-        print_success "Dependencies installed"
-
-        print_info "Building production bundle..."
-        npm run build
-        print_success "Web build complete"
-
-        # Verify build output
-        if [[ ! -d "$REPO_ROOT/web/dist" ]]; then
-            print_error "Build failed - dist directory not found"
+        if ! npm install --silent 2>/dev/null; then
+            print_error "Failed to install dependencies"
             RESULT_WEB_BUILD="FAILED"
         else
-            print_success "Build output verified at web/dist"
-            RESULT_WEB_BUILD="SUCCESS"
+            print_success "Dependencies installed"
+
+            # Step 1b: TypeScript type checking
+            print_info "Running TypeScript type check..."
+            if npm run type-check 2>/dev/null; then
+                print_success "TypeScript types verified"
+            elif npx tsc --noEmit 2>/dev/null; then
+                print_success "TypeScript types verified"
+            else
+                print_warning "TypeScript check skipped"
+            fi
+
+            # Step 1c: ESLint check (optional - don't fail on lint errors)
+            print_info "Running ESLint check..."
+            if npm run lint 2>/dev/null; then
+                print_success "ESLint passed"
+            else
+                print_warning "ESLint check skipped or has warnings"
+            fi
+
+            # Step 1d: Build the application
+            print_info "Building production bundle..."
+            if ! npm run build; then
+                print_error "Build failed!"
+                RESULT_WEB_BUILD="FAILED"
+            else
+                print_success "Web build complete"
+
+                # Step 1e: Verify build output
+                if [[ ! -d "$REPO_ROOT/web/dist" ]]; then
+                    print_error "Build verification failed - dist directory not found"
+                    RESULT_WEB_BUILD="FAILED"
+                else
+                    # Check dist has content
+                    DIST_SIZE=$(du -sh "$REPO_ROOT/web/dist" 2>/dev/null | cut -f1)
+                    DIST_FILES=$(find "$REPO_ROOT/web/dist" -type f | wc -l | xargs)
+
+                    if [[ "$DIST_FILES" -lt 5 ]]; then
+                        print_error "Build verification failed - dist has too few files ($DIST_FILES)"
+                        RESULT_WEB_BUILD="FAILED"
+                    else
+                        print_success "Build verified: $DIST_FILES files, $DIST_SIZE total"
+                        RESULT_WEB_BUILD="SUCCESS"
+                    fi
+                fi
+            fi
         fi
 
         TIME_WEB_BUILD=$(($(date +%s) - STEP_START))
+
+        # Fail early if web build failed
+        if [[ "$RESULT_WEB_BUILD" == "FAILED" ]]; then
+            print_error "Web frontend build verification failed - aborting frontend deployment"
+            SKIP_FRONTEND=true
+        fi
     elif [[ "$SKIP_BUILD" == "true" ]]; then
         print_info "Skipping web build (using existing dist)"
-        RESULT_WEB_BUILD="SKIPPED"
+        # Verify existing dist
+        if [[ -d "$REPO_ROOT/web/dist" ]]; then
+            DIST_FILES=$(find "$REPO_ROOT/web/dist" -type f 2>/dev/null | wc -l | xargs)
+            if [[ "$DIST_FILES" -gt 5 ]]; then
+                print_success "Existing dist verified: $DIST_FILES files"
+                RESULT_WEB_BUILD="SKIPPED"
+            else
+                print_error "Existing dist is invalid or empty"
+                RESULT_WEB_BUILD="FAILED"
+                SKIP_FRONTEND=true
+            fi
+        else
+            print_error "No existing dist directory found"
+            RESULT_WEB_BUILD="FAILED"
+            SKIP_FRONTEND=true
+        fi
     fi
 
     # ============================================================
@@ -288,7 +346,103 @@ main() {
     fi
 
     # ============================================================
-    # STEP 3: Deploy Backend to Cloud Run
+    # STEP 3: Verify Backend Build (before deployment)
+    # ============================================================
+    RESULT_BACKEND_BUILD="SKIPPED"
+    TIME_BACKEND_BUILD=0
+
+    if [[ "$SKIP_BACKEND" != "true" && "$SKIP_BUILD" != "true" ]]; then
+        print_section "Verifying Backend Build"
+        STEP_START=$(date +%s)
+
+        cd "$REPO_ROOT/backend"
+
+        # Check Poetry is available
+        if ! command_exists poetry; then
+            print_error "Poetry not found - backend build verification failed"
+            RESULT_BACKEND_BUILD="FAILED"
+        else
+            print_info "Checking Poetry lock file..."
+            if ! poetry check --quiet 2>/dev/null; then
+                print_error "Poetry lock file is out of sync. Run: poetry lock"
+                RESULT_BACKEND_BUILD="FAILED"
+            else
+                print_success "Poetry lock file is valid"
+
+                print_info "Installing dependencies..."
+                if ! poetry install --quiet 2>/dev/null; then
+                    print_error "Failed to install dependencies"
+                    RESULT_BACKEND_BUILD="FAILED"
+                else
+                    print_success "Dependencies installed"
+
+                    print_info "Verifying Python syntax..."
+                    SYNTAX_ERROR=false
+
+                    # Compile main app
+                    if ! poetry run python -m py_compile app/main.py 2>/dev/null; then
+                        print_error "Python syntax error in app/main.py"
+                        SYNTAX_ERROR=true
+                    fi
+
+                    # Compile route files
+                    for f in app/api/routes/*.py; do
+                        if ! poetry run python -m py_compile "$f" 2>/dev/null; then
+                            print_error "Python syntax error in $f"
+                            SYNTAX_ERROR=true
+                        fi
+                    done
+
+                    # Compile service files
+                    for f in app/services/*.py; do
+                        if ! poetry run python -m py_compile "$f" 2>/dev/null; then
+                            print_error "Python syntax error in $f"
+                            SYNTAX_ERROR=true
+                        fi
+                    done
+
+                    # Compile AI agent files
+                    for f in app/services/ai_agent/*.py app/services/ai_agent/executors/*.py; do
+                        if ! poetry run python -m py_compile "$f" 2>/dev/null; then
+                            print_error "Python syntax error in $f"
+                            SYNTAX_ERROR=true
+                        fi
+                    done
+
+                    if [[ "$SYNTAX_ERROR" == "true" ]]; then
+                        RESULT_BACKEND_BUILD="FAILED"
+                    else
+                        print_success "Python syntax verification passed"
+
+                        print_info "Verifying application imports..."
+                        if ! poetry run python -c "from app.main import app; print('OK')" 2>/dev/null; then
+                            print_error "Application import failed"
+                            RESULT_BACKEND_BUILD="FAILED"
+                        else
+                            print_success "Application imports verified"
+                            RESULT_BACKEND_BUILD="SUCCESS"
+                        fi
+                    fi
+                fi
+            fi
+        fi
+
+        TIME_BACKEND_BUILD=$(($(date +%s) - STEP_START))
+
+        # Fail deployment if build verification failed
+        if [[ "$RESULT_BACKEND_BUILD" == "FAILED" ]]; then
+            print_error "Backend build verification failed - aborting backend deployment"
+            SKIP_BACKEND=true
+            RESULT_CLOUD_RUN_BACKEND="FAILED"
+        else
+            print_success "Backend build verification passed"
+        fi
+    elif [[ "$SKIP_BUILD" == "true" ]]; then
+        print_info "Skipping backend build verification (using existing build)"
+    fi
+
+    # ============================================================
+    # STEP 4: Deploy Backend to Cloud Run
     # ============================================================
     if [[ "$SKIP_BACKEND" != "true" ]]; then
         print_section "Deploying Backend to Cloud Run"
@@ -323,11 +477,13 @@ main() {
         TIME_CLOUD_RUN_BACKEND=$(($(date +%s) - STEP_START))
     else
         print_info "Skipping Cloud Run backend deployment"
-        RESULT_CLOUD_RUN_BACKEND="SKIPPED"
+        if [[ "$RESULT_CLOUD_RUN_BACKEND" != "FAILED" ]]; then
+            RESULT_CLOUD_RUN_BACKEND="SKIPPED"
+        fi
     fi
 
     # ============================================================
-    # STEP 4: Deploy iOS Mobile App
+    # STEP 5: Deploy iOS Mobile App
     # ============================================================
     if [[ "$SKIP_IOS" != "true" ]]; then
         print_section "Deploying iOS Mobile App"
@@ -368,7 +524,7 @@ main() {
     fi
 
     # ============================================================
-    # STEP 5: Deploy tvOS App
+    # STEP 6: Deploy tvOS App
     # ============================================================
     if [[ "$SKIP_TVOS" != "true" ]]; then
         print_section "Deploying tvOS App"
@@ -452,6 +608,7 @@ main() {
 
     print_row "Web Build" "$RESULT_WEB_BUILD" "$TIME_WEB_BUILD"
     print_row "Firebase Hosting" "$RESULT_FIREBASE_HOSTING" "$TIME_FIREBASE_HOSTING"
+    print_row "Backend Build" "$RESULT_BACKEND_BUILD" "$TIME_BACKEND_BUILD"
     print_row "Cloud Run Backend" "$RESULT_CLOUD_RUN_BACKEND" "$TIME_CLOUD_RUN_BACKEND"
     print_row "iOS App" "$RESULT_IOS_APP" "$TIME_IOS_APP"
     print_row "tvOS App" "$RESULT_TVOS_APP" "$TIME_TVOS_APP"
@@ -481,7 +638,9 @@ main() {
 
     # Count failures
     FAILURES=0
+    [[ "$RESULT_WEB_BUILD" == "FAILED" ]] && ((FAILURES++))
     [[ "$RESULT_FIREBASE_HOSTING" == "FAILED" ]] && ((FAILURES++))
+    [[ "$RESULT_BACKEND_BUILD" == "FAILED" ]] && ((FAILURES++))
     [[ "$RESULT_CLOUD_RUN_BACKEND" == "FAILED" ]] && ((FAILURES++))
     [[ "$RESULT_IOS_APP" == "FAILED" ]] && ((FAILURES++))
     [[ "$RESULT_TVOS_APP" == "FAILED" ]] && ((FAILURES++))

@@ -165,8 +165,12 @@ class YouTubeKidsService:
 
     @staticmethod
     def _youtube_to_thumbnail(video_id: str) -> str:
-        """Get YouTube thumbnail URL from video ID."""
-        return f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
+        """
+        Get YouTube thumbnail URL from video ID.
+        Uses hqdefault.jpg (480x360) which is available for all videos.
+        maxresdefault.jpg (1280x720) doesn't exist for all videos.
+        """
+        return f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
 
     @staticmethod
     def _parse_duration(duration_str: str) -> str:

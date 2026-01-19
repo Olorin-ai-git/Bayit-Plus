@@ -66,6 +66,9 @@ from .series import (
     execute_find_duplicate_episodes,
     execute_resolve_duplicate_episodes,
     execute_create_series_from_episode,
+    execute_sync_series_posters_to_episodes,
+    execute_find_misclassified_episodes,
+    execute_fix_misclassified_series,
 )
 
 from .integrity import (
@@ -125,6 +128,9 @@ __all__ = [
     "execute_find_duplicate_episodes",
     "execute_resolve_duplicate_episodes",
     "execute_create_series_from_episode",
+    "execute_sync_series_posters_to_episodes",
+    "execute_find_misclassified_episodes",
+    "execute_fix_misclassified_series",
     # Integrity Tools
     "execute_get_integrity_status",
     "execute_find_orphaned_gcs_files",

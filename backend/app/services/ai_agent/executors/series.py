@@ -331,3 +331,590 @@ async def execute_create_series_from_episode(
     except Exception as e:
         logger.error(f"Error creating series from episode: {e}")
         return {"success": False, "error": str(e)}
+
+
+async def execute_sync_series_posters_to_episodes(
+    series_id: Optional[str] = None,
+    fetch_from_tmdb: bool = True,
+    audit_id: Optional[str] = None,
+    dry_run: bool = False
+) -> Dict[str, Any]:
+    """
+    Synchronize series posters to all linked episodes.
+
+    When a series has a poster, this applies the same poster/thumbnail/backdrop
+    to all episodes linked to that series. If the series lacks a poster and
+    has a tmdb_id, fetches artwork from TMDB (single call per series).
+
+    Args:
+        series_id: Optional specific series to process. If None, processes all series.
+        fetch_from_tmdb: If True, fetch missing posters from TMDB when tmdb_id available.
+        audit_id: Parent audit ID for logging actions.
+        dry_run: If True, only report what would be changed.
+
+    Returns:
+        Dict with success status, counts, and details.
+    """
+    try:
+        from beanie import PydanticObjectId
+        from datetime import datetime
+
+        from app.models.content import Content
+        from app.models.librarian import LibrarianAction
+        from app.services.tmdb_service import TMDBService
+        from app.core.config import settings
+
+        # Build query for series containers
+        series_query = {"is_series": True}
+        if series_id:
+            series_query["_id"] = PydanticObjectId(series_id)
+
+        series_list = await Content.find(series_query).to_list()
+
+        results = {
+            "success": True,
+            "series_processed": 0,
+            "episodes_updated": 0,
+            "tmdb_fetches": 0,
+            "series_without_episodes": 0,
+            "series_already_synced": 0,
+            "errors": [],
+            "details": [],
+            "dry_run": dry_run
+        }
+
+        tmdb = TMDBService() if fetch_from_tmdb and settings.TMDB_API_KEY else None
+
+        for series in series_list:
+            series_detail = {
+                "series_id": str(series.id),
+                "series_title": series.title,
+                "episodes_updated": 0,
+                "poster_source": None,
+                "actions": []
+            }
+
+            try:
+                # Get series poster - either existing or fetch from TMDB
+                poster_url = series.poster_url
+                thumbnail = series.thumbnail or series.poster_url
+                backdrop = series.backdrop
+
+                # If no poster and we have TMDB ID, fetch from TMDB
+                if not poster_url and series.tmdb_id and tmdb:
+                    logger.info(f"Fetching poster from TMDB for series '{series.title}' (tmdb_id={series.tmdb_id})")
+                    details = await tmdb.get_tv_series_details(series.tmdb_id)
+
+                    if details:
+                        if details.get("poster_path"):
+                            poster_url = tmdb.get_image_url(details["poster_path"], "w500")
+                            thumbnail = poster_url
+                        if details.get("backdrop_path"):
+                            backdrop = tmdb.get_image_url(details["backdrop_path"], "w1280")
+
+                        results["tmdb_fetches"] += 1
+                        series_detail["poster_source"] = "tmdb"
+
+                        # Update series with fetched artwork if not dry run
+                        if not dry_run and (poster_url or backdrop):
+                            series.poster_url = poster_url or series.poster_url
+                            series.thumbnail = thumbnail or series.thumbnail
+                            series.backdrop = backdrop or series.backdrop
+                            series.updated_at = datetime.utcnow()
+                            await series.save()
+                            series_detail["actions"].append("updated_series_poster_from_tmdb")
+                else:
+                    series_detail["poster_source"] = "existing" if poster_url else "none"
+
+                # Skip if no poster available
+                if not poster_url:
+                    logger.debug(f"Series '{series.title}' has no poster to sync")
+                    continue
+
+                # Find all episodes linked to this series
+                episodes = await Content.find({
+                    "series_id": str(series.id),
+                    "is_series": False
+                }).to_list()
+
+                if not episodes:
+                    results["series_without_episodes"] += 1
+                    series_detail["actions"].append("no_episodes_found")
+                    results["details"].append(series_detail)
+                    continue
+
+                # Check which episodes need updating
+                episodes_to_update = []
+                for ep in episodes:
+                    needs_update = (
+                        ep.poster_url != poster_url or
+                        ep.thumbnail != thumbnail or
+                        (backdrop and ep.backdrop != backdrop)
+                    )
+                    if needs_update:
+                        episodes_to_update.append(ep)
+
+                if not episodes_to_update:
+                    results["series_already_synced"] += 1
+                    series_detail["actions"].append("already_synced")
+                    results["details"].append(series_detail)
+                    continue
+
+                # Update episodes
+                for ep in episodes_to_update:
+                    if dry_run:
+                        series_detail["episodes_updated"] += 1
+                        continue
+
+                    before_state = {
+                        "poster_url": ep.poster_url,
+                        "thumbnail": ep.thumbnail,
+                        "backdrop": ep.backdrop
+                    }
+
+                    ep.poster_url = poster_url
+                    ep.thumbnail = thumbnail
+                    if backdrop:
+                        ep.backdrop = backdrop
+                    ep.updated_at = datetime.utcnow()
+                    await ep.save()
+
+                    series_detail["episodes_updated"] += 1
+                    results["episodes_updated"] += 1
+
+                    # Log action if audit_id provided
+                    if audit_id:
+                        action = LibrarianAction(
+                            audit_id=audit_id,
+                            action_type="sync_episode_poster",
+                            content_id=str(ep.id),
+                            content_type="episode",
+                            issue_type="missing_poster",
+                            description=f"Synced poster from series '{series.title}' to episode '{ep.title}'",
+                            before_state=before_state,
+                            after_state={
+                                "poster_url": poster_url,
+                                "thumbnail": thumbnail,
+                                "backdrop": backdrop
+                            },
+                            confidence_score=1.0,
+                            auto_approved=True,
+                            timestamp=datetime.utcnow()
+                        )
+                        await action.insert()
+
+                series_detail["actions"].append(f"updated_{series_detail['episodes_updated']}_episodes")
+                results["series_processed"] += 1
+
+            except Exception as e:
+                error_msg = f"Error processing series '{series.title}': {str(e)}"
+                logger.error(error_msg)
+                results["errors"].append(error_msg)
+                series_detail["actions"].append(f"error: {str(e)}")
+
+            results["details"].append(series_detail)
+
+        # Close TMDB client if used
+        if tmdb:
+            await tmdb.close()
+
+        results["message"] = (
+            f"{'[DRY RUN] Would process' if dry_run else 'Processed'} "
+            f"{results['series_processed']} series, "
+            f"{'would update' if dry_run else 'updated'} {results['episodes_updated']} episodes"
+        )
+
+        logger.info(f"Series poster sync complete: {results['message']}")
+        return results
+
+    except Exception as e:
+        logger.error(f"Error in sync series posters to episodes: {e}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_find_misclassified_episodes(
+    limit: int = 100
+) -> Dict[str, Any]:
+    """
+    Find content items that are misclassified as series containers but are actually episodes.
+
+    These are items with:
+    - is_series=True (marked as series container)
+    - But have a stream_url (actual video file)
+    - And filename contains episode patterns (S01E01, etc.)
+
+    Returns grouped by series name for easy fixing.
+    """
+    try:
+        import re
+        from app.models.content import Content
+
+        # Find items marked as series but with stream URLs containing episode patterns
+        misclassified = await Content.find({
+            "is_series": True,
+            "stream_url": {"$ne": "", "$exists": True},
+        }).to_list(limit * 2)  # Get more to filter
+
+        # Filter and group by series name
+        episode_pattern = re.compile(r'[._\-\s]S(\d+)E(\d+)', re.IGNORECASE)
+        series_groups: Dict[str, List[Dict[str, Any]]] = {}
+
+        for item in misclassified:
+            stream_url = item.stream_url or ""
+            title = item.title or ""
+
+            # Check if this looks like an episode
+            match = episode_pattern.search(stream_url) or episode_pattern.search(title)
+            if not match:
+                continue
+
+            season = int(match.group(1))
+            episode = int(match.group(2))
+
+            # Extract series name from title (remove episode markers)
+            series_name = re.sub(r'\s*S\d+E\d+.*$', '', title, flags=re.IGNORECASE).strip()
+            if not series_name:
+                # Try to extract from stream URL
+                url_match = re.search(r'/([^/]+)\.S\d+E\d+', stream_url, re.IGNORECASE)
+                if url_match:
+                    series_name = url_match.group(1).replace('.', ' ').replace('_', ' ')
+
+            if not series_name:
+                series_name = "Unknown Series"
+
+            if series_name not in series_groups:
+                series_groups[series_name] = []
+
+            series_groups[series_name].append({
+                "content_id": str(item.id),
+                "title": item.title,
+                "stream_url": stream_url[:100] + "..." if len(stream_url) > 100 else stream_url,
+                "detected_season": season,
+                "detected_episode": episode,
+                "has_poster": bool(item.poster_url),
+                "tmdb_id": item.tmdb_id
+            })
+
+            if len(series_groups) >= limit:
+                break
+
+        # Format results
+        groups_list = [
+            {
+                "series_name": name,
+                "episode_count": len(episodes),
+                "episodes": sorted(episodes, key=lambda x: (x["detected_season"], x["detected_episode"]))
+            }
+            for name, episodes in series_groups.items()
+        ]
+
+        total_episodes = sum(len(g["episodes"]) for g in groups_list)
+
+        return {
+            "success": True,
+            "total_misclassified": total_episodes,
+            "series_groups": len(groups_list),
+            "groups": groups_list,
+            "message": f"Found {total_episodes} misclassified episodes in {len(groups_list)} series groups"
+        }
+
+    except Exception as e:
+        logger.error(f"Error finding misclassified episodes: {e}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_fix_misclassified_series(
+    series_name: str,
+    tmdb_id: Optional[int] = None,
+    fetch_tmdb_metadata: bool = True,
+    audit_id: Optional[str] = None,
+    dry_run: bool = False
+) -> Dict[str, Any]:
+    """
+    Fix misclassified episodes for a specific series.
+
+    This function:
+    1. Finds all items marked as is_series=True with matching series name
+    2. Creates or finds a proper parent series container
+    3. Fetches TMDB metadata if tmdb_id provided or found
+    4. Converts misclassified items to proper episodes (is_series=False)
+    5. Links them to the parent series and applies poster/metadata
+
+    Args:
+        series_name: Name of the series to fix (e.g., "1883", "Breaking Bad")
+        tmdb_id: Optional TMDB ID for the series (for metadata lookup)
+        fetch_tmdb_metadata: If True, fetch metadata from TMDB
+        audit_id: Parent audit ID for logging actions
+        dry_run: If True, only report what would be fixed
+
+    Returns:
+        Dict with results of the fix operation.
+    """
+    try:
+        import re
+        from datetime import datetime
+        from beanie import PydanticObjectId
+
+        from app.models.content import Content, Category
+        from app.models.librarian import LibrarianAction
+        from app.services.tmdb_service import TMDBService
+        from app.core.config import settings
+
+        results = {
+            "success": True,
+            "series_name": series_name,
+            "parent_series_id": None,
+            "parent_series_created": False,
+            "episodes_fixed": 0,
+            "episodes_found": 0,
+            "tmdb_metadata_applied": False,
+            "poster_url": None,
+            "errors": [],
+            "fixed_episodes": [],
+            "dry_run": dry_run
+        }
+
+        episode_pattern = re.compile(r'[._\-\s]S(\d+)E(\d+)', re.IGNORECASE)
+
+        # Find all misclassified items for this series
+        misclassified = await Content.find({
+            "is_series": True,
+            "stream_url": {"$ne": "", "$exists": True},
+            "$or": [
+                {"title": {"$regex": f"^{re.escape(series_name)}", "$options": "i"}},
+                {"title_en": {"$regex": f"^{re.escape(series_name)}", "$options": "i"}}
+            ]
+        }).to_list()
+
+        # Filter to only items with episode patterns
+        episodes_to_fix = []
+        for item in misclassified:
+            stream_url = item.stream_url or ""
+            title = item.title or ""
+            match = episode_pattern.search(stream_url) or episode_pattern.search(title)
+            if match:
+                episodes_to_fix.append({
+                    "content": item,
+                    "season": int(match.group(1)),
+                    "episode": int(match.group(2))
+                })
+
+        results["episodes_found"] = len(episodes_to_fix)
+
+        if not episodes_to_fix:
+            results["message"] = f"No misclassified episodes found for series '{series_name}'"
+            return results
+
+        logger.info(f"Found {len(episodes_to_fix)} misclassified episodes for '{series_name}'")
+
+        # Find or create proper parent series container
+        parent_series = await Content.find_one({
+            "is_series": True,
+            "content_type": "series",
+            "$or": [
+                {"stream_url": ""},
+                {"stream_url": None},
+                {"stream_url": {"$exists": False}}
+            ],
+            "$or": [
+                {"title": {"$regex": f"^{re.escape(series_name)}$", "$options": "i"}},
+                {"title_en": {"$regex": f"^{re.escape(series_name)}$", "$options": "i"}}
+            ]
+        })
+
+        # Fetch TMDB metadata
+        tmdb_data = None
+        tmdb = None
+        if fetch_tmdb_metadata and settings.TMDB_API_KEY:
+            tmdb = TMDBService()
+
+            # If no tmdb_id provided, try to search
+            if not tmdb_id:
+                search_result = await tmdb.search_tv_series(series_name)
+                if search_result:
+                    tmdb_id = search_result.get("id")
+                    logger.info(f"Found TMDB ID {tmdb_id} for '{series_name}'")
+
+            if tmdb_id:
+                tmdb_data = await tmdb.get_tv_series_details(tmdb_id)
+                if tmdb_data:
+                    results["tmdb_metadata_applied"] = True
+                    results["poster_url"] = tmdb.get_image_url(tmdb_data.get("poster_path"), "w500") if tmdb_data.get("poster_path") else None
+
+        # Build series metadata
+        poster_url = None
+        backdrop_url = None
+        external_ids = {}
+
+        if tmdb_data:
+            poster_url = tmdb.get_image_url(tmdb_data["poster_path"], "w500") if tmdb_data.get("poster_path") else None
+            backdrop_url = tmdb.get_image_url(tmdb_data["backdrop_path"], "w1280") if tmdb_data.get("backdrop_path") else None
+            external_ids = tmdb_data.get("external_ids", {})
+
+        if dry_run:
+            results["message"] = (
+                f"[DRY RUN] Would fix {len(episodes_to_fix)} episodes for '{series_name}'. "
+                f"Parent series {'exists' if parent_series else 'would be created'}. "
+                f"TMDB metadata {'would be applied' if tmdb_data else 'not available'}."
+            )
+            if tmdb:
+                await tmdb.close()
+            return results
+
+        # Create parent series if needed
+        if not parent_series:
+            category = await Category.find_one({"slug": "series"})
+            if not category:
+                category = await Category.find_one({"name": "Series"})
+
+            parent_series = Content(
+                title=series_name,
+                title_en=series_name,
+                description=tmdb_data.get("overview") if tmdb_data else None,
+                description_en=tmdb_data.get("overview") if tmdb_data else None,
+                poster_url=poster_url,
+                thumbnail=poster_url,
+                backdrop=backdrop_url,
+                year=int(tmdb_data.get("first_air_date", "")[:4]) if tmdb_data and tmdb_data.get("first_air_date") else None,
+                tmdb_id=tmdb_id,
+                imdb_id=external_ids.get("imdb_id"),
+                imdb_rating=tmdb_data.get("vote_average") if tmdb_data else None,
+                imdb_votes=tmdb_data.get("vote_count") if tmdb_data else None,
+                total_seasons=tmdb_data.get("number_of_seasons") if tmdb_data else None,
+                total_episodes=tmdb_data.get("number_of_episodes") if tmdb_data else None,
+                genres=[g.get("name") for g in tmdb_data.get("genres", [])] if tmdb_data else [],
+                is_series=True,
+                content_type="series",
+                is_published=True,
+                category_id=str(category.id) if category else "",
+                category_name="Series",
+                stream_url="",
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow()
+            )
+
+            await parent_series.insert()
+            results["parent_series_created"] = True
+            logger.info(f"Created parent series container: '{series_name}' (ID: {parent_series.id})")
+
+            # Log action
+            if audit_id:
+                action = LibrarianAction(
+                    audit_id=audit_id,
+                    action_type="create_series_container",
+                    content_id=str(parent_series.id),
+                    content_type="series",
+                    issue_type="missing_series_container",
+                    description=f"Created series container '{series_name}' for misclassified episodes",
+                    before_state={},
+                    after_state={"series_id": str(parent_series.id), "title": series_name, "tmdb_id": tmdb_id},
+                    confidence_score=1.0,
+                    auto_approved=True,
+                    timestamp=datetime.utcnow()
+                )
+                await action.insert()
+
+        results["parent_series_id"] = str(parent_series.id)
+
+        # Update parent series with TMDB data if it was missing
+        if tmdb_data and not parent_series.poster_url:
+            parent_series.poster_url = poster_url
+            parent_series.thumbnail = poster_url
+            parent_series.backdrop = backdrop_url
+            parent_series.description = tmdb_data.get("overview")
+            parent_series.tmdb_id = tmdb_id
+            parent_series.imdb_id = external_ids.get("imdb_id")
+            parent_series.imdb_rating = tmdb_data.get("vote_average")
+            parent_series.total_seasons = tmdb_data.get("number_of_seasons")
+            parent_series.total_episodes = tmdb_data.get("number_of_episodes")
+            parent_series.updated_at = datetime.utcnow()
+            await parent_series.save()
+            logger.info(f"Updated parent series with TMDB metadata")
+
+        # Convert misclassified items to episodes
+        for ep_data in episodes_to_fix:
+            content = ep_data["content"]
+            season = ep_data["season"]
+            episode = ep_data["episode"]
+
+            try:
+                before_state = {
+                    "is_series": content.is_series,
+                    "content_type": content.content_type,
+                    "series_id": content.series_id,
+                    "season": content.season,
+                    "episode": content.episode
+                }
+
+                # Update to episode
+                content.is_series = False
+                content.content_type = "episode"
+                content.series_id = str(parent_series.id)
+                content.season = season
+                content.episode = episode
+                content.title = f"{series_name} S{season:02d}E{episode:02d}"
+                content.title_en = f"{series_name} S{season:02d}E{episode:02d}"
+                content.poster_url = poster_url or parent_series.poster_url
+                content.thumbnail = poster_url or parent_series.thumbnail
+                content.backdrop = backdrop_url or parent_series.backdrop
+                content.tmdb_id = tmdb_id or parent_series.tmdb_id
+                content.imdb_id = external_ids.get("imdb_id") or parent_series.imdb_id
+                content.imdb_rating = tmdb_data.get("vote_average") if tmdb_data else parent_series.imdb_rating
+                if tmdb_data:
+                    content.description = tmdb_data.get("overview")
+                    content.genres = [g.get("name") for g in tmdb_data.get("genres", [])]
+                content.updated_at = datetime.utcnow()
+
+                await content.save()
+                results["episodes_fixed"] += 1
+                results["fixed_episodes"].append({
+                    "content_id": str(content.id),
+                    "title": content.title,
+                    "season": season,
+                    "episode": episode
+                })
+
+                logger.info(f"Fixed episode: {content.title}")
+
+                # Log action
+                if audit_id:
+                    action = LibrarianAction(
+                        audit_id=audit_id,
+                        action_type="fix_misclassified_episode",
+                        content_id=str(content.id),
+                        content_type="episode",
+                        issue_type="misclassified_as_series",
+                        description=f"Fixed '{content.title}': converted from series to episode S{season:02d}E{episode:02d}",
+                        before_state=before_state,
+                        after_state={
+                            "is_series": False,
+                            "content_type": "episode",
+                            "series_id": str(parent_series.id),
+                            "season": season,
+                            "episode": episode
+                        },
+                        confidence_score=1.0,
+                        auto_approved=True,
+                        timestamp=datetime.utcnow()
+                    )
+                    await action.insert()
+
+            except Exception as e:
+                error_msg = f"Error fixing episode {content.id}: {str(e)}"
+                logger.error(error_msg)
+                results["errors"].append(error_msg)
+
+        if tmdb:
+            await tmdb.close()
+
+        results["message"] = (
+            f"Fixed {results['episodes_fixed']}/{results['episodes_found']} episodes for '{series_name}'. "
+            f"Parent series: {results['parent_series_id']}. "
+            f"TMDB metadata: {'applied' if results['tmdb_metadata_applied'] else 'not available'}."
+        )
+
+        return results
+
+    except Exception as e:
+        logger.error(f"Error fixing misclassified series: {e}")
+        return {"success": False, "error": str(e)}

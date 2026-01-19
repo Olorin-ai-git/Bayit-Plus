@@ -32,6 +32,7 @@ export function useVideoPreview({
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const previewTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const hasAutoStartedRef = useRef<string | null>(null); // Track which episode/series auto-started
 
   const getPreviewUrl = useCallback((): string | null => {
     if (selectedEpisode?.preview_url) return selectedEpisode.preview_url;
@@ -122,16 +123,27 @@ export function useVideoPreview({
     }, 20000);
   }, [getPreviewUrl, stopPreview]);
 
+  // Auto-start preview when episode/series changes (only once per content)
   useEffect(() => {
+    const contentKey = `${selectedEpisode?.id || ''}-${series?.id || ''}`;
     const previewUrl = getPreviewUrl();
-    if (previewUrl && showPoster) {
+
+    // Only auto-start if:
+    // 1. We have a preview URL
+    // 2. We haven't already auto-started for this content
+    if (previewUrl && hasAutoStartedRef.current !== contentKey) {
+      hasAutoStartedRef.current = contentKey;
       const startTimer = setTimeout(() => {
         startPreview();
       }, 800);
       return () => clearTimeout(startTimer);
     }
-    return () => stopPreview();
-  }, [selectedEpisode?.id, series?.id, getPreviewUrl, showPoster, startPreview, stopPreview]);
+
+    // Cleanup on unmount
+    return () => {
+      cleanup();
+    };
+  }, [selectedEpisode?.id, series?.id, getPreviewUrl, startPreview, cleanup]);
 
   return {
     isPreviewPlaying,

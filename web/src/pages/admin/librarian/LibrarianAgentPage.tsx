@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Activity, DollarSign, Clock, Play, Bot, FileText, Eye, Minus, Plus, MessageSquare } from 'lucide-react';
+import { RefreshCw, Activity, DollarSign, Clock, Play, Bot, FileText, Eye, Minus, Plus, MessageSquare, Settings } from 'lucide-react';
 import { GlassButton, GlassToggle, GlassStatCard, GlassBadge, GlassModal, GlassTextarea } from '@bayit/shared/ui';
 import { GlassLog, GlassTable, GlassDraggableExpander } from '@bayit/shared/ui/web';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -414,10 +414,17 @@ const LibrarianAgentPage = () => {
         />
       </View>
 
-      {/* Audit Configuration Section */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.librarian.quickActions.title', 'Run Configuration')}</Text>
-
+      {/* Audit Configuration Section - Collapsible */}
+      <GlassDraggableExpander
+        title={t('admin.librarian.quickActions.title', 'Run Configuration')}
+        subtitle={dryRun ? t('admin.librarian.quickActions.previewMode', 'Preview Mode') : t('admin.librarian.quickActions.liveMode', 'Live Mode')}
+        icon={<Settings size={18} color={colors.primary} />}
+        defaultExpanded={true}
+        draggable={false}
+        minHeight={200}
+        maxHeight={400}
+        style={styles.section}
+      >
         {/* Toggles Grid - 2 columns */}
         {/* NOTE: These are ADDITIVE capabilities - multiple can be enabled together */}
         <View style={styles.toggleGrid}>
@@ -536,7 +543,7 @@ const LibrarianAgentPage = () => {
             </Text>
           </View>
         )}
-      </View>
+      </GlassDraggableExpander>
 
       {/* Live Audit Log */}
       <View style={styles.section}>

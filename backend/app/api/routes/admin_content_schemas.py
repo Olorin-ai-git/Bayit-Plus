@@ -76,6 +76,8 @@ class CategoryCreateRequest(BaseModel):
     thumbnail: Optional[str] = None
     order: int = 0
     is_active: bool = True
+    show_on_homepage: bool = True  # If False, category only appears on dedicated pages
+    parent_category_id: Optional[str] = None  # For hierarchical categories
 
 
 class CategoryUpdateRequest(BaseModel):
@@ -86,6 +88,8 @@ class CategoryUpdateRequest(BaseModel):
     thumbnail: Optional[str] = None
     order: Optional[int] = None
     is_active: Optional[bool] = None
+    show_on_homepage: Optional[bool] = None
+    parent_category_id: Optional[str] = None
 
 
 # Live Channel Models

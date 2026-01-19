@@ -271,7 +271,7 @@ Return ONLY JSON, no additional text."""
                     },
                     auto_approved=result.is_appropriate,
                     confidence_score=result.confidence,
-                    description=f"Kids classification: {', '.join(changes_made)}",
+                    description=f"Kids classification for '{content.title}': {', '.join(changes_made)}",
                 )
                 await action.insert()
 

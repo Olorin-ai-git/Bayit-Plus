@@ -28,6 +28,33 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import Video, { TextTrackType, VideoRef } from 'react-native-video';
+import { WebView } from 'react-native-webview';
+
+/**
+ * Check if a URL is a YouTube embed URL
+ */
+const isYouTubeUrl = (url: string): boolean => {
+  return url.includes('youtube.com/embed/') || url.includes('youtu.be/');
+};
+
+/**
+ * Extract YouTube video ID from various URL formats
+ */
+const getYouTubeVideoId = (url: string): string | null => {
+  // Match youtube.com/embed/VIDEO_ID
+  const embedMatch = url.match(/youtube\.com\/embed\/([^?&]+)/);
+  if (embedMatch) return embedMatch[1];
+
+  // Match youtu.be/VIDEO_ID
+  const shortMatch = url.match(/youtu\.be\/([^?&]+)/);
+  if (shortMatch) return shortMatch[1];
+
+  // Match youtube.com/watch?v=VIDEO_ID
+  const watchMatch = url.match(/youtube\.com\/watch\?v=([^&]+)/);
+  if (watchMatch) return watchMatch[1];
+
+  return null;
+};
 import { API_BASE_URL } from '../config/appConfig';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useTranslation } from 'react-i18next';
@@ -80,7 +107,43 @@ export const PlayerScreenMobile: React.FC = () => {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [chaptersLoading, setChaptersLoading] = useState(false);
 
+  // Stream URL state (for YouTube detection)
+  const [streamUrl, setStreamUrl] = useState<string | null>(null);
+  const [isYouTube, setIsYouTube] = useState(false);
+  const [streamLoading, setStreamLoading] = useState(true);
+
   const translateY = useSharedValue(0);
+
+  // Fetch stream URL to detect YouTube content
+  useEffect(() => {
+    const fetchStreamUrl = async () => {
+      try {
+        setStreamLoading(true);
+        const response = await fetch(`${API_BASE_URL}/content/${id}/stream`);
+        if (response.ok) {
+          const data = await response.json();
+          const url = data.url;
+          setStreamUrl(url);
+          setIsYouTube(isYouTubeUrl(url));
+        } else {
+          // Fallback to direct stream endpoint
+          setStreamUrl(`${API_BASE_URL.replace('/api/v1', '')}/stream/${id}`);
+          setIsYouTube(false);
+        }
+      } catch (error) {
+        console.error('Failed to fetch stream URL:', error);
+        // Fallback
+        setStreamUrl(`${API_BASE_URL.replace('/api/v1', '')}/stream/${id}`);
+        setIsYouTube(false);
+      } finally {
+        setStreamLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchStreamUrl();
+    }
+  }, [id]);
 
   // Fetch available subtitles
   useEffect(() => {
@@ -208,28 +271,49 @@ export const PlayerScreenMobile: React.FC = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Build YouTube embed URL with autoplay
+  const youtubeEmbedUrl = streamUrl && isYouTube
+    ? `https://www.youtube.com/embed/${getYouTubeVideoId(streamUrl)}?autoplay=1&rel=0&modestbranding=1&playsinline=1`
+    : null;
+
   return (
     <PanGestureHandler onGestureEvent={gestureHandler}>
       <Animated.View style={[styles.container, animatedStyle]}>
-        {/* Video player */}
-        <Video
-          ref={videoRef}
-          source={{ uri: `${API_BASE_URL.replace('/api/v1', '')}/stream/${id}` }}
-          style={styles.video}
-          resizeMode="contain"
-          paused={!isPlaying}
-          playbackRate={playbackSpeed}
-          onProgress={handleProgress}
-          onLoad={handleLoad}
-          textTracks={subtitleTracks}
-          selectedTextTrack={
-            subtitles === 'off'
-              ? undefined
-              : { type: 'language', value: subtitles }
-          }
-        />
+        {/* Video player - WebView for YouTube, native Video for other content */}
+        {streamLoading ? (
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>{t('player.loading')}</Text>
+          </View>
+        ) : isYouTube && youtubeEmbedUrl ? (
+          <WebView
+            source={{ uri: youtubeEmbedUrl }}
+            style={styles.video}
+            allowsFullscreenVideo
+            allowsInlineMediaPlayback
+            mediaPlaybackRequiresUserAction={false}
+            javaScriptEnabled
+          />
+        ) : (
+          <Video
+            ref={videoRef}
+            source={{ uri: streamUrl || `${API_BASE_URL.replace('/api/v1', '')}/stream/${id}` }}
+            style={styles.video}
+            resizeMode="contain"
+            paused={!isPlaying}
+            playbackRate={playbackSpeed}
+            onProgress={handleProgress}
+            onLoad={handleLoad}
+            textTracks={subtitleTracks}
+            selectedTextTrack={
+              subtitles === 'off'
+                ? undefined
+                : { type: 'language', value: subtitles }
+            }
+          />
+        )}
 
         {/* Controls layer with integrated tap handling */}
+        {/* For YouTube content, only show top bar (title + close) since YouTube has its own controls */}
         {showControls ? (
           <Pressable
             style={styles.controlsContainer}
@@ -252,8 +336,8 @@ export const PlayerScreenMobile: React.FC = () => {
                 </GlassView>
               </View>
 
-              {/* Center controls - play/pause */}
-              <View style={styles.centerControlsWrapper}>
+              {/* Center controls - play/pause (hidden for YouTube - it has its own controls) */}
+              {!isYouTube && <View style={styles.centerControlsWrapper}>
                 <View style={styles.centerControls}>
                   <Pressable
                     onPress={() => handleSeek(-10)}
@@ -290,10 +374,10 @@ export const PlayerScreenMobile: React.FC = () => {
                     <RotateCcw size={24} color={colors.text} strokeWidth={2.5} />
                   </Pressable>
                 )}
-              </View>
+              </View>}
 
-              {/* Bottom bar - progress and settings */}
-              {type !== 'live' && (
+              {/* Bottom bar - progress and settings (hidden for YouTube) */}
+              {!isYouTube && type !== 'live' && (
                 <View style={styles.bottomBar}>
                   <GlassView style={styles.bottomBarContent}>
                     {/* Time */}
@@ -455,6 +539,16 @@ const styles = StyleSheet.create({
   },
   video: {
     ...StyleSheet.absoluteFillObject,
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
+  },
+  loadingText: {
+    ...typography.body,
+    color: colors.text,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,

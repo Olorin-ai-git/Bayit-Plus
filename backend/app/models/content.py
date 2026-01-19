@@ -185,6 +185,8 @@ class Category(Document):
     icon: Optional[str] = None  # Icon name or URL
     order: int = 0
     is_active: bool = True
+    show_on_homepage: bool = True  # If False, category only appears on dedicated pages (e.g., kids sub-categories)
+    parent_category_id: Optional[str] = None  # For hierarchical categories (e.g., kids sub-categories)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     class Settings:

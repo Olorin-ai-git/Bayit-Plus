@@ -58,7 +58,85 @@ main() {
         exit 1
     fi
 
+    if ! command_exists poetry; then
+        print_error "Poetry not found. Please install: https://python-poetry.org/docs/#installation"
+        exit 1
+    fi
+
     print_success "Prerequisites check passed"
+
+    # ============================================================
+    # BUILD VERIFICATION (mandatory before deployment)
+    # ============================================================
+    print_header "Build Verification"
+
+    # Get repository root and backend path
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+    BACKEND_DIR="$REPO_ROOT/backend"
+
+    print_info "Verifying backend build at: $BACKEND_DIR"
+    cd "$BACKEND_DIR"
+
+    # Step 1: Verify Poetry lock file is up to date
+    print_info "Checking Poetry lock file..."
+    if ! poetry check --quiet 2>/dev/null; then
+        print_error "Poetry lock file is out of sync. Run: poetry lock"
+        exit 1
+    fi
+    print_success "Poetry lock file is valid"
+
+    # Step 2: Install dependencies (ensure all are present)
+    print_info "Installing dependencies..."
+    if ! poetry install --quiet; then
+        print_error "Failed to install dependencies"
+        exit 1
+    fi
+    print_success "Dependencies installed"
+
+    # Step 3: Compile all Python files (syntax check)
+    print_info "Verifying Python syntax..."
+    if ! poetry run python -m py_compile app/main.py; then
+        print_error "Python syntax error in app/main.py"
+        exit 1
+    fi
+
+    # Compile all route files
+    for f in app/api/routes/*.py; do
+        if ! poetry run python -m py_compile "$f" 2>/dev/null; then
+            print_error "Python syntax error in $f"
+            exit 1
+        fi
+    done
+
+    # Compile all service files
+    for f in app/services/*.py; do
+        if ! poetry run python -m py_compile "$f" 2>/dev/null; then
+            print_error "Python syntax error in $f"
+            exit 1
+        fi
+    done
+
+    # Compile AI agent files
+    for f in app/services/ai_agent/*.py app/services/ai_agent/executors/*.py; do
+        if ! poetry run python -m py_compile "$f" 2>/dev/null; then
+            print_error "Python syntax error in $f"
+            exit 1
+        fi
+    done
+    print_success "Python syntax verification passed"
+
+    # Step 4: Verify imports work (catches missing dependencies)
+    print_info "Verifying application imports..."
+    if ! poetry run python -c "from app.main import app; print('OK')" 2>/dev/null; then
+        print_error "Application import failed. Check for missing dependencies or import errors."
+        print_info "Run manually: cd $BACKEND_DIR && poetry run python -c 'from app.main import app'"
+        exit 1
+    fi
+    print_success "Application imports verified"
+
+    print_success "Build verification passed - proceeding with deployment"
+    echo ""
 
     # Configuration from environment or defaults
     print_header "Configuration"

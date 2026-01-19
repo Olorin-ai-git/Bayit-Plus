@@ -298,7 +298,7 @@ async def execute_reclassify_as_series(
             confidence_score=0.95,
             auto_approved=True,
             rollback_available=True,
-            description=f"Reclassified as TV series. Reason: {reason}",
+            description=f"Reclassified '{content.title}' as TV series. Reason: {reason}",
         )
         await action.insert()
 
@@ -370,7 +370,7 @@ async def execute_reclassify_as_movie(
             confidence_score=0.95,
             auto_approved=True,
             rollback_available=True,
-            description=f"Reclassified as movie. Reason: {reason}",
+            description=f"Reclassified '{content.title}' as movie. Reason: {reason}",
         )
         await action.insert()
 
@@ -476,13 +476,14 @@ async def execute_delete_broken_content(
             audit_id=audit_id,
             action_type="delete_broken_content",
             content_id=content_id,
-            content_title=title,
+            content_type="content",
+            issue_type="broken_stream",
             before_state=before_state,
             after_state=after_state,
-            confidence=1.0,
+            confidence_score=1.0,
             auto_approved=True,
-            reason=reason,
-            issue_type="broken_stream"
+            rollback_available=False,
+            description=f"Deleted broken content '{title}'. Reason: {reason}",
         )
         await action.insert()
 
@@ -550,7 +551,7 @@ async def execute_clean_title(
             confidence_score=1.0,
             auto_approved=True,
             rollback_available=True,
-            description=f"Cleaned title. Reason: {reason}",
+            description=f"Cleaned title from '{before_state['title']}' to '{cleaned_title}'. Reason: {reason}",
         )
         await action.insert()
 

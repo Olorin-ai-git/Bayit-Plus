@@ -277,8 +277,11 @@ class JudaismContentSeeder:
 
     @staticmethod
     def _youtube_to_thumbnail(youtube_id: str) -> str:
-        """Get YouTube thumbnail URL from video ID."""
-        return f"https://img.youtube.com/vi/{youtube_id}/maxresdefault.jpg"
+        """
+        Get YouTube thumbnail URL from video ID.
+        Uses hqdefault.jpg (480x360) which is available for all videos.
+        """
+        return f"https://img.youtube.com/vi/{youtube_id}/hqdefault.jpg"
 
     async def _ensure_judaism_category(self) -> str:
         """Ensure Judaism category exists and return its ID."""
