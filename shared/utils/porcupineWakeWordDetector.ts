@@ -439,7 +439,9 @@ export function getPicovoiceAccessKey(): string {
     // The mobile app should set this via native modules or config
     try {
       // Try to get from react-native-config if available
-      const Config = require('react-native-config').default;
+      // Use dynamic require to avoid webpack bundling issues
+      const configModule = 'react-native-config';
+      const Config = require(configModule).default;
       if (Config?.PICOVOICE_ACCESS_KEY) {
         const key = Config.PICOVOICE_ACCESS_KEY;
         console.log('[PorcupineWakeWord] Access key found (React Native Config):', key ? `${key.slice(0, 10)}...` : 'empty');

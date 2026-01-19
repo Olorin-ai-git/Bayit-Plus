@@ -8,6 +8,7 @@ import {
   Pressable,
   Image,
   Platform,
+  findNodeHandle,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -66,6 +67,31 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
   const [rightArrowFocused, setRightArrowFocused] = useState(false);
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Refs for tvOS focus navigation
+  const mainCarouselRef = useRef<TouchableOpacity>(null);
+  const leftArrowRef = useRef<TouchableOpacity>(null);
+  const rightArrowRef = useRef<TouchableOpacity>(null);
+
+  // Node handles for focus navigation
+  const [mainCarouselNode, setMainCarouselNode] = useState<number | null>(null);
+  const [leftArrowNode, setLeftArrowNode] = useState<number | null>(null);
+  const [rightArrowNode, setRightArrowNode] = useState<number | null>(null);
+
+  // Get node handles on mount for tvOS focus navigation
+  useEffect(() => {
+    if (Platform.isTV) {
+      if (mainCarouselRef.current) {
+        setMainCarouselNode(findNodeHandle(mainCarouselRef.current));
+      }
+      if (leftArrowRef.current) {
+        setLeftArrowNode(findNodeHandle(leftArrowRef.current));
+      }
+      if (rightArrowRef.current) {
+        setRightArrowNode(findNodeHandle(rightArrowRef.current));
+      }
+    }
+  }, []);
 
   // Action button states - keyed by content ID
   const [favoriteStates, setFavoriteStates] = useState<Record<string, boolean>>({});
@@ -188,11 +214,16 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
         style={[styles.carouselWrapper, { height }, isFocused && styles.carouselFocused]}
       >
         <TouchableOpacity
+          ref={mainCarouselRef}
           activeOpacity={0.95}
           onPress={() => onItemPress?.(currentItem)}
           onFocus={handleFocus}
           onBlur={handleBlur}
           style={styles.touchable}
+          // @ts-ignore - tvOS specific focus navigation
+          hasTVPreferredFocus={Platform.isTV}
+          nextFocusLeft={leftArrowNode || undefined}
+          nextFocusRight={rightArrowNode || undefined}
         >
           <Animated.View style={[styles.itemContainer, { opacity: fadeAnim }]}>
             {/* Background Image */}
@@ -302,7 +333,9 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
         {items.length > 1 && (
           <>
             <TouchableOpacity
+              ref={leftArrowRef as any}
               style={[styles.navButton, styles.navButtonLeft]}
+              activeOpacity={0.8}
               onPress={() => {
                 console.log('[GlassCarousel] Left arrow pressed, isRTL:', isRTL);
                 if (isRTL) {
@@ -314,16 +347,16 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
               onFocus={() => {
                 console.log('[GlassCarousel] Left arrow focused');
                 setLeftArrowFocused(true);
-                handleFocus();
               }}
               onBlur={() => {
+                console.log('[GlassCarousel] Left arrow blurred');
                 setLeftArrowFocused(false);
-                handleBlur();
               }}
-              activeOpacity={0.7}
               accessible={true}
               accessibilityLabel={isRTL ? 'Next' : 'Previous'}
               accessibilityRole="button"
+              // @ts-ignore - tvOS specific focus navigation
+              nextFocusRight={mainCarouselNode || undefined}
             >
               <View style={[
                 styles.navButtonInner,
@@ -334,7 +367,9 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
             </TouchableOpacity>
 
             <TouchableOpacity
+              ref={rightArrowRef as any}
               style={[styles.navButton, styles.navButtonRight]}
+              activeOpacity={0.8}
               onPress={() => {
                 console.log('[GlassCarousel] Right arrow pressed, isRTL:', isRTL);
                 if (isRTL) {
@@ -346,16 +381,16 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
               onFocus={() => {
                 console.log('[GlassCarousel] Right arrow focused');
                 setRightArrowFocused(true);
-                handleFocus();
               }}
               onBlur={() => {
+                console.log('[GlassCarousel] Right arrow blurred');
                 setRightArrowFocused(false);
-                handleBlur();
               }}
-              activeOpacity={0.7}
               accessible={true}
               accessibilityLabel={isRTL ? 'Previous' : 'Next'}
               accessibilityRole="button"
+              // @ts-ignore - tvOS specific focus navigation
+              nextFocusLeft={mainCarouselNode || undefined}
             >
               <View style={[
                 styles.navButtonInner,
@@ -563,7 +598,9 @@ const styles = StyleSheet.create({
     borderRadius: Platform.isTV ? 40 : 24,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   navButtonText: {
     fontSize: Platform.isTV ? 48 : 32,
