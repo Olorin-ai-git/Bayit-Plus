@@ -306,6 +306,12 @@ class Settings(BaseSettings):
     KIDS_LIBRARIAN_AUDIT_CRON: str = "0 3 * * *"
     KIDS_LIBRARIAN_AUDIT_ENABLED: bool = True
 
+    # Kids Content Runtime Service Configuration
+    KIDS_CONTENT_CACHE_TTL_MINUTES: int = 15
+    KIDS_CONTENT_MIN_RELEVANCE_SCORE: float = 0.3
+    KIDS_CONTENT_SAFE_SEARCH_ENABLED: bool = True
+    KIDS_CONTENT_DEFAULT_AGE_MAX: int = 12
+
     # Series Linker Configuration
     # Minimum similarity ratio (0-1) for matching episode titles to series names
     SERIES_LINKER_TITLE_SIMILARITY_THRESHOLD: float = 0.85

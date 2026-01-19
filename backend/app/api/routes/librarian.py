@@ -69,16 +69,28 @@ async def run_audit_with_tracking(
 # ============ REQUEST/RESPONSE MODELS ============
 
 class TriggerAuditRequest(BaseModel):
+    """
+    Audit configuration request model.
+
+    All capability options are ADDITIVE - when multiple are enabled, all selected
+    capabilities are combined into the audit prompt. Disabling all options runs
+    a comprehensive audit that checks everything.
+    """
     audit_type: str = "daily_incremental"  # "daily_incremental", "weekly_full", "manual", "ai_agent"
     dry_run: bool = False
     use_ai_agent: bool = False  # Use autonomous AI agent instead of rule-based workflow
     max_iterations: int = 50  # Max tool uses for AI agent (only used if use_ai_agent=True)
     budget_limit_usd: float = 1.0  # Max Claude API cost for AI agent (only used if use_ai_agent=True)
+
+    # Scope filter
     last_24_hours_only: bool = False  # Only scan content added/modified in last 24 hours
-    cyb_titles_only: bool = False  # Only scan and extract CYB titles
-    tmdb_posters_only: bool = False  # Only add/update TMDB posters and metadata
-    opensubtitles_enabled: bool = False  # Enable OpenSubtitles API for subtitle retrieval
-    classify_only: bool = False  # Focus on content classification verification
+
+    # Capability options (ADDITIVE - multiple can be enabled together)
+    cyb_titles_only: bool = False  # Clean dirty titles (file extensions, quality markers)
+    tmdb_posters_only: bool = False  # Fetch missing posters and metadata from TMDB
+    opensubtitles_enabled: bool = False  # Download missing subtitles from OpenSubtitles
+    classify_only: bool = False  # Verify and fix content classification (movie vs series)
+    remove_duplicates: bool = False  # Find and remove duplicate content
 
 
 class TriggerAuditResponse(BaseModel):
@@ -385,7 +397,9 @@ async def trigger_librarian_audit(
                 "last_24_hours_only": request.last_24_hours_only,
                 "cyb_titles_only": request.cyb_titles_only,
                 "tmdb_posters_only": request.tmdb_posters_only,
-                "opensubtitles_enabled": request.opensubtitles_enabled
+                "opensubtitles_enabled": request.opensubtitles_enabled,
+                "classify_only": request.classify_only,
+                "remove_duplicates": request.remove_duplicates,
             }
         )
         await audit.save()
@@ -408,7 +422,8 @@ async def trigger_librarian_audit(
                     cyb_titles_only=request.cyb_titles_only,
                     tmdb_posters_only=request.tmdb_posters_only,
                     opensubtitles_enabled=request.opensubtitles_enabled,
-                    classify_only=request.classify_only
+                    classify_only=request.classify_only,
+                    remove_duplicates=request.remove_duplicates,
                 )
             )
             audit_task_manager.register_task(audit_id, task)

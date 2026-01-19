@@ -79,10 +79,12 @@ export interface TriggerAuditRequest {
   max_iterations?: number;
   budget_limit_usd?: number;
   last_24_hours_only?: boolean;
-  cyb_titles_only?: boolean;
-  tmdb_posters_only?: boolean;
-  opensubtitles_enabled?: boolean;
-  classify_only?: boolean;
+  // Capability options (ADDITIVE - multiple can be enabled together)
+  cyb_titles_only?: boolean;      // Clean dirty titles
+  tmdb_posters_only?: boolean;    // Fetch TMDB posters & metadata
+  opensubtitles_enabled?: boolean; // Acquire subtitles
+  classify_only?: boolean;        // Verify classification
+  remove_duplicates?: boolean;    // Remove duplicate content
 }
 
 export interface TriggerAuditResponse {

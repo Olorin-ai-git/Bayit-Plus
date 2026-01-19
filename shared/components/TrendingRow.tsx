@@ -339,9 +339,9 @@ const styles = StyleSheet.create({
     gap: isMobilePhone ? spacing.sm : spacing.md,
   },
   topicCard: {
-    width: isMobilePhone ? 160 : 280,
-    height: isMobilePhone ? 140 : 240,
-    padding: isMobilePhone ? spacing.sm : spacing.lg,
+    width: isMobilePhone ? 180 : 280,
+    minHeight: isMobilePhone ? 140 : 240,
+    padding: isMobilePhone ? spacing.md : spacing.lg,
     borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
     borderWidth: 2,
     borderColor: 'transparent',
@@ -383,7 +383,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.text,
     marginBottom: isMobilePhone ? spacing.xs : spacing.sm,
-    lineHeight: isMobilePhone ? 16 : 22,
+    lineHeight: isMobilePhone ? 18 : 22,
+    flexShrink: 1,
   },
   topicSummary: {
     fontSize: isMobilePhone ? 11 : fontSize.sm,

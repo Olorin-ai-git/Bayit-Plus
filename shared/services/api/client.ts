@@ -19,12 +19,17 @@ const getApiBaseUrl = () => {
   }
 
   // In development:
-  // Web can use localhost for local backend development
-  if (Platform.OS === 'web') {
+  // Web and iOS simulator can use localhost
+  if (Platform.OS === 'web' || Platform.OS === 'ios') {
     return 'http://localhost:8000/api/v1';
   }
 
-  // Mobile/TV platforms use Cloud Run API in development
+  // Android emulator uses special address for localhost
+  if (Platform.OS === 'android') {
+    return 'http://10.0.2.2:8000/api/v1';
+  }
+
+  // tvOS and other platforms use Cloud Run API in development
   return CLOUD_RUN_API_URL;
 };
 

@@ -43,6 +43,7 @@ from app.models.jerusalem_content import JerusalemContentSource, JerusalemConten
 from app.models.tel_aviv_content import TelAvivContentSource, TelAvivContentItem
 from app.models.support import SupportTicket, SupportConversation, SupportAnalytics
 from app.models.culture import Culture, CultureCity, CultureNewsSource, CultureContentItem
+from app.models.kids_content import KidsContentSource
 
 
 class Database:
@@ -156,6 +157,8 @@ async def connect_to_mongo():
             CultureCity,
             CultureNewsSource,
             CultureContentItem,
+            # Kids Content models
+            KidsContentSource,
         ],
     )
     print(f"Connected to MongoDB: {settings.MONGODB_DB_NAME}")

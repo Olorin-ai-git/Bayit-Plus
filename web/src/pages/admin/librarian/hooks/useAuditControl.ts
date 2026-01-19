@@ -89,10 +89,12 @@ export const useAuditControl = ({
         max_iterations: config.audit_limits.max_iterations,
         budget_limit_usd: auditConfig.budgetLimit,
         last_24_hours_only: auditConfig.last24HoursOnly,
+        // Capability options (ADDITIVE - all enabled options are combined)
         cyb_titles_only: auditConfig.cybTitlesOnly,
         tmdb_posters_only: auditConfig.tmdbPostersOnly,
         opensubtitles_enabled: auditConfig.openSubtitlesEnabled,
         classify_only: auditConfig.classifyOnly,
+        remove_duplicates: auditConfig.purgeDuplicates,
       });
 
       setLivePanelExpanded(true);

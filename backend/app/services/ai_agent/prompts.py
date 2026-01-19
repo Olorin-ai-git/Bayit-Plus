@@ -2,9 +2,10 @@
 AI Agent Prompts - System prompts and audit-specific instructions
 
 Contains all the prompt templates for different audit types and modes.
+Implements ADDITIVE capability model where multiple capabilities can be combined.
 """
 
-from typing import Dict
+from typing import Dict, List
 
 # Language instructions for Claude's responses
 LANGUAGE_INSTRUCTIONS: Dict[str, str] = {
@@ -13,7 +14,93 @@ LANGUAGE_INSTRUCTIONS: Dict[str, str] = {
     "he": "תקשר בעברית."
 }
 
-# Audit type-specific instructions
+# Individual capability prompts (to be combined additively)
+CAPABILITY_PROMPTS: Dict[str, str] = {
+    "clean_titles": """
+## Title Cleaning
+Your task includes finding and cleaning dirty titles:
+- Find titles with file extensions (.mp4, .mkv, .avi)
+- Find titles with quality markers (1080p, 720p, 4K, HD, BluRay, WEB-DL)
+- Find titles with release group tags ([YTS], [MX], MDMA, BoK, XviD, [Hebrew])
+- Use `clean_title` tool for each dirty title found
+- Verify cleaned titles with TMDB search before applying metadata fixes
+""",
+
+    "tmdb_metadata": """
+## TMDB Posters & Metadata
+Your task includes fetching missing posters and metadata from TMDB:
+- Search TMDB for all content items using `search_tmdb(title, year, content_type)`
+- Fix missing posters using `fix_missing_poster(content_id, tmdb_id)`
+- Fix missing metadata (description, year, genres, cast, director) using `fix_missing_metadata(content_id, tmdb_id)`
+- IMPORTANT: Clean dirty titles FIRST before searching TMDB (dirty titles won't match)
+""",
+
+    "subtitles": """
+## Subtitle Acquisition
+Your task includes acquiring missing subtitles:
+- Check required languages: Hebrew (he), English (en), Spanish (es)
+- Use `verify_required_subtitles` to check what's missing
+- Try embedded subtitles first: `scan_video_subtitles` then `extract_video_subtitles`
+- Use `batch_download_subtitles` for efficiency (20-30 items per batch)
+- Respect OpenSubtitles quota (1500/day)
+- Embedded subtitle extraction is FREE and unlimited - prioritize this!
+""",
+
+    "verify_classification": """
+## Classification Verification
+Your task includes verifying and fixing content classification:
+- Check for series indicators in titles: S01E01, S02E03, "Season 1", etc.
+- Verify against TMDB: use content_type="tv" for series, "movie" for movies
+- Reclassify misidentified content using:
+  - `reclassify_as_series(content_id)` for items that should be series
+  - `reclassify_as_movie(content_id)` for items that should be movies
+- Report how many items were correctly classified vs reclassified
+""",
+
+    "remove_duplicates": """
+## Duplicate Removal
+Your task includes finding and removing duplicate content:
+- Use `find_duplicates` to identify duplicate content items
+- Duplicates may have same title, same file hash, or very similar metadata
+- When resolving duplicates, keep the highest quality version (resolution, file size)
+- Use `resolve_duplicates` tool to handle duplicate groups
+- Log all duplicate resolutions with clear reasoning
+"""
+}
+
+# Base prompt sections
+BASE_PROMPT_HEADER = """You are an autonomous AI Librarian for Bayit+, an Israeli streaming platform.
+
+{language_instruction}
+
+**Your Mission:** Perform the following tasks on the content library.
+"""
+
+BASE_PROMPT_PROCESSING = """
+**Processing Strategy:**
+1. Get ALL content items: `list_content_items(limit=100, skip=0)`
+2. If `has_more: true`, continue with skip=100, skip=200, etc.
+3. Process EVERY item systematically
+4. Report progress regularly
+5. Complete ALL items before finishing
+
+**Rules:**
+- Stay focused on the assigned tasks
+- Process systematically through ALL items
+- Track comprehensive statistics as you work
+- When calling complete_audit, provide detailed breakdown statistics
+- Report final comprehensive summary when done
+"""
+
+BASE_PROMPT_MODE = """
+**Mode:** {mode}
+
+**Limits:**
+- Maximum {max_iterations} tool uses
+- API Budget: ${budget_limit_usd}
+"""
+
+# Audit type-specific instructions (for comprehensive audits)
 AUDIT_INSTRUCTIONS: Dict[str, str] = {
     "weekly_comprehensive": """
 **AUDIT TYPE: Weekly Comprehensive Library Scan**
@@ -70,163 +157,72 @@ Balance between metadata fixes, subtitle acquisition, and quality checks.
 """,
 }
 
-TMDB_POSTERS_ONLY_PROMPT = """**TASK: TMDB Posters & Metadata ONLY**
 
-**Your ONLY mission:** Add/update TMDB posters and metadata for content items.
-
-**What to do:**
-1. Get ALL content items: `list_content_items(limit=100)`
-2. For EACH item:
-   - If title is dirty (.mp4, 1080p, [MX], etc) → `clean_title` FIRST
-   - Search TMDB: `search_tmdb(title, year, content_type)`
-   - Get poster: `fix_missing_poster(content_id, tmdb_id)`
-   - Get metadata: `fix_missing_metadata(content_id, tmdb_id)`
-3. Process ALL items systematically
-
-**What NOT to do:**
-- Skip subtitle checks entirely
-- Skip category checks
-- Skip stream URL validation
-- Skip storage calculations
-
-**Focus:** ONLY posters and metadata. Nothing else."""
-
-TITLE_CLEANING_ONLY_PROMPT = """**TASK: Title Cleaning ONLY**
-
-**Your ONLY mission:** Find and clean dirty titles (file artifacts, resolutions, codec names).
-
-**What to do:**
-1. Get ALL content items: `list_content_items(limit=100)`
-2. Find items with dirty titles containing:
-   - File extensions: .mp4, .mkv, .avi
-   - Resolutions: 1080p, 720p, 4K, HD
-   - Codec/Release: [MX], XviD, MDMA, BoK, [Hebrew]
-   - Other junk: WEB-DL, BluRay, etc.
-3. For each dirty title:
-   - Clean it: `clean_title(content_id, current_title)`
-   - Verify with TMDB: `search_tmdb(cleaned_title)`
-4. Process ALL dirty titles
-
-**What NOT to do:**
-- Skip items with clean titles
-- Don't check posters/metadata
-- Don't check subtitles
-
-**Focus:** ONLY title cleaning. Nothing else."""
-
-CLASSIFY_ONLY_PROMPT = """**TASK: Content Classification & Reclassification**
-
-**Your ONLY mission:** Verify and fix content type classification (movies vs series).
-
-**CRITICAL CLASSIFICATION RULES:**
-
-**How to identify SERIES content:**
-1. **Filename patterns indicating SERIES:**
-   - Contains S01E01, S02E03, etc. (Season/Episode format)
-   - Contains "1x01", "2x05" format
-   - Contains ".S01.", ".S02." season indicators
-   - Title ends with "Season 1", "Season 2", etc.
-   - Part of known TV series (check TMDB type)
-
-2. **TMDB Verification:**
-   - Search TMDB with search_tmdb(title, year, content_type="tv")
-   - If TMDB returns a TV show match → it's a SERIES
-   - If TMDB returns a movie match → it's a MOVIE
-
-**What to do:**
-1. Get ALL content items: `list_content_items(limit=100, skip=0)`
-2. For EACH item, check:
-   a. Current `is_series` value
-   b. Current `content_type` value ("movie" or "series")
-   c. Title for S01E01, S02E03, etc. patterns
-   d. TMDB to verify correct type
-3. If classification is WRONG:
-   - Use `reclassify_as_series(content_id)` for items that should be series
-   - Use `reclassify_as_movie(content_id)` for items that should be movies
-4. Continue with skip=100, skip=200, etc. until all items processed
-
-**Classification Fixes to Make:**
-- Movies incorrectly marked as `is_series=true` → Fix to movie
-- Series incorrectly marked as `is_series=false` → Fix to series
-- Items in wrong category (Movies vs Series) → Recategorize
-- Missing `content_type` field → Set based on `is_series` value
-
-**What NOT to do:**
-- Don't check/fix posters or metadata
-- Don't check/fix subtitles
-- Don't clean titles (unless needed to verify classification)
-- Don't check streaming URLs
-
-**Expected Output:**
-Report how many items:
-- Were correctly classified
-- Were reclassified from movie to series
-- Were reclassified from series to movie
-- Need manual review (uncertain classification)
-
-**Focus:** ONLY content type classification. Nothing else."""
-
-
-def get_task_specific_prompt(
-    tmdb_posters_only: bool,
+def get_enabled_capabilities(
     cyb_titles_only: bool,
+    tmdb_posters_only: bool,
+    opensubtitles_enabled: bool,
     classify_only: bool,
-    audit_type: str,
-    opensubtitles_enabled: bool
-) -> str:
-    """Get the appropriate task-specific instruction prompt."""
+    remove_duplicates: bool,
+) -> List[str]:
+    """Get list of enabled capability keys based on configuration."""
+    enabled = []
+    if cyb_titles_only:
+        enabled.append("clean_titles")
     if tmdb_posters_only:
-        return TMDB_POSTERS_ONLY_PROMPT
-    elif cyb_titles_only:
-        return TITLE_CLEANING_ONLY_PROMPT
-    elif classify_only:
-        return CLASSIFY_ONLY_PROMPT
-    elif audit_type == "daily_maintenance" or opensubtitles_enabled:
-        prompt = AUDIT_INSTRUCTIONS.get("daily_maintenance", "")
-        if opensubtitles_enabled:
-            prompt += "\n\n**OpenSubtitles API ENABLED:** You have access to 1500 downloads/day. Use batch_download_subtitles aggressively!\n"
-        return prompt
-    else:
-        return AUDIT_INSTRUCTIONS.get(audit_type, AUDIT_INSTRUCTIONS["ai_agent"])
+        enabled.append("tmdb_metadata")
+    if opensubtitles_enabled:
+        enabled.append("subtitles")
+    if classify_only:
+        enabled.append("verify_classification")
+    if remove_duplicates:
+        enabled.append("remove_duplicates")
+    return enabled
+
+
+def build_combined_capability_prompt(enabled_capabilities: List[str]) -> str:
+    """
+    Build a combined prompt from selected capability prompts.
+
+    This implements the ADDITIVE model where multiple capabilities can be
+    combined into a single audit instruction set.
+    """
+    if not enabled_capabilities:
+        return ""
+
+    sections = []
+    for cap in enabled_capabilities:
+        if cap in CAPABILITY_PROMPTS:
+            sections.append(CAPABILITY_PROMPTS[cap])
+
+    if sections:
+        return "\n**ENABLED CAPABILITIES:**\n" + "\n".join(sections)
+    return ""
 
 
 def build_task_specific_initial_prompt(
     language_instruction: str,
-    audit_specific_instruction: str,
+    enabled_capabilities: List[str],
     dry_run: bool,
     max_iterations: int,
     budget_limit_usd: float
 ) -> str:
-    """Build the initial prompt for task-specific (focused) audits."""
-    return f"""You are an autonomous AI Librarian for Bayit+, an Israeli streaming platform.
+    """Build the initial prompt for task-specific (focused) audits with additive capabilities."""
+    capability_prompt = build_combined_capability_prompt(enabled_capabilities)
 
-{language_instruction}
+    mode_text = "DRY RUN - You cannot actually change data, only report what you would do" if dry_run else "LIVE - You can make real changes"
 
-{audit_specific_instruction}
+    return f"""{BASE_PROMPT_HEADER.format(language_instruction=language_instruction)}
 
-**Processing Strategy:**
-1. Get ALL content items: `list_content_items(limit=100, skip=0)`
-2. If `has_more: true`, continue with skip=100, skip=200, etc.
-3. Process EVERY item systematically
-4. Report progress regularly
-5. Complete ALL items before finishing
+{capability_prompt}
 
-**Available Tools:** Use ONLY the tools needed for this specific task. Ignore irrelevant tools.
+{BASE_PROMPT_PROCESSING}
 
-**Rules:**
-- Stay focused on the assigned task
-- Don't check or fix things outside your task scope
-- Process systematically through ALL items
-- Track comprehensive statistics as you work
-- When calling complete_audit, provide detailed breakdown statistics (subtitle_stats, metadata_stats, issue_breakdown, action_breakdown, health_score, etc.)
-- Report final comprehensive summary when done
+**Available Tools:** Use ONLY the tools needed for the enabled capabilities above. Ignore irrelevant tools.
 
-**Mode:** {'DRY RUN - You cannot actually change data, only report what you would do' if dry_run else 'LIVE - You can make real changes'}
+{BASE_PROMPT_MODE.format(mode=mode_text, max_iterations=max_iterations, budget_limit_usd=budget_limit_usd)}
 
-**Limits:**
-- Maximum {max_iterations} tool uses
-- API Budget: ${budget_limit_usd}
-"""
+Start the audit!"""
 
 
 def build_comprehensive_initial_prompt(
@@ -238,6 +234,8 @@ def build_comprehensive_initial_prompt(
     budget_limit_usd: float
 ) -> str:
     """Build the initial prompt for comprehensive audits."""
+    mode_text = "DRY RUN - You cannot actually change data, only report what you would do" if dry_run else "LIVE - You can make real changes"
+
     return f"""You are an autonomous AI Librarian for Bayit+, an Israeli streaming platform.
 
 {language_instruction}
@@ -392,7 +390,7 @@ Step 5: list_content_items(limit=100, skip=400)
         → All 450 items covered!
 ```
 
-**Mode:** {'DRY RUN - You cannot actually change data, only report what you would do' if dry_run else 'LIVE - You can make real changes'}
+**Mode:** {mode_text}
 
 **Limits:**
 - Maximum {max_iterations} tool uses

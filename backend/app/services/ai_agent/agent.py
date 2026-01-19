@@ -23,7 +23,7 @@ from app.services.ai_agent.summary_logger import log_comprehensive_summary
 from app.services.ai_agent.prompts import (
     LANGUAGE_INSTRUCTIONS,
     AUDIT_INSTRUCTIONS,
-    get_task_specific_prompt,
+    get_enabled_capabilities,
     build_task_specific_initial_prompt,
     build_comprehensive_initial_prompt,
 )
@@ -45,6 +45,7 @@ async def run_ai_agent_audit(
     tmdb_posters_only: bool = False,
     opensubtitles_enabled: bool = False,
     classify_only: bool = False,
+    remove_duplicates: bool = False,
     audit_id: Optional[str] = None
 ) -> AuditReport:
     """
@@ -101,6 +102,7 @@ async def run_ai_agent_audit(
         tmdb_posters_only=tmdb_posters_only,
         opensubtitles_enabled=opensubtitles_enabled,
         classify_only=classify_only,
+        remove_duplicates=remove_duplicates,
     )
 
     # Add initial message to conversation
@@ -279,36 +281,46 @@ def _build_initial_prompt(
     tmdb_posters_only: bool,
     opensubtitles_enabled: bool,
     classify_only: bool,
+    remove_duplicates: bool,
 ) -> str:
-    """Build the initial prompt based on audit configuration."""
+    """
+    Build the initial prompt based on audit configuration.
+
+    Uses ADDITIVE capability model where multiple capabilities can be combined.
+    If no capabilities are enabled, runs a comprehensive audit.
+    """
     language_instruction = LANGUAGE_INSTRUCTIONS.get(language, "Communicate in English.")
 
-    # Determine if this is a task-specific audit
-    is_task_specific = tmdb_posters_only or cyb_titles_only or classify_only or (audit_type == "daily_maintenance")
-
-    # Get the appropriate task instruction
-    audit_specific_instruction = get_task_specific_prompt(
-        tmdb_posters_only=tmdb_posters_only,
+    # Get list of enabled capabilities using the additive model
+    enabled_capabilities = get_enabled_capabilities(
         cyb_titles_only=cyb_titles_only,
+        tmdb_posters_only=tmdb_posters_only,
+        opensubtitles_enabled=opensubtitles_enabled,
         classify_only=classify_only,
-        audit_type=audit_type,
-        opensubtitles_enabled=opensubtitles_enabled
+        remove_duplicates=remove_duplicates,
     )
+
+    # If any capabilities are enabled, use task-specific (focused) mode
+    # If no capabilities enabled, use comprehensive mode
+    is_task_specific = len(enabled_capabilities) > 0 or audit_type == "daily_maintenance"
 
     # Build filter instructions for comprehensive mode
     filter_instructions = ""
-    if not is_task_specific and last_24_hours_only:
+    if last_24_hours_only:
         filter_instructions = "\n**TIME FILTER:** Focus ONLY on content added/modified in the last 24 hours\n"
 
-    if is_task_specific:
+    if is_task_specific and enabled_capabilities:
+        # ADDITIVE mode: combine selected capabilities
         return build_task_specific_initial_prompt(
             language_instruction=language_instruction,
-            audit_specific_instruction=audit_specific_instruction,
+            enabled_capabilities=enabled_capabilities,
             dry_run=dry_run,
             max_iterations=max_iterations,
             budget_limit_usd=budget_limit_usd
         )
     else:
+        # Comprehensive mode: check everything
+        audit_specific_instruction = AUDIT_INSTRUCTIONS.get(audit_type, AUDIT_INSTRUCTIONS["ai_agent"])
         return build_comprehensive_initial_prompt(
             language_instruction=language_instruction,
             audit_specific_instruction=audit_specific_instruction,

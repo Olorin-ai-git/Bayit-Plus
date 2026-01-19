@@ -50,7 +50,7 @@ export const ContentCardMobile: React.FC<ContentCardMobileProps> = ({
       tablet: (Dimensions.get('window').width - spacing.md * 5) / 4,
     });
 
-  const cardHeight = cardWidth * 1.55; // Slightly taller for better poster visibility
+  const cardHeight = cardWidth * 1.4; // Balanced aspect ratio for mobile
 
   return (
     <Pressable
@@ -99,7 +99,7 @@ export const ContentCardMobile: React.FC<ContentCardMobileProps> = ({
                 <Text style={styles.meta}>⭐ {content.rating.toFixed(1)}</Text>
               </>
             )}
-            {content.duration && (
+            {content.duration && typeof content.duration === 'number' && content.duration > 0 && (
               <>
                 <Text style={styles.metaDivider}>•</Text>
                 <Text style={styles.meta}>{Math.floor(content.duration / 60)}m</Text>

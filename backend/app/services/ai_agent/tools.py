@@ -313,10 +313,6 @@ TOOLS = [
                     "type": "string",
                     "description": "The ID of the content item with messy title"
                 },
-                "audit_id": {
-                    "type": "string",
-                    "description": "The current audit ID for tracking"
-                },
                 "cleaned_title": {
                     "type": "string",
                     "description": "The cleaned version of the title - just the actual movie/show name without any file junk"
@@ -330,7 +326,7 @@ TOOLS = [
                     "description": "Brief explanation of what you cleaned (e.g., 'Removed 1080p, BluRay, and [YTS.MX] from both Hebrew and English titles')"
                 }
             },
-            "required": ["content_id", "audit_id", "cleaned_title", "reason"]
+            "required": ["content_id", "cleaned_title", "reason"]
         }
     },
     {
@@ -361,17 +357,13 @@ TOOLS = [
                     "type": "string",
                     "description": "The ID of the content item"
                 },
-                "audit_id": {
-                    "type": "string",
-                    "description": "Current audit ID for tracking"
-                },
                 "languages": {
                     "type": "array",
                     "items": {"type": "string"},
                     "description": "Optional: Specific languages to extract (e.g., ['en', 'he']). If not provided, extracts all."
                 }
             },
-            "required": ["content_id", "audit_id"]
+            "required": ["content_id"]
         }
     },
     {
@@ -431,13 +423,9 @@ TOOLS = [
                 "language": {
                     "type": "string",
                     "description": "Language code (he, en, es, ar, ru, fr)"
-                },
-                "audit_id": {
-                    "type": "string",
-                    "description": "Audit report ID for tracking"
                 }
             },
-            "required": ["content_id", "language", "audit_id"]
+            "required": ["content_id", "language"]
         }
     },
     {
@@ -461,13 +449,9 @@ TOOLS = [
                     "type": "integer",
                     "description": "Maximum downloads to perform (respects daily quota)",
                     "default": 20
-                },
-                "audit_id": {
-                    "type": "string",
-                    "description": "Audit report ID for tracking"
                 }
             },
-            "required": ["content_ids", "audit_id"]
+            "required": ["content_ids"]
         }
     },
     {
@@ -493,13 +477,9 @@ TOOLS = [
                     "type": "integer",
                     "description": "Maximum number of episodes to keep per podcast (default: 3)",
                     "default": 3
-                },
-                "audit_id": {
-                    "type": "string",
-                    "description": "Current audit ID for tracking"
                 }
             },
-            "required": ["audit_id"]
+            "required": []
         }
     },
     {
@@ -696,13 +676,9 @@ TOOLS = [
                     "type": "number",
                     "description": "Minimum confidence score (0-1) required for auto-linking (default 0.9)",
                     "default": 0.9
-                },
-                "audit_id": {
-                    "type": "string",
-                    "description": "Audit ID for tracking actions"
                 }
             },
-            "required": ["audit_id"]
+            "required": []
         }
     },
     {
@@ -726,13 +702,9 @@ TOOLS = [
                 "reason": {
                     "type": "string",
                     "description": "Brief explanation of why you're creating this series"
-                },
-                "audit_id": {
-                    "type": "string",
-                    "description": "Audit ID for tracking actions"
                 }
             },
-            "required": ["episode_id", "series_title", "audit_id"]
+            "required": ["episode_id", "series_title"]
         }
     },
     # Episode Deduplication Tools
@@ -774,13 +746,9 @@ TOOLS = [
                 "reason": {
                     "type": "string",
                     "description": "Brief explanation of why you're resolving these duplicates"
-                },
-                "audit_id": {
-                    "type": "string",
-                    "description": "Audit ID for tracking actions"
                 }
             },
-            "required": ["episode_ids", "audit_id"]
+            "required": ["episode_ids"]
         }
     },
     # Integrity Tools

@@ -1,38 +1,18 @@
-from typing import Optional, List
+from typing import Optional
 from fastapi import APIRouter, HTTPException, status, Depends, Query
 from pydantic import BaseModel
 from app.models.user import User
-from app.models.content import Content
+from app.models.kids_content import (
+    KidsContentAggregatedResponse,
+    KidsFeaturedResponse,
+)
+from app.services.kids_content_service import kids_content_service
 from app.core.security import get_current_active_user, get_password_hash, verify_password
-
-
-# Children content categories
-CHILDREN_CATEGORIES = [
-    {"id": "all", "name": "הכל", "name_en": "All", "icon": ""},
-    {"id": "cartoons", "name": "סרטונים מצוירים", "name_en": "Cartoons", "icon": ""},
-    {"id": "educational", "name": "תוכניות לימודיות", "name_en": "Educational", "icon": ""},
-    {"id": "music", "name": "מוזיקה לילדים", "name_en": "Kids Music", "icon": ""},
-    {"id": "hebrew", "name": "לימוד עברית", "name_en": "Learn Hebrew", "icon": "א"},
-    {"id": "stories", "name": "סיפורים", "name_en": "Stories", "icon": ""},
-    {"id": "jewish", "name": "יהדות לילדים", "name_en": "Kids Judaism", "icon": ""},
-]
 
 
 class ParentalControlsUpdate(BaseModel):
     kids_pin: Optional[str] = None
     default_age_limit: Optional[int] = None
-
-
-class ContentResponse(BaseModel):
-    id: str
-    title: str
-    description: Optional[str] = None
-    thumbnail: Optional[str] = None
-    duration: Optional[str] = None
-    age_rating: Optional[int] = None
-    content_rating: Optional[str] = None
-    educational_tags: List[str] = []
-    type: str = "vod"
 
 
 router = APIRouter()
@@ -41,10 +21,11 @@ router = APIRouter()
 @router.get("/categories")
 async def get_children_categories():
     """Get kids-specific content categories."""
-    return {"data": CHILDREN_CATEGORIES}
+    categories = await kids_content_service.get_categories()
+    return {"data": categories}
 
 
-@router.get("/content")
+@router.get("/content", response_model=KidsContentAggregatedResponse)
 async def get_children_content(
     age_max: Optional[int] = Query(None, description="Maximum age rating"),
     category: Optional[str] = Query(None, description="Category filter"),
@@ -53,87 +34,24 @@ async def get_children_content(
     current_user: User = Depends(get_current_active_user),
 ):
     """Get children's content filtered by age and category."""
-    query = {
-        "is_kids_content": True,
-        "is_published": True,
-    }
-
-    # Filter by age rating if specified
-    if age_max is not None:
-        query["age_rating"] = {"$lte": age_max}
-
-    # Filter by category/educational tags
-    if category and category != "all":
-        if category in ["hebrew", "jewish"]:
-            query["educational_tags"] = {"$in": [category]}
-        else:
-            query["genre"] = {"$regex": category, "$options": "i"}
-
-    # Get content with pagination
-    skip = (page - 1) * limit
-    content = await Content.find(query).skip(skip).limit(limit).to_list()
-
-    # Get total count for pagination
-    total = await Content.find(query).count()
-
-    return {
-        "data": [
-            ContentResponse(
-                id=str(c.id),
-                title=c.title,
-                description=c.description,
-                thumbnail=c.thumbnail,
-                duration=c.duration,
-                age_rating=c.age_rating,
-                content_rating=c.content_rating,
-                educational_tags=c.educational_tags,
-            )
-            for c in content
-        ],
-        "pagination": {
-            "page": page,
-            "limit": limit,
-            "total": total,
-            "pages": (total + limit - 1) // limit,
-        },
-    }
+    return await kids_content_service.fetch_all_content(
+        category=category,
+        age_max=age_max,
+        page=page,
+        limit=limit,
+    )
 
 
-@router.get("/featured")
+@router.get("/featured", response_model=KidsFeaturedResponse)
 async def get_children_featured(
     age_max: Optional[int] = Query(None, description="Maximum age rating"),
     current_user: User = Depends(get_current_active_user),
 ):
     """Get featured children's content for homepage."""
-    query = {
-        "is_kids_content": True,
-        "is_published": True,
-        "is_featured": True,
-    }
-
-    if age_max is not None:
-        query["age_rating"] = {"$lte": age_max}
-
-    featured = await Content.find(query).limit(10).to_list()
-
-    return {
-        "data": [
-            ContentResponse(
-                id=str(c.id),
-                title=c.title,
-                description=c.description,
-                thumbnail=c.thumbnail,
-                duration=c.duration,
-                age_rating=c.age_rating,
-                content_rating=c.content_rating,
-                educational_tags=c.educational_tags,
-            )
-            for c in featured
-        ]
-    }
+    return await kids_content_service.get_featured_content(age_max=age_max)
 
 
-@router.get("/by-category/{category_id}")
+@router.get("/by-category/{category_id}", response_model=KidsContentAggregatedResponse)
 async def get_children_by_category(
     category_id: str,
     age_max: Optional[int] = Query(None),
@@ -142,54 +60,28 @@ async def get_children_by_category(
     current_user: User = Depends(get_current_active_user),
 ):
     """Get children's content by specific category."""
-    query = {
-        "is_kids_content": True,
-        "is_published": True,
-    }
+    return await kids_content_service.get_content_by_category(
+        category=category_id,
+        age_max=age_max,
+        page=page,
+        limit=limit,
+    )
 
-    if age_max is not None:
-        query["age_rating"] = {"$lte": age_max}
 
-    # Map category to query
-    if category_id == "cartoons":
-        query["genre"] = {"$regex": "cartoon|animation", "$options": "i"}
-    elif category_id == "educational":
-        query["educational_tags"] = {"$exists": True, "$ne": []}
-    elif category_id == "music":
-        query["genre"] = {"$regex": "music|song", "$options": "i"}
-    elif category_id == "hebrew":
-        query["educational_tags"] = {"$in": ["hebrew"]}
-    elif category_id == "stories":
-        query["genre"] = {"$regex": "story|tale", "$options": "i"}
-    elif category_id == "jewish":
-        query["educational_tags"] = {"$in": ["jewish"]}
+@router.post("/admin/refresh")
+async def refresh_cache(
+    current_user: User = Depends(get_current_active_user),
+):
+    """Clear the kids content cache to force refresh."""
+    # Check if user has admin permissions
+    if not getattr(current_user, 'is_admin', False):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required",
+        )
 
-    skip = (page - 1) * limit
-    content = await Content.find(query).skip(skip).limit(limit).to_list()
-    total = await Content.find(query).count()
-
-    return {
-        "data": [
-            ContentResponse(
-                id=str(c.id),
-                title=c.title,
-                description=c.description,
-                thumbnail=c.thumbnail,
-                duration=c.duration,
-                age_rating=c.age_rating,
-                content_rating=c.content_rating,
-                educational_tags=c.educational_tags,
-            )
-            for c in content
-        ],
-        "category": next((c for c in CHILDREN_CATEGORIES if c["id"] == category_id), None),
-        "pagination": {
-            "page": page,
-            "limit": limit,
-            "total": total,
-            "pages": (total + limit - 1) // limit,
-        },
-    }
+    kids_content_service.clear_cache()
+    return {"message": "Kids content cache cleared successfully"}
 
 
 @router.post("/parental-controls")

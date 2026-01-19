@@ -78,7 +78,7 @@ export const PlayerScreenMobile: React.FC = () => {
   useEffect(() => {
     const fetchSubtitles = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/subtitles/${id}/tracks`);
+        const response = await fetch(`${API_BASE_URL}/subtitles/${id}/tracks`);
         if (response.ok) {
           const data = await response.json();
           setAvailableSubtitles(data.tracks || []);
@@ -88,7 +88,7 @@ export const PlayerScreenMobile: React.FC = () => {
             title: track.language_name,
             language: track.language,
             type: TextTrackType.VTT,
-            uri: `${API_BASE_URL}/api/v1/subtitles/${id}/${track.language}/vtt`,
+            uri: `${API_BASE_URL}/subtitles/${id}/${track.language}/vtt`,
           }));
           setSubtitleTracks(tracks);
         }
@@ -195,9 +195,11 @@ export const PlayerScreenMobile: React.FC = () => {
         <Pressable
           style={styles.overlay}
           onPress={toggleControls}
-        >
-          {showControls && (
-            <View style={styles.controlsContainer}>
+        />
+
+        {/* Controls layer - separate from touch overlay */}
+        {showControls && (
+          <View style={styles.controlsContainer} pointerEvents="box-none">
               {/* Top bar - title and close */}
               <View style={styles.topBar}>
                 <GlassView style={styles.topBarContent}>
@@ -215,36 +217,39 @@ export const PlayerScreenMobile: React.FC = () => {
               </View>
 
               {/* Center controls - play/pause */}
-              <View style={styles.centerControls}>
-                <Pressable
-                  onPress={() => handleSeek(-10)}
-                  style={[styles.controlButton, styles.seekButton]}
-                >
-                  <SkipBack size={28} color={colors.text} fill={colors.text} />
-                </Pressable>
+              <View style={styles.centerControlsWrapper}>
+                <View style={styles.centerControls}>
+                  <Pressable
+                    onPress={() => handleSeek(-10)}
+                    style={[styles.controlButton, styles.seekButton]}
+                  >
+                    <SkipBack size={28} color={colors.text} fill={colors.text} />
+                  </Pressable>
 
-                <Pressable
-                  onPress={handlePlayPause}
-                  style={[styles.controlButton, styles.playButton]}
-                >
-                  {isPlaying ? (
-                    <Pause size={36} color={colors.text} fill={colors.text} />
-                  ) : (
-                    <Play size={36} color={colors.text} fill={colors.text} style={{ marginLeft: 4 }} />
-                  )}
-                </Pressable>
+                  <Pressable
+                    onPress={handlePlayPause}
+                    style={[styles.controlButton, styles.playButton]}
+                  >
+                    {isPlaying ? (
+                      <Pause size={36} color={colors.text} fill={colors.text} />
+                    ) : (
+                      <Play size={36} color={colors.text} fill={colors.text} style={{ marginLeft: 4 }} />
+                    )}
+                  </Pressable>
 
-                <Pressable
-                  onPress={() => handleSeek(10)}
-                  style={[styles.controlButton, styles.seekButton]}
-                >
-                  <SkipForward size={28} color={colors.text} fill={colors.text} />
-                </Pressable>
+                  <Pressable
+                    onPress={() => handleSeek(10)}
+                    style={[styles.controlButton, styles.seekButton]}
+                  >
+                    <SkipForward size={28} color={colors.text} fill={colors.text} />
+                  </Pressable>
+                </View>
 
+                {/* Restart button positioned separately */}
                 {type !== 'live' && (
                   <Pressable
                     onPress={handleRestart}
-                    style={[styles.controlButton, styles.seekButton]}
+                    style={[styles.controlButton, styles.restartButton]}
                   >
                     <RotateCcw size={24} color={colors.text} strokeWidth={2.5} />
                   </Pressable>
@@ -281,9 +286,8 @@ export const PlayerScreenMobile: React.FC = () => {
                   </GlassView>
                 </View>
               )}
-            </View>
-          )}
-        </Pressable>
+          </View>
+        )}
 
         {/* Settings bottom sheet */}
         <BottomSheet
@@ -394,11 +398,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  centerControlsWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    position: 'relative',
+  },
   centerControls: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     gap: spacing.xl,
+  },
+  restartButton: {
+    position: 'absolute',
+    right: spacing.xl,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   controlButton: {
     width: 60,
