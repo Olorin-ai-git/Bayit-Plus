@@ -383,7 +383,7 @@ export const HomeScreen: React.FC = () => {
         <GlassCarousel
           items={carouselItems}
           onItemPress={handleCarouselPress}
-          height={isTV ? 600 : 400}
+          height={isTV ? 700 : 400}
           autoPlayInterval={6000}
         />
       </View>

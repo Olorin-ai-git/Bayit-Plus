@@ -62,6 +62,8 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
   const { isRTL } = useDirection();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
+  const [leftArrowFocused, setLeftArrowFocused] = useState(false);
+  const [rightArrowFocused, setRightArrowFocused] = useState(false);
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -126,6 +128,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
       }
     };
   }, [isFocused, items.length, autoPlayInterval, activeIndex]);
+
 
   const transitionToIndex = (newIndex: number) => {
     // Fade out
@@ -295,29 +298,71 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
           </Animated.View>
         </TouchableOpacity>
 
-        {/* Navigation Arrows */}
+        {/* Navigation Arrows - RTL aware, TV compatible */}
         {items.length > 1 && (
           <>
             <TouchableOpacity
               style={[styles.navButton, styles.navButtonLeft]}
-              onPress={transitionToPrevious}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
+              onPress={() => {
+                console.log('[GlassCarousel] Left arrow pressed, isRTL:', isRTL);
+                if (isRTL) {
+                  transitionToNext();
+                } else {
+                  transitionToPrevious();
+                }
+              }}
+              onFocus={() => {
+                console.log('[GlassCarousel] Left arrow focused');
+                setLeftArrowFocused(true);
+                handleFocus();
+              }}
+              onBlur={() => {
+                setLeftArrowFocused(false);
+                handleBlur();
+              }}
+              activeOpacity={0.7}
+              accessible={true}
+              accessibilityLabel={isRTL ? 'Next' : 'Previous'}
+              accessibilityRole="button"
             >
-              <GlassView intensity="high" style={styles.navButtonInner}>
-                <Text style={styles.navButtonText}>‹</Text>
-              </GlassView>
+              <View style={[
+                styles.navButtonInner,
+                leftArrowFocused && styles.navButtonFocused
+              ]}>
+                <Text style={styles.navButtonText}>{isRTL ? '›' : '‹'}</Text>
+              </View>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[styles.navButton, styles.navButtonRight]}
-              onPress={transitionToNext}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
+              onPress={() => {
+                console.log('[GlassCarousel] Right arrow pressed, isRTL:', isRTL);
+                if (isRTL) {
+                  transitionToPrevious();
+                } else {
+                  transitionToNext();
+                }
+              }}
+              onFocus={() => {
+                console.log('[GlassCarousel] Right arrow focused');
+                setRightArrowFocused(true);
+                handleFocus();
+              }}
+              onBlur={() => {
+                setRightArrowFocused(false);
+                handleBlur();
+              }}
+              activeOpacity={0.7}
+              accessible={true}
+              accessibilityLabel={isRTL ? 'Previous' : 'Next'}
+              accessibilityRole="button"
             >
-              <GlassView intensity="high" style={styles.navButtonInner}>
-                <Text style={styles.navButtonText}>›</Text>
-              </GlassView>
+              <View style={[
+                styles.navButtonInner,
+                rightArrowFocused && styles.navButtonFocused
+              ]}>
+                <Text style={styles.navButtonText}>{isRTL ? '‹' : '›'}</Text>
+              </View>
             </TouchableOpacity>
           </>
         )}
@@ -392,9 +437,13 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   backgroundImage: {
-    ...StyleSheet.absoluteFillObject,
-    width: '100%',
-    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    // Make image taller to show more of the top (heads) instead of center-cropping
+    // On TV, we want to see actors' faces, so we extend the image down and crop the bottom
+    height: Platform.isTV ? '130%' : '100%',
     borderRadius: borderRadius.lg,
     // Web: position image to show more of the center-top
     ...(Platform.OS === 'web' && {
@@ -499,25 +548,33 @@ const styles = StyleSheet.create({
   navButton: {
     position: 'absolute',
     top: '50%',
-    marginTop: -24,
+    marginTop: Platform.isTV ? -40 : -24,
     zIndex: 10,
   },
   navButtonLeft: {
-    left: 16,
+    left: Platform.isTV ? 24 : 16,
   },
   navButtonRight: {
-    right: 16,
+    right: Platform.isTV ? 24 : 16,
   },
   navButtonInner: {
-    width: 48,
-    height: 48,
+    width: Platform.isTV ? 80 : 48,
+    height: Platform.isTV ? 80 : 48,
+    borderRadius: Platform.isTV ? 40 : 24,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   navButtonText: {
-    fontSize: 32,
+    fontSize: Platform.isTV ? 48 : 32,
     color: colors.text,
     fontWeight: 'bold',
+  },
+  navButtonFocused: {
+    borderWidth: 3,
+    borderColor: colors.primary,
+    backgroundColor: 'rgba(139, 92, 246, 0.3)',
+    transform: [{ scale: 1.1 }],
   },
   pagination: {
     position: 'absolute',
