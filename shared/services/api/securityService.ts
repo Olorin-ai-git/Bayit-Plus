@@ -8,7 +8,7 @@
  * - Biometric settings
  */
 
-import { api as apiClient } from './client';
+import { api } from './client';
 import type { ApiResponse } from './types';
 
 export interface ConnectedDevice {
@@ -48,7 +48,7 @@ export const securityService = {
    */
   async getConnectedDevices(): Promise<ConnectedDevice[]> {
     try {
-      const response = await apiClient.get<ApiResponse<ConnectedDevice[]>>(
+      const response = await api.get<ApiResponse<ConnectedDevice[]>>(
         '/api/v1/security/devices'
       );
       return response.data.data || [];
@@ -63,7 +63,7 @@ export const securityService = {
    */
   async getLoginHistory(): Promise<LoginHistory[]> {
     try {
-      const response = await apiClient.get<ApiResponse<LoginHistory[]>>(
+      const response = await api.get<ApiResponse<LoginHistory[]>>(
         '/api/v1/security/login-history'
       );
       return response.data.data || [];
@@ -78,7 +78,7 @@ export const securityService = {
    */
   async getSecuritySettings(): Promise<SecuritySettings> {
     try {
-      const response = await apiClient.get<ApiResponse<SecuritySettings>>(
+      const response = await api.get<ApiResponse<SecuritySettings>>(
         '/api/v1/security/settings'
       );
       return response.data.data || {
@@ -102,7 +102,7 @@ export const securityService = {
    * Enable two-factor authentication
    */
   async enableTwoFactor(): Promise<{ secret: string; qrCode: string }> {
-    const response = await apiClient.post<ApiResponse<{ secret: string; qrCode: string }>>(
+    const response = await api.post<ApiResponse<{ secret: string; qrCode: string }>>(
       '/api/v1/security/2fa/enable'
     );
     return response.data.data || { secret: '', qrCode: '' };
@@ -112,7 +112,7 @@ export const securityService = {
    * Disable two-factor authentication
    */
   async disableTwoFactor(): Promise<void> {
-    await apiClient.post('/api/v1/security/2fa/disable');
+    await api.post('/api/v1/security/2fa/disable');
   },
 
   /**
@@ -120,7 +120,7 @@ export const securityService = {
    */
   async verifyTwoFactor(code: string): Promise<boolean> {
     try {
-      await apiClient.post('/api/v1/security/2fa/verify', { code });
+      await api.post('/api/v1/security/2fa/verify', { code });
       return true;
     } catch (error) {
       return false;
@@ -131,42 +131,42 @@ export const securityService = {
    * Enable biometric authentication for the current device
    */
   async enableBiometric(): Promise<void> {
-    await apiClient.post('/api/v1/security/biometric/enable');
+    await api.post('/api/v1/security/biometric/enable');
   },
 
   /**
    * Disable biometric authentication for the current device
    */
   async disableBiometric(): Promise<void> {
-    await apiClient.post('/api/v1/security/biometric/disable');
+    await api.post('/api/v1/security/biometric/disable');
   },
 
   /**
    * Change password
    */
   async changePassword(request: ChangePasswordRequest): Promise<void> {
-    await apiClient.post('/api/v1/security/password/change', request);
+    await api.post('/api/v1/security/password/change', request);
   },
 
   /**
    * Remove a connected device
    */
   async removeDevice(deviceId: string): Promise<void> {
-    await apiClient.delete(`/api/v1/security/devices/${deviceId}`);
+    await api.delete(`/api/v1/security/devices/${deviceId}`);
   },
 
   /**
    * Sign out from all devices
    */
   async signOutAllDevices(): Promise<void> {
-    await apiClient.post('/api/v1/security/sign-out-all');
+    await api.post('/api/v1/security/sign-out-all');
   },
 
   /**
    * Toggle login notifications
    */
   async toggleLoginNotifications(enabled: boolean): Promise<void> {
-    await apiClient.post('/api/v1/security/notifications', { enabled });
+    await api.post('/api/v1/security/notifications', { enabled });
   },
 };
 

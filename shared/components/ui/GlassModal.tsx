@@ -14,6 +14,7 @@ import {
   ActivityIndicator,
   Platform,
   ScrollView,
+  I18nManager,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing, borderRadius, fontSize } from '../theme';
@@ -75,6 +76,9 @@ export const GlassModal: React.FC<GlassModalProps> = ({
   const icon = getIconForType(type);
   const hasCustomContent = !!children;
 
+  // Detect RTL from I18nManager or document direction (web)
+  const isRTL = I18nManager.isRTL || (Platform.OS === 'web' && typeof document !== 'undefined' && document.dir === 'rtl');
+
   const handleBackdropPress = () => {
     if (dismissable && onClose) {
       onClose();
@@ -121,8 +125,8 @@ export const GlassModal: React.FC<GlassModalProps> = ({
         <>
           {/* Header with close button for custom content */}
           {title && (
-            <View style={styles.customHeader}>
-              <Text style={[styles.dialogTitle, { marginBottom: 0, flex: 1 }]}>{title}</Text>
+            <View style={[styles.customHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <Text style={[styles.dialogTitle, { marginBottom: 0, flex: 1, textAlign: isRTL ? 'right' : 'left' }]}>{title}</Text>
               {onClose && (
                 <TouchableOpacity
                   style={styles.closeButton}
@@ -142,6 +146,16 @@ export const GlassModal: React.FC<GlassModalProps> = ({
           >
             {children}
           </ScrollView>
+          {/* Render buttons for custom content modals */}
+          {buttons && buttons.length > 0 && (
+            <View style={[styles.customButtonContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              {loading ? (
+                <ActivityIndicator size="small" color={modalColor} />
+              ) : (
+                buttons.map(renderButton)
+              )}
+            </View>
+          )}
         </>
       );
     }
@@ -159,7 +173,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({
         {loading ? (
           <ActivityIndicator size="small" color={modalColor} style={styles.loader} />
         ) : (
-          <View style={styles.buttonContainer}>
+          <View style={[styles.buttonContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             {buttons.map(renderButton)}
           </View>
         )}
@@ -359,6 +373,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.lg,
     paddingBottom: spacing.md,
+  },
+  customButtonContainer: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.xl,
+    paddingTop: spacing.md,
   },
   closeButton: {
     width: 36,
