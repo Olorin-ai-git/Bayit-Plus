@@ -7,15 +7,33 @@
  *
  * This service wraps the Porcupine Web SDK for browser-based wake word detection.
  * For React Native (iOS/Android), use the @picovoice/porcupine-react-native package.
+ * 
+ * NOTE: This module is web-only. React Native apps should use native wake word modules.
  */
 
-import {
-  PorcupineWorker,
-  PorcupineKeyword,
-  BuiltInKeyword,
-} from '@picovoice/porcupine-web';
-import { WebVoiceProcessor } from '@picovoice/web-voice-processor';
 import { supportConfig, WakeWordSystemConfig } from '../config/supportConfig';
+
+// Check if we're in React Native environment
+const isReactNative = typeof navigator !== 'undefined' && navigator.product === 'ReactNative';
+
+// Web-only imports - these will be undefined in React Native
+let PorcupineWorker: any;
+let WebVoiceProcessor: any;
+type PorcupineKeyword = any;
+type BuiltInKeyword = any;
+
+// Only import web modules in browser environment
+if (!isReactNative && typeof window !== 'undefined') {
+  try {
+    // Dynamic require for web modules
+    const porcupineWeb = require('@picovoice/porcupine-web');
+    const webVoiceProcessor = require('@picovoice/web-voice-processor');
+    PorcupineWorker = porcupineWeb.PorcupineWorker;
+    WebVoiceProcessor = webVoiceProcessor.WebVoiceProcessor;
+  } catch (e) {
+    console.warn('[PorcupineWakeWord] Web SDK not available:', e);
+  }
+}
 
 /**
  * Voice system types for wake word detection
@@ -62,29 +80,39 @@ export function getActiveWakeWord(system: VoiceSystemType): string {
 
 /**
  * Map wake word string to BuiltInKeyword enum
+ * Returns the enum value dynamically since we use dynamic imports
  */
-function getBuiltInKeyword(wakeWord: string): BuiltInKeyword {
-  const wakeWordMap: Record<string, BuiltInKeyword> = {
-    'Alexa': BuiltInKeyword.Alexa,
-    'Americano': BuiltInKeyword.Americano,
-    'Blueberry': BuiltInKeyword.Blueberry,
-    'Bumblebee': BuiltInKeyword.Bumblebee,
-    'Computer': BuiltInKeyword.Computer,
-    'Grapefruit': BuiltInKeyword.Grapefruit,
-    'Grasshopper': BuiltInKeyword.Grasshopper,
-    'Hey Google': BuiltInKeyword.HeyGoogle,
-    'HeyGoogle': BuiltInKeyword.HeyGoogle,
-    'Hey Siri': BuiltInKeyword.HeySiri,
-    'HeySiri': BuiltInKeyword.HeySiri,
-    'Jarvis': BuiltInKeyword.Jarvis,
-    'Okay Google': BuiltInKeyword.OkayGoogle,
-    'OkayGoogle': BuiltInKeyword.OkayGoogle,
-    'Picovoice': BuiltInKeyword.Picovoice,
-    'Porcupine': BuiltInKeyword.Porcupine,
-    'Terminator': BuiltInKeyword.Terminator,
-  };
+function getBuiltInKeyword(wakeWord: string): any {
+  // Get BuiltInKeyword from the dynamically imported module
+  try {
+    const porcupineWeb = require('@picovoice/porcupine-web');
+    const BuiltInKeywordEnum = porcupineWeb.BuiltInKeyword;
+    
+    const wakeWordMap: Record<string, any> = {
+      'Alexa': BuiltInKeywordEnum?.Alexa,
+      'Americano': BuiltInKeywordEnum?.Americano,
+      'Blueberry': BuiltInKeywordEnum?.Blueberry,
+      'Bumblebee': BuiltInKeywordEnum?.Bumblebee,
+      'Computer': BuiltInKeywordEnum?.Computer,
+      'Grapefruit': BuiltInKeywordEnum?.Grapefruit,
+      'Grasshopper': BuiltInKeywordEnum?.Grasshopper,
+      'Hey Google': BuiltInKeywordEnum?.HeyGoogle,
+      'HeyGoogle': BuiltInKeywordEnum?.HeyGoogle,
+      'Hey Siri': BuiltInKeywordEnum?.HeySiri,
+      'HeySiri': BuiltInKeywordEnum?.HeySiri,
+      'Jarvis': BuiltInKeywordEnum?.Jarvis,
+      'Okay Google': BuiltInKeywordEnum?.OkayGoogle,
+      'OkayGoogle': BuiltInKeywordEnum?.OkayGoogle,
+      'Picovoice': BuiltInKeywordEnum?.Picovoice,
+      'Porcupine': BuiltInKeywordEnum?.Porcupine,
+      'Terminator': BuiltInKeywordEnum?.Terminator,
+    };
 
-  return wakeWordMap[wakeWord] || BuiltInKeyword.Jarvis;
+    return wakeWordMap[wakeWord] || BuiltInKeywordEnum?.Jarvis;
+  } catch {
+    // Return a placeholder for React Native - wake word won't work without native module
+    return wakeWord;
+  }
 }
 
 /**
@@ -119,6 +147,18 @@ export class PorcupineWakeWordDetector {
     sensitivity: number = 0.5,
     system: VoiceSystemType = 'voiceSearch'
   ): Promise<void> {
+    // React Native check - use native wake word module instead
+    if (isReactNative) {
+      console.warn('[PorcupineWakeWord] Web SDK not available in React Native. Use native WakeWordModule instead.');
+      throw new Error('Porcupine Web SDK is not available in React Native. Use the native WakeWordModule.');
+    }
+
+    // Check if web modules are available
+    if (!PorcupineWorker || !WebVoiceProcessor) {
+      console.error('[PorcupineWakeWord] Web SDK modules not loaded');
+      throw new Error('Porcupine Web SDK not available. Ensure @picovoice/porcupine-web is installed.');
+    }
+
     if (this.isInitialized) {
       console.log('[PorcupineWakeWord] Already initialized');
       return;
@@ -388,20 +428,52 @@ export class PorcupineWakeWordDetector {
 
 /**
  * Get Picovoice access key from environment
+ * Supports web (Vite), Node.js (process.env), and React Native (Config)
  */
 export function getPicovoiceAccessKey(): string {
-  // Try Vite env first (web apps)
-  if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_PICOVOICE_ACCESS_KEY) {
-    const key = import.meta.env.VITE_PICOVOICE_ACCESS_KEY;
-    console.log('[PorcupineWakeWord] Access key found (Vite):', key ? `${key.slice(0, 10)}...` : 'empty');
-    return key;
+  // Check if we're in React Native environment
+  const isReactNative = typeof navigator !== 'undefined' && navigator.product === 'ReactNative';
+  
+  if (isReactNative) {
+    // React Native: use react-native-config or return empty
+    // The mobile app should set this via native modules or config
+    try {
+      // Try to get from react-native-config if available
+      const Config = require('react-native-config').default;
+      if (Config?.PICOVOICE_ACCESS_KEY) {
+        const key = Config.PICOVOICE_ACCESS_KEY;
+        console.log('[PorcupineWakeWord] Access key found (React Native Config):', key ? `${key.slice(0, 10)}...` : 'empty');
+        return key;
+      }
+    } catch {
+      // react-native-config not available
+    }
+    console.warn('[PorcupineWakeWord] React Native: No Picovoice access key found');
+    return '';
   }
 
-  // Try process.env (Node/build time)
-  if (typeof process !== 'undefined' && process.env?.VITE_PICOVOICE_ACCESS_KEY) {
-    const key = process.env.VITE_PICOVOICE_ACCESS_KEY;
-    console.log('[PorcupineWakeWord] Access key found (process.env):', key ? `${key.slice(0, 10)}...` : 'empty');
-    return key;
+  // Web: Try Vite env (must check at runtime without using import.meta directly in module scope)
+  try {
+    // Use indirect eval to avoid bundler issues with import.meta
+    const viteEnv = (globalThis as any).__VITE_ENV__ || (typeof window !== 'undefined' && (window as any).__VITE_ENV__);
+    if (viteEnv?.VITE_PICOVOICE_ACCESS_KEY) {
+      const key = viteEnv.VITE_PICOVOICE_ACCESS_KEY;
+      console.log('[PorcupineWakeWord] Access key found (Vite global):', key ? `${key.slice(0, 10)}...` : 'empty');
+      return key;
+    }
+  } catch {
+    // Vite env not available
+  }
+
+  // Try process.env (Node/build time / webpack DefinePlugin)
+  try {
+    if (typeof process !== 'undefined' && process.env?.VITE_PICOVOICE_ACCESS_KEY) {
+      const key = process.env.VITE_PICOVOICE_ACCESS_KEY;
+      console.log('[PorcupineWakeWord] Access key found (process.env):', key ? `${key.slice(0, 10)}...` : 'empty');
+      return key;
+    }
+  } catch {
+    // process.env not available
   }
 
   console.warn('[PorcupineWakeWord] No Picovoice access key found in environment');
@@ -410,11 +482,24 @@ export function getPicovoiceAccessKey(): string {
 
 /**
  * Check if Porcupine is supported in the current environment
+ * Note: Returns false for React Native - use native WakeWordModule instead
  */
 export function isPorcupineSupported(): boolean {
+  // React Native uses native wake word modules, not web SDK
+  if (isReactNative) {
+    console.log('[PorcupineWakeWord] React Native detected - use native WakeWordModule');
+    return false;
+  }
+
   // Check for browser environment
   if (typeof window === 'undefined') {
     console.log('[PorcupineWakeWord] Not browser environment');
+    return false;
+  }
+
+  // Check if web modules were loaded
+  if (!PorcupineWorker || !WebVoiceProcessor) {
+    console.log('[PorcupineWakeWord] Web SDK modules not available');
     return false;
   }
 

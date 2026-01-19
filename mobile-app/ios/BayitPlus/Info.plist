@@ -34,13 +34,13 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Bayit Plus needs access</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Bayit+ needs microphone access for voice commands and "Hey Bayit" wake word detection.</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Bayit+ uses speech recognition to understand your voice commands for hands-free content control.</string>
 	<key>NSSiriUsageDescription</key>
 	<string>Bayit+ integrates with Siri to enable voice commands like "Play Channel 13 on Bayit Plus" and "Resume watching on Bayit Plus".</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Bayit+ uses speech recognition to understand your voice commands for hands-free content control.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -49,6 +49,8 @@
 	<array>
 		<string>arm64</string>
 	</array>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleDarkContent</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
