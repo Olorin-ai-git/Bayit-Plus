@@ -25,8 +25,8 @@ import {
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { LinearGradient } from 'expo-linear-gradient';
-import * as Haptics from 'expo-haptics';
+import LinearGradient from 'react-native-linear-gradient';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useProfile } from '@bayit/shared-contexts';
 import { useDirection } from '@bayit/shared-hooks';
 import api from '@bayit/shared-services/api';
@@ -84,7 +84,7 @@ const FlowCard: React.FC<FlowCardProps> = ({ flow, onPress, getLocalizedName }) 
   const isSystem = flow.flow_type === 'system';
 
   const handlePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     onPress();
   }, [onPress]);
 
@@ -210,13 +210,13 @@ export const FlowsScreenMobile: React.FC = () => {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     await fetchFlows();
     setRefreshing(false);
   }, [fetchFlows]);
 
   const handleStartFlow = useCallback(async (flow: Flow) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
     try {
       const response = await api.get(`/flows/${flow.id}/content`);
       if (response.data.content && response.data.content.length > 0) {
@@ -236,7 +236,7 @@ export const FlowsScreenMobile: React.FC = () => {
   }, [navigation, getLocalizedName]);
 
   const handleSkipToday = useCallback(async (flow: Flow) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     try {
       await api.post(`/flows/${flow.id}/skip-today`);
       setActiveFlow(null);
@@ -368,7 +368,7 @@ export const FlowsScreenMobile: React.FC = () => {
         <TouchableOpacity
           style={styles.createButton}
           onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            ReactNativeHapticFeedback.trigger('impactLight');
             // Navigate to create flow or show info modal
           }}
         >

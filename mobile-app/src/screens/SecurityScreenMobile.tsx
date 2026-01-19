@@ -27,8 +27,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import * as Haptics from 'expo-haptics';
-import * as LocalAuthentication from 'expo-local-authentication';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import * as BiometricAuth from '../utils/biometricAuth';
 import { GlassView, GlassButton } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
@@ -70,8 +70,8 @@ export const SecurityScreenMobile: React.FC = () => {
       setIsLoading(true);
 
       // Check biometric availability
-      const compatible = await LocalAuthentication.hasHardwareAsync();
-      const enrolled = await LocalAuthentication.isEnrolledAsync();
+      const compatible = await BiometricAuth.hasHardwareAsync();
+      const enrolled = await BiometricAuth.isEnrolledAsync();
       setBiometricAvailable(compatible && enrolled);
 
       // Load security settings
@@ -98,18 +98,18 @@ export const SecurityScreenMobile: React.FC = () => {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     await loadSecurityData();
     setRefreshing(false);
   }, [loadSecurityData]);
 
   const handleChangePassword = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
     navigation.navigate('ChangePassword');
   }, [navigation]);
 
   const handleToggleTwoFactor = useCallback(async (value: boolean) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
 
     if (value) {
       // Enable 2FA - navigate to setup
@@ -128,7 +128,7 @@ export const SecurityScreenMobile: React.FC = () => {
               try {
                 await securityService.disableTwoFactor();
                 setTwoFactorEnabled(false);
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                ReactNativeHapticFeedback.trigger('notificationSuccess');
               } catch (error) {
                 console.error('Failed to disable 2FA:', error);
                 Alert.alert(t('common.error'), t('security.disable2FAError'));
@@ -141,11 +141,11 @@ export const SecurityScreenMobile: React.FC = () => {
   }, [navigation, t]);
 
   const handleToggleBiometric = useCallback(async (value: boolean) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
 
     if (value) {
       // Verify biometric before enabling
-      const result = await LocalAuthentication.authenticateAsync({
+      const result = await BiometricAuth.authenticateAsync({
         promptMessage: t('security.verifyBiometric'),
         fallbackLabel: t('security.usePassword'),
       });
@@ -154,7 +154,7 @@ export const SecurityScreenMobile: React.FC = () => {
         try {
           await securityService.enableBiometric();
           setBiometricEnabled(true);
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          ReactNativeHapticFeedback.trigger('notificationSuccess');
         } catch (error) {
           console.error('Failed to enable biometric:', error);
           Alert.alert(t('common.error'), t('security.enableBiometricError'));
@@ -171,7 +171,7 @@ export const SecurityScreenMobile: React.FC = () => {
   }, [t]);
 
   const handleRemoveDevice = useCallback(async (deviceId: string) => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    ReactNativeHapticFeedback.trigger('notificationWarning');
 
     Alert.alert(
       t('security.removeDeviceTitle'),
@@ -185,7 +185,7 @@ export const SecurityScreenMobile: React.FC = () => {
             try {
               await securityService.removeDevice(deviceId);
               setDevices(prev => prev.filter(d => d.id !== deviceId));
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              ReactNativeHapticFeedback.trigger('notificationSuccess');
             } catch (error) {
               console.error('Failed to remove device:', error);
               Alert.alert(t('common.error'), t('security.removeDeviceError'));
@@ -435,7 +435,7 @@ export const SecurityScreenMobile: React.FC = () => {
           <GlassButton
             title={t('security.signOutAllDevices')}
             onPress={() => {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+              ReactNativeHapticFeedback.trigger('notificationWarning');
               Alert.alert(
                 t('security.signOutAllTitle'),
                 t('security.signOutAllMessage'),

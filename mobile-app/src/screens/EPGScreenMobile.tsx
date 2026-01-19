@@ -25,7 +25,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
-import * as Haptics from 'expo-haptics';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { epgApi, EPGProgram, Channel } from '@bayit/shared-services';
 import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
@@ -65,7 +65,7 @@ const ChannelCard: React.FC<ChannelCardProps> = ({
       <TouchableOpacity
         style={[styles.channelHeader, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
         onPress={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          ReactNativeHapticFeedback.trigger('impactLight');
           onChannelPress(item.channel);
         }}
         activeOpacity={0.7}
@@ -97,7 +97,7 @@ const ChannelCard: React.FC<ChannelCardProps> = ({
         <TouchableOpacity
           style={styles.currentProgram}
           onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            ReactNativeHapticFeedback.trigger('impactMedium');
             onProgramPress(item.currentProgram!);
           }}
           activeOpacity={0.7}
@@ -131,7 +131,7 @@ const ChannelCard: React.FC<ChannelCardProps> = ({
               style={styles.upcomingProgram}
               onPress={() => {
                 if (program.is_past && isPremium) {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  ReactNativeHapticFeedback.trigger('impactLight');
                   onProgramPress(program);
                 }
               }}
@@ -240,13 +240,13 @@ export const EPGScreenMobile: React.FC = () => {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     await fetchEPGData();
     setRefreshing(false);
   }, [fetchEPGData]);
 
   const handleTimeShift = useCallback((hours: number) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     const shiftMs = hours * 60 * 60 * 1000;
     setTimeWindow((prev) => ({
       start: new Date(prev.start.getTime() + shiftMs),
@@ -255,7 +255,7 @@ export const EPGScreenMobile: React.FC = () => {
   }, []);
 
   const handleJumpToNow = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
     const now = new Date();
     setTimeWindow({
       start: new Date(now.getTime() - 2 * 60 * 60 * 1000),
@@ -265,7 +265,7 @@ export const EPGScreenMobile: React.FC = () => {
   }, []);
 
   const handleTimezoneToggle = useCallback(() => {
-    Haptics.selectionAsync();
+    ReactNativeHapticFeedback.trigger('selection');
     setTimezone((prev) => (prev === 'israel' ? 'local' : 'israel'));
   }, []);
 

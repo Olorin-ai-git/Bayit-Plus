@@ -27,8 +27,8 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
-import * as Haptics from 'expo-haptics';
+import LinearGradient from 'react-native-linear-gradient';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { contentService } from '@bayit/shared-services';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useDirection } from '@bayit/shared-hooks';
@@ -110,7 +110,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
   return (
     <TouchableOpacity
       onPress={() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        ReactNativeHapticFeedback.trigger('impactLight');
         onPress();
       }}
       style={[styles.episodeCard, isSelected && styles.episodeCardSelected]}
@@ -231,7 +231,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
 
   const handlePlay = useCallback(() => {
     if (selectedEpisode) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      ReactNativeHapticFeedback.trigger('impactMedium');
       navigation.navigate('Player', {
         id: selectedEpisode.id,
         title: getLocalizedText(selectedEpisode, 'title'),
@@ -241,7 +241,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
   }, [selectedEpisode, navigation, getLocalizedText]);
 
   const handleEpisodePlay = useCallback((episode: Episode) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
     navigation.navigate('Player', {
       id: episode.id,
       title: getLocalizedText(episode, 'title'),
@@ -254,7 +254,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
   }, []);
 
   const handleSeasonChange = useCallback((seasonNumber: number) => {
-    Haptics.selectionAsync();
+    ReactNativeHapticFeedback.trigger('selection');
     setSelectedSeason(seasonNumber);
     setSelectedEpisode(null);
     setShowSeasonPicker(false);
@@ -262,7 +262,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
 
   const handleShare = useCallback(async () => {
     if (series) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      ReactNativeHapticFeedback.trigger('impactLight');
       try {
         await Share.share({
           message: `${t('share.checkOut', 'Check out')} "${getLocalizedText(series, 'title')}" ${t('share.onBayitPlus', 'on Bayit+')}`,
@@ -275,17 +275,17 @@ export const SeriesDetailScreenMobile: React.FC = () => {
   }, [series, t, getLocalizedText]);
 
   const handleBack = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     navigation.goBack();
   }, [navigation]);
 
   const handleRecommendationPress = useCallback((item: any) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     navigation.push('SeriesDetail', { seriesId: item.id });
   }, [navigation]);
 
   const handleToggleWatchlist = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     setIsInWatchlist(!isInWatchlist);
   }, [isInWatchlist]);
 
@@ -373,7 +373,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
           <TouchableOpacity
             style={styles.seasonSelector}
             onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              ReactNativeHapticFeedback.trigger('impactLight');
               setShowSeasonPicker(true);
             }}
           >

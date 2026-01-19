@@ -38,6 +38,7 @@ import { apiSearchService, apiSubtitlesService, apiSubtitlePreferencesService, a
 import { apiZmanService, apiTrendingService, apiRitualService, apiJudaismService, apiFlowsService } from './specialtyServices';
 import { apiChatService, apiPartyService, apiRecordingService, apiDownloadsService } from './socialServices';
 import { apiJerusalemService, apiTelAvivService, apiCultureService } from './cultureServices';
+import { securityService } from './securityService';
 
 // Import demo services
 import {
@@ -115,6 +116,9 @@ export const downloadsService = isDemo ? demoDownloadsService : apiDownloadsServ
 export const jerusalemService = isDemo ? demoJerusalemService : apiJerusalemService;
 export const telAvivService = isDemo ? demoTelAvivService : apiTelAvivService;
 export const cultureService = isDemo ? demoCultureService : apiCultureService;
+
+// Security services - No demo mode (requires real auth)
+export { securityService };
 
 // Re-export API services for direct access
 export {

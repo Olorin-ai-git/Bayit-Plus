@@ -29,7 +29,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import * as Haptics from 'expo-haptics';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { downloadsService, type Download } from '@bayit/shared-services';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useDirection } from '@bayit/shared-hooks';
@@ -138,7 +138,7 @@ const SwipeableDownloadCard: React.FC<SwipeableDownloadCardProps> = ({
 
         if (swipeValue > DELETE_THRESHOLD) {
           // Trigger delete with animation
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+          ReactNativeHapticFeedback.trigger('notificationWarning');
           Animated.spring(translateX, {
             toValue: isRTL ? SCREEN_WIDTH : -SCREEN_WIDTH,
             useNativeDriver: true,
@@ -158,7 +158,7 @@ const SwipeableDownloadCard: React.FC<SwipeableDownloadCardProps> = ({
 
   const handlePress = useCallback(() => {
     if (!isSwiping) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      ReactNativeHapticFeedback.trigger('impactLight');
       onPress();
     }
   }, [isSwiping, onPress]);
@@ -281,7 +281,7 @@ export const DownloadsScreenMobile: React.FC = () => {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     await loadDownloads();
     setRefreshing(false);
   }, [loadDownloads]);
@@ -295,7 +295,7 @@ export const DownloadsScreenMobile: React.FC = () => {
       return;
     }
 
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
     navigation.navigate('Player', {
       id: item.id,
       title: getLocalizedText(item, 'title'),
@@ -323,10 +323,10 @@ export const DownloadsScreenMobile: React.FC = () => {
             try {
               await downloadsService.deleteDownload(id);
               setDownloads(prev => prev.filter(item => item.id !== id));
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              ReactNativeHapticFeedback.trigger('notificationSuccess');
             } catch (err) {
               console.error('Failed to delete download:', err);
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              ReactNativeHapticFeedback.trigger('notificationError');
             }
           },
         },

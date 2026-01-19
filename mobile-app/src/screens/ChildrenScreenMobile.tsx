@@ -25,7 +25,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import * as Haptics from 'expo-haptics';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { childrenService } from '@bayit/shared-services';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useDirection } from '@bayit/shared-hooks';
@@ -76,7 +76,7 @@ const KidsCard: React.FC<KidsCardProps> = ({ item, onPress, getLocalizedText }) 
   const { isRTL, textAlign } = useDirection();
 
   const handlePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     onPress();
   }, [onPress]);
 
@@ -137,7 +137,7 @@ const CategoryPill: React.FC<CategoryPillProps> = ({
   getLocalizedText,
 }) => {
   const handlePress = useCallback(() => {
-    Haptics.selectionAsync();
+    ReactNativeHapticFeedback.trigger('selection');
     onPress();
   }, [onPress]);
 
@@ -218,13 +218,13 @@ export const ChildrenScreenMobile: React.FC = () => {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     await Promise.all([loadCategories(), loadContent()]);
     setRefreshing(false);
   }, [loadCategories, loadContent]);
 
   const handleItemPress = useCallback((item: KidsItem) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
     navigation.navigate('Player', {
       id: item.id,
       title: getLocalizedText(item, 'title'),
@@ -234,7 +234,7 @@ export const ChildrenScreenMobile: React.FC = () => {
 
   const handleCategoryChange = useCallback((categoryId: string) => {
     setSelectedCategory(categoryId);
-    Haptics.selectionAsync();
+    ReactNativeHapticFeedback.trigger('selection');
   }, []);
 
   const renderHeader = () => (

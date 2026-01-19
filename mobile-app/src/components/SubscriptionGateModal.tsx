@@ -23,8 +23,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import * as Haptics from 'expo-haptics';
-import { LinearGradient } from 'expo-linear-gradient';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import LinearGradient from 'react-native-linear-gradient';
 import { GlassView, GlassButton } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { spacing, colors, borderRadius } from '../theme';
@@ -98,19 +98,19 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
   const { isRTL, textAlign } = useDirection();
 
   const handleSelectPlan = useCallback((planId: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
     onClose();
     navigation.navigate('Subscribe', { plan: planId });
   }, [onClose, navigation]);
 
   const handleStartTrial = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
     onClose();
     navigation.navigate('Subscribe', { trial: true });
   }, [onClose, navigation]);
 
   const handleClose = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     onClose();
   }, [onClose]);
 

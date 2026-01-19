@@ -25,7 +25,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import * as Haptics from 'expo-haptics';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView, GlassButton } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
@@ -104,7 +104,7 @@ export const SubscriptionScreenMobile: React.FC = () => {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     // Refresh user subscription data
     await new Promise(resolve => setTimeout(resolve, 500));
     setRefreshing(false);
@@ -113,12 +113,12 @@ export const SubscriptionScreenMobile: React.FC = () => {
   const handleSelectPlan = useCallback(async (planId: string) => {
     if (planId === currentPlan) return;
 
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
     navigation.navigate('Subscribe', { plan: planId });
   }, [currentPlan, navigation]);
 
   const handleCancelSubscription = useCallback(() => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    ReactNativeHapticFeedback.trigger('notificationWarning');
 
     Alert.alert(
       t('subscription.cancelConfirmTitle'),

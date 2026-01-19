@@ -15,7 +15,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { colors } from '../../theme';
 
 export interface Chapter {
@@ -71,7 +71,7 @@ export const ChapterMarkers: React.FC<ChapterMarkersProps> = ({
   }
 
   const handleMarkerPress = useCallback((chapter: Chapter) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     onSeek(chapter.start_time);
   }, [onSeek]);
 

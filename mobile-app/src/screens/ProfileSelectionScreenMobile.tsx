@@ -25,8 +25,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import * as Haptics from 'expo-haptics';
-import * as LocalAuthentication from 'expo-local-authentication';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import * as BiometricAuth from '../utils/biometricAuth';
 import { useProfile, Profile } from '@bayit/shared-contexts';
 import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
@@ -62,7 +62,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   };
 
   const handlePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
     onSelect(profile);
   }, [profile, onSelect]);
 
@@ -143,7 +143,7 @@ const PinModal: React.FC<PinModalProps> = ({
 
   const handleSubmit = useCallback(() => {
     if (pin.length >= 4) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      ReactNativeHapticFeedback.trigger('impactLight');
       onSubmit(pin);
     }
   }, [pin, onSubmit]);
@@ -180,7 +180,7 @@ const PinModal: React.FC<PinModalProps> = ({
             <TouchableOpacity
               style={styles.pinCancelButton}
               onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                ReactNativeHapticFeedback.trigger('impactLight');
                 onCancel();
               }}
             >
@@ -191,7 +191,7 @@ const PinModal: React.FC<PinModalProps> = ({
               <TouchableOpacity
                 style={styles.biometricButton}
                 onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  ReactNativeHapticFeedback.trigger('impactLight');
                   onBiometric();
                 }}
               >
@@ -247,13 +247,13 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
 
   const checkBiometrics = async () => {
     try {
-      const compatible = await LocalAuthentication.hasHardwareAsync();
+      const compatible = await BiometricAuth.hasHardwareAsync();
       if (compatible) {
-        const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
-        if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
+        const types = await BiometricAuth.supportedAuthenticationTypesAsync();
+        if (types.includes(BiometricAuth.AuthenticationType.FACIAL_RECOGNITION)) {
           setBiometricType('face');
           setHasBiometric(true);
-        } else if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
+        } else if (types.includes(BiometricAuth.AuthenticationType.FINGERPRINT)) {
           setBiometricType('fingerprint');
           setHasBiometric(true);
         }
@@ -278,10 +278,10 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
 
     try {
       await selectProfile(profile.id);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      ReactNativeHapticFeedback.trigger('notificationSuccess');
       navigation.replace('Main');
     } catch (err: any) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      ReactNativeHapticFeedback.trigger('notificationError');
       setPinError(err.detail || t('profiles.selectFailed', 'Failed to select profile'));
     }
   }, [isManageMode, navigation, selectProfile, t]);
@@ -293,10 +293,10 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
       await selectProfile(selectedProfile.id, pin);
       setShowPinModal(false);
       setSelectedProfile(null);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      ReactNativeHapticFeedback.trigger('notificationSuccess');
       navigation.replace('Main');
     } catch (err: any) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      ReactNativeHapticFeedback.trigger('notificationError');
       setPinError(err.detail || t('profiles.incorrectPin', 'Incorrect PIN'));
     }
   }, [selectedProfile, selectProfile, navigation, t]);
@@ -305,7 +305,7 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
     if (!selectedProfile) return;
 
     try {
-      const result = await LocalAuthentication.authenticateAsync({
+      const result = await BiometricAuth.authenticateAsync({
         promptMessage: t('profiles.biometricPrompt', 'Authenticate to access profile'),
         cancelLabel: t('common.cancel', 'Cancel'),
         fallbackLabel: t('profiles.usePin', 'Use PIN'),
@@ -317,17 +317,17 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
         await selectProfile(selectedProfile.id);
         setShowPinModal(false);
         setSelectedProfile(null);
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        ReactNativeHapticFeedback.trigger('notificationSuccess');
         navigation.replace('Main');
       }
     } catch (err: any) {
       console.error('Biometric auth failed:', err);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      ReactNativeHapticFeedback.trigger('notificationError');
     }
   }, [selectedProfile, selectProfile, navigation, t]);
 
   const handleAddProfile = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     navigation.navigate('CreateProfile');
   }, [navigation]);
 
@@ -402,7 +402,7 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
         <TouchableOpacity
           style={styles.manageButton}
           onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            ReactNativeHapticFeedback.trigger('impactLight');
             setIsManageMode(!isManageMode);
           }}
         >

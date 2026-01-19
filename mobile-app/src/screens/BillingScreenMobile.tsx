@@ -24,7 +24,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import * as Haptics from 'expo-haptics';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView, GlassButton } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
@@ -87,23 +87,23 @@ export const BillingScreenMobile: React.FC = () => {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     await loadBillingData();
     setRefreshing(false);
   }, [loadBillingData]);
 
   const handleAddPaymentMethod = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
     navigation.navigate('AddPaymentMethod');
   }, [navigation]);
 
   const handleEditPaymentMethod = useCallback((methodId: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     navigation.navigate('EditPaymentMethod', { methodId });
   }, [navigation]);
 
   const handleSetDefaultPaymentMethod = useCallback(async (methodId: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
     try {
       await subscriptionService.setDefaultPaymentMethod(methodId);
       await loadBillingData();
@@ -114,7 +114,7 @@ export const BillingScreenMobile: React.FC = () => {
   }, [t, loadBillingData]);
 
   const handleDownloadInvoice = useCallback((invoiceId: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     // Download invoice functionality
     Alert.alert(t('billing.downloadStarted'), t('billing.checkDownloads'));
   }, [t]);

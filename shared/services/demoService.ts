@@ -83,6 +83,46 @@ export const demoContentService = {
     await delay();
     return { stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' };
   },
+
+  // Series endpoints
+  getSeriesDetails: async (seriesId: string) => {
+    await delay();
+    const series = demoSeries.find(s => s.id === seriesId);
+    return series || null;
+  },
+  getSeriesSeasons: async (seriesId: string) => {
+    await delay();
+    const series = demoSeries.find(s => s.id === seriesId);
+    return { seasons: series?.seasons || [] };
+  },
+  getSeasonEpisodes: async (seriesId: string, seasonNum: number) => {
+    await delay();
+    const series = demoSeries.find(s => s.id === seriesId);
+    const season = series?.seasons?.find((s: any) => s.season_number === seasonNum);
+    return { episodes: season?.episodes || [] };
+  },
+
+  // Movie endpoints
+  getMovieDetails: async (movieId: string) => {
+    await delay();
+    const movie = demoMovies.find(m => m.id === movieId);
+    return movie || null;
+  },
+
+  // Preview endpoint
+  getContentPreview: async (contentId: string) => {
+    await delay();
+    const content = [...demoMovies, ...demoSeries].find(c => c.id === contentId);
+    return content ? { preview_url: content.trailer_url } : null;
+  },
+
+  // Recommendations endpoint
+  getRecommendations: async (contentId: string, limit: number = 10) => {
+    await delay();
+    // Return random mix of movies and series as recommendations
+    const allContent = [...demoMovies, ...demoSeries].filter(c => c.id !== contentId);
+    return { items: allContent.slice(0, limit) };
+  },
 };
 
 // ===========================================

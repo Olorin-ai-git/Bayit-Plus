@@ -161,6 +161,42 @@ TOOLS = [
         }
     },
     {
+        "name": "reclassify_as_series",
+        "description": "Reclassify a content item from movie to TV series. Use this when you detect series indicators in the title (S01E01, S02E03, 'Season 1', etc.) or when TMDB confirms the content is a TV show. This changes the content_type field and moves the item to the Series category.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_id": {
+                    "type": "string",
+                    "description": "The ID of the content item to reclassify"
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Explanation of why this should be classified as a series (e.g., 'Title contains S01E05 episode marker', 'TMDB confirms this is a TV series')"
+                }
+            },
+            "required": ["content_id", "reason"]
+        }
+    },
+    {
+        "name": "reclassify_as_movie",
+        "description": "Reclassify a content item from series to movie. Use this when a content item is incorrectly marked as a series but is actually a standalone movie. This changes the content_type field and moves the item to the Movies category.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_id": {
+                    "type": "string",
+                    "description": "The ID of the content item to reclassify"
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Explanation of why this should be classified as a movie (e.g., 'TMDB confirms this is a standalone film', 'No episode/season indicators found')"
+                }
+            },
+            "required": ["content_id", "reason"]
+        }
+    },
+    {
         "name": "flag_for_manual_review",
         "description": "Flag a content item for manual human review. Use this when you find an issue but aren't confident about the fix, or when the issue requires human judgment. NOTE: Do NOT use this for broken streams - use delete_broken_content instead.",
         "input_schema": {

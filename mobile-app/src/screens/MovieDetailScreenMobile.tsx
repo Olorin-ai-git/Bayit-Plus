@@ -26,8 +26,8 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
-import * as Haptics from 'expo-haptics';
+import LinearGradient from 'react-native-linear-gradient';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { contentService } from '@bayit/shared-services';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useDirection } from '@bayit/shared-hooks';
@@ -141,7 +141,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
 
   const handlePlay = useCallback(() => {
     if (movie) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      ReactNativeHapticFeedback.trigger('impactMedium');
       navigation.navigate('Player', {
         id: movie.id,
         title: getLocalizedText(movie, 'title'),
@@ -152,7 +152,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
 
   const handleShare = useCallback(async () => {
     if (movie) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      ReactNativeHapticFeedback.trigger('impactLight');
       try {
         await Share.share({
           message: `${t('share.checkOut', 'Check out')} "${getLocalizedText(movie, 'title')}" ${t('share.onBayitPlus', 'on Bayit+')}`,
@@ -165,24 +165,24 @@ export const MovieDetailScreenMobile: React.FC = () => {
   }, [movie, t, getLocalizedText]);
 
   const handleToggleWatchlist = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     setIsInWatchlist(!isInWatchlist);
     // Call API to add/remove from watchlist
   }, [isInWatchlist]);
 
   const handleToggleFavorites = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     setIsInFavorites(!isInFavorites);
     // Call API to add/remove from favorites
   }, [isInFavorites]);
 
   const handleBack = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     navigation.goBack();
   }, [navigation]);
 
   const handleRecommendationPress = useCallback((item: any) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     navigation.push('MovieDetail', { movieId: item.id });
   }, [navigation]);
 

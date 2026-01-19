@@ -19,7 +19,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import * as Haptics from 'expo-haptics';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { spacing, colors, borderRadius } from '../../theme';
@@ -101,7 +101,7 @@ export const ChapterListMobile: React.FC<ChapterListMobileProps> = ({
   }, [activeChapterIndex, chapters.length]);
 
   const handleChapterPress = useCallback((chapter: Chapter) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
     onSeek(chapter.start_time);
     onClose?.();
   }, [onSeek, onClose]);

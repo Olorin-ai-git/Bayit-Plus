@@ -25,7 +25,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import * as Haptics from 'expo-haptics';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { judaismService } from '@bayit/shared-services';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useDirection } from '@bayit/shared-hooks';
@@ -77,7 +77,7 @@ const JudaismCard: React.FC<JudaismCardProps> = ({ item, onPress, getLocalizedTe
   const { isRTL, textAlign } = useDirection();
 
   const handlePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     onPress();
   }, [onPress]);
 
@@ -136,7 +136,7 @@ const CategoryPill: React.FC<CategoryPillProps> = ({
   getLocalizedText,
 }) => {
   const handlePress = useCallback(() => {
-    Haptics.selectionAsync();
+    ReactNativeHapticFeedback.trigger('selection');
     onPress();
   }, [onPress]);
 
@@ -215,13 +215,13 @@ export const JudaismScreenMobile: React.FC = () => {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    ReactNativeHapticFeedback.trigger('impactLight');
     await Promise.all([loadCategories(), loadContent()]);
     setRefreshing(false);
   }, [loadCategories, loadContent]);
 
   const handleItemPress = useCallback((item: JudaismItem) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    ReactNativeHapticFeedback.trigger('impactMedium');
     navigation.navigate('Player', {
       id: item.id,
       title: getLocalizedText(item, 'title'),
@@ -231,7 +231,7 @@ export const JudaismScreenMobile: React.FC = () => {
 
   const handleCategoryChange = useCallback((categoryId: string) => {
     setSelectedCategory(categoryId);
-    Haptics.selectionAsync();
+    ReactNativeHapticFeedback.trigger('selection');
   }, []);
 
   const renderHeader = () => (

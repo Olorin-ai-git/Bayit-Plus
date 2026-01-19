@@ -23,6 +23,10 @@ export const apiContentService = {
 
   // Preview endpoint
   getContentPreview: (contentId: string) => api.get(`/content/${contentId}/preview`),
+
+  // Recommendations endpoint
+  getRecommendations: (contentId: string, limit: number = 10) =>
+    api.get(`/content/${contentId}/recommendations`, { params: { limit } }),
 };
 
 // Live TV Service (API)
