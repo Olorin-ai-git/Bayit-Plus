@@ -191,15 +191,13 @@ export const PlayerScreenMobile: React.FC = () => {
           }
         />
 
-        {/* Touch overlay to toggle controls */}
-        <Pressable
-          style={styles.overlay}
-          onPress={toggleControls}
-        />
-
-        {/* Controls layer - separate from touch overlay */}
-        {showControls && (
-          <View style={styles.controlsContainer} pointerEvents="box-none">
+        {/* Controls layer with integrated tap handling */}
+        {showControls ? (
+          <Pressable
+            style={styles.controlsContainer}
+            onPress={toggleControls}
+          >
+              {/* Prevent button presses from triggering toggle */}
               {/* Top bar - title and close */}
               <View style={styles.topBar}>
                 <GlassView style={styles.topBarContent}>
@@ -286,7 +284,13 @@ export const PlayerScreenMobile: React.FC = () => {
                   </GlassView>
                 </View>
               )}
-          </View>
+          </Pressable>
+        ) : (
+          /* Tap overlay when controls hidden */
+          <Pressable
+            style={styles.overlay}
+            onPress={toggleControls}
+          />
         )}
 
         {/* Settings bottom sheet */}

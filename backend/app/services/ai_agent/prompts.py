@@ -127,10 +127,6 @@ BASE_PROMPT_PROCESSING = """
 
 BASE_PROMPT_MODE = """
 **Mode:** {mode}
-
-**Limits:**
-- Maximum {max_iterations} tool uses
-- API Budget: ${budget_limit_usd}
 """
 
 # Audit type-specific instructions (for comprehensive audits)
@@ -152,7 +148,7 @@ Your mission: Conduct a THOROUGH audit of the entire library focusing on:
 - Use OpenSubtitles quota strategically (20 downloads max)
 - Provide comprehensive recommendations for next week
 
-**Budget:** You have 200 iterations and $15 budget - use it wisely!
+**Goal:** Complete a thorough audit of the entire library.
 """,
     "daily_maintenance": """
 **AUDIT TYPE: Daily Subtitle Maintenance Scan**
@@ -180,7 +176,7 @@ Your mission: Focus EXCLUSIVELY on subtitle acquisition and maintenance:
 - Continue until ALL items processed
 
 **Daily Quota:** OpenSubtitles allows 1500 downloads/day. You can process ~150-200 movies (3 languages each).
-**Budget:** You have 100 iterations and $5 budget - focus ONLY on subtitles! No other tasks.
+**Goal:** Focus ONLY on subtitles until complete coverage is achieved.
 """,
     "ai_agent": """
 **AUDIT TYPE: Manual AI Agent Audit**
@@ -252,8 +248,8 @@ def build_task_specific_initial_prompt(
     language_instruction: str,
     enabled_capabilities: List[str],
     dry_run: bool,
-    max_iterations: int,
-    budget_limit_usd: float
+    max_iterations: int = 0,  # Kept for backward compatibility, not used in prompt
+    budget_limit_usd: float = 0.0  # Kept for backward compatibility, not used in prompt
 ) -> str:
     """Build the initial prompt for task-specific (focused) audits with additive capabilities."""
     capability_prompt = build_combined_capability_prompt(enabled_capabilities)
@@ -268,7 +264,7 @@ def build_task_specific_initial_prompt(
 
 **Available Tools:** Use ONLY the tools needed for the enabled capabilities above. Ignore irrelevant tools.
 
-{BASE_PROMPT_MODE.format(mode=mode_text, max_iterations=max_iterations, budget_limit_usd=budget_limit_usd)}
+{BASE_PROMPT_MODE.format(mode=mode_text)}
 
 Start the audit!"""
 
@@ -278,8 +274,8 @@ def build_comprehensive_initial_prompt(
     audit_specific_instruction: str,
     filter_instructions: str,
     dry_run: bool,
-    max_iterations: int,
-    budget_limit_usd: float
+    max_iterations: int = 0,  # Kept for backward compatibility, not used in prompt
+    budget_limit_usd: float = 0.0  # Kept for backward compatibility, not used in prompt
 ) -> str:
     """Build the initial prompt for comprehensive audits."""
     mode_text = "DRY RUN - You cannot actually change data, only report what you would do" if dry_run else "LIVE - You can make real changes"
@@ -439,10 +435,6 @@ Step 5: list_content_items(limit=100, skip=400)
 ```
 
 **Mode:** {mode_text}
-
-**Limits:**
-- Maximum {max_iterations} tool uses
-- API Budget: ${budget_limit_usd}
 
 **COMPREHENSIVE SUMMARY REQUIREMENTS:**
 

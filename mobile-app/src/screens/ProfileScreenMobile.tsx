@@ -117,6 +117,22 @@ export const ProfileScreenMobile: React.FC = () => {
       badge: stats.downloadsCount,
     },
     {
+      id: 'subscription',
+      title: t('profile.subscription'),
+      subtitle: user?.subscription_tier || t('profile.noSubscription'),
+      onPress: () => navigation.navigate('Subscription'),
+    },
+    {
+      id: 'billing',
+      title: t('profile.billing'),
+      onPress: () => navigation.navigate('Billing'),
+    },
+    {
+      id: 'security',
+      title: t('profile.security'),
+      onPress: () => navigation.navigate('Security'),
+    },
+    {
       id: 'settings',
       title: t('profile.settings'),
       onPress: () => navigation.navigate('Settings'),

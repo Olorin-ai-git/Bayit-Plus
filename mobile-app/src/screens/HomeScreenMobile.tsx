@@ -33,6 +33,7 @@ import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
 import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
+import { optimizeTMDBImageUrl } from '../utils/imageUtils';
 import { spacing, colors, typography } from '../theme';
 
 interface ContentItem {
@@ -117,16 +118,18 @@ export const HomeScreenMobile: React.FC = () => {
         }
       });
 
-      // Set carousel from featured hero items
+      // Set carousel from spotlight items (same as tvOS and web)
       const heroItems = featuredRes.hero ? [featuredRes.hero] : [];
-      const featuredItems = featuredRes.items || [];
+      const spotlightItems = featuredRes.spotlight || [];
+      const featuredItems = featuredRes.items || featuredRes.picks || [];
 
-      const carouselData = [...heroItems, ...featuredItems].map((item: any) => ({
+      // Carousel uses hero + spotlight items
+      const carouselData = [...heroItems, ...spotlightItems].map((item: any) => ({
         id: item.id,
         title: getLocalizedName(item, currentLang),
         subtitle: formatContentMetadata(item),
         description: getLocalizedDescription(item, currentLang),
-        image: item.thumbnail || item.image,
+        image: optimizeTMDBImageUrl(item.thumbnail || item.image, 'backdrop'),
         badge: item.badge,
       }));
 
@@ -137,7 +140,7 @@ export const HomeScreenMobile: React.FC = () => {
         id: item.id,
         title: getLocalizedName(item, currentLang),
         subtitle: item.subtitle,
-        thumbnail: item.thumbnail,
+        thumbnail: optimizeTMDBImageUrl(item.thumbnail, 'poster'),
         type: item.type,
       }));
       setContinueWatching(continueWatchingData);
@@ -147,7 +150,7 @@ export const HomeScreenMobile: React.FC = () => {
         id: item.id,
         title: getLocalizedName(item, currentLang),
         subtitle: item.subtitle,
-        thumbnail: item.thumbnail,
+        thumbnail: optimizeTMDBImageUrl(item.thumbnail, 'poster'),
         type: item.type,
       }));
       setFeatured(featuredData);
@@ -157,7 +160,7 @@ export const HomeScreenMobile: React.FC = () => {
         id: channel.id,
         title: getLocalizedName(channel, currentLang),
         subtitle: channel.number,
-        thumbnail: channel.thumbnail,
+        thumbnail: optimizeTMDBImageUrl(channel.thumbnail, 'poster'),
         type: 'live',
       }));
       setLiveChannels(liveData);
@@ -169,7 +172,7 @@ export const HomeScreenMobile: React.FC = () => {
           id: item.id,
           title: getLocalizedName(item, currentLang),
           subtitle: item.subtitle,
-          thumbnail: item.thumbnail,
+          thumbnail: optimizeTMDBImageUrl(item.thumbnail, 'poster'),
           type: item.type,
         })),
       }));

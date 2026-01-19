@@ -30,3 +30,11 @@ export {
   requireNetwork,
 } from './errorHandling';
 export type { ErrorDetails, ErrorSeverity } from './errorHandling';
+
+export {
+  optimizeTMDBImageUrl,
+  buildTMDBImageUrl,
+  getOptimalImageSize,
+  getPlaceholderColor,
+  calculateImageDimensions,
+} from './imageUtils';

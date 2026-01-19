@@ -28,6 +28,15 @@ export type RootStackParamList = {
   VoiceOnboarding: undefined;
   Support: undefined;
   Admin: undefined;
+  // Content detail screens
+  MovieDetail: { movieId: string };
+  SeriesDetail: { seriesId: string };
+  // Flows/sequences
+  Flows: undefined;
+  // Account management
+  Billing: undefined;
+  Subscription: undefined;
+  Security: undefined;
 };
 
 export type MainTabParamList = {

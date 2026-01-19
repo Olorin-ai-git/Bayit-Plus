@@ -14,14 +14,9 @@ import MainTabNavigator from './MainTabNavigator';
 import {
   LoginScreen,
   RegisterScreen,
-  ProfileSelectionScreen,
   MorningRitualScreen,
-  JudaismScreen,
-  ChildrenScreen,
-  DownloadsScreen,
   SupportScreen,
   RecordingsScreen,
-  EPGScreen,
 } from '@bayit/shared-screens';
 import { colors } from '../theme';
 
@@ -34,6 +29,17 @@ import {
   NotificationSettingsScreen,
   FavoritesScreenMobile,
   WatchlistScreenMobile,
+  ProfileSelectionScreenMobile,
+  ChildrenScreenMobile,
+  DownloadsScreenMobile,
+  JudaismScreenMobile,
+  FlowsScreenMobile,
+  EPGScreenMobile,
+  MovieDetailScreenMobile,
+  SeriesDetailScreenMobile,
+  BillingScreenMobile,
+  SubscriptionScreenMobile,
+  SecurityScreenMobile,
 } from '../screens';
 
 // Import mobile-specific screens (to be created)
@@ -57,7 +63,7 @@ export const RootNavigator: React.FC = () => {
       {/* Auth Screens - Reused from shared */}
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
-      <Stack.Screen name="ProfileSelection" component={ProfileSelectionScreen} />
+      <Stack.Screen name="ProfileSelection" component={ProfileSelectionScreenMobile} />
 
       {/* Main Tab Navigator - Uses mobile-optimized screens */}
       <Stack.Screen name="Main" component={MainTabNavigator} />
@@ -80,20 +86,30 @@ export const RootNavigator: React.FC = () => {
         }}
       />
 
-      {/* Content Screens - Mobile-optimized where available */}
+      {/* Content Screens - Mobile-optimized */}
       <Stack.Screen name="MorningRitual" component={MorningRitualScreen} />
-      <Stack.Screen name="Judaism" component={JudaismScreen} />
-      <Stack.Screen name="Children" component={ChildrenScreen} />
+      <Stack.Screen name="Judaism" component={JudaismScreenMobile} />
+      <Stack.Screen name="Children" component={ChildrenScreenMobile} />
       <Stack.Screen name="Watchlist" component={WatchlistScreenMobile} />
       <Stack.Screen name="Favorites" component={FavoritesScreenMobile} />
-      <Stack.Screen name="Downloads" component={DownloadsScreen} />
+      <Stack.Screen name="Downloads" component={DownloadsScreenMobile} />
       <Stack.Screen name="Recordings" component={RecordingsScreen} />
-      <Stack.Screen name="EPG" component={EPGScreen} />
+      <Stack.Screen name="EPG" component={EPGScreenMobile} />
+      <Stack.Screen name="Flows" component={FlowsScreenMobile} />
+
+      {/* Content Detail Screens */}
+      <Stack.Screen name="MovieDetail" component={MovieDetailScreenMobile} />
+      <Stack.Screen name="SeriesDetail" component={SeriesDetailScreenMobile} />
 
       {/* Settings - Mobile-specific */}
       <Stack.Screen name="Settings" component={SettingsScreenMobile} />
       <Stack.Screen name="LanguageSettings" component={LanguageSettingsScreen} />
       <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
+
+      {/* Account Management */}
+      <Stack.Screen name="Billing" component={BillingScreenMobile} />
+      <Stack.Screen name="Subscription" component={SubscriptionScreenMobile} />
+      <Stack.Screen name="Security" component={SecurityScreenMobile} />
 
       {/* Voice Onboarding - Mobile-specific */}
       <Stack.Screen

@@ -15,6 +15,7 @@ import { View, Image, Text, Pressable, StyleSheet, Dimensions } from 'react-nati
 import { GlassView } from '@bayit/shared';
 import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
 import { responsive } from '../utils/responsive';
+import { optimizeTMDBImageUrl } from '../utils/imageUtils';
 import { typography, spacing, borderRadius, colors } from '../theme';
 
 export interface ContentCardMobileProps {
@@ -59,11 +60,11 @@ export const ContentCardMobile: React.FC<ContentCardMobileProps> = ({
       android_ripple={{ color: colors.glassLight }}
     >
       <GlassView style={styles.card}>
-        {/* Poster image */}
+        {/* Poster image - optimized for mobile */}
         <View style={{ position: 'relative' }}>
           {content.posterUrl ? (
             <Image
-              source={{ uri: content.posterUrl }}
+              source={{ uri: optimizeTMDBImageUrl(content.posterUrl, 'poster') }}
               style={[styles.poster, { height: cardHeight }]}
               resizeMode="cover"
             />

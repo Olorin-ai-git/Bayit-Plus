@@ -16,6 +16,7 @@ import { JerusalemRow } from '../components/JerusalemRow';
 import { TelAvivRow } from '../components/TelAvivRow';
 import { GlassLiveChannelCard } from '../components/ui/GlassLiveChannelCard';
 import { contentService, liveService, historyService, ritualService } from '../services/api';
+import { useAuthStore } from '../stores/authStore';
 import { colors, spacing, fontSize, borderRadius } from '../theme';
 import { getLocalizedName, getLocalizedDescription } from '../utils/contentLocalization';
 import { formatContentMetadata } from '../utils/metadataFormatters';
@@ -55,6 +56,7 @@ export const HomeScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const { isRTL } = useDirection();
   const { getVisibleSections, loadPreferences } = useHomePageConfigStore();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [isLoading, setIsLoading] = useState(true);
   const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
   const [continueWatching, setContinueWatching] = useState<ContentItem[]>([]);
@@ -116,6 +118,9 @@ export const HomeScreen: React.FC = () => {
   }, [i18n.language, loadPreferences]);
 
   const checkMorningRitual = async () => {
+    // Skip ritual check if not authenticated - requires user preferences
+    if (!isAuthenticated) return;
+
     try {
       const result = await ritualService.shouldShow() as { show_ritual: boolean };
       if (result.show_ritual) {
@@ -131,25 +136,31 @@ export const HomeScreen: React.FC = () => {
     try {
       setIsLoading(true);
 
-      // Load all content in parallel using allSettled to handle individual failures gracefully
-      // This ensures public content loads even if authenticated endpoints fail
-      const results = await Promise.allSettled([
+      // Build request array - only include authenticated endpoints when logged in
+      const requests: Promise<any>[] = [
         contentService.getFeatured(),
         liveService.getChannels(),
-        historyService.getContinueWatching(),
         contentService.getCategories(),
-      ]);
+      ];
+
+      // Only fetch history if authenticated (requires user token)
+      if (isAuthenticated) {
+        requests.push(historyService.getContinueWatching());
+      }
+
+      // Load all content in parallel using allSettled to handle individual failures gracefully
+      const results = await Promise.allSettled(requests);
 
       // Extract successful results, using empty defaults for failed calls
       const featuredRes = results[0].status === 'fulfilled' ? results[0].value : { hero: null, spotlight: [], items: [] };
       const liveRes = results[1].status === 'fulfilled' ? results[1].value : { channels: [] };
-      const historyRes = results[2].status === 'fulfilled' ? results[2].value : { items: [] };
-      const categoriesRes = results[3].status === 'fulfilled' ? results[3].value : { categories: [] };
+      const categoriesRes = results[2].status === 'fulfilled' ? results[2].value : { categories: [] };
+      const historyRes = isAuthenticated && results[3]?.status === 'fulfilled' ? results[3].value : { items: [] };
 
       // Log any failed requests for debugging
+      const endpoints = isAuthenticated ? ['featured', 'channels', 'categories', 'history'] : ['featured', 'channels', 'categories'];
       results.forEach((result, index) => {
         if (result.status === 'rejected') {
-          const endpoints = ['featured', 'channels', 'history', 'categories'];
           console.log(`[HomeScreen] ${endpoints[index]} request failed:`, result.reason?.message || result.reason);
         }
       });

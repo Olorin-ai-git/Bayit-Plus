@@ -10,7 +10,6 @@ import {
   Animated,
   Pressable,
   Text,
-  Dimensions,
 } from 'react-native';
 import Video, { OnLoadData } from 'react-native-video';
 import { useTranslation } from 'react-i18next';
@@ -21,25 +20,19 @@ interface SplashScreenProps {
   minimumDuration?: number;
 }
 
-// Video sources - from shared assets
-// Use try-catch for require in case files don't exist
-let VIDEO_SOURCES: Record<string, any> = {};
-try {
-  VIDEO_SOURCES = {
-    he: require('../../../shared/assets/video/intro/Bayit_Intro_Hebrew.mp4'),
-    en: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-    es: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-    fr: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-    zh: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-    it: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-    hi: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-    ta: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-    bn: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-    ja: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-  };
-} catch (e) {
-  console.warn('[Splash] Failed to load video sources:', e);
-}
+// Video sources - from local assets (copied from shared)
+const VIDEO_SOURCES: Record<string, any> = {
+  he: require('../assets/video/intro/Bayit_Intro_Hebrew.mp4'),
+  en: require('../assets/video/intro/Bayit_Intro_English.mp4'),
+  es: require('../assets/video/intro/Bayit_Intro_English.mp4'),
+  fr: require('../assets/video/intro/Bayit_Intro_English.mp4'),
+  zh: require('../assets/video/intro/Bayit_Intro_English.mp4'),
+  it: require('../assets/video/intro/Bayit_Intro_English.mp4'),
+  hi: require('../assets/video/intro/Bayit_Intro_English.mp4'),
+  ta: require('../assets/video/intro/Bayit_Intro_English.mp4'),
+  bn: require('../assets/video/intro/Bayit_Intro_English.mp4'),
+  ja: require('../assets/video/intro/Bayit_Intro_English.mp4'),
+};
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({
   onComplete,
@@ -53,8 +46,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   const startTimeRef = useRef(Date.now());
 
   // Get video source based on language
-  const currentLang = (i18n.language || 'he') as keyof typeof VIDEO_SOURCES;
+  const currentLang = (i18n.language || 'he') as string;
   const videoSource = VIDEO_SOURCES[currentLang] || VIDEO_SOURCES.he;
+
+  console.log('[Splash] Language:', currentLang);
 
   // Handle completion with minimum duration
   const handleComplete = useCallback(() => {
@@ -119,7 +114,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       <Video
         source={videoSource}
         style={styles.video}
-        resizeMode="cover"
+        resizeMode="contain"
         onLoad={onVideoLoad}
         onEnd={onVideoEnd}
         onError={onVideoError}
@@ -147,17 +142,16 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   );
 };
 
-const { width, height } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#0d0d1a',
     zIndex: 9999,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   video: {
-    width,
-    height,
+    ...StyleSheet.absoluteFillObject,
   },
   skipButton: {
     position: 'absolute',
