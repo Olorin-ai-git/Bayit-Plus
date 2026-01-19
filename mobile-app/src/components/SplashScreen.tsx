@@ -22,18 +22,24 @@ interface SplashScreenProps {
 }
 
 // Video sources - from shared assets
-const VIDEO_SOURCES = {
-  he: require('../../../shared/assets/video/intro/Bayit_Intro_Hebrew.mp4'),
-  en: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-  es: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-  fr: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-  zh: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-  it: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-  hi: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-  ta: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-  bn: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-  ja: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
-};
+// Use try-catch for require in case files don't exist
+let VIDEO_SOURCES: Record<string, any> = {};
+try {
+  VIDEO_SOURCES = {
+    he: require('../../../shared/assets/video/intro/Bayit_Intro_Hebrew.mp4'),
+    en: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
+    es: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
+    fr: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
+    zh: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
+    it: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
+    hi: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
+    ta: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
+    bn: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
+    ja: require('../../../shared/assets/video/intro/Bayit_Intro_English.mp4'),
+  };
+} catch (e) {
+  console.warn('[Splash] Failed to load video sources:', e);
+}
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({
   onComplete,

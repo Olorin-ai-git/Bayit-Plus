@@ -1619,7 +1619,7 @@
         "unknown": "לא ידוע"
       },
       "quickActions": {
-        "title": "פעולות מהירות",
+        "title": "הגדרות הרצה",
         "subtitle": "הגדר והפעל ביקורות",
         "auditMode": "מצב ביקורת",
         "auditModeHelp": "בחר מה לבדוק",
@@ -1652,7 +1652,8 @@
         "auditRunningNotice": "ביקורת כבר רצה כעת. הכפתורים יופעלו כשהיא תסתיים.",
         "budgetLabel": "מגבלת תקציב לסוכן AI: ${{budget}}",
         "budgetPerAudit": "תקציב לביקורת",
-        "monthlyBudgetUsed": "תקציב חודשי (30 יום אחרונים)",
+        "monthlyBudgetUsed": "תקציב בשימוש (30י)",
+        "monthlyBudgetLimit": "/ ${{limit}} חודשי",
         "budgetWarning": "הרצת ביקורת זו תחרוג ממגבלת התקציב החודשית",
         "aiAuditSuccess": "ביקורת סוכן AI הופעלה בהצלחה. {{dryRun}}",
         "dailyAuditSuccess": "ביקורת יומית הופעלה בהצלחה. {{dryRun}}",

@@ -308,17 +308,21 @@ export const HomeScreenMobile: React.FC = () => {
         </View>
       )}
 
-      {/* Categories */}
-      {categories.map((category) => (
-        <View key={category.name} style={styles.section}>
-          <Text style={styles.sectionTitle}>{category.name}</Text>
-          <ContentRow
-            items={category.items}
-            onItemPress={handleContentPress}
-            columns={contentColumns}
-          />
-        </View>
-      ))}
+      {/* Categories - only show if they have items */}
+      {categories
+        .filter((category) => category.items && category.items.length > 0)
+        .map((category) => (
+          <View key={category.name} style={styles.section}>
+            <Text style={[styles.sectionTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
+              {category.name}
+            </Text>
+            <ContentRow
+              items={category.items}
+              onItemPress={handleContentPress}
+              columns={contentColumns}
+            />
+          </View>
+        ))}
 
       {/* Bottom spacing */}
       <View style={styles.bottomSpacer} />

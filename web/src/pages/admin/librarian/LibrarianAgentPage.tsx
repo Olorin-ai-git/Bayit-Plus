@@ -394,7 +394,7 @@ const LibrarianAgentPage = () => {
           icon={<DollarSign size={20} color={colors.primary} />}
           label={t('admin.librarian.quickActions.monthlyBudgetUsed', 'Budget Used')}
           value={`$${budgetUsed.toFixed(2)}`}
-          subtitle={`/ $${(config.audit_limits.max_budget_usd * 30).toFixed(0)} monthly`}
+          subtitle={t('admin.librarian.quickActions.monthlyBudgetLimit', '/ ${{limit}} monthly', { limit: (config.audit_limits.max_budget_usd * 30).toFixed(0) })}
           compact
           style={styles.statCard}
         />
@@ -409,15 +409,16 @@ const LibrarianAgentPage = () => {
 
       {/* Audit Configuration Section */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.librarian.quickActions.title', 'Audit Configuration')}</Text>
+        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.librarian.quickActions.title', 'Run Configuration')}</Text>
 
         {/* Toggles Grid - 2 columns */}
+        {/* NOTE: These are ADDITIVE capabilities - multiple can be enabled together */}
         <View style={styles.toggleGrid}>
           <View style={styles.toggleItem}>
             <GlassToggle
               value={last24HoursOnly}
               onValueChange={setLast24HoursOnly}
-              label={t('admin.librarian.quickActions.last24Hours', 'Last 24 Hours Only')}
+              label={t('admin.librarian.quickActions.last24Hours', 'Recent Content')}
               size="small"
               isRTL={isRTL}
             />
@@ -426,7 +427,7 @@ const LibrarianAgentPage = () => {
             <GlassToggle
               value={cybTitlesOnly}
               onValueChange={setCybTitlesOnly}
-              label={t('admin.librarian.quickActions.cybTitlesOnly', 'CYB Titles Only')}
+              label={t('admin.librarian.quickActions.cybTitlesOnly', 'Clean Dirty Titles')}
               size="small"
               isRTL={isRTL}
             />
@@ -435,7 +436,7 @@ const LibrarianAgentPage = () => {
             <GlassToggle
               value={tmdbPostersOnly}
               onValueChange={setTmdbPostersOnly}
-              label={t('admin.librarian.quickActions.tmdbPostersOnly', 'TMDB Posters Only')}
+              label={t('admin.librarian.quickActions.tmdbPostersOnly', 'TMDB Posters & Metadata')}
               size="small"
               isRTL={isRTL}
             />
@@ -444,7 +445,7 @@ const LibrarianAgentPage = () => {
             <GlassToggle
               value={openSubtitlesEnabled}
               onValueChange={setOpenSubtitlesEnabled}
-              label={t('admin.librarian.quickActions.openSubtitlesEnabled', 'OpenSubtitles')}
+              label={t('admin.librarian.quickActions.openSubtitlesEnabled', 'Acquire Subtitles')}
               size="small"
               isRTL={isRTL}
             />
@@ -453,7 +454,7 @@ const LibrarianAgentPage = () => {
             <GlassToggle
               value={classifyOnly}
               onValueChange={setClassifyOnly}
-              label={t('admin.librarian.quickActions.classifyOnly', 'Classify Content')}
+              label={t('admin.librarian.quickActions.classifyOnly', 'Verify Classification')}
               size="small"
               isRTL={isRTL}
             />
@@ -462,7 +463,7 @@ const LibrarianAgentPage = () => {
             <GlassToggle
               value={purgeDuplicates}
               onValueChange={setPurgeDuplicates}
-              label={t('admin.librarian.quickActions.purgeDuplicates', 'Purge Duplicates')}
+              label={t('admin.librarian.quickActions.purgeDuplicates', 'Remove Duplicates')}
               size="small"
               isRTL={isRTL}
             />
@@ -471,7 +472,7 @@ const LibrarianAgentPage = () => {
             <GlassToggle
               value={dryRun}
               onValueChange={setDryRun}
-              label={t('admin.librarian.quickActions.dryRun', 'Dry Run')}
+              label={t('admin.librarian.quickActions.dryRun', 'Preview Mode')}
               size="small"
               isRTL={isRTL}
             />

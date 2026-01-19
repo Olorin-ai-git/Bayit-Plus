@@ -109,6 +109,7 @@ class AuditReportResponse(BaseModel):
     execution_time_seconds: float
     status: str
     summary: dict
+    content_results: Optional[dict] = None  # Contains total_cost_usd for budget tracking
     issues_count: int
     fixes_count: int
 
@@ -513,6 +514,7 @@ async def get_audit_reports(
                 execution_time_seconds=report.execution_time_seconds,
                 status=report.status,
                 summary=report.summary,
+                content_results=report.content_results,  # Contains total_cost_usd
                 # Use actual action count instead of incomplete summary
                 issues_count=action_counts.get(report.audit_id, 0),
                 fixes_count=action_counts.get(report.audit_id, 0)

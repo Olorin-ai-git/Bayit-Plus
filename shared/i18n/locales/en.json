@@ -1742,7 +1742,7 @@
         "unknown": "unknown"
       },
       "quickActions": {
-        "title": "Quick Actions",
+        "title": "Run Configuration",
         "subtitle": "Configure and trigger audits",
         "auditMode": "Audit Mode",
         "auditModeHelp": "Choose what to check",
@@ -1775,7 +1775,8 @@
         "auditRunningNotice": "An audit is currently running. Buttons will be enabled when it completes.",
         "budgetLabel": "AI Agent Budget Limit: ${{budget}}",
         "budgetPerAudit": "Budget per Audit",
-        "monthlyBudgetUsed": "Monthly Budget (Last 30 days)",
+        "monthlyBudgetUsed": "Budget Used (30d)",
+        "monthlyBudgetLimit": "/ ${{limit}} monthly",
         "budgetWarning": "Running this audit would exceed monthly budget limit",
         "aiAuditSuccess": "AI Agent audit triggered successfully. {{dryRun}}",
         "dailyAuditSuccess": "Daily audit triggered successfully. {{dryRun}}",
