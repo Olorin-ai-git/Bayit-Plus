@@ -30,6 +30,7 @@ const InvestigationsManagementApp = React.lazy(() => import('../microservices/in
 const ParallelInvestigationsPage = React.lazy(() => import('../microservices/investigation/pages/ParallelInvestigationsPage').then(module => ({ default: module.ParallelInvestigationsPage })));
 const AnalyticsApp = React.lazy(() => import('../microservices/analytics/AnalyticsApp'));
 const FinancialAnalysisApp = React.lazy(() => import('../microservices/financial-analysis/FinancialAnalysisApp'));
+const MonthlyAnalysisPage = React.lazy(() => import('../microservices/investigation/pages/MonthlyAnalysisPage'));
 
 interface ShellState {
   isInitialized: boolean;
@@ -354,6 +355,22 @@ const App: React.FC = () => {
                       </div>
                     }>
                       <InvestigationsManagementApp />
+                    </Suspense>
+                  </ErrorBoundary>
+                } />
+                <Route path="/monthly-analysis" element={
+                  <ErrorBoundary serviceName="monthly-analysis">
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                          <LoadingSpinner size="md" />
+                          <p className="mt-2 text-sm text-corporate-textSecondary">
+                            Loading Monthly Analysis...
+                          </p>
+                        </div>
+                      </div>
+                    }>
+                      <MonthlyAnalysisPage />
                     </Suspense>
                   </ErrorBoundary>
                 } />

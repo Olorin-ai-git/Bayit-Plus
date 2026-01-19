@@ -105,6 +105,15 @@ export const serviceLinks: ServiceLink[] = [
     status: 'ready',
     color: 'from-emerald-600 to-green-700',
     bgGradient: 'from-emerald-50 to-green-100'
+  },
+  {
+    name: 'Monthly Analysis',
+    path: '/monthly-analysis',
+    icon: '📅',
+    description: 'Monthly batch fraud analysis and reporting',
+    status: 'ready',
+    color: 'from-indigo-600 to-purple-700',
+    bgGradient: 'from-indigo-50 to-purple-100'
   }
 ];
 

@@ -52,6 +52,7 @@ def _include_core_routers(app: FastAPI) -> None:
     from app.router.investigation_comparison_router import (
         router as investigation_comparison_router,
     )
+    from app.router.monthly_analysis_router import router as monthly_analysis_router
     from app.router.investigation_state_router import (
         router as investigation_state_router,
     )
@@ -109,6 +110,7 @@ def _include_core_routers(app: FastAPI) -> None:
         investigation_comparison_router
     )  # Investigation comparison API (Feature 001-you-editing-fraud)
     app.include_router(financial_router)  # Financial Analysis API (Feature 025)
+    app.include_router(monthly_analysis_router)  # Monthly Analysis API (Feature: monthly-frontend-trigger)
 
     logger.info("All core routers have been included (WebSocket disabled)")
 
