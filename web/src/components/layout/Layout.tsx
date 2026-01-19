@@ -51,6 +51,15 @@ export default function Layout() {
     activateVoiceAssistant();
   }, [activateVoiceAssistant]);
 
+  // Handle closing the voice modal - must also toggle the microphone button back
+  const handleCloseVoiceModal = useCallback(() => {
+    console.log('[Layout] Voice modal closing - toggling microphone button off');
+    // Dispatch custom event to toggle topbar microphone button state back off
+    window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
+    // Close the modal
+    closeVoiceModal();
+  }, [closeVoiceModal]);
+
   const toggleSidebar = useCallback(() => {
     setIsSidebarExpanded(prev => !prev);
   }, []);
@@ -230,7 +239,7 @@ export default function Layout() {
       {/* Voice Chat Modal - Full-screen voice interaction */}
       <VoiceChatModal
         visible={isVoiceModalOpen}
-        onClose={closeVoiceModal}
+        onClose={handleCloseVoiceModal}
         onStartListening={startListening}
         onStopListening={stopListening}
         onInterrupt={interrupt}

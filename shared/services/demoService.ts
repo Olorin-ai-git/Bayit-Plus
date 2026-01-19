@@ -844,6 +844,520 @@ export const demoRecordingService = {
   },
 };
 
+// ===========================================
+// CHAT SERVICE (Demo)
+// ===========================================
+export const demoChatService = {
+  sendMessage: async (message: string, _conversationId?: string, _context?: any, _language?: string) => {
+    await delay();
+    return {
+      response: 'This is a demo response. In production, you would get AI-powered recommendations.',
+      conversationId: 'demo-conversation',
+    };
+  },
+  clearConversation: async (_conversationId: string) => {
+    return { success: true };
+  },
+  getConversation: async (_conversationId: string) => {
+    return { messages: [] };
+  },
+  transcribeAudio: async (_audioBlob: Blob, _language: string = 'he') => {
+    await delay();
+    return { text: 'Demo transcription', language: _language };
+  },
+  resolveContent: async (items: Array<{ name: string; type: string }>, _language: string = 'he') => {
+    await delay(300);
+    return {
+      items: items.map((item, index) => ({
+        id: `demo-${item.type}-${index}`,
+        name: item.name,
+        type: item.type || 'channel',
+        thumbnail: 'https://via.placeholder.com/300x200',
+        stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+        matched_name: item.name,
+        confidence: 0.9,
+      })),
+      unresolved: [],
+      total_requested: items.length,
+      total_resolved: items.length,
+    };
+  },
+  searchUsers: async (name: string) => {
+    await delay(200);
+    return {
+      users: [{ id: 'demo-user-1', name: name }],
+    };
+  },
+};
+
+// ===========================================
+// DOWNLOADS SERVICE (Demo)
+// ===========================================
+export const demoDownloadsService = {
+  getDownloads: async () => {
+    await delay();
+    return [
+      {
+        id: 'dl-1',
+        content_id: 'fauda-s4e1',
+        content_type: 'episode',
+        title: 'פאודה - עונה 4 פרק 1',
+        title_en: 'Fauda - Season 4 Episode 1',
+        thumbnail: 'https://picsum.photos/seed/fauda-ep1/400/225',
+        quality: 'hd',
+        status: 'completed',
+        progress: 100,
+        file_size: 1288490188,
+        downloaded_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: 'dl-2',
+        content_id: 'shtisel-s3e5',
+        content_type: 'episode',
+        title: 'שטיסל - עונה 3 פרק 5',
+        title_en: 'Shtisel - Season 3 Episode 5',
+        thumbnail: 'https://picsum.photos/seed/shtisel-ep5/400/225',
+        quality: 'hd',
+        status: 'completed',
+        progress: 100,
+        file_size: 1027604480,
+        downloaded_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: 'dl-3',
+        content_id: 'waltz',
+        content_type: 'movie',
+        title: 'ואלס עם באשיר',
+        title_en: 'Waltz with Bashir',
+        thumbnail: 'https://picsum.photos/seed/waltz/400/225',
+        quality: 'fhd',
+        status: 'completed',
+        progress: 100,
+        file_size: 2576980377,
+        downloaded_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+    ];
+  },
+  startDownload: async (contentId: string, contentType: string, quality: string = 'hd') => {
+    await delay(300);
+    return { message: 'Download started', id: `dl-demo-${Date.now()}`, status: 'pending' };
+  },
+  deleteDownload: async (_downloadId: string) => {
+    await delay(200);
+    return { message: 'Download deleted' };
+  },
+  checkDownload: async (_contentId: string) => {
+    await delay(100);
+    return { is_downloaded: false };
+  },
+};
+
+// ===========================================
+// JERUSALEM SERVICE (Demo)
+// ===========================================
+export const demoJerusalemService = {
+  getContent: async (category?: string, _page?: number, _limit?: number) => {
+    await delay(300);
+    const items = [
+      {
+        id: 'jrslm-1',
+        source_name: 'ynet',
+        title: 'טקס השבעה מרגש בכותל המערבי',
+        title_he: 'טקס השבעה מרגש בכותל המערבי',
+        title_en: 'Moving Swearing-In Ceremony at the Western Wall',
+        url: 'https://www.ynet.co.il/example',
+        published_at: new Date().toISOString(),
+        summary: 'מאות חיילים הושבעו הלילה בטקס מרגש ברחבת הכותל המערבי',
+        category: 'idf-ceremony',
+        category_label: { he: 'טקסי צה"ל', en: 'IDF Ceremonies' },
+        tags: ['כותל', 'צהל', 'השבעה'],
+        relevance_score: 8.5,
+      },
+      {
+        id: 'jrslm-2',
+        source_name: 'walla',
+        title: 'אלפי מבקרים בכותל לקראת החגים',
+        title_he: 'אלפי מבקרים בכותל לקראת החגים',
+        title_en: 'Thousands of Visitors at the Western Wall Before the Holidays',
+        url: 'https://news.walla.co.il/example',
+        published_at: new Date().toISOString(),
+        summary: 'הכותל המערבי מלא במבקרים מכל העולם לקראת תקופת החגים',
+        category: 'kotel',
+        category_label: { he: 'הכותל המערבי', en: 'Western Wall' },
+        tags: ['כותל', 'חגים', 'ירושלים'],
+        relevance_score: 7.2,
+      },
+      {
+        id: 'jrslm-3',
+        source_name: 'mako',
+        title: 'משלחת תגלית מגיעה לישראל',
+        title_he: 'משלחת תגלית מגיעה לישראל',
+        title_en: 'Birthright Delegation Arrives in Israel',
+        url: 'https://www.mako.co.il/example',
+        published_at: new Date().toISOString(),
+        summary: 'צעירים יהודים מארה"ב הגיעו לביקור ראשון בארץ הקודש',
+        category: 'diaspora-connection',
+        category_label: { he: 'קשר לתפוצות', en: 'Diaspora Connection' },
+        tags: ['תגלית', 'תפוצות', 'עלייה'],
+        relevance_score: 6.8,
+      },
+    ];
+
+    const filtered = category ? items.filter(item => item.category === category) : items;
+    return {
+      items: filtered,
+      pagination: { page: 1, limit: 20, total: filtered.length, pages: 1 },
+      sources_count: 3,
+      last_updated: new Date().toISOString(),
+      category,
+    };
+  },
+  getFeatured: async () => {
+    await delay(300);
+    const content = await demoJerusalemService.getContent();
+    return {
+      featured: content.items.slice(0, 6),
+      kotel_live: {
+        name: 'Western Wall Live',
+        name_he: 'שידור חי מהכותל',
+        url: 'https://www.kotel.org/en/kotel-live',
+        icon: '🕎',
+      },
+      upcoming_ceremonies: [],
+      last_updated: new Date().toISOString(),
+    };
+  },
+  getCategories: async () => {
+    await delay(200);
+    return [
+      { id: 'kotel', name: 'Western Wall', name_he: 'הכותל המערבי', icon: '🕎' },
+      { id: 'idf-ceremony', name: 'IDF Ceremonies', name_he: 'טקסי צה"ל', icon: '🎖️' },
+      { id: 'diaspora-connection', name: 'Diaspora Connection', name_he: 'קשר לתפוצות', icon: '🌍' },
+      { id: 'holy-sites', name: 'Holy Sites', name_he: 'מקומות קדושים', icon: '✡️' },
+      { id: 'jerusalem-events', name: 'Jerusalem Events', name_he: 'אירועים בירושלים', icon: '🇮🇱' },
+    ];
+  },
+  getKotelContent: async (page?: number, limit?: number) =>
+    demoJerusalemService.getContent('kotel', page, limit),
+  getKotelEvents: async () => {
+    await delay(200);
+    return {
+      events: [],
+      kotel_live: {
+        name: 'Western Wall Live',
+        name_he: 'שידור חי מהכותל',
+        url: 'https://www.kotel.org/en/kotel-live',
+        icon: '🕎',
+      },
+    };
+  },
+  getIDFCeremonies: async (page?: number, limit?: number) =>
+    demoJerusalemService.getContent('idf-ceremony', page, limit),
+  getDiasporaConnection: async (page?: number, limit?: number) =>
+    demoJerusalemService.getContent('diaspora-connection', page, limit),
+  getSources: async () => {
+    await delay(200);
+    return {
+      sources: [
+        { id: '1', name: 'Ynet Jerusalem', name_he: 'ynet ירושלים', website_url: 'https://www.ynet.co.il', is_active: true },
+        { id: '2', name: 'Walla Jerusalem', name_he: 'וואלה ירושלים', website_url: 'https://news.walla.co.il', is_active: true },
+        { id: '3', name: 'Mako Jerusalem', name_he: 'mako ירושלים', website_url: 'https://www.mako.co.il', is_active: true },
+      ],
+      total: 3,
+    };
+  },
+};
+
+// ===========================================
+// TEL AVIV SERVICE (Demo)
+// ===========================================
+export const demoTelAvivService = {
+  getContent: async (category?: string, _page?: number, _limit?: number) => {
+    await delay(300);
+    const items = [
+      {
+        id: 'tlv-1',
+        source_name: 'ynet',
+        title: 'פסטיבל חוף תל אביב - אלפי משתתפים',
+        title_he: 'פסטיבל חוף תל אביב - אלפי משתתפים',
+        title_en: 'Tel Aviv Beach Festival - Thousands of Participants',
+        url: 'https://www.ynet.co.il/example',
+        published_at: new Date().toISOString(),
+        summary: 'אלפי אנשים השתתפו בפסטיבל המוזיקה השנתי על חוף גורדון',
+        category: 'beaches',
+        category_label: { he: 'חופים', en: 'Beaches' },
+        tags: ['חוף', 'פסטיבל', 'תל אביב'],
+        relevance_score: 8.5,
+      },
+      {
+        id: 'tlv-2',
+        source_name: 'walla',
+        title: 'פתיחת מסעדה חדשה בשרונה מרקט',
+        title_he: 'פתיחת מסעדה חדשה בשרונה מרקט',
+        title_en: 'New Restaurant Opens at Sarona Market',
+        url: 'https://news.walla.co.il/example',
+        published_at: new Date().toISOString(),
+        summary: 'שף ידוע פותח מסעדה ים תיכונית חדשה בלב שרונה',
+        category: 'food',
+        category_label: { he: 'אוכל ומסעדות', en: 'Food & Dining' },
+        tags: ['מסעדה', 'שרונה', 'אוכל'],
+        relevance_score: 7.2,
+      },
+      {
+        id: 'tlv-3',
+        source_name: 'mako',
+        title: 'מופע חדש בברבי קלאב',
+        title_he: 'מופע חדש בברבי קלאב',
+        title_en: 'New Show at Barby Club',
+        url: 'https://www.mako.co.il/example',
+        published_at: new Date().toISOString(),
+        summary: 'להקה מקומית חוגגת אלבום חדש במופע מיוחד',
+        category: 'music',
+        category_label: { he: 'מוזיקה', en: 'Music Scene' },
+        tags: ['מוזיקה', 'הופעה', 'ברבי'],
+        relevance_score: 6.8,
+      },
+      {
+        id: 'tlv-4',
+        source_name: 'geektime',
+        title: 'סטארטאפ תל אביבי גייס 50 מיליון דולר',
+        title_he: 'סטארטאפ תל אביבי גייס 50 מיליון דולר',
+        title_en: 'Tel Aviv Startup Raises $50 Million',
+        url: 'https://www.geektime.co.il/example',
+        published_at: new Date().toISOString(),
+        summary: 'חברת AI מתל אביב סגרה סבב גיוס משמעותי',
+        category: 'tech',
+        category_label: { he: 'סטארטאפים והייטק', en: 'Tech & Startups' },
+        tags: ['סטארטאפ', 'הייטק', 'גיוס'],
+        relevance_score: 7.5,
+      },
+    ];
+
+    const filtered = category ? items.filter(item => item.category === category) : items;
+    return {
+      items: filtered,
+      pagination: { page: 1, limit: 20, total: filtered.length, pages: 1 },
+      sources_count: 4,
+      last_updated: new Date().toISOString(),
+      category,
+    };
+  },
+  getFeatured: async () => {
+    await delay(300);
+    const content = await demoTelAvivService.getContent();
+    return {
+      featured: content.items.slice(0, 6),
+      beach_webcam: {
+        name: 'Tel Aviv Beach Live',
+        name_he: 'חוף תל אביב בשידור חי',
+        url: 'https://www.skylinewebcams.com/en/webcam/israel/tel-aviv-district/tel-aviv/tel-aviv-beach.html',
+        icon: '🏖️',
+      },
+      upcoming_events: [],
+      last_updated: new Date().toISOString(),
+    };
+  },
+  getCategories: async () => {
+    await delay(200);
+    return [
+      { id: 'beaches', name: 'Beaches', name_he: 'חופים', icon: '🏖️' },
+      { id: 'nightlife', name: 'Nightlife', name_he: 'חיי לילה', icon: '🌃' },
+      { id: 'culture', name: 'Culture & Art', name_he: 'תרבות ואמנות', icon: '🎭' },
+      { id: 'music', name: 'Music Scene', name_he: 'מוזיקה', icon: '🎵' },
+      { id: 'food', name: 'Food & Dining', name_he: 'אוכל ומסעדות', icon: '🍽️' },
+      { id: 'tech', name: 'Tech & Startups', name_he: 'סטארטאפים והייטק', icon: '💻' },
+      { id: 'events', name: 'Events', name_he: 'אירועים', icon: '🎉' },
+    ];
+  },
+  getBeachesContent: async (page?: number, limit?: number) =>
+    demoTelAvivService.getContent('beaches', page, limit),
+  getNightlifeContent: async (page?: number, limit?: number) =>
+    demoTelAvivService.getContent('nightlife', page, limit),
+  getCultureContent: async (page?: number, limit?: number) =>
+    demoTelAvivService.getContent('culture', page, limit),
+  getMusicContent: async (page?: number, limit?: number) =>
+    demoTelAvivService.getContent('music', page, limit),
+  getSources: async () => {
+    await delay(200);
+    return {
+      sources: [
+        { id: '1', name: 'Ynet Tel Aviv', name_he: 'ynet תל אביב', website_url: 'https://www.ynet.co.il', is_active: true },
+        { id: '2', name: 'Walla Tel Aviv', name_he: 'וואלה תל אביב', website_url: 'https://news.walla.co.il', is_active: true },
+        { id: '3', name: 'Time Out Tel Aviv', name_he: 'טיים אאוט תל אביב', website_url: 'https://www.timeout.co.il', is_active: true },
+        { id: '4', name: 'Geektime', name_he: 'גיקטיים', website_url: 'https://www.geektime.co.il', is_active: true },
+      ],
+      total: 4,
+    };
+  },
+};
+
+// ===========================================
+// CULTURE SERVICE (Demo)
+// ===========================================
+export const demoCultureService = {
+  getCultures: async () => {
+    await delay(200);
+    return [
+      {
+        id: '1',
+        culture_id: 'israeli',
+        name: 'Israeli',
+        name_localized: { he: 'ישראלי', en: 'Israeli', es: 'Israelí' },
+        flag_emoji: '🇮🇱',
+        country_code: 'IL',
+        primary_timezone: 'Asia/Jerusalem',
+        primary_language: 'he',
+        has_shabbat_mode: true,
+        has_lunar_calendar: false,
+        display_order: 0,
+        is_active: true,
+        is_default: true,
+      },
+      {
+        id: '2',
+        culture_id: 'chinese',
+        name: 'Chinese',
+        name_localized: { zh: '中国', he: 'סיני', en: 'Chinese', es: 'Chino' },
+        flag_emoji: '🇨🇳',
+        country_code: 'CN',
+        primary_timezone: 'Asia/Shanghai',
+        primary_language: 'zh',
+        has_shabbat_mode: false,
+        has_lunar_calendar: true,
+        display_order: 1,
+        is_active: true,
+        is_default: false,
+      },
+    ];
+  },
+  getCulture: async (cultureId: string) => {
+    const cultures = await demoCultureService.getCultures();
+    return cultures.find(c => c.culture_id === cultureId) || cultures[0];
+  },
+  getDefaultCulture: async () => {
+    const cultures = await demoCultureService.getCultures();
+    return cultures.find(c => c.is_default) || cultures[0];
+  },
+  getCultureCities: async (cultureId: string, _featuredOnly: boolean = true) => {
+    await delay(200);
+    if (cultureId === 'israeli') {
+      return [
+        {
+          id: '1',
+          city_id: 'jerusalem',
+          culture_id: 'israeli',
+          name: 'Jerusalem',
+          name_localized: { he: 'ירושלים', en: 'Jerusalem' },
+          name_native: 'ירושלים',
+          timezone: 'Asia/Jerusalem',
+          display_order: 0,
+          is_featured: true,
+          accent_color: '#C5A03A',
+        },
+        {
+          id: '2',
+          city_id: 'tel-aviv',
+          culture_id: 'israeli',
+          name: 'Tel Aviv',
+          name_localized: { he: 'תל אביב', en: 'Tel Aviv' },
+          name_native: 'תל אביב',
+          timezone: 'Asia/Jerusalem',
+          display_order: 1,
+          is_featured: true,
+          accent_color: '#F97316',
+        },
+      ];
+    }
+    return [
+      {
+        id: '3',
+        city_id: 'beijing',
+        culture_id: 'chinese',
+        name: 'Beijing',
+        name_localized: { zh: '北京', en: 'Beijing' },
+        name_native: '北京',
+        timezone: 'Asia/Shanghai',
+        display_order: 0,
+        is_featured: true,
+        accent_color: '#FFD700',
+      },
+      {
+        id: '4',
+        city_id: 'shanghai',
+        culture_id: 'chinese',
+        name: 'Shanghai',
+        name_localized: { zh: '上海', en: 'Shanghai' },
+        name_native: '上海',
+        timezone: 'Asia/Shanghai',
+        display_order: 1,
+        is_featured: true,
+        accent_color: '#00BFFF',
+      },
+    ];
+  },
+  getCity: async (cultureId: string, cityId: string) => {
+    const cities = await demoCultureService.getCultureCities(cultureId);
+    return cities.find(c => c.city_id === cityId) || cities[0];
+  },
+  getCityContent: async (cultureId: string, cityId: string, _category?: string, _page?: number, _limit?: number) => {
+    await delay(300);
+    if (cultureId === 'israeli' && cityId === 'jerusalem') {
+      return demoJerusalemService.getContent(_category, _page, _limit);
+    }
+    if (cultureId === 'israeli' && cityId === 'tel-aviv') {
+      return demoTelAvivService.getContent(_category, _page, _limit);
+    }
+    return { items: [], pagination: { page: 1, limit: 20, total: 0, pages: 0 }, sources_count: 0, last_updated: new Date().toISOString() };
+  },
+  getTrending: async (cultureId: string, _limit?: number) => {
+    await delay(200);
+    const content = cultureId === 'israeli'
+      ? await demoJerusalemService.getContent()
+      : { items: [] };
+    return content.items.slice(0, _limit || 10);
+  },
+  getFeatured: async (cultureId: string) => {
+    await delay(200);
+    const content = cultureId === 'israeli'
+      ? await demoJerusalemService.getContent()
+      : { items: [] };
+    return {
+      featured: content.items.slice(0, 6),
+      trending: content.items.slice(0, 10),
+      last_updated: new Date().toISOString(),
+      culture_id: cultureId,
+    };
+  },
+  getCategories: async (cultureId: string, _cityId?: string) => {
+    if (cultureId === 'israeli') {
+      return demoJerusalemService.getCategories();
+    }
+    return [
+      { id: 'general', name: 'General', name_localized: { en: 'General', zh: '综合' } },
+    ];
+  },
+  getSources: async (cultureId: string, _cityId?: string) => {
+    if (cultureId === 'israeli') {
+      return demoJerusalemService.getSources();
+    }
+    return { sources: [], total: 0 };
+  },
+  getCultureTime: async (cultureId: string) => {
+    await delay(100);
+    const now = new Date();
+    const timezone = cultureId === 'israeli' ? 'Asia/Jerusalem' : 'Asia/Shanghai';
+    return {
+      culture_id: cultureId,
+      timezone,
+      current_time: now.toISOString(),
+      display_time: now.toLocaleTimeString('en-US', { timeZone: timezone, hour: '2-digit', minute: '2-digit' }),
+      display_date: now.toLocaleDateString('en-US', { timeZone: timezone, month: 'long', day: 'numeric', year: 'numeric' }),
+      day_of_week: now.toLocaleDateString('en-US', { timeZone: timezone, weekday: 'long' }),
+      is_weekend: cultureId === 'israeli' ? [5, 6].includes(now.getDay()) : [0, 6].includes(now.getDay()),
+    };
+  },
+};
+
 // Export all demo services
 export default {
   auth: demoAuthService,
@@ -862,4 +1376,9 @@ export default {
   chapters: demoChaptersService,
   party: demoPartyService,
   recording: demoRecordingService,
+  chat: demoChatService,
+  downloads: demoDownloadsService,
+  jerusalem: demoJerusalemService,
+  telAviv: demoTelAvivService,
+  culture: demoCultureService,
 };

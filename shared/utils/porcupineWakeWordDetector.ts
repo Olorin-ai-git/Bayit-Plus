@@ -437,18 +437,18 @@ export function getPicovoiceAccessKey(): string {
   if (isReactNative) {
     // React Native: use react-native-config or return empty
     // The mobile app should set this via native modules or config
+    // Note: This code path is only executed at runtime in React Native,
+    // webpack should tree-shake it out for web builds
     try {
-      // Try to get from react-native-config if available
-      // Use dynamic require to avoid webpack bundling issues
-      const configModule = 'react-native-config';
-      const Config = require(configModule).default;
-      if (Config?.PICOVOICE_ACCESS_KEY) {
-        const key = Config.PICOVOICE_ACCESS_KEY;
-        console.log('[PorcupineWakeWord] Access key found (React Native Config):', key ? `${key.slice(0, 10)}...` : 'empty');
+      // Try to get from global config if set by native side
+      const globalConfig = (globalThis as any).__REACT_NATIVE_CONFIG__;
+      if (globalConfig?.PICOVOICE_ACCESS_KEY) {
+        const key = globalConfig.PICOVOICE_ACCESS_KEY;
+        console.log('[PorcupineWakeWord] Access key found (React Native global):', key ? `${key.slice(0, 10)}...` : 'empty');
         return key;
       }
     } catch {
-      // react-native-config not available
+      // Global config not available
     }
     console.warn('[PorcupineWakeWord] React Native: No Picovoice access key found');
     return '';

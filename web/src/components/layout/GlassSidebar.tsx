@@ -50,6 +50,7 @@ const baseMenuSections: MenuSection[] = [
   {
     items: [
       { id: 'home', icon: '🏠', labelKey: 'nav.home', path: '/' },
+      { id: 'plans', icon: '💎', labelKey: 'nav.plans', path: '/subscribe' },
       { id: 'liveTV', icon: '📺', labelKey: 'nav.liveTV', path: '/live' },
       { id: 'epg', icon: '📅', labelKey: 'nav.epg', path: '/epg' },
       { id: 'vod', icon: '🎬', labelKey: 'nav.vod', path: '/vod' },
@@ -80,7 +81,6 @@ const baseMenuSections: MenuSection[] = [
     titleKey: 'nav.account',
     items: [
       { id: 'profile', icon: '👤', labelKey: 'nav.profile', path: '/profile' },
-      { id: 'subscribe', icon: '💎', labelKey: 'nav.subscribe', path: '/subscribe' },
     ],
   },
   {
