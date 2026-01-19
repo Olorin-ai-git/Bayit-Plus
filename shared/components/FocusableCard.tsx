@@ -18,9 +18,13 @@ import { useTVFocus } from './hooks/useTVFocus';
 declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
-// TV cards are larger for 10-foot UI
-const DEFAULT_WIDTH = IS_TV_BUILD ? 380 : 280;
-const DEFAULT_HEIGHT = IS_TV_BUILD ? 220 : 160;
+// Platform-specific sizing
+const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
+const isMobilePhone = isMobile && !Platform.isTV;
+
+// TV cards are larger for 10-foot UI, mobile cards are smaller for touch UI
+const DEFAULT_WIDTH = IS_TV_BUILD ? 380 : (isMobilePhone ? 140 : 280);
+const DEFAULT_HEIGHT = IS_TV_BUILD ? 220 : (isMobilePhone ? 85 : 160);
 
 type ContentType = 'vod' | 'live' | 'podcast' | 'radio' | 'movie' | 'series' | 'channel';
 
@@ -197,11 +201,11 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
 
 const styles = StyleSheet.create({
   touchable: {
-    marginLeft: 20,
+    marginLeft: isMobilePhone ? 8 : 20,
     overflow: 'visible' as any,
   },
   card: {
-    borderRadius: 12,
+    borderRadius: isMobilePhone ? 8 : 12,
     overflow: 'visible' as any,
     backgroundColor: colors.glass,
     borderWidth: 1,
@@ -210,15 +214,17 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+    borderRadius: isMobilePhone ? 8 : 12,
   },
   placeholder: {
     flex: 1,
     backgroundColor: colors.backgroundLighter,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: isMobilePhone ? 8 : 12,
   },
   placeholderText: {
-    fontSize: 48,
+    fontSize: isMobilePhone ? 24 : 48,
     fontWeight: 'bold',
     color: colors.primary,
   },
@@ -227,36 +233,38 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    padding: 12,
+    padding: isMobilePhone ? 6 : 12,
     backgroundColor: colors.overlay,
+    borderBottomLeftRadius: isMobilePhone ? 8 : 12,
+    borderBottomRightRadius: isMobilePhone ? 8 : 12,
   },
   title: {
-    fontSize: IS_TV_BUILD ? 24 : 18,
+    fontSize: IS_TV_BUILD ? 24 : (isMobilePhone ? 12 : 18),
     fontWeight: 'bold',
     color: colors.text,
   },
   subtitle: {
-    fontSize: IS_TV_BUILD ? 18 : 14,
+    fontSize: IS_TV_BUILD ? 18 : (isMobilePhone ? 10 : 14),
     color: colors.textSecondary,
-    marginTop: 2,
+    marginTop: isMobilePhone ? 1 : 2,
   },
   actionButtons: {
     position: 'absolute',
-    top: spacing.sm,
+    top: isMobilePhone ? spacing.xs : spacing.sm,
     flexDirection: 'row',
     gap: spacing.xs,
     zIndex: 10,
   },
   actionButtonsRight: {
-    right: spacing.sm,
+    right: isMobilePhone ? spacing.xs : spacing.sm,
   },
   actionButtonsLeft: {
-    left: spacing.sm,
+    left: isMobilePhone ? spacing.xs : spacing.sm,
   },
   actionButton: {
-    width: IS_TV_BUILD ? 44 : 32,
-    height: IS_TV_BUILD ? 44 : 32,
-    borderRadius: IS_TV_BUILD ? 22 : 16,
+    width: IS_TV_BUILD ? 44 : (isMobilePhone ? 24 : 32),
+    height: IS_TV_BUILD ? 44 : (isMobilePhone ? 24 : 32),
+    borderRadius: IS_TV_BUILD ? 22 : (isMobilePhone ? 12 : 16),
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'center',
     alignItems: 'center',

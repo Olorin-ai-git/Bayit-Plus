@@ -37,6 +37,15 @@ import { BottomSheet } from '../components';
 import { GlassView, GlassButton } from '@bayit/shared';
 import { spacing, colors, typography, touchTarget } from '../theme';
 import type { RootStackParamList } from '../navigation/types';
+import {
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+  RotateCcw,
+  X,
+  Settings,
+} from 'lucide-react-native';
 
 type PlayerRoute = RouteProp<RootStackParamList, 'Player'>;
 
@@ -200,7 +209,7 @@ export const PlayerScreenMobile: React.FC = () => {
                     style={styles.closeButton}
                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                   >
-                    <Text style={styles.closeIcon}>✕</Text>
+                    <X size={24} color={colors.text} strokeWidth={2.5} />
                   </Pressable>
                 </GlassView>
               </View>
@@ -211,23 +220,25 @@ export const PlayerScreenMobile: React.FC = () => {
                   onPress={() => handleSeek(-10)}
                   style={[styles.controlButton, styles.seekButton]}
                 >
-                  <Text style={styles.controlIcon}>⏪</Text>
+                  <SkipBack size={28} color={colors.text} fill={colors.text} />
                 </Pressable>
 
                 <Pressable
                   onPress={handlePlayPause}
                   style={[styles.controlButton, styles.playButton]}
                 >
-                  <Text style={styles.controlIcon}>
-                    {isPlaying ? '⏸' : '▶'}
-                  </Text>
+                  {isPlaying ? (
+                    <Pause size={36} color={colors.text} fill={colors.text} />
+                  ) : (
+                    <Play size={36} color={colors.text} fill={colors.text} style={{ marginLeft: 4 }} />
+                  )}
                 </Pressable>
 
                 <Pressable
                   onPress={() => handleSeek(10)}
                   style={[styles.controlButton, styles.seekButton]}
                 >
-                  <Text style={styles.controlIcon}>⏩</Text>
+                  <SkipForward size={28} color={colors.text} fill={colors.text} />
                 </Pressable>
 
                 {type !== 'live' && (
@@ -235,7 +246,7 @@ export const PlayerScreenMobile: React.FC = () => {
                     onPress={handleRestart}
                     style={[styles.controlButton, styles.seekButton]}
                   >
-                    <Text style={styles.controlIcon}>↻</Text>
+                    <RotateCcw size={24} color={colors.text} strokeWidth={2.5} />
                   </Pressable>
                 )}
               </View>
@@ -265,7 +276,7 @@ export const PlayerScreenMobile: React.FC = () => {
                       style={styles.settingsButton}
                       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
-                      <Text style={styles.settingsIcon}>⚙️</Text>
+                      <Settings size={24} color={colors.text} />
                     </Pressable>
                   </GlassView>
                 </View>
@@ -383,10 +394,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  closeIcon: {
-    fontSize: 24,
-    color: colors.text,
-  },
   centerControls: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -409,10 +416,6 @@ const styles = StyleSheet.create({
   },
   seekButton: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  controlIcon: {
-    fontSize: 32,
-    color: colors.text,
   },
   bottomBar: {
     paddingBottom: spacing.xl,
@@ -444,9 +447,6 @@ const styles = StyleSheet.create({
     height: touchTarget.minHeight,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  settingsIcon: {
-    fontSize: 24,
   },
   sheetTitle: {
     ...typography.h3,

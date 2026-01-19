@@ -41,7 +41,7 @@ router = APIRouter()
 @router.get("/categories")
 async def get_children_categories():
     """Get kids-specific content categories."""
-    return {"categories": CHILDREN_CATEGORIES}
+    return {"data": CHILDREN_CATEGORIES}
 
 
 @router.get("/content")
@@ -65,7 +65,7 @@ async def get_children_content(
     # Filter by category/educational tags
     if category and category != "all":
         if category in ["hebrew", "jewish"]:
-            query["educational_tags"] = category
+            query["educational_tags"] = {"$in": [category]}
         else:
             query["genre"] = {"$regex": category, "$options": "i"}
 
@@ -77,7 +77,7 @@ async def get_children_content(
     total = await Content.find(query).count()
 
     return {
-        "content": [
+        "data": [
             ContentResponse(
                 id=str(c.id),
                 title=c.title,
@@ -117,7 +117,7 @@ async def get_children_featured(
     featured = await Content.find(query).limit(10).to_list()
 
     return {
-        "featured": [
+        "data": [
             ContentResponse(
                 id=str(c.id),
                 title=c.title,
@@ -158,19 +158,18 @@ async def get_children_by_category(
     elif category_id == "music":
         query["genre"] = {"$regex": "music|song", "$options": "i"}
     elif category_id == "hebrew":
-        query["educational_tags"] = "hebrew"
+        query["educational_tags"] = {"$in": ["hebrew"]}
     elif category_id == "stories":
         query["genre"] = {"$regex": "story|tale", "$options": "i"}
     elif category_id == "jewish":
-        query["educational_tags"] = "jewish"
+        query["educational_tags"] = {"$in": ["jewish"]}
 
     skip = (page - 1) * limit
     content = await Content.find(query).skip(skip).limit(limit).to_list()
     total = await Content.find(query).count()
 
     return {
-        "category": next((c for c in CHILDREN_CATEGORIES if c["id"] == category_id), None),
-        "content": [
+        "data": [
             ContentResponse(
                 id=str(c.id),
                 title=c.title,
@@ -183,6 +182,7 @@ async def get_children_by_category(
             )
             for c in content
         ],
+        "category": next((c for c in CHILDREN_CATEGORIES if c["id"] == category_id), None),
         "pagination": {
             "page": page,
             "limit": limit,

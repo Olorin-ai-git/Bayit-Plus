@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Activity, DollarSign, Clock, Play, Bot, FileText, Eye, Minus, Plus } from 'lucide-react';
-import { GlassButton, GlassToggle, GlassStatCard, GlassBadge } from '@bayit/shared/ui';
+import { GlassButton, GlassToggle, GlassStatCard, GlassBadge, GlassModal } from '@bayit/shared/ui';
 import { GlassLog, GlassTable, GlassDraggableExpander } from '@bayit/shared/ui/web';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
@@ -18,11 +18,7 @@ import { format } from 'date-fns';
 import { useLibrarianData } from './hooks/useLibrarianData';
 import { useAuditControl } from './hooks/useAuditControl';
 
-import { AuditConfirmationModal } from './modals/AuditConfirmationModal';
-import { ClearReportsModal } from './modals/ClearReportsModal';
 import { ReportDetailModal } from './modals/ReportDetailModal';
-import { ErrorModal } from './modals/ErrorModal';
-import { SuccessModal } from './modals/SuccessModal';
 
 import { BatchProgress, AuditConfigState } from './types';
 
@@ -715,21 +711,50 @@ const LibrarianAgentPage = () => {
       </GlassDraggableExpander>
 
       {/* Modals */}
-      <AuditConfirmationModal
+      <GlassModal
         visible={confirmModalVisible}
-        budgetLimit={budgetLimit}
-        dryRun={dryRun}
+        type="warning"
+        title={t('admin.librarian.modal.confirmAI.title')}
+        message={t('admin.librarian.modal.confirmAI.message', {
+          budget: budgetLimit.toFixed(2),
+          dryRun: dryRun ? t('admin.librarian.modal.confirmAI.dryRunNote') : ''
+        })}
         onClose={() => {
           setConfirmModalVisible(false);
           setPendingAuditType(null);
         }}
-        onConfirm={() => pendingAuditType && executeAudit(pendingAuditType)}
+        buttons={[
+          {
+            text: t('admin.librarian.modal.cancel'),
+            style: 'cancel',
+          },
+          {
+            text: t('admin.librarian.modal.confirm'),
+            style: 'default',
+            onPress: () => pendingAuditType && executeAudit(pendingAuditType),
+          },
+        ]}
+        dismissable
       />
 
-      <ClearReportsModal
+      <GlassModal
         visible={clearReportsModalOpen}
+        type="warning"
+        title={t('admin.librarian.reports.clearAll')}
+        message={t('admin.librarian.reports.confirmClearAll')}
         onClose={() => setClearReportsModalOpen(false)}
-        onConfirm={handleClearReportsConfirm}
+        buttons={[
+          {
+            text: t('common.cancel'),
+            style: 'cancel',
+          },
+          {
+            text: t('admin.librarian.reports.clearAll'),
+            style: 'destructive',
+            onPress: handleClearReportsConfirm,
+          },
+        ]}
+        dismissable
       />
 
       <ReportDetailModal
@@ -747,16 +772,24 @@ const LibrarianAgentPage = () => {
         }}
       />
 
-      <ErrorModal
+      <GlassModal
         visible={errorModalOpen}
+        type="error"
+        title={t('common.error')}
         message={errorMessage}
         onClose={() => setErrorModalOpen(false)}
+        buttons={[{ text: t('common.ok'), style: 'default' }]}
+        dismissable
       />
 
-      <SuccessModal
+      <GlassModal
         visible={successModalOpen}
+        type="success"
+        title={t('common.success')}
         message={successMessage}
         onClose={() => setSuccessModalOpen(false)}
+        buttons={[{ text: t('common.ok'), style: 'default' }]}
+        dismissable
       />
     </ScrollView>
   );

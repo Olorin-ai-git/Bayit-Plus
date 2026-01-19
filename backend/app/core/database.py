@@ -29,7 +29,7 @@ from app.models.widget import Widget
 from app.models.user_system_widget import UserSystemWidget
 from app.models.librarian import AuditReport, LibrarianAction, StreamValidationCache, ClassificationVerificationCache
 from app.models.recording import RecordingSession, Recording, RecordingSchedule, RecordingSubtitleCue
-from app.models.upload import UploadJob, MonitoredFolder, UploadStats, BrowserUploadSession
+from app.models.upload import UploadJob, MonitoredFolder, UploadStats, BrowserUploadSession, UploadHashLock
 from app.api.routes.favorites import Favorite
 from app.api.routes.downloads import Download
 from app.models.chess import ChessGame, ChessChatMessage
@@ -122,6 +122,7 @@ async def connect_to_mongo():
             MonitoredFolder,
             UploadStats,
             BrowserUploadSession,
+            UploadHashLock,
             # Chess models
             ChessGame,
             ChessChatMessage,

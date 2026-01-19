@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Optional, List, Union, Dict, Any
 from beanie import Document
 from pydantic import BaseModel, Field
-from pymongo import IndexModel, ASCENDING
 
 
 class ContentBase(BaseModel):
@@ -148,30 +147,8 @@ class Content(Document):
             "series_id",
             "created_at",
             "updated_at",
-            # Unique index on file_hash to prevent duplicate uploads
-            # partialFilterExpression excludes null values
-            IndexModel(
-                [("file_hash", ASCENDING)],
-                unique=True,
-                name="file_hash_unique",
-                partialFilterExpression={
-                    "file_hash": {"$exists": True, "$type": "string"}
-                }
-            ),
             ("category_id", "is_published"),
             ("is_featured", "is_published"),
-            # Search indexes (added for comprehensive search functionality)
-            [
-                ("title", "text"),
-                ("title_en", "text"),
-                ("title_es", "text"),
-                ("description", "text"),
-                ("description_en", "text"),
-                ("description_es", "text"),
-                ("cast", "text"),
-                ("director", "text"),
-                ("genres", "text"),
-            ],
             # Filter indexes for advanced search
             "year",
             "genres",
@@ -179,19 +156,10 @@ class Content(Document):
             "requires_subscription",
             "is_kids_content",
             "content_type",
-            # Compound unique index for episode uniqueness
-            # Prevents duplicate episodes (same series + season + episode)
-            # partialFilterExpression ensures index only applies when all fields are present
-            IndexModel(
-                [("series_id", ASCENDING), ("season", ASCENDING), ("episode", ASCENDING)],
-                unique=True,
-                name="episode_uniqueness",
-                partialFilterExpression={
-                    "series_id": {"$exists": True, "$type": "string"},
-                    "season": {"$exists": True, "$type": "int"},
-                    "episode": {"$exists": True, "$type": "int"}
-                }
-            ),
+            # Kids content indexes
+            "age_rating",
+            ("is_kids_content", "age_rating"),
+            ("is_kids_content", "is_published", "age_rating"),
         ]
 
 

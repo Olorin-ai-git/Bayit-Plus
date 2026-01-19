@@ -126,7 +126,9 @@ async def execute_get_categories() -> Dict[str, Any]:
                     "name": cat.name,
                     "name_en": cat.name_en,
                     "slug": cat.slug,
-                    "content_type": cat.content_type
+                    "icon": cat.icon,
+                    "order": cat.order,
+                    "is_active": cat.is_active
                 }
                 for cat in categories
             ]

@@ -84,6 +84,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({
   const renderButton = (button: ModalButton, index: number) => {
     const isDestructive = button.style === 'destructive';
     const isCancel = button.style === 'cancel';
+    const isPrimary = !isDestructive && !isCancel;
 
     return (
       <TouchableOpacity
@@ -92,7 +93,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({
           styles.button,
           isDestructive && styles.buttonDestructive,
           isCancel && styles.buttonCancel,
-          !isDestructive && !isCancel && { backgroundColor: modalColor },
+          isPrimary && styles.buttonPrimary,
         ]}
         onPress={() => {
           button.onPress?.();
@@ -104,6 +105,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({
           style={[
             styles.buttonText,
             isCancel && styles.buttonTextCancel,
+            isPrimary && styles.buttonTextPrimary,
           ]}
         >
           {button.text}
@@ -318,6 +320,14 @@ const styles = StyleSheet.create({
     boxShadow: Platform.OS === 'web' ? 'none' : undefined,
     elevation: 0,
   },
+  buttonPrimary: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    // @ts-ignore - Web-specific CSS
+    backdropFilter: Platform.OS === 'web' ? 'blur(8px)' : undefined,
+    WebkitBackdropFilter: Platform.OS === 'web' ? 'blur(8px)' : undefined,
+  },
   buttonText: {
     fontSize: 16,
     fontWeight: '600',
@@ -326,6 +336,10 @@ const styles = StyleSheet.create({
   },
   buttonTextCancel: {
     color: colors.textSecondary,
+  },
+  buttonTextPrimary: {
+    color: colors.text,
+    fontWeight: '700',
   },
   loader: {
     marginTop: spacing.md,

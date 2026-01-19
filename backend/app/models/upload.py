@@ -8,6 +8,7 @@ from typing import Optional, Dict, Any, List
 from enum import Enum
 from beanie import Document, Indexed
 from pydantic import BaseModel, Field
+from pymongo import IndexModel, ASCENDING
 
 
 class ContentType(str, Enum):
@@ -236,8 +237,8 @@ class UploadHashLock(Document):
     class Settings:
         name = "upload_hash_locks"
         indexes = [
-            {"keys": [("file_hash", 1)], "unique": True},
-            {"keys": [("expires_at", 1)], "expireAfterSeconds": 0},  # TTL index
+            IndexModel([("file_hash", ASCENDING)], unique=True),
+            IndexModel([("expires_at", ASCENDING)], expireAfterSeconds=0),
             "job_id",
         ]
 

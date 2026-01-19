@@ -3,8 +3,4 @@ export * from './types';
 export * from './hooks/useLibrarianData';
 export * from './hooks/useAuditControl';
 export * from './hooks/useVoiceLibrarian';
-export * from './modals/AuditConfirmationModal';
-export * from './modals/ClearReportsModal';
 export * from './modals/ReportDetailModal';
-export * from './modals/ErrorModal';
-export * from './modals/SuccessModal';

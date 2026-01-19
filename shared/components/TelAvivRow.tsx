@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Linking,
   ImageBackground,
+  Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui/GlassView';
@@ -16,6 +17,10 @@ import { colors, spacing, fontSize, borderRadius } from '../theme';
 import { telAvivService } from '../services/api';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
+
+// Platform-specific detection
+const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
+const isMobilePhone = isMobile && !Platform.isTV;
 
 // Import Tel Aviv panoramic background
 const TelAvivBackground = require('../assets/images/Scenery/TelAviv.png');
@@ -364,78 +369,78 @@ const ContentCard: React.FC<ContentCardProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: spacing.md,
-    borderRadius: borderRadius.xl,
+    marginVertical: isMobilePhone ? spacing.sm : spacing.md,
+    borderRadius: isMobilePhone ? borderRadius.lg : borderRadius.xl,
     overflow: 'hidden',
-    marginHorizontal: spacing.md,
+    marginHorizontal: isMobilePhone ? spacing.sm : spacing.md,
   },
   backgroundImage: {
     width: '100%',
-    minHeight: 320,
+    minHeight: isMobilePhone ? 180 : 320,
   },
   backgroundImageStyle: {
     opacity: 0.6,
-    borderRadius: borderRadius.xl,
+    borderRadius: isMobilePhone ? borderRadius.lg : borderRadius.xl,
   },
   backgroundOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(10, 10, 30, 0.5)',
-    borderRadius: borderRadius.xl,
+    borderRadius: isMobilePhone ? borderRadius.lg : borderRadius.xl,
   },
   contentWrapper: {
     position: 'relative',
     zIndex: 1,
-    paddingVertical: spacing.md,
+    paddingVertical: isMobilePhone ? spacing.sm : spacing.md,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: spacing.xs,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
   },
   headerEmoji: {
-    fontSize: 20,
-    marginRight: spacing.sm,
+    fontSize: isMobilePhone ? 16 : 20,
+    marginRight: isMobilePhone ? spacing.xs : spacing.sm,
   },
   headerTitle: {
-    fontSize: fontSize.lg,
+    fontSize: isMobilePhone ? fontSize.md : fontSize.lg,
     fontWeight: '600',
     color: colors.text,
   },
   subtitle: {
-    fontSize: fontSize.sm,
+    fontSize: isMobilePhone ? fontSize.xs : fontSize.sm,
     color: colors.textSecondary,
-    paddingHorizontal: spacing.md,
-    marginBottom: spacing.md,
+    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
+    marginBottom: isMobilePhone ? spacing.sm : spacing.md,
   },
   loadingContainer: {
-    height: 150,
+    height: isMobilePhone ? 80 : 150,
     justifyContent: 'center',
     alignItems: 'center',
   },
   emptyContainer: {
-    height: 100,
+    height: isMobilePhone ? 60 : 100,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing.md,
   },
   emptyText: {
-    fontSize: fontSize.md,
+    fontSize: isMobilePhone ? fontSize.sm : fontSize.md,
     color: colors.textSecondary,
     textAlign: 'center',
   },
   itemsContainer: {
-    paddingHorizontal: spacing.md,
-    gap: spacing.md,
+    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
+    gap: isMobilePhone ? spacing.sm : spacing.md,
   },
   contentCard: {
-    width: 300,
-    height: 220,
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
+    width: isMobilePhone ? 180 : 300,
+    height: isMobilePhone ? 130 : 220,
+    padding: isMobilePhone ? spacing.sm : spacing.lg,
+    borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
     borderWidth: 2,
     borderColor: 'transparent',
-    marginRight: spacing.md,
+    marginRight: isMobilePhone ? spacing.sm : spacing.md,
     backgroundColor: 'rgba(30, 30, 50, 0.6)',
   },
   contentCardFocused: {
@@ -450,50 +455,50 @@ const styles = StyleSheet.create({
   },
   cardHeader: {
     alignItems: 'center',
-    marginBottom: spacing.sm,
+    marginBottom: isMobilePhone ? spacing.xs : spacing.sm,
   },
   categoryEmoji: {
-    fontSize: 24,
+    fontSize: isMobilePhone ? 18 : 24,
   },
   categoryBadge: {
     backgroundColor: 'rgba(249, 115, 22, 0.3)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: 4,
+    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
+    paddingVertical: isMobilePhone ? 2 : 4,
     borderRadius: borderRadius.full,
     borderWidth: 1,
     borderColor: 'rgba(249, 115, 22, 0.6)',
   },
   categoryText: {
-    fontSize: fontSize.xs,
+    fontSize: isMobilePhone ? 10 : fontSize.xs,
     color: 'rgba(253, 186, 116, 0.9)',
     fontWeight: '600',
   },
   cardTitle: {
-    fontSize: fontSize.md,
+    fontSize: isMobilePhone ? fontSize.sm : fontSize.md,
     fontWeight: '700',
     color: colors.text,
     marginBottom: spacing.xs,
-    lineHeight: 20,
+    lineHeight: isMobilePhone ? 16 : 20,
   },
   cardSummary: {
-    fontSize: fontSize.sm,
+    fontSize: isMobilePhone ? 11 : fontSize.sm,
     color: 'rgba(255, 255, 255, 0.7)',
-    marginBottom: spacing.sm,
-    lineHeight: 16,
+    marginBottom: isMobilePhone ? spacing.xs : spacing.sm,
+    lineHeight: isMobilePhone ? 14 : 16,
   },
   tagsContainer: {
     flexWrap: 'wrap',
-    gap: 4,
-    marginBottom: spacing.sm,
+    gap: isMobilePhone ? 2 : 4,
+    marginBottom: isMobilePhone ? spacing.xs : spacing.sm,
   },
   tag: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
+    paddingHorizontal: isMobilePhone ? spacing.xs : spacing.sm,
+    paddingVertical: isMobilePhone ? 1 : 2,
     borderRadius: borderRadius.sm,
   },
   tagText: {
-    fontSize: fontSize.xs,
+    fontSize: isMobilePhone ? 9 : fontSize.xs,
     color: 'rgba(255, 255, 255, 0.6)',
   },
   cardFooter: {
@@ -503,18 +508,18 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
   },
   sourceText: {
-    fontSize: fontSize.xs,
+    fontSize: isMobilePhone ? 9 : fontSize.xs,
     color: colors.textMuted,
     textTransform: 'uppercase',
   },
   scoreContainer: {
     flexDirection: 'row',
-    gap: 4,
+    gap: isMobilePhone ? 2 : 4,
   },
   scoreDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: isMobilePhone ? 4 : 6,
+    height: isMobilePhone ? 4 : 6,
+    borderRadius: isMobilePhone ? 2 : 3,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   scoreDotActive: {
@@ -522,15 +527,15 @@ const styles = StyleSheet.create({
   },
   sourcesContainer: {
     flexDirection: 'row',
-    paddingHorizontal: spacing.md,
-    marginTop: spacing.sm,
+    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
+    marginTop: isMobilePhone ? spacing.xs : spacing.sm,
   },
   sourcesLabel: {
-    fontSize: fontSize.xs,
+    fontSize: isMobilePhone ? 10 : fontSize.xs,
     color: colors.textMuted,
   },
   sourcesText: {
-    fontSize: fontSize.xs,
+    fontSize: isMobilePhone ? 10 : fontSize.xs,
     color: colors.textMuted,
   },
 });

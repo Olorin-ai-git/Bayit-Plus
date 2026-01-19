@@ -267,7 +267,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                     >
                       <Ionicons
                         name={favoriteStates[currentItem.id] ? 'star' : 'star-outline'}
-                        size={20}
+                        size={Platform.isTV ? 20 : (Platform.OS === 'web' ? 20 : 16)}
                         color={favoriteStates[currentItem.id] ? colors.warning : colors.text}
                       />
                     </Pressable>
@@ -283,7 +283,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                     >
                       <Ionicons
                         name={watchlistStates[currentItem.id] ? 'bookmark' : 'bookmark-outline'}
-                        size={20}
+                        size={Platform.isTV ? 20 : (Platform.OS === 'web' ? 20 : 16)}
                         color={watchlistStates[currentItem.id] ? colors.primary : colors.text}
                       />
                     </Pressable>
@@ -426,12 +426,16 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
   );
 };
 
+// Check if we're on a mobile device (not TV, not web)
+const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
+const isMobilePhone = isMobile && !Platform.isTV;
+
 const styles = StyleSheet.create({
   container: {
     width: '100%',
   },
   carouselWrapper: {
-    borderRadius: borderRadius.lg,
+    borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
     overflow: 'hidden',
     backgroundColor: 'rgba(10, 10, 10, 0.5)',
     // @ts-ignore - Web CSS property
@@ -444,14 +448,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
+    padding: isMobilePhone ? 16 : 32,
   },
   emptyIcon: {
-    fontSize: 48,
-    marginBottom: 16,
+    fontSize: isMobilePhone ? 32 : 48,
+    marginBottom: isMobilePhone ? 8 : 16,
   },
   emptyText: {
-    fontSize: 20,
+    fontSize: isMobilePhone ? 16 : 20,
     fontWeight: '600',
     color: colors.text,
     textAlign: 'center',
@@ -468,7 +472,7 @@ const styles = StyleSheet.create({
   itemContainer: {
     flex: 1,
     position: 'relative',
-    borderRadius: borderRadius.lg,
+    borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
     overflow: 'hidden',
   },
   backgroundImage: {
@@ -479,7 +483,7 @@ const styles = StyleSheet.create({
     // Make image taller to show more of the top (heads) instead of center-cropping
     // On TV, we want to see actors' faces, so we extend the image down and crop the bottom
     height: Platform.isTV ? '130%' : '100%',
-    borderRadius: borderRadius.lg,
+    borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
     // Web: position image to show more of the center-top
     ...(Platform.OS === 'web' && {
       objectFit: 'cover',
@@ -488,122 +492,134 @@ const styles = StyleSheet.create({
   },
   gradientOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(13, 13, 26, 0.3)',
-    borderRadius: borderRadius.lg,
+    // Stronger gradient on mobile for better text contrast
+    backgroundColor: isMobilePhone ? 'rgba(0, 0, 0, 0.55)' : 'rgba(13, 13, 26, 0.3)',
+    borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
   },
   contentContainer: {
     ...StyleSheet.absoluteFillObject,
-    padding: 32,
+    padding: isMobilePhone ? 12 : 32,
     justifyContent: 'space-between',
   },
   badgeContainer: {
     position: 'absolute',
-    top: 32,
+    top: isMobilePhone ? 12 : 32,
   },
   badgeRight: {
-    right: 80,
+    right: isMobilePhone ? 12 : 80,
   },
   badgeLeft: {
-    left: 80,
+    left: isMobilePhone ? 12 : 80,
   },
   badge: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: isMobilePhone ? 8 : 16,
+    paddingVertical: isMobilePhone ? 4 : 8,
   },
   badgeText: {
     color: colors.primary,
-    fontSize: 14,
+    fontSize: isMobilePhone ? 11 : 14,
     fontWeight: 'bold',
   },
   textSection: {
     position: 'absolute',
-    bottom: 100,
+    bottom: isMobilePhone ? 48 : 100,
+    // On mobile, limit width to prevent text from spanning full width
+    ...(isMobilePhone && {
+      maxWidth: '75%',
+    }),
   },
   textSectionRight: {
-    right: 80,
+    right: isMobilePhone ? 12 : 80,
     alignItems: 'flex-end',
   },
   textSectionLeft: {
-    left: 80,
+    left: isMobilePhone ? 12 : 80,
     alignItems: 'flex-start',
   },
   title: {
-    fontSize: 42,
+    fontSize: isMobilePhone ? 20 : 42,
     fontWeight: 'bold',
     color: colors.text,
-    marginBottom: 8,
-    // Text shadow - iOS only (web uses textShadow CSS property)
-    ...Platform.select({
-      ios: {
-        textShadowColor: 'rgba(0, 0, 0, 0.8)',
-        textShadowOffset: { width: 0, height: 2 },
-        textShadowRadius: 4,
-      },
-      default: {},
-    }),
+    marginBottom: isMobilePhone ? 4 : 8,
+    // Text shadow for better readability
+    textShadowColor: 'rgba(0, 0, 0, 0.9)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: isMobilePhone ? 3 : 4,
   },
   subtitle: {
-    fontSize: 18,
-    color: colors.textSecondary,
-    marginBottom: 12,
+    fontSize: isMobilePhone ? 13 : 18,
+    color: isMobilePhone ? colors.text : colors.textSecondary,
+    marginBottom: isMobilePhone ? 4 : 12,
     fontWeight: '600',
     letterSpacing: 0.5,
+    // Text shadow for mobile readability
+    ...(isMobilePhone && {
+      textShadowColor: 'rgba(0, 0, 0, 0.8)',
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 2,
+    }),
   },
   description: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    lineHeight: 24,
-    maxWidth: 500,
+    fontSize: isMobilePhone ? 12 : 16,
+    color: isMobilePhone ? 'rgba(255, 255, 255, 0.9)' : colors.textSecondary,
+    lineHeight: isMobilePhone ? 16 : 24,
+    maxWidth: isMobilePhone ? 280 : 500,
+    // Text shadow for mobile readability
+    ...(isMobilePhone && {
+      textShadowColor: 'rgba(0, 0, 0, 0.8)',
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 2,
+    }),
   },
   playButtonContainer: {
     position: 'absolute',
-    bottom: 32,
+    bottom: isMobilePhone ? 12 : 32,
   },
   playButtonRight: {
-    right: 80,
+    right: isMobilePhone ? 12 : 80,
   },
   playButtonLeft: {
-    left: 80,
+    left: isMobilePhone ? 12 : 80,
   },
   playButton: {
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    gap: 12,
+    paddingHorizontal: isMobilePhone ? 14 : 24,
+    paddingVertical: isMobilePhone ? 8 : 14,
+    gap: isMobilePhone ? 6 : 12,
   },
   playIcon: {
-    fontSize: 18,
+    fontSize: isMobilePhone ? 14 : 18,
     color: colors.primary,
   },
   playText: {
-    fontSize: 18,
+    fontSize: isMobilePhone ? 14 : 18,
     fontWeight: 'bold',
     color: colors.text,
   },
   navButton: {
     position: 'absolute',
     top: '50%',
-    marginTop: Platform.isTV ? -40 : -24,
+    marginTop: Platform.isTV ? -40 : (isMobilePhone ? -16 : -24),
     zIndex: 10,
   },
   navButtonLeft: {
-    left: Platform.isTV ? 24 : 16,
+    left: Platform.isTV ? 24 : (isMobilePhone ? 8 : 16),
   },
   navButtonRight: {
-    right: Platform.isTV ? 24 : 16,
+    right: Platform.isTV ? 24 : (isMobilePhone ? 8 : 16),
   },
   navButtonInner: {
-    width: Platform.isTV ? 80 : 48,
-    height: Platform.isTV ? 80 : 48,
-    borderRadius: Platform.isTV ? 40 : 24,
+    width: Platform.isTV ? 80 : (isMobilePhone ? 32 : 48),
+    height: Platform.isTV ? 80 : (isMobilePhone ? 32 : 48),
+    borderRadius: Platform.isTV ? 40 : (isMobilePhone ? 16 : 24),
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderWidth: 2,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderWidth: isMobilePhone ? 1 : 2,
     borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   navButtonText: {
-    fontSize: Platform.isTV ? 48 : 32,
+    fontSize: Platform.isTV ? 48 : (isMobilePhone ? 20 : 32),
     color: colors.text,
     fontWeight: 'bold',
   },
@@ -615,44 +631,44 @@ const styles = StyleSheet.create({
   },
   pagination: {
     position: 'absolute',
-    bottom: 16,
+    bottom: isMobilePhone ? 8 : 16,
     left: 0,
     right: 0,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
+    gap: isMobilePhone ? 4 : 8,
   },
   dotTouchable: {
-    padding: 4,
+    padding: isMobilePhone ? 2 : 4,
   },
   dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: isMobilePhone ? 6 : 8,
+    height: isMobilePhone ? 6 : 8,
+    borderRadius: isMobilePhone ? 3 : 4,
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
   dotActive: {
-    width: 24,
+    width: isMobilePhone ? 16 : 24,
     backgroundColor: colors.primary,
   },
   actionButtons: {
     position: 'absolute',
-    top: 32,
+    top: isMobilePhone ? 12 : 32,
     flexDirection: 'row',
-    gap: spacing.sm,
+    gap: isMobilePhone ? spacing.xs : spacing.sm,
     zIndex: 10,
   },
   actionButtonsRight: {
-    right: 32,
+    right: isMobilePhone ? 12 : 32,
   },
   actionButtonsLeft: {
-    left: 32,
+    left: isMobilePhone ? 12 : 32,
   },
   actionButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: isMobilePhone ? 32 : 40,
+    height: isMobilePhone ? 32 : 40,
+    borderRadius: isMobilePhone ? 16 : 20,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',

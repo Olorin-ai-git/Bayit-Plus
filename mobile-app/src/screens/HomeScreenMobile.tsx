@@ -339,13 +339,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
-    paddingTop: spacing.xl,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    paddingTop: spacing.md,
   },
   logo: {
-    width: 140,
-    height: 50,
+    width: 100,
+    height: 36,
   },
   headerTitle: {
     ...typography.h2,
@@ -354,19 +354,21 @@ const styles = StyleSheet.create({
     writingDirection: 'auto', // Supports RTL/LTR automatically
   },
   section: {
-    marginBottom: spacing.xl,
+    marginBottom: spacing.md,
+    paddingHorizontal: spacing.xs,
   },
   filterSection: {
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.lg,
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.sm,
   },
   sectionTitle: {
-    ...typography.h3,
+    ...typography.body,
+    fontWeight: '600',
     color: colors.text,
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.md,
+    paddingHorizontal: spacing.sm,
+    marginBottom: spacing.xs,
   },
   bottomSpacer: {
-    height: spacing.xxl,
+    height: spacing.xl,
   },
 });

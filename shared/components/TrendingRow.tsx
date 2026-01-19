@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Animated,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui/GlassView';
@@ -14,6 +15,10 @@ import { colors, spacing, fontSize, borderRadius } from '../theme';
 import { trendingService } from '../services/api';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
+
+// Platform-specific detection
+const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
+const isMobilePhone = isMobile && !Platform.isTV;
 
 interface TrendingTopic {
   title: string;
@@ -290,57 +295,57 @@ const TopicCard: React.FC<TopicCardProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: spacing.md,
+    marginVertical: isMobilePhone ? spacing.sm : spacing.md,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: spacing.sm,
-    paddingHorizontal: spacing.md,
+    marginBottom: isMobilePhone ? spacing.xs : spacing.sm,
+    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
   },
   headerEmoji: {
-    fontSize: 20,
-    marginRight: spacing.sm,
+    fontSize: isMobilePhone ? 16 : 20,
+    marginRight: isMobilePhone ? spacing.xs : spacing.sm,
   },
   headerTitle: {
-    fontSize: fontSize.lg,
+    fontSize: isMobilePhone ? fontSize.md : fontSize.lg,
     fontWeight: '600',
     color: colors.text,
   },
   loadingContainer: {
-    height: 150,
+    height: isMobilePhone ? 100 : 150,
     justifyContent: 'center',
     alignItems: 'center',
   },
   emptyContainer: {
-    height: 100,
+    height: isMobilePhone ? 60 : 100,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing.md,
   },
   emptyText: {
-    fontSize: fontSize.md,
+    fontSize: isMobilePhone ? fontSize.sm : fontSize.md,
     color: colors.textSecondary,
     textAlign: 'center',
   },
   overallMood: {
-    fontSize: fontSize.sm,
+    fontSize: isMobilePhone ? fontSize.xs : fontSize.sm,
     color: colors.textSecondary,
-    paddingHorizontal: spacing.md,
-    marginBottom: spacing.md,
+    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
+    marginBottom: isMobilePhone ? spacing.sm : spacing.md,
   },
   topicsContainer: {
-    paddingHorizontal: spacing.md,
-    gap: spacing.md,
+    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
+    gap: isMobilePhone ? spacing.sm : spacing.md,
   },
   topicCard: {
-    width: 280,
-    height: 240,
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
+    width: isMobilePhone ? 160 : 280,
+    height: isMobilePhone ? 140 : 240,
+    padding: isMobilePhone ? spacing.sm : spacing.lg,
+    borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
     borderWidth: 2,
     borderColor: 'transparent',
-    marginRight: spacing.md,
+    marginRight: isMobilePhone ? spacing.sm : spacing.md,
     backgroundColor: 'rgba(30, 30, 50, 0.6)',
   },
   topicCardFocused: {
@@ -355,78 +360,78 @@ const styles = StyleSheet.create({
   },
   topicHeader: {
     alignItems: 'center',
-    marginBottom: spacing.md,
+    marginBottom: isMobilePhone ? spacing.xs : spacing.md,
   },
   categoryEmoji: {
-    fontSize: 28,
+    fontSize: isMobilePhone ? 20 : 28,
   },
   categoryBadge: {
     backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: 4,
+    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
+    paddingVertical: isMobilePhone ? 2 : 4,
     borderRadius: borderRadius.full,
     borderWidth: 1,
     borderColor: 'rgba(168, 85, 247, 0.6)',
   },
   categoryText: {
-    fontSize: fontSize.xs,
+    fontSize: isMobilePhone ? 10 : fontSize.xs,
     color: 'rgba(168, 85, 247, 0.9)',
     fontWeight: '600',
   },
   topicTitle: {
-    fontSize: fontSize.md,
+    fontSize: isMobilePhone ? fontSize.sm : fontSize.md,
     fontWeight: '700',
     color: colors.text,
-    marginBottom: spacing.sm,
-    lineHeight: 22,
+    marginBottom: isMobilePhone ? spacing.xs : spacing.sm,
+    lineHeight: isMobilePhone ? 16 : 22,
   },
   topicSummary: {
-    fontSize: fontSize.sm,
+    fontSize: isMobilePhone ? 11 : fontSize.sm,
     color: 'rgba(255, 255, 255, 0.7)',
-    marginBottom: spacing.md,
-    lineHeight: 18,
+    marginBottom: isMobilePhone ? spacing.xs : spacing.md,
+    lineHeight: isMobilePhone ? 14 : 18,
   },
   importanceContainer: {
     flexDirection: 'row',
-    gap: 6,
+    gap: isMobilePhone ? 4 : 6,
     marginTop: 'auto',
   },
   importanceDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: isMobilePhone ? 6 : 8,
+    height: isMobilePhone ? 6 : 8,
+    borderRadius: isMobilePhone ? 3 : 4,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   importanceDotActive: {
     backgroundColor: '#a855f7',
   },
   topStoryContainer: {
-    marginHorizontal: spacing.md,
-    marginTop: spacing.md,
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
+    marginHorizontal: isMobilePhone ? spacing.sm : spacing.md,
+    marginTop: isMobilePhone ? spacing.sm : spacing.md,
+    padding: isMobilePhone ? spacing.sm : spacing.md,
+    borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
   },
   topStoryLabel: {
-    fontSize: fontSize.xs,
+    fontSize: isMobilePhone ? 10 : fontSize.xs,
     fontWeight: '600',
     color: colors.primary,
     marginBottom: spacing.xs,
   },
   topStoryText: {
-    fontSize: fontSize.sm,
+    fontSize: isMobilePhone ? fontSize.xs : fontSize.sm,
     color: colors.text,
   },
   sourcesContainer: {
     flexDirection: 'row',
-    paddingHorizontal: spacing.md,
-    marginTop: spacing.sm,
+    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
+    marginTop: isMobilePhone ? spacing.xs : spacing.sm,
   },
   sourcesLabel: {
-    fontSize: fontSize.xs,
+    fontSize: isMobilePhone ? 10 : fontSize.xs,
     color: colors.textMuted,
   },
   sourcesText: {
-    fontSize: fontSize.xs,
+    fontSize: isMobilePhone ? 10 : fontSize.xs,
     color: colors.textMuted,
   },
 });
