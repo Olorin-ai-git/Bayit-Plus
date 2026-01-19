@@ -147,7 +147,9 @@ class Content(Document):
             "series_id",
             "created_at",
             "updated_at",
-            "file_hash",
+            # Unique sparse index on file_hash to prevent duplicate uploads
+            # Sparse allows multiple null values (for content without hash)
+            {"keys": [("file_hash", 1)], "unique": True, "sparse": True},
             ("category_id", "is_published"),
             ("is_featured", "is_published"),
             # Search indexes (added for comprehensive search functionality)
@@ -169,6 +171,19 @@ class Content(Document):
             "requires_subscription",
             "is_kids_content",
             "content_type",
+            # Compound unique index for episode uniqueness
+            # Prevents duplicate episodes (same series + season + episode)
+            # Sparse to allow nulls - only enforces when all three fields are present
+            {
+                "keys": [("series_id", 1), ("season", 1), ("episode", 1)],
+                "unique": True,
+                "sparse": True,
+                "partialFilterExpression": {
+                    "series_id": {"$ne": None},
+                    "season": {"$ne": None},
+                    "episode": {"$ne": None}
+                }
+            },
         ]
 
 

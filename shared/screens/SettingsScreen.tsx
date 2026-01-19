@@ -131,7 +131,7 @@ export default function SettingsScreen() {
     const nextIndex = (currentIndex + 1) % languages.length;
     const newLang = languages[nextIndex];
     await i18n.changeLanguage(newLang);
-    await AsyncStorage.setItem('bayit-language', newLang);
+    await AsyncStorage.setItem('@bayit_language', newLang);
   };
 
   const handleWakeWordToggle = async (value: boolean) => {

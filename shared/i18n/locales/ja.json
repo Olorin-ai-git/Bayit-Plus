@@ -770,7 +770,9 @@
     "sports": "スポーツ",
     "culture": "文化",
     "religious": "宗教",
-    "community": "コミュニティ"
+    "community": "コミュニティ",
+    "playing": "再生中",
+    "fmSuffix": "FM"
   },
   "podcasts": {
     "title": "ポッドキャスト",
@@ -955,7 +957,15 @@
     "pinLock": "PINロック",
     "setPin": "PINを設定",
     "changePin": "PINを変更",
-    "removePin": "PINを削除"
+    "removePin": "PINを削除",
+    "complimentaryPremium": "無料プレミアムアクセス",
+    "emailVerified": "メール認証済み",
+    "emailUnverified": "メール未認証",
+    "phoneVerified": "電話認証済み",
+    "phoneUnverified": "電話未認証",
+    "completeVerification": "すべての機能をアンロックするには認証を完了してください",
+    "unlockPremium": "プレミアム機能をアンロック",
+    "unlockPremiumDescription": "限定コンテンツと機能を楽しむためにアップグレード"
   },
   "settings": {
     "title": "設定",
@@ -1081,6 +1091,9 @@
     "watchFromBeginning": "最初から視聴",
     "continueWatching": "続きから視聴",
     "startOver": "最初から",
+    "restart": "最初から再生",
+    "subtitlesOff": "オフ",
+    "speed": "速度",
     "relatedContent": "関連コンテンツ",
     "upNext": "次のコンテンツ",
     "autoPlayIn": "{{seconds}}秒後に自動再生",
@@ -1654,5 +1667,50 @@
     "timeIn": "{{location}}の時間",
     "shabbat": "シャバット",
     "weekend": "週末"
+  },
+  "voiceOnboarding": {
+    "welcome": {
+      "title": "音声コントロールへようこそ",
+      "description": "音声でBayit+を操作してハンズフリー体験を"
+    },
+    "features": {
+      "voiceCommands": "音声コマンド",
+      "voiceCommandsDesc": "自然な言葉でナビゲート、検索、再生をコントロール",
+      "tts": "テキスト読み上げ",
+      "ttsDesc": "応答とコンテンツの説明を音声で聞く",
+      "wakeWord": "ウェイクワード",
+      "wakeWordDesc": "'Bayit'と言っていつでも音声コントロールを起動"
+    },
+    "getStarted": "始める",
+    "permissions": {
+      "title": "マイクへのアクセス",
+      "description": "音声コントロールにはコマンドを聞くためのマイクアクセスが必要です",
+      "privacy": "音声データは安全に処理され、保存されることはありません"
+    },
+    "permissionsGranted": "マイクアクセスが許可されました",
+    "permissionRequired": {
+      "title": "許可が必要です",
+      "message": "音声コントロールを使用するには、デバイス設定でマイクアクセスを有効にしてください"
+    },
+    "grantPermissions": "許可を与える",
+    "testWakeWord": {
+      "title": "ウェイクワードをテスト",
+      "description": "'Bayit'と言って音声起動をテスト",
+      "success": "素晴らしい！音声起動が機能しています"
+    },
+    "startTest": "テスト開始",
+    "complete": {
+      "title": "準備完了！",
+      "description": "音声コントロールが有効になりました。これらのコマンドを試してください：",
+      "tryCommands": "これらのコマンドを試してください",
+      "examples": {
+        "search": "\"Faudaを検索\"",
+        "play": "\"ニュースを再生\"",
+        "navigate": "\"ライブTVに移動\"",
+        "control": "\"一時停止\" または \"音量を上げて\""
+      },
+      "startUsing": "音声コントロールを使い始める"
+    },
+    "skip": "今はスキップ"
   }
 }

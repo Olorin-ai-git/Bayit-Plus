@@ -53,7 +53,8 @@
     "clearSelection": "Cancella",
     "expand": "Espandi",
     "collapse": "Comprimi",
-    "upgrade": "Passa a Premium"
+    "upgrade": "Passa a Premium",
+    "skip": "Salta"
   },
   "demo": {
     "banner": "MODALITÀ DEMO",
@@ -308,7 +309,9 @@
       "jewish": "Ebraica"
     },
     "noStations": "Nessuna stazione radio disponibile",
-    "tryLater": "Riprova più tardi"
+    "tryLater": "Riprova più tardi",
+    "playing": "IN RIPRODUZIONE",
+    "fmSuffix": "FM"
   },
   "podcasts": {
     "title": "Podcast",
@@ -419,6 +422,8 @@
     "skipBackward": "Indietro di 30 secondi",
     "skipForward": "Avanti di 30 secondi",
     "restart": "Riavvia dall'inizio",
+    "subtitlesOff": "Disattivati",
+    "speed": "Velocità",
     "subscription": {
       "requiredTitle": "Abbonamento richiesto",
       "requiredMessage": "richiede un abbonamento a pagamento",
@@ -770,5 +775,60 @@
       "sports": "Sport",
       "business": "Business"
     }
+  },
+  "profile": {
+    "complimentaryPremium": "ACCESSO PREMIUM GRATUITO",
+    "emailVerified": "Email verificata",
+    "emailUnverified": "Email non verificata",
+    "phoneVerified": "Telefono verificato",
+    "phoneUnverified": "Telefono non verificato",
+    "completeVerification": "Completa la verifica per sbloccare tutte le funzionalità",
+    "unlockPremium": "Sblocca Funzionalità Premium",
+    "unlockPremiumDescription": "Effettua l'upgrade per goderti contenuti e funzionalità esclusive"
+  },
+  "voiceOnboarding": {
+    "welcome": {
+      "title": "Benvenuto al Controllo Vocale",
+      "description": "Controlla Bayit+ con la tua voce per un'esperienza a mani libere"
+    },
+    "features": {
+      "voiceCommands": "Comandi Vocali",
+      "voiceCommandsDesc": "Naviga, cerca e controlla la riproduzione con il linguaggio naturale",
+      "tts": "Sintesi Vocale",
+      "ttsDesc": "Ascolta le risposte e le descrizioni dei contenuti ad alta voce",
+      "wakeWord": "Parola di Attivazione",
+      "wakeWordDesc": "Dì 'Bayit' per attivare il controllo vocale in qualsiasi momento"
+    },
+    "getStarted": "Inizia",
+    "permissions": {
+      "title": "Accesso al Microfono",
+      "description": "Il controllo vocale richiede l'accesso al microfono per sentire i tuoi comandi",
+      "privacy": "I tuoi dati vocali vengono elaborati in modo sicuro e non vengono mai memorizzati"
+    },
+    "permissionsGranted": "Accesso al microfono concesso",
+    "permissionRequired": {
+      "title": "Permesso Richiesto",
+      "message": "Abilita l'accesso al microfono nelle impostazioni del tuo dispositivo per usare il controllo vocale"
+    },
+    "grantPermissions": "Concedi Permessi",
+    "testWakeWord": {
+      "title": "Testa la Parola di Attivazione",
+      "description": "Dì 'Bayit' per testare l'attivazione vocale",
+      "success": "Ottimo! L'attivazione vocale funziona"
+    },
+    "startTest": "Inizia Test",
+    "complete": {
+      "title": "Tutto Pronto!",
+      "description": "Il controllo vocale è ora abilitato. Prova questi comandi:",
+      "tryCommands": "Prova Questi Comandi",
+      "examples": {
+        "search": "\"Cerca Fauda\"",
+        "play": "\"Riproduci le notizie\"",
+        "navigate": "\"Vai alla TV in Diretta\"",
+        "control": "\"Pausa\" o \"Alza il volume\""
+      },
+      "startUsing": "Inizia a Usare il Controllo Vocale"
+    },
+    "skip": "Salta per ora"
   }
 }

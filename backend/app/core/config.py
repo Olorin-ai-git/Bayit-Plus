@@ -306,6 +306,18 @@ class Settings(BaseSettings):
     KIDS_LIBRARIAN_AUDIT_CRON: str = "0 3 * * *"
     KIDS_LIBRARIAN_AUDIT_ENABLED: bool = True
 
+    # Series Linker Configuration
+    # Minimum similarity ratio (0-1) for matching episode titles to series names
+    SERIES_LINKER_TITLE_SIMILARITY_THRESHOLD: float = 0.85
+    # Minimum confidence (0-1) required for auto-linking episodes to series
+    SERIES_LINKER_AUTO_LINK_CONFIDENCE_THRESHOLD: float = 0.90
+    # Maximum number of episodes to process in one auto-link batch
+    SERIES_LINKER_AUTO_LINK_BATCH_SIZE: int = 50
+    # Strategy for resolving duplicate episodes: keep_highest_quality, keep_oldest, keep_newest, keep_most_complete
+    SERIES_LINKER_DUPLICATE_RESOLUTION_STRATEGY: str = "keep_highest_quality"
+    # Whether to create new series from TMDB when no local match is found
+    SERIES_LINKER_CREATE_MISSING_SERIES: bool = True
+
     class Config:
         env_file = ".env"
         case_sensitive = True

@@ -148,10 +148,71 @@ async def run_daily_audit(
         if audit_id:
             await audit_task_manager.check_should_continue(audit_id)
 
+        # Step 2b: Series-Episode Linking
+        logger.info("\n🔗 Step 2b: Series-Episode Linking...")
+        try:
+            from app.services.series_linker_service import get_series_linker_service
+            series_linker = get_series_linker_service()
+
+            linking_results = await series_linker.auto_link_unlinked_episodes(
+                limit=50,
+                audit_id=audit_report.audit_id,
+                dry_run=dry_run
+            )
+            logger.info(f"   Linked {linking_results.get('linked', 0)} episodes")
+        except Exception as e:
+            logger.error(f"❌ Series linking failed: {e}")
+            linking_results = {"status": "failed", "error": str(e)}
+
+        # Check for cancellation/pause
+        if audit_id:
+            await audit_task_manager.check_should_continue(audit_id)
+
+        # Step 2c: Episode Deduplication
+        logger.info("\n🔄 Step 2c: Episode Deduplication...")
+        try:
+            from app.core.config import settings
+            dedup_results = await series_linker.auto_resolve_duplicate_episodes(
+                strategy=settings.SERIES_LINKER_DUPLICATE_RESOLUTION_STRATEGY,
+                audit_id=audit_report.audit_id,
+                dry_run=dry_run
+            )
+            logger.info(f"   Resolved {dedup_results.get('groups_resolved', 0)} duplicate groups")
+        except Exception as e:
+            logger.error(f"❌ Episode deduplication failed: {e}")
+            dedup_results = {"status": "failed", "error": str(e)}
+
+        # Check for cancellation/pause
+        if audit_id:
+            await audit_task_manager.check_should_continue(audit_id)
+
+        # Step 2d: Integrity Cleanup
+        logger.info("\n🧹 Step 2d: Integrity Cleanup...")
+        try:
+            from app.services.upload_service.integrity import upload_integrity_service
+            integrity_results = await upload_integrity_service.run_full_cleanup(
+                dry_run=dry_run,
+                limit=100
+            )
+            logger.info(f"   Integrity cleanup: {integrity_results.get('overall_success', False)}")
+        except Exception as e:
+            logger.error(f"❌ Integrity cleanup failed: {e}")
+            integrity_results = {"status": "failed", "error": str(e)}
+
+        # Check for cancellation/pause
+        if audit_id:
+            await audit_task_manager.check_should_continue(audit_id)
+
         # Step 3: Compile results
         logger.info("\n📊 Step 3: Compiling audit results...")
         audit_report.content_results = content_results
         audit_report.database_health = db_health
+
+        # Add series linking and integrity results to database health
+        if isinstance(db_health, dict):
+            db_health["series_linking"] = linking_results
+            db_health["episode_deduplication"] = dedup_results
+            db_health["integrity_cleanup"] = integrity_results
 
         # Extract issues from results
         audit_report.broken_streams = stream_results.get("broken_streams", [])

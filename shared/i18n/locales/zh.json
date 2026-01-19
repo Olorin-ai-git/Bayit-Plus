@@ -53,7 +53,8 @@
     "clearSelection": "清除",
     "expand": "展开",
     "collapse": "收起",
-    "upgrade": "升级到高级版"
+    "upgrade": "升级到高级版",
+    "skip": "跳过"
   },
   "demo": {
     "banner": "演示模式",
@@ -371,6 +372,8 @@
   },
   "radio": {
     "title": "广播",
+    "playing": "播放中",
+    "fmSuffix": "FM",
     "categories": {
       "all": "全部",
       "music": "音乐",
@@ -742,7 +745,15 @@
     "invalidImageType": "请选择有效的图片文件（JPEG、PNG、WebP 或 GIF）",
     "imageTooLarge": "图片太大。最大大小为 5MB。",
     "uploadSuccess": "头像更新成功！",
-    "uploadFailed": "头像上传失败。请重试。"
+    "uploadFailed": "头像上传失败。请重试。",
+    "complimentaryPremium": "免费高级访问",
+    "emailVerified": "邮箱已验证",
+    "emailUnverified": "邮箱未验证",
+    "phoneVerified": "手机已验证",
+    "phoneUnverified": "手机未验证",
+    "completeVerification": "完成验证以解锁所有功能",
+    "unlockPremium": "解锁高级功能",
+    "unlockPremiumDescription": "升级以享受独家内容和功能"
   },
   "voiceMode": {
     "voiceOnly": "仅语音",
@@ -889,6 +900,8 @@
     "skipBackward": "后退30秒",
     "skipForward": "前进30秒",
     "restart": "从头开始",
+    "subtitlesOff": "关闭",
+    "speed": "速度",
     "subscription": {
       "requiredTitle": "需要订阅",
       "requiredMessage": "需要付费订阅",
@@ -1923,5 +1936,50 @@
       "sports": "体育",
       "business": "商业"
     }
+  },
+  "voiceOnboarding": {
+    "welcome": {
+      "title": "欢迎使用语音控制",
+      "description": "用语音控制 Bayit+，解放双手"
+    },
+    "features": {
+      "voiceCommands": "语音命令",
+      "voiceCommandsDesc": "用自然语言导航、搜索和控制播放",
+      "tts": "文字转语音",
+      "ttsDesc": "聆听响应和内容描述",
+      "wakeWord": "唤醒词",
+      "wakeWordDesc": "说 'Bayit' 随时激活语音控制"
+    },
+    "getStarted": "开始使用",
+    "permissions": {
+      "title": "麦克风权限",
+      "description": "语音控制需要麦克风权限来听取您的命令",
+      "privacy": "您的语音数据安全处理，不会被存储"
+    },
+    "permissionsGranted": "麦克风权限已授予",
+    "permissionRequired": {
+      "title": "需要权限",
+      "message": "请在设备设置中启用麦克风权限以使用语音控制"
+    },
+    "grantPermissions": "授予权限",
+    "testWakeWord": {
+      "title": "测试唤醒词",
+      "description": "说 'Bayit' 测试语音激活",
+      "success": "太棒了！语音激活正常工作"
+    },
+    "startTest": "开始测试",
+    "complete": {
+      "title": "一切就绪！",
+      "description": "语音控制已启用。试试这些命令：",
+      "tryCommands": "试试这些命令",
+      "examples": {
+        "search": "\"搜索 Fauda\"",
+        "play": "\"播放新闻\"",
+        "navigate": "\"转到直播电视\"",
+        "control": "\"暂停\" 或 \"调高音量\""
+      },
+      "startUsing": "开始使用语音控制"
+    },
+    "skip": "暂时跳过"
   }
 }

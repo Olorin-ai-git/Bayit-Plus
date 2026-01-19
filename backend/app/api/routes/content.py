@@ -184,11 +184,13 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
                 {"series_id": ""},
             ]
         }},
-        # Only project fields we actually need
+        # Only project fields we actually need (include poster_url and thumbnail_data for fallback)
         {"$project": {
             "_id": 1,
             "title": 1,
             "thumbnail": 1,
+            "thumbnail_data": 1,
+            "poster_url": 1,
             "duration": 1,
             "year": 1,
             "category_id": 1,
@@ -204,6 +206,8 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
                 "_id": "$_id",
                 "title": "$title",
                 "thumbnail": "$thumbnail",
+                "thumbnail_data": "$thumbnail_data",
+                "poster_url": "$poster_url",
                 "duration": "$duration",
                 "year": "$year",
                 "is_series": "$is_series",
@@ -230,10 +234,12 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
         for item in group["items"]:
             # Check both is_series flag and category name
             is_series = item.get("is_series", False) or is_series_by_category(cat_name)
+            # Use thumbnail with fallback to thumbnail_data and poster_url
+            thumbnail = item.get("thumbnail_data") or item.get("thumbnail") or item.get("poster_url")
             item_data = {
                 "id": str(item["_id"]),
                 "title": item.get("title"),
-                "thumbnail": item.get("thumbnail"),
+                "thumbnail": thumbnail,
                 "duration": item.get("duration"),
                 "year": item.get("year"),
                 "category": cat_name,

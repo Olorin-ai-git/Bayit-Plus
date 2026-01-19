@@ -51,7 +51,8 @@
     "clear": "Limpiar",
     "clearSelection": "Limpiar",
     "expand": "Expandir",
-    "collapse": "Contraer"
+    "collapse": "Contraer",
+    "skip": "Omitir"
   },
   "demo": {
     "banner": "MODO DEMOSTRACIÓN",
@@ -379,7 +380,9 @@
       "jewish": "Judío"
     },
     "noStations": "Sin estaciones de radio disponibles",
-    "tryLater": "Intenta de nuevo más tarde"
+    "tryLater": "Intenta de nuevo más tarde",
+    "playing": "REPRODUCIENDO",
+    "fmSuffix": "FM"
   },
   "podcasts": {
     "title": "Podcasts",
@@ -419,7 +422,10 @@
     },
     "allCategories": "Todos",
     "emptyTitle": "Sin contenido disponible",
-    "emptyDescription": "Intenta seleccionar otra categoría"
+    "emptyDescription": "Intenta seleccionar otra categoría",
+    "allContent": "Todo el contenido",
+    "noContent": "No hay contenido disponible",
+    "noContentInCategory": "No se encontró contenido en esta categoría"
   },
   "account": {
     "title": "Mi Cuenta",
@@ -753,7 +759,15 @@
     "invalidImageType": "Por favor selecciona un archivo de imagen válido (JPEG, PNG, WebP o GIF)",
     "imageTooLarge": "La imagen es demasiado grande. El tamaño máximo es 5MB.",
     "uploadSuccess": "¡Avatar actualizado exitosamente!",
-    "uploadFailed": "Error al subir el avatar. Por favor intenta de nuevo."
+    "uploadFailed": "Error al subir el avatar. Por favor intenta de nuevo.",
+    "complimentaryPremium": "ACCESO PREMIUM GRATUITO",
+    "emailVerified": "Correo verificado",
+    "emailUnverified": "Correo no verificado",
+    "phoneVerified": "Teléfono verificado",
+    "phoneUnverified": "Teléfono no verificado",
+    "completeVerification": "Completa la verificación para desbloquear todas las funciones",
+    "unlockPremium": "Desbloquear Funciones Premium",
+    "unlockPremiumDescription": "Actualiza para disfrutar de contenido y funciones exclusivas"
   },
   "settings": {
     "title": "Configuración",
@@ -866,6 +880,8 @@
     "playbackSpeed": "Velocidad de Reproducción",
     "quality": "Calidad",
     "auto": "Automático",
+    "subtitlesOff": "Desactivados",
+    "speed": "Velocidad",
     "subscription": {
       "requiredMessage": "requiere una suscripción paga",
       "requiredTitle": "Suscripción Requerida",
@@ -3058,5 +3074,50 @@
       "events": "Eventos",
       "general": "Tel Aviv"
     }
+  },
+  "voiceOnboarding": {
+    "welcome": {
+      "title": "Bienvenido al Control por Voz",
+      "description": "Controla Bayit+ con tu voz para una experiencia manos libres"
+    },
+    "features": {
+      "voiceCommands": "Comandos de Voz",
+      "voiceCommandsDesc": "Navega, busca y controla la reproducción con habla natural",
+      "tts": "Texto a Voz",
+      "ttsDesc": "Escucha las respuestas y descripciones de contenido en voz alta",
+      "wakeWord": "Palabra de Activación",
+      "wakeWordDesc": "Di 'Bayit' para activar el control por voz en cualquier momento"
+    },
+    "getStarted": "Comenzar",
+    "permissions": {
+      "title": "Acceso al Micrófono",
+      "description": "El control por voz requiere acceso al micrófono para escuchar tus comandos",
+      "privacy": "Tus datos de voz se procesan de forma segura y nunca se almacenan"
+    },
+    "permissionsGranted": "Acceso al micrófono concedido",
+    "permissionRequired": {
+      "title": "Permiso Requerido",
+      "message": "Por favor, habilita el acceso al micrófono en la configuración de tu dispositivo para usar el control por voz"
+    },
+    "grantPermissions": "Conceder Permisos",
+    "testWakeWord": {
+      "title": "Probar Palabra de Activación",
+      "description": "Di 'Bayit' para probar la activación por voz",
+      "success": "¡Genial! La activación por voz está funcionando"
+    },
+    "startTest": "Iniciar Prueba",
+    "complete": {
+      "title": "¡Todo Listo!",
+      "description": "El control por voz está habilitado. Prueba estos comandos:",
+      "tryCommands": "Prueba Estos Comandos",
+      "examples": {
+        "search": "\"Buscar Fauda\"",
+        "play": "\"Reproducir las noticias\"",
+        "navigate": "\"Ir a TV en Vivo\"",
+        "control": "\"Pausar\" o \"Subir volumen\""
+      },
+      "startUsing": "Comenzar a Usar Control por Voz"
+    },
+    "skip": "Omitir por ahora"
   }
 }

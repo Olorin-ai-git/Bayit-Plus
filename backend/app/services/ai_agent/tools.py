@@ -634,6 +634,259 @@ TOOLS = [
             },
             "required": ["summary", "items_checked", "issues_found", "issues_fixed"]
         }
+    },
+    # Series Linking Tools
+    {
+        "name": "find_unlinked_episodes",
+        "description": "Find episodes that have season/episode numbers but are not linked to any parent series. Use this to discover episodes that need to be connected to their series for proper organization.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum number of unlinked episodes to return (default 100)",
+                    "default": 100
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "link_episode_to_series",
+        "description": "Link an episode to its parent series. Use this when you've confirmed which series an episode belongs to.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "episode_id": {
+                    "type": "string",
+                    "description": "The ID of the episode content item"
+                },
+                "series_id": {
+                    "type": "string",
+                    "description": "The ID of the parent series"
+                },
+                "season": {
+                    "type": "integer",
+                    "description": "Season number (optional, uses existing value if not provided)"
+                },
+                "episode": {
+                    "type": "integer",
+                    "description": "Episode number (optional, uses existing value if not provided)"
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Brief explanation of why you're linking this episode"
+                }
+            },
+            "required": ["episode_id", "series_id", "reason"]
+        }
+    },
+    {
+        "name": "auto_link_episodes",
+        "description": "Automatically link unlinked episodes to their parent series using title pattern matching and TMDB lookup. Uses high confidence threshold (90%) to avoid incorrect links.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum number of episodes to process (default 50)",
+                    "default": 50
+                },
+                "confidence_threshold": {
+                    "type": "number",
+                    "description": "Minimum confidence score (0-1) required for auto-linking (default 0.9)",
+                    "default": 0.9
+                },
+                "audit_id": {
+                    "type": "string",
+                    "description": "Audit ID for tracking actions"
+                }
+            },
+            "required": ["audit_id"]
+        }
+    },
+    {
+        "name": "create_series_from_episode",
+        "description": "Create a new series container from an episode's information. Use this when an episode references a series that doesn't exist in our database. The new series will be populated with metadata from TMDB if available.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "episode_id": {
+                    "type": "string",
+                    "description": "The ID of the episode to create a series from"
+                },
+                "series_title": {
+                    "type": "string",
+                    "description": "The title for the new series"
+                },
+                "tmdb_id": {
+                    "type": "integer",
+                    "description": "Optional TMDB ID for the series to fetch metadata"
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Brief explanation of why you're creating this series"
+                },
+                "audit_id": {
+                    "type": "string",
+                    "description": "Audit ID for tracking actions"
+                }
+            },
+            "required": ["episode_id", "series_title", "audit_id"]
+        }
+    },
+    # Episode Deduplication Tools
+    {
+        "name": "find_duplicate_episodes",
+        "description": "Find episodes that are duplicates (same series + season + episode number). Returns groups of duplicate episodes that need resolution.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "series_id": {
+                    "type": "string",
+                    "description": "Optional: Filter to a specific series ID"
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "resolve_duplicate_episodes",
+        "description": "Resolve a group of duplicate episodes by keeping one and unpublishing/deleting the others. Choose the best quality version to keep.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "episode_ids": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "List of duplicate episode IDs in the group"
+                },
+                "keep_id": {
+                    "type": "string",
+                    "description": "ID of the episode to keep (if not provided, auto-selects based on quality)"
+                },
+                "action": {
+                    "type": "string",
+                    "description": "What to do with duplicates: 'unpublish' (default) or 'delete'",
+                    "enum": ["unpublish", "delete"],
+                    "default": "unpublish"
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Brief explanation of why you're resolving these duplicates"
+                },
+                "audit_id": {
+                    "type": "string",
+                    "description": "Audit ID for tracking actions"
+                }
+            },
+            "required": ["episode_ids", "audit_id"]
+        }
+    },
+    # Integrity Tools
+    {
+        "name": "get_integrity_status",
+        "description": "Get a summary of all data integrity issues: orphaned GCS files (uploaded but no database record), orphaned Content records (database record but no GCS file), and stuck upload jobs. Use this to understand the overall health of the storage system.",
+        "input_schema": {
+            "type": "object",
+            "properties": {},
+            "required": []
+        }
+    },
+    {
+        "name": "find_orphaned_gcs_files",
+        "description": "Find files in Google Cloud Storage that have no corresponding Content record in the database. These are wasted storage that should be cleaned up.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "prefix": {
+                    "type": "string",
+                    "description": "Optional GCS path prefix to filter (e.g., 'movies/', 'seriess/')"
+                },
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum number of orphans to return (default 100)",
+                    "default": 100
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "find_orphaned_content_records",
+        "description": "Find Content records in the database whose GCS files no longer exist. These are broken content items that should be cleaned up.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum number of orphans to return (default 100)",
+                    "default": 100
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "find_stuck_upload_jobs",
+        "description": "Find upload jobs that are stuck in processing state for too long. These jobs may need recovery or cleanup.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "threshold_minutes": {
+                    "type": "integer",
+                    "description": "Time after which a job is considered stuck (default 30 minutes)",
+                    "default": 30
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "cleanup_orphans",
+        "description": "Clean up orphaned data: delete orphaned GCS files and/or Content records. IMPORTANT: Use dry_run=true first to see what would be cleaned, then run with dry_run=false to actually clean.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "cleanup_type": {
+                    "type": "string",
+                    "description": "What to clean: 'gcs' for files, 'content' for records, 'all' for both",
+                    "enum": ["gcs", "content", "all"],
+                    "default": "all"
+                },
+                "dry_run": {
+                    "type": "boolean",
+                    "description": "If true, only report what would be cleaned without making changes (default true)",
+                    "default": True
+                },
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum number of items to clean per category (default 100)",
+                    "default": 100
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "recover_stuck_jobs",
+        "description": "Recover stuck upload jobs by marking them as failed and optionally requeuing for retry. Use dry_run=true first to preview.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "dry_run": {
+                    "type": "boolean",
+                    "description": "If true, only report what would be recovered (default true)",
+                    "default": True
+                },
+                "threshold_minutes": {
+                    "type": "integer",
+                    "description": "Time after which a job is considered stuck (default 30 minutes)",
+                    "default": 30
+                }
+            },
+            "required": []
+        }
     }
 ]
 

@@ -169,7 +169,7 @@ export const RadioScreenMobile: React.FC = () => {
                   <GlassBadge variant="primary">
                     <View style={styles.playingContainer}>
                       <View style={styles.playingIndicator} />
-                      <Text style={styles.playingText}>PLAYING</Text>
+                      <Text style={styles.playingText}>{t('radio.playing')}</Text>
                     </View>
                   </GlassBadge>
                 </View>
@@ -178,7 +178,7 @@ export const RadioScreenMobile: React.FC = () => {
                   <GlassBadge variant="danger">
                     <View style={styles.liveContainer}>
                       <View style={styles.liveIndicator} />
-                      <Text style={styles.liveText}>LIVE</Text>
+                      <Text style={styles.liveText}>{t('common.live')}</Text>
                     </View>
                   </GlassBadge>
                 </View>
@@ -191,7 +191,7 @@ export const RadioScreenMobile: React.FC = () => {
                 {localizedName}
               </Text>
               {item.frequency && (
-                <Text style={styles.frequency}>{item.frequency} FM</Text>
+                <Text style={styles.frequency}>{item.frequency} {t('radio.fmSuffix')}</Text>
               )}
               {localizedDescription && (
                 <Text style={styles.description} numberOfLines={2}>

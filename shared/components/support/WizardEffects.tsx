@@ -188,35 +188,45 @@ const ShimmerGradient: React.FC<{ size: number }> = ({ size }) => {
 
 /**
  * AudioLevelIndicator - Visual audio level meter
+ * Uses scaleX transform for native driver support (smoother animation)
+ * Positioned at left edge so scaleX grows from left to right
  */
 const AudioLevelIndicator: React.FC<{ level: number; size: number }> = ({
   level,
   size,
 }) => {
-  const animatedLevel = useRef(new Animated.Value(0)).current;
+  const animatedLevel = useRef(new Animated.Value(0.01)).current;
+  const containerWidth = size * 0.8;
 
   useEffect(() => {
-    Animated.timing(animatedLevel, {
-      toValue: level,
-      duration: 50, // Fast response
-      useNativeDriver: false,
+    Animated.spring(animatedLevel, {
+      toValue: Math.max(0.01, level), // Minimum scale to prevent disappearing
+      friction: 8,
+      tension: 200,
+      useNativeDriver: true,
     }).start();
   }, [level, animatedLevel]);
 
-  const barWidth = animatedLevel.interpolate({
+  // Use translateX to simulate left-aligned scaling
+  // scaleX scales from center, so we offset by half the width * (1 - scale)
+  const translateX = animatedLevel.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0%', '100%'],
+    outputRange: [-containerWidth / 2, 0],
     extrapolate: 'clamp',
   });
 
   return (
-    <View style={[styles.audioLevelContainer, { width: size * 0.8 }]}>
+    <View style={[styles.audioLevelContainer, { width: containerWidth }]}>
       <Animated.View
         style={[
           styles.audioLevelBar,
           {
-            width: barWidth,
+            width: containerWidth,
             backgroundColor: level > 0.5 ? colors.primary : colors.textSecondary,
+            transform: [
+              { translateX },
+              { scaleX: animatedLevel },
+            ],
           },
         ]}
       />

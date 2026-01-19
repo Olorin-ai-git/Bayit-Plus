@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
+import { languages as sharedLanguages } from '@bayit/shared-i18n';
 import { spacing, colors, typography, touchTarget } from '../theme';
 
 type Language = {
@@ -31,11 +32,29 @@ type Language = {
   nativeName: string;
 };
 
-const LANGUAGES: Language[] = [
-  { code: 'he', name: 'Hebrew', nativeName: 'עברית' },
-  { code: 'en', name: 'English', nativeName: 'English' },
-  { code: 'es', name: 'Spanish', nativeName: 'Español' },
-];
+// Map shared languages to our format
+const LANGUAGES: Language[] = sharedLanguages.map(lang => ({
+  code: lang.code,
+  name: getLanguageEnglishName(lang.code),
+  nativeName: lang.name,
+}));
+
+// Get English name for language code
+function getLanguageEnglishName(code: string): string {
+  const names: Record<string, string> = {
+    he: 'Hebrew',
+    en: 'English',
+    es: 'Spanish',
+    zh: 'Chinese',
+    fr: 'French',
+    it: 'Italian',
+    hi: 'Hindi',
+    ta: 'Tamil',
+    bn: 'Bengali',
+    ja: 'Japanese',
+  };
+  return names[code] || code;
+}
 
 export const LanguageSettingsScreen: React.FC = () => {
   const { t, i18n } = useTranslation();

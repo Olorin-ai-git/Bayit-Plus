@@ -46,6 +46,21 @@ from app.services.ai_agent.executors import (
     execute_find_quality_variants,
     execute_link_quality_variants,
     execute_find_missing_metadata,
+    # Series Management
+    execute_find_unlinked_episodes,
+    execute_link_episode_to_series,
+    execute_auto_link_episodes,
+    execute_find_duplicate_episodes,
+    execute_resolve_duplicate_episodes,
+    execute_create_series_from_episode,
+    # Integrity Tools
+    execute_get_integrity_status,
+    execute_find_orphaned_gcs_files,
+    execute_find_orphaned_content_records,
+    execute_find_stuck_upload_jobs,
+    execute_cleanup_orphans,
+    execute_recover_stuck_jobs,
+    execute_run_full_cleanup,
 )
 
 logger = logging.getLogger(__name__)
@@ -151,6 +166,47 @@ async def execute_tool(
 
         elif tool_name == "manage_podcast_episodes":
             return await execute_manage_podcast_episodes(**tool_input)
+
+        # Series Management Tools
+        elif tool_name == "find_unlinked_episodes":
+            return await execute_find_unlinked_episodes(**tool_input)
+
+        elif tool_name == "link_episode_to_series":
+            return await execute_link_episode_to_series(**tool_input, audit_id=audit_id, dry_run=dry_run)
+
+        elif tool_name == "auto_link_episodes":
+            return await execute_auto_link_episodes(**tool_input, audit_id=audit_id, dry_run=dry_run)
+
+        elif tool_name == "find_duplicate_episodes":
+            return await execute_find_duplicate_episodes(**tool_input)
+
+        elif tool_name == "resolve_duplicate_episodes":
+            return await execute_resolve_duplicate_episodes(**tool_input, audit_id=audit_id, dry_run=dry_run)
+
+        elif tool_name == "create_series_from_episode":
+            return await execute_create_series_from_episode(**tool_input, audit_id=audit_id, dry_run=dry_run)
+
+        # Integrity Tools
+        elif tool_name == "get_integrity_status":
+            return await execute_get_integrity_status()
+
+        elif tool_name == "find_orphaned_gcs_files":
+            return await execute_find_orphaned_gcs_files(**tool_input)
+
+        elif tool_name == "find_orphaned_content_records":
+            return await execute_find_orphaned_content_records(**tool_input)
+
+        elif tool_name == "find_stuck_upload_jobs":
+            return await execute_find_stuck_upload_jobs(**tool_input)
+
+        elif tool_name == "cleanup_orphans":
+            return await execute_cleanup_orphans(**tool_input)
+
+        elif tool_name == "recover_stuck_jobs":
+            return await execute_recover_stuck_jobs(**tool_input)
+
+        elif tool_name == "run_full_cleanup":
+            return await execute_run_full_cleanup(**tool_input)
 
         elif tool_name == "complete_audit":
             # This is handled specially in the agent loop

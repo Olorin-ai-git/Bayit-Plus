@@ -166,7 +166,7 @@ export const ProfileScreenMobile: React.FC = () => {
         {isAdminRole() ? (
           <View style={styles.subscriptionBadge}>
             <Text style={styles.subscriptionText}>
-              ✨ COMPLIMENTARY PREMIUM ACCESS
+              {t('profile.complimentaryPremium')}
             </Text>
           </View>
         ) : user?.subscription_tier ? (
@@ -186,7 +186,7 @@ export const ProfileScreenMobile: React.FC = () => {
                 (user as any).email_verified ? styles.verifiedBadge : styles.unverifiedBadge
               ]}>
                 <Text style={styles.verificationBadgeText}>
-                  {(user as any).email_verified ? '✓ Email Verified' : '✗ Email Unverified'}
+                  {(user as any).email_verified ? t('profile.emailVerified') : t('profile.emailUnverified')}
                 </Text>
               </View>
               <View style={[
@@ -194,13 +194,13 @@ export const ProfileScreenMobile: React.FC = () => {
                 (user as any).phone_verified ? styles.verifiedBadge : styles.unverifiedBadge
               ]}>
                 <Text style={styles.verificationBadgeText}>
-                  {(user as any).phone_verified ? '✓ Phone Verified' : '✗ Phone Unverified'}
+                  {(user as any).phone_verified ? t('profile.phoneVerified') : t('profile.phoneUnverified')}
                 </Text>
               </View>
             </View>
             {needsVerification() && (
               <GlassButton
-                title="Complete Verification"
+                title={t('profile.completeVerification')}
                 onPress={() => setShowVerificationModal(true)}
                 variant="primary"
                 size="sm"
@@ -214,9 +214,9 @@ export const ProfileScreenMobile: React.FC = () => {
       {/* Upgrade Section - for verified users without subscription */}
       {!isAdminRole() && isVerified() && !user?.subscription_tier && (
         <GlassView style={styles.upgradeSection}>
-          <Text style={styles.upgradeSectionTitle}>Unlock Premium Features</Text>
+          <Text style={styles.upgradeSectionTitle}>{t('profile.unlockPremium')}</Text>
           <Text style={styles.upgradeSectionSubtitle}>
-            Watch VOD content, create widgets, and access all premium features
+            {t('profile.unlockPremiumDescription')}
           </Text>
           <UpgradeButton fullWidth />
         </GlassView>
@@ -281,7 +281,7 @@ export const ProfileScreenMobile: React.FC = () => {
       )}
 
       {/* App Version */}
-      <Text style={styles.version}>Bayit+ v1.0.0</Text>
+      <Text style={styles.version}>{t('common.appVersion')}</Text>
 
       {/* Verification Modal */}
       <VerificationModal

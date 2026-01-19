@@ -223,6 +223,25 @@ class BrowserUploadSession(Document):
         ]
 
 
+class UploadHashLock(Document):
+    """
+    Distributed lock for preventing duplicate uploads during processing.
+    Uses MongoDB TTL index for automatic cleanup of stale locks.
+    """
+    file_hash: str  # SHA256 hash of the file
+    job_id: str  # ID of the job holding the lock
+    acquired_at: datetime = Field(default_factory=datetime.utcnow)
+    expires_at: datetime  # TTL index will auto-delete expired locks
+
+    class Settings:
+        name = "upload_hash_locks"
+        indexes = [
+            {"keys": [("file_hash", 1)], "unique": True},
+            {"keys": [("expires_at", 1)], "expireAfterSeconds": 0},  # TTL index
+            "job_id",
+        ]
+
+
 class UploadStats(Document):
     """
     Aggregated statistics for upload operations.

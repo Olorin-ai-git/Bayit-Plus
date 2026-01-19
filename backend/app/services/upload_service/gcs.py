@@ -301,5 +301,73 @@ class GCSUploader:
             return None
 
 
+    async def delete_file(self, gcs_path: str) -> bool:
+        """
+        Delete a file from GCS.
+
+        Args:
+            gcs_path: The path to the file in GCS (e.g., "movies/title/file.mp4")
+
+        Returns:
+            True if the file was deleted or didn't exist, False on error
+        """
+        try:
+            client = await self.get_client()
+            bucket = client.bucket(settings.GCS_BUCKET_NAME)
+            blob = bucket.blob(gcs_path)
+
+            if blob.exists():
+                blob.delete()
+                logger.info(f"Deleted GCS file: {gcs_path}")
+                return True
+            else:
+                logger.debug(f"GCS file not found (already deleted or never existed): {gcs_path}")
+                return True
+
+        except Exception as e:
+            logger.error(f"Failed to delete GCS file {gcs_path}: {e}", exc_info=True)
+            return False
+
+    async def file_exists(self, gcs_path: str) -> bool:
+        """
+        Check if a file exists in GCS.
+
+        Args:
+            gcs_path: The path to the file in GCS
+
+        Returns:
+            True if the file exists, False otherwise
+        """
+        try:
+            client = await self.get_client()
+            bucket = client.bucket(settings.GCS_BUCKET_NAME)
+            blob = bucket.blob(gcs_path)
+            return blob.exists()
+
+        except Exception as e:
+            logger.error(f"Failed to check GCS file existence {gcs_path}: {e}", exc_info=True)
+            return False
+
+    async def list_files(self, prefix: str) -> list:
+        """
+        List files in GCS with a given prefix.
+
+        Args:
+            prefix: The prefix to filter files (e.g., "movies/")
+
+        Returns:
+            List of blob names matching the prefix
+        """
+        try:
+            client = await self.get_client()
+            bucket = client.bucket(settings.GCS_BUCKET_NAME)
+            blobs = bucket.list_blobs(prefix=prefix)
+            return [blob.name for blob in blobs]
+
+        except Exception as e:
+            logger.error(f"Failed to list GCS files with prefix {prefix}: {e}", exc_info=True)
+            return []
+
+
 # Global GCS uploader instance
 gcs_uploader = GCSUploader()

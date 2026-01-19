@@ -53,7 +53,8 @@
     "clearSelection": "Clear",
     "expand": "Expand",
     "collapse": "Collapse",
-    "upgrade": "Upgrade to Premium"
+    "upgrade": "Upgrade to Premium",
+    "skip": "Skip"
   },
   "demo": {
     "banner": "DEMO MODE",
@@ -380,7 +381,9 @@
       "jewish": "Jewish"
     },
     "noStations": "No radio stations available",
-    "tryLater": "Try again later"
+    "tryLater": "Try again later",
+    "playing": "PLAYING",
+    "fmSuffix": "FM"
   },
   "podcasts": {
     "title": "Podcasts",
@@ -420,7 +423,10 @@
     },
     "allCategories": "All",
     "emptyTitle": "No Content Available",
-    "emptyDescription": "Try selecting another category"
+    "emptyDescription": "Try selecting another category",
+    "allContent": "All Content",
+    "noContent": "No content available",
+    "noContentInCategory": "No content found in this category"
   },
   "account": {
     "title": "My Account",
@@ -743,7 +749,15 @@
     "invalidImageType": "Please select a valid image file (JPEG, PNG, WebP, or GIF)",
     "imageTooLarge": "Image is too large. Maximum size is 5MB.",
     "uploadSuccess": "Avatar updated successfully!",
-    "uploadFailed": "Failed to upload avatar. Please try again."
+    "uploadFailed": "Failed to upload avatar. Please try again.",
+    "complimentaryPremium": "COMPLIMENTARY PREMIUM ACCESS",
+    "emailVerified": "Email verified",
+    "emailUnverified": "Email not verified",
+    "phoneVerified": "Phone verified",
+    "phoneUnverified": "Phone not verified",
+    "completeVerification": "Complete verification to unlock all features",
+    "unlockPremium": "Unlock Premium Features",
+    "unlockPremiumDescription": "Upgrade to enjoy exclusive content and features"
   },
   "voiceMode": {
     "voiceOnly": "Voice Only",
@@ -890,6 +904,8 @@
     "skipBackward": "Skip backward 30 seconds",
     "skipForward": "Skip forward 30 seconds",
     "restart": "Restart from beginning",
+    "subtitlesOff": "Off",
+    "speed": "Speed",
     "subscription": {
       "requiredTitle": "Subscription Required",
       "requiredMessage": "requires a paid subscription",
@@ -3178,5 +3194,50 @@
       "events": "Events",
       "general": "Tel Aviv"
     }
+  },
+  "voiceOnboarding": {
+    "welcome": {
+      "title": "Welcome to Voice Control",
+      "description": "Control Bayit+ with your voice for a hands-free experience"
+    },
+    "features": {
+      "voiceCommands": "Voice Commands",
+      "voiceCommandsDesc": "Navigate, search, and control playback with natural speech",
+      "tts": "Text-to-Speech",
+      "ttsDesc": "Hear responses and content descriptions read aloud",
+      "wakeWord": "Wake Word",
+      "wakeWordDesc": "Say 'Bayit' to activate voice control anytime"
+    },
+    "getStarted": "Get Started",
+    "permissions": {
+      "title": "Microphone Access",
+      "description": "Voice control requires microphone access to hear your commands",
+      "privacy": "Your voice data is processed securely and never stored"
+    },
+    "permissionsGranted": "Microphone access granted",
+    "permissionRequired": {
+      "title": "Permission Required",
+      "message": "Please enable microphone access in your device settings to use voice control"
+    },
+    "grantPermissions": "Grant Permissions",
+    "testWakeWord": {
+      "title": "Test Wake Word",
+      "description": "Say 'Bayit' to test voice activation",
+      "success": "Great! Voice activation is working"
+    },
+    "startTest": "Start Test",
+    "complete": {
+      "title": "You're All Set!",
+      "description": "Voice control is now enabled. Try these commands:",
+      "tryCommands": "Try These Commands",
+      "examples": {
+        "search": "\"Search for Fauda\"",
+        "play": "\"Play the news\"",
+        "navigate": "\"Go to Live TV\"",
+        "control": "\"Pause\" or \"Volume up\""
+      },
+      "startUsing": "Start Using Voice Control"
+    },
+    "skip": "Skip for now"
   }
 }

@@ -31,6 +31,14 @@ from .gcs import gcs_uploader
 from .metadata import metadata_extractor
 from .content import content_creator
 from .background import background_enricher
+from .lock import upload_lock_manager
+from .transaction import UploadTransaction
+
+from app.core.exceptions import (
+    DuplicateContentError,
+    HashLockConflictError,
+    TransactionRollbackError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -173,7 +181,10 @@ class UploadService:
             await self._broadcast_queue_update()
 
     async def _process_job(self, job: UploadJob):
-        """Process a single upload job."""
+        """Process a single upload job with transaction support and rollback."""
+        transaction = UploadTransaction(job)
+        hash_lock_acquired = False
+
         try:
             logger.info(f"Processing job {job.job_id}: {job.filename}")
 
@@ -185,6 +196,27 @@ class UploadService:
             # Stage 0: Calculate hash and check for duplicates
             await self._process_hash_stage(job)
 
+            # Stage 0.5: Acquire hash lock to prevent race conditions
+            if job.file_hash:
+                hash_lock_acquired = await upload_lock_manager.acquire_hash_lock(
+                    file_hash=job.file_hash,
+                    job_id=job.job_id,
+                    timeout_seconds=1800  # 30 minutes for large uploads
+                )
+
+                if not hash_lock_acquired:
+                    lock_info = await upload_lock_manager.get_lock_info(job.file_hash)
+                    blocking_job = lock_info.get("job_id") if lock_info else "unknown"
+                    raise HashLockConflictError(job.file_hash, blocking_job)
+
+                # Re-check for duplicates after acquiring lock (double-check pattern)
+                client = AsyncIOMotorClient(settings.MONGODB_URL)
+                db = client[settings.MONGODB_DB_NAME]
+                existing_content = await db.content.find_one({'file_hash': job.file_hash})
+                if existing_content:
+                    existing_title = existing_content.get('title', job.filename)
+                    raise DuplicateContentError(job.file_hash, existing_title)
+
             # Stage 1: Extract metadata
             await self._process_metadata_stage(job)
 
@@ -195,11 +227,22 @@ class UploadService:
                 await job.save()
                 logger.info(f"Subtitle extraction scheduled for background: {job.source_path}")
 
-            # Stage 2: Upload to GCS
-            await self._process_upload_stage(job)
+            # Stage 2: Upload to GCS with compensation
+            await transaction.execute_with_compensation(
+                action=lambda: self._process_upload_stage(job),
+                compensation=lambda: self._compensate_gcs_upload(job),
+                action_name="gcs_upload"
+            )
 
-            # Stage 3: Create content entry in database
-            await self._process_database_stage(job)
+            # Stage 3: Create content entry in database with compensation
+            await transaction.execute_with_compensation(
+                action=lambda: self._process_database_stage(job),
+                compensation=lambda: self._compensate_database_insert(job),
+                action_name="database_insert"
+            )
+
+            # All stages successful - commit transaction
+            await transaction.commit()
 
             # Mark as completed
             job.status = UploadStatus.COMPLETED
@@ -214,10 +257,40 @@ class UploadService:
             await self._schedule_enrichment_tasks(job)
 
         except Exception as e:
-            await self._handle_job_failure(job, e)
+            await self._handle_job_failure(job, e, transaction)
 
         finally:
+            # Always release hash lock
+            if hash_lock_acquired and job.file_hash:
+                await upload_lock_manager.release_hash_lock(job.file_hash, job.job_id)
+
             await self._broadcast_queue_update()
+
+    async def _compensate_gcs_upload(self, job: UploadJob) -> bool:
+        """Compensation action: Delete uploaded GCS file."""
+        if job.gcs_path:
+            logger.info(f"Compensating: Deleting GCS file {job.gcs_path}")
+            return await gcs_uploader.delete_file(job.gcs_path)
+        return True  # Nothing to delete
+
+    async def _compensate_database_insert(self, job: UploadJob) -> bool:
+        """Compensation action: Delete created Content record."""
+        content_id = job.metadata.get('content_id')
+        if content_id:
+            try:
+                from app.models.content import Content
+                from bson import ObjectId
+
+                logger.info(f"Compensating: Deleting Content record {content_id}")
+                content = await Content.find_one(Content.id == ObjectId(content_id))
+                if content:
+                    await content.delete()
+                    logger.info(f"Deleted Content record {content_id}")
+                return True
+            except Exception as e:
+                logger.error(f"Failed to delete Content record {content_id}: {e}")
+                return False
+        return True  # Nothing to delete
 
     async def _process_hash_stage(self, job: UploadJob):
         """Calculate hash and check for duplicates."""
@@ -365,16 +438,69 @@ class UploadService:
 
         await self._broadcast_queue_update()
 
-    async def _handle_job_failure(self, job: UploadJob, error: Exception):
-        """Handle job failure with retry logic."""
+    async def _handle_job_failure(
+        self,
+        job: UploadJob,
+        error: Exception,
+        transaction: UploadTransaction = None
+    ):
+        """Handle job failure with rollback and retry logic."""
         logger.error(f"Job {job.job_id} failed: {error}", exc_info=True)
+
+        # Perform transaction rollback if there are compensations registered
+        rollback_result = None
+        if transaction and transaction.is_active and transaction.get_compensation_count() > 0:
+            logger.info(
+                f"Initiating rollback for job {job.job_id} with "
+                f"{transaction.get_compensation_count()} compensation actions"
+            )
+            rollback_result = await transaction.rollback()
+
+            if not rollback_result.success:
+                logger.error(
+                    f"Rollback partially failed for job {job.job_id}: "
+                    f"{rollback_result.actions_failed}/{rollback_result.actions_attempted} failed"
+                )
+                # Store rollback failure info in job metadata for debugging
+                job.metadata['rollback_result'] = {
+                    'success': rollback_result.success,
+                    'actions_attempted': rollback_result.actions_attempted,
+                    'actions_succeeded': rollback_result.actions_succeeded,
+                    'actions_failed': rollback_result.actions_failed,
+                    'errors': rollback_result.errors,
+                }
+            else:
+                logger.info(
+                    f"Rollback successful for job {job.job_id}: "
+                    f"{rollback_result.actions_succeeded}/{rollback_result.actions_attempted} succeeded"
+                )
 
         job.status = UploadStatus.FAILED
         job.error_message = str(error)
         job.retry_count += 1
+        job.completed_at = datetime.utcnow()
         await job.save()
 
+        # Check for specific error types that should not be retried
+        is_duplicate_error = isinstance(error, DuplicateContentError)
+        is_lock_conflict = isinstance(error, HashLockConflictError)
         is_credential_error = self._is_credential_error(error)
+
+        if is_duplicate_error:
+            # Duplicate errors should not be retried
+            logger.info(f"Job {job.job_id} failed due to duplicate content - not retrying")
+            return
+
+        if is_lock_conflict:
+            # Lock conflicts could be retried after a delay
+            if job.retry_count < job.max_retries:
+                job.status = UploadStatus.QUEUED
+                await job.save()
+                logger.info(
+                    f"Job {job.job_id} requeued after lock conflict "
+                    f"({job.retry_count}/{job.max_retries})"
+                )
+            return
 
         if is_credential_error:
             self._consecutive_credential_failures += 1
@@ -390,6 +516,7 @@ class UploadService:
         else:
             self._consecutive_credential_failures = 0
 
+        # Retry if not a permanent failure
         if job.retry_count < job.max_retries:
             job.status = UploadStatus.QUEUED
             await job.save()

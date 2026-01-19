@@ -302,6 +302,13 @@ EOF
     # create_or_update_secret "bayit-gcs-upload-retry-initial-delay" "GCS_UPLOAD_RETRY_INITIAL_DELAY_SECONDS"
     # create_or_update_secret "bayit-gcs-upload-retry-max-delay" "GCS_UPLOAD_RETRY_MAX_DELAY_SECONDS"
 
+    # Series Linker Configuration
+    create_or_update_secret "bayit-series-linker-title-similarity" "SERIES_LINKER_TITLE_SIMILARITY_THRESHOLD"
+    create_or_update_secret "bayit-series-linker-auto-link-confidence" "SERIES_LINKER_AUTO_LINK_CONFIDENCE_THRESHOLD"
+    create_or_update_secret "bayit-series-linker-batch-size" "SERIES_LINKER_AUTO_LINK_BATCH_SIZE"
+    create_or_update_secret "bayit-series-linker-duplicate-strategy" "SERIES_LINKER_DUPLICATE_RESOLUTION_STRATEGY"
+    create_or_update_secret "bayit-series-linker-create-missing" "SERIES_LINKER_CREATE_MISSING_SERIES"
+
     # Judaism Section Configuration
     create_or_update_secret "bayit-jewish-news-cache-ttl" "JEWISH_NEWS_CACHE_TTL_MINUTES"
     create_or_update_secret "bayit-jewish-news-sync-interval" "JEWISH_NEWS_SYNC_INTERVAL_MINUTES"
@@ -346,6 +353,9 @@ EOF
                   bayit-librarian-max-budget-usd bayit-librarian-budget-step-usd bayit-librarian-reports-limit \
                   bayit-librarian-actions-limit bayit-librarian-activity-page-size bayit-librarian-id-truncate-length \
                   bayit-librarian-modal-max-height \
+                  bayit-series-linker-title-similarity bayit-series-linker-auto-link-confidence \
+                  bayit-series-linker-batch-size bayit-series-linker-duplicate-strategy \
+                  bayit-series-linker-create-missing \
                   bayit-jewish-news-cache-ttl bayit-jewish-news-sync-interval bayit-jewish-news-timeout \
                   bayit-hebcal-api-url bayit-sefaria-api-url bayit-jewish-calendar-cache-ttl \
                   bayit-community-search-radius bayit-community-default-region bayit-us-jewish-regions \

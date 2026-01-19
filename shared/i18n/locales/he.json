@@ -51,7 +51,9 @@
     "clear": "נקה",
     "clearSelection": "נקה",
     "expand": "הרחב",
-    "collapse": "כווץ"
+    "collapse": "כווץ",
+    "upgrade": "שדרג לפרימיום",
+    "skip": "דלג"
   },
   "demo": {
     "banner": "מצב הדמו",
@@ -374,7 +376,9 @@
       "jewish": "יהודי"
     },
     "noStations": "אין תחנות רדיו זמינות",
-    "tryLater": "נסה שוב מאוחר יותר"
+    "tryLater": "נסה שוב מאוחר יותר",
+    "playing": "מתנגן",
+    "fmSuffix": "FM"
   },
   "podcasts": {
     "title": "פודקאסטים",
@@ -414,7 +418,10 @@
     },
     "allCategories": "הכל",
     "emptyTitle": "אין תוכן זמין",
-    "emptyDescription": "נסה לבחור קטגוריה אחרת"
+    "emptyDescription": "נסה לבחור קטגוריה אחרת",
+    "allContent": "כל התוכן",
+    "noContent": "אין תוכן זמין",
+    "noContentInCategory": "לא נמצא תוכן בקטגוריה זו"
   },
   "account": {
     "title": "החשבון שלי",
@@ -741,7 +748,15 @@
     "invalidImageType": "אנא בחר קובץ תמונה תקין (JPEG, PNG, WebP או GIF)",
     "imageTooLarge": "התמונה גדולה מדי. גודל מקסימלי הוא 5MB.",
     "uploadSuccess": "התמונה עודכנה בהצלחה!",
-    "uploadFailed": "העלאת התמונה נכשלה. אנא נסה שוב."
+    "uploadFailed": "העלאת התמונה נכשלה. אנא נסה שוב.",
+    "complimentaryPremium": "גישת פרימיום בחינם",
+    "emailVerified": "האימייל אומת",
+    "emailUnverified": "האימייל לא אומת",
+    "phoneVerified": "הטלפון אומת",
+    "phoneUnverified": "הטלפון לא אומת",
+    "completeVerification": "השלם אימות כדי לפתוח את כל התכונות",
+    "unlockPremium": "פתח תכונות פרימיום",
+    "unlockPremiumDescription": "שדרג כדי ליהנות מתוכן ותכונות בלעדיות"
   },
   "voiceMode": {
     "voiceOnly": "קולי בלבד",
@@ -888,6 +903,8 @@
     "skipBackward": "קפוץ 30 שניות אחורה",
     "skipForward": "קפוץ 30 שניות קדימה",
     "restart": "התחל מההתחלה",
+    "subtitlesOff": "כבוי",
+    "speed": "מהירות",
     "selectQuality": "בחר איכות וידאו",
     "quality4k": "4K Ultra HD",
     "quality1080p": "1080p Full HD",
@@ -3175,5 +3192,50 @@
       "events": "אירועים",
       "general": "תל אביב"
     }
+  },
+  "voiceOnboarding": {
+    "welcome": {
+      "title": "ברוכים הבאים לשליטה קולית",
+      "description": "שלוט ב-Bayit+ עם הקול שלך לחוויה ללא ידיים"
+    },
+    "features": {
+      "voiceCommands": "פקודות קוליות",
+      "voiceCommandsDesc": "נווט, חפש ושלוט בהפעלה בעזרת דיבור טבעי",
+      "tts": "טקסט לדיבור",
+      "ttsDesc": "שמע תגובות ותיאורי תוכן מושמעים בקול",
+      "wakeWord": "מילת הפעלה",
+      "wakeWordDesc": "אמור 'בית' כדי להפעיל שליטה קולית בכל עת"
+    },
+    "getStarted": "התחל",
+    "permissions": {
+      "title": "גישה למיקרופון",
+      "description": "שליטה קולית דורשת גישה למיקרופון כדי לשמוע את הפקודות שלך",
+      "privacy": "נתוני הקול שלך מעובדים בצורה מאובטחת ולא נשמרים"
+    },
+    "permissionsGranted": "גישה למיקרופון אושרה",
+    "permissionRequired": {
+      "title": "נדרשת הרשאה",
+      "message": "אנא הפעל גישה למיקרופון בהגדרות המכשיר שלך כדי להשתמש בשליטה קולית"
+    },
+    "grantPermissions": "אשר הרשאות",
+    "testWakeWord": {
+      "title": "בדוק מילת הפעלה",
+      "description": "אמור 'בית' כדי לבדוק הפעלה קולית",
+      "success": "מעולה! הפעלה קולית עובדת"
+    },
+    "startTest": "התחל בדיקה",
+    "complete": {
+      "title": "הכל מוכן!",
+      "description": "שליטה קולית מופעלת כעת. נסה את הפקודות האלה:",
+      "tryCommands": "נסה את הפקודות האלה",
+      "examples": {
+        "search": "\"חפש פאודה\"",
+        "play": "\"נגן חדשות\"",
+        "navigate": "\"לך לטלוויזיה חיה\"",
+        "control": "\"השהה\" או \"הגבר עוצמה\""
+      },
+      "startUsing": "התחל להשתמש בשליטה קולית"
+    },
+    "skip": "דלג לעת עתה"
   }
 }

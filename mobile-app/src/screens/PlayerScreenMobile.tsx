@@ -172,7 +172,7 @@ export const PlayerScreenMobile: React.FC = () => {
         {/* Video player */}
         <Video
           ref={videoRef}
-          source={{ uri: `https://api.bayit.tv/stream/${id}` }}
+          source={{ uri: `${API_BASE_URL.replace('/api/v1', '')}/stream/${id}` }}
           style={styles.video}
           resizeMode="contain"
           paused={!isPlaying}
@@ -285,11 +285,11 @@ export const PlayerScreenMobile: React.FC = () => {
           onClose={() => setSettingsVisible(false)}
           height={300}
         >
-          <Text style={styles.sheetTitle}>Settings</Text>
+          <Text style={styles.sheetTitle}>{t('player.settings')}</Text>
 
           {/* Quality selection */}
           <View style={styles.settingSection}>
-            <Text style={styles.settingLabel}>Quality</Text>
+            <Text style={styles.settingLabel}>{t('player.quality')}</Text>
             <View style={styles.settingOptions}>
               {['auto', '1080p', '720p', '480p'].map((q) => (
                 <GlassButton
@@ -306,7 +306,7 @@ export const PlayerScreenMobile: React.FC = () => {
 
           {/* Subtitles */}
           <View style={styles.settingSection}>
-            <Text style={styles.settingLabel}>Subtitles</Text>
+            <Text style={styles.settingLabel}>{t('player.subtitles')}</Text>
             <View style={styles.settingOptions}>
               <GlassButton
                 key="off"
@@ -314,7 +314,7 @@ export const PlayerScreenMobile: React.FC = () => {
                 onPress={() => setSubtitles('off')}
                 style={styles.settingOption}
               >
-                Off
+                {t('player.subtitlesOff')}
               </GlassButton>
               {availableSubtitles.map((track) => (
                 <GlassButton
@@ -331,7 +331,7 @@ export const PlayerScreenMobile: React.FC = () => {
 
           {/* Playback speed */}
           <View style={styles.settingSection}>
-            <Text style={styles.settingLabel}>Speed</Text>
+            <Text style={styles.settingLabel}>{t('player.speed')}</Text>
             <View style={styles.settingOptions}>
               {[0.5, 1.0, 1.5, 2.0].map((speed) => (
                 <GlassButton

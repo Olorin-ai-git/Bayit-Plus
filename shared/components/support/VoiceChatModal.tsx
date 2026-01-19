@@ -107,6 +107,21 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
   const [prevState, setPrevState] = useState<VoiceState>(voiceState);
   const [currentState, setCurrentState] = useState<VoiceState>(voiceState);
 
+  // Track sprite type for crossfade transitions between different spritesheets
+  type SpriteType = 'speaking' | 'listening' | 'thinking' | 'gesture' | 'static';
+  const getSpriteType = useCallback((vs: VoiceState, gs: GestureState | null): SpriteType => {
+    if (gs && GESTURE_TO_SPRITESHEET[gs]) return 'gesture';
+    if (gs) return 'static';
+    if (vs === 'speaking') return 'speaking';
+    if (vs === 'processing') return 'thinking';
+    if (vs === 'listening') return 'listening';
+    return 'static';
+  }, []);
+
+  const [prevSpriteType, setPrevSpriteType] = useState<SpriteType>(() => getSpriteType(voiceState, gestureState));
+  const [currentSpriteType, setCurrentSpriteType] = useState<SpriteType>(() => getSpriteType(voiceState, gestureState));
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
   // Animations
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -115,6 +130,10 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
   // Crossfade animations for wizard images
   const currentImageOpacity = useRef(new Animated.Value(1)).current;
   const prevImageOpacity = useRef(new Animated.Value(0)).current;
+
+  // Crossfade for sprite type transitions
+  const currentSpriteOpacity = useRef(new Animated.Value(1)).current;
+  const prevSpriteOpacity = useRef(new Animated.Value(0)).current;
 
   // Handle state changes with crossfade
   useEffect(() => {
@@ -144,6 +163,39 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
       ]).start();
     }
   }, [voiceState, currentState]);
+
+  // Handle sprite type changes with crossfade (for smooth transitions between spritesheets)
+  useEffect(() => {
+    const newSpriteType = getSpriteType(voiceState, gestureState);
+
+    if (newSpriteType !== currentSpriteType && !isTransitioning) {
+      setIsTransitioning(true);
+      setPrevSpriteType(currentSpriteType);
+
+      // Reset opacities for crossfade
+      prevSpriteOpacity.setValue(1);
+      currentSpriteOpacity.setValue(0);
+
+      // Update current sprite type
+      setCurrentSpriteType(newSpriteType);
+
+      // Animate crossfade between sprite types
+      Animated.parallel([
+        Animated.timing(currentSpriteOpacity, {
+          toValue: 1,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(prevSpriteOpacity, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setIsTransitioning(false);
+      });
+    }
+  }, [voiceState, gestureState, currentSpriteType, isTransitioning, getSpriteType]);
 
   // Play sound effects for gesture animations
   useEffect(() => {
@@ -247,6 +299,86 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
   const displayText = currentIntroText || lastResponse || currentTranscript;
   const hasText = Boolean(displayText);
 
+  // Helper to render sprite based on type
+  const renderSpriteForType = (spriteType: SpriteType, vs: VoiceState, gs: GestureState | null, playing: boolean) => {
+    switch (spriteType) {
+      case 'gesture':
+        return gs && GESTURE_TO_SPRITESHEET[gs] ? (
+          <WizardSprite
+            spritesheet={GESTURE_TO_SPRITESHEET[gs]!}
+            size={WIZARD_SIZE}
+            playing={playing && isAnimatingGesture}
+            onComplete={() => {
+              setIsAnimatingGesture(false);
+              clearGesture();
+            }}
+          />
+        ) : null;
+      case 'speaking':
+        return (
+          <WizardSprite
+            spritesheet="speaking"
+            size={WIZARD_SIZE}
+            playing={playing}
+            loop={true}
+          />
+        );
+      case 'thinking':
+        return (
+          <WizardSprite
+            spritesheet="thinking"
+            size={WIZARD_SIZE}
+            playing={playing}
+            loop={true}
+          />
+        );
+      case 'listening':
+        return (
+          <WizardSprite
+            spritesheet="listening"
+            size={WIZARD_SIZE}
+            playing={playing}
+            loop={true}
+          />
+        );
+      case 'static':
+      default:
+        // Static images with crossfade
+        if (gs && GESTURE_AVATARS[gs]) {
+          return (
+            <Image
+              source={GESTURE_AVATARS[gs]}
+              style={styles.wizardImage}
+              resizeMode="contain"
+            />
+          );
+        }
+        return (
+          <>
+            {/* Previous state image (fading out) */}
+            <Animated.Image
+              source={WIZARD_AVATARS[prevState]}
+              style={[
+                styles.wizardImage,
+                styles.wizardImageAbsolute,
+                { opacity: prevImageOpacity },
+              ]}
+              resizeMode="contain"
+            />
+            {/* Current state image (fading in) */}
+            <Animated.Image
+              source={WIZARD_AVATARS[vs]}
+              style={[
+                styles.wizardImage,
+                { opacity: currentImageOpacity },
+              ]}
+              resizeMode="contain"
+            />
+          </>
+        );
+    }
+  };
+
   if (!visible) return null;
 
   return (
@@ -283,72 +415,25 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
               { transform: [{ scale: wizardBreathing }] },
             ]}
           >
-            {/* Gesture with spritesheet animation */}
-            {gestureState && GESTURE_TO_SPRITESHEET[gestureState] ? (
-              <WizardSprite
-                spritesheet={GESTURE_TO_SPRITESHEET[gestureState]!}
-                size={WIZARD_SIZE}
-                playing={isAnimatingGesture}
-                onComplete={() => {
-                  setIsAnimatingGesture(false);
-                  clearGesture();
-                }}
-              />
-            ) : gestureState ? (
-              /* Static gesture image */
-              <Image
-                source={GESTURE_AVATARS[gestureState]}
-                style={styles.wizardImage}
-                resizeMode="contain"
-              />
-            ) : voiceState === 'speaking' ? (
-              /* Speaking animation using spritesheet */
-              <WizardSprite
-                spritesheet="speaking"
-                size={WIZARD_SIZE}
-                playing={true}
-                loop={true}
-              />
-            ) : voiceState === 'processing' ? (
-              /* Thinking animation using spritesheet */
-              <WizardSprite
-                spritesheet="thinking"
-                size={WIZARD_SIZE}
-                playing={true}
-                loop={true}
-              />
-            ) : voiceState === 'listening' ? (
-              /* Listening animation using spritesheet */
-              <WizardSprite
-                spritesheet="listening"
-                size={WIZARD_SIZE}
-                playing={true}
-                loop={true}
-              />
-            ) : (
-              /* Voice state with crossfade (default behavior) */
-              <>
-                {/* Previous state image (fading out) */}
-                <Animated.Image
-                  source={WIZARD_AVATARS[prevState]}
-                  style={[
-                    styles.wizardImage,
-                    styles.wizardImageAbsolute,
-                    { opacity: prevImageOpacity },
-                  ]}
-                  resizeMode="contain"
-                />
-                {/* Current state image (fading in) */}
-                <Animated.Image
-                  source={WIZARD_AVATARS[currentState]}
-                  style={[
-                    styles.wizardImage,
-                    { opacity: currentImageOpacity },
-                  ]}
-                  resizeMode="contain"
-                />
-              </>
+            {/* Crossfade between sprite types for smooth transitions */}
+            {isTransitioning && (
+              <Animated.View
+                style={[
+                  styles.spriteLayer,
+                  { opacity: prevSpriteOpacity },
+                ]}
+              >
+                {renderSpriteForType(prevSpriteType, prevState, null, false)}
+              </Animated.View>
             )}
+            <Animated.View
+              style={[
+                styles.spriteLayer,
+                isTransitioning ? { opacity: currentSpriteOpacity } : undefined,
+              ]}
+            >
+              {renderSpriteForType(currentSpriteType, voiceState, gestureState, true)}
+            </Animated.View>
           </Animated.View>
         </View>
 
@@ -482,6 +567,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
+  },
+  spriteLayer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   nameBadge: {
     alignItems: 'center',

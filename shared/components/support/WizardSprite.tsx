@@ -2,10 +2,11 @@
  * WizardSprite
  * Animated sprite component for wizard spritesheet animations
  * Supports clapping and speaking animations using 6x6 grid spritesheets
+ * Uses requestAnimationFrame for smooth 60fps rendering
  */
 
-import React, { useEffect, useRef, useCallback } from 'react';
-import { View, Image, Animated, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
+import { View, Image, Animated, StyleSheet, Platform } from 'react-native';
 import { isTV } from '../../utils/platform';
 
 // Spritesheet configurations
@@ -115,10 +116,11 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
   const config = SPRITESHEET_CONFIG[spritesheet];
   const shouldLoop = loop !== undefined ? loop : config.loop;
 
-  // Animation value (0 to totalFrames - 1)
-  const frameAnim = useRef(new Animated.Value(0)).current;
-  const animationRef = useRef<Animated.CompositeAnimation | null>(null);
+  // Current frame state for direct rendering (smoother than Animated for discrete frames)
+  const [currentFrame, setCurrentFrame] = useState(0);
   const isPlayingRef = useRef(false);
+  const frameRequestRef = useRef<number | null>(null);
+  const lastFrameTimeRef = useRef<number>(0);
 
   // Calculate scale factor to fit frame into display size
   const scale = size / Math.max(config.frameWidth, config.frameHeight);
@@ -135,53 +137,51 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
   const startAnimation = useCallback(() => {
     if (isPlayingRef.current) return;
     isPlayingRef.current = true;
+    lastFrameTimeRef.current = performance.now();
+    setCurrentFrame(0);
 
-    // Reset to frame 0
-    frameAnim.setValue(0);
-
-    // Create frame-by-frame animation
-    const animateFrame = (currentFrame: number) => {
+    // Use requestAnimationFrame for smooth timing
+    const animate = (timestamp: number) => {
       if (!isPlayingRef.current) return;
 
-      if (currentFrame >= config.totalFrames) {
-        if (shouldLoop) {
-          // Restart from frame 0
-          frameAnim.setValue(0);
-          animateFrame(0);
-        } else {
-          // Animation complete
-          isPlayingRef.current = false;
-          onComplete?.();
-        }
-        return;
+      const elapsed = timestamp - lastFrameTimeRef.current;
+
+      if (elapsed >= frameDuration) {
+        lastFrameTimeRef.current = timestamp - (elapsed % frameDuration);
+
+        setCurrentFrame((prevFrame) => {
+          const nextFrame = prevFrame + 1;
+          if (nextFrame >= config.totalFrames) {
+            if (shouldLoop) {
+              return 0; // Loop back to start
+            } else {
+              // Animation complete
+              isPlayingRef.current = false;
+              // Schedule callback outside of setState
+              setTimeout(() => onComplete?.(), 0);
+              return prevFrame; // Stay on last frame
+            }
+          }
+          return nextFrame;
+        });
       }
 
-      // Animate to next frame
-      animationRef.current = Animated.timing(frameAnim, {
-        toValue: currentFrame,
-        duration: 0, // Instant jump to frame
-        useNativeDriver: true,
-      });
-
-      animationRef.current.start(() => {
-        // Schedule next frame
-        setTimeout(() => {
-          animateFrame(currentFrame + 1);
-        }, frameDuration);
-      });
+      if (isPlayingRef.current) {
+        frameRequestRef.current = requestAnimationFrame(animate);
+      }
     };
 
-    animateFrame(0);
-  }, [frameAnim, config.totalFrames, shouldLoop, frameDuration, onComplete]);
+    frameRequestRef.current = requestAnimationFrame(animate);
+  }, [config.totalFrames, shouldLoop, frameDuration, onComplete]);
 
   const stopAnimation = useCallback(() => {
     isPlayingRef.current = false;
-    if (animationRef.current) {
-      animationRef.current.stop();
-      animationRef.current = null;
+    if (frameRequestRef.current !== null) {
+      cancelAnimationFrame(frameRequestRef.current);
+      frameRequestRef.current = null;
     }
-    frameAnim.setValue(0);
-  }, [frameAnim]);
+    setCurrentFrame(0);
+  }, []);
 
   // Handle play/pause
   useEffect(() => {
@@ -196,22 +196,11 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
     };
   }, [playing, startAnimation, stopAnimation]);
 
-  // Calculate translation based on current frame
-  const translateX = frameAnim.interpolate({
-    inputRange: Array.from({ length: config.totalFrames }, (_, i) => i),
-    outputRange: Array.from({ length: config.totalFrames }, (_, i) => {
-      const col = i % config.columns;
-      return -col * scaledWidth;
-    }),
-  });
-
-  const translateY = frameAnim.interpolate({
-    inputRange: Array.from({ length: config.totalFrames }, (_, i) => i),
-    outputRange: Array.from({ length: config.totalFrames }, (_, i) => {
-      const row = Math.floor(i / config.columns);
-      return -row * scaledHeight;
-    }),
-  });
+  // Calculate translation based on current frame (direct calculation, no interpolation needed)
+  const col = currentFrame % config.columns;
+  const row = Math.floor(currentFrame / config.columns);
+  const translateX = -col * scaledWidth;
+  const translateY = -row * scaledHeight;
 
   return (
     <View
@@ -227,7 +216,7 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
       {/* Subtle glass background to mask sprite transparency - no visible border */}
       <View style={styles.glassBackground} />
 
-      <Animated.Image
+      <Image
         source={config.source}
         style={[
           styles.spritesheet,

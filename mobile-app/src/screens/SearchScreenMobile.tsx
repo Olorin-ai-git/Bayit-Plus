@@ -8,7 +8,7 @@
  * - Recent searches with AsyncStorage persistence
  * - Voice search integration
  * - Bottom sheet for advanced filters
- * - Glass design system with Tailwind CSS
+ * - Glass design system with StyleSheet
  * - Responsive grid layout
  * - Pull-to-refresh
  */
@@ -22,6 +22,7 @@ import {
   ScrollView,
   Platform,
   RefreshControl,
+  StyleSheet,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -32,13 +33,13 @@ import { useAuthStore } from '@bayit/shared-stores';
 import { getLocalizedName } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
+import { colors, spacing } from '../theme';
 
 // Shared search components
 import { useSearch } from '../../../shared/hooks/useSearch';
 import { SearchBar } from '../../../shared/components/search/SearchBar';
 import { SearchFilters } from '../../../shared/components/search/SearchFilters';
 import { SearchResults } from '../../../shared/components/search/SearchResults';
-import { LLMSearchButton } from '../../../shared/components/search/LLMSearchButton';
 import { LLMSearchModal } from '../../../shared/components/search/LLMSearchModal';
 
 interface SearchRoute {
@@ -191,23 +192,24 @@ export const SearchScreenMobile: React.FC = () => {
 
   const hasQuery = !!query.trim();
   const showInitialState = !hasQuery && !loading && results.length === 0;
+  const hasActiveFilters = !!(filters.genres?.length || filters.yearMin || filters.ratingMin || filters.subtitleLanguages?.length);
 
   return (
-    <View className="flex-1 bg-black">
+    <View style={styles.container}>
       {/* Search Header */}
-      <View className="px-4 pt-4 pb-3 bg-black/40 backdrop-blur-xl border-b border-white/10">
-        <View className="flex-row items-center gap-3 mb-3">
+      <View style={styles.header}>
+        <View style={styles.searchRow}>
           {/* Back Button */}
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            className="w-10 h-10 items-center justify-center bg-white/10 rounded-full"
+            style={styles.backButton}
             activeOpacity={0.7}
           >
-            <Text className="text-white text-xl">{isRTL ? '→' : '←'}</Text>
+            <Text style={styles.backButtonText}>{isRTL ? '\u2192' : '\u2190'}</Text>
           </TouchableOpacity>
 
           {/* Search Bar */}
-          <View className="flex-1">
+          <View style={styles.searchBarContainer}>
             <SearchBar
               value={query}
               onChange={setQuery}
@@ -223,13 +225,13 @@ export const SearchScreenMobile: React.FC = () => {
           {/* LLM Search Button (compact for mobile) */}
           <TouchableOpacity
             onPress={() => setShowLLMSearch(true)}
-            className="w-12 h-12 items-center justify-center bg-purple-500/30 rounded-full border border-purple-400/50"
+            style={styles.llmButton}
             activeOpacity={0.7}
           >
-            <Text className="text-2xl">🤖</Text>
+            <Text style={styles.llmButtonIcon}>&#129302;</Text>
             {!isPremium && (
-              <View className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full items-center justify-center">
-                <Text className="text-white text-xs font-bold">P</Text>
+              <View style={styles.premiumBadge}>
+                <Text style={styles.premiumBadgeText}>P</Text>
               </View>
             )}
           </TouchableOpacity>
@@ -239,7 +241,7 @@ export const SearchScreenMobile: React.FC = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerClassName="gap-2"
+          contentContainerStyle={styles.filtersContainer}
         >
           {CONTENT_TYPE_FILTERS.map((filter) => {
             const isActive = activeContentType === filter.id;
@@ -247,18 +249,16 @@ export const SearchScreenMobile: React.FC = () => {
               <TouchableOpacity
                 key={filter.id}
                 onPress={() => handleContentTypeChange(filter.id)}
-                className={`
-                  px-4 py-2 rounded-full border
-                  ${isActive
-                    ? 'bg-purple-500 border-purple-400'
-                    : 'bg-white/5 border-white/10'}
-                `}
+                style={[
+                  styles.filterPill,
+                  isActive ? styles.filterPillActive : styles.filterPillInactive,
+                ]}
                 activeOpacity={0.7}
               >
-                <Text className={`
-                  text-sm font-medium
-                  ${isActive ? 'text-white' : 'text-white/70'}
-                `}>
+                <Text style={[
+                  styles.filterPillText,
+                  isActive ? styles.filterPillTextActive : styles.filterPillTextInactive,
+                ]}>
                   {t(filter.label, { defaultValue: filter.id.toUpperCase() })}
                 </Text>
               </TouchableOpacity>
@@ -268,56 +268,56 @@ export const SearchScreenMobile: React.FC = () => {
           {/* Advanced Filters Button */}
           <TouchableOpacity
             onPress={() => setShowFilters(true)}
-            className="px-4 py-2 rounded-full border border-white/20 bg-white/5"
+            style={styles.moreFiltersButton}
             activeOpacity={0.7}
           >
-            <View className="flex-row items-center gap-1">
-              <Text className="text-base">⚙️</Text>
-              <Text className="text-white/70 text-sm font-medium">
+            <View style={styles.moreFiltersContent}>
+              <Text style={styles.moreFiltersIcon}>&#9881;&#65039;</Text>
+              <Text style={styles.moreFiltersText}>
                 {t('search.moreFilters', { defaultValue: 'More' })}
               </Text>
-              {(filters.genres?.length || filters.yearMin || filters.ratingMin) && (
-                <View className="w-2 h-2 bg-blue-500 rounded-full ml-1" />
+              {hasActiveFilters && (
+                <View style={styles.activeFilterIndicator} />
               )}
             </View>
           </TouchableOpacity>
         </ScrollView>
 
         {/* Active Filters Summary (compact for mobile) */}
-        {(filters.genres?.length || filters.yearMin || filters.ratingMin || filters.subtitleLanguages?.length) && (
+        {hasActiveFilters && (
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerClassName="gap-2 mt-2"
+            contentContainerStyle={styles.activeFiltersContainer}
           >
             {filters.genres?.slice(0, 3).map((genre) => (
-              <View key={genre} className="px-3 py-1 bg-blue-500/30 rounded-full">
-                <Text className="text-blue-300 text-xs">{genre}</Text>
+              <View key={genre} style={styles.genreTag}>
+                <Text style={styles.genreTagText}>{genre}</Text>
               </View>
             ))}
             {filters.genres && filters.genres.length > 3 && (
-              <View className="px-3 py-1 bg-blue-500/30 rounded-full">
-                <Text className="text-blue-300 text-xs">+{filters.genres.length - 3}</Text>
+              <View style={styles.genreTag}>
+                <Text style={styles.genreTagText}>+{filters.genres.length - 3}</Text>
               </View>
             )}
             {filters.yearMin && (
-              <View className="px-3 py-1 bg-green-500/30 rounded-full">
-                <Text className="text-green-300 text-xs">
+              <View style={styles.yearTag}>
+                <Text style={styles.yearTagText}>
                   {filters.yearMin}{filters.yearMax ? `-${filters.yearMax}` : '+'}
                 </Text>
               </View>
             )}
             {filters.ratingMin && (
-              <View className="px-3 py-1 bg-yellow-500/30 rounded-full">
-                <Text className="text-yellow-300 text-xs">{filters.ratingMin}+ ⭐</Text>
+              <View style={styles.ratingTag}>
+                <Text style={styles.ratingTagText}>{filters.ratingMin}+ &#11088;</Text>
               </View>
             )}
             <TouchableOpacity
               onPress={() => setFilters({ contentTypes: filters.contentTypes })}
-              className="px-3 py-1 bg-red-500/30 rounded-full"
+              style={styles.clearFiltersButton}
               activeOpacity={0.7}
             >
-              <Text className="text-red-300 text-xs">✕</Text>
+              <Text style={styles.clearFiltersText}>&#10005;</Text>
             </TouchableOpacity>
           </ScrollView>
         )}
@@ -326,30 +326,30 @@ export const SearchScreenMobile: React.FC = () => {
       {/* Search Results or Initial State */}
       {showInitialState ? (
         <ScrollView
-          className="flex-1"
-          contentContainerClassName="px-4 pt-6"
+          style={styles.scrollView}
+          contentContainerStyle={styles.initialStateContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary} />
           }
         >
           {/* Recent Searches */}
           {recentSearches.length > 0 && (
-            <View className="mb-6">
-              <View className="flex-row items-center gap-2 mb-3">
-                <Text className="text-xl">🕐</Text>
-                <Text className="text-white font-semibold text-base">
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionIcon}>&#128336;</Text>
+                <Text style={styles.sectionTitle}>
                   {t('search.recentSearches', { defaultValue: 'Recent Searches' })}
                 </Text>
               </View>
-              <View className="flex-row flex-wrap gap-2">
+              <View style={styles.recentSearchesContainer}>
                 {recentSearches.map((recentQuery, idx) => (
                   <TouchableOpacity
                     key={idx}
                     onPress={() => handleRecentSearchClick(recentQuery)}
-                    className="px-4 py-2 rounded-full bg-white/5 border border-white/10"
+                    style={styles.recentSearchItem}
                     activeOpacity={0.7}
                   >
-                    <Text className="text-white/80 text-sm">{recentQuery}</Text>
+                    <Text style={styles.recentSearchText}>{recentQuery}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -358,10 +358,10 @@ export const SearchScreenMobile: React.FC = () => {
 
           {/* Suggestions (when typing) */}
           {suggestions.length > 0 && (
-            <View className="mb-6">
-              <View className="flex-row items-center gap-2 mb-3">
-                <Text className="text-xl">💡</Text>
-                <Text className="text-white font-semibold text-base">
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionIcon}>&#128161;</Text>
+                <Text style={styles.sectionTitle}>
                   {t('search.suggestions', { defaultValue: 'Suggestions' })}
                 </Text>
               </View>
@@ -369,13 +369,13 @@ export const SearchScreenMobile: React.FC = () => {
                 <TouchableOpacity
                   key={idx}
                   onPress={() => handleSuggestionClick(suggestion)}
-                  className="mb-2 px-4 py-3 rounded-xl bg-white/5 border border-white/10"
+                  style={styles.suggestionItem}
                   activeOpacity={0.7}
                 >
-                  <View className="flex-row items-center gap-3">
-                    <Text className="text-lg">🔍</Text>
-                    <Text className="flex-1 text-white text-base">{suggestion}</Text>
-                    <Text className="text-white/40 text-lg">↖</Text>
+                  <View style={styles.suggestionContent}>
+                    <Text style={styles.suggestionIcon}>&#128269;</Text>
+                    <Text style={styles.suggestionText}>{suggestion}</Text>
+                    <Text style={styles.suggestionArrow}>&#8598;</Text>
                   </View>
                 </TouchableOpacity>
               ))}
@@ -383,12 +383,12 @@ export const SearchScreenMobile: React.FC = () => {
           )}
 
           {/* Initial Prompt */}
-          <View className="items-center justify-center py-12">
-            <Text className="text-7xl mb-4">🔍</Text>
-            <Text className="text-white text-center font-bold text-xl mb-2">
+          <View style={styles.initialPrompt}>
+            <Text style={styles.initialPromptIcon}>&#128269;</Text>
+            <Text style={styles.initialPromptTitle}>
               {t('search.promptTitle', { defaultValue: 'Search for Content' })}
             </Text>
-            <Text className="text-white/60 text-center max-w-sm text-sm px-4">
+            <Text style={styles.initialPromptDescription}>
               {t('search.promptDescription', {
                 defaultValue: 'Search for movies, series, live channels, podcasts, and more. Use advanced filters or smart search for best results.'
               })}
@@ -416,13 +416,13 @@ export const SearchScreenMobile: React.FC = () => {
         animationType="slide"
         onRequestClose={() => setShowFilters(false)}
       >
-        <View className="flex-1 bg-black/80">
+        <View style={styles.modalOverlay}>
           <TouchableOpacity
             activeOpacity={1}
             onPress={() => setShowFilters(false)}
-            className="flex-1"
+            style={styles.modalDismissArea}
           />
-          <View className="h-4/5 rounded-t-3xl overflow-hidden">
+          <View style={styles.filtersSheet}>
             <SearchFilters
               filters={filters}
               onFiltersChange={setFilters}
@@ -442,5 +442,272 @@ export const SearchScreenMobile: React.FC = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  header: {
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.md,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.md,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 20,
+  },
+  backButtonText: {
+    color: colors.text,
+    fontSize: 20,
+  },
+  searchBarContainer: {
+    flex: 1,
+  },
+  llmButton: {
+    width: 48,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(168, 85, 247, 0.5)',
+  },
+  llmButtonIcon: {
+    fontSize: 24,
+  },
+  premiumBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    width: 20,
+    height: 20,
+    backgroundColor: '#eab308',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  premiumBadgeText: {
+    color: colors.text,
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  filtersContainer: {
+    gap: spacing.sm,
+  },
+  filterPill: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: 9999,
+    borderWidth: 1,
+  },
+  filterPillActive: {
+    backgroundColor: colors.primary,
+    borderColor: 'rgba(168, 85, 247, 0.8)',
+  },
+  filterPillInactive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  filterPillText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  filterPillTextActive: {
+    color: colors.text,
+  },
+  filterPillTextInactive: {
+    color: colors.textSecondary,
+  },
+  moreFiltersButton: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  moreFiltersContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  moreFiltersIcon: {
+    fontSize: 16,
+  },
+  moreFiltersText: {
+    color: colors.textSecondary,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  activeFilterIndicator: {
+    width: 8,
+    height: 8,
+    backgroundColor: '#3b82f6',
+    borderRadius: 4,
+    marginLeft: spacing.xs,
+  },
+  activeFiltersContainer: {
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  genreTag: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    backgroundColor: 'rgba(59, 130, 246, 0.3)',
+    borderRadius: 9999,
+  },
+  genreTagText: {
+    color: '#93c5fd',
+    fontSize: 12,
+  },
+  yearTag: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    backgroundColor: 'rgba(34, 197, 94, 0.3)',
+    borderRadius: 9999,
+  },
+  yearTagText: {
+    color: '#86efac',
+    fontSize: 12,
+  },
+  ratingTag: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    backgroundColor: 'rgba(234, 179, 8, 0.3)',
+    borderRadius: 9999,
+  },
+  ratingTagText: {
+    color: '#fde047',
+    fontSize: 12,
+  },
+  clearFiltersButton: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    backgroundColor: 'rgba(239, 68, 68, 0.3)',
+    borderRadius: 9999,
+  },
+  clearFiltersText: {
+    color: '#fca5a5',
+    fontSize: 12,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  initialStateContent: {
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.xl,
+  },
+  section: {
+    marginBottom: spacing.xl,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  sectionIcon: {
+    fontSize: 20,
+  },
+  sectionTitle: {
+    color: colors.text,
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  recentSearchesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  recentSearchItem: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: 9999,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  recentSearchText: {
+    color: colors.textSecondary,
+    fontSize: 14,
+  },
+  suggestionItem: {
+    marginBottom: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  suggestionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  suggestionIcon: {
+    fontSize: 18,
+  },
+  suggestionText: {
+    flex: 1,
+    color: colors.text,
+    fontSize: 16,
+  },
+  suggestionArrow: {
+    color: colors.textTertiary,
+    fontSize: 18,
+  },
+  initialPrompt: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.xxxl,
+  },
+  initialPromptIcon: {
+    fontSize: 72,
+    marginBottom: spacing.lg,
+  },
+  initialPromptTitle: {
+    color: colors.text,
+    textAlign: 'center',
+    fontWeight: '700',
+    fontSize: 20,
+    marginBottom: spacing.sm,
+  },
+  initialPromptDescription: {
+    color: colors.textSecondary,
+    textAlign: 'center',
+    maxWidth: 320,
+    fontSize: 14,
+    paddingHorizontal: spacing.lg,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+  },
+  modalDismissArea: {
+    flex: 1,
+  },
+  filtersSheet: {
+    height: '80%',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    overflow: 'hidden',
+  },
+});
 
 export default SearchScreenMobile;

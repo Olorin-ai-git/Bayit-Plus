@@ -22,13 +22,16 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Mic, Volume2, Sparkles, Check } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { speechService, wakeWordService, ttsService } from '../services';
 import { VoiceWaveform } from '../components/voice';
+import { colors, spacing } from '../theme';
 
 type OnboardingStep = 'welcome' | 'permissions' | 'test-wake-word' | 'complete';
 
 export default function VoiceOnboardingScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
   const [hasPermissions, setHasPermissions] = useState(false);
@@ -48,16 +51,16 @@ export default function VoiceOnboardingScreen() {
         setCurrentStep('test-wake-word');
 
         // Speak welcome message
-        await ttsService.speak('Permissions granted! Let\'s test the wake word detection.');
+        await ttsService.speak(t('voiceOnboarding.permissionsGranted'));
       } else {
         Alert.alert(
-          'Permission Required',
-          'Voice commands require microphone and speech recognition permissions. Please enable them in Settings.',
-          [{ text: 'OK' }]
+          t('voiceOnboarding.permissionRequired.title'),
+          t('voiceOnboarding.permissionRequired.message'),
+          [{ text: t('common.ok') }]
         );
       }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to request permissions');
+      Alert.alert(t('common.error'), error.message || t('voiceOnboarding.permissionError'));
     } finally {
       setIsLoading(false);
     }
@@ -79,7 +82,7 @@ export default function VoiceOnboardingScreen() {
         wakeWordService.stopListening();
 
         // Speak confirmation
-        ttsService.speak('Great! Wake word detected. You\'re all set!');
+        ttsService.speak(t('voiceOnboarding.wakeWordSuccess'));
 
         // Move to complete step
         setTimeout(() => {
@@ -91,9 +94,9 @@ export default function VoiceOnboardingScreen() {
       await wakeWordService.startListening();
 
       // Speak instructions
-      await ttsService.speak('Say "Hey Bayit" or "Bayit Plus" to test wake word detection.');
+      await ttsService.speak(t('voiceOnboarding.speakWakeWord'));
     } catch (error: any) {
-      Alert.alert('Error', 'Failed to start wake word detection: ' + error.message);
+      Alert.alert(t('common.error'), t('voiceOnboarding.wakeWordError', { error: error.message }));
       setIsTestingWakeWord(false);
     }
   }, []);
@@ -120,23 +123,23 @@ export default function VoiceOnboardingScreen() {
         return (
           <View style={styles.stepContainer}>
             <View style={styles.iconContainer}>
-              <Sparkles size={64} color="#00aaff" />
+              <Sparkles size={64} color={colors.primary} />
             </View>
 
-            <Text style={styles.title}>Welcome to Voice Control</Text>
+            <Text style={styles.title}>{t('voiceOnboarding.welcome.title')}</Text>
 
             <Text style={styles.description}>
-              Control Bayit+ with your voice! Navigate, play content, and manage widgets hands-free.
+              {t('voiceOnboarding.welcome.description')}
             </Text>
 
             <View style={styles.featureList}>
-              <FeatureItem icon={<Mic size={24} color="#00aaff" />} text="Voice commands in Hebrew, English, and Spanish" />
-              <FeatureItem icon={<Volume2 size={24} color="#00aaff" />} text="Natural text-to-speech responses" />
-              <FeatureItem icon={<Sparkles size={24} color="#00aaff" />} text="Wake word detection: 'Hey Bayit'" />
+              <FeatureItem icon={<Mic size={24} color={colors.primary} />} text={t('voiceOnboarding.features.voiceCommands')} />
+              <FeatureItem icon={<Volume2 size={24} color={colors.primary} />} text={t('voiceOnboarding.features.tts')} />
+              <FeatureItem icon={<Sparkles size={24} color={colors.primary} />} text={t('voiceOnboarding.features.wakeWord')} />
             </View>
 
             <Pressable style={styles.primaryButton} onPress={() => setCurrentStep('permissions')}>
-              <Text style={styles.primaryButtonText}>Get Started</Text>
+              <Text style={styles.primaryButtonText}>{t('voiceOnboarding.getStarted')}</Text>
             </Pressable>
           </View>
         );
@@ -145,27 +148,26 @@ export default function VoiceOnboardingScreen() {
         return (
           <View style={styles.stepContainer}>
             <View style={styles.iconContainer}>
-              <Mic size={64} color="#00aaff" />
+              <Mic size={64} color={colors.primary} />
             </View>
 
-            <Text style={styles.title}>Enable Voice Access</Text>
+            <Text style={styles.title}>{t('voiceOnboarding.permissions.title')}</Text>
 
             <Text style={styles.description}>
-              Bayit+ needs access to your microphone and speech recognition to understand your voice commands.
+              {t('voiceOnboarding.permissions.description')}
             </Text>
 
             <View style={styles.permissionInfo}>
               <Text style={styles.permissionText}>
-                <Text style={styles.permissionLabel}>Privacy:</Text> All voice processing happens on your device.
-                Your voice data is never sent to the cloud.
+                <Text style={styles.permissionLabel}>{t('voiceOnboarding.permissions.privacyLabel')}</Text> {t('voiceOnboarding.permissions.privacy')}
               </Text>
             </View>
 
             {isLoading ? (
-              <ActivityIndicator size="large" color="#00aaff" style={styles.loader} />
+              <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
             ) : (
               <Pressable style={styles.primaryButton} onPress={handleRequestPermissions}>
-                <Text style={styles.primaryButtonText}>Grant Permissions</Text>
+                <Text style={styles.primaryButtonText}>{t('voiceOnboarding.grantPermissions')}</Text>
               </Pressable>
             )}
           </View>
@@ -174,29 +176,29 @@ export default function VoiceOnboardingScreen() {
       case 'test-wake-word':
         return (
           <View style={styles.stepContainer}>
-            <Text style={styles.title}>Test Wake Word</Text>
+            <Text style={styles.title}>{t('voiceOnboarding.testWakeWord.title')}</Text>
 
             <Text style={styles.description}>
-              Try saying "Hey Bayit" or "Bayit Plus" to activate voice commands.
+              {t('voiceOnboarding.testWakeWord.description')}
             </Text>
 
-            {isTestingWakeWord && <VoiceWaveform isListening={true} barCount={7} color="#00aaff" />}
+            {isTestingWakeWord && <VoiceWaveform isListening={true} barCount={7} color={colors.primary} />}
 
             {wakeWordDetected && (
               <View style={styles.successContainer}>
-                <Check size={48} color="#00ff88" />
-                <Text style={styles.successText}>Wake word detected!</Text>
+                <Check size={48} color={colors.success} />
+                <Text style={styles.successText}>{t('voiceOnboarding.testWakeWord.success')}</Text>
               </View>
             )}
 
             <View style={styles.buttonGroup}>
               {!isTestingWakeWord ? (
                 <Pressable style={styles.primaryButton} onPress={handleTestWakeWord}>
-                  <Text style={styles.primaryButtonText}>Start Test</Text>
+                  <Text style={styles.primaryButtonText}>{t('voiceOnboarding.startTest')}</Text>
                 </Pressable>
               ) : (
                 <Pressable style={styles.secondaryButton} onPress={handleSkipWakeWord}>
-                  <Text style={styles.secondaryButtonText}>Skip</Text>
+                  <Text style={styles.secondaryButtonText}>{t('common.skip')}</Text>
                 </Pressable>
               )}
             </View>
@@ -207,25 +209,25 @@ export default function VoiceOnboardingScreen() {
         return (
           <View style={styles.stepContainer}>
             <View style={styles.iconContainer}>
-              <Check size={64} color="#00ff88" />
+              <Check size={64} color={colors.success} />
             </View>
 
-            <Text style={styles.title}>You're All Set!</Text>
+            <Text style={styles.title}>{t('voiceOnboarding.complete.title')}</Text>
 
             <Text style={styles.description}>
-              Voice control is now enabled. Tap the voice button or say "Hey Bayit" to start using voice commands.
+              {t('voiceOnboarding.complete.description')}
             </Text>
 
             <View style={styles.exampleCommands}>
-              <Text style={styles.exampleTitle}>Try these commands:</Text>
-              <Text style={styles.exampleCommand}>• "Go to home"</Text>
-              <Text style={styles.exampleCommand}>• "Play Channel 13"</Text>
-              <Text style={styles.exampleCommand}>• "Open podcast widget"</Text>
-              <Text style={styles.exampleCommand}>• "Switch to Hebrew"</Text>
+              <Text style={styles.exampleTitle}>{t('voiceOnboarding.complete.tryCommands')}</Text>
+              <Text style={styles.exampleCommand}>• {t('voiceOnboarding.complete.examples.goHome')}</Text>
+              <Text style={styles.exampleCommand}>• {t('voiceOnboarding.complete.examples.playChannel')}</Text>
+              <Text style={styles.exampleCommand}>• {t('voiceOnboarding.complete.examples.openWidget')}</Text>
+              <Text style={styles.exampleCommand}>• {t('voiceOnboarding.complete.examples.switchLanguage')}</Text>
             </View>
 
             <Pressable style={styles.primaryButton} onPress={handleComplete}>
-              <Text style={styles.primaryButtonText}>Start Using Voice</Text>
+              <Text style={styles.primaryButtonText}>{t('voiceOnboarding.complete.startUsing')}</Text>
             </Pressable>
           </View>
         );
@@ -269,12 +271,12 @@ function FeatureItem({ icon, text }: { icon: React.ReactNode; text: string }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: colors.background,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 40,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.xxxl,
   },
   stepContainer: {
     flex: 1,
@@ -282,126 +284,126 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconContainer: {
-    marginBottom: 32,
+    marginBottom: spacing.xxl,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#fff',
+    color: colors.text,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   description: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
-    marginBottom: 32,
+    marginBottom: spacing.xxl,
   },
   featureList: {
     width: '100%',
-    marginBottom: 40,
+    marginBottom: spacing.xxxl,
   },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: spacing.lg,
   },
   featureIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(0, 170, 255, 0.1)',
+    backgroundColor: `${colors.primary}20`,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
+    marginRight: spacing.lg,
   },
   featureText: {
     flex: 1,
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: colors.textSecondary,
     lineHeight: 22,
   },
   permissionInfo: {
-    backgroundColor: 'rgba(0, 170, 255, 0.1)',
+    backgroundColor: `${colors.primary}20`,
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 32,
+    padding: spacing.lg,
+    marginBottom: spacing.xxl,
   },
   permissionText: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   permissionLabel: {
     fontWeight: '700',
-    color: '#00aaff',
+    color: colors.primary,
   },
   loader: {
-    marginVertical: 32,
+    marginVertical: spacing.xxl,
   },
   successContainer: {
     alignItems: 'center',
-    marginVertical: 32,
+    marginVertical: spacing.xxl,
   },
   successText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#00ff88',
-    marginTop: 12,
+    color: colors.success,
+    marginTop: spacing.md,
   },
   exampleCommands: {
     width: '100%',
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 12,
-    padding: 20,
-    marginBottom: 32,
+    padding: spacing.lg,
+    marginBottom: spacing.xxl,
   },
   exampleTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#fff',
-    marginBottom: 12,
+    color: colors.text,
+    marginBottom: spacing.md,
   },
   exampleCommand: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
-    marginBottom: 8,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
   },
   buttonGroup: {
     width: '100%',
-    gap: 12,
+    gap: spacing.md,
   },
   primaryButton: {
     width: '100%',
-    backgroundColor: '#00aaff',
+    backgroundColor: colors.primary,
     borderRadius: 12,
-    paddingVertical: 16,
+    paddingVertical: spacing.lg,
     alignItems: 'center',
   },
   primaryButtonText: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#fff',
+    color: colors.text,
   },
   secondaryButton: {
     width: '100%',
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 12,
-    paddingVertical: 16,
+    paddingVertical: spacing.lg,
     alignItems: 'center',
   },
   secondaryButtonText: {
     fontSize: 18,
     fontWeight: '700',
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: colors.textSecondary,
   },
   stepIndicator: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 20,
-    gap: 8,
+    paddingVertical: spacing.lg,
+    gap: spacing.sm,
   },
   stepDot: {
     width: 8,
@@ -411,9 +413,9 @@ const styles = StyleSheet.create({
   },
   stepDotActive: {
     width: 24,
-    backgroundColor: '#00aaff',
+    backgroundColor: colors.primary,
   },
   stepDotCompleted: {
-    backgroundColor: '#00ff88',
+    backgroundColor: colors.success,
   },
 });

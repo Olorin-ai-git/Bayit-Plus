@@ -58,6 +58,25 @@ from .diagnostics import (
     execute_find_missing_metadata,
 )
 
+from .series import (
+    execute_find_unlinked_episodes,
+    execute_link_episode_to_series,
+    execute_auto_link_episodes,
+    execute_find_duplicate_episodes,
+    execute_resolve_duplicate_episodes,
+    execute_create_series_from_episode,
+)
+
+from .integrity import (
+    execute_get_integrity_status,
+    execute_find_orphaned_gcs_files,
+    execute_find_orphaned_content_records,
+    execute_find_stuck_upload_jobs,
+    execute_cleanup_orphans,
+    execute_recover_stuck_jobs,
+    execute_run_full_cleanup,
+)
+
 __all__ = [
     # Content
     "execute_list_content_items",
@@ -97,4 +116,19 @@ __all__ = [
     "execute_find_quality_variants",
     "execute_link_quality_variants",
     "execute_find_missing_metadata",
+    # Series Management
+    "execute_find_unlinked_episodes",
+    "execute_link_episode_to_series",
+    "execute_auto_link_episodes",
+    "execute_find_duplicate_episodes",
+    "execute_resolve_duplicate_episodes",
+    "execute_create_series_from_episode",
+    # Integrity Tools
+    "execute_get_integrity_status",
+    "execute_find_orphaned_gcs_files",
+    "execute_find_orphaned_content_records",
+    "execute_find_stuck_upload_jobs",
+    "execute_cleanup_orphans",
+    "execute_recover_stuck_jobs",
+    "execute_run_full_cleanup",
 ]

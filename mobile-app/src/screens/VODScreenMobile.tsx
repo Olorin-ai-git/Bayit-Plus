@@ -87,17 +87,44 @@ export const VODScreenMobile: React.FC = () => {
     try {
       setIsLoading(true);
 
-      const [contentRes, categoriesRes] = await Promise.all([
+      const [featuredRes, categoriesRes] = await Promise.all([
         contentService.getFeatured(),
         contentService.getCategories(),
       ]) as [any, any];
 
-      const contentData = (contentRes.items || []).map((item: any) => ({
-        ...item,
-        posterUrl: item.poster || item.thumbnail,
-      }));
+      // Extract content from featured response
+      // API returns { hero, spotlight, categories: [{id, name, items: [...]}] }
+      const allItems: Content[] = [];
 
-      setContent(contentData);
+      // Add spotlight items
+      if (featuredRes.spotlight && Array.isArray(featuredRes.spotlight)) {
+        featuredRes.spotlight.forEach((item: any) => {
+          allItems.push({
+            ...item,
+            posterUrl: item.backdrop || item.thumbnail,
+          });
+        });
+      }
+
+      // Add items from each category in featured response
+      if (featuredRes.categories && Array.isArray(featuredRes.categories)) {
+        featuredRes.categories.forEach((cat: any) => {
+          if (cat.items && Array.isArray(cat.items)) {
+            cat.items.forEach((item: any) => {
+              // Avoid duplicates
+              if (!allItems.find(existing => existing.id === item.id)) {
+                allItems.push({
+                  ...item,
+                  posterUrl: item.thumbnail,
+                  category: cat.id,
+                });
+              }
+            });
+          }
+        });
+      }
+
+      setContent(allItems);
 
       const categoriesData = categoriesRes.categories || [];
       setCategories(categoriesData);
