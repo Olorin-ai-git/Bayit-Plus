@@ -11,15 +11,16 @@ Deployed independently from main Bayit+ backend for:
 import logging
 from contextlib import asynccontextmanager
 
-from app.api.routes.olorin import cultural_context, dubbing, partners, recap, search
-from app.core.olorin_settings import settings
-from app.core.database import close_mongo_connection, connect_to_mongo
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from slowapi.util import get_remote_address
+
+from app.api.routes.olorin import context, dubbing, partner, recap, search
+from app.core.database import close_mongo_connection, connect_to_mongo
+from app.core.olorin_settings import settings
 
 # Configure logging
 logging.basicConfig(
@@ -77,7 +78,11 @@ app.add_middleware(SlowAPIMiddleware)
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS.split(",") if settings.BACKEND_CORS_ORIGINS != "*" else ["*"],
+    allow_origins=(
+        settings.BACKEND_CORS_ORIGINS.split(",")
+        if settings.BACKEND_CORS_ORIGINS != "*"
+        else ["*"]
+    ),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -100,7 +105,7 @@ API_PREFIX = f"/api/{settings.OLORIN_API_VERSION}/olorin"
 
 # Partner management (always enabled for API key auth)
 app.include_router(
-    partners.router,
+    partner.router,
     prefix=f"{API_PREFIX}/partners",
     tags=["Partners"],
 )
@@ -132,7 +137,7 @@ if settings.OLORIN_RECAP_ENABLED:
 # Cultural context (if enabled)
 if settings.OLORIN_CULTURAL_CONTEXT_ENABLED:
     app.include_router(
-        cultural_context.router,
+        context.router,
         prefix=f"{API_PREFIX}/cultural-context",
         tags=["Cultural Context"],
     )
