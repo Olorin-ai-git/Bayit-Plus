@@ -25,7 +25,8 @@
 #    import "SentryReachability.h"
 #endif // !TARGET_OS_WATCH
 
-@interface SentryHttpTransport ()
+@interface
+SentryHttpTransport ()
 #if SENTRY_HAS_REACHABILITY
     <SentryReachabilityObserver>
 #endif // !TARGET_OS_WATCH
@@ -52,8 +53,6 @@
  */
 @property (nonatomic, strong)
     NSMutableDictionary<NSString *, SentryDiscardedEvent *> *discardedEvents;
-
-@property (nonatomic, strong) NSMutableArray<SentryEnvelope *> *notStoredEnvelopes;
 
 /**
  * Synching with a dispatch queue to have concurrent reads and writes as barrier blocks is roughly
@@ -89,7 +88,6 @@
         _isSending = NO;
         _isFlushing = NO;
         self.discardedEvents = [NSMutableDictionary new];
-        self.notStoredEnvelopes = [NSMutableArray new];
         [self.envelopeRateLimit setDelegate:self];
         [self.fileManager setDelegate:self];
 
@@ -124,7 +122,7 @@
     envelope = [self.envelopeRateLimit removeRateLimitedItems:envelope];
 
     if (envelope.items.count == 0) {
-        SENTRY_LOG_WARN(@"RateLimit is active for all envelope items.");
+        SENTRY_LOG_DEBUG(@"RateLimit is active for all envelope items.");
         return;
     }
 
@@ -135,20 +133,9 @@
     // thread, which could be the main thread.
     __weak SentryHttpTransport *weakSelf = self;
     [self.dispatchQueue dispatchAsyncWithBlock:^{
-        NSString *path = [weakSelf.fileManager storeEnvelope:envelopeToStore];
-        if (path == nil) {
-            SENTRY_LOG_DEBUG(@"Could not store envelope. Schedule for sending.");
-            @synchronized(weakSelf.notStoredEnvelopes) {
-                [weakSelf.notStoredEnvelopes addObject:envelopeToStore];
-            }
-        }
+        [weakSelf.fileManager storeEnvelope:envelopeToStore];
         [weakSelf sendAllCachedEnvelopes];
     }];
-}
-
-- (void)storeEnvelope:(SentryEnvelope *)envelope
-{
-    [self.fileManager storeEnvelope:envelope];
 }
 
 - (void)recordLostEvent:(SentryDataCategory)category reason:(SentryDiscardReason)reason
@@ -165,7 +152,7 @@
     }
 
     NSString *key = [NSString stringWithFormat:@"%@:%@", nameForSentryDataCategory(category),
-        nameForSentryDiscardReason(reason)];
+                              nameForSentryDiscardReason(reason)];
 
     @synchronized(self.discardedEvents) {
         SentryDiscardedEvent *event = self.discardedEvents[key];
@@ -237,8 +224,6 @@
 - (void)envelopeItemDropped:(SentryEnvelopeItem *)envelopeItem
                withCategory:(SentryDataCategory)dataCategory;
 {
-    SENTRY_LOG_WARN(@"Envelope item dropped due to exceeding rate limit. Category: %@",
-        nameForSentryDataCategory(dataCategory));
     [self recordLostEvent:dataCategory reason:kSentryDiscardReasonRateLimitBackoff];
     [self recordLostSpans:envelopeItem reason:kSentryDiscardReasonRateLimitBackoff];
 }
@@ -296,38 +281,24 @@
         self.isSending = YES;
     }
 
-    SentryEnvelope *envelope;
-    NSString *envelopeFilePath;
-
-    @synchronized(self.notStoredEnvelopes) {
-        if (self.notStoredEnvelopes.count > 0) {
-            envelope = self.notStoredEnvelopes[0];
-            [self.notStoredEnvelopes removeObjectAtIndex:0];
-        }
+    SentryFileContents *envelopeFileContents = [self.fileManager getOldestEnvelope];
+    if (nil == envelopeFileContents) {
+        SENTRY_LOG_DEBUG(@"No envelopes left to send.");
+        [self finishedSending];
+        return;
     }
 
-    if (envelope == nil) {
-        SentryFileContents *envelopeFileContents = [self.fileManager getOldestEnvelope];
-        if (nil == envelopeFileContents) {
-            SENTRY_LOG_DEBUG(@"No envelopes left to send.");
-            [self finishedSending];
-            return;
-        }
-
-        envelopeFilePath = envelopeFileContents.path;
-
-        envelope = [SentrySerialization envelopeWithData:envelopeFileContents.contents];
-        if (nil == envelope) {
-            SENTRY_LOG_DEBUG(@"Envelope contained no deserializable data.");
-            [self deleteEnvelopeAndSendNext:envelopeFilePath];
-            return;
-        }
+    SentryEnvelope *envelope = [SentrySerialization envelopeWithData:envelopeFileContents.contents];
+    if (nil == envelope) {
+        SENTRY_LOG_DEBUG(@"Envelope contained no deserializable data.");
+        [self deleteEnvelopeAndSendNext:envelopeFileContents.path];
+        return;
     }
 
     SentryEnvelope *rateLimitedEnvelope = [self.envelopeRateLimit removeRateLimitedItems:envelope];
     if (rateLimitedEnvelope.items.count == 0) {
         SENTRY_LOG_DEBUG(@"Envelope had no rate-limited items, nothing to send.");
-        [self deleteEnvelopeAndSendNext:envelopeFilePath];
+        [self deleteEnvelopeAndSendNext:envelopeFileContents.path];
         return;
     }
 
@@ -339,24 +310,22 @@
                                                                    dsn:self.options.parsedDsn
                                                       didFailWithError:&requestError];
 
-    if (nil == request || nil != requestError) {
-        if (nil != requestError) {
-            SENTRY_LOG_DEBUG(@"Failed to build request: %@.", requestError);
-        }
+    if (nil != requestError) {
+        SENTRY_LOG_DEBUG(@"Failed to build request: %@.", requestError);
         [self recordLostEventFor:rateLimitedEnvelope.items];
-        [self deleteEnvelopeAndSendNext:envelopeFilePath];
+        [self deleteEnvelopeAndSendNext:envelopeFileContents.path];
         return;
     } else {
-        [self sendEnvelope:rateLimitedEnvelope envelopePath:envelopeFilePath request:request];
+        [self sendEnvelope:rateLimitedEnvelope
+              envelopePath:envelopeFileContents.path
+                   request:request];
     }
 }
 
-- (void)deleteEnvelopeAndSendNext:(nullable NSString *)envelopePath
+- (void)deleteEnvelopeAndSendNext:(NSString *)envelopePath
 {
     SENTRY_LOG_DEBUG(@"Deleting envelope and sending next.");
-    if (envelopePath != nil) {
-        [self.fileManager removeFileAtPath:envelopePath];
-    }
+    [self.fileManager removeFileAtPath:envelopePath];
     @synchronized(self) {
         self.isSending = NO;
     }
@@ -372,7 +341,7 @@
 }
 
 - (void)sendEnvelope:(SentryEnvelope *)envelope
-        envelopePath:(NSString *_Nullable)envelopePath
+        envelopePath:(NSString *)envelopePath
              request:(NSURLRequest *)request
 {
     __weak SentryHttpTransport *weakSelf = self;

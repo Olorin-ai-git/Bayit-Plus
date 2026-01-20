@@ -3,7 +3,7 @@
 
 @class SentryRetryAfterHeaderParser;
 @class SentryRateLimitParser;
-@protocol SentryCurrentDateProvider;
+@class SentryCurrentDateProvider;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,7 +19,7 @@ NS_SWIFT_NAME(DefaultRateLimits)
 - (instancetype)initWithRetryAfterHeaderParser:
                     (SentryRetryAfterHeaderParser *)retryAfterHeaderParser
                             andRateLimitParser:(SentryRateLimitParser *)rateLimitParser
-                           currentDateProvider:(id<SentryCurrentDateProvider>)currentDateProvider;
+                           currentDateProvider:(SentryCurrentDateProvider *)currentDateProvider;
 
 @end
 

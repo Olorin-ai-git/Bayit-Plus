@@ -31,12 +31,13 @@
  * see https://github.com/getsentry/sentry-cocoa/issues/3763. This category doesn't contain any
  * functions and is safe to use.
  */
-@interface UIApplication (SentryUIApplication) <SentryUIApplication>
+@interface
+UIApplication (SentryUIApplication) <SentryUIApplication>
 @end
 
-@interface SentryUIViewControllerSwizzling ()
+@interface
+SentryUIViewControllerSwizzling ()
 
-@property (nonatomic, strong) SentryOptions *options;
 @property (nonatomic, strong) SentryInAppLogic *inAppLogic;
 @property (nonatomic, strong) SentryDispatchQueueWrapper *dispatchQueue;
 @property (nonatomic, strong) id<SentryObjCRuntimeWrapper> objcRuntimeWrapper;
@@ -57,7 +58,6 @@
                binaryImageCache:(SentryBinaryImageCache *)binaryImageCache
 {
     if (self = [super init]) {
-        self.options = options;
         self.inAppLogic = [[SentryInAppLogic alloc] initWithInAppIncludes:options.inAppIncludes
                                                             inAppExcludes:options.inAppExcludes];
         self.dispatchQueue = dispatchQueue;
@@ -79,17 +79,12 @@
 - (void)start
 {
     for (NSString *inAppInclude in self.inAppLogic.inAppIncludes) {
-        NSSet<NSString *> *imagePathsToInAppInclude =
-            [self.binaryImageCache imagePathsForInAppInclude:inAppInclude];
-
-        if (imagePathsToInAppInclude.count > 0) {
-            for (NSString *imagePath in imagePathsToInAppInclude) {
-                [self swizzleUIViewControllersOfImage:imagePath];
-            }
+        NSString *pathToImage = [self.binaryImageCache pathForInAppInclude:inAppInclude];
+        if (pathToImage != nil) {
+            [self swizzleUIViewControllersOfImage:pathToImage];
         } else {
-            SENTRY_LOG_WARN(
-                @"Failed to find the binary image(s) for inAppInclude <%@> and, therefore "
-                @"can't instrument UIViewControllers in these binaries.",
+            SENTRY_LOG_WARN(@"Failed to find the binary image for inAppInclude <%@> and, therefore "
+                            @"can't instrument UIViewControllers in that binary",
                 inAppInclude);
         }
     }
@@ -104,8 +99,9 @@
         // twice. We could also use objc_getClassList to lookup sub classes of UIViewController, but
         // the lookup can take around 60ms, which is not acceptable.
         if (![self swizzleRootViewControllerFromUIApplication:app]) {
-            SENTRY_LOG_DEBUG(@"Failed to find root UIViewController from UIApplicationDelegate. "
-                             @"Trying to use UISceneWillConnectNotification notification.");
+            SENTRY_LOG_DEBUG(@"UIViewControllerSwizzling: Failed to find root UIViewController "
+                             @"from UIApplicationDelegate. Trying to use "
+                             @"UISceneWillConnectNotification notification.");
 
             if (@available(iOS 13.0, tvOS 13.0, *)) {
                 [NSNotificationCenter.defaultCenter
@@ -114,9 +110,9 @@
                            name:UISceneWillConnectNotification
                          object:nil];
             } else {
-                SENTRY_LOG_DEBUG(
-                    @"iOS version older then 13. There is no UISceneWillConnectNotification "
-                    @"notification. Could not find a rootViewController");
+                SENTRY_LOG_DEBUG(@"UIViewControllerSwizzling: iOS version older then 13. There is "
+                                 @"no UISceneWillConnectNotification notification. Could not find "
+                                 @"a rootViewController");
             }
         }
     }
@@ -128,14 +124,15 @@
 - (id<SentryUIApplication>)findApp
 {
     if (![UIApplication respondsToSelector:@selector(sharedApplication)]) {
-        SENTRY_LOG_DEBUG(@"UIApplication doesn't respond to sharedApplication.");
+        SENTRY_LOG_DEBUG(
+            @"UIViewControllerSwizzling: UIApplication doesn't respond to sharedApplication.");
         return nil;
     }
 
     UIApplication *app = [UIApplication performSelector:@selector(sharedApplication)];
 
     if (app == nil) {
-        SENTRY_LOG_DEBUG(@"UIApplication.sharedApplication is nil.");
+        SENTRY_LOG_DEBUG(@"UIViewControllerSwizzling: UIApplication.sharedApplication is nil.");
         return nil;
     }
 
@@ -145,17 +142,18 @@
 - (void)swizzleUIViewControllersOfClassesInImageOf:(Class)class
 {
     if (class == NULL) {
-        SENTRY_LOG_DEBUG(@"Class is NULL. Skipping swizzling of classes in same image.");
+        SENTRY_LOG_DEBUG(@"UIViewControllerSwizzling: class is NULL. Skipping swizzling of classes "
+                         @"in same image.");
         return;
     }
 
-    SENTRY_LOG_DEBUG(@"Class to get the image name: %@", class);
+    SENTRY_LOG_DEBUG(@"UIViewControllerSwizzling: Class to get the image name: %@", class);
 
     const char *imageNameAsCharArray = [self.objcRuntimeWrapper class_getImageName:class];
 
     if (imageNameAsCharArray == NULL) {
-        SENTRY_LOG_DEBUG(@"Wasn't able to get image name of the class: %@. Skipping swizzling of "
-                         @"classes in same image.",
+        SENTRY_LOG_DEBUG(@"UIViewControllerSwizzling: Wasn't able to get image name of the class: "
+                         @"%@. Skipping swizzling of classes in same image.",
             class);
         return;
     }
@@ -164,8 +162,9 @@
                                              encoding:NSUTF8StringEncoding];
 
     if (imageName == nil || imageName.length == 0) {
-        SENTRY_LOG_DEBUG(@"Wasn't able to get the app image name of the app delegate class: %@. "
-                         @"Skipping swizzling of classes in same image.",
+        SENTRY_LOG_DEBUG(
+            @"UIViewControllerSwizzling: Wasn't able to get the app image name of the app "
+            @"delegate class: %@. Skipping swizzling of classes in same image.",
             class);
         return;
     }
@@ -176,12 +175,14 @@
 - (void)swizzleUIViewControllersOfImage:(NSString *)imageName
 {
     if ([imageName containsString:@"UIKitCore"]) {
-        SENTRY_LOG_DEBUG(@"Skipping UIKitCore.");
+        SENTRY_LOG_DEBUG(@"UIViewControllerSwizzling: Skipping UIKitCore.");
         return;
     }
 
     if ([self.imagesActedOnSubclassesOfUIViewControllers containsObject:imageName]) {
-        SENTRY_LOG_DEBUG(@"Already swizzled UIViewControllers in image: %@.", imageName);
+        SENTRY_LOG_DEBUG(
+            @"UIViewControllerSwizzling: Already swizzled UIViewControllers in image: %@.",
+            imageName);
         return;
     }
 
@@ -224,15 +225,15 @@
         // The object of a UISceneWillConnectNotification should be a NSWindowScene
         if (![notification.object respondsToSelector:@selector(windows)]) {
             SENTRY_LOG_DEBUG(
-                @"Failed to find root UIViewController from UISceneWillConnectNotification. "
-                @"Notification object has no windows property");
+                @"UIViewControllerSwizzling: Failed to find root UIViewController from "
+                @"UISceneWillConnectNotification. Notification object has no windows property");
             return;
         }
 
         id windows = [notification.object performSelector:@selector(windows)];
         if (![windows isKindOfClass:[NSArray class]]) {
-            SENTRY_LOG_DEBUG(@"Failed to find root UIViewController from "
-                             @"UISceneWillConnectNotification. Windows is not an array");
+            SENTRY_LOG_DEBUG(@"UIViewControllerSwizzling: Failed to find root UIViewController "
+                             @"from UISceneWillConnectNotification. Windows is not an array");
             return;
         }
 
@@ -243,9 +244,9 @@
                 [self
                     swizzleRootViewControllerAndDescendant:((UIWindow *)window).rootViewController];
             } else {
-                SENTRY_LOG_DEBUG(
-                    @"Failed to find root UIViewController from UISceneWillConnectNotification. "
-                    @"Window is not a UIWindow class or the rootViewController is nil");
+                SENTRY_LOG_DEBUG(@"UIViewControllerSwizzling: Failed to find root "
+                                 @"UIViewController from UISceneWillConnectNotification. Window is "
+                                 @"not a UIWindow class or the rootViewController is nil");
             }
         }
     }
@@ -254,28 +255,29 @@
 - (BOOL)swizzleRootViewControllerFromUIApplication:(id<SentryUIApplication>)app
 {
     if (app.delegate == nil) {
-        SENTRY_LOG_DEBUG(
-            @"App delegate is nil. Skipping swizzleRootViewControllerFromAppDelegate.");
+        SENTRY_LOG_DEBUG(@"UIViewControllerSwizzling: App delegate is nil. Skipping "
+                         @"swizzleRootViewControllerFromAppDelegate.");
         return NO;
     }
 
     // Check if delegate responds to window, which it doesn't have to.
     if (![app.delegate respondsToSelector:@selector(window)]) {
-        SENTRY_LOG_DEBUG(@"UIApplicationDelegate.window is nil. Skipping "
-                         @"swizzleRootViewControllerFromAppDelegate.");
+        SENTRY_LOG_DEBUG(@"UIViewControllerSwizzling: UIApplicationDelegate.window is nil. "
+                         @"Skipping swizzleRootViewControllerFromAppDelegate.");
         return NO;
     }
 
     if (app.delegate.window == nil) {
-        SENTRY_LOG_DEBUG(@"UIApplicationDelegate.window is nil. Skipping "
-                         @"swizzleRootViewControllerFromAppDelegate.");
+        SENTRY_LOG_DEBUG(@"UIViewControllerSwizzling: UIApplicationDelegate.window is nil. "
+                         @"Skipping swizzleRootViewControllerFromAppDelegate.");
         return NO;
     }
 
     UIViewController *rootViewController = app.delegate.window.rootViewController;
     if (rootViewController == nil) {
-        SENTRY_LOG_DEBUG(@"UIApplicationDelegate.window.rootViewController is nil. Skipping "
-                         @"swizzleRootViewControllerFromAppDelegate.");
+        SENTRY_LOG_DEBUG(
+            @"UIViewControllerSwizzling: UIApplicationDelegate.window.rootViewController is nil. "
+            @"Skipping swizzleRootViewControllerFromAppDelegate.");
         return NO;
     }
 
@@ -289,23 +291,16 @@
     NSArray<UIViewController *> *allViewControllers =
         [SentryViewController descendantsOfViewController:rootViewController];
 
-    SENTRY_LOG_DEBUG(@"Found %lu descendants for RootViewController %@", allViewControllers.count,
-        rootViewController.description);
-
     for (UIViewController *viewController in allViewControllers) {
         Class viewControllerClass = [viewController class];
         if (viewControllerClass != nil) {
-            SENTRY_LOG_DEBUG(
-                @"Calling swizzleRootViewController for %@", viewController.description);
+            SENTRY_LOG_DEBUG(@"UIViewControllerSwizzling Calling swizzleRootViewController.");
             [self swizzleViewControllerSubClass:viewControllerClass];
 
             // We can't get the image name with the app delegate class for some apps. Therefore, we
             // use the rootViewController and its subclasses as a fallback.  The following method
             // ensures we don't swizzle ViewControllers of UIKit.
             [self swizzleUIViewControllersOfClassesInImageOf:viewControllerClass];
-        } else {
-            SENTRY_LOG_WARN(@"ViewControllerClass was nil for UIViewController: %@",
-                viewController.description);
         }
     }
 }
@@ -330,10 +325,8 @@
 
 - (void)swizzleViewControllerSubClass:(Class)class
 {
-    if (![self shouldSwizzleViewController:class]) {
-        SENTRY_LOG_DEBUG(@"Skipping swizzling of class: %@", class);
+    if (![self shouldSwizzleViewController:class])
         return;
-    }
 
     // This are the five main functions related to UI creation in a view controller.
     // We are swizzling it to track anything that happens inside one of this functions.
@@ -350,15 +343,6 @@
  */
 - (BOOL)shouldSwizzleViewController:(Class)class
 {
-    NSString *className = NSStringFromClass(class);
-
-    BOOL shouldExcludeClassFromSwizzling = [SentrySwizzleClassNameExclude
-        shouldExcludeClassWithClassName:className
-               swizzleClassNameExcludes:self.options.swizzleClassNameExcludes];
-    if (shouldExcludeClassFromSwizzling) {
-        return NO;
-    }
-
     return [self.inAppLogic isClassInApp:class];
 }
 

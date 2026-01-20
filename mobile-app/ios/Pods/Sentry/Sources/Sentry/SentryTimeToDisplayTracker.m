@@ -24,7 +24,8 @@
 #        import "SentryLaunchProfiling.h"
 #    endif // SENTRY_TARGET_PROFILING_SUPPORTED
 
-@interface SentryTimeToDisplayTracker () <SentryFramesTrackerListener>
+@interface
+SentryTimeToDisplayTracker () <SentryFramesTrackerListener>
 
 @property (nonatomic, weak) SentrySpan *initialDisplaySpan;
 @property (nonatomic, weak) SentrySpan *fullDisplaySpan;
@@ -72,7 +73,7 @@
         self.fullDisplaySpan =
             [tracer startChildWithOperation:SentrySpanOperationUILoadFullDisplay
                                 description:[NSString stringWithFormat:@"%@ full display",
-                                                _controllerName]];
+                                                      _controllerName]];
         self.fullDisplaySpan.origin = SentryTraceOriginManualUITimeToDisplay;
 
         // By concept TTID and TTFD spans should have the same beginning,
@@ -135,21 +136,6 @@
     // All other accesses to _fullyDisplayedReported run on the main thread.
     // To avoid using locks, we execute this on the main queue instead.
     [_dispatchQueueWrapper dispatchAsyncOnMainQueue:^{ self->_fullyDisplayedReported = YES; }];
-}
-
-- (void)finishSpansIfNotFinished
-{
-    if (self.initialDisplaySpan.isFinished == NO) {
-        [self.initialDisplaySpan finish];
-    }
-
-    if (self.fullDisplaySpan.isFinished == NO) {
-        SENTRY_LOG_WARN(@"You didn't call SentrySDK.reportFullyDisplayed() for UIViewController: "
-                        @"%@. Finishing full display span with status: %@.",
-            _controllerName, nameForSentrySpanStatus(kSentrySpanStatusDeadlineExceeded));
-
-        [self.fullDisplaySpan finishWithStatus:kSentrySpanStatusDeadlineExceeded];
-    }
 }
 
 - (void)framesTrackerHasNewFrame:(NSDate *)newFrameDate

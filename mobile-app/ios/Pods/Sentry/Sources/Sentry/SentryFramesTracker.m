@@ -28,12 +28,13 @@ typedef NSMutableArray<NSDictionary<NSString *, NSNumber *> *> SentryMutableFram
 static CFTimeInterval const SentryFrozenFrameThreshold = 0.7;
 static CFTimeInterval const SentryPreviousFrameInitialValue = -1;
 
-@interface SentryFramesTracker ()
+@interface
+SentryFramesTracker ()
 
 @property (nonatomic, assign, readonly) BOOL isStarted;
 
 @property (nonatomic, strong, readonly) SentryDisplayLinkWrapper *displayLinkWrapper;
-@property (nonatomic, strong, readonly) id<SentryCurrentDateProvider> dateProvider;
+@property (nonatomic, strong, readonly) SentryCurrentDateProvider *dateProvider;
 @property (nonatomic, strong, readonly) SentryDispatchQueueWrapper *dispatchQueueWrapper;
 @property (nonatomic, strong) SentryNSNotificationCenterWrapper *notificationCenter;
 @property (nonatomic, assign) CFTimeInterval previousFrameTimestamp;
@@ -65,7 +66,7 @@ slowFrameThreshold(uint64_t actualFramesPerSecond)
 }
 
 - (instancetype)initWithDisplayLinkWrapper:(SentryDisplayLinkWrapper *)displayLinkWrapper
-                              dateProvider:(id<SentryCurrentDateProvider>)dateProvider
+                              dateProvider:(SentryCurrentDateProvider *)dateProvider
                       dispatchQueueWrapper:(SentryDispatchQueueWrapper *)dispatchQueueWrapper
                         notificationCenter:(SentryNSNotificationCenterWrapper *)notificationCenter
                  keepDelayedFramesDuration:(CFTimeInterval)keepDelayedFramesDuration
@@ -256,11 +257,14 @@ slowFrameThreshold(uint64_t actualFramesPerSecond)
 
 - (void)reportNewFrame
 {
+    NSArray *localListeners;
+    @synchronized(self.listeners) {
+        localListeners = [self.listeners allObjects];
+    }
+
     NSDate *newFrameDate = [self.dateProvider date];
-    // We need to copy the list because some listeners will remove themselves
-    // from the list during the callback, causing a crash during iteration.
-    NSArray<id<SentryFramesTrackerListener>> *listeners = [self.listeners copy];
-    for (id<SentryFramesTrackerListener> listener in listeners) {
+
+    for (id<SentryFramesTrackerListener> listener in localListeners) {
         [listener framesTrackerHasNewFrame:newFrameDate];
     }
 }
@@ -307,15 +311,17 @@ slowFrameThreshold(uint64_t actualFramesPerSecond)
 
 - (void)addListener:(id<SentryFramesTrackerListener>)listener
 {
-    // Adding listeners on the main thread to avoid race condition with new frame callback
-    [self.dispatchQueueWrapper dispatchAsyncOnMainQueue:^{ [self.listeners addObject:listener]; }];
+
+    @synchronized(self.listeners) {
+        [self.listeners addObject:listener];
+    }
 }
 
 - (void)removeListener:(id<SentryFramesTrackerListener>)listener
 {
-    // Removing listeners on the main thread to avoid race condition with new frame callback
-    [self.dispatchQueueWrapper
-        dispatchAsyncOnMainQueue:^{ [self.listeners removeObject:listener]; }];
+    @synchronized(self.listeners) {
+        [self.listeners removeObject:listener];
+    }
 }
 
 - (void)pause

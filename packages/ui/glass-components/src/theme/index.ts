@@ -63,6 +63,7 @@ export const colors = {
   // Glass effects
   glass: glass.bg,
   glassLight: glass.bgLight,
+  glassMedium: glass.bgMedium,
   glassStrong: glass.bgStrong,
   glassBorder: glass.border,
   glassBorderLight: glass.borderLight,

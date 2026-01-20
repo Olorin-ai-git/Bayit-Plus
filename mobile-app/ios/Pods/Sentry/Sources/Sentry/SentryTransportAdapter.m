@@ -7,7 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SentryTransportAdapter ()
+@interface
+SentryTransportAdapter ()
 
 @property (nonatomic, strong) NSArray<id<SentryTransport>> *transports;
 @property (nonatomic, strong) SentryOptions *options;
@@ -75,21 +76,6 @@ NS_ASSUME_NONNULL_BEGIN
     SentryEnvelope *envelope = [[SentryEnvelope alloc] initWithHeader:envelopeHeader items:items];
 
     [self sendEnvelope:envelope];
-}
-
-- (void)storeEvent:(SentryEvent *)event traceContext:(nullable SentryTraceContext *)traceContext
-{
-    SentryEnvelopeItem *item = [[SentryEnvelopeItem alloc] initWithEvent:event];
-
-    SentryEnvelopeHeader *envelopeHeader = [[SentryEnvelopeHeader alloc] initWithId:event.eventId
-                                                                       traceContext:traceContext];
-
-    SentryEnvelope *envelope = [[SentryEnvelope alloc] initWithHeader:envelopeHeader
-                                                                items:@[ item ]];
-
-    for (id<SentryTransport> transport in self.transports) {
-        [transport storeEnvelope:envelope];
-    }
 }
 
 - (void)sendUserFeedback:(SentryUserFeedback *)userFeedback

@@ -14,7 +14,6 @@
 #    import "SentryNSNotificationCenterWrapper.h"
 #    import "SentryOptions.h"
 #    import "SentryRandom.h"
-#    import "SentryRateLimits.h"
 #    import "SentryReachability.h"
 #    import "SentrySDK+Private.h"
 #    import "SentryScope+Private.h"
@@ -28,8 +27,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString *SENTRY_REPLAY_FOLDER = @"replay";
-static NSString *SENTRY_CURRENT_REPLAY = @"replay.current";
-static NSString *SENTRY_LAST_REPLAY = @"replay.last";
 
 /**
  * We need to use this from the swizzled block
@@ -38,7 +35,8 @@ static NSString *SENTRY_LAST_REPLAY = @"replay.last";
  */
 static SentryTouchTracker *_touchTracker;
 
-@interface SentrySessionReplayIntegration () <SentryReachabilityObserver>
+@interface
+SentrySessionReplayIntegration () <SentryReachabilityObserver>
 - (void)newSceneActivate;
 @end
 
@@ -47,28 +45,6 @@ static SentryTouchTracker *_touchTracker;
     SentryReplayOptions *_replayOptions;
     SentryNSNotificationCenterWrapper *_notificationCenter;
     SentryOnDemandReplay *_resumeReplayMaker;
-    id<SentryRateLimits> _rateLimits;
-    // We need to use this variable to identify whether rate limiting was ever activated for session
-    // replay in this session, instead of always looking for the rate status in `SentryRateLimits`
-    // This is the easiest way to ensure segment 0 will always reach the server, because session
-    // replay absolutely needs segment 0 to make replay work.
-    BOOL _rateLimited;
-}
-
-- (instancetype)init
-{
-    self = [super init];
-    return self;
-}
-
-- (instancetype)initForManualUse:(nonnull SentryOptions *)options
-{
-    if (self = [super init]) {
-        [self setupWith:options.experimental.sessionReplay
-            enableTouchTracker:options.enableSwizzling];
-        [self startWithOptions:options.experimental.sessionReplay fullSession:YES];
-    }
-    return self;
 }
 
 - (BOOL)installWithOptions:(nonnull SentryOptions *)options
@@ -77,29 +53,19 @@ static SentryTouchTracker *_touchTracker;
         return NO;
     }
 
-    [self setupWith:options.experimental.sessionReplay enableTouchTracker:options.enableSwizzling];
-    return YES;
-}
+    _replayOptions = options.experimental.sessionReplay;
 
-- (void)setupWith:(SentryReplayOptions *)replayOptions enableTouchTracker:(BOOL)touchTracker
-{
-    _replayOptions = replayOptions;
-    _viewPhotographer = [[SentryViewPhotographer alloc] initWithRedactOptions:replayOptions];
-    _rateLimits = SentryDependencyContainer.sharedInstance.rateLimits;
-
-    if (touchTracker) {
+    if (options.enableSwizzling) {
         _touchTracker = [[SentryTouchTracker alloc]
             initWithDateProvider:SentryDependencyContainer.sharedInstance.dateProvider
-                           scale:replayOptions.sizeScale];
+                           scale:options.experimental.sessionReplay.sizeScale];
         [self swizzleApplicationTouch];
     }
 
     _notificationCenter = SentryDependencyContainer.sharedInstance.notificationCenterWrapper;
 
-    [self moveCurrentReplay];
-    [self cleanUp];
-
     [SentrySDK.currentHub registerSessionListener:self];
+
     [SentryGlobalEventProcessor.shared
         addEventProcessor:^SentryEvent *_Nullable(SentryEvent *_Nonnull event) {
             if (event.isCrashEvent) {
@@ -111,19 +77,10 @@ static SentryTouchTracker *_touchTracker;
         }];
 
     [SentryDependencyContainer.sharedInstance.reachability addObserver:self];
-}
+    [SentryViewPhotographer.shared addIgnoreClasses:_replayOptions.ignoreRedactViewTypes];
+    [SentryViewPhotographer.shared addRedactClasses:_replayOptions.redactViewTypes];
 
-- (nullable NSDictionary<NSString *, id> *)lastReplayInfo
-{
-    NSURL *dir = [self replayDirectory];
-    NSURL *lastReplayUrl = [dir URLByAppendingPathComponent:SENTRY_LAST_REPLAY];
-    NSData *lastReplay = [NSData dataWithContentsOfURL:lastReplayUrl];
-
-    if (lastReplay == nil) {
-        return nil;
-    }
-
-    return [SentrySerialization deserializeDictionaryFromJsonData:lastReplay];
+    return YES;
 }
 
 /**
@@ -135,8 +92,14 @@ static SentryTouchTracker *_touchTracker;
 - (void)resumePreviousSessionReplay:(SentryEvent *)event
 {
     NSURL *dir = [self replayDirectory];
-    NSDictionary<NSString *, id> *jsonObject = [self lastReplayInfo];
+    NSData *lastReplay =
+        [NSData dataWithContentsOfURL:[dir URLByAppendingPathComponent:@"lastreplay"]];
+    if (lastReplay == nil) {
+        return;
+    }
 
+    NSDictionary<NSString *, id> *jsonObject =
+        [SentrySerialization deserializeDictionaryFromJsonData:lastReplay];
     if (jsonObject == nil) {
         return;
     }
@@ -198,10 +161,6 @@ static SentryTouchTracker *_touchTracker;
     eventContext[@"replay"] =
         [NSDictionary dictionaryWithObjectsAndKeys:replayId.sentryIdString, @"replay_id", nil];
     event.context = eventContext;
-
-    if ([NSFileManager.defaultManager removeItemAtURL:lastReplayURL error:&error] == NO) {
-        SENTRY_LOG_ERROR(@"Can`t delete '%@': %@", SENTRY_LAST_REPLAY, error);
-    }
 }
 
 - (void)captureVideo:(SentryVideoInfo *)video
@@ -231,7 +190,7 @@ static SentryTouchTracker *_touchTracker;
 
 - (void)startSession
 {
-    [self.sessionReplay pause];
+    [self.sessionReplay stop];
 
     _startedAsFullSession = [self shouldReplayFullSession:_replayOptions.sessionSampleRate];
 
@@ -239,37 +198,30 @@ static SentryTouchTracker *_touchTracker;
         return;
     }
 
-    [self runReplayForAvailableWindow];
-}
-
-- (void)runReplayForAvailableWindow
-{
     if (SentryDependencyContainer.sharedInstance.application.windows.count > 0) {
         // If a window its already available start replay right away
         [self startWithOptions:_replayOptions fullSession:_startedAsFullSession];
-    } else if (@available(iOS 13.0, tvOS 13.0, *)) {
+    } else {
         // Wait for a scene to be available to started the replay
-        [_notificationCenter addObserver:self
-                                selector:@selector(newSceneActivate)
-                                    name:UISceneDidActivateNotification];
+        if (@available(iOS 13.0, tvOS 13.0, *)) {
+            [_notificationCenter addObserver:self
+                                    selector:@selector(newSceneActivate)
+                                        name:UISceneDidActivateNotification];
+        }
     }
 }
 
 - (void)newSceneActivate
 {
-    if (@available(iOS 13.0, tvOS 13.0, *)) {
-        [SentryDependencyContainer.sharedInstance.notificationCenterWrapper
-            removeObserver:self
-                      name:UISceneDidActivateNotification];
-        [self startWithOptions:_replayOptions fullSession:_startedAsFullSession];
-    }
+    [SentryDependencyContainer.sharedInstance.notificationCenterWrapper removeObserver:self];
+    [self startWithOptions:_replayOptions fullSession:_startedAsFullSession];
 }
 
 - (void)startWithOptions:(SentryReplayOptions *)replayOptions
              fullSession:(BOOL)shouldReplayFullSession
 {
     [self startWithOptions:replayOptions
-         screenshotProvider:_viewPhotographer
+         screenshotProvider:SentryViewPhotographer.shared
         breadcrumbConverter:[[SentrySRDefaultBreadcrumbConverter alloc] init]
                 fullSession:shouldReplayFullSession];
 }
@@ -297,12 +249,6 @@ static SentryTouchTracker *_touchTracker;
         = (NSInteger)(shouldReplayFullSession ? replayOptions.sessionSegmentDuration + 1
                                               : replayOptions.errorReplayDuration + 1);
 
-    dispatch_queue_attr_t attributes = dispatch_queue_attr_make_with_qos_class(
-        DISPATCH_QUEUE_SERIAL, DISPATCH_QUEUE_PRIORITY_LOW, 0);
-    SentryDispatchQueueWrapper *dispatchQueue =
-        [[SentryDispatchQueueWrapper alloc] initWithName:"io.sentry.session-replay"
-                                              attributes:attributes];
-
     self.sessionReplay = [[SentrySessionReplay alloc]
         initWithReplayOptions:replayOptions
              replayFolderPath:docs
@@ -312,21 +258,21 @@ static SentryTouchTracker *_touchTracker;
                  touchTracker:_touchTracker
                  dateProvider:SentryDependencyContainer.sharedInstance.dateProvider
                      delegate:self
-                dispatchQueue:dispatchQueue
+                dispatchQueue:[[SentryDispatchQueueWrapper alloc] init]
            displayLinkWrapper:[[SentryDisplayLinkWrapper alloc] init]];
 
     [self.sessionReplay
         startWithRootView:SentryDependencyContainer.sharedInstance.application.windows.firstObject
-              fullSession:shouldReplayFullSession];
+              fullSession:[self shouldReplayFullSession:replayOptions.sessionSampleRate]];
 
     [_notificationCenter addObserver:self
-                            selector:@selector(pause)
+                            selector:@selector(stop)
                                 name:UIApplicationDidEnterBackgroundNotification
                               object:nil];
 
     [_notificationCenter addObserver:self
                             selector:@selector(resume)
-                                name:UIApplicationDidBecomeActiveNotification
+                                name:UIApplicationWillEnterForegroundNotification
                               object:nil];
 
     [self saveCurrentSessionInfo:self.sessionReplay.sessionReplayId
@@ -345,14 +291,14 @@ static SentryTouchTracker *_touchTracker;
                           path:(NSString *)path
                        options:(SentryReplayOptions *)options
 {
-    NSDictionary *info =
-        [[NSDictionary alloc] initWithObjectsAndKeys:sessionId.sentryIdString, @"replayId",
-            path.lastPathComponent, @"path", @(options.onErrorSampleRate), @"errorSampleRate", nil];
+    NSDictionary *info = [[NSDictionary alloc]
+        initWithObjectsAndKeys:sessionId.sentryIdString, @"replayId", path.lastPathComponent,
+        @"path", @(options.onErrorSampleRate), @"errorSampleRate", nil];
 
     NSData *data = [SentrySerialization dataWithJSONObject:info];
 
-    NSString *infoPath = [[path stringByDeletingLastPathComponent]
-        stringByAppendingPathComponent:SENTRY_CURRENT_REPLAY];
+    NSString *infoPath =
+        [[path stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"lastreplay"];
     if ([NSFileManager.defaultManager fileExistsAtPath:infoPath]) {
         [NSFileManager.defaultManager removeItemAtPath:infoPath error:nil];
     }
@@ -362,59 +308,9 @@ static SentryTouchTracker *_touchTracker;
         cStringUsingEncoding:NSUTF8StringEncoding]);
 }
 
-- (void)moveCurrentReplay
+- (void)stop
 {
-    NSURL *path = [self replayDirectory];
-    NSURL *current = [path URLByAppendingPathComponent:SENTRY_CURRENT_REPLAY];
-    NSURL *last = [path URLByAppendingPathComponent:SENTRY_LAST_REPLAY];
-
-    NSError *error;
-    if ([NSFileManager.defaultManager fileExistsAtPath:last.path]) {
-        if ([NSFileManager.defaultManager removeItemAtURL:last error:&error] == NO) {
-            SENTRY_LOG_ERROR(@"Could not delete 'lastreplay' file: %@", error);
-            return;
-        }
-    }
-
-    if ([NSFileManager.defaultManager moveItemAtURL:current toURL:last error:nil] == NO) {
-        SENTRY_LOG_ERROR(@"Could not move 'currentreplay' to 'lastreplat': %@", error);
-    }
-}
-
-- (void)cleanUp
-{
-    NSURL *replayDir = [self replayDirectory];
-    NSDictionary<NSString *, id> *lastReplayInfo = [self lastReplayInfo];
-    NSString *lastReplayFolder = lastReplayInfo[@"path"];
-
-    SentryFileManager *fileManager = SentryDependencyContainer.sharedInstance.fileManager;
-    // Mapping replay folder here and not in dispatched queue to prevent a race condition between
-    // listing files and creating a new replay session.
-    NSArray *replayFiles = [fileManager allFilesInFolder:replayDir.path];
-    if (replayFiles.count == 0) {
-        return;
-    }
-
-    [SentryDependencyContainer.sharedInstance.dispatchQueueWrapper dispatchAsyncWithBlock:^{
-        for (NSString *file in replayFiles) {
-            // Skip the last replay folder.
-            if ([file isEqualToString:lastReplayFolder]) {
-                continue;
-            }
-
-            NSString *filePath = [replayDir.path stringByAppendingPathComponent:file];
-
-            // Check if the file is a directory before deleting it.
-            if ([fileManager isDirectory:filePath]) {
-                [fileManager removeFileAtPath:filePath];
-            }
-        }
-    }];
-}
-
-- (void)pause
-{
-    [self.sessionReplay pause];
+    [self.sessionReplay stop];
 }
 
 - (void)resume
@@ -422,34 +318,9 @@ static SentryTouchTracker *_touchTracker;
     [self.sessionReplay resume];
 }
 
-- (void)start
-{
-    if (_rateLimited) {
-        SENTRY_LOG_WARN(
-            @"This session was rate limited. Not starting session replay until next app session");
-        return;
-    }
-
-    if (self.sessionReplay != nil) {
-        if (self.sessionReplay.isFullSession == NO) {
-            [self.sessionReplay captureReplay];
-        }
-        return;
-    }
-
-    _startedAsFullSession = YES;
-    [self runReplayForAvailableWindow];
-}
-
-- (void)stop
-{
-    [self.sessionReplay pause];
-    self.sessionReplay = nil;
-}
-
 - (void)sentrySessionEnded:(SentrySession *)session
 {
-    [self pause];
+    [self stop];
     [_notificationCenter removeObserver:self
                                    name:UIApplicationDidEnterBackgroundNotification
                                  object:nil];
@@ -461,7 +332,6 @@ static SentryTouchTracker *_touchTracker;
 
 - (void)sentrySessionStarted:(SentrySession *)session
 {
-    _rateLimited = NO;
     [self startSession];
 }
 
@@ -491,7 +361,7 @@ static SentryTouchTracker *_touchTracker;
 {
     [SentrySDK.currentHub unregisterSessionListener:self];
     _touchTracker = nil;
-    [self pause];
+    [self stop];
 }
 
 - (void)dealloc
@@ -568,15 +438,6 @@ static SentryTouchTracker *_touchTracker;
                                replayRecording:(SentryReplayRecording *)replayRecording
                                       videoUrl:(NSURL *)videoUrl
 {
-    if ([_rateLimits isRateLimitActive:kSentryDataCategoryReplay] ||
-        [_rateLimits isRateLimitActive:kSentryDataCategoryAll]) {
-        SENTRY_LOG_DEBUG(
-            @"Rate limiting is active for replays. Stopping session replay until next session.");
-        _rateLimited = YES;
-        [self stop];
-        return;
-    }
-
     [SentrySDK.currentHub captureReplayEvent:replayEvent
                              replayRecording:replayRecording
                                        video:videoUrl];
@@ -614,7 +475,7 @@ static SentryTouchTracker *_touchTracker;
     if (connected) {
         [_sessionReplay resume];
     } else {
-        [_sessionReplay pauseSessionMode];
+        [_sessionReplay pause];
     }
 }
 

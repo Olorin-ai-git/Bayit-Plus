@@ -1,90 +1,68 @@
 /**
- * B2B Partner Portal i18n Configuration
+ * B2B Partner Portal i18n Configuration (Unified)
  *
- * Standalone i18n configuration for the B2B Partner Portal.
- * Uses environment configuration for default language.
+ * Uses the unified @olorin/i18n package for B2B Partner Portal.
+ * Supports 10 languages with fallback to B2B-specific overrides.
  */
 
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-
-import partnerEn from './locales/en.json';
-import partnerHe from './locales/he.json';
-import partnerEs from './locales/es.json';
+import i18n, { languages } from '@olorin/i18n';
+import { initWebI18n as initWebI18nCore, saveLanguageWeb, setupWebDirectionListener } from '@olorin/i18n/web';
 import { getB2BConfig } from '../config/env';
 
-export interface Language {
-  code: string;
-  name: string;
-  nativeName: string;
-  rtl: boolean;
+// Re-export language list for compatibility
+export { languages };
+
+/**
+ * Get initial language from config or saved preference.
+ */
+function getInitialLanguageFromConfig(): string {
+  return getB2BConfig().defaultLanguage || 'he';
 }
 
-export const languages: Language[] = [
-  { code: 'he', name: 'Hebrew', nativeName: 'עברית', rtl: true },
-  { code: 'en', name: 'English', nativeName: 'English', rtl: false },
-  { code: 'es', name: 'Spanish', nativeName: 'Español', rtl: false },
-];
+/**
+ * Initialize i18n for B2B Partner Portal.
+ * Uses the unified @olorin/i18n package with environment-configured defaults.
+ */
+export async function initializeI18n(): Promise<typeof i18n> {
+  // Load from localStorage if available
+  await initWebI18nCore();
 
-const LANGUAGE_KEY = '@bayit_partner_language';
-
-function getInitialLanguage(): string {
-  // First, check if user has a saved preference
-  try {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const saved = window.localStorage.getItem(LANGUAGE_KEY);
-      if (saved && ['he', 'en', 'es'].includes(saved)) {
-        return saved;
-      }
+  // If no saved preference, apply configured default
+  const configDefault = getInitialLanguageFromConfig();
+  if (i18n.language === 'he' || !i18n.language) {
+    // Check if config specifies a different default
+    if (configDefault && configDefault !== 'he') {
+      await i18n.changeLanguage(configDefault);
     }
-  } catch {
-    // Ignore localStorage errors
   }
-  // Fall back to configured default language
-  return getB2BConfig().defaultLanguage;
-}
 
-export function initializeI18n() {
-  const initialLanguage = getInitialLanguage();
-
-  i18n.use(initReactI18next).init({
-    resources: {
-      en: { translation: partnerEn },
-      he: { translation: partnerHe },
-      es: { translation: partnerEs },
-    },
-    lng: initialLanguage,
-    fallbackLng: 'en',
-    interpolation: {
-      escapeValue: false,
-    },
-    react: {
-      useSuspense: false,
-    },
-  });
+  // Setup web-specific direction handling
+  setupWebDirectionListener();
 
   return i18n;
 }
 
-export function changeLanguage(lang: string) {
-  if (['he', 'en', 'es'].includes(lang)) {
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        window.localStorage.setItem(LANGUAGE_KEY, lang);
-      }
-    } catch {
-      // Ignore errors
-    }
-    i18n.changeLanguage(lang);
-  }
+/**
+ * Change the current language.
+ * @param lang Language code
+ */
+export async function changeLanguage(lang: string): Promise<void> {
+  await saveLanguageWeb(lang as any);
 }
 
+/**
+ * Get current language information.
+ */
 export function getCurrentLanguage() {
   return languages.find((l) => l.code === i18n.language) || languages[0];
 }
 
-export function isRTL() {
-  return getCurrentLanguage().rtl;
+/**
+ * Check if current language is RTL.
+ */
+export function isRTL(): boolean {
+  const current = getCurrentLanguage();
+  return current.rtl;
 }
 
 export { i18n };

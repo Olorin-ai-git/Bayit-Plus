@@ -6,15 +6,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SentryRateLimitParser ()
+@interface
+SentryRateLimitParser ()
 
-@property (nonatomic, strong) id<SentryCurrentDateProvider> currentDateProvider;
+@property (nonatomic, strong) SentryCurrentDateProvider *currentDateProvider;
 
 @end
 
 @implementation SentryRateLimitParser
 
-- (instancetype)initWithCurrentDateProvider:(id<SentryCurrentDateProvider>)currentDateProvider
+- (instancetype)initWithCurrentDateProvider:(SentryCurrentDateProvider *)currentDateProvider
 {
     if (self = [super init]) {
         self.currentDateProvider = currentDateProvider;

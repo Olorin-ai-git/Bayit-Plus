@@ -55,7 +55,8 @@ dependencies = [
     "bayit-voice-pipeline @ file:///Users/olorin/Documents/Bayit-Plus/packages/bayit-voice-pipeline",
     "bayit-translation @ file:///Users/olorin/Documents/Bayit-Plus/packages/bayit-translation",
     "olorin-core @ file:///Users/olorin/Documents/Bayit-Plus/packages/olorin-core",
-    "olorin-shared @ file:///Users/olorin/Documents/Bayit-Plus/packages/olorin-shared"
+    "olorin-shared @ file:///Users/olorin/Documents/Bayit-Plus/packages/olorin-shared",
+    "olorin-i18n @ file:///Users/olorin/Documents/Bayit-Plus/packages/python/olorin-i18n"
 ]
 
 

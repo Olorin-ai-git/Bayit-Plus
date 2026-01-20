@@ -225,7 +225,6 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
     ...currentVariant,
     // Web-specific backdrop filter
     ...(Platform.OS === 'web' && {
-      // @ts-expect-error Web-specific CSS properties
       backdropFilter: 'blur(24px)',
       WebkitBackdropFilter: 'blur(24px)',
     }),

@@ -14,10 +14,4 @@
     return is24Hour;
 }
 
-+ (BOOL)isRightToLeftLanguage
-{
-    return [NSLocale characterDirectionForLanguage:NSLocale.currentLocale.languageCode]
-        == NSLocaleLanguageDirectionRightToLeft;
-}
-
 @end

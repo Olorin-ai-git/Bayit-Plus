@@ -17,6 +17,7 @@
     "deploy:preview": "npm run build && firebase hosting:channel:deploy partner-preview --only partner-portal"
   },
   "dependencies": {
+    "@olorin/i18n": "file:../shared/i18n",
     "@tanstack/react-query": "^5.62.0",
     "axios": "^1.6.2",
     "clsx": "^2.1.1",

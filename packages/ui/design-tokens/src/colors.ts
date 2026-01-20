@@ -33,6 +33,8 @@ export interface GlassColors {
   bg: string;
   /** Lighter glass background */
   bgLight: string;
+  /** Medium glass background */
+  bgMedium: string;
   /** Stronger glass background */
   bgStrong: string;
   /** Dark purple border */
@@ -156,6 +158,7 @@ export const gold = '#ffd700';
 export const glass: GlassColors = {
   bg: 'rgba(10, 10, 10, 0.7)',
   bgLight: 'rgba(10, 10, 10, 0.5)',
+  bgMedium: 'rgba(10, 10, 10, 0.6)',
   bgStrong: 'rgba(10, 10, 10, 0.85)',
   border: 'rgba(126, 34, 206, 0.25)',
   borderLight: 'rgba(126, 34, 206, 0.15)',

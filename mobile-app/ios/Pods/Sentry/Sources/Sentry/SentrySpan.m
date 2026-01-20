@@ -1,4 +1,3 @@
-#import "SentryBaggage.h"
 #import "SentryCrashThread.h"
 #import "SentryDependencyContainer.h"
 #import "SentryFrame.h"
@@ -14,7 +13,6 @@
 #import "SentrySwift.h"
 #import "SentryThreadInspector.h"
 #import "SentryTime.h"
-#import "SentryTraceContext.h"
 #import "SentryTraceHeader.h"
 #import "SentryTracer.h"
 
@@ -33,7 +31,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SentrySpan ()
+@interface
+SentrySpan ()
 @end
 
 @implementation SentrySpan {
@@ -42,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSObject *_stateLock;
     BOOL _isFinished;
     uint64_t _startSystemTime;
+    LocalMetricsAggregator *localMetricsAggregator;
 #if SENTRY_HAS_UIKIT
     NSUInteger initTotalFrames;
     NSUInteger initSlowFrames;
@@ -298,15 +298,12 @@ NS_ASSUME_NONNULL_BEGIN
                                               sampled:self.sampled];
 }
 
-// Getter for the computed property baggage
-- (nullable NSString *)baggageHttpHeader
+- (LocalMetricsAggregator *)getLocalMetricsAggregator
 {
-    return [[self.tracer.traceContext toBaggage] toHTTPHeaderWithOriginalBaggage:nil];
-}
-
-- (nullable SentryTraceContext *)traceContext
-{
-    return self.tracer.traceContext;
+    if (localMetricsAggregator == nil) {
+        localMetricsAggregator = [[LocalMetricsAggregator alloc] init];
+    }
+    return localMetricsAggregator;
 }
 
 - (NSDictionary *)serialize
@@ -348,6 +345,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     [mutableDictionary setValue:@(self.startTimestamp.timeIntervalSince1970)
                          forKey:@"start_timestamp"];
+
+    if (localMetricsAggregator != nil) {
+        mutableDictionary[@"_metrics_summary"] = [localMetricsAggregator serialize];
+    }
 
     @synchronized(_data) {
         NSMutableDictionary *data = _data.mutableCopy;

@@ -17,10 +17,14 @@ end
 target 'BayitPlus' do
   config = use_native_modules!
 
+  # Disable problematic packages for simulator build
+  post_install_setup_env = ENV['XCODE_SIMULATOR_BUILD'] == '1'
+
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    :production => !post_install_setup_env
   )
 
   post_install do |installer|

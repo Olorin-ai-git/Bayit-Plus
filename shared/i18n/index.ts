@@ -1,7 +1,15 @@
+/**
+ * Platform-agnostic i18n initialization for @olorin/i18n.
+ *
+ * This module provides the core i18next initialization with all supported languages.
+ * Platform-specific initialization should use:
+ *
+ * - Web: import { initWebI18n } from '@olorin/i18n/web'
+ * - React Native: import { initNativeI18n } from '@olorin/i18n/native'
+ */
+
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
 
 import he from './locales/he.json';
 import en from './locales/en.json';
@@ -14,26 +22,11 @@ import ta from './locales/ta.json';
 import bn from './locales/bn.json';
 import ja from './locales/ja.json';
 
-const LANGUAGE_KEY = '@bayit_language';
-const isWeb = Platform.OS === 'web';
+import type { LanguageCode, LanguageInfo } from './types';
+import { getInitialLanguageWeb } from './web';
 
-// Get initial language synchronously for web
-// Note: Check window directly since Platform.OS may not be set at module init time
-const getInitialLanguage = (): string => {
-  try {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const saved = window.localStorage.getItem(LANGUAGE_KEY);
-      if (saved && ['he', 'en', 'es', 'zh', 'fr', 'it', 'hi', 'ta', 'bn', 'ja'].includes(saved)) {
-        return saved;
-      }
-    }
-  } catch (e) {
-    // Ignore errors (e.g., in SSR or restricted environments)
-  }
-  return 'he'; // Default fallback
-};
-
-export const languages = [
+// Language metadata matching Olorin ecosystem standards
+export const languages: LanguageInfo[] = [
   { code: 'he', name: 'עברית', flag: '🇮🇱', rtl: true },
   { code: 'en', name: 'English', flag: '🇺🇸', rtl: false },
   { code: 'es', name: 'Español', flag: '🇪🇸', rtl: false },
@@ -41,11 +34,12 @@ export const languages = [
   { code: 'fr', name: 'Français', flag: '🇫🇷', rtl: false },
   { code: 'it', name: 'Italiano', flag: '🇮🇹', rtl: false },
   { code: 'hi', name: 'हिन्दी', flag: '🇮🇳', rtl: false },
-  { code: 'ta', name: 'தமிழ்', flag: '🇮🇳', rtl: false },
+  { code: 'ta', name: 'தமிழ्', flag: '🇮🇳', rtl: false },
   { code: 'bn', name: 'বাংলা', flag: '🇧🇩', rtl: false },
   { code: 'ja', name: '日本語', flag: '🇯🇵', rtl: false },
 ];
 
+// Translation resources for all supported languages
 const resources = {
   he: { translation: he },
   en: { translation: en },
@@ -57,10 +51,11 @@ const resources = {
   ta: { translation: ta },
   bn: { translation: bn },
   ja: { translation: ja },
-};
+} as const;
 
-// Initialize i18n with saved language (or default to Hebrew)
-const initialLang = getInitialLanguage();
+// Initialize i18next with sensible defaults
+// Note: Language is set to 'he' by default, platform-specific init will update it
+const initialLang = getInitialLanguageWeb();
 i18n
   .use(initReactI18next)
   .init({
@@ -77,59 +72,88 @@ i18n
     compatibilityJSON: 'v3',
   });
 
-// Type-safe localStorage access for web
-const getWebStorage = (): Storage | null => {
-  if (isWeb && typeof window !== 'undefined' && window.localStorage) {
-    return window.localStorage;
-  }
-  return null;
-};
-
-// Load saved language preference
-export const loadSavedLanguage = async () => {
+/**
+ * Load saved language preference from storage.
+ * This function is platform-aware and works on both web and native.
+ *
+ * For web: uses localStorage
+ * For React Native: uses AsyncStorage (requires platform-specific init)
+ *
+ * @deprecated Use initWebI18n() for web or initNativeI18n() for React Native
+ */
+export const loadSavedLanguage = async (): Promise<void> => {
   try {
     let savedLang: string | null = null;
-    const webStorage = getWebStorage();
 
-    if (webStorage) {
-      savedLang = webStorage.getItem(LANGUAGE_KEY);
+    // Try web first
+    if (typeof window !== 'undefined' && window.localStorage) {
+      savedLang = window.localStorage.getItem('@olorin_language');
     } else {
-      savedLang = await AsyncStorage.getItem(LANGUAGE_KEY);
+      // Try AsyncStorage for React Native
+      try {
+        const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
+        savedLang = await AsyncStorage.getItem('@olorin_language');
+      } catch {
+        // AsyncStorage not available
+      }
     }
 
-    if (savedLang && ['he', 'en', 'es', 'zh', 'fr', 'it', 'hi', 'ta', 'bn', 'ja'].includes(savedLang)) {
-      i18n.changeLanguage(savedLang);
+    if (savedLang) {
+      const validLanguages: LanguageCode[] = ['he', 'en', 'es', 'zh', 'fr', 'it', 'hi', 'ta', 'bn', 'ja'];
+      if (validLanguages.includes(savedLang as LanguageCode)) {
+        await i18n.changeLanguage(savedLang);
+      }
     }
   } catch (error) {
-    console.log('Error loading saved language:', error);
+    console.warn('Error loading saved language:', error);
   }
 };
 
-// Save language preference
-export const saveLanguage = async (lang: string) => {
+/**
+ * Save language preference to storage.
+ * This function is platform-aware and works on both web and native.
+ *
+ * For web: uses localStorage
+ * For React Native: uses AsyncStorage (requires platform-specific init)
+ *
+ * @deprecated Use saveLanguageWeb() for web or saveLanguageNative() for React Native
+ */
+export const saveLanguage = async (lang: LanguageCode): Promise<void> => {
   try {
-    const webStorage = getWebStorage();
-
-    if (webStorage) {
-      webStorage.setItem(LANGUAGE_KEY, lang);
+    // Try web first
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem('@olorin_language', lang);
     } else {
-      await AsyncStorage.setItem(LANGUAGE_KEY, lang);
+      // Try AsyncStorage for React Native
+      try {
+        const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
+        await AsyncStorage.setItem('@olorin_language', lang);
+      } catch {
+        // AsyncStorage not available
+      }
     }
-    i18n.changeLanguage(lang);
+
+    await i18n.changeLanguage(lang);
   } catch (error) {
-    console.log('Error saving language:', error);
+    console.warn('Error saving language:', error);
   }
 };
 
-// Get current language info
-export const getCurrentLanguage = () => {
-  return languages.find(l => l.code === i18n.language) || languages[0];
+/**
+ * Get current language information.
+ * @returns Language info object with code, name, flag, RTL status
+ */
+export const getCurrentLanguage = (): LanguageInfo => {
+  const current = languages.find(l => l.code === (i18n.language as LanguageCode));
+  return current || languages[0];
 };
 
-// Check if current language is RTL
-export const isRTL = () => {
-  const current = getCurrentLanguage();
-  return current.rtl;
+/**
+ * Check if current language is RTL.
+ * @returns True if current language is right-to-left
+ */
+export const isRTL = (): boolean => {
+  return getCurrentLanguage().rtl;
 };
 
 export default i18n;

@@ -1,1 +1,1 @@
-../../../Sentry/Sources/Sentry/Public/SentryTraceContext.h
+../../../Sentry/Sources/Sentry/include/SentryTraceContext.h

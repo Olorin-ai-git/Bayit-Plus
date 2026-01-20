@@ -1,0 +1,80 @@
+{
+  "name": "@olorin/shared-hooks",
+  "version": "1.0.0",
+  "description": "Olorin.ai Shared React Hooks - Reusable hooks for React Native and Web",
+  "license": "UNLICENSED",
+  "private": true,
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "@olorin/design-tokens": "*"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-native": ">=0.72.0",
+    "zustand": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react-native": {
+      "optional": true
+    },
+    "zustand": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@testing-library/react-hooks": "^8.0.1",
+    "@types/react": "^18.2.0",
+    "@types/react-native": "^0.73.0",
+    "jest": "^29.7.0",
+    "react": "^18.3.1",
+    "react-native": "^0.76.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "zustand": "^5.0.0"
+  },
+  "keywords": [
+    "react",
+    "react-native",
+    "hooks",
+    "olorin",
+    "bayit-plus"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olorin-ai/olorin-ecosystem.git",
+    "directory": "packages/ui/shared-hooks"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  }
+}

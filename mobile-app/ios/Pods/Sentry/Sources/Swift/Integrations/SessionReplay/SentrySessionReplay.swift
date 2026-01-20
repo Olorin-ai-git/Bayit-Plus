@@ -96,7 +96,7 @@ class SentrySessionReplay: NSObject {
         delegate?.sessionReplayStarted(replayId: sessionReplayId)
     }
 
-    func pauseSessionMode() {
+    func pause() {
         lock.lock()
         defer { lock.unlock() }
         
@@ -104,7 +104,7 @@ class SentrySessionReplay: NSObject {
         self.videoSegmentStart = nil
     }
     
-    func pause() {
+    func stop() {
         lock.lock()
         defer { lock.unlock() }
         
@@ -130,7 +130,7 @@ class SentrySessionReplay: NSObject {
         videoSegmentStart = nil
         displayLink.link(withTarget: self, selector: #selector(newFrame(_:)))
     }
-  
+
     func captureReplayFor(event: Event) {
         guard isRunning else { return }
 
@@ -185,7 +185,7 @@ class SentrySessionReplay: NSObject {
         
         if let sessionStart = sessionStart, isFullSession && now.timeIntervalSince(sessionStart) > replayOptions.maximumDuration {
             reachedMaximumDuration = true
-            pause()
+            stop()
             return
         }
 
@@ -255,7 +255,7 @@ class SentrySessionReplay: NSObject {
 
         var events = convertBreadcrumbs(breadcrumbs: breadcrumbs, from: video.start, until: video.end)
         if let touchTracker = touchTracker {
-            events.append(contentsOf: touchTracker.replayEvents(from: videoSegmentStart ?? video.start, until: video.end))
+            events.append(contentsOf: touchTracker.replayEvents(from: video.start, until: video.end))
             touchTracker.flushFinishedEvents()
         }
 
@@ -269,25 +269,13 @@ class SentrySessionReplay: NSObject {
             SentryLog.debug("Could not delete replay segment from disk: \(error.localizedDescription)")
         }
     }
-    
+
     private func convertBreadcrumbs(breadcrumbs: [Breadcrumb], from: Date, until: Date) -> [any SentryRRWebEventProtocol] {
-        var filteredResult: [Breadcrumb] = []
-        var lastNavigationTime: Date = from.addingTimeInterval(-1)
-        
-        for breadcrumb in breadcrumbs {
-            guard let time = breadcrumb.timestamp, time >= from && time < until else { continue }
-            
-            // If it's a "navigation" breadcrumb, check the timestamp difference from the previous breadcrumb.
-            // Skip any breadcrumbs that have occurred within 50ms of the last one,
-            // as these represent child view controllers that don’t need their own navigation breadcrumb.
-            if breadcrumb.type == "navigation" {
-                if time.timeIntervalSince(lastNavigationTime) < 0.05 { continue }
-                lastNavigationTime = time
-            }
-            filteredResult.append(breadcrumb)
+        return breadcrumbs.filter {
+            guard let time = $0.timestamp, time >= from && time < until else { return false }
+            return true
         }
-        
-        return filteredResult.compactMap(breadcrumbConverter.convert(from:))
+        .compactMap(breadcrumbConverter.convert(from:))
     }
     
     private func takeScreenshot() {

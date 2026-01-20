@@ -1,10 +1,5 @@
-#if __has_include(<Sentry/Sentry.h>)
-#    import <Sentry/SentryDefines.h>
-#    import <Sentry/SentrySampleDecision.h>
-#else
-#    import <SentryWithoutUIKit/SentryDefines.h>
-#    import <SentryWithoutUIKit/SentrySampleDecision.h>
-#endif
+#import "SentryDefines.h"
+#import "SentrySampleDecision.h"
 
 @class SentryId, SentrySpanId;
 

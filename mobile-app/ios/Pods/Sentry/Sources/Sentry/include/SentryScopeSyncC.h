@@ -5,7 +5,6 @@ typedef struct {
     char *user;
     char *dist;
     char *context;
-    char *traceContext;
     char *environment;
     char *tags;
     char *extras;
@@ -14,7 +13,6 @@ typedef struct {
     char **breadcrumbs; // dynamic array of char arrays
     long maxCrumbs;
     long currentCrumb;
-
 } SentryCrashScope;
 
 SentryCrashScope *sentrycrash_scopesync_getScope(void);
@@ -30,8 +28,6 @@ void sentrycrash_scopesync_setUser(const char *const jsonEncodedCString);
 void sentrycrash_scopesync_setDist(const char *const jsonEncodedCString);
 
 void sentrycrash_scopesync_setContext(const char *const jsonEncodedCString);
-
-void sentrycrash_scopesync_setTraceContext(const char *const jsonEncodedCString);
 
 void sentrycrash_scopesync_setEnvironment(const char *const jsonEncodedCString);
 
