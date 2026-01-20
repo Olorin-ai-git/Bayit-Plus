@@ -300,7 +300,9 @@ async def list_voices(
     partner: IntegrationPartner = Depends(get_current_partner),
 ):
     """List available TTS voices."""
-    # Default voices available for dubbing
+    import json
+
+    # Start with the default voice
     voices = [
         VoiceInfo(
             voice_id=settings.ELEVENLABS_DEFAULT_VOICE_ID,
@@ -308,31 +310,22 @@ async def list_voices(
             language="multilingual",
             description="Natural multilingual female voice (default)",
         ),
-        VoiceInfo(
-            voice_id="21m00Tcm4TlvDq8ikWAM",
-            name="Adam",
-            language="multilingual",
-            description="Deep male voice",
-        ),
-        VoiceInfo(
-            voice_id="AZnzlk1XvdvUeBnXmlld",
-            name="Domi",
-            language="multilingual",
-            description="Youthful female voice",
-        ),
-        VoiceInfo(
-            voice_id="MF3mGyEYCl7XYWbV9V6O",
-            name="Elli",
-            language="multilingual",
-            description="Warm female voice",
-        ),
-        VoiceInfo(
-            voice_id="TxGEqnHWrfWFTfGW9XjX",
-            name="Josh",
-            language="multilingual",
-            description="Conversational male voice",
-        ),
     ]
+
+    # Add configured voices from settings
+    try:
+        configured_voices = json.loads(settings.ELEVENLABS_DUBBING_VOICES)
+        for voice_config in configured_voices:
+            voices.append(
+                VoiceInfo(
+                    voice_id=voice_config.get("id", ""),
+                    name=voice_config.get("name", "Unknown"),
+                    language=voice_config.get("lang", "multilingual"),
+                    description=voice_config.get("desc"),
+                )
+            )
+    except json.JSONDecodeError:
+        logger.warning("Failed to parse ELEVENLABS_DUBBING_VOICES configuration")
 
     return VoicesResponse(voices=voices)
 

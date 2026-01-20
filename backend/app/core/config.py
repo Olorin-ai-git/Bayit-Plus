@@ -461,6 +461,10 @@ class Settings(BaseSettings):
     DUBBING_SESSION_TIMEOUT_MINUTES: int = 120
     DUBBING_TARGET_LATENCY_MS: int = 2000
 
+    # ElevenLabs Voice IDs for Dubbing (JSON array of voice configs)
+    # Format: '[{"id":"voice_id","name":"Name","lang":"multilingual","desc":"Description"}]'
+    ELEVENLABS_DUBBING_VOICES: str = '[{"id":"21m00Tcm4TlvDq8ikWAM","name":"Adam","lang":"multilingual","desc":"Deep male voice"},{"id":"AZnzlk1XvdvUeBnXmlld","name":"Domi","lang":"multilingual","desc":"Youthful female voice"},{"id":"MF3mGyEYCl7XYWbV9V6O","name":"Elli","lang":"multilingual","desc":"Warm female voice"},{"id":"TxGEqnHWrfWFTfGW9XjX","name":"Josh","lang":"multilingual","desc":"Conversational male voice"}]'
+
     # Recap Agent (Phase 5)
     RECAP_MAX_CONTEXT_TOKENS: int = 8000
     RECAP_WINDOW_DEFAULT_MINUTES: int = 15

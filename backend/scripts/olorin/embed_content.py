@@ -35,7 +35,7 @@ from beanie import init_beanie
 
 from app.core.config import settings
 from app.models.content import Content
-from app.models.content_embedding import ContentEmbedding, EmbeddingType
+from app.models.content_embedding import ContentEmbedding
 from app.models.subtitles import SubtitleTrackDoc
 
 logging.basicConfig(
@@ -188,7 +188,7 @@ class ContentEmbedder:
             if not self.force:
                 existing = await ContentEmbedding.find_one(
                     ContentEmbedding.content_id == content_id,
-                    ContentEmbedding.embedding_type == EmbeddingType.TITLE,
+                    ContentEmbedding.embedding_type == "title",
                 )
                 if existing:
                     stats["skipped"] += 1
@@ -238,7 +238,7 @@ class ContentEmbedder:
             if not self.dry_run:
                 embedding_doc = ContentEmbedding(
                     content_id=content_id,
-                    embedding_type=EmbeddingType.TITLE,
+                    embedding_type="title",
                     embedding_model=settings.EMBEDDING_MODEL,
                     embedding_dimensions=settings.EMBEDDING_DIMENSIONS,
                     pinecone_vector_id=vector_id,
@@ -285,7 +285,7 @@ class ContentEmbedder:
             if not self.force:
                 existing = await ContentEmbedding.find_one(
                     ContentEmbedding.content_id == content_id,
-                    ContentEmbedding.embedding_type == EmbeddingType.SUBTITLE_SEGMENT,
+                    ContentEmbedding.embedding_type == "subtitle_segment",
                 )
                 if existing:
                     stats["skipped"] += 1
@@ -411,7 +411,7 @@ class ContentEmbedder:
         if not self.dry_run:
             embedding_doc = ContentEmbedding(
                 content_id=content_id,
-                embedding_type=EmbeddingType.SUBTITLE_SEGMENT,
+                embedding_type="subtitle_segment",
                 segment_index=segment_index,
                 segment_start_time=segment_start,
                 segment_end_time=segment_end,

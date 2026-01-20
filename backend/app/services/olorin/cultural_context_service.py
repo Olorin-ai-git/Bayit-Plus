@@ -130,7 +130,8 @@ class CulturalContextService:
                 if request.target_language == "en":
                     ref.short_explanation_en = explanation.short_explanation
                 elif request.target_language == "es":
-                    pass  # Would set Spanish if available
+                    # Set Spanish explanation, falling back to English if not available
+                    ref.short_explanation_es = explanation.short_explanation
 
         return ContextDetectionResponse(
             original_text=request.text,
