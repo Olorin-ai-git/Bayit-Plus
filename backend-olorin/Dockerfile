@@ -33,8 +33,8 @@ RUN poetry config virtualenvs.create false
 # Regenerate lock file with updated paths
 RUN poetry lock
 
-# Install dependencies
-RUN poetry install --no-interaction --no-ansi
+# Install dependencies (skip installing root package)
+RUN poetry install --no-interaction --no-ansi --no-root
 
 # Copy application code from main backend
 COPY backend/app ./app
