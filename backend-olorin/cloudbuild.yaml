@@ -10,12 +10,12 @@ steps:
       - |
         echo "Validating required secrets..."
         REQUIRED_SECRETS=(
-          "MONGODB_URL"
-          "ANTHROPIC_API_KEY"
-          "OPENAI_API_KEY"
-          "ELEVENLABS_API_KEY"
-          "PINECONE_API_KEY"
-          "PARTNER_API_KEY_SALT"
+          "bayit-mongodb-url"
+          "bayit-anthropic-api-key"
+          "bayit-openai-api-key"
+          "bayit-elevenlabs-api-key"
+          "olorin-pinecone-api-key"
+          "olorin-partner-api-key-salt"
         )
 
         for secret in "${REQUIRED_SECRETS[@]}"; do
@@ -75,7 +75,7 @@ steps:
       - "--timeout=120s"
       - "--concurrency=50"
       - "--set-env-vars=ENVIRONMENT=production,PROJECT_ID=$PROJECT_ID,API_V1_PREFIX=/api/v1,DEBUG=false,GCP_PROJECT_ID=$PROJECT_ID,LOG_LEVEL=INFO,SENTRY_ENVIRONMENT=production,SENTRY_TRACES_SAMPLE_RATE=0.2,OLORIN_DUBBING_ENABLED=false,OLORIN_SEMANTIC_SEARCH_ENABLED=false,OLORIN_CULTURAL_CONTEXT_ENABLED=false,OLORIN_RECAP_ENABLED=false,PINECONE_ENVIRONMENT=us-east-1-aws,PINECONE_INDEX_NAME=olorin-content,EMBEDDING_MODEL=text-embedding-3-small,EMBEDDING_DIMENSIONS=1536"
-      - "--set-secrets=MONGODB_URL=MONGODB_URL:latest,ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest,ELEVENLABS_API_KEY=ELEVENLABS_API_KEY:latest,PINECONE_API_KEY=PINECONE_API_KEY:latest,PARTNER_API_KEY_SALT=PARTNER_API_KEY_SALT:latest"
+      - "--set-secrets=MONGODB_URL=bayit-mongodb-url:latest,ANTHROPIC_API_KEY=bayit-anthropic-api-key:latest,OPENAI_API_KEY=bayit-openai-api-key:latest,ELEVENLABS_API_KEY=bayit-elevenlabs-api-key:latest,PINECONE_API_KEY=olorin-pinecone-api-key:latest,OLORIN_PARTNER_API_KEY_SALT=olorin-partner-api-key-salt:latest"
     id: "deploy-cloud-run"
     waitFor: ["push-image-sha"]
 
