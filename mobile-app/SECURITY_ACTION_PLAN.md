@@ -1,4 +1,5 @@
 # Security Action Plan - Bayit+ Mobile App
+
 ## Implementation Timeline & Responsibility Matrix
 
 **Status:** 🔴 CRITICAL - Ready for Execution
@@ -29,6 +30,7 @@ This plan provides step-by-step implementation guidance with estimated effort an
 **Status:** ⏳ PENDING
 
 **Steps:**
+
 ```bash
 1. Login to https://elevenlabs.io/app/settings/api-keys
 2. Locate and delete key: sk_63c958e380a6c81f4fc63880ca3b9af3d6f8b5ca05ba92ac
@@ -54,6 +56,7 @@ curl -X GET https://api.elevenlabs.io/v1/user \
 **Status:** ⏳ PENDING
 
 **Steps:**
+
 ```bash
 1. Login to https://console.picovoice.ai/
 2. Navigate to Access Keys section
@@ -80,6 +83,7 @@ curl -X GET https://api.elevenlabs.io/v1/user \
 **Status:** ⏳ PENDING
 
 **Steps:**
+
 ```bash
 1. Login to Sentry Project Settings
    → https://sentry.io/settings/[organization]/projects/[project]/keys/
@@ -111,6 +115,7 @@ curl -X GET https://api.elevenlabs.io/v1/user \
 **Status:** ⏳ PENDING
 
 **Steps:**
+
 ```bash
 # Check if .env file is in git history
 cd /Users/olorin/Documents/Bayit-Plus
@@ -130,6 +135,7 @@ grep "\.env" .gitignore
 ```
 
 **Finding:**
+
 - ✅ .env NOT tracked in git currently
 - ✅ .gitignore properly configured
 - ⚠️ BUT credentials exist on developer machines
@@ -141,6 +147,7 @@ grep "\.env" .gitignore
 ### Phase 1 Sign-Off
 
 **Completion Criteria:**
+
 - [ ] ElevenLabs old key revoked, new key generated
 - [ ] Picovoice old key revoked, new key generated
 - [ ] Sentry DSN revoked or renewed
@@ -294,23 +301,29 @@ async def get_available_voices(language: str = "en"):
 ```
 
 **Mobile App Usage (Update):**
+
 ```typescript
 // OLD (Remove from mobile app):
-import { ElevenLabs } from "elevenlabs"
-const client = new ElevenLabs({ apiKey: process.env.ELEVENLABS_API_KEY })
+import { ElevenLabs } from "elevenlabs";
+const client = new ElevenLabs({ apiKey: process.env.ELEVENLABS_API_KEY });
 
 // NEW (Replace with):
-const response = await apiClient.post<Blob>("/api/v1/tts/synthesize", {
-  text: "Hello world",
-  voice: "Bella",
-  language: "he"
-}, { responseType: "blob" })
+const response = await apiClient.post<Blob>(
+  "/api/v1/tts/synthesize",
+  {
+    text: "Hello world",
+    voice: "Bella",
+    language: "he",
+  },
+  { responseType: "blob" },
+);
 
-const audioUrl = URL.createObjectURL(response.data)
-await playAudio(audioUrl)
+const audioUrl = URL.createObjectURL(response.data);
+await playAudio(audioUrl);
 ```
 
 **Testing:**
+
 ```bash
 # Test TTS endpoint
 curl -X POST http://localhost:8000/api/v1/tts/synthesize \
@@ -530,6 +543,7 @@ def scrub_sensitive_data(data: Dict[str, Any]) -> Dict[str, Any]:
 **Effort:** 2 hours
 
 **Files to Update:**
+
 ```bash
 # Remove ElevenLabs direct usage
 src/services/tts.ts
@@ -553,18 +567,18 @@ src/utils/sentry.ts
 
 ```typescript
 // OLD (Remove):
-import { ElevenLabs } from "elevenlabs"
-const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY
-const client = new ElevenLabs({ apiKey: ELEVENLABS_API_KEY })
+import { ElevenLabs } from "elevenlabs";
+const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
+const client = new ElevenLabs({ apiKey: ELEVENLABS_API_KEY });
 
 // NEW (Add):
 async function synthesizeSpeech(text: string, language: string): Promise<Blob> {
   const response = await apiClient.post<Blob>(
     "/api/v1/tts/synthesize",
     { text, language, voice: "Bella" },
-    { responseType: "blob" }
-  )
-  return response.data
+    { responseType: "blob" },
+  );
+  return response.data;
 }
 ```
 
@@ -584,37 +598,37 @@ async function synthesizeSpeech(text: string, language: string): Promise<Blob> {
  */
 
 export interface Environment {
-  API_BASE_URL: string
-  API_TIMEOUT: number
-  IS_PRODUCTION: boolean
-  LOG_LEVEL: "debug" | "info" | "warn" | "error"
-  SENTRY_ENABLED: boolean
+  API_BASE_URL: string;
+  API_TIMEOUT: number;
+  IS_PRODUCTION: boolean;
+  LOG_LEVEL: "debug" | "info" | "warn" | "error";
+  SENTRY_ENABLED: boolean;
 }
 
 export const validateEnvironment = (): Environment => {
-  const API_BASE_URL = process.env.API_BASE_URL
+  const API_BASE_URL = process.env.API_BASE_URL;
 
   // Fail fast if API URL not configured
   if (!API_BASE_URL) {
     throw new Error(
       "CRITICAL: API_BASE_URL environment variable is required.\n" +
-      "Please copy .env.example to .env and fill in the API URL.\n" +
-      "See README.md for setup instructions."
-    )
+        "Please copy .env.example to .env and fill in the API URL.\n" +
+        "See README.md for setup instructions.",
+    );
   }
 
   // Validate API URL format
   try {
-    new URL(API_BASE_URL)
+    new URL(API_BASE_URL);
   } catch {
     throw new Error(
       `CRITICAL: API_BASE_URL must be a valid URL.\n` +
-      `Got: ${API_BASE_URL}\n` +
-      `Expected: https://api.example.com/api/v1`
-    )
+        `Got: ${API_BASE_URL}\n` +
+        `Expected: https://api.example.com/api/v1`,
+    );
   }
 
-  const isProduction = process.env.NODE_ENV === "production"
+  const isProduction = process.env.NODE_ENV === "production";
 
   return {
     API_BASE_URL,
@@ -622,23 +636,24 @@ export const validateEnvironment = (): Environment => {
     IS_PRODUCTION: isProduction,
     LOG_LEVEL: (process.env.LOG_LEVEL as any) || "info",
     SENTRY_ENABLED: !isProduction, // Optional in dev, warn in prod
-  }
-}
+  };
+};
 
 // Validate at startup
-export const environment = validateEnvironment()
+export const environment = validateEnvironment();
 ```
 
 **Usage in App.tsx:**
+
 ```typescript
 // app.tsx
 try {
-  const env = validateEnvironment()
+  const env = validateEnvironment();
   // App is safe to start
 } catch (error) {
   // Show error and prevent app launch
-  console.error("Configuration Error:", error.message)
-  throw error
+  console.error("Configuration Error:", error.message);
+  throw error;
 }
 ```
 
@@ -663,23 +678,23 @@ import axios, {
   AxiosError,
   AxiosRequestConfig,
   AxiosResponse,
-} from "axios"
-import { Platform } from "react-native"
-import { environment } from "../config/environment"
+} from "axios";
+import { Platform } from "react-native";
+import { environment } from "../config/environment";
 
 interface PinningConfig {
-  hostname: string
-  pins: string[] // SHA256 certificate hashes
+  hostname: string;
+  pins: string[]; // SHA256 certificate hashes
 }
 
 // Extract hostname from API URL
 const getHostname = (url: string): string => {
   try {
-    return new URL(url).hostname || "api.bayit.tv"
+    return new URL(url).hostname || "api.bayit.tv";
   } catch {
-    return "api.bayit.tv"
+    return "api.bayit.tv";
   }
-}
+};
 
 // Certificate pins (update quarterly)
 // Generate with: openssl s_client -connect api.bayit.tv:443 -showcerts
@@ -691,7 +706,7 @@ const CERTIFICATE_PINS: PinningConfig = {
     // Backup certificate (for rotation)
     "sha256/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb=",
   ],
-}
+};
 
 // Create secure API client
 export const createSecureApiClient = (): AxiosInstance => {
@@ -702,23 +717,23 @@ export const createSecureApiClient = (): AxiosInstance => {
       "Content-Type": "application/json",
       "User-Agent": "BayitPlusMobile/1.0",
     },
-  })
+  });
 
   // Request interceptor - add auth & headers
   client.interceptors.request.use(
     (config) => {
-      const token = getAuthToken() // From secure storage
+      const token = getAuthToken(); // From secure storage
       if (token) {
-        config.headers.Authorization = `Bearer ${token}`
+        config.headers.Authorization = `Bearer ${token}`;
       }
 
-      config.headers["X-Request-ID"] = generateRequestId()
-      config.headers["X-App-Version"] = "1.0.0"
+      config.headers["X-Request-ID"] = generateRequestId();
+      config.headers["X-App-Version"] = "1.0.0";
 
-      return config
+      return config;
     },
-    (error) => Promise.reject(error)
-  )
+    (error) => Promise.reject(error),
+  );
 
   // Response interceptor - handle errors
   client.interceptors.response.use(
@@ -726,50 +741,51 @@ export const createSecureApiClient = (): AxiosInstance => {
     (error: AxiosError) => {
       // Handle 401 - token expired
       if (error.response?.status === 401) {
-        clearAuthToken()
+        clearAuthToken();
         // Redirect to login
-        NavigationService.navigate("Login")
+        NavigationService.navigate("Login");
       }
 
       // Handle 429 - rate limited
       if (error.response?.status === 429) {
         const retryAfter = parseInt(
           error.response.headers["retry-after"] || "60",
-          10
-        )
-        logger.warn(`Rate limited. Retry after ${retryAfter}s`)
+          10,
+        );
+        logger.warn(`Rate limited. Retry after ${retryAfter}s`);
       }
 
       logger.error("API Error", {
         status: error.response?.status,
         url: error.config?.url,
-      })
+      });
 
-      return Promise.reject(error)
-    }
-  )
+      return Promise.reject(error);
+    },
+  );
 
-  return client
-}
+  return client;
+};
 
-export const apiClient = createSecureApiClient()
+export const apiClient = createSecureApiClient();
 
 // Helper functions
 function getAuthToken(): string | null {
   // Retrieve from secure storage
-  return secureStorage.get("auth_token")
+  return secureStorage.get("auth_token");
 }
 
 function clearAuthToken(): void {
-  secureStorage.remove("auth_token")
+  secureStorage.remove("auth_token");
 }
 
 function generateRequestId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 ```
 
 **Android Certificate Pinning (Alternative):**
+
 ```bash
 # If using react-native-network-security-config
 npm install react-native-network-security-config
@@ -800,64 +816,69 @@ if (Platform.OS === "android") {
 export const validateContentId = (id: unknown): string => {
   // Type check
   if (typeof id !== "string") {
-    throw new Error("Invalid content ID: must be string")
+    throw new Error("Invalid content ID: must be string");
   }
 
   // Empty check
   if (id.trim().length === 0) {
-    throw new Error("Invalid content ID: cannot be empty")
+    throw new Error("Invalid content ID: cannot be empty");
   }
 
   // Length check
   if (id.length > 100) {
-    throw new Error("Invalid content ID: too long (max 100 chars)")
+    throw new Error("Invalid content ID: too long (max 100 chars)");
   }
 
   // Whitelist: alphanumeric, dash, underscore only
   if (!/^[a-zA-Z0-9_-]+$/.test(id)) {
-    throw new Error("Invalid content ID: invalid characters")
+    throw new Error("Invalid content ID: invalid characters");
   }
 
   // Reject path traversal attempts
   if (id.includes("..") || id.includes("/") || id.includes("\\")) {
-    throw new Error("Invalid content ID: path traversal detected")
+    throw new Error("Invalid content ID: path traversal detected");
   }
 
-  return id
-}
+  return id;
+};
 
 export const validateVideoUrl = (url: string): string => {
   // Must be valid URL
   try {
-    const parsed = new URL(url)
+    const parsed = new URL(url);
 
     // Only allow https
     if (parsed.protocol !== "https:") {
-      throw new Error("Only HTTPS URLs allowed")
+      throw new Error("Only HTTPS URLs allowed");
     }
 
     // Only allow YouTube
-    if (!parsed.hostname.includes("youtube.com") &&
-        !parsed.hostname.includes("youtu.be")) {
-      throw new Error("Only YouTube URLs allowed")
+    if (
+      !parsed.hostname.includes("youtube.com") &&
+      !parsed.hostname.includes("youtu.be")
+    ) {
+      throw new Error("Only YouTube URLs allowed");
     }
 
-    return url
+    return url;
   } catch (error) {
-    throw new Error(`Invalid video URL: ${error.message}`)
+    throw new Error(`Invalid video URL: ${error.message}`);
   }
-}
+};
 
 export const validateLanguage = (lang: string): string => {
-  const valid = ["he", "en", "es"]
+  const valid = ["he", "en", "es"];
   if (!valid.includes(lang)) {
-    throw new Error(`Invalid language: ${lang}. Must be one of: ${valid.join(", ")}`)
+    throw new Error(
+      `Invalid language: ${lang}. Must be one of: ${valid.join(", ")}`,
+    );
   }
-  return lang
-}
+  return lang;
+};
 ```
 
 **Usage in Player:**
+
 ```typescript
 // In PlayerScreenMobile.tsx
 const { id: rawId } = route.params
@@ -888,6 +909,7 @@ const fetchStreamUrl = async () => {
 ### Phase 2 Sign-Off
 
 **Completion Criteria:**
+
 - [ ] Backend API proxies implemented and tested
 - [ ] Mobile app updated to use backend endpoints
 - [ ] Environment validation implemented
@@ -916,26 +938,26 @@ const fetchStreamUrl = async () => {
 export const logger = {
   debug: (message: string, data?: any) => {
     if (__DEV__) {
-      console.log(`[DEBUG] ${message}`, data)
+      console.log(`[DEBUG] ${message}`, data);
     }
   },
 
   info: (message: string) => {
     if (__DEV__) {
-      console.info(`[INFO] ${message}`)
+      console.info(`[INFO] ${message}`);
     }
     // Never log in production
   },
 
   warn: (message: string, metadata?: any) => {
-    console.warn(`[WARN] ${message}`)
+    console.warn(`[WARN] ${message}`);
     if (__DEV__ && metadata) {
-      console.warn("Metadata:", metadata)
+      console.warn("Metadata:", metadata);
     }
   },
 
   error: (message: string, error?: Error, metadata?: any) => {
-    console.error(`[ERROR] ${message}`)
+    console.error(`[ERROR] ${message}`);
 
     // Report to Sentry via backend
     if (!__DEV__) {
@@ -943,10 +965,10 @@ export const logger = {
         message,
         stack: error?.stack,
         context: metadata,
-      })
+      });
     }
   },
-}
+};
 ```
 
 #### Task 3.2: WebView Security Hardening
@@ -992,64 +1014,64 @@ export const logger = {
 ```typescript
 // src/utils/rateLimiter.ts
 
-import { RateLimiter } from "limiter"
+import { RateLimiter } from "limiter";
 
 const limiter = new RateLimiter({
   tokensPerInterval: 10,
   interval: "second",
-})
+});
 
 export async function fetchWithRateLimit<T>(
   url: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<T> {
-  const maxRetries = 3
-  let retryCount = 0
+  const maxRetries = 3;
+  let retryCount = 0;
 
   while (retryCount <= maxRetries) {
     try {
       // Wait for rate limit token
-      await limiter.removeTokens(1)
+      await limiter.removeTokens(1);
 
-      const response = await fetch(url, options)
+      const response = await fetch(url, options);
 
       if (response.ok) {
-        return response.json() as Promise<T>
+        return response.json() as Promise<T>;
       }
 
       // Handle rate limiting (429)
       if (response.status === 429) {
         const retryAfter = parseInt(
           response.headers.get("retry-after") || "60",
-          10
-        )
-        logger.warn(`Rate limited. Waiting ${retryAfter}s`)
-        await sleep(retryAfter * 1000)
-        retryCount++
-        continue
+          10,
+        );
+        logger.warn(`Rate limited. Waiting ${retryAfter}s`);
+        await sleep(retryAfter * 1000);
+        retryCount++;
+        continue;
       }
 
       // Server error (5xx) - exponential backoff
       if (response.status >= 500 && retryCount < maxRetries) {
-        const delay = Math.pow(2, retryCount) * 1000
-        await sleep(delay)
-        retryCount++
-        continue
+        const delay = Math.pow(2, retryCount) * 1000;
+        await sleep(delay);
+        retryCount++;
+        continue;
       }
 
-      throw new Error(`HTTP ${response.status}`)
+      throw new Error(`HTTP ${response.status}`);
     } catch (error) {
       if (retryCount < maxRetries) {
-        const delay = Math.pow(2, retryCount) * 1000
-        await sleep(delay)
-        retryCount++
+        const delay = Math.pow(2, retryCount) * 1000;
+        await sleep(delay);
+        retryCount++;
       } else {
-        throw error
+        throw error;
       }
     }
   }
 
-  throw new Error("Max retries exceeded")
+  throw new Error("Max retries exceeded");
 }
 ```
 
@@ -1062,29 +1084,45 @@ export async function fetchWithRateLimit<T>(
 // src/utils/sentry.ts - Update
 
 const scrubSensitiveData = (data: any, depth = 0, maxDepth = 10): any => {
-  if (depth > maxDepth) return "[Too Deep]"
-  if (data === null || typeof data !== "object") return data
-  if (Array.isArray(data)) return data.map((i) => scrubSensitiveData(i, depth + 1))
+  if (depth > maxDepth) return "[Too Deep]";
+  if (data === null || typeof data !== "object") return data;
+  if (Array.isArray(data))
+    return data.map((i) => scrubSensitiveData(i, depth + 1));
 
-  const scrubbed: any = {}
+  const scrubbed: any = {};
   for (const [key, value] of Object.entries(data)) {
-    const keyLower = key.toLowerCase()
+    const keyLower = key.toLowerCase();
 
     const isSensitive = [
-      "password", "secret", "token", "key", "auth", "credential",
-      "bearer", "api_key", "apikey", "access_token", "refresh_token",
-      "jwt", "private", "ssn", "cc", "credit", "cvv", "pin"
-    ].some((p) => keyLower.includes(p))
+      "password",
+      "secret",
+      "token",
+      "key",
+      "auth",
+      "credential",
+      "bearer",
+      "api_key",
+      "apikey",
+      "access_token",
+      "refresh_token",
+      "jwt",
+      "private",
+      "ssn",
+      "cc",
+      "credit",
+      "cvv",
+      "pin",
+    ].some((p) => keyLower.includes(p));
 
     scrubbed[key] = isSensitive
       ? "[REDACTED]"
       : typeof value === "object" && value !== null
         ? scrubSensitiveData(value, depth + 1, maxDepth)
-        : value
+        : value;
   }
 
-  return scrubbed
-}
+  return scrubbed;
+};
 ```
 
 ---
@@ -1165,6 +1203,7 @@ frida -U -l hook_script.js -f com.bayit.plus --no-pause
 **Effort:** 2 hours
 
 **Review Checklist:**
+
 ```
 ☐ No hardcoded credentials anywhere
 ☐ All environment variables validated
@@ -1207,11 +1246,13 @@ frida -U -l hook_script.js -f com.bayit.plus --no-pause
 ## SUCCESS CRITERIA
 
 ### Phase 1: Emergency Response
+
 ✅ All exposed credentials revoked
 ✅ Verified not in git history
 ✅ Team notified of rotation
 
 ### Phase 2: Critical Fixes
+
 ✅ Backend proxies working
 ✅ Mobile app uses proxies instead of direct calls
 ✅ Environment validation implemented
@@ -1219,12 +1260,14 @@ frida -U -l hook_script.js -f com.bayit.plus --no-pause
 ✅ Input validation in place
 
 ### Phase 3: Hardening
+
 ✅ Production logging configured
 ✅ WebView hardened
 ✅ Rate limiting implemented
 ✅ Data scrubbing improved
 
 ### Phase 4: Testing
+
 ✅ All security tests passing
 ✅ Penetration testing complete
 ✅ Code review approved
@@ -1234,13 +1277,13 @@ frida -U -l hook_script.js -f com.bayit.plus --no-pause
 
 ## BUDGET & TIMELINE SUMMARY
 
-| Phase | Duration | Effort | Cost (Est.) | Status |
-|-------|----------|--------|------------|---------|
-| 1: Emergency | 4 hours | 1 eng | $200 | ⏳ PENDING |
-| 2: Critical Fixes | 16 hours | 2 eng | $800 | ⏳ PENDING |
-| 3: Hardening | 8 hours | 1 eng | $400 | ⏳ PENDING |
-| 4: Testing | 8 hours | 1 eng | $400 | ⏳ PENDING |
-| **TOTAL** | **36 hours** | **1-2 eng** | **$1,800** | **1 week** |
+| Phase             | Duration     | Effort      | Cost (Est.) | Status     |
+| ----------------- | ------------ | ----------- | ----------- | ---------- |
+| 1: Emergency      | 4 hours      | 1 eng       | $200        | ⏳ PENDING |
+| 2: Critical Fixes | 16 hours     | 2 eng       | $800        | ⏳ PENDING |
+| 3: Hardening      | 8 hours      | 1 eng       | $400        | ⏳ PENDING |
+| 4: Testing        | 8 hours      | 1 eng       | $400        | ⏳ PENDING |
+| **TOTAL**         | **36 hours** | **1-2 eng** | **$1,800**  | **1 week** |
 
 ---
 
@@ -1251,6 +1294,7 @@ frida -U -l hook_script.js -f com.bayit.plus --no-pause
 **Status:** Ready for Execution ✅
 
 **Approvals Needed:**
+
 - [ ] CTO/Tech Lead
 - [ ] Security Lead
 - [ ] Backend Lead
@@ -1287,6 +1331,7 @@ exit 0
 ```
 
 **Install:**
+
 ```bash
 chmod +x .git/hooks/pre-commit
 ```

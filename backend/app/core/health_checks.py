@@ -143,6 +143,100 @@ async def check_sentry_health() -> ServiceHealth:
         )
 
 
+async def check_pinecone_health() -> ServiceHealth:
+    """Check Pinecone vector database connectivity."""
+    import time
+
+    start = time.monotonic()
+    try:
+        if not settings.PINECONE_API_KEY:
+            return ServiceHealth(
+                name="pinecone",
+                status=HealthStatus.DEGRADED,
+                message="API key not configured",
+            )
+
+        from pinecone import Pinecone
+
+        pc = Pinecone(api_key=settings.PINECONE_API_KEY)
+        indexes = pc.list_indexes()
+        latency = (time.monotonic() - start) * 1000
+
+        # Check if our index exists
+        index_names = [idx.name for idx in indexes]
+        if settings.PINECONE_INDEX_NAME in index_names:
+            return ServiceHealth(
+                name="pinecone",
+                status=HealthStatus.HEALTHY,
+                latency_ms=latency,
+                message=f"Index '{settings.PINECONE_INDEX_NAME}' available",
+            )
+        return ServiceHealth(
+            name="pinecone",
+            status=HealthStatus.DEGRADED,
+            latency_ms=latency,
+            message=f"Index '{settings.PINECONE_INDEX_NAME}' not found",
+        )
+    except ImportError:
+        return ServiceHealth(
+            name="pinecone",
+            status=HealthStatus.DEGRADED,
+            message="Pinecone SDK not installed",
+        )
+    except Exception as e:
+        latency = (time.monotonic() - start) * 1000
+        return ServiceHealth(
+            name="pinecone",
+            status=HealthStatus.DEGRADED,
+            latency_ms=latency,
+            message=str(e),
+        )
+
+
+async def check_openai_health() -> ServiceHealth:
+    """Check OpenAI API connectivity."""
+    import time
+
+    import httpx
+
+    start = time.monotonic()
+    try:
+        if not settings.OPENAI_API_KEY:
+            return ServiceHealth(
+                name="openai",
+                status=HealthStatus.DEGRADED,
+                message="API key not configured",
+            )
+
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            response = await client.get(
+                "https://api.openai.com/v1/models",
+                headers={"Authorization": f"Bearer {settings.OPENAI_API_KEY}"},
+            )
+            latency = (time.monotonic() - start) * 1000
+
+            if response.status_code == 200:
+                return ServiceHealth(
+                    name="openai",
+                    status=HealthStatus.HEALTHY,
+                    latency_ms=latency,
+                )
+            return ServiceHealth(
+                name="openai",
+                status=HealthStatus.DEGRADED,
+                latency_ms=latency,
+                message=f"API returned {response.status_code}",
+            )
+    except Exception as e:
+        latency = (time.monotonic() - start) * 1000
+        return ServiceHealth(
+            name="openai",
+            status=HealthStatus.DEGRADED,
+            latency_ms=latency,
+            message=str(e),
+        )
+
+
 async def check_external_services() -> list[ServiceHealth]:
     """Check external service availability (non-blocking)."""
     import time
@@ -242,22 +336,32 @@ async def run_deep_health_check() -> dict:
     Deep health check - comprehensive check of all services.
 
     Checks all external dependencies including database, storage,
-    and third-party APIs. This is more expensive and should not
-    be called too frequently.
+    vector search, AI services, and third-party APIs. This is more
+    expensive and should not be called too frequently.
     """
     # Run all checks concurrently
     mongodb_task = asyncio.create_task(check_mongodb_health())
     gcs_task = asyncio.create_task(check_gcs_health())
     sentry_task = asyncio.create_task(check_sentry_health())
+    pinecone_task = asyncio.create_task(check_pinecone_health())
+    openai_task = asyncio.create_task(check_openai_health())
     external_task = asyncio.create_task(check_external_services())
 
     mongodb_health = await mongodb_task
     gcs_health = await gcs_task
     sentry_health = await sentry_task
+    pinecone_health = await pinecone_task
+    openai_health = await openai_task
     external_services = await external_task
 
     # Collect all service health statuses
-    all_services = [mongodb_health, gcs_health, sentry_health] + external_services
+    all_services = [
+        mongodb_health,
+        gcs_health,
+        sentry_health,
+        pinecone_health,
+        openai_health,
+    ] + external_services
 
     # Determine overall status
     unhealthy_count = sum(1 for s in all_services if s.status == HealthStatus.UNHEALTHY)

@@ -130,24 +130,25 @@ export function useVoiceMobile(): UseVoiceMobileResult {
         });
 
         // Process command with shared voiceCommandProcessor
-        const commandResponse = voiceCommandProcessor.processVoiceInput(transcription);
+        const commandResponse =
+          voiceCommandProcessor.processVoiceInput(transcription);
 
         // Map to local result format based on intent
-        let action = 'chat';
+        let action = "chat";
         let screen: any = undefined;
         let params: any = {};
         let widgetAction: any = undefined;
         let widgetId: any = undefined;
 
-        if (commandResponse.intent === 'NAVIGATION') {
-          action = 'navigate';
-          screen = commandResponse.action.payload?.path || 'Home';
-        } else if (commandResponse.intent === 'SEARCH') {
-          action = 'navigate';
-          screen = 'Search';
+        if (commandResponse.intent === "NAVIGATION") {
+          action = "navigate";
+          screen = commandResponse.action.payload?.path || "Home";
+        } else if (commandResponse.intent === "SEARCH") {
+          action = "navigate";
+          screen = "Search";
           params = { query: commandResponse.action.payload?.query };
-        } else if (commandResponse.intent === 'PLAYBACK') {
-          action = commandResponse.action.payload?.action || 'chat';
+        } else if (commandResponse.intent === "PLAYBACK") {
+          action = commandResponse.action.payload?.action || "chat";
         }
 
         const result = {

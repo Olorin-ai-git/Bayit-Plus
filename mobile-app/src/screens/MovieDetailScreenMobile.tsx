@@ -10,7 +10,7 @@
  * - Haptic feedback
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -23,20 +23,20 @@ import {
   Share,
   Dimensions,
   StatusBar,
-} from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import LinearGradient from 'react-native-linear-gradient';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { contentService } from '@bayit/shared-services';
-import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
-import { useDirection } from '@bayit/shared-hooks';
-import { spacing, colors, borderRadius } from '../theme';
+} from "react-native";
+import { useTranslation } from "react-i18next";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
+import LinearGradient from "react-native-linear-gradient";
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
+import { contentService } from "@bayit/shared-services";
+import { getLocalizedName, getLocalizedDescription } from "@bayit/shared-utils";
+import { useDirection } from "@bayit/shared-hooks";
+import { spacing, colors, borderRadius } from "../theme";
 
 // Type assertion for LinearGradient React component
 const LinearGradientComponent = LinearGradient as any as React.FC<any>;
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const HERO_HEIGHT = SCREEN_HEIGHT * 0.45;
 
 type MovieDetailRouteParams = {
@@ -76,7 +76,7 @@ interface CastMember {
 }
 
 const formatVotes = (votes?: number): string => {
-  if (!votes) return '';
+  if (!votes) return "";
   if (votes >= 1000000) return `${(votes / 1000000).toFixed(1)}M`;
   if (votes >= 1000) return `${(votes / 1000).toFixed(0)}K`;
   return votes.toString();
@@ -86,7 +86,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
-  const route = useRoute<RouteProp<MovieDetailRouteParams, 'MovieDetail'>>();
+  const route = useRoute<RouteProp<MovieDetailRouteParams, "MovieDetail">>();
   const { movieId } = route.params;
   const currentLang = i18n.language;
 
@@ -97,13 +97,18 @@ export const MovieDetailScreenMobile: React.FC = () => {
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [isInFavorites, setIsInFavorites] = useState(false);
 
-  const getLocalizedText = useCallback((item: any, field: string): string => {
-    if (field === 'title') return getLocalizedName(item, currentLang);
-    if (field === 'description') return getLocalizedDescription(item, currentLang);
-    if (currentLang === 'he') return item[field] || item.title || item.name;
-    if (currentLang === 'es') return item[`${field}_es`] || item[`${field}_en`] || item[field];
-    return item[`${field}_en`] || item[field];
-  }, [currentLang]);
+  const getLocalizedText = useCallback(
+    (item: any, field: string): string => {
+      if (field === "title") return getLocalizedName(item, currentLang);
+      if (field === "description")
+        return getLocalizedDescription(item, currentLang);
+      if (currentLang === "he") return item[field] || item.title || item.name;
+      if (currentLang === "es")
+        return item[`${field}_es`] || item[`${field}_en`] || item[field];
+      return item[`${field}_en`] || item[field];
+    },
+    [currentLang],
+  );
 
   useEffect(() => {
     loadMovieDetails();
@@ -120,7 +125,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
         const formattedCast = data.cast.map((name: string, index: number) => ({
           id: `cast-${index}`,
           name,
-          character: '',
+          character: "",
           photo: undefined,
         }));
         setCastMembers(formattedCast);
@@ -136,7 +141,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
         // Non-blocking error - continue without recommendations
       }
     } catch (error) {
-      console.error('Failed to load movie:', error);
+      console.error("Failed to load movie:", error);
     } finally {
       setLoading(false);
     }
@@ -144,50 +149,53 @@ export const MovieDetailScreenMobile: React.FC = () => {
 
   const handlePlay = useCallback(() => {
     if (movie) {
-      ReactNativeHapticFeedback.trigger('impactMedium');
-      navigation.navigate('Player', {
+      ReactNativeHapticFeedback.trigger("impactMedium");
+      navigation.navigate("Player", {
         id: movie.id,
-        title: getLocalizedText(movie, 'title'),
-        type: 'vod',
+        title: getLocalizedText(movie, "title"),
+        type: "vod",
       });
     }
   }, [movie, navigation, getLocalizedText]);
 
   const handleShare = useCallback(async () => {
     if (movie) {
-      ReactNativeHapticFeedback.trigger('impactLight');
+      ReactNativeHapticFeedback.trigger("impactLight");
       try {
         await Share.share({
-          message: `${t('share.checkOut', 'Check out')} "${getLocalizedText(movie, 'title')}" ${t('share.onBayitPlus', 'on Bayit+')}`,
-          title: getLocalizedText(movie, 'title'),
+          message: `${t("share.checkOut", "Check out")} "${getLocalizedText(movie, "title")}" ${t("share.onBayitPlus", "on Bayit+")}`,
+          title: getLocalizedText(movie, "title"),
         });
       } catch (error) {
-        console.error('Share failed:', error);
+        console.error("Share failed:", error);
       }
     }
   }, [movie, t, getLocalizedText]);
 
   const handleToggleWatchlist = useCallback(() => {
-    ReactNativeHapticFeedback.trigger('impactLight');
+    ReactNativeHapticFeedback.trigger("impactLight");
     setIsInWatchlist(!isInWatchlist);
     // Call API to add/remove from watchlist
   }, [isInWatchlist]);
 
   const handleToggleFavorites = useCallback(() => {
-    ReactNativeHapticFeedback.trigger('impactLight');
+    ReactNativeHapticFeedback.trigger("impactLight");
     setIsInFavorites(!isInFavorites);
     // Call API to add/remove from favorites
   }, [isInFavorites]);
 
   const handleBack = useCallback(() => {
-    ReactNativeHapticFeedback.trigger('impactLight');
+    ReactNativeHapticFeedback.trigger("impactLight");
     navigation.goBack();
   }, [navigation]);
 
-  const handleRecommendationPress = useCallback((item: any) => {
-    ReactNativeHapticFeedback.trigger('impactLight');
-    navigation.push('MovieDetail', { movieId: item.id });
-  }, [navigation]);
+  const handleRecommendationPress = useCallback(
+    (item: any) => {
+      ReactNativeHapticFeedback.trigger("impactLight");
+      navigation.push("MovieDetail", { movieId: item.id });
+    },
+    [navigation],
+  );
 
   if (loading) {
     return (
@@ -200,9 +208,13 @@ export const MovieDetailScreenMobile: React.FC = () => {
   if (!movie) {
     return (
       <SafeAreaView style={styles.errorContainer}>
-        <Text style={styles.errorText}>{t('content.notFound', 'Content not found')}</Text>
+        <Text style={styles.errorText}>
+          {t("content.notFound", "Content not found")}
+        </Text>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Text style={styles.backButtonText}>{t('common.goBack', 'Go Back')}</Text>
+          <Text style={styles.backButtonText}>
+            {t("common.goBack", "Go Back")}
+          </Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -225,7 +237,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
             resizeMode="cover"
           />
           <LinearGradientComponent
-            colors={['transparent', 'rgba(0,0,0,0.7)', colors.background]}
+            colors={["transparent", "rgba(0,0,0,0.7)", colors.background]}
             locations={[0.3, 0.7, 1]}
             style={styles.heroGradient}
           />
@@ -236,7 +248,10 @@ export const MovieDetailScreenMobile: React.FC = () => {
               <Text style={styles.headerButtonIcon}>←</Text>
             </TouchableOpacity>
             <View style={styles.headerRightActions}>
-              <TouchableOpacity onPress={handleShare} style={styles.headerButton}>
+              <TouchableOpacity
+                onPress={handleShare}
+                style={styles.headerButton}
+              >
                 <Text style={styles.headerButtonIcon}>⤴</Text>
               </TouchableOpacity>
             </View>
@@ -244,11 +259,20 @@ export const MovieDetailScreenMobile: React.FC = () => {
 
           {/* Hero Content */}
           <View style={styles.heroContent}>
-            <Text style={[styles.movieTitle, { textAlign }]}>{getLocalizedText(movie, 'title')}</Text>
+            <Text style={[styles.movieTitle, { textAlign }]}>
+              {getLocalizedText(movie, "title")}
+            </Text>
 
             {/* Metadata */}
-            <View style={[styles.metadataRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              {movie.year && <Text style={styles.metadataText}>{movie.year}</Text>}
+            <View
+              style={[
+                styles.metadataRow,
+                { flexDirection: isRTL ? "row-reverse" : "row" },
+              ]}
+            >
+              {movie.year && (
+                <Text style={styles.metadataText}>{movie.year}</Text>
+              )}
               {movie.rating && (
                 <>
                   <Text style={styles.metadataDot}>•</Text>
@@ -271,13 +295,22 @@ export const MovieDetailScreenMobile: React.FC = () => {
 
             {/* IMDb Rating */}
             {movie.imdb_rating && (
-              <View style={[styles.imdbRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <View
+                style={[
+                  styles.imdbRow,
+                  { flexDirection: isRTL ? "row-reverse" : "row" },
+                ]}
+              >
                 <View style={styles.imdbBadge}>
                   <Text style={styles.imdbLabel}>IMDb</Text>
-                  <Text style={styles.imdbRating}>{movie.imdb_rating.toFixed(1)}</Text>
+                  <Text style={styles.imdbRating}>
+                    {movie.imdb_rating.toFixed(1)}
+                  </Text>
                 </View>
                 {movie.imdb_votes && (
-                  <Text style={styles.imdbVotes}>({formatVotes(movie.imdb_votes)} votes)</Text>
+                  <Text style={styles.imdbVotes}>
+                    ({formatVotes(movie.imdb_votes)} votes)
+                  </Text>
                 )}
               </View>
             )}
@@ -287,29 +320,41 @@ export const MovieDetailScreenMobile: React.FC = () => {
         {/* Content Section */}
         <View style={styles.content}>
           {/* Quick Actions */}
-          <View style={[styles.quickActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View
+            style={[
+              styles.quickActions,
+              { flexDirection: isRTL ? "row-reverse" : "row" },
+            ]}
+          >
             <TouchableOpacity
               onPress={handleToggleWatchlist}
               style={styles.quickActionButton}
             >
-              <Text style={styles.quickActionIcon}>{isInWatchlist ? '✓' : '+'}</Text>
+              <Text style={styles.quickActionIcon}>
+                {isInWatchlist ? "✓" : "+"}
+              </Text>
               <Text style={styles.quickActionLabel}>
-                {t('content.myList', 'My List')}
+                {t("content.myList", "My List")}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleToggleFavorites}
               style={styles.quickActionButton}
             >
-              <Text style={styles.quickActionIcon}>{isInFavorites ? '❤️' : '🤍'}</Text>
+              <Text style={styles.quickActionIcon}>
+                {isInFavorites ? "❤️" : "🤍"}
+              </Text>
               <Text style={styles.quickActionLabel}>
-                {t('content.favorite', 'Favorite')}
+                {t("content.favorite", "Favorite")}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleShare} style={styles.quickActionButton}>
+            <TouchableOpacity
+              onPress={handleShare}
+              style={styles.quickActionButton}
+            >
               <Text style={styles.quickActionIcon}>⤴</Text>
               <Text style={styles.quickActionLabel}>
-                {t('content.share', 'Share')}
+                {t("content.share", "Share")}
               </Text>
             </TouchableOpacity>
           </View>
@@ -318,10 +363,10 @@ export const MovieDetailScreenMobile: React.FC = () => {
           {movie.description && (
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { textAlign }]}>
-                {t('content.synopsis', 'Synopsis')}
+                {t("content.synopsis", "Synopsis")}
               </Text>
               <Text style={[styles.synopsisText, { textAlign }]}>
-                {getLocalizedText(movie, 'description')}
+                {getLocalizedText(movie, "description")}
               </Text>
             </View>
           )}
@@ -330,9 +375,11 @@ export const MovieDetailScreenMobile: React.FC = () => {
           {movie.director && (
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { textAlign }]}>
-                {t('content.director', 'Director')}
+                {t("content.director", "Director")}
               </Text>
-              <Text style={[styles.directorName, { textAlign }]}>{movie.director}</Text>
+              <Text style={[styles.directorName, { textAlign }]}>
+                {movie.director}
+              </Text>
             </View>
           )}
 
@@ -340,14 +387,14 @@ export const MovieDetailScreenMobile: React.FC = () => {
           {castMembers.length > 0 && (
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { textAlign }]}>
-                {t('content.cast', 'Cast')}
+                {t("content.cast", "Cast")}
               </Text>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={[
                   styles.castContainer,
-                  { flexDirection: isRTL ? 'row-reverse' : 'row' },
+                  { flexDirection: isRTL ? "row-reverse" : "row" },
                 ]}
               >
                 {castMembers.map((member) => (
@@ -370,14 +417,14 @@ export const MovieDetailScreenMobile: React.FC = () => {
           {recommendations.length > 0 && (
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { textAlign }]}>
-                {t('content.moreLikeThis', 'More Like This')}
+                {t("content.moreLikeThis", "More Like This")}
               </Text>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={[
                   styles.recommendationsContainer,
-                  { flexDirection: isRTL ? 'row-reverse' : 'row' },
+                  { flexDirection: isRTL ? "row-reverse" : "row" },
                 ]}
               >
                 {recommendations.map((item) => (
@@ -393,7 +440,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
                       resizeMode="cover"
                     />
                     <Text style={styles.recommendationTitle} numberOfLines={2}>
-                      {getLocalizedText(item, 'title')}
+                      {getLocalizedText(item, "title")}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -421,7 +468,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
           >
             <Text style={styles.watchButtonIcon}>▶</Text>
             <Text style={styles.watchButtonText}>
-              {t('content.watchNow', 'Watch Now')}
+              {t("content.watchNow", "Watch Now")}
             </Text>
           </LinearGradientComponent>
         </TouchableOpacity>
@@ -437,14 +484,14 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: colors.background,
   },
   errorContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: colors.background,
     padding: spacing.lg,
   },
@@ -461,7 +508,7 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     color: colors.text,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   scrollView: {
     flex: 1,
@@ -471,28 +518,28 @@ const styles = StyleSheet.create({
   },
   heroContainer: {
     height: HERO_HEIGHT,
-    position: 'relative',
+    position: "relative",
   },
   heroImage: {
     width: SCREEN_WIDTH,
     height: HERO_HEIGHT,
-    position: 'absolute',
+    position: "absolute",
   },
   heroGradient: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
     bottom: 0,
     height: HERO_HEIGHT,
   },
   headerActions: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
   },
@@ -500,20 +547,20 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerButtonIcon: {
     fontSize: 20,
     color: colors.text,
   },
   headerRightActions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
   },
   heroContent: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
@@ -522,14 +569,14 @@ const styles = StyleSheet.create({
   },
   movieTitle: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.text,
     marginBottom: spacing.sm,
   },
   metadataRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
     marginBottom: spacing.sm,
   },
   metadataText: {
@@ -542,13 +589,13 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.xs,
   },
   imdbRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   imdbBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5c518',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f5c518",
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
     borderRadius: 4,
@@ -556,13 +603,13 @@ const styles = StyleSheet.create({
   },
   imdbLabel: {
     fontSize: 12,
-    fontWeight: 'bold',
-    color: '#000000',
+    fontWeight: "bold",
+    color: "#000000",
   },
   imdbRating: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#000000',
+    fontWeight: "bold",
+    color: "#000000",
   },
   imdbVotes: {
     fontSize: 12,
@@ -574,15 +621,15 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg,
   },
   quickActions: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     gap: spacing.xl,
     paddingBottom: spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: "rgba(255, 255, 255, 0.1)",
   },
   quickActionButton: {
-    alignItems: 'center',
+    alignItems: "center",
     minWidth: 60,
   },
   quickActionIcon: {
@@ -598,7 +645,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
     marginBottom: spacing.sm,
   },
@@ -616,7 +663,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
   },
   castCard: {
-    alignItems: 'center',
+    alignItems: "center",
     width: 70,
   },
   castAvatar: {
@@ -624,19 +671,19 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: 28,
     backgroundColor: colors.backgroundLight,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: spacing.xs,
   },
   castInitial: {
     fontSize: 22,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.primary,
   },
   castName: {
     fontSize: 12,
     color: colors.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
   },
   recommendationsContainer: {
     gap: spacing.md,
@@ -661,7 +708,7 @@ const styles = StyleSheet.create({
     height: 100,
   },
   fixedButtonContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
@@ -670,16 +717,16 @@ const styles = StyleSheet.create({
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    borderTopColor: "rgba(255, 255, 255, 0.1)",
   },
   watchButton: {
     borderRadius: borderRadius.lg,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   watchButtonGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: spacing.md,
     gap: spacing.sm,
   },
@@ -689,7 +736,7 @@ const styles = StyleSheet.create({
   },
   watchButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
   },
 });

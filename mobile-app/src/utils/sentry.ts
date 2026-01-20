@@ -5,33 +5,33 @@
  * native crash reporting, and integrates with the shared logger.
  */
 
-import * as Sentry from '@sentry/react-native';
-import { initLoggerSentry } from '@bayit/shared/utils/logger';
-import { initErrorBoundarySentry } from '@bayit/shared/components/ErrorBoundary';
+import * as Sentry from "@sentry/react-native";
+import { initLoggerSentry } from "@bayit/shared/utils/logger";
+import { initErrorBoundarySentry } from "@bayit/shared/components/ErrorBoundary";
 
 // Environment variable access (from react-native-dotenv or similar)
-const SENTRY_DSN = process.env.SENTRY_DSN || '';
-const SENTRY_ENVIRONMENT = process.env.SENTRY_ENVIRONMENT || 'development';
-const SENTRY_RELEASE = process.env.SENTRY_RELEASE || '';
+const SENTRY_DSN = process.env.SENTRY_DSN || "";
+const SENTRY_ENVIRONMENT = process.env.SENTRY_ENVIRONMENT || "development";
+const SENTRY_RELEASE = process.env.SENTRY_RELEASE || "";
 
 /**
  * Sensitive fields to scrub from events.
  */
 const SENSITIVE_FIELDS = new Set([
-  'password',
-  'secret',
-  'token',
-  'api_key',
-  'apikey',
-  'authorization',
-  'auth',
-  'credentials',
-  'private_key',
-  'access_token',
-  'refresh_token',
-  'jwt',
-  'session',
-  'cookie',
+  "password",
+  "secret",
+  "token",
+  "api_key",
+  "apikey",
+  "authorization",
+  "auth",
+  "credentials",
+  "private_key",
+  "access_token",
+  "refresh_token",
+  "jwt",
+  "session",
+  "cookie",
 ]);
 
 /**
@@ -41,8 +41,8 @@ const scrubObject = (obj: Record<string, unknown>): void => {
   for (const key of Object.keys(obj)) {
     const keyLower = key.toLowerCase();
     if (Array.from(SENSITIVE_FIELDS).some((s) => keyLower.includes(s))) {
-      obj[key] = '[Filtered]';
-    } else if (obj[key] && typeof obj[key] === 'object') {
+      obj[key] = "[Filtered]";
+    } else if (obj[key] && typeof obj[key] === "object") {
       scrubObject(obj[key] as Record<string, unknown>);
     }
   }
@@ -56,7 +56,7 @@ const scrubObject = (obj: Record<string, unknown>): void => {
  */
 export const initSentry = (): boolean => {
   if (!SENTRY_DSN) {
-    console.info('[Sentry] DSN not configured - error tracking disabled');
+    console.info("[Sentry] DSN not configured - error tracking disabled");
     return false;
   }
 
@@ -109,7 +109,12 @@ export const initSentry = (): boolean => {
       },
       captureMessage: (message, options) => {
         Sentry.captureMessage(message, {
-          level: options?.level as 'fatal' | 'error' | 'warning' | 'info' | 'debug',
+          level: options?.level as
+            | "fatal"
+            | "error"
+            | "warning"
+            | "info"
+            | "debug",
           extra: options?.extra,
         });
       },
@@ -128,7 +133,7 @@ export const initSentry = (): boolean => {
     console.info(`[Sentry] Initialized - environment: ${SENTRY_ENVIRONMENT}`);
     return true;
   } catch (error) {
-    console.error('[Sentry] Failed to initialize:', error);
+    console.error("[Sentry] Failed to initialize:", error);
     return false;
   }
 };
@@ -139,7 +144,7 @@ export const initSentry = (): boolean => {
 export const setSentryUser = (
   userId: string,
   email?: string,
-  username?: string
+  username?: string,
 ): void => {
   if (!SENTRY_DSN) return;
 

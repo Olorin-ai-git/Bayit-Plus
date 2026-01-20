@@ -9,7 +9,7 @@
  * - Haptic feedback
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -24,20 +24,20 @@ import {
   StatusBar,
   Modal,
   FlatList,
-} from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import LinearGradient from 'react-native-linear-gradient';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { contentService } from '@bayit/shared-services';
-import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
-import { useDirection } from '@bayit/shared-hooks';
-import { spacing, colors, borderRadius } from '../theme';
+} from "react-native";
+import { useTranslation } from "react-i18next";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
+import LinearGradient from "react-native-linear-gradient";
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
+import { contentService } from "@bayit/shared-services";
+import { getLocalizedName, getLocalizedDescription } from "@bayit/shared-utils";
+import { useDirection } from "@bayit/shared-hooks";
+import { spacing, colors, borderRadius } from "../theme";
 
 // Type assertion for LinearGradient React component
 const LinearGradientComponent = LinearGradient as any as React.FC<any>;
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const HERO_HEIGHT = SCREEN_HEIGHT * 0.4;
 const EPISODE_CARD_WIDTH = 280;
 
@@ -113,7 +113,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
   return (
     <TouchableOpacity
       onPress={() => {
-        ReactNativeHapticFeedback.trigger('impactLight');
+        ReactNativeHapticFeedback.trigger("impactLight");
         onPress();
       }}
       style={[styles.episodeCard, isSelected && styles.episodeCardSelected]}
@@ -134,10 +134,12 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
       </View>
       <View style={styles.episodeInfo}>
         <Text style={[styles.episodeTitle, { textAlign }]} numberOfLines={1}>
-          {getLocalizedText(episode, 'title')}
+          {getLocalizedText(episode, "title")}
         </Text>
         {episode.duration && (
-          <Text style={[styles.episodeDuration, { textAlign }]}>{episode.duration}</Text>
+          <Text style={[styles.episodeDuration, { textAlign }]}>
+            {episode.duration}
+          </Text>
         )}
       </View>
     </TouchableOpacity>
@@ -148,7 +150,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
-  const route = useRoute<RouteProp<SeriesDetailRouteParams, 'SeriesDetail'>>();
+  const route = useRoute<RouteProp<SeriesDetailRouteParams, "SeriesDetail">>();
   const { seriesId } = route.params;
   const currentLang = i18n.language;
 
@@ -163,13 +165,18 @@ export const SeriesDetailScreenMobile: React.FC = () => {
   const [showSeasonPicker, setShowSeasonPicker] = useState(false);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
 
-  const getLocalizedText = useCallback((item: any, field: string): string => {
-    if (field === 'title') return getLocalizedName(item, currentLang);
-    if (field === 'description') return getLocalizedDescription(item, currentLang);
-    if (currentLang === 'he') return item[field] || item.title || item.name;
-    if (currentLang === 'es') return item[`${field}_es`] || item[`${field}_en`] || item[field];
-    return item[`${field}_en`] || item[field];
-  }, [currentLang]);
+  const getLocalizedText = useCallback(
+    (item: any, field: string): string => {
+      if (field === "title") return getLocalizedName(item, currentLang);
+      if (field === "description")
+        return getLocalizedDescription(item, currentLang);
+      if (currentLang === "he") return item[field] || item.title || item.name;
+      if (currentLang === "es")
+        return item[`${field}_es`] || item[`${field}_en`] || item[field];
+      return item[`${field}_en`] || item[field];
+    },
+    [currentLang],
+  );
 
   useEffect(() => {
     loadSeriesDetails();
@@ -195,7 +202,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
         const formattedCast = data.cast.map((name: string, index: number) => ({
           id: `cast-${index}`,
           name,
-          character: '',
+          character: "",
           photo: undefined,
         }));
         setCastMembers(formattedCast);
@@ -211,7 +218,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
         // Non-blocking error
       }
     } catch (error) {
-      console.error('Failed to load series:', error);
+      console.error("Failed to load series:", error);
     } finally {
       setLoading(false);
     }
@@ -220,13 +227,16 @@ export const SeriesDetailScreenMobile: React.FC = () => {
   const loadSeasonEpisodes = async () => {
     setEpisodesLoading(true);
     try {
-      const data = await contentService.getSeasonEpisodes(seriesId, selectedSeason);
+      const data = await contentService.getSeasonEpisodes(
+        seriesId,
+        selectedSeason,
+      );
       setEpisodes(data.episodes || []);
       if (data.episodes && data.episodes.length > 0 && !selectedEpisode) {
         setSelectedEpisode(data.episodes[0]);
       }
     } catch (error) {
-      console.error('Failed to load episodes:', error);
+      console.error("Failed to load episodes:", error);
     } finally {
       setEpisodesLoading(false);
     }
@@ -234,30 +244,33 @@ export const SeriesDetailScreenMobile: React.FC = () => {
 
   const handlePlay = useCallback(() => {
     if (selectedEpisode) {
-      ReactNativeHapticFeedback.trigger('impactMedium');
-      navigation.navigate('Player', {
+      ReactNativeHapticFeedback.trigger("impactMedium");
+      navigation.navigate("Player", {
         id: selectedEpisode.id,
-        title: getLocalizedText(selectedEpisode, 'title'),
-        type: 'vod',
+        title: getLocalizedText(selectedEpisode, "title"),
+        type: "vod",
       });
     }
   }, [selectedEpisode, navigation, getLocalizedText]);
 
-  const handleEpisodePlay = useCallback((episode: Episode) => {
-    ReactNativeHapticFeedback.trigger('impactMedium');
-    navigation.navigate('Player', {
-      id: episode.id,
-      title: getLocalizedText(episode, 'title'),
-      type: 'vod',
-    });
-  }, [navigation, getLocalizedText]);
+  const handleEpisodePlay = useCallback(
+    (episode: Episode) => {
+      ReactNativeHapticFeedback.trigger("impactMedium");
+      navigation.navigate("Player", {
+        id: episode.id,
+        title: getLocalizedText(episode, "title"),
+        type: "vod",
+      });
+    },
+    [navigation, getLocalizedText],
+  );
 
   const handleEpisodeSelect = useCallback((episode: Episode) => {
     setSelectedEpisode(episode);
   }, []);
 
   const handleSeasonChange = useCallback((seasonNumber: number) => {
-    ReactNativeHapticFeedback.trigger('selection');
+    ReactNativeHapticFeedback.trigger("selection");
     setSelectedSeason(seasonNumber);
     setSelectedEpisode(null);
     setShowSeasonPicker(false);
@@ -265,30 +278,33 @@ export const SeriesDetailScreenMobile: React.FC = () => {
 
   const handleShare = useCallback(async () => {
     if (series) {
-      ReactNativeHapticFeedback.trigger('impactLight');
+      ReactNativeHapticFeedback.trigger("impactLight");
       try {
         await Share.share({
-          message: `${t('share.checkOut', 'Check out')} "${getLocalizedText(series, 'title')}" ${t('share.onBayitPlus', 'on Bayit+')}`,
-          title: getLocalizedText(series, 'title'),
+          message: `${t("share.checkOut", "Check out")} "${getLocalizedText(series, "title")}" ${t("share.onBayitPlus", "on Bayit+")}`,
+          title: getLocalizedText(series, "title"),
         });
       } catch (error) {
-        console.error('Share failed:', error);
+        console.error("Share failed:", error);
       }
     }
   }, [series, t, getLocalizedText]);
 
   const handleBack = useCallback(() => {
-    ReactNativeHapticFeedback.trigger('impactLight');
+    ReactNativeHapticFeedback.trigger("impactLight");
     navigation.goBack();
   }, [navigation]);
 
-  const handleRecommendationPress = useCallback((item: any) => {
-    ReactNativeHapticFeedback.trigger('impactLight');
-    navigation.push('SeriesDetail', { seriesId: item.id });
-  }, [navigation]);
+  const handleRecommendationPress = useCallback(
+    (item: any) => {
+      ReactNativeHapticFeedback.trigger("impactLight");
+      navigation.push("SeriesDetail", { seriesId: item.id });
+    },
+    [navigation],
+  );
 
   const handleToggleWatchlist = useCallback(() => {
-    ReactNativeHapticFeedback.trigger('impactLight');
+    ReactNativeHapticFeedback.trigger("impactLight");
     setIsInWatchlist(!isInWatchlist);
   }, [isInWatchlist]);
 
@@ -303,9 +319,13 @@ export const SeriesDetailScreenMobile: React.FC = () => {
   if (!series) {
     return (
       <SafeAreaView style={styles.errorContainer}>
-        <Text style={styles.errorText}>{t('content.notFound', 'Content not found')}</Text>
+        <Text style={styles.errorText}>
+          {t("content.notFound", "Content not found")}
+        </Text>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Text style={styles.backButtonText}>{t('common.goBack', 'Go Back')}</Text>
+          <Text style={styles.backButtonText}>
+            {t("common.goBack", "Go Back")}
+          </Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -323,12 +343,17 @@ export const SeriesDetailScreenMobile: React.FC = () => {
         {/* Hero Section */}
         <View style={styles.heroContainer}>
           <Image
-            source={{ uri: selectedEpisode?.thumbnail || series.backdrop || series.thumbnail }}
+            source={{
+              uri:
+                selectedEpisode?.thumbnail ||
+                series.backdrop ||
+                series.thumbnail,
+            }}
             style={styles.heroImage}
             resizeMode="cover"
           />
           <LinearGradientComponent
-            colors={['transparent', 'rgba(0,0,0,0.7)', colors.background]}
+            colors={["transparent", "rgba(0,0,0,0.7)", colors.background]}
             locations={[0.3, 0.7, 1]}
             style={styles.heroGradient}
           />
@@ -339,7 +364,10 @@ export const SeriesDetailScreenMobile: React.FC = () => {
               <Text style={styles.headerButtonIcon}>←</Text>
             </TouchableOpacity>
             <View style={styles.headerRightActions}>
-              <TouchableOpacity onPress={handleShare} style={styles.headerButton}>
+              <TouchableOpacity
+                onPress={handleShare}
+                style={styles.headerButton}
+              >
                 <Text style={styles.headerButtonIcon}>⤴</Text>
               </TouchableOpacity>
             </View>
@@ -347,11 +375,20 @@ export const SeriesDetailScreenMobile: React.FC = () => {
 
           {/* Hero Content */}
           <View style={styles.heroContent}>
-            <Text style={[styles.seriesTitle, { textAlign }]}>{getLocalizedText(series, 'title')}</Text>
+            <Text style={[styles.seriesTitle, { textAlign }]}>
+              {getLocalizedText(series, "title")}
+            </Text>
 
             {/* Metadata */}
-            <View style={[styles.metadataRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              {series.year && <Text style={styles.metadataText}>{series.year}</Text>}
+            <View
+              style={[
+                styles.metadataRow,
+                { flexDirection: isRTL ? "row-reverse" : "row" },
+              ]}
+            >
+              {series.year && (
+                <Text style={styles.metadataText}>{series.year}</Text>
+              )}
               {series.rating && (
                 <>
                   <Text style={styles.metadataDot}>•</Text>
@@ -362,7 +399,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
                 <>
                   <Text style={styles.metadataDot}>•</Text>
                   <Text style={styles.metadataText}>
-                    {series.total_seasons} {t('content.seasons', 'Seasons')}
+                    {series.total_seasons} {t("content.seasons", "Seasons")}
                   </Text>
                 </>
               )}
@@ -376,12 +413,12 @@ export const SeriesDetailScreenMobile: React.FC = () => {
           <TouchableOpacity
             style={styles.seasonSelector}
             onPress={() => {
-              ReactNativeHapticFeedback.trigger('impactLight');
+              ReactNativeHapticFeedback.trigger("impactLight");
               setShowSeasonPicker(true);
             }}
           >
             <Text style={styles.seasonSelectorLabel}>
-              {t('content.season', 'Season')} {selectedSeason}
+              {t("content.season", "Season")} {selectedSeason}
             </Text>
             <Text style={styles.seasonSelectorArrow}>▼</Text>
           </TouchableOpacity>
@@ -389,7 +426,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
           {/* Episodes */}
           <View style={styles.episodesSection}>
             <Text style={[styles.sectionTitle, { textAlign }]}>
-              {t('content.episodes', 'Episodes')}
+              {t("content.episodes", "Episodes")}
             </Text>
             {episodesLoading ? (
               <ActivityIndicator size="small" color={colors.primary} />
@@ -401,7 +438,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={[
                   styles.episodesList,
-                  { flexDirection: isRTL ? 'row-reverse' : 'row' },
+                  { flexDirection: isRTL ? "row-reverse" : "row" },
                 ]}
                 renderItem={({ item }) => (
                   <EpisodeCard
@@ -416,20 +453,30 @@ export const SeriesDetailScreenMobile: React.FC = () => {
           </View>
 
           {/* Quick Actions */}
-          <View style={[styles.quickActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View
+            style={[
+              styles.quickActions,
+              { flexDirection: isRTL ? "row-reverse" : "row" },
+            ]}
+          >
             <TouchableOpacity
               onPress={handleToggleWatchlist}
               style={styles.quickActionButton}
             >
-              <Text style={styles.quickActionIcon}>{isInWatchlist ? '✓' : '+'}</Text>
+              <Text style={styles.quickActionIcon}>
+                {isInWatchlist ? "✓" : "+"}
+              </Text>
               <Text style={styles.quickActionLabel}>
-                {t('content.myList', 'My List')}
+                {t("content.myList", "My List")}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleShare} style={styles.quickActionButton}>
+            <TouchableOpacity
+              onPress={handleShare}
+              style={styles.quickActionButton}
+            >
               <Text style={styles.quickActionIcon}>⤴</Text>
               <Text style={styles.quickActionLabel}>
-                {t('content.share', 'Share')}
+                {t("content.share", "Share")}
               </Text>
             </TouchableOpacity>
           </View>
@@ -438,10 +485,10 @@ export const SeriesDetailScreenMobile: React.FC = () => {
           {series.description && (
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { textAlign }]}>
-                {t('content.synopsis', 'Synopsis')}
+                {t("content.synopsis", "Synopsis")}
               </Text>
               <Text style={[styles.synopsisText, { textAlign }]}>
-                {getLocalizedText(series, 'description')}
+                {getLocalizedText(series, "description")}
               </Text>
             </View>
           )}
@@ -450,14 +497,14 @@ export const SeriesDetailScreenMobile: React.FC = () => {
           {castMembers.length > 0 && (
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { textAlign }]}>
-                {t('content.cast', 'Cast')}
+                {t("content.cast", "Cast")}
               </Text>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={[
                   styles.castContainer,
-                  { flexDirection: isRTL ? 'row-reverse' : 'row' },
+                  { flexDirection: isRTL ? "row-reverse" : "row" },
                 ]}
               >
                 {castMembers.map((member) => (
@@ -480,14 +527,14 @@ export const SeriesDetailScreenMobile: React.FC = () => {
           {recommendations.length > 0 && (
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { textAlign }]}>
-                {t('content.moreLikeThis', 'More Like This')}
+                {t("content.moreLikeThis", "More Like This")}
               </Text>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={[
                   styles.recommendationsContainer,
-                  { flexDirection: isRTL ? 'row-reverse' : 'row' },
+                  { flexDirection: isRTL ? "row-reverse" : "row" },
                 ]}
               >
                 {recommendations.map((item) => (
@@ -503,7 +550,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
                       resizeMode="cover"
                     />
                     <Text style={styles.recommendationTitle} numberOfLines={2}>
-                      {getLocalizedText(item, 'title')}
+                      {getLocalizedText(item, "title")}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -525,7 +572,11 @@ export const SeriesDetailScreenMobile: React.FC = () => {
           disabled={!selectedEpisode}
         >
           <LinearGradientComponent
-            colors={selectedEpisode ? [colors.primary, colors.primaryDark] : [colors.textSecondary, colors.textSecondary]}
+            colors={
+              selectedEpisode
+                ? [colors.primary, colors.primaryDark]
+                : [colors.textSecondary, colors.textSecondary]
+            }
             style={styles.watchButtonGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
@@ -533,8 +584,8 @@ export const SeriesDetailScreenMobile: React.FC = () => {
             <Text style={styles.watchButtonIcon}>▶</Text>
             <Text style={styles.watchButtonText}>
               {selectedEpisode
-                ? `${t('content.play', 'Play')} S${selectedSeason}:E${selectedEpisode.episode_number}`
-                : t('content.selectEpisode', 'Select Episode')}
+                ? `${t("content.play", "Play")} S${selectedSeason}:E${selectedEpisode.episode_number}`
+                : t("content.selectEpisode", "Select Episode")}
             </Text>
           </LinearGradientComponent>
         </TouchableOpacity>
@@ -555,7 +606,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
           <View style={styles.seasonPickerContainer}>
             <View style={styles.seasonPickerHeader}>
               <Text style={styles.seasonPickerTitle}>
-                {t('content.selectSeason', 'Select Season')}
+                {t("content.selectSeason", "Select Season")}
               </Text>
               <TouchableOpacity onPress={() => setShowSeasonPicker(false)}>
                 <Text style={styles.seasonPickerClose}>✕</Text>
@@ -567,20 +618,22 @@ export const SeriesDetailScreenMobile: React.FC = () => {
                   key={season.season_number}
                   style={[
                     styles.seasonItem,
-                    selectedSeason === season.season_number && styles.seasonItemSelected,
+                    selectedSeason === season.season_number &&
+                      styles.seasonItemSelected,
                   ]}
                   onPress={() => handleSeasonChange(season.season_number)}
                 >
                   <Text
                     style={[
                       styles.seasonItemText,
-                      selectedSeason === season.season_number && styles.seasonItemTextSelected,
+                      selectedSeason === season.season_number &&
+                        styles.seasonItemTextSelected,
                     ]}
                   >
-                    {t('content.season', 'Season')} {season.season_number}
+                    {t("content.season", "Season")} {season.season_number}
                   </Text>
                   <Text style={styles.seasonItemEpisodes}>
-                    {season.episode_count} {t('content.episodes', 'episodes')}
+                    {season.episode_count} {t("content.episodes", "episodes")}
                   </Text>
                   {selectedSeason === season.season_number && (
                     <Text style={styles.seasonItemCheck}>✓</Text>
@@ -602,14 +655,14 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: colors.background,
   },
   errorContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: colors.background,
     padding: spacing.lg,
   },
@@ -626,7 +679,7 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     color: colors.text,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   scrollView: {
     flex: 1,
@@ -636,28 +689,28 @@ const styles = StyleSheet.create({
   },
   heroContainer: {
     height: HERO_HEIGHT,
-    position: 'relative',
+    position: "relative",
   },
   heroImage: {
     width: SCREEN_WIDTH,
     height: HERO_HEIGHT,
-    position: 'absolute',
+    position: "absolute",
   },
   heroGradient: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
     bottom: 0,
     height: HERO_HEIGHT,
   },
   headerActions: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
   },
@@ -665,20 +718,20 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerButtonIcon: {
     fontSize: 20,
     color: colors.text,
   },
   headerRightActions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
   },
   heroContent: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
@@ -687,14 +740,14 @@ const styles = StyleSheet.create({
   },
   seriesTitle: {
     fontSize: 26,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.text,
     marginBottom: spacing.sm,
   },
   metadataRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
   },
   metadataText: {
     fontSize: 14,
@@ -709,9 +762,9 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
   },
   seasonSelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: colors.backgroundLight,
     marginHorizontal: spacing.md,
     paddingVertical: spacing.md,
@@ -721,7 +774,7 @@ const styles = StyleSheet.create({
   },
   seasonSelectorLabel: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
     marginRight: spacing.sm,
   },
@@ -734,7 +787,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
     marginBottom: spacing.sm,
     paddingHorizontal: spacing.md,
@@ -747,7 +800,7 @@ const styles = StyleSheet.create({
     width: EPISODE_CARD_WIDTH,
     marginRight: spacing.md,
     borderRadius: borderRadius.md,
-    overflow: 'hidden',
+    overflow: "hidden",
     backgroundColor: colors.backgroundLight,
   },
   episodeCardSelected: {
@@ -760,38 +813,38 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundElevated,
   },
   episodeOverlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     height: 157,
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     padding: spacing.sm,
   },
   episodeNumberBadge: {
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
     borderRadius: 4,
   },
   episodeNumber: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
   },
   episodePlayButton: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
     marginTop: -20,
     marginLeft: -20,
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(126, 34, 206, 0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(126, 34, 206, 0.9)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   episodePlayIcon: {
     fontSize: 16,
@@ -803,7 +856,7 @@ const styles = StyleSheet.create({
   },
   episodeTitle: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: colors.text,
     marginBottom: 4,
   },
@@ -812,16 +865,16 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   quickActions: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     gap: spacing.xl,
     paddingHorizontal: spacing.md,
     paddingBottom: spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: "rgba(255, 255, 255, 0.1)",
   },
   quickActionButton: {
-    alignItems: 'center',
+    alignItems: "center",
     minWidth: 60,
   },
   quickActionIcon: {
@@ -847,7 +900,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
   },
   castCard: {
-    alignItems: 'center',
+    alignItems: "center",
     width: 70,
   },
   castAvatar: {
@@ -855,19 +908,19 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: 28,
     backgroundColor: colors.backgroundLight,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: spacing.xs,
   },
   castInitial: {
     fontSize: 22,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.primary,
   },
   castName: {
     fontSize: 12,
     color: colors.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
   },
   recommendationsContainer: {
     gap: spacing.md,
@@ -893,7 +946,7 @@ const styles = StyleSheet.create({
     height: 100,
   },
   fixedButtonContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
@@ -902,16 +955,16 @@ const styles = StyleSheet.create({
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    borderTopColor: "rgba(255, 255, 255, 0.1)",
   },
   watchButton: {
     borderRadius: borderRadius.lg,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   watchButtonGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: spacing.md,
     gap: spacing.sm,
   },
@@ -921,13 +974,13 @@ const styles = StyleSheet.create({
   },
   watchButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'flex-end',
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    justifyContent: "flex-end",
   },
   seasonPickerContainer: {
     backgroundColor: colors.backgroundLight,
@@ -936,16 +989,16 @@ const styles = StyleSheet.create({
     maxHeight: SCREEN_HEIGHT * 0.5,
   },
   seasonPickerHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: "rgba(255, 255, 255, 0.1)",
   },
   seasonPickerTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
   },
   seasonPickerClose: {
@@ -957,8 +1010,8 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   seasonItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.md,
     borderRadius: borderRadius.md,
@@ -966,7 +1019,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundElevated,
   },
   seasonItemSelected: {
-    backgroundColor: 'rgba(126, 34, 206, 0.2)',
+    backgroundColor: "rgba(126, 34, 206, 0.2)",
     borderWidth: 1,
     borderColor: colors.primary,
   },
@@ -974,7 +1027,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: colors.text,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   seasonItemTextSelected: {
     color: colors.primary,
@@ -987,7 +1040,7 @@ const styles = StyleSheet.create({
   seasonItemCheck: {
     fontSize: 16,
     color: colors.primary,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
 

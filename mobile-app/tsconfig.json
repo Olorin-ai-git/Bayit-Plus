@@ -49,16 +49,6 @@
       "@bayit/shared/stores/*": ["../shared/stores/*"]
     }
   },
-  "include": [
-    "src/**/*",
-    "App.tsx",
-    "index.js"
-  ],
-  "exclude": [
-    "node_modules",
-    "ios",
-    "android",
-    "src/stubs",
-    "demo"
-  ]
+  "include": ["src/**/*", "App.tsx", "index.js"],
+  "exclude": ["node_modules", "ios", "android", "src/stubs", "demo"]
 }

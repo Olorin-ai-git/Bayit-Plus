@@ -86,18 +86,28 @@
     "versionGroups": [
       {
         "label": "React versions must be consistent across web apps",
-        "packages": ["@olorin/bayit-web", "@olorin/partner-portal"],
-        "dependencies": ["react", "react-dom"],
+        "packages": [
+          "@olorin/bayit-web",
+          "@olorin/partner-portal"
+        ],
+        "dependencies": [
+          "react",
+          "react-dom"
+        ],
         "pinVersion": "^18.3.1"
       },
       {
         "label": "Zustand version must be consistent",
-        "dependencies": ["zustand"],
+        "dependencies": [
+          "zustand"
+        ],
         "pinVersion": "^5.0.0"
       },
       {
         "label": "TanStack Query version must be consistent",
-        "dependencies": ["@tanstack/react-query"],
+        "dependencies": [
+          "@tanstack/react-query"
+        ],
         "pinVersion": "^5.62.0"
       }
     ]

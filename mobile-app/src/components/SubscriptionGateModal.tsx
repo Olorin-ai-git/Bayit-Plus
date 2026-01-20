@@ -10,7 +10,7 @@
  * - Haptic feedback
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback } from "react";
 import {
   View,
   Text,
@@ -20,14 +20,14 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
   ScrollView,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import LinearGradient from 'react-native-linear-gradient';
-import { GlassView, GlassButton } from '@bayit/shared';
-import { useDirection } from '@bayit/shared-hooks';
-import { spacing, colors, borderRadius } from '../theme';
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
+import LinearGradient from "react-native-linear-gradient";
+import { GlassView, GlassButton } from "@bayit/shared";
+import { useDirection } from "@bayit/shared-hooks";
+import { spacing, colors, borderRadius } from "../theme";
 
 // Type assertion for LinearGradient React component
 const LinearGradientComponent = LinearGradient as any as React.FC<any>;
@@ -45,46 +45,46 @@ interface SubscriptionGateModalProps {
   visible: boolean;
   onClose: () => void;
   contentTitle?: string;
-  contentType?: 'movie' | 'series' | 'live' | 'premium';
-  requiredTier?: 'basic' | 'premium' | 'family';
+  contentType?: "movie" | "series" | "live" | "premium";
+  requiredTier?: "basic" | "premium" | "family";
 }
 
 const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
-    id: 'basic',
-    name: 'Basic',
-    price: '₪29.90',
-    period: '/month',
+    id: "basic",
+    name: "Basic",
+    price: "₪29.90",
+    period: "/month",
     features: [
-      'subscriptionGate.features.sdStreaming',
-      'subscriptionGate.features.oneDevice',
-      'subscriptionGate.features.limitedLibrary',
+      "subscriptionGate.features.sdStreaming",
+      "subscriptionGate.features.oneDevice",
+      "subscriptionGate.features.limitedLibrary",
     ],
   },
   {
-    id: 'premium',
-    name: 'Premium',
-    price: '₪49.90',
-    period: '/month',
+    id: "premium",
+    name: "Premium",
+    price: "₪49.90",
+    period: "/month",
     features: [
-      'subscriptionGate.features.hdStreaming',
-      'subscriptionGate.features.twoDevices',
-      'subscriptionGate.features.fullLibrary',
-      'subscriptionGate.features.downloads',
+      "subscriptionGate.features.hdStreaming",
+      "subscriptionGate.features.twoDevices",
+      "subscriptionGate.features.fullLibrary",
+      "subscriptionGate.features.downloads",
     ],
     recommended: true,
   },
   {
-    id: 'family',
-    name: 'Family',
-    price: '₪79.90',
-    period: '/month',
+    id: "family",
+    name: "Family",
+    price: "₪79.90",
+    period: "/month",
     features: [
-      'subscriptionGate.features.uhd4k',
-      'subscriptionGate.features.fiveDevices',
-      'subscriptionGate.features.fullLibrary',
-      'subscriptionGate.features.downloads',
-      'subscriptionGate.features.kidsProfiles',
+      "subscriptionGate.features.uhd4k",
+      "subscriptionGate.features.fiveDevices",
+      "subscriptionGate.features.fullLibrary",
+      "subscriptionGate.features.downloads",
+      "subscriptionGate.features.kidsProfiles",
     ],
   },
 ];
@@ -93,54 +93,66 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
   visible,
   onClose,
   contentTitle,
-  contentType = 'premium',
-  requiredTier = 'basic',
+  contentType = "premium",
+  requiredTier = "basic",
 }) => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const { isRTL, textAlign } = useDirection();
 
-  const handleSelectPlan = useCallback((planId: string) => {
-    ReactNativeHapticFeedback.trigger('impactMedium');
-    onClose();
-    navigation.navigate('Subscribe', { plan: planId });
-  }, [onClose, navigation]);
+  const handleSelectPlan = useCallback(
+    (planId: string) => {
+      ReactNativeHapticFeedback.trigger("impactMedium");
+      onClose();
+      navigation.navigate("Subscribe", { plan: planId });
+    },
+    [onClose, navigation],
+  );
 
   const handleStartTrial = useCallback(() => {
-    ReactNativeHapticFeedback.trigger('impactMedium');
+    ReactNativeHapticFeedback.trigger("impactMedium");
     onClose();
-    navigation.navigate('Subscribe', { trial: true });
+    navigation.navigate("Subscribe", { trial: true });
   }, [onClose, navigation]);
 
   const handleClose = useCallback(() => {
-    ReactNativeHapticFeedback.trigger('impactLight');
+    ReactNativeHapticFeedback.trigger("impactLight");
     onClose();
   }, [onClose]);
 
   const getContentTypeIcon = () => {
     switch (contentType) {
-      case 'movie': return '🎬';
-      case 'series': return '📺';
-      case 'live': return '📡';
-      default: return '⭐';
+      case "movie":
+        return "🎬";
+      case "series":
+        return "📺";
+      case "live":
+        return "📡";
+      default:
+        return "⭐";
     }
   };
 
   const getContentTypeText = () => {
     switch (contentType) {
-      case 'movie': return t('subscriptionGate.premiumMovie');
-      case 'series': return t('subscriptionGate.premiumSeries');
-      case 'live': return t('subscriptionGate.premiumLive');
-      default: return t('subscriptionGate.premiumContent');
+      case "movie":
+        return t("subscriptionGate.premiumMovie");
+      case "series":
+        return t("subscriptionGate.premiumSeries");
+      case "live":
+        return t("subscriptionGate.premiumLive");
+      default:
+        return t("subscriptionGate.premiumContent");
     }
   };
 
   const renderPlanCard = (plan: SubscriptionPlan) => {
     const isRecommended = plan.recommended;
     const meetsRequirement =
-      requiredTier === 'basic' ||
-      (requiredTier === 'premium' && (plan.id === 'premium' || plan.id === 'family')) ||
-      (requiredTier === 'family' && plan.id === 'family');
+      requiredTier === "basic" ||
+      (requiredTier === "premium" &&
+        (plan.id === "premium" || plan.id === "family")) ||
+      (requiredTier === "family" && plan.id === "family");
 
     return (
       <TouchableOpacity
@@ -158,14 +170,12 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
           {isRecommended && (
             <View style={styles.recommendedBadge}>
               <Text style={styles.recommendedText}>
-                {t('subscriptionGate.recommended')}
+                {t("subscriptionGate.recommended")}
               </Text>
             </View>
           )}
 
-          <Text style={[styles.planName, { textAlign }]}>
-            {plan.name}
-          </Text>
+          <Text style={[styles.planName, { textAlign }]}>{plan.name}</Text>
 
           <View style={[styles.priceRow, isRTL && styles.priceRowRTL]}>
             <Text style={styles.planPrice}>{plan.price}</Text>
@@ -174,7 +184,10 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
 
           <View style={styles.featuresList}>
             {plan.features.map((feature, index) => (
-              <View key={index} style={[styles.featureRow, isRTL && styles.featureRowRTL]}>
+              <View
+                key={index}
+                style={[styles.featureRow, isRTL && styles.featureRowRTL]}
+              >
                 <Text style={styles.featureCheck}>✓</Text>
                 <Text style={[styles.featureText, { textAlign }]}>
                   {t(feature)}
@@ -184,9 +197,13 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
           </View>
 
           <GlassButton
-            title={meetsRequirement ? t('subscriptionGate.selectPlan') : t('subscriptionGate.upgradeRequired')}
+            title={
+              meetsRequirement
+                ? t("subscriptionGate.selectPlan")
+                : t("subscriptionGate.upgradeRequired")
+            }
             onPress={() => handleSelectPlan(plan.id)}
-            variant={isRecommended ? 'primary' : 'secondary'}
+            variant={isRecommended ? "primary" : "secondary"}
             disabled={!meetsRequirement}
             style={styles.selectButton}
           />
@@ -207,7 +224,7 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
           <TouchableWithoutFeedback>
             <SafeAreaView style={styles.modalContainer}>
               <LinearGradientComponent
-                colors={['rgba(107, 33, 168, 0.95)', 'rgba(0, 0, 0, 0.98)']}
+                colors={["rgba(107, 33, 168, 0.95)", "rgba(0, 0, 0, 0.98)"]}
                 style={styles.gradient}
               >
                 {/* Close button */}
@@ -226,17 +243,19 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                   <View style={styles.header}>
                     <Text style={styles.lockIcon}>🔒</Text>
                     <Text style={[styles.title, { textAlign }]}>
-                      {t('subscriptionGate.title')}
+                      {t("subscriptionGate.title")}
                     </Text>
                     <Text style={[styles.subtitle, { textAlign }]}>
-                      {t('subscriptionGate.subtitle')}
+                      {t("subscriptionGate.subtitle")}
                     </Text>
                   </View>
 
                   {/* Content info */}
                   {contentTitle && (
                     <GlassView style={styles.contentInfo}>
-                      <Text style={styles.contentIcon}>{getContentTypeIcon()}</Text>
+                      <Text style={styles.contentIcon}>
+                        {getContentTypeIcon()}
+                      </Text>
                       <View style={styles.contentDetails}>
                         <Text style={[styles.contentType, { textAlign }]}>
                           {getContentTypeText()}
@@ -256,14 +275,14 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                     <View style={styles.trialHeader}>
                       <Text style={styles.trialIcon}>🎁</Text>
                       <Text style={[styles.trialTitle, { textAlign }]}>
-                        {t('subscriptionGate.trialTitle')}
+                        {t("subscriptionGate.trialTitle")}
                       </Text>
                     </View>
                     <Text style={[styles.trialDescription, { textAlign }]}>
-                      {t('subscriptionGate.trialDescription')}
+                      {t("subscriptionGate.trialDescription")}
                     </Text>
                     <GlassButton
-                      title={t('subscriptionGate.startTrial')}
+                      title={t("subscriptionGate.startTrial")}
                       onPress={handleStartTrial}
                       variant="primary"
                       style={styles.trialButton}
@@ -272,7 +291,7 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
 
                   {/* Plans */}
                   <Text style={[styles.plansTitle, { textAlign }]}>
-                    {t('subscriptionGate.choosePlan')}
+                    {t("subscriptionGate.choosePlan")}
                   </Text>
 
                   <View style={styles.plansContainer}>
@@ -281,7 +300,7 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
 
                   {/* Footer */}
                   <Text style={[styles.footerText, { textAlign }]}>
-                    {t('subscriptionGate.cancelAnytime')}
+                    {t("subscriptionGate.cancelAnytime")}
                   </Text>
                 </ScrollView>
               </LinearGradientComponent>
@@ -296,8 +315,8 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end",
   },
   modalContainer: {
     flex: 1,
@@ -307,18 +326,18 @@ const styles = StyleSheet.create({
     flex: 1,
     borderTopLeftRadius: borderRadius.xl,
     borderTopRightRadius: borderRadius.xl,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   closeButton: {
-    position: 'absolute',
+    position: "absolute",
     top: spacing.lg,
     right: spacing.lg,
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    justifyContent: "center",
+    alignItems: "center",
     zIndex: 10,
   },
   closeButtonRTL: {
@@ -335,7 +354,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xl,
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: spacing.lg,
   },
   lockIcon: {
@@ -344,7 +363,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.text,
     marginBottom: spacing.xs,
   },
@@ -353,8 +372,8 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   contentInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: spacing.md,
     borderRadius: borderRadius.lg,
     marginBottom: spacing.lg,
@@ -369,11 +388,11 @@ const styles = StyleSheet.create({
   contentType: {
     fontSize: 12,
     color: colors.textSecondary,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   },
   contentTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
     marginTop: 2,
   },
@@ -385,8 +404,8 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   trialHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: spacing.sm,
   },
   trialIcon: {
@@ -395,7 +414,7 @@ const styles = StyleSheet.create({
   },
   trialTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
   },
   trialDescription: {
@@ -404,11 +423,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   trialButton: {
-    alignSelf: 'stretch',
+    alignSelf: "stretch",
   },
   plansTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
     marginBottom: spacing.md,
   },
@@ -421,19 +440,19 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   planCardRecommended: {
     borderColor: colors.primary,
-    backgroundColor: 'rgba(107, 33, 168, 0.15)',
+    backgroundColor: "rgba(107, 33, 168, 0.15)",
   },
   planCardDisabled: {
     opacity: 0.5,
   },
   recommendedBadge: {
-    position: 'absolute',
+    position: "absolute",
     top: -10,
-    alignSelf: 'center',
+    alignSelf: "center",
     backgroundColor: colors.primary,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
@@ -442,26 +461,26 @@ const styles = StyleSheet.create({
   recommendedText: {
     color: colors.text,
     fontSize: 11,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   planName: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.text,
     marginTop: spacing.sm,
   },
   priceRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
+    flexDirection: "row",
+    alignItems: "baseline",
     marginTop: spacing.xs,
     marginBottom: spacing.sm,
   },
   priceRowRTL: {
-    flexDirection: 'row-reverse',
+    flexDirection: "row-reverse",
   },
   planPrice: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.primary,
   },
   planPeriod: {
@@ -473,16 +492,16 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   featureRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: spacing.xs,
   },
   featureRowRTL: {
-    flexDirection: 'row-reverse',
+    flexDirection: "row-reverse",
   },
   featureCheck: {
     fontSize: 14,
-    color: '#22c55e',
+    color: "#22c55e",
     marginRight: spacing.sm,
   },
   featureText: {
@@ -496,7 +515,7 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 12,
     color: colors.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
 

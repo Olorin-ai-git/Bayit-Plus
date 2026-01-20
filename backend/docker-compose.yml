@@ -1,0 +1,95 @@
+# =============================================================================
+# Docker Compose for Local Development
+# Provides MongoDB 6.0 (same as CI) and backend service
+# =============================================================================
+#
+# Usage:
+#   docker-compose up -d mongodb    # Start MongoDB only
+#   docker-compose up -d            # Start all services
+#   docker-compose down             # Stop all services
+#   docker-compose logs -f backend  # View backend logs
+#
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # MongoDB - Same version as CI (6.0)
+  # ---------------------------------------------------------------------------
+  mongodb:
+    image: mongo:6.0
+    container_name: bayit-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Backend - FastAPI application
+  # ---------------------------------------------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bayit-backend
+    ports:
+      - "8080:8080"
+    environment:
+      # Database
+      - MONGODB_URL=mongodb://mongodb:27017
+      - MONGODB_DB_NAME=bayit_local
+      # App config
+      - SECRET_KEY=local-dev-secret-key-change-in-production
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      - API_V1_PREFIX=/api/v1
+      - STORAGE_TYPE=local
+      # Optional: Add your API keys here or use .env file
+      # - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      # - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      # - PINECONE_API_KEY=${PINECONE_API_KEY}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Redis - Optional caching layer
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: bayit-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    profiles:
+      - full  # Only start with: docker-compose --profile full up
+
+volumes:
+  mongodb_data:
+    name: bayit-mongodb-data
+  redis_data:
+    name: bayit-redis-data
+
+networks:
+  default:
+    name: bayit-network
