@@ -33,6 +33,9 @@ import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useDirection } from '@bayit/shared-hooks';
 import { spacing, colors, borderRadius } from '../theme';
 
+// Type assertion for LinearGradient React component
+const LinearGradientComponent = LinearGradient as any as React.FC<any>;
+
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const HERO_HEIGHT = SCREEN_HEIGHT * 0.45;
 
@@ -221,7 +224,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
             style={styles.heroImage}
             resizeMode="cover"
           />
-          <LinearGradient
+          <LinearGradientComponent
             colors={['transparent', 'rgba(0,0,0,0.7)', colors.background]}
             locations={[0.3, 0.7, 1]}
             style={styles.heroGradient}
@@ -410,7 +413,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
           style={styles.watchButton}
           activeOpacity={0.8}
         >
-          <LinearGradient
+          <LinearGradientComponent
             colors={[colors.primary, colors.primaryDark]}
             style={styles.watchButtonGradient}
             start={{ x: 0, y: 0 }}
@@ -420,7 +423,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
             <Text style={styles.watchButtonText}>
               {t('content.watchNow', 'Watch Now')}
             </Text>
-          </LinearGradient>
+          </LinearGradientComponent>
         </TouchableOpacity>
       </SafeAreaView>
     </View>

@@ -109,7 +109,7 @@ export const initSentry = (): boolean => {
       },
       captureMessage: (message, options) => {
         Sentry.captureMessage(message, {
-          level: options?.level as Sentry.SeverityLevel,
+          level: options?.level as 'fatal' | 'error' | 'warning' | 'info' | 'debug',
           extra: options?.extra,
         });
       },

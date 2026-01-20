@@ -32,6 +32,9 @@ import { useDirection } from '@bayit/shared-hooks';
 import api from '@bayit/shared-services/api';
 import { spacing, colors, borderRadius } from '../theme';
 
+// Type assertion for LinearGradient React component
+const LinearGradientComponent = LinearGradient as any as React.FC<any>;
+
 interface FlowItem {
   content_id: string;
   content_type: string;
@@ -95,12 +98,12 @@ const FlowCard: React.FC<FlowCardProps> = ({ flow, onPress, getLocalizedName }) 
       activeOpacity={0.8}
     >
       <View style={[styles.flowCardContent, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <LinearGradient
+        <LinearGradientComponent
           colors={iconConfig.colors}
           style={styles.flowIcon}
         >
           <Text style={styles.flowIconText}>{iconConfig.icon}</Text>
-        </LinearGradient>
+        </LinearGradientComponent>
 
         <View style={[styles.flowInfo, { alignItems: isRTL ? 'flex-start' : 'flex-end' }]}>
           <View style={[styles.flowHeader, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
@@ -288,7 +291,7 @@ export const FlowsScreenMobile: React.FC = () => {
         {/* Active Flow Banner */}
         {activeFlow && (
           <Animated.View style={[styles.activeBanner, { transform: [{ scale: pulseAnim }] }]}>
-            <LinearGradient
+            <LinearGradientComponent
               colors={['rgba(126, 34, 206, 0.3)', 'rgba(126, 34, 206, 0.15)']}
               style={styles.activeBannerGradient}
             >
@@ -326,7 +329,7 @@ export const FlowsScreenMobile: React.FC = () => {
                   </Text>
                 </TouchableOpacity>
               </View>
-            </LinearGradient>
+            </LinearGradientComponent>
           </Animated.View>
         )}
 

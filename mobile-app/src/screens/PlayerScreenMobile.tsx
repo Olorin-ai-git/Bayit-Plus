@@ -10,32 +10,26 @@
  * - Tap to show/hide controls
  */
 
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  View,
-  StyleSheet,
-  Pressable,
-  Text,
-  Platform,
-} from 'react-native';
-import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
-import { PanGestureHandler } from 'react-native-gesture-handler';
+import React, { useState, useRef, useEffect } from "react";
+import { View, StyleSheet, Pressable, Text, Platform } from "react-native";
+import { useRoute, useNavigation, RouteProp } from "@react-navigation/native";
+import { PanGestureHandler } from "react-native-gesture-handler";
 import Animated, {
   useSharedValue,
   useAnimatedGestureHandler,
   useAnimatedStyle,
   withSpring,
   runOnJS,
-} from 'react-native-reanimated';
-import Video, { TextTrackType, VideoRef } from 'react-native-video';
-import { WebView } from 'react-native-webview';
+} from "react-native-reanimated";
+import Video, { TextTrackType, VideoRef } from "react-native-video";
+import { WebView } from "react-native-webview";
 
 /**
  * Check if a URL is a YouTube URL (any format)
  */
 const isYouTubeUrl = (url: string): boolean => {
   const lowerUrl = url.toLowerCase();
-  return lowerUrl.includes('youtube.com/') || lowerUrl.includes('youtu.be/');
+  return lowerUrl.includes("youtube.com/") || lowerUrl.includes("youtu.be/");
 };
 
 /**
@@ -56,16 +50,20 @@ const getYouTubeVideoId = (url: string): string | null => {
 
   return null;
 };
-import { API_BASE_URL } from '../config/appConfig';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { useTranslation } from 'react-i18next';
-import { useDirection } from '@bayit/shared-hooks';
-import { useResponsive } from '../hooks/useResponsive';
-import { BottomSheet } from '../components';
-import { ChapterListMobile, ChapterMarkers, Chapter } from '../components/player';
-import { GlassView, GlassButton } from '@bayit/shared';
-import { spacing, colors, typography, touchTarget } from '../theme';
-import type { RootStackParamList } from '../navigation/types';
+import { API_BASE_URL } from "../config/appConfig";
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
+import { useTranslation } from "react-i18next";
+import { useDirection } from "@bayit/shared-hooks";
+import { useResponsive } from "../hooks/useResponsive";
+import { BottomSheet } from "../components";
+import {
+  ChapterListMobile,
+  ChapterMarkers,
+  Chapter,
+} from "../components/player";
+import { GlassView, GlassButton } from "@bayit/shared";
+import { spacing, colors, typography, touchTarget } from "../theme";
+import type { RootStackParamList } from "../navigation/types";
 import {
   Play,
   Pause,
@@ -75,9 +73,9 @@ import {
   X,
   Settings,
   List,
-} from 'lucide-react-native';
+} from "lucide-react-native";
 
-type PlayerRoute = RouteProp<RootStackParamList, 'Player'>;
+type PlayerRoute = RouteProp<RootStackParamList, "Player">;
 
 export const PlayerScreenMobile: React.FC = () => {
   const route = useRoute<PlayerRoute>();
@@ -98,8 +96,8 @@ export const PlayerScreenMobile: React.FC = () => {
   const [progressBarWidth, setProgressBarWidth] = useState(0);
 
   // Settings state
-  const [quality, setQuality] = useState('auto');
-  const [subtitles, setSubtitles] = useState('off');
+  const [quality, setQuality] = useState("auto");
+  const [subtitles, setSubtitles] = useState("off");
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
   const [availableSubtitles, setAvailableSubtitles] = useState<any[]>([]);
   const [subtitleTracks, setSubtitleTracks] = useState<any[]>([]);
@@ -128,13 +126,13 @@ export const PlayerScreenMobile: React.FC = () => {
           setIsYouTube(isYouTubeUrl(url));
         } else {
           // Fallback to direct stream endpoint
-          setStreamUrl(`${API_BASE_URL.replace('/api/v1', '')}/stream/${id}`);
+          setStreamUrl(`${API_BASE_URL.replace("/api/v1", "")}/stream/${id}`);
           setIsYouTube(false);
         }
       } catch (error) {
-        console.error('Failed to fetch stream URL:', error);
+        console.error("Failed to fetch stream URL:", error);
         // Fallback
-        setStreamUrl(`${API_BASE_URL.replace('/api/v1', '')}/stream/${id}`);
+        setStreamUrl(`${API_BASE_URL.replace("/api/v1", "")}/stream/${id}`);
         setIsYouTube(false);
       } finally {
         setStreamLoading(false);
@@ -165,7 +163,7 @@ export const PlayerScreenMobile: React.FC = () => {
           setSubtitleTracks(tracks);
         }
       } catch (error) {
-        console.error('Failed to fetch subtitles:', error);
+        console.error("Failed to fetch subtitles:", error);
       }
     };
 
@@ -185,13 +183,13 @@ export const PlayerScreenMobile: React.FC = () => {
           setChapters(data.chapters || []);
         }
       } catch (error) {
-        console.error('Failed to fetch chapters:', error);
+        console.error("Failed to fetch chapters:", error);
       } finally {
         setChaptersLoading(false);
       }
     };
 
-    if (id && type === 'vod') {
+    if (id && type === "vod") {
       fetchChapters();
     }
   }, [id, type]);
@@ -219,16 +217,16 @@ export const PlayerScreenMobile: React.FC = () => {
   }));
 
   const handleClose = () => {
-    if (Platform.OS === 'ios') {
-      ReactNativeHapticFeedback.trigger('impactMedium');
+    if (Platform.OS === "ios") {
+      ReactNativeHapticFeedback.trigger("impactMedium");
     }
     navigation.goBack();
   };
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
-    if (Platform.OS === 'ios') {
-      ReactNativeHapticFeedback.trigger('impactLight');
+    if (Platform.OS === "ios") {
+      ReactNativeHapticFeedback.trigger("impactLight");
     }
   };
 
@@ -241,16 +239,16 @@ export const PlayerScreenMobile: React.FC = () => {
   const handleSeekToTime = (time: number) => {
     videoRef.current?.seek(time);
     setCurrentTime(time);
-    if (Platform.OS === 'ios') {
-      ReactNativeHapticFeedback.trigger('impactLight');
+    if (Platform.OS === "ios") {
+      ReactNativeHapticFeedback.trigger("impactLight");
     }
   };
 
   const handleRestart = () => {
     videoRef.current?.seek(0);
     setCurrentTime(0);
-    if (Platform.OS === 'ios') {
-      ReactNativeHapticFeedback.trigger('impactLight');
+    if (Platform.OS === "ios") {
+      ReactNativeHapticFeedback.trigger("impactLight");
     }
   };
 
@@ -269,13 +267,14 @@ export const PlayerScreenMobile: React.FC = () => {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   // Build YouTube embed URL with autoplay
-  const youtubeEmbedUrl = streamUrl && isYouTube
-    ? `https://www.youtube.com/embed/${getYouTubeVideoId(streamUrl)}?autoplay=1&rel=0&modestbranding=1&playsinline=1`
-    : null;
+  const youtubeEmbedUrl =
+    streamUrl && isYouTube
+      ? `https://www.youtube.com/embed/${getYouTubeVideoId(streamUrl)}?autoplay=1&rel=0&modestbranding=1&playsinline=1`
+      : null;
 
   return (
     <PanGestureHandler onGestureEvent={gestureHandler}>
@@ -283,20 +282,19 @@ export const PlayerScreenMobile: React.FC = () => {
         {/* Video player - WebView for YouTube, native Video for other content */}
         {streamLoading ? (
           <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>{t('player.loading')}</Text>
+            <Text style={styles.loadingText}>{t("player.loading")}</Text>
           </View>
         ) : isYouTube && youtubeEmbedUrl ? (
           <WebView
             source={{ uri: youtubeEmbedUrl }}
             style={styles.video}
-            allowsFullscreenVideo
+            allowsFullscreenVideo={true}
             allowsInlineMediaPlayback
             mediaPlaybackRequiresUserAction={false}
             javaScriptEnabled
             // Security configuration
-            originWhitelist={['https://', 'youtube.com', 'www.youtube.com']}
+            originWhitelist={["https://", "youtube.com", "www.youtube.com"]}
             mixedContentMode="never"
-            allowsFullscreenVideo={true}
             scalesPageToFit={true}
             userAgent={`BayitPlus-iOS/${Platform.Version}`}
             // Disable geolocation access
@@ -309,7 +307,11 @@ export const PlayerScreenMobile: React.FC = () => {
         ) : (
           <Video
             ref={videoRef}
-            source={{ uri: streamUrl || `${API_BASE_URL.replace('/api/v1', '')}/stream/${id}` }}
+            source={{
+              uri:
+                streamUrl ||
+                `${API_BASE_URL.replace("/api/v1", "")}/stream/${id}`,
+            }}
             style={styles.video}
             resizeMode="contain"
             paused={!isPlaying}
@@ -318,9 +320,9 @@ export const PlayerScreenMobile: React.FC = () => {
             onLoad={handleLoad}
             textTracks={subtitleTracks}
             selectedTextTrack={
-              subtitles === 'off'
+              subtitles === "off"
                 ? undefined
-                : { type: 'language', value: subtitles }
+                : { type: "language", value: subtitles }
             }
           />
         )}
@@ -328,35 +330,37 @@ export const PlayerScreenMobile: React.FC = () => {
         {/* Controls layer with integrated tap handling */}
         {/* For YouTube content, only show top bar (title + close) since YouTube has its own controls */}
         {showControls ? (
-          <Pressable
-            style={styles.controlsContainer}
-            onPress={toggleControls}
-          >
-              {/* Prevent button presses from triggering toggle */}
-              {/* Top bar - title and close */}
-              <View style={styles.topBar}>
-                <GlassView style={styles.topBarContent}>
-                  <Text style={styles.title} numberOfLines={1}>
-                    {title}
-                  </Text>
-                  <Pressable
-                    onPress={handleClose}
-                    style={styles.closeButton}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  >
-                    <X size={24} color={colors.text} strokeWidth={2.5} />
-                  </Pressable>
-                </GlassView>
-              </View>
+          <Pressable style={styles.controlsContainer} onPress={toggleControls}>
+            {/* Prevent button presses from triggering toggle */}
+            {/* Top bar - title and close */}
+            <View style={styles.topBar}>
+              <GlassView style={styles.topBarContent}>
+                <Text style={styles.title} numberOfLines={1}>
+                  {title}
+                </Text>
+                <Pressable
+                  onPress={handleClose}
+                  style={styles.closeButton}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <X size={24} color={colors.text} strokeWidth={2.5} />
+                </Pressable>
+              </GlassView>
+            </View>
 
-              {/* Center controls - play/pause (hidden for YouTube - it has its own controls) */}
-              {!isYouTube && <View style={styles.centerControlsWrapper}>
+            {/* Center controls - play/pause (hidden for YouTube - it has its own controls) */}
+            {!isYouTube && (
+              <View style={styles.centerControlsWrapper}>
                 <View style={styles.centerControls}>
                   <Pressable
                     onPress={() => handleSeek(-10)}
                     style={[styles.controlButton, styles.seekButton]}
                   >
-                    <SkipBack size={28} color={colors.text} fill={colors.text} />
+                    <SkipBack
+                      size={28}
+                      color={colors.text}
+                      fill={colors.text}
+                    />
                   </Pressable>
 
                   <Pressable
@@ -366,7 +370,12 @@ export const PlayerScreenMobile: React.FC = () => {
                     {isPlaying ? (
                       <Pause size={36} color={colors.text} fill={colors.text} />
                     ) : (
-                      <Play size={36} color={colors.text} fill={colors.text} style={{ marginLeft: 4 }} />
+                      <Play
+                        size={36}
+                        color={colors.text}
+                        fill={colors.text}
+                        style={{ marginLeft: 4 }}
+                      />
                     )}
                   </Pressable>
 
@@ -374,87 +383,95 @@ export const PlayerScreenMobile: React.FC = () => {
                     onPress={() => handleSeek(10)}
                     style={[styles.controlButton, styles.seekButton]}
                   >
-                    <SkipForward size={28} color={colors.text} fill={colors.text} />
+                    <SkipForward
+                      size={28}
+                      color={colors.text}
+                      fill={colors.text}
+                    />
                   </Pressable>
                 </View>
 
                 {/* Restart button positioned separately */}
-                {type !== 'live' && (
+                {type !== "live" && (
                   <Pressable
                     onPress={handleRestart}
                     style={[styles.controlButton, styles.restartButton]}
                   >
-                    <RotateCcw size={24} color={colors.text} strokeWidth={2.5} />
+                    <RotateCcw
+                      size={24}
+                      color={colors.text}
+                      strokeWidth={2.5}
+                    />
                   </Pressable>
                 )}
-              </View>}
+              </View>
+            )}
 
-              {/* Bottom bar - progress and settings (hidden for YouTube) */}
-              {!isYouTube && type !== 'live' && (
-                <View style={styles.bottomBar}>
-                  <GlassView style={styles.bottomBarContent}>
-                    {/* Time */}
-                    <Text style={styles.timeText}>
-                      {formatTime(currentTime)} / {formatTime(duration)}
-                    </Text>
+            {/* Bottom bar - progress and settings (hidden for YouTube) */}
+            {!isYouTube && type !== "live" && (
+              <View style={styles.bottomBar}>
+                <GlassView style={styles.bottomBarContent}>
+                  {/* Time */}
+                  <Text style={styles.timeText}>
+                    {formatTime(currentTime)} / {formatTime(duration)}
+                  </Text>
 
-                    {/* Progress bar with chapter markers */}
+                  {/* Progress bar with chapter markers */}
+                  <View
+                    style={styles.progressBarContainer}
+                    onLayout={(e) =>
+                      setProgressBarWidth(e.nativeEvent.layout.width)
+                    }
+                  >
                     <View
-                      style={styles.progressBarContainer}
-                      onLayout={(e) => setProgressBarWidth(e.nativeEvent.layout.width)}
-                    >
-                      <View
-                        style={[
-                          styles.progressBar,
-                          { width: `${(currentTime / duration) * 100}%` },
-                        ]}
+                      style={[
+                        styles.progressBar,
+                        { width: `${(currentTime / duration) * 100}%` },
+                      ]}
+                    />
+                    {chapters.length > 0 && progressBarWidth > 0 && (
+                      <ChapterMarkers
+                        chapters={chapters}
+                        duration={duration}
+                        currentTime={currentTime}
+                        onSeek={handleSeekToTime}
+                        progressBarWidth={progressBarWidth}
                       />
-                      {chapters.length > 0 && progressBarWidth > 0 && (
-                        <ChapterMarkers
-                          chapters={chapters}
-                          duration={duration}
-                          currentTime={currentTime}
-                          onSeek={handleSeekToTime}
-                          progressBarWidth={progressBarWidth}
-                        />
-                      )}
-                    </View>
+                    )}
+                  </View>
 
-                    {/* Bottom buttons row */}
-                    <View style={styles.bottomButtonsRow}>
-                      {/* Chapters button */}
-                      {chapters.length > 0 && (
-                        <Pressable
-                          onPress={() => setChaptersVisible(true)}
-                          style={styles.bottomButton}
-                          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                        >
-                          <List size={20} color={colors.text} />
-                          <Text style={styles.bottomButtonText}>
-                            {t('player.chapters')} ({chapters.length})
-                          </Text>
-                        </Pressable>
-                      )}
-
-                      {/* Settings button */}
+                  {/* Bottom buttons row */}
+                  <View style={styles.bottomButtonsRow}>
+                    {/* Chapters button */}
+                    {chapters.length > 0 && (
                       <Pressable
-                        onPress={() => setSettingsVisible(true)}
-                        style={styles.settingsButton}
+                        onPress={() => setChaptersVisible(true)}
+                        style={styles.bottomButton}
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                       >
-                        <Settings size={24} color={colors.text} />
+                        <List size={20} color={colors.text} />
+                        <Text style={styles.bottomButtonText}>
+                          {t("player.chapters")} ({chapters.length})
+                        </Text>
                       </Pressable>
-                    </View>
-                  </GlassView>
-                </View>
-              )}
+                    )}
+
+                    {/* Settings button */}
+                    <Pressable
+                      onPress={() => setSettingsVisible(true)}
+                      style={styles.settingsButton}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                      <Settings size={24} color={colors.text} />
+                    </Pressable>
+                  </View>
+                </GlassView>
+              </View>
+            )}
           </Pressable>
         ) : (
           /* Tap overlay when controls hidden */
-          <Pressable
-            style={styles.overlay}
-            onPress={toggleControls}
-          />
+          <Pressable style={styles.overlay} onPress={toggleControls} />
         )}
 
         {/* Chapters bottom sheet */}
@@ -463,7 +480,7 @@ export const PlayerScreenMobile: React.FC = () => {
           onClose={() => setChaptersVisible(false)}
           height={450}
         >
-          <Text style={styles.sheetTitle}>{t('player.chapters')}</Text>
+          <Text style={styles.sheetTitle}>{t("player.chapters")}</Text>
           <ChapterListMobile
             chapters={chapters}
             currentTime={currentTime}
@@ -479,16 +496,16 @@ export const PlayerScreenMobile: React.FC = () => {
           onClose={() => setSettingsVisible(false)}
           height={300}
         >
-          <Text style={styles.sheetTitle}>{t('player.settings')}</Text>
+          <Text style={styles.sheetTitle}>{t("player.settings")}</Text>
 
           {/* Quality selection */}
           <View style={styles.settingSection}>
-            <Text style={styles.settingLabel}>{t('player.quality')}</Text>
+            <Text style={styles.settingLabel}>{t("player.quality")}</Text>
             <View style={styles.settingOptions}>
-              {['auto', '1080p', '720p', '480p'].map((q) => (
+              {["auto", "1080p", "720p", "480p"].map((q) => (
                 <GlassButton
                   key={q}
-                  variant={quality === q ? 'primary' : 'secondary'}
+                  variant={quality === q ? "primary" : "secondary"}
                   onPress={() => setQuality(q)}
                   style={styles.settingOption}
                 >
@@ -500,20 +517,22 @@ export const PlayerScreenMobile: React.FC = () => {
 
           {/* Subtitles */}
           <View style={styles.settingSection}>
-            <Text style={styles.settingLabel}>{t('player.subtitles')}</Text>
+            <Text style={styles.settingLabel}>{t("player.subtitles")}</Text>
             <View style={styles.settingOptions}>
               <GlassButton
                 key="off"
-                variant={subtitles === 'off' ? 'primary' : 'secondary'}
-                onPress={() => setSubtitles('off')}
+                variant={subtitles === "off" ? "primary" : "secondary"}
+                onPress={() => setSubtitles("off")}
                 style={styles.settingOption}
               >
-                {t('player.subtitlesOff')}
+                {t("player.subtitlesOff")}
               </GlassButton>
               {availableSubtitles.map((track) => (
                 <GlassButton
                   key={track.language}
-                  variant={subtitles === track.language ? 'primary' : 'secondary'}
+                  variant={
+                    subtitles === track.language ? "primary" : "secondary"
+                  }
                   onPress={() => setSubtitles(track.language)}
                   style={styles.settingOption}
                 >
@@ -525,12 +544,12 @@ export const PlayerScreenMobile: React.FC = () => {
 
           {/* Playback speed */}
           <View style={styles.settingSection}>
-            <Text style={styles.settingLabel}>{t('player.speed')}</Text>
+            <Text style={styles.settingLabel}>{t("player.speed")}</Text>
             <View style={styles.settingOptions}>
               {[0.5, 1.0, 1.5, 2.0].map((speed) => (
                 <GlassButton
                   key={speed}
-                  variant={playbackSpeed === speed ? 'primary' : 'secondary'}
+                  variant={playbackSpeed === speed ? "primary" : "secondary"}
                   onPress={() => setPlaybackSpeed(speed)}
                   style={styles.settingOption}
                 >
@@ -548,16 +567,16 @@ export const PlayerScreenMobile: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: "#000",
   },
   video: {
     ...StyleSheet.absoluteFillObject,
   },
   loadingContainer: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#000",
   },
   loadingText: {
     ...typography.body,
@@ -568,16 +587,16 @@ const styles = StyleSheet.create({
   },
   controlsContainer: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   topBar: {
     paddingTop: spacing.xl,
     paddingHorizontal: spacing.lg,
   },
   topBarContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
   },
@@ -589,43 +608,43 @@ const styles = StyleSheet.create({
   closeButton: {
     width: touchTarget.minWidth,
     height: touchTarget.minHeight,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   centerControlsWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    position: 'relative',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    position: "relative",
   },
   centerControls: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     gap: spacing.xl,
   },
   restartButton: {
-    position: 'absolute',
+    position: "absolute",
     right: spacing.xl,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   controlButton: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   playButton: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(168, 85, 247, 0.9)',
+    backgroundColor: "rgba(168, 85, 247, 0.9)",
   },
   seekButton: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   bottomBar: {
     paddingBottom: spacing.xl,
@@ -642,24 +661,24 @@ const styles = StyleSheet.create({
   },
   progressBarContainer: {
     height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
     borderRadius: 2,
     marginBottom: spacing.md,
-    position: 'relative',
+    position: "relative",
   },
   progressBar: {
-    height: '100%',
+    height: "100%",
     backgroundColor: colors.primary,
     borderRadius: 2,
   },
   bottomButtonsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   bottomButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.xs,
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
@@ -672,8 +691,8 @@ const styles = StyleSheet.create({
   settingsButton: {
     width: touchTarget.minWidth,
     height: touchTarget.minHeight,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   sheetTitle: {
     ...typography.h3,
@@ -689,9 +708,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   settingOptions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
   },
   settingOption: {
     minWidth: 70,

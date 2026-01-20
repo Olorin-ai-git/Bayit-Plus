@@ -10,6 +10,7 @@ export { downloadsService, type Download, type DownloadAdd } from './api';
 
 // Voice-first conversational interface services (Phases 1, 8-10)
 export { ttsService, default as ttsServiceDefault } from './ttsService';
+export { voiceCommandProcessor, default as voiceCommandProcessorDefault } from './voiceCommandProcessor';
 export { proactiveAgentService, default as proactiveAgentServiceDefault } from './proactiveAgentService';
 export { emotionalIntelligenceService, default as emotionalIntelligenceServiceDefault } from './emotionalIntelligenceService';
 export { presenceDetectionService, default as presenceDetectionServiceDefault } from './presenceDetectionService';

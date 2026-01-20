@@ -49,10 +49,9 @@ export function useConversationContextMobile(
       currentRoute: route.name,
       visibleContentIds,
       lastMentionedContentIds,
-      previousCommands: commandHistory,
       lastSearchQuery,
     });
-  }, [route.name, visibleContentIds, lastMentionedContentIds, commandHistory, lastSearchQuery]);
+  }, [route.name, visibleContentIds, lastMentionedContentIds, lastSearchQuery]);
 
   /**
    * Register visible content on screen

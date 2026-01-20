@@ -1,26 +1,67 @@
 {
-  "name": "bayit-plus",
+  "name": "olorin-ecosystem",
   "version": "1.0.0",
   "private": true,
-  "description": "Bayit Plus - Monorepo deployment scripts",
+  "description": "Olorin.ai Ecosystem - Unified monorepo for all Olorin platforms",
+  "workspaces": [
+    "packages/ui/*",
+    "apps/*"
+  ],
   "scripts": {
-    "build:all": "npm run build:web && npm run build:tv",
-    "build:web": "cd web && npm run build",
-    "build:tv": "cd tv-app && npm run build:web",
-    "deploy": "npm run build:all && firebase deploy --only hosting",
-    "deploy:web": "cd web && npm run deploy",
-    "deploy:tv": "cd tv-app && npm run deploy",
-    "deploy:preview": "npm run build:all && firebase hosting:channel:deploy preview",
+    "build": "turbo run build",
+    "build:all": "turbo run build",
+    "build:web": "turbo run build --filter=@olorin/bayit-web",
+    "build:mobile": "turbo run build --filter=@olorin/bayit-mobile",
+    "build:tv": "turbo run build --filter=@olorin/bayit-tv-android",
+    "build:tvos": "turbo run build --filter=@olorin/bayit-tv-apple",
+    "build:partner": "turbo run build --filter=@olorin/partner-portal",
+    "build:packages": "turbo run build --filter='./packages/**'",
+    "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=@olorin/bayit-web",
+    "dev:mobile": "turbo run dev --filter=@olorin/bayit-mobile",
+    "dev:partner": "turbo run dev --filter=@olorin/partner-portal",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint -- --fix",
+    "type-check": "turbo run type-check",
+    "test": "turbo run test",
+    "test:unit": "turbo run test:unit",
+    "test:e2e": "turbo run test:e2e",
+    "clean": "turbo run clean && rm -rf node_modules/.cache",
+    "deploy": "turbo run deploy",
+    "deploy:web": "turbo run deploy --filter=@olorin/bayit-web",
+    "deploy:partner": "turbo run deploy --filter=@olorin/partner-portal",
+    "deploy:preview": "turbo run build && firebase hosting:channel:deploy preview",
     "firebase:login": "firebase login",
     "firebase:init": "firebase init hosting",
-    "tvos": "cd tvos-app && npm run tvos",
-    "tvos:start": "cd tvos-app && npm run start",
-    "android-tv": "cd tv-app && npm run android",
-    "install:tvos": "cd tvos-app && npm install && cd tvos && pod install"
+    "tvos": "cd apps/bayit-tv-apple && npm run tvos",
+    "tvos:start": "cd apps/bayit-tv-apple && npm run start",
+    "android-tv": "cd apps/bayit-tv-android && npm run android",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "version:check": "syncpack list-mismatches",
+    "version:fix": "syncpack fix-mismatches",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "turbo run build --filter='./packages/**' && changeset publish",
+    "prepare": "husky install || true",
+    "legacy:build:all": "npm run build:web && npm run build:tv",
+    "legacy:build:web": "cd web && npm run build",
+    "legacy:build:tv": "cd tv-app && npm run build:web",
+    "legacy:deploy": "npm run legacy:build:all && firebase deploy --only hosting",
+    "legacy:deploy:web": "cd web && npm run deploy",
+    "legacy:deploy:tv": "cd tv-app && npm run deploy",
+    "legacy:install:tvos": "cd tvos-app && npm install && cd tvos && pod install"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.0",
     "@playwright/test": "^1.57.0",
-    "firebase-tools": "^13.0.0"
+    "firebase-tools": "^13.0.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.2.0",
+    "syncpack": "^12.0.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.3.0"
   },
   "engines": {
     "node": ">=20"
@@ -31,5 +72,35 @@
     "react-native-linear-gradient": "^2.8.3",
     "react-native-vector-icons": "^10.3.0",
     "vosk-browser": "^0.0.8"
-  }
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  },
+  "syncpack": {
+    "versionGroups": [
+      {
+        "label": "React versions must be consistent across web apps",
+        "packages": ["@olorin/bayit-web", "@olorin/partner-portal"],
+        "dependencies": ["react", "react-dom"],
+        "pinVersion": "^18.3.1"
+      },
+      {
+        "label": "Zustand version must be consistent",
+        "dependencies": ["zustand"],
+        "pinVersion": "^5.0.0"
+      },
+      {
+        "label": "TanStack Query version must be consistent",
+        "dependencies": ["@tanstack/react-query"],
+        "pinVersion": "^5.62.0"
+      }
+    ]
+  },
+  "packageManager": "npm@10.2.0"
 }

@@ -42,6 +42,7 @@ export {
   setCorrelationId,
   getCorrelationId,
   generateCorrelationId,
+  default as loggerDefault,
 } from "./logger";
 
 // Admin Constants
@@ -65,3 +66,6 @@ export {
   getContentPosterUrl,
 } from "./youtube";
 export type { YouTubeThumbnailQuality } from "./youtube";
+
+// Default export
+export { default } from "./logger";

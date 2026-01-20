@@ -34,6 +34,9 @@ import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useDirection } from '@bayit/shared-hooks';
 import { spacing, colors, borderRadius } from '../theme';
 
+// Type assertion for LinearGradient React component
+const LinearGradientComponent = LinearGradient as any as React.FC<any>;
+
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const HERO_HEIGHT = SCREEN_HEIGHT * 0.4;
 const EPISODE_CARD_WIDTH = 280;
@@ -324,7 +327,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
             style={styles.heroImage}
             resizeMode="cover"
           />
-          <LinearGradient
+          <LinearGradientComponent
             colors={['transparent', 'rgba(0,0,0,0.7)', colors.background]}
             locations={[0.3, 0.7, 1]}
             style={styles.heroGradient}
@@ -521,7 +524,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
           activeOpacity={0.8}
           disabled={!selectedEpisode}
         >
-          <LinearGradient
+          <LinearGradientComponent
             colors={selectedEpisode ? [colors.primary, colors.primaryDark] : [colors.textSecondary, colors.textSecondary]}
             style={styles.watchButtonGradient}
             start={{ x: 0, y: 0 }}
@@ -533,7 +536,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
                 ? `${t('content.play', 'Play')} S${selectedSeason}:E${selectedEpisode.episode_number}`
                 : t('content.selectEpisode', 'Select Episode')}
             </Text>
-          </LinearGradient>
+          </LinearGradientComponent>
         </TouchableOpacity>
       </SafeAreaView>
 

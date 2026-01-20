@@ -18,20 +18,23 @@ RUN pip install --no-cache-dir poetry==2.1.1
 # Set working directory
 WORKDIR /app
 
+# Copy Olorin packages FIRST (needed by Poetry dependencies)
+COPY packages /packages
+
 # Copy Poetry configuration from backend directory
 COPY backend/pyproject.toml backend/poetry.lock* ./
+
+# Convert absolute file paths to relative paths for Docker build
+RUN sed -i 's|file:///Users/olorin/Documents/Bayit-Plus/packages|file:///packages|g' pyproject.toml
 
 # Configure Poetry to not create virtual environment in Docker
 RUN poetry config virtualenvs.create false
 
-# Install dependencies (production only)
-RUN poetry install --no-interaction --no-ansi --without dev
+# Install dependencies
+RUN poetry install --no-interaction --no-ansi
 
 # Copy application code from main backend
 COPY backend/app ./app
-
-# Copy Olorin packages
-COPY packages /packages
 
 # Create non-root user (security best practice)
 RUN useradd -m -u 1000 appuser && chown -R appuser /app

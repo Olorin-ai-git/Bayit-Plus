@@ -73,7 +73,7 @@ function App(): React.JSX.Element {
   }, []);
 
   if (!isReady) {
-    return null;
+    return <View style={{ flex: 1, backgroundColor: '#000' }} />;
   }
 
   return (

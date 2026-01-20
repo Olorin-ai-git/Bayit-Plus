@@ -1,0 +1,20 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    { "repo": "olorin-ai/olorin-ecosystem" }
+  ],
+  "commit": false,
+  "fixed": [],
+  "linked": [
+    ["@olorin/glass-ui", "@olorin/design-tokens"]
+  ],
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [],
+  "privatePackages": {
+    "version": true,
+    "tag": true
+  }
+}

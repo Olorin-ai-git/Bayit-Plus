@@ -29,6 +29,9 @@ import { GlassView, GlassButton } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { spacing, colors, borderRadius } from '../theme';
 
+// Type assertion for LinearGradient React component
+const LinearGradientComponent = LinearGradient as any as React.FC<any>;
+
 interface SubscriptionPlan {
   id: string;
   name: string;
@@ -203,7 +206,7 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
         <View style={styles.overlay}>
           <TouchableWithoutFeedback>
             <SafeAreaView style={styles.modalContainer}>
-              <LinearGradient
+              <LinearGradientComponent
                 colors={['rgba(107, 33, 168, 0.95)', 'rgba(0, 0, 0, 0.98)']}
                 style={styles.gradient}
               >
@@ -281,7 +284,7 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                     {t('subscriptionGate.cancelAnytime')}
                   </Text>
                 </ScrollView>
-              </LinearGradient>
+              </LinearGradientComponent>
             </SafeAreaView>
           </TouchableWithoutFeedback>
         </View>

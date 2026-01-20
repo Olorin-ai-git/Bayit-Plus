@@ -5,34 +5,43 @@
  * and correlation ID propagation for end-to-end request tracing.
  */
 
-import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { Platform } from 'react-native';
-import { useAuthStore } from '../../stores/authStore';
-import { getCorrelationId, generateCorrelationId, setCorrelationId } from '../../utils/logger';
-import logger from '../../utils/logger';
+import axios, {
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
+import { Platform } from "react-native";
+import { useAuthStore } from "../../stores/authStore";
+import {
+  getCorrelationId,
+  generateCorrelationId,
+  setCorrelationId,
+} from "../../utils/logger";
+import logger from "../../utils/logger";
 
 // Correlation ID header name (matches backend)
-const CORRELATION_ID_HEADER = 'X-Correlation-ID';
+const CORRELATION_ID_HEADER = "X-Correlation-ID";
 
 // Cloud Run production API URL
-const CLOUD_RUN_API_URL = 'https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1';
+const CLOUD_RUN_API_URL =
+  "https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1";
 
 // Get correct API URL based on platform
 const getApiBaseUrl = () => {
   // Production builds always use the production API
   if (!__DEV__) {
-    return 'https://api.bayit.tv/api/v1';
+    return "https://api.bayit.tv/api/v1";
   }
 
   // In development:
   // Web and iOS simulator can use localhost
-  if (Platform.OS === 'web' || Platform.OS === 'ios') {
-    return 'http://localhost:8000/api/v1';
+  if (Platform.OS === "web" || Platform.OS === "ios") {
+    return "http://localhost:8000/api/v1";
   }
 
   // Android emulator uses special address for localhost
-  if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:8000/api/v1';
+  if (Platform.OS === "android") {
+    return "http://10.0.2.2:8000/api/v1";
   }
 
   // tvOS and other platforms use Cloud Run API in development
@@ -42,15 +51,15 @@ const getApiBaseUrl = () => {
 export const API_BASE_URL = getApiBaseUrl();
 
 // Create scoped logger for API client
-const apiLogger = logger.scope('API');
+const apiLogger = logger.scope("API");
 
 // Security headers for all API requests
 const SECURITY_HEADERS = {
-  'Content-Type': 'application/json',
-  'X-Content-Type-Options': 'nosniff', // Prevent MIME type sniffing
-  'X-Frame-Options': 'DENY', // Prevent clickjacking
-  'X-XSS-Protection': '1; mode=block', // XSS protection
-  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains', // Force HTTPS
+  "Content-Type": "application/json",
+  "X-Content-Type-Options": "nosniff", // Prevent MIME type sniffing
+  "X-Frame-Options": "DENY", // Prevent clickjacking
+  "X-XSS-Protection": "1; mode=block", // XSS protection
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains", // Force HTTPS
 };
 
 // Main API instance with security hardening
@@ -70,7 +79,7 @@ export const contentApi = axios.create({
 });
 
 // Passkey session header name
-const PASSKEY_SESSION_HEADER = 'X-Passkey-Session';
+const PASSKEY_SESSION_HEADER = "X-Passkey-Session";
 
 /**
  * Validate request URL to prevent SSRF and open redirect attacks
@@ -80,13 +89,16 @@ const validateRequestUrl = (url: string): boolean => {
     const parsedUrl = new URL(url, API_BASE_URL);
 
     // Only allow HTTPS in production
-    if (!__DEV__ && parsedUrl.protocol !== 'https:') {
+    if (!__DEV__ && parsedUrl.protocol !== "https:") {
       apiLogger.warn(`Non-HTTPS URL blocked in production: ${url}`);
       return false;
     }
 
     // Block requests to localhost in production
-    if (!__DEV__ && (parsedUrl.hostname === 'localhost' || parsedUrl.hostname === '127.0.0.1')) {
+    if (
+      !__DEV__ &&
+      (parsedUrl.hostname === "localhost" || parsedUrl.hostname === "127.0.0.1")
+    ) {
       apiLogger.warn(`Localhost URL blocked in production: ${url}`);
       return false;
     }
@@ -102,10 +114,12 @@ const validateRequestUrl = (url: string): boolean => {
  * Add correlation ID, auth token, and passkey session to request.
  * Validates URLs and prevents credential leakage.
  */
-const addRequestHeaders = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
+const addRequestHeaders = (
+  config: InternalAxiosRequestConfig,
+): InternalAxiosRequestConfig => {
   // Validate URL to prevent SSRF attacks
-  if (!validateRequestUrl(config.url || '')) {
-    throw new Error('Invalid request URL');
+  if (!validateRequestUrl(config.url || "")) {
+    throw new Error("Invalid request URL");
   }
 
   // Add auth token (never in URL or query params)
@@ -142,10 +156,13 @@ const addRequestHeaders = (config: InternalAxiosRequestConfig): InternalAxiosReq
 /**
  * Log response timing and extract correlation ID from response.
  */
-const handleResponseSuccess = (response: AxiosResponse): AxiosResponse['data'] => {
+const handleResponseSuccess = (
+  response: AxiosResponse,
+): AxiosResponse["data"] => {
   // Extract correlation ID from response (may be different if server generated it)
-  const responseCorrelationId = response.headers[CORRELATION_ID_HEADER.toLowerCase()];
-  const durationMs = response.headers['x-request-duration-ms'];
+  const responseCorrelationId =
+    response.headers[CORRELATION_ID_HEADER.toLowerCase()];
+  const durationMs = response.headers["x-request-duration-ms"];
 
   apiLogger.debug(`Response: ${response.status} ${response.config.url}`, {
     status: response.status,
@@ -163,7 +180,10 @@ api.interceptors.request.use(addRequestHeaders);
  * Handle response errors and log them.
  */
 const handleResponseError = (error: unknown): Promise<never> => {
-  const axiosError = error as { response?: AxiosResponse; config?: AxiosRequestConfig };
+  const axiosError = error as {
+    response?: AxiosResponse;
+    config?: AxiosRequestConfig;
+  };
 
   // Log error with correlation ID
   const correlationId = getCorrelationId();
@@ -174,20 +194,23 @@ const handleResponseError = (error: unknown): Promise<never> => {
   });
 
   if (axiosError.response?.status === 401) {
-    const errorDetail = (axiosError.response?.data as { detail?: string })?.detail || '';
-    const requestUrl = axiosError.config?.url || '';
+    const errorDetail =
+      (axiosError.response?.data as { detail?: string })?.detail || "";
+    const requestUrl = axiosError.config?.url || "";
 
-    const isCriticalAuthEndpoint = ['/auth/me', '/auth/login', '/auth/refresh'].some(path =>
-      requestUrl.includes(path)
-    );
+    const isCriticalAuthEndpoint = [
+      "/auth/me",
+      "/auth/login",
+      "/auth/refresh",
+    ].some((path) => requestUrl.includes(path));
 
     const isTokenError = [
-      'Could not validate credentials',
-      'Invalid authentication credentials',
-      'Token has expired',
-      'Invalid token',
-      'Signature has expired'
-    ].some(msg => errorDetail.toLowerCase().includes(msg.toLowerCase()));
+      "Could not validate credentials",
+      "Invalid authentication credentials",
+      "Token has expired",
+      "Invalid token",
+      "Signature has expired",
+    ].some((msg) => errorDetail.toLowerCase().includes(msg.toLowerCase()));
 
     if (isCriticalAuthEndpoint || isTokenError) {
       useAuthStore.getState().logout();
@@ -201,6 +224,9 @@ api.interceptors.response.use(handleResponseSuccess, handleResponseError);
 
 // Content API interceptors
 contentApi.interceptors.request.use(addRequestHeaders);
-contentApi.interceptors.response.use(handleResponseSuccess, handleResponseError);
+contentApi.interceptors.response.use(
+  handleResponseSuccess,
+  handleResponseError,
+);
 
 export default api;
