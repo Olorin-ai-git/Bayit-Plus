@@ -31,7 +31,7 @@ RUN sed -i 's|file:///Users/olorin/Documents/Bayit-Plus/packages|file:///package
 RUN poetry config virtualenvs.create false
 
 # Regenerate lock file with updated paths
-RUN poetry lock --no-update
+RUN poetry lock
 
 # Install dependencies
 RUN poetry install --no-interaction --no-ansi
