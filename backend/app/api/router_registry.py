@@ -8,9 +8,10 @@ Routers are grouped by category for better organization and maintainability.
 import logging
 from pathlib import Path
 
-from app.core.config import settings
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, RedirectResponse
+
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -30,77 +31,32 @@ def register_all_routers(app: FastAPI) -> None:
     prefix = settings.API_V1_PREFIX
 
     # Import all routers
-    from app.api.routes import (
-        admin,
-        admin_categories,
-        admin_content_importer,
-        admin_content_vod_read,
-        admin_content_vod_toggles,
-        admin_content_vod_write,
-        admin_cultures,
-        admin_kids_content,
-        admin_live_channels,
-        admin_podcast_episodes,
-        admin_podcasts,
-        admin_radio_stations,
-        admin_taxonomy,
-        admin_uploads,
-        admin_widgets,
-        admin_youngsters_content,
-        auth,
-        chapters,
-        chat,
-        chess,
-        children,
-        content,
-        content_taxonomy,
-        cultures,
-        device_pairing,
-        direct_messages,
-        downloads,
-        epg,
-        family_controls,
-        favorites,
-        flows,
-        friends,
-        health,
-        history,
-        jerusalem,
-        judaism,
-        librarian,
-        live,
-        news,
-        onboarding,
-        party,
-        password_reset,
-        podcasts,
-        profile_stats,
-        profiles,
-        radio,
-        recordings,
-        ritual,
-        search,
-        stats,
-        subscriptions,
-        subtitle_preferences,
-        subtitles,
-        support,
-        tel_aviv,
-        trending,
-        user_system_widgets,
-        users,
-        verification,
-        watchlist,
-        webauthn,
-        websocket,
-        websocket_chess,
-        websocket_dm,
-        websocket_live_subtitles,
-        widgets,
-        youngsters,
-        zman,
-    )
-    from app.api.routes.admin.recordings import router as admin_recordings_router
+    from app.api.routes import (admin, admin_categories,
+                                admin_content_importer, admin_content_vod_read,
+                                admin_content_vod_toggles,
+                                admin_content_vod_write, admin_cultures,
+                                admin_kids_content, admin_live_channels,
+                                admin_podcast_episodes, admin_podcasts,
+                                admin_radio_stations, admin_taxonomy,
+                                admin_uploads, admin_widgets,
+                                admin_youngsters_content, auth, chapters, chat,
+                                chess, children, content, content_taxonomy,
+                                cultures, device_pairing, direct_messages,
+                                downloads, epg, family_controls, favorites,
+                                flows, friends, health, history, jerusalem,
+                                judaism, librarian, live, news, onboarding,
+                                party, password_reset, podcasts, profile_stats,
+                                profiles, radio, recordings, ritual, search,
+                                stats, subscriptions, subtitle_preferences,
+                                subtitles, support, tel_aviv, trending,
+                                user_system_widgets, users, verification,
+                                watchlist, webauthn, websocket,
+                                websocket_chess, websocket_dm,
+                                websocket_live_subtitles, widgets, youngsters,
+                                zman)
+    from app.api.endpoints import tts_router, wake_word_router, analytics_router
+    from app.api.routes.admin.recordings import \
+        router as admin_recordings_router
     from app.api.routes.olorin import legacy_router as olorin_legacy_router
     from app.api.routes.olorin import router as olorin_router
 
@@ -109,6 +65,14 @@ def register_all_routers(app: FastAPI) -> None:
     # ============================================
     app.include_router(health.router)
     logger.debug("Registered health routes")
+
+    # ============================================
+    # Proxy Service Endpoints (Backend-only credentials)
+    # ============================================
+    app.include_router(tts_router, tags=["tts-proxy"])
+    app.include_router(wake_word_router, tags=["wake-word-proxy"])
+    app.include_router(analytics_router, tags=["analytics-proxy"])
+    logger.debug("Registered proxy service endpoints")
 
     # ============================================
     # Authentication Routes
