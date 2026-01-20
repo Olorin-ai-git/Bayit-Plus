@@ -57,7 +57,7 @@ steps:
           SECRETS_ARG=""
         fi
 
-        gcloud run deploy olorin-backend-${_ENVIRONMENT} \
+        gcloud run deploy olorin-fraud-detection-${_ENVIRONMENT} \
           --image=us-east1-docker.pkg.dev/$PROJECT_ID/olorin/backend:$BUILD_ID \
           --region=${_REGION} \
           --platform=managed \
@@ -93,7 +93,7 @@ steps:
         echo "🏥 Verifying deployment health..."
 
         # Get service URL
-        SVC_URL=$$(gcloud run services describe olorin-backend-${_ENVIRONMENT} \
+        SVC_URL=$$(gcloud run services describe olorin-fraud-detection-${_ENVIRONMENT} \
           --region=${_REGION} \
           --format='value(status.url)' \
           --project=$PROJECT_ID)

@@ -61,11 +61,11 @@ jobs:
         run: |
           case "${{ matrix.environment }}" in
             "production")
-              BACKEND_ENDPOINT="https://olorin-backend-us-central1.run.app"
+              BACKEND_ENDPOINT="https://olorin-fraud-detection-production-us-central1.run.app"
               FRONTEND_ENDPOINT="https://olorin-ai.web.app"
               ;;
             "staging")
-              BACKEND_ENDPOINT="https://olorin-backend-staging-us-central1.run.app"
+              BACKEND_ENDPOINT="https://olorin-fraud-detection-staging-us-central1.run.app"
               FRONTEND_ENDPOINT="https://olorin-ai--staging.web.app"
               ;;
           esac

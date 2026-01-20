@@ -220,9 +220,9 @@ jobs:
       - name: Verify backend deployment
         run: |
           echo "::group::Backend Deployment Verification"
-          
+
           # Get service URL
-          SERVICE_URL=$(gcloud run services describe olorin-backend \
+          SERVICE_URL=$(gcloud run services describe olorin-fraud-detection \
             --region="${{ env.REGION }}" \
             --project="${{ env.PROJECT_ID }}" \
             --format="value(status.url)")
@@ -391,12 +391,12 @@ jobs:
           
           View logs:
           \`\`\`bash
-          gcloud run logs tail olorin-backend --region=${{ env.REGION }} --project=${{ env.PROJECT_ID }}
+          gcloud run logs tail olorin-fraud-detection --region=${{ env.REGION }} --project=${{ env.PROJECT_ID }}
           \`\`\`
-          
+
           Service info:
           \`\`\`bash
-          gcloud run services describe olorin-backend --region=${{ env.REGION }} --project=${{ env.PROJECT_ID }}
+          gcloud run services describe olorin-fraud-detection --region=${{ env.REGION }} --project=${{ env.PROJECT_ID }}
           \`\`\`
           EOF
           

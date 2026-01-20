@@ -35,7 +35,7 @@ on:
 env:
   PROJECT_ID: olorin-fraud-detection
   REGION: us-east1
-  SERVICE_NAME: olorin-backend
+  SERVICE_NAME: olorin-fraud-detection
   ARTIFACT_REGISTRY: us-east1-docker.pkg.dev
 
 jobs:

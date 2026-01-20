@@ -155,7 +155,7 @@ jobs:
           
           # For now, simulate successful deployment
           echo "✅ Backend deployment completed"
-          echo "backend-url=https://olorin-backend-${{ env.DEPLOYMENT_ENVIRONMENT }}.run.app" >> $GITHUB_OUTPUT
+          echo "backend-url=https://olorin-fraud-detection-${{ env.DEPLOYMENT_ENVIRONMENT }}.run.app" >> $GITHUB_OUTPUT
 
       - name: Verify Backend Health
         run: |
