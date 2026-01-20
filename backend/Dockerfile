@@ -8,17 +8,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libpq5 \
     ffmpeg \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy dependency files
-COPY requirements.txt ./
+# Install Poetry
+ENV POETRY_HOME=/opt/poetry
+ENV POETRY_VERSION=1.8.0
+ENV PATH="$POETRY_HOME/bin:$PATH"
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
+    poetry config virtualenvs.create false
 
-# Install dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Copy dependency files first (for layer caching)
+COPY pyproject.toml poetry.lock ./
+
+# Install production dependencies only (no dev dependencies)
+RUN poetry install --no-interaction --no-ansi --no-root --only main
 
 # Copy application code
 COPY . .
+
+# Install the package itself
+RUN poetry install --no-interaction --no-ansi --only-root
 
 # Create non-root user
 RUN useradd -m -u 1000 appuser && chown -R appuser /app

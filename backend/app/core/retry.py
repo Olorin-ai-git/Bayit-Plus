@@ -117,6 +117,11 @@ def sync_retry(
     """
     Synchronous retry decorator with exponential backoff.
 
+    WARNING: This decorator is for SYNCHRONOUS functions ONLY.
+    For async functions, use async_retry instead.
+    Using this decorator on async functions will cause blocking behavior
+    due to time.sleep() being used for delays.
+
     Uses configuration from settings if parameters not provided.
 
     Args:
@@ -129,10 +134,20 @@ def sync_retry(
 
     Returns:
         Decorated function with retry logic
+
+    Raises:
+        TypeError: If applied to an async function
     """
+    import inspect
     import time
 
     def decorator(func: Callable[..., T]) -> Callable[..., T]:
+        if asyncio.iscoroutinefunction(func):
+            raise TypeError(
+                f"sync_retry cannot be applied to async function {func.__name__}. "
+                "Use async_retry instead."
+            )
+
         @functools.wraps(func)
         def wrapper(*args, **kwargs) -> T:
             config = _get_resilience_config()

@@ -296,11 +296,16 @@ class DatabaseConfig(BaseSettings):
     @classmethod
     def validate_mongodb_url(cls, v: Optional[str]) -> Optional[str]:
         """Validate MongoDB URL if provided."""
-        if v and v == "mongodb://localhost:27017":
-            raise ValueError(
-                "OLORIN_MONGODB_URL should not use localhost in production. "
-                "Use a proper MongoDB Atlas or server URL."
-            )
+        import os
+
+        if v and v.startswith("mongodb://localhost"):
+            # Allow localhost in development, reject in production
+            environment = os.getenv("ENVIRONMENT", "development")
+            if environment == "production":
+                raise ValueError(
+                    "OLORIN_MONGODB_URL should not use localhost in production. "
+                    "Use a proper MongoDB Atlas or server URL."
+                )
         return v
 
     class Config:
@@ -339,6 +344,13 @@ class OlorinSettings(BaseSettings):
         default=False,
         description="Enable recap agent capability",
         alias="OLORIN_RECAP_ENABLED",
+    )
+
+    # Content Configuration
+    default_content_language: str = Field(
+        default="he",
+        description="Default language code for content (used when content language field is not available)",
+        alias="OLORIN_DEFAULT_CONTENT_LANGUAGE",
     )
 
     # API Version Configuration

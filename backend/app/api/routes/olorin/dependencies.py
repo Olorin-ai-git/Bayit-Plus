@@ -13,6 +13,7 @@ from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
 from app.services.olorin.partner_service import partner_service
 from app.services.olorin.metering_service import metering_service
+from app.services.olorin.rate_limiter import partner_rate_limiter
 from app.api.routes.olorin.errors import get_error_message, OlorinErrors
 
 logger = logging.getLogger(__name__)
@@ -170,8 +171,6 @@ async def check_partner_rate_limit(
         return await metering_service.check_usage_limit(partner, capability)
 
     # Per-partner rate limits configured - use rate limiter service
-    from app.services.olorin.rate_limiter import partner_rate_limiter
-
     return await partner_rate_limiter.check_rate_limit(
         partner_id=partner.partner_id,
         capability=capability,

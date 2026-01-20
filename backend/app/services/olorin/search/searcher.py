@@ -107,7 +107,7 @@ async def semantic_search(
                         title=content.title or "",
                         title_en=content.title_en,
                         content_type=content.content_type,
-                        thumbnail_url=content.thumbnail_url,
+                        thumbnail_url=content.thumbnail,
                         matched_text=metadata.get("text", ""),
                         match_type=metadata.get("embedding_type", "title"),
                         relevance_score=match.score,
@@ -200,7 +200,7 @@ async def dialogue_search(
                         title=content.title if content else "",
                         title_en=content.title_en if content else None,
                         content_type=content.content_type if content else None,
-                        thumbnail_url=content.thumbnail_url if content else None,
+                        thumbnail_url=content.thumbnail if content else None,
                         matched_text=metadata.get("text", ""),
                         match_type="subtitle_segment",
                         relevance_score=match.score,
@@ -228,29 +228,22 @@ async def mongodb_text_search(query: SearchQuery) -> List[SemanticSearchResult]:
     results = []
 
     try:
-        # Build MongoDB query
-        mongo_query = {"$text": {"$search": query.query}}
+        # Use content metadata service for text search
+        # This maintains proper separation while providing fallback search
+        search_results = await content_metadata_service.text_search(
+            query_text=query.query,
+            content_types=query.content_types,
+            limit=query.limit,
+        )
 
-        if query.content_types:
-            mongo_query["content_type"] = {"$in": query.content_types}
-
-        # Search content collection via metadata service
-        # Note: For complex queries with projections, we need direct Content model access
-        # This is safe because Content model is accessible in both Phase 1 and Phase 2
-        from app.models.content import Content
-        cursor = Content.find(
-            mongo_query,
-            projection={"score": {"$meta": "textScore"}},
-        ).sort([("score", {"$meta": "textScore"})]).limit(query.limit)
-
-        async for content in cursor:
+        for content in search_results:
             results.append(
                 SemanticSearchResult(
                     content_id=str(content.id),
                     title=content.title or "",
                     title_en=content.title_en,
                     content_type=content.content_type,
-                    thumbnail_url=content.thumbnail_url,
+                    thumbnail_url=content.thumbnail,
                     matched_text=content.title or content.description or "",
                     match_type="title",
                     relevance_score=0.5,

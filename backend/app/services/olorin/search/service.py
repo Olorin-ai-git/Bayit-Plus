@@ -54,11 +54,23 @@ class VectorSearchService:
         self,
         content_id: str,
         subtitles: List[dict],
-        language: str = "he",
+        language: Optional[str] = None,
         segment_duration: float = 30.0,
         partner_id: Optional[str] = None,
     ) -> dict:
-        """Index subtitle segments for dialogue search."""
+        """
+        Index subtitle segments for dialogue search.
+
+        Args:
+            content_id: Content document ID
+            subtitles: List of {text, start_time, end_time} dicts
+            language: Subtitle language (defaults to configured default_content_language)
+            segment_duration: Group subtitles into segments of this duration
+            partner_id: Optional partner ID
+
+        Returns:
+            Indexing status
+        """
         return await index_subtitles(
             content_id, subtitles, language, segment_duration, partner_id
         )

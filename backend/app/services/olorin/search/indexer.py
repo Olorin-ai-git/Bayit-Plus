@@ -2,13 +2,16 @@
 Content Indexer
 
 Indexes content and subtitles for semantic search.
+Uses IndexableContent protocol for loose coupling.
 """
 
 import logging
 from typing import Optional, List
 
+from olorin import IndexableContent
+
+from app.adapters import BayitContentAdapter
 from app.core.config import settings
-from app.models.content import Content
 from app.models.content_embedding import ContentEmbedding
 from app.services.olorin.search.client import client_manager
 from app.services.olorin.search.embedding import generate_embedding
@@ -39,9 +42,12 @@ async def index_content(
 
     try:
         # Get content via metadata service (supports both Phase 1 and Phase 2)
-        content = await content_metadata_service.get_content(content_id)
-        if not content:
+        content_model = await content_metadata_service.get_content(content_id)
+        if not content_model:
             return {"status": "failed", "error": "Content not found"}
+
+        # Wrap in adapter to implement IndexableContent protocol
+        content = BayitContentAdapter(content_model)
 
         # Check if already indexed
         if not force_reindex:
@@ -56,7 +62,8 @@ async def index_content(
         embeddings_to_save = []
 
         # Index title
-        title = content.title or content.title_en or ""
+        # Get multilingual variants from underlying Content model for indexing
+        title = content_model.title or content_model.title_en or ""
         if title:
             title_result = await _index_text_field(
                 content_id=content_id,
@@ -70,7 +77,7 @@ async def index_content(
                 embeddings_to_save.append(title_result["embedding"])
 
         # Index description
-        description = content.description or content.description_en or ""
+        description = content_model.description or content_model.description_en or ""
         if description:
             desc_result = await _index_text_field(
                 content_id=content_id,
@@ -105,7 +112,7 @@ async def index_content(
 
 async def _index_text_field(
     content_id: str,
-    content: Content,
+    content: IndexableContent,
     text: str,
     embedding_type: str,
     partner_id: Optional[str] = None,
@@ -124,7 +131,7 @@ async def _index_text_field(
             "content_id": content_id,
             "content_type": content.content_type,
             "embedding_type": embedding_type,
-            "language": "he",
+            "language": content.original_language,
             "text": text[:1000],
         },
     }
@@ -136,9 +143,9 @@ async def _index_text_field(
         segment_text=text,
         embedding_model=settings.EMBEDDING_MODEL,
         pinecone_vector_id=vector_id,
-        language="he",
-        genre_ids=[str(g) for g in (content.genre_ids or [])],
-        section_ids=[str(s) for s in (content.section_ids or [])],
+        language=content.original_language,
+        genre_ids=[str(g) for g in (content.genres or [])],
+        section_ids=[str(t) for t in (content.tags or [])],
         partner_id=partner_id,
     )
 
@@ -148,7 +155,7 @@ async def _index_text_field(
 async def index_subtitles(
     content_id: str,
     subtitles: List[dict],
-    language: str = "he",
+    language: Optional[str] = None,
     segment_duration: float = 30.0,
     partner_id: Optional[str] = None,
 ) -> dict:
@@ -158,7 +165,7 @@ async def index_subtitles(
     Args:
         content_id: Content document ID
         subtitles: List of {text, start_time, end_time} dicts
-        language: Subtitle language
+        language: Subtitle language (defaults to configured default_content_language)
         segment_duration: Group subtitles into segments of this duration
         partner_id: Optional partner ID
 
@@ -167,6 +174,9 @@ async def index_subtitles(
     """
     if not client_manager.is_initialized:
         await client_manager.initialize()
+
+    # Use configured default if language not provided
+    subtitle_language = language or settings.olorin.default_content_language
 
     try:
         # Get content metadata via metadata service
@@ -200,7 +210,7 @@ async def index_subtitles(
                     "segment_index": idx,
                     "start_time": segment["start_time"],
                     "end_time": segment["end_time"],
-                    "language": language,
+                    "language": subtitle_language,
                     "text": text[:1000],
                 },
             })
@@ -216,7 +226,7 @@ async def index_subtitles(
                     segment_text=text,
                     embedding_model=settings.EMBEDDING_MODEL,
                     pinecone_vector_id=vector_id,
-                    language=language,
+                    language=subtitle_language,
                     partner_id=partner_id,
                 )
             )

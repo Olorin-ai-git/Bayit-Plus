@@ -1,0 +1,69 @@
+# Cloud Build configuration for Olorin Platform Backend
+# Builds and deploys independent Olorin backend to Cloud Run
+
+steps:
+  # Build Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/olorin-backend:$COMMIT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/olorin-backend:latest'
+      - '-f'
+      - 'backend-olorin/Dockerfile'
+      - '.'
+    id: 'build-image'
+
+  # Push image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/olorin-backend:$COMMIT_SHA'
+    id: 'push-image-sha'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/olorin-backend:latest'
+    id: 'push-image-latest'
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'olorin-backend'
+      - '--image=gcr.io/$PROJECT_ID/olorin-backend:$COMMIT_SHA'
+      - '--region=us-east1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--min-instances=1'
+      - '--max-instances=20'
+      - '--memory=2Gi'
+      - '--cpu=2'
+      - '--timeout=60s'
+      - '--concurrency=80'
+      - '--set-env-vars=ENVIRONMENT=production'
+      - '--set-env-vars=PROJECT_ID=$PROJECT_ID'
+      - '--set-secrets=MONGODB_URL=MONGODB_URL:latest'
+      - '--set-secrets=ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest'
+      - '--set-secrets=OPENAI_API_KEY=OPENAI_API_KEY:latest'
+      - '--set-secrets=ELEVENLABS_API_KEY=ELEVENLABS_API_KEY:latest'
+      - '--set-secrets=PINECONE_API_KEY=PINECONE_API_KEY:latest'
+      - '--set-secrets=PARTNER_API_KEY_SALT=PARTNER_API_KEY_SALT:latest'
+    id: 'deploy-cloud-run'
+
+# Build timeout
+timeout: '1200s'
+
+# Images to push to Container Registry
+images:
+  - 'gcr.io/$PROJECT_ID/olorin-backend:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/olorin-backend:latest'
+
+# Build options
+options:
+  machineType: 'N1_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY

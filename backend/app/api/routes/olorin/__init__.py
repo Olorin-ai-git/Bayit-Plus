@@ -10,7 +10,7 @@ API endpoints for third-party integration:
 - /olorin/v1/webhooks - Webhook management
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
@@ -60,7 +60,7 @@ async def redirect_legacy_routes(request: Request, path: str) -> RedirectRespons
 
     return RedirectResponse(
         url=new_path,
-        status_code=308,  # Permanent redirect that preserves method
+        status_code=status.HTTP_308_PERMANENT_REDIRECT,
     )
 
 

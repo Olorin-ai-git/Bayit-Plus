@@ -196,6 +196,45 @@ class ContentMetadataService:
         contents = await self.get_contents_by_ids(content_ids)
         return {str(c.id): c for c in contents}
 
+    async def text_search(
+        self,
+        query_text: str,
+        content_types: Optional[List[str]] = None,
+        limit: int = 50,
+    ) -> List[Content]:
+        """
+        Perform MongoDB text search on content collection.
+
+        Args:
+            query_text: Text search query
+            content_types: Optional filter for content types
+            limit: Maximum results to return
+
+        Returns:
+            List of Content documents sorted by text relevance score
+        """
+        if not self._initialized:
+            await self.initialize()
+
+        try:
+            # Build MongoDB text search query
+            mongo_query = {"$text": {"$search": query_text}}
+
+            if content_types:
+                mongo_query["content_type"] = {"$in": content_types}
+
+            # Execute search with text score projection and sorting
+            cursor = Content.find(
+                mongo_query,
+                projection={"score": {"$meta": "textScore"}},
+            ).sort([("score", {"$meta": "textScore"})]).limit(limit)
+
+            return await cursor.to_list()
+
+        except Exception as e:
+            logger.error(f"Text search failed: {e}")
+            return []
+
 
 # Singleton instance
 content_metadata_service = ContentMetadataService()

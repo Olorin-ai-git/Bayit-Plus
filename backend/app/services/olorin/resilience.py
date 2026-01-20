@@ -80,17 +80,32 @@ class CircuitBreaker:
 
     @property
     def state(self) -> CircuitState:
-        """Get current circuit state."""
+        """
+        Get current circuit state (for monitoring/debugging only).
+
+        WARNING: This property is NOT thread-safe. The state may change
+        immediately after being read. For decision-making, use can_execute().
+        """
         return self._state
 
     @property
     def is_closed(self) -> bool:
-        """Check if circuit allows calls."""
+        """
+        Check if circuit allows calls (for monitoring/debugging only).
+
+        WARNING: This property is NOT thread-safe. The state may change
+        immediately after being read. For decision-making, use can_execute().
+        """
         return self._state == CircuitState.CLOSED
 
     @property
     def is_open(self) -> bool:
-        """Check if circuit is blocking calls."""
+        """
+        Check if circuit is blocking calls (for monitoring/debugging only).
+
+        WARNING: This property is NOT thread-safe. The state may change
+        immediately after being read. For decision-making, use can_execute().
+        """
         return self._state == CircuitState.OPEN
 
     async def _check_state_transition(self) -> None:

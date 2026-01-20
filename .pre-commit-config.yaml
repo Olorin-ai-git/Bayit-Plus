@@ -10,7 +10,7 @@ repos:
       # Prevent commits to main branch
       - id: no-commit-to-branch
         args: ['--branch', 'main', '--branch', 'master']
-        stages: [commit]
+        stages: [pre-commit]
 
       # Check for files that would conflict in case-insensitive filesystems
       - id: check-case-conflict
@@ -113,39 +113,67 @@ repos:
     hooks:
       - id: check-env-files
         name: Check .env files are not committed
-        entry: bash -c 'if git diff --cached --name-only | grep -E "\.env$" | grep -v "\.env\.example$"; then echo "ERROR: .env file detected in commit. Only .env.example files are allowed."; exit 1; fi'
+        entry: bash -c
+        args:
+          - -c
+          - |
+            if git diff --cached --name-only | grep -E "\.env$" | grep -v "\.env\.example$"; then
+              echo "ERROR: .env file detected in commit. Only .env.example files are allowed."
+              exit 1
+            fi
         language: system
         pass_filenames: false
-        stages: [commit]
+        stages: [pre-commit]
 
       - id: check-secret-patterns
         name: Check for common secret patterns
-        entry: bash -c 'if git diff --cached | grep -f .git-secrets-patterns; then echo "ERROR: Potential secret detected in commit. Review changes carefully."; exit 1; fi'
+        entry: bash -c
+        args:
+          - -c
+          - |
+            if git diff --cached | grep -f .git-secrets-patterns 2>/dev/null; then
+              echo "ERROR: Potential secret detected in commit. Review changes carefully."
+              exit 1
+            fi
         language: system
         pass_filenames: false
-        stages: [commit]
+        stages: [pre-commit]
 
       - id: check-service-account
         name: Check service account files are not committed
-        entry: bash -c 'if git diff --cached --name-only | grep -E "service-account.*\.json$"; then echo "ERROR: Service account JSON file detected in commit."; exit 1; fi'
+        entry: bash -c
+        args:
+          - -c
+          - |
+            if git diff --cached --name-only | grep -E "service-account.*\.json$"; then
+              echo "ERROR: Service account JSON file detected in commit."
+              exit 1
+            fi
         language: system
         pass_filenames: false
-        stages: [commit]
+        stages: [pre-commit]
 
       - id: check-credentials-dir
         name: Check credentials directory files
-        entry: bash -c 'if git diff --cached --name-only | grep -E "^credentials/"; then echo "ERROR: Credentials directory file detected in commit."; exit 1; fi'
+        entry: bash -c
+        args:
+          - -c
+          - |
+            if git diff --cached --name-only | grep -E "^credentials/"; then
+              echo "ERROR: Credentials directory file detected in commit."
+              exit 1
+            fi
         language: system
         pass_filenames: false
-        stages: [commit]
+        stages: [pre-commit]
 
 # Configuration for specific hooks
 default_language_version:
-  python: python3.11
+  python: python3.9
   node: system
 
 # Stages
-default_stages: [commit]
+default_stages: [pre-commit]
 
 # Fail fast - stop on first failure
 fail_fast: false
