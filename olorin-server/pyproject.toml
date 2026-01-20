@@ -84,6 +84,7 @@ langchain-google-genai = "^2.1.10"
 schemathesis = "^4.3.16"
 pytest-cov = "^7.0.0"
 openapi-spec-validator = "^0.7.2"
+olorin-shared = {path = "/Users/olorin/Documents/Bayit-Plus/packages/olorin-shared", develop = true}
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"

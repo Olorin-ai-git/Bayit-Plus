@@ -1,19 +1,23 @@
 """
 JWT Authentication and Authorization for Olorin API
+
+Uses unified olorin-shared authentication with Firebase Secrets Manager integration.
 """
 
 import os
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 from typing import Any, Dict, Optional
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
+import jwt
 
 from app.service.logging import get_bridge_logger
+from olorin_shared.auth import create_access_token as shared_create_access_token
+from olorin_shared.auth import verify_access_token as shared_verify_access_token
 
 logger = get_bridge_logger(__name__)
 
@@ -136,15 +140,13 @@ def authenticate_user(
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """Create a JWT access token."""
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+    """Create a JWT access token using unified olorin-shared implementation."""
+    return shared_create_access_token(
+        data=data,
+        expires_delta=expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+        secret_key=SECRET_KEY,
+        algorithm=ALGORITHM
+    )
 
 
 async def get_current_user(
@@ -159,12 +161,16 @@ async def get_current_user(
 
     try:
         token = credentials.credentials
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = shared_verify_access_token(
+            token=token,
+            secret_key=SECRET_KEY,
+            algorithm=ALGORITHM
+        )
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username, scopes=payload.get("scopes", []))
-    except JWTError:
+    except (jwt.InvalidTokenError, ValueError):
         raise credentials_exception
 
     user = get_user(fake_users_db, username=token_data.username)
@@ -249,12 +255,16 @@ def _create_dev_aware_scope_checker(required_scopes: list[str]):
 
         try:
             token = credentials.credentials
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            payload = shared_verify_access_token(
+                token=token,
+                secret_key=SECRET_KEY,
+                algorithm=ALGORITHM
+            )
             username: str = payload.get("sub")
             if username is None:
                 raise credentials_exception
             token_data = TokenData(username=username, scopes=payload.get("scopes", []))
-        except JWTError:
+        except (jwt.InvalidTokenError, ValueError):
             raise credentials_exception
 
         user = get_user(fake_users_db, username=token_data.username)
