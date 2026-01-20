@@ -248,6 +248,14 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 12px;
 }
 
+.glass-subtle {
+  background: transparent;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
 .glass-strong {
   background: var(--glass-bg-strong);
   backdrop-filter: blur(24px);

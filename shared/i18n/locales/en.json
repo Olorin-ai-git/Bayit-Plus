@@ -3248,5 +3248,105 @@
       "startUsing": "Start Using Voice Control"
     },
     "skip": "Skip for now"
+  },
+  "taxonomy": {
+    "title": "Content Classification",
+    "sections": {
+      "title": "Sections",
+      "description": "Primary navigation categories",
+      "movies": "Movies",
+      "series": "Series",
+      "kids": "Kids",
+      "judaism": "Judaism",
+      "documentaries": "Documentaries",
+      "live": "Live"
+    },
+    "formats": {
+      "title": "Format",
+      "description": "Content structural type",
+      "movie": "Movie",
+      "series": "Series",
+      "documentary": "Documentary",
+      "short": "Short",
+      "clip": "Clip"
+    },
+    "genres": {
+      "title": "Genres",
+      "description": "Mood and style",
+      "drama": "Drama",
+      "comedy": "Comedy",
+      "action": "Action",
+      "thriller": "Thriller",
+      "animation": "Animation",
+      "musical": "Musical",
+      "romance": "Romance",
+      "horror": "Horror",
+      "sci-fi": "Sci-Fi",
+      "documentary": "Documentary",
+      "family": "Family",
+      "adventure": "Adventure",
+      "fantasy": "Fantasy",
+      "crime": "Crime",
+      "mystery": "Mystery",
+      "war": "War",
+      "western": "Western",
+      "biography": "Biography",
+      "history": "History",
+      "sport": "Sport"
+    },
+    "audiences": {
+      "title": "Audience",
+      "description": "Age appropriateness",
+      "general": "General",
+      "kids": "Kids",
+      "family": "Family",
+      "mature": "Mature"
+    },
+    "topicTags": {
+      "title": "Topics",
+      "description": "Content themes",
+      "jewish": "Jewish",
+      "israeli": "Israeli",
+      "educational": "Educational",
+      "historical": "Historical",
+      "sports": "Sports",
+      "nature": "Nature",
+      "science": "Science",
+      "music": "Music",
+      "art": "Art",
+      "cooking": "Cooking",
+      "travel": "Travel",
+      "technology": "Technology"
+    },
+    "subcategories": {
+      "title": "Subcategories",
+      "kids": {
+        "cartoons": "Cartoons",
+        "educational": "Educational",
+        "music": "Music",
+        "hebrew-learning": "Hebrew Learning",
+        "stories": "Stories",
+        "jewish": "Jewish"
+      },
+      "judaism": {
+        "shiurim": "Torah Classes",
+        "tefila": "Prayer",
+        "jewish-music": "Jewish Music",
+        "holidays": "Holidays",
+        "documentaries": "Documentaries"
+      }
+    },
+    "admin": {
+      "selectSection": "Select Section",
+      "selectSections": "Select Sections",
+      "primarySection": "Primary Section",
+      "selectFormat": "Select Format",
+      "selectAudience": "Select Audience",
+      "selectGenres": "Select Genres",
+      "selectTopics": "Select Topics",
+      "selectSubcategories": "Select Subcategories",
+      "crossListing": "Cross-listing",
+      "crossListingHint": "Content can appear in multiple sections"
+    }
   }
 }

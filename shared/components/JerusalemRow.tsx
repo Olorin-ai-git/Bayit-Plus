@@ -310,7 +310,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
             styles.contentCard,
             isFocused && styles.contentCardFocused,
           ]}
-          intensity="medium"
+          intensity="subtle"
         >
           <View style={[styles.cardHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <Text style={[styles.categoryEmoji, { marginLeft: isRTL ? spacing.sm : 0, marginRight: isRTL ? 0 : spacing.sm }]}>
@@ -432,14 +432,13 @@ const styles = StyleSheet.create({
     gap: isMobilePhone ? spacing.sm : spacing.md,
   },
   contentCard: {
-    width: isMobilePhone ? 180 : 300,
-    height: isMobilePhone ? 130 : 220,
+    width: isMobilePhone ? 180 : 261,
+    height: isMobilePhone ? 130 : 180,
     padding: isMobilePhone ? spacing.sm : spacing.lg,
     borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
     borderWidth: 2,
     borderColor: 'transparent',
     marginRight: isMobilePhone ? spacing.sm : spacing.md,
-    backgroundColor: 'rgba(30, 30, 50, 0.6)',
   },
   contentCardFocused: {
     borderColor: '#3b82f6',

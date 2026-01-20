@@ -416,6 +416,14 @@ EOF
     create_or_update_secret "bayit-apple-bundle-id-ios" "APPLE_BUNDLE_ID_IOS"
     create_or_update_secret "bayit-apple-bundle-id-tvos" "APPLE_BUNDLE_ID_TVOS"
 
+    # Kids Content Runtime Service Configuration
+    # Note: These are set as environment variables in cloudbuild.yaml by default
+    # Uncomment below to manage via Secret Manager instead (for custom overrides)
+    # create_or_update_secret "bayit-kids-content-cache-ttl" "KIDS_CONTENT_CACHE_TTL_MINUTES"
+    # create_or_update_secret "bayit-kids-content-min-relevance" "KIDS_CONTENT_MIN_RELEVANCE_SCORE"
+    # create_or_update_secret "bayit-kids-content-safe-search" "KIDS_CONTENT_SAFE_SEARCH_ENABLED"
+    # create_or_update_secret "bayit-kids-content-default-age" "KIDS_CONTENT_DEFAULT_AGE_MAX"
+
     print_success "Secrets created/updated from .env"
 
     # Step 5: Grant Secret Access
@@ -486,13 +494,21 @@ EOF
     print_header "Step 7: Building and Deploying to Cloud Run"
 
     print_info "Building and deploying using Cloud Build (cloudbuild.yaml)..."
-    
-    # Get repository root
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-    
-    # Build and deploy using cloudbuild.yaml (includes all configuration)
+
+    # Use the REPO_ROOT already defined at the start of the script
+    # Navigate to repo root for Cloud Build
     cd "$REPO_ROOT"
+
+    # Verify cloudbuild.yaml exists
+    if [[ ! -f "cloudbuild.yaml" ]]; then
+        print_error "cloudbuild.yaml not found at $REPO_ROOT"
+        print_info "Current directory: $(pwd)"
+        print_info "Looking for: $REPO_ROOT/cloudbuild.yaml"
+        exit 1
+    fi
+    print_info "Found cloudbuild.yaml at $REPO_ROOT"
+
+    # Build and deploy using cloudbuild.yaml (includes all configuration)
     gcloud builds submit \
         --config=cloudbuild.yaml \
         --substitutions=_REGION=$REGION,_MEMORY=2Gi,_CPU=2,_MAX_INSTANCES=10,_MIN_INSTANCES=1
@@ -583,6 +599,7 @@ EOF
     echo "  ✓ Judaism Section (Jewish News, Calendar, Community Directory, Torah Content)"
     echo "  ✓ GCS Upload (10min timeout, 5 retries, 8MB chunks)"
     echo "  ✓ Apple Push Notifications (APNs for iOS + tvOS)"
+    echo "  ✓ Kids Content Service (runtime aggregation with caching)"
     echo ""
     echo "Next steps:"
     echo "  1. Update OAuth redirect URIs in Google Cloud Console"

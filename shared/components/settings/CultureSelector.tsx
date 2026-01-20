@@ -324,11 +324,11 @@ const styles = StyleSheet.create({
   buttonText: {
     flex: 1,
     fontSize: isTV ? fontSize.md : fontSize.sm,
-    color: colors.text.primary,
+    color: colors.text,
   },
   chevron: {
     fontSize: 12,
-    color: colors.text.muted,
+    color: colors.textMuted,
   },
   modalBackdrop: {
     flex: 1,
@@ -347,13 +347,13 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: isTV ? fontSize.xl : fontSize.lg,
     fontWeight: 'bold',
-    color: colors.text.primary,
+    color: colors.text,
     textAlign: 'center',
     marginBottom: spacing.xs,
   },
   modalSubtitle: {
     fontSize: isTV ? fontSize.sm : fontSize.xs,
-    color: colors.text.secondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: spacing.lg,
   },
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
   },
   cultureName: {
     fontSize: isTV ? fontSize.sm : fontSize.xs,
-    color: colors.text.primary,
+    color: colors.text,
     textAlign: 'center',
   },
   cultureNameSelected: {
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     fontSize: isTV ? fontSize.md : fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.textSecondary,
   },
   inlineContainer: {
     marginVertical: spacing.md,
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
   inlineLabel: {
     fontSize: isTV ? fontSize.lg : fontSize.md,
     fontWeight: '600',
-    color: colors.text.primary,
+    color: colors.text,
     marginBottom: spacing.md,
     paddingHorizontal: spacing.md,
   },

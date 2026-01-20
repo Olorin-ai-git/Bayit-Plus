@@ -3141,5 +3141,105 @@
       "startUsing": "Comenzar a Usar Control por Voz"
     },
     "skip": "Omitir por ahora"
+  },
+  "taxonomy": {
+    "title": "Clasificación de Contenido",
+    "sections": {
+      "title": "Secciones",
+      "description": "Categorías de navegación principal",
+      "movies": "Películas",
+      "series": "Series",
+      "kids": "Niños",
+      "judaism": "Judaísmo",
+      "documentaries": "Documentales",
+      "live": "En Vivo"
+    },
+    "formats": {
+      "title": "Formato",
+      "description": "Tipo estructural del contenido",
+      "movie": "Película",
+      "series": "Serie",
+      "documentary": "Documental",
+      "short": "Corto",
+      "clip": "Clip"
+    },
+    "genres": {
+      "title": "Géneros",
+      "description": "Estado de ánimo y estilo",
+      "drama": "Drama",
+      "comedy": "Comedia",
+      "action": "Acción",
+      "thriller": "Suspenso",
+      "animation": "Animación",
+      "musical": "Musical",
+      "romance": "Romance",
+      "horror": "Terror",
+      "sci-fi": "Ciencia Ficción",
+      "documentary": "Documental",
+      "family": "Familiar",
+      "adventure": "Aventura",
+      "fantasy": "Fantasía",
+      "crime": "Crimen",
+      "mystery": "Misterio",
+      "war": "Guerra",
+      "western": "Western",
+      "biography": "Biografía",
+      "history": "Historia",
+      "sport": "Deporte"
+    },
+    "audiences": {
+      "title": "Audiencia",
+      "description": "Adecuación por edad",
+      "general": "General",
+      "kids": "Niños",
+      "family": "Familiar",
+      "mature": "Adultos"
+    },
+    "topicTags": {
+      "title": "Temas",
+      "description": "Temas del contenido",
+      "jewish": "Judío",
+      "israeli": "Israelí",
+      "educational": "Educativo",
+      "historical": "Histórico",
+      "sports": "Deportes",
+      "nature": "Naturaleza",
+      "science": "Ciencia",
+      "music": "Música",
+      "art": "Arte",
+      "cooking": "Cocina",
+      "travel": "Viajes",
+      "technology": "Tecnología"
+    },
+    "subcategories": {
+      "title": "Subcategorías",
+      "kids": {
+        "cartoons": "Dibujos Animados",
+        "educational": "Educativo",
+        "music": "Música",
+        "hebrew-learning": "Aprender Hebreo",
+        "stories": "Cuentos",
+        "jewish": "Judío"
+      },
+      "judaism": {
+        "shiurim": "Clases de Torá",
+        "tefila": "Oración",
+        "jewish-music": "Música Judía",
+        "holidays": "Festividades",
+        "documentaries": "Documentales"
+      }
+    },
+    "admin": {
+      "selectSection": "Seleccionar Sección",
+      "selectSections": "Seleccionar Secciones",
+      "primarySection": "Sección Principal",
+      "selectFormat": "Seleccionar Formato",
+      "selectAudience": "Seleccionar Audiencia",
+      "selectGenres": "Seleccionar Géneros",
+      "selectTopics": "Seleccionar Temas",
+      "selectSubcategories": "Seleccionar Subcategorías",
+      "crossListing": "Publicación Cruzada",
+      "crossListingHint": "El contenido puede aparecer en múltiples secciones"
+    }
   }
 }

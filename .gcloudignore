@@ -1,0 +1,139 @@
+# ===========================================
+# Bayit+ Project Root .gcloudignore
+# For Cloud Build backend deployments
+# ===========================================
+
+# Exclude all frontend/mobile apps (not needed for backend build)
+web/
+mobile-app/
+tv-app/
+tvos-app/
+tizen/
+webos/
+ios/
+
+# Root node_modules
+node_modules/
+
+# Shared (if not needed by backend)
+shared/node_modules/
+
+# Test results
+test-results/
+
+# Documentation (not needed in container)
+docs/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# CI/CD config files (not needed in build context)
+.github/
+
+# Credentials at root (secrets should come from Secret Manager)
+credentials/
+
+# ===========================================
+# Backend-specific exclusions
+# ===========================================
+
+# Large uploads directory (18GB+)
+backend/uploads/
+
+# Python artifacts
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.py[cod]
+backend/**/*.py[cod]
+backend/*$py.class
+backend/**/*$py.class
+backend/*.so
+backend/**/*.so
+backend/.Python
+backend/build/
+backend/develop-eggs/
+backend/dist/
+backend/downloads/
+backend/eggs/
+backend/.eggs/
+backend/lib/
+backend/lib64/
+backend/parts/
+backend/sdist/
+backend/var/
+backend/wheels/
+backend/*.egg-info/
+backend/**/*.egg-info/
+backend/.installed.cfg
+backend/*.egg
+backend/MANIFEST
+
+# Virtual environments
+backend/venv/
+backend/ENV/
+backend/env/
+backend/.venv/
+
+# Testing
+backend/.pytest_cache/
+backend/**/.pytest_cache/
+backend/.coverage
+backend/htmlcov/
+backend/.tox/
+backend/.hypothesis/
+
+# Logs
+backend/*.log
+backend/logs/
+
+# Cache
+backend/.cache/
+backend/cache/
+backend/*.cache
+
+# Local env files (secrets from Secret Manager)
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# Credentials (secrets from Secret Manager)
+backend/credentials.json
+backend/service-account.json
+backend/*-service-account.json
+backend/token.json
+backend/*.pem
+backend/*.key
+
+# Scripts (not needed in container)
+backend/scripts/
+backend/*.sh
+!backend/start.sh
+
+# Documentation
+backend/docs/
+backend/*.md
+!backend/README.md
+
+# Large files
+backend/*.zip
+backend/*.tar.gz
+backend/*.sql
+backend/*.dump
+
+# Backups
+backend/backups/
+
+# Config files not needed
+backend/.gcp-config
+backend/DEPLOYMENT*.md
+backend/QUICKSTART.md

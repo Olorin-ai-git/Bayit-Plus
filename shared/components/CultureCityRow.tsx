@@ -19,7 +19,6 @@ import {
   Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { GlassView } from './ui/GlassView';
 import { colors, spacing, fontSize, borderRadius } from '../theme';
 import { cultureService } from '../services/api';
 import { isTV } from '../utils/platform';
@@ -402,12 +401,11 @@ const ContentCard: React.FC<ContentCardProps> = ({
       activeOpacity={0.8}
     >
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-        <GlassView
+        <View
           style={[
             styles.contentCard,
             isFocused && [styles.contentCardFocused, { borderColor: accentColor }],
           ]}
-          intensity="medium"
         >
           <View style={[styles.cardHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <Text style={[styles.categoryEmoji, { marginLeft: isRTL ? spacing.sm : 0, marginRight: isRTL ? 0 : spacing.sm }]}>
@@ -456,7 +454,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
               ))}
             </View>
           </View>
-        </GlassView>
+        </View>
       </Animated.View>
     </TouchableOpacity>
   );
@@ -490,14 +488,14 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: isTV ? fontSize.xl : fontSize.lg,
     fontWeight: 'bold',
-    color: colors.text.primary,
+    color: colors.text,
   },
   headerEmoji: {
     fontSize: isTV ? fontSize.xl : fontSize.lg,
   },
   subtitle: {
     fontSize: isTV ? fontSize.md : fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.textSecondary,
     marginBottom: spacing.md,
   },
   loadingContainer: {
@@ -511,7 +509,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    color: colors.text.muted,
+    color: colors.textMuted,
     fontSize: fontSize.md,
   },
   itemsContainer: {
@@ -519,12 +517,17 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   contentCard: {
-    width: isTV ? 340 : 300,
-    minHeight: isTV ? 240 : 220,
+    width: 261,
+    height: 180,
     padding: spacing.md,
     borderRadius: borderRadius.lg,
     borderWidth: 2,
     borderColor: 'transparent',
+    backgroundColor: 'transparent',
+    overflow: 'hidden',
+    // @ts-ignore - Web-specific CSS properties
+    backdropFilter: 'blur(4px)',
+    WebkitBackdropFilter: 'blur(4px)',
   },
   contentCardFocused: {
     borderWidth: 2,
@@ -548,13 +551,13 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: isTV ? fontSize.md : fontSize.sm,
     fontWeight: '600',
-    color: colors.text.primary,
+    color: colors.text,
     marginBottom: spacing.sm,
     lineHeight: isTV ? 24 : 20,
   },
   cardSummary: {
     fontSize: isTV ? fontSize.sm : fontSize.xs,
-    color: colors.text.secondary,
+    color: colors.textSecondary,
     marginBottom: spacing.sm,
     lineHeight: isTV ? 20 : 16,
   },
@@ -572,7 +575,7 @@ const styles = StyleSheet.create({
   },
   tagText: {
     fontSize: isTV ? fontSize.xs : 10,
-    color: colors.text.muted,
+    color: colors.textMuted,
   },
   cardFooter: {
     justifyContent: 'space-between',
@@ -581,7 +584,7 @@ const styles = StyleSheet.create({
   },
   sourceText: {
     fontSize: isTV ? fontSize.xs : 10,
-    color: colors.text.muted,
+    color: colors.textMuted,
   },
   scoreContainer: {
     flexDirection: 'row',
@@ -600,11 +603,11 @@ const styles = StyleSheet.create({
   },
   sourcesLabel: {
     fontSize: isTV ? fontSize.xs : 10,
-    color: colors.text.muted,
+    color: colors.textMuted,
   },
   sourcesText: {
     fontSize: isTV ? fontSize.xs : 10,
-    color: colors.text.secondary,
+    color: colors.textSecondary,
     flexShrink: 1,
   },
 });

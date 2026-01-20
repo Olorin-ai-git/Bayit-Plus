@@ -69,6 +69,7 @@ from .series import (
     execute_sync_series_posters_to_episodes,
     execute_find_misclassified_episodes,
     execute_fix_misclassified_series,
+    execute_organize_all_series,
 )
 
 from .integrity import (
@@ -79,6 +80,20 @@ from .integrity import (
     execute_cleanup_orphans,
     execute_recover_stuck_jobs,
     execute_run_full_cleanup,
+    execute_validate_youtube_links,
+    execute_flag_broken_youtube_videos,
+    execute_get_youtube_content_stats,
+    execute_fix_youtube_posters,
+    execute_find_youtube_missing_posters,
+)
+
+from .taxonomy import (
+    execute_validate_taxonomy_compliance,
+    execute_suggest_taxonomy_classification,
+    execute_apply_taxonomy_classification,
+    execute_batch_migrate_taxonomy,
+    execute_get_taxonomy_summary,
+    execute_list_taxonomy_violations,
 )
 
 __all__ = [
@@ -131,6 +146,7 @@ __all__ = [
     "execute_sync_series_posters_to_episodes",
     "execute_find_misclassified_episodes",
     "execute_fix_misclassified_series",
+    "execute_organize_all_series",
     # Integrity Tools
     "execute_get_integrity_status",
     "execute_find_orphaned_gcs_files",
@@ -139,4 +155,18 @@ __all__ = [
     "execute_cleanup_orphans",
     "execute_recover_stuck_jobs",
     "execute_run_full_cleanup",
+    # YouTube Validation Tools
+    "execute_validate_youtube_links",
+    "execute_flag_broken_youtube_videos",
+    "execute_get_youtube_content_stats",
+    # YouTube Poster Tools
+    "execute_fix_youtube_posters",
+    "execute_find_youtube_missing_posters",
+    # Taxonomy Tools
+    "execute_validate_taxonomy_compliance",
+    "execute_suggest_taxonomy_classification",
+    "execute_apply_taxonomy_classification",
+    "execute_batch_migrate_taxonomy",
+    "execute_get_taxonomy_summary",
+    "execute_list_taxonomy_violations",
 ]

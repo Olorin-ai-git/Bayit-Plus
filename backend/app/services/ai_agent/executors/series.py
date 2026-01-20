@@ -4,10 +4,26 @@ AI Agent Executors - Series Management
 Functions for series-episode linking and episode deduplication.
 """
 
+import asyncio
 import logging
+import re
+from collections import defaultdict
+from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
 
+import httpx
+
 logger = logging.getLogger(__name__)
+
+# Hebrew series name mapping (Hebrew -> English for TMDB search)
+HEBREW_SERIES_MAPPING = {
+    "הבורגנים": "The Bourgeois",
+    "פאודה": "Fauda",
+    "שטיסל": "Shtisel",
+    "טהרן": "Tehran",
+    "הבורר": "The Arbitrator",
+    "מאפיה": "Mafia",
+}
 
 
 async def execute_find_unlinked_episodes(
@@ -917,4 +933,328 @@ async def execute_fix_misclassified_series(
 
     except Exception as e:
         logger.error(f"Error fixing misclassified series: {e}")
+        return {"success": False, "error": str(e)}
+
+
+async def execute_organize_all_series(
+    fetch_tmdb_metadata: bool = True,
+    propagate_to_episodes: bool = True,
+    include_hebrew: bool = True,
+    audit_id: Optional[str] = None,
+    dry_run: bool = False
+) -> Dict[str, Any]:
+    """
+    Comprehensive series organization tool.
+
+    Scans all content in the database, identifies episodes by title patterns,
+    groups them by series name, creates series parent containers with TMDB
+    metadata and posters, links all episodes to their parents, and propagates
+    poster/backdrop to episodes.
+
+    Args:
+        fetch_tmdb_metadata: If True, fetch metadata from TMDB for each series.
+        propagate_to_episodes: If True, apply series poster/backdrop to episodes.
+        include_hebrew: If True, process Hebrew series with title mapping.
+        audit_id: Parent audit ID for logging actions.
+        dry_run: If True, only report what would be done.
+
+    Returns:
+        Dict with comprehensive results of the organization.
+    """
+    try:
+        from app.core.config import settings
+        from app.models.content import Content, Category
+        from app.models.librarian import LibrarianAction
+
+        results = {
+            "success": True,
+            "dry_run": dry_run,
+            "series_found": 0,
+            "series_created": 0,
+            "series_updated": 0,
+            "episodes_linked": 0,
+            "episodes_enriched": 0,
+            "tmdb_fetched": 0,
+            "hebrew_series": [],
+            "all_series": [],
+            "errors": []
+        }
+
+        logger.info("=" * 60)
+        logger.info("ORGANIZE ALL SERIES - Starting comprehensive series organization")
+        logger.info("=" * 60)
+
+        # Step 1: Scan all content for series patterns
+        logger.info("Step 1: Scanning database for series content...")
+
+        all_content = await Content.find({}).to_list()
+        logger.info(f"Total content items: {len(all_content)}")
+
+        # Episode pattern: S01E01, S1E1, etc.
+        episode_pattern = re.compile(r'^(.+?)\s*[Ss](\d+)[Ee](\d+)')
+
+        # Group by series name
+        series_groups: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+
+        for content in all_content:
+            title = content.title or ""
+            match = episode_pattern.match(title)
+
+            if match:
+                series_name = match.group(1).strip()
+                season = int(match.group(2))
+                episode = int(match.group(3))
+
+                series_groups[series_name].append({
+                    "content": content,
+                    "season": season,
+                    "episode": episode
+                })
+
+        results["series_found"] = len(series_groups)
+        logger.info(f"Found {len(series_groups)} series with {sum(len(eps) for eps in series_groups.values())} total episodes")
+
+        if not series_groups:
+            results["message"] = "No series found in database"
+            return results
+
+        # Step 2: Process each series
+        logger.info("\nStep 2: Processing each series...")
+
+        # Get TMDB API key
+        tmdb_api_key = settings.TMDB_API_KEY if hasattr(settings, 'TMDB_API_KEY') else None
+
+        # Find series category
+        series_category = await Category.find_one({"slug": "series"})
+        if not series_category:
+            series_category = await Category.find_one({"slug": "tv"})
+        if not series_category:
+            series_category = await Category.find_one({})
+
+        category_id = str(series_category.id) if series_category else ""
+
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            for series_name, episodes in sorted(series_groups.items(), key=lambda x: -len(x[1])):
+                series_info = {
+                    "name": series_name,
+                    "episode_count": len(episodes),
+                    "tmdb_id": None,
+                    "poster_url": None,
+                    "is_hebrew": False
+                }
+
+                # Check if Hebrew
+                is_hebrew = any(0x0590 <= ord(c) <= 0x05FF for c in series_name)
+                series_info["is_hebrew"] = is_hebrew
+
+                if is_hebrew:
+                    results["hebrew_series"].append(series_name)
+                    if not include_hebrew:
+                        logger.info(f"Skipping Hebrew series: {series_name}")
+                        continue
+
+                logger.info(f"\n📺 Processing: {series_name} ({len(episodes)} episodes)")
+
+                try:
+                    # Get TMDB metadata
+                    tmdb_data = None
+                    poster_url = None
+                    backdrop_url = None
+
+                    if fetch_tmdb_metadata and tmdb_api_key:
+                        # Use English mapping for Hebrew series
+                        search_name = HEBREW_SERIES_MAPPING.get(series_name, series_name)
+
+                        # Search TMDB
+                        params = {"api_key": tmdb_api_key, "query": search_name}
+                        resp = await client.get("https://api.themoviedb.org/3/search/tv", params=params)
+
+                        if resp.status_code == 200:
+                            data = resp.json()
+                            if data.get("results"):
+                                tmdb_id = data["results"][0].get("id")
+                                series_info["tmdb_id"] = tmdb_id
+
+                                # Get full details
+                                detail_params = {
+                                    "api_key": tmdb_api_key,
+                                    "append_to_response": "external_ids,videos,credits"
+                                }
+                                detail_resp = await client.get(
+                                    f"https://api.themoviedb.org/3/tv/{tmdb_id}",
+                                    params=detail_params
+                                )
+
+                                if detail_resp.status_code == 200:
+                                    tmdb_data = detail_resp.json()
+                                    results["tmdb_fetched"] += 1
+
+                                    if tmdb_data.get("poster_path"):
+                                        poster_url = f"https://image.tmdb.org/t/p/w500{tmdb_data['poster_path']}"
+                                        series_info["poster_url"] = poster_url
+                                    if tmdb_data.get("backdrop_path"):
+                                        backdrop_url = f"https://image.tmdb.org/t/p/w1280{tmdb_data['backdrop_path']}"
+
+                                    logger.info(f"   ✅ TMDB: ID={tmdb_id}, Rating={tmdb_data.get('vote_average')}")
+
+                    if dry_run:
+                        results["all_series"].append(series_info)
+                        continue
+
+                    # Find or create series parent
+                    parent_series = await Content.find_one({
+                        "content_type": "series",
+                        "is_series": True,
+                        "season": None,
+                        "episode": None,
+                        "$or": [
+                            {"title": series_name},
+                            {"title": {"$regex": f"^{re.escape(series_name)}$", "$options": "i"}}
+                        ]
+                    })
+
+                    if parent_series:
+                        logger.info(f"   📂 Found existing series parent: {parent_series.id}")
+                        results["series_updated"] += 1
+                    else:
+                        # Create new series parent
+                        logger.info(f"   📁 Creating new series parent for '{series_name}'")
+
+                        # Calculate total seasons
+                        seasons = set(ep["season"] for ep in episodes)
+
+                        parent_series = Content(
+                            title=series_name,
+                            title_en=tmdb_data.get("original_name") if tmdb_data else None,
+                            description=tmdb_data.get("overview") if tmdb_data else None,
+                            description_en=tmdb_data.get("overview") if tmdb_data else None,
+                            category_id=category_id,
+                            content_type="series",
+                            is_series=True,
+                            is_published=True,
+                            season=None,
+                            episode=None,
+                            total_seasons=len(seasons) if seasons else (tmdb_data.get("number_of_seasons") if tmdb_data else None),
+                            total_episodes=len(episodes),
+                            stream_url="",
+                            stream_type="hls",
+                            created_at=datetime.now(timezone.utc),
+                            updated_at=datetime.now(timezone.utc),
+                        )
+
+                        await parent_series.insert()
+                        results["series_created"] += 1
+                        logger.info(f"      ✅ Created: {parent_series.id}")
+
+                        # Log action
+                        if audit_id:
+                            action = LibrarianAction(
+                                audit_id=audit_id,
+                                action_type="create_series",
+                                content_id=str(parent_series.id),
+                                content_type="series",
+                                issue_type="series_organization",
+                                description=f"Created series container '{series_name}' during full organization",
+                                before_state={},
+                                after_state={"series_id": str(parent_series.id), "title": series_name},
+                                confidence_score=1.0,
+                                auto_approved=True,
+                                timestamp=datetime.now(timezone.utc)
+                            )
+                            await action.insert()
+
+                    # Update series with TMDB data
+                    if tmdb_data:
+                        external_ids = tmdb_data.get("external_ids", {})
+                        credits = tmdb_data.get("credits", {})
+                        videos = tmdb_data.get("videos", {}).get("results", [])
+                        cast = [c.get("name") for c in credits.get("cast", [])[:10]]
+                        trailers = [v for v in videos if v.get("type") == "Trailer" and v.get("site") == "YouTube"]
+                        trailer_url = f"https://www.youtube.com/embed/{trailers[0]['key']}" if trailers else None
+
+                        parent_series.tmdb_id = tmdb_data.get("id")
+                        parent_series.imdb_id = external_ids.get("imdb_id")
+                        parent_series.imdb_rating = tmdb_data.get("vote_average")
+                        parent_series.imdb_votes = tmdb_data.get("vote_count")
+                        parent_series.poster_url = poster_url
+                        parent_series.thumbnail = poster_url
+                        parent_series.backdrop = backdrop_url
+                        parent_series.trailer_url = trailer_url
+                        parent_series.genres = [g.get("name") for g in tmdb_data.get("genres", [])]
+                        parent_series.cast = cast
+                        parent_series.total_seasons = tmdb_data.get("number_of_seasons")
+                        parent_series.total_episodes = tmdb_data.get("number_of_episodes")
+
+                        if tmdb_data.get("first_air_date"):
+                            try:
+                                parent_series.year = int(tmdb_data["first_air_date"][:4])
+                            except (ValueError, IndexError):
+                                pass
+
+                        parent_series.updated_at = datetime.now(timezone.utc)
+                        await parent_series.save()
+                        logger.info(f"   ✅ Updated series with TMDB data")
+
+                    # Link episodes
+                    series_id = str(parent_series.id)
+
+                    for ep_data in episodes:
+                        content = ep_data["content"]
+                        season = ep_data["season"]
+                        episode_num = ep_data["episode"]
+
+                        content.series_id = series_id
+                        content.is_series = True
+                        content.content_type = "episode"
+                        content.season = season
+                        content.episode = episode_num
+                        content.updated_at = datetime.now(timezone.utc)
+
+                        # Propagate metadata if enabled
+                        if propagate_to_episodes and poster_url:
+                            content.poster_url = poster_url
+                            content.thumbnail = poster_url
+                            if backdrop_url:
+                                content.backdrop = backdrop_url
+                            if tmdb_data:
+                                content.genres = parent_series.genres
+                                content.cast = parent_series.cast
+                                content.tmdb_id = parent_series.tmdb_id
+                                content.imdb_id = parent_series.imdb_id
+                            results["episodes_enriched"] += 1
+
+                        await content.save()
+                        results["episodes_linked"] += 1
+
+                    logger.info(f"   🔗 Linked {len(episodes)} episodes")
+                    series_info["series_id"] = series_id
+                    results["all_series"].append(series_info)
+
+                except Exception as e:
+                    error_msg = f"Error processing series '{series_name}': {str(e)}"
+                    logger.error(error_msg)
+                    results["errors"].append(error_msg)
+
+                # Rate limit TMDB calls
+                await asyncio.sleep(0.3)
+
+        # Build summary message
+        results["message"] = (
+            f"{'[DRY RUN] Would organize' if dry_run else 'Organized'} {results['series_found']} series. "
+            f"Created {results['series_created']} new series containers, "
+            f"updated {results['series_updated']} existing. "
+            f"Linked {results['episodes_linked']} episodes, "
+            f"enriched {results['episodes_enriched']} with TMDB data. "
+            f"Hebrew series: {len(results['hebrew_series'])}."
+        )
+
+        logger.info("\n" + "=" * 60)
+        logger.info("ORGANIZATION COMPLETE")
+        logger.info("=" * 60)
+        logger.info(results["message"])
+
+        return results
+
+    except Exception as e:
+        logger.error(f"Error in organize_all_series: {e}")
         return {"success": False, "error": str(e)}

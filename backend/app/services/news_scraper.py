@@ -14,6 +14,17 @@ import re
 from app.core.config import settings
 
 
+def clean_cdata(text: str) -> str:
+    """Remove CDATA markers from text (both HTML-encoded and raw)."""
+    if not text:
+        return text
+    # Remove raw CDATA markers
+    text = text.replace("<![CDATA[", "").replace("]]>", "")
+    # Remove HTML-encoded CDATA markers
+    text = text.replace("&lt;![CDATA[", "").replace("]]&gt;", "")
+    return text.strip()
+
+
 @dataclass
 class HeadlineItem:
     """A single news headline"""
@@ -73,16 +84,12 @@ async def scrape_ynet() -> List[HeadlineItem]:
                 if not title_elem:
                     continue
 
-                title = title_elem.get_text(strip=True)
+                title = clean_cdata(title_elem.get_text(strip=True))
 
                 # Get link from guid (which has the URL)
                 href = ""
                 if guid_elem:
-                    href = guid_elem.get_text(strip=True)
-
-                # Clean up HTML-encoded CDATA markers
-                title = title.replace("&lt;![CDATA[", "").replace("]]&gt;", "").strip()
-                href = href.replace("&lt;![CDATA[", "").replace("]]&gt;", "").replace("<![CDATA[", "").replace("]]>", "").strip()
+                    href = clean_cdata(guid_elem.get_text(strip=True))
 
                 if not title or len(title) < 10 or not href:
                     continue
@@ -123,8 +130,8 @@ async def scrape_ynet() -> List[HeadlineItem]:
 
                 # Look for recent news articles by date in URL
                 for link in soup.find_all("a", href=True)[:50]:
-                    href = link.get("href", "")
-                    title = link.get_text(strip=True)
+                    href = clean_cdata(link.get("href", ""))
+                    title = clean_cdata(link.get_text(strip=True))
 
                     if not title or len(title) < 12:
                         continue
@@ -182,8 +189,8 @@ async def scrape_walla() -> List[HeadlineItem]:
                 try:
                     elements = soup.select(selector)
                     for elem in elements[:20]:
-                        title = elem.get_text(strip=True)
-                        href = elem.get("href", "")
+                        title = clean_cdata(elem.get_text(strip=True))
+                        href = clean_cdata(elem.get("href", ""))
 
                         if not title or len(title) < 8:
                             continue
@@ -262,8 +269,8 @@ async def scrape_mako() -> List[HeadlineItem]:
                 try:
                     elements = soup.select(selector)
                     for elem in elements[:20]:
-                        title = elem.get_text(strip=True)
-                        href = elem.get("href", "")
+                        title = clean_cdata(elem.get_text(strip=True))
+                        href = clean_cdata(elem.get("href", ""))
 
                         if not title or len(title) < 8:
                             continue
@@ -411,8 +418,8 @@ async def search_google_news_rss(
                 if not title_elem or not link_elem:
                     continue
 
-                title = title_elem.get_text(strip=True)
-                url = link_elem.get_text(strip=True)
+                title = clean_cdata(title_elem.get_text(strip=True))
+                url = clean_cdata(link_elem.get_text(strip=True))
 
                 # Skip if title too short
                 if len(title) < 10:
@@ -421,7 +428,7 @@ async def search_google_news_rss(
                 # Extract source name
                 source_name = "Google News"
                 if source_elem:
-                    source_name = source_elem.get_text(strip=True)
+                    source_name = clean_cdata(source_elem.get_text(strip=True))
 
                 # Parse publication date
                 pub_date = None
@@ -487,8 +494,8 @@ async def search_duckduckgo(
                 if len(headlines) >= max_results:
                     break
 
-                title = result.get_text(strip=True)
-                href = result.get("href", "")
+                title = clean_cdata(result.get_text(strip=True))
+                href = clean_cdata(result.get("href", ""))
 
                 if not title or len(title) < 10 or not href:
                     continue
@@ -515,7 +522,7 @@ async def search_duckduckgo(
                 summary = None
                 snippet_elem = result.find_next_sibling("a", class_="result__snippet")
                 if snippet_elem:
-                    summary = snippet_elem.get_text(strip=True)
+                    summary = clean_cdata(snippet_elem.get_text(strip=True))
 
                 headlines.append(
                     HeadlineItem(

@@ -46,8 +46,30 @@ class Content(Document):
     backdrop: Optional[str] = None  # URL (kept for backward compatibility)
     backdrop_data: Optional[str] = None  # Base64-encoded image data URI
     poster_url: Optional[str] = None  # TMDB poster URL
-    category_id: str
-    category_name: Optional[str] = None
+
+    # === NEW TAXONOMY FIELDS (5-axis classification system) ===
+    # Section: Where content lives in navigation (can appear in multiple sections)
+    section_ids: List[str] = Field(default_factory=list)  # ["movies", "judaism"] - cross-listing
+    primary_section_id: Optional[str] = None  # Main section for sorting/display priority
+
+    # Format: Structural content type
+    content_format: Optional[str] = None  # "movie", "series", "documentary", "short", "clip"
+
+    # Audience: Age appropriateness
+    audience_id: Optional[str] = None  # "general", "kids", "family", "mature"
+
+    # Genre: Mood/style (multiple allowed)
+    genre_ids: List[str] = Field(default_factory=list)  # ["drama", "thriller"]
+
+    # Topic Tags: Themes (multiple allowed)
+    topic_tags: List[str] = Field(default_factory=list)  # ["jewish", "educational"]
+
+    # Sub-categories: Section-specific organization (can be in multiple)
+    subcategory_ids: List[str] = Field(default_factory=list)  # ["shiurim", "cartoons"]
+
+    # === LEGACY FIELDS (kept for backward compatibility during migration) ===
+    category_id: str  # Maps to primary_section_id after migration
+    category_name: Optional[str] = None  # Deprecated - remove after migration
 
     # Metadata
     duration: Optional[str] = None  # e.g., "1:45:00"
@@ -56,10 +78,10 @@ class Content(Document):
     genre: Optional[str] = None  # Primary genre (legacy field, kept for backward compatibility)
     genre_en: Optional[str] = None  # English genre translation
     genre_es: Optional[str] = None  # Spanish genre translation
-    genres: Optional[List[str]] = None  # Multiple genres from TMDB
+    genres: Optional[List[str]] = None  # Multiple genres from TMDB (legacy - use genre_ids)
     cast: Optional[List[str]] = None
     director: Optional[str] = None
-    content_type: Optional[str] = None  # "movie", "series", "documentary", etc.
+    content_type: Optional[str] = None  # Legacy - use content_format instead
 
     # Streaming
     stream_url: str
@@ -147,14 +169,30 @@ class Content(Document):
     class Settings:
         name = "content"
         indexes = [
-            # Existing indexes
+            # Legacy category indexes (backward compatibility)
             "category_id",
+            ("category_id", "is_published"),
+            # New taxonomy indexes
+            "section_ids",
+            "primary_section_id",
+            "content_format",
+            "audience_id",
+            "genre_ids",
+            "topic_tags",
+            "subcategory_ids",
+            ("section_ids", "is_published"),
+            ("primary_section_id", "is_published"),
+            ("audience_id", "is_published"),
+            ("content_format", "is_published"),
+            # Multi-field taxonomy queries
+            ("section_ids", "audience_id", "is_published"),
+            ("section_ids", "genre_ids", "is_published"),
+            # Core indexes
             "is_featured",
             "is_published",
             "series_id",
             "created_at",
             "updated_at",
-            ("category_id", "is_published"),
             ("is_featured", "is_published"),
             # Filter indexes for advanced search
             "year",

@@ -2,9 +2,12 @@
 Seed script to populate Bayit+ database with culture configurations.
 
 Creates:
-- Israeli culture (default, with Jerusalem and Tel Aviv cities)
-- Chinese culture (with Beijing and Shanghai cities)
-- Default news sources for each culture
+- Israeli culture (default) - Jerusalem, Tel Aviv
+- Chinese culture - Beijing, Shanghai
+- Japanese culture - Tokyo, Kyoto, Osaka
+- Korean culture - Seoul, Busan
+- Indian culture - Mumbai, Delhi, Bangalore
+- News sources for each culture
 
 Run with: python -m scripts.seed_cultures
 """
@@ -415,6 +418,567 @@ CHINESE_SOURCES = [
     },
 ]
 
+# Japanese culture configuration
+JAPANESE_CULTURE = {
+    "culture_id": "japanese",
+    "name": "Japanese",
+    "name_localized": {
+        "ja": "日本",
+        "he": "יפני",
+        "en": "Japanese",
+        "es": "Japonés",
+    },
+    "flag_emoji": "🇯🇵",
+    "country_code": "JP",
+    "primary_timezone": "Asia/Tokyo",
+    "primary_language": "ja",
+    "supported_languages": ["ja", "en"],
+    "keyword_weight_native": 2.0,
+    "keyword_weight_english": 1.0,
+    "has_shabbat_mode": False,
+    "has_lunar_calendar": False,
+    "has_special_holidays": True,
+    "display_order": 2,
+    "is_active": True,
+    "is_default": False,
+    "background_image_key": "cultures/japanese/background.jpg",
+    "accent_color": "#BC002D",
+}
+
+JAPANESE_CITIES = [
+    {
+        "city_id": "tokyo",
+        "name": "Tokyo",
+        "name_localized": {
+            "ja": "東京",
+            "he": "טוקיו",
+            "en": "Tokyo",
+            "es": "Tokio",
+        },
+        "name_native": "東京",
+        "timezone": "Asia/Tokyo",
+        "coordinates": {"lat": 35.6762, "lng": 139.6503},
+        "country_code": "JP",
+        "categories": [
+            CultureCityCategory(
+                id="tech",
+                name="Technology",
+                name_localized={"ja": "テクノロジー", "en": "Technology", "he": "טכנולוגיה"},
+                icon_emoji="🤖",
+                keywords_native=["テクノロジー", "技術", "ロボット"],
+                keywords_english=["technology", "tech", "robotics"],
+                display_order=0,
+                is_active=True,
+            ),
+            CultureCityCategory(
+                id="anime",
+                name="Anime & Manga",
+                name_localized={"ja": "アニメ・漫画", "en": "Anime & Manga", "he": "אנימה ומנגה"},
+                icon_emoji="🎌",
+                keywords_native=["アニメ", "漫画", "秋葉原"],
+                keywords_english=["anime", "manga", "akihabara"],
+                display_order=1,
+                is_active=True,
+            ),
+            CultureCityCategory(
+                id="food",
+                name="Food",
+                name_localized={"ja": "グルメ", "en": "Food", "he": "אוכל"},
+                icon_emoji="🍣",
+                keywords_native=["グルメ", "寿司", "ラーメン"],
+                keywords_english=["food", "sushi", "ramen"],
+                display_order=2,
+                is_active=True,
+            ),
+        ],
+        "display_order": 0,
+        "is_active": True,
+        "is_featured": True,
+        "background_image_key": "cultures/japanese/tokyo.jpg",
+        "thumbnail_image_key": "cultures/japanese/tokyo_thumb.jpg",
+        "accent_color": "#FF1493",
+    },
+    {
+        "city_id": "kyoto",
+        "name": "Kyoto",
+        "name_localized": {
+            "ja": "京都",
+            "he": "קיוטו",
+            "en": "Kyoto",
+            "es": "Kioto",
+        },
+        "name_native": "京都",
+        "timezone": "Asia/Tokyo",
+        "coordinates": {"lat": 35.0116, "lng": 135.7681},
+        "country_code": "JP",
+        "categories": [
+            CultureCityCategory(
+                id="temples",
+                name="Temples & Shrines",
+                name_localized={"ja": "寺社仏閣", "en": "Temples & Shrines", "he": "מקדשים"},
+                icon_emoji="⛩️",
+                keywords_native=["寺", "神社", "仏閣"],
+                keywords_english=["temple", "shrine", "spiritual"],
+                display_order=0,
+                is_active=True,
+            ),
+            CultureCityCategory(
+                id="tradition",
+                name="Traditional Culture",
+                name_localized={"ja": "伝統文化", "en": "Traditional Culture", "he": "תרבות מסורתית"},
+                icon_emoji="🎎",
+                keywords_native=["伝統", "着物", "芸者"],
+                keywords_english=["tradition", "kimono", "geisha"],
+                display_order=1,
+                is_active=True,
+            ),
+        ],
+        "display_order": 1,
+        "is_active": True,
+        "is_featured": True,
+        "background_image_key": "cultures/japanese/kyoto.jpg",
+        "thumbnail_image_key": "cultures/japanese/kyoto_thumb.jpg",
+        "accent_color": "#8B4513",
+    },
+    {
+        "city_id": "osaka",
+        "name": "Osaka",
+        "name_localized": {
+            "ja": "大阪",
+            "he": "אוסקה",
+            "en": "Osaka",
+            "es": "Osaka",
+        },
+        "name_native": "大阪",
+        "timezone": "Asia/Tokyo",
+        "coordinates": {"lat": 34.6937, "lng": 135.5023},
+        "country_code": "JP",
+        "categories": [
+            CultureCityCategory(
+                id="street-food",
+                name="Street Food",
+                name_localized={"ja": "屋台グルメ", "en": "Street Food", "he": "אוכל רחוב"},
+                icon_emoji="🍢",
+                keywords_native=["たこ焼き", "お好み焼き", "屋台"],
+                keywords_english=["takoyaki", "okonomiyaki", "street food"],
+                display_order=0,
+                is_active=True,
+            ),
+            CultureCityCategory(
+                id="entertainment",
+                name="Entertainment",
+                name_localized={"ja": "エンタメ", "en": "Entertainment", "he": "בידור"},
+                icon_emoji="🎪",
+                keywords_native=["お笑い", "USJ", "エンタメ"],
+                keywords_english=["comedy", "universal studios", "entertainment"],
+                display_order=1,
+                is_active=True,
+            ),
+        ],
+        "display_order": 2,
+        "is_active": True,
+        "is_featured": True,
+        "background_image_key": "cultures/japanese/osaka.jpg",
+        "thumbnail_image_key": "cultures/japanese/osaka_thumb.jpg",
+        "accent_color": "#FF6347",
+    },
+]
+
+JAPANESE_SOURCES = [
+    {
+        "source_id": "nhk-world",
+        "culture_id": "japanese",
+        "city_id": None,
+        "name": "NHK World",
+        "name_localized": {"ja": "NHKワールド", "en": "NHK World"},
+        "name_native": "NHKワールド",
+        "source_type": "rss",
+        "rss_url": "https://www3.nhk.or.jp/rss/news/cat0.xml",
+        "website_url": "https://www3.nhk.or.jp/nhkworld/",
+        "content_type": "news",
+        "language": "en",
+        "categories": ["general"],
+        "is_active": True,
+        "priority": 10,
+    },
+    {
+        "source_id": "japan-times",
+        "culture_id": "japanese",
+        "city_id": None,
+        "name": "The Japan Times",
+        "name_localized": {"ja": "ジャパンタイムズ", "en": "The Japan Times"},
+        "name_native": "ジャパンタイムズ",
+        "source_type": "rss",
+        "rss_url": "https://www.japantimes.co.jp/feed/",
+        "website_url": "https://www.japantimes.co.jp",
+        "content_type": "news",
+        "language": "en",
+        "categories": ["general"],
+        "is_active": True,
+        "priority": 9,
+    },
+]
+
+# Korean culture configuration
+KOREAN_CULTURE = {
+    "culture_id": "korean",
+    "name": "Korean",
+    "name_localized": {
+        "ko": "한국",
+        "he": "קוריאני",
+        "en": "Korean",
+        "es": "Coreano",
+    },
+    "flag_emoji": "🇰🇷",
+    "country_code": "KR",
+    "primary_timezone": "Asia/Seoul",
+    "primary_language": "ko",
+    "supported_languages": ["ko", "en"],
+    "keyword_weight_native": 2.0,
+    "keyword_weight_english": 1.0,
+    "has_shabbat_mode": False,
+    "has_lunar_calendar": True,
+    "has_special_holidays": True,
+    "display_order": 3,
+    "is_active": True,
+    "is_default": False,
+    "background_image_key": "cultures/korean/background.jpg",
+    "accent_color": "#003478",
+}
+
+KOREAN_CITIES = [
+    {
+        "city_id": "seoul",
+        "name": "Seoul",
+        "name_localized": {
+            "ko": "서울",
+            "he": "סיאול",
+            "en": "Seoul",
+            "es": "Seúl",
+        },
+        "name_native": "서울",
+        "timezone": "Asia/Seoul",
+        "coordinates": {"lat": 37.5665, "lng": 126.9780},
+        "country_code": "KR",
+        "categories": [
+            CultureCityCategory(
+                id="kpop",
+                name="K-Pop & Entertainment",
+                name_localized={"ko": "K-Pop & 엔터테인먼트", "en": "K-Pop & Entertainment", "he": "קיי-פופ ובידור"},
+                icon_emoji="🎤",
+                keywords_native=["케이팝", "아이돌", "강남"],
+                keywords_english=["kpop", "idol", "gangnam"],
+                display_order=0,
+                is_active=True,
+            ),
+            CultureCityCategory(
+                id="tech",
+                name="Technology",
+                name_localized={"ko": "기술", "en": "Technology", "he": "טכנולוגיה"},
+                icon_emoji="📱",
+                keywords_native=["삼성", "기술", "스타트업"],
+                keywords_english=["samsung", "tech", "startup"],
+                display_order=1,
+                is_active=True,
+            ),
+            CultureCityCategory(
+                id="food",
+                name="Korean Food",
+                name_localized={"ko": "한식", "en": "Korean Food", "he": "אוכל קוריאני"},
+                icon_emoji="🍜",
+                keywords_native=["한식", "김치", "삼겹살"],
+                keywords_english=["korean food", "kimchi", "bbq"],
+                display_order=2,
+                is_active=True,
+            ),
+        ],
+        "display_order": 0,
+        "is_active": True,
+        "is_featured": True,
+        "background_image_key": "cultures/korean/seoul.jpg",
+        "thumbnail_image_key": "cultures/korean/seoul_thumb.jpg",
+        "accent_color": "#FF69B4",
+    },
+    {
+        "city_id": "busan",
+        "name": "Busan",
+        "name_localized": {
+            "ko": "부산",
+            "he": "בוסאן",
+            "en": "Busan",
+            "es": "Busan",
+        },
+        "name_native": "부산",
+        "timezone": "Asia/Seoul",
+        "coordinates": {"lat": 35.1796, "lng": 129.0756},
+        "country_code": "KR",
+        "categories": [
+            CultureCityCategory(
+                id="beaches",
+                name="Beaches",
+                name_localized={"ko": "해변", "en": "Beaches", "he": "חופים"},
+                icon_emoji="🏖️",
+                keywords_native=["해운대", "광안리", "해변"],
+                keywords_english=["haeundae", "gwangalli", "beach"],
+                display_order=0,
+                is_active=True,
+            ),
+            CultureCityCategory(
+                id="film",
+                name="Film & Festivals",
+                name_localized={"ko": "영화 & 축제", "en": "Film & Festivals", "he": "קולנוע ופסטיבלים"},
+                icon_emoji="🎬",
+                keywords_native=["부산국제영화제", "영화", "축제"],
+                keywords_english=["biff", "film festival", "cinema"],
+                display_order=1,
+                is_active=True,
+            ),
+        ],
+        "display_order": 1,
+        "is_active": True,
+        "is_featured": True,
+        "background_image_key": "cultures/korean/busan.jpg",
+        "thumbnail_image_key": "cultures/korean/busan_thumb.jpg",
+        "accent_color": "#00CED1",
+    },
+]
+
+KOREAN_SOURCES = [
+    {
+        "source_id": "korea-herald",
+        "culture_id": "korean",
+        "city_id": None,
+        "name": "The Korea Herald",
+        "name_localized": {"ko": "코리아헤럴드", "en": "The Korea Herald"},
+        "name_native": "코리아헤럴드",
+        "source_type": "rss",
+        "rss_url": "http://www.koreaherald.com/rss/020100000000.xml",
+        "website_url": "http://www.koreaherald.com",
+        "content_type": "news",
+        "language": "en",
+        "categories": ["general"],
+        "is_active": True,
+        "priority": 10,
+    },
+    {
+        "source_id": "yonhap-news",
+        "culture_id": "korean",
+        "city_id": None,
+        "name": "Yonhap News Agency",
+        "name_localized": {"ko": "연합뉴스", "en": "Yonhap News Agency"},
+        "name_native": "연합뉴스",
+        "source_type": "rss",
+        "rss_url": "https://en.yna.co.kr/RSS/news.xml",
+        "website_url": "https://en.yna.co.kr",
+        "content_type": "news",
+        "language": "en",
+        "categories": ["general"],
+        "is_active": True,
+        "priority": 9,
+    },
+]
+
+# Indian culture configuration
+INDIAN_CULTURE = {
+    "culture_id": "indian",
+    "name": "Indian",
+    "name_localized": {
+        "hi": "भारतीय",
+        "he": "הודי",
+        "en": "Indian",
+        "es": "Indio",
+    },
+    "flag_emoji": "🇮🇳",
+    "country_code": "IN",
+    "primary_timezone": "Asia/Kolkata",
+    "primary_language": "hi",
+    "supported_languages": ["hi", "en"],
+    "keyword_weight_native": 2.0,
+    "keyword_weight_english": 1.0,
+    "has_shabbat_mode": False,
+    "has_lunar_calendar": False,
+    "has_special_holidays": True,
+    "display_order": 4,
+    "is_active": True,
+    "is_default": False,
+    "background_image_key": "cultures/indian/background.jpg",
+    "accent_color": "#FF9933",
+}
+
+INDIAN_CITIES = [
+    {
+        "city_id": "mumbai",
+        "name": "Mumbai",
+        "name_localized": {
+            "hi": "मुंबई",
+            "he": "מומבאי",
+            "en": "Mumbai",
+            "es": "Bombay",
+        },
+        "name_native": "मुंबई",
+        "timezone": "Asia/Kolkata",
+        "coordinates": {"lat": 19.0760, "lng": 72.8777},
+        "country_code": "IN",
+        "categories": [
+            CultureCityCategory(
+                id="bollywood",
+                name="Bollywood",
+                name_localized={"hi": "बॉलीवुड", "en": "Bollywood", "he": "בוליווד"},
+                icon_emoji="🎬",
+                keywords_native=["बॉलीवुड", "फिल्म", "सिनेमा"],
+                keywords_english=["bollywood", "film", "cinema"],
+                display_order=0,
+                is_active=True,
+            ),
+            CultureCityCategory(
+                id="finance",
+                name="Finance",
+                name_localized={"hi": "वित्त", "en": "Finance", "he": "פיננסים"},
+                icon_emoji="💹",
+                keywords_native=["शेयर बाजार", "वित्त", "व्यापार"],
+                keywords_english=["stock market", "finance", "business"],
+                display_order=1,
+                is_active=True,
+            ),
+            CultureCityCategory(
+                id="street-food",
+                name="Street Food",
+                name_localized={"hi": "स्ट्रीट फूड", "en": "Street Food", "he": "אוכל רחוב"},
+                icon_emoji="🍛",
+                keywords_native=["वड़ा पाव", "पाव भाजी", "स्ट्रीट फूड"],
+                keywords_english=["vada pav", "pav bhaji", "street food"],
+                display_order=2,
+                is_active=True,
+            ),
+        ],
+        "display_order": 0,
+        "is_active": True,
+        "is_featured": True,
+        "background_image_key": "cultures/indian/mumbai.jpg",
+        "thumbnail_image_key": "cultures/indian/mumbai_thumb.jpg",
+        "accent_color": "#FFD700",
+    },
+    {
+        "city_id": "delhi",
+        "name": "Delhi",
+        "name_localized": {
+            "hi": "दिल्ली",
+            "he": "דלהי",
+            "en": "Delhi",
+            "es": "Delhi",
+        },
+        "name_native": "दिल्ली",
+        "timezone": "Asia/Kolkata",
+        "coordinates": {"lat": 28.7041, "lng": 77.1025},
+        "country_code": "IN",
+        "categories": [
+            CultureCityCategory(
+                id="history",
+                name="History & Heritage",
+                name_localized={"hi": "इतिहास और विरासत", "en": "History & Heritage", "he": "היסטוריה ומורשת"},
+                icon_emoji="🏛️",
+                keywords_native=["लाल किला", "कुतुब मीनार", "इतिहास"],
+                keywords_english=["red fort", "qutub minar", "history"],
+                display_order=0,
+                is_active=True,
+            ),
+            CultureCityCategory(
+                id="politics",
+                name="Politics & Government",
+                name_localized={"hi": "राजनीति और सरकार", "en": "Politics & Government", "he": "פוליטיקה וממשל"},
+                icon_emoji="🏛️",
+                keywords_native=["संसद", "सरकार", "राजनीति"],
+                keywords_english=["parliament", "government", "politics"],
+                display_order=1,
+                is_active=True,
+            ),
+        ],
+        "display_order": 1,
+        "is_active": True,
+        "is_featured": True,
+        "background_image_key": "cultures/indian/delhi.jpg",
+        "thumbnail_image_key": "cultures/indian/delhi_thumb.jpg",
+        "accent_color": "#228B22",
+    },
+    {
+        "city_id": "bangalore",
+        "name": "Bangalore",
+        "name_localized": {
+            "hi": "बेंगलुरु",
+            "he": "בנגלור",
+            "en": "Bangalore",
+            "es": "Bangalore",
+        },
+        "name_native": "बेंगलुरु",
+        "timezone": "Asia/Kolkata",
+        "coordinates": {"lat": 12.9716, "lng": 77.5946},
+        "country_code": "IN",
+        "categories": [
+            CultureCityCategory(
+                id="tech",
+                name="Technology & Startups",
+                name_localized={"hi": "प्रौद्योगिकी और स्टार्टअप", "en": "Technology & Startups", "he": "טכנולוגיה וסטארטאפים"},
+                icon_emoji="💻",
+                keywords_native=["आईटी", "स्टार्टअप", "टेक"],
+                keywords_english=["it", "startup", "tech"],
+                display_order=0,
+                is_active=True,
+            ),
+            CultureCityCategory(
+                id="gardens",
+                name="Gardens & Parks",
+                name_localized={"hi": "उद्यान और पार्क", "en": "Gardens & Parks", "he": "גנים ופארקים"},
+                icon_emoji="🌳",
+                keywords_native=["लालबाग", "कब्बन पार्क", "उद्यान"],
+                keywords_english=["lalbagh", "cubbon park", "gardens"],
+                display_order=1,
+                is_active=True,
+            ),
+        ],
+        "display_order": 2,
+        "is_active": True,
+        "is_featured": True,
+        "background_image_key": "cultures/indian/bangalore.jpg",
+        "thumbnail_image_key": "cultures/indian/bangalore_thumb.jpg",
+        "accent_color": "#9370DB",
+    },
+]
+
+INDIAN_SOURCES = [
+    {
+        "source_id": "times-of-india",
+        "culture_id": "indian",
+        "city_id": None,
+        "name": "Times of India",
+        "name_localized": {"hi": "टाइम्स ऑफ इंडिया", "en": "Times of India"},
+        "name_native": "टाइम्स ऑफ इंडिया",
+        "source_type": "rss",
+        "rss_url": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+        "website_url": "https://timesofindia.indiatimes.com",
+        "content_type": "news",
+        "language": "en",
+        "categories": ["general"],
+        "is_active": True,
+        "priority": 10,
+    },
+    {
+        "source_id": "hindustan-times",
+        "culture_id": "indian",
+        "city_id": None,
+        "name": "Hindustan Times",
+        "name_localized": {"hi": "हिंदुस्तान टाइम्स", "en": "Hindustan Times"},
+        "name_native": "हिंदुस्तान टाइम्स",
+        "source_type": "rss",
+        "rss_url": "https://www.hindustantimes.com/rss/topnews/rssfeed.xml",
+        "website_url": "https://www.hindustantimes.com",
+        "content_type": "news",
+        "language": "en",
+        "categories": ["general"],
+        "is_active": True,
+        "priority": 9,
+    },
+]
+
 
 async def seed_cultures(clear_existing: bool = False):
     """Seed the database with culture configurations."""
@@ -517,6 +1081,135 @@ async def seed_cultures(clear_existing: bool = False):
 
     # Create or update Chinese sources
     for source_data in CHINESE_SOURCES:
+        source = await CultureNewsSource.find_one(
+            CultureNewsSource.source_id == source_data["source_id"],
+        )
+        if not source:
+            source = CultureNewsSource(**source_data)
+            await source.insert()
+            print(f"  ✓ Created source: {source_data['name']}")
+        else:
+            await source.update({"$set": source_data})
+            print(f"  ⊙ Updated source: {source_data['name']}")
+
+    # =====================
+    # JAPANESE CULTURE
+    # =====================
+    print("\n📍 Seeding Japanese culture...")
+
+    # Create or update Japanese culture
+    japanese_culture = await Culture.find_one(Culture.culture_id == "japanese")
+    if not japanese_culture:
+        japanese_culture = Culture(**JAPANESE_CULTURE)
+        await japanese_culture.insert()
+        print("  ✓ Created Japanese culture")
+    else:
+        await japanese_culture.update({"$set": JAPANESE_CULTURE})
+        print("  ⊙ Updated Japanese culture")
+
+    # Create or update Japanese cities
+    for city_data in JAPANESE_CITIES:
+        city_data["culture_id"] = "japanese"
+        city = await CultureCity.find_one(
+            CultureCity.culture_id == "japanese",
+            CultureCity.city_id == city_data["city_id"],
+        )
+        if not city:
+            city = CultureCity(**city_data)
+            await city.insert()
+            print(f"  ✓ Created city: {city_data['name']}")
+        else:
+            await city.update({"$set": city_data})
+            print(f"  ⊙ Updated city: {city_data['name']}")
+
+    # Create or update Japanese sources
+    for source_data in JAPANESE_SOURCES:
+        source = await CultureNewsSource.find_one(
+            CultureNewsSource.source_id == source_data["source_id"],
+        )
+        if not source:
+            source = CultureNewsSource(**source_data)
+            await source.insert()
+            print(f"  ✓ Created source: {source_data['name']}")
+        else:
+            await source.update({"$set": source_data})
+            print(f"  ⊙ Updated source: {source_data['name']}")
+
+    # =====================
+    # KOREAN CULTURE
+    # =====================
+    print("\n📍 Seeding Korean culture...")
+
+    # Create or update Korean culture
+    korean_culture = await Culture.find_one(Culture.culture_id == "korean")
+    if not korean_culture:
+        korean_culture = Culture(**KOREAN_CULTURE)
+        await korean_culture.insert()
+        print("  ✓ Created Korean culture")
+    else:
+        await korean_culture.update({"$set": KOREAN_CULTURE})
+        print("  ⊙ Updated Korean culture")
+
+    # Create or update Korean cities
+    for city_data in KOREAN_CITIES:
+        city_data["culture_id"] = "korean"
+        city = await CultureCity.find_one(
+            CultureCity.culture_id == "korean",
+            CultureCity.city_id == city_data["city_id"],
+        )
+        if not city:
+            city = CultureCity(**city_data)
+            await city.insert()
+            print(f"  ✓ Created city: {city_data['name']}")
+        else:
+            await city.update({"$set": city_data})
+            print(f"  ⊙ Updated city: {city_data['name']}")
+
+    # Create or update Korean sources
+    for source_data in KOREAN_SOURCES:
+        source = await CultureNewsSource.find_one(
+            CultureNewsSource.source_id == source_data["source_id"],
+        )
+        if not source:
+            source = CultureNewsSource(**source_data)
+            await source.insert()
+            print(f"  ✓ Created source: {source_data['name']}")
+        else:
+            await source.update({"$set": source_data})
+            print(f"  ⊙ Updated source: {source_data['name']}")
+
+    # =====================
+    # INDIAN CULTURE
+    # =====================
+    print("\n📍 Seeding Indian culture...")
+
+    # Create or update Indian culture
+    indian_culture = await Culture.find_one(Culture.culture_id == "indian")
+    if not indian_culture:
+        indian_culture = Culture(**INDIAN_CULTURE)
+        await indian_culture.insert()
+        print("  ✓ Created Indian culture")
+    else:
+        await indian_culture.update({"$set": INDIAN_CULTURE})
+        print("  ⊙ Updated Indian culture")
+
+    # Create or update Indian cities
+    for city_data in INDIAN_CITIES:
+        city_data["culture_id"] = "indian"
+        city = await CultureCity.find_one(
+            CultureCity.culture_id == "indian",
+            CultureCity.city_id == city_data["city_id"],
+        )
+        if not city:
+            city = CultureCity(**city_data)
+            await city.insert()
+            print(f"  ✓ Created city: {city_data['name']}")
+        else:
+            await city.update({"$set": city_data})
+            print(f"  ⊙ Updated city: {city_data['name']}")
+
+    # Create or update Indian sources
+    for source_data in INDIAN_SOURCES:
         source = await CultureNewsSource.find_one(
             CultureNewsSource.source_id == source_data["source_id"],
         )

@@ -47,7 +47,7 @@ async def get_default_culture(
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
-    Get the default culture (Israeli for backward compatibility).
+    Get the default culture (Israel for backward compatibility).
     """
     culture = await culture_content_service.get_default_culture()
     if not culture:

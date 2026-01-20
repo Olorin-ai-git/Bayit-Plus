@@ -5,14 +5,14 @@ import { colors, borderRadius } from '../theme';
 
 interface GlassViewProps {
   children: React.ReactNode;
-  intensity?: 'low' | 'medium' | 'high' | 'light' | 'heavy';
+  intensity?: 'subtle' | 'low' | 'medium' | 'high' | 'light' | 'heavy';
   style?: StyleProp<ViewStyle>;
   borderColor?: string;
   noBorder?: boolean;
 }
 
 // Map intensity aliases to base levels
-const normalizeIntensity = (intensity: 'low' | 'medium' | 'high' | 'light' | 'heavy'): 'low' | 'medium' | 'high' => {
+const normalizeIntensity = (intensity: 'subtle' | 'low' | 'medium' | 'high' | 'light' | 'heavy'): 'subtle' | 'low' | 'medium' | 'high' => {
   if (intensity === 'light') return 'low';
   if (intensity === 'heavy') return 'high';
   return intensity;
@@ -29,12 +29,14 @@ export const GlassView: React.FC<GlassViewProps> = ({
 
   // Purple-tinted black glass backgrounds
   const intensityStyles = {
+    subtle: { backgroundColor: 'transparent' },       // No background for subtle blur
     low: { backgroundColor: colors.glassLight },      // rgba(10, 10, 10, 0.5)
     medium: { backgroundColor: colors.glass },        // rgba(10, 10, 10, 0.7)
     high: { backgroundColor: colors.glassStrong },    // rgba(10, 10, 10, 0.85)
   };
 
   const blurAmount = {
+    subtle: 4,
     low: 8,
     medium: 12,
     high: 20,
@@ -43,7 +45,8 @@ export const GlassView: React.FC<GlassViewProps> = ({
   // Web: Use CSS backdrop-filter with className for reliability
   if (Platform.OS === 'web') {
     const glassClassName = normalizedIntensity === 'high' ? 'glass-strong' :
-                           normalizedIntensity === 'low' ? 'glass-light' : 'glass';
+                           normalizedIntensity === 'low' ? 'glass-light' :
+                           normalizedIntensity === 'subtle' ? 'glass-subtle' : 'glass';
     return (
       <View
         // @ts-ignore - Web-specific className
@@ -74,6 +77,8 @@ export const GlassView: React.FC<GlassViewProps> = ({
     ? ['rgba(10, 10, 10, 0.9)', 'rgba(15, 10, 20, 0.95)']  // Stronger with purple tint
     : normalizedIntensity === 'low'
     ? ['rgba(10, 10, 10, 0.4)', 'rgba(15, 10, 20, 0.5)']   // Lighter with purple tint
+    : normalizedIntensity === 'subtle'
+    ? ['rgba(10, 10, 10, 0.1)', 'rgba(15, 10, 20, 0.15)']  // Very subtle with minimal tint
     : ['rgba(10, 10, 10, 0.7)', 'rgba(15, 10, 20, 0.8)'];  // Medium with purple tint
   
   return (

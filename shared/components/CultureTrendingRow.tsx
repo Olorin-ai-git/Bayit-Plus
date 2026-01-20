@@ -53,6 +53,7 @@ interface CultureTrendingRowProps {
 }
 
 const CATEGORY_EMOJIS: Record<string, string> = {
+  // General categories
   security: '🔒',
   politics: '🏛️',
   tech: '💻',
@@ -70,6 +71,14 @@ const CATEGORY_EMOJIS: Record<string, string> = {
   history: '📜',
   expat: '🌍',
   general: '📰',
+  // Israeli-specific categories
+  kotel: '🕍',
+  'idf-ceremony': '🎖️',
+  diaspora: '🌐',
+  'holy-sites': '✡️',
+  'jerusalem-events': '🏛️',
+  beaches: '🏖️',
+  nightlife: '🌃',
 };
 
 /**
@@ -130,8 +139,44 @@ export const CultureTrendingRow: React.FC<CultureTrendingRowProps> = ({
   const fetchTrending = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await cultureService.getCultureTrending(effectiveCultureId);
-      const trendingData: CultureTrendingData = response.data || response;
+      const response = await cultureService.getTrending(effectiveCultureId);
+      const rawData = response.data || response;
+
+      // Transform backend array response to expected structure
+      // Backend returns: Array<{id, title, title_localized, category, source_name, summary, ...}>
+      // Frontend expects: {culture_id, topics: [...], sources: [...], analyzed_at}
+      let trendingData: CultureTrendingData;
+
+      if (Array.isArray(rawData)) {
+        // Backend returns array directly - transform to expected structure
+        const topics: CultureTrendingTopic[] = rawData.map((item: any) => ({
+          id: item.id,
+          title: item.title || item.title_native || '',
+          title_localized: item.title_localized,
+          category: item.category || 'general',
+          sentiment: item.sentiment,
+          relevance_score: item.relevance_score || 0,
+          summary: item.summary || item.summary_native,
+          summary_localized: item.summary_localized,
+          keywords: item.tags || [],
+          source: item.source_name,
+          published_at: item.published_at,
+        }));
+
+        // Extract unique sources
+        const sources = [...new Set(rawData.map((item: any) => item.source_name).filter(Boolean))];
+
+        trendingData = {
+          culture_id: effectiveCultureId,
+          topics,
+          sources,
+          analyzed_at: new Date().toISOString(),
+        };
+      } else {
+        // Already in expected format
+        trendingData = rawData as CultureTrendingData;
+      }
+
       setData(trendingData);
     } catch (err) {
       console.warn('Failed to fetch culture trending:', err);
@@ -297,7 +342,7 @@ const TopicCard: React.FC<TopicCardProps> = ({
             styles.topicCard,
             isFocused && styles.topicCardFocused,
           ]}
-          intensity="medium"
+          intensity="subtle"
         >
           <View style={[styles.topicHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <Text style={styles.categoryEmoji}>{categoryEmoji}</Text>
@@ -365,7 +410,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: isTV ? fontSize.lg : fontSize.md,
     fontWeight: '600',
-    color: colors.text.primary,
+    color: colors.text,
   },
   loadingContainer: {
     height: 150,
@@ -380,12 +425,12 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: fontSize.md,
-    color: colors.text.secondary,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   overallMood: {
     fontSize: fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.textSecondary,
     paddingHorizontal: spacing.md,
     marginBottom: spacing.md,
   },
@@ -394,14 +439,13 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   topicCard: {
-    width: isTV ? 320 : 260,
+    width: isTV ? 320 : 261,
     height: isTV ? 220 : 180,
     padding: spacing.lg,
     borderRadius: borderRadius.lg,
     borderWidth: 2,
     borderColor: 'transparent',
     marginRight: spacing.md,
-    backgroundColor: 'rgba(30, 30, 50, 0.6)',
   },
   topicCardFocused: {
     borderColor: '#a855f7',
@@ -438,7 +482,7 @@ const styles = StyleSheet.create({
   topicTitle: {
     fontSize: isTV ? fontSize.md : fontSize.sm,
     fontWeight: '700',
-    color: colors.text.primary,
+    color: colors.text,
     marginBottom: spacing.xs,
     lineHeight: isTV ? 22 : 18,
   },
@@ -465,7 +509,7 @@ const styles = StyleSheet.create({
   },
   sourceText: {
     fontSize: 10,
-    color: colors.text.muted,
+    color: colors.textMuted,
     marginTop: spacing.xs,
   },
   sourcesContainer: {
@@ -475,11 +519,11 @@ const styles = StyleSheet.create({
   },
   sourcesLabel: {
     fontSize: fontSize.xs,
-    color: colors.text.muted,
+    color: colors.textMuted,
   },
   sourcesText: {
     fontSize: fontSize.xs,
-    color: colors.text.muted,
+    color: colors.textMuted,
     flex: 1,
   },
 });

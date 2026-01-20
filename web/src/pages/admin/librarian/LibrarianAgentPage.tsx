@@ -421,8 +421,8 @@ const LibrarianAgentPage = () => {
         icon={<Settings size={18} color={colors.primary} />}
         defaultExpanded={true}
         draggable={false}
-        minHeight={200}
-        maxHeight={400}
+        minHeight={320}
+        maxHeight={500}
         style={styles.section}
       >
         {/* Toggles Grid - 2 columns */}
@@ -534,13 +534,45 @@ const LibrarianAgentPage = () => {
           </View>
         </View>
 
-        {/* Running notice */}
+        {/* Running notice with controls */}
         {isAuditRunning && !triggering && (
-          <View style={[styles.runningNotice, { flexDirection }]}>
-            <ActivityIndicator size="small" color={colors.warning} />
-            <Text style={[styles.runningNoticeText, { textAlign }]}>
-              {t('admin.librarian.quickActions.auditRunningNotice', 'An audit is currently running')}
-            </Text>
+          <View style={styles.runningNoticeContainer}>
+            <View style={[styles.runningNotice, { flexDirection }]}>
+              <ActivityIndicator size="small" color={colors.warning} />
+              <Text style={[styles.runningNoticeText, { textAlign, flex: 1 }]}>
+                {t('admin.librarian.quickActions.auditRunningNotice', 'An audit is currently running')}
+              </Text>
+            </View>
+            <View style={[styles.runningControls, { flexDirection }]}>
+              {auditPaused ? (
+                <GlassButton
+                  title={t('admin.librarian.audit.resume', 'Resume')}
+                  variant="primary"
+                  icon={<Play size={14} color={colors.background} />}
+                  onPress={() => livePanelReport && handleResumeAudit(livePanelReport.audit_id)}
+                  loading={resumingAudit}
+                  disabled={resumingAudit || !livePanelReport}
+                  size="sm"
+                />
+              ) : (
+                <GlassButton
+                  title={t('admin.librarian.audit.pause', 'Pause')}
+                  variant="secondary"
+                  onPress={() => livePanelReport && handlePauseAudit(livePanelReport.audit_id)}
+                  loading={pausingAudit}
+                  disabled={pausingAudit || !livePanelReport}
+                  size="sm"
+                />
+              )}
+              <GlassButton
+                title={t('admin.librarian.audit.cancel', 'Cancel Audit')}
+                variant="ghost"
+                onPress={() => livePanelReport && handleCancelAudit(livePanelReport.audit_id)}
+                loading={cancellingAudit}
+                disabled={cancellingAudit || !livePanelReport}
+                size="sm"
+              />
+            </View>
           </View>
         )}
       </GlassDraggableExpander>
@@ -969,20 +1001,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  runningNotice: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
+  runningNoticeContainer: {
+    marginTop: spacing.md,
     backgroundColor: colors.warning + '20',
     borderRadius: borderRadius.md,
     borderWidth: 1,
     borderColor: colors.warning + '40',
-    marginTop: spacing.md,
+    padding: spacing.md,
+    gap: spacing.md,
+  },
+  runningNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   runningNoticeText: {
     fontSize: 13,
     color: colors.warning,
+  },
+  runningControls: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    flexWrap: 'wrap',
   },
   connectingState: {
     alignItems: 'center',

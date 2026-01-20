@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 from functools import lru_cache
 import json
 
@@ -9,14 +10,49 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     API_V1_PREFIX: str = "/api/v1"
 
-    # Security
-    SECRET_KEY: str = "your-secret-key-change-in-production"
+    # Security (REQUIRED - no defaults for sensitive fields)
+    SECRET_KEY: str  # Required, minimum 32 characters
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     ALGORITHM: str = "HS256"
 
-    # MongoDB
-    MONGODB_URL: str = "mongodb://localhost:27017"
+    # MongoDB (REQUIRED - no defaults for connection strings)
+    MONGODB_URL: str  # Required, must be set via environment
     MONGODB_DB_NAME: str = "bayit_plus"
+
+    @field_validator("SECRET_KEY")
+    @classmethod
+    def validate_secret_key(cls, v: str) -> str:
+        """Validate SECRET_KEY is secure."""
+        insecure_values = [
+            "your-secret-key-change-in-production",
+            "secret",
+            "changeme",
+            "password",
+            "test",
+            "dev",
+            "development",
+        ]
+        if v.lower() in insecure_values or v.lower().startswith("your-"):
+            raise ValueError(
+                "SECRET_KEY must be a secure random value. "
+                "Generate one with: python -c \"import secrets; print(secrets.token_urlsafe(32))\""
+            )
+        if len(v) < 32:
+            raise ValueError(
+                f"SECRET_KEY must be at least 32 characters (got {len(v)}). "
+                "Generate one with: python -c \"import secrets; print(secrets.token_urlsafe(32))\""
+            )
+        return v
+
+    @field_validator("MONGODB_URL")
+    @classmethod
+    def validate_mongodb_url(cls, v: str) -> str:
+        """Validate MongoDB URL is not a placeholder."""
+        if not v or v == "mongodb://localhost:27017":
+            raise ValueError(
+                "MONGODB_URL must be configured. Set it to your MongoDB Atlas or server URL."
+            )
+        return v
 
     # Stripe
     STRIPE_API_KEY: str = ""
@@ -32,10 +68,10 @@ class Settings(BaseSettings):
     CLAUDE_MAX_TOKENS_SHORT: int = 200
     CLAUDE_MAX_TOKENS_LONG: int = 500
 
-    # Google OAuth
+    # Google OAuth (optional - only required if using Google sign-in)
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
-    GOOGLE_REDIRECT_URI: str = "http://localhost:3000/auth/google/callback"
+    GOOGLE_REDIRECT_URI: str = ""  # Required if using Google OAuth, no localhost defaults
 
     # ElevenLabs (speech-to-text and text-to-speech)
     ELEVENLABS_API_KEY: str = ""
@@ -56,26 +92,29 @@ class Settings(BaseSettings):
     # Options: "google" (Google Cloud Translate), "openai" (GPT-4o-mini), or "claude" (Claude)
     LIVE_TRANSLATION_PROVIDER: str = "google"
 
-    # CORS (supports JSON string from Secret Manager or list)
-    BACKEND_CORS_ORIGINS: list[str] | str = [
-        "http://localhost:3000",
-        "http://localhost:8000",
-        "https://bayit.tv",
-        "https://www.bayit.tv",
-        "https://bayit-plus.web.app",
-        "https://api.bayit.tv",
-    ]
+    # CORS (REQUIRED - supports JSON string from Secret Manager or comma-separated list)
+    # Example: '["https://bayit.tv","https://api.bayit.tv"]' or "https://bayit.tv,https://api.bayit.tv"
+    BACKEND_CORS_ORIGINS: list[str] | str = ""  # Required, no hardcoded defaults
 
     @property
     def parsed_cors_origins(self) -> list[str]:
-        """Parse CORS origins from string or list"""
+        """Parse CORS origins from string or list."""
+        if not self.BACKEND_CORS_ORIGINS:
+            # Return minimal defaults only for local development
+            import os
+            if os.getenv("DEBUG", "").lower() == "true":
+                return ["http://localhost:3000", "http://localhost:8000"]
+            raise ValueError(
+                "BACKEND_CORS_ORIGINS must be configured in production. "
+                "Set it as JSON array or comma-separated URLs."
+            )
         if isinstance(self.BACKEND_CORS_ORIGINS, str):
             # JSON string from Secret Manager
             try:
                 return json.loads(self.BACKEND_CORS_ORIGINS)
             except json.JSONDecodeError:
                 # Comma-separated fallback
-                return [origin.strip() for origin in self.BACKEND_CORS_ORIGINS.split(",")]
+                return [origin.strip() for origin in self.BACKEND_CORS_ORIGINS.split(",") if origin.strip()]
         return self.BACKEND_CORS_ORIGINS
 
     # DRM (optional)
@@ -118,7 +157,8 @@ class Settings(BaseSettings):
     UPLOAD_SESSION_TIMEOUT_HOURS: int = 2  # Timeout for inactive upload sessions
 
     # Frontend URL (for password reset links, email verification, etc.)
-    FRONTEND_URL: str = "https://bayit.tv"
+    # REQUIRED for email functionality - no production defaults
+    FRONTEND_URL: str = ""
 
     # Email Service (for Librarian AI Agent notifications)
     SENDGRID_API_KEY: str = ""
@@ -155,8 +195,9 @@ class Settings(BaseSettings):
     MAX_VERIFICATION_ATTEMPTS_PER_HOUR: int = 3
 
     # Frontend URLs (for verification links)
-    FRONTEND_WEB_URL: str = "https://bayit.tv"
-    FRONTEND_MOBILE_URL: str = "bayitplus://"
+    # REQUIRED for verification functionality - no production defaults
+    FRONTEND_WEB_URL: str = ""
+    FRONTEND_MOBILE_URL: str = "bayitplus://"  # Mobile deep link scheme (app-specific)
 
     # Google Cloud Project
     GCP_PROJECT_ID: str

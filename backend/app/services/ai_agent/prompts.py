@@ -23,31 +23,68 @@ CAPABILITY_PROMPTS: Dict[str, str] = {
 
 Before fixing metadata, posters, or subtitles, you MUST validate content integrity:
 
-1. **Check Stream URL Works:**
-   - Use `check_stream_url(content_id)` for each item
-   - A broken stream means the video file doesn't exist or is inaccessible
-   - DO NOT process items with broken streams for metadata/posters/subtitles
+### 1. Check Regular Stream URLs:
+- Use `check_stream_url(content_id)` for each non-YouTube item
+- A broken stream means the video file doesn't exist or is inaccessible
+- DO NOT process items with broken streams for metadata/posters/subtitles
 
-2. **Verify Database Record Integrity:**
-   - Content must have a valid `stream_url` field
-   - Content must have a valid `content_type` (movie or series)
-   - Content must belong to a valid category
+### 2. Validate YouTube Links (IMPORTANT!):
+YouTube videos can become unavailable (removed, private, copyright strikes, etc.)
+- First: Use `get_youtube_content_stats()` to see how many YouTube items exist
+- Then: Use `validate_youtube_links(limit=100)` to check all YouTube video URLs
+- YouTube validation uses oEmbed API (no API key required, unlimited)
+- This will identify: removed videos, private videos, region-locked videos
+- For broken YouTube videos: Use `flag_broken_youtube_videos(content_ids=[...])` to mark for review
+- YouTube content should NOT be auto-deleted (admin review needed to find replacements)
 
-3. **Handle Broken Streams:**
-   - Count items with broken streams
-   - **DELETE broken content** using `delete_broken_content(content_id, reason)`
-   - Do NOT flag for manual review - just delete it immediately
-   - Broken content is useless and should be removed
+### 3. Verify Database Record Integrity:
+- Content must have a valid `stream_url` field
+- Content must have a valid `content_type` (movie or series)
+- Content must belong to a valid category
 
-4. **Skip Invalid Content:**
-   - DO NOT fetch TMDB metadata for content with broken streams
-   - DO NOT download subtitles for content with broken streams
-   - DO NOT waste API calls on non-existent content
+### 4. Handle Broken Content:
+**For regular GCS streams:**
+- Count items with broken streams
+- **DELETE broken content** using `delete_broken_content(content_id, reason)`
+- Broken GCS content is useless and should be removed
 
-**Workflow:**
-- For each content item: check_stream_url FIRST
-- If stream is broken → delete_broken_content and SKIP all other processing
-- If stream is valid → proceed with other enabled capabilities
+**For YouTube content:**
+- FLAG for manual review using `flag_broken_youtube_videos(content_ids=[...])`
+- DO NOT auto-delete YouTube content (admins may find replacement videos)
+- Set review_issue_type="broken_youtube" for easy filtering
+
+### 5. Skip Invalid Content:
+- DO NOT fetch TMDB metadata for content with broken streams
+- DO NOT download subtitles for content with broken streams
+- DO NOT waste API calls on non-existent content
+
+### 6. Fix YouTube Posters (IMPORTANT!):
+YouTube content should have nice poster images from YouTube's thumbnail service:
+- Use `get_youtube_content_stats()` to see how many items are missing posters
+- Use `fix_youtube_posters(limit=100, dry_run=false)` to fix all YouTube thumbnails
+- This fetches high-quality thumbnails (maxresdefault or sddefault) from YouTube
+- Updates thumbnail, backdrop, and poster_url fields automatically
+- No API key required - uses public YouTube thumbnail URLs
+
+**Workflow Example:**
+```
+Step 1: get_youtube_content_stats()
+        → See total YouTube content count and missing_posters count
+
+Step 2: validate_youtube_links(limit=100, include_kids=true)
+        → Returns list of broken YouTube videos
+
+Step 3: flag_broken_youtube_videos(content_ids=[broken IDs], dry_run=false)
+        → Flag broken videos for manual review
+
+Step 4: fix_youtube_posters(limit=100, dry_run=false)
+        → Fix all YouTube thumbnails with high-quality images
+
+Step 5: For non-YouTube content: check_stream_url for each item
+        → Delete broken GCS content
+
+Step 6: Proceed with metadata/subtitle fixes for valid content only
+```
 """,
 
     "clean_titles": """
@@ -155,6 +192,63 @@ Step 5: auto_link_episodes()
 - Missing parent series means no proper series navigation
 - Inconsistent posters look unprofessional
 - Proper series structure enables "Continue Watching" and episode navigation
+""",
+
+    "enforce_taxonomy": """
+## Taxonomy Enforcement (5-Axis Classification System)
+**CRITICAL: Migrate ALL content to new taxonomy - no exceptions!**
+
+**The 5-Axis Classification System:**
+1. **Sections** - Where content appears in navigation (movies, series, kids, judaism, documentaries)
+2. **Format** - Structural type (movie, series, documentary, short, clip)
+3. **Audience** - Age appropriateness (general, kids, family, mature)
+4. **Genres** - Mood/style (drama, comedy, action, thriller, etc.)
+5. **Topic Tags** - Themes (jewish, israeli, educational, historical, etc.)
+
+**MANDATORY WORKFLOW - DO ALL STEPS:**
+
+**Step 1: Check Migration Status**
+- Use `get_taxonomy_summary()` to see current state
+- Note total pending items - YOU MUST MIGRATE ALL OF THEM
+
+**Step 2: Batch Migrate ALL Pending Content**
+- Use `batch_migrate_taxonomy(batch_size=100)` REPEATEDLY until done
+- Keep calling it until migration_status shows 0 pending
+- This is the fastest way to migrate - USE IT
+
+**Step 3: Fix Remaining Violations**
+- Use `list_taxonomy_violations(violation_type="all", limit=200)`
+- For EACH violation: apply immediate fix
+- DO NOT analyze - FIX
+
+**Step 4: Validate Completion**
+- Call `get_taxonomy_summary()` again
+- Verify: pending = 0
+- If not: continue migrating
+
+**CORRECT APPROACH:**
+```
+1. get_taxonomy_summary() → see pending count
+2. LOOP: batch_migrate_taxonomy(batch_size=100) until all done
+3. list_taxonomy_violations(limit=200) → fix each one
+4. get_taxonomy_summary() → confirm pending = 0
+5. complete_audit() ONLY when truly done
+```
+
+**WRONG APPROACH (DO NOT DO THIS):**
+- "Let me examine a few items first..." - NO
+- "I'll analyze the taxonomy structure..." - NO
+- "Here's what I observed about the taxonomy..." - NO
+- Just migrate EVERYTHING immediately
+
+**Section Mapping Rules:**
+- סרטים/Movies/קומדיה/דרמה/אקשן → section: "movies"
+- סדרות/Series/TV Shows → section: "series"
+- ילדים/Kids/לילדים → section: "kids", audience: "kids"
+- יהדות/Judaism/תורה → section: "judaism"
+- דוקומנטרי/Documentaries → section: "documentaries"
+
+**Goal: 100% taxonomy coverage - EVERY item must have proper classification!**
 """
 }
 
@@ -167,19 +261,39 @@ BASE_PROMPT_HEADER = """You are an autonomous AI Librarian for Bayit+, an Israel
 """
 
 BASE_PROMPT_PROCESSING = """
-**Processing Strategy:**
-1. Get ALL content items: `list_content_items(limit=100, skip=0)`
-2. If `has_more: true`, continue with skip=100, skip=200, etc.
-3. Process EVERY item systematically
-4. Report progress regularly
-5. Complete ALL items before finishing
+**Processing Strategy - CRITICAL: FIX EVERYTHING, NO EXCEPTIONS:**
 
-**Rules:**
-- Stay focused on the assigned tasks
-- Process systematically through ALL items
-- Track comprehensive statistics as you work
-- When calling complete_audit, provide detailed breakdown statistics
-- Report final comprehensive summary when done
+**MANDATORY WORKFLOW:**
+1. Get ALL content items: `list_content_items(limit=100, skip=0)`
+2. If `has_more: true`, CONTINUE with skip=100, skip=200, etc. - DO NOT STOP!
+3. Process EVERY SINGLE ITEM - no sampling, no skipping, no exceptions
+4. For EACH item: apply ALL fixes needed, not just one
+5. Only call complete_audit when EVERY item has been processed
+
+**ABSOLUTE RULES - NO EXCEPTIONS:**
+- DO NOT sample files - process ALL of them
+- DO NOT stop early - finish the entire library
+- DO NOT skip items because "it would take too long"
+- DO NOT report partial results as complete
+- DO NOT observe/analyze without fixing
+- FIX first, report later
+
+**YOU MUST:**
+- Process ALL items systematically from first to last
+- Apply fixes immediately as you find issues
+- Track running statistics as you work
+- Continue until has_more=false and all items processed
+- Only then call complete_audit with FINAL statistics
+
+**ANTI-PATTERNS TO AVOID:**
+- "Let me check a sample of files..." - NO, check ALL files
+- "This would take a while, so I'll report what I found..." - NO, keep going
+- "I've identified several issues..." - NO, FIX them immediately
+- "For efficiency, I'll focus on..." - NO, focus on EVERYTHING
+
+**Progress Reporting:**
+- After every 100 items: brief progress update with items_processed and items_fixed
+- DO NOT call complete_audit until truly finished
 """
 
 BASE_PROMPT_MODE = """
@@ -252,6 +366,7 @@ def get_enabled_capabilities(
     remove_duplicates: bool,
     validate_integrity: bool = True,
     fix_series_structure: bool = False,
+    enforce_taxonomy: bool = False,
 ) -> List[str]:
     """
     Get list of enabled capability keys based on configuration.
@@ -280,6 +395,8 @@ def get_enabled_capabilities(
         enabled.append("remove_duplicates")
     if fix_series_structure:
         enabled.append("fix_series_structure")
+    if enforce_taxonomy:
+        enabled.append("enforce_taxonomy")
 
     return enabled
 
@@ -454,6 +571,13 @@ These will ONLY appear in AI Insights in complete_audit, NOT as fixes_applied!
 - batch_download_subtitles - Batch download subtitles for multiple items
 - flag_for_manual_review - Flag for manual review (NOT for broken streams)
 - delete_broken_content - Delete content with broken/inaccessible streams
+
+**Available Tools - YouTube Link Validation:**
+- get_youtube_content_stats - Get statistics about YouTube content (total count, kids vs non-kids, already flagged, missing posters)
+- validate_youtube_links - Validate YouTube video URLs are still available (checks for removed, private, region-locked videos)
+- flag_broken_youtube_videos - Flag content with broken YouTube videos for manual review (DO NOT delete YouTube content)
+- fix_youtube_posters - Fix missing or low-quality posters for YouTube content (fetches high-quality thumbnails from YouTube)
+- find_youtube_missing_posters - Find YouTube content items that are missing proper thumbnails/posters
 
 **Available Tools - Storage Monitoring:**
 - check_storage_usage - Check storage usage (total size, file count, breakdown by type)

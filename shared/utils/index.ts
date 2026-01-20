@@ -70,3 +70,13 @@ export {
   WakeWordDetector,
   WakeWordConfig,
 } from './wakeWordDetector';
+
+// YouTube Helpers
+export {
+  extractYouTubeVideoId,
+  isYouTubeUrl,
+  getYouTubeThumbnailUrl,
+  getYouTubeThumbnailFromUrl,
+  getContentPosterUrl,
+} from './youtube';
+export type { YouTubeThumbnailQuality } from './youtube';

@@ -23,6 +23,7 @@ import { ShabbatModeBanner, ShabbatEveSection } from '@/components/judaism';
 import { colors, spacing } from '@bayit/shared/theme';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
+import { getContentPosterUrl } from '@bayit/shared-utils/youtube';
 import logger from '@/utils/logger';
 
 declare const __TV__: boolean;
@@ -193,7 +194,7 @@ export default function HomePage() {
         title: getLocalizedName(item, i18n.language),
         subtitle: formatContentMetadata(item),
         description: getLocalizedDescription(item, i18n.language),
-        image: item.backdrop || item.thumbnail,
+        image: getContentPosterUrl(item) || item.backdrop || item.thumbnail,
         badge: index === 0 ? t('common.new') : undefined,
         is_series: item.is_series,
         available_subtitle_languages: item.available_subtitle_languages,

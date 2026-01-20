@@ -240,11 +240,11 @@ const styles = StyleSheet.create({
     marginRight: spacing.xs,
   },
   labelText: {
-    color: colors.text.muted,
+    color: colors.textMuted,
   },
   timeText: {
     fontWeight: 'bold',
-    color: colors.text.primary,
+    color: colors.text,
     fontVariant: ['tabular-nums'],
   },
   dateContainer: {
@@ -253,10 +253,10 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   dateText: {
-    color: colors.text.secondary,
+    color: colors.textSecondary,
   },
   dateSeparator: {
-    color: colors.text.muted,
+    color: colors.textMuted,
   },
   weekendBadge: {
     marginTop: spacing.xs,

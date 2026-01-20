@@ -57,6 +57,7 @@ from app.services.ai_agent.executors import (
     execute_sync_series_posters_to_episodes,
     execute_find_misclassified_episodes,
     execute_fix_misclassified_series,
+    execute_organize_all_series,
     # Integrity Tools
     execute_get_integrity_status,
     execute_find_orphaned_gcs_files,
@@ -65,6 +66,21 @@ from app.services.ai_agent.executors import (
     execute_cleanup_orphans,
     execute_recover_stuck_jobs,
     execute_run_full_cleanup,
+    # YouTube Validation Tools
+    execute_validate_youtube_links,
+    execute_flag_broken_youtube_videos,
+    execute_get_youtube_content_stats,
+    # YouTube Poster Tools
+    execute_fix_youtube_posters,
+    execute_find_youtube_missing_posters,
+)
+from app.services.ai_agent.executors.taxonomy import (
+    execute_validate_taxonomy_compliance,
+    execute_suggest_taxonomy_classification,
+    execute_apply_taxonomy_classification,
+    execute_batch_migrate_taxonomy,
+    execute_get_taxonomy_summary,
+    execute_list_taxonomy_violations,
 )
 
 logger = logging.getLogger(__name__)
@@ -202,6 +218,9 @@ async def execute_tool(
         elif tool_name == "fix_misclassified_series":
             return await execute_fix_misclassified_series(**tool_input, audit_id=audit_id, dry_run=dry_run)
 
+        elif tool_name == "organize_all_series":
+            return await execute_organize_all_series(**tool_input, audit_id=audit_id, dry_run=dry_run)
+
         # Integrity Tools
         elif tool_name == "get_integrity_status":
             return await execute_get_integrity_status()
@@ -223,6 +242,42 @@ async def execute_tool(
 
         elif tool_name == "run_full_cleanup":
             return await execute_run_full_cleanup(**tool_input)
+
+        # YouTube Validation Tools
+        elif tool_name == "validate_youtube_links":
+            return await execute_validate_youtube_links(**tool_input)
+
+        elif tool_name == "flag_broken_youtube_videos":
+            return await execute_flag_broken_youtube_videos(**tool_input, audit_id=audit_id, dry_run=dry_run)
+
+        elif tool_name == "get_youtube_content_stats":
+            return await execute_get_youtube_content_stats()
+
+        # YouTube Poster Tools
+        elif tool_name == "fix_youtube_posters":
+            return await execute_fix_youtube_posters(**tool_input)
+
+        elif tool_name == "find_youtube_missing_posters":
+            return await execute_find_youtube_missing_posters(**tool_input)
+
+        # Taxonomy Tools
+        elif tool_name == "validate_taxonomy_compliance":
+            return await execute_validate_taxonomy_compliance(**tool_input, audit_id=audit_id, dry_run=dry_run)
+
+        elif tool_name == "suggest_taxonomy_classification":
+            return await execute_suggest_taxonomy_classification(**tool_input, audit_id=audit_id, dry_run=dry_run)
+
+        elif tool_name == "apply_taxonomy_classification":
+            return await execute_apply_taxonomy_classification(**tool_input, audit_id=audit_id, dry_run=dry_run)
+
+        elif tool_name == "batch_migrate_taxonomy":
+            return await execute_batch_migrate_taxonomy(**tool_input, audit_id=audit_id, dry_run=dry_run)
+
+        elif tool_name == "get_taxonomy_summary":
+            return await execute_get_taxonomy_summary(audit_id=audit_id, dry_run=dry_run)
+
+        elif tool_name == "list_taxonomy_violations":
+            return await execute_list_taxonomy_violations(**tool_input, audit_id=audit_id, dry_run=dry_run)
 
         elif tool_name == "complete_audit":
             # This is handled specially in the agent loop

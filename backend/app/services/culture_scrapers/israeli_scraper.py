@@ -55,6 +55,10 @@ class IsraeliScraper(BaseCultureScraper):
         "culture": ["תרבות", "אמנות", "מוזיקה", "תיאטרון", "גלריה"],
         "food": ["אוכל", "מסעדה", "שוק", "שף", "מטבח"],
 
+        # Politics & Security
+        "politics": ["ממשלה", "כנסת", "בחירות", "ראש הממשלה", "שר", "פוליטיקה", "קואליציה", "אופוזיציה", "נתניהו", "ארדואן", "טורקיה", "כורדים", "דרוזים"],
+        "security": ["ביטחון", "צה\"ל", "צבא", "מלחמה", "פיגוע", "טרור", "חמאס", "חיזבאללה", "עזה", "גבול", "רקטות", "ברזל", "מבצע"],
+
         # General
         "general": ["ישראל", "חדשות"],
     }
@@ -75,6 +79,10 @@ class IsraeliScraper(BaseCultureScraper):
         "culture": ["culture", "art", "music", "theater", "gallery", "bauhaus"],
         "food": ["food", "restaurant", "market", "chef", "cuisine"],
 
+        # Politics & Security
+        "politics": ["government", "knesset", "election", "prime minister", "minister", "politics", "coalition", "opposition", "netanyahu", "erdogan", "turkey", "kurds", "druze"],
+        "security": ["security", "idf", "army", "war", "attack", "terror", "hamas", "hezbollah", "gaza", "border", "rockets", "iron dome", "operation"],
+
         # General
         "general": ["israel", "news"],
     }
@@ -91,6 +99,8 @@ class IsraeliScraper(BaseCultureScraper):
         "tech": {"he": "הייטק", "en": "Tech", "es": "Tecnologia"},
         "culture": {"he": "תרבות", "en": "Culture", "es": "Cultura"},
         "food": {"he": "אוכל", "en": "Food", "es": "Comida"},
+        "politics": {"he": "פוליטיקה", "en": "Politics", "es": "Politica"},
+        "security": {"he": "ביטחון", "en": "Security", "es": "Seguridad"},
         "general": {"he": "כללי", "en": "General", "es": "General"},
     }
 

@@ -22,7 +22,7 @@ import { useModeEnforcement } from '@bayit/shared-hooks';
 import { GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
-import { useAuthStore } from '@bayit/shared-stores/authStore';
+import { useAuthStore } from '@/stores/authStore';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;

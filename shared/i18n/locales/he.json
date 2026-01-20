@@ -3246,5 +3246,105 @@
       "startUsing": "התחל להשתמש בשליטה קולית"
     },
     "skip": "דלג לעת עתה"
+  },
+  "taxonomy": {
+    "title": "סיווג תוכן",
+    "sections": {
+      "title": "מדורים",
+      "description": "קטגוריות ניווט ראשיות",
+      "movies": "סרטים",
+      "series": "סדרות",
+      "kids": "ילדים",
+      "judaism": "יהדות",
+      "documentaries": "דוקומנטריים",
+      "live": "שידור חי"
+    },
+    "formats": {
+      "title": "פורמט",
+      "description": "סוג מבני של התוכן",
+      "movie": "סרט",
+      "series": "סדרה",
+      "documentary": "דוקומנטרי",
+      "short": "סרטון קצר",
+      "clip": "קליפ"
+    },
+    "genres": {
+      "title": "ז'אנרים",
+      "description": "מצב רוח וסגנון",
+      "drama": "דרמה",
+      "comedy": "קומדיה",
+      "action": "אקשן",
+      "thriller": "מותחן",
+      "animation": "אנימציה",
+      "musical": "מחזמר",
+      "romance": "רומנטיקה",
+      "horror": "אימה",
+      "sci-fi": "מדע בדיוני",
+      "documentary": "דוקומנטרי",
+      "family": "משפחה",
+      "adventure": "הרפתקאות",
+      "fantasy": "פנטזיה",
+      "crime": "פשע",
+      "mystery": "מסתורין",
+      "war": "מלחמה",
+      "western": "מערבון",
+      "biography": "ביוגרפיה",
+      "history": "היסטוריה",
+      "sport": "ספורט"
+    },
+    "audiences": {
+      "title": "קהל יעד",
+      "description": "התאמה גילאית",
+      "general": "כללי",
+      "kids": "ילדים",
+      "family": "משפחה",
+      "mature": "מבוגרים"
+    },
+    "topicTags": {
+      "title": "נושאים",
+      "description": "ערכות תוכן",
+      "jewish": "יהודי",
+      "israeli": "ישראלי",
+      "educational": "חינוכי",
+      "historical": "היסטורי",
+      "sports": "ספורט",
+      "nature": "טבע",
+      "science": "מדע",
+      "music": "מוזיקה",
+      "art": "אומנות",
+      "cooking": "בישול",
+      "travel": "טיולים",
+      "technology": "טכנולוגיה"
+    },
+    "subcategories": {
+      "title": "תתי-קטגוריות",
+      "kids": {
+        "cartoons": "סרטונים מצוירים",
+        "educational": "חינוכי",
+        "music": "מוזיקה",
+        "hebrew-learning": "לימוד עברית",
+        "stories": "סיפורים",
+        "jewish": "יהודי"
+      },
+      "judaism": {
+        "shiurim": "שיעורי תורה",
+        "tefila": "תפילה",
+        "jewish-music": "מוזיקה יהודית",
+        "holidays": "חגים",
+        "documentaries": "דוקומנטריים"
+      }
+    },
+    "admin": {
+      "selectSection": "בחר מדור",
+      "selectSections": "בחר מדורים",
+      "primarySection": "מדור ראשי",
+      "selectFormat": "בחר פורמט",
+      "selectAudience": "בחר קהל יעד",
+      "selectGenres": "בחר ז'אנרים",
+      "selectTopics": "בחר נושאים",
+      "selectSubcategories": "בחר תתי-קטגוריות",
+      "crossListing": "פרסום צולב",
+      "crossListingHint": "התוכן יכול להופיע במספר מדורים"
+    }
   }
 }

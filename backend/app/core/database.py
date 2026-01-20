@@ -6,6 +6,7 @@ from app.core.config import settings
 from app.models.user import User
 from app.models.verification import VerificationToken
 from app.models.content import Content, Category, LiveChannel, EPGEntry, RadioStation, Podcast, PodcastEpisode
+from app.models.content_taxonomy import ContentSection, SectionSubcategory, Genre, Audience
 from app.models.subscription import Subscription, Invoice
 from app.models.watchlist import WatchlistItem, WatchHistory, Conversation
 from app.models.profile import Profile
@@ -70,6 +71,11 @@ async def connect_to_mongo():
             RadioStation,
             Podcast,
             PodcastEpisode,
+            # Content taxonomy models (new classification system)
+            ContentSection,
+            SectionSubcategory,
+            Genre,
+            Audience,
             Subscription,
             Invoice,
             WatchlistItem,

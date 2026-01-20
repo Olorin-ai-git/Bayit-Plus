@@ -35,14 +35,22 @@ async def log_audit(
     request: Request = None,
 ):
     """Create an audit log entry."""
+    # Safely extract IP address (request.client can be None in some contexts)
+    ip_address = None
+    user_agent = None
+    if request:
+        if request.client:
+            ip_address = request.client.host
+        user_agent = request.headers.get("user-agent")
+
     log = AuditLog(
         user_id=user_id,
         action=action,
         resource_type=resource_type,
         resource_id=resource_id,
         details=details or {},
-        ip_address=request.client.host if request else None,
-        user_agent=request.headers.get("user-agent") if request else None,
+        ip_address=ip_address,
+        user_agent=user_agent,
     )
     await log.insert()
 
