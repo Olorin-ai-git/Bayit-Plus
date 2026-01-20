@@ -1,0 +1,168 @@
+# GitLeaks configuration for Bayit-Plus
+# Detects secrets in commits, branches, and files
+
+title = "Bayit-Plus GitLeaks Configuration"
+
+[extend]
+# Use default gitleaks rules as base
+useDefault = true
+
+[[rules]]
+id = "mongodb-connection-string"
+description = "MongoDB connection string with credentials"
+regex = '''mongodb(\+srv)?://[^:]+:[^@]+@'''
+tags = ["mongodb", "credentials"]
+
+[[rules]]
+id = "stripe-secret-key"
+description = "Stripe secret API key"
+regex = '''sk_live_[a-zA-Z0-9]{24,}'''
+tags = ["stripe", "api-key"]
+
+[[rules]]
+id = "stripe-restricted-key"
+description = "Stripe restricted API key"
+regex = '''rk_live_[a-zA-Z0-9]{24,}'''
+tags = ["stripe", "api-key"]
+
+[[rules]]
+id = "stripe-webhook-secret"
+description = "Stripe webhook signing secret"
+regex = '''whsec_[a-zA-Z0-9]{32,}'''
+tags = ["stripe", "webhook"]
+
+[[rules]]
+id = "anthropic-api-key"
+description = "Anthropic (Claude) API key"
+regex = '''sk-ant-[a-zA-Z0-9\-_]{32,}'''
+tags = ["anthropic", "api-key"]
+
+[[rules]]
+id = "openai-api-key"
+description = "OpenAI API key"
+regex = '''sk-[a-zA-Z0-9]{48}'''
+tags = ["openai", "api-key"]
+
+[[rules]]
+id = "openai-project-key"
+description = "OpenAI project API key"
+regex = '''sk-proj-[a-zA-Z0-9_-]{32,}'''
+tags = ["openai", "api-key"]
+
+[[rules]]
+id = "google-api-key"
+description = "Google API key"
+regex = '''AIza[a-zA-Z0-9_-]{35}'''
+tags = ["google", "api-key"]
+
+[[rules]]
+id = "google-oauth-secret"
+description = "Google OAuth client secret"
+regex = '''GOCSPX-[a-zA-Z0-9_-]{28}'''
+tags = ["google", "oauth"]
+
+[[rules]]
+id = "twilio-account-sid"
+description = "Twilio Account SID"
+regex = '''AC[a-z0-9]{32}'''
+tags = ["twilio", "credentials"]
+
+[[rules]]
+id = "twilio-api-key"
+description = "Twilio API Key SID"
+regex = '''SK[a-z0-9]{32}'''
+tags = ["twilio", "api-key"]
+
+[[rules]]
+id = "elevenlabs-api-key"
+description = "ElevenLabs API key (estimated pattern)"
+regex = '''[a-f0-9]{32}[a-f0-9]*'''
+tags = ["elevenlabs", "api-key"]
+# Note: This pattern may be too broad, adjust based on actual format
+
+[[rules]]
+id = "sentry-dsn"
+description = "Sentry DSN"
+regex = '''https://[a-f0-9]{32}@[a-z0-9-]+\.ingest\.sentry\.io/[0-9]+'''
+tags = ["sentry", "dsn"]
+
+[[rules]]
+id = "jwt-token"
+description = "JWT token"
+regex = '''eyJ[a-zA-Z0-9_-]*\.eyJ[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]*'''
+tags = ["jwt", "token"]
+
+[[rules]]
+id = "private-key-pem"
+description = "Private key in PEM format"
+regex = '''-----BEGIN\s+(?:RSA|DSA|EC|OPENSSH|ENCRYPTED)?\s?PRIVATE KEY-----'''
+tags = ["private-key", "pem"]
+
+[[rules]]
+id = "gcp-service-account"
+description = "GCP service account JSON"
+regex = '''"type":\s*"service_account"'''
+tags = ["gcp", "service-account"]
+
+[[rules]]
+id = "password-in-url"
+description = "Password in URL or connection string"
+regex = '''://[^:]+:[^@\s]{8,}@'''
+tags = ["password", "credentials"]
+
+[[rules]]
+id = "generic-api-key"
+description = "Generic API key pattern"
+regex = '''(?i)(api[_-]?key|apikey)[\s:=]+["\x27]?[a-zA-Z0-9_-]{20,}'''
+tags = ["api-key", "generic"]
+
+[[rules]]
+id = "generic-secret"
+description = "Generic secret pattern"
+regex = '''(?i)(secret|password|passwd|pwd)[\s:=]+["\x27]?[a-zA-Z0-9_!@#$%^&*-]{12,}'''
+tags = ["secret", "generic"]
+
+# Allowlist for known false positives
+[allowlist]
+description = "Allowlisted files and patterns"
+
+# Ignore example files
+paths = [
+  '''\.env\.example$''',
+  '''\.secrets\.baseline$''',
+  '''^\.git-secrets-patterns$''',
+  '''^\.gitleaks\.toml$''',
+]
+
+# Ignore lock files and minified code
+regexes = [
+  '''poetry\.lock''',
+  '''package-lock\.json''',
+  '''yarn\.lock''',
+  '''\.min\.js''',
+]
+
+# Ignore test fixtures with obvious mock values
+[[rules]]
+id = "test-mock-values"
+description = "Test mock values (not real secrets)"
+regex = '''(test-api-key|mock-secret|fake-password|example-key)'''
+tags = ["test", "mock"]
+
+[allowlist]
+# Allowlist test mock values
+regexes = [
+  '''test-secret-key-minimum-32-chars-long''',
+  '''test-api-key''',
+  '''mock-.*''',
+  '''fake-.*''',
+  '''example-.*''',
+  '''sk_test_.*''',
+  '''pk_test_.*''',
+]
+
+# Additional entropy detection
+[extend.entropyDetection]
+enabled = true
+threshold = 3.5  # Adjust based on false positive rate
+groups = 1

@@ -147,12 +147,18 @@ def validate_required_config() -> None:
 
     # Check librarian fields (only if librarian feature is being used)
     # We check if any librarian field is set to determine if the feature is active
-    for field in LIBRARIAN_FIELDS:
-        is_valid, error_msg = _check_field_value(field.field_name)
-        if not is_valid:
-            errors.append(
-                f"{field.field_name} ({field.category}): {field.description} - {error_msg}"
-            )
+    librarian_in_use = any(
+        hasattr(settings, field.field_name) and getattr(settings, field.field_name, None)
+        for field in LIBRARIAN_FIELDS
+    )
+
+    if librarian_in_use:
+        for field in LIBRARIAN_FIELDS:
+            is_valid, error_msg = _check_field_value(field.field_name)
+            if not is_valid:
+                errors.append(
+                    f"{field.field_name} ({field.category}): {field.description} - {error_msg}"
+                )
 
     if errors:
         raise ConfigValidationError(errors)
