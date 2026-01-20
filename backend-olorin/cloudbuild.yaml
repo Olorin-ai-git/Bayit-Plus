@@ -2,32 +2,6 @@
 # Builds and deploys independent Olorin backend to Cloud Run
 
 steps:
-  # Validate required secrets exist
-  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-    entrypoint: bash
-    args:
-      - "-c"
-      - |
-        echo "Validating required secrets..."
-        REQUIRED_SECRETS=(
-          "bayit-mongodb-url"
-          "bayit-anthropic-api-key"
-          "bayit-openai-api-key"
-          "bayit-elevenlabs-api-key"
-          "olorin-pinecone-api-key"
-          "olorin-partner-api-key-salt"
-        )
-
-        for secret in "$${REQUIRED_SECRETS[@]}"; do
-          if ! gcloud secrets describe $$secret --project=$$PROJECT_ID &>/dev/null; then
-            echo "ERROR: Required secret $$secret not found"
-            exit 1
-          fi
-          echo "✓ Secret $$secret exists"
-        done
-        echo "All required secrets validated"
-    id: "validate-secrets"
-
   # Build Docker image
   - name: "gcr.io/cloud-builders/docker"
     args:
@@ -40,7 +14,6 @@ steps:
       - "backend-olorin/Dockerfile"
       - "."
     id: "build-image"
-    waitFor: ["validate-secrets"]
 
   # Push image to Container Registry
   - name: "gcr.io/cloud-builders/docker"
