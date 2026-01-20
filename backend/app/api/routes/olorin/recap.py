@@ -17,6 +17,7 @@ from app.api.routes.olorin.dependencies import (
     get_current_partner,
     verify_capability,
 )
+from app.api.routes.olorin.errors import get_error_message, OlorinErrors
 
 logger = logging.getLogger(__name__)
 
@@ -141,7 +142,7 @@ async def create_session(
         logger.error(f"Failed to create recap session: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create session",
+            detail=get_error_message(OlorinErrors.CREATE_SESSION_FAILED),
         )
 
 
@@ -166,19 +167,19 @@ async def add_transcript(
         if not session:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Session not found",
+                detail=get_error_message(OlorinErrors.SESSION_NOT_FOUND),
             )
 
         if session.partner_id and session.partner_id != partner.partner_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Session belongs to different partner",
+                detail=get_error_message(OlorinErrors.SESSION_DIFFERENT_PARTNER),
             )
 
         if session.status != "active":
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Session is {session.status}, cannot add transcript",
+                detail=get_error_message(OlorinErrors.SESSION_INVALID_STATUS, status=session.status),
             )
 
         # Add segment
@@ -194,7 +195,7 @@ async def add_transcript(
         if not updated:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to add transcript",
+                detail=get_error_message(OlorinErrors.ADD_TRANSCRIPT_FAILED),
             )
 
         return TranscriptResponse(
@@ -209,7 +210,7 @@ async def add_transcript(
         logger.error(f"Failed to add transcript: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to add transcript",
+            detail=get_error_message(OlorinErrors.ADD_TRANSCRIPT_FAILED),
         )
 
 
@@ -236,13 +237,13 @@ async def generate_recap(
         if not session:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Session not found",
+                detail=get_error_message(OlorinErrors.SESSION_NOT_FOUND),
             )
 
         if session.partner_id and session.partner_id != partner.partner_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Session belongs to different partner",
+                detail=get_error_message(OlorinErrors.SESSION_DIFFERENT_PARTNER),
             )
 
         # Generate recap
@@ -255,7 +256,7 @@ async def generate_recap(
         if not result:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to generate recap",
+                detail=get_error_message(OlorinErrors.GENERATE_RECAP_FAILED),
             )
 
         # Record usage
@@ -280,7 +281,7 @@ async def generate_recap(
         logger.error(f"Failed to generate recap: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to generate recap",
+            detail=get_error_message(OlorinErrors.GENERATE_RECAP_FAILED),
         )
 
 
@@ -302,13 +303,13 @@ async def get_session(
     if not session:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Session not found",
+            detail=get_error_message(OlorinErrors.SESSION_NOT_FOUND),
         )
 
     if session.partner_id and session.partner_id != partner.partner_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Session belongs to different partner",
+            detail=get_error_message(OlorinErrors.SESSION_DIFFERENT_PARTNER),
         )
 
     return SessionResponse(
@@ -343,13 +344,13 @@ async def end_session(
     if not session:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Session not found",
+            detail=get_error_message(OlorinErrors.SESSION_NOT_FOUND),
         )
 
     if session.partner_id and session.partner_id != partner.partner_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Session belongs to different partner",
+            detail=get_error_message(OlorinErrors.SESSION_DIFFERENT_PARTNER),
         )
 
     # End session

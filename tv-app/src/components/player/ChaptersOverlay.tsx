@@ -9,7 +9,7 @@ import {
   Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { GlassView } from '../ui/GlassView';
+import { GlassView } from '../ui';
 import { ChapterItem, Chapter } from './ChapterItem';
 import { colors, borderRadius, spacing } from '../../theme';
 

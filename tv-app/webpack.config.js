@@ -106,18 +106,29 @@ module.exports = {
       'react-native-linear-gradient': 'react-native-web-linear-gradient',
       // AsyncStorage web shim
       '@react-native-async-storage/async-storage': path.resolve(__dirname, 'src/utils/asyncStorageWeb.ts'),
-      // Shared packages
-      '@bayit/shared': path.resolve(__dirname, '../shared/components'),
-      '@bayit/shared/components': path.resolve(__dirname, '../shared/components'),
+      // Sentry web shim - @sentry/react-native doesn't work on web
+      '@sentry/react-native': path.resolve(__dirname, 'src/utils/sentryWebShim.ts'),
+      // Shared packages - exact matches with $ suffix, specific paths without
+      '@bayit/shared/components/ErrorBoundary': path.resolve(__dirname, '../shared/components/ErrorBoundary'),
       '@bayit/shared/components/ai': path.resolve(__dirname, '../shared/components/ai'),
       '@bayit/shared/components/ui': path.resolve(__dirname, '../shared/components/ui'),
       '@bayit/shared/components/support': path.resolve(__dirname, '../shared/components/support'),
+      '@bayit/shared/components$': path.resolve(__dirname, '../shared/components'),
+      '@bayit/shared/components': path.resolve(__dirname, '../shared/components'),
+      '@bayit/shared/utils/logger$': path.resolve(__dirname, '../shared/utils/logger.ts'),
+      '@bayit/shared/utils/logger': path.resolve(__dirname, '../shared/utils/logger.ts'),
+      '@bayit/shared/utils$': path.resolve(__dirname, '../shared/utils'),
+      '@bayit/shared/utils': path.resolve(__dirname, '../shared/utils'),
       '@bayit/shared/ui': path.resolve(__dirname, '../shared/components/ui'),
       '@bayit/shared/theme': path.resolve(__dirname, '../shared/theme'),
       '@bayit/shared/stores': path.resolve(__dirname, '../shared/stores'),
       '@bayit/shared/services': path.resolve(__dirname, '../shared/services'),
+      '@bayit/shared/hooks$': path.resolve(__dirname, '../shared/hooks'),
       '@bayit/shared/hooks': path.resolve(__dirname, '../shared/hooks'),
       '@bayit/shared/admin': path.resolve(__dirname, '../shared/components/admin'),
+      '@bayit/shared$': path.resolve(__dirname, '../shared/components'),
+      '@bayit/shared/chat': path.resolve(__dirname, '../shared/components/chat'),
+      '@bayit/shared/watchparty': path.resolve(__dirname, '../shared/components/watchparty'),
       '@bayit/shared-screens': path.resolve(__dirname, '../shared/screens'),
       '@bayit/shared-assets': path.resolve(__dirname, '../shared/assets'),
       '@bayit/shared-services': path.resolve(__dirname, '../shared/services'),
@@ -126,6 +137,7 @@ module.exports = {
       '@bayit/shared-contexts': path.resolve(__dirname, '../shared/contexts'),
       '@bayit/shared-i18n': path.resolve(__dirname, '../shared/i18n'),
       '@bayit/shared-config': path.resolve(__dirname, '../shared/config'),
+      '@bayit/shared-utils': path.resolve(__dirname, '../shared/utils'),
     },
     // Allow shared components to resolve node_modules from this directory
     modules: [

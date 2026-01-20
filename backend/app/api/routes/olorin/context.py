@@ -22,6 +22,7 @@ from app.api.routes.olorin.dependencies import (
     get_current_partner,
     verify_capability,
 )
+from app.api.routes.olorin.errors import get_error_message, OlorinErrors
 
 logger = logging.getLogger(__name__)
 
@@ -177,7 +178,7 @@ async def detect_cultural_references(
         logger.error(f"Cultural detection failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Detection failed",
+            detail=get_error_message(OlorinErrors.DETECTION_FAILED),
         )
 
 
@@ -205,7 +206,7 @@ async def get_reference_explanation(
         if not explanation:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Reference '{reference_id}' not found",
+                detail=get_error_message(OlorinErrors.REFERENCE_NOT_FOUND, reference_id=reference_id),
             )
 
         # Record minimal usage
@@ -234,7 +235,7 @@ async def get_reference_explanation(
         logger.error(f"Get explanation failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to get explanation",
+            detail=get_error_message(OlorinErrors.EXPLANATION_FAILED),
         )
 
 
@@ -278,7 +279,7 @@ async def enrich_text(
         logger.error(f"Text enrichment failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Enrichment failed",
+            detail=get_error_message(OlorinErrors.ENRICHMENT_FAILED),
         )
 
 
@@ -329,7 +330,7 @@ async def get_category_references(
         logger.error(f"Get category references failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to get references",
+            detail=get_error_message(OlorinErrors.GET_REFERENCES_FAILED),
         )
 
 
@@ -376,5 +377,5 @@ async def get_popular_references(
         logger.error(f"Get popular references failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to get references",
+            detail=get_error_message(OlorinErrors.GET_REFERENCES_FAILED),
         )

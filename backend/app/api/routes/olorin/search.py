@@ -23,6 +23,7 @@ from app.api.routes.olorin.dependencies import (
     get_current_partner,
     verify_capability,
 )
+from app.api.routes.olorin.errors import get_error_message, OlorinErrors
 
 logger = logging.getLogger(__name__)
 
@@ -181,7 +182,7 @@ async def semantic_search(
         logger.error(f"Semantic search failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Search failed",
+            detail=get_error_message(OlorinErrors.SEARCH_FAILED),
         )
 
 
@@ -260,7 +261,7 @@ async def dialogue_search(
         logger.error(f"Dialogue search failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Search failed",
+            detail=get_error_message(OlorinErrors.SEARCH_FAILED),
         )
 
 
@@ -297,5 +298,5 @@ async def index_content(
         logger.error(f"Content indexing failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Indexing failed",
+            detail=get_error_message(OlorinErrors.INDEXING_FAILED),
         )

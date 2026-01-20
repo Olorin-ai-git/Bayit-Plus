@@ -13,6 +13,7 @@ from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
 from app.services.olorin.partner_service import partner_service
 from app.services.olorin.metering_service import metering_service
+from app.api.routes.olorin.errors import get_error_message, OlorinErrors
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ async def get_current_partner(
     if not x_olorin_api_key:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Missing {API_KEY_HEADER} header",
+            detail=get_error_message(OlorinErrors.MISSING_API_KEY, header=API_KEY_HEADER),
             headers={"WWW-Authenticate": "ApiKey"},
         )
 
@@ -46,7 +47,7 @@ async def get_current_partner(
     if not partner:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid API key",
+            detail=get_error_message(OlorinErrors.INVALID_API_KEY),
             headers={"WWW-Authenticate": "ApiKey"},
         )
 
@@ -78,14 +79,14 @@ async def verify_capability(
     if not feature_flags.get(capability, False):
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Capability '{capability}' is currently disabled",
+            detail=get_error_message(OlorinErrors.CAPABILITY_DISABLED, capability=capability),
         )
 
     # Check partner has capability
     if not partner.has_capability(capability):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Capability '{capability}' not enabled for this partner",
+            detail=get_error_message(OlorinErrors.CAPABILITY_NOT_ENABLED, capability=capability),
         )
 
     # Check usage limits

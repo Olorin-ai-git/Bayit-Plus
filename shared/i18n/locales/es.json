@@ -3481,5 +3481,35 @@
       "error": "Error al generar el código QR",
       "expired": "El código QR ha expirado. Por favor, intenta de nuevo."
     }
+  },
+  "olorin": {
+    "errors": {
+      "session_not_found": "Sesión no encontrada",
+      "session_different_partner": "La sesión pertenece a otro socio",
+      "session_invalid_status": "La sesión está en estado {status}, no se puede agregar transcripción",
+      "max_sessions_reached": "Se alcanzó el número máximo de sesiones simultáneas ({limit})",
+      "invalid_api_key": "Clave API inválida",
+      "missing_api_key": "Falta el encabezado {header}",
+      "capability_disabled": "La capacidad '{capability}' está actualmente deshabilitada",
+      "capability_not_enabled": "La capacidad '{capability}' no está habilitada para este socio",
+      "source_language_not_supported": "El idioma de origen '{language}' no es compatible. Compatible: {supported}",
+      "target_language_not_supported": "El idioma de destino '{language}' no es compatible. Compatible: {supported}",
+      "partner_not_found": "Socio no encontrado",
+      "partner_registration_failed": "Error al registrar socio",
+      "no_updates_provided": "No se proporcionaron actualizaciones",
+      "webhook_config_failed": "Error al configurar webhook",
+      "webhook_url_not_configured": "URL del webhook no configurada",
+      "webhook_secret_not_configured": "Secreto del webhook no configurado",
+      "search_failed": "La búsqueda falló",
+      "indexing_failed": "La indexación falló",
+      "detection_failed": "La detección falló",
+      "explanation_failed": "Error al obtener explicación",
+      "reference_not_found": "Referencia '{reference_id}' no encontrada",
+      "enrichment_failed": "El enriquecimiento falló",
+      "get_references_failed": "Error al obtener referencias",
+      "create_session_failed": "Error al crear sesión",
+      "add_transcript_failed": "Error al agregar transcripción",
+      "generate_recap_failed": "Error al generar resumen"
+    }
   }
 }

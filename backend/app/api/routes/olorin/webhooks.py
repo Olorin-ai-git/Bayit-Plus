@@ -22,6 +22,7 @@ from app.models.integration_partner import (
 )
 from app.services.olorin.partner_service import partner_service
 from app.api.routes.olorin.dependencies import get_current_partner
+from app.api.routes.olorin.errors import get_error_message, OlorinErrors
 
 logger = logging.getLogger(__name__)
 
@@ -126,7 +127,7 @@ async def configure_webhooks(
     if not updated:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to configure webhook",
+            detail=get_error_message(OlorinErrors.WEBHOOK_CONFIG_FAILED),
         )
 
     return WebhookConfigResponse(
@@ -169,13 +170,13 @@ async def test_webhook(
     if not partner.webhook_url:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Webhook URL not configured",
+            detail=get_error_message(OlorinErrors.WEBHOOK_URL_NOT_CONFIGURED),
         )
 
     if not partner.webhook_secret:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Webhook secret not configured",
+            detail=get_error_message(OlorinErrors.WEBHOOK_SECRET_NOT_CONFIGURED),
         )
 
     # Build test payload

@@ -3587,5 +3587,35 @@
       "error": "Failed to generate QR code",
       "expired": "QR code expired. Please try again."
     }
+  },
+  "olorin": {
+    "errors": {
+      "session_not_found": "Session not found",
+      "session_different_partner": "Session belongs to different partner",
+      "session_invalid_status": "Session is {status}, cannot add transcript",
+      "max_sessions_reached": "Maximum concurrent sessions ({limit}) reached",
+      "invalid_api_key": "Invalid API key",
+      "missing_api_key": "Missing {header} header",
+      "capability_disabled": "Capability '{capability}' is currently disabled",
+      "capability_not_enabled": "Capability '{capability}' not enabled for this partner",
+      "source_language_not_supported": "Source language '{language}' not supported. Supported: {supported}",
+      "target_language_not_supported": "Target language '{language}' not supported. Supported: {supported}",
+      "partner_not_found": "Partner not found",
+      "partner_registration_failed": "Failed to register partner",
+      "no_updates_provided": "No updates provided",
+      "webhook_config_failed": "Failed to configure webhook",
+      "webhook_url_not_configured": "Webhook URL not configured",
+      "webhook_secret_not_configured": "Webhook secret not configured",
+      "search_failed": "Search failed",
+      "indexing_failed": "Indexing failed",
+      "detection_failed": "Detection failed",
+      "explanation_failed": "Failed to get explanation",
+      "reference_not_found": "Reference '{reference_id}' not found",
+      "enrichment_failed": "Enrichment failed",
+      "get_references_failed": "Failed to get references",
+      "create_session_failed": "Failed to create session",
+      "add_transcript_failed": "Failed to add transcript",
+      "generate_recap_failed": "Failed to generate recap"
+    }
   }
 }

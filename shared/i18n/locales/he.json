@@ -3586,5 +3586,35 @@
       "error": "שגיאה ביצירת קוד QR",
       "expired": "קוד ה-QR פג תוקף. נסה שוב."
     }
+  },
+  "olorin": {
+    "errors": {
+      "session_not_found": "הפעילות לא נמצאה",
+      "session_different_partner": "הפעילות שייכת לשותף אחר",
+      "session_invalid_status": "הפעילות במצב {status}, לא ניתן להוסיף תמלול",
+      "max_sessions_reached": "הגעת למספר המקסימלי של פעילויות מקבילות ({limit})",
+      "invalid_api_key": "מפתח API לא תקין",
+      "missing_api_key": "חסר כותרת {header}",
+      "capability_disabled": "היכולת '{capability}' כרגע מושבתת",
+      "capability_not_enabled": "היכולת '{capability}' לא מופעלת עבור שותף זה",
+      "source_language_not_supported": "שפת המקור '{language}' לא נתמכת. נתמכות: {supported}",
+      "target_language_not_supported": "שפת היעד '{language}' לא נתמכת. נתמכות: {supported}",
+      "partner_not_found": "השותף לא נמצא",
+      "partner_registration_failed": "ההרשמה כשותף נכשלה",
+      "no_updates_provided": "לא סופקו עדכונים",
+      "webhook_config_failed": "הגדרת ה-webhook נכשלה",
+      "webhook_url_not_configured": "כתובת ה-webhook לא הוגדרה",
+      "webhook_secret_not_configured": "סוד ה-webhook לא הוגדר",
+      "search_failed": "החיפוש נכשל",
+      "indexing_failed": "האינדוקס נכשל",
+      "detection_failed": "הזיהוי נכשל",
+      "explanation_failed": "קבלת ההסבר נכשלה",
+      "reference_not_found": "ההפניה '{reference_id}' לא נמצאה",
+      "enrichment_failed": "ההעשרה נכשלה",
+      "get_references_failed": "קבלת ההפניות נכשלה",
+      "create_session_failed": "יצירת הפעילות נכשלה",
+      "add_transcript_failed": "הוספת התמלול נכשלה",
+      "generate_recap_failed": "יצירת הסיכום נכשלה"
+    }
   }
 }

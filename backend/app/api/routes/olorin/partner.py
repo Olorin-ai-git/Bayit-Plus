@@ -15,6 +15,7 @@ from app.models.integration_partner import IntegrationPartner, WebhookEventType
 from app.services.olorin.partner_service import partner_service
 from app.services.olorin.metering_service import metering_service
 from app.api.routes.olorin.dependencies import get_current_partner
+from app.api.routes.olorin.errors import get_error_message, OlorinErrors
 
 logger = logging.getLogger(__name__)
 
@@ -152,7 +153,7 @@ async def register_partner(request: PartnerRegisterRequest):
         logger.error(f"Error registering partner: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to register partner",
+            detail=get_error_message(OlorinErrors.PARTNER_REGISTRATION_FAILED),
         )
 
 
@@ -197,7 +198,7 @@ async def update_partner(
     if not updates:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No updates provided",
+            detail=get_error_message(OlorinErrors.NO_UPDATES_PROVIDED),
         )
 
     updated = await partner_service.update_partner(
@@ -208,7 +209,7 @@ async def update_partner(
     if not updated:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Partner not found",
+            detail=get_error_message(OlorinErrors.PARTNER_NOT_FOUND),
         )
 
     return PartnerInfoResponse(
@@ -247,7 +248,7 @@ async def configure_webhook(
     if not updated:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Partner not found",
+            detail=get_error_message(OlorinErrors.PARTNER_NOT_FOUND),
         )
 
     return PartnerInfoResponse(
@@ -281,7 +282,7 @@ async def regenerate_api_key(
     if not result:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Partner not found",
+            detail=get_error_message(OlorinErrors.PARTNER_NOT_FOUND),
         )
 
     updated_partner, new_api_key = result
