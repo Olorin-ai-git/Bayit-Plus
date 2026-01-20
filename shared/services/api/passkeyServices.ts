@@ -3,16 +3,31 @@
  *
  * Handles passkey registration, authentication, and session management
  * for accessing passkey-protected content.
+ *
+ * Note: This service is Web/Browser only and requires @simplewebauthn/browser.
+ * It should not be imported in React Native applications.
  */
 
 import { api } from './client';
-import {
-  startRegistration,
-  startAuthentication,
-  browserSupportsWebAuthn,
-  type PublicKeyCredentialCreationOptionsJSON,
-  type PublicKeyCredentialRequestOptionsJSON,
-} from '@simplewebauthn/browser';
+
+// Dynamic import to handle missing dependency in React Native environments
+let startRegistration: any;
+let startAuthentication: any;
+let browserSupportsWebAuthn: any;
+
+try {
+  const simpleWebAuthn = require('@simplewebauthn/browser');
+  startRegistration = simpleWebAuthn.startRegistration;
+  startAuthentication = simpleWebAuthn.startAuthentication;
+  browserSupportsWebAuthn = simpleWebAuthn.browserSupportsWebAuthn;
+} catch (e) {
+  // @simplewebauthn/browser not available (e.g., in React Native environments)
+  // These functions will be undefined if accessed
+  console.warn('[passkeyServices] @simplewebauthn/browser not available - passkey features will be unavailable');
+}
+
+type PublicKeyCredentialCreationOptionsJSON = any;
+type PublicKeyCredentialRequestOptionsJSON = any;
 
 // ============================================
 // Types
