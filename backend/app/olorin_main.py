@@ -12,7 +12,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from app.api.routes.olorin import cultural_context, dubbing, partners, recap, search
-from app.core.config import settings
+from app.core.olorin_settings import settings
 from app.core.database import close_mongo_connection, connect_to_mongo
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -38,14 +38,14 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting Olorin.ai Platform Backend")
     logger.info(f"Environment: {settings.ENVIRONMENT}")
-    logger.info(f"API Version: {settings.olorin.api_version}")
+    logger.info(f"API Version: {settings.OLORIN_API_VERSION}")
 
     # Connect to MongoDB
     await connect_to_mongo()
     logger.info("Database connection established")
 
     # Initialize services based on enabled features
-    if settings.olorin.semantic_search_enabled:
+    if settings.OLORIN_SEMANTIC_SEARCH_ENABLED:
         from app.services.olorin.search.client import client_manager
 
         await client_manager.initialize()
@@ -77,7 +77,7 @@ app.add_middleware(SlowAPIMiddleware)
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=settings.BACKEND_CORS_ORIGINS.split(",") if settings.BACKEND_CORS_ORIGINS != "*" else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -96,7 +96,7 @@ async def health_check():
 
 
 # Include Olorin API routes
-API_PREFIX = f"/api/{settings.olorin.api_version}/olorin"
+API_PREFIX = f"/api/{settings.OLORIN_API_VERSION}/olorin"
 
 # Partner management (always enabled for API key auth)
 app.include_router(
@@ -106,7 +106,7 @@ app.include_router(
 )
 
 # Semantic search (if enabled)
-if settings.olorin.semantic_search_enabled:
+if settings.OLORIN_SEMANTIC_SEARCH_ENABLED:
     app.include_router(
         search.router,
         prefix=f"{API_PREFIX}/search",
@@ -114,7 +114,7 @@ if settings.olorin.semantic_search_enabled:
     )
 
 # Dubbing (if enabled)
-if settings.olorin.dubbing_enabled:
+if settings.OLORIN_DUBBING_ENABLED:
     app.include_router(
         dubbing.router,
         prefix=f"{API_PREFIX}/dubbing",
@@ -122,7 +122,7 @@ if settings.olorin.dubbing_enabled:
     )
 
 # Recap agent (if enabled)
-if settings.olorin.recap_enabled:
+if settings.OLORIN_RECAP_ENABLED:
     app.include_router(
         recap.router,
         prefix=f"{API_PREFIX}/recap",
@@ -130,7 +130,7 @@ if settings.olorin.recap_enabled:
     )
 
 # Cultural context (if enabled)
-if settings.olorin.cultural_context_enabled:
+if settings.OLORIN_CULTURAL_CONTEXT_ENABLED:
     app.include_router(
         cultural_context.router,
         prefix=f"{API_PREFIX}/cultural-context",
