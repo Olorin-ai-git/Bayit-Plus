@@ -102,7 +102,7 @@ def register_all_routers(app: FastAPI) -> None:
         webauthn,
     )
     from app.api.routes.admin.recordings import router as admin_recordings_router
-    from app.api.routes.olorin import router as olorin_router
+    from app.api.routes.olorin import router as olorin_router, legacy_router as olorin_legacy_router
 
     # ============================================
     # Health Check Routes (no prefix)
@@ -258,8 +258,11 @@ def register_all_routers(app: FastAPI) -> None:
     # ============================================
     # Olorin.ai Platform Routes
     # ============================================
+    # Versioned routes: /api/v1/olorin/v1/* (main router already has /olorin/v1 prefix)
     app.include_router(olorin_router, prefix=prefix, tags=["olorin"])
-    logger.debug("Registered Olorin.ai platform routes")
+    # Legacy redirect routes: /api/v1/olorin/* -> /api/v1/olorin/v1/*
+    app.include_router(olorin_legacy_router, prefix=prefix, tags=["olorin-legacy"])
+    logger.debug("Registered Olorin.ai platform routes (versioned + legacy redirects)")
 
     logger.info(f"All API routers registered with prefix {prefix}")
 

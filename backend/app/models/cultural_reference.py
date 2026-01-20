@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from typing import Optional, List, Literal
 from beanie import Document
 from pydantic import BaseModel, Field
+from pymongo import IndexModel, ASCENDING, DESCENDING
 
 
 # Category types for cultural references
@@ -120,7 +121,7 @@ class CulturalReference(Document):
     class Settings:
         name = "cultural_references"
         indexes = [
-            "reference_id",
+            IndexModel([("reference_id", ASCENDING)], unique=True),
             "category",
             "subcategory",
             "verified",

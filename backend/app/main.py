@@ -14,9 +14,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.database import connect_to_mongo, close_mongo_connection
+from app.core.database_olorin import connect_to_olorin_mongo, close_olorin_mongo_connection
 from app.core.logging_config import setup_logging
 from app.core.config_validation import log_configuration_warnings
 from app.core.sentry_config import init_sentry
+from app.services.olorin.content_metadata_service import content_metadata_service
 from app.middleware.correlation_id import CorrelationIdMiddleware
 from app.middleware.request_timing import RequestTimingMiddleware
 from app.services.startup import (
@@ -101,6 +103,12 @@ async def lifespan(app: FastAPI):
     # Connect to MongoDB
     await connect_to_mongo()
 
+    # Connect to Olorin database (Phase 2 - separate database if enabled)
+    await connect_to_olorin_mongo()
+
+    # Initialize Content metadata service for Olorin cross-database access
+    await content_metadata_service.initialize()
+
     # Ensure upload directory exists
     upload_dir = Path(settings.UPLOAD_DIR)
     upload_dir.mkdir(parents=True, exist_ok=True)
@@ -140,6 +148,9 @@ async def lifespan(app: FastAPI):
 
     # Close database connection
     await close_mongo_connection()
+
+    # Close Olorin database connection (if separate database enabled)
+    await close_olorin_mongo_connection()
 
     logger.info("Server shutdown complete")
 

@@ -7,7 +7,6 @@ Performs vector and text search across content.
 import logging
 from typing import Optional, List
 
-from app.models.content import Content
 from app.models.content_embedding import (
     SemanticSearchResult,
     SearchQuery,
@@ -16,6 +15,7 @@ from app.models.content_embedding import (
 from app.services.olorin.search.client import client_manager
 from app.services.olorin.search.embedding import generate_embedding
 from app.services.olorin.search.helpers import format_timestamp
+from app.services.olorin.content_metadata_service import content_metadata_service
 
 logger = logging.getLogger(__name__)
 
@@ -65,8 +65,10 @@ async def semantic_search(
                 include_metadata=True,
             )
 
-            # Process results
+            # First pass: collect unique content IDs and their match data
             seen_content_ids = set()
+            matches_to_process = []
+
             for match in pinecone_results.matches:
                 if match.score < query.min_score:
                     continue
@@ -78,9 +80,18 @@ async def semantic_search(
                 if content_id in seen_content_ids:
                     continue
                 seen_content_ids.add(content_id)
+                matches_to_process.append((content_id, match, metadata))
 
-                # Get content details
-                content = await Content.get(content_id)
+                if len(matches_to_process) >= query.limit:
+                    break
+
+            # Batch load all content documents
+            content_ids_to_fetch = [m[0] for m in matches_to_process if m[0]]
+            contents_map = await content_metadata_service.get_contents_batch(content_ids_to_fetch)
+
+            # Build results using cached content data
+            for content_id, match, metadata in matches_to_process:
+                content = contents_map.get(content_id)
                 if not content:
                     continue
 
@@ -104,9 +115,6 @@ async def semantic_search(
                         timestamp_formatted=timestamp_formatted,
                     )
                 )
-
-                if len(results) >= query.limit:
-                    break
 
     except Exception as e:
         logger.error(f"Semantic search failed: {e}")
@@ -161,6 +169,10 @@ async def dialogue_search(
                 include_metadata=True,
             )
 
+            # First pass: collect matches and content IDs
+            matches_to_process = []
+            content_ids_to_fetch = set()
+
             for match in pinecone_results.matches:
                 if match.score < query.min_score:
                     continue
@@ -168,8 +180,16 @@ async def dialogue_search(
                 metadata = match.metadata or {}
                 content_id = metadata.get("content_id")
 
-                # Get content details
-                content = await Content.get(content_id) if content_id else None
+                matches_to_process.append((content_id, match, metadata))
+                if content_id:
+                    content_ids_to_fetch.add(content_id)
+
+            # Batch load all content documents
+            contents_map = await content_metadata_service.get_contents_batch(list(content_ids_to_fetch))
+
+            # Build results using cached content data
+            for content_id, match, metadata in matches_to_process:
+                content = contents_map.get(content_id) if content_id else None
 
                 timestamp_seconds = metadata.get("start_time")
                 timestamp_formatted = format_timestamp(timestamp_seconds) if timestamp_seconds else None
@@ -214,7 +234,10 @@ async def mongodb_text_search(query: SearchQuery) -> List[SemanticSearchResult]:
         if query.content_types:
             mongo_query["content_type"] = {"$in": query.content_types}
 
-        # Search content collection
+        # Search content collection via metadata service
+        # Note: For complex queries with projections, we need direct Content model access
+        # This is safe because Content model is accessible in both Phase 1 and Phase 2
+        from app.models.content import Content
         cursor = Content.find(
             mongo_query,
             projection={"score": {"$meta": "textScore"}},

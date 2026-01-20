@@ -15,6 +15,7 @@ try:
         "register": "3/hour",          # 3 registrations per hour
         "oauth_callback": "10/minute", # 10 OAuth attempts per minute
         "password_reset": "3/hour",    # 3 password reset requests per hour
+        "partner_register": "3/hour",  # 3 partner registrations per hour per IP
     }
     
     RATE_LIMITING_ENABLED = True

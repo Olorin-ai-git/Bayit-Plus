@@ -29,7 +29,8 @@ class PartnerService:
 
     def __init__(self):
         """Initialize partner service."""
-        self._api_key_salt = getattr(settings, "PARTNER_API_KEY_SALT", "")
+        # Use new nested configuration
+        self._api_key_salt = settings.olorin.partner.api_key_salt
 
     async def create_partner(
         self,

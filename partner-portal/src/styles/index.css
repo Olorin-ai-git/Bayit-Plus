@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base Styles */
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-glass-bg text-text-primary min-h-screen;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* RTL Support */
+  [dir="rtl"] {
+    text-align: right;
+  }
+
+  [dir="ltr"] {
+    text-align: left;
+  }
+}
+
+/* Glass Components */
+@layer components {
+  .glass-card {
+    @apply bg-glass-card backdrop-blur-glass border border-glass-border rounded-xl shadow-glass;
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-200 hover:bg-glass-hover hover:border-glass-border-hover hover:shadow-glow;
+  }
+
+  .glass-input {
+    @apply w-full px-4 py-3 bg-glass-card border border-glass-border rounded-lg text-text-primary placeholder-text-tertiary focus:outline-none focus:border-partner-primary focus:ring-1 focus:ring-partner-primary transition-colors;
+  }
+
+  .glass-button {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-glass-bg disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .glass-button-primary {
+    @apply glass-button bg-partner-primary text-white hover:bg-partner-primary-hover focus:ring-partner-primary;
+  }
+
+  .glass-button-secondary {
+    @apply glass-button bg-glass-card border border-glass-border text-text-primary hover:bg-glass-hover hover:border-glass-border-hover;
+  }
+
+  .glass-sidebar {
+    @apply fixed inset-y-0 start-0 w-64 bg-glass-card backdrop-blur-glass border-e border-glass-border;
+  }
+
+  .glass-topbar {
+    @apply sticky top-0 z-40 h-16 bg-glass-card/80 backdrop-blur-glass border-b border-glass-border;
+  }
+
+  /* Stat Card */
+  .stat-card {
+    @apply glass-card p-6 flex flex-col gap-2;
+  }
+
+  .stat-value {
+    @apply text-3xl font-bold text-text-primary;
+  }
+
+  .stat-label {
+    @apply text-sm text-text-secondary;
+  }
+
+  .stat-change {
+    @apply text-sm font-medium;
+  }
+
+  .stat-change-positive {
+    @apply stat-change text-partner-success;
+  }
+
+  .stat-change-negative {
+    @apply stat-change text-partner-error;
+  }
+}
+
+/* Utility Classes */
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-partner-primary to-partner-secondary bg-clip-text text-transparent;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out forwards;
+  }
+}

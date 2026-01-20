@@ -7,7 +7,7 @@ Vector embeddings for semantic search with timestamp deep-linking.
 from datetime import datetime, timezone
 from typing import Optional, List, Literal
 from beanie import Document, PydanticObjectId
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 EmbeddingType = Literal["title", "description", "subtitle_segment", "dialogue", "summary"]
@@ -151,6 +151,23 @@ class RecapSession(Document):
     started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     ended_at: Optional[datetime] = Field(default=None)
     last_updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    @field_validator("transcript_segments")
+    @classmethod
+    def validate_transcript_segments_limit(cls, v):
+        """Validate transcript segments don't exceed MongoDB document size limits."""
+        # Max segments configurable via settings, default 5000
+        # MongoDB doc limit is 16MB - with typical segment size ~500 bytes,
+        # 5000 segments = ~2.5MB which is safe
+        from app.core.config import settings
+
+        max_segments = settings.olorin.recap.max_transcript_segments
+        if len(v) > max_segments:
+            raise ValueError(
+                f"Transcript segments exceed maximum of {max_segments}. "
+                f"Consider creating a new session or implementing segment rotation."
+            )
+        return v
 
     class Settings:
         name = "recap_sessions"

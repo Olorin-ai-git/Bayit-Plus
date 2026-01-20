@@ -189,6 +189,81 @@ def validate_security_config() -> None:
         raise ConfigValidationError(errors)
 
 
+def validate_olorin_config() -> None:
+    """
+    Validate Olorin.ai platform configuration.
+
+    Checks that enabled Olorin features have required dependencies configured.
+
+    Raises:
+        ConfigValidationError: If any Olorin configuration is invalid.
+    """
+    errors: list[str] = []
+
+    # Use the built-in validation method from OlorinSettings
+    olorin_errors = settings.olorin.validate_enabled_features()
+    errors.extend(olorin_errors)
+
+    # Additional cross-cutting validation
+    if any([
+        settings.olorin.dubbing_enabled,
+        settings.olorin.semantic_search_enabled,
+        settings.olorin.cultural_context_enabled,
+        settings.olorin.recap_enabled
+    ]):
+        # At least one Olorin feature is enabled - validate partner API configuration
+        if not settings.olorin.partner.api_key_salt:
+            errors.append(
+                "PARTNER_API_KEY_SALT is required when any Olorin feature is enabled. "
+                "Generate with: python -c \"import secrets; print(secrets.token_urlsafe(32))\""
+            )
+        elif len(settings.olorin.partner.api_key_salt) < 32:
+            errors.append(
+                f"PARTNER_API_KEY_SALT must be at least 32 characters (got {len(settings.olorin.partner.api_key_salt)}). "
+                "Generate with: python -c \"import secrets; print(secrets.token_urlsafe(32))\""
+            )
+
+    # Validate semantic search dependencies
+    if settings.olorin.semantic_search_enabled:
+        if not settings.OPENAI_API_KEY:
+            errors.append(
+                "OPENAI_API_KEY is required for Olorin semantic search (embedding generation). "
+                "Set OLORIN_SEMANTIC_SEARCH_ENABLED=false or configure OPENAI_API_KEY."
+            )
+
+    # Validate recap agent dependencies
+    if settings.olorin.recap_enabled:
+        if not settings.ANTHROPIC_API_KEY:
+            errors.append(
+                "ANTHROPIC_API_KEY is required for Olorin recap agent (Claude). "
+                "Set OLORIN_RECAP_ENABLED=false or configure ANTHROPIC_API_KEY."
+            )
+
+    # Validate cultural context dependencies
+    if settings.olorin.cultural_context_enabled:
+        if not settings.ANTHROPIC_API_KEY:
+            errors.append(
+                "ANTHROPIC_API_KEY is required for Olorin cultural context (Claude). "
+                "Set OLORIN_CULTURAL_CONTEXT_ENABLED=false or configure ANTHROPIC_API_KEY."
+            )
+
+    # Validate dubbing dependencies
+    if settings.olorin.dubbing_enabled:
+        if not settings.ELEVENLABS_API_KEY:
+            errors.append(
+                "ELEVENLABS_API_KEY is required for Olorin dubbing (TTS/STT). "
+                "Set OLORIN_DUBBING_ENABLED=false or configure ELEVENLABS_API_KEY."
+            )
+        if not settings.ANTHROPIC_API_KEY:
+            errors.append(
+                "ANTHROPIC_API_KEY is required for Olorin dubbing (translation). "
+                "Set OLORIN_DUBBING_ENABLED=false or configure ANTHROPIC_API_KEY."
+            )
+
+    if errors:
+        raise ConfigValidationError(errors)
+
+
 def validate_all_config() -> None:
     """
     Run all configuration validations.
@@ -203,6 +278,7 @@ def validate_all_config() -> None:
     try:
         validate_required_config()
         validate_security_config()
+        validate_olorin_config()
         logger.info("Configuration validation passed")
     except ConfigValidationError:
         logger.error("Configuration validation FAILED")

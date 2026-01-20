@@ -13,6 +13,7 @@ from app.models.content_embedding import ContentEmbedding
 from app.services.olorin.search.client import client_manager
 from app.services.olorin.search.embedding import generate_embedding
 from app.services.olorin.search.helpers import generate_vector_id, group_subtitles
+from app.services.olorin.content_metadata_service import content_metadata_service
 
 logger = logging.getLogger(__name__)
 
@@ -37,8 +38,8 @@ async def index_content(
         await client_manager.initialize()
 
     try:
-        # Get content
-        content = await Content.get(content_id)
+        # Get content via metadata service (supports both Phase 1 and Phase 2)
+        content = await content_metadata_service.get_content(content_id)
         if not content:
             return {"status": "failed", "error": "Content not found"}
 
@@ -168,8 +169,8 @@ async def index_subtitles(
         await client_manager.initialize()
 
     try:
-        # Get content metadata
-        content = await Content.get(content_id)
+        # Get content metadata via metadata service
+        content = await content_metadata_service.get_content(content_id)
         content_type = content.content_type if content else None
 
         # Group subtitles into segments

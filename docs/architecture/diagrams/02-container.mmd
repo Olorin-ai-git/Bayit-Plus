@@ -1,0 +1,36 @@
+graph TB
+    subgraph "Olorin Platform"
+        API[Olorin API<br/>FastAPI Routes]
+
+        subgraph "Services"
+            PS[Partner Service<br/>Auth & Management]
+            MS[Metering Service<br/>Usage & Billing]
+            DS[Dubbing Service<br/>Realtime Pipeline]
+            SS[Search Service<br/>Vector Search]
+            CS[Context Service<br/>Cultural Detection]
+            RS[Recap Service<br/>Summarization]
+            CMS[Content Metadata<br/>Adapter Service]
+        end
+
+        subgraph "Data"
+            DB1[(Partners<br/>Usage Records)]
+            DB2[(Embeddings<br/>References)]
+            DB3[(Sessions)]
+        end
+    end
+
+    subgraph "Bayit+ Core"
+        BDB[(Content<br/>Collection)]
+        VS[Voice Services<br/>ElevenLabs]
+    end
+
+    API --> PS & MS
+    API --> DS & SS & CS & RS
+    DS --> VS
+    SS --> CMS
+    CMS --> BDB
+    PS --> DB1
+    MS --> DB1
+    SS --> DB2
+    CS --> DB2
+    RS --> DB3

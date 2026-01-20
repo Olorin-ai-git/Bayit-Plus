@@ -12,10 +12,10 @@ from typing import Optional, AsyncIterator
 
 from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
-from app.services.elevenlabs_realtime_service import ElevenLabsRealtimeService
 from app.services.olorin.metering_service import metering_service
 from app.services.olorin.dubbing.models import DubbingMessage, DubbingMetrics
 from app.services.olorin.dubbing.translation import TranslationProvider
+from app.services.olorin.dubbing.stt_provider import STTProvider, get_stt_provider
 from app.services.olorin.dubbing import pipeline
 
 logger = logging.getLogger(__name__)
@@ -37,6 +37,7 @@ class RealtimeDubbingService:
         source_language: str = "he",
         target_language: str = "en",
         voice_id: Optional[str] = None,
+        stt_provider: Optional[STTProvider] = None,
     ):
         """
         Initialize dubbing service.
@@ -46,6 +47,7 @@ class RealtimeDubbingService:
             source_language: Source language code (default: Hebrew)
             target_language: Target language code (default: English)
             voice_id: ElevenLabs voice ID (default: from config)
+            stt_provider: STT provider instance (default: from config)
         """
         self.partner = partner
         self.source_language = source_language
@@ -54,7 +56,8 @@ class RealtimeDubbingService:
 
         self.session_id = f"dub_{uuid.uuid4().hex[:12]}"
 
-        self.stt_service: Optional[ElevenLabsRealtimeService] = None
+        # Use injected provider or create from config
+        self._stt_provider: Optional[STTProvider] = stt_provider
         self._translation_provider = TranslationProvider(target_language)
 
         self._running = False
@@ -84,8 +87,10 @@ class RealtimeDubbingService:
                 voice_id=self.voice_id,
             )
 
-            self.stt_service = ElevenLabsRealtimeService()
-            await self.stt_service.connect(source_lang=self.source_language)
+            # Use injected provider or create from config
+            if self._stt_provider is None:
+                self._stt_provider = get_stt_provider()
+            await self._stt_provider.connect(source_lang=self.source_language)
 
             await self._translation_provider.initialize()
 
@@ -93,7 +98,7 @@ class RealtimeDubbingService:
 
             self._stt_task = asyncio.create_task(
                 pipeline.process_transcripts(
-                    stt_service=self.stt_service,
+                    stt_provider=self._stt_provider,
                     output_queue=self._output_queue,
                     metrics=self._metrics,
                     source_language=self.source_language,
@@ -138,9 +143,9 @@ class RealtimeDubbingService:
             except asyncio.CancelledError:
                 pass
 
-        if self.stt_service:
-            await self.stt_service.close()
-            self.stt_service = None
+        if self._stt_provider:
+            await self._stt_provider.close()
+            self._stt_provider = None
 
         status = "error" if error_message else "ended"
         session = await metering_service.end_dubbing_session(
@@ -190,13 +195,13 @@ class RealtimeDubbingService:
         Args:
             audio_data: Raw PCM audio bytes (16kHz, mono, 16-bit signed)
         """
-        if not self._running or not self.stt_service:
+        if not self._running or not self._stt_provider:
             return
 
         if self._current_segment_start_time is None:
             self._current_segment_start_time = time.time() * 1000
 
-        await self.stt_service.send_audio_chunk(audio_data)
+        await self._stt_provider.send_audio_chunk(audio_data)
 
     async def receive_messages(self) -> AsyncIterator[DubbingMessage]:
         """

@@ -79,6 +79,50 @@ class RecapAgentService:
 
         return session
 
+    def _get_max_segments(self) -> int:
+        """Get max transcript segments from config."""
+        return settings.olorin.recap.max_transcript_segments
+
+    def _get_max_recaps(self) -> int:
+        """Get max recaps per session from config."""
+        return settings.olorin.recap.max_recaps_per_session
+
+    def _trim_segments_if_needed(self, segments: List[dict], max_segments: int) -> List[dict]:
+        """
+        Trim segments to max size using FIFO (remove oldest).
+
+        Args:
+            segments: List of transcript segments
+            max_segments: Maximum allowed segments
+
+        Returns:
+            Trimmed list of segments
+        """
+        if len(segments) <= max_segments:
+            return segments
+        # Remove oldest (first) segments
+        trimmed = len(segments) - max_segments
+        logger.info(f"Trimming {trimmed} oldest transcript segments (FIFO)")
+        return segments[trimmed:]
+
+    def _trim_recaps_if_needed(self, recaps: List[dict], max_recaps: int) -> List[dict]:
+        """
+        Trim recaps to max size using FIFO (remove oldest).
+
+        Args:
+            recaps: List of recap entries
+            max_recaps: Maximum allowed recaps
+
+        Returns:
+            Trimmed list of recaps
+        """
+        if len(recaps) <= max_recaps:
+            return recaps
+        # Remove oldest (first) recaps
+        trimmed = len(recaps) - max_recaps
+        logger.info(f"Trimming {trimmed} oldest recaps (FIFO)")
+        return recaps[trimmed:]
+
     async def add_transcript_segment(
         self,
         session_id: str,
@@ -117,6 +161,13 @@ class RecapAgentService:
         }
 
         session.transcript_segments.append(segment)
+
+        # Trim segments if exceeding max (FIFO - remove oldest)
+        max_segments = self._get_max_segments()
+        session.transcript_segments = self._trim_segments_if_needed(
+            session.transcript_segments, max_segments
+        )
+
         session.total_duration_seconds = max(session.total_duration_seconds, timestamp)
         session.last_updated_at = datetime.now(timezone.utc)
 
@@ -157,7 +208,7 @@ class RecapAgentService:
 
         # Determine time window
         if window_minutes is None:
-            window_minutes = settings.RECAP_WINDOW_DEFAULT_MINUTES
+            window_minutes = settings.olorin.recap.window_default_minutes
 
         window_seconds = window_minutes * 60
         current_time = session.total_duration_seconds
@@ -213,6 +264,11 @@ class RecapAgentService:
                 "tokens_used": tokens_used,
             }
             session.recaps.append(recap_entry)
+
+            # Trim recaps if exceeding max (FIFO - remove oldest)
+            max_recaps = self._get_max_recaps()
+            session.recaps = self._trim_recaps_if_needed(session.recaps, max_recaps)
+
             await session.save()
 
             return {
@@ -326,7 +382,7 @@ Focus on:
 
         response = await claude.messages.create(
             model=settings.CLAUDE_MODEL,
-            max_tokens=settings.RECAP_SUMMARY_MAX_TOKENS,
+            max_tokens=settings.olorin.recap.summary_max_tokens,
             messages=[{"role": "user", "content": prompt}],
         )
 

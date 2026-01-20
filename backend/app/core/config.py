@@ -1,7 +1,9 @@
 from pydantic_settings import BaseSettings
-from pydantic import field_validator
+from pydantic import field_validator, Field
 from functools import lru_cache
 import json
+
+from app.core.olorin_config import OlorinSettings
 
 
 class Settings(BaseSettings):
@@ -444,55 +446,263 @@ class Settings(BaseSettings):
     PASSKEY_MAX_CREDENTIALS_PER_USER: int = 10
 
     # ============================================
-    # OLORIN.AI PLATFORM CONFIGURATION
+    # OLORIN.AI PLATFORM CONFIGURATION (NESTED)
     # ============================================
 
-    # Pinecone Vector Database (Phase 3)
-    PINECONE_API_KEY: str = ""
-    PINECONE_ENVIRONMENT: str = "us-east-1-aws"
-    PINECONE_INDEX_NAME: str = "olorin-content"
-
-    # Embeddings
-    EMBEDDING_MODEL: str = "text-embedding-3-small"
-    EMBEDDING_DIMENSIONS: int = 1536
-
-    # Realtime Dubbing (Phase 1)
-    DUBBING_MAX_CONCURRENT_SESSIONS: int = 100
-    DUBBING_SESSION_TIMEOUT_MINUTES: int = 120
-    DUBBING_TARGET_LATENCY_MS: int = 2000
+    olorin: OlorinSettings = Field(
+        default_factory=OlorinSettings,
+        description="Olorin.ai platform configuration (nested)",
+    )
 
     # ElevenLabs Voice IDs for Dubbing (JSON array of voice configs)
     # Format: '[{"id":"voice_id","name":"Name","lang":"multilingual","desc":"Description"}]'
     ELEVENLABS_DUBBING_VOICES: str = '[{"id":"21m00Tcm4TlvDq8ikWAM","name":"Adam","lang":"multilingual","desc":"Deep male voice"},{"id":"AZnzlk1XvdvUeBnXmlld","name":"Domi","lang":"multilingual","desc":"Youthful female voice"},{"id":"MF3mGyEYCl7XYWbV9V6O","name":"Elli","lang":"multilingual","desc":"Warm female voice"},{"id":"TxGEqnHWrfWFTfGW9XjX","name":"Josh","lang":"multilingual","desc":"Conversational male voice"}]'
 
-    # Recap Agent (Phase 5)
-    RECAP_MAX_CONTEXT_TOKENS: int = 8000
-    RECAP_WINDOW_DEFAULT_MINUTES: int = 15
-    RECAP_SUMMARY_MAX_TOKENS: int = 300
-
-    # Cultural Context (Phase 4)
-    CULTURAL_REFERENCE_CACHE_TTL_HOURS: int = 24
-    CULTURAL_DETECTION_MIN_CONFIDENCE: float = 0.7
-
-    # Partner API (Phase 2)
-    PARTNER_API_KEY_SALT: str = ""  # Required for API key hashing
-    PARTNER_DEFAULT_RATE_LIMIT_RPM: int = 60
-    PARTNER_WEBHOOK_TIMEOUT_SECONDS: float = 10.0
-
-    # Feature Flags (all disabled by default for gradual rollout)
-    OLORIN_DUBBING_ENABLED: bool = False
-    OLORIN_SEMANTIC_SEARCH_ENABLED: bool = False
-    OLORIN_CULTURAL_CONTEXT_ENABLED: bool = False
-    OLORIN_RECAP_ENABLED: bool = False
+    # ============================================
+    # OLORIN.AI BACKWARD COMPATIBILITY PROPERTIES
+    # ============================================
+    # Legacy settings are provided via @property methods below.
+    # They delegate to settings.olorin.* and emit deprecation warnings.
+    # New code should use settings.olorin.* directly.
 
     @property
     def webauthn_origins(self) -> list[str]:
         """Parse WebAuthn origins from comma-separated string."""
         return [origin.strip() for origin in self.WEBAUTHN_ORIGIN.split(",") if origin.strip()]
 
+    # ============================================
+    # BACKWARD-COMPATIBLE PROPERTIES FOR OLORIN CONFIG
+    # ============================================
+    # These properties provide backward compatibility during migration.
+    # They include deprecation warnings and delegate to settings.olorin.*
+    # Will be removed in a future version.
+
+    @property
+    def PINECONE_API_KEY(self) -> str:
+        """DEPRECATED: Use settings.olorin.pinecone.api_key"""
+        import warnings
+        warnings.warn(
+            "PINECONE_API_KEY is deprecated. Use settings.olorin.pinecone.api_key instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.pinecone.api_key
+
+    @property
+    def PINECONE_ENVIRONMENT(self) -> str:
+        """DEPRECATED: Use settings.olorin.pinecone.environment"""
+        import warnings
+        warnings.warn(
+            "PINECONE_ENVIRONMENT is deprecated. Use settings.olorin.pinecone.environment instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.pinecone.environment
+
+    @property
+    def PINECONE_INDEX_NAME(self) -> str:
+        """DEPRECATED: Use settings.olorin.pinecone.index_name"""
+        import warnings
+        warnings.warn(
+            "PINECONE_INDEX_NAME is deprecated. Use settings.olorin.pinecone.index_name instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.pinecone.index_name
+
+    @property
+    def EMBEDDING_MODEL(self) -> str:
+        """DEPRECATED: Use settings.olorin.embedding.model"""
+        import warnings
+        warnings.warn(
+            "EMBEDDING_MODEL is deprecated. Use settings.olorin.embedding.model instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.embedding.model
+
+    @property
+    def EMBEDDING_DIMENSIONS(self) -> int:
+        """DEPRECATED: Use settings.olorin.embedding.dimensions"""
+        import warnings
+        warnings.warn(
+            "EMBEDDING_DIMENSIONS is deprecated. Use settings.olorin.embedding.dimensions instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.embedding.dimensions
+
+    @property
+    def DUBBING_MAX_CONCURRENT_SESSIONS(self) -> int:
+        """DEPRECATED: Use settings.olorin.dubbing.max_concurrent_sessions"""
+        import warnings
+        warnings.warn(
+            "DUBBING_MAX_CONCURRENT_SESSIONS is deprecated. Use settings.olorin.dubbing.max_concurrent_sessions instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.dubbing.max_concurrent_sessions
+
+    @property
+    def DUBBING_SESSION_TIMEOUT_MINUTES(self) -> int:
+        """DEPRECATED: Use settings.olorin.dubbing.session_timeout_minutes"""
+        import warnings
+        warnings.warn(
+            "DUBBING_SESSION_TIMEOUT_MINUTES is deprecated. Use settings.olorin.dubbing.session_timeout_minutes instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.dubbing.session_timeout_minutes
+
+    @property
+    def DUBBING_TARGET_LATENCY_MS(self) -> int:
+        """DEPRECATED: Use settings.olorin.dubbing.target_latency_ms"""
+        import warnings
+        warnings.warn(
+            "DUBBING_TARGET_LATENCY_MS is deprecated. Use settings.olorin.dubbing.target_latency_ms instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.dubbing.target_latency_ms
+
+    @property
+    def RECAP_MAX_CONTEXT_TOKENS(self) -> int:
+        """DEPRECATED: Use settings.olorin.recap.max_context_tokens"""
+        import warnings
+        warnings.warn(
+            "RECAP_MAX_CONTEXT_TOKENS is deprecated. Use settings.olorin.recap.max_context_tokens instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.recap.max_context_tokens
+
+    @property
+    def RECAP_WINDOW_DEFAULT_MINUTES(self) -> int:
+        """DEPRECATED: Use settings.olorin.recap.window_default_minutes"""
+        import warnings
+        warnings.warn(
+            "RECAP_WINDOW_DEFAULT_MINUTES is deprecated. Use settings.olorin.recap.window_default_minutes instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.recap.window_default_minutes
+
+    @property
+    def RECAP_SUMMARY_MAX_TOKENS(self) -> int:
+        """DEPRECATED: Use settings.olorin.recap.summary_max_tokens"""
+        import warnings
+        warnings.warn(
+            "RECAP_SUMMARY_MAX_TOKENS is deprecated. Use settings.olorin.recap.summary_max_tokens instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.recap.summary_max_tokens
+
+    @property
+    def CULTURAL_REFERENCE_CACHE_TTL_HOURS(self) -> int:
+        """DEPRECATED: Use settings.olorin.cultural.reference_cache_ttl_hours"""
+        import warnings
+        warnings.warn(
+            "CULTURAL_REFERENCE_CACHE_TTL_HOURS is deprecated. Use settings.olorin.cultural.reference_cache_ttl_hours instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.cultural.reference_cache_ttl_hours
+
+    @property
+    def CULTURAL_DETECTION_MIN_CONFIDENCE(self) -> float:
+        """DEPRECATED: Use settings.olorin.cultural.detection_min_confidence"""
+        import warnings
+        warnings.warn(
+            "CULTURAL_DETECTION_MIN_CONFIDENCE is deprecated. Use settings.olorin.cultural.detection_min_confidence instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.cultural.detection_min_confidence
+
+    @property
+    def PARTNER_API_KEY_SALT(self) -> str:
+        """DEPRECATED: Use settings.olorin.partner.api_key_salt"""
+        import warnings
+        warnings.warn(
+            "PARTNER_API_KEY_SALT is deprecated. Use settings.olorin.partner.api_key_salt instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.partner.api_key_salt
+
+    @property
+    def PARTNER_DEFAULT_RATE_LIMIT_RPM(self) -> int:
+        """DEPRECATED: Use settings.olorin.partner.default_rate_limit_rpm"""
+        import warnings
+        warnings.warn(
+            "PARTNER_DEFAULT_RATE_LIMIT_RPM is deprecated. Use settings.olorin.partner.default_rate_limit_rpm instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.partner.default_rate_limit_rpm
+
+    @property
+    def PARTNER_WEBHOOK_TIMEOUT_SECONDS(self) -> float:
+        """DEPRECATED: Use settings.olorin.partner.webhook_timeout_seconds"""
+        import warnings
+        warnings.warn(
+            "PARTNER_WEBHOOK_TIMEOUT_SECONDS is deprecated. Use settings.olorin.partner.webhook_timeout_seconds instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.partner.webhook_timeout_seconds
+
+    @property
+    def OLORIN_DUBBING_ENABLED(self) -> bool:
+        """DEPRECATED: Use settings.olorin.dubbing_enabled"""
+        import warnings
+        warnings.warn(
+            "OLORIN_DUBBING_ENABLED is deprecated. Use settings.olorin.dubbing_enabled instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.dubbing_enabled
+
+    @property
+    def OLORIN_SEMANTIC_SEARCH_ENABLED(self) -> bool:
+        """DEPRECATED: Use settings.olorin.semantic_search_enabled"""
+        import warnings
+        warnings.warn(
+            "OLORIN_SEMANTIC_SEARCH_ENABLED is deprecated. Use settings.olorin.semantic_search_enabled instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.semantic_search_enabled
+
+    @property
+    def OLORIN_CULTURAL_CONTEXT_ENABLED(self) -> bool:
+        """DEPRECATED: Use settings.olorin.cultural_context_enabled"""
+        import warnings
+        warnings.warn(
+            "OLORIN_CULTURAL_CONTEXT_ENABLED is deprecated. Use settings.olorin.cultural_context_enabled instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.cultural_context_enabled
+
+    @property
+    def OLORIN_RECAP_ENABLED(self) -> bool:
+        """DEPRECATED: Use settings.olorin.recap_enabled"""
+        import warnings
+        warnings.warn(
+            "OLORIN_RECAP_ENABLED is deprecated. Use settings.olorin.recap_enabled instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.olorin.recap_enabled
+
     class Config:
         env_file = ".env"
         case_sensitive = True
+        # Allow extra environment variables during Olorin config migration
+        # This enables backward compatibility while old env vars are still in .env files
+        extra = 'ignore'
 
 
 @lru_cache()

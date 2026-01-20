@@ -1,0 +1,53 @@
+graph LR
+    subgraph API["API Layer"]
+        A1["partner"]
+        A2["dubbing"]
+        A3["search"]
+        A4["context"]
+        A5["recap"]
+        A6["webhooks"]
+    end
+
+    subgraph Auth["Auth"]
+        D1["get_current_partner"]
+        D2["RequireCapability"]
+    end
+
+    subgraph Services["Services"]
+        S1["PartnerService"]
+        S2["MeteringService"]
+        S3["DubbingService"]
+        S4["SearchService"]
+        S5["ContextService"]
+        S6["RecapService"]
+    end
+
+    subgraph External["External"]
+        E1["ElevenLabs"]
+        E2["Pinecone"]
+        E3["OpenAI"]
+        E4["Claude"]
+    end
+
+    A1 --> D1
+    A2 --> D1
+    A3 --> D1
+    A4 --> D1
+    A5 --> D1
+    A6 --> D1
+    D1 --> S1
+
+    A2 --> D2
+    A3 --> D2
+    A4 --> D2
+    A5 --> D2
+    D2 --> S2
+
+    S3 --> E1
+    S4 --> E2
+    S4 --> E3
+    S5 --> E4
+    S6 --> E4
+
+    style E1 fill:#ffcdd2
+    style S3 fill:#fff9c4

@@ -297,6 +297,10 @@ class UploadService:
         if job.file_hash is not None:
             return
 
+        # Validate file exists before attempting hash calculation
+        if not os.path.exists(job.source_path):
+            raise FileNotFoundError(f"Source file not found: {job.source_path}")
+
         pre_calculated_hash = job.metadata.get('pre_calculated_hash')
 
         if pre_calculated_hash:
@@ -484,11 +488,22 @@ class UploadService:
         # Check for specific error types that should not be retried
         is_duplicate_error = isinstance(error, DuplicateContentError)
         is_lock_conflict = isinstance(error, HashLockConflictError)
+        is_file_not_found = isinstance(error, FileNotFoundError)
         is_credential_error = self._is_credential_error(error)
 
         if is_duplicate_error:
             # Duplicate errors should not be retried
             logger.info(f"Job {job.job_id} failed due to duplicate content - not retrying")
+            return
+
+        if is_file_not_found:
+            # File not found errors should not be retried - file is missing/deleted
+            logger.error(
+                f"Job {job.job_id} failed because source file is missing: {job.source_path}. "
+                "This may be due to an unmounted drive or deleted file - not retrying"
+            )
+            job.error_message = f"Source file not found: {job.source_path}. File may have been deleted or drive unmounted."
+            await job.save()
             return
 
         if is_lock_conflict:

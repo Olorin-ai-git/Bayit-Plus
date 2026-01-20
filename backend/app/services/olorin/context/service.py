@@ -113,7 +113,7 @@ class CulturalContextService:
             text=text,
             language=language,
             target_language=target_language,
-            min_confidence=settings.CULTURAL_DETECTION_MIN_CONFIDENCE,
+            min_confidence=settings.olorin.cultural.detection_min_confidence,
         )
         detection = await self.detect_references(request)
 

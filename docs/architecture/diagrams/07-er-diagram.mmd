@@ -1,0 +1,41 @@
+erDiagram
+    IntegrationPartner ||--o{ UsageRecord : has
+    IntegrationPartner ||--o{ DubbingSession : has
+    IntegrationPartner ||--o{ RecapSession : owns
+
+    IntegrationPartner {
+        string partner_id PK
+        string api_key_hash
+        dict capabilities
+        string billing_tier
+        float monthly_limit_usd
+    }
+
+    UsageRecord {
+        ObjectId id PK
+        string partner_id FK
+        string capability
+        float estimated_cost_usd
+        datetime period_start
+    }
+
+    ContentEmbedding {
+        ObjectId id PK
+        string content_id FK
+        string pinecone_vector_id
+        string embedding_type
+    }
+
+    CulturalReference {
+        string reference_id PK
+        string canonical_name
+        string category
+        list aliases
+    }
+
+    RecapSession {
+        string session_id PK
+        string partner_id FK
+        list transcript_segments
+        list recaps
+    }

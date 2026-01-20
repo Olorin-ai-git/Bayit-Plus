@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from typing import Optional, List, Literal
 from beanie import Document, PydanticObjectId
 from pydantic import BaseModel, Field, EmailStr
+from pymongo import IndexModel, ASCENDING, DESCENDING
 
 
 # Type definitions
@@ -99,12 +100,13 @@ class IntegrationPartner(Document):
     class Settings:
         name = "integration_partners"
         indexes = [
-            "partner_id",
+            IndexModel([("partner_id", ASCENDING)], unique=True),
             "api_key_prefix",
             "is_active",
             "billing_tier",
             "created_at",
             [("is_active", 1), ("billing_tier", 1)],
+            [("api_key_prefix", 1), ("is_active", 1)],
         ]
 
     def has_capability(self, capability: str) -> bool:
@@ -151,6 +153,7 @@ class UsageRecord(Document):
             "granularity",
             [("partner_id", 1), ("capability", 1), ("period_start", -1)],
             [("partner_id", 1), ("period_start", -1)],
+            [("partner_id", 1), ("granularity", 1), ("period_start", -1)],  # Billing period optimization
         ]
 
 
@@ -201,7 +204,7 @@ class DubbingSession(Document):
     class Settings:
         name = "dubbing_sessions"
         indexes = [
-            "session_id",
+            IndexModel([("session_id", ASCENDING)], unique=True),
             "partner_id",
             "status",
             "started_at",

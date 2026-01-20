@@ -51,6 +51,29 @@ def generate_correlation_id() -> str:
     return str(uuid.uuid4())
 
 
+def get_correlation_headers() -> dict[str, str]:
+    """
+    Get headers dict with correlation ID for external service calls.
+
+    Use this when making HTTP requests to external services to propagate
+    the correlation ID for distributed tracing.
+
+    Returns:
+        Dictionary with X-Correlation-ID header if set, empty dict otherwise
+
+    Example:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                url,
+                headers={**default_headers, **get_correlation_headers()}
+            )
+    """
+    correlation_id = get_correlation_id()
+    if correlation_id:
+        return {settings.CORRELATION_ID_HEADER: correlation_id}
+    return {}
+
+
 class CorrelationIdMiddleware(BaseHTTPMiddleware):
     """
     Middleware to manage correlation IDs for request tracing.

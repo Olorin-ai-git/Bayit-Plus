@@ -1,5 +1,7 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
+from typing import List, Type
+from beanie import Document
 from app.core.config import settings
 
 # Models
@@ -73,128 +75,140 @@ db = Database()
 
 
 async def connect_to_mongo():
-    """Create database connection."""
-    db.client = AsyncIOMotorClient(settings.MONGODB_URL)
+    """Create database connection with connection pool configuration."""
+    db.client = AsyncIOMotorClient(
+        settings.MONGODB_URL,
+        maxPoolSize=100,          # Maximum connections in pool (higher for main app)
+        minPoolSize=20,           # Minimum connections to maintain
+        maxIdleTimeMS=30000,      # Close idle connections after 30s
+        waitQueueTimeoutMS=5000,  # Fail fast if pool exhausted
+        connectTimeoutMS=10000,   # Connection timeout
+        serverSelectionTimeoutMS=10000,  # Server selection timeout
+    )
 
-    # Initialize Beanie with document models
-    await init_beanie(
-        database=db.client[settings.MONGODB_DB_NAME],
-        document_models=[
-            User,
-            VerificationToken,
-            Content,
-            LiveChannel,
-            EPGEntry,
-            RadioStation,
-            Podcast,
-            PodcastEpisode,
-            # Content taxonomy models (new classification system)
-            ContentSection,
-            SectionSubcategory,
-            Genre,
-            Audience,
-            Subscription,
-            Invoice,
-            WatchlistItem,
-            WatchHistory,
-            Conversation,
-            Profile,
-            Flow,
-            # Real-time models
-            WatchParty,
-            ChatMessage,
-            # Trending models
-            TrendingSnapshot,
-            ContentTrendMatch,
-            # Chapter models
-            VideoChapters,
-            # Subtitle models
-            SubtitleTrackDoc,
-            TranslationCacheDoc,
-            SubtitleSearchCacheDoc,
-            SubtitleQuotaTrackerDoc,
-            SubtitlePreference,
-            # Admin models
-            Campaign,
-            Transaction,
-            Refund,
-            AuditLog,
-            EmailCampaign,
-            PushNotification,
-            SystemSettings,
-            SubscriptionPlan,
-            # Security audit log
-            SecurityAuditLog,
-            # Widget models
-            Widget,
-            UserSystemWidget,
-            # Librarian AI Agent models
-            AuditReport,
-            LibrarianAction,
-            StreamValidationCache,
-            ClassificationVerificationCache,
-            # User content models
-            Favorite,
-            Download,
-            # Recording models
-            RecordingSession,
-            Recording,
-            RecordingSchedule,
-            RecordingSubtitleCue,
-            # Upload models
-            UploadJob,
-            MonitoredFolder,
-            UploadStats,
-            BrowserUploadSession,
-            UploadHashLock,
-            # Chess models
-            ChessGame,
-            ChessChatMessage,
-            # Friends & Stats models
-            FriendRequest,
-            UserFriendship,
-            GameResult,
-            PlayerStats,
-            # Chat Translation models
-            ChatTranslationCacheDoc,
-            DirectMessage,
-            # Judaism Section models
-            JewishNewsSource,
-            JewishNewsItem,
-            JewishCalendarCache,
-            JewishOrganization,
-            CommunityEvent,
-            ScrapingJob,
-            # Jerusalem Content models
-            JerusalemContentSource,
-            JerusalemContentItem,
-            # Tel Aviv Content models
-            TelAvivContentSource,
-            TelAvivContentItem,
-            # Support system models
-            SupportTicket,
-            SupportConversation,
-            SupportAnalytics,
-            FAQEntry,
-            # Documentation models
-            DocumentationArticle,
-            DocumentationCategory,
-            DocumentationFeedback,
-            DocumentationSearchLog,
-            # Culture models (Global Cultures feature)
-            Culture,
-            CultureCity,
-            CultureNewsSource,
-            CultureContentItem,
-            # Kids Content models
-            KidsContentSource,
-            # Youngsters Content models
-            YoungstersContentSource,
-            # Family Controls models (unified parental controls)
-            FamilyControls,
-            # MCP Content Discovery models
-            ContentDiscoveryQueue,
-            # Olorin.ai Platform models
+    # Build document models list
+    document_models: List[Type[Document]] = [
+        User,
+        VerificationToken,
+        Content,
+        LiveChannel,
+        EPGEntry,
+        RadioStation,
+        Podcast,
+        PodcastEpisode,
+        # Content taxonomy models (new classification system)
+        ContentSection,
+        SectionSubcategory,
+        Genre,
+        Audience,
+        Subscription,
+        Invoice,
+        WatchlistItem,
+        WatchHistory,
+        Conversation,
+        Profile,
+        Flow,
+        # Real-time models
+        WatchParty,
+        ChatMessage,
+        # Trending models
+        TrendingSnapshot,
+        ContentTrendMatch,
+        # Chapter models
+        VideoChapters,
+        # Subtitle models
+        SubtitleTrackDoc,
+        TranslationCacheDoc,
+        SubtitleSearchCacheDoc,
+        SubtitleQuotaTrackerDoc,
+        SubtitlePreference,
+        # Admin models
+        Campaign,
+        Transaction,
+        Refund,
+        AuditLog,
+        EmailCampaign,
+        PushNotification,
+        SystemSettings,
+        SubscriptionPlan,
+        # Security audit log
+        SecurityAuditLog,
+        # Widget models
+        Widget,
+        UserSystemWidget,
+        # Librarian AI Agent models
+        AuditReport,
+        LibrarianAction,
+        StreamValidationCache,
+        ClassificationVerificationCache,
+        # User content models
+        Favorite,
+        Download,
+        # Recording models
+        RecordingSession,
+        Recording,
+        RecordingSchedule,
+        RecordingSubtitleCue,
+        # Upload models
+        UploadJob,
+        MonitoredFolder,
+        UploadStats,
+        BrowserUploadSession,
+        UploadHashLock,
+        # Chess models
+        ChessGame,
+        ChessChatMessage,
+        # Friends & Stats models
+        FriendRequest,
+        UserFriendship,
+        GameResult,
+        PlayerStats,
+        # Chat Translation models
+        ChatTranslationCacheDoc,
+        DirectMessage,
+        # Judaism Section models
+        JewishNewsSource,
+        JewishNewsItem,
+        JewishCalendarCache,
+        JewishOrganization,
+        CommunityEvent,
+        ScrapingJob,
+        # Jerusalem Content models
+        JerusalemContentSource,
+        JerusalemContentItem,
+        # Tel Aviv Content models
+        TelAvivContentSource,
+        TelAvivContentItem,
+        # Support system models
+        SupportTicket,
+        SupportConversation,
+        SupportAnalytics,
+        FAQEntry,
+        # Documentation models
+        DocumentationArticle,
+        DocumentationCategory,
+        DocumentationFeedback,
+        DocumentationSearchLog,
+        # Culture models (Global Cultures feature)
+        Culture,
+        CultureCity,
+        CultureNewsSource,
+        CultureContentItem,
+        # Kids Content models
+        KidsContentSource,
+        # Youngsters Content models
+        YoungstersContentSource,
+        # Family Controls models (unified parental controls)
+        FamilyControls,
+        # MCP Content Discovery models
+        ContentDiscoveryQueue,
+    ]
+
+    # Conditionally add Olorin models based on database separation setting
+    # When Phase 2 (separate database) is enabled, Olorin models are managed separately
+    if not settings.olorin.database.use_separate_database:
+        # Phase 1: Olorin models in main database
+        document_models.extend([
             IntegrationPartner,
             UsageRecord,
             DubbingSession,
@@ -202,7 +216,16 @@ async def connect_to_mongo():
             ContentEmbedding,
             RecapSession,
             CulturalReference,
-        ],
+        ])
+        print("Olorin models included in main database (Phase 1)")
+    else:
+        # Phase 2: Olorin models in separate database
+        print("Olorin models excluded from main database (Phase 2 - separate database)")
+
+    # Initialize Beanie with document models
+    await init_beanie(
+        database=db.client[settings.MONGODB_DB_NAME],
+        document_models=document_models,
     )
     print(f"Connected to MongoDB: {settings.MONGODB_DB_NAME}")
 

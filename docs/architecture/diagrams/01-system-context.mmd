@@ -1,0 +1,27 @@
+graph TB
+    subgraph "External Actors"
+        P[Integration Partner<br/>Netflix IL, HOT, etc.]
+        V[End Viewer]
+    end
+
+    subgraph "Bayit+ Platform"
+        O[Olorin.ai Platform<br/>B2B AI Overlay]
+        B[Bayit+ Core<br/>Streaming Platform]
+    end
+
+    subgraph "External Services"
+        E[ElevenLabs<br/>STT/TTS]
+        PC[Pinecone<br/>Vector DB]
+        CL[Claude AI<br/>LLM]
+        OA[OpenAI<br/>Embeddings]
+        M[(MongoDB Atlas)]
+    end
+
+    P -->|REST/WebSocket| O
+    V -->|Consumes via| P
+    O -->|Audio Processing| E
+    O -->|Vector Search| PC
+    O -->|AI Analysis| CL
+    O -->|Embeddings| OA
+    O -->|Data| M
+    O <-->|Content Metadata| B

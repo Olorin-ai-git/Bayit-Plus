@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 async def process_transcripts(
-    stt_service,
+    stt_provider,
     output_queue: asyncio.Queue[DubbingMessage],
     metrics: DubbingMetrics,
     source_language: str,
@@ -32,7 +32,7 @@ async def process_transcripts(
     Background task to process STT transcripts.
 
     Args:
-        stt_service: ElevenLabs STT service
+        stt_provider: STT provider instance (STTProvider interface)
         output_queue: Queue for output messages
         metrics: Dubbing session metrics
         source_language: Source language code
@@ -44,7 +44,7 @@ async def process_transcripts(
         reset_segment_time: Callable to reset segment time
     """
     try:
-        async for transcript, detected_lang in stt_service.receive_transcripts():
+        async for transcript, detected_lang in stt_provider.receive_transcripts():
             if not running_check():
                 break
 

@@ -1,0 +1,63 @@
+{
+  "name": "bayit-plus-partner-portal",
+  "description": "B2B Partner Portal for Bayit-Plus API management",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "dev": "lsof -ti:3011 | xargs kill -9 2>/dev/null || true; webpack serve --mode development --config webpack.config.cjs",
+    "build": "webpack --mode production --config webpack.config.cjs",
+    "preview": "serve -s dist -l 3011",
+    "lint": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "deploy": "npm run build && firebase deploy --only hosting:partner-portal",
+    "deploy:preview": "npm run build && firebase hosting:channel:deploy partner-preview --only partner-portal"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.62.0",
+    "axios": "^1.6.2",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.0.6",
+    "i18next": "^25.7.3",
+    "lucide-react": "^0.303.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.71.0",
+    "react-i18next": "^16.5.1",
+    "react-router-dom": "^6.21.0",
+    "recharts": "^2.15.3",
+    "zod": "^3.24.1",
+    "zustand": "^4.4.7"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/preset-react": "^7.28.5",
+    "@babel/preset-typescript": "^7.28.5",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@typescript-eslint/eslint-plugin": "^8.53.1",
+    "@typescript-eslint/parser": "^8.53.1",
+    "autoprefixer": "^10.4.16",
+    "babel-loader": "^10.0.0",
+    "copy-webpack-plugin": "^13.0.1",
+    "css-loader": "^7.1.2",
+    "dotenv": "^17.2.3",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "html-webpack-plugin": "^5.6.5",
+    "postcss": "^8.4.32",
+    "postcss-loader": "^8.2.0",
+    "style-loader": "^4.0.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.3.3",
+    "vite": "^7.3.1",
+    "webpack": "^5.104.1",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
+  }
+}

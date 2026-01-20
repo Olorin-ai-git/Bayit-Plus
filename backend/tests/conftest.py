@@ -13,6 +13,8 @@ sys.path.insert(0, str(backend_dir))
 import pytest
 import pytest_asyncio
 from typing import Optional
+from motor.motor_asyncio import AsyncIOMotorClient
+from beanie import init_beanie
 
 
 @pytest.fixture
@@ -72,3 +74,116 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "integration: mark test as integration test"
     )
+    config.addinivalue_line(
+        "markers", "olorin: mark test as Olorin platform test"
+    )
+    config.addinivalue_line(
+        "markers", "phase2: mark test as Phase 2 (separate database) test"
+    )
+
+
+# ============================================
+# Olorin Database Test Fixtures (Phase 2)
+# ============================================
+
+@pytest_asyncio.fixture
+async def olorin_db_client():
+    """
+    Create Olorin test database client.
+
+    For Phase 2 separate database testing.
+    Creates a separate test database for Olorin models.
+    """
+    from app.core.config import settings
+    from app.models.integration_partner import (
+        IntegrationPartner,
+        UsageRecord,
+        DubbingSession,
+        WebhookDelivery,
+    )
+    from app.models.content_embedding import ContentEmbedding, RecapSession
+    from app.models.cultural_reference import CulturalReference
+
+    # Use test database name
+    test_db_name = f"{settings.olorin.database.mongodb_db_name}_test"
+    mongodb_url = settings.olorin.database.mongodb_url or settings.MONGODB_URL
+
+    client = AsyncIOMotorClient(mongodb_url)
+
+    # Initialize Beanie with Olorin models
+    await init_beanie(
+        database=client[test_db_name],
+        document_models=[
+            IntegrationPartner,
+            UsageRecord,
+            DubbingSession,
+            WebhookDelivery,
+            ContentEmbedding,
+            RecapSession,
+            CulturalReference,
+        ],
+    )
+
+    yield client
+
+    # Cleanup - drop test database
+    await client.drop_database(test_db_name)
+    client.close()
+
+
+@pytest_asyncio.fixture
+async def content_db_client():
+    """
+    Create Content database client for cross-database testing.
+
+    Provides access to Bayit+ Content model for Olorin tests
+    that need to verify cross-database access patterns.
+    """
+    from app.core.config import settings
+    from app.models.content import Content
+
+    # Use test database name
+    test_db_name = f"{settings.MONGODB_DB_NAME}_content_test"
+
+    client = AsyncIOMotorClient(settings.MONGODB_URL)
+
+    # Initialize Beanie with Content model only
+    await init_beanie(
+        database=client[test_db_name],
+        document_models=[Content],
+    )
+
+    yield client
+
+    # Cleanup - drop test database
+    await client.drop_database(test_db_name)
+    client.close()
+
+
+@pytest_asyncio.fixture
+async def combined_db_clients(olorin_db_client, content_db_client):
+    """
+    Combined fixture providing both Olorin and Content database clients.
+
+    Use this for tests that need to verify cross-database operations,
+    such as ContentMetadataService functionality.
+
+    Returns:
+        tuple: (olorin_client, content_client)
+    """
+    return (olorin_db_client, content_db_client)
+
+
+@pytest_asyncio.fixture
+async def mock_content_metadata_service(content_db_client):
+    """
+    Mock ContentMetadataService for testing Olorin services.
+
+    Initializes the service with test Content database client.
+    """
+    from app.services.olorin.content_metadata_service import content_metadata_service
+
+    # Initialize with test database
+    await content_metadata_service.initialize()
+
+    yield content_metadata_service

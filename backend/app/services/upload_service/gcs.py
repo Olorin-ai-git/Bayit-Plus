@@ -39,7 +39,12 @@ class GCSUploader:
     def is_retryable_error(self, exception: Exception) -> bool:
         """
         Check if an upload exception is retryable (transient network/server error).
+        FileNotFoundError and similar permanent failures are not retryable.
         """
+        # Non-retryable errors - file doesn't exist, no point retrying
+        if isinstance(exception, (FileNotFoundError, PermissionError)):
+            return False
+
         if isinstance(exception, (ServiceUnavailable, TooManyRequests, InternalServerError)):
             return True
 
@@ -224,6 +229,10 @@ class GCSUploader:
                 initial_delay = settings.GCS_UPLOAD_RETRY_INITIAL_DELAY_SECONDS
                 max_delay = settings.GCS_UPLOAD_RETRY_MAX_DELAY_SECONDS
                 timeout = settings.GCS_UPLOAD_TIMEOUT_SECONDS
+
+                # Validate file exists before attempting upload
+                if not Path(job.source_path).exists():
+                    raise FileNotFoundError(f"Source file not found: {job.source_path}")
 
                 last_exception = None
 

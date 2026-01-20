@@ -1,0 +1,10 @@
+flowchart TB
+    A[Input Text] --> B[Load AliasCache]
+    B --> C[Pattern Matching]
+    C --> D{Text > 20 chars?}
+    D -->|Yes| E[Claude AI Analysis]
+    D -->|No| F[Skip AI]
+    E --> G[Merge Results]
+    F --> G
+    G --> H[Get Explanations]
+    H --> I[Return Response]

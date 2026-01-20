@@ -47,7 +47,8 @@ async def pattern_based_detection(
     Returns:
         List of detected references
     """
-    detected = []
+    # First pass: collect all matches and their reference IDs
+    matches_by_ref_id: dict[str, List[Tuple[re.Match, str]]] = {}
 
     for alias, ref_id in alias_cache.aliases.items():
         if len(alias) < 3:
@@ -55,12 +56,28 @@ async def pattern_based_detection(
 
         pattern = re.compile(r'\b' + re.escape(alias) + r'\b', re.IGNORECASE)
         for match in pattern.finditer(text):
-            ref = await CulturalReference.find_one(
-                CulturalReference.reference_id == ref_id
-            )
-            if not ref:
-                continue
+            if ref_id not in matches_by_ref_id:
+                matches_by_ref_id[ref_id] = []
+            matches_by_ref_id[ref_id].append((match, alias))
 
+    if not matches_by_ref_id:
+        return []
+
+    # Batch load all referenced CulturalReference documents
+    ref_ids = list(matches_by_ref_id.keys())
+    refs = await CulturalReference.find(
+        {"reference_id": {"$in": ref_ids}}
+    ).to_list()
+    refs_by_id = {r.reference_id: r for r in refs}
+
+    # Build detected references using cached data
+    detected = []
+    for ref_id, match_list in matches_by_ref_id.items():
+        ref = refs_by_id.get(ref_id)
+        if not ref:
+            continue
+
+        for match, _alias in match_list:
             confidence = 0.9 if match.group().lower() == ref.canonical_name.lower() else 0.8
 
             if confidence >= min_confidence:

@@ -8,7 +8,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Optional, List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr, Field
 
 from app.models.integration_partner import IntegrationPartner, WebhookEventType
@@ -16,6 +16,7 @@ from app.services.olorin.partner_service import partner_service
 from app.services.olorin.metering_service import metering_service
 from app.api.routes.olorin.dependencies import get_current_partner
 from app.api.routes.olorin.errors import get_error_message, OlorinErrors
+from app.core.rate_limiter import limiter
 
 logger = logging.getLogger(__name__)
 
@@ -119,7 +120,8 @@ class ApiKeyRegenerateResponse(BaseModel):
     description="Register a new third-party platform for Olorin.ai integration. "
     "Returns an API key that must be stored securely.",
 )
-async def register_partner(request: PartnerRegisterRequest):
+@limiter.limit("3/hour")
+async def register_partner(http_request: Request, request: PartnerRegisterRequest):
     """Register a new integration partner."""
     try:
         partner, api_key = await partner_service.create_partner(
