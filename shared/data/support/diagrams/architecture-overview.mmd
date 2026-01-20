@@ -1,0 +1,56 @@
+%% Bayit Plus Platform Architecture Overview
+%% High-level system architecture showing major components and connections
+
+graph TB
+    subgraph "Client Applications"
+        Web[Web App<br/>React + Vite]
+        Mobile[Mobile App<br/>React Native]
+        TV[TV App<br/>React Native tvOS]
+    end
+
+    subgraph "Backend Services"
+        API[FastAPI Backend<br/>Python 3.11+]
+        Auth[Authentication<br/>JWT + OAuth]
+        Upload[Upload Service<br/>FFmpeg Processing]
+        AI[AI Services<br/>Librarian + Chat]
+    end
+
+    subgraph "Data Layer"
+        MongoDB[(MongoDB<br/>Primary Database)]
+        Redis[(Redis<br/>Cache + Sessions)]
+    end
+
+    subgraph "External Services"
+        CDN[Streaming CDN<br/>HLS/DASH]
+        LLM[AI/LLM Provider<br/>Content Analysis]
+        Payment[Payment Gateway<br/>Subscriptions]
+        TTS[TTS/STT Services<br/>Voice Features]
+    end
+
+    Web --> API
+    Mobile --> API
+    TV --> API
+
+    API --> Auth
+    API --> Upload
+    API --> AI
+
+    API --> MongoDB
+    API --> Redis
+
+    Upload --> CDN
+    AI --> LLM
+    API --> Payment
+    AI --> TTS
+
+    CDN -.->|Stream Delivery| Web
+    CDN -.->|Stream Delivery| Mobile
+    CDN -.->|Stream Delivery| TV
+
+    style Web fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    style Mobile fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    style TV fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    style API fill:#50C878,stroke:#2E7D4E,color:#fff
+    style MongoDB fill:#F39C12,stroke:#B8730A,color:#fff
+    style Redis fill:#E74C3C,stroke:#A93226,color:#fff
+    style CDN fill:#9B59B6,stroke:#6C3483,color:#fff

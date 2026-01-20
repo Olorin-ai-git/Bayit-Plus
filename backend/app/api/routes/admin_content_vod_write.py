@@ -8,7 +8,8 @@ from fastapi import APIRouter, HTTPException, Depends, Request, BackgroundTasks
 import logging
 
 from app.models.user import User
-from app.models.content import Content, Category
+from app.models.content import Content
+from app.models.content_taxonomy import ContentSection
 from app.models.admin import Permission, AuditAction
 from .admin_content_utils import has_permission, log_audit
 from .admin_content_schemas import ContentCreateRequest, ContentUpdateRequest
@@ -27,7 +28,7 @@ async def create_content(
     current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
 ):
     """Create new VOD content."""
-    category = await Category.get(data.category_id)
+    category = await ContentSection.get(data.category_id)
     if not category:
         raise HTTPException(status_code=400, detail="Category not found")
 
@@ -78,7 +79,7 @@ async def update_content(
         changes["title"] = {"old": content.title, "new": data.title}
         content.title = data.title
     if data.category_id is not None:
-        category = await Category.get(data.category_id)
+        category = await ContentSection.get(data.category_id)
         if not category:
             raise HTTPException(status_code=400, detail="Category not found")
         changes["category_id"] = {"old": content.category_id, "new": data.category_id}

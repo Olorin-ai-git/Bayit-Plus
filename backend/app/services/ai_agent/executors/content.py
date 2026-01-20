@@ -8,7 +8,8 @@ import logging
 import random
 from typing import Dict, Any, Optional
 
-from app.models.content import Content, Category
+from app.models.content import Content
+from app.models.content_taxonomy import ContentSection
 
 logger = logging.getLogger(__name__)
 
@@ -115,7 +116,7 @@ async def execute_get_content_details(content_id: str) -> Dict[str, Any]:
 async def execute_get_categories() -> Dict[str, Any]:
     """Get all categories in the system."""
     try:
-        categories = await Category.find().to_list()
+        categories = await ContentSection.find().to_list()
 
         return {
             "success": True,

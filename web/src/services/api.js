@@ -22,12 +22,23 @@ import {
   demoChildrenService,
   demoFlowsService,
 } from './demoService'
+import logger, {
+  getCorrelationId,
+  generateCorrelationId,
+  setCorrelationId,
+} from '@bayit/shared-utils/logger'
+
+// Correlation ID header name (matches backend)
+const CORRELATION_ID_HEADER = 'X-Correlation-ID'
 
 // Use environment variable set by webpack at build time
 // In production, this will be the Cloud Run URL
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
 
-console.log('[API] Base URL:', API_BASE_URL) // Debug log
+// Create scoped logger for API
+const apiLogger = logger.scope('API')
+
+apiLogger.debug('Base URL configured', { baseUrl: API_BASE_URL })
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -36,19 +47,53 @@ const api = axios.create({
   },
 })
 
-// Request interceptor to add auth token
+// Request interceptor to add auth token and correlation ID
 api.interceptors.request.use((config) => {
+  // Add auth token
   const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
   if (authData?.state?.token) {
     config.headers.Authorization = `Bearer ${authData.state.token}`
   }
+
+  // Add correlation ID - use existing or generate new one
+  let correlationId = getCorrelationId()
+  if (!correlationId) {
+    correlationId = generateCorrelationId()
+    setCorrelationId(correlationId)
+  }
+  config.headers[CORRELATION_ID_HEADER] = correlationId
+
+  apiLogger.debug(`Request: ${config.method?.toUpperCase()} ${config.url}`, {
+    correlationId,
+  })
+
   return config
 })
 
 // Response interceptor for error handling
 api.interceptors.response.use(
-  (response) => response.data,
+  (response) => {
+    // Log successful response with timing
+    const correlationId = response.headers[CORRELATION_ID_HEADER.toLowerCase()]
+    const durationMs = response.headers['x-request-duration-ms']
+
+    apiLogger.debug(`Response: ${response.status} ${response.config.url}`, {
+      status: response.status,
+      correlationId,
+      durationMs: durationMs ? parseInt(durationMs, 10) : undefined,
+    })
+
+    return response.data
+  },
   (error) => {
+    // Log error
+    const correlationId = getCorrelationId()
+    apiLogger.error(`Request failed: ${error.config?.url}`, {
+      correlationId,
+      status: error.response?.status,
+      error: error.response?.data || error.message,
+    })
+
     // Only logout on authentication failures, not all 401 errors
     if (error.response?.status === 401) {
       const errorDetail = error.response?.data?.detail || ''
@@ -341,12 +386,36 @@ const apiChildrenService = {
   getContent: (category, maxAge, limit) =>
     api.get('/children/content', { params: { category, max_age: maxAge, limit } }),
   getCategories: () => api.get('/children/categories'),
+  getSubcategories: () => api.get('/children/subcategories'),
+  getContentBySubcategory: (slug, maxAge, limit) =>
+    api.get(`/children/subcategory/${slug}`, { params: { age_max: maxAge, limit } }),
+  getAgeGroups: () => api.get('/children/age-groups'),
+  getContentByAgeGroup: (group, limit) =>
+    api.get(`/children/age-group/${group}`, { params: { limit } }),
   toggleParentalControls: (enabled) =>
     api.post('/children/parental-controls', { enabled }),
   verifyPin: (pin) => api.post('/children/verify-pin', { pin }),
   setPin: (pin) => api.post('/children/set-pin', { pin }),
   getSettings: () => api.get('/children/settings'),
   updateSettings: (settings) => api.put('/children/settings', settings),
+}
+
+// Youngsters Service (API)
+const apiYoungstersService = {
+  getContent: (category, maxAge, limit) =>
+    api.get('/youngsters/content', { params: { category, age_max: maxAge, limit } }),
+  getCategories: () => api.get('/youngsters/categories'),
+  getSubcategories: () => api.get('/youngsters/subcategories'),
+  getContentBySubcategory: (slug, maxAge, limit) =>
+    api.get(`/youngsters/subcategory/${slug}`, { params: { age_max: maxAge, limit } }),
+  getAgeGroups: () => api.get('/youngsters/age-groups'),
+  getContentByAgeGroup: (group, limit) =>
+    api.get(`/youngsters/age-group/${group}`, { params: { limit } }),
+  getTrending: (ageGroup, limit) =>
+    api.get('/youngsters/trending', { params: { age_group: ageGroup, limit } }),
+  getNews: (limit, ageGroup) =>
+    api.get('/youngsters/news', { params: { limit, age_group: ageGroup } }),
+  verifyPin: (pin) => api.post('/youngsters/verify-parent-pin', { pin }),
 }
 
 // Judaism Service (API)
@@ -485,6 +554,7 @@ export const favoritesService = isDemo ? demoFavoritesService : apiFavoritesServ
 export const downloadsService = isDemo ? demoDownloadsService : apiDownloadsService
 export const profilesService = apiProfilesService // No demo mode for profiles - requires real auth
 export const childrenService = isDemo ? demoChildrenService : apiChildrenService
+export const youngstersService = apiYoungstersService // No demo mode - requires real content
 export const judaismService = isDemo ? demoJudaismService : apiJudaismService
 export const flowsService = isDemo ? demoFlowsService : apiFlowsService
 

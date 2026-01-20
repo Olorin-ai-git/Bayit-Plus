@@ -114,3 +114,24 @@ export const apiChildrenService = {
     bedtime_end?: string;
   }) => api.put('/children/settings', settings),
 };
+
+// Youngsters Service (API)
+export const apiYoungstersService = {
+  getContent: (category?: string, maxAge?: number, limit?: number) =>
+    api.get('/youngsters/content', { params: { category, age_max: maxAge, limit } }),
+  getCategories: () => api.get('/youngsters/categories'),
+  getFeatured: () => api.get('/youngsters/featured'),
+  getByCategory: (categoryId: string, maxAge?: number, limit?: number) =>
+    api.get(`/youngsters/by-category/${categoryId}`, { params: { age_max: maxAge, limit } }),
+  getSubcategories: () => api.get('/youngsters/subcategories'),
+  getContentBySubcategory: (slug: string, maxAge?: number, limit?: number) =>
+    api.get(`/youngsters/subcategory/${slug}`, { params: { age_max: maxAge, limit } }),
+  getAgeGroups: () => api.get('/youngsters/age-groups'),
+  getContentByAgeGroup: (group: string, limit?: number) =>
+    api.get(`/youngsters/age-group/${group}`, { params: { limit } }),
+  getTrending: (ageGroup?: string, limit?: number) =>
+    api.get('/youngsters/trending', { params: { age_group: ageGroup, limit } }),
+  getNews: (limit?: number, ageGroup?: string) =>
+    api.get('/youngsters/news', { params: { limit, age_group: ageGroup } }),
+  verifyParentPin: (pin: string) => api.post('/youngsters/verify-parent-pin', { pin }),
+};

@@ -317,6 +317,77 @@ This agent verifies:
 
 **Refusal Requirement:** No voice, audio, or sound-related change can be marked as complete or production-ready without explicit approval from the voice-technician agent.
 
+#### 9. MANDATORY: Full Secrets Infrastructure Management Compliance (Paved Road)
+
+**ALL secrets management MUST follow the paved road for full infrastructure compliance.**
+
+**CRITICAL: Placing secrets in code files is STRICTLY PROHIBITED.**
+
+All secrets MUST only exist in `.gitignore`'d files. Never commit secrets to version control.
+
+**When adding ANY new secret, it MUST be placed in ALL of the following locations:**
+
+1. **`.env`** - Local development environment file
+2. **`docker-compose.yml` / Docker configuration** - Container environment variables
+3. **YAML configuration files** - Kubernetes/deployment configs (as secret references, not values)
+4. **`deploy_server.sh`** - Server deployment script environment setup
+5. **`deploy_all.sh`** - Full deployment automation script
+6. **`gcloud secrets`** - Google Cloud Secret Manager for production
+
+**Verification Checklist for New Secrets:**
+```bash
+# Before declaring any feature with new secrets complete:
+☐ Secret added to .env.example (with placeholder, not real value)
+☐ Secret added to docker-compose.yml (as environment variable reference)
+☐ Secret added to deployment YAML configs (as secret reference)
+☐ Secret added to deploy_server.sh (with gcloud secret fetch)
+☐ Secret added to deploy_all.sh (with proper secret handling)
+☐ Secret created in gcloud secrets manager
+☐ Secret documented in README or configuration docs
+☐ Verified .env is in .gitignore
+☐ Verified no secret values exist in any code files
+```
+
+**Forbidden:**
+- Hardcoded secrets, API keys, tokens, or credentials anywhere in code
+- Committing `.env` files to git
+- Secrets in JavaScript/TypeScript/Python source files
+- Secrets in configuration files that are tracked by git
+- Default/fallback secret values in code
+- Secrets in comments or documentation (even as examples)
+
+**Correct Pattern:**
+```python
+# backend/app/core/config.py
+class Settings(BaseSettings):
+    anthropic_api_key: str  # MUST come from environment, no default
+    mongodb_url: str        # MUST come from environment, no default
+    jwt_secret_key: str     # MUST come from environment, no default
+
+    class Config:
+        env_file = ".env"
+```
+
+```bash
+# deploy_server.sh - Fetch from gcloud secrets
+export ANTHROPIC_API_KEY=$(gcloud secrets versions access latest --secret="anthropic-api-key")
+export JWT_SECRET_KEY=$(gcloud secrets versions access latest --secret="jwt-secret-key")
+```
+
+**Incorrect (FORBIDDEN):**
+```python
+# ❌ WRONG - Hardcoded secret
+api_key = "sk-ant-api03-..."
+
+# ❌ WRONG - Default value for secret
+anthropic_api_key: str = "default-key"
+
+# ❌ WRONG - Fallback for missing secret
+api_key = os.getenv("API_KEY", "fallback-key")
+```
+
+**Refusal Requirement:** Any code change that introduces secrets without full paved road compliance across all 6 locations (.env, docker, yaml, deploy_server.sh, deploy_all.sh, gcloud secrets) MUST be refused. Secrets in code files is a critical failure.
+
 ---
 
 ### 1. UI/UX Standards

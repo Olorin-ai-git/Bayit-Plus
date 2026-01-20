@@ -818,6 +818,41 @@
     "phone": "Phone Support",
     "chat": "Live Chat",
     "chatAvailable": "Available 24/7",
+    "openTooltip": "Open help tooltip",
+    "openHelp": "Open help menu",
+    "howTo": "How to use",
+    "relatedArticles": "Related articles",
+    "stillNeedHelp": "Still need help?",
+    "contactSupport": "Contact Support",
+    "previous": "Previous",
+    "next": "Next",
+    "getStarted": "Get Started",
+    "skipTutorial": "Skip tutorial",
+    "actions": {
+      "search": "Search Help",
+      "docs": "Documentation",
+      "faq": "FAQ",
+      "support": "Contact Support",
+      "tutorial": "View Tutorial"
+    },
+    "search": {
+      "placeholder": "Search help...",
+      "noResults": "No results found for \"{{query}}\"",
+      "noResultsHint": "Try different keywords or browse categories",
+      "recent": "Recent",
+      "popular": "Popular"
+    },
+    "categories": {
+      "getting-started": "Getting Started",
+      "features": "Features",
+      "judaism": "Judaism",
+      "platform-guides": "Platform Guides",
+      "account": "Account",
+      "troubleshooting": "Troubleshooting",
+      "parents": "For Parents",
+      "admin": "Admin Guide",
+      "developer": "Developer API"
+    },
     "faq": {
       "title": "Frequently Asked Questions",
       "q1": "How do I change my subscription plan?",
@@ -828,6 +863,28 @@
       "a3": "Check your internet connection. If the problem persists, try clearing the app cache or restarting the app.",
       "q4": "How do I cancel my subscription?",
       "a4": "You can cancel your subscription anytime through Settings > Subscription > Cancel Plan. You'll continue to have access until the end of your billing period."
+    },
+    "onboarding": {
+      "welcome": {
+        "title": "Welcome to Bayit+",
+        "description": "Your home for Israeli entertainment, anywhere in the world"
+      },
+      "liveTv": {
+        "title": "Live TV",
+        "description": "Watch Israeli channels live, including news, sports, and entertainment"
+      },
+      "vod": {
+        "title": "On-Demand Content",
+        "description": "Browse movies, series, and documentaries anytime"
+      },
+      "voice": {
+        "title": "Voice Control",
+        "description": "Say 'Bayit' to control the app with your voice"
+      },
+      "profiles": {
+        "title": "Family Profiles",
+        "description": "Create profiles for each family member with personalized recommendations"
+      }
     }
   },
   "voice": {
@@ -2855,6 +2912,49 @@
       "pendingModeration": "Pending Moderation"
     }
   },
+  "youngsters": {
+    "title": "Youngsters",
+    "items": "items",
+    "empty": "No content available",
+    "emptyHint": "Try another category",
+    "exitYoungstersMode": "Exit Youngsters Mode",
+    "exitDescription": "Enter parent code to exit",
+    "parentCode": "Parent code",
+    "confirm": "Confirm",
+    "wrongCode": "Incorrect code",
+    "noContent": "No content available",
+    "tryAnotherCategory": "Try selecting another category",
+    "categories": {
+      "all": "All",
+      "trending": "Trending",
+      "news": "News",
+      "culture": "Culture",
+      "educational": "Educational",
+      "music": "Music",
+      "entertainment": "Entertainment",
+      "sports": "Sports",
+      "tech": "Technology",
+      "judaism": "Judaism"
+    },
+    "ageGroups": {
+      "middle-school": "Middle School (12-14)",
+      "high-school": "High School (15-17)"
+    },
+    "moderation": {
+      "pending": "Pending Review",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "admin": {
+      "stats": "Youngsters Content Manager",
+      "seedContent": "Seed Content",
+      "importArchive": "Import Archive.org",
+      "syncPodcasts": "Sync Podcasts",
+      "syncYouTube": "Sync YouTube",
+      "tagVod": "Tag VOD",
+      "pendingModeration": "Pending Moderation"
+    }
+  },
   "chatbot": {
     "title": "Bayit+ Assistant",
     "greeting": "Hello! I'm Bayit+ smart assistant. How can I help you today? Click the microphone and speak, or type a message.",
@@ -3326,7 +3426,26 @@
         "music": "Music",
         "hebrew-learning": "Hebrew Learning",
         "stories": "Stories",
-        "jewish": "Jewish"
+        "jewish": "Jewish",
+        "learning-hebrew": "Learning Hebrew",
+        "young-science": "Young Science",
+        "math-fun": "Fun Math",
+        "nature-animals": "Nature & Animals",
+        "interactive": "Interactive",
+        "hebrew-songs": "Hebrew Songs",
+        "nursery-rhymes": "Nursery Rhymes",
+        "kids-movies": "Kids Movies",
+        "kids-series": "Kids Series",
+        "jewish-holidays": "Jewish Holidays",
+        "torah-stories": "Torah Stories",
+        "bedtime-stories": "Bedtime Stories"
+      },
+      "ageGroups": {
+        "title": "Age Groups",
+        "toddlers": "Toddlers (0-3)",
+        "preschool": "Preschool (3-5)",
+        "elementary": "Elementary (5-10)",
+        "preteen": "Pre-teen (10-12)"
       },
       "judaism": {
         "shiurim": "Torah Classes",
@@ -3347,6 +3466,88 @@
       "selectSubcategories": "Select Subcategories",
       "crossListing": "Cross-listing",
       "crossListingHint": "Content can appear in multiple sections"
+    }
+  },
+  "taxonomy": {
+    "sections": {
+      "movies": "Movies",
+      "series": "Series",
+      "kids": "Kids",
+      "youngsters": "Youngsters",
+      "music": "Music",
+      "documentaries": "Documentaries",
+      "podcasts": "Podcasts",
+      "live": "Live TV"
+    },
+    "subcategories": {
+      "learning-hebrew": "Learning Hebrew",
+      "learning-hebrew.description": "Learning to read, write and vocabulary in Hebrew for kids",
+      "young-science": "Young Science",
+      "young-science.description": "Experiments and scientific explanations adapted for children",
+      "math-fun": "Fun Math",
+      "math-fun.description": "Learning numbers and arithmetic in a fun and playful way",
+      "nature-animals": "Nature & Animals",
+      "nature-animals.description": "The world of animals and nature for curious children",
+      "interactive": "Interactive",
+      "interactive.description": "Interactive and participatory content for children",
+      "hebrew-songs": "Hebrew Songs",
+      "hebrew-songs.description": "Classic and new Israeli children's songs",
+      "nursery-rhymes": "Nursery Rhymes",
+      "nursery-rhymes.description": "Songs and melodies for toddlers and babies",
+      "kids-movies": "Kids Movies",
+      "kids-movies.description": "Full-length movies suitable for children",
+      "kids-series": "Kids Series",
+      "kids-series.description": "Animated series and TV shows for children",
+      "jewish-holidays": "Jewish Holidays",
+      "jewish-holidays.description": "Content about Jewish holidays and traditions for children",
+      "torah-stories": "Torah Stories",
+      "torah-stories.description": "Stories from the Torah and Jewish tradition",
+      "bedtime-stories": "Bedtime Stories",
+      "bedtime-stories.description": "Relaxing stories for bedtime",
+      "tiktok-trends": "TikTok Trends",
+      "tiktok-trends.description": "Hot trends and challenges on TikTok",
+      "viral-videos": "Viral Videos",
+      "viral-videos.description": "Popular viral videos on social media",
+      "memes": "Memes",
+      "memes.description": "Funny memes and internet culture",
+      "israel-news": "Israel News",
+      "israel-news.description": "Israel news adapted for teens",
+      "world-news": "World News",
+      "world-news.description": "International news for youth",
+      "science-news": "Science News",
+      "science-news.description": "Scientific discoveries and technological innovation",
+      "sports-news": "Sports News",
+      "sports-news.description": "Sports updates and game results",
+      "music-culture": "Music Culture",
+      "music-culture.description": "Music scene, artists and festivals",
+      "film-culture": "Film Culture",
+      "film-culture.description": "Cinema, series and reviews",
+      "art-culture": "Art Culture",
+      "art-culture.description": "Art, galleries and creativity",
+      "food-culture": "Food Culture",
+      "food-culture.description": "Cooking, recipes and food culture",
+      "study-help": "Study Help",
+      "study-help.description": "Help with exams, summaries and test prep",
+      "career-prep": "Career Prep",
+      "career-prep.description": "University and career preparation",
+      "life-skills": "Life Skills",
+      "life-skills.description": "Life skills, money management and independence",
+      "teen-movies": "Teen Movies",
+      "teen-movies.description": "Recommended movies for teenagers",
+      "teen-series": "Teen Series",
+      "teen-series.description": "Popular series for teenagers",
+      "gaming": "Gaming",
+      "gaming.description": "Video games, e-sports and gaming",
+      "coding": "Coding",
+      "coding.description": "Programming, coding and software development",
+      "gadgets": "Gadgets",
+      "gadgets.description": "Gadgets, technology and reviews",
+      "bar-bat-mitzvah": "Bar/Bat Mitzvah",
+      "bar-bat-mitzvah.description": "Preparation and celebrations for Bar/Bat Mitzvah",
+      "teen-torah": "Teen Torah",
+      "teen-torah.description": "Torah classes and weekly portion for teens",
+      "jewish-history": "Jewish History",
+      "jewish-history.description": "History of the Jewish people"
     }
   }
 }

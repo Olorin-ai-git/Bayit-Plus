@@ -11,7 +11,7 @@ import { Clock, Sparkles, Play, List } from 'lucide-react';
 import LinearGradient from 'react-native-web-linear-gradient';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassBadge } from '@bayit/shared/ui';
-import { isTV } from '@bayit/shared/utils/platform';
+import { isTV } from '@bayit/shared-utils/platform';
 import type { Flow } from '../types/flows.types';
 import { getLocalizedName, formatTriggerTime } from '../utils/flowHelpers';
 

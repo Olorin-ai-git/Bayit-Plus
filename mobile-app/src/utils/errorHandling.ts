@@ -5,7 +5,7 @@
  * - Network error detection
  * - Retry mechanisms with exponential backoff
  * - Offline mode detection
- * - Error logging
+ * - Error logging with Sentry integration
  * - User-friendly error messages
  */
 
@@ -13,6 +13,7 @@ import { Alert } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { ttsService } from '@bayit/shared-services';
 import i18n from '@bayit/shared-i18n';
+import logger from './logger';
 
 export type ErrorSeverity = 'info' | 'warning' | 'error' | 'critical';
 
@@ -62,7 +63,7 @@ class ErrorHandler {
    * Handle offline state
    */
   private handleOffline(): void {
-    console.log('[ErrorHandler] Device went offline');
+    logger.warn('Device went offline', 'ErrorHandler');
 
     Alert.alert(
       i18n.t('errors.offline.title'),
@@ -78,7 +79,7 @@ class ErrorHandler {
    * Handle online state
    */
   private handleOnline(): void {
-    console.log('[ErrorHandler] Device is back online');
+    logger.info('Device is back online', 'ErrorHandler');
 
     Alert.alert(
       i18n.t('errors.online.title'),
@@ -101,8 +102,14 @@ class ErrorHandler {
       this.errorLog.shift();
     }
 
-    // Log to console
-    console.error(`[ErrorHandler] ${error.severity.toUpperCase()}:`, error);
+    // Log using unified logger (also sends to Sentry)
+    if (error.severity === 'critical' || error.severity === 'error') {
+      logger.error(`${error.code}: ${error.message}`, 'ErrorHandler', error);
+    } else if (error.severity === 'warning') {
+      logger.warn(`${error.code}: ${error.message}`, 'ErrorHandler', error);
+    } else {
+      logger.info(`${error.code}: ${error.message}`, 'ErrorHandler', error);
+    }
   }
 
   /**
@@ -331,7 +338,7 @@ export async function retryWithBackoff<T>(
 
       if (attempt < maxRetries) {
         const delay = initialDelay * Math.pow(2, attempt);
-        console.log(`[Retry] Attempt ${attempt + 1} failed. Retrying in ${delay}ms...`);
+        logger.debug(`Attempt ${attempt + 1} failed. Retrying in ${delay}ms...`, 'Retry');
 
         await new Promise((resolve) => setTimeout(resolve, delay));
       }

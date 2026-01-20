@@ -21,7 +21,8 @@ from typing import List, Dict, Any, Optional
 import anthropic
 
 from app.core.config import settings
-from app.models.content import Content, Category
+from app.models.content import Content
+from app.models.content_taxonomy import ContentSection
 from app.models.librarian import LibrarianAction
 
 logger = logging.getLogger(__name__)
@@ -54,14 +55,14 @@ class KidsAuditResult:
 async def audit_kids_content(
     audit_id: str,
     dry_run: bool = False,
-    content_ids: Optional[List[str]] = None,
+    content_ids: Optional[List[str]] = None
 ) -> Dict[str, Any]:
     """
     Audit all kids content for appropriateness and correct classification.
 
     Args:
-        audit_id: Parent audit report ID
-        dry_run: If true, only report issues without fixing
+        audit_id: Parent audit report ID,
+        dry_run: If true, only report issues without fixing,
         content_ids: Optional specific content IDs to audit
 
     Returns:
@@ -85,7 +86,7 @@ async def audit_kids_content(
             "message": "No kids content to audit",
             "kids_audit_results": {
                 "total_kids_items": 0,
-            },
+            }
         }
 
     # Verify each item
@@ -132,21 +133,21 @@ async def audit_kids_content(
             "category_issues": result.category_issues,
             "inappropriate_flags": result.inappropriate_flags,
             "missing_educational_tags": result.missing_educational_tags,
-        },
+        }
     }
 
 
 async def verify_kids_classification(
     content: Content,
     audit_id: str,
-    dry_run: bool = False,
+    dry_run: bool = False
 ) -> KidsClassificationResult:
     """
     Use Claude AI to verify content is appropriate for kids and correctly categorized.
 
     Args:
-        content: Content item to verify
-        audit_id: Parent audit ID
+        content: Content item to verify,
+        audit_id: Parent audit ID,
         dry_run: If true, don't apply fixes
 
     Returns:
@@ -157,7 +158,7 @@ async def verify_kids_classification(
         content_id=str(content.id),
         is_appropriate=True,
         suggested_age_rating=content.age_rating or 7,
-        current_age_rating=content.age_rating,
+        current_age_rating=content.age_rating
     )
 
     try:
@@ -185,10 +186,10 @@ async def verify_kids_classification(
 4. Suggest relevant educational tags
 
 **Age Rating Guidelines:**
-- Age 3: Simple, colorful, no conflict, gentle music/stories
-- Age 5: Basic stories, mild cartoon action, learning content
-- Age 7: More complex stories, cartoon action, educational content
-- Age 10: Pre-teen content, mild drama, advanced learning
+- Age 3: Simple, colorful, no conflict, gentle music/stories,
+- Age 5: Basic stories, mild cartoon action, learning content,
+- Age 7: More complex stories, cartoon action, educational content,
+- Age 10: Pre-teen content, mild drama, advanced learning,
 - Age 12: Tween content, complex themes (nothing inappropriate)
 
 **Return JSON format:**
@@ -197,7 +198,7 @@ async def verify_kids_classification(
     "suggested_age_rating": 7,
     "issues": ["issue1", "issue2"],
     "suggested_tags": ["hebrew", "music", "learning"],
-    "reasoning": "Brief explanation"
+    "reasoning": "Brief explanation",
 }}
 
 Return ONLY JSON, no additional text."""
@@ -271,7 +272,7 @@ Return ONLY JSON, no additional text."""
                     },
                     auto_approved=result.is_appropriate,
                     confidence_score=result.confidence,
-                    description=f"Kids classification for '{content.title}': {', '.join(changes_made)}",
+                    description=f"Kids classification for '{content.title}': {', '.join(changes_made)}"
                 )
                 await action.insert()
 
@@ -401,7 +402,7 @@ async def detect_inappropriate_content() -> Dict[str, Any]:
         "$or": [
             {"kids_moderation_status": None},
             {"kids_moderation_status": "pending"},
-        ],
+        ]
     }).limit(100).to_list()
 
     flagged = []
@@ -441,7 +442,7 @@ async def sync_kids_categories() -> Dict[str, Any]:
 
     for category_key, category_data in KIDS_CATEGORIES.items():
         slug = f"kids-{category_key}"
-        existing = await Category.find_one({"slug": slug})
+        existing = await ContentSection.find_one({"slug": slug})
 
         if existing:
             if not existing.is_active:
@@ -449,14 +450,14 @@ async def sync_kids_categories() -> Dict[str, Any]:
                 await existing.save()
                 updated += 1
         else:
-            category = Category(
+            category = ContentSection(
                 name=category_data["name"],
                 name_en=category_data["name_en"],
                 name_es=category_data["name_es"],
                 slug=slug,
                 description=f"Kids content: {category_data['name_en']}",
                 icon=category_data["icon"],
-                is_active=True,
+                is_active=True
             )
             await category.insert()
             created += 1
@@ -515,5 +516,5 @@ async def get_kids_audit_summary() -> Dict[str, Any]:
         "moderation": {
             "pending": pending,
             "approved": approved,
-        },
+        }
     }

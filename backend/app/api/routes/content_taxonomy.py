@@ -6,10 +6,12 @@ New endpoints for the 5-axis content classification system:
 - Genres: Mood/style classifications
 - Audiences: Age appropriateness classifications
 - Browse: Unified content browsing with filters
+
+Uses i18n translation system for multilingual support.
 """
 
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Header
 from app.models.content import Content
 from app.models.content_taxonomy import (
     ContentSection,
@@ -18,10 +20,84 @@ from app.models.content_taxonomy import (
     Audience,
 )
 from app.services.subtitle_enrichment import enrich_content_items_with_subtitles
+from app.utils.i18n import get_multilingual_names, resolve_name_key
 import logging
 
 router = APIRouter(prefix="/content", tags=["content-taxonomy"])
 logger = logging.getLogger(__name__)
+
+
+def parse_language(accept_language: Optional[str] = None) -> str:
+    """
+    Parse Accept-Language header to determine preferred language.
+
+    Returns language code: he, en, or es (default: en)
+    """
+    if not accept_language:
+        return "en"
+
+    # Simple parsing - take first language code
+    lang = accept_language.split(",")[0].strip().lower()
+
+    # Map common language codes
+    if lang.startswith("he"):
+        return "he"
+    elif lang.startswith("es"):
+        return "es"
+    else:
+        return "en"
+
+
+def format_section_response(section: ContentSection, language: str = "en") -> dict:
+    """
+    Format a ContentSection model into an API response with i18n.
+
+    Args:
+        section: ContentSection model instance
+        language: Preferred language code
+
+    Returns:
+        Dictionary with resolved translations
+    """
+    return {
+        "id": str(section.id),
+        "slug": section.slug,
+        "name": resolve_name_key(section.name_key, language),
+        "translations": get_multilingual_names(section.name_key),
+        "description": resolve_name_key(section.description_key, language) if section.description_key else None,
+        "description_translations": get_multilingual_names(section.description_key) if section.description_key else None,
+        "icon": section.icon,
+        "thumbnail": section.thumbnail,
+        "color": section.color,
+        "order": section.order,
+        "show_on_homepage": section.show_on_homepage,
+        "show_on_nav": section.show_on_nav,
+        "supports_subcategories": section.supports_subcategories,
+    }
+
+
+def format_subcategory_response(subcategory: SectionSubcategory, language: str = "en") -> dict:
+    """
+    Format a SectionSubcategory model into an API response with i18n.
+
+    Args:
+        subcategory: SectionSubcategory model instance
+        language: Preferred language code
+
+    Returns:
+        Dictionary with resolved translations
+    """
+    return {
+        "id": str(subcategory.id),
+        "slug": subcategory.slug,
+        "name": resolve_name_key(subcategory.name_key, language),
+        "translations": get_multilingual_names(subcategory.name_key),
+        "description": resolve_name_key(subcategory.description_key, language) if subcategory.description_key else None,
+        "description_translations": get_multilingual_names(subcategory.description_key) if subcategory.description_key else None,
+        "icon": subcategory.icon,
+        "thumbnail": subcategory.thumbnail,
+        "order": subcategory.order,
+    }
 
 
 # ============================================================================
@@ -32,6 +108,7 @@ logger = logging.getLogger(__name__)
 async def get_sections(
     show_on_nav: Optional[bool] = None,
     show_on_homepage: Optional[bool] = None,
+    accept_language: Optional[str] = Header(None),
 ):
     """
     Get all content sections for navigation.
@@ -39,6 +116,12 @@ async def get_sections(
     Query params:
     - show_on_nav: Filter to sections visible in navigation
     - show_on_homepage: Filter to sections that should appear on homepage
+
+    Headers:
+    - Accept-Language: Preferred language (he, en, es)
+
+    Returns sections with resolved translations based on Accept-Language header,
+    plus all available translations for client-side language switching.
     """
     filters = {"is_active": True}
 
@@ -49,27 +132,11 @@ async def get_sections(
 
     sections = await ContentSection.find(filters).sort("order").to_list()
 
+    # Determine preferred language
+    language = parse_language(accept_language)
+
     return {
-        "sections": [
-            {
-                "id": str(section.id),
-                "slug": section.slug,
-                "name": section.name,
-                "name_en": section.name_en,
-                "name_es": section.name_es,
-                "description": section.description,
-                "description_en": section.description_en,
-                "description_es": section.description_es,
-                "icon": section.icon,
-                "thumbnail": section.thumbnail,
-                "color": section.color,
-                "order": section.order,
-                "show_on_homepage": section.show_on_homepage,
-                "show_on_nav": section.show_on_nav,
-                "supports_subcategories": section.supports_subcategories,
-            }
-            for section in sections
-        ]
+        "sections": [format_section_response(section, language) for section in sections]
     }
 
 

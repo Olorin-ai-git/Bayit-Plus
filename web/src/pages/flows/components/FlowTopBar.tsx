@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { Plus, ChevronDown, Sun, Moon, Star, Coffee, Sunset, Sparkles } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassFAB, GlassModal } from '@bayit/shared/ui';
-import { isTV } from '@bayit/shared/utils/platform';
+import { isTV } from '@bayit/shared-utils/platform';
 import { useDirection } from '@/hooks/useDirection';
 import type { Flow } from '../types/flows.types';
 

@@ -325,6 +325,20 @@ class Settings(BaseSettings):
     # YouTube Data API v3 key for importing kids channel content
     YOUTUBE_API_KEY: str = ""
 
+    # YouTube Validation Configuration
+    # Concurrent limit for batch validation (lower to avoid rate limiting)
+    YOUTUBE_VALIDATION_CONCURRENT_LIMIT: int = 5
+    # Timeout in seconds for individual video validation requests
+    YOUTUBE_VALIDATION_TIMEOUT_SECONDS: float = 10.0
+    # Cache TTL in hours for valid YouTube videos
+    YOUTUBE_CACHE_TTL_VALID_HOURS: int = 72
+    # Cache TTL in hours for invalid YouTube videos (recheck sooner)
+    YOUTUBE_CACHE_TTL_INVALID_HOURS: int = 12
+    # Minimum thumbnail file size in bytes to consider valid (avoid placeholder images)
+    YOUTUBE_THUMBNAIL_MIN_SIZE_BYTES: int = 1000
+    # Timeout in seconds for thumbnail fetch requests
+    YOUTUBE_THUMBNAIL_TIMEOUT_SECONDS: float = 5.0
+
     # JSON list of YouTube channel IDs to sync for kids content
     # e.g., '["UCxxxxxxx", "UCyyyyyyy"]'
     KIDS_YOUTUBE_CHANNEL_IDS: str = ""
@@ -353,6 +367,43 @@ class Settings(BaseSettings):
     KIDS_CONTENT_SAFE_SEARCH_ENABLED: bool = True
     KIDS_CONTENT_DEFAULT_AGE_MAX: int = 12
 
+    # Kids Educational Sites Configuration (JSON mapping subcategory -> URLs)
+    # Example: '{"learning-hebrew": ["https://site1.com", "https://site2.com"]}'
+    KIDS_EDUCATIONAL_SITES_CONFIG: str = ""
+
+    # Youngsters Content Configuration (ages 12-17)
+    # YouTube Data API v3 key (shared with kids content)
+    # JSON list of YouTube channel IDs to sync for youngsters content
+    # e.g., '["UCxxxxxxx", "UCyyyyyyy"]' (Kan Noar, teen educational channels, etc.)
+    YOUNGSTERS_YOUTUBE_CHANNEL_IDS: str = ""
+
+    # JSON list of youngsters podcast RSS feed URLs
+    # e.g., '["https://rss.example.com/youngsters1", "https://rss.example.com/youngsters2"]'
+    YOUNGSTERS_PODCAST_RSS_FEEDS: str = ""
+
+    # Enable Archive.org public domain youngsters content import
+    YOUNGSTERS_ARCHIVE_ORG_ENABLED: bool = True
+
+    # Comma-separated age ratings for youngsters content (used for filtering)
+    YOUNGSTERS_CONTENT_AGE_RATINGS: str = "12,13,14,15,16,17"
+
+    # Allowed content ratings for youngsters (PG-13 and below)
+    YOUNGSTERS_CONTENT_ALLOWED_RATINGS: str = "G,PG,PG-13,TV-G,TV-PG,TV-14"
+
+    # Youngsters content moderation settings
+    YOUNGSTERS_CONTENT_AUTO_APPROVE_THRESHOLD: float = 0.9
+    YOUNGSTERS_CONTENT_REQUIRE_MODERATION: bool = True
+
+    # Youngsters librarian audit schedule (runs after kids audit)
+    YOUNGSTERS_LIBRARIAN_AUDIT_CRON: str = "0 4 * * *"
+    YOUNGSTERS_LIBRARIAN_AUDIT_ENABLED: bool = True
+
+    # Youngsters Content Runtime Service Configuration
+    YOUNGSTERS_CONTENT_CACHE_TTL_MINUTES: int = 15
+    YOUNGSTERS_CONTENT_MIN_RELEVANCE_SCORE: float = 0.3
+    YOUNGSTERS_CONTENT_SAFE_SEARCH_ENABLED: bool = True
+    YOUNGSTERS_CONTENT_DEFAULT_AGE_MAX: int = 17
+
     # Series Linker Configuration
     # Minimum similarity ratio (0-1) for matching episode titles to series names
     SERIES_LINKER_TITLE_SIMILARITY_THRESHOLD: float = 0.85
@@ -364,6 +415,17 @@ class Settings(BaseSettings):
     SERIES_LINKER_DUPLICATE_RESOLUTION_STRATEGY: str = "keep_highest_quality"
     # Whether to create new series from TMDB when no local match is found
     SERIES_LINKER_CREATE_MISSING_SERIES: bool = True
+
+    # Sentry Configuration (Error Tracking & Monitoring)
+    SENTRY_DSN: str = ""  # Optional, empty = disabled
+    SENTRY_ENVIRONMENT: str = "development"
+    SENTRY_RELEASE: str = ""
+    SENTRY_TRACES_SAMPLE_RATE: float = 0.2
+
+    # Logging Configuration
+    LOG_LEVEL: str = "INFO"
+    CORRELATION_ID_HEADER: str = "X-Correlation-ID"
+    REQUEST_TIMEOUT_WARNING_MS: int = 5000
 
     class Config:
         env_file = ".env"

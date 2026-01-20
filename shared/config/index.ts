@@ -8,3 +8,10 @@ export {
   isProduction,
   config,
 } from './appConfig';
+
+export {
+  getSentryConfig,
+  isSensitiveKey,
+  SENTRY_SENSITIVE_PATTERNS,
+} from './sentryConfig';
+export type { SentryConfig } from './sentryConfig';

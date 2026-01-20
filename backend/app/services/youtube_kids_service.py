@@ -5,8 +5,8 @@ Full YouTube Data API v3 integration for importing kids channel content.
 Supports Hebrew, English, and Spanish kids educational channels.
 
 Target Channels:
-- Hebrew: HOP! ילדים, כאן חינוכית, ערוץ הילדים
-- Jewish: Chabad Kids, Aish HaTorah Kids, Torah Live
+- Hebrew: HOP! ילדים, כאן חינוכית, ערוץ הילדים,
+- Jewish: Chabad Kids, Aish HaTorah Kids, Torah Live,
 - Educational: Numberblocks, StoryBots, Sesame Street
 """
 
@@ -18,7 +18,8 @@ from dataclasses import dataclass, field
 
 import httpx
 
-from app.models.content import Content, Category
+from app.models.content import Content
+from app.models.content_taxonomy import ContentSection
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -48,15 +49,17 @@ class YouTubeVideo:
 
 # Curated list of kids YouTube channels
 # Channel IDs are used for API queries
+# Now includes subcategory_key for the expanded taxonomy
 KIDS_YOUTUBE_CHANNELS: List[Dict[str, Any]] = [
     # Hebrew Kids Channels
     {
-        "channel_id": "UCDybr25JFpOhGsFxwW8Lnlw",  # HOP! ילדים
+        "channel_id": "UCDybr25JFpOhGsFxwW8Lnlw",  # HOP! ילדים,
         "name": "HOP! ילדים",
         "name_en": "HOP! Kids",
         "language": "he",
         "age_rating": 3,
         "category_key": "cartoons",
+        "subcategory_key": "kids-series",
         "educational_tags": ["hebrew", "entertainment", "cartoons"],
     },
     {
@@ -66,6 +69,7 @@ KIDS_YOUTUBE_CHANNELS: List[Dict[str, Any]] = [
         "language": "he",
         "age_rating": 3,
         "category_key": "educational",
+        "subcategory_key": "learning-hebrew",
         "educational_tags": ["hebrew", "educational", "israel"],
     },
     # Hebrew Learning
@@ -76,6 +80,7 @@ KIDS_YOUTUBE_CHANNELS: List[Dict[str, Any]] = [
         "language": "he",
         "age_rating": 3,
         "category_key": "hebrew",
+        "subcategory_key": "learning-hebrew",
         "educational_tags": ["hebrew", "language", "alphabet"],
     },
     # Jewish Educational
@@ -86,6 +91,7 @@ KIDS_YOUTUBE_CHANNELS: List[Dict[str, Any]] = [
         "language": "en",
         "age_rating": 5,
         "category_key": "jewish",
+        "subcategory_key": "torah-stories",
         "educational_tags": ["jewish", "torah", "holidays"],
     },
     {
@@ -95,6 +101,7 @@ KIDS_YOUTUBE_CHANNELS: List[Dict[str, Any]] = [
         "language": "en",
         "age_rating": 7,
         "category_key": "jewish",
+        "subcategory_key": "torah-stories",
         "educational_tags": ["jewish", "torah", "education"],
     },
     # Educational (English)
@@ -105,6 +112,7 @@ KIDS_YOUTUBE_CHANNELS: List[Dict[str, Any]] = [
         "language": "en",
         "age_rating": 3,
         "category_key": "educational",
+        "subcategory_key": "math-fun",
         "educational_tags": ["math", "numbers", "learning"],
     },
     {
@@ -114,6 +122,7 @@ KIDS_YOUTUBE_CHANNELS: List[Dict[str, Any]] = [
         "language": "en",
         "age_rating": 5,
         "category_key": "educational",
+        "subcategory_key": "young-science",
         "educational_tags": ["science", "learning", "fun"],
     },
     # Kids Music
@@ -124,7 +133,41 @@ KIDS_YOUTUBE_CHANNELS: List[Dict[str, Any]] = [
         "language": "en",
         "age_rating": 3,
         "category_key": "music",
+        "subcategory_key": "nursery-rhymes",
         "educational_tags": ["music", "nursery_rhymes", "songs"],
+    },
+    # Nature & Animals
+    {
+        "channel_id": "UC4-D5q6ZzSVYtHklbDLOKxQ",  # National Geographic Kids
+        "name": "National Geographic Kids",
+        "name_en": "National Geographic Kids",
+        "language": "en",
+        "age_rating": 5,
+        "category_key": "educational",
+        "subcategory_key": "nature-animals",
+        "educational_tags": ["nature", "animals", "science"],
+    },
+    # Hebrew Songs
+    {
+        "channel_id": "UC4r5W6vJtVJj0L0zB9UYZBw",  # שירים לילדים
+        "name": "שירים לילדים",
+        "name_en": "Hebrew Kids Songs",
+        "language": "he",
+        "age_rating": 3,
+        "category_key": "music",
+        "subcategory_key": "hebrew-songs",
+        "educational_tags": ["hebrew", "music", "songs"],
+    },
+    # Jewish Holidays
+    {
+        "channel_id": "UCq8q8q8q8q8q8q8q8q8q8",  # חגי ישראל לילדים
+        "name": "חגי ישראל לילדים",
+        "name_en": "Jewish Holidays for Kids",
+        "language": "he",
+        "age_rating": 3,
+        "category_key": "jewish",
+        "subcategory_key": "jewish-holidays",
+        "educational_tags": ["jewish", "holidays", "hebrew"],
     },
 ]
 
@@ -211,13 +254,13 @@ class YouTubeKidsService:
     async def get_channel_videos(
         self,
         channel_id: str,
-        max_results: int = 50,
+        max_results: int = 50
     ) -> List[Dict[str, Any]]:
         """
         Get videos from a YouTube channel using the Data API.
 
         Args:
-            channel_id: YouTube channel ID
+            channel_id: YouTube channel ID,
             max_results: Maximum number of videos to fetch
 
         Returns:
@@ -339,13 +382,13 @@ class YouTubeKidsService:
     async def import_channel_content(
         self,
         channel_info: Dict[str, Any],
-        max_videos: int = 20,
+        max_videos: int = 20
     ) -> Dict[str, Any]:
         """
         Import content from a single YouTube channel.
 
         Args:
-            channel_info: Channel metadata from KIDS_YOUTUBE_CHANNELS
+            channel_info: Channel metadata from KIDS_YOUTUBE_CHANNELS,
             max_videos: Maximum number of videos to import
 
         Returns:
@@ -368,7 +411,7 @@ class YouTubeKidsService:
                 try:
                     # Check if video already exists
                     existing = await Content.find_one({
-                        "stream_url": self._youtube_to_stream_url(video["video_id"])
+                        "stream_url": self._youtube_to_stream_url(video["video_id"]),
                     })
                     if existing:
                         skipped += 1
@@ -498,8 +541,8 @@ class YouTubeKidsService:
         Note: Results should be reviewed before import.
 
         Args:
-            query: Search query
-            max_results: Maximum number of results
+            query: Search query,
+            max_results: Maximum number of results,
             safe_search: YouTube safe search mode (strict, moderate, none)
 
         Returns:
@@ -517,7 +560,7 @@ class YouTubeKidsService:
                 "part": "snippet",
                 "maxResults": min(max_results, 50),
                 "safeSearch": safe_search,
-                "videoCategoryId": "1",  # Film & Animation category
+                "videoCategoryId": "1",  # Film & Animation category,
             }
 
             response = await client.get(search_url, params=params)

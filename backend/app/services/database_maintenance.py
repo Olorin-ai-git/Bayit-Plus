@@ -8,7 +8,8 @@ from datetime import datetime
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.core.database import db
-from app.models.content import Content, Category, LiveChannel, Podcast, PodcastEpisode, EPGEntry
+from app.models.content import Content
+from app.models.content_taxonomy import ContentSection, LiveChannel, Podcast, PodcastEpisode, EPGEntry
 
 logger = logging.getLogger(__name__)
 

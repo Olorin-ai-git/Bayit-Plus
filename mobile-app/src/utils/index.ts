@@ -2,6 +2,16 @@
  * Utilities Export
  */
 
+export { default as logger } from './logger';
+export {
+  initLoggerSentry,
+  setCorrelationId,
+  getCorrelationId,
+  generateCorrelationId,
+} from './logger';
+
+export { initSentry, setSentryUser, clearSentryUser, withSentryErrorBoundary } from './sentry';
+
 export { performanceMonitor, measureAsync, debounce, throttle } from './performance';
 export type { PerformanceMetrics } from './performance';
 

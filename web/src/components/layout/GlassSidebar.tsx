@@ -570,8 +570,8 @@ const styles = StyleSheet.create({
     transition: 'width 0.3s, height 0.3s',
   } as any,
   houseLogoExpanded: {
-    width: 140,
-    height: 140,
+    width: 96,
+    height: 96,
   },
   logoPlaceholder: {
     width: 48,

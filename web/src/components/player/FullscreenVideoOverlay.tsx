@@ -20,11 +20,12 @@ interface Chapter {
 }
 
 /**
- * Check if a URL is a YouTube embed URL
+ * Check if a URL is a YouTube URL (any format)
  */
 function isYouTubeUrl(url: string | null): boolean {
   if (!url) return false
-  return url.includes('youtube.com/embed/') || url.includes('youtu.be/')
+  const lowerUrl = url.toLowerCase()
+  return lowerUrl.includes('youtube.com/') || lowerUrl.includes('youtu.be/')
 }
 
 /**

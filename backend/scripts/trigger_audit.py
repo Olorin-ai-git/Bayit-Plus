@@ -46,7 +46,8 @@ async def trigger_audit(
     
     # Initialize Beanie
     from beanie import init_beanie
-    from app.models.content import Content, Category
+    from app.models.content import Content, 
+from app.models.content_taxonomy import ContentSection
     from app.models.subtitles import SubtitleTrackDoc, SubtitleSearchCacheDoc, SubtitleQuotaTrackerDoc
     from app.models.librarian import AuditReport, LibrarianAction
     

@@ -17,7 +17,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 
 from app.models.user import User
-from app.models.content import Content, Category
+from app.models.content import Content
+from app.models.content_taxonomy import ContentSection
 from app.api.routes.admin_content_utils import has_permission, log_audit, Permission, AuditAction
 
 logger = logging.getLogger(__name__)

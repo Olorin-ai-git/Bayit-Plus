@@ -5,7 +5,8 @@ Run this script after initializing the database to create necessary indexes for 
 
 import asyncio
 from app.core.database import connect_to_mongo, close_mongo_connection
-from app.models.content import Content, Category, LiveChannel, RadioStation, Podcast, PodcastEpisode
+from app.models.content import Content, , LiveChannel, RadioStation, Podcast, PodcastEpisode
+from app.models.content_taxonomy import ContentSection
 from app.models.user import User
 from app.models.subscription import Subscription
 from app.models.watchlist import WatchlistItem, WatchHistory

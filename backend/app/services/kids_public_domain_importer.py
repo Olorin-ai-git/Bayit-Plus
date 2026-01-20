@@ -16,7 +16,8 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
 
-from app.models.content import Content, Category
+from app.models.content import Content
+from app.models.content_taxonomy import ContentSection
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -153,7 +154,7 @@ PUBLIC_DOMAIN_KIDS_CONTENT: List[Dict[str, Any]] = [
         "age_rating": 5,
         "category_key": "stories",
         "educational_tags": ["fairy_tale", "animation", "classic"],
-    },
+    }
 ]
 
 
@@ -171,7 +172,7 @@ class KidsPublicDomainImporter:
         if self.http_client is None or self.http_client.is_closed:
             self.http_client = httpx.AsyncClient(
                 timeout=30.0,
-                follow_redirects=True,
+                follow_redirects=True
             )
         return self.http_client
 
@@ -248,14 +249,14 @@ class KidsPublicDomainImporter:
         self,
         verify_availability: bool = True,
         age_max: Optional[int] = None,
-        categories: Optional[List[str]] = None,
+        categories: Optional[List[str]] = None
     ) -> Dict[str, Any]:
         """
         Import curated public domain kids content.
 
         Args:
-            verify_availability: Whether to verify each item is accessible
-            age_max: Maximum age rating to import
+            verify_availability: Whether to verify each item is accessible,
+            age_max: Maximum age rating to import,
             categories: List of category keys to import
 
         Returns:
@@ -326,7 +327,7 @@ class KidsPublicDomainImporter:
                     requires_subscription="basic",
                     # Timestamps
                     created_at=datetime.utcnow(),
-                    updated_at=datetime.utcnow(),
+                    updated_at=datetime.utcnow()
                 )
 
                 await content.insert()
@@ -348,7 +349,7 @@ class KidsPublicDomainImporter:
     async def search_archive_kids_content(
         self,
         query: str,
-        max_results: int = 20,
+        max_results: int = 20
     ) -> List[Dict[str, Any]]:
         """
         Search Archive.org for kids-appropriate content.
@@ -357,7 +358,7 @@ class KidsPublicDomainImporter:
         be reviewed before importing.
 
         Args:
-            query: Search query
+            query: Search query,
             max_results: Maximum number of results
 
         Returns:

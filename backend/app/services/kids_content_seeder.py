@@ -5,11 +5,11 @@ This service creates children-focused VOD content entries using publicly availab
 YouTube videos from authorized educational and entertainment channels.
 
 Categories:
-- Hebrew: Alef-bet learning, Hebrew vocabulary, Israeli kids channels
-- Jewish: Shabbat songs, holiday content, Torah stories for kids
-- Educational: Learning videos, STEM content
-- Cartoons: Age-appropriate animated content
-- Music: Kids songs, nursery rhymes
+- Hebrew: Alef-bet learning, Hebrew vocabulary, Israeli kids channels,
+- Jewish: Shabbat songs, holiday content, Torah stories for kids,
+- Educational: Learning videos, STEM content,
+- Cartoons: Age-appropriate animated content,
+- Music: Kids songs, nursery rhymes,
 - Stories: Story time content
 """
 
@@ -17,7 +17,8 @@ import logging
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
-from app.models.content import Content, Category
+from app.models.content import Content
+from app.models.content_taxonomy import ContentSection
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -350,7 +351,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 3,
         "educational_tags": ["animation", "animals", "comedy"],
         "content_rating": "G",
-    },
+    }
 ]
 
 
@@ -376,14 +377,14 @@ class KidsContentSeeder:
 
         for category_key, category_data in KIDS_CATEGORIES.items():
             slug = f"kids-{category_key}"
-            existing = await Category.find_one({"slug": slug})
+            existing = await ContentSection.find_one({"slug": slug})
 
             if existing:
                 category_ids[category_key] = str(existing.id)
                 continue
 
             # Create category
-            category = Category(
+            category = ContentSection(
                 name=category_data["name"],
                 name_en=category_data["name_en"],
                 name_es=category_data["name_es"],
@@ -401,13 +402,13 @@ class KidsContentSeeder:
     async def seed_content(
         self,
         age_max: Optional[int] = None,
-        categories: Optional[List[str]] = None,
+        categories: Optional[List[str]] = None
     ) -> Dict[str, Any]:
         """
         Seed kids content into the database.
 
         Args:
-            age_max: Maximum age rating to seed (filters content)
+            age_max: Maximum age rating to seed (filters content),
             categories: List of category keys to seed (filters content)
 
         Returns:
@@ -483,7 +484,7 @@ class KidsContentSeeder:
                 logger.info(f"Seeded kids content: {item['title']}")
 
             except Exception as e:
-                errors.append(f"Error seeding {item.get('title', 'unknown')}: {str(e)}")
+                errors.append(f"Error seeding {item.get('title', 'unknown')}: {str(e)}"),
                 logger.error(f"Error seeding content: {e}")
 
         return {

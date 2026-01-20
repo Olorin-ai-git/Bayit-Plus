@@ -150,6 +150,14 @@ class Content(Document):
     kids_moderated_by: Optional[str] = None  # User ID who moderated
     kids_moderated_at: Optional[datetime] = None  # When moderation occurred
 
+    # Youngsters content fields (ages 12-17)
+    is_youngsters_content: bool = False
+    youngsters_age_rating: Optional[int] = None  # Age rating (12, 14, 17)
+    youngsters_moderation_status: Optional[str] = None  # "pending", "approved", "rejected"
+    youngsters_moderated_by: Optional[str] = None  # User ID who moderated
+    youngsters_moderated_at: Optional[datetime] = None  # When moderation occurred
+    youngsters_educational_tags: List[str] = Field(default_factory=list)  # ["study-help", "career-prep", etc.]
+
     # Manual review flags (set by AI agent for broken streams, integrity issues, etc.)
     needs_review: bool = False
     review_reason: Optional[str] = None
@@ -196,6 +204,9 @@ class Content(Document):
             "created_at",
             "updated_at",
             ("is_featured", "is_published"),
+            # Series episode indexes for duplicate detection and linking
+            ("series_id", "season", "episode"),
+            ("content_type", "series_id"),
             # Filter indexes for advanced search
             "year",
             "genres",
@@ -207,41 +218,15 @@ class Content(Document):
             "age_rating",
             ("is_kids_content", "age_rating"),
             ("is_kids_content", "is_published", "age_rating"),
+            # Youngsters content indexes
+            "is_youngsters_content",
+            "youngsters_age_rating",
+            ("is_youngsters_content", "youngsters_age_rating"),
+            ("is_youngsters_content", "is_published", "youngsters_age_rating"),
             # Manual review indexes
             "needs_review",
             ("needs_review", "review_priority"),
         ]
-
-
-class Category(Document):
-    """
-    DEPRECATED: Use ContentSection from app.models.content_taxonomy instead.
-
-    This model is retained for backward compatibility with legacy scripts.
-    The 'categories' collection has been dropped from the database.
-    All category functionality has been migrated to the new taxonomy system:
-    - ContentSection (replaces Category)
-    - SectionSubcategory (for hierarchical categories like kids/judaism)
-    - Genre (for content genres)
-    - Audience (for age ratings)
-    """
-    name: str
-    name_en: Optional[str] = None
-    name_es: Optional[str] = None
-    slug: str
-    description: Optional[str] = None
-    description_en: Optional[str] = None
-    description_es: Optional[str] = None
-    thumbnail: Optional[str] = None
-    icon: Optional[str] = None  # Icon name or URL
-    order: int = 0
-    is_active: bool = True
-    show_on_homepage: bool = True  # If False, category only appears on dedicated pages (e.g., kids sub-categories)
-    parent_category_id: Optional[str] = None  # For hierarchical categories (e.g., kids sub-categories)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-
-    class Settings:
-        name = "categories"
 
 
 class LiveChannel(Document):

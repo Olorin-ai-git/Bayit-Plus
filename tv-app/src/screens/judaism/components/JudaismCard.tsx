@@ -45,13 +45,17 @@ export const JudaismCard: React.FC<JudaismCardProps> = ({
     }).start();
   };
 
+  // Always prefer hqdefault (480x360) which is always available for any YouTube video
+  // maxresdefault (1280x720) is not always available and causes 404 errors
   const getThumbnailUrl = (): string | null => {
     if (!item.thumbnail) return null;
+
+    // Convert any maxresdefault URLs to hqdefault for reliability
     if (item.thumbnail.includes('maxresdefault')) {
-      if (thumbnailAttempt === 0) return item.thumbnail;
-      if (thumbnailAttempt === 1) return item.thumbnail.replace('maxresdefault', 'hqdefault');
-      return null;
+      return item.thumbnail.replace('maxresdefault', 'hqdefault');
     }
+
+    // For other YouTube thumbnails or non-YouTube images
     return thumbnailAttempt < 2 ? item.thumbnail : null;
   };
 

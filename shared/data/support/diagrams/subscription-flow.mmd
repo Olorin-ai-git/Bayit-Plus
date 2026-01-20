@@ -1,0 +1,125 @@
+%% Subscription and Billing Flow
+%% Sequence diagram showing subscription lifecycle and payment processing
+
+sequenceDiagram
+    participant U as User
+    participant App as Client App
+    participant API as Backend API
+    participant DB as MongoDB
+    participant Payment as Payment Gateway
+    participant Email as Email Service
+
+    Note over U,Email: New Subscription
+    U->>App: Browse Plans
+    App->>API: GET /subscriptions/plans
+    API-->>App: Available plans + pricing
+    App-->>U: Display plans
+
+    U->>App: Select plan
+    App->>App: Store selected plan
+    U->>App: Choose payment method
+
+    alt Credit Card
+        U->>App: Enter card details
+        App->>Payment: Tokenize card
+        Payment-->>App: Payment token
+    else PayPal
+        App->>Payment: Redirect to PayPal
+        U->>Payment: Authorize payment
+        Payment-->>App: Payment token
+    else Apple Pay / Google Pay
+        App->>Payment: Platform pay request
+        U->>Payment: Authorize via biometric
+        Payment-->>App: Payment token
+    end
+
+    App->>API: POST /subscriptions/create
+    API->>Payment: Process payment
+
+    alt Payment Successful
+        Payment-->>API: Payment confirmed
+        API->>DB: Create subscription record
+        API->>DB: Update user status
+        API->>Email: Send confirmation email
+        Email-->>U: Welcome email + receipt
+        API-->>App: Subscription created
+        App->>App: Unlock premium features
+        App-->>U: Success notification
+    else Payment Failed
+        Payment-->>API: Payment declined
+        API-->>App: Payment error
+        App-->>U: Show error + retry option
+    end
+
+    Note over U,Email: Subscription Active
+    loop Monthly Billing Cycle
+        API->>DB: Check upcoming renewals
+        DB-->>API: Subscriptions to renew
+        API->>Payment: Process renewal payment
+
+        alt Renewal Successful
+            Payment-->>API: Payment confirmed
+            API->>DB: Extend subscription period
+            API->>Email: Send renewal receipt
+            Email-->>U: Receipt email
+        else Renewal Failed
+            Payment-->>API: Payment failed
+            API->>DB: Mark payment failed
+            API->>Email: Send payment failed email
+            Email-->>U: Update payment method warning
+
+            Note over API,Email: Grace Period (7 Days)
+            API->>Payment: Retry payment (Day 3)
+            API->>Payment: Retry payment (Day 7)
+
+            alt Payment Recovered
+                Payment-->>API: Payment successful
+                API->>DB: Update subscription status
+                API->>Email: Send recovery confirmation
+                Email-->>U: Subscription restored email
+            else Payment Still Failed
+                API->>DB: Downgrade to free tier
+                API->>Email: Send cancellation email
+                Email-->>U: Subscription cancelled email
+                App->>App: Lock premium features
+                App-->>U: Show reactivation prompt
+            end
+        end
+    end
+
+    Note over U,Email: User Cancellation
+    U->>App: Cancel subscription
+    App->>API: POST /subscriptions/cancel
+    API->>DB: Set cancellation date
+    API->>Payment: Cancel recurring payment
+    Payment-->>API: Cancellation confirmed
+    API->>Email: Send cancellation confirmation
+    Email-->>U: Cancellation email
+    API-->>App: Cancellation confirmed
+    App-->>U: Access until end of period
+
+    Note over U,Email: End of Billing Period
+    API->>DB: Deactivate subscription
+    API->>App: Push notification
+    App->>App: Lock premium features
+    App-->>U: Subscription expired notice
+
+    Note over U,Email: Plan Upgrade/Downgrade
+    U->>App: Change plan
+    App->>API: POST /subscriptions/change-plan
+    API->>Payment: Calculate prorated amount
+
+    alt Upgrade (Charge difference)
+        Payment-->>API: Prorated charge successful
+        API->>DB: Update plan immediately
+        API->>Email: Send upgrade confirmation
+        Email-->>U: Plan upgraded email
+    else Downgrade (Apply at next cycle)
+        API->>DB: Schedule plan change
+        API->>Email: Send downgrade notice
+        Email-->>U: Plan will change email
+    end
+
+    API-->>App: Plan change confirmed
+    App->>App: Update feature access
+    App-->>U: Plan updated notification

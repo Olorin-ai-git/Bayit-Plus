@@ -11,7 +11,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from app.core.database import connect_to_mongo
-from app.models.content import Category
+from app.models.content import 
+from app.models.content_taxonomy import ContentSection
 
 
 # Category translations mapping

@@ -7,7 +7,8 @@ Tests the content type processors for localization.
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
 from app.services.content_localization import ContentLocalizationProcessor
-from app.models.content import Podcast, Content, Category, LiveChannel, RadioStation
+from app.models.content import Podcast, Content, LiveChannel, RadioStation
+from app.models.content_taxonomy import ContentSection
 
 
 class TestContentLocalizationProcessor:
@@ -327,7 +328,7 @@ class TestContentLocalizationProcessor:
         mock_category.description_es = None
         mock_category.save = AsyncMock()
 
-        with patch('app.services.content_localization.Category') as mock_category_class:
+        with patch('app.services.content_localization.ContentSection') as mock_category_class:
             mock_category_class.get = AsyncMock(return_value=mock_category)
 
             with patch.object(

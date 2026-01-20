@@ -17,3 +17,4 @@ export { DownloadsScreen } from './DownloadsScreen';
 export { WatchlistScreen } from './WatchlistScreen';
 export { NotFoundScreen } from './NotFoundScreen';
 export { JudaismScreen } from './judaism';
+export { YoungstersScreen } from './YoungstersScreen';

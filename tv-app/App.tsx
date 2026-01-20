@@ -7,6 +7,16 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import i18n, { loadSavedLanguage } from '@bayit/shared-i18n';
 import { useDirection } from '@bayit/shared-hooks';
+
+// Initialize Sentry error tracking
+import { initSentry, withSentryErrorBoundary } from './src/utils/sentry';
+import logger from './src/utils/logger';
+
+const sentryEnabled = initSentry();
+if (sentryEnabled) {
+  logger.info('Sentry error tracking enabled', 'App');
+}
+
 import {
   HomeScreen,
   PlayerScreen,
@@ -35,6 +45,7 @@ import {
   SupportScreen,
   SubscribeScreen,
 } from '@bayit/shared-screens';
+import { YoungstersScreen } from './src/screens';
 import { useAuthStore, useChatbotStore } from '@bayit/shared-stores';
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';
@@ -60,6 +71,7 @@ export type RootStackParamList = {
   MorningRitual: undefined;
   Judaism: undefined;
   Children: undefined;
+  Youngsters: undefined;
   Flows: undefined;
   Player: {
     id: string;
@@ -324,6 +336,13 @@ const AppContent: React.FC = () => {
               }}
             />
             <Stack.Screen
+              name="Youngsters"
+              component={YoungstersScreen}
+              options={{
+                animation: 'fade',
+              }}
+            />
+            <Stack.Screen
               name="Flows"
               component={FlowsScreen}
               options={{
@@ -454,4 +473,5 @@ const appStyles = StyleSheet.create({
   },
 });
 
-export default App;
+// Wrap with Sentry's error boundary for crash reporting
+export default withSentryErrorBoundary(App);

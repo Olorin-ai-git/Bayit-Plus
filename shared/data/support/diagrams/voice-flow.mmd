@@ -1,0 +1,78 @@
+%% Voice Command Processing Flow
+%% Flowchart showing wake word detection through TTS response
+
+flowchart TD
+    Start([User Speaks]) --> WakeWord{Wake Word<br/>Detected?}
+
+    WakeWord -->|No| Listening[Continue Listening]
+    Listening --> Start
+
+    WakeWord -->|Yes| Activate[Activate Voice Mode<br/>Show Visual Indicator]
+
+    Activate --> Permission{Microphone<br/>Permission?}
+
+    Permission -->|No| RequestPerm[Request Permission]
+    RequestPerm --> PermGranted{Permission<br/>Granted?}
+    PermGranted -->|No| ErrorPerm[Show Permission Error]
+    ErrorPerm --> End([Exit Voice Mode])
+    PermGranted -->|Yes| Permission
+
+    Permission -->|Yes| Capture[Capture Audio Stream<br/>WebRTC/Native API]
+
+    Capture --> VAD{Voice Activity<br/>Detected?}
+
+    VAD -->|No Timeout| TimeoutWarn[Show Timeout Warning]
+    TimeoutWarn --> End
+
+    VAD -->|Speaking| Record[Record Audio Buffer]
+
+    Record --> SilenceDetect{Silence<br/>Detected?}
+    SilenceDetect -->|No| Record
+
+    SilenceDetect -->|Yes| STT[Speech-to-Text<br/>Send to STT Service]
+
+    STT --> ParseText{Text<br/>Received?}
+
+    ParseText -->|Error| ErrorSTT[Show Recognition Error]
+    ErrorSTT --> Retry{Retry?}
+    Retry -->|Yes| Activate
+    Retry -->|No| End
+
+    ParseText -->|Yes| NLU[Natural Language<br/>Understanding]
+
+    NLU --> Intent{Identify<br/>Intent}
+
+    Intent -->|Search Content| SearchCmd[Execute Search<br/>Query Database]
+    Intent -->|Control Playback| PlaybackCmd[Control Player<br/>Play/Pause/Skip]
+    Intent -->|Navigation| NavCmd[Navigate to Section]
+    Intent -->|Unknown| UnknownCmd[Show Clarification]
+
+    SearchCmd --> ExecuteAction[Execute Command]
+    PlaybackCmd --> ExecuteAction
+    NavCmd --> ExecuteAction
+    UnknownCmd --> ExecuteAction
+
+    ExecuteAction --> Success{Command<br/>Successful?}
+
+    Success -->|No| ErrorExec[Show Error Message]
+    ErrorExec --> TTSError[TTS: Error Response]
+    TTSError --> End
+
+    Success -->|Yes| Response[Generate Response]
+
+    Response --> TTS[Text-to-Speech<br/>Play Audio Response]
+
+    TTS --> Visual[Update Visual UI<br/>Show Results]
+
+    Visual --> Complete([Command Complete])
+    Complete --> Listening
+
+    style Start fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    style End fill:#95A5A6,stroke:#5D6D7E,color:#fff
+    style Complete fill:#50C878,stroke:#2E7D4E,color:#fff
+    style ErrorPerm fill:#E74C3C,stroke:#A93226,color:#fff
+    style ErrorSTT fill:#E74C3C,stroke:#A93226,color:#fff
+    style ErrorExec fill:#E74C3C,stroke:#A93226,color:#fff
+    style WakeWord fill:#9B59B6,stroke:#6C3483,color:#fff
+    style NLU fill:#F39C12,stroke:#B8730A,color:#fff
+    style TTS fill:#50C878,stroke:#2E7D4E,color:#fff

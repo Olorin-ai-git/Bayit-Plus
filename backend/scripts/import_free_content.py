@@ -11,7 +11,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 from datetime import datetime, timedelta
 
-from app.models.content import Content, Category, LiveChannel, RadioStation, Podcast, PodcastEpisode
+from app.models.content import Content, , LiveChannel, RadioStation, Podcast, PodcastEpisode
+from app.models.content_taxonomy import ContentSection
 from app.core.config import settings
 
 

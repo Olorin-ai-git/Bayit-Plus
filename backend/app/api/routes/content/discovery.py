@@ -11,7 +11,8 @@ from typing import Optional
 from fastapi import APIRouter, Query
 
 from app.api.routes.content.utils import convert_to_proxy_url, is_series_by_category
-from app.models.content import Category, Content
+from app.models.content import Content
+from app.models.content_taxonomy import ContentSection
 from app.services.subtitle_enrichment import enrich_content_items_with_subtitles
 
 router = APIRouter()
@@ -43,7 +44,7 @@ async def get_all_content(
         return await Content.find(content_filter).count()
 
     async def get_all_categories():
-        return await Category.find().to_list()
+        return await ContentSection.find().to_list()
 
     items, total, categories = await asyncio.gather(
         get_content(), get_total(), get_all_categories()

@@ -1,819 +1,720 @@
 """
 Content Taxonomy Migration Service
 
-This service handles:
-1. Seeding initial sections, genres, audiences, and subcategories
-2. Migrating existing content from legacy categories to new taxonomy
-3. Verifying migration status
-
-The migration is designed to be idempotent - can be run multiple times safely.
+Handles seeding taxonomy and migrating existing content from legacy categories.
 """
 
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
-from app.models.content import Content, Category
-from app.models.content_taxonomy import (
-    ContentSection,
-    SectionSubcategory,
-    Genre,
-    Audience,
-)
+from app.models.content import Content
+from app.models.content_taxonomy import ContentSection, SectionSubcategory
 
 logger = logging.getLogger(__name__)
 
 
-# ============================================================================
-# SEED DATA DEFINITIONS
-# ============================================================================
-
-SECTIONS_SEED_DATA = [
-    {
-        "slug": "movies",
-        "name": "סרטים",
-        "name_en": "Movies",
-        "name_es": "Películas",
-        "description": "צפו בסרטים מובחרים",
-        "description_en": "Watch premium movies",
-        "description_es": "Ver películas premium",
-        "icon": "film",
-        "color": "#E50914",
-        "order": 1,
-        "show_on_homepage": True,
-        "show_on_nav": True,
-        "supports_subcategories": False,
-        "default_content_format": "movie",
-    },
-    {
-        "slug": "series",
-        "name": "סדרות",
-        "name_en": "Series",
-        "name_es": "Series",
-        "description": "צפו בסדרות טלוויזיה",
-        "description_en": "Watch TV series",
-        "description_es": "Ver series de televisión",
-        "icon": "tv",
-        "color": "#1DB954",
-        "order": 2,
-        "show_on_homepage": True,
-        "show_on_nav": True,
-        "supports_subcategories": False,
-        "default_content_format": "series",
-    },
-    {
-        "slug": "kids",
-        "name": "ילדים",
-        "name_en": "Kids",
-        "name_es": "Niños",
-        "description": "תוכן בטוח לילדים",
-        "description_en": "Safe content for children",
-        "description_es": "Contenido seguro para niños",
-        "icon": "child",
-        "color": "#FFD700",
-        "order": 3,
-        "show_on_homepage": True,
-        "show_on_nav": True,
-        "supports_subcategories": True,
-        "default_content_format": None,
-    },
-    {
-        "slug": "judaism",
-        "name": "יהדות",
-        "name_en": "Judaism",
-        "name_es": "Judaísmo",
-        "description": "תוכן יהודי ותורני",
-        "description_en": "Jewish and Torah content",
-        "description_es": "Contenido judío y de la Torá",
-        "icon": "star-of-david",
-        "color": "#0066CC",
-        "order": 4,
-        "show_on_homepage": True,
-        "show_on_nav": True,
-        "supports_subcategories": True,
-        "default_content_format": None,
-    },
-    {
-        "slug": "documentaries",
-        "name": "דוקומנטרי",
-        "name_en": "Documentaries",
-        "name_es": "Documentales",
-        "description": "סרטים תיעודיים",
-        "description_en": "Documentary films",
-        "description_es": "Películas documentales",
-        "icon": "book-open",
-        "color": "#8B4513",
-        "order": 5,
-        "show_on_homepage": True,
-        "show_on_nav": True,
-        "supports_subcategories": False,
-        "default_content_format": "documentary",
-    },
-    {
-        "slug": "live",
-        "name": "שידור חי",
-        "name_en": "Live TV",
-        "name_es": "TV en Vivo",
-        "description": "ערוצי טלוויזיה בשידור חי",
-        "description_en": "Live television channels",
-        "description_es": "Canales de televisión en vivo",
-        "icon": "broadcast",
-        "color": "#FF0000",
-        "order": 6,
-        "show_on_homepage": False,
-        "show_on_nav": True,
-        "supports_subcategories": False,
-        "default_content_format": None,
-    },
-]
-
+# Kids subcategory seed data using i18n translation keys
+# Translations are in shared/i18n/locales/{lang}.json under taxonomy.subcategories.*
 KIDS_SUBCATEGORIES_SEED_DATA = [
+    # Educational subcategories
     {
-        "slug": "cartoons",
-        "name": "קריקטורות",
-        "name_en": "Cartoons",
-        "name_es": "Dibujos Animados",
+        "slug": "learning-hebrew",
+        "name_key": "taxonomy.subcategories.learning-hebrew",
+        "description_key": "taxonomy.subcategories.learning-hebrew.description",
+        "icon": "book-open",
+        "parent_section_slug": "kids",
+        "parent_category": "educational",
+        "min_age": 3,
+        "max_age": 12,
         "order": 1,
     },
     {
-        "slug": "educational",
-        "name": "לימודי",
-        "name_en": "Educational",
-        "name_es": "Educativo",
+        "slug": "young-science",
+        "name_key": "taxonomy.subcategories.young-science",
+        "description_key": "taxonomy.subcategories.young-science.description",
+        "icon": "flask",
+        "parent_section_slug": "kids",
+        "parent_category": "educational",
+        "min_age": 5,
+        "max_age": 12,
         "order": 2,
     },
     {
-        "slug": "music",
-        "name": "מוזיקה",
-        "name_en": "Music",
-        "name_es": "Música",
+        "slug": "math-fun",
+        "name_key": "taxonomy.subcategories.math-fun",
+        "description_key": "taxonomy.subcategories.math-fun.description",
+        "icon": "calculator",
+        "parent_section_slug": "kids",
+        "parent_category": "educational",
+        "min_age": 5,
+        "max_age": 10,
         "order": 3,
     },
     {
-        "slug": "hebrew-learning",
-        "name": "לימוד עברית",
-        "name_en": "Hebrew Learning",
-        "name_es": "Aprendizaje de Hebreo",
+        "slug": "nature-animals",
+        "name_key": "taxonomy.subcategories.nature-animals",
+        "description_key": "taxonomy.subcategories.nature-animals.description",
+        "icon": "paw-print",
+        "parent_section_slug": "kids",
+        "parent_category": "educational",
+        "min_age": 3,
+        "max_age": 10,
         "order": 4,
     },
     {
-        "slug": "stories",
-        "name": "סיפורים",
-        "name_en": "Stories",
-        "name_es": "Historias",
+        "slug": "interactive",
+        "name_key": "taxonomy.subcategories.interactive",
+        "description_key": "taxonomy.subcategories.interactive.description",
+        "icon": "hand-pointing",
+        "parent_section_slug": "kids",
+        "parent_category": "educational",
+        "min_age": 3,
+        "max_age": 10,
         "order": 5,
     },
+    # Music subcategories
     {
-        "slug": "jewish-kids",
-        "name": "יהדות לילדים",
-        "name_en": "Jewish Kids",
-        "name_es": "Judaísmo para Niños",
+        "slug": "hebrew-songs",
+        "name_key": "taxonomy.subcategories.hebrew-songs",
+        "description_key": "taxonomy.subcategories.hebrew-songs.description",
+        "icon": "music",
+        "parent_section_slug": "kids",
+        "parent_category": "music",
+        "min_age": 3,
+        "max_age": 10,
         "order": 6,
     },
+    {
+        "slug": "nursery-rhymes",
+        "name_key": "taxonomy.subcategories.nursery-rhymes",
+        "description_key": "taxonomy.subcategories.nursery-rhymes.description",
+        "icon": "baby",
+        "parent_section_slug": "kids",
+        "parent_category": "music",
+        "min_age": 0,
+        "max_age": 5,
+        "order": 7,
+    },
+    # Video/Cartoon subcategories
+    {
+        "slug": "kids-movies",
+        "name_key": "taxonomy.subcategories.kids-movies",
+        "description_key": "taxonomy.subcategories.kids-movies.description",
+        "icon": "film",
+        "parent_section_slug": "kids",
+        "parent_category": "cartoons",
+        "min_age": 5,
+        "max_age": 12,
+        "order": 8,
+    },
+    {
+        "slug": "kids-series",
+        "name_key": "taxonomy.subcategories.kids-series",
+        "description_key": "taxonomy.subcategories.kids-series.description",
+        "icon": "tv",
+        "parent_section_slug": "kids",
+        "parent_category": "cartoons",
+        "min_age": 5,
+        "max_age": 12,
+        "order": 9,
+    },
+    # Jewish subcategories
+    {
+        "slug": "jewish-holidays",
+        "name_key": "taxonomy.subcategories.jewish-holidays",
+        "description_key": "taxonomy.subcategories.jewish-holidays.description",
+        "icon": "star-of-david",
+        "parent_section_slug": "kids",
+        "parent_category": "jewish",
+        "min_age": 3,
+        "max_age": 12,
+        "order": 10,
+    },
+    {
+        "slug": "torah-stories",
+        "name_key": "taxonomy.subcategories.torah-stories",
+        "description_key": "taxonomy.subcategories.torah-stories.description",
+        "icon": "scroll",
+        "parent_section_slug": "kids",
+        "parent_category": "jewish",
+        "min_age": 5,
+        "max_age": 12,
+        "order": 11,
+    },
+    # Stories subcategory
+    {
+        "slug": "bedtime-stories",
+        "name_key": "taxonomy.subcategories.bedtime-stories",
+        "description_key": "taxonomy.subcategories.bedtime-stories.description",
+        "icon": "moon",
+        "parent_section_slug": "kids",
+        "parent_category": "stories",
+        "min_age": 3,
+        "max_age": 7,
+        "order": 12,
+    },
 ]
 
-JUDAISM_SUBCATEGORIES_SEED_DATA = [
+
+# Youngsters subcategory seed data using i18n translation keys - 23 subcategories for ages 12-17
+# Translations are in shared/i18n/locales/{lang}.json under taxonomy.subcategories.*
+YOUNGSTERS_SUBCATEGORIES_SEED_DATA = [
+    # Trending subcategories (3)
     {
-        "slug": "shiurim",
-        "name": "שיעורים",
-        "name_en": "Torah Classes",
-        "name_es": "Clases de Torá",
+        "slug": "tiktok-trends",
+        "name_key": "taxonomy.subcategories.tiktok-trends",
+        "description_key": "taxonomy.subcategories.tiktok-trends.description",
+        "icon": "trending-up",
+        "parent_section_slug": "youngsters",
+        "parent_category": "trending",
+        "min_age": 13,
+        "max_age": 17,
         "order": 1,
     },
     {
-        "slug": "tefila",
-        "name": "תפילה",
-        "name_en": "Prayer",
-        "name_es": "Oración",
+        "slug": "viral-videos",
+        "name_key": "taxonomy.subcategories.viral-videos",
+        "description_key": "taxonomy.subcategories.viral-videos.description",
+        "icon": "zap",
+        "parent_section_slug": "youngsters",
+        "parent_category": "trending",
+        "min_age": 13,
+        "max_age": 17,
         "order": 2,
     },
     {
-        "slug": "jewish-music",
-        "name": "מוזיקה יהודית",
-        "name_en": "Jewish Music",
-        "name_es": "Música Judía",
+        "slug": "memes",
+        "name_key": "taxonomy.subcategories.memes",
+        "description_key": "taxonomy.subcategories.memes.description",
+        "icon": "smile",
+        "parent_section_slug": "youngsters",
+        "parent_category": "trending",
+        "min_age": 13,
+        "max_age": 17,
         "order": 3,
     },
+    # News subcategories (4)
     {
-        "slug": "holidays",
-        "name": "חגים",
-        "name_en": "Holidays",
-        "name_es": "Festividades",
+        "slug": "israel-news",
+        "name_key": "taxonomy.subcategories.israel-news",
+        "description_key": "taxonomy.subcategories.israel-news.description",
+        "icon": "newspaper",
+        "parent_section_slug": "youngsters",
+        "parent_category": "news",
+        "min_age": 12,
+        "max_age": 17,
         "order": 4,
     },
     {
-        "slug": "jewish-docs",
-        "name": "דוקומנטרים",
-        "name_en": "Documentaries",
-        "name_es": "Documentales",
+        "slug": "world-news",
+        "name_key": "taxonomy.subcategories.world-news",
+        "description_key": "taxonomy.subcategories.world-news.description",
+        "icon": "globe",
+        "parent_section_slug": "youngsters",
+        "parent_category": "news",
+        "min_age": 14,
+        "max_age": 17,
         "order": 5,
     },
+    {
+        "slug": "science-news",
+        "name_key": "taxonomy.subcategories.science-news",
+        "description_key": "taxonomy.subcategories.science-news.description",
+        "icon": "atom",
+        "parent_section_slug": "youngsters",
+        "parent_category": "news",
+        "min_age": 13,
+        "max_age": 17,
+        "order": 6,
+    },
+    {
+        "slug": "sports-news",
+        "name_key": "taxonomy.subcategories.sports-news",
+        "description_key": "taxonomy.subcategories.sports-news.description",
+        "icon": "trophy",
+        "parent_section_slug": "youngsters",
+        "parent_category": "news",
+        "min_age": 12,
+        "max_age": 17,
+        "order": 7,
+    },
+    # Culture subcategories (4)
+    {
+        "slug": "music-culture",
+        "name_key": "taxonomy.subcategories.music-culture",
+        "description_key": "taxonomy.subcategories.music-culture.description",
+        "icon": "headphones",
+        "parent_section_slug": "youngsters",
+        "parent_category": "culture",
+        "min_age": 13,
+        "max_age": 17,
+        "order": 8,
+    },
+    {
+        "slug": "film-culture",
+        "name_key": "taxonomy.subcategories.film-culture",
+        "description_key": "taxonomy.subcategories.film-culture.description",
+        "icon": "film",
+        "parent_section_slug": "youngsters",
+        "parent_category": "culture",
+        "min_age": 13,
+        "max_age": 17,
+        "order": 9,
+    },
+    {
+        "slug": "art-culture",
+        "name_key": "taxonomy.subcategories.art-culture",
+        "description_key": "taxonomy.subcategories.art-culture.description",
+        "icon": "palette",
+        "parent_section_slug": "youngsters",
+        "parent_category": "culture",
+        "min_age": 13,
+        "max_age": 17,
+        "order": 10,
+    },
+    {
+        "slug": "food-culture",
+        "name_key": "taxonomy.subcategories.food-culture",
+        "description_key": "taxonomy.subcategories.food-culture.description",
+        "icon": "utensils",
+        "parent_section_slug": "youngsters",
+        "parent_category": "culture",
+        "min_age": 13,
+        "max_age": 17,
+        "order": 11,
+    },
+    # Educational subcategories (3)
+    {
+        "slug": "study-help",
+        "name_key": "taxonomy.subcategories.study-help",
+        "description_key": "taxonomy.subcategories.study-help.description",
+        "icon": "book",
+        "parent_section_slug": "youngsters",
+        "parent_category": "educational",
+        "min_age": 14,
+        "max_age": 17,
+        "order": 12,
+    },
+    {
+        "slug": "career-prep",
+        "name_key": "taxonomy.subcategories.career-prep",
+        "description_key": "taxonomy.subcategories.career-prep.description",
+        "icon": "briefcase",
+        "parent_section_slug": "youngsters",
+        "parent_category": "educational",
+        "min_age": 15,
+        "max_age": 17,
+        "order": 13,
+    },
+    {
+        "slug": "life-skills",
+        "name_key": "taxonomy.subcategories.life-skills",
+        "description_key": "taxonomy.subcategories.life-skills.description",
+        "icon": "lightbulb",
+        "parent_section_slug": "youngsters",
+        "parent_category": "educational",
+        "min_age": 14,
+        "max_age": 17,
+        "order": 14,
+    },
+    # Entertainment subcategories (2)
+    {
+        "slug": "teen-movies",
+        "name_key": "taxonomy.subcategories.teen-movies",
+        "description_key": "taxonomy.subcategories.teen-movies.description",
+        "icon": "film",
+        "parent_section_slug": "youngsters",
+        "parent_category": "entertainment",
+        "min_age": 13,
+        "max_age": 17,
+        "order": 15,
+    },
+    {
+        "slug": "teen-series",
+        "name_key": "taxonomy.subcategories.teen-series",
+        "description_key": "taxonomy.subcategories.teen-series.description",
+        "icon": "tv",
+        "parent_section_slug": "youngsters",
+        "parent_category": "entertainment",
+        "min_age": 13,
+        "max_age": 17,
+        "order": 16,
+    },
+    # Tech subcategories (3)
+    {
+        "slug": "gaming",
+        "name_key": "taxonomy.subcategories.gaming",
+        "description_key": "taxonomy.subcategories.gaming.description",
+        "icon": "gamepad",
+        "parent_section_slug": "youngsters",
+        "parent_category": "tech",
+        "min_age": 13,
+        "max_age": 17,
+        "order": 17,
+    },
+    {
+        "slug": "coding",
+        "name_key": "taxonomy.subcategories.coding",
+        "description_key": "taxonomy.subcategories.coding.description",
+        "icon": "code",
+        "parent_section_slug": "youngsters",
+        "parent_category": "tech",
+        "min_age": 13,
+        "max_age": 17,
+        "order": 18,
+    },
+    {
+        "slug": "gadgets",
+        "name_key": "taxonomy.subcategories.gadgets",
+        "description_key": "taxonomy.subcategories.gadgets.description",
+        "icon": "smartphone",
+        "parent_section_slug": "youngsters",
+        "parent_category": "tech",
+        "min_age": 12,
+        "max_age": 17,
+        "order": 19,
+    },
+    # Judaism subcategories (3)
+    {
+        "slug": "bar-bat-mitzvah",
+        "name_key": "taxonomy.subcategories.bar-bat-mitzvah",
+        "description_key": "taxonomy.subcategories.bar-bat-mitzvah.description",
+        "icon": "star",
+        "parent_section_slug": "youngsters",
+        "parent_category": "judaism",
+        "min_age": 12,
+        "max_age": 13,
+        "order": 20,
+    },
+    {
+        "slug": "teen-torah",
+        "name_key": "taxonomy.subcategories.teen-torah",
+        "description_key": "taxonomy.subcategories.teen-torah.description",
+        "icon": "book-open",
+        "parent_section_slug": "youngsters",
+        "parent_category": "judaism",
+        "min_age": 13,
+        "max_age": 17,
+        "order": 21,
+    },
+    {
+        "slug": "jewish-history",
+        "name_key": "taxonomy.subcategories.jewish-history",
+        "description_key": "taxonomy.subcategories.jewish-history.description",
+        "icon": "scroll",
+        "parent_section_slug": "youngsters",
+        "parent_category": "judaism",
+        "min_age": 14,
+        "max_age": 17,
+        "order": 22,
+    },
 ]
 
-GENRES_SEED_DATA = [
-    {"slug": "drama", "name": "דרמה", "name_en": "Drama", "name_es": "Drama", "tmdb_id": 18, "order": 1},
-    {"slug": "comedy", "name": "קומדיה", "name_en": "Comedy", "name_es": "Comedia", "tmdb_id": 35, "order": 2},
-    {"slug": "action", "name": "אקשן", "name_en": "Action", "name_es": "Acción", "tmdb_id": 28, "order": 3},
-    {"slug": "thriller", "name": "מתח", "name_en": "Thriller", "name_es": "Suspenso", "tmdb_id": 53, "order": 4},
-    {"slug": "horror", "name": "אימה", "name_en": "Horror", "name_es": "Terror", "tmdb_id": 27, "order": 5},
-    {"slug": "romance", "name": "רומנטי", "name_en": "Romance", "name_es": "Romance", "tmdb_id": 10749, "order": 6},
-    {"slug": "animation", "name": "אנימציה", "name_en": "Animation", "name_es": "Animación", "tmdb_id": 16, "order": 7},
-    {"slug": "documentary", "name": "דוקומנטרי", "name_en": "Documentary", "name_es": "Documental", "tmdb_id": 99, "order": 8},
-    {"slug": "family", "name": "משפחה", "name_en": "Family", "name_es": "Familia", "tmdb_id": 10751, "order": 9},
-    {"slug": "adventure", "name": "הרפתקאות", "name_en": "Adventure", "name_es": "Aventura", "tmdb_id": 12, "order": 10},
-    {"slug": "sci-fi", "name": "מדע בדיוני", "name_en": "Sci-Fi", "name_es": "Ciencia Ficción", "tmdb_id": 878, "order": 11},
-    {"slug": "fantasy", "name": "פנטזיה", "name_en": "Fantasy", "name_es": "Fantasía", "tmdb_id": 14, "order": 12},
-    {"slug": "crime", "name": "פשע", "name_en": "Crime", "name_es": "Crimen", "tmdb_id": 80, "order": 13},
-    {"slug": "mystery", "name": "מסתורין", "name_en": "Mystery", "name_es": "Misterio", "tmdb_id": 9648, "order": 14},
-    {"slug": "war", "name": "מלחמה", "name_en": "War", "name_es": "Guerra", "tmdb_id": 10752, "order": 15},
-    {"slug": "history", "name": "היסטוריה", "name_en": "History", "name_es": "Historia", "tmdb_id": 36, "order": 16},
-    {"slug": "music", "name": "מוזיקה", "name_en": "Music", "name_es": "Música", "tmdb_id": 10402, "order": 17},
-    {"slug": "western", "name": "מערבון", "name_en": "Western", "name_es": "Western", "tmdb_id": 37, "order": 18},
+
+
+# Taxonomy seed data using i18n translation keys
+# Translations are in shared/i18n/locales/{lang}.json under taxonomy.sections.*
+SECTIONS_SEED_DATA = [
+    {"slug": "movies", "name_key": "taxonomy.sections.movies", "icon": "film", "color": "#E50914", "order": 1, "show_on_homepage": True},
+    {"slug": "series", "name_key": "taxonomy.sections.series", "icon": "tv", "color": "#0080FF", "order": 2, "show_on_homepage": True},
+    {"slug": "kids", "name_key": "taxonomy.sections.kids", "icon": "baby", "color": "#FF6B35", "order": 3, "show_on_homepage": True},
+    {"slug": "youngsters", "name_key": "taxonomy.sections.youngsters", "icon": "users", "color": "#8B5CF6", "order": 4, "show_on_homepage": True},
+    {"slug": "music", "name_key": "taxonomy.sections.music", "icon": "music", "color": "#1DB954", "order": 5, "show_on_homepage": True},
+    {"slug": "documentaries", "name_key": "taxonomy.sections.documentaries", "icon": "video", "color": "#FF9500", "order": 6, "show_on_homepage": True},
+    {"slug": "podcasts", "name_key": "taxonomy.sections.podcasts", "icon": "microphone", "color": "#9C27B0", "order": 7, "show_on_homepage": True},
+    {"slug": "live", "name_key": "taxonomy.sections.live", "icon": "broadcast", "color": "#FF3B30", "order": 8, "show_on_homepage": True}
 ]
 
-AUDIENCES_SEED_DATA = [
-    {
-        "slug": "general",
-        "name": "כללי",
-        "name_en": "General",
-        "name_es": "General",
-        "description": "מתאים לכל הגילאים",
-        "description_en": "Suitable for all ages",
-        "description_es": "Apto para todas las edades",
-        "min_age": None,
-        "max_age": None,
-        "content_ratings": ["G", "PG"],
-        "order": 1,
-    },
-    {
-        "slug": "kids",
-        "name": "ילדים",
-        "name_en": "Kids",
-        "name_es": "Niños",
-        "description": "תוכן לילדים עד גיל 12",
-        "description_en": "Content for children up to age 12",
-        "description_es": "Contenido para niños hasta 12 años",
-        "min_age": None,
-        "max_age": 12,
-        "content_ratings": ["G", "TV-Y", "TV-Y7"],
-        "order": 2,
-    },
-    {
-        "slug": "family",
-        "name": "משפחה",
-        "name_en": "Family",
-        "name_es": "Familia",
-        "description": "מתאים לצפייה משפחתית",
-        "description_en": "Suitable for family viewing",
-        "description_es": "Apto para ver en familia",
-        "min_age": None,
-        "max_age": None,
-        "content_ratings": ["G", "PG", "PG-13", "TV-G", "TV-PG"],
-        "order": 3,
-    },
-    {
-        "slug": "mature",
-        "name": "בוגרים",
-        "name_en": "Mature",
-        "name_es": "Adultos",
-        "description": "תוכן לבוגרים בלבד",
-        "description_en": "Content for adults only",
-        "description_es": "Contenido solo para adultos",
-        "min_age": 18,
-        "max_age": None,
-        "content_ratings": ["R", "NC-17", "TV-MA"],
-        "order": 4,
-    },
-]
-
-# ============================================================================
-# LEGACY CATEGORY MAPPINGS
-# ============================================================================
-
-LEGACY_CATEGORY_TO_SECTION_MAP: Dict[str, str] = {
-    # Hebrew category names -> section slug
-    "סרטים": "movies",
-    "קומדיה": "movies",
-    "דרמה": "movies",
-    "אקשן": "movies",
-    "מתח": "movies",
-    "רומנטי": "movies",
-    "סדרות": "series",
-    "ילדים": "kids",
-    "לילדים": "kids",
-    "לנוער": "kids",
-    "יהדות": "judaism",
-    "תורה": "judaism",
-    "שיעורים": "judaism",
-    "תפילה": "judaism",
-    "דוקומנטרי": "documentaries",
-    "דוקומנטרים": "documentaries",
-    # English category names -> section slug
-    "Movies": "movies",
-    "movies": "movies",
-    "Comedy": "movies",
-    "Drama": "movies",
-    "Action": "movies",
-    "Thriller": "movies",
-    "Romance": "movies",
-    "Series": "series",
-    "series": "series",
-    "tv shows": "series",
-    "shows": "series",
-    "Kids": "kids",
-    "kids": "kids",
-    "Judaism": "judaism",
-    "judaism": "judaism",
-    "jewish": "judaism",
-    "Jewish": "judaism",
-    "holidays": "judaism",
-    "Holidays": "judaism",
-    "shiurim": "judaism",
-    "Shiurim": "judaism",
-    "tefila": "judaism",
-    "Tefila": "judaism",
-    "Documentaries": "documentaries",
-    "documentaries": "documentaries",
-    "Documentary": "documentaries",
-    "documentary": "documentaries",
-    # Kids subcategories that should map to kids section
-    "ילדים ומשפחה": "kids",
-    "educational": "kids",
-    "Educational": "kids",
-    "stories": "kids",
-    "Stories": "kids",
-    "cartoons": "kids",
-    "Cartoons": "kids",
-    "hebrew": "kids",
-    "Hebrew": "kids",
-    "music": "kids",
-    "Music": "kids",
-}
-
-LEGACY_CATEGORY_TO_GENRE_MAP: Dict[str, str] = {
-    # Hebrew category names that are actually genres -> genre slug
-    "קומדיה": "comedy",
-    "דרמה": "drama",
-    "אקשן": "action",
-    "מתח": "thriller",
-    "רומנטי": "romance",
-    "אנימציה": "animation",
-    "מדע בדיוני": "sci-fi",
-    # English
-    "Comedy": "comedy",
-    "Drama": "drama",
-    "Action": "action",
-    "Thriller": "thriller",
-    "Romance": "romance",
-    "Animation": "animation",
-    "Sci-Fi": "sci-fi",
-}
-
-
-# ============================================================================
-# SEEDING FUNCTIONS
-# ============================================================================
 
 async def seed_sections() -> Dict[str, str]:
-    """
-    Seed content sections.
-    Returns mapping of slug -> section_id.
-    """
+    """Seed ContentSection taxonomy."""
     section_map = {}
 
-    for data in SECTIONS_SEED_DATA:
-        existing = await ContentSection.find_one(ContentSection.slug == data["slug"])
+    for section_data in SECTIONS_SEED_DATA:
+        existing = await ContentSection.find_one({"slug": section_data["slug"]})
 
         if existing:
-            section_map[data["slug"]] = str(existing.id)
-            logger.info(f"Section '{data['slug']}' already exists")
-            continue
-
-        section = ContentSection(**data)
-        await section.insert()
-        section_map[data["slug"]] = str(section.id)
-        logger.info(f"Created section '{data['slug']}'")
+            section_map[section_data["slug"]] = str(existing.id)
+            logger.info(f"Section '{section_data['slug']}' already exists")
+        else:
+            section = ContentSection(
+                slug=section_data["slug"],
+                name_key=section_data["name_key"],
+                description_key=section_data.get("description_key"),
+                icon=section_data.get("icon", "folder"),
+                color=section_data.get("color", "#000000"),
+                order=section_data.get("order", 99),
+                show_on_homepage=section_data.get("show_on_homepage", False),
+                show_on_nav=section_data.get("show_on_nav", True),
+                is_active=True,
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow()
+            )
+            await section.insert()
+            section_map[section_data["slug"]] = str(section.id)
+            logger.info(f"Created section: {section_data['slug']}")
 
     return section_map
 
 
-async def seed_subcategories(section_map: Dict[str, str]) -> Dict[str, str]:
-    """
-    Seed section subcategories.
-    Returns mapping of "{section_slug}:{subcategory_slug}" -> subcategory_id.
-    """
+async def seed_kids_subcategories(section_map: Dict[str, str]) -> Dict[str, str]:
+    """Seed kids section subcategories."""
     subcategory_map = {}
 
-    # Kids subcategories
     kids_section_id = section_map.get("kids")
-    if kids_section_id:
-        for data in KIDS_SUBCATEGORIES_SEED_DATA:
-            key = f"kids:{data['slug']}"
-            existing = await SectionSubcategory.find_one(
-                SectionSubcategory.section_id == kids_section_id,
-                SectionSubcategory.slug == data["slug"],
+    if not kids_section_id:
+        logger.warning("Kids section not found, skipping subcategory seeding")
+        return subcategory_map
+
+    for subcat_data in KIDS_SUBCATEGORIES_SEED_DATA:
+        slug = subcat_data["slug"]
+        existing = await SectionSubcategory.find_one({
+            "section_id": kids_section_id,
+            "slug": slug
+        })
+
+        if existing:
+            subcategory_map[slug] = str(existing.id)
+            logger.info(f"Kids subcategory '{slug}' already exists")
+        else:
+            subcategory = SectionSubcategory(
+                section_id=kids_section_id,
+                slug=slug,
+                name_key=subcat_data["name_key"],
+                description_key=subcat_data.get("description_key"),
+                icon=subcat_data.get("icon"),
+                order=subcat_data.get("order", 99),
+                is_active=True,
             )
-
-            if existing:
-                subcategory_map[key] = str(existing.id)
-                logger.info(f"Subcategory '{key}' already exists")
-                continue
-
-            subcategory = SectionSubcategory(section_id=kids_section_id, **data)
             await subcategory.insert()
-            subcategory_map[key] = str(subcategory.id)
-            logger.info(f"Created subcategory '{key}'")
-
-    # Judaism subcategories
-    judaism_section_id = section_map.get("judaism")
-    if judaism_section_id:
-        for data in JUDAISM_SUBCATEGORIES_SEED_DATA:
-            key = f"judaism:{data['slug']}"
-            existing = await SectionSubcategory.find_one(
-                SectionSubcategory.section_id == judaism_section_id,
-                SectionSubcategory.slug == data["slug"],
-            )
-
-            if existing:
-                subcategory_map[key] = str(existing.id)
-                logger.info(f"Subcategory '{key}' already exists")
-                continue
-
-            subcategory = SectionSubcategory(section_id=judaism_section_id, **data)
-            await subcategory.insert()
-            subcategory_map[key] = str(subcategory.id)
-            logger.info(f"Created subcategory '{key}'")
+            subcategory_map[slug] = str(subcategory.id)
+            logger.info(f"Created kids subcategory: {slug}")
 
     return subcategory_map
 
 
-async def seed_genres() -> Dict[str, str]:
-    """
-    Seed genres.
-    Returns mapping of slug -> genre_id.
-    """
-    genre_map = {}
+async def seed_youngsters_subcategories(section_map: Dict[str, str]) -> Dict[str, str]:
+    """Seed youngsters section subcategories using i18n translation keys."""
+    subcategory_map = {}
 
-    for data in GENRES_SEED_DATA:
-        existing = await Genre.find_one(Genre.slug == data["slug"])
+    youngsters_section_id = section_map.get("youngsters")
+    if not youngsters_section_id:
+        logger.warning("Youngsters section not found, skipping subcategory seeding")
+        return subcategory_map
 
-        if existing:
-            genre_map[data["slug"]] = str(existing.id)
-            logger.info(f"Genre '{data['slug']}' already exists")
-            continue
-
-        genre = Genre(**data)
-        await genre.insert()
-        genre_map[data["slug"]] = str(genre.id)
-        logger.info(f"Created genre '{data['slug']}'")
-
-    return genre_map
-
-
-async def seed_audiences() -> Dict[str, str]:
-    """
-    Seed audience classifications.
-    Returns mapping of slug -> audience_id.
-    """
-    audience_map = {}
-
-    for data in AUDIENCES_SEED_DATA:
-        existing = await Audience.find_one(Audience.slug == data["slug"])
+    for subcat_data in YOUNGSTERS_SUBCATEGORIES_SEED_DATA:
+        slug = subcat_data["slug"]
+        existing = await SectionSubcategory.find_one({
+            "section_id": youngsters_section_id,
+            "slug": slug
+        })
 
         if existing:
-            audience_map[data["slug"]] = str(existing.id)
-            logger.info(f"Audience '{data['slug']}' already exists")
-            continue
+            subcategory_map[slug] = str(existing.id)
+            logger.info(f"Youngsters subcategory '{slug}' already exists")
+        else:
+            subcategory = SectionSubcategory(
+                section_id=youngsters_section_id,
+                slug=slug,
+                name_key=subcat_data["name_key"],
+                description_key=subcat_data.get("description_key"),
+                icon=subcat_data.get("icon"),
+                order=subcat_data.get("order", 99),
+                is_active=True,
+            )
+            await subcategory.insert()
+            subcategory_map[slug] = str(subcategory.id)
+            logger.info(f"Created youngsters subcategory: {slug}")
 
-        audience = Audience(**data)
-        await audience.insert()
-        audience_map[data["slug"]] = str(audience.id)
-        logger.info(f"Created audience '{data['slug']}'")
-
-    return audience_map
+    return subcategory_map
 
 
-async def seed_all_taxonomy() -> Tuple[Dict[str, str], Dict[str, str], Dict[str, str], Dict[str, str]]:
-    """
-    Seed all taxonomy data.
-    Returns (section_map, subcategory_map, genre_map, audience_map).
-    """
-    logger.info("Starting taxonomy seed...")
+async def seed_all_taxonomy() -> Dict[str, any]:
+    """Seed all taxonomy components using i18n translation keys."""
+    logger.info("🌱 Starting taxonomy seeding...")
 
     section_map = await seed_sections()
-    subcategory_map = await seed_subcategories(section_map)
-    genre_map = await seed_genres()
-    audience_map = await seed_audiences()
+    logger.info(f"✅ Seeded {len(section_map)} sections")
 
-    logger.info("Taxonomy seed complete")
-    return section_map, subcategory_map, genre_map, audience_map
+    kids_subcategory_map = await seed_kids_subcategories(section_map)
+    logger.info(f"✅ Seeded {len(kids_subcategory_map)} kids subcategories")
 
+    youngsters_subcategory_map = await seed_youngsters_subcategories(section_map)
+    logger.info(f"✅ Seeded {len(youngsters_subcategory_map)} youngsters subcategories")
 
-# ============================================================================
-# MIGRATION FUNCTIONS
-# ============================================================================
-
-async def migrate_content_to_new_taxonomy(
-    section_map: Dict[str, str],
-    genre_map: Dict[str, str],
-    audience_map: Dict[str, str],
-    batch_size: int = 100,
-    dry_run: bool = False,
-) -> Dict[str, int]:
-    """
-    Migrate existing content from legacy categories to new taxonomy.
-
-    Args:
-        section_map: Mapping of section slug -> section_id
-        genre_map: Mapping of genre slug -> genre_id
-        audience_map: Mapping of audience slug -> audience_id
-        batch_size: Number of items to process at a time
-        dry_run: If True, only log changes without saving
-
-    Returns:
-        Migration statistics
-    """
-    stats = {
-        "total": 0,
-        "migrated": 0,
-        "already_migrated": 0,
-        "skipped": 0,
-        "errors": 0,
+    return {
+        "sections": section_map,
+        "kids_subcategories": kids_subcategory_map,
+        "youngsters_subcategories": youngsters_subcategory_map,
     }
 
-    # Get all content without new taxonomy fields populated
-    skip = 0
 
-    while True:
-        # Find content that hasn't been migrated yet
-        content_items = await Content.find(
-            {"$or": [
-                {"section_ids": {"$exists": False}},
-                {"section_ids": {"$size": 0}},
-                {"primary_section_id": None},
-                {"primary_section_id": {"$exists": False}},
-            ]}
-        ).skip(skip).limit(batch_size).to_list()
+async def migrate_content_to_new_taxonomy(section_map: Dict[str, str], dry_run: bool = False) -> Dict:
+    """Migrate existing content from legacy category to new taxonomy."""
+    logger.info("🔄 Starting content migration to new taxonomy...")
 
-        if not content_items:
-            break
+    migrated_count = 0
+    skipped_count = 0
+    error_count = 0
 
-        for item in content_items:
-            stats["total"] += 1
+    all_content = await Content.find({}).to_list()
+    logger.info(f"Found {len(all_content)} content items to migrate")
 
-            try:
-                # Check if already migrated
-                existing_sections = getattr(item, "section_ids", []) or []
-                if existing_sections and getattr(item, "primary_section_id", None):
-                    stats["already_migrated"] += 1
-                    continue
+    for item in all_content:
+        try:
+            # Determine target section
+            section_slug = _determine_section_from_category(item)
+            if not section_slug or section_slug not in section_map:
+                logger.warning(f"Could not determine section for: {item.title}")
+                skipped_count += 1
+                continue
 
-                # Determine section from legacy category
-                category_name = item.category_name or ""
-                section_slug = _determine_section_from_category(item)
+            # Skip if already migrated
+            if item.category_id == section_map[section_slug]:
+                skipped_count += 1
+                continue
 
-                if not section_slug:
-                    logger.warning(f"Could not determine section for content {item.id}: {category_name}")
-                    stats["skipped"] += 1
-                    continue
+            # Update content item
+            if not dry_run:
+                item.category_id = section_map[section_slug]
+                item.updated_at = datetime.utcnow()
+                await item.save()
 
-                section_id = section_map.get(section_slug)
-                if not section_id:
-                    logger.warning(f"Section '{section_slug}' not found for content {item.id}")
-                    stats["skipped"] += 1
-                    continue
+            migrated_count += 1
 
-                # Build update data
-                update_data = {
-                    "section_ids": [section_id],
-                    "primary_section_id": section_id,
-                    "updated_at": datetime.utcnow(),
-                }
+        except Exception as e:
+            logger.error(f"Error migrating {item.id}: {e}")
+            error_count += 1
 
-                # Determine content format
-                content_format = _determine_content_format(item)
-                if content_format:
-                    update_data["content_format"] = content_format
-
-                # Determine audience
-                audience_slug = _determine_audience(item)
-                if audience_slug and audience_slug in audience_map:
-                    update_data["audience_id"] = audience_map[audience_slug]
-
-                # Map genres
-                genre_ids = _map_genres_to_ids(item, genre_map)
-                if genre_ids:
-                    update_data["genre_ids"] = genre_ids
-
-                # Determine topic tags
-                topic_tags = _determine_topic_tags(item)
-                if topic_tags:
-                    update_data["topic_tags"] = topic_tags
-
-                if dry_run:
-                    logger.info(f"[DRY RUN] Would update content {item.id}: {update_data}")
-                else:
-                    await item.set(update_data)
-                    logger.debug(f"Migrated content {item.id} to section '{section_slug}'")
-
-                stats["migrated"] += 1
-
-            except Exception as e:
-                logger.error(f"Error migrating content {item.id}: {e}")
-                stats["errors"] += 1
-
-        skip += batch_size
-        logger.info(f"Processed {skip} items...")
-
-    return stats
+    return {
+        "total_items": len(all_content),
+        "migrated": migrated_count,
+        "skipped": skipped_count,
+        "errors": error_count,
+        "dry_run": dry_run
+    }
 
 
 def _determine_section_from_category(item: Content) -> Optional[str]:
-    """Determine section slug from legacy category data."""
-    category_name = item.category_name or ""
+    """Determine target section from legacy category."""
+    category_name = (item.category_name or "").lower()
 
-    # Direct mapping
-    if category_name in LEGACY_CATEGORY_TO_SECTION_MAP:
-        return LEGACY_CATEGORY_TO_SECTION_MAP[category_name]
-
-    # Check is_series flag
-    if getattr(item, "is_series", False):
+    # Simple mapping based on category name
+    if "movie" in category_name or "film" in category_name:
+        return "movies"
+    elif "series" in category_name or "show" in category_name:
         return "series"
+    elif "kid" in category_name or "child" in category_name:
+        return "kids"
+    elif "music" in category_name or "song" in category_name:
+        return "music"
+    elif "document" in category_name:
+        return "documentaries"
+    elif "podcast" in category_name:
+        return "podcasts"
+    elif "live" in category_name or "channel" in category_name:
+        return "live"
+
+    # Check content type
+    if item.content_type == "movie" or item.content_type == "vod":
+        return "movies"
+    elif item.content_type == "series" or item.content_type == "episode":
+        return "series"
+    elif item.content_type == "live" or item.content_type == "channel":
+        return "live"
+    elif item.content_type == "podcast":
+        return "podcasts"
 
     # Check is_kids_content flag
     if getattr(item, "is_kids_content", False):
         return "kids"
 
-    # Check content_type
-    content_type = getattr(item, "content_type", "") or ""
-    if content_type == "documentary":
-        return "documentaries"
-    if content_type == "series":
-        return "series"
-    if content_type == "movie":
-        return "movies"
-
-    # Default to movies for unknown categories
-    return "movies"
+    return "movies"  # Default fallback
 
 
 def _determine_content_format(item: Content) -> Optional[str]:
-    """Determine content format from item data."""
-    # Check existing content_type
-    content_type = getattr(item, "content_type", None)
-    if content_type in ["movie", "series", "documentary", "short", "clip"]:
-        return content_type
-
-    # Check is_series flag
-    if getattr(item, "is_series", False):
+    """Determine content format (movie, episode, etc)."""
+    if item.content_type:
+        return item.content_type
+    if item.is_series:
         return "series"
-
-    # Check category name for documentary
-    category_name = (item.category_name or "").lower()
-    if "דוקומנטרי" in category_name or "documentary" in category_name:
-        return "documentary"
-
-    # Default to movie
     return "movie"
 
 
 def _determine_audience(item: Content) -> Optional[str]:
-    """Determine audience slug from item data."""
-    # Check is_kids_content
+    """Determine target audience."""
     if getattr(item, "is_kids_content", False):
         return "kids"
-
-    # Check content_rating
-    content_rating = getattr(item, "content_rating", "") or ""
-    if content_rating in ["G", "TV-Y", "TV-Y7"]:
-        return "kids"
-    if content_rating in ["PG", "TV-G", "TV-PG"]:
-        return "family"
-    if content_rating in ["R", "NC-17", "TV-MA"]:
-        return "mature"
-
-    # Check age_rating
-    age_rating = getattr(item, "age_rating", None)
-    if age_rating is not None:
-        if age_rating <= 7:
-            return "kids"
-        if age_rating <= 13:
-            return "family"
-        if age_rating >= 18:
-            return "mature"
-
     return "general"
 
 
 def _map_genres_to_ids(item: Content, genre_map: Dict[str, str]) -> List[str]:
-    """Map item's genre data to genre IDs."""
-    genre_ids = []
-
-    # Check genres list (from TMDB)
-    genres = getattr(item, "genres", None) or []
-    for genre_name in genres:
-        genre_name_lower = genre_name.lower()
-        for slug, genre_id in genre_map.items():
-            if slug == genre_name_lower or genre_name_lower in slug:
-                genre_ids.append(genre_id)
-                break
-
-    # Check legacy genre field
-    genre = getattr(item, "genre", None)
-    if genre:
-        genre_slug = LEGACY_CATEGORY_TO_GENRE_MAP.get(genre)
-        if genre_slug and genre_slug in genre_map:
-            genre_id = genre_map[genre_slug]
-            if genre_id not in genre_ids:
-                genre_ids.append(genre_id)
-
-    # Check category name for genre hints
-    category_name = item.category_name or ""
-    if category_name in LEGACY_CATEGORY_TO_GENRE_MAP:
-        genre_slug = LEGACY_CATEGORY_TO_GENRE_MAP[category_name]
-        if genre_slug in genre_map:
-            genre_id = genre_map[genre_slug]
-            if genre_id not in genre_ids:
-                genre_ids.append(genre_id)
-
-    return genre_ids
+    """Map genre names to IDs."""
+    if not item.genre:
+        return []
+    return [genre_map.get(item.genre, "")] if item.genre in genre_map else []
 
 
 def _determine_topic_tags(item: Content) -> List[str]:
-    """Determine topic tags from item data."""
-    tags = []
-
-    # Check educational_tags
-    educational_tags = getattr(item, "educational_tags", []) or []
-    if educational_tags:
-        tags.extend(educational_tags)
-
-    # Check category for Jewish content
-    category_name = (item.category_name or "").lower()
-    if any(kw in category_name for kw in ["יהדות", "judaism", "תורה", "torah"]):
-        if "jewish" not in tags:
-            tags.append("jewish")
-
-    # Check is_kids_content for educational
-    if getattr(item, "is_kids_content", False):
-        if "educational" not in tags and educational_tags:
-            tags.append("educational")
-
-    return tags
+    """Determine topic tags."""
+    return getattr(item, "tags", [])
 
 
-# ============================================================================
-# VERIFICATION FUNCTIONS
-# ============================================================================
+# Legacy mapping constants for backward compatibility
+LEGACY_CATEGORY_TO_SECTION_MAP = {
+    "movies": "movies",
+    "series": "series",
+    "kids": "kids",
+    "music": "music",
+    "documentaries": "documentaries",
+    "podcasts": "podcasts",
+    "live": "live"
+}
+
+LEGACY_CATEGORY_TO_GENRE_MAP = {}
+
 
 async def get_migration_status() -> Dict:
     """Get current migration status."""
-    total_content = await Content.count()
+    total_content = await Content.find({}).count()
+    sections = await ContentSection.find({}).to_list()
 
-    # Count migrated content
-    migrated = await Content.find(
-        {"section_ids": {"$exists": True, "$ne": []}}
-    ).count()
-
-    # Count by section
-    sections = await ContentSection.find().to_list()
     section_counts = {}
     for section in sections:
-        section_id = str(section.id)
-        count = await Content.find({"section_ids": section_id}).count()
+        count = await Content.find({"category_id": str(section.id)}).count()
         section_counts[section.slug] = count
 
+    unmigrated = await Content.find({
+        "$or": [
+            {"category_id": {"$exists": False}},
+            {"category_id": None},
+            {"category_id": ""}
+        ]
+    }).count()
+
     return {
+        "total_sections": len(sections),
         "total_content": total_content,
-        "migrated_content": migrated,
-        "pending_migration": total_content - migrated,
-        "migration_percentage": round((migrated / total_content * 100) if total_content > 0 else 0, 2),
-        "content_by_section": section_counts,
+        "section_distribution": section_counts,
+        "unmigrated_content": unmigrated,
+        "migration_complete": unmigrated == 0
     }
 
 
 async def run_full_migration(dry_run: bool = False) -> Dict:
-    """
-    Run complete migration: seed taxonomy and migrate content.
-
-    Args:
-        dry_run: If True, only log changes without saving
-
-    Returns:
-        Migration results
-    """
-    logger.info(f"Starting full migration (dry_run={dry_run})...")
+    """Run complete taxonomy migration."""
+    logger.info("=" * 80)
+    logger.info("CONTENT TAXONOMY MIGRATION")
+    logger.info("=" * 80)
 
     # Seed taxonomy
-    section_map, subcategory_map, genre_map, audience_map = await seed_all_taxonomy()
+    taxonomy_result = await seed_all_taxonomy()
+    section_map = taxonomy_result.get("sections", {})
+    subcategory_map = taxonomy_result.get("subcategories", {})
 
     # Migrate content
-    migration_stats = await migrate_content_to_new_taxonomy(
-        section_map=section_map,
-        genre_map=genre_map,
-        audience_map=audience_map,
-        dry_run=dry_run,
-    )
+    migration_results = await migrate_content_to_new_taxonomy(section_map, dry_run)
 
     # Get final status
     status = await get_migration_status()
@@ -822,9 +723,23 @@ async def run_full_migration(dry_run: bool = False) -> Dict:
         "seed_results": {
             "sections": len(section_map),
             "subcategories": len(subcategory_map),
-            "genres": len(genre_map),
-            "audiences": len(audience_map),
+            "genres": 0,
+            "audiences": 0,
         },
-        "migration_stats": migration_stats,
-        "final_status": status,
+        "migration_stats": {
+            "total": migration_results.get("total_items", 0),
+            "migrated": migration_results.get("migrated", 0),
+            "already_migrated": migration_results.get("skipped", 0),
+            "skipped": migration_results.get("skipped", 0),
+            "errors": migration_results.get("errors", 0),
+        },
+        "final_status": {
+            "total_content": status.get("total_content", 0),
+            "migrated_content": status.get("total_content", 0) - status.get("unmigrated_content", 0),
+            "migration_percentage": round(
+                (1 - status.get("unmigrated_content", 0) / max(status.get("total_content", 1), 1)) * 100, 1
+            ),
+            "content_by_section": status.get("section_distribution", {}),
+        },
+        "dry_run": dry_run
     }

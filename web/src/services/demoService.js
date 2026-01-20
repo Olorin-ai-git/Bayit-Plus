@@ -1232,6 +1232,50 @@ export const demoChildrenService = {
     await delay();
     return { data: demoChildrenCategories };
   },
+  getSubcategories: async () => {
+    await delay();
+    return {
+      subcategories: [
+        { slug: 'learning-hebrew', name: 'לימוד עברית', name_en: 'Learning Hebrew', parent_category: 'educational' },
+        { slug: 'young-science', name: 'מדע צעיר', name_en: 'Young Science', parent_category: 'educational' },
+        { slug: 'math-fun', name: 'מתמטיקה מהנה', name_en: 'Fun Math', parent_category: 'educational' },
+        { slug: 'nature-animals', name: 'טבע וחיות', name_en: 'Nature & Animals', parent_category: 'educational' },
+        { slug: 'interactive', name: 'אינטראקטיבי', name_en: 'Interactive', parent_category: 'educational' },
+        { slug: 'hebrew-songs', name: 'שירים בעברית', name_en: 'Hebrew Songs', parent_category: 'music' },
+        { slug: 'nursery-rhymes', name: 'שירי פעוטות', name_en: 'Nursery Rhymes', parent_category: 'music' },
+        { slug: 'kids-movies', name: 'סרטי ילדים', name_en: 'Kids Movies', parent_category: 'cartoons' },
+        { slug: 'kids-series', name: 'סדרות לילדים', name_en: 'Kids Series', parent_category: 'cartoons' },
+        { slug: 'jewish-holidays', name: 'חגי ישראל', name_en: 'Jewish Holidays', parent_category: 'jewish' },
+        { slug: 'torah-stories', name: 'סיפורי תורה', name_en: 'Torah Stories', parent_category: 'jewish' },
+        { slug: 'bedtime-stories', name: 'סיפורי ערב טוב', name_en: 'Bedtime Stories', parent_category: 'stories' },
+      ],
+      total: 12,
+    };
+  },
+  getContentBySubcategory: async (slug, maxAge) => {
+    await delay();
+    let content = demoChildrenContent;
+    if (maxAge) {
+      content = content.filter(item => !item.age_rating || item.age_rating <= maxAge);
+    }
+    return { items: content.slice(0, 5) };
+  },
+  getAgeGroups: async () => {
+    await delay();
+    return {
+      age_groups: [
+        { slug: 'toddlers', name: 'פעוטות (0-3)', name_en: 'Toddlers (0-3)', min_age: 0, max_age: 3 },
+        { slug: 'preschool', name: 'גן ילדים (3-5)', name_en: 'Preschool (3-5)', min_age: 3, max_age: 5 },
+        { slug: 'elementary', name: 'יסודי (5-10)', name_en: 'Elementary (5-10)', min_age: 5, max_age: 10 },
+        { slug: 'preteen', name: 'לפני בר מצווה (10-12)', name_en: 'Pre-teen (10-12)', min_age: 10, max_age: 12 },
+      ],
+      total: 4,
+    };
+  },
+  getContentByAgeGroup: async (group) => {
+    await delay();
+    return { items: demoChildrenContent.slice(0, 5) };
+  },
   toggleParentalControls: async (enabled) => {
     await delay();
     return { message: 'Parental controls updated' };

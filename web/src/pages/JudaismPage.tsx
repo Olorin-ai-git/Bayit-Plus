@@ -55,6 +55,7 @@ interface Category {
 
 function JudaismCard({ item }: { item: JudaismItem }) {
   const { i18n } = useTranslation();
+  const { isRTL, textAlign } = useDirection();
   const [isHovered, setIsHovered] = useState(false);
   // Track which thumbnail quality we're trying: 0=maxres, 1=hqdefault, 2=failed
   const [thumbnailAttempt, setThumbnailAttempt] = useState(0);
@@ -68,14 +69,17 @@ function JudaismCard({ item }: { item: JudaismItem }) {
   };
 
   // Try different YouTube thumbnail qualities with proper fallback
+  // Always prefer hqdefault (480x360) which is always available for any YouTube video
+  // maxresdefault (1280x720) is not always available and causes 404 errors
   const getThumbnailUrl = (): string | null => {
     if (!item.thumbnail) return null;
-    // If YouTube maxresdefault failed, try hqdefault
+
+    // Convert any maxresdefault URLs to hqdefault for reliability
     if (item.thumbnail.includes('maxresdefault')) {
-      if (thumbnailAttempt === 0) return item.thumbnail;
-      if (thumbnailAttempt === 1) return item.thumbnail.replace('maxresdefault', 'hqdefault');
-      return null; // Both failed
+      return item.thumbnail.replace('maxresdefault', 'hqdefault');
     }
+
+    // For other YouTube thumbnails or non-YouTube images
     return thumbnailAttempt < 2 ? item.thumbnail : null;
   };
 
@@ -95,58 +99,77 @@ function JudaismCard({ item }: { item: JudaismItem }) {
         onHoverOut={() => setIsHovered(false)}
         style={{ width: '100%' }}
       >
-        <GlassCard className={`p-0 overflow-hidden transition-transform ${isHovered ? 'scale-105' : ''}`}>
-          {/* Thumbnail Container - fixed aspect ratio */}
-          <View className="w-full relative" style={{ paddingBottom: '56.25%', backgroundColor: colors.glassLight }}>
+        <GlassCard style={[
+          judaismCardStyles.card,
+          isHovered && judaismCardStyles.cardHovered,
+        ]}>
+          {/* Thumbnail Container - portrait aspect ratio like carousel cards */}
+          <View style={judaismCardStyles.thumbnailContainer}>
             {thumbnailUrl ? (
               <Image
                 source={{ uri: thumbnailUrl }}
-                className="absolute inset-0 w-full h-full"
+                style={judaismCardStyles.thumbnail}
                 resizeMode="cover"
                 onError={handleImageError}
               />
             ) : (
-              <View className="absolute inset-0 items-center justify-center">
-                <Text className="text-5xl">{categoryIcon}</Text>
+              <View style={judaismCardStyles.thumbnailPlaceholder}>
+                <Text style={{ fontSize: 48 }}>{categoryIcon}</Text>
               </View>
             )}
 
-            {/* Category Badge */}
-            <View className="absolute top-2 left-2 px-2 py-1 rounded-full" style={{ backgroundColor: colors.overlayDark }}>
-              <Text className="text-sm">{categoryIcon}</Text>
-            </View>
-
-            {/* Duration Badge */}
-            {item.duration && (
-              <View className="absolute bottom-2 right-2 px-2 py-1 rounded flex-row items-center gap-1" style={{ backgroundColor: colors.primary }}>
-                <Clock size={12} color={colors.text} />
-                <Text style={{ color: colors.text, fontSize: 12, fontWeight: 'bold' }}>{item.duration}</Text>
-              </View>
-            )}
-
-            {/* Hover Overlay */}
+            {/* Play Overlay - matches carousel style */}
             {isHovered && (
-              <View className="absolute inset-0 items-center justify-center" style={{ backgroundColor: colors.overlay }}>
-                <View className="w-14 h-14 rounded-full items-center justify-center" style={{ backgroundColor: colors.primary }}>
+              <View style={judaismCardStyles.playOverlay}>
+                <LinearGradient
+                  colors={['transparent', 'rgba(10, 10, 20, 0.8)']}
+                  style={StyleSheet.absoluteFill}
+                />
+                <View style={judaismCardStyles.playButton}>
                   <Play size={24} color={colors.text} fill={colors.text} />
                 </View>
               </View>
             )}
+
+            {/* Duration Badge - dark glass style like carousel cards */}
+            {item.duration && (
+              <View style={[
+                judaismCardStyles.durationBadge,
+                isRTL ? { left: 'auto', right: spacing.sm } : {},
+              ]}>
+                <Text style={judaismCardStyles.durationText}>{item.duration}</Text>
+              </View>
+            )}
+
+            {/* Category Badge - top corner */}
+            <View style={[
+              judaismCardStyles.categoryBadge,
+              isRTL ? { left: 'auto', right: spacing.sm } : {},
+            ]}>
+              <Text style={{ fontSize: 14 }}>{categoryIcon}</Text>
+            </View>
           </View>
 
           {/* Content Info */}
-          <View className="p-3">
-            <Text className="font-semibold text-sm" style={{ color: colors.text }} numberOfLines={2}>
+          <View style={judaismCardStyles.info}>
+            <Text
+              style={[
+                judaismCardStyles.title,
+                isHovered && judaismCardStyles.titleHovered,
+                { textAlign },
+              ]}
+              numberOfLines={2}
+            >
               {getLocalizedText('title')}
             </Text>
             {item.rabbi && (
-              <View className="flex-row items-center gap-1 mt-1">
+              <View style={judaismCardStyles.rabbiRow}>
                 <User size={14} color={colors.primary} />
-                <Text className="text-sm" style={{ color: colors.primaryLight }}>{getLocalizedText('rabbi')}</Text>
+                <Text style={judaismCardStyles.rabbiText}>{getLocalizedText('rabbi')}</Text>
               </View>
             )}
             {item.description && (
-              <Text className="text-xs mt-1" style={{ color: colors.textSecondary }} numberOfLines={2}>
+              <Text style={judaismCardStyles.description} numberOfLines={2}>
                 {getLocalizedText('description')}
               </Text>
             )}
@@ -156,6 +179,107 @@ function JudaismCard({ item }: { item: JudaismItem }) {
     </Link>
   );
 }
+
+const judaismCardStyles = StyleSheet.create({
+  card: {
+    width: '100%',
+    padding: 0,
+    overflow: 'hidden',
+  },
+  cardHovered: {
+    transform: [{ translateY: -4 }],
+    // @ts-ignore - web-specific property
+    boxShadow: `0 8px 32px rgba(107, 33, 168, 0.3)`,
+  },
+  thumbnailContainer: {
+    aspectRatio: 2 / 3, // Portrait aspect ratio like carousel cards
+    position: 'relative',
+    borderTopLeftRadius: borderRadius.lg,
+    borderTopRightRadius: borderRadius.lg,
+    overflow: 'hidden',
+    backgroundColor: colors.background,
+  },
+  thumbnail: {
+    width: '100%',
+    height: '100%',
+  },
+  thumbnailPlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: colors.glass,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  playOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  playButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    // @ts-ignore - web-specific property
+    backdropFilter: 'blur(8px)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // @ts-ignore - web-specific property
+    boxShadow: `0 0 20px ${colors.primary}`,
+  },
+  durationBadge: {
+    position: 'absolute',
+    bottom: spacing.sm,
+    left: spacing.sm,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+  },
+  durationText: {
+    fontSize: 11,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  categoryBadge: {
+    position: 'absolute',
+    top: spacing.sm,
+    left: spacing.sm,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    // @ts-ignore - web-specific property
+    backdropFilter: 'blur(8px)',
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 4,
+    borderRadius: borderRadius.full,
+  },
+  info: {
+    padding: spacing.sm,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  titleHovered: {
+    color: colors.primary,
+  },
+  rabbiRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginTop: 2,
+  },
+  rabbiText: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  description: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+  },
+});
 
 export default function JudaismPage() {
   const { t, i18n } = useTranslation();

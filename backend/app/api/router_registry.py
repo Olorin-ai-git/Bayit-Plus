@@ -55,6 +55,7 @@ def register_all_routers(app: FastAPI) -> None:
         ritual,
         profiles,
         children,
+        youngsters,
         judaism,
         flows,
         device_pairing,
@@ -88,6 +89,7 @@ def register_all_routers(app: FastAPI) -> None:
         search,
         support,
         admin_kids_content,
+        admin_youngsters_content,
         jerusalem,
         tel_aviv,
         cultures,
@@ -96,6 +98,7 @@ def register_all_routers(app: FastAPI) -> None:
         health,
         content_taxonomy,
         admin_taxonomy,
+        family_controls,
     )
     from app.api.routes.admin.recordings import router as admin_recordings_router
 
@@ -147,6 +150,8 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(recordings.router, prefix=f"{prefix}/recordings", tags=["recordings"])
     app.include_router(profiles.router, prefix=f"{prefix}/profiles", tags=["profiles"])
     app.include_router(children.router, prefix=f"{prefix}/children", tags=["children"])
+    app.include_router(youngsters.router, prefix=f"{prefix}/youngsters", tags=["youngsters"])
+    app.include_router(family_controls.router, prefix=f"{prefix}/family", tags=["family-controls"])
     app.include_router(users.router, prefix=f"{prefix}/users", tags=["users"])
     app.include_router(profile_stats.router, prefix=prefix, tags=["profile"])
     logger.debug("Registered user routes")
@@ -226,6 +231,9 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(admin_recordings_router, prefix=f"{prefix}/admin", tags=["admin-recordings"])
     app.include_router(
         admin_kids_content.router, prefix=f"{prefix}/admin", tags=["admin-kids-content"]
+    )
+    app.include_router(
+        admin_youngsters_content.router, prefix=f"{prefix}/admin", tags=["admin-youngsters-content"]
     )
     app.include_router(
         admin_cultures.router, prefix=f"{prefix}/admin/cultures", tags=["admin-cultures"]

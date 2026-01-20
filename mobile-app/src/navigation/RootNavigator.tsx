@@ -31,6 +31,7 @@ import {
   WatchlistScreenMobile,
   ProfileSelectionScreenMobile,
   ChildrenScreenMobile,
+  YoungstersScreenMobile,
   DownloadsScreenMobile,
   JudaismScreenMobile,
   FlowsScreenMobile,
@@ -90,6 +91,7 @@ export const RootNavigator: React.FC = () => {
       <Stack.Screen name="MorningRitual" component={MorningRitualScreen} />
       <Stack.Screen name="Judaism" component={JudaismScreenMobile} />
       <Stack.Screen name="Children" component={ChildrenScreenMobile} />
+      <Stack.Screen name="Youngsters" component={YoungstersScreenMobile} />
       <Stack.Screen name="Watchlist" component={WatchlistScreenMobile} />
       <Stack.Screen name="Favorites" component={FavoritesScreenMobile} />
       <Stack.Screen name="Downloads" component={DownloadsScreenMobile} />

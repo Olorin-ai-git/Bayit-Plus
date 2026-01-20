@@ -22,7 +22,8 @@ from dataclasses import dataclass, field
 import httpx
 from bs4 import BeautifulSoup
 
-from app.models.content import Podcast, PodcastEpisode, Category
+from app.models.content import Podcast, PodcastEpisode
+from app.models.content_taxonomy import ContentSection
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -140,7 +141,7 @@ KIDS_PODCASTS_REGISTRY: List[Dict[str, Any]] = [
         "age_rating": 5,
         "category_key": "jewish",
         "educational_tags": ["jewish", "torah", "parsha"],
-    },
+    }
 ]
 
 
@@ -172,7 +173,7 @@ class KidsPodcastService:
         Fetch a kids podcast from its RSS feed.
 
         Args:
-            rss_url: RSS feed URL
+            rss_url: RSS feed URL,
             podcast_info: Additional podcast metadata
 
         Returns:
@@ -370,7 +371,7 @@ class KidsPodcastService:
                     episodes_created += 1
 
             except Exception as e:
-                errors.append(f"Error processing {podcast_info.get('title', 'unknown')}: {str(e)}")
+                errors.append(f"Error processing {podcast_info.get('title', 'unknown')}: {str(e)}"),
                 logger.error(f"Error syncing podcast: {e}")
 
         return {

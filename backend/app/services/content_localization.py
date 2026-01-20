@@ -10,12 +10,12 @@ from beanie import Document
 
 from app.models.content import (
     Content,
-    Category,
     LiveChannel,
     RadioStation,
     Podcast,
     PodcastEpisode
 )
+from app.models.content_taxonomy import ContentSection
 from app.services.translation_service import translation_service
 
 
@@ -303,7 +303,7 @@ class ContentLocalizationProcessor:
             Processing results
         """
         if category_id:
-            category = await Category.get(category_id)
+            category = await ContentSection.get(category_id)
             if not category:
                 return {"error": f"Category {category_id} not found"}
 
@@ -315,7 +315,7 @@ class ContentLocalizationProcessor:
                 "results": [result]
             }
         else:
-            categories = await Category.find_all().to_list()
+            categories = await ContentSection.find_all().to_list()
             results = []
             processed_count = 0
 

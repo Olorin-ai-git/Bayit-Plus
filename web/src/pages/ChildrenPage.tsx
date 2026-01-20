@@ -22,12 +22,36 @@ const CATEGORY_ICONS: Record<string, string> = {
   jewish: '✡️',
 };
 
+const SUBCATEGORY_ICONS: Record<string, string> = {
+  'learning-hebrew': 'א',
+  'young-science': '🔬',
+  'math-fun': '🔢',
+  'nature-animals': '🦁',
+  'interactive': '🎮',
+  'hebrew-songs': '🎶',
+  'nursery-rhymes': '👶',
+  'kids-movies': '🎬',
+  'kids-series': '📺',
+  'jewish-holidays': '🕎',
+  'torah-stories': '📜',
+  'bedtime-stories': '🌙',
+};
+
+const AGE_GROUP_ICONS: Record<string, string> = {
+  toddlers: '👶',
+  preschool: '🧒',
+  elementary: '👧',
+  preteen: '🧑',
+};
+
 interface KidsContentItem {
   id: string;
   title: string;
   description?: string;
   thumbnail?: string;
   category?: string;
+  subcategory?: string;
+  age_group?: string;
   age_rating?: number;
   duration?: string;
   educational_tags?: string[];
@@ -36,6 +60,26 @@ interface KidsContentItem {
 interface Category {
   id: string;
   name: string;
+}
+
+interface Subcategory {
+  id: string;
+  slug: string;
+  name: string;
+  name_en?: string;
+  icon?: string;
+  parent_category: string;
+  content_count: number;
+}
+
+interface AgeGroup {
+  id: string;
+  slug: string;
+  name: string;
+  name_en?: string;
+  min_age: number;
+  max_age: number;
+  content_count: number;
 }
 
 function KidsContentCard({ item }: { item: KidsContentItem }) {
@@ -164,21 +208,28 @@ export default function ChildrenPage() {
   const navigate = useNavigate();
   const { activeProfile, isKidsMode } = useProfileStore();
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState<string | null>(null);
   const [content, setContent] = useState<KidsContentItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
+  const [ageGroups, setAgeGroups] = useState<AgeGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showExitModal, setShowExitModal] = useState(false);
+  const [showSubcategories, setShowSubcategories] = useState(false);
   const { width } = useWindowDimensions();
 
   const numColumns = width >= 1280 ? 5 : width >= 1024 ? 4 : width >= 768 ? 3 : 2;
 
   useEffect(() => {
     loadCategories();
+    loadSubcategories();
+    loadAgeGroups();
   }, []);
 
   useEffect(() => {
     loadContent();
-  }, [selectedCategory, activeProfile]);
+  }, [selectedCategory, selectedSubcategory, selectedAgeGroup, activeProfile]);
 
   const loadCategories = async () => {
     try {
@@ -191,14 +242,49 @@ export default function ChildrenPage() {
     }
   };
 
+  const loadSubcategories = async () => {
+    try {
+      const response = await childrenService.getSubcategories();
+      if (response?.subcategories && Array.isArray(response.subcategories)) {
+        setSubcategories(response.subcategories);
+      }
+    } catch (err) {
+      logger.error('Failed to load children subcategories', 'ChildrenPage', err);
+    }
+  };
+
+  const loadAgeGroups = async () => {
+    try {
+      const response = await childrenService.getAgeGroups();
+      if (response?.age_groups && Array.isArray(response.age_groups)) {
+        setAgeGroups(response.age_groups);
+      }
+    } catch (err) {
+      logger.error('Failed to load age groups', 'ChildrenPage', err);
+    }
+  };
+
   const loadContent = async () => {
     try {
       setIsLoading(true);
-      const category = selectedCategory !== 'all' ? selectedCategory : undefined;
       const maxAge = activeProfile?.is_kids_profile ? activeProfile.kids_age_limit : undefined;
-      const response = await childrenService.getContent(category, maxAge);
-      if (response?.data && Array.isArray(response.data)) {
+
+      let response;
+      if (selectedSubcategory) {
+        response = await childrenService.getContentBySubcategory(selectedSubcategory, maxAge);
+      } else if (selectedAgeGroup) {
+        response = await childrenService.getContentByAgeGroup(selectedAgeGroup);
+      } else {
+        const category = selectedCategory !== 'all' ? selectedCategory : undefined;
+        response = await childrenService.getContent(category, maxAge);
+      }
+
+      if (response?.items && Array.isArray(response.items)) {
+        setContent(response.items);
+      } else if (response?.data && Array.isArray(response.data)) {
         setContent(response.data);
+      } else {
+        setContent([]);
       }
     } catch (err) {
       logger.error('Failed to load kids content', 'ChildrenPage', err);
@@ -207,6 +293,29 @@ export default function ChildrenPage() {
       setIsLoading(false);
     }
   };
+
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    setSelectedSubcategory(null);
+    setSelectedAgeGroup(null);
+    setShowSubcategories(false);
+  };
+
+  const handleSubcategorySelect = (subcategorySlug: string) => {
+    setSelectedSubcategory(subcategorySlug);
+    setSelectedCategory('all');
+    setSelectedAgeGroup(null);
+  };
+
+  const handleAgeGroupSelect = (ageGroupSlug: string) => {
+    setSelectedAgeGroup(ageGroupSlug);
+    setSelectedSubcategory(null);
+  };
+
+  // Filter subcategories by selected category
+  const filteredSubcategories = selectedCategory !== 'all'
+    ? subcategories.filter(s => s.parent_category === selectedCategory)
+    : subcategories;
 
   const handleExitKidsMode = async (pin: string) => {
     try {
@@ -244,6 +353,7 @@ export default function ChildrenPage() {
           )}
         </View>
 
+        {/* Main Categories */}
         {categories.length > 0 && (
           <View style={styles.categories}>
             {categories.map((category) => (
@@ -251,10 +361,58 @@ export default function ChildrenPage() {
                 key={category.id}
                 label={getLocalizedName(category, i18n.language)}
                 emoji={CATEGORY_ICONS[category.id] || '🌈'}
-                isActive={selectedCategory === category.id}
-                onPress={() => setSelectedCategory(category.id)}
+                isActive={selectedCategory === category.id && !selectedSubcategory && !selectedAgeGroup}
+                onPress={() => handleCategorySelect(category.id)}
               />
             ))}
+            <GlassCategoryPill
+              label={t('taxonomy.subcategories.title')}
+              emoji="📂"
+              isActive={showSubcategories}
+              onPress={() => setShowSubcategories(!showSubcategories)}
+            />
+          </View>
+        )}
+
+        {/* Subcategories (expandable) */}
+        {showSubcategories && filteredSubcategories.length > 0 && (
+          <View style={styles.subcategories}>
+            {filteredSubcategories.map((subcategory) => (
+              <GlassCategoryPill
+                key={subcategory.slug}
+                label={getLocalizedName(subcategory, i18n.language)}
+                emoji={SUBCATEGORY_ICONS[subcategory.slug] || '📁'}
+                isActive={selectedSubcategory === subcategory.slug}
+                onPress={() => handleSubcategorySelect(subcategory.slug)}
+              />
+            ))}
+          </View>
+        )}
+
+        {/* Age Group Filter */}
+        {ageGroups.length > 0 && (
+          <View style={styles.ageGroups}>
+            <Text style={styles.filterLabel}>{t('taxonomy.subcategories.ageGroups.title')}</Text>
+            <View style={styles.ageGroupPills}>
+              {ageGroups.map((group) => (
+                <Pressable
+                  key={group.slug}
+                  style={[
+                    styles.ageGroupPill,
+                    selectedAgeGroup === group.slug && styles.ageGroupPillActive
+                  ]}
+                  onPress={() => handleAgeGroupSelect(selectedAgeGroup === group.slug ? '' : group.slug)}
+                >
+                  <Text style={styles.ageGroupEmoji}>{AGE_GROUP_ICONS[group.slug] || '👤'}</Text>
+                  <Text style={[
+                    styles.ageGroupText,
+                    selectedAgeGroup === group.slug && styles.ageGroupTextActive
+                  ]}>
+                    {getLocalizedName(group, i18n.language)}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
           </View>
         )}
 
@@ -356,7 +514,57 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  subcategories: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+    backgroundColor: 'rgba(250, 204, 21, 0.05)',
+    borderRadius: borderRadius.lg,
+  },
+  ageGroups: {
     marginBottom: spacing.lg,
+  },
+  filterLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.textMuted,
+    marginBottom: spacing.sm,
+  },
+  ageGroupPills: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  ageGroupPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  ageGroupPillActive: {
+    backgroundColor: 'rgba(250, 204, 21, 0.3)',
+    borderColor: '#facc15',
+  },
+  ageGroupEmoji: {
+    fontSize: 14,
+  },
+  ageGroupText: {
+    fontSize: 13,
+    color: colors.textMuted,
+  },
+  ageGroupTextActive: {
+    color: '#facc15',
+    fontWeight: '600',
   },
   loadingContainer: {
     flex: 1,

@@ -1,8 +1,9 @@
 from app.models.user import User, UserCreate, UserLogin, UserUpdate, UserResponse, TokenResponse
 from app.models.content import (
     Content, ContentBase, ContentCreate, ContentResponse,
-    Category, LiveChannel, EPGEntry, RadioStation, Podcast, PodcastEpisode
+    LiveChannel, EPGEntry, RadioStation, Podcast, PodcastEpisode
 )
+from app.models.content_taxonomy import ContentSection
 from app.models.subscription import Subscription, Invoice, SUBSCRIPTION_PLANS, SubscriptionPlan
 from app.models.watchlist import WatchlistItem, WatchHistory, Conversation
 from app.models.user_system_widget import (
@@ -75,7 +76,7 @@ __all__ = [
     "ContentBase",
     "ContentCreate",
     "ContentResponse",
-    "Category",
+    "ContentSection",
     "LiveChannel",
     "EPGEntry",
     "RadioStation",

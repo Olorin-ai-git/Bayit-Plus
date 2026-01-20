@@ -27,19 +27,16 @@ class ContentSection(Document):
 
     Content can belong to multiple sections (cross-listing) via section_ids field
     on Content model. The primary_section_id determines display priority.
+
+    Translation keys follow pattern: taxonomy.sections.{slug}
+    Description keys follow pattern: taxonomy.sections.{slug}.description
     """
     # Identifiers
     slug: str  # Unique identifier (e.g., "movies", "kids", "judaism")
 
-    # Multilingual names
-    name: str  # Hebrew name (primary)
-    name_en: Optional[str] = None  # English name
-    name_es: Optional[str] = None  # Spanish name
-
-    # Multilingual descriptions
-    description: Optional[str] = None
-    description_en: Optional[str] = None
-    description_es: Optional[str] = None
+    # i18n translation keys (resolved at runtime via shared/i18n)
+    name_key: str  # Translation key (e.g., "taxonomy.sections.movies")
+    description_key: Optional[str] = None  # Description translation key
 
     # Display
     icon: Optional[str] = None  # Icon name or URL
@@ -77,6 +74,9 @@ class SectionSubcategory(Document):
 
     These are used within a specific section for further organization.
     Content can belong to multiple subcategories within a section.
+
+    Translation keys follow pattern: taxonomy.subcategories.{slug}
+    Description keys follow pattern: taxonomy.subcategories.{slug}.description
     """
     # Parent section
     section_id: str  # References ContentSection
@@ -84,15 +84,9 @@ class SectionSubcategory(Document):
     # Identifiers
     slug: str  # Unique within section (e.g., "cartoons", "shiurim")
 
-    # Multilingual names
-    name: str  # Hebrew name (primary)
-    name_en: Optional[str] = None  # English name
-    name_es: Optional[str] = None  # Spanish name
-
-    # Multilingual descriptions
-    description: Optional[str] = None
-    description_en: Optional[str] = None
-    description_es: Optional[str] = None
+    # i18n translation keys (resolved at runtime via shared/i18n)
+    name_key: str  # Translation key (e.g., "taxonomy.subcategories.learning-hebrew")
+    description_key: Optional[str] = None  # Description translation key
 
     # Display
     icon: Optional[str] = None
@@ -122,14 +116,14 @@ class Genre(Document):
 
     Genres are platform-wide and can be mapped to external sources like TMDB.
     Content can have multiple genres.
+
+    Translation keys follow pattern: taxonomy.genres.{slug}
     """
     # Identifiers
     slug: str  # Unique identifier (e.g., "drama", "comedy", "action")
 
-    # Multilingual names
-    name: str  # Hebrew name (primary)
-    name_en: Optional[str] = None  # English name
-    name_es: Optional[str] = None  # Spanish name
+    # i18n translation keys (resolved at runtime via shared/i18n)
+    name_key: str  # Translation key (e.g., "taxonomy.genres.drama")
 
     # External mappings
     tmdb_id: Optional[int] = None  # TMDB genre ID for automatic matching
@@ -162,19 +156,16 @@ class Audience(Document):
     Audience classification (age appropriateness).
 
     Each content item has exactly one audience classification.
+
+    Translation keys follow pattern: taxonomy.audiences.{slug}
+    Description keys follow pattern: taxonomy.audiences.{slug}.description
     """
     # Identifiers
     slug: str  # Unique identifier (e.g., "general", "kids", "family", "mature")
 
-    # Multilingual names
-    name: str  # Hebrew name (primary)
-    name_en: Optional[str] = None  # English name
-    name_es: Optional[str] = None  # Spanish name
-
-    # Multilingual descriptions
-    description: Optional[str] = None
-    description_en: Optional[str] = None
-    description_es: Optional[str] = None
+    # i18n translation keys (resolved at runtime via shared/i18n)
+    name_key: str  # Translation key (e.g., "taxonomy.audiences.kids")
+    description_key: Optional[str] = None  # Description translation key
 
     # Age settings
     min_age: Optional[int] = None  # Minimum recommended age
@@ -206,12 +197,8 @@ class Audience(Document):
 class ContentSectionCreate(BaseModel):
     """Schema for creating a content section."""
     slug: str
-    name: str
-    name_en: Optional[str] = None
-    name_es: Optional[str] = None
-    description: Optional[str] = None
-    description_en: Optional[str] = None
-    description_es: Optional[str] = None
+    name_key: str  # i18n translation key (e.g., "taxonomy.sections.movies")
+    description_key: Optional[str] = None  # Description translation key
     icon: Optional[str] = None
     thumbnail: Optional[str] = None
     color: Optional[str] = None
@@ -225,12 +212,8 @@ class ContentSectionCreate(BaseModel):
 
 class ContentSectionUpdate(BaseModel):
     """Schema for updating a content section."""
-    name: Optional[str] = None
-    name_en: Optional[str] = None
-    name_es: Optional[str] = None
-    description: Optional[str] = None
-    description_en: Optional[str] = None
-    description_es: Optional[str] = None
+    name_key: Optional[str] = None  # i18n translation key
+    description_key: Optional[str] = None  # Description translation key
     icon: Optional[str] = None
     thumbnail: Optional[str] = None
     color: Optional[str] = None
@@ -246,12 +229,8 @@ class SectionSubcategoryCreate(BaseModel):
     """Schema for creating a section sub-category."""
     section_id: str
     slug: str
-    name: str
-    name_en: Optional[str] = None
-    name_es: Optional[str] = None
-    description: Optional[str] = None
-    description_en: Optional[str] = None
-    description_es: Optional[str] = None
+    name_key: str  # i18n translation key (e.g., "taxonomy.subcategories.learning-hebrew")
+    description_key: Optional[str] = None  # Description translation key
     icon: Optional[str] = None
     thumbnail: Optional[str] = None
     order: int = 0
@@ -260,12 +239,8 @@ class SectionSubcategoryCreate(BaseModel):
 
 class SectionSubcategoryUpdate(BaseModel):
     """Schema for updating a section sub-category."""
-    name: Optional[str] = None
-    name_en: Optional[str] = None
-    name_es: Optional[str] = None
-    description: Optional[str] = None
-    description_en: Optional[str] = None
-    description_es: Optional[str] = None
+    name_key: Optional[str] = None  # i18n translation key
+    description_key: Optional[str] = None  # Description translation key
     icon: Optional[str] = None
     thumbnail: Optional[str] = None
     order: Optional[int] = None
@@ -275,9 +250,7 @@ class SectionSubcategoryUpdate(BaseModel):
 class GenreCreate(BaseModel):
     """Schema for creating a genre."""
     slug: str
-    name: str
-    name_en: Optional[str] = None
-    name_es: Optional[str] = None
+    name_key: str  # i18n translation key (e.g., "taxonomy.genres.drama")
     tmdb_id: Optional[int] = None
     tmdb_name: Optional[str] = None
     icon: Optional[str] = None
@@ -289,9 +262,7 @@ class GenreCreate(BaseModel):
 
 class GenreUpdate(BaseModel):
     """Schema for updating a genre."""
-    name: Optional[str] = None
-    name_en: Optional[str] = None
-    name_es: Optional[str] = None
+    name_key: Optional[str] = None  # i18n translation key
     tmdb_id: Optional[int] = None
     tmdb_name: Optional[str] = None
     icon: Optional[str] = None
@@ -304,12 +275,8 @@ class GenreUpdate(BaseModel):
 class AudienceCreate(BaseModel):
     """Schema for creating an audience classification."""
     slug: str
-    name: str
-    name_en: Optional[str] = None
-    name_es: Optional[str] = None
-    description: Optional[str] = None
-    description_en: Optional[str] = None
-    description_es: Optional[str] = None
+    name_key: str  # i18n translation key (e.g., "taxonomy.audiences.kids")
+    description_key: Optional[str] = None  # Description translation key
     min_age: Optional[int] = None
     max_age: Optional[int] = None
     content_ratings: List[str] = Field(default_factory=list)
@@ -321,12 +288,8 @@ class AudienceCreate(BaseModel):
 
 class AudienceUpdate(BaseModel):
     """Schema for updating an audience classification."""
-    name: Optional[str] = None
-    name_en: Optional[str] = None
-    name_es: Optional[str] = None
-    description: Optional[str] = None
-    description_en: Optional[str] = None
-    description_es: Optional[str] = None
+    name_key: Optional[str] = None  # i18n translation key
+    description_key: Optional[str] = None  # Description translation key
     min_age: Optional[int] = None
     max_age: Optional[int] = None
     content_ratings: Optional[List[str]] = None

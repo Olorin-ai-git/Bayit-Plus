@@ -9,7 +9,7 @@ import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { isTV } from '@bayit/shared/utils/platform';
+import { isTV } from '@bayit/shared-utils/platform';
 import { useDirection } from '@/hooks/useDirection';
 import { FlowCarouselCard } from './FlowCarouselCard';
 import type { Flow } from '../types/flows.types';

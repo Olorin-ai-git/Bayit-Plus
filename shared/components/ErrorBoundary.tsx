@@ -1,16 +1,36 @@
 /**
  * ErrorBoundary - Catches React errors and displays fallback UI
  * Prevents crashes from propagating and provides user-friendly error handling
+ * Integrates with Sentry for error tracking in production
  */
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { colors, spacing, borderRadius } from '../theme';
+import logger, { getCorrelationId } from '../utils/logger';
+
+// Sentry-like interface for error capture
+interface SentryLike {
+  captureException: (error: Error, options?: { extra?: Record<string, unknown> }) => void;
+}
+
+// Global Sentry instance (set by initErrorBoundarySentry)
+let sentryInstance: SentryLike | null = null;
+
+/**
+ * Initialize Sentry for ErrorBoundary.
+ * Call this once during app initialization.
+ */
+export const initErrorBoundarySentry = (sentry: SentryLike): void => {
+  sentryInstance = sentry;
+};
 
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
+  /** Optional component name for better error context */
+  componentName?: string;
 }
 
 interface State {
@@ -29,7 +49,27 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error('[ErrorBoundary] Caught error:', error, errorInfo);
+    const { componentName } = this.props;
+    const correlationId = getCorrelationId();
+
+    // Log error using unified logger
+    logger.error(
+      `ErrorBoundary caught error${componentName ? ` in ${componentName}` : ''}`,
+      'ErrorBoundary',
+      error
+    );
+
+    // Send to Sentry if initialized
+    if (sentryInstance) {
+      sentryInstance.captureException(error, {
+        extra: {
+          componentStack: errorInfo.componentStack,
+          componentName,
+          correlationId,
+        },
+      });
+    }
+
     this.props.onError?.(error, errorInfo);
   }
 

@@ -16,6 +16,9 @@ from app.core.config import settings
 from app.core.database import connect_to_mongo, close_mongo_connection
 from app.core.logging_config import setup_logging
 from app.core.config_validation import log_configuration_warnings
+from app.core.sentry_config import init_sentry
+from app.middleware.correlation_id import CorrelationIdMiddleware
+from app.middleware.request_timing import RequestTimingMiddleware
 from app.services.startup import (
     init_default_widgets,
     init_default_cultures,
@@ -27,6 +30,11 @@ from app.api.router_registry import register_all_routers, register_upload_servin
 # Initialize structured logging for Cloud Run
 setup_logging(debug=settings.DEBUG)
 logger = logging.getLogger(__name__)
+
+# Initialize Sentry error tracking (before app startup)
+sentry_enabled = init_sentry()
+if sentry_enabled:
+    logger.info("Sentry error tracking enabled")
 
 
 def _validate_configuration() -> None:
@@ -146,14 +154,22 @@ app = FastAPI(
 )
 
 # ============================================
-# Middleware
+# Middleware (order matters - first added = innermost, last added = outermost)
 # ============================================
 
-# Security middleware - input sanitization (added first = innermost)
+# Security middleware - input sanitization (innermost)
 from app.middleware.input_sanitization import InputSanitizationMiddleware
 
 app.add_middleware(InputSanitizationMiddleware, enable_logging=True)
 logger.info("Input sanitization middleware enabled")
+
+# Request timing middleware - tracks request duration
+app.add_middleware(RequestTimingMiddleware)
+logger.info("Request timing middleware enabled")
+
+# Correlation ID middleware - adds request tracing
+app.add_middleware(CorrelationIdMiddleware)
+logger.info("Correlation ID middleware enabled")
 
 # CORS middleware - added LAST = outermost (wraps all responses including errors)
 # This ensures CORS headers are added even to error responses
@@ -165,7 +181,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"],
+    expose_headers=["*", "X-Correlation-ID", "X-Request-Duration-Ms"],
 )
 
 # ============================================

@@ -12,7 +12,8 @@ from datetime import datetime
 # Add parent directory to path so app imports work
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.models.content import Content, Category, LiveChannel, RadioStation, Podcast
+from app.models.content import Content, , LiveChannel, RadioStation, Podcast
+from app.models.content_taxonomy import ContentSection
 from app.core.config import settings
 from beanie import init_beanie
 import motor.motor_asyncio

@@ -33,6 +33,7 @@ import {
   apiFavoritesService,
   apiProfilesService,
   apiChildrenService,
+  apiYoungstersService,
 } from './userServices';
 import { apiSearchService, apiSubtitlesService, apiSubtitlePreferencesService, apiChaptersService } from './mediaServices';
 import { apiZmanService, apiTrendingService, apiRitualService, apiJudaismService, apiFlowsService } from './specialtyServices';
@@ -92,6 +93,7 @@ export const historyService = isDemo ? demoHistoryService : apiHistoryService;
 export const favoritesService = isDemo ? demoFavoritesService : apiFavoritesService;
 export const profilesService = apiProfilesService; // No demo mode - requires real auth
 export const childrenService = apiChildrenService; // No demo mode for children
+export const youngstersService = apiYoungstersService; // No demo mode for youngsters
 
 // Media services - Conditional
 export const searchService = isDemo ? demoSearchService : apiSearchService;
@@ -134,6 +136,7 @@ export {
   apiFavoritesService,
   apiProfilesService,
   apiChildrenService,
+  apiYoungstersService,
   apiSearchService,
   apiSubtitlesService,
   apiSubtitlePreferencesService,

@@ -42,9 +42,18 @@ from app.models.jewish_calendar import JewishCalendarCache
 from app.models.jewish_community import JewishOrganization, CommunityEvent, ScrapingJob
 from app.models.jerusalem_content import JerusalemContentSource, JerusalemContentItem
 from app.models.tel_aviv_content import TelAvivContentSource, TelAvivContentItem
-from app.models.support import SupportTicket, SupportConversation, SupportAnalytics
+from app.models.support import SupportTicket, SupportConversation, SupportAnalytics, FAQEntry
+from app.models.documentation import (
+    DocumentationArticle,
+    DocumentationCategory,
+    DocumentationFeedback,
+    DocumentationSearchLog,
+)
 from app.models.culture import Culture, CultureCity, CultureNewsSource, CultureContentItem
 from app.models.kids_content import KidsContentSource
+from app.models.youngsters_content import YoungstersContentSource
+from app.models.family_controls import FamilyControls
+from app.services.mcp_content_discovery import ContentDiscoveryQueue
 
 
 class Database:
@@ -157,6 +166,12 @@ async def connect_to_mongo():
             SupportTicket,
             SupportConversation,
             SupportAnalytics,
+            FAQEntry,
+            # Documentation models
+            DocumentationArticle,
+            DocumentationCategory,
+            DocumentationFeedback,
+            DocumentationSearchLog,
             # Culture models (Global Cultures feature)
             Culture,
             CultureCity,
@@ -164,6 +179,12 @@ async def connect_to_mongo():
             CultureContentItem,
             # Kids Content models
             KidsContentSource,
+            # Youngsters Content models
+            YoungstersContentSource,
+            # Family Controls models (unified parental controls)
+            FamilyControls,
+            # MCP Content Discovery models
+            ContentDiscoveryQueue,
         ],
     )
     print(f"Connected to MongoDB: {settings.MONGODB_DB_NAME}")

@@ -1,6 +1,7 @@
 """
 Production logging configuration for Cloud Run
 Uses structured logging compatible with Google Cloud Logging
+Includes correlation ID for end-to-end request tracing
 """
 import logging
 import sys
@@ -8,8 +9,20 @@ import json
 from typing import Any
 
 
+def _get_correlation_id() -> str | None:
+    """
+    Get the current correlation ID from context.
+    Imported lazily to avoid circular imports.
+    """
+    try:
+        from app.middleware.correlation_id import get_correlation_id
+        return get_correlation_id()
+    except ImportError:
+        return None
+
+
 class StructuredLogger(logging.Formatter):
-    """Format logs as JSON for Cloud Logging"""
+    """Format logs as JSON for Cloud Logging with correlation ID"""
 
     def format(self, record: logging.LogRecord) -> str:
         log_obj = {
@@ -21,6 +34,11 @@ class StructuredLogger(logging.Formatter):
             "function": record.funcName,
             "line": record.lineno,
         }
+
+        # Add correlation ID for request tracing
+        correlation_id = _get_correlation_id()
+        if correlation_id:
+            log_obj["correlation_id"] = correlation_id
 
         # Add exception info if present
         if record.exc_info:

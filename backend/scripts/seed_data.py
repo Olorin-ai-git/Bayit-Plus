@@ -13,7 +13,8 @@ import argparse
 import sys
 sys.path.append('.')
 
-from app.models.content import Content, Category, LiveChannel, EPGEntry, RadioStation, Podcast, PodcastEpisode
+from app.models.content import Content, , LiveChannel, EPGEntry, RadioStation, Podcast, PodcastEpisode
+from app.models.content_taxonomy import ContentSection
 from app.models.user import User
 from app.core.config import settings
 from app.core.security import get_password_hash

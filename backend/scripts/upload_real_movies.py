@@ -25,7 +25,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
-from app.models.content import Content, Category
+from app.models.content import Content, 
+from app.models.content_taxonomy import ContentSection
 from app.core.config import settings
 from google.cloud import storage
 

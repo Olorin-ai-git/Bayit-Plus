@@ -22,6 +22,7 @@ from app.core.config import settings
 from app.core.security import get_current_active_user, require_role
 from app.models.user import User
 from app.services.support_service import support_service
+from app.services.docs_search_service import docs_search_service
 from app.services.voice_pipeline_service import VoicePipelineService, PipelineMessage
 from app.schemas.support import (
     SupportChatRequest,
@@ -612,6 +613,70 @@ async def get_doc(path: str, language: str = 'en'):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f'Error reading document: {str(e)}')
+
+
+@router.get('/docs/search')
+async def search_docs(
+    q: str = Query(..., min_length=1, description='Search query'),
+    lang: str = Query('en', description='Language code (en, he, es)'),
+    category: Optional[str] = Query(None, description='Filter by category'),
+    audience: Optional[str] = Query(None, description='Filter by audience (user, parent, admin, developer)'),
+    platform: Optional[str] = Query(None, description='Filter by platform (web, ios, android, apple_tv, android_tv, carplay)'),
+    limit: int = Query(20, ge=1, le=100, description='Maximum results'),
+    current_user: Optional[User] = Depends(get_current_active_user),
+):
+    """
+    Search documentation articles and FAQ entries.
+
+    Returns combined results from both documentation and FAQ, ranked by relevance.
+    """
+    user_id = str(current_user.id) if current_user else None
+
+    results = await docs_search_service.search(
+        query=q,
+        language=lang,
+        category=category,
+        audience=audience,
+        platform=platform,
+        limit=limit,
+        user_id=user_id,
+    )
+
+    return results
+
+
+@router.get('/docs/search/popular')
+async def get_popular_searches(
+    lang: str = Query('en', description='Language code'),
+    limit: int = Query(10, ge=1, le=50),
+    days: int = Query(7, ge=1, le=30),
+):
+    """Get popular search queries from the last N days."""
+    results = await docs_search_service.get_popular_searches(
+        language=lang,
+        limit=limit,
+        days=days,
+    )
+    return {'popular_searches': results}
+
+
+@router.get('/docs/search/gaps')
+async def get_search_gaps(
+    lang: str = Query('en', description='Language code'),
+    limit: int = Query(20, ge=1, le=100),
+    days: int = Query(7, ge=1, le=30),
+    current_user: User = Depends(require_role(['admin'])),
+):
+    """
+    Get searches that returned zero results (admin only).
+    Useful for identifying content gaps.
+    """
+    results = await docs_search_service.get_zero_result_searches(
+        language=lang,
+        limit=limit,
+        days=days,
+    )
+    return {'zero_result_searches': results}
 
 
 # =============================================================================

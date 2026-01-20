@@ -5,9 +5,16 @@ from app.models.user import User
 from app.models.kids_content import (
     KidsContentAggregatedResponse,
     KidsFeaturedResponse,
+    KidsSubcategoriesResponse,
+    KidsAgeGroupsResponse,
 )
 from app.services.kids_content_service import kids_content_service
-from app.core.security import get_current_active_user, get_password_hash, verify_password
+
+
+class CategoriesResponse(BaseModel):
+    """Response model for kids categories."""
+    data: list
+from app.core.security import get_current_active_user, get_optional_user, get_password_hash, verify_password
 
 
 class ParentalControlsUpdate(BaseModel):
@@ -18,11 +25,11 @@ class ParentalControlsUpdate(BaseModel):
 router = APIRouter()
 
 
-@router.get("/categories")
+@router.get("/categories", response_model=CategoriesResponse)
 async def get_children_categories():
     """Get kids-specific content categories."""
     categories = await kids_content_service.get_categories()
-    return {"data": categories}
+    return CategoriesResponse(data=categories)
 
 
 @router.get("/content", response_model=KidsContentAggregatedResponse)
@@ -31,7 +38,7 @@ async def get_children_content(
     category: Optional[str] = Query(None, description="Category filter"),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
-    current_user: User = Depends(get_current_active_user),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Get children's content filtered by age and category."""
     return await kids_content_service.fetch_all_content(
@@ -45,7 +52,7 @@ async def get_children_content(
 @router.get("/featured", response_model=KidsFeaturedResponse)
 async def get_children_featured(
     age_max: Optional[int] = Query(None, description="Maximum age rating"),
-    current_user: User = Depends(get_current_active_user),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Get featured children's content for homepage."""
     return await kids_content_service.get_featured_content(age_max=age_max)
@@ -63,6 +70,71 @@ async def get_children_by_category(
     return await kids_content_service.get_content_by_category(
         category=category_id,
         age_max=age_max,
+        page=page,
+        limit=limit,
+    )
+
+
+@router.get("/subcategories", response_model=KidsSubcategoriesResponse)
+async def get_children_subcategories(
+    current_user: Optional[User] = Depends(get_optional_user),
+):
+    """
+    Get all kids subcategories with metadata.
+
+    Returns 12 subcategories organized by parent category:
+    - Educational: learning-hebrew, young-science, math-fun, nature-animals, interactive
+    - Music: hebrew-songs, nursery-rhymes
+    - Cartoons: kids-movies, kids-series
+    - Jewish: jewish-holidays, torah-stories
+    - Stories: bedtime-stories
+    """
+    return await kids_content_service.get_subcategories()
+
+
+@router.get("/subcategory/{slug}", response_model=KidsContentAggregatedResponse)
+async def get_children_by_subcategory(
+    slug: str,
+    age_max: Optional[int] = Query(None, description="Maximum age rating"),
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=50),
+    current_user: Optional[User] = Depends(get_optional_user),
+):
+    """Get children's content by specific subcategory."""
+    return await kids_content_service.get_content_by_subcategory(
+        subcategory_slug=slug,
+        age_max=age_max,
+        page=page,
+        limit=limit,
+    )
+
+
+@router.get("/age-groups", response_model=KidsAgeGroupsResponse)
+async def get_children_age_groups(
+    current_user: Optional[User] = Depends(get_optional_user),
+):
+    """
+    Get all age groups for kids content filtering.
+
+    Age groups:
+    - toddlers: 0-3 years
+    - preschool: 3-5 years
+    - elementary: 5-10 years
+    - preteen: 10-12 years
+    """
+    return await kids_content_service.get_age_groups()
+
+
+@router.get("/age-group/{group}", response_model=KidsContentAggregatedResponse)
+async def get_children_by_age_group(
+    group: str,
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=50),
+    current_user: Optional[User] = Depends(get_optional_user),
+):
+    """Get children's content by specific age group."""
+    return await kids_content_service.get_content_by_age_group(
+        age_group_slug=group,
         page=page,
         limit=limit,
     )

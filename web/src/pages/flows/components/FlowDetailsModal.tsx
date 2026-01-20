@@ -11,7 +11,7 @@ import { Play, Edit2, Trash2, SkipForward, Clock, Sparkles, List, X, Calendar, Z
 import LinearGradient from 'react-native-web-linear-gradient';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassModal, GlassButton, GlassBadge } from '@bayit/shared/ui';
-import { isTV } from '@bayit/shared/utils/platform';
+import { isTV } from '@bayit/shared-utils/platform';
 import { useDirection } from '@/hooks/useDirection';
 import type { Flow } from '../types/flows.types';
 import { getLocalizedName, getLocalizedDescription, formatTriggerTime } from '../utils/flowHelpers';

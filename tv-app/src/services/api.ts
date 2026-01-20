@@ -313,6 +313,27 @@ const apiChildrenService = {
   }) => api.put('/children/settings', settings),
 };
 
+// Youngsters Service (API)
+const apiYoungstersService = {
+  getContent: (category?: string, maxAge?: number, limit?: number) =>
+    api.get('/youngsters/content', { params: { category, age_max: maxAge, limit } }),
+  getCategories: () => api.get('/youngsters/categories'),
+  getFeatured: () => api.get('/youngsters/featured'),
+  getByCategory: (categoryId: string, maxAge?: number, limit?: number) =>
+    api.get(`/youngsters/by-category/${categoryId}`, { params: { age_max: maxAge, limit } }),
+  getSubcategories: () => api.get('/youngsters/subcategories'),
+  getContentBySubcategory: (slug: string, maxAge?: number, limit?: number) =>
+    api.get(`/youngsters/subcategory/${slug}`, { params: { age_max: maxAge, limit } }),
+  getAgeGroups: () => api.get('/youngsters/age-groups'),
+  getContentByAgeGroup: (group: string, limit?: number) =>
+    api.get(`/youngsters/age-group/${group}`, { params: { limit } }),
+  getTrending: (ageGroup?: string, limit?: number) =>
+    api.get('/youngsters/trending', { params: { age_group: ageGroup, limit } }),
+  getNews: (limit?: number, ageGroup?: string) =>
+    api.get('/youngsters/news', { params: { limit, age_group: ageGroup } }),
+  verifyParentPin: (pin: string) => api.post('/youngsters/verify-parent-pin', { pin }),
+};
+
 // Judaism Service (API)
 const apiJudaismService = {
   // Content
@@ -486,6 +507,7 @@ export const partyService = isDemo ? demoPartyService : apiPartyService;
 export const chatService = isDemo ? demoChatService : apiChatService;
 export const profilesService = apiProfilesService; // No demo mode for profiles - requires real auth
 export const childrenService = apiChildrenService; // No demo mode for children
+export const youngstersService = apiYoungstersService; // No demo mode for youngsters
 export const judaismService = apiJudaismService; // No demo mode for judaism
 export const flowsService = apiFlowsService; // No demo mode for flows
 

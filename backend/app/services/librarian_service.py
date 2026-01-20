@@ -10,7 +10,8 @@ from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
 from beanie import PydanticObjectId
 
-from app.models.content import Content, LiveChannel, Podcast, PodcastEpisode, RadioStation, Category
+from app.models.content import Content, LiveChannel, Podcast, PodcastEpisode, RadioStation
+from app.models.content_taxonomy import ContentSection
 from app.models.librarian import AuditReport, LibrarianAction
 from app.services.audit_task_manager import audit_task_manager
 

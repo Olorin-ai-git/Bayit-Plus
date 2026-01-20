@@ -11,6 +11,15 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { I18nextProvider } from 'react-i18next';
 import i18n, { loadSavedLanguage } from '@bayit/shared-i18n';
 
+// Initialize Sentry error tracking (before any other imports that might throw)
+import { initSentry, withSentryErrorBoundary } from './src/utils/sentry';
+import logger from './src/utils/logger';
+
+const sentryEnabled = initSentry();
+if (sentryEnabled) {
+  logger.info('Sentry error tracking enabled', 'App');
+}
+
 // Context Providers
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';
@@ -47,10 +56,10 @@ function App(): React.JSX.Element {
         // Initialize accessibility service
         await accessibilityService.initialize();
 
-        console.log('[App] Initialization complete');
+        logger.info('Initialization complete', 'App');
         setIsReady(true);
       } catch (error) {
-        console.error('[App] Initialization failed:', error);
+        logger.error('Initialization failed', 'App', error);
         setIsReady(true); // Still allow app to load
       }
     };
@@ -59,7 +68,7 @@ function App(): React.JSX.Element {
   }, []);
 
   const handleSplashComplete = useCallback(() => {
-    console.log('[App] Splash complete, showing main app');
+    logger.info('Splash complete, showing main app', 'App');
     setShowSplash(false);
   }, []);
 
@@ -88,4 +97,5 @@ function App(): React.JSX.Element {
   );
 }
 
-export default App;
+// Wrap with Sentry's error boundary for crash reporting
+export default withSentryErrorBoundary(App);

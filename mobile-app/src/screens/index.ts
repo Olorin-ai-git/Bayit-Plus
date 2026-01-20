@@ -39,6 +39,9 @@ export * from './SeriesDetailScreenMobile';
 // Kids mode
 export * from './ChildrenScreenMobile';
 
+// Youngsters mode (teens 12-17)
+export * from './YoungstersScreenMobile';
+
 // Judaism content
 export * from './JudaismScreenMobile';
 

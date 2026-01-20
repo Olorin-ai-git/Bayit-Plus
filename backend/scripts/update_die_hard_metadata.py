@@ -23,7 +23,8 @@ async def update_die_hard_metadata():
     
     # Initialize Beanie
     from beanie import init_beanie
-    from app.models.content import Content, Category
+    from app.models.content import Content, 
+from app.models.content_taxonomy import ContentSection
     
     await init_beanie(
         database=db,

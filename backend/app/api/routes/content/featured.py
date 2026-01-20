@@ -11,7 +11,8 @@ from typing import Optional
 
 from app.api.routes.content.utils import is_series_by_category
 from app.core.security import get_optional_user
-from app.models.content import Category, Content
+from app.models.content import Content
+from app.models.content_taxonomy import ContentSection
 from app.models.user import User
 
 router = APIRouter()
@@ -54,9 +55,9 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
         return await cursor.to_list(length=None)
 
     async def get_categories():
-        return await Category.find(
-            Category.is_active == True,
-            Category.show_on_homepage == True
+        return await ContentSection.find(
+            ContentSection.is_active == True,
+            ContentSection.show_on_homepage == True
         ).sort("order").limit(6).to_list()
 
     hero_content, featured_content, categories = await asyncio.gather(

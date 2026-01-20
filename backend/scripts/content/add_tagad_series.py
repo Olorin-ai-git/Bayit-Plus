@@ -7,7 +7,8 @@ from pathlib import Path
 from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
-from app.models.content import Content, Category
+from app.models.content import Content, 
+from app.models.content_taxonomy import ContentSection
 from app.core.config import settings
 
 UPLOADS_DIR = Path("/Users/olorin/Documents/Bayit-Plus/backend/uploads/vod")

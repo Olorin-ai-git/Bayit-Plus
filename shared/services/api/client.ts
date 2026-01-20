@@ -1,12 +1,18 @@
 /**
  * API Client Configuration
  *
- * Axios client setup, interceptors, and authentication handling.
+ * Axios client setup, interceptors, authentication handling,
+ * and correlation ID propagation for end-to-end request tracing.
  */
 
-import axios from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { Platform } from 'react-native';
 import { useAuthStore } from '../../stores/authStore';
+import { getCorrelationId, generateCorrelationId, setCorrelationId } from '../../utils/logger';
+import logger from '../../utils/logger';
+
+// Correlation ID header name (matches backend)
+const CORRELATION_ID_HEADER = 'X-Correlation-ID';
 
 // Cloud Run production API URL
 const CLOUD_RUN_API_URL = 'https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1';
@@ -35,6 +41,9 @@ const getApiBaseUrl = () => {
 
 export const API_BASE_URL = getApiBaseUrl();
 
+// Create scoped logger for API client
+const apiLogger = logger.scope('API');
+
 // Main API instance
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -53,57 +62,96 @@ export const contentApi = axios.create({
   },
 });
 
-// Request interceptor to add auth token
-api.interceptors.request.use((config) => {
+/**
+ * Add correlation ID and auth token to request.
+ */
+const addRequestHeaders = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
+  // Add auth token
   const token = useAuthStore.getState().token;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  // Add correlation ID - use existing or generate new one
+  let correlationId = getCorrelationId();
+  if (!correlationId) {
+    correlationId = generateCorrelationId();
+    setCorrelationId(correlationId);
+  }
+  config.headers[CORRELATION_ID_HEADER] = correlationId;
+
+  // Log request start
+  apiLogger.debug(`Request: ${config.method?.toUpperCase()} ${config.url}`, {
+    correlationId,
+    method: config.method,
+    url: config.url,
+  });
+
   return config;
-});
+};
+
+/**
+ * Log response timing and extract correlation ID from response.
+ */
+const handleResponseSuccess = (response: AxiosResponse): AxiosResponse['data'] => {
+  // Extract correlation ID from response (may be different if server generated it)
+  const responseCorrelationId = response.headers[CORRELATION_ID_HEADER.toLowerCase()];
+  const durationMs = response.headers['x-request-duration-ms'];
+
+  apiLogger.debug(`Response: ${response.status} ${response.config.url}`, {
+    status: response.status,
+    correlationId: responseCorrelationId,
+    durationMs: durationMs ? parseInt(durationMs, 10) : undefined,
+  });
+
+  return response.data;
+};
+
+// Request interceptor to add auth token and correlation ID
+api.interceptors.request.use(addRequestHeaders);
+
+/**
+ * Handle response errors and log them.
+ */
+const handleResponseError = (error: unknown): Promise<never> => {
+  const axiosError = error as { response?: AxiosResponse; config?: AxiosRequestConfig };
+
+  // Log error with correlation ID
+  const correlationId = getCorrelationId();
+  apiLogger.error(`Request failed: ${axiosError.config?.url}`, {
+    correlationId,
+    status: axiosError.response?.status,
+    error: axiosError.response?.data || error,
+  });
+
+  if (axiosError.response?.status === 401) {
+    const errorDetail = (axiosError.response?.data as { detail?: string })?.detail || '';
+    const requestUrl = axiosError.config?.url || '';
+
+    const isCriticalAuthEndpoint = ['/auth/me', '/auth/login', '/auth/refresh'].some(path =>
+      requestUrl.includes(path)
+    );
+
+    const isTokenError = [
+      'Could not validate credentials',
+      'Invalid authentication credentials',
+      'Token has expired',
+      'Invalid token',
+      'Signature has expired'
+    ].some(msg => errorDetail.toLowerCase().includes(msg.toLowerCase()));
+
+    if (isCriticalAuthEndpoint || isTokenError) {
+      useAuthStore.getState().logout();
+    }
+  }
+  return Promise.reject(axiosError.response?.data || error);
+};
 
 // Response interceptor for error handling
-api.interceptors.response.use(
-  (response) => response.data,
-  (error) => {
-    if (error.response?.status === 401) {
-      const errorDetail = error.response?.data?.detail || '';
-      const requestUrl = error.config?.url || '';
-
-      const isCriticalAuthEndpoint = ['/auth/me', '/auth/login', '/auth/refresh'].some(path =>
-        requestUrl.includes(path)
-      );
-
-      const isTokenError = [
-        'Could not validate credentials',
-        'Invalid authentication credentials',
-        'Token has expired',
-        'Invalid token',
-        'Signature has expired'
-      ].some(msg => errorDetail.toLowerCase().includes(msg.toLowerCase()));
-
-      if (isCriticalAuthEndpoint || isTokenError) {
-        useAuthStore.getState().logout();
-      }
-    }
-    return Promise.reject(error.response?.data || error);
-  }
-);
+api.interceptors.response.use(handleResponseSuccess, handleResponseError);
 
 // Content API interceptors
-contentApi.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().token;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-contentApi.interceptors.response.use(
-  (response) => response.data,
-  (error) => {
-    return Promise.reject(error.response?.data || error);
-  }
-);
+contentApi.interceptors.request.use(addRequestHeaders);
+contentApi.interceptors.response.use(handleResponseSuccess, handleResponseError);
 
 export default api;
