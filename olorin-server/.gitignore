@@ -35,8 +35,8 @@ ENV/
 env/
 .venv
 
-# Poetry
-poetry.lock
+# Poetry virtual environments only
+# NOTE: poetry.lock should be committed for reproducible builds
 
 # IDEs
 .vscode/
