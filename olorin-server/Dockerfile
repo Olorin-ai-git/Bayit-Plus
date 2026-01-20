@@ -30,7 +30,6 @@ RUN poetry config virtualenvs.create false && \
 
 # Copy application code
 COPY app/ /app/app/
-COPY scripts/server/main.py /app/
 
 # Set Python path
 ENV PYTHONPATH="/app"
@@ -42,5 +41,5 @@ EXPOSE 8090
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:${PORT:-8090}/health || exit 1
 
-# Start command - use simple main.py with CORS middleware
-CMD ["sh", "-c", "exec python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8090} --workers 1 --access-log --log-level info"]
+# Start command - use full application with investigation routers
+CMD ["sh", "-c", "exec python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8090} --workers 1 --access-log --log-level info"]
