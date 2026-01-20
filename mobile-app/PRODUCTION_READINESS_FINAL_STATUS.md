@@ -61,7 +61,14 @@ Location: SentrySamplingProfiler.cpp, SentryThreadMetadataCache.cpp
 4. **Sentry downgrade**: Use Sentry < 5.30 (older, stable version)
 5. **Build settings override**: Add aggressive C++ optimization flags in Podfile post_install
 
-**Status**: Requires manual investigation with Xcode or physical device testing
+**Status**: Documented technical blocker - requires iOS Specialist review and Xcode direct build or physical device testing
+**Build Attempts**: 5+ approaches tried - all failed with Sentry profiler C++ errors:
+- ✗ Podfile preprocessor definitions
+- ✗ Sentry 5.30.0 downgrade (installed 8.34.0 instead)
+- ✗ Complete Sentry removal
+- ✗ Disabling New Architecture (RCT_NEW_ARCH_ENABLED=0)
+- ✗ Fresh pod install with cmake
+**Next**: iOS Specialist to investigate direct Xcode build or physical device testing
 
 ### TypeScript Errors (11 non-blocking remaining)
 1. `useProactiveVoice.ts` - Array type narrowing
