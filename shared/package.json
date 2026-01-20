@@ -21,9 +21,11 @@
     "react-native": "^0.70.0"
   },
   "dependencies": {
-    "@simplewebauthn/browser": "^13.2.2",
     "axios": "^1.6.0",
     "eventemitter3": "^5.0.0"
+  },
+  "optionalDependencies": {
+    "@simplewebauthn/browser": "^13.2.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
