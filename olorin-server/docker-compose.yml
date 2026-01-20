@@ -1,0 +1,254 @@
+# =============================================================================
+# Olorin Platform - Local Development Docker Compose
+# =============================================================================
+# Usage:
+#   docker-compose up -d          # Start all services
+#   docker-compose up backend     # Start backend only
+#   docker-compose logs -f        # Follow logs
+#   docker-compose down           # Stop all services
+#   docker-compose down -v        # Stop and remove volumes
+#
+# Environment:
+#   Copy .env.example to .env and configure values before starting.
+#
+# =============================================================================
+
+version: '3.8'
+
+services:
+  # ===========================================================================
+  # MongoDB - Primary Database
+  # ===========================================================================
+  mongodb:
+    image: mongo:7
+    container_name: olorin-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME:-olorin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD:-olorin_dev}
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE:-olorin}
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - olorin-network
+
+  # ===========================================================================
+  # Redis - Caching and Rate Limiting
+  # ===========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: olorin-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - olorin-network
+
+  # ===========================================================================
+  # PostgreSQL - Relational Database (Optional)
+  # ===========================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: olorin-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-olorin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-olorin_dev}
+      POSTGRES_DB: ${POSTGRES_DATABASE:-olorin}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-olorin}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - olorin-network
+    profiles:
+      - postgres  # Only start with: docker-compose --profile postgres up
+
+  # ===========================================================================
+  # Backend API - FastAPI Application
+  # ===========================================================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: olorin-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8090}:8090"
+      - "9090:9090"  # Metrics port
+    environment:
+      # Application
+      APP_ENV: local
+      BACKEND_PORT: 8090
+      DEBUG: "true"
+
+      # MongoDB
+      MONGODB_URI: mongodb://${MONGODB_USERNAME:-olorin}:${MONGODB_PASSWORD:-olorin_dev}@mongodb:27017/${MONGODB_DATABASE:-olorin}?authSource=admin
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-olorin}
+      ENABLE_MONGODB: "true"
+
+      # Redis
+      REDIS_URL: redis://redis:6379/0
+      REDIS_ENABLE: "true"
+
+      # PostgreSQL (if used)
+      DATABASE_PROVIDER: mongodb
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DATABASE: ${POSTGRES_DATABASE:-olorin}
+      POSTGRES_USER: ${POSTGRES_USER:-olorin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-olorin_dev}
+
+      # Authentication
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-dev-jwt-secret-change-in-production}
+      JWT_EXPIRY_HOURS: 24
+
+      # CORS
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8090
+
+      # Feature Flags
+      ENABLE_REAL_TIME_UPDATES: "true"
+      ENABLE_AI_AGENTS: "true"
+      ENABLE_METRICS: "true"
+
+      # B2B Platform (disabled by default in local)
+      OLORIN_B2B_ENABLED: ${OLORIN_B2B_ENABLED:-false}
+      OLORIN_B2B_JWT_SECRET: ${OLORIN_B2B_JWT_SECRET:-}
+      OLORIN_B2B_API_KEY_SALT: ${OLORIN_B2B_API_KEY_SALT:-}
+
+      # External Services (configure in .env)
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+
+    volumes:
+      - ./app:/app/app:ro  # Mount app directory for live reload (read-only for safety)
+      - ./config:/app/config:ro
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - olorin-network
+
+  # ===========================================================================
+  # Frontend - React Application (Optional)
+  # ===========================================================================
+  frontend:
+    build:
+      context: ../olorin-front
+      dockerfile: Dockerfile.dev
+    container_name: olorin-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      REACT_APP_API_URL: http://localhost:8090
+      REACT_APP_WS_URL: ws://localhost:8090
+    volumes:
+      - ../olorin-front/src:/app/src:ro
+      - ../olorin-front/public:/app/public:ro
+    depends_on:
+      - backend
+    networks:
+      - olorin-network
+    profiles:
+      - frontend  # Only start with: docker-compose --profile frontend up
+
+  # ===========================================================================
+  # Prometheus - Metrics Collection (Optional)
+  # ===========================================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: olorin-prometheus
+    restart: unless-stopped
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - olorin-network
+    profiles:
+      - monitoring
+
+  # ===========================================================================
+  # Grafana - Metrics Visualization (Optional)
+  # ===========================================================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: olorin-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - olorin-network
+    profiles:
+      - monitoring
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  olorin-network:
+    driver: bridge
+    name: olorin-network
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  mongodb_data:
+    name: olorin-mongodb-data
+  mongodb_config:
+    name: olorin-mongodb-config
+  redis_data:
+    name: olorin-redis-data
+  postgres_data:
+    name: olorin-postgres-data
+  prometheus_data:
+    name: olorin-prometheus-data
+  grafana_data:
+    name: olorin-grafana-data

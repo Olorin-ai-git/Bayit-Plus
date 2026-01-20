@@ -4,16 +4,14 @@
 # Date: 2026-01-15
 
 steps:
-  # Note: Tests and quality checks are skipped in deployment builds for speed
-  # Run these in a separate CI/CD pipeline (GitHub Actions)
-  # Docker build handles all dependency installation internally
+  # Note: Tests and quality checks run in GitHub Actions CI
+  # Cloud Build focuses on Docker build and deployment
 
   # ======================================
-  # Step 1: Build Docker image
+  # Step 1: Build Docker image with cache optimization
   # ======================================
   - name: 'gcr.io/cloud-builders/docker'
     id: 'build-image'
-    dir: 'olorin-server'
     args:
       - 'build'
       - '-t'
@@ -46,7 +44,6 @@ steps:
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'deploy-cloud-run'
     entrypoint: 'bash'
-    dir: 'olorin-server'
     args:
       - '-c'
       - |

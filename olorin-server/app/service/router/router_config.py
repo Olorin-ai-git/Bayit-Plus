@@ -112,7 +112,34 @@ def _include_core_routers(app: FastAPI) -> None:
     app.include_router(financial_router)  # Financial Analysis API (Feature 025)
     app.include_router(monthly_analysis_router)  # Monthly Analysis API (Feature: monthly-frontend-trigger)
 
+    # B2B Partner Platform routers (separate auth from internal)
+    _include_b2b_routers(app)
+
     logger.info("All core routers have been included (WebSocket disabled)")
+
+
+def _include_b2b_routers(app: FastAPI) -> None:
+    """Include B2B Partner Platform routers."""
+    import os
+
+    # Check if B2B platform is enabled
+    b2b_enabled = os.getenv("OLORIN_B2B_ENABLED", "false").lower() == "true"
+
+    if not b2b_enabled:
+        logger.info("B2B Partner Platform disabled (set OLORIN_B2B_ENABLED=true to enable)")
+        return
+
+    try:
+        from app.router.b2b import configure_b2b_routes
+
+        b2b_router = configure_b2b_routes()
+        app.include_router(b2b_router)
+
+        logger.info("B2B Partner Platform routers included successfully")
+    except ImportError as e:
+        logger.warning(f"Failed to import B2B routers: {e}")
+    except Exception as e:
+        logger.error(f"Failed to configure B2B routers: {e}")
 
 
 def _register_error_handlers(app: FastAPI) -> None:
