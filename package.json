@@ -71,7 +71,6 @@
     "@picovoice/porcupine-web": "^4.0.0",
     "@picovoice/web-voice-processor": "^4.0.9",
     "@simplewebauthn/browser": "^13.2.2",
-    "@simplewebauthn/types": "^13.0.0",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-vector-icons": "^10.3.0",
     "vosk-browser": "^0.0.8"

@@ -1,0 +1,34 @@
+{
+  "name": "@olorin/shared-services",
+  "version": "1.0.0",
+  "description": "Shared service utilities for the Olorin.ai ecosystem",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "axios": ">=1.0.0"
+  },
+  "devDependencies": {
+    "axios": "^1.7.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.0"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
