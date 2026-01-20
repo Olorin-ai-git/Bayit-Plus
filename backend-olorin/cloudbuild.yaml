@@ -18,12 +18,12 @@ steps:
           "olorin-partner-api-key-salt"
         )
 
-        for secret in "${REQUIRED_SECRETS[@]}"; do
-          if ! gcloud secrets describe $secret --project=$PROJECT_ID &>/dev/null; then
-            echo "ERROR: Required secret $secret not found"
+        for secret in "$${REQUIRED_SECRETS[@]}"; do
+          if ! gcloud secrets describe $$secret --project=$$PROJECT_ID &>/dev/null; then
+            echo "ERROR: Required secret $$secret not found"
             exit 1
           fi
-          echo "✓ Secret $secret exists"
+          echo "✓ Secret $$secret exists"
         done
         echo "All required secrets validated"
     id: "validate-secrets"
