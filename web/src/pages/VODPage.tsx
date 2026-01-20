@@ -39,15 +39,18 @@ export default function VODPage() {
   const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [content, setContent] = useState<ContentItem[]>([]);
+  const [movies, setMovies] = useState<ContentItem[]>([]);
+  const [series, setSeries] = useState<ContentItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(
     searchParams.get('category') || 'all'
   );
   const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
+  const [moviesPage, setMoviesPage] = useState(1);
+  const [seriesPage, setSeriesPage] = useState(1);
+  const [totalMovies, setTotalMovies] = useState(0);
+  const [totalSeries, setTotalSeries] = useState(0);
   const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false);
   const { width } = useWindowDimensions();
 
@@ -57,37 +60,38 @@ export default function VODPage() {
   const numColumns = width >= 1280 ? 6 : width >= 1024 ? 5 : width >= 768 ? 4 : width >= 640 ? 3 : 2;
   const itemsPerPage = 24; // Reduced from 100 for better UX and smaller batches
 
-  // Filter and separate movies and series
-  const { movies, series, filteredTotal } = useMemo(() => {
-    const movies: ContentItem[] = [];
-    const series: ContentItem[] = [];
-
-    // Filter by search query
-    let filtered = searchQuery.trim()
-      ? content.filter(item =>
-          item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.category?.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      : content;
-
-    // Filter by subtitles if enabled
-    if (showOnlyWithSubtitles) {
+  // Filter movies and series by search query and subtitle filter
+  const filteredMovies = useMemo(() => {
+    let filtered = movies;
+    if (searchQuery.trim()) {
       filtered = filtered.filter(item =>
-        item.available_subtitle_languages &&
-        item.available_subtitle_languages.length > 0
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.category?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
+    if (showOnlyWithSubtitles) {
+      filtered = filtered.filter(item =>
+        item.available_subtitle_languages && item.available_subtitle_languages.length > 0
+      );
+    }
+    return filtered;
+  }, [movies, searchQuery, showOnlyWithSubtitles]);
 
-    filtered.forEach(item => {
-      if (item.is_series || item.type === 'series') {
-        series.push({ ...item, type: 'series' });
-      } else {
-        movies.push({ ...item, type: 'movie' });
-      }
-    });
-
-    return { movies, series, filteredTotal: filtered.length };
-  }, [content, searchQuery, showOnlyWithSubtitles]);
+  const filteredSeries = useMemo(() => {
+    let filtered = series;
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(item =>
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.category?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    if (showOnlyWithSubtitles) {
+      filtered = filtered.filter(item =>
+        item.available_subtitle_languages && item.available_subtitle_languages.length > 0
+      );
+    }
+    return filtered;
+  }, [series, searchQuery, showOnlyWithSubtitles]);
 
   // Combined useEffect to prevent duplicate API calls
   useEffect(() => {
@@ -95,52 +99,31 @@ export default function VODPage() {
 
     if (categoryChanged) {
       prevCategoryRef.current = selectedCategory;
-
-      // If category changed and we're not on page 1, reset to page 1
-      // This will trigger the effect again, which will then load content
-      if (page !== 1) {
-        setPage(1);
-        return;
-      }
+      setMoviesPage(1);
+      setSeriesPage(1);
     }
 
-    // Load content in these cases:
-    // 1. Category changed and page is already 1
-    // 2. Page changed (pagination navigation)
     loadContent();
-  }, [selectedCategory, page]);
+  }, [selectedCategory, moviesPage, seriesPage]);
 
   const loadContent = async () => {
     setLoading(true);
     try {
-      const [categoriesData, contentData] = await Promise.all([
+      const categoryParam = selectedCategory === 'all' ? undefined : selectedCategory;
+
+      const [categoriesData, moviesData, seriesData] = await Promise.all([
         contentService.getCategories(),
-        selectedCategory === 'all'
-          ? contentService.getAll({ page, limit: itemsPerPage })
-          : contentService.getByCategory(selectedCategory, { page, limit: itemsPerPage }),
+        contentService.getAllMovies({ page: moviesPage, limit: itemsPerPage, category_id: categoryParam }),
+        contentService.getAllSeries({ page: seriesPage, limit: itemsPerPage, category_id: categoryParam }),
       ]);
-      setCategories(categoriesData.categories);
-      const items = contentData.items || contentData.categories?.flatMap((c: any) => c.items) || [];
 
-      // Debug logging to check if thumbnails are present
-      logger.info(`VODPage: Loaded ${items.length} items. Total: ${contentData.total}`, 'VODPage');
+      setCategories(categoriesData.categories || []);
+      setMovies(moviesData.items || []);
+      setSeries(seriesData.items || []);
+      setTotalMovies(moviesData.total || 0);
+      setTotalSeries(seriesData.total || 0);
 
-      // Find Avatar specifically
-      const avatar = items.find((item: any) => item.title?.toLowerCase().includes('avatar'));
-      if (avatar) {
-        logger.info('Found Avatar:', 'VODPage', avatar);
-        logger.info(`Avatar has thumbnail: ${!!avatar.thumbnail}, value: ${avatar.thumbnail}`, 'VODPage');
-      } else {
-        logger.warn('Avatar not found in loaded items', 'VODPage');
-        logger.info('All titles:', 'VODPage', items.map((i: any) => i.title).slice(0, 10));
-      }
-
-      // Count how many items have thumbnails
-      const itemsWithThumbnails = items.filter((item: any) => item.thumbnail).length;
-      logger.info(`Items with thumbnails: ${itemsWithThumbnails} / ${items.length}`, 'VODPage');
-
-      setContent(items);
-      setTotalItems(contentData.total || 0);
+      logger.info(`VODPage: Loaded ${moviesData.items?.length || 0} movies and ${seriesData.items?.length || 0} series`, 'VODPage');
     } catch (error) {
       logger.error('Failed to load content', 'VODPage', error);
     } finally {
@@ -159,9 +142,8 @@ export default function VODPage() {
     setSearchParams(searchParams);
   };
 
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const showingFrom = (page - 1) * itemsPerPage + 1;
-  const showingTo = Math.min(page * itemsPerPage, totalItems);
+  const moviesTotalPages = Math.ceil(totalMovies / itemsPerPage);
+  const seriesTotalPages = Math.ceil(totalSeries / itemsPerPage);
 
   const renderContentGrid = (items: ContentItem[], emptyMessage: string) => {
     if (items.length === 0) {
@@ -189,7 +171,7 @@ export default function VODPage() {
   };
 
   // Show full page loader on initial load
-  if (loading && content.length === 0) {
+  if (loading && movies.length === 0 && series.length === 0) {
     return (
       <View style={styles.container}>
         {/* Header */}
@@ -263,7 +245,7 @@ export default function VODPage() {
         </ScrollView>
 
         {/* Loading State for Pagination */}
-        {loading && content.length > 0 ? (
+        {loading && (movies.length > 0 || series.length > 0) ? (
           <View style={styles.grid}>
             {[...Array(12)].map((_, i) => (
               <View key={i} style={{ width: `${100 / numColumns}%`, padding: spacing.xs }}>
@@ -277,34 +259,74 @@ export default function VODPage() {
           <>
             {/* Movies Section */}
             <View style={styles.section}>
-            <View style={[styles.sectionHeader, { flexDirection }]}>
-              <Film size={24} color={colors.primary} />
-              <Text style={[styles.sectionTitle, { textAlign }]}>
-                {t('vod.movies')}
-              </Text>
-              <View style={styles.countBadge}>
-                <Text style={styles.countText}>{movies.length}</Text>
+              <View style={[styles.sectionHeader, { flexDirection }]}>
+                <Film size={24} color={colors.primary} />
+                <Text style={[styles.sectionTitle, { textAlign }]}>
+                  {t('vod.movies')}
+                </Text>
+                <View style={styles.countBadge}>
+                  <Text style={styles.countText}>{totalMovies}</Text>
+                </View>
               </View>
-            </View>
-            {renderContentGrid(movies, t('vod.noMovies'))}
+              {renderContentGrid(filteredMovies, t('vod.noMovies'))}
+              {/* Movies Pagination */}
+              {!searchQuery && moviesTotalPages > 1 && (
+                <View style={styles.sectionPagination}>
+                  <Pressable
+                    onPress={() => setMoviesPage(p => Math.max(1, p - 1))}
+                    disabled={moviesPage === 1}
+                    style={[styles.smallPageButton, moviesPage === 1 && styles.pageButtonDisabled]}
+                  >
+                    {isRTL ? <ChevronRight size={16} color={colors.text} /> : <ChevronLeft size={16} color={colors.text} />}
+                  </Pressable>
+                  <Text style={styles.pageText}>{moviesPage} / {moviesTotalPages}</Text>
+                  <Pressable
+                    onPress={() => setMoviesPage(p => Math.min(moviesTotalPages, p + 1))}
+                    disabled={moviesPage === moviesTotalPages}
+                    style={[styles.smallPageButton, moviesPage === moviesTotalPages && styles.pageButtonDisabled]}
+                  >
+                    {isRTL ? <ChevronLeft size={16} color={colors.text} /> : <ChevronRight size={16} color={colors.text} />}
+                  </Pressable>
+                </View>
+              )}
             </View>
 
             {/* Series Section */}
             <View style={styles.section}>
-            <View style={[styles.sectionHeader, { flexDirection }]}>
-              <Tv size={24} color={colors.secondary} />
-              <Text style={[styles.sectionTitle, { textAlign }]}>
-                {t('vod.series')}
-              </Text>
-              <View style={styles.countBadge}>
-                <Text style={styles.countText}>{series.length}</Text>
+              <View style={[styles.sectionHeader, { flexDirection }]}>
+                <Tv size={24} color={colors.secondary} />
+                <Text style={[styles.sectionTitle, { textAlign }]}>
+                  {t('vod.series')}
+                </Text>
+                <View style={styles.countBadge}>
+                  <Text style={styles.countText}>{totalSeries}</Text>
+                </View>
               </View>
-            </View>
-            {renderContentGrid(series, t('vod.noSeries'))}
+              {renderContentGrid(filteredSeries, t('vod.noSeries'))}
+              {/* Series Pagination */}
+              {!searchQuery && seriesTotalPages > 1 && (
+                <View style={styles.sectionPagination}>
+                  <Pressable
+                    onPress={() => setSeriesPage(p => Math.max(1, p - 1))}
+                    disabled={seriesPage === 1}
+                    style={[styles.smallPageButton, seriesPage === 1 && styles.pageButtonDisabled]}
+                  >
+                    {isRTL ? <ChevronRight size={16} color={colors.text} /> : <ChevronLeft size={16} color={colors.text} />}
+                  </Pressable>
+                  <Text style={styles.pageText}>{seriesPage} / {seriesTotalPages}</Text>
+                  <Pressable
+                    onPress={() => setSeriesPage(p => Math.min(seriesTotalPages, p + 1))}
+                    disabled={seriesPage === seriesTotalPages}
+                    style={[styles.smallPageButton, seriesPage === seriesTotalPages && styles.pageButtonDisabled]}
+                  >
+                    {isRTL ? <ChevronLeft size={16} color={colors.text} /> : <ChevronRight size={16} color={colors.text} />}
+                  </Pressable>
+                </View>
+              )}
             </View>
 
             {/* Empty State - when both are empty */}
-            {movies.length === 0 && series.length === 0 && (
+            {filteredMovies.length === 0 && filteredSeries.length === 0 && (
               <View style={styles.emptyState}>
                 <GlassCard style={styles.emptyCard}>
                   <Film size={64} color={colors.textMuted} />
@@ -312,44 +334,6 @@ export default function VODPage() {
                   <Text style={styles.emptyDescription}>{t('vod.emptyDescription')}</Text>
                 </GlassCard>
               </View>
-            )}
-
-            {/* Pagination Controls */}
-            {!searchQuery && totalPages > 1 && (
-              <GlassView style={styles.paginationContainer} intensity="medium">
-                <Pressable
-                  onPress={() => setPage(p => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  style={[styles.pageButton, page === 1 && styles.pageButtonDisabled]}
-                >
-                  {isRTL ? (
-                    <ChevronRight size={20} color={page === 1 ? colors.textMuted : colors.text} />
-                  ) : (
-                    <ChevronLeft size={20} color={page === 1 ? colors.textMuted : colors.text} />
-                  )}
-                </Pressable>
-
-                <View style={styles.pageInfo}>
-                  <Text style={styles.pageText}>
-                    {t('vod.pagination.page', 'Page')} {page} {t('vod.pagination.of', 'of')} {totalPages}
-                  </Text>
-                  <Text style={styles.pageSubtext}>
-                    {t('vod.pagination.showing', 'Showing')} {showingFrom}-{showingTo} {t('vod.pagination.outOf', 'of')} {totalItems}
-                  </Text>
-                </View>
-
-                <Pressable
-                  onPress={() => setPage(p => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                  style={[styles.pageButton, page === totalPages && styles.pageButtonDisabled]}
-                >
-                  {isRTL ? (
-                    <ChevronLeft size={20} color={page === totalPages ? colors.textMuted : colors.text} />
-                  ) : (
-                    <ChevronRight size={20} color={page === totalPages ? colors.textMuted : colors.text} />
-                  )}
-                </Pressable>
-              </GlassView>
             )}
           </>
         )}
@@ -519,12 +503,25 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   pageText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: colors.text,
   },
   pageSubtext: {
     fontSize: 13,
     color: colors.textMuted,
+  },
+  sectionPagination: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.md,
+    marginTop: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  smallPageButton: {
+    padding: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
 });

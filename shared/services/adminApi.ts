@@ -536,7 +536,38 @@ export interface Content {
   updated_at: string;
 }
 
+export interface CategoryFilter {
+  is_active?: boolean;
+  page?: number;
+  page_size?: number;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  name_en?: string;
+  slug: string;
+  description?: string;
+  thumbnail?: string;
+  order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
 export const adminContentService = {
+  // Category management
+  getCategories: (filters?: CategoryFilter): Promise<PaginatedResponse<Category>> =>
+    adminApi.get('/admin/categories', { params: filters }),
+
+  createCategory: (data: Partial<Category>): Promise<{ id: string; name: string; slug: string }> =>
+    adminApi.post('/admin/categories', data),
+
+  updateCategory: (categoryId: string, data: Partial<Category>): Promise<{ message: string; id: string }> =>
+    adminApi.patch(`/admin/categories/${categoryId}`, data),
+
+  deleteCategory: (categoryId: string): Promise<{ message: string }> =>
+    adminApi.delete(`/admin/categories/${categoryId}`),
+
   getContent: (filters?: ContentFilter): Promise<PaginatedResponse<Content>> =>
     adminApi.get('/admin/content', { params: filters }),
 

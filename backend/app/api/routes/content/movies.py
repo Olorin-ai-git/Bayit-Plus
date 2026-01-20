@@ -17,6 +17,52 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+@router.get("/movies")
+async def list_all_movies(
+    page: int = 1,
+    limit: int = 50,
+    category_id: Optional[str] = None,
+):
+    """Get all movies (non-series content)."""
+    skip = (page - 1) * limit
+
+    filters = {
+        "is_published": True,
+        "is_series": {"$ne": True},
+        "$or": [
+            {"series_id": None},
+            {"series_id": {"$exists": False}},
+            {"series_id": ""},
+        ],
+    }
+    if category_id:
+        filters["category_id"] = category_id
+
+    items = await Content.find(filters).skip(skip).limit(limit).to_list()
+    total = await Content.find(filters).count()
+
+    return {
+        "items": [
+            {
+                "id": str(item.id),
+                "title": item.title,
+                "description": item.description,
+                "thumbnail": item.thumbnail,
+                "backdrop": item.backdrop,
+                "category": item.category_name,
+                "year": item.year,
+                "duration": item.duration,
+                "type": "movie",
+                "is_series": False,
+            }
+            for item in items
+        ],
+        "total": total,
+        "page": page,
+        "limit": limit,
+    }
+
+
 @router.get("/movie/{movie_id}/debug")
 async def debug_movie(movie_id: str):
     """Debug endpoint to check database vs Beanie."""

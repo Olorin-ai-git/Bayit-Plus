@@ -78,12 +78,12 @@ export function getYouTubeThumbnailUrl(
  * Get thumbnail URL from a YouTube video URL
  *
  * @param url YouTube video URL
- * @param quality Thumbnail quality (default: maxresdefault for best quality)
+ * @param quality Thumbnail quality (default: hqdefault - always available)
  * @returns Thumbnail URL or null if not a valid YouTube URL
  */
 export function getYouTubeThumbnailFromUrl(
   url: string | undefined | null,
-  quality: YouTubeThumbnailQuality = 'maxresdefault'
+  quality: YouTubeThumbnailQuality = 'hqdefault'
 ): string | null {
   const videoId = extractYouTubeVideoId(url);
   if (!videoId) return null;
@@ -117,8 +117,10 @@ export function getContentPosterUrl(content: {
   }
 
   // Generate YouTube thumbnail if stream_url is YouTube
+  // Use hqdefault (480x360) which is always available for any YouTube video
+  // maxresdefault (1280x720) is not always available and causes 404 errors
   if (content.stream_url && isYouTubeUrl(content.stream_url)) {
-    const thumbnailUrl = getYouTubeThumbnailFromUrl(content.stream_url, 'maxresdefault');
+    const thumbnailUrl = getYouTubeThumbnailFromUrl(content.stream_url, 'hqdefault');
     if (thumbnailUrl) {
       return thumbnailUrl;
     }

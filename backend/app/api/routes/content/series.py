@@ -15,6 +15,53 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+@router.get("/series")
+async def list_all_series(
+    page: int = 1,
+    limit: int = 50,
+    category_id: Optional[str] = None,
+):
+    """Get all series (parent series, not episodes)."""
+    skip = (page - 1) * limit
+
+    filters = {
+        "is_published": True,
+        "is_series": True,
+        "$or": [
+            {"series_id": None},
+            {"series_id": {"$exists": False}},
+            {"series_id": ""},
+        ],
+    }
+    if category_id:
+        filters["category_id"] = category_id
+
+    items = await Content.find(filters).skip(skip).limit(limit).to_list()
+    total = await Content.find(filters).count()
+
+    return {
+        "items": [
+            {
+                "id": str(item.id),
+                "title": item.title,
+                "description": item.description,
+                "thumbnail": item.thumbnail,
+                "backdrop": item.backdrop,
+                "category": item.category_name,
+                "year": item.year,
+                "total_episodes": item.total_episodes,
+                "total_seasons": item.total_seasons,
+                "type": "series",
+                "is_series": True,
+            }
+            for item in items
+        ],
+        "total": total,
+        "page": page,
+        "limit": limit,
+    }
+
+
 @router.get("/series/{series_id}")
 async def get_series_details(
     series_id: str,

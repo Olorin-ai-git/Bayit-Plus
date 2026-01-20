@@ -149,13 +149,14 @@ app = FastAPI(
 # Middleware
 # ============================================
 
-# Security middleware - input sanitization
+# Security middleware - input sanitization (added first = innermost)
 from app.middleware.input_sanitization import InputSanitizationMiddleware
 
 app.add_middleware(InputSanitizationMiddleware, enable_logging=True)
 logger.info("Input sanitization middleware enabled")
 
-# CORS middleware
+# CORS middleware - added LAST = outermost (wraps all responses including errors)
+# This ensures CORS headers are added even to error responses
 cors_origins = settings.parsed_cors_origins
 logger.info(f"CORS Origins configured: {cors_origins}")
 app.add_middleware(
@@ -164,6 +165,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # ============================================

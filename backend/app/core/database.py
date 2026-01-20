@@ -5,7 +5,7 @@ from app.core.config import settings
 # Models
 from app.models.user import User
 from app.models.verification import VerificationToken
-from app.models.content import Content, Category, LiveChannel, EPGEntry, RadioStation, Podcast, PodcastEpisode
+from app.models.content import Content, LiveChannel, EPGEntry, RadioStation, Podcast, PodcastEpisode
 from app.models.content_taxonomy import ContentSection, SectionSubcategory, Genre, Audience
 from app.models.subscription import Subscription, Invoice
 from app.models.watchlist import WatchlistItem, WatchHistory, Conversation
@@ -65,7 +65,6 @@ async def connect_to_mongo():
             User,
             VerificationToken,
             Content,
-            Category,
             LiveChannel,
             EPGEntry,
             RadioStation,

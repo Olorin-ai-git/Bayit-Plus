@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions } from 'react-native';
+import { View, Text, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
-import { Play, Clock, User } from 'lucide-react';
+import { Play, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassCategoryPill } from '@bayit/shared/ui';
 import { JerusalemRow, TelAvivRow } from '@bayit/shared';
 import {
@@ -15,6 +15,7 @@ import {
   CommunityDirectory,
   ShabbatEveSection,
 } from '@/components/judaism';
+import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
 const CATEGORY_ICONS: Record<string, string> = {

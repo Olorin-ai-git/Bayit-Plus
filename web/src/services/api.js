@@ -119,11 +119,13 @@ const apiContentService = {
   syncContent: () => api.post('/podcasts/refresh'),
 
   // Series endpoints
+  getAllSeries: (params) => api.get('/content/series', { params }),
   getSeriesDetails: (seriesId) => api.get(`/content/series/${seriesId}`),
   getSeriesSeasons: (seriesId) => api.get(`/content/series/${seriesId}/seasons`),
   getSeasonEpisodes: (seriesId, seasonNum) => api.get(`/content/series/${seriesId}/season/${seasonNum}/episodes`),
 
   // Movie endpoints
+  getAllMovies: (params) => api.get('/content/movies', { params }),
   getMovieDetails: (movieId) => api.get(`/content/movie/${movieId}`),
 
   // Preview endpoint

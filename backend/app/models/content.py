@@ -186,7 +186,9 @@ class Content(Document):
             ("content_format", "is_published"),
             # Multi-field taxonomy queries
             ("section_ids", "audience_id", "is_published"),
-            ("section_ids", "genre_ids", "is_published"),
+            # Note: Cannot use ("section_ids", "genre_ids", "is_published") - MongoDB doesn't allow
+            # compound indexes with multiple array fields (parallel arrays)
+            ("genre_ids", "is_published"),
             # Core indexes
             "is_featured",
             "is_published",
@@ -212,6 +214,17 @@ class Content(Document):
 
 
 class Category(Document):
+    """
+    DEPRECATED: Use ContentSection from app.models.content_taxonomy instead.
+
+    This model is retained for backward compatibility with legacy scripts.
+    The 'categories' collection has been dropped from the database.
+    All category functionality has been migrated to the new taxonomy system:
+    - ContentSection (replaces Category)
+    - SectionSubcategory (for hierarchical categories like kids/judaism)
+    - Genre (for content genres)
+    - Audience (for age ratings)
+    """
     name: str
     name_en: Optional[str] = None
     name_es: Optional[str] = None

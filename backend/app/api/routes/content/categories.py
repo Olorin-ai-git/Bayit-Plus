@@ -1,15 +1,18 @@
 """
-Category endpoints.
+Category/Section endpoints.
+
+Migrated to use ContentSection taxonomy system.
+Legacy Category model is deprecated.
 """
 
-import asyncio
 import logging
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
 
 from app.api.routes.content.utils import convert_to_proxy_url, is_series_by_category
-from app.models.content import Category, Content
+from app.models.content import Content
+from app.models.content_taxonomy import ContentSection, SectionSubcategory
 from app.services.subtitle_enrichment import enrich_content_items_with_subtitles
 
 router = APIRouter()
@@ -19,17 +22,15 @@ logger = logging.getLogger(__name__)
 @router.get("/categories")
 async def get_categories():
     """
-    Get all content categories with localized names.
+    Get all content sections (categories).
 
-    BACKWARD COMPATIBILITY: Returns both legacy categories AND new sections merged.
+    Returns sections from the new taxonomy system.
     """
-    from app.models.content_taxonomy import ContentSection
-
-    categories = await Category.find(Category.is_active == True).sort("order").to_list()
-    sections = await ContentSection.find(ContentSection.is_active == True).sort("order").to_list()
+    sections = await ContentSection.find(
+        ContentSection.is_active == True
+    ).sort("order").to_list()
 
     result_items = []
-
     for section in sections:
         result_items.append({
             "id": str(section.id),
@@ -39,23 +40,65 @@ async def get_categories():
             "slug": section.slug,
             "thumbnail": section.thumbnail,
             "icon": section.icon,
-            "is_section": True,
+            "color": section.color,
+            "show_on_homepage": section.show_on_homepage,
+            "show_on_nav": section.show_on_nav,
+            "supports_subcategories": section.supports_subcategories,
         })
 
-    existing_slugs = {s.slug for s in sections}
-    for cat in categories:
-        if cat.slug not in existing_slugs:
-            result_items.append({
-                "id": str(cat.id),
-                "name": cat.name,
-                "name_en": cat.name_en,
-                "name_es": cat.name_es,
-                "slug": cat.slug,
-                "thumbnail": cat.thumbnail,
-                "is_section": False,
-            })
-
     return {"categories": result_items}
+
+
+@router.get("/sections")
+async def get_sections():
+    """
+    Get all content sections with subcategories.
+    """
+    sections = await ContentSection.find(
+        ContentSection.is_active == True
+    ).sort("order").to_list()
+
+    result = []
+    for section in sections:
+        section_id = str(section.id)
+        subcategories = []
+
+        if section.supports_subcategories:
+            subcats = await SectionSubcategory.find(
+                SectionSubcategory.section_id == section_id,
+                SectionSubcategory.is_active == True
+            ).sort("order").to_list()
+
+            subcategories = [{
+                "id": str(sub.id),
+                "slug": sub.slug,
+                "name": sub.name,
+                "name_en": sub.name_en,
+                "name_es": sub.name_es,
+            } for sub in subcats]
+
+        content_count = await Content.find({
+            "section_ids": section_id,
+            "is_published": True,
+        }).count()
+
+        result.append({
+            "id": section_id,
+            "slug": section.slug,
+            "name": section.name,
+            "name_en": section.name_en,
+            "name_es": section.name_es,
+            "icon": section.icon,
+            "color": section.color,
+            "thumbnail": section.thumbnail,
+            "show_on_homepage": section.show_on_homepage,
+            "show_on_nav": section.show_on_nav,
+            "supports_subcategories": section.supports_subcategories,
+            "subcategories": subcategories,
+            "content_count": content_count,
+        })
+
+    return {"sections": result}
 
 
 @router.get("/category/{category_id}")
@@ -64,25 +107,29 @@ async def get_by_category(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
 ):
-    """Get content by category (accepts ID or slug)."""
+    """
+    Get content by section (accepts ID or slug).
+
+    Uses new taxonomy system with section_ids field.
+    """
     skip = (page - 1) * limit
 
-    category = None
+    section = None
     try:
-        category = await Category.get(category_id)
+        section = await ContentSection.get(category_id)
     except Exception:
         pass
 
-    if not category:
-        category = await Category.find_one(Category.slug == category_id)
+    if not section:
+        section = await ContentSection.find_one(ContentSection.slug == category_id)
 
-    if not category:
-        raise HTTPException(status_code=404, detail="Category not found")
+    if not section:
+        raise HTTPException(status_code=404, detail="Section not found")
 
-    category_obj_id = str(category.id)
+    section_id = str(section.id)
 
     content_filter = {
-        "category_id": category_obj_id,
+        "section_ids": section_id,
         "is_published": True,
         "$or": [
             {"series_id": None},
@@ -97,7 +144,7 @@ async def get_by_category(
 
     result_items = []
     for item in items:
-        is_series = item.is_series or is_series_by_category(category.name)
+        is_series = item.is_series or is_series_by_category(section.name)
 
         item_data = {
             "id": str(item.id),
@@ -105,9 +152,9 @@ async def get_by_category(
             "thumbnail": item.thumbnail_data or item.thumbnail or item.poster_url,
             "duration": item.duration,
             "year": item.year,
-            "category": category.name,
-            "category_name_en": category.name_en,
-            "category_name_es": category.name_es,
+            "category": section.name,
+            "category_name_en": section.name_en,
+            "category_name_es": section.name_es,
             "type": "series" if is_series else "movie",
             "is_series": is_series,
         }
@@ -139,10 +186,95 @@ async def get_by_category(
 
     return {
         "category": {
-            "id": str(category.id),
-            "name": category.name,
-            "name_en": category.name_en,
-            "name_es": category.name_es,
+            "id": str(section.id),
+            "name": section.name,
+            "name_en": section.name_en,
+            "name_es": section.name_es,
+            "slug": section.slug,
+        },
+        "items": result_items,
+        "total": total,
+        "page": page,
+        "pages": (total + limit - 1) // limit,
+    }
+
+
+@router.get("/section/{slug}")
+async def get_section_content(
+    slug: str,
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=50),
+):
+    """
+    Get content for a specific section by slug.
+    """
+    return await get_by_category(slug, page, limit)
+
+
+@router.get("/section/{section_slug}/subcategory/{subcategory_slug}")
+async def get_subcategory_content(
+    section_slug: str,
+    subcategory_slug: str,
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=50),
+):
+    """
+    Get content for a specific subcategory.
+    """
+    skip = (page - 1) * limit
+
+    section = await ContentSection.find_one(ContentSection.slug == section_slug)
+    if not section:
+        raise HTTPException(status_code=404, detail="Section not found")
+
+    subcategory = await SectionSubcategory.find_one(
+        SectionSubcategory.section_id == str(section.id),
+        SectionSubcategory.slug == subcategory_slug,
+    )
+    if not subcategory:
+        raise HTTPException(status_code=404, detail="Subcategory not found")
+
+    subcategory_id = str(subcategory.id)
+
+    content_filter = {
+        "subcategory_ids": subcategory_id,
+        "is_published": True,
+        "$or": [
+            {"series_id": None},
+            {"series_id": {"$exists": False}},
+            {"series_id": ""},
+        ],
+    }
+
+    items = await Content.find(content_filter).skip(skip).limit(limit).to_list()
+    total = await Content.find(content_filter).count()
+
+    result_items = []
+    for item in items:
+        result_items.append({
+            "id": str(item.id),
+            "title": item.title,
+            "thumbnail": item.thumbnail_data or item.thumbnail or item.poster_url,
+            "duration": item.duration,
+            "year": item.year,
+            "type": "series" if item.is_series else "movie",
+            "is_series": item.is_series,
+        })
+
+    result_items = await enrich_content_items_with_subtitles(result_items)
+
+    return {
+        "section": {
+            "id": str(section.id),
+            "name": section.name,
+            "name_en": section.name_en,
+            "slug": section.slug,
+        },
+        "subcategory": {
+            "id": subcategory_id,
+            "name": subcategory.name,
+            "name_en": subcategory.name_en,
+            "slug": subcategory.slug,
         },
         "items": result_items,
         "total": total,

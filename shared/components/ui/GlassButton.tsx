@@ -64,7 +64,7 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
 
   const variantStyles: Record<ButtonVariant, ViewStyle> = {
     primary: {
-      backgroundColor: 'rgba(147, 51, 234, 0.8)', // purple-600/80
+      backgroundColor: 'transparent', //rgba(147, 51, 234, 0.8)', // purple-600/80
       borderWidth: 2,
       borderColor: 'rgba(126, 34, 206, 0.6)', // purple-700/60
       // @ts-ignore - Web CSS
