@@ -122,6 +122,17 @@ export const cultureService = isDemo ? demoCultureService : apiCultureService;
 // Security services - No demo mode (requires real auth)
 export { securityService };
 
+// Passkey services - No demo mode (requires real auth)
+export { passkeyService, checkPasskeySupport } from './passkeyServices';
+export type {
+  PasskeyCredential,
+  RegistrationOptionsResponse,
+  AuthenticationOptionsResponse,
+  AuthenticationResult,
+  QRStatus,
+  SessionStatus,
+} from './passkeyServices';
+
 // Re-export API services for direct access
 export {
   apiAuthService,

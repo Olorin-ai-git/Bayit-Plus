@@ -54,6 +54,15 @@ from app.models.kids_content import KidsContentSource
 from app.models.youngsters_content import YoungstersContentSource
 from app.models.family_controls import FamilyControls
 from app.services.mcp_content_discovery import ContentDiscoveryQueue
+# Olorin.ai Platform models
+from app.models.integration_partner import (
+    IntegrationPartner,
+    UsageRecord,
+    DubbingSession,
+    WebhookDelivery,
+)
+from app.models.content_embedding import ContentEmbedding, RecapSession
+from app.models.cultural_reference import CulturalReference
 
 
 class Database:
@@ -185,6 +194,14 @@ async def connect_to_mongo():
             FamilyControls,
             # MCP Content Discovery models
             ContentDiscoveryQueue,
+            # Olorin.ai Platform models
+            IntegrationPartner,
+            UsageRecord,
+            DubbingSession,
+            WebhookDelivery,
+            ContentEmbedding,
+            RecapSession,
+            CulturalReference,
         ],
     )
     print(f"Connected to MongoDB: {settings.MONGODB_DB_NAME}")

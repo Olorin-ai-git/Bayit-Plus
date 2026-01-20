@@ -8,9 +8,10 @@ import asyncio
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Request
 
 from app.api.routes.content.utils import convert_to_proxy_url, is_series_by_category
+from app.core.security import get_passkey_session
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
 from app.services.subtitle_enrichment import enrich_content_items_with_subtitles
@@ -19,22 +20,68 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+def build_visibility_filter(has_passkey_access: bool) -> dict:
+    """
+    Build a MongoDB filter for content visibility based on passkey access.
+
+    Content visibility rules:
+    - "public": Always visible
+    - "private": Hidden from discovery (direct link only)
+    - "passkey_protected": Visible only with valid passkey session,
+      OR if requires_subscription is "none" (free content)
+    """
+    if has_passkey_access:
+        # User has passkey access - show public and passkey_protected content
+        return {
+            "$or": [
+                {"visibility_mode": {"$in": ["public", None]}},
+                {"visibility_mode": "passkey_protected"},
+                # Null/missing visibility_mode treated as public
+                {"visibility_mode": {"$exists": False}},
+            ]
+        }
+    else:
+        # No passkey access - show only public content and free content
+        return {
+            "$or": [
+                {"visibility_mode": {"$in": ["public", None]}},
+                {"visibility_mode": {"$exists": False}},
+                # Free content is always visible regardless of visibility_mode
+                {"requires_subscription": "none"},
+            ]
+        }
+
+
 @router.get("/all")
 async def get_all_content(
+    request: Request,
     page: int = Query(1, ge=1),
     limit: int = Query(100, ge=1, le=200),
 ):
     """Get all published content (movies and series, excluding episodes)."""
     skip = (page - 1) * limit
 
+    # Check if user has passkey access for protected content
+    passkey_session = await get_passkey_session(request)
+    has_passkey = passkey_session is not None
+    visibility_filter = build_visibility_filter(has_passkey)
+
+    # Build filter combining series exclusion and visibility rules
     content_filter = {
-        "is_published": True,
-        "$or": [
-            {"series_id": None},
-            {"series_id": {"$exists": False}},
-            {"series_id": ""},
-        ],
-        "is_quality_variant": {"$ne": True},
+        "$and": [
+            {"is_published": True},
+            {"is_quality_variant": {"$ne": True}},
+            # Exclude episodes (only show movies and series)
+            {
+                "$or": [
+                    {"series_id": None},
+                    {"series_id": {"$exists": False}},
+                    {"series_id": ""},
+                ]
+            },
+            # Apply visibility filter
+            visibility_filter,
+        ]
     }
 
     async def get_content():
@@ -135,6 +182,7 @@ async def sync_all_content():
 
 @router.post("/search")
 async def search_content(
+    request: Request,
     query: str,
     type: Optional[str] = None,
     page: int = Query(1, ge=1),
@@ -144,11 +192,21 @@ async def search_content(
     skip = (page - 1) * limit
     results = []
 
+    # Check if user has passkey access for protected content
+    passkey_session = await get_passkey_session(request)
+    has_passkey = passkey_session is not None
+    visibility_filter = build_visibility_filter(has_passkey)
+
     if not type or type == "vod":
-        vod_items = await Content.find(
-            {"$text": {"$search": query}},
-            Content.is_published == True,
-        ).limit(limit).to_list()
+        # Build search filter with visibility rules
+        search_filter = {
+            "$and": [
+                {"$text": {"$search": query}},
+                {"is_published": True},
+                visibility_filter,
+            ]
+        }
+        vod_items = await Content.find(search_filter).limit(limit).to_list()
 
         for item in vod_items:
             results.append({

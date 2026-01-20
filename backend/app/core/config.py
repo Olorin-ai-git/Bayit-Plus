@@ -427,6 +427,65 @@ class Settings(BaseSettings):
     CORRELATION_ID_HEADER: str = "X-Correlation-ID"
     REQUEST_TIMEOUT_WARNING_MS: int = 5000
 
+    # WebAuthn (Passkey) Configuration
+    # Relying Party ID - must match the domain where passkeys are created
+    # For production, this should be the main domain (e.g., "bayit.tv")
+    WEBAUTHN_RP_ID: str
+    # Relying Party Name - displayed to users during passkey creation
+    WEBAUTHN_RP_NAME: str
+    # Expected origin(s) - comma-separated list of allowed origins
+    # Example: "https://bayit.tv,https://www.bayit.tv"
+    WEBAUTHN_ORIGIN: str
+    # Session duration for passkey-authenticated sessions (default 7 days)
+    PASSKEY_SESSION_DURATION_DAYS: int = 7
+    # Challenge expiration time in seconds (default 5 minutes)
+    PASSKEY_CHALLENGE_EXPIRY_SECONDS: int = 300
+    # Maximum number of passkeys per user
+    PASSKEY_MAX_CREDENTIALS_PER_USER: int = 10
+
+    # ============================================
+    # OLORIN.AI PLATFORM CONFIGURATION
+    # ============================================
+
+    # Pinecone Vector Database (Phase 3)
+    PINECONE_API_KEY: str = ""
+    PINECONE_ENVIRONMENT: str = "us-east-1-aws"
+    PINECONE_INDEX_NAME: str = "olorin-content"
+
+    # Embeddings
+    EMBEDDING_MODEL: str = "text-embedding-3-small"
+    EMBEDDING_DIMENSIONS: int = 1536
+
+    # Realtime Dubbing (Phase 1)
+    DUBBING_MAX_CONCURRENT_SESSIONS: int = 100
+    DUBBING_SESSION_TIMEOUT_MINUTES: int = 120
+    DUBBING_TARGET_LATENCY_MS: int = 2000
+
+    # Recap Agent (Phase 5)
+    RECAP_MAX_CONTEXT_TOKENS: int = 8000
+    RECAP_WINDOW_DEFAULT_MINUTES: int = 15
+    RECAP_SUMMARY_MAX_TOKENS: int = 300
+
+    # Cultural Context (Phase 4)
+    CULTURAL_REFERENCE_CACHE_TTL_HOURS: int = 24
+    CULTURAL_DETECTION_MIN_CONFIDENCE: float = 0.7
+
+    # Partner API (Phase 2)
+    PARTNER_API_KEY_SALT: str = ""  # Required for API key hashing
+    PARTNER_DEFAULT_RATE_LIMIT_RPM: int = 60
+    PARTNER_WEBHOOK_TIMEOUT_SECONDS: float = 10.0
+
+    # Feature Flags (all disabled by default for gradual rollout)
+    OLORIN_DUBBING_ENABLED: bool = False
+    OLORIN_SEMANTIC_SEARCH_ENABLED: bool = False
+    OLORIN_CULTURAL_CONTEXT_ENABLED: bool = False
+    OLORIN_RECAP_ENABLED: bool = False
+
+    @property
+    def webauthn_origins(self) -> list[str]:
+        """Parse WebAuthn origins from comma-separated string."""
+        return [origin.strip() for origin in self.WEBAUTHN_ORIGIN.split(",") if origin.strip()]
+
     class Config:
         env_file = ".env"
         case_sensitive = True

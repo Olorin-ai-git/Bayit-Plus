@@ -1,6 +1,6 @@
 # Compatibilidad de Dispositivos
 
-Verifica que tu dispositivo cumpla con los requisitos para ejecutar Bayit+ y disfrutar de todas las caracteristicas.
+Verifica que tu dispositivo cumpla con los requisitos para ejecutar Bayit+ y disfrutar de todas las funciones.
 
 ## Dispositivos Moviles
 
@@ -13,10 +13,10 @@ Verifica que tu dispositivo cumpla con los requisitos para ejecutar Bayit+ y dis
 | Almacenamiento | 100 MB libre (solo app) |
 | Almacenamiento con descargas | 2 GB+ recomendado |
 
-**Modelos Soportados:**
-- iPhone 6s y posteriores
-- iPad Air 2 y posteriores
-- iPad mini 4 y posteriores
+**Modelos Compatibles:**
+- iPhone 6s y mas reciente
+- iPad Air 2 y mas reciente
+- iPad mini 4 y mas reciente
 - iPad Pro (todos los modelos)
 
 ### Dispositivos Android
@@ -28,9 +28,9 @@ Verifica que tu dispositivo cumpla con los requisitos para ejecutar Bayit+ y dis
 | Almacenamiento | 100 MB libre (solo app) |
 | Google Play Services | Requerido |
 
-**Dispositivos Soportados:**
-- La mayoria de telefonos Android desde 2018 en adelante
-- La mayoria de tablets Android desde 2018 en adelante
+**Dispositivos Compatibles:**
+- La mayoria de telefonos Android de 2018 en adelante
+- La mayoria de tablets Android de 2018 en adelante
 - Dispositivos con procesadores ARM o ARM64
 
 ## Smart TVs
@@ -43,10 +43,10 @@ Verifica que tu dispositivo cumpla con los requisitos para ejecutar Bayit+ y dis
 | Modelo | Apple TV HD (4ta gen) o posterior |
 | Almacenamiento | 50 MB libre |
 
-**Caracteristicas:**
-- Soporte 4K HDR en Apple TV 4K
-- Soporte Dolby Atmos
-- Control por voz Siri
+**Funciones:**
+- Soporte para 4K HDR en Apple TV 4K
+- Soporte para Dolby Atmos
+- Control por voz con Siri
 
 ### Android TV
 
@@ -56,7 +56,7 @@ Verifica que tu dispositivo cumpla con los requisitos para ejecutar Bayit+ y dis
 | RAM | 1.5 GB minimo |
 | Almacenamiento | 100 MB libre |
 
-**Dispositivos Soportados:**
+**Dispositivos Compatibles:**
 - Sony Bravia (2018+)
 - Philips Android TVs
 - TCL Android TVs
@@ -70,7 +70,7 @@ Verifica que tu dispositivo cumpla con los requisitos para ejecutar Bayit+ y dis
 | Version de Fire OS | Fire OS 5.0 o posterior |
 | Modelo | Fire TV Stick (2da gen) o posterior |
 
-**Modelos Soportados:**
+**Modelos Compatibles:**
 - Fire TV Stick (2da gen+)
 - Fire TV Stick 4K
 - Fire TV Stick 4K Max
@@ -84,7 +84,7 @@ Verifica que tu dispositivo cumpla con los requisitos para ejecutar Bayit+ y dis
 | Version de Roku OS | Roku OS 9.0 o posterior |
 | Modelo | Roku Express (2017+) o posterior |
 
-**Modelos Soportados:**
+**Modelos Compatibles:**
 - Roku Express y Express+
 - Roku Streaming Stick
 - Roku Streaming Stick+
@@ -98,18 +98,18 @@ Verifica que tu dispositivo cumpla con los requisitos para ejecutar Bayit+ y dis
 | Requisito | Minimo |
 |-----------|--------|
 | Version de Tizen | Tizen 4.0 o posterior |
-| Ano del Modelo | 2018 o posterior |
+| Ano del Modelo | 2018 o mas reciente |
 
 ### LG Smart TV
 
 | Requisito | Minimo |
 |-----------|--------|
 | Version de webOS | webOS 4.0 o posterior |
-| Ano del Modelo | 2018 o posterior |
+| Ano del Modelo | 2018 o mas reciente |
 
 ## Navegadores Web
 
-### Navegadores Soportados
+### Navegadores Compatibles
 
 | Navegador | Version Minima |
 |-----------|----------------|
@@ -122,8 +122,8 @@ Verifica que tu dispositivo cumpla con los requisitos para ejecutar Bayit+ y dis
 
 - JavaScript habilitado
 - Cookies habilitadas
-- Aceleracion de hardware recomendada
-- Bloqueador de ventanas emergentes puede necesitar excepcion
+- Aceleracion por hardware recomendada
+- El bloqueador de ventanas emergentes puede necesitar excepcion
 
 ### Sistema Operativo
 
@@ -134,12 +134,12 @@ Verifica que tu dispositivo cumpla con los requisitos para ejecutar Bayit+ y dis
 | ChromeOS | Version 90+ |
 | Linux | Ubuntu 18.04+ o equivalente |
 
-## Disponibilidad de Caracteristicas por Dispositivo
+## Disponibilidad de Funciones por Dispositivo
 
 ### Soporte de Calidad de Video
 
-| Dispositivo | Calidad Max | HDR | Dolby Vision |
-|-------------|-------------|-----|--------------|
+| Dispositivo | Calidad Maxima | HDR | Dolby Vision |
+|-------------|----------------|-----|--------------|
 | iPhone | 4K | Si | Si |
 | iPad | 4K | Si | Si |
 | Android | 4K | Depende del dispositivo | Depende del dispositivo |
@@ -154,19 +154,19 @@ Verifica que tu dispositivo cumpla con los requisitos para ejecutar Bayit+ y dis
 | Apple TV | Si | Si | No |
 | Fire TV | Si | Algunos modelos | Si |
 | Android TV | Si | Algunos modelos | Si |
-| Web | Solo Stereo | No | No |
+| Web | Solo estereo | No | No |
 
-### Soporte de Caracteristicas
+### Soporte de Funciones
 
-| Caracteristica | Movil | Smart TV | Web |
-|----------------|-------|----------|-----|
+| Funcion | Movil | Smart TV | Web |
+|---------|-------|----------|-----|
 | Descargas | Si | No | No |
-| Control por Voz | Si | Control remoto | Si |
+| Control por Voz | Si | Control remoto del dispositivo | Si |
 | Picture-in-Picture | Si | No | Si |
 | AirPlay | Solo iOS | No | No |
-| Chromecast | Si | Incorporado | Si |
+| Chromecast | Si | Integrado | Si |
 
-## Verificar Tu Dispositivo
+## Verificar tu Dispositivo
 
 ### Verificar Compatibilidad
 
@@ -178,18 +178,18 @@ Verifica que tu dispositivo cumpla con los requisitos para ejecutar Bayit+ y dis
 ### Dispositivo No Listado
 
 Si tu dispositivo no esta listado:
-- Puede funcionar igualmente si cumple los requisitos
+- Aun puede funcionar si cumple los requisitos
 - Intenta descargar la app para probar
-- Consulta nuestro sitio web para la lista de compatibilidad mas reciente
-- Contacta soporte para preguntas especificas de dispositivos
+- Revisa nuestro sitio web para la lista de compatibilidad mas reciente
+- Contacta a soporte para preguntas sobre dispositivos especificos
 
-## Actualizar Tu Dispositivo
+## Actualizar tu Dispositivo
 
 ### iOS/iPadOS
 
 1. Ve a Configuracion > General > Actualizacion de Software
 2. Descarga e instala las actualizaciones disponibles
-3. Reinicia el dispositivo despues de la actualizacion
+3. Reinicia el dispositivo despues de actualizar
 
 ### Android
 
@@ -199,13 +199,13 @@ Si tu dispositivo no esta listado:
 
 ### Smart TV
 
-1. Ve a Configuracion del TV > Sistema > Actualizacion de Software
+1. Ve a Configuracion de TV > Sistema > Actualizacion de Software
 2. Busca actualizaciones
 3. Sigue las instrucciones en pantalla
 
 ## Contactar Soporte
 
 Para preguntas de compatibilidad:
-1. **En la App**: Configuracion > Ayuda > Compatibilidad de Dispositivos
-2. **Web**: bayitplus.com/devices
+1. **En la App:** Configuracion > Ayuda > Compatibilidad de Dispositivos
+2. **Web:** bayitplus.com/devices
 3. Incluye el modelo de tu dispositivo y version del SO

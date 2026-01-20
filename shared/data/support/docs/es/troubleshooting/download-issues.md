@@ -1,12 +1,12 @@
-# Solucion de Problemas de Descargas
+# Solucionar Problemas de Descarga
 
-Tienes problemas descargando contenido para ver sin conexion? Esta guia te ayuda a resolver fallas de descarga, problemas de almacenamiento y descargas expiradas.
+Tienes problemas para descargar contenido para ver sin conexion? Esta guia te ayuda a resolver fallas de descarga, problemas de almacenamiento y descargas expiradas.
 
 ## Fallas de Descarga
 
 ### La Descarga No Inicia
 
-1. **Verifica la conexion a internet** - Las descargas requieren conexion estable
+1. **Verifica la conexion a internet** - Las descargas requieren una conexion estable
 2. **Verifica la suscripcion** - Tu plan debe soportar descargas
 3. **Verifica los derechos del contenido** - No todos los titulos son descargables
 4. **Reinicia la app** - Cierra completamente y vuelve a abrir
@@ -31,7 +31,7 @@ Actualiza tu plan si las descargas no estan disponibles.
 
 ### Descarga Interrumpida
 
-Si una descarga se detiene a mitad del progreso:
+Si una descarga se detiene a mitad de progreso:
 1. Verifica la estabilidad de la conexion Wi-Fi
 2. Toca la descarga para reanudar
 3. Si esta atascada, cancela y reinicia
@@ -41,28 +41,28 @@ Si una descarga se detiene a mitad del progreso:
 
 ### Error de Almacenamiento Insuficiente
 
-Si ves "No hay suficiente espacio":
+Si ves "No hay suficiente almacenamiento":
 
 **iOS:**
 1. Ve a Configuracion > General > Almacenamiento del iPhone
 2. Revisa el uso de almacenamiento
 3. Elimina apps o contenido no utilizado
-4. Limpia el cache de Bayit+ si es necesario
+4. Limpia la cache de Bayit+ si es necesario
 
 **Android:**
 1. Ve a Configuracion > Almacenamiento
 2. Revisa el desglose de almacenamiento
 3. Limpia datos en cache
-4. Elimina archivos o apps no utilizadas
+4. Elimina archivos o apps no utilizados
 
-### Verificar Almacenamiento de Descargas
+### Verificar el Almacenamiento de Descargas
 
 1. Ve a **Configuracion** > **Descargas**
 2. Ve el **Almacenamiento Usado** por Bayit+
 3. Ve el desglose por tipo de contenido
 4. Elimina contenido para liberar espacio
 
-### Gestionar Contenido Descargado
+### Administrar Contenido Descargado
 
 1. Ve a **Descargas** en la app
 2. Revisa todos los titulos descargados
@@ -71,7 +71,7 @@ Si ves "No hay suficiente espacio":
 
 ### Calidad de Descarga y Tamano
 
-Mayor calidad significa archivos mas grandes:
+Mayor calidad significa mayor tamano de archivo:
 
 | Calidad | Tamano Aproximado (por hora) |
 |---------|------------------------------|
@@ -80,16 +80,16 @@ Mayor calidad significa archivos mas grandes:
 | Alta | 1.5 GB |
 | Ultra | 3 GB |
 
-### Cambiar Calidad de Descarga
+### Cambiar la Calidad de Descarga
 
 1. Ve a **Configuracion** > **Descargas**
 2. Selecciona **Calidad de Descarga**
 3. Elige el nivel de calidad preferido
-4. Menor calidad ahorra espacio de almacenamiento
+4. Una calidad menor ahorra espacio de almacenamiento
 
 ### Ubicacion de Descarga (Android)
 
-Mueve descargas a tarjeta SD:
+Mueve las descargas a la tarjeta SD:
 1. Ve a **Configuracion** > **Descargas**
 2. Toca **Ubicacion de Descarga**
 3. Selecciona **Tarjeta SD** si esta disponible
@@ -97,14 +97,14 @@ Mueve descargas a tarjeta SD:
 
 ## Descargas Expiradas
 
-### Entender la Expiracion de Descargas
+### Entendiendo la Expiracion de Descargas
 
 El contenido descargado expira despues de:
 - **30 dias** desde la fecha de descarga
 - **48 horas** despues de la primera reproduccion
 - O cuando termina la suscripcion
 
-### Verificar Estado de Expiracion
+### Verificar el Estado de Expiracion
 
 1. Ve a **Descargas**
 2. Ve la fecha de expiracion bajo cada titulo
@@ -113,16 +113,16 @@ El contenido descargado expira despues de:
 
 ### Renovar Descargas Expiradas
 
-Para ver contenido expirado nuevamente:
-1. Asegura conexion a internet
+Para ver contenido expirado de nuevo:
+1. Asegura la conexion a internet
 2. Elimina la descarga expirada
 3. Vuelve a descargar el contenido
 4. Comienza un nuevo periodo de expiracion
 
-### Descargas Despues de Terminar la Suscripcion
+### Descargas Despues de que Termina la Suscripcion
 
 Si tu suscripcion expira:
-- Todas las descargas se vuelven no reproducibles
+- Todas las descargas se vuelven irreproducibles
 - El contenido permanece en el dispositivo temporalmente
 - Reactiva la suscripcion para restaurar el acceso
 - O las descargas se eliminaran automaticamente
@@ -135,54 +135,54 @@ Los limites dependen de tu plan:
 - **Premium:** 25 titulos por dispositivo
 - **Familiar:** 25 titulos por dispositivo, por perfil
 
-### Limites de Dispositivos para Descargas
+### Limites de Dispositivo para Descargas
 
 Las descargas estan vinculadas a dispositivos especificos:
 - No se pueden transferir descargas entre dispositivos
 - Cada dispositivo tiene su propio limite
-- Eliminar un dispositivo elimina sus descargas
+- Eliminar un dispositivo borra sus descargas
 
-### Alcanzando el Limite de Descargas
+### Alcanzar el Limite de Descargas
 
 Si no puedes descargar mas:
 1. Ve a **Descargas**
-2. Elimina titulos que ya viste
-3. Elimina titulos que ya no necesitas
-4. Intenta descargar nuevamente
+2. Elimina titulos que ya hayas visto
+3. Elimina titulos que ya no necesites
+4. Intenta descargar de nuevo
 
-## Descarga No Reproduce
+## Descarga No Se Reproduce
 
-### Contenido Descargado No Reproduce
+### El Contenido Descargado No Se Reproduce
 
-1. **Verifica expiracion** - El contenido puede haber expirado
-2. **Verifica cuenta** - Asegurate de estar conectado
-3. **Verifica fecha/hora** - La fecha del dispositivo debe ser precisa
+1. **Verifica la expiracion** - El contenido puede haber expirado
+2. **Verifica la cuenta** - Asegurate de haber iniciado sesion
+3. **Verifica la fecha/hora** - La fecha del dispositivo debe ser precisa
 4. **Reinicia la app** - Cierra y vuelve a abrir Bayit+
 
 ### Error de Reproduccion en Contenido Descargado
 
 1. Elimina la descarga problematica
 2. Vuelve a descargar el contenido
-3. Asegura almacenamiento suficiente
-4. Intenta una configuracion de calidad diferente
+3. Asegura suficiente almacenamiento
+4. Prueba una configuracion de calidad diferente
 
-### Fecha/Hora del Dispositivo Incorrecta
+### Fecha/Hora Incorrecta del Dispositivo
 
-Las descargas se verifican contra el tiempo del dispositivo:
+Las descargas verifican contra la hora del dispositivo:
 1. Ve a Configuracion del dispositivo > Fecha y Hora
 2. Habilita **Configurar Automaticamente**
-3. Reinicia la app de Bayit+
-4. Intenta reproducir el contenido nuevamente
+3. Reinicia la app Bayit+
+4. Intenta reproducir el contenido de nuevo
 
 ## Descargas Solo por Wi-Fi
 
-### Habilitar Modo Solo Wi-Fi
+### Habilitar el Modo Solo Wi-Fi
 
-Para prevenir uso de datos moviles:
+Para prevenir el uso de datos moviles:
 1. Ve a **Configuracion** > **Descargas**
 2. Habilita **Solo Wi-Fi**
-3. Las descargas solo proceden con Wi-Fi
-4. Ahorra la asignacion de datos moviles
+3. Las descargas solo proceden por Wi-Fi
+4. Ahorra tu asignacion de datos moviles
 
 ### Descargar con Datos Moviles
 
@@ -190,11 +190,11 @@ Si necesitas descargar con datos moviles:
 1. Ve a **Configuracion** > **Descargas**
 2. Deshabilita **Solo Wi-Fi**
 3. Ten en cuenta el uso de datos
-4. Reduce la calidad para disminuir el consumo de datos
+4. Baja la calidad para reducir el consumo de datos
 
 ## Contactar Soporte
 
 Para problemas persistentes de descarga:
-1. **En la App**: Configuracion > Ayuda > Problema de Descarga
-2. **Por Voz**: "Hey Bayit, no puedo descargar"
+1. **En la App:** Configuracion > Ayuda > Problema de Descarga
+2. **Voz:** "Hey Bayit, no puedo descargar"
 3. Incluye: tipo de dispositivo, titulo del contenido y mensaje de error

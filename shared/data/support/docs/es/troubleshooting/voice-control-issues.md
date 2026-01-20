@@ -1,6 +1,6 @@
-# Solucion de Problemas de Control por Voz
+# Solucionar Problemas de Control por Voz
 
-Tienes problemas con los comandos de voz? Esta guia te ayuda a resolver problemas de permisos de microfono, reconocimiento de voz y deteccion de palabra de activacion.
+Tienes problemas con los comandos de voz? Esta guia te ayuda a resolver problemas de permisos de microfono, reconocimiento de voz y palabra de activacion.
 
 ## Permisos de Microfono
 
@@ -9,39 +9,39 @@ Tienes problemas con los comandos de voz? Esta guia te ayuda a resolver problema
 El control por voz requiere permiso de microfono para funcionar.
 
 **iOS:**
-1. Abre la Configuracion del dispositivo
+1. Abre Configuracion del dispositivo
 2. Desplazate hasta Bayit+
 3. Habilita el interruptor de **Microfono**
-4. Vuelve a Bayit+ e intenta nuevamente
+4. Regresa a Bayit+ e intenta de nuevo
 
 **Android:**
-1. Abre la Configuracion del dispositivo
+1. Abre Configuracion del dispositivo
 2. Ve a Apps > Bayit+
 3. Toca Permisos
 4. Habilita **Microfono**
-5. Vuelve a Bayit+ e intenta nuevamente
+5. Regresa a Bayit+ e intenta de nuevo
 
 **Navegador Web:**
 1. Haz clic en el icono de candado en la barra de direcciones
 2. Encuentra el permiso de Microfono
-3. Configura en **Permitir**
+3. Configuralo en **Permitir**
 4. Actualiza la pagina
 
 ### Error de Permiso Denegado
 
 Si ves "Acceso al microfono denegado":
 1. Sigue los pasos anteriores para tu dispositivo
-2. Reinicia la app de Bayit+
-3. Intenta el control por voz nuevamente
-4. Otorga permiso cuando se te solicite
+2. Reinicia la app Bayit+
+3. Intenta el control por voz de nuevo
+4. Otorga el permiso cuando se solicite
 
-### Microfono En Uso por Otra App
+### Microfono en Uso por Otra App
 
 Si otra app esta usando el microfono:
-1. Cierra otras apps con voz habilitada
+1. Cierra otras apps habilitadas para voz
 2. Finaliza cualquier llamada activa
 3. Detiene cualquier grabacion en progreso
-4. Vuelve a Bayit+ e intenta nuevamente
+4. Regresa a Bayit+ e intenta de nuevo
 
 ## Problemas de Reconocimiento de Voz
 
@@ -50,9 +50,9 @@ Si otra app esta usando el microfono:
 Si la app no entiende tus comandos:
 
 1. **Habla claramente** - Usa un ritmo de habla normal
-2. **Reduce el ruido de fondo** - Muevete a un area mas silenciosa
+2. **Reduce el ruido de fondo** - Muevete a un area mas tranquila
 3. **Acercate** - Habla hacia el microfono
-4. **Verifica el microfono** - Asegurate de que no este bloqueado
+4. **Revisa el microfono** - Asegurate de que no este bloqueado
 
 ### Mejorar la Precision del Reconocimiento
 
@@ -64,9 +64,9 @@ Si la app no entiende tus comandos:
 ### Idiomas Soportados
 
 El control por voz soporta:
-- Ingles (EE.UU., Reino Unido, Australiano)
+- Ingles (Estados Unidos, Reino Unido, Australiano)
 - Hebreo
-- Espanol (Latinoamerica, Europeo)
+- Espanol (Latinoamericano, Europeo)
 
 Selecciona tu idioma en Configuracion > Control por Voz.
 
@@ -74,16 +74,16 @@ Selecciona tu idioma en Configuracion > Control por Voz.
 
 | Comando | Accion |
 |---------|--------|
-| "Reproducir [titulo]" | Comienza a reproducir contenido |
-| "Pausar" | Pausa la reproduccion actual |
-| "Reanudar" | Reanuda la reproduccion |
-| "Retroceder 30 segundos" | Rebobina la reproduccion |
-| "Avanzar" | Salta hacia adelante |
-| "Activar subtitulos" | Habilita los subtitulos |
-| "Buscar [consulta]" | Busca contenido |
-| "Abrir configuracion" | Va a configuracion |
+| "Reproduce [titulo]" | Inicia la reproduccion del contenido |
+| "Pausa" | Pausa la reproduccion actual |
+| "Reanuda" | Reanuda la reproduccion |
+| "Retrocede 30 segundos" | Retrocede la reproduccion |
+| "Salta adelante" | Avanza |
+| "Activa los subtitulos" | Habilita los subtitulos |
+| "Busca [consulta]" | Busca contenido |
+| "Abre configuracion" | Va a configuracion |
 
-## Problemas con Palabra de Activacion
+## Problemas con la Palabra de Activacion
 
 ### Palabra de Activacion No Detectada
 
@@ -92,40 +92,40 @@ La palabra de activacion "Hey Bayit" activa el control por voz.
 Si la palabra de activacion no se detecta:
 1. Ve a **Configuracion** > **Control por Voz**
 2. Verifica que **Deteccion de Palabra de Activacion** este habilitada
-3. Confirma que el permiso de microfono este otorgado
+3. Verifica que el permiso de microfono este otorgado
 4. Asegurate de que el dispositivo no este en modo de ahorro de energia
 
-### Ajustar Sensibilidad de Palabra de Activacion
+### Ajustar Sensibilidad de la Palabra de Activacion
 
 1. Ve a **Configuracion** > **Control por Voz** > **Palabra de Activacion**
 2. Ajusta el nivel de **Sensibilidad**:
    - **Baja** - Menos activaciones falsas
-   - **Media** - Balanceada (recomendada)
-   - **Alta** - Mas receptiva
+   - **Media** - Equilibrado (recomendado)
+   - **Alta** - Mas receptivo
 
 ### Activaciones Falsas
 
 Si el control por voz se activa involuntariamente:
 1. Reduce la sensibilidad de la palabra de activacion
 2. Deshabilita la palabra de activacion y usa activacion por boton
-3. Verifica si hay palabras similares cerca
+3. Verifica si hay palabras con sonido similar cerca
 
-### Cambiar Metodo de Activacion
+### Cambiar el Metodo de Activacion
 
 Si prefieres no usar la palabra de activacion:
 1. Ve a **Configuracion** > **Control por Voz**
 2. Deshabilita **Deteccion de Palabra de Activacion**
 3. Usa el boton del microfono en su lugar
-4. Manteno presionado para hablar comandos
+4. Manten presionado para hablar los comandos
 
-## Problemas Especificos por Dispositivo
+## Problemas por Dispositivo
 
 ### Control por Voz en Smart TV
 
 **Apple TV:**
 1. Manten presionado el boton de Siri en el control remoto
-2. Habla tu comando
-3. La palabra de activacion no esta soportada en Apple TV
+2. Di tu comando
+3. La palabra de activacion no es compatible en Apple TV
 
 **Android TV:**
 1. Presiona el boton del microfono en el control remoto
@@ -137,30 +137,30 @@ Si prefieres no usar la palabra de activacion:
 2. Di "Alexa, abre Bayit+"
 3. Usa Alexa para comandos de voz
 
-### Control por Voz en Moviles
+### Control por Voz en Movil
 
 1. Toca el icono del microfono en la app
-2. O usa la palabra de activacion cuando la app este abierta
+2. O usa la palabra de activacion cuando la app esta abierta
 3. La escucha en segundo plano requiere que la app este activa
 
 ## Pasos de Solucion de Problemas
 
-### Control por Voz No Funciona
+### El Control por Voz No Funciona en Absoluto
 
-1. Reinicia la app de Bayit+
-2. Verifica los permisos del microfono
+1. Reinicia la app Bayit+
+2. Verifica los permisos de microfono
 3. Verifica la conexion a internet
 4. Actualiza la app a la ultima version
 5. Reinicia tu dispositivo
 
-### Control por Voz Funcionaba Antes
+### El Control por Voz Funcionaba Antes
 
-1. Verifica cambios recientes de permisos
-2. Confirma que no haya nuevas apps bloqueando el microfono
-3. Verifica actualizaciones del sistema
-4. Limpia el cache de la app e intenta nuevamente
+1. Verifica cambios recientes en permisos
+2. Verifica que no haya nuevas apps bloqueando el microfono
+3. Busca actualizaciones del sistema
+4. Limpia la cache de la app e intenta de nuevo
 
-### Probar Tu Microfono
+### Probar tu Microfono
 
 1. Ve a **Configuracion** > **Control por Voz**
 2. Toca **Probar Microfono**
@@ -187,5 +187,5 @@ Si prefieres no usar la palabra de activacion:
 ## Contactar Soporte
 
 Para problemas persistentes de control por voz:
-1. **En la App**: Configuracion > Ayuda > Problema de Control por Voz
+1. **En la App:** Configuracion > Ayuda > Problema de Control por Voz
 2. Incluye: tipo de dispositivo, comando intentado y mensaje de error

@@ -62,6 +62,11 @@ from app.models.jerusalem_content import (
     JerusalemContentAggregatedResponse,
     JerusalemFeaturedResponse,
 )
+from app.models.passkey_credential import (
+    PasskeyCredential,
+    PasskeySession,
+    PasskeyChallenge,
+)
 
 __all__ = [
     # User
@@ -141,4 +146,8 @@ __all__ = [
     "JerusalemContentSourceResponse",
     "JerusalemContentAggregatedResponse",
     "JerusalemFeaturedResponse",
+    # Passkey (WebAuthn)
+    "PasskeyCredential",
+    "PasskeySession",
+    "PasskeyChallenge",
 ]

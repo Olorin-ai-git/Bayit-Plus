@@ -1,109 +1,162 @@
-# Solucion de Problemas de Audio
+# Solucionar Problemas de Audio
 
-Si experimentas problemas con el sonido mientras usas Bayit+, esta guia te ayudara a diagnosticar y resolver los problemas mas comunes de audio.
+Experimentando problemas de sonido? Sigue estos pasos para diagnosticar y solucionar problemas de audio en Bayit+.
 
-## Sin Audio
+## Sin Sonido
 
-### Verificar Volumen del Dispositivo
-1. Asegurate de que el volumen de tu dispositivo no este en silencio
-2. Sube el volumen usando los botones fisicos o la configuracion
-3. Verifica que la salida de audio este configurada correctamente
+### Verificaciones Rapidas
 
-### Verificar Volumen de la App
-1. Durante la reproduccion, toca la pantalla para mostrar los controles
-2. Ajusta el control deslizante de volumen dentro de la app
-3. Verifica que el icono de silencio no este activo
+1. **Revisa el volumen del dispositivo** - Asegurate de que no este silenciado o en cero
+2. **Revisa el volumen de la app** - El control de volumen del reproductor puede estar bajo
+3. **Revisa las conexiones fisicas** - Audifonos, parlantes o cables HDMI
+4. **Prueba con diferente contenido** - Verifica que el problema afecte multiples titulos
 
-### Bluetooth y Audio Externo
-Si usas dispositivos Bluetooth o altavoces externos:
-1. Verifica que el dispositivo este conectado correctamente
-2. Confirma que el audio esta dirigido al dispositivo correcto
-3. Prueba desconectando y reconectando
-4. Verifica la bateria del dispositivo Bluetooth
+### Soluciones por Dispositivo
+
+**Movil (iOS/Android):**
+1. Verifica que el modo silencioso este desactivado
+2. Presiona el boton de subir volumen
+3. Verifica que el audio Bluetooth no este conectado a otro lugar
+4. Reinicia la app
+
+**Smart TV:**
+1. Revisa el volumen de la TV y el estado de silencio
+2. Verifica la salida de audio correcta (parlantes de TV vs barra de sonido)
+3. Revisa la configuracion de audio HDMI-CEC
+4. Prueba otras apps para verificar el sonido
+
+**Navegador Web:**
+1. Verifica que la pestana del navegador no este silenciada
+2. Haz clic dentro del reproductor de video
+3. Revisa el mezclador de volumen del sistema
+4. Prueba con un navegador diferente
+
+### Configuracion de Salida de Audio
+
+1. Ve a **Configuracion** > **Reproduccion** > **Salida de Audio**
+2. Verifica que el dispositivo de salida correcto este seleccionado
+3. Prueba con el boton **Prueba de Audio**
+4. Cambia entre opciones estereo y surround
 
 ## Audio Desincronizado
 
-### Audio Adelantado o Atrasado del Video
-1. **Reiniciar reproduccion**: Pausa y reanuda el video
-2. **Cerrar otras apps**: Reduce la carga del procesador
-3. **Cambiar calidad**: Reduce la calidad del video temporalmente
-4. **Reiniciar la app**: Cierra completamente y vuelve a abrir
-5. **Verificar conexion**: Una conexion lenta puede causar desincronizacion
+### Sintomas
 
-### Sincronizacion Persistente
-Si el problema persiste en contenido especifico:
-1. Intenta ver en otro dispositivo
-2. Reporta el problema a traves del Centro de Ayuda
-3. Incluye el titulo del contenido afectado
+- Las voces no coinciden con el movimiento de los labios
+- El sonido llega antes o despues del video
+- El retraso aumenta con el tiempo
 
-## Problemas de Calidad de Audio
+### Soluciones
 
-### Audio Distorsionado o Entrecortado
-1. Verifica tu velocidad de internet
-2. Reduce la calidad de video para liberar ancho de banda
-3. Usa conexion por cable en lugar de Wi-Fi si es posible
-4. Cierra otras aplicaciones que usen internet
+#### Soluciones Rapidas
+1. Pausa y reanuda la reproduccion
+2. Retrocede 10-15 segundos
+3. Reinicia la app completamente
+4. Prueba un titulo diferente
 
-### Volumen Bajo
-1. Verifica la configuracion de volumen del dispositivo y la app
-2. Prueba con auriculares para aislar el problema
-3. Algunos contenidos pueden tener audio original bajo
-4. Verifica la configuracion de ecualizador de tu dispositivo
+#### Ajustar el Retraso de Audio
+
+Si tu dispositivo soporta ajuste de sincronizacion de audio:
+1. Durante la reproduccion, toca el icono de **Configuracion**
+2. Selecciona **Sincronizacion de Audio**
+3. Ajusta el retraso en milisegundos
+4. Valores positivos retrasan el audio
+5. Valores negativos adelantan el audio
+
+#### Problemas de Sincronizacion por Red
+1. Baja la calidad de video para reducir buffering
+2. Verifica la estabilidad de tu conexion a internet
+3. Desconecta otros dispositivos que usen ancho de banda
+4. Prueba una conexion por cable si esta disponible
+
+#### Soluciones por Dispositivo
+
+**Smart TV con Barra de Sonido:**
+1. Revisa la configuracion de retraso de audio de la barra de sonido
+2. Deshabilita funciones de procesamiento de audio
+3. Usa conexion HDMI ARC si esta disponible
+4. Actualiza el firmware de la barra de sonido
+
+**Audifonos Bluetooth:**
+1. Bluetooth introduce un retraso natural
+2. Usa audifonos con cable para sincronizacion perfecta
+3. Verifica si hay soporte para codec de baja latencia
+4. Manten el dispositivo cerca de la fuente Bluetooth
+
+## Problemas con Sonido Surround
+
+### El Sonido Surround No Funciona
+
+1. Ve a **Configuracion** > **Reproduccion** > **Audio**
+2. Verifica que **Sonido Surround** este habilitado
+3. Verifica que tu equipo soporte surround
+4. Verifica que el contenido incluya pista de audio surround
+
+### Verificar Soporte del Equipo
+
+| Formato de Audio | Requisito |
+|------------------|-----------|
+| Dolby Digital 5.1 | Receptor o barra de sonido compatible |
+| Dolby Atmos | Equipo habilitado para Atmos |
+| DTS | Receptor compatible con DTS |
+
+### Configurar Sonido Surround
+
+1. Asegurate de que el receptor este en la entrada correcta
+2. Verifica el modo de decodificacion del receptor (Auto recomendado)
+3. Verifica todas las conexiones de parlantes
+4. Ejecuta la calibracion de parlantes del receptor
+
+### Disponibilidad de Contenido
+
+No todo el contenido soporta sonido surround:
+- Verifica los detalles del titulo para formatos de audio disponibles
+- Algunos titulos solo ofrecen estereo
+- El contenido antiguo puede tener opciones limitadas
 
 ## Pista de Audio Incorrecta
 
-### Cambiar Idioma de Audio
-1. Durante la reproduccion, toca los controles de reproduccion
-2. Selecciona el icono de configuracion de audio
-3. Elige el idioma de audio deseado
-4. El cambio se aplica inmediatamente
+### Cambiar el Idioma del Audio
 
-### Configurar Idioma Predeterminado
-1. Ve a Configuracion y selecciona Reproduccion
-2. Elige "Idioma de Audio Predeterminado"
-3. Selecciona tu preferencia
-4. El ajuste se aplica a contenido futuro
+1. Durante la reproduccion, toca el icono de **Audio**
+2. Selecciona el idioma preferido
+3. El audio cambia inmediatamente
+4. La configuracion se guarda para futuras reproducciones
 
-### Audio No Disponible
-Si el idioma de audio que buscas no esta disponible:
-- No todo el contenido tiene multiples pistas de audio
-- Verifica los detalles del contenido para idiomas disponibles
-- Considera usar subtitulos como alternativa
+### Descripcion de Audio
 
-## Problemas de Dolby y Audio Surround
+Si escuchas narracion de elementos visuales:
+1. Toca el icono de **Audio** durante la reproduccion
+2. Deshabilita **Descripcion de Audio**
+3. Selecciona la pista de audio estandar
+4. Revisa la configuracion de accesibilidad
 
-### Dolby Atmos No Funciona
-1. Verifica que tu dispositivo soporte Dolby Atmos
-2. Confirma que tu equipo de audio soporte Atmos
-3. Verifica la configuracion de audio de tu dispositivo
-4. No todo el contenido incluye Dolby Atmos
+### Configurar Audio Predeterminado
 
-### Audio 5.1 No Funciona
-1. Confirma que tu sistema de audio soporte 5.1
-2. Verifica las conexiones (HDMI para TV, etc.)
-3. Revisa la configuracion de audio de tu dispositivo
-4. Algunos dispositivos requieren configuracion manual
+1. Ve a **Configuracion** > **Reproduccion** > **Audio**
+2. Establece el **Idioma de Audio Preferido**
+3. Habilita **Descripcion de Audio** por defecto si es necesario
+4. La configuracion se aplica a todas las reproducciones futuras
 
-## Pasos de Solucion General
+## Audio con Interferencia o Distorsionado
 
-### Reiniciar la App
-1. Cierra completamente la app de Bayit+
-2. Espera unos segundos
-3. Abre la app nuevamente
-4. Intenta reproducir el contenido
+### Causas y Soluciones
 
-### Actualizar la App
-Asegurate de tener la ultima version:
-1. Ve a tu tienda de aplicaciones
-2. Busca Bayit+
-3. Actualiza si hay una nueva version disponible
+1. **Baja el volumen** - Distorsion a niveles altos
+2. **Revisa las conexiones** - Cables sueltos causan problemas
+3. **Actualiza controladores** - Para reproduccion en navegador web
+4. **Reduce la calidad** - Menor ancho de banda ayuda
 
-### Reiniciar el Dispositivo
-Un reinicio del dispositivo a menudo resuelve problemas de audio.
+### Solucion de Problemas de Hardware
+
+1. Prueba con diferentes audifonos o parlantes
+2. Prueba una salida de audio diferente
+3. Busca actualizaciones de software del dispositivo
+4. Reinicia tu equipo de audio
 
 ## Contactar Soporte
 
 Si los problemas de audio persisten:
-1. **En la App**: Configuracion > Ayuda > Problema de Audio
-2. **Por Voz**: "Hey Bayit, tengo un problema de sonido"
-3. Incluye: tipo de dispositivo, contenido afectado y descripcion del problema
+1. **En la App:** Configuracion > Ayuda > Problema de Audio
+2. **Voz:** "Hey Bayit, tengo un problema de audio"
+3. Incluye: tipo de dispositivo, titulo del contenido y descripcion del problema

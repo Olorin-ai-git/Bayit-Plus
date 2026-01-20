@@ -1,4 +1,4 @@
-# Solucion de Problemas de Pagos
+# Solucionar Problemas de Pago
 
 Tienes problemas con pagos, facturacion o cargos de suscripcion? Esta guia te ayuda a resolver problemas comunes de pago.
 
@@ -9,22 +9,22 @@ Tienes problemas con pagos, facturacion o cargos de suscripcion? Esta guia te ay
 | Razon | Solucion |
 |-------|----------|
 | Fondos insuficientes | Agrega fondos a la cuenta |
-| Tarjeta expirada | Actualiza los detalles de la tarjeta |
-| Detalles incorrectos | Vuelve a ingresar la informacion de la tarjeta |
+| Tarjeta expirada | Actualiza los datos de la tarjeta |
+| Datos incorrectos | Vuelve a ingresar la informacion de la tarjeta |
 | Bloqueo de seguridad del banco | Contacta a tu banco |
 | Restriccion internacional | Habilita compras internacionales |
 
 ### Resolver Pagos Rechazados
 
 1. Ve a **Configuracion** > **Cuenta** > **Metodo de Pago**
-2. Verifica que los detalles de la tarjeta sean correctos
-3. Confirma que la fecha de expiracion sea actual
+2. Verifica que los datos de la tarjeta sean correctos
+3. Revisa que la fecha de vencimiento este actualizada
 4. Confirma que la direccion de facturacion coincida con los registros del banco
-5. Intenta el pago nuevamente
+5. Intenta el pago de nuevo
 
 ### Contactar a tu Banco
 
-Si el pago continua fallando:
+Si el pago sigue fallando:
 1. Llama a la linea de soporte de tu banco
 2. Confirma que la tarjeta este activa
 3. Pregunta sobre transacciones bloqueadas
@@ -46,16 +46,16 @@ Si tu tarjeta no funciona:
 Si notas un cargo desconocido:
 1. Ve a **Configuracion** > **Cuenta** > **Historial de Facturacion**
 2. Revisa las transacciones recientes
-3. Verifica si hay mejoras de plan
-4. Confirma que no haya compras adicionales
+3. Verifica actualizaciones de plan
+4. Verifica que no haya compras adicionales
 
 ### Explicaciones Comunes de Cargos
 
 | Tipo de Cargo | Descripcion |
 |---------------|-------------|
 | Suscripcion mensual | Cargo regular del plan |
-| Mejora de plan | Costo prorrateado de actualizacion |
-| Compra de complemento | Canales o caracteristicas premium |
+| Actualizacion de plan | Costo prorrateado de actualizacion |
+| Compra de complemento | Canales o funciones premium |
 | Reactivacion | Despues de que termina el periodo de pausa |
 
 ### Disputar un Cargo
@@ -72,7 +72,7 @@ Si crees que un cargo es incorrecto:
 - Dentro de 7 dias del cargo: Reembolso completo disponible
 - Despues de 7 dias: Revision caso por caso
 - Compras en tienda de apps: Sigue el proceso de reembolso de la tienda
-- Contacta soporte para circunstancias especiales
+- Contacta a soporte para circunstancias especiales
 
 ## Problemas de Suscripcion
 
@@ -81,8 +81,8 @@ Si crees que un cargo es incorrecto:
 Si tu suscripcion muestra inactiva:
 1. Ve a **Configuracion** > **Cuenta** > **Suscripcion**
 2. Verifica el estado de la suscripcion
-3. Confirma que el pago fue exitoso
-4. Revisa el historial de facturacion por pagos fallidos
+3. Verifica que el pago fue exitoso
+4. Revisa el historial de facturacion para pagos fallidos
 
 ### Reactivar Suscripcion
 
@@ -92,70 +92,70 @@ Si tu suscripcion muestra inactiva:
 4. Confirma el plan de suscripcion
 5. El acceso se restaura inmediatamente
 
-### Suscripcion Muestra Plan Incorrecto
+### La Suscripcion Muestra el Plan Incorrecto
 
 Si tienes el nivel de suscripcion incorrecto:
 1. Verifica cambios recientes de plan en el historial de facturacion
-2. Confirma la confirmacion de mejora o reduccion
-3. Contacta soporte con el recibo de pago
+2. Verifica la confirmacion de actualizacion o cambio
+3. Contacta a soporte con el recibo de pago
 4. La sincronizacion del plan puede tomar hasta 15 minutos
 
 ### Suscripciones Duplicadas
 
-Si se te cobro multiples veces:
+Si te cobraron multiples veces:
 1. Verifica si te suscribiste a traves de multiples tiendas
-2. Revisa las suscripciones del App Store de Apple
+2. Revisa las suscripciones de Apple App Store
 3. Revisa las suscripciones de Google Play
-4. Cancela suscripciones duplicadas
+4. Cancela las suscripciones duplicadas
 5. Solicita reembolso por duplicados
 
-## Facturacion de Tiendas de Apps
+## Facturacion de la Tienda de Apps
 
-### Gestionar Suscripcion de iOS
+### Administrar Suscripcion de iOS
 
 1. Abre Configuracion del dispositivo
 2. Toca tu Apple ID
 3. Toca Suscripciones
 4. Encuentra Bayit+
-5. Gestiona o cancela la suscripcion
+5. Administra o cancela la suscripcion
 
-### Gestionar Suscripcion de Android
+### Administrar Suscripcion de Android
 
 1. Abre Google Play Store
 2. Toca Menu > Suscripciones
 3. Encuentra Bayit+
-4. Gestiona o cancela la suscripcion
+4. Administra o cancela la suscripcion
 
-### Reembolsos de Tiendas de Apps
+### Reembolsos de la Tienda de Apps
 
 **Apple:**
 1. Ve a reportaproblem.apple.com
 2. Inicia sesion con tu Apple ID
 3. Encuentra el cargo de Bayit+
-4. Solicita reembolso
+4. Solicita el reembolso
 
 **Google:**
 1. Ve a play.google.com/store/account
 2. Encuentra el historial de compras
 3. Selecciona el cargo
-4. Solicita reembolso
+4. Solicita el reembolso
 
-## Gestion de Metodos de Pago
+## Administracion de Metodos de Pago
 
 ### Agregar un Metodo de Pago
 
 1. Ve a **Configuracion** > **Cuenta** > **Metodo de Pago**
 2. Toca **Agregar Metodo de Pago**
-3. Elige tipo: Tarjeta, PayPal, etc.
+3. Elige el tipo: Tarjeta, PayPal, etc.
 4. Ingresa los detalles
-5. Verifica con pequeno cargo de autorizacion
+5. Verifica con un pequeno cargo de autorizacion
 
-### Actualizar Detalles de Tarjeta
+### Actualizar Datos de Tarjeta
 
 1. Ve a **Configuracion** > **Cuenta** > **Metodo de Pago**
 2. Selecciona la tarjeta a actualizar
 3. Toca **Editar**
-4. Actualiza la fecha de expiracion o direccion
+4. Actualiza la fecha de vencimiento o direccion
 5. Guarda los cambios
 
 ### Eliminar un Metodo de Pago
@@ -178,10 +178,10 @@ Si se te cobro multiples veces:
 ### Periodo de Gracia
 
 Despues de un pago fallido:
-- 7 dias de periodo de gracia antes de interrupcion del servicio
+- 7 dias de periodo de gracia antes de la interrupcion del servicio
 - Multiples intentos de reintento durante este periodo
-- Notificaciones por correo electronico enviadas sobre pago fallido
-- Actualiza el metodo de pago para evitar interrupcion
+- Notificaciones por correo electronico enviadas sobre el pago fallido
+- Actualiza el metodo de pago para evitar la interrupcion
 
 ### Servicio Interrumpido
 
@@ -194,7 +194,7 @@ Si tu servicio fue interrumpido:
 ## Contactar Soporte
 
 Para asistencia de facturacion:
-1. **En la App**: Configuracion > Ayuda > Problema de Facturacion
-2. **Correo Electronico**: billing@bayitplus.com
-3. **Por Voz**: "Hey Bayit, tengo una pregunta de facturacion"
-4. Incluye: correo electronico de la cuenta, ultimos 4 digitos del pago y descripcion del problema
+1. **En la App:** Configuracion > Ayuda > Problema de Facturacion
+2. **Correo electronico:** billing@bayitplus.com
+3. **Voz:** "Hey Bayit, tengo una pregunta de facturacion"
+4. Incluye: correo de cuenta, ultimos 4 digitos del pago y descripcion del problema

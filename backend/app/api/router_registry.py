@@ -99,8 +99,10 @@ def register_all_routers(app: FastAPI) -> None:
         content_taxonomy,
         admin_taxonomy,
         family_controls,
+        webauthn,
     )
     from app.api.routes.admin.recordings import router as admin_recordings_router
+    from app.api.routes.olorin import router as olorin_router
 
     # ============================================
     # Health Check Routes (no prefix)
@@ -119,6 +121,7 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(
         device_pairing.router, prefix=f"{prefix}/auth/device-pairing", tags=["device-pairing"]
     )
+    app.include_router(webauthn.router, prefix=f"{prefix}/webauthn", tags=["webauthn"])
     logger.debug("Registered auth routes")
 
     # ============================================
@@ -251,6 +254,12 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(websocket_chess.router, prefix=prefix, tags=["websocket", "chess"])
     app.include_router(websocket_dm.router, prefix=prefix, tags=["websocket", "direct-messages"])
     logger.debug("Registered websocket routes")
+
+    # ============================================
+    # Olorin.ai Platform Routes
+    # ============================================
+    app.include_router(olorin_router, prefix=prefix, tags=["olorin"])
+    logger.debug("Registered Olorin.ai platform routes")
 
     logger.info(f"All API routers registered with prefix {prefix}")
 

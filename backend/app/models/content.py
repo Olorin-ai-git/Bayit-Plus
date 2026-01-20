@@ -137,7 +137,12 @@ class Content(Document):
     # Visibility
     is_published: bool = True
     is_featured: bool = False
-    requires_subscription: str = "basic"  # basic, premium, family
+    requires_subscription: str = "basic"  # basic, premium, family, none
+    # Content access visibility mode:
+    # - "public": Visible to all users (default)
+    # - "private": Hidden from discovery, direct link only
+    # - "passkey_protected": Requires passkey authentication to view
+    visibility_mode: str = "public"
 
     # Children content fields
     is_kids_content: bool = False
@@ -226,6 +231,10 @@ class Content(Document):
             # Manual review indexes
             "needs_review",
             ("needs_review", "review_priority"),
+            # Visibility mode indexes (for passkey-protected content filtering)
+            "visibility_mode",
+            ("visibility_mode", "is_published"),
+            ("visibility_mode", "is_published", "section_ids"),
         ]
 
 

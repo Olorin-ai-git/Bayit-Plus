@@ -416,6 +416,11 @@ EOF
     create_or_update_secret "bayit-apple-bundle-id-ios" "APPLE_BUNDLE_ID_IOS"
     create_or_update_secret "bayit-apple-bundle-id-tvos" "APPLE_BUNDLE_ID_TVOS"
 
+    # Olorin.ai Platform Configuration
+    # CRITICAL: These secrets are required for partner API authentication and semantic search
+    create_or_update_secret "olorin-pinecone-api-key" "PINECONE_API_KEY"
+    create_or_update_secret "olorin-partner-api-key-salt" "PARTNER_API_KEY_SALT"
+
     # Kids Content Runtime Service Configuration
     # Note: These are set as environment variables in cloudbuild.yaml by default
     # Uncomment below to manage via Secret Manager instead (for custom overrides)
@@ -455,7 +460,8 @@ EOF
                   bayit-community-search-radius bayit-community-default-region bayit-us-jewish-regions \
                   bayit-community-scrape-interval bayit-yutorah-rss-url bayit-chabad-multimedia-rss-url \
                   bayit-torahanytime-rss-url \
-                  bayit-apple-key-id bayit-apple-team-id bayit-apple-bundle-id-ios bayit-apple-bundle-id-tvos; do
+                  bayit-apple-key-id bayit-apple-team-id bayit-apple-bundle-id-ios bayit-apple-bundle-id-tvos \
+                  olorin-pinecone-api-key olorin-partner-api-key-salt; do
         gcloud secrets add-iam-policy-binding "$secret" \
             --member="serviceAccount:$SERVICE_ACCOUNT" \
             --role="roles/secretmanager.secretAccessor" \
@@ -600,6 +606,7 @@ EOF
     echo "  ✓ GCS Upload (10min timeout, 5 retries, 8MB chunks)"
     echo "  ✓ Apple Push Notifications (APNs for iOS + tvOS)"
     echo "  ✓ Kids Content Service (runtime aggregation with caching)"
+    echo "  ✓ Olorin.ai Platform (Realtime Dubbing, Semantic Search, Cultural Context, Recap Agent)"
     echo ""
     echo "Next steps:"
     echo "  1. Update OAuth redirect URIs in Google Cloud Console"

@@ -5,9 +5,9 @@ Content detail and streaming endpoints.
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
-from app.core.security import get_current_active_user, get_optional_user
+from app.core.security import get_current_active_user, get_optional_user, get_passkey_session
 from app.models.content import Content
 from app.models.user import User
 
@@ -15,15 +15,71 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+async def check_visibility_access(
+    content: Content,
+    request: Request,
+    require_stream: bool = False,
+) -> bool:
+    """
+    Check if the request has access to view/stream this content based on visibility_mode.
+
+    Args:
+        content: The content item to check
+        request: The HTTP request (to check passkey session)
+        require_stream: If True, checks for stream access (stricter for passkey_protected)
+
+    Returns:
+        True if access is allowed
+
+    Raises:
+        HTTPException if access is denied
+    """
+    visibility_mode = getattr(content, 'visibility_mode', None) or 'public'
+
+    if visibility_mode == 'public':
+        return True
+
+    if visibility_mode == 'private':
+        # Private content is only accessible via direct link and requires passkey for streaming
+        if require_stream:
+            passkey_session = await get_passkey_session(request)
+            if not passkey_session:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Passkey authentication required to stream this content",
+                )
+        return True
+
+    if visibility_mode == 'passkey_protected':
+        # Free content is always accessible
+        if content.requires_subscription == 'none':
+            return True
+
+        # Check for valid passkey session
+        passkey_session = await get_passkey_session(request)
+        if not passkey_session:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Passkey authentication required to access this content",
+            )
+        return True
+
+    return True
+
+
 @router.get("/{content_id}")
 async def get_content(
     content_id: str,
+    request: Request,
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Get content details."""
     content = await Content.get(content_id)
     if not content or not content.is_published:
         raise HTTPException(status_code=404, detail="Content not found")
+
+    # Check visibility access (doesn't require stream access for details)
+    await check_visibility_access(content, request, require_stream=False)
 
     related = await Content.find(
         Content.category_id == content.category_id,
@@ -73,6 +129,7 @@ async def get_content(
 @router.get("/{content_id}/stream")
 async def get_stream_url(
     content_id: str,
+    request: Request,
     quality: Optional[str] = Query(None, description="Quality tier to request (4k, 1080p, 720p, 480p)"),
     current_user: User = Depends(get_current_active_user),
 ):
@@ -80,6 +137,9 @@ async def get_stream_url(
     content = await Content.get(content_id)
     if not content or not content.is_published:
         raise HTTPException(status_code=404, detail="Content not found")
+
+    # Check visibility access (requires stream access for protected content)
+    await check_visibility_access(content, request, require_stream=True)
 
     is_admin = current_user.role in ["super_admin", "admin"]
 

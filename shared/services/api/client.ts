@@ -62,14 +62,23 @@ export const contentApi = axios.create({
   },
 });
 
+// Passkey session header name
+const PASSKEY_SESSION_HEADER = 'X-Passkey-Session';
+
 /**
- * Add correlation ID and auth token to request.
+ * Add correlation ID, auth token, and passkey session to request.
  */
 const addRequestHeaders = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
   // Add auth token
   const token = useAuthStore.getState().token;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  // Add passkey session token if available
+  const passkeySessionToken = useAuthStore.getState().passkeySessionToken;
+  if (passkeySessionToken) {
+    config.headers[PASSKEY_SESSION_HEADER] = passkeySessionToken;
   }
 
   // Add correlation ID - use existing or generate new one

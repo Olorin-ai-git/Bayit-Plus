@@ -81,37 +81,56 @@ def get_translation(key: str, language: str = DEFAULT_LANGUAGE, fallback: Option
     return str(value)
 
 
-def resolve_name_key(name_key: str, language: str = DEFAULT_LANGUAGE) -> str:
+def resolve_name_key(name_key: Optional[str], language: str = DEFAULT_LANGUAGE, slug: Optional[str] = None, taxonomy_type: str = "sections") -> str:
     """
     Resolve a name_key to its translated value.
 
     Convenience wrapper around get_translation for taxonomy names.
+    If name_key is None, generates a default key from slug.
 
     Args:
-        name_key: Translation key (e.g., "taxonomy.sections.movies")
+        name_key: Translation key (e.g., "taxonomy.sections.movies") or None
         language: Language code (he, en, es)
+        slug: Slug to generate default key if name_key is None
+        taxonomy_type: Type of taxonomy (sections, subcategories, genres, audiences)
 
     Returns:
-        Translated name
+        Translated name or slug if translation not found
     """
-    return get_translation(name_key, language)
+    # Generate default key from slug if name_key is None
+    if name_key is None:
+        if slug:
+            name_key = f"taxonomy.{taxonomy_type}.{slug}"
+        else:
+            return "Unknown"
+
+    return get_translation(name_key, language, fallback=slug or name_key)
 
 
-def get_multilingual_names(name_key: str) -> Dict[str, str]:
+def get_multilingual_names(name_key: Optional[str], slug: Optional[str] = None, taxonomy_type: str = "sections") -> Dict[str, str]:
     """
     Get translations for all supported languages.
 
     Args:
-        name_key: Translation key
+        name_key: Translation key or None
+        slug: Slug to generate default key if name_key is None
+        taxonomy_type: Type of taxonomy (sections, subcategories, genres, audiences)
 
     Returns:
         Dictionary with language codes as keys and translations as values
         Example: {"he": "סרטים", "en": "Movies", "es": "Películas"}
     """
+    # Generate default key from slug if name_key is None
+    if name_key is None and slug:
+        name_key = f"taxonomy.{taxonomy_type}.{slug}"
+
+    if name_key is None:
+        return {"he": "Unknown", "en": "Unknown", "es": "Unknown"}
+
     return {
-        "he": get_translation(name_key, "he"),
-        "en": get_translation(name_key, "en"),
-        "es": get_translation(name_key, "es"),
+        "he": get_translation(name_key, "he", fallback=slug or name_key),
+        "en": get_translation(name_key, "en", fallback=slug or name_key),
+        "es": get_translation(name_key, "es", fallback=slug or name_key),
     }
 
 

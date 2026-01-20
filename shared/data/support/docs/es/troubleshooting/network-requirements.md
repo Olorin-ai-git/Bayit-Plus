@@ -1,6 +1,6 @@
 # Requisitos de Red
 
-Asegura que tu conexion a internet cumpla con los requisitos para un rendimiento optimo de streaming en Bayit+.
+Asegurate de que tu conexion a internet cumpla los requisitos para un rendimiento optimo de streaming en Bayit+.
 
 ## Requisitos de Velocidad de Internet
 
@@ -14,7 +14,7 @@ Asegura que tu conexion a internet cumpla con los requisitos para un rendimiento
 | 4K Ultra HD | 25 Mbps |
 | 4K con HDR | 40 Mbps |
 
-### Probar Tu Velocidad
+### Probar tu Velocidad
 
 1. Visita speedtest.net o fast.com
 2. Ejecuta una prueba de velocidad
@@ -26,7 +26,7 @@ Asegura que tu conexion a internet cumpla con los requisitos para un rendimiento
 
 Para la mejor experiencia, recomendamos:
 - **Un espectador:** 1.5x la velocidad minima
-- **Multiples espectadores:** Suma los requisitos
+- **Multiples espectadores:** Suma los requisitos juntos
 - **Ejemplo:** Dos transmisiones 4K necesitan 50+ Mbps
 
 ## Optimizacion de Wi-Fi
@@ -36,12 +36,12 @@ Para la mejor experiencia, recomendamos:
 1. Coloca el router en una ubicacion central
 2. Eleva el router del piso
 3. Mantente alejado de paredes y objetos metalicos
-4. Evita ubicarlo cerca de microondas o telefonos inalambricos
+4. Evita colocarlo cerca de microondas o telefonos inalambricos
 
 ### Bandas de Frecuencia Wi-Fi
 
 | Banda | Mejor Para |
-|-------|-----------|
+|-------|------------|
 | 2.4 GHz | Mayor alcance, mas interferencia |
 | 5 GHz | Velocidades mas rapidas, menor alcance |
 
@@ -49,7 +49,7 @@ Para la mejor experiencia, recomendamos:
 
 ### Reducir Interferencia
 
-1. Cambia el canal Wi-Fi en la configuracion del router
+1. Cambia el canal de Wi-Fi en la configuracion del router
 2. Actualiza el firmware del router
 3. Elimina dispositivos conectados no utilizados
 4. Considera Wi-Fi mesh para casas grandes
@@ -57,7 +57,7 @@ Para la mejor experiencia, recomendamos:
 ### Conexion por Cable
 
 Para streaming mas estable en TV:
-1. Conecta cable Ethernet al dispositivo de streaming
+1. Conecta el cable Ethernet al dispositivo de streaming
 2. Conecta el otro extremo al router
 3. Las conexiones por cable eliminan problemas de Wi-Fi
 4. Recomendado para streaming 4K
@@ -74,11 +74,11 @@ Bayit+ requiere que estos puertos esten abiertos:
 | 443 | TCP | Trafico HTTPS |
 | 53 | UDP | Resolucion DNS |
 
-### Configurar Tu Firewall
+### Configurar tu Firewall
 
 1. Accede al panel de administracion del router
 2. Encuentra la configuracion de firewall o seguridad
-3. Asegura que los puertos anteriores no esten bloqueados
+3. Asegurate de que los puertos anteriores no esten bloqueados
 4. Agrega Bayit+ a las aplicaciones permitidas
 
 ### Redes Empresariales
@@ -89,38 +89,38 @@ Para redes corporativas o escolares:
 3. Proporciona el dominio requerido: *.bayitplus.com
 4. Puede necesitar configuracion de proxy
 
-## Problemas de VPN
+## Problemas con VPN
 
 ### Compatibilidad con VPN
 
 Usar una VPN puede causar problemas:
 - Velocidad de streaming reducida
 - Conflictos de restriccion geografica
-- Caidas de conexion durante reproduccion
+- Desconexiones durante la reproduccion
 - Algunas VPNs estan bloqueadas
 
-### Configuracion VPN Recomendada
+### Configuracion Recomendada de VPN
 
 Si debes usar una VPN:
-1. Conecta a un servidor en tu pais de origen
+1. Conectate a un servidor en tu pais de origen
 2. Usa un servidor optimizado para streaming
-3. Habilita tunel dividido para Bayit+
-4. Usa protocolo UDP para mejor velocidad
+3. Habilita split tunneling para Bayit+
+4. Usa el protocolo UDP para mejor velocidad
 
 ### Deshabilitar VPN para Streaming
 
-Para mejor experiencia:
-1. Deshabilita VPN cuando veas Bayit+
+Para la mejor experiencia:
+1. Deshabilita la VPN cuando veas Bayit+
 2. O excluye Bayit+ del tunel VPN
-3. Consulta a tu proveedor de VPN para tunel dividido
+3. Revisa con tu proveedor de VPN el split tunneling
 
 ### Error de VPN Bloqueada
 
 Si ves un error relacionado con VPN:
-1. Desconecta de la VPN
-2. Limpia el cache de la app
+1. Desconectate de la VPN
+2. Limpia la cache de la app
 3. Reinicia la app
-4. Intenta nuevamente sin VPN
+4. Intenta de nuevo sin VPN
 
 ## Streaming con Datos Moviles
 
@@ -133,7 +133,7 @@ Si ves un error relacionado con VPN:
 | Alta | 1.5 GB |
 | Ultra | 3 GB |
 
-### Reducir Uso de Datos Moviles
+### Reducir el Uso de Datos Moviles
 
 1. Ve a **Configuracion** > **Reproduccion**
 2. Configura **Calidad de Datos Moviles** a Baja o Media
@@ -149,27 +149,27 @@ Si ves un error relacionado con VPN:
 
 ## Solucion de Problemas de Red
 
-### Conexion se Cae Durante Reproduccion
+### Desconexiones Durante la Reproduccion
 
-1. Verifica si hay zonas muertas de Wi-Fi
+1. Verifica si hay puntos muertos de Wi-Fi
 2. Acercate al router
-3. Reinicia router y dispositivo
-4. Reduce la configuracion de calidad de video
-5. Prueba conexion por cable
+3. Reinicia el router y el dispositivo
+4. Baja la configuracion de calidad de video
+5. Prueba una conexion por cable
 
 ### Problemas de Buffering
 
 1. Ejecuta una prueba de velocidad
 2. Cierra otras apps de streaming
 3. Desconecta dispositivos no utilizados
-4. Reduce la calidad en Configuracion > Reproduccion
+4. Baja la calidad en Configuracion > Reproduccion
 5. Reinicia el equipo de red
 
 ### Diagnostico de Red
 
 1. Ve a **Configuracion** > **Ayuda** > **Prueba de Red**
-2. Ejecuta el diagnostico incorporado
-3. Revisa resultados y recomendaciones
+2. Ejecuta el diagnostico integrado
+3. Revisa los resultados y recomendaciones
 4. Sigue las correcciones sugeridas
 
 ### Problemas de DNS
@@ -184,10 +184,10 @@ Si el contenido no carga:
 
 ### Estrangulamiento
 
-Algunos ISPs estrangulan el trafico de streaming:
-1. Ejecuta prueba de velocidad a servidores de Bayit+
-2. Compara con prueba de velocidad general
-3. Contacta al ISP si son significativamente diferentes
+Algunos ISPs estangulan el trafico de streaming:
+1. Ejecuta una prueba de velocidad a los servidores de Bayit+
+2. Compara con una prueba de velocidad general
+3. Contacta al ISP si hay diferencia significativa
 4. Considera un ISP que no estrangule
 
 ### Limites de Datos
@@ -195,12 +195,12 @@ Algunos ISPs estrangulan el trafico de streaming:
 Ten en cuenta los limites de datos:
 1. Verifica el limite de datos de tu ISP
 2. Monitorea el uso mensual
-3. Reduce la calidad para conservar datos
+3. Baja la calidad para conservar datos
 4. Considera planes ilimitados para streaming intensivo
 
 ## Contactar Soporte
 
 Para ayuda relacionada con la red:
-1. **En la App**: Configuracion > Ayuda > Problema de Red
+1. **En la App:** Configuracion > Ayuda > Problema de Red
 2. Ejecuta el diagnostico de red antes de contactar
 3. Incluye: nombre del ISP, resultados de prueba de velocidad, modelo del router

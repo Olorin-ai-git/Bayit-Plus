@@ -53,6 +53,9 @@ export { ErrorBoundary } from './ErrorBoundary';
 // Settings Components
 export * from './settings';
 
+// Passkey Components (WebAuthn/FIDO2)
+export * from './passkey';
+
 // Judaism Components (Shabbat features)
 export * from './judaism';
 

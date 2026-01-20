@@ -6,11 +6,11 @@ import asyncio
 import logging
 import time
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from typing import Optional
 
 from app.api.routes.content.utils import is_series_by_category
-from app.core.security import get_optional_user
+from app.core.security import get_optional_user, get_passkey_session
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
 from app.models.user import User
@@ -19,14 +19,56 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+def build_visibility_match(has_passkey_access: bool) -> dict:
+    """
+    Build a MongoDB $match condition for content visibility.
+
+    Content visibility rules:
+    - "public": Always visible
+    - "private": Hidden from discovery
+    - "passkey_protected": Visible only with valid passkey session,
+      OR if requires_subscription is "none" (free content)
+    """
+    if has_passkey_access:
+        return {
+            "$or": [
+                {"visibility_mode": {"$in": ["public", None]}},
+                {"visibility_mode": "passkey_protected"},
+                {"visibility_mode": {"$exists": False}},
+            ]
+        }
+    else:
+        return {
+            "$or": [
+                {"visibility_mode": {"$in": ["public", None]}},
+                {"visibility_mode": {"$exists": False}},
+                {"requires_subscription": "none"},
+            ]
+        }
+
+
 @router.get("/featured")
-async def get_featured(current_user: Optional[User] = Depends(get_optional_user)):
+async def get_featured(
+    request: Request,
+    current_user: Optional[User] = Depends(get_optional_user),
+):
     """Get featured content for homepage - OPTIMIZED for performance."""
     start_time = time.time()
 
+    # Check if user has passkey access for protected content
+    passkey_session = await get_passkey_session(request)
+    has_passkey = passkey_session is not None
+    visibility_match = build_visibility_match(has_passkey)
+
     async def get_hero():
+        # Hero must be featured, published, and pass visibility check
         pipeline = [
-            {"$match": {"is_featured": True, "is_published": True}},
+            {"$match": {
+                "$and": [
+                    {"is_featured": True, "is_published": True},
+                    visibility_match,
+                ]
+            }},
             {"$project": {"thumbnail_data": 0, "backdrop_data": 0}},
             {"$limit": 1}
         ]
@@ -38,14 +80,21 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
     async def get_featured_content():
         pipeline = [
             {"$match": {
-                "is_featured": True,
-                "is_published": True,
-                "$or": [
-                    {"series_id": None},
-                    {"series_id": {"$exists": False}},
-                    {"series_id": ""},
-                ],
-                "is_quality_variant": {"$ne": True},
+                "$and": [
+                    {
+                        "is_featured": True,
+                        "is_published": True,
+                        "is_quality_variant": {"$ne": True},
+                    },
+                    {
+                        "$or": [
+                            {"series_id": None},
+                            {"series_id": {"$exists": False}},
+                            {"series_id": ""},
+                        ]
+                    },
+                    visibility_match,
+                ]
             }},
             {"$project": {"thumbnail_data": 0, "backdrop_data": 0}},
             {"$limit": 10}
@@ -96,14 +145,21 @@ async def get_featured(current_user: Optional[User] = Depends(get_optional_user)
 
     pipeline = [
         {"$match": {
-            "category_id": {"$in": category_ids},
-            "is_published": True,
-            "$or": [
-                {"series_id": None},
-                {"series_id": {"$exists": False}},
-                {"series_id": ""},
-            ],
-            "is_quality_variant": {"$ne": True},
+            "$and": [
+                {
+                    "category_id": {"$in": category_ids},
+                    "is_published": True,
+                    "is_quality_variant": {"$ne": True},
+                },
+                {
+                    "$or": [
+                        {"series_id": None},
+                        {"series_id": {"$exists": False}},
+                        {"series_id": ""},
+                    ]
+                },
+                visibility_match,
+            ]
         }},
         {"$project": {
             "_id": 1, "title": 1, "thumbnail": 1, "thumbnail_data": 1,

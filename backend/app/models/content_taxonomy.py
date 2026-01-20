@@ -35,7 +35,7 @@ class ContentSection(Document):
     slug: str  # Unique identifier (e.g., "movies", "kids", "judaism")
 
     # i18n translation keys (resolved at runtime via shared/i18n)
-    name_key: str  # Translation key (e.g., "taxonomy.sections.movies")
+    name_key: Optional[str] = None  # Translation key (e.g., "taxonomy.sections.movies")
     description_key: Optional[str] = None  # Description translation key
 
     # Display
@@ -85,7 +85,7 @@ class SectionSubcategory(Document):
     slug: str  # Unique within section (e.g., "cartoons", "shiurim")
 
     # i18n translation keys (resolved at runtime via shared/i18n)
-    name_key: str  # Translation key (e.g., "taxonomy.subcategories.learning-hebrew")
+    name_key: Optional[str] = None  # Translation key (e.g., "taxonomy.subcategories.learning-hebrew")
     description_key: Optional[str] = None  # Description translation key
 
     # Display
@@ -123,7 +123,7 @@ class Genre(Document):
     slug: str  # Unique identifier (e.g., "drama", "comedy", "action")
 
     # i18n translation keys (resolved at runtime via shared/i18n)
-    name_key: str  # Translation key (e.g., "taxonomy.genres.drama")
+    name_key: Optional[str] = None  # Translation key (e.g., "taxonomy.genres.drama")
 
     # External mappings
     tmdb_id: Optional[int] = None  # TMDB genre ID for automatic matching
@@ -164,7 +164,7 @@ class Audience(Document):
     slug: str  # Unique identifier (e.g., "general", "kids", "family", "mature")
 
     # i18n translation keys (resolved at runtime via shared/i18n)
-    name_key: str  # Translation key (e.g., "taxonomy.audiences.kids")
+    name_key: Optional[str] = None  # Translation key (e.g., "taxonomy.audiences.kids")
     description_key: Optional[str] = None  # Description translation key
 
     # Age settings

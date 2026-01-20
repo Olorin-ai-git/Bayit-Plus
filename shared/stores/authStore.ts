@@ -34,6 +34,10 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  // Passkey session state
+  passkeySessionToken: string | null;
+  passkeySessionExpires: string | null;
+  // Actions
   login: (email: string, password: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   loginWithGoogle: () => Promise<string | void>;
@@ -41,6 +45,10 @@ interface AuthState {
   logout: () => void;
   setUser: (user: User | null) => void;
   clearError: () => void;
+  // Passkey session actions
+  setPasskeySession: (token: string, expiresAt: string) => void;
+  clearPasskeySession: () => void;
+  hasPasskeyAccess: () => boolean;
   // RBAC helpers
   hasPermission: (permission: Permission) => boolean;
   hasAnyPermission: (permissions: Permission[]) => boolean;
@@ -64,6 +72,9 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      // Passkey session state
+      passkeySessionToken: null,
+      passkeySessionExpires: null,
 
       login: async (email: string, password: string) => {
         set({ isLoading: true, error: null });
@@ -153,12 +164,39 @@ export const useAuthStore = create<AuthState>()(
           token: null,
           isAuthenticated: false,
           error: null,
+          passkeySessionToken: null,
+          passkeySessionExpires: null,
         });
       },
 
       setUser: (user) => set({ user, isAuthenticated: !!user }),
 
       clearError: () => set({ error: null }),
+
+      // Passkey session actions
+      setPasskeySession: (token: string, expiresAt: string) => {
+        set({
+          passkeySessionToken: token,
+          passkeySessionExpires: expiresAt,
+        });
+      },
+
+      clearPasskeySession: () => {
+        set({
+          passkeySessionToken: null,
+          passkeySessionExpires: null,
+        });
+      },
+
+      hasPasskeyAccess: () => {
+        const { passkeySessionToken, passkeySessionExpires } = get();
+        if (!passkeySessionToken || !passkeySessionExpires) {
+          return false;
+        }
+        // Check if session has expired
+        const expiresDate = new Date(passkeySessionExpires);
+        return expiresDate > new Date();
+      },
 
       // RBAC helper implementations
       getPermissions: () => {
@@ -256,6 +294,8 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
+        passkeySessionToken: state.passkeySessionToken,
+        passkeySessionExpires: state.passkeySessionExpires,
       }),
     }
   )

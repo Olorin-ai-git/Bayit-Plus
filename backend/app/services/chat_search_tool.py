@@ -4,7 +4,7 @@ Chat Search Tool for Voice Assistant (Olorin)
 Defines Claude tools for searching the content catalog and user guide from the chat endpoint.
 Enables the voice assistant to answer questions about available content using
 the UnifiedSearchService for full-text MongoDB search, and to provide help
-using the user guide documentation.
+using the comprehensive documentation system with 219+ articles across 9 categories.
 """
 
 import json
@@ -13,11 +13,25 @@ from pathlib import Path
 from typing import Any
 
 from app.services.unified_search_service import UnifiedSearchService, SearchFilters
+from app.services.docs_search_service import docs_search_service
 
 logger = logging.getLogger(__name__)
 
 # Path to user guide documentation
 USER_GUIDE_DOCS_PATH = Path(__file__).parent.parent.parent.parent / 'shared' / 'data' / 'support' / 'docs'
+
+# All available documentation categories
+DOCUMENTATION_CATEGORIES = [
+    "getting-started",
+    "features",
+    "account",
+    "troubleshooting",
+    "judaism",
+    "parents",
+    "admin",
+    "developer",
+    "platform-guides",
+]
 
 # Claude tool definitions for chat endpoint
 CHAT_TOOLS = [
@@ -68,22 +82,45 @@ CHAT_TOOLS = [
     {
         "name": "lookup_user_guide",
         "description": (
-            "Search the Bayit+ user guide and help documentation. "
-            "Use this tool when users ask how to do something, need help with features, have questions about "
-            "subscriptions, voice control, streaming issues, account settings, or troubleshooting. "
-            "Returns relevant help articles and instructions."
+            "Search the comprehensive Bayit+ documentation system with 219+ articles and 80+ FAQ entries. "
+            "Use this tool when users ask how to do something, need help with features, or have questions about:\n"
+            "- Getting started: account setup, platform overview, choosing subscriptions\n"
+            "- Features: voice control, recordings, downloads, search, profiles, subtitles, EPG guide, watch parties\n"
+            "- Account management: subscription, profile settings, security, notifications, device management\n"
+            "- Troubleshooting: streaming issues, login problems, audio, subtitles, voice control, downloads, errors\n"
+            "- Judaism content: Torah, Jewish calendar, Shabbat mode, community directory, zmanim\n"
+            "- Parents/Kids: parental controls, kids profiles, screen time limits, age ratings, safe browsing\n"
+            "- Platform guides: Web, iOS, Android, Apple TV, Android TV, CarPlay setup and usage\n"
+            "- Admin: dashboard, content management, user management, analytics, campaigns\n"
+            "- Developer: API overview, authentication, content API, streaming API, webhooks, rate limits\n"
+            "Returns relevant help articles, FAQ entries, and detailed instructions."
         ),
         "input_schema": {
             "type": "object",
             "properties": {
                 "topic": {
                     "type": "string",
-                    "description": "The topic or question to search for in the user guide"
+                    "description": "The topic or question to search for in the documentation"
                 },
                 "category": {
                     "type": "string",
-                    "enum": ["getting-started", "features", "account", "troubleshooting"],
-                    "description": "Optionally filter by category: getting-started, features, account, troubleshooting"
+                    "enum": [
+                        "getting-started",
+                        "features",
+                        "account",
+                        "troubleshooting",
+                        "judaism",
+                        "parents",
+                        "admin",
+                        "developer",
+                        "platform-guides"
+                    ],
+                    "description": "Optionally filter by category to narrow down results"
+                },
+                "audience": {
+                    "type": "string",
+                    "enum": ["user", "parent", "admin", "developer"],
+                    "description": "Optionally filter by target audience"
                 },
                 "language": {
                     "type": "string",
@@ -191,92 +228,93 @@ def _truncate_description(description: str | None, max_length: int = 150) -> str
 async def execute_lookup_user_guide(
     topic: str,
     category: str | None = None,
+    audience: str | None = None,
     language: str = "en"
 ) -> dict[str, Any]:
     """
-    Search the user guide documentation for relevant help content.
+    Search the comprehensive documentation system for relevant help content.
+
+    Uses DocsSearchService to search across 219+ articles and 80+ FAQ entries
+    with intelligent relevance scoring.
 
     Args:
         topic: The topic or question to search for
-        category: Optional category filter (getting-started, features, account, troubleshooting)
+        category: Optional category filter (9 categories available)
+        audience: Optional audience filter (user, parent, admin, developer)
         language: Language code (en, he, es)
 
     Returns:
-        Dict with matching help articles and excerpts
+        Dict with matching articles, FAQ entries, and content excerpts
     """
-    logger.info(f"[ChatTool] User guide lookup: topic='{topic}', category={category}, lang={language}")
+    logger.info(
+        f"[ChatTool] Documentation lookup: topic='{topic}', "
+        f"category={category}, audience={audience}, lang={language}"
+    )
 
-    # Load manifest
-    manifest_path = USER_GUIDE_DOCS_PATH / 'manifest.json'
-    if not manifest_path.exists():
-        logger.warning(f"[ChatTool] Manifest not found at {manifest_path}")
-        return {"articles": [], "topic": topic, "error": "User guide not available"}
+    # Use DocsSearchService for comprehensive search
+    search_results = await docs_search_service.search(
+        query=topic,
+        language=language,
+        category=category,
+        audience=audience,
+        limit=10,
+    )
 
-    with open(manifest_path, 'r', encoding='utf-8') as f:
-        manifest = json.load(f)
+    articles = search_results.get('articles', [])
+    faq_results = search_results.get('faq', [])
 
-    # Filter articles by language and optional category
-    articles = manifest.get('articles', [])
-    filtered_articles = [
-        a for a in articles
-        if a.get('language') == language
-        and (category is None or a.get('category') == category)
-    ]
-
-    # Score articles by keyword match
-    topic_lower = topic.lower()
-    topic_words = set(topic_lower.split())
-
-    scored_articles = []
-    for article in filtered_articles:
-        keywords = set(article.get('keywords', []))
-        title_words = set(article.get('title', '').lower().split())
-        all_words = keywords | title_words
-
-        # Calculate overlap score
-        overlap = len(topic_words & all_words)
-        # Bonus for partial matches
-        partial_bonus = sum(
-            0.5 for tw in topic_words
-            for aw in all_words
-            if tw in aw or aw in tw
+    # Load content for top 3 articles
+    article_results = []
+    for article in articles[:3]:
+        slug = article.get('slug', '')
+        content_data = await docs_search_service.get_article_content(
+            slug=slug,
+            language=language,
         )
-        score = overlap + partial_bonus
 
-        if score > 0:
-            scored_articles.append((score, article))
-
-    # Sort by score and take top 3
-    scored_articles.sort(key=lambda x: x[0], reverse=True)
-    top_articles = scored_articles[:3]
-
-    # Load content for top articles
-    results = []
-    for score, article in top_articles:
-        doc_path = USER_GUIDE_DOCS_PATH / language / article['path']
         content = ""
+        if content_data:
+            content = content_data.get('content', '')
+            # Truncate to first 1000 chars to save tokens while providing useful context
+            if len(content) > 1000:
+                content = content[:1000].rsplit('\n', 1)[0] + "\n..."
 
-        if doc_path.exists():
-            with open(doc_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            # Truncate to first 800 chars to save tokens
-            if len(content) > 800:
-                content = content[:800].rsplit('\n', 1)[0] + "\n..."
-
-        results.append({
-            "title": article.get('title', ''),
+        article_results.append({
+            "title": article.get('title_key', slug),
+            "slug": slug,
             "category": article.get('category', ''),
+            "subcategory": article.get('subcategory'),
             "content": content,
-            "relevance_score": score
+            "relevance_score": article.get('score', 0),
+            "platforms": article.get('platforms', ['all']),
         })
 
-    logger.info(f"[ChatTool] Found {len(results)} relevant user guide articles")
+    # Format FAQ results
+    faq_formatted = []
+    for faq in faq_results[:3]:
+        faq_formatted.append({
+            "question": faq.get('question', ''),
+            "answer": faq.get('answer', ''),
+            "category": faq.get('category', ''),
+            "relevance_score": faq.get('score', 0),
+        })
+
+    total_found = len(articles) + len(faq_results)
+
+    logger.info(
+        f"[ChatTool] Found {len(article_results)} articles and "
+        f"{len(faq_formatted)} FAQ entries for '{topic}'"
+    )
 
     return {
-        "articles": results,
+        "articles": article_results,
+        "faq": faq_formatted,
         "topic": topic,
         "language": language,
-        "total_found": len(results)
+        "category_filter": category,
+        "audience_filter": audience,
+        "total_found": total_found,
+        "available_categories": DOCUMENTATION_CATEGORIES,
     }
 
 
@@ -308,6 +346,7 @@ async def execute_chat_tool(tool_name: str, tool_input: dict[str, Any]) -> dict[
         return await execute_lookup_user_guide(
             topic=tool_input.get("topic", ""),
             category=tool_input.get("category"),
+            audience=tool_input.get("audience"),
             language=tool_input.get("language", "en")
         )
     else:

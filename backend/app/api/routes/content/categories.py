@@ -14,6 +14,7 @@ from app.api.routes.content.utils import convert_to_proxy_url, is_series_by_cate
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection, SectionSubcategory
 from app.services.subtitle_enrichment import enrich_content_items_with_subtitles
+from app.utils.i18n import get_multilingual_names
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -32,11 +33,14 @@ async def get_categories():
 
     result_items = []
     for section in sections:
+        # Resolve multilingual names from i18n
+        names = get_multilingual_names(section.name_key, slug=section.slug, taxonomy_type="sections")
+
         result_items.append({
             "id": str(section.id),
-            "name": section.name,
-            "name_en": section.name_en,
-            "name_es": section.name_es,
+            "name": names["he"],  # Hebrew as default
+            "name_en": names["en"],
+            "name_es": names["es"],
             "slug": section.slug,
             "thumbnail": section.thumbnail,
             "icon": section.icon,
@@ -69,25 +73,31 @@ async def get_sections():
                 SectionSubcategory.is_active == True
             ).sort("order").to_list()
 
-            subcategories = [{
-                "id": str(sub.id),
-                "slug": sub.slug,
-                "name": sub.name,
-                "name_en": sub.name_en,
-                "name_es": sub.name_es,
-            } for sub in subcats]
+            subcategories = []
+            for sub in subcats:
+                sub_names = get_multilingual_names(sub.name_key, slug=sub.slug, taxonomy_type="subcategories")
+                subcategories.append({
+                    "id": str(sub.id),
+                    "slug": sub.slug,
+                    "name": sub_names["he"],
+                    "name_en": sub_names["en"],
+                    "name_es": sub_names["es"],
+                })
 
         content_count = await Content.find({
             "section_ids": section_id,
             "is_published": True,
         }).count()
 
+        # Resolve multilingual names from i18n
+        section_names = get_multilingual_names(section.name_key, slug=section.slug, taxonomy_type="sections")
+
         result.append({
             "id": section_id,
             "slug": section.slug,
-            "name": section.name,
-            "name_en": section.name_en,
-            "name_es": section.name_es,
+            "name": section_names["he"],
+            "name_en": section_names["en"],
+            "name_es": section_names["es"],
             "icon": section.icon,
             "color": section.color,
             "thumbnail": section.thumbnail,
@@ -142,9 +152,12 @@ async def get_by_category(
     items = await Content.find(content_filter).skip(skip).limit(limit).to_list()
     total = await Content.find(content_filter).count()
 
+    # Resolve section names
+    section_names = get_multilingual_names(section.name_key, slug=section.slug, taxonomy_type="sections")
+
     result_items = []
     for item in items:
-        is_series = item.is_series or is_series_by_category(section.name)
+        is_series = item.is_series or is_series_by_category(section_names["he"])
 
         item_data = {
             "id": str(item.id),
@@ -152,9 +165,9 @@ async def get_by_category(
             "thumbnail": item.thumbnail_data or item.thumbnail or item.poster_url,
             "duration": item.duration,
             "year": item.year,
-            "category": section.name,
-            "category_name_en": section.name_en,
-            "category_name_es": section.name_es,
+            "category": section_names["he"],
+            "category_name_en": section_names["en"],
+            "category_name_es": section_names["es"],
             "type": "series" if is_series else "movie",
             "is_series": is_series,
         }
@@ -187,9 +200,9 @@ async def get_by_category(
     return {
         "category": {
             "id": str(section.id),
-            "name": section.name,
-            "name_en": section.name_en,
-            "name_es": section.name_es,
+            "name": section_names["he"],
+            "name_en": section_names["en"],
+            "name_es": section_names["es"],
             "slug": section.slug,
         },
         "items": result_items,
@@ -263,17 +276,21 @@ async def get_subcategory_content(
 
     result_items = await enrich_content_items_with_subtitles(result_items)
 
+    # Resolve multilingual names
+    section_names = get_multilingual_names(section.name_key, slug=section.slug, taxonomy_type="sections")
+    subcategory_names = get_multilingual_names(subcategory.name_key, slug=subcategory.slug, taxonomy_type="subcategories")
+
     return {
         "section": {
             "id": str(section.id),
-            "name": section.name,
-            "name_en": section.name_en,
+            "name": section_names["he"],
+            "name_en": section_names["en"],
             "slug": section.slug,
         },
         "subcategory": {
             "id": subcategory_id,
-            "name": subcategory.name,
-            "name_en": subcategory.name_en,
+            "name": subcategory_names["he"],
+            "name_en": subcategory_names["en"],
             "slug": subcategory.slug,
         },
         "items": result_items,

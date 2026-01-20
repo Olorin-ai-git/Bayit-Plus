@@ -2,10 +2,11 @@ from datetime import datetime, timedelta
 from typing import Optional, List, Callable
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.core.config import settings
 from app.models.user import User
+from app.models.passkey_credential import PasskeySession
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
@@ -140,3 +141,51 @@ def require_role(allowed_roles: List[str]) -> Callable:
         return current_user
 
     return role_checker
+
+
+async def get_passkey_session(request: Request) -> Optional[PasskeySession]:
+    """
+    Get the passkey session from X-Passkey-Session header if present and valid.
+
+    Returns the session if valid, None otherwise.
+    """
+    session_token = request.headers.get("X-Passkey-Session")
+    if not session_token:
+        return None
+
+    session = await PasskeySession.find_one(
+        PasskeySession.session_token == session_token,
+        PasskeySession.is_revoked == False,
+    )
+
+    if not session or not session.is_valid():
+        return None
+
+    return session
+
+
+async def has_passkey_access(request: Request) -> bool:
+    """
+    Check if the request has a valid passkey session.
+
+    Returns True if the request includes a valid passkey session token.
+    """
+    session = await get_passkey_session(request)
+    return session is not None
+
+
+async def require_passkey_session(
+    request: Request,
+) -> PasskeySession:
+    """
+    Require a valid passkey session for this endpoint.
+
+    Raises 403 if no valid passkey session is present.
+    """
+    session = await get_passkey_session(request)
+    if not session:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Passkey authentication required to access this content",
+        )
+    return session

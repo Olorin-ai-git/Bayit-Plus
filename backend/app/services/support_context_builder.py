@@ -2,15 +2,21 @@
 Support Context Builder
 Builds context for LLM support chat by injecting relevant documentation,
 FAQ entries, and user context to provide intelligent support responses.
+
+Uses DocsSearchService for comprehensive search across 219+ documentation
+articles and 80+ FAQ entries in Hebrew, English, and Spanish.
 """
 
 import json
+import logging
 from typing import Optional, List
 from pathlib import Path
 
 from app.core.config import settings
 from app.models.support import FAQEntry, SupportConversation
 from app.models.user import User
+
+logger = logging.getLogger(__name__)
 
 
 class SupportContextBuilder:
@@ -82,11 +88,62 @@ class SupportContextBuilder:
     ) -> List[dict]:
         """
         Find documentation excerpts relevant to the query.
-        Uses simple keyword matching for now - can be enhanced with embeddings.
+        Uses DocsSearchService for intelligent relevance scoring across
+        219+ articles and 80+ FAQ entries.
         """
         relevant = []
 
-        # Get doc manifest
+        try:
+            # Import here to avoid circular imports
+            from app.services.docs_search_service import docs_search_service
+
+            # Use DocsSearchService for comprehensive search
+            search_results = await docs_search_service.search(
+                query=query,
+                language=language,
+                limit=max_docs + 2,  # Get a few extra in case some fail to load
+            )
+
+            articles = search_results.get('articles', [])
+
+            for article in articles[:max_docs]:
+                slug = article.get('slug', '')
+                content_data = await docs_search_service.get_article_content(
+                    slug=slug,
+                    language=language,
+                )
+
+                if content_data:
+                    content = content_data.get('content', '')
+                    relevant.append({
+                        'title': article.get('title_key', slug),
+                        'path': f"{article.get('category', '')}/{slug}.md",
+                        'excerpt': content[:500] + '...' if len(content) > 500 else content,
+                        'relevance_score': article.get('score', 0),
+                        'category': article.get('category'),
+                    })
+
+            logger.info(
+                f"[SupportContext] Found {len(relevant)} relevant docs for "
+                f"'{query}' in {language}"
+            )
+
+        except Exception as e:
+            logger.error(f"[SupportContext] Error searching docs: {e}")
+            # Fall back to basic manifest search if DocsSearchService fails
+            relevant = await self._find_relevant_docs_fallback(query, language, max_docs)
+
+        return relevant
+
+    async def _find_relevant_docs_fallback(
+        self,
+        query: str,
+        language: str,
+        max_docs: int,
+    ) -> List[dict]:
+        """Fallback method using basic keyword matching if DocsSearchService fails."""
+        relevant = []
+
         manifest = await self._load_doc_manifest(language)
         if not manifest:
             return relevant
@@ -94,7 +151,6 @@ class SupportContextBuilder:
         query_lower = query.lower()
         query_words = set(query_lower.split())
 
-        # Score each document by keyword overlap
         scored_docs = []
         for doc in manifest.get('articles', []):
             doc_words = set(doc.get('keywords', []))
@@ -104,7 +160,6 @@ class SupportContextBuilder:
             if overlap > 0:
                 scored_docs.append((overlap, doc))
 
-        # Sort by score and take top N
         scored_docs.sort(key=lambda x: x[0], reverse=True)
 
         for score, doc in scored_docs[:max_docs]:
@@ -125,24 +180,66 @@ class SupportContextBuilder:
         language: str,
         max_items: int = 3,
     ) -> List[dict]:
-        """Find FAQ entries relevant to the query."""
+        """
+        Find FAQ entries relevant to the query.
+        Uses DocsSearchService for intelligent relevance scoring.
+        """
         relevant = []
 
         try:
-            # Get active FAQ entries
+            # Import here to avoid circular imports
+            from app.services.docs_search_service import docs_search_service
+
+            # Use DocsSearchService for comprehensive FAQ search
+            search_results = await docs_search_service.search(
+                query=query,
+                language=language,
+                limit=max_items + 2,
+            )
+
+            faq_results = search_results.get('faq', [])
+
+            for faq in faq_results[:max_items]:
+                relevant.append({
+                    'question': faq.get('question', ''),
+                    'answer': faq.get('answer', ''),
+                    'category': faq.get('category', ''),
+                    'relevance_score': faq.get('score', 0),
+                })
+
+            logger.info(
+                f"[SupportContext] Found {len(relevant)} relevant FAQ for "
+                f"'{query}' in {language}"
+            )
+
+        except Exception as e:
+            logger.error(f"[SupportContext] Error searching FAQ: {e}")
+            # Fall back to basic search if DocsSearchService fails
+            relevant = await self._find_relevant_faq_fallback(query, language, max_items)
+
+        return relevant
+
+    async def _find_relevant_faq_fallback(
+        self,
+        query: str,
+        language: str,
+        max_items: int = 3,
+    ) -> List[dict]:
+        """Fallback method for FAQ search if DocsSearchService fails."""
+        relevant = []
+
+        try:
             faq_entries = await FAQEntry.find(
-                FAQEntry.is_active == True
+                FAQEntry.is_active == True  # noqa: E712
             ).to_list()
 
             query_lower = query.lower()
 
             for entry in faq_entries:
-                # Get translation for language
                 trans = entry.translations.get(language, {})
                 question = trans.get('question', '')
                 answer = trans.get('answer', '')
 
-                # Simple relevance check
                 if query_lower in question.lower() or any(
                     word in question.lower() for word in query_lower.split()
                 ):
@@ -156,7 +253,7 @@ class SupportContextBuilder:
                     break
 
         except Exception as e:
-            print(f'[SupportContext] Error finding FAQ: {e}')
+            logger.error(f'[SupportContext] Error in FAQ fallback: {e}')
 
         return relevant
 
@@ -183,33 +280,38 @@ class SupportContextBuilder:
         """Build system instructions based on context."""
         if language == 'he':
             base = """אתה עוזר תמיכה של Bayit+. עזור למשתמשים בשאלות על השירות.
+יש לך גישה למערכת תיעוד מקיפה עם 219+ מאמרים ו-80+ שאלות נפוצות.
 תענה בעברית, בקצרה וברורות.
 אם אתה לא בטוח בתשובה, הצע ליצור פניה לתמיכה."""
         elif language == 'es':
             base = """Eres un asistente de soporte de Bayit+. Ayuda a los usuarios con preguntas sobre el servicio.
+Tienes acceso a un sistema de documentación completo con 219+ artículos y 80+ preguntas frecuentes.
 Responde en español, de forma breve y clara.
 Si no estás seguro de la respuesta, sugiere crear un ticket de soporte."""
         else:
             base = """You are a Bayit+ support assistant. Help users with questions about the service.
+You have access to a comprehensive documentation system with 219+ articles and 80+ FAQ entries.
 Respond briefly and clearly in English.
 If you're unsure of the answer, suggest creating a support ticket."""
 
         # Add context about available info
         if context.get('docs'):
+            doc_count = len(context.get('docs', []))
             if language == 'he':
-                base += '\n\nיש לך מידע רלוונטי מהתיעוד שלנו שתוכל להשתמש בו לענות.'
+                base += f'\n\nנמצאו {doc_count} מאמרי עזרה רלוונטיים לשאילתה זו.'
             elif language == 'es':
-                base += '\n\nTienes información relevante de nuestra documentación que puedes usar para responder.'
+                base += f'\n\nSe encontraron {doc_count} artículos de ayuda relevantes para esta consulta.'
             else:
-                base += '\n\nYou have relevant information from our documentation that you can use to answer.'
+                base += f'\n\nFound {doc_count} relevant help articles for this query.'
 
         if context.get('faq'):
+            faq_count = len(context.get('faq', []))
             if language == 'he':
-                base += '\n\nיש שאלות נפוצות רלוונטיות שיכולות לעזור.'
+                base += f'\n\nנמצאו {faq_count} שאלות נפוצות רלוונטיות.'
             elif language == 'es':
-                base += '\n\nHay preguntas frecuentes relevantes que pueden ayudar.'
+                base += f'\n\nSe encontraron {faq_count} preguntas frecuentes relevantes.'
             else:
-                base += '\n\nThere are relevant FAQ entries that may help.'
+                base += f'\n\nFound {faq_count} relevant FAQ entries.'
 
         return base
 

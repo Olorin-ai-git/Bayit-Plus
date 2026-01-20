@@ -3549,5 +3549,43 @@
       "jewish-history": "Jewish History",
       "jewish-history.description": "History of the Jewish people"
     }
+  },
+  "passkey": {
+    "manager": {
+      "title": "Passkeys",
+      "subtitle": "Manage your passkeys for secure content access"
+    },
+    "unsupported": "Passkeys are not supported on this device",
+    "fetchError": "Failed to load passkeys",
+    "registerError": "Failed to register passkey",
+    "deleteError": "Failed to delete passkey",
+    "cancelled": "Passkey operation was cancelled",
+    "noPasskeys": "No passkeys registered yet. Add one to unlock private content.",
+    "unknownDevice": "Unknown Device",
+    "created": "Created",
+    "lastUsed": "Last used",
+    "never": "Never",
+    "addPasskey": "Add Passkey",
+    "deleteConfirmTitle": "Delete Passkey?",
+    "deleteConfirmText": "This passkey will no longer be able to unlock content. You can always add it again later.",
+    "unlock": "Unlock",
+    "unlockContent": "Unlock Private Content",
+    "unlockDescription": "Use your passkey to access private movies and series",
+    "auth": {
+      "title": "Unlock Content",
+      "description": "Use your fingerprint, face, or device PIN to unlock private movies and series.",
+      "unlock": "Unlock with Passkey",
+      "authenticating": "Authenticating...",
+      "success": "Content Unlocked!",
+      "cancelled": "Authentication was cancelled",
+      "error": "Authentication failed. Please try again."
+    },
+    "qr": {
+      "useQR": "Use Phone to Unlock",
+      "scanWithPhone": "Scan with your phone",
+      "instruction": "Open the camera on your phone and scan the QR code to authenticate",
+      "error": "Failed to generate QR code",
+      "expired": "QR code expired. Please try again."
+    }
   }
 }

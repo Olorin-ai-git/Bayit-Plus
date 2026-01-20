@@ -3443,5 +3443,43 @@
       "jewish-history": "Historia Judía",
       "jewish-history.description": "Historia del pueblo judío"
     }
+  },
+  "passkey": {
+    "manager": {
+      "title": "Claves de Acceso",
+      "subtitle": "Gestiona tus claves de acceso para contenido seguro"
+    },
+    "unsupported": "Las claves de acceso no son compatibles con este dispositivo",
+    "fetchError": "Error al cargar las claves de acceso",
+    "registerError": "Error al registrar la clave de acceso",
+    "deleteError": "Error al eliminar la clave de acceso",
+    "cancelled": "La operación de clave de acceso fue cancelada",
+    "noPasskeys": "Aún no hay claves de acceso registradas. Agrega una para desbloquear contenido privado.",
+    "unknownDevice": "Dispositivo Desconocido",
+    "created": "Creada",
+    "lastUsed": "Último uso",
+    "never": "Nunca",
+    "addPasskey": "Agregar Clave de Acceso",
+    "deleteConfirmTitle": "¿Eliminar Clave de Acceso?",
+    "deleteConfirmText": "Esta clave de acceso ya no podrá desbloquear contenido. Siempre puedes agregarla de nuevo más tarde.",
+    "unlock": "Desbloquear",
+    "unlockContent": "Desbloquear Contenido Privado",
+    "unlockDescription": "Usa tu clave de acceso para acceder a películas y series privadas",
+    "auth": {
+      "title": "Desbloquear Contenido",
+      "description": "Usa tu huella digital, rostro o PIN del dispositivo para desbloquear películas y series privadas.",
+      "unlock": "Desbloquear con Clave de Acceso",
+      "authenticating": "Autenticando...",
+      "success": "¡Contenido Desbloqueado!",
+      "cancelled": "La autenticación fue cancelada",
+      "error": "La autenticación falló. Por favor, intenta de nuevo."
+    },
+    "qr": {
+      "useQR": "Usar Teléfono para Desbloquear",
+      "scanWithPhone": "Escanea con tu teléfono",
+      "instruction": "Abre la cámara en tu teléfono y escanea el código QR para autenticarte",
+      "error": "Error al generar el código QR",
+      "expired": "El código QR ha expirado. Por favor, intenta de nuevo."
+    }
   }
 }
