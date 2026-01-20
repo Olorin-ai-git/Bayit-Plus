@@ -13,10 +13,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 async def test_password_validation():
     """Test password strength validation"""
     print("\n🔐 Testing Password Strength Validation...")
-    
+
     from app.models.user import UserCreate
     from pydantic import ValidationError
-    
+
     # Test 1: Weak password (too short)
     try:
         user = UserCreate(email="test@test.com", name="Test", password="weak")
@@ -27,7 +27,7 @@ async def test_password_validation():
             print("   ✅ PASS: Weak password rejected (too short)")
         else:
             print(f"   ⚠️  Unexpected error: {e}")
-    
+
     # Test 2: Password without uppercase
     try:
         user = UserCreate(email="test@test.com", name="Test", password="lowercase123!")
@@ -38,7 +38,7 @@ async def test_password_validation():
             print("   ✅ PASS: Password without uppercase rejected")
         else:
             print(f"   ⚠️  Unexpected error: {e}")
-    
+
     # Test 3: Common password
     try:
         user = UserCreate(email="test@test.com", name="Test", password="password")
@@ -49,7 +49,7 @@ async def test_password_validation():
             print("   ✅ PASS: Common password rejected")
         else:
             print(f"   ⚠️  Unexpected error: {e}")
-    
+
     # Test 4: Strong password should work
     try:
         user = UserCreate(email="test@test.com", name="Test", password="StrongP@ss123!")
@@ -57,30 +57,30 @@ async def test_password_validation():
     except ValidationError as e:
         print(f"   ❌ FAIL: Strong password rejected: {e}")
         return False
-    
+
     return True
 
 
 async def test_oauth_state():
     """Test OAuth state parameter generation"""
     print("\n🔒 Testing OAuth CSRF Protection...")
-    
+
     from app.api.routes.auth import get_google_auth_url
-    
+
     try:
         result = await get_google_auth_url()
-        
+
         if "url" in result and "state" in result:
             print(f"   ✅ PASS: OAuth URL includes state parameter")
             print(f"   ℹ️  State length: {len(result['state'])} characters")
-            
-            if len(result['state']) >= 16:
+
+            if len(result["state"]) >= 16:
                 print(f"   ✅ PASS: State parameter is sufficiently long")
             else:
                 print(f"   ❌ FAIL: State parameter too short")
                 return False
-            
-            if "state=" in result['url']:
+
+            if "state=" in result["url"]:
                 print(f"   ✅ PASS: State parameter in URL")
             else:
                 print(f"   ❌ FAIL: State parameter not in URL")
@@ -91,26 +91,26 @@ async def test_oauth_state():
     except Exception as e:
         print(f"   ❌ FAIL: Error generating OAuth URL: {e}")
         return False
-    
+
     return True
 
 
 async def test_rate_limiter():
     """Test rate limiter import"""
     print("\n⏱️  Testing Rate Limiter...")
-    
+
     try:
-        from app.core.rate_limiter import limiter, RATE_LIMITING_ENABLED, RATE_LIMITS
-        
+        from app.core.rate_limiter import RATE_LIMITING_ENABLED, RATE_LIMITS, limiter
+
         print(f"   ✅ PASS: Rate limiter module loaded")
         print(f"   ℹ️  Rate limiting enabled: {RATE_LIMITING_ENABLED}")
-        
+
         if RATE_LIMITING_ENABLED:
             print(f"   ✅ PASS: Rate limiting is enabled")
             print(f"   ℹ️  Configured limits: {RATE_LIMITS}")
         else:
             print(f"   ⚠️  WARNING: Rate limiting disabled (slowapi not installed?)")
-        
+
         return True
     except Exception as e:
         print(f"   ❌ FAIL: Error loading rate limiter: {e}")
@@ -120,25 +120,26 @@ async def test_rate_limiter():
 async def test_datetime_fix():
     """Test datetime.utcnow() replacement"""
     print("\n📅 Testing datetime.utcnow() Fix...")
-    
+
     try:
         # Check if timezone is imported
-        from app.api.routes import auth
         import inspect
-        
+
+        from app.api.routes import auth
+
         source = inspect.getsource(auth)
-        
+
         if "datetime.utcnow()" in source:
             print("   ❌ FAIL: datetime.utcnow() still present in auth.py")
             return False
         else:
             print("   ✅ PASS: datetime.utcnow() removed from auth.py")
-        
+
         if "datetime.now(timezone.utc)" in source:
             print("   ✅ PASS: Using datetime.now(timezone.utc)")
         else:
             print("   ⚠️  WARNING: Neither utcnow() nor timezone.utc found")
-        
+
         return True
     except Exception as e:
         print(f"   ❌ FAIL: Error checking datetime fix: {e}")
@@ -149,33 +150,33 @@ async def main():
     print("╔" + "=" * 78 + "╗")
     print("║" + " " * 25 + "Security Fixes Test Suite" + " " * 28 + "║")
     print("╚" + "=" * 78 + "╝")
-    
+
     results = []
-    
+
     # Run tests
     results.append(("Password Validation", await test_password_validation()))
     results.append(("OAuth CSRF Protection", await test_oauth_state()))
     results.append(("Rate Limiter", await test_rate_limiter()))
     results.append(("datetime.utcnow() Fix", await test_datetime_fix()))
-    
+
     # Summary
     print()
     print("╔" + "=" * 78 + "╗")
     print("║" + " " * 32 + "TEST SUMMARY" + " " * 33 + "║")
     print("╚" + "=" * 78 + "╝")
     print()
-    
+
     passed = sum(1 for _, result in results if result)
     total = len(results)
-    
+
     for test_name, result in results:
         status = "✅ PASS" if result else "❌ FAIL"
         print(f"   {status}: {test_name}")
-    
+
     print()
     print(f"   Total: {passed}/{total} tests passed")
     print()
-    
+
     if passed == total:
         print("🎉 All security fixes verified!")
         print()

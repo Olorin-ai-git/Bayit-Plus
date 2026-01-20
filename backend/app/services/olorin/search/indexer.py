@@ -6,17 +6,16 @@ Uses IndexableContent protocol for loose coupling.
 """
 
 import logging
-from typing import Optional, List
-
-from olorin import IndexableContent
+from typing import List, Optional
 
 from app.adapters import BayitContentAdapter
 from app.core.config import settings
 from app.models.content_embedding import ContentEmbedding
+from app.services.olorin.content_metadata_service import content_metadata_service
 from app.services.olorin.search.client import client_manager
 from app.services.olorin.search.embedding import generate_embedding
 from app.services.olorin.search.helpers import generate_vector_id, group_subtitles
-from app.services.olorin.content_metadata_service import content_metadata_service
+from olorin import IndexableContent
 
 logger = logging.getLogger(__name__)
 
@@ -200,20 +199,22 @@ async def index_subtitles(
 
             vector_id = generate_vector_id(content_id, "subtitle_segment", idx)
 
-            vectors_to_upsert.append({
-                "id": vector_id,
-                "values": embedding,
-                "metadata": {
-                    "content_id": content_id,
-                    "content_type": content_type,
-                    "embedding_type": "subtitle_segment",
-                    "segment_index": idx,
-                    "start_time": segment["start_time"],
-                    "end_time": segment["end_time"],
-                    "language": subtitle_language,
-                    "text": text[:1000],
-                },
-            })
+            vectors_to_upsert.append(
+                {
+                    "id": vector_id,
+                    "values": embedding,
+                    "metadata": {
+                        "content_id": content_id,
+                        "content_type": content_type,
+                        "embedding_type": "subtitle_segment",
+                        "segment_index": idx,
+                        "start_time": segment["start_time"],
+                        "end_time": segment["end_time"],
+                        "language": subtitle_language,
+                        "text": text[:1000],
+                    },
+                }
+            )
 
             embeddings_to_save.append(
                 ContentEmbedding(

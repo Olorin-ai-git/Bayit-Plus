@@ -5,12 +5,13 @@ Manage user's downloaded content for offline viewing
 
 from datetime import datetime
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, status, Depends
-from pydantic import BaseModel
-from beanie import Document
-from app.models.user import User
-from app.models.content import Content, Podcast
+
 from app.core.security import get_current_active_user
+from app.models.content import Content, Podcast
+from app.models.user import User
+from beanie import Document
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 
 
 # Download model
@@ -60,9 +61,11 @@ async def get_downloads(
     current_user: User = Depends(get_current_active_user),
 ):
     """Get user's downloaded items."""
-    downloads = await Download.find(
-        Download.user_id == str(current_user.id)
-    ).sort("-downloaded_at").to_list()
+    downloads = (
+        await Download.find(Download.user_id == str(current_user.id))
+        .sort("-downloaded_at")
+        .to_list()
+    )
 
     result = []
     for dl in downloads:

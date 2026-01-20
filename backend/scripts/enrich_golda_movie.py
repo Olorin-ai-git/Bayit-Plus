@@ -23,16 +23,17 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Set environment variables before importing app modules
 from dotenv import load_dotenv
+
 load_dotenv(Path(__file__).parent.parent / ".env")
 
 import logging
-from motor.motor_asyncio import AsyncIOMotorClient
+
 from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -42,8 +43,8 @@ async def main():
     from app.core.config import settings
     from app.models.content import Content
     from app.models.subtitles import SubtitleTrackDoc, TranslationCacheDoc
-    from app.services.tmdb_service import tmdb_service
     from app.services.ffmpeg_service import ffmpeg_service
+    from app.services.tmdb_service import tmdb_service
 
     logger.info("=" * 60)
     logger.info("ENRICHING MOVIE: GOLDA")
@@ -54,7 +55,7 @@ async def main():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     await init_beanie(
         database=client[settings.MONGODB_DB_NAME],
-        document_models=[Content, SubtitleTrackDoc, TranslationCacheDoc]
+        document_models=[Content, SubtitleTrackDoc, TranslationCacheDoc],
     )
     logger.info(f"✅ Connected to database: {settings.MONGODB_DB_NAME}")
 
@@ -126,7 +127,9 @@ async def main():
             video_metadata = await ffmpeg_service.analyze_video(stream_url)
 
             logger.info(f"   Video Duration: {video_metadata.get('duration', 0):.2f}s")
-            logger.info(f"   Resolution: {video_metadata.get('width')}x{video_metadata.get('height')}")
+            logger.info(
+                f"   Resolution: {video_metadata.get('width')}x{video_metadata.get('height')}"
+            )
             logger.info(f"   Codec: {video_metadata.get('codec')}")
 
             subtitle_tracks = video_metadata.get("subtitle_tracks", [])
@@ -145,14 +148,21 @@ async def main():
                 logger.info("\n📝 Extracting subtitle tracks...")
                 extracted_subtitles = await ffmpeg_service.extract_all_subtitles(
                     stream_url,
-                    languages=["he", "en", "es", "ar", "ru", "fr"],  # Priority languages
+                    languages=[
+                        "he",
+                        "en",
+                        "es",
+                        "ar",
+                        "ru",
+                        "fr",
+                    ],  # Priority languages
                     max_parallel=3,
-                    max_subtitles=10
+                    max_subtitles=10,
                 )
 
                 logger.info(f"✅ Extracted {len(extracted_subtitles)} subtitle tracks")
                 for sub in extracted_subtitles:
-                    content_preview = sub['content'][:100].replace('\n', ' ')
+                    content_preview = sub["content"][:100].replace("\n", " ")
                     logger.info(f"   - {sub['language']}: {len(sub['content'])} chars")
             else:
                 logger.info("   No embedded subtitle tracks found in video")
@@ -168,18 +178,20 @@ async def main():
             try:
                 # Parse SRT content into cues
                 from app.services.subtitle_parser import parse_srt_content
-                cues = parse_srt_content(sub['content'])
+
+                cues = parse_srt_content(sub["content"])
 
                 # Check if subtitle track already exists
-                existing_track = await SubtitleTrackDoc.find_one({
-                    "content_id": str(golda_movie.id),
-                    "language": sub['language']
-                })
+                existing_track = await SubtitleTrackDoc.find_one(
+                    {"content_id": str(golda_movie.id), "language": sub["language"]}
+                )
 
                 if existing_track:
-                    logger.info(f"   ↻ Updating existing {sub['language']} subtitle track")
+                    logger.info(
+                        f"   ↻ Updating existing {sub['language']} subtitle track"
+                    )
                     existing_track.cues = cues
-                    existing_track.format = sub['format']
+                    existing_track.format = sub["format"]
                     existing_track.source = "embedded"
                     existing_track.updated_at = datetime.utcnow()
                     await existing_track.save()
@@ -188,27 +200,27 @@ async def main():
                     new_track = SubtitleTrackDoc(
                         content_id=str(golda_movie.id),
                         content_type="vod",
-                        language=sub['language'],
-                        language_name=get_language_name(sub['language']),
-                        format=sub['format'],
+                        language=sub["language"],
+                        language_name=get_language_name(sub["language"]),
+                        format=sub["format"],
                         cues=cues,
-                        is_default=(sub['language'] == 'en'),
+                        is_default=(sub["language"] == "en"),
                         is_auto_generated=False,
                         source="embedded",
                         created_at=datetime.utcnow(),
-                        updated_at=datetime.utcnow()
+                        updated_at=datetime.utcnow(),
                     )
                     await new_track.insert()
 
             except Exception as e:
-                logger.error(f"   ❌ Failed to store {sub['language']} subtitles: {str(e)}")
+                logger.error(
+                    f"   ❌ Failed to store {sub['language']} subtitles: {str(e)}"
+                )
 
     # Step 6: Update Content document with enriched data
     logger.info("\n📦 Updating Content document...")
 
-    update_data = {
-        "updated_at": datetime.utcnow()
-    }
+    update_data = {"updated_at": datetime.utcnow()}
 
     # Add TMDB data
     if tmdb_data.get("tmdb_id"):
@@ -233,20 +245,22 @@ async def main():
     # Add subtitle info
     if extracted_subtitles:
         update_data["has_subtitles"] = True
-        update_data["available_subtitle_languages"] = [s["language"] for s in extracted_subtitles]
+        update_data["available_subtitle_languages"] = [
+            s["language"] for s in extracted_subtitles
+        ]
         update_data["embedded_subtitle_count"] = len(extracted_subtitles)
         update_data["subtitle_extraction_status"] = "completed"
         update_data["subtitle_last_checked"] = datetime.utcnow()
 
     # Add video metadata if available
-    if 'video_metadata' in locals() and video_metadata:
+    if "video_metadata" in locals() and video_metadata:
         update_data["video_metadata"] = {
             "duration": video_metadata.get("duration"),
             "width": video_metadata.get("width"),
             "height": video_metadata.get("height"),
             "codec": video_metadata.get("codec"),
             "bitrate": video_metadata.get("bitrate"),
-            "fps": video_metadata.get("fps")
+            "fps": video_metadata.get("fps"),
         }
 
         # Determine quality tier
@@ -332,12 +346,14 @@ def parse_srt_content(content: str) -> list:
             # Get text (remaining lines)
             text = "\n".join(lines[2:])
 
-            cues.append({
-                "index": index,
-                "start_time": start_time,
-                "end_time": end_time,
-                "text": text
-            })
+            cues.append(
+                {
+                    "index": index,
+                    "start_time": start_time,
+                    "end_time": end_time,
+                    "text": text,
+                }
+            )
         except (ValueError, IndexError):
             continue
 

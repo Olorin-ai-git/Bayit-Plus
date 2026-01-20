@@ -8,6 +8,7 @@ Run with: poetry run python scripts/fix_subtitle_index.py
 import asyncio
 import os
 from pathlib import Path
+
 from motor.motor_asyncio import AsyncIOMotorClient
 
 # Load .env file if exists
@@ -19,6 +20,7 @@ if env_file.exists():
             if line and not line.startswith("#") and "=" in line:
                 key, value = line.split("=", 1)
                 os.environ.setdefault(key.strip(), value.strip())
+
 
 async def fix_subtitle_index():
     """Drop the problematic text index on subtitle_tracks"""
@@ -42,7 +44,7 @@ async def fix_subtitle_index():
     print("\nExisting indexes:")
     async for index in collection.list_indexes():
         print(f"  - {index['name']}: {index.get('key', {})}")
-        if index.get('default_language'):
+        if index.get("default_language"):
             print(f"    default_language: {index['default_language']}")
 
     # Drop the text index if it exists
@@ -50,8 +52,8 @@ async def fix_subtitle_index():
         # Find the text index name
         text_index_name = None
         async for index in collection.list_indexes():
-            if 'text' in str(index.get('key', {})):
-                text_index_name = index['name']
+            if "text" in str(index.get("key", {})):
+                text_index_name = index["name"]
                 break
 
         if text_index_name:

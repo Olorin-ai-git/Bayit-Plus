@@ -5,17 +5,18 @@ Endpoints for viewing and exporting audit logs
 
 from datetime import datetime
 from typing import Optional
-from fastapi import APIRouter, Query, Depends
 
+from app.models.admin import AuditAction, AuditLog, Permission
 from app.models.user import User
-from app.models.admin import Permission, AuditLog, AuditAction
-from .auth import has_permission
+from fastapi import APIRouter, Depends, Query
 
+from .auth import has_permission
 
 router = APIRouter()
 
 
 # ============ AUDIT LOGS ENDPOINTS ============
+
 
 @router.get("/logs")
 async def get_audit_logs(
@@ -26,7 +27,7 @@ async def get_audit_logs(
     end_date: Optional[datetime] = None,
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=50, le=200),
-    current_user: User = Depends(has_permission(Permission.SYSTEM_LOGS))
+    current_user: User = Depends(has_permission(Permission.SYSTEM_LOGS)),
 ):
     """Get audit logs with filtering."""
     query = AuditLog.find()
@@ -71,7 +72,7 @@ async def get_audit_logs(
 async def export_audit_logs(
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
-    current_user: User = Depends(has_permission(Permission.SYSTEM_LOGS))
+    current_user: User = Depends(has_permission(Permission.SYSTEM_LOGS)),
 ):
     """Export audit logs as JSON."""
     query = AuditLog.find()

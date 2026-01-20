@@ -20,22 +20,23 @@ import sys
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Any, Dict, List, Optional, Tuple
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from dotenv import load_dotenv
+
 load_dotenv(Path(__file__).parent.parent / ".env")
 
 import logging
-from motor.motor_asyncio import AsyncIOMotorClient
+
 from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -71,20 +72,23 @@ class SeriesOrganizer:
         """Initialize TMDB service."""
         try:
             from app.services.tmdb_service import TMDBService
+
             self.tmdb_service = TMDBService()
             logger.info("✅ TMDB service initialized")
         except Exception as e:
             logger.error(f"❌ Failed to initialize TMDB service: {e}")
             self.tmdb_service = None
 
-    def extract_series_info(self, title: str) -> Tuple[str, Optional[int], Optional[int]]:
+    def extract_series_info(
+        self, title: str
+    ) -> Tuple[str, Optional[int], Optional[int]]:
         """
         Extract series name, season, and episode from title.
 
         Returns: (series_name, season_number, episode_number)
         """
         # Pattern: "Series Name S01E01" or "Series Name S01E01 - Episode Title"
-        pattern = r'^(.+?)\s*[Ss](\d+)[Ee](\d+)'
+        pattern = r"^(.+?)\s*[Ss](\d+)[Ee](\d+)"
         match = re.match(pattern, title)
 
         if match:
@@ -94,17 +98,17 @@ class SeriesOrganizer:
             return series_name, season, episode
 
         # Try Hebrew patterns
-        hebrew_season = r'עונה\s*(\d+)'
-        hebrew_episode = r'פרק\s*(\d+)'
+        hebrew_season = r"עונה\s*(\d+)"
+        hebrew_episode = r"פרק\s*(\d+)"
 
         season_match = re.search(hebrew_season, title)
         episode_match = re.search(hebrew_episode, title)
 
         if season_match or episode_match:
             # Remove Hebrew markers to get series name
-            series_name = re.sub(hebrew_season, '', title)
-            series_name = re.sub(hebrew_episode, '', series_name)
-            series_name = re.sub(r'\s*-\s*$', '', series_name).strip()
+            series_name = re.sub(hebrew_season, "", title)
+            series_name = re.sub(hebrew_episode, "", series_name)
+            series_name = re.sub(r"\s*-\s*$", "", series_name).strip()
 
             season = int(season_match.group(1)) if season_match else None
             episode = int(episode_match.group(1)) if episode_match else None
@@ -139,11 +143,15 @@ class SeriesOrganizer:
                 series_groups[series_name].append(content)
 
         self.stats["series_found"] = len(series_groups)
-        logger.info(f"✅ Found {len(series_groups)} series with {sum(len(eps) for eps in series_groups.values())} total episodes")
+        logger.info(
+            f"✅ Found {len(series_groups)} series with {sum(len(eps) for eps in series_groups.values())} total episodes"
+        )
 
         return dict(series_groups)
 
-    async def fetch_tmdb_series_data(self, series_name: str, year: Optional[int] = None) -> Optional[Dict[str, Any]]:
+    async def fetch_tmdb_series_data(
+        self, series_name: str, year: Optional[int] = None
+    ) -> Optional[Dict[str, Any]]:
         """Fetch TMDB metadata for a series."""
         if not self.tmdb_service:
             return None
@@ -172,18 +180,20 @@ class SeriesOrganizer:
         self,
         series_name: str,
         episodes: List[dict],
-        tmdb_data: Optional[Dict[str, Any]]
+        tmdb_data: Optional[Dict[str, Any]],
     ) -> Optional[str]:
         """Find existing series parent or create a new one."""
 
         # Check if a series parent already exists
-        existing = await self.db.content.find_one({
-            "title": series_name,
-            "content_type": "series",
-            "is_series": True,
-            "season": None,
-            "episode": None
-        })
+        existing = await self.db.content.find_one(
+            {
+                "title": series_name,
+                "content_type": "series",
+                "is_series": True,
+                "season": None,
+                "episode": None,
+            }
+        )
 
         if existing:
             logger.info(f"   📂 Found existing series parent: {existing['_id']}")
@@ -221,7 +231,9 @@ class SeriesOrganizer:
             "is_published": True,
             "season": None,
             "episode": None,
-            "total_seasons": len(seasons) if seasons else (tmdb_data.get("total_seasons") if tmdb_data else None),
+            "total_seasons": len(seasons)
+            if seasons
+            else (tmdb_data.get("total_seasons") if tmdb_data else None),
             "total_episodes": len(episodes),
             "stream_url": "",  # Parent has no stream
             "stream_type": "hls",
@@ -231,25 +243,29 @@ class SeriesOrganizer:
 
         # Add TMDB data
         if tmdb_data:
-            series_doc.update({
-                "tmdb_id": tmdb_data.get("tmdb_id"),
-                "imdb_id": tmdb_data.get("imdb_id"),
-                "imdb_rating": tmdb_data.get("imdb_rating"),
-                "imdb_votes": tmdb_data.get("imdb_votes"),
-                "poster_url": tmdb_data.get("poster"),
-                "thumbnail": tmdb_data.get("poster"),
-                "backdrop": tmdb_data.get("backdrop"),
-                "trailer_url": tmdb_data.get("trailer_url"),
-                "genres": tmdb_data.get("genres"),
-                "cast": tmdb_data.get("cast"),
-                "year": tmdb_data.get("release_year"),
-            })
+            series_doc.update(
+                {
+                    "tmdb_id": tmdb_data.get("tmdb_id"),
+                    "imdb_id": tmdb_data.get("imdb_id"),
+                    "imdb_rating": tmdb_data.get("imdb_rating"),
+                    "imdb_votes": tmdb_data.get("imdb_votes"),
+                    "poster_url": tmdb_data.get("poster"),
+                    "thumbnail": tmdb_data.get("poster"),
+                    "backdrop": tmdb_data.get("backdrop"),
+                    "trailer_url": tmdb_data.get("trailer_url"),
+                    "genres": tmdb_data.get("genres"),
+                    "cast": tmdb_data.get("cast"),
+                    "year": tmdb_data.get("release_year"),
+                }
+            )
         else:
             # Try to get poster from first episode
             for ep in episodes:
                 if ep.get("poster_url") or ep.get("thumbnail"):
                     series_doc["poster_url"] = ep.get("poster_url")
-                    series_doc["thumbnail"] = ep.get("thumbnail") or ep.get("poster_url")
+                    series_doc["thumbnail"] = ep.get("thumbnail") or ep.get(
+                        "poster_url"
+                    )
                     series_doc["backdrop"] = ep.get("backdrop")
                     break
 
@@ -260,7 +276,9 @@ class SeriesOrganizer:
         logger.info(f"      ✅ Created series parent: {series_id}")
         return series_id
 
-    async def update_series_with_tmdb(self, series_oid: ObjectId, tmdb_data: Dict[str, Any], episodes: List[dict]):
+    async def update_series_with_tmdb(
+        self, series_oid: ObjectId, tmdb_data: Dict[str, Any], episodes: List[dict]
+    ):
         """Update existing series with TMDB data."""
         update_data = {
             "updated_at": datetime.now(timezone.utc),
@@ -290,10 +308,7 @@ class SeriesOrganizer:
         if tmdb_data.get("total_seasons"):
             update_data["total_seasons"] = tmdb_data["total_seasons"]
 
-        await self.db.content.update_one(
-            {"_id": series_oid},
-            {"$set": update_data}
-        )
+        await self.db.content.update_one({"_id": series_oid}, {"$set": update_data})
         logger.info(f"      ✅ Updated series with TMDB data")
 
     async def link_episodes_to_series(
@@ -301,7 +316,7 @@ class SeriesOrganizer:
         series_id: str,
         series_name: str,
         episodes: List[dict],
-        tmdb_data: Optional[Dict[str, Any]]
+        tmdb_data: Optional[Dict[str, Any]],
     ):
         """Link episodes to series parent and propagate metadata."""
         logger.info(f"   🔗 Linking {len(episodes)} episodes to series...")
@@ -340,13 +355,12 @@ class SeriesOrganizer:
                 if not ep.get("imdb_id") and tmdb_data.get("imdb_id"):
                     update_data["imdb_id"] = tmdb_data["imdb_id"]
 
-            await self.db.content.update_one(
-                {"_id": ep_id},
-                {"$set": update_data}
-            )
+            await self.db.content.update_one({"_id": ep_id}, {"$set": update_data})
             self.stats["episodes_linked"] += 1
 
-            if len(update_data) > 4:  # More than just series_id, is_series, content_type, updated_at
+            if (
+                len(update_data) > 4
+            ):  # More than just series_id, is_series, content_type, updated_at
                 self.stats["episodes_enriched"] += 1
 
         logger.info(f"      ✅ Linked {len(episodes)} episodes")
@@ -372,7 +386,9 @@ class SeriesOrganizer:
         logger.info("PROCESSING SERIES")
         logger.info("=" * 80)
 
-        for series_name, episodes in sorted(series_groups.items(), key=lambda x: -len(x[1])):
+        for series_name, episodes in sorted(
+            series_groups.items(), key=lambda x: -len(x[1])
+        ):
             logger.info(f"\n📺 Processing: {series_name} ({len(episodes)} episodes)")
 
             # Check if Hebrew
@@ -388,11 +404,15 @@ class SeriesOrganizer:
             tmdb_data = await self.fetch_tmdb_series_data(series_name, year)
 
             # Find or create series parent
-            series_id = await self.find_or_create_series_parent(series_name, episodes, tmdb_data)
+            series_id = await self.find_or_create_series_parent(
+                series_name, episodes, tmdb_data
+            )
 
             if series_id:
                 # Link episodes
-                await self.link_episodes_to_series(series_id, series_name, episodes, tmdb_data)
+                await self.link_episodes_to_series(
+                    series_id, series_name, episodes, tmdb_data
+                )
             else:
                 logger.error(f"   ❌ Failed to create series parent for '{series_name}'")
                 self.stats["errors"] += 1

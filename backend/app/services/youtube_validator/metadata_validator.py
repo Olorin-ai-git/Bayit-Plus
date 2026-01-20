@@ -8,32 +8,28 @@ Handles video availability, privacy status, and embedding permissions.
 import logging
 
 import httpx
-
 from app.core.config import settings
 from app.services.youtube_validator.constants import (
-    OEMBED_URL,
-    YOUTUBE_API_BASE_URL,
-    VIDEO_STATUS_AVAILABLE,
-    VIDEO_STATUS_UNAVAILABLE,
-    VIDEO_STATUS_PRIVATE,
-    VIDEO_STATUS_REMOVED,
-    VIDEO_STATUS_ERROR,
-    HTTP_STATUS_OK,
-    HTTP_STATUS_UNAUTHORIZED,
     HTTP_STATUS_FORBIDDEN,
     HTTP_STATUS_NOT_FOUND,
+    HTTP_STATUS_OK,
+    HTTP_STATUS_UNAUTHORIZED,
+    OEMBED_URL,
+    VIDEO_STATUS_AVAILABLE,
+    VIDEO_STATUS_ERROR,
+    VIDEO_STATUS_PRIVATE,
+    VIDEO_STATUS_REMOVED,
+    VIDEO_STATUS_UNAVAILABLE,
+    YOUTUBE_API_BASE_URL,
 )
 from app.services.youtube_validator.models import YouTubeValidationResult
 from app.services.youtube_validator.url_parser import build_watch_url
-
 
 logger = logging.getLogger(__name__)
 
 
 async def validate_with_oembed(
-    client: httpx.AsyncClient,
-    url: str,
-    video_id: str
+    client: httpx.AsyncClient, url: str, video_id: str
 ) -> YouTubeValidationResult:
     """Validate using YouTube oEmbed API (no API key required)."""
     watch_url = build_watch_url(video_id)
@@ -48,7 +44,7 @@ async def validate_with_oembed(
             is_valid=True,
             status=VIDEO_STATUS_AVAILABLE,
             title=data.get("title"),
-            author=data.get("author_name")
+            author=data.get("author_name"),
         )
 
     if response.status_code == HTTP_STATUS_UNAUTHORIZED:
@@ -57,7 +53,7 @@ async def validate_with_oembed(
             video_id=video_id,
             is_valid=False,
             status=VIDEO_STATUS_PRIVATE,
-            error_message="Video is private or requires authentication"
+            error_message="Video is private or requires authentication",
         )
 
     if response.status_code == HTTP_STATUS_NOT_FOUND:
@@ -66,7 +62,7 @@ async def validate_with_oembed(
             video_id=video_id,
             is_valid=False,
             status=VIDEO_STATUS_REMOVED,
-            error_message="Video not found or has been removed"
+            error_message="Video not found or has been removed",
         )
 
     if response.status_code == HTTP_STATUS_FORBIDDEN:
@@ -75,7 +71,7 @@ async def validate_with_oembed(
             video_id=video_id,
             is_valid=False,
             status=VIDEO_STATUS_UNAVAILABLE,
-            error_message="Video is not available (may be region-locked or restricted)"
+            error_message="Video is not available (may be region-locked or restricted)",
         )
 
     return YouTubeValidationResult(
@@ -83,14 +79,12 @@ async def validate_with_oembed(
         video_id=video_id,
         is_valid=False,
         status=VIDEO_STATUS_ERROR,
-        error_message=f"HTTP {response.status_code}"
+        error_message=f"HTTP {response.status_code}",
     )
 
 
 async def validate_with_api(
-    client: httpx.AsyncClient,
-    url: str,
-    video_id: str
+    client: httpx.AsyncClient, url: str, video_id: str
 ) -> YouTubeValidationResult:
     """Validate using YouTube Data API v3 (requires API key)."""
     api_key = settings.YOUTUBE_API_KEY
@@ -106,7 +100,7 @@ async def validate_with_api(
             video_id=video_id,
             is_valid=False,
             status=VIDEO_STATUS_ERROR,
-            error_message=f"API error: HTTP {response.status_code}"
+            error_message=f"API error: HTTP {response.status_code}",
         )
 
     data = response.json()
@@ -118,7 +112,7 @@ async def validate_with_api(
             video_id=video_id,
             is_valid=False,
             status=VIDEO_STATUS_REMOVED,
-            error_message="Video not found or has been removed"
+            error_message="Video not found or has been removed",
         )
 
     video = items[0]
@@ -137,7 +131,7 @@ async def validate_with_api(
             status=VIDEO_STATUS_PRIVATE,
             title=title,
             author=author,
-            error_message="Video is private"
+            error_message="Video is private",
         )
 
     if not embeddable:
@@ -148,7 +142,7 @@ async def validate_with_api(
             status=VIDEO_STATUS_UNAVAILABLE,
             title=title,
             author=author,
-            error_message="Video embedding is disabled"
+            error_message="Video embedding is disabled",
         )
 
     return YouTubeValidationResult(
@@ -157,7 +151,7 @@ async def validate_with_api(
         is_valid=True,
         status=VIDEO_STATUS_AVAILABLE,
         title=title,
-        author=author
+        author=author,
     )
 
 

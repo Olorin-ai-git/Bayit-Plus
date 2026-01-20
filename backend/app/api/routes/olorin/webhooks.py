@@ -11,9 +11,8 @@ from datetime import datetime, timezone
 from typing import Optional
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
-from pydantic import BaseModel, Field
-
+from app.api.routes.olorin.dependencies import get_current_partner
+from app.api.routes.olorin.errors import OlorinErrors, get_error_message
 from app.core.config import settings
 from app.models.integration_partner import (
     IntegrationPartner,
@@ -21,8 +20,8 @@ from app.models.integration_partner import (
     WebhookEventType,
 )
 from app.services.olorin.partner_service import partner_service
-from app.api.routes.olorin.dependencies import get_current_partner
-from app.api.routes.olorin.errors import get_error_message, OlorinErrors
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -217,9 +216,12 @@ async def list_deliveries(
     partner: IntegrationPartner = Depends(get_current_partner),
 ):
     """List recent webhook deliveries."""
-    deliveries = await WebhookDelivery.find(
-        WebhookDelivery.partner_id == partner.partner_id
-    ).sort(-WebhookDelivery.created_at).limit(limit).to_list()
+    deliveries = (
+        await WebhookDelivery.find(WebhookDelivery.partner_id == partner.partner_id)
+        .sort(-WebhookDelivery.created_at)
+        .limit(limit)
+        .to_list()
+    )
 
     return [
         WebhookDeliveryResponse(
@@ -317,7 +319,9 @@ async def _deliver_webhook(
         "Content-Type": "application/json",
         "X-Olorin-Signature": f"sha256={signature}",
         "X-Olorin-Event": event_type,
-        "X-Olorin-Delivery": "test" if is_test else str(datetime.now(timezone.utc).timestamp()),
+        "X-Olorin-Delivery": "test"
+        if is_test
+        else str(datetime.now(timezone.utc).timestamp()),
     }
 
     start_time = time.time()
@@ -387,7 +391,7 @@ async def _deliver_webhook_with_retry(
 
         # Exponential backoff before retry
         if attempt < max_attempts - 1:
-            await asyncio.sleep(2 ** attempt)
+            await asyncio.sleep(2**attempt)
 
     logger.warning(
         f"Webhook delivery failed after {max_attempts} attempts: "

@@ -11,21 +11,21 @@ Usage:
     poetry run python scripts/content/tag_youngsters_vod.py --age-rating 14
 """
 
-import asyncio
 import argparse
+import asyncio
 import logging
 import sys
 
 # Add parent directory to path for imports
 sys.path.insert(0, "/Users/olorin/Documents/Bayit-Plus/backend")
 
-from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
 from datetime import datetime
 
 from app.core.config import settings
 from app.core.database import document_models
 from app.models.content import Content
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 logging.basicConfig(
     level=logging.INFO,
@@ -41,9 +41,22 @@ MATURE_RATINGS = ["R", "NC-17", "TV-MA", "Mature", "18+", "17+"]
 
 # Teen-appropriate genres (higher relevance)
 TEEN_GENRES = [
-    "teen", "young adult", "coming of age", "high school", "college",
-    "adventure", "sci-fi", "fantasy", "action", "mystery", "thriller",
-    "comedy", "romance", "drama", "animation", "documentary",
+    "teen",
+    "young adult",
+    "coming of age",
+    "high school",
+    "college",
+    "adventure",
+    "sci-fi",
+    "fantasy",
+    "action",
+    "mystery",
+    "thriller",
+    "comedy",
+    "romance",
+    "drama",
+    "animation",
+    "documentary",
 ]
 
 
@@ -122,7 +135,9 @@ async def tag_vod_content(dry_run: bool = True, age_rating: int = None):
             skipped_count += 1
             continue
 
-        logger.info(f"{'[DRY RUN] ' if dry_run else ''}Tagging: {content.title} (Rating: {content.rating}, Age: {calculated_age})")
+        logger.info(
+            f"{'[DRY RUN] ' if dry_run else ''}Tagging: {content.title} (Rating: {content.rating}, Age: {calculated_age})"
+        )
 
         if not dry_run:
             # Tag as youngsters content
@@ -149,7 +164,9 @@ async def tag_vod_content(dry_run: bool = True, age_rating: int = None):
 
 
 async def main():
-    parser = argparse.ArgumentParser(description="Tag VOD content as youngsters content")
+    parser = argparse.ArgumentParser(
+        description="Tag VOD content as youngsters content"
+    )
     parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -170,20 +187,26 @@ async def main():
     args = parser.parse_args()
 
     if not args.dry_run and not args.apply:
-        logger.warning("Neither --dry-run nor --apply specified. Defaulting to --dry-run for safety.")
+        logger.warning(
+            "Neither --dry-run nor --apply specified. Defaulting to --dry-run for safety."
+        )
         args.dry_run = True
 
     # Initialize database connection
     logger.info("Connecting to MongoDB...")
     client = AsyncIOMotorClient(settings.MONGODB_URL)
-    await init_beanie(database=client[settings.DB_NAME], document_models=document_models)
+    await init_beanie(
+        database=client[settings.DB_NAME], document_models=document_models
+    )
     logger.info("Database initialized")
 
     try:
         logger.info("=" * 80)
         logger.info("YOUNGSTERS VOD TAGGING")
         logger.info("=" * 80)
-        logger.info(f"Mode: {'DRY RUN (no changes)' if args.dry_run else 'APPLY CHANGES'}")
+        logger.info(
+            f"Mode: {'DRY RUN (no changes)' if args.dry_run else 'APPLY CHANGES'}"
+        )
         if args.age_rating:
             logger.info(f"Age Rating Filter: {args.age_rating}+")
         logger.info("=" * 80)

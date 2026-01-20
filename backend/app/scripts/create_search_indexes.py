@@ -10,10 +10,10 @@ Run with: poetry run python -m app.scripts.create_search_indexes
 
 import asyncio
 import logging
-from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo.errors import OperationFailure
 
 from app.core.config import settings
+from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo.errors import OperationFailure
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ async def create_content_indexes(db):
         for index in existing_indexes:
             if "textIndexVersion" in index:
                 logger.info(f"Dropping existing text index: {index['name']}")
-                await collection.drop_index(index['name'])
+                await collection.drop_index(index["name"])
 
         # Create multi-field text index with weights
         logger.info("Creating multi-field text index on Content...")
@@ -87,7 +87,9 @@ async def create_content_indexes(db):
 
         # Available subtitle languages array index
         try:
-            await collection.create_index("available_subtitle_languages", name="available_subtitle_languages_1")
+            await collection.create_index(
+                "available_subtitle_languages", name="available_subtitle_languages_1"
+            )
             logger.info("✓ Created available_subtitle_languages index")
         except OperationFailure as e:
             if "already exists" not in str(e):
@@ -96,7 +98,9 @@ async def create_content_indexes(db):
 
         # Subscription tier index
         try:
-            await collection.create_index("requires_subscription", name="requires_subscription_1")
+            await collection.create_index(
+                "requires_subscription", name="requires_subscription_1"
+            )
             logger.info("✓ Created requires_subscription index")
         except OperationFailure as e:
             if "already exists" not in str(e):
@@ -141,7 +145,7 @@ async def create_subtitle_indexes(db):
         for index in existing_indexes:
             if "textIndexVersion" in index:
                 logger.info(f"Dropping existing text index: {index['name']}")
-                await collection.drop_index(index['name'])
+                await collection.drop_index(index["name"])
 
         # Create text index on subtitle cues for dialogue search
         logger.info("Creating text index on subtitle cues...")
@@ -161,9 +165,9 @@ async def create_subtitle_indexes(db):
 
 async def verify_indexes(db):
     """Verify that all indexes were created successfully."""
-    logger.info("\n" + "="*60)
+    logger.info("\n" + "=" * 60)
     logger.info("VERIFYING INDEXES")
-    logger.info("="*60)
+    logger.info("=" * 60)
 
     # Verify Content indexes
     logger.info("\nContent collection indexes:")
@@ -177,19 +181,21 @@ async def verify_indexes(db):
     for index in subtitle_indexes:
         logger.info(f"  - {index['name']}: {index.get('key', {})}")
 
-    logger.info("\n" + "="*60)
+    logger.info("\n" + "=" * 60)
     logger.info("VERIFICATION COMPLETE")
-    logger.info("="*60)
+    logger.info("=" * 60)
 
 
 async def run_migration():
     """Run the complete index migration."""
-    logger.info("="*60)
+    logger.info("=" * 60)
     logger.info("SEARCH INDEX MIGRATION SCRIPT")
-    logger.info("="*60)
-    logger.info(f"MongoDB URI: {settings.MONGODB_URL.split('@')[1] if '@' in settings.MONGODB_URL else settings.MONGODB_URL}")
+    logger.info("=" * 60)
+    logger.info(
+        f"MongoDB URI: {settings.MONGODB_URL.split('@')[1] if '@' in settings.MONGODB_URL else settings.MONGODB_URL}"
+    )
     logger.info(f"Database: {settings.MONGODB_DB_NAME}")
-    logger.info("="*60 + "\n")
+    logger.info("=" * 60 + "\n")
 
     # Connect to MongoDB
     client = AsyncIOMotorClient(settings.MONGODB_URL)
@@ -197,7 +203,7 @@ async def run_migration():
 
     try:
         # Test connection
-        await client.admin.command('ping')
+        await client.admin.command("ping")
         logger.info("✓ Connected to MongoDB successfully\n")
 
         # Create Content indexes

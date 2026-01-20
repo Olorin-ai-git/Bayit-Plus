@@ -14,17 +14,16 @@ Sources include:
 import asyncio
 import json
 import logging
+from dataclasses import dataclass, field
 from datetime import datetime
 from email.utils import parsedate_to_datetime
-from typing import List, Dict, Any, Optional
-from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
 
 import httpx
-from bs4 import BeautifulSoup
-
+from app.core.config import settings
 from app.models.content import Podcast, PodcastEpisode
 from app.models.content_taxonomy import ContentSection
-from app.core.config import settings
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +31,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class KidsPodcastEpisode:
     """A single kids podcast episode from RSS feed."""
+
     title: str
     title_en: Optional[str] = None
     description: Optional[str] = None
@@ -46,6 +46,7 @@ class KidsPodcastEpisode:
 @dataclass
 class KidsPodcast:
     """Kids podcast feed data with episodes."""
+
     title: str
     title_en: Optional[str] = None
     title_es: Optional[str] = None
@@ -141,7 +142,7 @@ KIDS_PODCASTS_REGISTRY: List[Dict[str, Any]] = [
         "age_rating": 5,
         "category_key": "jewish",
         "educational_tags": ["jewish", "torah", "parsha"],
-    }
+    },
 ]
 
 
@@ -168,7 +169,9 @@ class KidsPodcastService:
         if self.http_client:
             await self.http_client.aclose()
 
-    async def fetch_podcast_feed(self, rss_url: str, podcast_info: Dict[str, Any]) -> Optional[KidsPodcast]:
+    async def fetch_podcast_feed(
+        self, rss_url: str, podcast_info: Dict[str, Any]
+    ) -> Optional[KidsPodcast]:
         """
         Fetch a kids podcast from its RSS feed.
 
@@ -225,7 +228,9 @@ class KidsPodcastService:
                 pub_date = None
                 if ep_pubdate:
                     try:
-                        pub_date = parsedate_to_datetime(ep_pubdate.get_text(strip=True))
+                        pub_date = parsedate_to_datetime(
+                            ep_pubdate.get_text(strip=True)
+                        )
                     except Exception:
                         pass
 
@@ -240,7 +245,9 @@ class KidsPodcastService:
                 episodes.append(
                     KidsPodcastEpisode(
                         title=ep_title.get_text(strip=True),
-                        description=ep_desc.get_text(strip=True)[:300] if ep_desc else None,
+                        description=ep_desc.get_text(strip=True)[:300]
+                        if ep_desc
+                        else None,
                         audio_url=audio_url,
                         duration=duration_str,
                         published_date=pub_date,
@@ -251,12 +258,19 @@ class KidsPodcastService:
                 )
 
             return KidsPodcast(
-                title=podcast_info.get("title", title_elem.get_text(strip=True) if title_elem else "Unknown"),
+                title=podcast_info.get(
+                    "title",
+                    title_elem.get_text(strip=True) if title_elem else "Unknown",
+                ),
                 title_en=podcast_info.get("title"),
                 title_es=podcast_info.get("title_es"),
-                author=podcast_info.get("author") or (author_elem.get_text(strip=True) if author_elem else None),
-                description=podcast_info.get("description") or (
-                    description_elem.get_text(strip=True)[:500] if description_elem else None
+                author=podcast_info.get("author")
+                or (author_elem.get_text(strip=True) if author_elem else None),
+                description=podcast_info.get("description")
+                or (
+                    description_elem.get_text(strip=True)[:500]
+                    if description_elem
+                    else None
                 ),
                 cover=cover,
                 rss_url=rss_url,
@@ -290,14 +304,16 @@ class KidsPodcastService:
             try:
                 custom_feeds = json.loads(settings.KIDS_PODCAST_RSS_FEEDS)
                 for feed_url in custom_feeds:
-                    all_podcasts.append({
-                        "title": "Custom Kids Podcast",
-                        "rss_url": feed_url,
-                        "language": "en",
-                        "age_rating": 5,
-                        "category_key": "stories",
-                        "educational_tags": [],
-                    })
+                    all_podcasts.append(
+                        {
+                            "title": "Custom Kids Podcast",
+                            "rss_url": feed_url,
+                            "language": "en",
+                            "age_rating": 5,
+                            "category_key": "stories",
+                            "educational_tags": [],
+                        }
+                    )
             except json.JSONDecodeError:
                 logger.warning("Invalid KIDS_PODCAST_RSS_FEEDS JSON format")
 
@@ -310,7 +326,9 @@ class KidsPodcastService:
                 # Fetch podcast data
                 podcast_data = await self.fetch_podcast_feed(rss_url, podcast_info)
                 if not podcast_data:
-                    errors.append(f"Failed to fetch: {podcast_info.get('title', rss_url)}")
+                    errors.append(
+                        f"Failed to fetch: {podcast_info.get('title', rss_url)}"
+                    )
                     continue
 
                 # Check if podcast exists
@@ -320,7 +338,9 @@ class KidsPodcastService:
                     # Update existing podcast
                     existing_podcast.episode_count = len(podcast_data.episodes)
                     if podcast_data.episodes:
-                        existing_podcast.latest_episode_date = podcast_data.episodes[0].published_date
+                        existing_podcast.latest_episode_date = podcast_data.episodes[
+                            0
+                        ].published_date
                     existing_podcast.updated_at = datetime.utcnow()
                     await existing_podcast.save()
                     podcast_id = str(existing_podcast.id)
@@ -336,7 +356,9 @@ class KidsPodcastService:
                         category=f"kids-{podcast_data.category_key}",
                         rss_feed=rss_url,
                         episode_count=len(podcast_data.episodes),
-                        latest_episode_date=podcast_data.episodes[0].published_date if podcast_data.episodes else None,
+                        latest_episode_date=podcast_data.episodes[0].published_date
+                        if podcast_data.episodes
+                        else None,
                         is_active=True,
                         created_at=datetime.utcnow(),
                         updated_at=datetime.utcnow(),
@@ -349,10 +371,12 @@ class KidsPodcastService:
                 # Sync episodes
                 for ep_data in podcast_data.episodes:
                     # Check if episode exists (by guid)
-                    existing_ep = await PodcastEpisode.find_one({
-                        "podcast_id": podcast_id,
-                        "guid": ep_data.guid,
-                    })
+                    existing_ep = await PodcastEpisode.find_one(
+                        {
+                            "podcast_id": podcast_id,
+                            "guid": ep_data.guid,
+                        }
+                    )
 
                     if existing_ep:
                         continue  # Skip existing episodes
@@ -371,7 +395,9 @@ class KidsPodcastService:
                     episodes_created += 1
 
             except Exception as e:
-                errors.append(f"Error processing {podcast_info.get('title', 'unknown')}: {str(e)}"),
+                errors.append(
+                    f"Error processing {podcast_info.get('title', 'unknown')}: {str(e)}"
+                ),
                 logger.error(f"Error syncing podcast: {e}")
 
         return {
@@ -385,19 +411,25 @@ class KidsPodcastService:
     async def get_kids_podcast_stats(self) -> Dict[str, Any]:
         """Get statistics about kids podcasts."""
         # Count podcasts with kids categories
-        total_podcasts = await Podcast.find({
-            "category": {"$regex": "^kids-", "$options": "i"},
-        }).count()
+        total_podcasts = await Podcast.find(
+            {
+                "category": {"$regex": "^kids-", "$options": "i"},
+            }
+        ).count()
 
         # Count episodes from kids podcasts
-        kids_podcasts = await Podcast.find({
-            "category": {"$regex": "^kids-", "$options": "i"},
-        }).to_list()
+        kids_podcasts = await Podcast.find(
+            {
+                "category": {"$regex": "^kids-", "$options": "i"},
+            }
+        ).to_list()
 
         podcast_ids = [str(p.id) for p in kids_podcasts]
-        total_episodes = await PodcastEpisode.find({
-            "podcast_id": {"$in": podcast_ids},
-        }).count()
+        total_episodes = await PodcastEpisode.find(
+            {
+                "podcast_id": {"$in": podcast_ids},
+            }
+        ).count()
 
         return {
             "total_kids_podcasts": total_podcasts,

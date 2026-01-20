@@ -5,6 +5,7 @@ Request/response models for all content types.
 
 from datetime import datetime
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -111,7 +112,20 @@ class LiveChannelCreateRequest(BaseModel):
     requires_subscription: str = "premium"
     supports_live_subtitles: bool = False
     primary_language: str = "he"
-    available_translation_languages: List[str] = Field(default_factory=lambda: ["en", "es", "ar", "ru", "fr", "de", "it", "pt", "yi", "he"])
+    available_translation_languages: List[str] = Field(
+        default_factory=lambda: [
+            "en",
+            "es",
+            "ar",
+            "ru",
+            "fr",
+            "de",
+            "it",
+            "pt",
+            "yi",
+            "he",
+        ]
+    )
 
 
 class LiveChannelUpdateRequest(BaseModel):

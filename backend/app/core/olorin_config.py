@@ -6,6 +6,7 @@ This module provides separation of concerns for Olorin-specific settings.
 """
 
 from typing import Optional
+
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
 
@@ -41,7 +42,7 @@ class PartnerAPIConfig(BaseSettings):
         if len(v) < 32:
             raise ValueError(
                 "PARTNER_API_KEY_SALT must be at least 32 characters. "
-                "Generate with: python -c \"import secrets; print(secrets.token_urlsafe(32))\""
+                'Generate with: python -c "import secrets; print(secrets.token_urlsafe(32))"'
             )
         return v
 
@@ -426,11 +427,16 @@ class OlorinSettings(BaseSettings):
                 )
 
         # Partner API requires salt
-        if self.dubbing_enabled or self.semantic_search_enabled or self.cultural_context_enabled or self.recap_enabled:
+        if (
+            self.dubbing_enabled
+            or self.semantic_search_enabled
+            or self.cultural_context_enabled
+            or self.recap_enabled
+        ):
             if not self.partner.api_key_salt:
                 errors.append(
                     "Olorin features require PARTNER_API_KEY_SALT to be set. "
-                    "Generate with: python -c \"import secrets; print(secrets.token_urlsafe(32))\""
+                    'Generate with: python -c "import secrets; print(secrets.token_urlsafe(32))"'
                 )
 
         return errors

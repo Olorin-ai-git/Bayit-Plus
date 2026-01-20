@@ -4,15 +4,14 @@ Supports both local file storage and AWS S3
 """
 
 import os
-from pathlib import Path
-from uuid import uuid4
-from typing import Optional, Tuple
 from io import BytesIO
-
-from fastapi import UploadFile
-from PIL import Image
+from pathlib import Path
+from typing import Optional, Tuple
+from uuid import uuid4
 
 from app.core.config import settings
+from fastapi import UploadFile
+from PIL import Image
 
 
 class StorageProvider:
@@ -83,7 +82,9 @@ class LocalStorageProvider(StorageProvider):
         # Return relative path for serving
         return f"/uploads/{image_type}/{filename}"
 
-    async def _optimize_image(self, image_bytes: bytes, preserve_alpha: bool = False) -> Tuple[bytes, str]:
+    async def _optimize_image(
+        self, image_bytes: bytes, preserve_alpha: bool = False
+    ) -> Tuple[bytes, str]:
         """Resize and compress image using Pillow. Returns (bytes, format)"""
         try:
             img = Image.open(BytesIO(image_bytes))
@@ -99,7 +100,9 @@ class LocalStorageProvider(StorageProvider):
             output = BytesIO()
 
             # Check if image has transparency
-            has_alpha = img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info)
+            has_alpha = img.mode in ("RGBA", "LA") or (
+                img.mode == "P" and "transparency" in img.info
+            )
 
             if preserve_alpha and has_alpha:
                 # Keep PNG format to preserve transparency
@@ -133,7 +136,11 @@ class LocalStorageProvider(StorageProvider):
         """Validate URL (for local, just check if it's a valid format)"""
         try:
             # Basic URL validation
-            return url.startswith("http://") or url.startswith("https://") or url.startswith("/uploads/")
+            return (
+                url.startswith("http://")
+                or url.startswith("https://")
+                or url.startswith("/uploads/")
+            )
         except Exception:
             return False
 
@@ -167,6 +174,7 @@ class S3StorageProvider(StorageProvider):
         try:
             import boto3
             from botocore.exceptions import ClientError
+
             self.boto3 = boto3
             self.ClientError = ClientError
             self.s3_client = boto3.client(
@@ -178,7 +186,9 @@ class S3StorageProvider(StorageProvider):
             self.bucket = settings.AWS_S3_BUCKET
             self.cdn_base = settings.CDN_BASE_URL
         except ImportError:
-            raise ImportError("boto3 required for S3 storage. Install with: pip install boto3")
+            raise ImportError(
+                "boto3 required for S3 storage. Install with: pip install boto3"
+            )
         except Exception as e:
             raise ValueError(f"Failed to initialize S3 client: {e}")
 
@@ -234,7 +244,9 @@ class S3StorageProvider(StorageProvider):
         except self.ClientError as e:
             raise ValueError(f"S3 upload failed: {e}")
 
-    async def _optimize_image(self, image_bytes: bytes, preserve_alpha: bool = False) -> Tuple[bytes, str]:
+    async def _optimize_image(
+        self, image_bytes: bytes, preserve_alpha: bool = False
+    ) -> Tuple[bytes, str]:
         """Resize and compress image using Pillow. Returns (bytes, format)"""
         try:
             img = Image.open(BytesIO(image_bytes))
@@ -249,7 +261,9 @@ class S3StorageProvider(StorageProvider):
             output = BytesIO()
 
             # Check if image has transparency
-            has_alpha = img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info)
+            has_alpha = img.mode in ("RGBA", "LA") or (
+                img.mode == "P" and "transparency" in img.info
+            )
 
             if preserve_alpha and has_alpha:
                 # Keep PNG format to preserve transparency
@@ -320,7 +334,9 @@ class S3StorageProvider(StorageProvider):
         try:
             if settings.CDN_BASE_URL and url.startswith(settings.CDN_BASE_URL):
                 key = url.replace(settings.CDN_BASE_URL + "/", "")
-            elif url.startswith(f"https://s3.{settings.AWS_S3_REGION}.amazonaws.com/{self.bucket}/"):
+            elif url.startswith(
+                f"https://s3.{settings.AWS_S3_REGION}.amazonaws.com/{self.bucket}/"
+            ):
                 key = url.split(f"/{self.bucket}/")[1]
             elif url.startswith("https://") or url.startswith("http://"):
                 key = url.split("/")[-2] + "/" + url.split("/")[-1]
@@ -339,10 +355,11 @@ class GCSStorageProvider(StorageProvider):
 
     def __init__(self):
         try:
-            from google.cloud import storage
-            from google.api_core import exceptions
             import datetime
             import os
+
+            from google.api_core import exceptions
+            from google.cloud import storage
 
             self.storage = storage
             self.exceptions = exceptions
@@ -350,7 +367,9 @@ class GCSStorageProvider(StorageProvider):
 
             # Set credentials path if provided (for local development)
             if settings.GOOGLE_APPLICATION_CREDENTIALS:
-                os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = settings.GOOGLE_APPLICATION_CREDENTIALS
+                os.environ[
+                    "GOOGLE_APPLICATION_CREDENTIALS"
+                ] = settings.GOOGLE_APPLICATION_CREDENTIALS
 
             # Client auto-authenticates:
             # - In Cloud Run: via metadata server
@@ -407,11 +426,7 @@ class GCSStorageProvider(StorageProvider):
             # Set cache control metadata before upload
             blob.cache_control = "public, max-age=31536000"  # 1 year
 
-            blob.upload_from_string(
-                optimized,
-                content_type=content_type,
-                timeout=60
-            )
+            blob.upload_from_string(optimized, content_type=content_type, timeout=60)
 
             # Note: With uniform bucket-level access, we don't call make_public()
             # The bucket itself should be configured to allow public access
@@ -427,7 +442,9 @@ class GCSStorageProvider(StorageProvider):
         except self.exceptions.GoogleAPIError as e:
             raise ValueError(f"GCS upload failed: {e}")
 
-    async def _optimize_image(self, image_bytes: bytes, preserve_alpha: bool = False) -> Tuple[bytes, str]:
+    async def _optimize_image(
+        self, image_bytes: bytes, preserve_alpha: bool = False
+    ) -> Tuple[bytes, str]:
         """Resize and compress image using Pillow. Returns (bytes, format)"""
         try:
             img = Image.open(BytesIO(image_bytes))
@@ -442,7 +459,9 @@ class GCSStorageProvider(StorageProvider):
             output = BytesIO()
 
             # Check if image has transparency
-            has_alpha = img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info)
+            has_alpha = img.mode in ("RGBA", "LA") or (
+                img.mode == "P" and "transparency" in img.info
+            )
 
             if preserve_alpha and has_alpha:
                 # Keep PNG format to preserve transparency
@@ -474,6 +493,7 @@ class GCSStorageProvider(StorageProvider):
     async def validate_url(self, url: str) -> bool:
         """Validate URL accessibility"""
         import httpx
+
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.head(url, timeout=5)
@@ -501,7 +521,7 @@ class GCSStorageProvider(StorageProvider):
                 "blob_name": blob_name,
                 "headers": {
                     "Content-Type": content_type,
-                }
+                },
             }
         except Exception as e:
             raise ValueError(f"Failed to generate signed URL: {e}")
@@ -532,6 +552,7 @@ class GCSStorageProvider(StorageProvider):
 def get_storage_provider() -> StorageProvider:
     """Get configured storage provider"""
     import logging
+
     logger = logging.getLogger(__name__)
 
     if settings.STORAGE_TYPE == "gcs":

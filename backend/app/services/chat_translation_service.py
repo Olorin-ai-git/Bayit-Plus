@@ -4,9 +4,8 @@ import logging
 from typing import Dict, List, Optional, Tuple
 
 import anthropic
-
 from app.core.config import settings
-from app.models.chat_translation import TranslationResult, LanguageDetectionResult
+from app.models.chat_translation import LanguageDetectionResult, TranslationResult
 from app.models.user import User
 from app.services.translation_cache_service import translation_cache_service
 
@@ -55,7 +54,7 @@ class ChatTranslationService:
             return LanguageDetectionResult(
                 detected_language=cls.DEFAULT_SOURCE_LANGUAGE,
                 confidence=0.0,
-                is_cached=False
+                is_cached=False,
             )
 
         # Check cache first (language detection is cached with empty target)
@@ -64,9 +63,7 @@ class ChatTranslationService:
         )
         if cached:
             return LanguageDetectionResult(
-                detected_language=cached,
-                confidence=1.0,
-                is_cached=True
+                detected_language=cached, confidence=1.0, is_cached=True
             )
 
         supported_codes = ", ".join(cls.SUPPORTED_LANGUAGES.keys())
@@ -87,10 +84,10 @@ Language code:"""
                     lambda: client.messages.create(
                         model=settings.CLAUDE_MODEL,
                         max_tokens=10,
-                        messages=[{"role": "user", "content": prompt}]
-                    )
+                        messages=[{"role": "user", "content": prompt}],
+                    ),
                 ),
-                timeout=settings.CHAT_TRANSLATION_TIMEOUT_SECONDS
+                timeout=settings.CHAT_TRANSLATION_TIMEOUT_SECONDS,
             )
 
             if response.content and len(response.content) > 0:
@@ -106,9 +103,7 @@ Language code:"""
                 )
 
                 return LanguageDetectionResult(
-                    detected_language=detected,
-                    confidence=0.9,
-                    is_cached=False
+                    detected_language=detected, confidence=0.9, is_cached=False
                 )
 
         except asyncio.TimeoutError:
@@ -119,15 +114,12 @@ Language code:"""
         return LanguageDetectionResult(
             detected_language=cls.DEFAULT_SOURCE_LANGUAGE,
             confidence=0.5,
-            is_cached=False
+            is_cached=False,
         )
 
     @classmethod
     async def _translate_with_claude(
-        cls,
-        text: str,
-        source_lang: str,
-        target_lang: str
+        cls, text: str, source_lang: str, target_lang: str
     ) -> str:
         """
         Translate text using Claude API.
@@ -158,8 +150,8 @@ Translation ({target_name}):"""
             lambda: client.messages.create(
                 model=settings.CLAUDE_MODEL,
                 max_tokens=settings.CLAUDE_MAX_TOKENS_SHORT,
-                messages=[{"role": "user", "content": prompt}]
-            )
+                messages=[{"role": "user", "content": prompt}],
+            ),
         )
 
         if response.content and len(response.content) > 0:
@@ -169,10 +161,7 @@ Translation ({target_name}):"""
 
     @classmethod
     async def translate_message(
-        cls,
-        message: str,
-        source_lang: str,
-        target_lang: str
+        cls, message: str, source_lang: str, target_lang: str
     ) -> TranslationResult:
         """
         Translate a message from source to target language.
@@ -194,7 +183,7 @@ Translation ({target_name}):"""
                 translated_text=message,
                 source_language=source_lang,
                 target_language=target_lang,
-                is_cached=False
+                is_cached=False,
             )
 
         if source_lang == target_lang or not message.strip():
@@ -203,18 +192,15 @@ Translation ({target_name}):"""
                 translated_text=message,
                 source_language=source_lang,
                 target_language=target_lang,
-                is_cached=True
+                is_cached=True,
             )
 
         try:
             translated, is_cached = await asyncio.wait_for(
                 translation_cache_service.get_or_translate(
-                    message,
-                    source_lang,
-                    target_lang,
-                    cls._translate_with_claude
+                    message, source_lang, target_lang, cls._translate_with_claude
                 ),
-                timeout=settings.CHAT_TRANSLATION_TIMEOUT_SECONDS
+                timeout=settings.CHAT_TRANSLATION_TIMEOUT_SECONDS,
             )
 
             return TranslationResult(
@@ -222,7 +208,7 @@ Translation ({target_name}):"""
                 translated_text=translated,
                 source_language=source_lang,
                 target_language=target_lang,
-                is_cached=is_cached
+                is_cached=is_cached,
             )
 
         except asyncio.TimeoutError:
@@ -236,7 +222,7 @@ Translation ({target_name}):"""
             translated_text=message,
             source_language=source_lang,
             target_language=target_lang,
-            is_cached=False
+            is_cached=False,
         )
 
     @classmethod
@@ -266,10 +252,7 @@ Translation ({target_name}):"""
 
     @classmethod
     async def translate_for_recipients(
-        cls,
-        message: str,
-        source_lang: str,
-        recipient_user_ids: List[str]
+        cls, message: str, source_lang: str, recipient_user_ids: List[str]
     ) -> Dict[str, TranslationResult]:
         """
         Translate a message for multiple recipients based on their preferences.
@@ -307,7 +290,7 @@ Translation ({target_name}):"""
                     translated_text=message,
                     source_language=source_lang,
                     target_language=source_lang,
-                    is_cached=True
+                    is_cached=True,
                 )
 
         # Translate for each language group
@@ -322,9 +305,7 @@ Translation ({target_name}):"""
 
     @classmethod
     async def detect_and_translate(
-        cls,
-        message: str,
-        target_lang: str
+        cls, message: str, target_lang: str
     ) -> TranslationResult:
         """
         Detect source language and translate to target.
@@ -341,17 +322,12 @@ Translation ({target_name}):"""
 
         # Translate to target
         return await cls.translate_message(
-            message,
-            detection.detected_language,
-            target_lang
+            message, detection.detected_language, target_lang
         )
 
     @classmethod
     async def get_translation_for_display(
-        cls,
-        message: str,
-        source_lang: str,
-        recipient_user_id: str
+        cls, message: str, source_lang: str, recipient_user_id: str
     ) -> Dict:
         """
         Get translation formatted for display in chat UI.
@@ -364,13 +340,15 @@ Translation ({target_name}):"""
         Returns:
             Dict with display_message, is_translated, and translation_available
         """
-        should_translate, target_lang = await cls.should_translate_for_user(recipient_user_id)
+        should_translate, target_lang = await cls.should_translate_for_user(
+            recipient_user_id
+        )
 
         if not should_translate or source_lang == target_lang:
             return {
                 "display_message": message,
                 "is_translated": False,
-                "translation_available": source_lang != target_lang
+                "translation_available": source_lang != target_lang,
             }
 
         result = await cls.translate_message(message, source_lang, target_lang)
@@ -378,7 +356,7 @@ Translation ({target_name}):"""
         return {
             "display_message": result.translated_text,
             "is_translated": result.translated_text != message,
-            "translation_available": True
+            "translation_available": True,
         }
 
 

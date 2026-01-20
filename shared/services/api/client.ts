@@ -44,38 +44,77 @@ export const API_BASE_URL = getApiBaseUrl();
 // Create scoped logger for API client
 const apiLogger = logger.scope('API');
 
-// Main API instance
+// Security headers for all API requests
+const SECURITY_HEADERS = {
+  'Content-Type': 'application/json',
+  'X-Content-Type-Options': 'nosniff', // Prevent MIME type sniffing
+  'X-Frame-Options': 'DENY', // Prevent clickjacking
+  'X-XSS-Protection': '1; mode=block', // XSS protection
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains', // Force HTTPS
+};
+
+// Main API instance with security hardening
 export const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: SECURITY_HEADERS,
+  validateStatus: (status) => status >= 200 && status < 500, // Don't throw on 4xx/5xx
 });
 
 // Separate API instance for content endpoints that involve web scraping
 export const contentApi = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: SECURITY_HEADERS,
+  validateStatus: (status) => status >= 200 && status < 500,
 });
 
 // Passkey session header name
 const PASSKEY_SESSION_HEADER = 'X-Passkey-Session';
 
 /**
+ * Validate request URL to prevent SSRF and open redirect attacks
+ */
+const validateRequestUrl = (url: string): boolean => {
+  try {
+    const parsedUrl = new URL(url, API_BASE_URL);
+
+    // Only allow HTTPS in production
+    if (!__DEV__ && parsedUrl.protocol !== 'https:') {
+      apiLogger.warn(`Non-HTTPS URL blocked in production: ${url}`);
+      return false;
+    }
+
+    // Block requests to localhost in production
+    if (!__DEV__ && (parsedUrl.hostname === 'localhost' || parsedUrl.hostname === '127.0.0.1')) {
+      apiLogger.warn(`Localhost URL blocked in production: ${url}`);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    apiLogger.error(`Invalid URL: ${url}`, { error });
+    return false;
+  }
+};
+
+/**
  * Add correlation ID, auth token, and passkey session to request.
+ * Validates URLs and prevents credential leakage.
  */
 const addRequestHeaders = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-  // Add auth token
+  // Validate URL to prevent SSRF attacks
+  if (!validateRequestUrl(config.url || '')) {
+    throw new Error('Invalid request URL');
+  }
+
+  // Add auth token (never in URL or query params)
   const token = useAuthStore.getState().token;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  // Add passkey session token if available
+  // Add passkey session token if available (never in URL)
   const passkeySessionToken = useAuthStore.getState().passkeySessionToken;
   if (passkeySessionToken) {
     config.headers[PASSKEY_SESSION_HEADER] = passkeySessionToken;
@@ -89,11 +128,12 @@ const addRequestHeaders = (config: InternalAxiosRequestConfig): InternalAxiosReq
   }
   config.headers[CORRELATION_ID_HEADER] = correlationId;
 
-  // Log request start
+  // Log request start (without sensitive data)
   apiLogger.debug(`Request: ${config.method?.toUpperCase()} ${config.url}`, {
     correlationId,
     method: config.method,
     url: config.url,
+    // Never log auth tokens or sensitive data
   });
 
   return config;

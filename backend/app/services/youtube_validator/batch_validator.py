@@ -7,18 +7,17 @@ Handles concurrent validation with rate limiting and caching.
 
 import asyncio
 import logging
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from app.models.content import Content
+from app.services.youtube_validator.cache import (
+    cache_youtube_result,
+    filter_cached_youtube,
+)
 from app.services.youtube_validator.constants import get_concurrent_limit
 from app.services.youtube_validator.models import YouTubeValidationResult
 from app.services.youtube_validator.url_parser import is_youtube_url
 from app.services.youtube_validator.video_validator import validate_youtube_video
-from app.services.youtube_validator.cache import (
-    filter_cached_youtube,
-    cache_youtube_result,
-)
-
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +26,7 @@ async def validate_youtube_content(
     limit: int = 100,
     category_id: Optional[str] = None,
     include_kids: bool = True,
-    use_cache: bool = True
+    use_cache: bool = True,
 ) -> Dict[str, Any]:
     """
     Validate all YouTube content in the database.
@@ -48,8 +47,8 @@ async def validate_youtube_content(
         "is_published": True,
         "$or": [
             {"stream_url": {"$regex": "youtube\\.com|youtu\\.be"}},
-            {"trailer_url": {"$regex": "youtube\\.com|youtu\\.be"}}
-        ]
+            {"trailer_url": {"$regex": "youtube\\.com|youtu\\.be"}},
+        ],
     }
 
     if category_id:
@@ -69,7 +68,7 @@ async def validate_youtube_content(
             "total_checked": 0,
             "valid_videos": 0,
             "broken_videos": [],
-            "message": "No YouTube content found"
+            "message": "No YouTube content found",
         }
 
     # Prepare URLs for validation
@@ -91,7 +90,7 @@ async def validate_youtube_content(
         "total_checked": len(urls_to_validate),
         "valid_videos": 0,
         "broken_videos": [],
-        "cached_results": len(cached_results)
+        "cached_results": len(cached_results),
     }
 
     # Process cached results
@@ -118,27 +117,30 @@ def _extract_youtube_urls(contents: List[Content]) -> List[Dict[str, Any]]:
 
     for content in contents:
         if content.stream_url and is_youtube_url(content.stream_url):
-            urls_to_validate.append({
-                "url": content.stream_url,
-                "content_id": str(content.id),
-                "title": content.title,
-                "field": "stream_url"
-            })
+            urls_to_validate.append(
+                {
+                    "url": content.stream_url,
+                    "content_id": str(content.id),
+                    "title": content.title,
+                    "field": "stream_url",
+                }
+            )
 
         if content.trailer_url and is_youtube_url(content.trailer_url):
-            urls_to_validate.append({
-                "url": content.trailer_url,
-                "content_id": str(content.id),
-                "title": content.title,
-                "field": "trailer_url"
-            })
+            urls_to_validate.append(
+                {
+                    "url": content.trailer_url,
+                    "content_id": str(content.id),
+                    "title": content.title,
+                    "field": "trailer_url",
+                }
+            )
 
     return urls_to_validate
 
 
 def _process_cached_results(
-    results: Dict[str, Any],
-    cached_results: List[Dict[str, Any]]
+    results: Dict[str, Any], cached_results: List[Dict[str, Any]]
 ) -> None:
     """Process cached validation results."""
     for cached in cached_results:
@@ -149,8 +151,7 @@ def _process_cached_results(
 
 
 async def _validate_uncached_urls(
-    results: Dict[str, Any],
-    uncached: List[Dict[str, Any]]
+    results: Dict[str, Any], uncached: List[Dict[str, Any]]
 ) -> None:
     """Validate uncached URLs with concurrency limit."""
     concurrent_limit = get_concurrent_limit()
@@ -178,21 +179,21 @@ async def _validate_uncached_urls(
 
 
 def _process_validation_result(
-    results: Dict[str, Any],
-    item: Dict[str, Any],
-    validation: YouTubeValidationResult
+    results: Dict[str, Any], item: Dict[str, Any], validation: YouTubeValidationResult
 ) -> None:
     """Process a single validation result."""
     if validation.is_valid:
         results["valid_videos"] += 1
     else:
-        results["broken_videos"].append({
-            "content_id": item["content_id"],
-            "title": item["title"],
-            "field": item["field"],
-            "url": item["url"],
-            "video_id": validation.video_id,
-            "status": validation.status,
-            "error": validation.error_message,
-            "response_time_ms": validation.response_time_ms
-        })
+        results["broken_videos"].append(
+            {
+                "content_id": item["content_id"],
+                "title": item["title"],
+                "field": item["field"],
+                "url": item["url"],
+                "video_id": validation.video_id,
+                "status": validation.status,
+                "error": validation.error_message,
+                "response_time_ms": validation.response_time_ms,
+            }
+        )

@@ -11,34 +11,34 @@ Tests cover:
 - Subcategory and age group listing
 """
 
+from datetime import datetime
+from typing import Any, Dict, List
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 import pytest_asyncio
-from datetime import datetime
-from typing import List, Dict, Any
-from unittest.mock import AsyncMock, MagicMock, patch
+from app.core.config import settings
+from app.models.content import Content
+from app.models.content_taxonomy import ContentSection, SectionSubcategory
+from app.models.kids_content import (
+    AGE_GROUP_RANGES,
+    SUBCATEGORY_PARENT_MAP,
+    KidsAgeGroup,
+    KidsAgeGroupsResponse,
+    KidsContentAggregatedResponse,
+    KidsSubcategoriesResponse,
+    KidsSubcategory,
+)
+from app.services.kids_content_service import (
+    KIDS_KEYWORDS_EN,
+    KIDS_KEYWORDS_HE,
+    KidsContentService,
+)
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from app.services.kids_content_service import (
-    KidsContentService,
-    KIDS_KEYWORDS_HE,
-    KIDS_KEYWORDS_EN,
-)
-from app.models.kids_content import (
-    KidsSubcategory,
-    KidsAgeGroup,
-    AGE_GROUP_RANGES,
-    SUBCATEGORY_PARENT_MAP,
-    KidsContentAggregatedResponse,
-    KidsSubcategoriesResponse,
-    KidsAgeGroupsResponse,
-)
-from app.models.content import Content
-from app.models.content_taxonomy import ContentSection, SectionSubcategory
-from app.core.config import settings
-
-
 # Test Fixtures
+
 
 @pytest_asyncio.fixture
 async def db_client():
@@ -46,7 +46,7 @@ async def db_client():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     await init_beanie(
         database=client[f"{settings.MONGODB_DB_NAME}_test_kids"],
-        document_models=[Content, ContentSection, SectionSubcategory]
+        document_models=[Content, ContentSection, SectionSubcategory],
     )
     yield client
     # Cleanup
@@ -211,6 +211,7 @@ async def sample_kids_content(db_client):
 
 # Subcategory Detection Tests
 
+
 @pytest.mark.asyncio
 async def test_detect_subcategory_learning_hebrew(kids_service):
     """Test detection of learning-hebrew subcategory."""
@@ -269,6 +270,7 @@ async def test_detect_subcategory_young_science(kids_service):
 
 # Age Group Classification Tests
 
+
 @pytest.mark.asyncio
 async def test_determine_age_group_toddlers(kids_service):
     """Test age group classification for toddlers (0-3)."""
@@ -305,6 +307,7 @@ async def test_determine_age_group_none(kids_service):
 
 
 # Content Categorization Tests
+
 
 @pytest.mark.asyncio
 async def test_categorize_content_educational(kids_service):
@@ -350,6 +353,7 @@ async def test_categorize_content_jewish(kids_service):
 
 # Relevance Score Tests
 
+
 @pytest.mark.asyncio
 async def test_calculate_relevance_score_high(kids_service):
     """Test high relevance score for Hebrew educational content."""
@@ -384,6 +388,7 @@ async def test_calculate_relevance_score_medium(kids_service):
 
 # Get Subcategories Tests
 
+
 @pytest.mark.asyncio
 async def test_get_subcategories_returns_all(kids_service, kids_subcategories):
     """Test that get_subcategories returns all active subcategories."""
@@ -394,7 +399,9 @@ async def test_get_subcategories_returns_all(kids_service, kids_subcategories):
 
 
 @pytest.mark.asyncio
-async def test_get_subcategories_has_correct_structure(kids_service, kids_subcategories):
+async def test_get_subcategories_has_correct_structure(
+    kids_service, kids_subcategories
+):
     """Test that subcategories have correct structure."""
     result = await kids_service.get_subcategories()
 
@@ -405,6 +412,7 @@ async def test_get_subcategories_has_correct_structure(kids_service, kids_subcat
 
 
 # Get Age Groups Tests
+
 
 @pytest.mark.asyncio
 async def test_get_age_groups_returns_all(kids_service):
@@ -444,6 +452,7 @@ async def test_get_age_groups_order(kids_service):
 
 # Fetch All Content Tests
 
+
 @pytest.mark.asyncio
 async def test_fetch_all_content_returns_kids_only(kids_service, sample_kids_content):
     """Test that fetch_all_content returns only kids content."""
@@ -481,8 +490,11 @@ async def test_fetch_all_content_pagination(kids_service, sample_kids_content):
 
 # Get Content by Subcategory Tests
 
+
 @pytest.mark.asyncio
-async def test_get_content_by_subcategory(kids_service, sample_kids_content, kids_subcategories):
+async def test_get_content_by_subcategory(
+    kids_service, sample_kids_content, kids_subcategories
+):
     """Test getting content by specific subcategory."""
     result = await kids_service.get_content_by_subcategory(
         subcategory_slug="learning-hebrew"
@@ -509,6 +521,7 @@ async def test_get_content_by_subcategory_with_age_filter(
 
 
 # Get Content by Age Group Tests
+
 
 @pytest.mark.asyncio
 async def test_get_content_by_age_group_toddlers(kids_service, sample_kids_content):
@@ -537,6 +550,7 @@ async def test_get_content_by_age_group_elementary(kids_service, sample_kids_con
 
 # Get Categories Tests
 
+
 @pytest.mark.asyncio
 async def test_get_categories_returns_list(kids_service):
     """Test that get_categories returns a list."""
@@ -557,6 +571,7 @@ async def test_get_categories_structure(kids_service):
 
 
 # Cache Tests
+
 
 @pytest.mark.asyncio
 async def test_cache_clear(kids_service, sample_kids_content):
@@ -587,6 +602,7 @@ async def test_cache_ttl_functionality(kids_service):
 
 # Featured Content Tests
 
+
 @pytest.mark.asyncio
 async def test_get_featured_content(kids_service, sample_kids_content):
     """Test getting featured kids content."""
@@ -608,6 +624,7 @@ async def test_get_featured_content_with_age_filter(kids_service, sample_kids_co
 
 
 # Edge Cases
+
 
 @pytest.mark.asyncio
 async def test_empty_database(kids_service, db_client):
@@ -641,6 +658,7 @@ async def test_invalid_age_group_slug(kids_service, sample_kids_content):
 
 
 # Constants Verification Tests
+
 
 def test_subcategory_parent_map_completeness():
     """Test that all subcategories have parent mappings."""
@@ -677,7 +695,14 @@ def test_age_group_ranges_completeness():
 
 def test_keywords_coverage():
     """Test that keywords dictionaries have required categories."""
-    required_categories = ["hebrew", "jewish", "educational", "music", "stories", "cartoons"]
+    required_categories = [
+        "hebrew",
+        "jewish",
+        "educational",
+        "music",
+        "stories",
+        "cartoons",
+    ]
 
     for category in required_categories:
         assert category in KIDS_KEYWORDS_HE, f"Missing {category} in Hebrew keywords"

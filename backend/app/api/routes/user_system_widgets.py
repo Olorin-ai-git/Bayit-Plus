@@ -7,22 +7,24 @@ and choose which ones to add to their collection.
 
 from datetime import datetime
 from typing import Optional
-from bson import ObjectId
-from fastapi import APIRouter, HTTPException, Depends
 
+from app.core.security import get_current_active_user, get_optional_user
 from app.models.user import User
-from app.models.widget import Widget, WidgetType, WidgetPosition
 from app.models.user_system_widget import (
     UserSystemWidget,
     UserSystemWidgetPositionUpdate,
     UserSystemWidgetPreferencesUpdate,
 )
-from app.core.security import get_current_active_user, get_optional_user
+from app.models.widget import Widget, WidgetPosition, WidgetType
+from bson import ObjectId
+from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
 
 
-def _widget_dict(w: Widget, is_added: bool = False, user_prefs: Optional[UserSystemWidget] = None) -> dict:
+def _widget_dict(
+    w: Widget, is_added: bool = False, user_prefs: Optional[UserSystemWidget] = None
+) -> dict:
     """Convert Widget document to API response dict with user subscription info."""
     result = {
         "id": str(w.id),
@@ -33,13 +35,23 @@ def _widget_dict(w: Widget, is_added: bool = False, user_prefs: Optional[UserSys
         "icon": w.icon,
         "content": {
             "content_type": w.content.content_type.value if w.content else None,
-            "live_channel_id": str(w.content.live_channel_id) if w.content and w.content.live_channel_id else None,
-            "podcast_id": str(w.content.podcast_id) if w.content and w.content.podcast_id else None,
-            "content_id": str(w.content.content_id) if w.content and w.content.content_id else None,
-            "station_id": str(w.content.station_id) if w.content and w.content.station_id else None,
+            "live_channel_id": str(w.content.live_channel_id)
+            if w.content and w.content.live_channel_id
+            else None,
+            "podcast_id": str(w.content.podcast_id)
+            if w.content and w.content.podcast_id
+            else None,
+            "content_id": str(w.content.content_id)
+            if w.content and w.content.content_id
+            else None,
+            "station_id": str(w.content.station_id)
+            if w.content and w.content.station_id
+            else None,
             "iframe_url": w.content.iframe_url if w.content else None,
             "iframe_title": w.content.iframe_title if w.content else None,
-            "component_name": w.content.component_name if w.content and hasattr(w.content, 'component_name') else None,
+            "component_name": w.content.component_name
+            if w.content and hasattr(w.content, "component_name")
+            else None,
         },
         "position": {
             "x": w.position.x,
@@ -83,7 +95,7 @@ def _widget_dict(w: Widget, is_added: bool = False, user_prefs: Optional[UserSys
 
 @router.get("/available")
 async def get_available_system_widgets(
-    current_user: Optional[User] = Depends(get_optional_user)
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Get all available system widgets that user can add.
@@ -95,13 +107,16 @@ async def get_available_system_widgets(
     # Default values for unauthenticated users
     user_id = str(current_user.id) if current_user else None
     user_role = current_user.role if current_user else "guest"
-    user_subscription = getattr(current_user, 'subscription_tier', None) if current_user else None
+    user_subscription = (
+        getattr(current_user, "subscription_tier", None) if current_user else None
+    )
 
     # Get all active system widgets
-    system_widgets = await Widget.find(
-        Widget.type == WidgetType.SYSTEM,
-        Widget.is_active == True
-    ).sort(Widget.order).to_list()
+    system_widgets = (
+        await Widget.find(Widget.type == WidgetType.SYSTEM, Widget.is_active == True)
+        .sort(Widget.order)
+        .to_list()
+    )
 
     # Get user's subscribed widget IDs (empty for unauthenticated users)
     if user_id:
@@ -117,12 +132,18 @@ async def get_available_system_widgets(
     for widget in system_widgets:
         # Check role targeting
         if widget.visible_to_roles:
-            if "user" not in widget.visible_to_roles and user_role not in widget.visible_to_roles:
+            if (
+                "user" not in widget.visible_to_roles
+                and user_role not in widget.visible_to_roles
+            ):
                 continue
 
         # Check subscription tier targeting
         if widget.visible_to_subscription_tiers:
-            if not user_subscription or user_subscription not in widget.visible_to_subscription_tiers:
+            if (
+                not user_subscription
+                or user_subscription not in widget.visible_to_subscription_tiers
+            ):
                 continue
 
         is_added = str(widget.id) in subscribed_ids
@@ -137,7 +158,7 @@ async def get_available_system_widgets(
 @router.get("/my")
 async def get_my_system_widgets(
     page_path: Optional[str] = None,
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get user's subscribed system widgets with their preferences applied.
@@ -147,10 +168,14 @@ async def get_my_system_widgets(
     user_id = str(current_user.id)
 
     # Get user's subscriptions
-    user_subscriptions = await UserSystemWidget.find(
-        UserSystemWidget.user_id == user_id,
-        UserSystemWidget.is_visible == True  # Only visible (not closed)
-    ).sort(UserSystemWidget.order).to_list()
+    user_subscriptions = (
+        await UserSystemWidget.find(
+            UserSystemWidget.user_id == user_id,
+            UserSystemWidget.is_visible == True,  # Only visible (not closed)
+        )
+        .sort(UserSystemWidget.order)
+        .to_list()
+    )
 
     if not user_subscriptions:
         return {"items": [], "total": 0}
@@ -158,8 +183,7 @@ async def get_my_system_widgets(
     # Get the actual widget documents
     widget_ids = [ObjectId(sub.widget_id) for sub in user_subscriptions]
     widgets = await Widget.find(
-        {"_id": {"$in": widget_ids}},
-        Widget.is_active == True
+        {"_id": {"$in": widget_ids}}, Widget.is_active == True
     ).to_list()
 
     # Create a lookup for quick access
@@ -188,8 +212,7 @@ async def get_my_system_widgets(
 
 @router.post("/{widget_id}/add")
 async def add_system_widget(
-    widget_id: str,
-    current_user: User = Depends(get_current_active_user)
+    widget_id: str, current_user: User = Depends(get_current_active_user)
 ):
     """Add a system widget to user's collection."""
     user_id = str(current_user.id)
@@ -211,17 +234,18 @@ async def add_system_widget(
 
     # Check if already subscribed
     existing = await UserSystemWidget.find_one(
-        UserSystemWidget.user_id == user_id,
-        UserSystemWidget.widget_id == widget_id
+        UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
     )
     if existing:
         # Already added, just return success
         return {"message": "Widget already added", "id": str(existing.id)}
 
     # Get next order number
-    last_sub = await UserSystemWidget.find(
-        UserSystemWidget.user_id == user_id
-    ).sort(-UserSystemWidget.order).first_or_none()
+    last_sub = (
+        await UserSystemWidget.find(UserSystemWidget.user_id == user_id)
+        .sort(-UserSystemWidget.order)
+        .first_or_none()
+    )
     next_order = (last_sub.order + 1) if last_sub else 0
 
     # Create subscription
@@ -243,16 +267,14 @@ async def add_system_widget(
 
 @router.delete("/{widget_id}/remove")
 async def remove_system_widget(
-    widget_id: str,
-    current_user: User = Depends(get_current_active_user)
+    widget_id: str, current_user: User = Depends(get_current_active_user)
 ):
     """Remove a system widget from user's collection."""
     user_id = str(current_user.id)
 
     # Find the subscription
     subscription = await UserSystemWidget.find_one(
-        UserSystemWidget.user_id == user_id,
-        UserSystemWidget.widget_id == widget_id
+        UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
     )
 
     if not subscription:
@@ -267,15 +289,14 @@ async def remove_system_widget(
 async def update_system_widget_position(
     widget_id: str,
     data: UserSystemWidgetPositionUpdate,
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ):
     """Update user's custom position for a system widget."""
     user_id = str(current_user.id)
 
     # Find the subscription
     subscription = await UserSystemWidget.find_one(
-        UserSystemWidget.user_id == user_id,
-        UserSystemWidget.widget_id == widget_id
+        UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
     )
 
     if not subscription:
@@ -301,15 +322,14 @@ async def update_system_widget_position(
 async def update_system_widget_preferences(
     widget_id: str,
     data: UserSystemWidgetPreferencesUpdate,
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ):
     """Update user's preferences for a system widget (mute, visibility, order)."""
     user_id = str(current_user.id)
 
     # Find the subscription
     subscription = await UserSystemWidget.find_one(
-        UserSystemWidget.user_id == user_id,
-        UserSystemWidget.widget_id == widget_id
+        UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
     )
 
     if not subscription:
@@ -330,16 +350,14 @@ async def update_system_widget_preferences(
 
 @router.post("/{widget_id}/close")
 async def close_system_widget(
-    widget_id: str,
-    current_user: User = Depends(get_current_active_user)
+    widget_id: str, current_user: User = Depends(get_current_active_user)
 ):
     """Close/hide a system widget for the current user."""
     user_id = str(current_user.id)
 
     # Find the subscription
     subscription = await UserSystemWidget.find_one(
-        UserSystemWidget.user_id == user_id,
-        UserSystemWidget.widget_id == widget_id
+        UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
     )
 
     if not subscription:
@@ -361,16 +379,14 @@ async def close_system_widget(
 
 @router.post("/{widget_id}/show")
 async def show_system_widget(
-    widget_id: str,
-    current_user: User = Depends(get_current_active_user)
+    widget_id: str, current_user: User = Depends(get_current_active_user)
 ):
     """Show/restore a previously closed system widget."""
     user_id = str(current_user.id)
 
     # Find the subscription
     subscription = await UserSystemWidget.find_one(
-        UserSystemWidget.user_id == user_id,
-        UserSystemWidget.widget_id == widget_id
+        UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
     )
 
     if not subscription:

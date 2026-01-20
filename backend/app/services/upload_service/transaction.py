@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class CompensationAction:
     """Represents a compensation action that can undo a completed step."""
+
     action_name: str
     compensation: Callable[[], Coroutine[Any, Any, bool]]
     completed_at: datetime = field(default_factory=datetime.utcnow)
@@ -28,6 +29,7 @@ class CompensationAction:
 @dataclass
 class RollbackResult:
     """Result of a rollback operation."""
+
     success: bool
     actions_attempted: int
     actions_succeeded: int
@@ -80,7 +82,7 @@ class UploadTransaction:
         self,
         action: Callable[[], Coroutine[Any, Any, Any]],
         compensation: Callable[[], Coroutine[Any, Any, bool]],
-        action_name: str
+        action_name: str,
     ) -> Any:
         """
         Execute an action and register its compensation for potential rollback.
@@ -105,11 +107,13 @@ class UploadTransaction:
             result = await action()
 
             # Register compensation for successful action
-            self._compensations.append(CompensationAction(
-                action_name=action_name,
-                compensation=compensation,
-                completed_at=datetime.utcnow(),
-            ))
+            self._compensations.append(
+                CompensationAction(
+                    action_name=action_name,
+                    compensation=compensation,
+                    completed_at=datetime.utcnow(),
+                )
+            )
 
             logger.debug(
                 f"[Transaction {self.job.job_id}] Completed: {action_name}, "
@@ -121,15 +125,13 @@ class UploadTransaction:
         except Exception as e:
             logger.error(
                 f"[Transaction {self.job.job_id}] Failed: {action_name} - {e}",
-                exc_info=True
+                exc_info=True,
             )
             # Re-raise to allow caller to handle and trigger rollback
             raise
 
     def register_compensation(
-        self,
-        compensation: Callable[[], Coroutine[Any, Any, bool]],
-        action_name: str
+        self, compensation: Callable[[], Coroutine[Any, Any, bool]], action_name: str
     ) -> None:
         """
         Manually register a compensation action without executing an action.
@@ -144,11 +146,13 @@ class UploadTransaction:
         if not self.is_active:
             raise RuntimeError("Transaction is no longer active")
 
-        self._compensations.append(CompensationAction(
-            action_name=action_name,
-            compensation=compensation,
-            completed_at=datetime.utcnow(),
-        ))
+        self._compensations.append(
+            CompensationAction(
+                action_name=action_name,
+                compensation=compensation,
+                completed_at=datetime.utcnow(),
+            )
+        )
 
         logger.debug(
             f"[Transaction {self.job.job_id}] Registered compensation: {action_name}"
@@ -174,7 +178,9 @@ class UploadTransaction:
             )
 
         if self._committed:
-            logger.warning(f"[Transaction {self.job.job_id}] Cannot rollback committed transaction")
+            logger.warning(
+                f"[Transaction {self.job.job_id}] Cannot rollback committed transaction"
+            )
             return RollbackResult(
                 success=False,
                 actions_attempted=0,
@@ -210,11 +216,13 @@ class UploadTransaction:
 
                 if comp_result:
                     result.actions_succeeded += 1
-                    result.details.append({
-                        "action": comp.action_name,
-                        "status": "success",
-                        "completed_at": comp.completed_at.isoformat(),
-                    })
+                    result.details.append(
+                        {
+                            "action": comp.action_name,
+                            "status": "success",
+                            "completed_at": comp.completed_at.isoformat(),
+                        }
+                    )
                     logger.info(
                         f"[Transaction {self.job.job_id}] Compensation succeeded: "
                         f"{comp.action_name}"
@@ -225,11 +233,13 @@ class UploadTransaction:
                     error_msg = f"Compensation returned False: {comp.action_name}"
                     comp.compensation_error = error_msg
                     result.errors.append(error_msg)
-                    result.details.append({
-                        "action": comp.action_name,
-                        "status": "failed",
-                        "error": error_msg,
-                    })
+                    result.details.append(
+                        {
+                            "action": comp.action_name,
+                            "status": "failed",
+                            "error": error_msg,
+                        }
+                    )
                     logger.error(
                         f"[Transaction {self.job.job_id}] Compensation failed: "
                         f"{comp.action_name}"
@@ -241,15 +251,17 @@ class UploadTransaction:
                 error_msg = f"Compensation exception in {comp.action_name}: {str(e)}"
                 comp.compensation_error = error_msg
                 result.errors.append(error_msg)
-                result.details.append({
-                    "action": comp.action_name,
-                    "status": "exception",
-                    "error": str(e),
-                })
+                result.details.append(
+                    {
+                        "action": comp.action_name,
+                        "status": "exception",
+                        "error": str(e),
+                    }
+                )
                 logger.error(
                     f"[Transaction {self.job.job_id}] Compensation exception: "
                     f"{comp.action_name} - {e}",
-                    exc_info=True
+                    exc_info=True,
                 )
 
         logger.info(
@@ -276,7 +288,9 @@ class UploadTransaction:
         self._committed = True
         self._compensations.clear()
 
-        logger.info(f"[Transaction {self.job.job_id}] Transaction committed successfully")
+        logger.info(
+            f"[Transaction {self.job.job_id}] Transaction committed successfully"
+        )
 
     def get_compensation_count(self) -> int:
         """Get the number of registered compensation actions."""

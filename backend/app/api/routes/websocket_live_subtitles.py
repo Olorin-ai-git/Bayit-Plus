@@ -2,17 +2,17 @@
 WebSocket endpoint for live subtitle translation (Premium feature)
 Real-time audio → transcription → translation → subtitle streaming
 """
-import logging
 import asyncio
+import logging
 from typing import Optional
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
-from jose import jwt, JWTError
 
 from app.core.config import settings
-from app.models.user import User
 from app.models.content import LiveChannel
+from app.models.user import User
 from app.services.live_translation_service import LiveTranslationService
 from beanie import PydanticObjectId
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
+from jose import JWTError, jwt
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -21,7 +21,9 @@ logger = logging.getLogger(__name__)
 async def get_user_from_token(token: str) -> Optional[User]:
     """Validate JWT token and return user."""
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
         user_id = payload.get("sub")
         if not user_id:
             return None
@@ -40,7 +42,7 @@ async def websocket_live_subtitles(
     websocket: WebSocket,
     channel_id: str,
     token: str = Query(...),
-    target_lang: str = Query("en")
+    target_lang: str = Query("en"),
 ):
     """
     WebSocket endpoint for live subtitle translation (Premium feature).
@@ -76,7 +78,9 @@ async def websocket_live_subtitles(
 
     # Step 4: Accept connection
     await websocket.accept()
-    logger.info(f"Live subtitle connection established: user={user.id}, channel={channel_id}")
+    logger.info(
+        f"Live subtitle connection established: user={user.id}, channel={channel_id}"
+    )
 
     # Step 5: Initialize translation service
     try:
@@ -89,27 +93,28 @@ async def websocket_live_subtitles(
         logger.info(f"📊 Service availability: {service_status}")
 
         if not service_status.get("speech_to_text"):
-            stt_provider = service_status.get("stt_provider", translation_service.provider)
+            stt_provider = service_status.get(
+                "stt_provider", translation_service.provider
+            )
             error_msg = f"Speech-to-text service ({stt_provider}) is not available"
             logger.error(f"❌ {error_msg}")
-            await websocket.send_json({
-                "type": "error",
-                "message": error_msg
-            })
+            await websocket.send_json({"type": "error", "message": error_msg})
             await websocket.close(code=4000, reason="Speech service unavailable")
             return
 
         # Send connection confirmation with both provider details
-        await websocket.send_json({
-            "type": "connected",
-            "source_lang": source_lang,
-            "target_lang": target_lang,
-            "channel_id": channel_id,
-            "stt_provider": translation_service.provider,
-            "translation_provider": translation_service.translation_provider,
-            # Deprecated: kept for backwards compatibility
-            "provider": translation_service.provider
-        })
+        await websocket.send_json(
+            {
+                "type": "connected",
+                "source_lang": source_lang,
+                "target_lang": target_lang,
+                "channel_id": channel_id,
+                "stt_provider": translation_service.provider,
+                "translation_provider": translation_service.translation_provider,
+                # Deprecated: kept for backwards compatibility
+                "provider": translation_service.provider,
+            }
+        )
         logger.info(
             f"✅ Translation service initialized: "
             f"STT={translation_service.provider}, "
@@ -129,47 +134,50 @@ async def websocket_live_subtitles(
 
                     # Log every 50 chunks to avoid spam
                     if chunk_count % 50 == 0:
-                        logger.info(f"📦 Received {chunk_count} audio chunks ({total_bytes} bytes total)")
+                        logger.info(
+                            f"📦 Received {chunk_count} audio chunks ({total_bytes} bytes total)"
+                        )
 
                     yield audio_chunk
             except WebSocketDisconnect:
-                logger.info(f"✅ WebSocket disconnected: user={user.id}, received {chunk_count} chunks, {total_bytes} bytes total")
+                logger.info(
+                    f"✅ WebSocket disconnected: user={user.id}, received {chunk_count} chunks, {total_bytes} bytes total"
+                )
             except Exception as e:
-                logger.error(f"❌ Error receiving audio: {str(e)}, chunks received: {chunk_count}")
+                logger.error(
+                    f"❌ Error receiving audio: {str(e)}, chunks received: {chunk_count}"
+                )
 
         # Step 7: Process audio and stream subtitles
         try:
             async for subtitle_cue in translation_service.process_live_audio_to_subtitles(
                 audio_stream_generator(),
                 source_lang=source_lang,
-                target_lang=target_lang
+                target_lang=target_lang,
             ):
                 # Send subtitle cue to client
-                await websocket.send_json({
-                    "type": "subtitle",
-                    "data": subtitle_cue
-                })
+                await websocket.send_json({"type": "subtitle", "data": subtitle_cue})
 
         except WebSocketDisconnect:
-            logger.info(f"Live subtitle session ended: user={user.id}, channel={channel_id}")
+            logger.info(
+                f"Live subtitle session ended: user={user.id}, channel={channel_id}"
+            )
 
         except Exception as e:
             logger.error(f"Error in live subtitle stream: {str(e)}")
             try:
-                await websocket.send_json({
-                    "type": "error",
-                    "message": "Translation service error"
-                })
+                await websocket.send_json(
+                    {"type": "error", "message": "Translation service error"}
+                )
             except Exception:
                 pass
 
     except Exception as e:
         logger.error(f"Failed to initialize translation service: {str(e)}")
         try:
-            await websocket.send_json({
-                "type": "error",
-                "message": "Service unavailable"
-            })
+            await websocket.send_json(
+                {"type": "error", "message": "Service unavailable"}
+            )
             await websocket.close(code=4000, reason="Service initialization failed")
         except Exception:
             pass
@@ -195,7 +203,7 @@ async def check_subtitle_availability(channel_id: str):
         return {
             "available": channel.supports_live_subtitles,
             "source_language": channel.primary_language or "he",
-            "supported_target_languages": channel.available_translation_languages
+            "supported_target_languages": channel.available_translation_languages,
         }
 
     except Exception as e:

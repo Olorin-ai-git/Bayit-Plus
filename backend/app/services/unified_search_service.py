@@ -10,12 +10,12 @@ Provides comprehensive search functionality across all content types:
 """
 
 import logging
-from typing import Dict, Any, List, Optional, Tuple
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
 
+from app.core.config import settings
 from app.models.content import Content
 from app.models.subtitles import SubtitleTrackDoc
-from app.core.config import settings
 from app.services.search_cache import get_cache
 from pydantic import BaseModel, Field
 
@@ -24,12 +24,17 @@ logger = logging.getLogger(__name__)
 
 class SearchFilters(BaseModel):
     """Advanced search filters"""
-    content_types: List[str] = Field(default=["vod"], description="vod, live, radio, podcast")
+
+    content_types: List[str] = Field(
+        default=["vod"], description="vod, live, radio, podcast"
+    )
     genres: Optional[List[str]] = Field(None, description="Filter by genres")
     year_min: Optional[int] = Field(None, description="Minimum year")
     year_max: Optional[int] = Field(None, description="Maximum year")
     rating_min: Optional[float] = Field(None, description="Minimum rating")
-    subtitle_languages: Optional[List[str]] = Field(None, description="Required subtitle languages")
+    subtitle_languages: Optional[List[str]] = Field(
+        None, description="Required subtitle languages"
+    )
     subscription_tier: Optional[str] = Field(None, description="basic, premium, family")
     is_kids_content: Optional[bool] = Field(None, description="Filter for kids content")
     search_in_subtitles: bool = Field(False, description="Enable subtitle text search")
@@ -37,6 +42,7 @@ class SearchFilters(BaseModel):
 
 class SubtitleMatch(BaseModel):
     """A single subtitle cue match"""
+
     cue_index: int
     timestamp: float  # seconds
     text: str
@@ -45,6 +51,7 @@ class SubtitleMatch(BaseModel):
 
 class SubtitleSearchResult(BaseModel):
     """Search result with subtitle matches"""
+
     content_id: str
     content_title: str
     content_thumbnail: Optional[str]
@@ -54,6 +61,7 @@ class SubtitleSearchResult(BaseModel):
 
 class SearchResults(BaseModel):
     """Search results with metadata"""
+
     results: List[Dict[str, Any]]
     total: int
     page: int
@@ -84,7 +92,7 @@ class UnifiedSearchService:
         filters: SearchFilters,
         page: int = 1,
         limit: int = 20,
-        user_subscription_tier: Optional[str] = None
+        user_subscription_tier: Optional[str] = None,
     ) -> SearchResults:
         """
         Main search entry point.
@@ -107,7 +115,7 @@ class UnifiedSearchService:
             "filters": filters.dict(),
             "page": page,
             "limit": limit,
-            "tier": user_subscription_tier
+            "tier": user_subscription_tier,
         }
 
         cached = self.cache.get_cached_results(query, cache_key_data)
@@ -123,11 +131,7 @@ class UnifiedSearchService:
         else:
             # Text and metadata search
             results = await self._search_text_and_metadata(
-                query,
-                filters,
-                page,
-                limit,
-                user_subscription_tier
+                query, filters, page, limit, user_subscription_tier
             )
 
         # Calculate execution time
@@ -141,7 +145,7 @@ class UnifiedSearchService:
             "page_size": limit,
             "has_more": len(results) >= limit,
             "execution_time_ms": execution_time,
-            "cache_hit": False
+            "cache_hit": False,
         }
 
         # Cache results
@@ -155,7 +159,7 @@ class UnifiedSearchService:
         filters: SearchFilters,
         page: int,
         limit: int,
-        user_subscription_tier: Optional[str]
+        user_subscription_tier: Optional[str],
     ) -> List[Dict[str, Any]]:
         """
         Execute text search with metadata filters.
@@ -169,24 +173,30 @@ class UnifiedSearchService:
         # Execute query with text score sorting if query exists
         if query.strip():
             # Text search with scoring
-            results = await Content.find(
-                mongo_query,
-                projection={"score": {"$meta": "textScore"}}
-            ).sort([("score", {"$meta": "textScore"})]).skip((page - 1) * limit).limit(limit).to_list()
+            results = (
+                await Content.find(
+                    mongo_query, projection={"score": {"$meta": "textScore"}}
+                )
+                .sort([("score", {"$meta": "textScore"})])
+                .skip((page - 1) * limit)
+                .limit(limit)
+                .to_list()
+            )
         else:
             # Metadata-only search, sort by featured then date
-            results = await Content.find(mongo_query).sort([
-                ("is_featured", -1),
-                ("created_at", -1)
-            ]).skip((page - 1) * limit).limit(limit).to_list()
+            results = (
+                await Content.find(mongo_query)
+                .sort([("is_featured", -1), ("created_at", -1)])
+                .skip((page - 1) * limit)
+                .limit(limit)
+                .to_list()
+            )
 
         # Convert to dict format
         return [self._content_to_dict(content) for content in results]
 
     async def _search_subtitles(
-        self,
-        query: str,
-        filters: SearchFilters
+        self, query: str, filters: SearchFilters
     ) -> List[Dict[str, Any]]:
         """
         Search within subtitle cues for specific dialogue.
@@ -196,12 +206,15 @@ class UnifiedSearchService:
         logger.info(f"Subtitle search for: {query}")
 
         # Search subtitle tracks
-        subtitle_tracks = await SubtitleTrackDoc.find(
-            {"$text": {"$search": query}},
-            projection={"score": {"$meta": "textScore"}}
-        ).sort([("score", {"$meta": "textScore"})]).limit(
-            settings.SEARCH_SUBTITLE_RESULT_LIMIT
-        ).to_list()
+        subtitle_tracks = (
+            await SubtitleTrackDoc.find(
+                {"$text": {"$search": query}},
+                projection={"score": {"$meta": "textScore"}},
+            )
+            .sort([("score", {"$meta": "textScore"})])
+            .limit(settings.SEARCH_SUBTITLE_RESULT_LIMIT)
+            .to_list()
+        )
 
         logger.info(f"Found {len(subtitle_tracks)} subtitle track matches")
 
@@ -221,7 +234,7 @@ class UnifiedSearchService:
                         cue_index=idx,
                         timestamp=cue.start_time,
                         text=cue.text,
-                        highlighted_text=highlighted
+                        highlighted_text=highlighted,
                     )
 
                     if content_id not in content_matches:
@@ -242,17 +255,17 @@ class UnifiedSearchService:
         for content in contents:
             content_dict = self._content_to_dict(content)
             content_dict["subtitle_matches"] = [
-                match.dict() for match in content_matches[str(content.id)][:5]  # Limit to 5 matches per content
+                match.dict()
+                for match in content_matches[str(content.id)][
+                    :5
+                ]  # Limit to 5 matches per content
             ]
             results.append(content_dict)
 
         return results
 
     def _build_mongo_query(
-        self,
-        query: str,
-        filters: SearchFilters,
-        user_subscription_tier: Optional[str]
+        self, query: str, filters: SearchFilters, user_subscription_tier: Optional[str]
     ) -> Dict[str, Any]:
         """
         Build MongoDB query from search query and filters.
@@ -269,12 +282,7 @@ class UnifiedSearchService:
         # Filter by content type (vod vs series episodes)
         if "vod" in filters.content_types:
             # Exclude episodes (series_id is None OR is_series is True for parent series)
-            conditions.append({
-                "$or": [
-                    {"series_id": None},
-                    {"is_series": True}
-                ]
-            })
+            conditions.append({"$or": [{"series_id": None}, {"is_series": True}]})
 
         # Genre filter
         if filters.genres:
@@ -295,18 +303,20 @@ class UnifiedSearchService:
 
         # Subtitle language filter
         if filters.subtitle_languages:
-            conditions.append({
-                "available_subtitle_languages": {
-                    "$all": filters.subtitle_languages
-                }
-            })
+            conditions.append(
+                {"available_subtitle_languages": {"$all": filters.subtitle_languages}}
+            )
 
         # Subscription tier filter
         if filters.subscription_tier:
             conditions.append({"requires_subscription": filters.subscription_tier})
         elif user_subscription_tier:
             # Filter by user's accessible tiers
-            tier_hierarchy = {"basic": ["basic"], "premium": ["basic", "premium"], "family": ["basic", "premium", "family"]}
+            tier_hierarchy = {
+                "basic": ["basic"],
+                "premium": ["basic", "premium"],
+                "family": ["basic", "premium", "family"],
+            }
             accessible_tiers = tier_hierarchy.get(user_subscription_tier, ["basic"])
             conditions.append({"requires_subscription": {"$in": accessible_tiers}})
 
@@ -331,18 +341,22 @@ class UnifiedSearchService:
             return []
 
         # Search for titles starting with or containing the query
-        suggestions = await Content.find(
-            {
-                "is_published": True,
-                "$or": [
-                    {"title": {"$regex": f"^{query}", "$options": "i"}},
-                    {"title_en": {"$regex": f"^{query}", "$options": "i"}},
-                    {"cast": {"$regex": query, "$options": "i"}},
-                    {"director": {"$regex": query, "$options": "i"}}
-                ]
-            },
-            projection={"title": 1, "title_en": 1}
-        ).limit(limit).to_list()
+        suggestions = (
+            await Content.find(
+                {
+                    "is_published": True,
+                    "$or": [
+                        {"title": {"$regex": f"^{query}", "$options": "i"}},
+                        {"title_en": {"$regex": f"^{query}", "$options": "i"}},
+                        {"cast": {"$regex": query, "$options": "i"}},
+                        {"director": {"$regex": query, "$options": "i"}},
+                    ],
+                },
+                projection={"title": 1, "title_en": 1},
+            )
+            .limit(limit)
+            .to_list()
+        )
 
         # Extract unique suggestions
         suggestion_set = set()
@@ -363,46 +377,63 @@ class UnifiedSearchService:
         """
         # Get unique genres
         genres_pipeline = [
-            {"$match": {"is_published": True, "genres": {"$exists": True, "$ne": None}}},
+            {
+                "$match": {
+                    "is_published": True,
+                    "genres": {"$exists": True, "$ne": None},
+                }
+            },
             {"$unwind": "$genres"},
             {"$group": {"_id": "$genres"}},
-            {"$sort": {"_id": 1}}
+            {"$sort": {"_id": 1}},
         ]
-        genres_result = await Content.get_motor_collection().aggregate(genres_pipeline).to_list(None)
+        genres_result = (
+            await Content.get_motor_collection()
+            .aggregate(genres_pipeline)
+            .to_list(None)
+        )
         genres = [item["_id"] for item in genres_result if item["_id"]]
 
         # Get year range
         year_pipeline = [
             {"$match": {"is_published": True, "year": {"$exists": True, "$ne": None}}},
-            {"$group": {
-                "_id": None,
-                "min_year": {"$min": "$year"},
-                "max_year": {"$max": "$year"}
-            }}
+            {
+                "$group": {
+                    "_id": None,
+                    "min_year": {"$min": "$year"},
+                    "max_year": {"$max": "$year"},
+                }
+            },
         ]
-        year_result = await Content.get_motor_collection().aggregate(year_pipeline).to_list(None)
+        year_result = (
+            await Content.get_motor_collection().aggregate(year_pipeline).to_list(None)
+        )
         year_min = year_result[0]["min_year"] if year_result else 1900
         year_max = year_result[0]["max_year"] if year_result else datetime.now().year
 
         # Get available subtitle languages
         langs_pipeline = [
-            {"$match": {"is_published": True, "available_subtitle_languages": {"$exists": True, "$ne": []}}},
+            {
+                "$match": {
+                    "is_published": True,
+                    "available_subtitle_languages": {"$exists": True, "$ne": []},
+                }
+            },
             {"$unwind": "$available_subtitle_languages"},
             {"$group": {"_id": "$available_subtitle_languages"}},
-            {"$sort": {"_id": 1}}
+            {"$sort": {"_id": 1}},
         ]
-        langs_result = await Content.get_motor_collection().aggregate(langs_pipeline).to_list(None)
+        langs_result = (
+            await Content.get_motor_collection().aggregate(langs_pipeline).to_list(None)
+        )
         subtitle_languages = [item["_id"] for item in langs_result if item["_id"]]
 
         return {
             "genres": genres,
-            "year_range": {
-                "min": year_min,
-                "max": year_max
-            },
+            "year_range": {"min": year_min, "max": year_max},
             "subtitle_languages": subtitle_languages,
             "content_types": ["vod", "live", "radio", "podcast"],
-            "subscription_tiers": ["basic", "premium", "family"]
+            "subscription_tiers": ["basic", "premium", "family"],
         }
 
     def _content_to_dict(self, content: Content) -> Dict[str, Any]:

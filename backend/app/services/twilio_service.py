@@ -4,12 +4,12 @@ Handles SMS verification code sending via Twilio API
 """
 import logging
 import secrets
-import phonenumbers
 from typing import Optional
-from twilio.rest import Client
-from twilio.base.exceptions import TwilioRestException
 
+import phonenumbers
 from app.core.config import settings
+from twilio.base.exceptions import TwilioRestException
+from twilio.rest import Client
 
 logger = logging.getLogger(__name__)
 
@@ -24,14 +24,13 @@ class TwilioService:
             self.client = None
         else:
             self.client = Client(
-                settings.TWILIO_ACCOUNT_SID,
-                settings.TWILIO_AUTH_TOKEN
+                settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN
             )
         self.from_number = settings.TWILIO_PHONE_NUMBER
 
     def generate_code(self) -> str:
         """Generate 6-digit verification code."""
-        return ''.join([str(secrets.randbelow(10)) for _ in range(6)])
+        return "".join([str(secrets.randbelow(10)) for _ in range(6)])
 
     def validate_phone_number(self, phone_number: str) -> Optional[str]:
         """
@@ -48,15 +47,13 @@ class TwilioService:
             parsed = phonenumbers.parse(phone_number, None)
             if not phonenumbers.is_valid_number(parsed):
                 return None
-            return phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
+            return phonenumbers.format_number(
+                parsed, phonenumbers.PhoneNumberFormat.E164
+            )
         except phonenumbers.phonenumberutil.NumberParseException:
             return None
 
-    async def send_verification_code(
-        self,
-        phone_number: str,
-        code: str
-    ) -> dict:
+    async def send_verification_code(self, phone_number: str, code: str) -> dict:
         """
         Send SMS verification code via Twilio.
 
@@ -71,7 +68,9 @@ class TwilioService:
             Exception if sending fails
         """
         if not self.client:
-            logger.error("Twilio client not initialized - check TWILIO credentials in settings")
+            logger.error(
+                "Twilio client not initialized - check TWILIO credentials in settings"
+            )
             raise Exception("SMS service not configured")
 
         if not self.from_number:
@@ -82,16 +81,14 @@ class TwilioService:
             message = self.client.messages.create(
                 body=f"Your Bayit+ verification code is: {code}. Valid for 10 minutes.",
                 from_=self.from_number,
-                to=phone_number
+                to=phone_number,
             )
 
-            logger.info(f"✅ SMS sent successfully to {phone_number[:8]}*** (SID: {message.sid})")
+            logger.info(
+                f"✅ SMS sent successfully to {phone_number[:8]}*** (SID: {message.sid})"
+            )
 
-            return {
-                "sid": message.sid,
-                "status": message.status,
-                "to": phone_number
-            }
+            return {"sid": message.sid, "status": message.status, "to": phone_number}
 
         except TwilioRestException as e:
             logger.error(f"❌ Twilio API error: {e.msg} (code: {e.code})")

@@ -9,7 +9,10 @@ from typing import List, Optional
 
 from app.services.news_scraper.constants import MAX_SEARCH_RESULTS
 from app.services.news_scraper.models import HeadlineItem
-from app.services.news_scraper.rss_parser import search_duckduckgo, search_google_news_rss
+from app.services.news_scraper.rss_parser import (
+    search_duckduckgo,
+    search_google_news_rss,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -121,15 +124,41 @@ def _categorize_jewish_content(title: str, summary: Optional[str] = None) -> str
     """Categorize Jewish content based on keywords."""
     text = f"{title} {summary or ''}".lower()
 
-    torah_kw = ["torah", "shiur", "parsha", "talmud", "halacha", "rabbi", "שיעור", "תורה", "הלכה", "רב"]
+    torah_kw = [
+        "torah",
+        "shiur",
+        "parsha",
+        "talmud",
+        "halacha",
+        "rabbi",
+        "שיעור",
+        "תורה",
+        "הלכה",
+        "רב",
+    ]
     if any(kw in text for kw in torah_kw):
         return "torah"
 
-    community_kw = ["community", "synagogue", "shul", "congregation", "קהילה", "בית כנסת"]
+    community_kw = [
+        "community",
+        "synagogue",
+        "shul",
+        "congregation",
+        "קהילה",
+        "בית כנסת",
+    ]
     if any(kw in text for kw in community_kw):
         return "community"
 
-    israel_kw = ["israel", "jerusalem", "tel aviv", "idf", "knesset", "ישראל", "ירושלים"]
+    israel_kw = [
+        "israel",
+        "jerusalem",
+        "tel aviv",
+        "idf",
+        "knesset",
+        "ישראל",
+        "ירושלים",
+    ]
     if any(kw in text for kw in israel_kw):
         return "israel"
 

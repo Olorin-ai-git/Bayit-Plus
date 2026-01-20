@@ -7,20 +7,19 @@ Reduces redundant API calls by storing validation results with TTL.
 
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Tuple, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from app.models.librarian import StreamValidationCache
 from app.services.youtube_validator.constants import (
-    VIDEO_STATUS_CACHED_INVALID,
-    STREAM_TYPE_YOUTUBE,
     CONTENT_TYPE_YOUTUBE,
-    HTTP_STATUS_OK,
     HTTP_STATUS_NOT_FOUND,
-    get_cache_ttl_valid_hours,
+    HTTP_STATUS_OK,
+    STREAM_TYPE_YOUTUBE,
+    VIDEO_STATUS_CACHED_INVALID,
     get_cache_ttl_invalid_hours,
+    get_cache_ttl_valid_hours,
 )
 from app.services.youtube_validator.models import YouTubeValidationResult
-
 
 logger = logging.getLogger(__name__)
 
@@ -42,23 +41,24 @@ async def filter_cached_youtube(
     now = datetime.utcnow()
 
     for item in urls:
-        cached = await StreamValidationCache.find_one({
-            "stream_url": item["url"],
-            "expires_at": {"$gt": now}
-        })
+        cached = await StreamValidationCache.find_one(
+            {"stream_url": item["url"], "expires_at": {"$gt": now}}
+        )
 
         if cached:
             if not cached.is_valid:
-                cached_results.append({
-                    "content_id": item["content_id"],
-                    "title": item["title"],
-                    "field": item["field"],
-                    "url": item["url"],
-                    "status": VIDEO_STATUS_CACHED_INVALID,
-                    "error": cached.error_message,
-                    "is_valid": False,
-                    "from_cache": True
-                })
+                cached_results.append(
+                    {
+                        "content_id": item["content_id"],
+                        "title": item["title"],
+                        "field": item["field"],
+                        "url": item["url"],
+                        "status": VIDEO_STATUS_CACHED_INVALID,
+                        "error": cached.error_message,
+                        "is_valid": False,
+                        "from_cache": True,
+                    }
+                )
             else:
                 cached_results.append({"is_valid": True})
         else:
@@ -94,7 +94,7 @@ async def cache_youtube_result(result: YouTubeValidationResult) -> None:
             error_message=result.error_message,
             stream_type=STREAM_TYPE_YOUTUBE,
             content_type=CONTENT_TYPE_YOUTUBE,
-            expires_at=datetime.utcnow() + ttl
+            expires_at=datetime.utcnow() + ttl,
         )
 
         # Upsert (replace if exists)
@@ -119,10 +119,9 @@ async def get_cached_validation(url: str) -> Optional[Dict[str, Any]]:
         Cached result dict or None if not cached or expired
     """
     now = datetime.utcnow()
-    cached = await StreamValidationCache.find_one({
-        "stream_url": url,
-        "expires_at": {"$gt": now}
-    })
+    cached = await StreamValidationCache.find_one(
+        {"stream_url": url, "expires_at": {"$gt": now}}
+    )
 
     if not cached:
         return None
@@ -135,7 +134,7 @@ async def get_cached_validation(url: str) -> Optional[Dict[str, Any]]:
         "error_message": cached.error_message,
         "last_validated": cached.last_validated.isoformat(),
         "expires_at": cached.expires_at.isoformat(),
-        "from_cache": True
+        "from_cache": True,
     }
 
 

@@ -37,10 +37,12 @@ async def find_unlinked_episodes(limit: int = 100) -> List[UnlinkedEpisode]:
                 {"is_published": True},
                 {"is_series": {"$ne": True}},  # Not a series container
                 {"series_id": None},
-                {"$or": [
-                    {"season": {"$ne": None}},
-                    {"episode": {"$ne": None}},
-                ]}
+                {
+                    "$or": [
+                        {"season": {"$ne": None}},
+                        {"episode": {"$ne": None}},
+                    ]
+                },
             ]
         }
 
@@ -52,15 +54,17 @@ async def find_unlinked_episodes(limit: int = 100) -> List[UnlinkedEpisode]:
                 ep.title or ep.title_en or ""
             )
 
-            unlinked.append(UnlinkedEpisode(
-                content_id=str(ep.id),
-                title=ep.title,
-                title_en=ep.title_en,
-                extracted_series_name=series_name,
-                season=ep.season or season,
-                episode=ep.episode or episode_num,
-                created_at=ep.created_at,
-            ))
+            unlinked.append(
+                UnlinkedEpisode(
+                    content_id=str(ep.id),
+                    title=ep.title,
+                    title_en=ep.title_en,
+                    extracted_series_name=series_name,
+                    season=ep.season or season,
+                    episode=ep.episode or episode_num,
+                    created_at=ep.created_at,
+                )
+            )
 
         logger.info(f"Found {len(unlinked)} unlinked episodes")
 
@@ -90,7 +94,7 @@ async def find_episodes_with_incomplete_data() -> List[Dict[str, Any]]:
             "$or": [
                 {"season": None},
                 {"episode": None},
-            ]
+            ],
         }
 
         episodes = await Content.find(query).limit(100).to_list()
@@ -102,14 +106,16 @@ async def find_episodes_with_incomplete_data() -> List[Dict[str, Any]]:
             if ep.episode is None:
                 missing.append("episode")
 
-            results.append({
-                "content_id": str(ep.id),
-                "title": ep.title,
-                "series_id": ep.series_id,
-                "season": ep.season,
-                "episode": ep.episode,
-                "missing": missing,
-            })
+            results.append(
+                {
+                    "content_id": str(ep.id),
+                    "title": ep.title,
+                    "series_id": ep.series_id,
+                    "season": ep.season,
+                    "episode": ep.episode,
+                    "missing": missing,
+                }
+            )
 
     except Exception as e:
         logger.error(f"Error finding incomplete episodes: {e}")

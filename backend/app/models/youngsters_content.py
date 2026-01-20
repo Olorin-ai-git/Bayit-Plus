@@ -16,7 +16,8 @@ Collections:
 """
 
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
@@ -112,7 +113,7 @@ class YoungstersAgeGroup:
     """Age group classifications for youngsters content."""
 
     MIDDLE_SCHOOL = "middle-school"  # 12-14 years
-    HIGH_SCHOOL = "high-school"      # 15-17 years
+    HIGH_SCHOOL = "high-school"  # 15-17 years
 
 
 # Age group range definitions (min_age, max_age)

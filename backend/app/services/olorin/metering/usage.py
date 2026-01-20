@@ -5,13 +5,13 @@ Functions for recording usage across capabilities.
 """
 
 import logging
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.models.integration_partner import UsageRecord
 from app.services.olorin.metering.costs import (
     calculate_dubbing_cost,
-    calculate_search_cost,
     calculate_llm_cost,
+    calculate_search_cost,
 )
 
 logger = logging.getLogger(__name__)
@@ -45,7 +45,9 @@ async def record_dubbing_usage(
     Returns:
         Updated or created usage record
     """
-    total_cost = calculate_dubbing_cost(audio_seconds, characters_translated, characters_synthesized)
+    total_cost = calculate_dubbing_cost(
+        audio_seconds, characters_translated, characters_synthesized
+    )
     period_start, period_end = _get_hourly_period()
 
     record = await UsageRecord.find_one(
@@ -74,7 +76,9 @@ async def record_dubbing_usage(
         )
 
     await record.save()
-    logger.debug(f"Recorded dubbing usage for {partner_id}: {audio_seconds:.1f}s, ${total_cost:.4f}")
+    logger.debug(
+        f"Recorded dubbing usage for {partner_id}: {audio_seconds:.1f}s, ${total_cost:.4f}"
+    )
     return record
 
 

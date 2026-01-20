@@ -3,14 +3,17 @@ Subtitle Enrichment Service
 Efficiently enriches content with available subtitle language information.
 """
 
-from typing import List, Dict
-from app.models.subtitles import SubtitleTrackDoc
 import logging
+from typing import Dict, List
+
+from app.models.subtitles import SubtitleTrackDoc
 
 logger = logging.getLogger(__name__)
 
 
-async def get_subtitle_languages_for_contents(content_ids: List[str]) -> Dict[str, List[str]]:
+async def get_subtitle_languages_for_contents(
+    content_ids: List[str],
+) -> Dict[str, List[str]]:
     """
     Batch fetch available subtitle languages for multiple content items.
     Returns mapping of content_id -> list of language codes.
@@ -52,7 +55,9 @@ async def get_subtitle_languages_for_contents(content_ids: List[str]) -> Dict[st
             for content_id, languages in subtitle_map.items()
         }
 
-        logger.debug(f"Fetched subtitle languages for {len(result)} content items out of {len(content_ids)} requested")
+        logger.debug(
+            f"Fetched subtitle languages for {len(result)} content items out of {len(content_ids)} requested"
+        )
 
         return result
 

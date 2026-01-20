@@ -7,12 +7,11 @@ Handles passkey registration, authentication, and session management.
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel, Field
-
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.user import User
-from app.services.webauthn_service import get_webauthn_service, WebAuthnService
+from app.services.webauthn_service import WebAuthnService, get_webauthn_service
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel, Field
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -43,7 +42,9 @@ class RegistrationOptionsResponse(BaseModel):
 class RegistrationVerifyRequest(BaseModel):
     """Request to verify passkey registration."""
 
-    credential: dict = Field(..., description="Credential from navigator.credentials.create()")
+    credential: dict = Field(
+        ..., description="Credential from navigator.credentials.create()"
+    )
     device_name: Optional[str] = Field(None, max_length=100)
 
 
@@ -76,7 +77,9 @@ class AuthenticationOptionsResponse(BaseModel):
 class AuthenticationVerifyRequest(BaseModel):
     """Request to verify passkey authentication."""
 
-    credential: dict = Field(..., description="Credential from navigator.credentials.get()")
+    credential: dict = Field(
+        ..., description="Credential from navigator.credentials.get()"
+    )
     challenge_id: Optional[str] = None
     qr_session_id: Optional[str] = None
 
@@ -193,7 +196,9 @@ async def get_authentication_options(
     For QR flow (cross-device), any discoverable credential is accepted.
     """
     try:
-        user_id = str(current_user.id) if current_user and not request.is_qr_flow else None
+        user_id = (
+            str(current_user.id) if current_user and not request.is_qr_flow else None
+        )
         result = await webauthn.generate_authentication_options_for_user(
             user_id=user_id,
             is_qr_flow=request.is_qr_flow,

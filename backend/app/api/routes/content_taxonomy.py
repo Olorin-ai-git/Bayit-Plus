@@ -10,18 +10,19 @@ New endpoints for the 5-axis content classification system:
 Uses i18n translation system for multilingual support.
 """
 
+import logging
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Query, Header
+
 from app.models.content import Content
 from app.models.content_taxonomy import (
-    ContentSection,
-    SectionSubcategory,
-    Genre,
     Audience,
+    ContentSection,
+    Genre,
+    SectionSubcategory,
 )
 from app.services.subtitle_enrichment import enrich_content_items_with_subtitles
 from app.utils.i18n import get_multilingual_names, resolve_name_key
-import logging
+from fastapi import APIRouter, Header, HTTPException, Query
 
 router = APIRouter(prefix="/content", tags=["content-taxonomy"])
 logger = logging.getLogger(__name__)
@@ -64,8 +65,12 @@ def format_section_response(section: ContentSection, language: str = "en") -> di
         "slug": section.slug,
         "name": resolve_name_key(section.name_key, language),
         "translations": get_multilingual_names(section.name_key),
-        "description": resolve_name_key(section.description_key, language) if section.description_key else None,
-        "description_translations": get_multilingual_names(section.description_key) if section.description_key else None,
+        "description": resolve_name_key(section.description_key, language)
+        if section.description_key
+        else None,
+        "description_translations": get_multilingual_names(section.description_key)
+        if section.description_key
+        else None,
         "icon": section.icon,
         "thumbnail": section.thumbnail,
         "color": section.color,
@@ -76,7 +81,9 @@ def format_section_response(section: ContentSection, language: str = "en") -> di
     }
 
 
-def format_subcategory_response(subcategory: SectionSubcategory, language: str = "en") -> dict:
+def format_subcategory_response(
+    subcategory: SectionSubcategory, language: str = "en"
+) -> dict:
     """
     Format a SectionSubcategory model into an API response with i18n.
 
@@ -92,8 +99,12 @@ def format_subcategory_response(subcategory: SectionSubcategory, language: str =
         "slug": subcategory.slug,
         "name": resolve_name_key(subcategory.name_key, language),
         "translations": get_multilingual_names(subcategory.name_key),
-        "description": resolve_name_key(subcategory.description_key, language) if subcategory.description_key else None,
-        "description_translations": get_multilingual_names(subcategory.description_key) if subcategory.description_key else None,
+        "description": resolve_name_key(subcategory.description_key, language)
+        if subcategory.description_key
+        else None,
+        "description_translations": get_multilingual_names(subcategory.description_key)
+        if subcategory.description_key
+        else None,
         "icon": subcategory.icon,
         "thumbnail": subcategory.thumbnail,
         "order": subcategory.order,
@@ -103,6 +114,7 @@ def format_subcategory_response(subcategory: SectionSubcategory, language: str =
 # ============================================================================
 # SECTIONS ENDPOINTS
 # ============================================================================
+
 
 @router.get("/sections")
 async def get_sections(
@@ -197,10 +209,14 @@ async def get_section_subcategories(section_id: str):
 
     section_obj_id = str(section.id)
 
-    subcategories = await SectionSubcategory.find(
-        SectionSubcategory.section_id == section_obj_id,
-        SectionSubcategory.is_active == True,
-    ).sort("order").to_list()
+    subcategories = (
+        await SectionSubcategory.find(
+            SectionSubcategory.section_id == section_obj_id,
+            SectionSubcategory.is_active == True,
+        )
+        .sort("order")
+        .to_list()
+    )
 
     return {
         "section": {
@@ -225,13 +241,14 @@ async def get_section_subcategories(section_id: str):
                 "order": sub.order,
             }
             for sub in subcategories
-        ]
+        ],
     }
 
 
 # ============================================================================
 # GENRES ENDPOINTS
 # ============================================================================
+
 
 @router.get("/genres")
 async def get_genres(
@@ -272,6 +289,7 @@ async def get_genres(
 # AUDIENCES ENDPOINTS
 # ============================================================================
 
+
 @router.get("/audiences")
 async def get_audiences():
     """
@@ -306,25 +324,40 @@ async def get_audiences():
 # UNIFIED BROWSE ENDPOINT
 # ============================================================================
 
+
 @router.get("/browse")
 async def browse_content(
     # Section filter
-    section: Optional[str] = Query(None, description="Section slug (e.g., movies, kids, judaism)"),
+    section: Optional[str] = Query(
+        None, description="Section slug (e.g., movies, kids, judaism)"
+    ),
     # Subcategory filter
-    subcategory: Optional[str] = Query(None, description="Subcategory slug (e.g., shiurim, cartoons)"),
+    subcategory: Optional[str] = Query(
+        None, description="Subcategory slug (e.g., shiurim, cartoons)"
+    ),
     # Genre filter (comma-separated for multiple)
-    genres: Optional[str] = Query(None, description="Comma-separated genre slugs (e.g., drama,comedy)"),
+    genres: Optional[str] = Query(
+        None, description="Comma-separated genre slugs (e.g., drama,comedy)"
+    ),
     # Audience filter
-    audience: Optional[str] = Query(None, description="Audience slug (e.g., kids, family)"),
+    audience: Optional[str] = Query(
+        None, description="Audience slug (e.g., kids, family)"
+    ),
     # Topic tags filter (comma-separated for multiple)
-    topics: Optional[str] = Query(None, description="Comma-separated topic tags (e.g., jewish,educational)"),
+    topics: Optional[str] = Query(
+        None, description="Comma-separated topic tags (e.g., jewish,educational)"
+    ),
     # Format filter
-    content_format: Optional[str] = Query(None, description="Content format (movie, series, documentary)"),
+    content_format: Optional[str] = Query(
+        None, description="Content format (movie, series, documentary)"
+    ),
     # Pagination
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
     # Sorting
-    sort_by: str = Query("created_at", description="Sort field (created_at, year, title, view_count)"),
+    sort_by: str = Query(
+        "created_at", description="Sort field (created_at, year, title, view_count)"
+    ),
     sort_order: str = Query("desc", description="Sort order (asc, desc)"),
 ):
     """
@@ -417,10 +450,12 @@ async def browse_content(
     if content_format:
         # Try new field first, fallback to legacy
         content_filter["$or"] = content_filter.get("$or", [])
-        content_filter["$or"].extend([
-            {"content_format": content_format},
-            {"content_type": content_format},
-        ])
+        content_filter["$or"].extend(
+            [
+                {"content_format": content_format},
+                {"content_type": content_format},
+            ]
+        )
         # Handle series format specially
         if content_format == "series":
             content_filter["$or"].append({"is_series": True})
@@ -437,16 +472,23 @@ async def browse_content(
     sort_field = sort_field_map.get(sort_by, "created_at")
 
     # Execute query
-    items = await Content.find(content_filter).sort(
-        [(sort_field, sort_direction)]
-    ).skip(skip).limit(limit).to_list()
+    items = (
+        await Content.find(content_filter)
+        .sort([(sort_field, sort_direction)])
+        .skip(skip)
+        .limit(limit)
+        .to_list()
+    )
 
     total = await Content.find(content_filter).count()
 
     # Build response items
     result_items = []
     for item in items:
-        is_series = getattr(item, "is_series", False) or getattr(item, "content_format", None) == "series"
+        is_series = (
+            getattr(item, "is_series", False)
+            or getattr(item, "content_format", None) == "series"
+        )
 
         item_data = {
             "id": str(item.id),
@@ -462,7 +504,8 @@ async def browse_content(
             # New taxonomy fields
             "section_ids": getattr(item, "section_ids", []),
             "primary_section_id": getattr(item, "primary_section_id", None),
-            "content_format": getattr(item, "content_format", None) or item.content_type,
+            "content_format": getattr(item, "content_format", None)
+            or item.content_type,
             "audience_id": getattr(item, "audience_id", None),
             "genre_ids": getattr(item, "genre_ids", []),
             "topic_tags": getattr(item, "topic_tags", []),
@@ -555,7 +598,13 @@ async def get_section_content(
         if sub_obj:
             content_filter["subcategory_ids"] = str(sub_obj.id)
 
-    items = await Content.find(content_filter).sort("created_at", -1).skip(skip).limit(limit).to_list()
+    items = (
+        await Content.find(content_filter)
+        .sort("created_at", -1)
+        .skip(skip)
+        .limit(limit)
+        .to_list()
+    )
     total = await Content.find(content_filter).count()
 
     # Build response
@@ -563,19 +612,21 @@ async def get_section_content(
     for item in items:
         is_series = getattr(item, "is_series", False)
 
-        result_items.append({
-            "id": str(item.id),
-            "title": item.title,
-            "title_en": item.title_en,
-            "title_es": item.title_es,
-            "description": item.description,
-            "thumbnail": item.thumbnail_data or item.thumbnail or item.poster_url,
-            "year": item.year,
-            "duration": item.duration,
-            "type": "series" if is_series else "movie",
-            "is_series": is_series,
-            "total_episodes": item.total_episodes if is_series else None,
-        })
+        result_items.append(
+            {
+                "id": str(item.id),
+                "title": item.title,
+                "title_en": item.title_en,
+                "title_es": item.title_es,
+                "description": item.description,
+                "thumbnail": item.thumbnail_data or item.thumbnail or item.poster_url,
+                "year": item.year,
+                "duration": item.duration,
+                "type": "series" if is_series else "movie",
+                "is_series": is_series,
+                "total_episodes": item.total_episodes if is_series else None,
+            }
+        )
 
     # Enrich with subtitles
     result_items = await enrich_content_items_with_subtitles(result_items)
@@ -603,7 +654,16 @@ def _get_legacy_category_mapping() -> dict:
     during the migration period.
     """
     return {
-        "movies": ["סרטים", "Movies", "movies", "קומדיה", "דרמה", "אקשן", "מתח", "רומנטי"],
+        "movies": [
+            "סרטים",
+            "Movies",
+            "movies",
+            "קומדיה",
+            "דרמה",
+            "אקשן",
+            "מתח",
+            "רומנטי",
+        ],
         "series": ["סדרות", "Series", "series", "tv shows", "shows"],
         "kids": ["ילדים", "Kids", "kids", "לילדים", "לנוער"],
         "judaism": ["יהדות", "Judaism", "judaism", "תורה", "שיעורים", "תפילה"],

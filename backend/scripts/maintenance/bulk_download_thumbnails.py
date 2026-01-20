@@ -3,8 +3,9 @@ Bulk download and store thumbnails for all content items
 This script downloads images from URLs and stores them as base64 in MongoDB
 """
 import asyncio
-import sys
 import os
+import sys
+
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -13,11 +14,12 @@ load_dotenv()
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
+import logging
+
 from app.models.content import Content
 from app.services.image_storage import download_and_encode_image
-import logging
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -27,7 +29,9 @@ async def bulk_download_thumbnails():
     """Download and store thumbnails for all content"""
 
     # Get MongoDB URI from environment
-    mongodb_uri = os.getenv("MONGODB_URI") or os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+    mongodb_uri = os.getenv("MONGODB_URI") or os.getenv(
+        "MONGODB_URL", "mongodb://localhost:27017"
+    )
     mongodb_db = os.getenv("MONGODB_DB") or os.getenv("MONGODB_DB_NAME", "bayit_plus")
 
     logger.info(f"Connecting to MongoDB: {mongodb_db}")
@@ -41,7 +45,7 @@ async def bulk_download_thumbnails():
         {
             "$or": [
                 {"thumbnail": {"$ne": None, "$exists": True}},
-                {"poster_url": {"$ne": None, "$exists": True}}
+                {"poster_url": {"$ne": None, "$exists": True}},
             ]
         }
     ).to_list()
@@ -71,7 +75,7 @@ async def bulk_download_thumbnails():
             skipped += 1
             continue
 
-        if not thumbnail_url.startswith(('http://', 'https://')):
+        if not thumbnail_url.startswith(("http://", "https://")):
             logger.info(f"  ⚠️  Thumbnail is not a URL: {thumbnail_url[:50]}")
             skipped += 1
             continue
@@ -79,7 +83,9 @@ async def bulk_download_thumbnails():
         logger.info(f"  📥 Downloading from: {thumbnail_url}")
 
         # Download and encode
-        thumbnail_data = await download_and_encode_image(thumbnail_url, max_size=(800, 1200))
+        thumbnail_data = await download_and_encode_image(
+            thumbnail_url, max_size=(800, 1200)
+        )
 
         if thumbnail_data:
             # Save to database
@@ -96,14 +102,14 @@ async def bulk_download_thumbnails():
         # Small delay to avoid overwhelming servers
         await asyncio.sleep(0.5)
 
-    logger.info(f"\n" + "="*60)
+    logger.info(f"\n" + "=" * 60)
     logger.info(f"📊 SUMMARY")
-    logger.info(f"="*60)
+    logger.info(f"=" * 60)
     logger.info(f"  Total items processed: {processed}")
     logger.info(f"  ✅ Successfully downloaded: {downloaded}")
     logger.info(f"  ⏭️  Skipped (already had data): {skipped}")
     logger.info(f"  ❌ Failed: {failed}")
-    logger.info(f"="*60 + "\n")
+    logger.info(f"=" * 60 + "\n")
 
 
 if __name__ == "__main__":

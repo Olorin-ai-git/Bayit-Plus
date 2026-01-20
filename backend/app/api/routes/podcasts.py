@@ -1,8 +1,9 @@
+import logging
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Query
+
 from app.models.content import Podcast, PodcastEpisode
 from app.services.podcast_sync import sync_all_podcasts
-import logging
+from fastapi import APIRouter, HTTPException, Query
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -99,7 +100,13 @@ async def get_podcasts(
         if category:
             query["category"] = category
 
-        shows = await Podcast.find(query).sort("-latest_episode_date").skip(skip).limit(limit).to_list()
+        shows = (
+            await Podcast.find(query)
+            .sort("-latest_episode_date")
+            .skip(skip)
+            .limit(limit)
+            .to_list()
+        )
         total = await Podcast.find(query).count()
 
         # Get unique categories (filtered by culture if specified)
@@ -119,7 +126,9 @@ async def get_podcasts(
                     "category": show.category,
                     "culture_id": show.culture_id,
                     "episodeCount": show.episode_count,
-                    "latestEpisode": show.latest_episode_date.strftime("%d/%m/%Y") if show.latest_episode_date else None,
+                    "latestEpisode": show.latest_episode_date.strftime("%d/%m/%Y")
+                    if show.latest_episode_date
+                    else None,
                 }
                 for show in shows
             ],
@@ -142,9 +151,12 @@ async def get_podcast(show_id: str):
             raise HTTPException(status_code=404, detail="Podcast not found")
 
         # Get latest episodes
-        episodes = await PodcastEpisode.find(
-            PodcastEpisode.podcast_id == show_id
-        ).sort("-published_at").limit(50).to_list()
+        episodes = (
+            await PodcastEpisode.find(PodcastEpisode.podcast_id == show_id)
+            .sort("-published_at")
+            .limit(50)
+            .to_list()
+        )
 
         return {
             "id": str(show.id),
@@ -171,7 +183,9 @@ async def get_podcast(show_id: str):
             ],
             "latestEpisode": {
                 "audioUrl": episodes[0].audio_url if episodes else None,
-            } if episodes else None,
+            }
+            if episodes
+            else None,
         }
     except HTTPException:
         raise
@@ -194,13 +208,15 @@ async def get_episodes(
         if not show:
             raise HTTPException(status_code=404, detail="Podcast not found")
 
-        episodes = await PodcastEpisode.find(
-            PodcastEpisode.podcast_id == show_id
-        ).sort("-published_at").skip(skip).limit(limit).to_list()
+        episodes = (
+            await PodcastEpisode.find(PodcastEpisode.podcast_id == show_id)
+            .sort("-published_at")
+            .skip(skip)
+            .limit(limit)
+            .to_list()
+        )
 
-        total = await PodcastEpisode.find(
-            PodcastEpisode.podcast_id == show_id
-        ).count()
+        total = await PodcastEpisode.find(PodcastEpisode.podcast_id == show_id).count()
 
         return {
             "episodes": [
@@ -222,7 +238,9 @@ async def get_episodes(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error fetching episodes for podcast {show_id}: {str(e)}", exc_info=True)
+        logger.error(
+            f"Error fetching episodes for podcast {show_id}: {str(e)}", exc_info=True
+        )
         raise HTTPException(status_code=500, detail="Failed to fetch episodes")
 
 

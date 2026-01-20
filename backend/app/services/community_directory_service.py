@@ -10,22 +10,22 @@ Provides:
 
 import logging
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Any, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from app.core.config import settings
 from app.models.jewish_community import (
-    JewishOrganization,
     CommunityEvent,
-    OrganizationType,
-    Denomination,
-    KosherCertification,
-    USRegion,
-    GeoLocation,
-    OrganizationResponse,
-    EventResponse,
     CommunitySearchResponse,
+    Denomination,
+    EventResponse,
+    GeoLocation,
+    JewishOrganization,
+    KosherCertification,
+    OrganizationResponse,
+    OrganizationType,
     RegionInfo,
     RegionsResponse,
+    USRegion,
 )
 
 logger = logging.getLogger(__name__)
@@ -132,10 +132,7 @@ class CommunityDirectoryService:
         skip = (page - 1) * limit
 
         organizations = (
-            await JewishOrganization.find(query)
-            .skip(skip)
-            .limit(limit)
-            .to_list()
+            await JewishOrganization.find(query).skip(skip).limit(limit).to_list()
         )
 
         total = await JewishOrganization.find(query).count()
@@ -171,7 +168,9 @@ class CommunityDirectoryService:
                     hours=org.hours,
                     services=org.services,
                     kosher_certification=(
-                        org.kosher_certification.value if org.kosher_certification else None
+                        org.kosher_certification.value
+                        if org.kosher_certification
+                        else None
                     ),
                     cuisine_type=org.cuisine_type,
                     price_range=org.price_range,
@@ -328,7 +327,9 @@ class CommunityDirectoryService:
             "region": region,
         }
 
-    async def get_organization_by_id(self, org_id: str) -> Optional[OrganizationResponse]:
+    async def get_organization_by_id(
+        self, org_id: str
+    ) -> Optional[OrganizationResponse]:
         """Get a single organization by ID."""
         from bson import ObjectId
 
@@ -419,7 +420,7 @@ class CommunityDirectoryService:
             },
             {
                 "name": "Chabad of the Upper West Side",
-                "name_he": "חב\"ד אפר ווסט סייד",
+                "name_he": 'חב"ד אפר ווסט סייד',
                 "organization_type": OrganizationType.CHABAD,
                 "denomination": Denomination.CHABAD,
                 "address": "2100 Broadway",
@@ -487,7 +488,13 @@ class CommunityDirectoryService:
                 "region": USRegion.NYC,
                 "phone": "(646) 505-4444",
                 "website": "https://www.jccmanhattan.org",
-                "services": ["fitness", "pool", "youth", "adult_programs", "hebrew_school"],
+                "services": [
+                    "fitness",
+                    "pool",
+                    "youth",
+                    "adult_programs",
+                    "hebrew_school",
+                ],
                 "description": "A thriving community center for all ages.",
                 "source": "manual",
                 "is_verified": True,
@@ -557,7 +564,7 @@ class CommunityDirectoryService:
         self, lat1: float, lon1: float, lat2: float, lon2: float
     ) -> float:
         """Calculate distance in miles between two coordinates using Haversine formula."""
-        from math import radians, sin, cos, sqrt, atan2
+        from math import atan2, cos, radians, sin, sqrt
 
         R = 3959  # Earth's radius in miles
 
@@ -566,7 +573,10 @@ class CommunityDirectoryService:
         delta_lat = radians(lat2 - lat1)
         delta_lon = radians(lon2 - lon1)
 
-        a = sin(delta_lat / 2) ** 2 + cos(lat1_rad) * cos(lat2_rad) * sin(delta_lon / 2) ** 2
+        a = (
+            sin(delta_lat / 2) ** 2
+            + cos(lat1_rad) * cos(lat2_rad) * sin(delta_lon / 2) ** 2
+        )
         c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
         return round(R * c, 2)

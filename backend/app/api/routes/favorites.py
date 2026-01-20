@@ -5,12 +5,13 @@ Manage user's favorite content items
 
 from datetime import datetime
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, status, Depends
-from pydantic import BaseModel
-from beanie import Document
-from app.models.user import User
-from app.models.content import Content, LiveChannel, Podcast
+
 from app.core.security import get_current_active_user
+from app.models.content import Content, LiveChannel, Podcast
+from app.models.user import User
+from beanie import Document
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 
 
 # Favorite model
@@ -57,9 +58,11 @@ async def get_favorites(
     current_user: User = Depends(get_current_active_user),
 ):
     """Get user's favorite items."""
-    favorites = await Favorite.find(
-        Favorite.user_id == str(current_user.id)
-    ).sort("-added_at").to_list()
+    favorites = (
+        await Favorite.find(Favorite.user_id == str(current_user.id))
+        .sort("-added_at")
+        .to_list()
+    )
 
     items = []
     for fav in favorites:
@@ -73,9 +76,11 @@ async def get_favorites(
             content = await Content.get(fav.content_id)
             if content:
                 item_data["title"] = content.title
-                item_data["title_en"] = getattr(content, 'title_en', None)
-                item_data["title_es"] = getattr(content, 'title_es', None)
-                item_data["subtitle"] = content.description[:100] if content.description else None
+                item_data["title_en"] = getattr(content, "title_en", None)
+                item_data["title_es"] = getattr(content, "title_es", None)
+                item_data["subtitle"] = (
+                    content.description[:100] if content.description else None
+                )
                 item_data["thumbnail"] = content.thumbnail
                 # Normalize type for frontend based on is_series field
                 item_data["type"] = "series" if content.is_series else "movie"

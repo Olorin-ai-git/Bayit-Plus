@@ -33,7 +33,9 @@ def load_locale(language: str) -> Dict:
         Dictionary containing all translations for the language
     """
     if language not in SUPPORTED_LANGUAGES:
-        logger.warning(f"Unsupported language '{language}', falling back to {DEFAULT_LANGUAGE}")
+        logger.warning(
+            f"Unsupported language '{language}', falling back to {DEFAULT_LANGUAGE}"
+        )
         language = DEFAULT_LANGUAGE
 
     locale_file = I18N_DIR / f"{language}.json"
@@ -50,7 +52,9 @@ def load_locale(language: str) -> Dict:
         return {}
 
 
-def get_translation(key: str, language: str = DEFAULT_LANGUAGE, fallback: Optional[str] = None) -> str:
+def get_translation(
+    key: str, language: str = DEFAULT_LANGUAGE, fallback: Optional[str] = None
+) -> str:
     """
     Get a translation for a specific key and language.
 
@@ -75,13 +79,20 @@ def get_translation(key: str, language: str = DEFAULT_LANGUAGE, fallback: Option
             # Translation not found
             if fallback:
                 return fallback
-            logger.warning(f"Translation not found for key '{key}' in language '{language}'")
+            logger.warning(
+                f"Translation not found for key '{key}' in language '{language}'"
+            )
             return key  # Return key itself as fallback
 
     return str(value)
 
 
-def resolve_name_key(name_key: Optional[str], language: str = DEFAULT_LANGUAGE, slug: Optional[str] = None, taxonomy_type: str = "sections") -> str:
+def resolve_name_key(
+    name_key: Optional[str],
+    language: str = DEFAULT_LANGUAGE,
+    slug: Optional[str] = None,
+    taxonomy_type: str = "sections",
+) -> str:
     """
     Resolve a name_key to its translated value.
 
@@ -107,7 +118,9 @@ def resolve_name_key(name_key: Optional[str], language: str = DEFAULT_LANGUAGE, 
     return get_translation(name_key, language, fallback=slug or name_key)
 
 
-def get_multilingual_names(name_key: Optional[str], slug: Optional[str] = None, taxonomy_type: str = "sections") -> Dict[str, str]:
+def get_multilingual_names(
+    name_key: Optional[str], slug: Optional[str] = None, taxonomy_type: str = "sections"
+) -> Dict[str, str]:
     """
     Get translations for all supported languages.
 

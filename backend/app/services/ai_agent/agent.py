@@ -7,26 +7,25 @@ The autonomous agent loop that orchestrates Claude's tool use for library audits
 import json
 import logging
 from datetime import datetime
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
-from beanie import PydanticObjectId
 from anthropic import Anthropic
-from anthropic.types import Message, ToolUseBlock, TextBlock
-
+from anthropic.types import Message, TextBlock, ToolUseBlock
 from app.core.config import settings
 from app.models.librarian import AuditReport
-from app.services.audit_task_manager import audit_task_manager
-from app.services.ai_agent.logger import log_to_database, clear_title_cache
-from app.services.ai_agent.tools import TOOLS
 from app.services.ai_agent.dispatcher import execute_tool
-from app.services.ai_agent.summary_logger import log_comprehensive_summary
+from app.services.ai_agent.logger import clear_title_cache, log_to_database
 from app.services.ai_agent.prompts import (
-    LANGUAGE_INSTRUCTIONS,
     AUDIT_INSTRUCTIONS,
-    get_enabled_capabilities,
-    build_task_specific_initial_prompt,
+    LANGUAGE_INSTRUCTIONS,
     build_comprehensive_initial_prompt,
+    build_task_specific_initial_prompt,
+    get_enabled_capabilities,
 )
+from app.services.ai_agent.summary_logger import log_comprehensive_summary
+from app.services.ai_agent.tools import TOOLS
+from app.services.audit_task_manager import audit_task_manager
+from beanie import PydanticObjectId
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +46,7 @@ async def run_ai_agent_audit(
     opensubtitles_enabled: bool = False,
     classify_only: bool = False,
     remove_duplicates: bool = False,
-    audit_id: Optional[str] = None
+    audit_id: Optional[str] = None,
 ) -> AuditReport:
     """
     Run a fully autonomous AI agent audit using Claude's tool use.
@@ -76,7 +75,9 @@ async def run_ai_agent_audit(
     audit_id = str(audit_report.id)
 
     # Log startup
-    await _log_startup(audit_report, audit_type, dry_run, max_iterations, budget_limit_usd)
+    await _log_startup(
+        audit_report, audit_type, dry_run, max_iterations, budget_limit_usd
+    )
 
     logger.info("=" * 80)
     logger.info("Starting AI Agent Audit")
@@ -108,10 +109,7 @@ async def run_ai_agent_audit(
     )
 
     # Add initial message to conversation
-    conversation_history.append({
-        "role": "user",
-        "content": initial_prompt
-    })
+    conversation_history.append({"role": "user", "content": initial_prompt})
 
     # Agent loop
     iteration = 0
@@ -138,12 +136,14 @@ The administrator has provided the following context:
 Please acknowledge this interjection and adjust your approach accordingly.
 [END INTERJECTION]
 """
-                    conversation_history.append({"role": "user", "content": interjection})
+                    conversation_history.append(
+                        {"role": "user", "content": interjection}
+                    )
                     await log_to_database(
                         audit_report,
                         "info",
                         f"Admin interjection: {msg['content'][:200]}",
-                        "Admin"
+                        "Admin",
                     )
                     logger.info(f"Injected admin message: {msg['content'][:100]}...")
 
@@ -155,7 +155,7 @@ Please acknowledge this interjection and adjust your approach accordingly.
                 model="claude-sonnet-4-20250514",
                 max_tokens=4096,
                 tools=TOOLS,
-                messages=conversation_history
+                messages=conversation_history,
             )
 
             # Estimate cost (rough approximation)
@@ -164,11 +164,15 @@ Please acknowledge this interjection and adjust your approach accordingly.
             cost = (input_tokens * 0.000003) + (output_tokens * 0.000015)
             total_cost += cost
 
-            logger.info(f"   Tokens: {input_tokens} in, {output_tokens} out (cost: ${cost:.4f}, total: ${total_cost:.4f})")
+            logger.info(
+                f"   Tokens: {input_tokens} in, {output_tokens} out (cost: ${cost:.4f}, total: ${total_cost:.4f})"
+            )
 
             # Check budget
             if total_cost > budget_limit_usd:
-                logger.warning(f"Budget limit reached: ${total_cost:.4f} > ${budget_limit_usd}")
+                logger.warning(
+                    f"Budget limit reached: ${total_cost:.4f} > ${budget_limit_usd}"
+                )
                 break
 
             # Process response
@@ -177,7 +181,11 @@ Please acknowledge this interjection and adjust your approach accordingly.
 
             # Process tool calls
             tool_results = []
-            audit_complete, completion_summary, tool_results = await _process_response_blocks(
+            (
+                audit_complete,
+                completion_summary,
+                tool_results,
+            ) = await _process_response_blocks(
                 response=response,
                 audit_report=audit_report,
                 audit_id=audit_id,
@@ -188,10 +196,7 @@ Please acknowledge this interjection and adjust your approach accordingly.
 
             # If we have tool results, continue conversation
             if tool_results and not audit_complete:
-                conversation_history.append({
-                    "role": "user",
-                    "content": tool_results
-                })
+                conversation_history.append({"role": "user", "content": tool_results})
 
             # If Claude didn't use any tools and didn't complete, something's wrong
             elif not tool_results and not audit_complete:
@@ -230,9 +235,7 @@ Please acknowledge this interjection and adjust your approach accordingly.
 
 
 async def _get_or_create_audit_report(
-    audit_id: Optional[str],
-    start_time: datetime,
-    audit_type: str
+    audit_id: Optional[str], start_time: datetime, audit_type: str
 ) -> AuditReport:
     """Get existing audit report or create a new one."""
     if audit_id:
@@ -252,7 +255,10 @@ async def _get_or_create_audit_report(
 
         logger.info(f"Using existing audit report: {audit_id}")
         # Ensure it has execution_logs field
-        if not hasattr(audit_report, 'execution_logs') or audit_report.execution_logs is None:
+        if (
+            not hasattr(audit_report, "execution_logs")
+            or audit_report.execution_logs is None
+        ):
             audit_report.execution_logs = []
     else:
         # Create new audit with legacy string ID format
@@ -262,7 +268,7 @@ async def _get_or_create_audit_report(
             audit_date=start_time,
             audit_type=audit_type,
             status="in_progress",
-            execution_logs=[]
+            execution_logs=[],
         )
         await audit_report.insert()
 
@@ -274,12 +280,21 @@ async def _log_startup(
     audit_type: str,
     dry_run: bool,
     max_iterations: int,
-    budget_limit_usd: float
+    budget_limit_usd: float,
 ):
     """Log audit startup information."""
-    await log_to_database(audit_report, "info", f"Audit started: {audit_type}", "Librarian")
-    await log_to_database(audit_report, "info", f"Mode: {'DRY RUN' if dry_run else 'LIVE'}", "Librarian")
-    await log_to_database(audit_report, "info", f"Max iterations: {max_iterations}, Budget: ${budget_limit_usd}", "Librarian")
+    await log_to_database(
+        audit_report, "info", f"Audit started: {audit_type}", "Librarian"
+    )
+    await log_to_database(
+        audit_report, "info", f"Mode: {'DRY RUN' if dry_run else 'LIVE'}", "Librarian"
+    )
+    await log_to_database(
+        audit_report,
+        "info",
+        f"Max iterations: {max_iterations}, Budget: ${budget_limit_usd}",
+        "Librarian",
+    )
 
     # Check TMDB configuration
     if not settings.TMDB_API_KEY:
@@ -287,7 +302,7 @@ async def _log_startup(
             audit_report,
             "warn",
             "TMDB API key not configured - metadata fixes will fail. Set TMDB_API_KEY environment variable.",
-            "System"
+            "System",
         )
         logger.warning("TMDB API key not configured - metadata fixes will not work")
     else:
@@ -317,7 +332,9 @@ def _build_initial_prompt(
     NOTE: validate_integrity runs FIRST when enabled to ensure we don't waste
     API calls on content with broken streams or missing database records.
     """
-    language_instruction = LANGUAGE_INSTRUCTIONS.get(language, "Communicate in English.")
+    language_instruction = LANGUAGE_INSTRUCTIONS.get(
+        language, "Communicate in English."
+    )
 
     # Get list of enabled capabilities using the additive model
     # validate_integrity runs FIRST to check content exists before other work
@@ -332,7 +349,9 @@ def _build_initial_prompt(
 
     # If any capabilities are enabled, use task-specific (focused) mode
     # If no capabilities enabled, use comprehensive mode
-    is_task_specific = len(enabled_capabilities) > 0 or audit_type == "daily_maintenance"
+    is_task_specific = (
+        len(enabled_capabilities) > 0 or audit_type == "daily_maintenance"
+    )
 
     # Build filter instructions for comprehensive mode
     filter_instructions = ""
@@ -346,18 +365,20 @@ def _build_initial_prompt(
             enabled_capabilities=enabled_capabilities,
             dry_run=dry_run,
             max_iterations=max_iterations,
-            budget_limit_usd=budget_limit_usd
+            budget_limit_usd=budget_limit_usd,
         )
     else:
         # Comprehensive mode: check everything
-        audit_specific_instruction = AUDIT_INSTRUCTIONS.get(audit_type, AUDIT_INSTRUCTIONS["ai_agent"])
+        audit_specific_instruction = AUDIT_INSTRUCTIONS.get(
+            audit_type, AUDIT_INSTRUCTIONS["ai_agent"]
+        )
         return build_comprehensive_initial_prompt(
             language_instruction=language_instruction,
             audit_specific_instruction=audit_specific_instruction,
             filter_instructions=filter_instructions,
             dry_run=dry_run,
             max_iterations=max_iterations,
-            budget_limit_usd=budget_limit_usd
+            budget_limit_usd=budget_limit_usd,
         )
 
 
@@ -390,15 +411,15 @@ async def _process_response_blocks(
 
             if isinstance(tool_input, dict):
                 item_name = (
-                    tool_input.get("title") or
-                    tool_input.get("content_title") or
-                    tool_input.get("name") or
-                    tool_input.get("item_title")
+                    tool_input.get("title")
+                    or tool_input.get("content_title")
+                    or tool_input.get("name")
+                    or tool_input.get("item_title")
                 )
                 content_id = (
-                    tool_input.get("content_id") or
-                    tool_input.get("id") or
-                    tool_input.get("item_id")
+                    tool_input.get("content_id")
+                    or tool_input.get("id")
+                    or tool_input.get("item_id")
                 )
 
             # Log tool use START
@@ -409,7 +430,7 @@ async def _process_response_blocks(
                 "AI Agent",
                 item_name=item_name,
                 content_id=content_id,
-                metadata={"tool_input": tool_input}
+                metadata={"tool_input": tool_input},
             )
 
             logger.info(f"Claude wants to use: {tool_name}")
@@ -423,13 +444,20 @@ async def _process_response_blocks(
                     audit_report,
                     "success",
                     "TOOL COMPLETE: complete_audit - Audit finished successfully",
-                    "AI Agent"
+                    "AI Agent",
                 )
-                tool_results.append({
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": json.dumps({"success": True, "message": "Audit completed successfully!"})
-                })
+                tool_results.append(
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": block.id,
+                        "content": json.dumps(
+                            {
+                                "success": True,
+                                "message": "Audit completed successfully!",
+                            }
+                        ),
+                    }
+                )
                 break
 
             # Execute tool
@@ -438,36 +466,42 @@ async def _process_response_blocks(
             # Extract item info from result if not already set
             if not item_name and isinstance(result, dict):
                 item_name = (
-                    result.get("title") or
-                    result.get("content_title") or
-                    result.get("name") or
-                    result.get("item_title")
+                    result.get("title")
+                    or result.get("content_title")
+                    or result.get("name")
+                    or result.get("item_title")
                 )
             if not content_id and isinstance(result, dict):
                 content_id = (
-                    result.get("content_id") or
-                    result.get("id") or
-                    result.get("item_id")
+                    result.get("content_id")
+                    or result.get("id")
+                    or result.get("item_id")
                 )
 
             # Log tool result
-            await _log_tool_result(audit_report, tool_name, result, item_name, content_id)
+            await _log_tool_result(
+                audit_report, tool_name, result, item_name, content_id
+            )
 
             # Track tool use
-            tool_uses.append({
-                "iteration": iteration,
-                "tool": tool_name,
-                "input": tool_input,
-                "result": result,
-                "timestamp": datetime.utcnow()
-            })
+            tool_uses.append(
+                {
+                    "iteration": iteration,
+                    "tool": tool_name,
+                    "input": tool_input,
+                    "result": result,
+                    "timestamp": datetime.utcnow(),
+                }
+            )
 
             # Add result to conversation
-            tool_results.append({
-                "type": "tool_result",
-                "tool_use_id": block.id,
-                "content": json.dumps(result, ensure_ascii=False)
-            })
+            tool_results.append(
+                {
+                    "type": "tool_result",
+                    "tool_use_id": block.id,
+                    "content": json.dumps(result, ensure_ascii=False),
+                }
+            )
 
             logger.info(f"   Result: {json.dumps(result, ensure_ascii=False)[:200]}")
 
@@ -479,7 +513,7 @@ async def _log_tool_result(
     tool_name: str,
     result: Dict[str, Any],
     item_name: Optional[str],
-    content_id: Optional[str]
+    content_id: Optional[str],
 ):
     """Log tool execution result."""
     if result.get("success") is False:
@@ -491,7 +525,7 @@ async def _log_tool_result(
             "AI Agent",
             item_name=item_name,
             content_id=content_id,
-            metadata={"tool_result": result}
+            metadata={"tool_result": result},
         )
         logger.error(f"   Tool failed: {error_msg}")
     elif result.get("success") is True:
@@ -503,7 +537,7 @@ async def _log_tool_result(
             "AI Agent",
             item_name=item_name,
             content_id=content_id,
-            metadata={"tool_result": result}
+            metadata={"tool_result": result},
         )
         logger.info(f"   Tool succeeded: {success_msg}")
     else:
@@ -514,7 +548,7 @@ async def _log_tool_result(
             "AI Agent",
             item_name=item_name,
             content_id=content_id,
-            metadata={"tool_result": result}
+            metadata={"tool_result": result},
         )
         logger.info("   Tool returned data")
 
@@ -546,12 +580,14 @@ async def _finalize_audit_report(
             "subtitle_stats": completion_summary.get("subtitle_stats", {}),
             "metadata_stats": completion_summary.get("metadata_stats", {}),
             "categorization_stats": completion_summary.get("categorization_stats", {}),
-            "stream_validation_stats": completion_summary.get("stream_validation_stats", {}),
+            "stream_validation_stats": completion_summary.get(
+                "stream_validation_stats", {}
+            ),
             "storage_stats": completion_summary.get("storage_stats", {}),
             "podcast_stats": completion_summary.get("podcast_stats", {}),
             "issue_breakdown": completion_summary.get("issue_breakdown", {}),
             "action_breakdown": completion_summary.get("action_breakdown", {}),
-            "health_score": completion_summary.get("health_score", 0)
+            "health_score": completion_summary.get("health_score", 0),
         }
     else:
         summary = {
@@ -560,7 +596,7 @@ async def _finalize_audit_report(
             "issues_found": 0,
             "issues_fixed": 0,
             "manual_review_needed": 0,
-            "agent_summary": "Audit incomplete - reached iteration or budget limit"
+            "agent_summary": "Audit incomplete - reached iteration or budget limit",
         }
 
     # Update the existing audit report
@@ -571,15 +607,24 @@ async def _finalize_audit_report(
         "agent_mode": True,
         "iterations": iteration,
         "tool_uses": len(tool_uses),
-        "total_cost_usd": round(total_cost, 4)
+        "total_cost_usd": round(total_cost, 4),
     }
-    audit_report.ai_insights = completion_summary.get("recommendations", []) if completion_summary else []
+    audit_report.ai_insights = (
+        completion_summary.get("recommendations", []) if completion_summary else []
+    )
     audit_report.completed_at = end_time
 
     await audit_report.save()
 
     # Log comprehensive summary to execution logs for UI
     if completion_summary:
-        await log_comprehensive_summary(audit_report, completion_summary, execution_time, iteration, total_cost)
+        await log_comprehensive_summary(
+            audit_report, completion_summary, execution_time, iteration, total_cost
+        )
     else:
-        await log_to_database(audit_report, "success", f"Audit completed in {execution_time:.1f}s", "Librarian")
+        await log_to_database(
+            audit_report,
+            "success",
+            f"Audit completed in {execution_time:.1f}s",
+            "Librarian",
+        )

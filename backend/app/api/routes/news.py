@@ -7,16 +7,18 @@ Provides endpoints for:
 
 from datetime import datetime
 from typing import Optional
-from fastapi import APIRouter, Query
 
 from app.services.news_service import fetch_ynet_mivzakim, get_cache_info
+from fastapi import APIRouter, Query
 
 router = APIRouter()
 
 
 @router.get("/mivzakim")
 async def get_mivzakim(
-    limit: int = Query(default=10, ge=1, le=50, description="Maximum number of items to return")
+    limit: int = Query(
+        default=10, ge=1, le=50, description="Maximum number of items to return"
+    )
 ):
     """
     Get Ynet breaking news (mivzakim).

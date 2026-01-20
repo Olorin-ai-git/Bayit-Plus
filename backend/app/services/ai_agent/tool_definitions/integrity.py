@@ -4,11 +4,7 @@ INTEGRITY_TOOLS = [
     {
         "name": "get_integrity_status",
         "description": "Get a summary of all data integrity issues: orphaned GCS files, orphaned Content records, and stuck upload jobs.",
-        "input_schema": {
-            "type": "object",
-            "properties": {},
-            "required": []
-        }
+        "input_schema": {"type": "object", "properties": {}, "required": []},
     },
     {
         "name": "find_orphaned_gcs_files",
@@ -18,16 +14,16 @@ INTEGRITY_TOOLS = [
             "properties": {
                 "prefix": {
                     "type": "string",
-                    "description": "Optional GCS path prefix to filter (e.g., 'movies/', 'seriess/')"
+                    "description": "Optional GCS path prefix to filter (e.g., 'movies/', 'seriess/')",
                 },
                 "limit": {
                     "type": "integer",
                     "description": "Maximum number of orphans to return (default 100)",
-                    "default": 100
-                }
+                    "default": 100,
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "find_orphaned_content_records",
@@ -38,11 +34,11 @@ INTEGRITY_TOOLS = [
                 "limit": {
                     "type": "integer",
                     "description": "Maximum number of orphans to return (default 100)",
-                    "default": 100
+                    "default": 100,
                 }
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "find_stuck_upload_jobs",
@@ -53,11 +49,11 @@ INTEGRITY_TOOLS = [
                 "threshold_minutes": {
                     "type": "integer",
                     "description": "Time after which a job is considered stuck (default 30 minutes)",
-                    "default": 30
+                    "default": 30,
                 }
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "cleanup_orphans",
@@ -69,21 +65,21 @@ INTEGRITY_TOOLS = [
                     "type": "string",
                     "description": "What to clean: 'gcs' for files, 'content' for records, 'all' for both",
                     "enum": ["gcs", "content", "all"],
-                    "default": "all"
+                    "default": "all",
                 },
                 "dry_run": {
                     "type": "boolean",
                     "description": "If true, only report what would be cleaned (default true)",
-                    "default": True
+                    "default": True,
                 },
                 "limit": {
                     "type": "integer",
                     "description": "Maximum number of items to clean per category (default 100)",
-                    "default": 100
-                }
+                    "default": 100,
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "recover_stuck_jobs",
@@ -94,16 +90,16 @@ INTEGRITY_TOOLS = [
                 "dry_run": {
                     "type": "boolean",
                     "description": "If true, only report what would be recovered (default true)",
-                    "default": True
+                    "default": True,
                 },
                 "threshold_minutes": {
                     "type": "integer",
                     "description": "Time after which a job is considered stuck (default 30 minutes)",
-                    "default": 30
-                }
+                    "default": 30,
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "run_full_cleanup",
@@ -114,16 +110,16 @@ INTEGRITY_TOOLS = [
                 "dry_run": {
                     "type": "boolean",
                     "description": "If true, only report what would be cleaned up (default true)",
-                    "default": True
+                    "default": True,
                 },
                 "limit": {
                     "type": "integer",
                     "description": "Maximum number of items to clean per category (default 100)",
-                    "default": 100
-                }
+                    "default": 100,
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     # YouTube Link Validation Tools
     {
@@ -135,25 +131,25 @@ INTEGRITY_TOOLS = [
                 "limit": {
                     "type": "integer",
                     "description": "Maximum number of items to validate (default 100)",
-                    "default": 100
+                    "default": 100,
                 },
                 "category_id": {
                     "type": "string",
-                    "description": "Optional category ID to filter validation scope"
+                    "description": "Optional category ID to filter validation scope",
                 },
                 "include_kids": {
                     "type": "boolean",
                     "description": "Include kids content in validation (default true)",
-                    "default": True
+                    "default": True,
                 },
                 "use_cache": {
                     "type": "boolean",
                     "description": "Use cached validation results to avoid redundant API calls (default true)",
-                    "default": True
-                }
+                    "default": True,
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "flag_broken_youtube_videos",
@@ -164,25 +160,21 @@ INTEGRITY_TOOLS = [
                 "content_ids": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "List of content IDs to flag as having broken YouTube videos"
+                    "description": "List of content IDs to flag as having broken YouTube videos",
                 },
                 "dry_run": {
                     "type": "boolean",
                     "description": "If true, only preview what would be flagged (default true)",
-                    "default": True
-                }
+                    "default": True,
+                },
             },
-            "required": ["content_ids"]
-        }
+            "required": ["content_ids"],
+        },
     },
     {
         "name": "get_youtube_content_stats",
         "description": "Get statistics about YouTube content in the library. Returns counts of YouTube content by category, kids vs non-kids, flagged broken content, and items missing posters. Use this to understand the scope before running validation or poster fixes.",
-        "input_schema": {
-            "type": "object",
-            "properties": {},
-            "required": []
-        }
+        "input_schema": {"type": "object", "properties": {}, "required": []},
     },
     # YouTube Poster/Thumbnail Tools
     {
@@ -194,25 +186,25 @@ INTEGRITY_TOOLS = [
                 "limit": {
                     "type": "integer",
                     "description": "Maximum number of items to process (default 100)",
-                    "default": 100
+                    "default": 100,
                 },
                 "category_id": {
                     "type": "string",
-                    "description": "Optional category ID to filter which content to fix"
+                    "description": "Optional category ID to filter which content to fix",
                 },
                 "include_kids": {
                     "type": "boolean",
                     "description": "Include kids content in the fix (default true)",
-                    "default": True
+                    "default": True,
                 },
                 "dry_run": {
                     "type": "boolean",
                     "description": "If true, only preview what would be fixed (default true)",
-                    "default": True
-                }
+                    "default": True,
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "find_youtube_missing_posters",
@@ -223,15 +215,15 @@ INTEGRITY_TOOLS = [
                 "limit": {
                     "type": "integer",
                     "description": "Maximum number of items to return (default 100)",
-                    "default": 100
+                    "default": 100,
                 },
                 "include_kids": {
                     "type": "boolean",
                     "description": "Include kids content (default true)",
-                    "default": True
-                }
+                    "default": True,
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
 ]

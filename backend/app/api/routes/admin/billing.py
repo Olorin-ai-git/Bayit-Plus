@@ -4,28 +4,34 @@ Admin billing and transaction management endpoints.
 
 from datetime import datetime, timedelta
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends, Query, Request
+
+from app.models.admin import (
+    AuditAction,
+    Permission,
+    Refund,
+    RefundStatus,
+    Transaction,
+    TransactionStatus,
+)
+from app.models.user import User
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
-from app.models.user import User
-from app.models.admin import (
-    Transaction, TransactionStatus, Refund, RefundStatus, Permission, AuditAction
-)
 from .auth import has_permission, log_audit
-
 
 router = APIRouter()
 
 
 class RefundRequest(BaseModel):
     """Refund request schema."""
+
     amount: float
     reason: str
 
 
 @router.get("/billing/overview")
 async def get_billing_overview(
-    current_user: User = Depends(has_permission(Permission.BILLING_READ))
+    current_user: User = Depends(has_permission(Permission.BILLING_READ)),
 ):
     """Get billing overview stats."""
     now = datetime.utcnow()
@@ -36,28 +42,34 @@ async def get_billing_overview(
 
     today_txns = await Transaction.find(
         Transaction.created_at >= today_start,
-        Transaction.status == TransactionStatus.COMPLETED
+        Transaction.status == TransactionStatus.COMPLETED,
     ).to_list()
     week_txns = await Transaction.find(
         Transaction.created_at >= week_start,
-        Transaction.status == TransactionStatus.COMPLETED
+        Transaction.status == TransactionStatus.COMPLETED,
     ).to_list()
     month_txns = await Transaction.find(
         Transaction.created_at >= month_start,
-        Transaction.status == TransactionStatus.COMPLETED
+        Transaction.status == TransactionStatus.COMPLETED,
     ).to_list()
     year_txns = await Transaction.find(
         Transaction.created_at >= year_start,
+        Transaction.status == TransactionStatus.COMPLETED,
+    ).to_list()
+    all_txns = await Transaction.find(
         Transaction.status == TransactionStatus.COMPLETED
     ).to_list()
-    all_txns = await Transaction.find(Transaction.status == TransactionStatus.COMPLETED).to_list()
 
     pending_refunds = await Refund.find(Refund.status == RefundStatus.PENDING).count()
     total_refunds = await Refund.find().count()
     total_transactions = len(all_txns)
     total_revenue = sum(t.amount for t in all_txns)
-    avg_transaction = total_revenue / total_transactions if total_transactions > 0 else 0
-    refund_rate = (total_refunds / total_transactions * 100) if total_transactions > 0 else 0
+    avg_transaction = (
+        total_revenue / total_transactions if total_transactions > 0 else 0
+    )
+    refund_rate = (
+        (total_refunds / total_transactions * 100) if total_transactions > 0 else 0
+    )
 
     return {
         "today": sum(t.amount for t in today_txns),
@@ -80,7 +92,7 @@ async def get_transactions(
     max_amount: Optional[float] = None,
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, le=100),
-    current_user: User = Depends(has_permission(Permission.BILLING_READ))
+    current_user: User = Depends(has_permission(Permission.BILLING_READ)),
 ):
     """Get transactions list."""
     query = Transaction.find()
@@ -98,7 +110,9 @@ async def get_transactions(
 
     total = await query.count()
     skip = (page - 1) * page_size
-    txns = await query.sort(-Transaction.created_at).skip(skip).limit(page_size).to_list()
+    txns = (
+        await query.sort(-Transaction.created_at).skip(skip).limit(page_size).to_list()
+    )
 
     return {
         "items": [
@@ -126,7 +140,7 @@ async def get_refunds(
     status: Optional[str] = None,
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, le=100),
-    current_user: User = Depends(has_permission(Permission.BILLING_READ))
+    current_user: User = Depends(has_permission(Permission.BILLING_READ)),
 ):
     """Get refunds list."""
     query = Refund.find()
@@ -165,7 +179,7 @@ async def process_refund(
     transaction_id: str,
     data: RefundRequest,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.BILLING_REFUND))
+    current_user: User = Depends(has_permission(Permission.BILLING_REFUND)),
 ):
     """Process a refund for a transaction."""
     txn = await Transaction.get(transaction_id)
@@ -173,10 +187,14 @@ async def process_refund(
         raise HTTPException(status_code=404, detail="Transaction not found")
 
     if txn.status != TransactionStatus.COMPLETED:
-        raise HTTPException(status_code=400, detail="Can only refund completed transactions")
+        raise HTTPException(
+            status_code=400, detail="Can only refund completed transactions"
+        )
 
     if data.amount > txn.amount:
-        raise HTTPException(status_code=400, detail="Refund amount exceeds transaction amount")
+        raise HTTPException(
+            status_code=400, detail="Refund amount exceeds transaction amount"
+        )
 
     refund = Refund(
         transaction_id=transaction_id,
@@ -187,8 +205,14 @@ async def process_refund(
     )
     await refund.insert()
 
-    await log_audit(str(current_user.id), AuditAction.REFUND_PROCESSED, "refund", str(refund.id),
-                   {"transaction_id": transaction_id, "amount": data.amount}, request)
+    await log_audit(
+        str(current_user.id),
+        AuditAction.REFUND_PROCESSED,
+        "refund",
+        str(refund.id),
+        {"transaction_id": transaction_id, "amount": data.amount},
+        request,
+    )
 
     return {"id": str(refund.id), "message": "Refund requested"}
 
@@ -197,7 +221,7 @@ async def process_refund(
 async def approve_refund(
     refund_id: str,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.BILLING_REFUND))
+    current_user: User = Depends(has_permission(Permission.BILLING_REFUND)),
 ):
     """Approve a pending refund."""
     refund = await Refund.get(refund_id)
@@ -217,7 +241,14 @@ async def approve_refund(
     refund.processed_at = datetime.utcnow()
     await refund.save()
 
-    await log_audit(str(current_user.id), AuditAction.REFUND_PROCESSED, "refund", refund_id, {"action": "approved"}, request)
+    await log_audit(
+        str(current_user.id),
+        AuditAction.REFUND_PROCESSED,
+        "refund",
+        refund_id,
+        {"action": "approved"},
+        request,
+    )
 
     return {"message": "Refund approved"}
 
@@ -227,7 +258,7 @@ async def reject_refund(
     refund_id: str,
     reason: str = Query(...),
     request: Request = None,
-    current_user: User = Depends(has_permission(Permission.BILLING_REFUND))
+    current_user: User = Depends(has_permission(Permission.BILLING_REFUND)),
 ):
     """Reject a pending refund."""
     refund = await Refund.get(refund_id)
@@ -242,6 +273,13 @@ async def reject_refund(
     refund.processed_at = datetime.utcnow()
     await refund.save()
 
-    await log_audit(str(current_user.id), AuditAction.REFUND_PROCESSED, "refund", refund_id, {"action": "rejected", "reason": reason}, request)
+    await log_audit(
+        str(current_user.id),
+        AuditAction.REFUND_PROCESSED,
+        "refund",
+        refund_id,
+        {"action": "rejected", "reason": reason},
+        request,
+    )
 
     return {"message": "Refund rejected"}

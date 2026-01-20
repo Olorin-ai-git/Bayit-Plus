@@ -1,9 +1,9 @@
-from pydantic_settings import BaseSettings
-from pydantic import field_validator, Field
-from functools import lru_cache
 import json
+from functools import lru_cache
 
 from app.core.olorin_config import OlorinSettings
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -37,12 +37,12 @@ class Settings(BaseSettings):
         if v.lower() in insecure_values or v.lower().startswith("your-"):
             raise ValueError(
                 "SECRET_KEY must be a secure random value. "
-                "Generate one with: python -c \"import secrets; print(secrets.token_urlsafe(32))\""
+                'Generate one with: python -c "import secrets; print(secrets.token_urlsafe(32))"'
             )
         if len(v) < 32:
             raise ValueError(
                 f"SECRET_KEY must be at least 32 characters (got {len(v)}). "
-                "Generate one with: python -c \"import secrets; print(secrets.token_urlsafe(32))\""
+                'Generate one with: python -c "import secrets; print(secrets.token_urlsafe(32))"'
             )
         return v
 
@@ -73,14 +73,20 @@ class Settings(BaseSettings):
     # Google OAuth (optional - only required if using Google sign-in)
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
-    GOOGLE_REDIRECT_URI: str = ""  # Required if using Google OAuth, no localhost defaults
+    GOOGLE_REDIRECT_URI: str = (
+        ""  # Required if using Google OAuth, no localhost defaults
+    )
 
     # ElevenLabs (speech-to-text and text-to-speech)
     ELEVENLABS_API_KEY: str = ""
     ELEVENLABS_WEBHOOK_SECRET: str = ""
-    ELEVENLABS_DEFAULT_VOICE_ID: str = "EXAVITQu4vr4xnSDxMaL"  # Rachel - multilingual female voice for general TTS
+    ELEVENLABS_DEFAULT_VOICE_ID: str = (
+        "EXAVITQu4vr4xnSDxMaL"  # Rachel - multilingual female voice for general TTS
+    )
     # Olorin Support Avatar - custom cloned voice for support wizard
-    ELEVENLABS_SUPPORT_VOICE_ID: str = "iwNTMolqpkQ3cGUnKlX8"  # Olorin - custom cloned voice
+    ELEVENLABS_SUPPORT_VOICE_ID: str = (
+        "iwNTMolqpkQ3cGUnKlX8"  # Olorin - custom cloned voice
+    )
 
     # OpenAI (Whisper speech-to-text)
     OPENAI_API_KEY: str = ""
@@ -104,6 +110,7 @@ class Settings(BaseSettings):
         if not self.BACKEND_CORS_ORIGINS:
             # Return minimal defaults only for local development
             import os
+
             if os.getenv("DEBUG", "").lower() == "true":
                 return ["http://localhost:3000", "http://localhost:8000"]
             raise ValueError(
@@ -116,7 +123,11 @@ class Settings(BaseSettings):
                 return json.loads(self.BACKEND_CORS_ORIGINS)
             except json.JSONDecodeError:
                 # Comma-separated fallback
-                return [origin.strip() for origin in self.BACKEND_CORS_ORIGINS.split(",") if origin.strip()]
+                return [
+                    origin.strip()
+                    for origin in self.BACKEND_CORS_ORIGINS.split(",")
+                    if origin.strip()
+                ]
         return self.BACKEND_CORS_ORIGINS
 
     # DRM (optional)
@@ -136,26 +147,34 @@ class Settings(BaseSettings):
     # Google Cloud Storage (optional, only needed if STORAGE_TYPE is "gcs")
     GCS_BUCKET_NAME: str = ""
     GCS_PROJECT_ID: str = ""  # Optional, auto-detected from Cloud Run
-    GOOGLE_APPLICATION_CREDENTIALS: str = ""  # Path to service account key JSON file for local development
+    GOOGLE_APPLICATION_CREDENTIALS: str = (
+        ""  # Path to service account key JSON file for local development
+    )
 
     # GCS Upload Configuration (for large file uploads)
     GCS_UPLOAD_TIMEOUT_SECONDS: int = 600  # 10 minutes timeout per chunk
     GCS_UPLOAD_CHUNK_SIZE_MB: int = 8  # 8MB chunks for resumable uploads
     GCS_UPLOAD_MAX_RETRIES: int = 5  # Maximum retry attempts for transient failures
-    GCS_UPLOAD_RETRY_INITIAL_DELAY_SECONDS: float = 1.0  # Initial delay for exponential backoff
+    GCS_UPLOAD_RETRY_INITIAL_DELAY_SECONDS: float = (
+        1.0  # Initial delay for exponential backoff
+    )
     GCS_UPLOAD_RETRY_MAX_DELAY_SECONDS: float = 60.0  # Maximum delay between retries
 
     # CDN (optional, works with both S3 CloudFront and GCS Cloud CDN)
     CDN_BASE_URL: str = ""
 
     # Upload Monitoring Configuration
-    UPLOAD_MONITOR_ENABLED: bool = True  # Controlled by DEBUG mode in background_tasks.py
+    UPLOAD_MONITOR_ENABLED: bool = (
+        True  # Controlled by DEBUG mode in background_tasks.py
+    )
     UPLOAD_MONITOR_INTERVAL: int = 3600  # Seconds between scans (default: 1 hour)
     UPLOAD_DEFAULT_FOLDERS: str = ""  # Comma-separated paths to monitor on startup
 
     # Upload Session Cleanup Configuration
     UPLOAD_SESSION_MAX_AGE_HOURS: int = 24  # Maximum age for orphaned upload sessions
-    UPLOAD_SESSION_CLEANUP_INTERVAL_SECONDS: int = 3600  # Cleanup task interval (1 hour)
+    UPLOAD_SESSION_CLEANUP_INTERVAL_SECONDS: int = (
+        3600  # Cleanup task interval (1 hour)
+    )
     UPLOAD_SESSION_TIMEOUT_HOURS: int = 2  # Timeout for inactive upload sessions
 
     # Frontend URL (for password reset links, email verification, etc.)
@@ -285,7 +304,9 @@ class Settings(BaseSettings):
     # Jewish Community Directory Configuration
     COMMUNITY_SEARCH_RADIUS_MILES: int = 25
     COMMUNITY_DEFAULT_REGION: str = "nyc"
-    US_JEWISH_REGIONS: str = "nyc,la,chicago,miami,boston,philadelphia,atlanta,dallas,denver,seattle"
+    US_JEWISH_REGIONS: str = (
+        "nyc,la,chicago,miami,boston,philadelphia,atlanta,dallas,denver,seattle"
+    )
     COMMUNITY_SCRAPE_INTERVAL_HOURS: int = 168  # Weekly scrape
 
     # Torah Content RSS Configuration
@@ -321,7 +342,9 @@ class Settings(BaseSettings):
     CULTURES_DEFAULT_LIMIT: int = 20
     CULTURES_MAX_LIMIT: int = 50
     CULTURES_DEFAULT_ID: str = "israeli"  # Backward compatibility default
-    CULTURES_SUPPORTED: str = "israeli,chinese,japanese,korean,indian"  # Comma-separated
+    CULTURES_SUPPORTED: str = (
+        "israeli,chinese,japanese,korean,indian"  # Comma-separated
+    )
 
     # Kids Content Configuration
     # YouTube Data API v3 key for importing kids channel content
@@ -468,7 +491,11 @@ class Settings(BaseSettings):
     @property
     def webauthn_origins(self) -> list[str]:
         """Parse WebAuthn origins from comma-separated string."""
-        return [origin.strip() for origin in self.WEBAUTHN_ORIGIN.split(",") if origin.strip()]
+        return [
+            origin.strip()
+            for origin in self.WEBAUTHN_ORIGIN.split(",")
+            if origin.strip()
+        ]
 
     # ============================================
     # BACKWARD-COMPATIBLE PROPERTIES FOR OLORIN CONFIG
@@ -481,10 +508,11 @@ class Settings(BaseSettings):
     def PINECONE_API_KEY(self) -> str:
         """DEPRECATED: Use settings.olorin.pinecone.api_key"""
         import warnings
+
         warnings.warn(
             "PINECONE_API_KEY is deprecated. Use settings.olorin.pinecone.api_key instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.pinecone.api_key
 
@@ -492,10 +520,11 @@ class Settings(BaseSettings):
     def PINECONE_ENVIRONMENT(self) -> str:
         """DEPRECATED: Use settings.olorin.pinecone.environment"""
         import warnings
+
         warnings.warn(
             "PINECONE_ENVIRONMENT is deprecated. Use settings.olorin.pinecone.environment instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.pinecone.environment
 
@@ -503,10 +532,11 @@ class Settings(BaseSettings):
     def PINECONE_INDEX_NAME(self) -> str:
         """DEPRECATED: Use settings.olorin.pinecone.index_name"""
         import warnings
+
         warnings.warn(
             "PINECONE_INDEX_NAME is deprecated. Use settings.olorin.pinecone.index_name instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.pinecone.index_name
 
@@ -514,10 +544,11 @@ class Settings(BaseSettings):
     def EMBEDDING_MODEL(self) -> str:
         """DEPRECATED: Use settings.olorin.embedding.model"""
         import warnings
+
         warnings.warn(
             "EMBEDDING_MODEL is deprecated. Use settings.olorin.embedding.model instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.embedding.model
 
@@ -525,10 +556,11 @@ class Settings(BaseSettings):
     def EMBEDDING_DIMENSIONS(self) -> int:
         """DEPRECATED: Use settings.olorin.embedding.dimensions"""
         import warnings
+
         warnings.warn(
             "EMBEDDING_DIMENSIONS is deprecated. Use settings.olorin.embedding.dimensions instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.embedding.dimensions
 
@@ -536,10 +568,11 @@ class Settings(BaseSettings):
     def DUBBING_MAX_CONCURRENT_SESSIONS(self) -> int:
         """DEPRECATED: Use settings.olorin.dubbing.max_concurrent_sessions"""
         import warnings
+
         warnings.warn(
             "DUBBING_MAX_CONCURRENT_SESSIONS is deprecated. Use settings.olorin.dubbing.max_concurrent_sessions instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.dubbing.max_concurrent_sessions
 
@@ -547,10 +580,11 @@ class Settings(BaseSettings):
     def DUBBING_SESSION_TIMEOUT_MINUTES(self) -> int:
         """DEPRECATED: Use settings.olorin.dubbing.session_timeout_minutes"""
         import warnings
+
         warnings.warn(
             "DUBBING_SESSION_TIMEOUT_MINUTES is deprecated. Use settings.olorin.dubbing.session_timeout_minutes instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.dubbing.session_timeout_minutes
 
@@ -558,10 +592,11 @@ class Settings(BaseSettings):
     def DUBBING_TARGET_LATENCY_MS(self) -> int:
         """DEPRECATED: Use settings.olorin.dubbing.target_latency_ms"""
         import warnings
+
         warnings.warn(
             "DUBBING_TARGET_LATENCY_MS is deprecated. Use settings.olorin.dubbing.target_latency_ms instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.dubbing.target_latency_ms
 
@@ -569,10 +604,11 @@ class Settings(BaseSettings):
     def RECAP_MAX_CONTEXT_TOKENS(self) -> int:
         """DEPRECATED: Use settings.olorin.recap.max_context_tokens"""
         import warnings
+
         warnings.warn(
             "RECAP_MAX_CONTEXT_TOKENS is deprecated. Use settings.olorin.recap.max_context_tokens instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.recap.max_context_tokens
 
@@ -580,10 +616,11 @@ class Settings(BaseSettings):
     def RECAP_WINDOW_DEFAULT_MINUTES(self) -> int:
         """DEPRECATED: Use settings.olorin.recap.window_default_minutes"""
         import warnings
+
         warnings.warn(
             "RECAP_WINDOW_DEFAULT_MINUTES is deprecated. Use settings.olorin.recap.window_default_minutes instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.recap.window_default_minutes
 
@@ -591,10 +628,11 @@ class Settings(BaseSettings):
     def RECAP_SUMMARY_MAX_TOKENS(self) -> int:
         """DEPRECATED: Use settings.olorin.recap.summary_max_tokens"""
         import warnings
+
         warnings.warn(
             "RECAP_SUMMARY_MAX_TOKENS is deprecated. Use settings.olorin.recap.summary_max_tokens instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.recap.summary_max_tokens
 
@@ -602,10 +640,11 @@ class Settings(BaseSettings):
     def CULTURAL_REFERENCE_CACHE_TTL_HOURS(self) -> int:
         """DEPRECATED: Use settings.olorin.cultural.reference_cache_ttl_hours"""
         import warnings
+
         warnings.warn(
             "CULTURAL_REFERENCE_CACHE_TTL_HOURS is deprecated. Use settings.olorin.cultural.reference_cache_ttl_hours instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.cultural.reference_cache_ttl_hours
 
@@ -613,10 +652,11 @@ class Settings(BaseSettings):
     def CULTURAL_DETECTION_MIN_CONFIDENCE(self) -> float:
         """DEPRECATED: Use settings.olorin.cultural.detection_min_confidence"""
         import warnings
+
         warnings.warn(
             "CULTURAL_DETECTION_MIN_CONFIDENCE is deprecated. Use settings.olorin.cultural.detection_min_confidence instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.cultural.detection_min_confidence
 
@@ -624,10 +664,11 @@ class Settings(BaseSettings):
     def PARTNER_API_KEY_SALT(self) -> str:
         """DEPRECATED: Use settings.olorin.partner.api_key_salt"""
         import warnings
+
         warnings.warn(
             "PARTNER_API_KEY_SALT is deprecated. Use settings.olorin.partner.api_key_salt instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.partner.api_key_salt
 
@@ -635,10 +676,11 @@ class Settings(BaseSettings):
     def PARTNER_DEFAULT_RATE_LIMIT_RPM(self) -> int:
         """DEPRECATED: Use settings.olorin.partner.default_rate_limit_rpm"""
         import warnings
+
         warnings.warn(
             "PARTNER_DEFAULT_RATE_LIMIT_RPM is deprecated. Use settings.olorin.partner.default_rate_limit_rpm instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.partner.default_rate_limit_rpm
 
@@ -646,10 +688,11 @@ class Settings(BaseSettings):
     def PARTNER_WEBHOOK_TIMEOUT_SECONDS(self) -> float:
         """DEPRECATED: Use settings.olorin.partner.webhook_timeout_seconds"""
         import warnings
+
         warnings.warn(
             "PARTNER_WEBHOOK_TIMEOUT_SECONDS is deprecated. Use settings.olorin.partner.webhook_timeout_seconds instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.partner.webhook_timeout_seconds
 
@@ -657,10 +700,11 @@ class Settings(BaseSettings):
     def OLORIN_DUBBING_ENABLED(self) -> bool:
         """DEPRECATED: Use settings.olorin.dubbing_enabled"""
         import warnings
+
         warnings.warn(
             "OLORIN_DUBBING_ENABLED is deprecated. Use settings.olorin.dubbing_enabled instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.dubbing_enabled
 
@@ -668,10 +712,11 @@ class Settings(BaseSettings):
     def OLORIN_SEMANTIC_SEARCH_ENABLED(self) -> bool:
         """DEPRECATED: Use settings.olorin.semantic_search_enabled"""
         import warnings
+
         warnings.warn(
             "OLORIN_SEMANTIC_SEARCH_ENABLED is deprecated. Use settings.olorin.semantic_search_enabled instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.semantic_search_enabled
 
@@ -679,10 +724,11 @@ class Settings(BaseSettings):
     def OLORIN_CULTURAL_CONTEXT_ENABLED(self) -> bool:
         """DEPRECATED: Use settings.olorin.cultural_context_enabled"""
         import warnings
+
         warnings.warn(
             "OLORIN_CULTURAL_CONTEXT_ENABLED is deprecated. Use settings.olorin.cultural_context_enabled instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.cultural_context_enabled
 
@@ -690,10 +736,11 @@ class Settings(BaseSettings):
     def OLORIN_RECAP_ENABLED(self) -> bool:
         """DEPRECATED: Use settings.olorin.recap_enabled"""
         import warnings
+
         warnings.warn(
             "OLORIN_RECAP_ENABLED is deprecated. Use settings.olorin.recap_enabled instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         return self.olorin.recap_enabled
 
@@ -702,7 +749,7 @@ class Settings(BaseSettings):
         case_sensitive = True
         # Allow extra environment variables during Olorin config migration
         # This enables backward compatibility while old env vars are still in .env files
-        extra = 'ignore'
+        extra = "ignore"
 
 
 @lru_cache()

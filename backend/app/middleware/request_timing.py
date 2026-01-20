@@ -8,11 +8,10 @@ import logging
 import time
 from typing import Callable
 
-from fastapi import Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
-
 from app.core.config import settings
 from app.middleware.correlation_id import get_correlation_id
+from fastapi import Request, Response
+from starlette.middleware.base import BaseHTTPMiddleware
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +36,9 @@ class RequestTimingMiddleware(BaseHTTPMiddleware):
             warning_threshold_ms: Custom threshold for slow request warnings (optional)
         """
         super().__init__(app)
-        self.warning_threshold_ms = warning_threshold_ms or settings.REQUEST_TIMEOUT_WARNING_MS
+        self.warning_threshold_ms = (
+            warning_threshold_ms or settings.REQUEST_TIMEOUT_WARNING_MS
+        )
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         """
@@ -81,7 +82,7 @@ class RequestTimingMiddleware(BaseHTTPMiddleware):
                         "status_code": status_code,
                         "correlation_id": correlation_id,
                     }
-                }
+                },
             )
 
         # Log all requests at debug level with timing
@@ -95,7 +96,7 @@ class RequestTimingMiddleware(BaseHTTPMiddleware):
                     "status_code": status_code,
                     "correlation_id": correlation_id,
                 }
-            }
+            },
         )
 
         return response

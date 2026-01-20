@@ -23,6 +23,7 @@ def _is_running_locally() -> bool:
     # Cloud Run sets K_SERVICE environment variable
     return os.getenv("K_SERVICE") is None
 
+
 logger = logging.getLogger(__name__)
 
 # Track running tasks for graceful shutdown

@@ -3,13 +3,14 @@ Admin VOD Content Toggle Endpoints
 Handle publish/feature status toggles for VOD content
 """
 
-from datetime import datetime
-from fastapi import APIRouter, HTTPException, Depends, Request
 import logging
+from datetime import datetime
 
-from app.models.user import User
+from app.models.admin import AuditAction, Permission
 from app.models.content import Content
-from app.models.admin import Permission, AuditAction
+from app.models.user import User
+from fastapi import APIRouter, Depends, HTTPException, Request
+
 from .admin_content_utils import has_permission, log_audit
 
 router = APIRouter()
@@ -20,7 +21,7 @@ logger = logging.getLogger(__name__)
 async def toggle_content_publish(
     content_id: str,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
 ):
     """Toggle content publish status."""
     try:
@@ -38,21 +39,35 @@ async def toggle_content_publish(
         content.updated_at = datetime.utcnow()
         await content.save()
 
-        action = AuditAction.CONTENT_PUBLISHED if content.is_published else AuditAction.CONTENT_UNPUBLISHED
-        await log_audit(str(current_user.id), action, "content", content_id,
-                        {"title": content.title, "is_published": content.is_published}, request)
-        return {"message": f"Content {'published' if content.is_published else 'unpublished'}",
-                "is_published": content.is_published}
+        action = (
+            AuditAction.CONTENT_PUBLISHED
+            if content.is_published
+            else AuditAction.CONTENT_UNPUBLISHED
+        )
+        await log_audit(
+            str(current_user.id),
+            action,
+            "content",
+            content_id,
+            {"title": content.title, "is_published": content.is_published},
+            request,
+        )
+        return {
+            "message": f"Content {'published' if content.is_published else 'unpublished'}",
+            "is_published": content.is_published,
+        }
     except Exception as e:
         logger.error(f"Error toggling publish status for {content_id}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to toggle publish status: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to toggle publish status: {str(e)}"
+        )
 
 
 @router.post("/content/{content_id}/feature")
 async def toggle_content_feature(
     content_id: str,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
 ):
     """Toggle content featured status."""
     try:
@@ -67,10 +82,20 @@ async def toggle_content_feature(
         content.is_featured = not content.is_featured
         content.updated_at = datetime.utcnow()
         await content.save()
-        await log_audit(str(current_user.id), AuditAction.CONTENT_UPDATED, "content", content_id,
-                        {"title": content.title, "is_featured": content.is_featured}, request)
-        return {"message": f"Content {'featured' if content.is_featured else 'unfeatured'}",
-                "is_featured": content.is_featured}
+        await log_audit(
+            str(current_user.id),
+            AuditAction.CONTENT_UPDATED,
+            "content",
+            content_id,
+            {"title": content.title, "is_featured": content.is_featured},
+            request,
+        )
+        return {
+            "message": f"Content {'featured' if content.is_featured else 'unfeatured'}",
+            "is_featured": content.is_featured,
+        }
     except Exception as e:
         logger.error(f"Error toggling featured status for {content_id}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to toggle featured status: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to toggle featured status: {str(e)}"
+        )

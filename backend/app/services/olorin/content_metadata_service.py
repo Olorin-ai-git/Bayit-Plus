@@ -6,12 +6,12 @@ with read-only access to Bayit+ Content metadata while maintaining database sepa
 """
 
 import logging
-from typing import Optional, List
-from beanie import PydanticObjectId
-from beanie.odm.queries.find import FindMany
+from typing import List, Optional
 
 from app.core.config import settings
 from app.models.content import Content
+from beanie import PydanticObjectId
+from beanie.odm.queries.find import FindMany
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,9 @@ class ContentMetadataService:
                 "Content model not accessible. Ensure database connection is established."
             ) from e
 
-    async def get_content(self, content_id: str | PydanticObjectId) -> Optional[Content]:
+    async def get_content(
+        self, content_id: str | PydanticObjectId
+    ) -> Optional[Content]:
         """
         Get content by ID.
 
@@ -68,10 +70,7 @@ class ContentMetadataService:
             logger.error(f"Error fetching content {content_id}: {e}")
             return None
 
-    async def find_contents(
-        self,
-        **filters
-    ) -> FindMany[Content]:
+    async def find_contents(self, **filters) -> FindMany[Content]:
         """
         Find contents matching filters.
 
@@ -146,8 +145,7 @@ class ContentMetadataService:
             return 0
 
     async def get_contents_by_ids(
-        self,
-        content_ids: List[str | PydanticObjectId]
+        self, content_ids: List[str | PydanticObjectId]
     ) -> List[Content]:
         """
         Get multiple contents by IDs.
@@ -168,16 +166,13 @@ class ContentMetadataService:
                 for cid in content_ids
             ]
 
-            return await Content.find(
-                {"_id": {"$in": obj_ids}}
-            ).to_list()
+            return await Content.find({"_id": {"$in": obj_ids}}).to_list()
         except Exception as e:
             logger.error(f"Error fetching contents by IDs: {e}")
             return []
 
     async def get_contents_batch(
-        self,
-        content_ids: List[str | PydanticObjectId]
+        self, content_ids: List[str | PydanticObjectId]
     ) -> dict[str, Content]:
         """
         Get multiple contents by IDs and return as a dictionary keyed by content ID.
@@ -224,10 +219,14 @@ class ContentMetadataService:
                 mongo_query["content_type"] = {"$in": content_types}
 
             # Execute search with text score projection and sorting
-            cursor = Content.find(
-                mongo_query,
-                projection={"score": {"$meta": "textScore"}},
-            ).sort([("score", {"$meta": "textScore"})]).limit(limit)
+            cursor = (
+                Content.find(
+                    mongo_query,
+                    projection={"score": {"$meta": "textScore"}},
+                )
+                .sort([("score", {"$meta": "textScore"})])
+                .limit(limit)
+            )
 
             return await cursor.to_list()
 

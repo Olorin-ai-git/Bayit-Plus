@@ -4,27 +4,34 @@ Real-time speech-to-text and translation for live streaming subtitles
 Supports Google Cloud, OpenAI Whisper, and ElevenLabs Scribe v2 for STT
 Supports Google Translate, OpenAI, and Claude for translation
 """
+import asyncio
 import html
 import logging
 import os
-import time
-import asyncio
 import queue
 import threading
-from typing import AsyncIterator, Dict, Any, Optional
+import time
+from typing import Any, AsyncIterator, Dict, Optional
+
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
 # Set Google Cloud credentials from settings if not already in environment
-if not os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") and settings.GOOGLE_APPLICATION_CREDENTIALS:
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = settings.GOOGLE_APPLICATION_CREDENTIALS
+if (
+    not os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    and settings.GOOGLE_APPLICATION_CREDENTIALS
+):
+    os.environ[
+        "GOOGLE_APPLICATION_CREDENTIALS"
+    ] = settings.GOOGLE_APPLICATION_CREDENTIALS
     logger.info(f"Set GOOGLE_APPLICATION_CREDENTIALS from settings")
 
 # Conditional imports based on provider
 try:
     from google.cloud import speech_v1p1beta1 as speech
     from google.cloud import translate_v2 as translate
+
     GOOGLE_AVAILABLE = True
 except ImportError:
     GOOGLE_AVAILABLE = False
@@ -32,6 +39,7 @@ except ImportError:
 
 try:
     from openai import AsyncOpenAI
+
     OPENAI_AVAILABLE = True
 except ImportError:
     OPENAI_AVAILABLE = False
@@ -39,6 +47,7 @@ except ImportError:
 
 try:
     from app.services.elevenlabs_realtime_service import ElevenLabsRealtimeService
+
     ELEVENLABS_AVAILABLE = True
 except ImportError:
     ELEVENLABS_AVAILABLE = False
@@ -46,6 +55,7 @@ except ImportError:
 
 try:
     from anthropic import AsyncAnthropic
+
     ANTHROPIC_AVAILABLE = True
 except ImportError:
     ANTHROPIC_AVAILABLE = False
@@ -53,9 +63,16 @@ except ImportError:
 
 # Language code mapping for Google Speech-to-Text
 LANGUAGE_CODES = {
-    "he": "he-IL", "en": "en-US", "ar": "ar-IL",
-    "es": "es-ES", "ru": "ru-RU", "fr": "fr-FR",
-    "de": "de-DE", "it": "it-IT", "pt": "pt-PT", "yi": "yi"
+    "he": "he-IL",
+    "en": "en-US",
+    "ar": "ar-IL",
+    "es": "es-ES",
+    "ru": "ru-RU",
+    "fr": "fr-FR",
+    "de": "de-DE",
+    "it": "it-IT",
+    "pt": "pt-PT",
+    "yi": "yi",
 }
 
 # Maximum characters per subtitle line for readability
@@ -64,7 +81,9 @@ MAX_SUBTITLE_LENGTH = 80
 PREFERRED_SUBTITLE_LENGTH = 60
 
 
-def chunk_text_for_subtitles(text: str, max_length: int = MAX_SUBTITLE_LENGTH) -> list[str]:
+def chunk_text_for_subtitles(
+    text: str, max_length: int = MAX_SUBTITLE_LENGTH
+) -> list[str]:
     """
     Split long text into smaller chunks suitable for subtitles.
 
@@ -86,21 +105,21 @@ def chunk_text_for_subtitles(text: str, max_length: int = MAX_SUBTITLE_LENGTH) -
         split_point = max_length
 
         # Priority 1: Split at sentence-ending punctuation (. ! ?)
-        for punct in ['. ', '! ', '? ', '। ', '。', '؟ ']:
+        for punct in [". ", "! ", "? ", "। ", "。", "؟ "]:
             pos = remaining.rfind(punct, 0, max_length)
             if pos > PREFERRED_SUBTITLE_LENGTH // 2:
                 split_point = pos + len(punct)
                 break
         else:
             # Priority 2: Split at comma or semicolon
-            for punct in [', ', '; ', '، ', '、']:
+            for punct in [", ", "; ", "، ", "、"]:
                 pos = remaining.rfind(punct, 0, max_length)
                 if pos > PREFERRED_SUBTITLE_LENGTH // 2:
                     split_point = pos + len(punct)
                     break
             else:
                 # Priority 3: Split at space
-                pos = remaining.rfind(' ', PREFERRED_SUBTITLE_LENGTH // 2, max_length)
+                pos = remaining.rfind(" ", PREFERRED_SUBTITLE_LENGTH // 2, max_length)
                 if pos > 0:
                     split_point = pos + 1
                 # If no space found, just hard cut at max_length
@@ -117,9 +136,7 @@ class LiveTranslationService:
     """Service for real-time audio transcription and translation."""
 
     def __init__(
-        self,
-        provider: Optional[str] = None,
-        translation_provider: Optional[str] = None
+        self, provider: Optional[str] = None, translation_provider: Optional[str] = None
     ):
         """
         Initialize transcription service with specified providers.
@@ -131,7 +148,9 @@ class LiveTranslationService:
                                  If None, uses LIVE_TRANSLATION_PROVIDER from config.
         """
         self.provider = provider or settings.SPEECH_TO_TEXT_PROVIDER
-        self.translation_provider = translation_provider or settings.LIVE_TRANSLATION_PROVIDER
+        self.translation_provider = (
+            translation_provider or settings.LIVE_TRANSLATION_PROVIDER
+        )
 
         # Service clients
         self.speech_client = None
@@ -188,7 +207,10 @@ class LiveTranslationService:
                 raise ValueError("OPENAI_API_KEY not configured")
 
             logger.info("📡 Initializing OpenAI Whisper service...")
-            from app.services.whisper_transcription_service import WhisperTranscriptionService
+            from app.services.whisper_transcription_service import (
+                WhisperTranscriptionService,
+            )
+
             self.whisper_service = WhisperTranscriptionService()
             logger.info("✅ OpenAI Whisper initialized")
 
@@ -292,7 +314,9 @@ class LiveTranslationService:
                 "💡 Set ANTHROPIC_API_KEY environment variable or add to .env file"
             )
 
-    def get_recognition_config(self, source_lang: str = "he") -> speech.StreamingRecognitionConfig:
+    def get_recognition_config(
+        self, source_lang: str = "he"
+    ) -> speech.StreamingRecognitionConfig:
         """Get streaming recognition configuration."""
         lang_code = LANGUAGE_CODES.get(source_lang, f"{source_lang}-IL")
 
@@ -308,9 +332,7 @@ class LiveTranslationService:
         return speech.StreamingRecognitionConfig(config=config, interim_results=False)
 
     async def transcribe_audio_stream(
-        self,
-        audio_stream: AsyncIterator[bytes],
-        source_lang: str = "he"
+        self, audio_stream: AsyncIterator[bytes], source_lang: str = "he"
     ) -> AsyncIterator[str]:
         """
         Transcribe audio stream to text in real-time.
@@ -320,7 +342,9 @@ class LiveTranslationService:
             if self.provider == "google":
                 # Google Cloud Speech-to-Text (streaming with async/sync bridge)
                 streaming_config = self.get_recognition_config(source_lang)
-                logger.info(f"🎤 Starting Google Speech-to-Text stream for language: {source_lang}")
+                logger.info(
+                    f"🎤 Starting Google Speech-to-Text stream for language: {source_lang}"
+                )
 
                 # Use thread-safe queues to bridge async audio stream with sync Google API
                 audio_queue = queue.Queue()
@@ -349,24 +373,32 @@ class LiveTranslationService:
 
                     def request_generator():
                         """Generate requests for Google Speech API."""
-                        yield speech.StreamingRecognizeRequest(streaming_config=streaming_config)
+                        yield speech.StreamingRecognizeRequest(
+                            streaming_config=streaming_config
+                        )
 
                         while not done_receiving.is_set() or not audio_queue.empty():
                             try:
                                 # Use timeout to periodically check done flag
                                 audio_chunk = audio_queue.get(timeout=0.1)
-                                yield speech.StreamingRecognizeRequest(audio_content=audio_chunk)
+                                yield speech.StreamingRecognizeRequest(
+                                    audio_content=audio_chunk
+                                )
                             except queue.Empty:
                                 if done_receiving.is_set() and audio_queue.empty():
                                     break
                                 continue
 
                     try:
-                        responses = self.speech_client.streaming_recognize(request_generator())
+                        responses = self.speech_client.streaming_recognize(
+                            request_generator()
+                        )
                         for response in responses:
                             if response.results and response.results[0].is_final:
                                 if response.results[0].alternatives:
-                                    transcript = response.results[0].alternatives[0].transcript
+                                    transcript = (
+                                        response.results[0].alternatives[0].transcript
+                                    )
                                     logger.info(f"📝 Google transcribed: {transcript}")
                                     # Put transcript into queue for async consumer
                                     transcript_queue.put(transcript)
@@ -411,8 +443,7 @@ class LiveTranslationService:
             elif self.provider == "whisper":
                 # OpenAI Whisper (buffered streaming)
                 async for transcript in self.whisper_service.transcribe_audio_stream(
-                    audio_stream,
-                    source_lang=source_lang
+                    audio_stream, source_lang=source_lang
                 ):
                     logger.debug(f"Whisper transcribed: {transcript}")
                     yield transcript
@@ -427,9 +458,11 @@ class LiveTranslationService:
                 )
                 async for transcript, detected_lang in self.elevenlabs_service.transcribe_audio_stream(
                     audio_stream,
-                    source_lang="he"  # Use Hebrew hint - more reliable than auto-detect
+                    source_lang="he",  # Use Hebrew hint - more reliable than auto-detect
                 ):
-                    logger.info(f"📝 ElevenLabs transcribed [{detected_lang}]: {transcript}")
+                    logger.info(
+                        f"📝 ElevenLabs transcribed [{detected_lang}]: {transcript}"
+                    )
                     # Yield tuple with detected language for translation pipeline
                     yield (transcript, detected_lang)
 
@@ -437,7 +470,9 @@ class LiveTranslationService:
             logger.error(f"Transcription error ({self.provider}): {str(e)}")
             raise
 
-    async def translate_text(self, text: str, source_lang: str, target_lang: str) -> str:
+    async def translate_text(
+        self, text: str, source_lang: str, target_lang: str
+    ) -> str:
         """
         Translate text using configured translation provider.
 
@@ -453,7 +488,7 @@ class LiveTranslationService:
             "de": "German",
             "it": "Italian",
             "pt": "Portuguese",
-            "yi": "Yiddish"
+            "yi": "Yiddish",
         }
 
         source_name = language_names.get(source_lang, source_lang)
@@ -466,7 +501,7 @@ class LiveTranslationService:
                     text, source_language=source_lang, target_language=target_lang
                 )
                 # Decode HTML entities (Google Translate returns &#39; for apostrophes, etc.)
-                translated = html.unescape(result['translatedText'])
+                translated = html.unescape(result["translatedText"])
                 logger.debug(f"Google Translate: {text} → {translated}")
                 return translated
 
@@ -481,15 +516,12 @@ class LiveTranslationService:
                                 f"You are a professional translator. "
                                 f"Translate the following text from {source_name} to {target_name}. "
                                 f"Return ONLY the translated text, nothing else."
-                            )
+                            ),
                         },
-                        {
-                            "role": "user",
-                            "content": text
-                        }
+                        {"role": "user", "content": text},
                     ],
                     temperature=0.3,
-                    max_tokens=500
+                    max_tokens=500,
                 )
 
                 translated = response.choices[0].message.content.strip()
@@ -508,9 +540,9 @@ class LiveTranslationService:
                                 f"Translate the following text from {source_name} to {target_name}. "
                                 f"Return ONLY the translated text, nothing else.\n\n"
                                 f"Text to translate: {text}"
-                            )
+                            ),
                         }
-                    ]
+                    ],
                 )
 
                 translated = response.content[0].text.strip()
@@ -532,7 +564,7 @@ class LiveTranslationService:
         audio_stream: AsyncIterator[bytes],
         source_lang: str,
         target_lang: str,
-        start_timestamp: float = 0.0
+        start_timestamp: float = 0.0,
     ) -> AsyncIterator[Dict[str, Any]]:
         """
         Complete pipeline: Audio → Transcription → Translation → Subtitle cues.
@@ -553,7 +585,9 @@ class LiveTranslationService:
                 if isinstance(result, tuple):
                     transcript, detected_lang = result
                     # Use auto-detected language for translation
-                    actual_source_lang = detected_lang if detected_lang != "auto" else source_lang
+                    actual_source_lang = (
+                        detected_lang if detected_lang != "auto" else source_lang
+                    )
                 else:
                     transcript = result
                     actual_source_lang = source_lang
@@ -565,8 +599,12 @@ class LiveTranslationService:
                 if actual_source_lang == target_lang:
                     translated = transcript
                 else:
-                    translated = await self.translate_text(transcript, actual_source_lang, target_lang)
-                    logger.info(f"🌍 Translated [{actual_source_lang}→{target_lang}]: {translated[:50]}...")
+                    translated = await self.translate_text(
+                        transcript, actual_source_lang, target_lang
+                    )
+                    logger.info(
+                        f"🌍 Translated [{actual_source_lang}→{target_lang}]: {translated[:50]}..."
+                    )
 
                 # Calculate base timestamp
                 current_time = time.time() - session_start + start_timestamp
@@ -590,7 +628,7 @@ class LiveTranslationService:
                         "target_lang": target_lang,
                         "confidence": 0.95,
                         "chunk_index": i,
-                        "total_chunks": len(translated_chunks)
+                        "total_chunks": len(translated_chunks),
                     }
 
         except Exception as e:
@@ -603,7 +641,7 @@ class LiveTranslationService:
             "speech_to_text": False,
             "translate": False,
             "stt_provider": self.provider,
-            "translation_provider": self.translation_provider
+            "translation_provider": self.translation_provider,
         }
 
         # Check STT provider
@@ -612,9 +650,13 @@ class LiveTranslationService:
                 self.speech_client.list_models(parent="global")
                 status["speech_to_text"] = True
             elif self.provider == "whisper":
-                status["speech_to_text"] = self.whisper_service.verify_service_availability()
+                status[
+                    "speech_to_text"
+                ] = self.whisper_service.verify_service_availability()
             elif self.provider == "elevenlabs":
-                status["speech_to_text"] = self.elevenlabs_service.verify_service_availability()
+                status[
+                    "speech_to_text"
+                ] = self.elevenlabs_service.verify_service_availability()
         except Exception as e:
             logger.error(f"Speech-to-Text ({self.provider}) unavailable: {str(e)}")
 
@@ -630,6 +672,8 @@ class LiveTranslationService:
                 # Anthropic client is already initialized, just check it exists
                 status["translate"] = True
         except Exception as e:
-            logger.error(f"Translate ({self.translation_provider}) unavailable: {str(e)}")
+            logger.error(
+                f"Translate ({self.translation_provider}) unavailable: {str(e)}"
+            )
 
         return status

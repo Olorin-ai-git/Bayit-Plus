@@ -43,10 +43,16 @@ class SeriesLinkerService:
 
     def __init__(self) -> None:
         """Initialize with configuration from settings."""
-        self._title_similarity_threshold = settings.SERIES_LINKER_TITLE_SIMILARITY_THRESHOLD
-        self._auto_link_confidence_threshold = settings.SERIES_LINKER_AUTO_LINK_CONFIDENCE_THRESHOLD
+        self._title_similarity_threshold = (
+            settings.SERIES_LINKER_TITLE_SIMILARITY_THRESHOLD
+        )
+        self._auto_link_confidence_threshold = (
+            settings.SERIES_LINKER_AUTO_LINK_CONFIDENCE_THRESHOLD
+        )
         self._auto_link_batch_size = settings.SERIES_LINKER_AUTO_LINK_BATCH_SIZE
-        self._duplicate_resolution_strategy = settings.SERIES_LINKER_DUPLICATE_RESOLUTION_STRATEGY
+        self._duplicate_resolution_strategy = (
+            settings.SERIES_LINKER_DUPLICATE_RESOLUTION_STRATEGY
+        )
         self._create_missing_series = settings.SERIES_LINKER_CREATE_MISSING_SERIES
 
     async def find_unlinked_episodes(self, limit: int = 100) -> List[UnlinkedEpisode]:
@@ -94,7 +100,7 @@ class SeriesLinkerService:
         self,
         limit: Optional[int] = None,
         audit_id: Optional[str] = None,
-        dry_run: bool = False
+        dry_run: bool = False,
     ) -> Dict[str, Any]:
         """Automatically link unlinked episodes."""
         if limit is None:
@@ -127,7 +133,7 @@ class SeriesLinkerService:
         action: str = "unpublish",
         audit_id: Optional[str] = None,
         dry_run: bool = False,
-        reason: str = ""
+        reason: str = "",
     ) -> DeduplicationResult:
         """Resolve a group of duplicate episodes."""
         return await resolve_duplicate_episode_group(
@@ -143,7 +149,7 @@ class SeriesLinkerService:
         self,
         strategy: Optional[str] = None,
         audit_id: Optional[str] = None,
-        dry_run: bool = False
+        dry_run: bool = False,
     ) -> Dict[str, Any]:
         """Automatically resolve all duplicate episodes."""
         if strategy is None:

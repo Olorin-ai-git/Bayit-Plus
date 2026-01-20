@@ -7,8 +7,12 @@ Main service class that coordinates metering operations.
 from datetime import datetime
 from typing import Optional
 
-from app.models.integration_partner import IntegrationPartner, UsageRecord, DubbingSession
-from app.services.olorin.metering import usage, summary, sessions
+from app.models.integration_partner import (
+    DubbingSession,
+    IntegrationPartner,
+    UsageRecord,
+)
+from app.services.olorin.metering import sessions, summary, usage
 
 
 class MeteringService:
@@ -24,8 +28,11 @@ class MeteringService:
     ) -> UsageRecord:
         """Record usage for a dubbing session."""
         return await usage.record_dubbing_usage(
-            partner_id, session_id, audio_seconds,
-            characters_translated, characters_synthesized
+            partner_id,
+            session_id,
+            audio_seconds,
+            characters_translated,
+            characters_synthesized,
         )
 
     async def record_search_usage(
@@ -35,7 +42,9 @@ class MeteringService:
         results_returned: int,
     ) -> UsageRecord:
         """Record usage for a semantic search request."""
-        return await usage.record_search_usage(partner_id, tokens_used, results_returned)
+        return await usage.record_search_usage(
+            partner_id, tokens_used, results_returned
+        )
 
     async def record_context_usage(
         self,
@@ -44,7 +53,9 @@ class MeteringService:
         references_found: int,
     ) -> UsageRecord:
         """Record usage for cultural context requests."""
-        return await usage.record_context_usage(partner_id, tokens_used, references_found)
+        return await usage.record_context_usage(
+            partner_id, tokens_used, references_found
+        )
 
     async def record_recap_usage(
         self,
@@ -53,7 +64,9 @@ class MeteringService:
         transcript_seconds: float,
     ) -> UsageRecord:
         """Record usage for recap agent requests."""
-        return await usage.record_recap_usage(partner_id, tokens_used, transcript_seconds)
+        return await usage.record_recap_usage(
+            partner_id, tokens_used, transcript_seconds
+        )
 
     async def get_usage_summary(
         self,
@@ -63,7 +76,9 @@ class MeteringService:
         capability: Optional[str] = None,
     ) -> dict:
         """Get usage summary for a partner."""
-        return await summary.get_usage_summary(partner_id, start_date, end_date, capability)
+        return await summary.get_usage_summary(
+            partner_id, start_date, end_date, capability
+        )
 
     async def check_usage_limit(
         self,
@@ -85,8 +100,13 @@ class MeteringService:
     ) -> DubbingSession:
         """Create a new dubbing session record."""
         return await sessions.create_dubbing_session(
-            partner_id, session_id, source_language, target_language,
-            voice_id, client_ip, client_user_agent
+            partner_id,
+            session_id,
+            source_language,
+            target_language,
+            voice_id,
+            client_ip,
+            client_user_agent,
         )
 
     async def update_dubbing_session(

@@ -2,9 +2,10 @@
 Apple Podcasts to RSS Feed Converter
 Converts Apple Podcasts URLs to RSS feed URLs using the iTunes API.
 """
-import re
 import logging
+import re
 from typing import Optional
+
 import httpx
 
 logger = logging.getLogger(__name__)
@@ -29,7 +30,7 @@ def extract_podcast_id_from_apple_url(apple_url: str) -> Optional[str]:
         Podcast ID or None if not found
     """
     # Match pattern: id followed by digits
-    match = re.search(r'/id(\d+)', apple_url)
+    match = re.search(r"/id(\d+)", apple_url)
     if match:
         return match.group(1)
     return None
@@ -68,7 +69,9 @@ async def get_rss_from_podcast_id(podcast_id: str) -> Optional[str]:
                 logger.info(f"   RSS: {rss_url}")
                 return rss_url
             else:
-                logger.warning(f"No RSS feed found in iTunes response for: {podcast_id}")
+                logger.warning(
+                    f"No RSS feed found in iTunes response for: {podcast_id}"
+                )
                 return None
 
     except Exception as e:

@@ -1,9 +1,10 @@
-from datetime import datetime, timezone
-from typing import Optional, List, Literal
 import re
+from datetime import datetime, timezone
+from typing import List, Literal, Optional
+
+from app.models.recording import RecordingQuota
 from beanie import Document
 from pydantic import BaseModel, EmailStr, Field, validator
-from app.models.recording import RecordingQuota
 
 
 class UserBase(BaseModel):
@@ -18,23 +19,25 @@ class UserCreate(BaseModel):
     name: str
     password: str
 
-    @validator('password')
+    @validator("password")
     def validate_password(cls, v):
         """Enforce strong password requirements"""
         if len(v) < 8:
-            raise ValueError('Password must be at least 8 characters long')
-        if not re.search(r'[A-Z]', v):
-            raise ValueError('Password must contain at least one uppercase letter')
-        if not re.search(r'[a-z]', v):
-            raise ValueError('Password must contain at least one lowercase letter')
-        if not re.search(r'[0-9]', v):
-            raise ValueError('Password must contain at least one digit')
+            raise ValueError("Password must be at least 8 characters long")
+        if not re.search(r"[A-Z]", v):
+            raise ValueError("Password must contain at least one uppercase letter")
+        if not re.search(r"[a-z]", v):
+            raise ValueError("Password must contain at least one lowercase letter")
+        if not re.search(r"[0-9]", v):
+            raise ValueError("Password must contain at least one digit")
         if not re.search(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\|`~]', v):
-            raise ValueError('Password must contain at least one special character')
+            raise ValueError("Password must contain at least one special character")
         # Check for common weak passwords
-        common_passwords = ['password', '12345678', 'qwerty', 'abc123', 'password123']
+        common_passwords = ["password", "12345678", "qwerty", "abc123", "password123"]
         if v.lower() in common_passwords:
-            raise ValueError('This password is too common. Please choose a stronger password')
+            raise ValueError(
+                "This password is too common. Please choose a stronger password"
+            )
         return v
 
 
@@ -95,7 +98,9 @@ class User(Document):
     hashed_password: Optional[str] = None  # Optional for OAuth users
     is_active: bool = True
     role: str = "user"  # super_admin, admin, content_manager, billing_admin, support, viewer, user
-    custom_permissions: List[str] = Field(default_factory=list)  # Additional permissions beyond role
+    custom_permissions: List[str] = Field(
+        default_factory=list
+    )  # Additional permissions beyond role
 
     # Profile
     avatar: Optional[str] = None  # URL to user's avatar image
@@ -153,48 +158,46 @@ class User(Document):
 
     # User preferences
     preferred_language: str = "he"
-    notification_settings: dict = Field(default_factory=lambda: {
-        "new_content": True,
-        "live_events": True,
-        "recommendations": True,
-        "updates": True,
-    })
+    notification_settings: dict = Field(
+        default_factory=lambda: {
+            "new_content": True,
+            "live_events": True,
+            "recommendations": True,
+            "updates": True,
+        }
+    )
 
     # Extended preferences for new features
-    preferences: dict = Field(default_factory=lambda: {
-        # Zman Yisrael settings
-        "show_israel_time": True,
-        "shabbat_mode_enabled": True,
-        "local_timezone": "America/New_York",
-
-        # Morning Ritual settings
-        "morning_ritual_enabled": False,
-        "morning_ritual_start": "07:00",
-        "morning_ritual_end": "09:00",
-        "morning_ritual_content": "news",  # news, ai_brief, custom
-
-        # Subtitle settings
-        "subtitles_enabled": True,
-        "nikud_enabled": False,
-        "tap_translate_enabled": True,
-        "subtitle_language": "he",
-
-        # Layout preferences
-        "layout_phone": "vertical",  # vertical, grid
-        "layout_tv": "cinematic",  # cinematic, grid
-
-        # Watch party settings
-        "auto_join_audio": False,
-        "push_to_talk": False,
-
-        # Translation settings
-        "auto_translate_enabled": True,
-
-        # Culture settings (Global Cultures feature)
-        "culture_id": "israeli",  # Default for backward compatibility
-        "show_culture_clock": True,  # Show clock for selected culture's timezone
-        "culture_cities_enabled": True,  # Show city rows for selected culture
-    })
+    preferences: dict = Field(
+        default_factory=lambda: {
+            # Zman Yisrael settings
+            "show_israel_time": True,
+            "shabbat_mode_enabled": True,
+            "local_timezone": "America/New_York",
+            # Morning Ritual settings
+            "morning_ritual_enabled": False,
+            "morning_ritual_start": "07:00",
+            "morning_ritual_end": "09:00",
+            "morning_ritual_content": "news",  # news, ai_brief, custom
+            # Subtitle settings
+            "subtitles_enabled": True,
+            "nikud_enabled": False,
+            "tap_translate_enabled": True,
+            "subtitle_language": "he",
+            # Layout preferences
+            "layout_phone": "vertical",  # vertical, grid
+            "layout_tv": "cinematic",  # cinematic, grid
+            # Watch party settings
+            "auto_join_audio": False,
+            "push_to_talk": False,
+            # Translation settings
+            "auto_translate_enabled": True,
+            # Culture settings (Global Cultures feature)
+            "culture_id": "israeli",  # Default for backward compatibility
+            "show_culture_clock": True,  # Show clock for selected culture's timezone
+            "culture_cities_enabled": True,  # Show city rows for selected culture
+        }
+    )
 
     # Device management
     devices: List[dict] = Field(default_factory=list)
@@ -235,8 +238,12 @@ class User(Document):
                 "id": self.subscription_id,
                 "plan": self.subscription_tier,
                 "status": self.subscription_status,
-                "start_date": self.subscription_start_date.isoformat() if self.subscription_start_date else None,
-                "end_date": self.subscription_end_date.isoformat() if self.subscription_end_date else None,
+                "start_date": self.subscription_start_date.isoformat()
+                if self.subscription_start_date
+                else None,
+                "end_date": self.subscription_end_date.isoformat()
+                if self.subscription_end_date
+                else None,
             }
         return UserResponse(
             id=str(self.id),
@@ -257,8 +264,12 @@ class User(Document):
                 "id": self.subscription_id,
                 "plan": self.subscription_tier,
                 "status": self.subscription_status,
-                "start_date": self.subscription_start_date.isoformat() if self.subscription_start_date else None,
-                "end_date": self.subscription_end_date.isoformat() if self.subscription_end_date else None,
+                "start_date": self.subscription_start_date.isoformat()
+                if self.subscription_start_date
+                else None,
+                "end_date": self.subscription_end_date.isoformat()
+                if self.subscription_end_date
+                else None,
             }
         return UserAdminResponse(
             id=str(self.id),
@@ -276,7 +287,13 @@ class User(Document):
         )
 
     def is_admin_user(self) -> bool:
-        return self.role in ["super_admin", "admin", "content_manager", "billing_admin", "support"]
+        return self.role in [
+            "super_admin",
+            "admin",
+            "content_manager",
+            "billing_admin",
+            "support",
+        ]
 
     def is_admin_role(self) -> bool:
         """Check if user has admin role (bypasses verification)."""

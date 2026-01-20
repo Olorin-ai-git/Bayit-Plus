@@ -5,18 +5,25 @@ to authenticate the TV session without typing credentials on the TV.
 """
 from datetime import datetime
 from typing import Optional
-from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, status, Depends
-from pydantic import BaseModel
-from app.models.user import User, UserLogin, UserResponse, TokenResponse
+
+from app.core.config import settings
 from app.core.security import (
-    get_password_hash,
-    verify_password,
     create_access_token,
     get_current_active_user,
+    get_password_hash,
+    verify_password,
 )
-from app.core.config import settings
+from app.models.user import TokenResponse, User, UserLogin, UserResponse
 from app.services.pairing_manager import pairing_manager
-
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    WebSocket,
+    WebSocketDisconnect,
+    status,
+)
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -24,6 +31,7 @@ router = APIRouter()
 # ============================================================================
 # Request/Response Models
 # ============================================================================
+
 
 class InitPairingResponse(BaseModel):
     session_id: str
@@ -65,6 +73,7 @@ class CompleteOAuthRequest(BaseModel):
 # ============================================================================
 # REST Endpoints
 # ============================================================================
+
 
 @router.post("/init", response_model=InitPairingResponse)
 async def init_pairing():
@@ -133,9 +142,7 @@ async def companion_connect(request: CompanionConnectRequest):
         "connected_at": datetime.utcnow().isoformat(),
     }
 
-    success = await pairing_manager.connect_companion(
-        request.session_id, device_info
-    )
+    success = await pairing_manager.connect_companion(request.session_id, device_info)
 
     if not success:
         raise HTTPException(
@@ -167,18 +174,14 @@ async def complete_auth(request: CompleteAuthRequest):
     user = await User.find_one(User.email == request.email)
 
     if not user or not verify_password(request.password, user.hashed_password):
-        await pairing_manager.fail_pairing(
-            request.session_id, "Invalid credentials"
-        )
+        await pairing_manager.fail_pairing(request.session_id, "Invalid credentials")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
         )
 
     if not user.is_active:
-        await pairing_manager.fail_pairing(
-            request.session_id, "Account inactive"
-        )
+        await pairing_manager.fail_pairing(request.session_id, "Account inactive")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Inactive user",
@@ -250,6 +253,7 @@ async def cancel_session(session_id: str):
 # WebSocket Endpoint
 # ============================================================================
 
+
 @router.websocket("/ws/{session_id}")
 async def pairing_websocket(websocket: WebSocket, session_id: str):
     """
@@ -270,26 +274,32 @@ async def pairing_websocket(websocket: WebSocket, session_id: str):
     session = await pairing_manager.connect_tv(session_id, websocket)
 
     if not session:
-        await websocket.send_json({
-            "type": "error",
-            "message": "Session not found or expired",
-        })
+        await websocket.send_json(
+            {
+                "type": "error",
+                "message": "Session not found or expired",
+            }
+        )
         await websocket.close()
         return
 
     # Send initial connected message
-    await websocket.send_json({
-        "type": "connected",
-        "session_id": session_id,
-        "expires_at": session.expires_at.isoformat(),
-    })
+    await websocket.send_json(
+        {
+            "type": "connected",
+            "session_id": session_id,
+            "expires_at": session.expires_at.isoformat(),
+        }
+    )
 
     # If companion already connected, notify
     if session.companion_device_info:
-        await websocket.send_json({
-            "type": "companion_connected",
-            "device_info": session.companion_device_info,
-        })
+        await websocket.send_json(
+            {
+                "type": "companion_connected",
+                "device_info": session.companion_device_info,
+            }
+        )
 
     try:
         # Keep connection alive and handle incoming messages
@@ -306,9 +316,11 @@ async def pairing_websocket(websocket: WebSocket, session_id: str):
                     # Check if session is still valid
                     current_session = await pairing_manager.get_session(session_id)
                     if current_session and current_session.is_expired():
-                        await websocket.send_json({
-                            "type": "session_expired",
-                        })
+                        await websocket.send_json(
+                            {
+                                "type": "session_expired",
+                            }
+                        )
                         break
 
             except Exception:

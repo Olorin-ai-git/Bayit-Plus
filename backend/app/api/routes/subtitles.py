@@ -2,34 +2,34 @@
 Subtitles API Routes.
 Handles subtitle tracks, nikud generation, and word translation.
 """
-from typing import Optional, List
-from fastapi import APIRouter, HTTPException, Query
 from datetime import datetime
+from typing import List, Optional
 
 from app.models.subtitles import (
-    SubtitleTrackDoc,
-    SubtitleCueModel,
-    TranslationCacheDoc,
-    SubtitleTrackResponse,
-    SubtitleCueResponse,
-    TranslationResponse,
     SUBTITLE_LANGUAGES,
-)
-from app.services.subtitle_service import (
-    parse_subtitles,
-    fetch_subtitles,
-    extract_words,
-    format_time,
-    cues_to_dict,
+    SubtitleCueModel,
+    SubtitleCueResponse,
+    SubtitleTrackDoc,
+    SubtitleTrackResponse,
+    TranslationCacheDoc,
+    TranslationResponse,
 )
 from app.services.nikud_service import (
     add_nikud,
     add_nikud_batch,
-    translate_word,
-    translate_phrase,
-    translation_to_dict,
     get_cache_stats,
+    translate_phrase,
+    translate_word,
+    translation_to_dict,
 )
+from app.services.subtitle_service import (
+    cues_to_dict,
+    extract_words,
+    fetch_subtitles,
+    format_time,
+    parse_subtitles,
+)
+from fastapi import APIRouter, HTTPException, Query
 
 router = APIRouter(prefix="/subtitles", tags=["subtitles"])
 
@@ -41,10 +41,7 @@ async def get_supported_languages():
 
 
 @router.get("/{content_id}")
-async def get_subtitle_tracks(
-    content_id: str,
-    language: Optional[str] = None
-) -> dict:
+async def get_subtitle_tracks(content_id: str, language: Optional[str] = None) -> dict:
     """
     Get available subtitle tracks for content.
     Optionally filter by language.
@@ -61,7 +58,7 @@ async def get_subtitle_tracks(
                 "format": track.format,
                 "has_nikud_version": track.has_nikud_version,
                 "is_default": track.is_default,
-                "is_auto_generated": getattr(track, 'is_auto_generated', False),
+                "is_auto_generated": getattr(track, "is_auto_generated", False),
                 "cue_count": len(track.cues),
             }
             for track in tracks
@@ -104,16 +101,18 @@ async def get_subtitle_cues(
     result_cues = []
     for cue in cues:
         text = cue.text_nikud if with_nikud and cue.text_nikud else cue.text
-        result_cues.append({
-            "index": cue.index,
-            "start_time": cue.start_time,
-            "end_time": cue.end_time,
-            "text": text,
-            "text_nikud": cue.text_nikud,
-            "formatted_start": format_time(cue.start_time),
-            "formatted_end": format_time(cue.end_time),
-            "words": extract_words(text),
-        })
+        result_cues.append(
+            {
+                "index": cue.index,
+                "start_time": cue.start_time,
+                "end_time": cue.end_time,
+                "text": text,
+                "text_nikud": cue.text_nikud,
+                "formatted_start": format_time(cue.start_time),
+                "formatted_end": format_time(cue.end_time),
+                "words": extract_words(text),
+            }
+        )
 
     return {
         "content_id": content_id,
@@ -188,12 +187,13 @@ async def import_subtitles(
     track = await fetch_subtitles(source_url)
 
     if not track:
-        raise HTTPException(status_code=400, detail="Failed to fetch or parse subtitles")
+        raise HTTPException(
+            status_code=400, detail="Failed to fetch or parse subtitles"
+        )
 
     # Check if track already exists
     existing = await SubtitleTrackDoc.find_one(
-        SubtitleTrackDoc.content_id == content_id,
-        SubtitleTrackDoc.language == language
+        SubtitleTrackDoc.content_id == content_id, SubtitleTrackDoc.language == language
     )
 
     if existing:
@@ -339,7 +339,10 @@ async def add_nikud_to_text(
 @router.post("/{content_id}/fetch-external")
 async def fetch_external_subtitles(
     content_id: str,
-    languages: Optional[List[str]] = Query(default=None, description="Languages to fetch (e.g., ['en', 'es', 'he']). If not provided, fetches common languages."),
+    languages: Optional[List[str]] = Query(
+        default=None,
+        description="Languages to fetch (e.g., ['en', 'es', 'he']). If not provided, fetches common languages.",
+    ),
 ) -> dict:
     """
     Search OpenSubtitles for available subtitles and download them.
@@ -347,10 +350,11 @@ async def fetch_external_subtitles(
 
     Returns list of successfully imported languages.
     """
+    import logging
+
     from app.models.content import Content
     from app.services.opensubtitles_service import get_opensubtitles_service
     from app.services.subtitle_service import parse_srt
-    import logging
 
     logger = logging.getLogger(__name__)
 
@@ -363,7 +367,7 @@ async def fetch_external_subtitles(
     if not imdb_id:
         raise HTTPException(
             status_code=400,
-            detail="Content does not have IMDB ID. Cannot search OpenSubtitles."
+            detail="Content does not have IMDB ID. Cannot search OpenSubtitles.",
         )
 
     # Default languages if not specified
@@ -409,17 +413,18 @@ async def fetch_external_subtitles(
     if not quota["available"]:
         raise HTTPException(
             status_code=429,
-            detail=f"OpenSubtitles daily quota exhausted ({quota['used']}/{quota['daily_limit']}). Resets at {quota['resets_at']}."
+            detail=f"OpenSubtitles daily quota exhausted ({quota['used']}/{quota['daily_limit']}). Resets at {quota['resets_at']}.",
         )
 
     imported = []
     failed = []
 
     # Determine if this is a series episode
-    season_number = getattr(content, 'season', None)
-    episode_number = getattr(content, 'episode', None)
-    parent_imdb_id = getattr(content, 'series_imdb_id', None) or (
-        getattr(content, 'series_id', None) and await _get_series_imdb_id(content.series_id)
+    season_number = getattr(content, "season", None)
+    episode_number = getattr(content, "episode", None)
+    parent_imdb_id = getattr(content, "series_imdb_id", None) or (
+        getattr(content, "series_id", None)
+        and await _get_series_imdb_id(content.series_id)
     )
 
     for lang in languages_to_fetch:
@@ -493,14 +498,18 @@ async def fetch_external_subtitles(
             )
             await track.insert()
 
-            imported.append({
-                "language": lang,
-                "language_name": language_names.get(lang, lang.upper()),
-                "cue_count": len(parsed.cues),
-                "track_id": str(track.id),
-            })
+            imported.append(
+                {
+                    "language": lang,
+                    "language_name": language_names.get(lang, lang.upper()),
+                    "cue_count": len(parsed.cues),
+                    "track_id": str(track.id),
+                }
+            )
 
-            logger.info(f"✅ Imported {lang} subtitles for {content.title} ({len(parsed.cues)} cues)")
+            logger.info(
+                f"✅ Imported {lang} subtitles for {content.title} ({len(parsed.cues)} cues)"
+            )
 
         except Exception as e:
             logger.error(f"❌ Error fetching {lang} subtitles: {e}")
@@ -518,6 +527,7 @@ async def fetch_external_subtitles(
 async def _get_series_imdb_id(series_id: str) -> Optional[str]:
     """Helper to get IMDB ID from parent series"""
     from app.models.content import Content
+
     try:
         series = await Content.get(series_id)
         return series.imdb_id if series else None
@@ -538,8 +548,7 @@ async def delete_subtitle_track(
 ) -> dict:
     """Delete a subtitle track"""
     track = await SubtitleTrackDoc.find_one(
-        SubtitleTrackDoc.content_id == content_id,
-        SubtitleTrackDoc.language == language
+        SubtitleTrackDoc.content_id == content_id, SubtitleTrackDoc.language == language
     )
 
     if not track:

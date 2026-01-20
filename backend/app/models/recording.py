@@ -3,11 +3,12 @@ Recording Models
 Database models for live stream recording functionality
 """
 
-from beanie import Document
+import uuid
 from datetime import datetime, timedelta
 from typing import Optional
+
+from beanie import Document
 from pydantic import BaseModel, Field
-import uuid
 
 
 class RecordingSession(Document):
@@ -23,7 +24,9 @@ class RecordingSession(Document):
     started_at: datetime = Field(default_factory=datetime.utcnow)
     expected_end_at: Optional[datetime] = None
     actual_end_at: Optional[datetime] = None
-    status: str = "recording"  # 'recording', 'processing', 'completed', 'failed', 'cancelled'
+    status: str = (
+        "recording"  # 'recording', 'processing', 'completed', 'failed', 'cancelled'
+    )
 
     # Subtitle capture
     subtitle_enabled: bool = False
@@ -106,7 +109,7 @@ class Recording(Document):
             duration_seconds=session.duration_seconds,
             video_url=video_url,
             file_size_bytes=file_size,
-            auto_delete_at=datetime.utcnow() + timedelta(days=30)
+            auto_delete_at=datetime.utcnow() + timedelta(days=30),
         )
 
     class Settings:
@@ -135,7 +138,9 @@ class RecordingSchedule(Document):
     subtitle_target_language: Optional[str] = None
 
     # Status
-    status: str = "pending"  # 'pending', 'recording', 'completed', 'failed', 'cancelled'
+    status: str = (
+        "pending"  # 'pending', 'recording', 'completed', 'failed', 'cancelled'
+    )
     recording_id: Optional[str] = None
 
     # Metadata

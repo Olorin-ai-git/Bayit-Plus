@@ -13,4 +13,4 @@ This file maintains backward compatibility for existing imports:
 
 from app.services.support import SupportService, support_service
 
-__all__ = ['SupportService', 'support_service']
+__all__ = ["SupportService", "support_service"]

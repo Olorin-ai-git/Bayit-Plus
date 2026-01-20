@@ -2,11 +2,13 @@
 Script to copy the Segal Barko podcast cover image to the uploads directory
 and update the podcast database with the cover image URL.
 """
-import shutil
 import os
-from pathlib import Path
-from pymongo import MongoClient
+import shutil
 from datetime import datetime
+from pathlib import Path
+
+from pymongo import MongoClient
+
 
 def setup_podcast_cover(source_image_path: str):
     """Copy podcast cover image and update database"""
@@ -27,7 +29,7 @@ def setup_podcast_cover(source_image_path: str):
         client = MongoClient("mongodb://localhost:27017")
         db = client["bayit_plus"]
 
-        podcast_title = "סג\"ל וברקו - הפודקאסט"
+        podcast_title = 'סג"ל וברקו - הפודקאסט'
         cover_url = "http://localhost:8000/uploads/podcasts/segal-barko-cover.jpg"
 
         result = db.podcasts.update_one(
@@ -53,6 +55,7 @@ def setup_podcast_cover(source_image_path: str):
         print(f"   {dest_file}")
         print(f"\nThen run this script with the image path.")
 
+
 if __name__ == "__main__":
     import sys
 
@@ -62,4 +65,6 @@ if __name__ == "__main__":
     else:
         print("Usage: python setup_segal_barko_cover.py <path-to-image>")
         print("\nOr save the image directly to:")
-        print("   /Users/olorin/Documents/Bayit-Plus/backend/uploads/podcasts/segal-barko-cover.jpg")
+        print(
+            "   /Users/olorin/Documents/Bayit-Plus/backend/uploads/podcasts/segal-barko-cover.jpg"
+        )

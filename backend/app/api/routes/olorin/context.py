@@ -5,24 +5,20 @@ Endpoints for detecting and explaining Israeli/Jewish cultural references.
 """
 
 import logging
-from typing import Optional, List
+from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
-
-from app.models.integration_partner import IntegrationPartner
+from app.api.routes.olorin.dependencies import get_current_partner, verify_capability
+from app.api.routes.olorin.errors import OlorinErrors, get_error_message
 from app.models.cultural_reference import (
     ContextDetectionRequest,
     DetectedReference,
     ReferenceExplanation,
 )
+from app.models.integration_partner import IntegrationPartner
 from app.services.olorin.cultural_context_service import cultural_context_service
 from app.services.olorin.metering_service import metering_service
-from app.api.routes.olorin.dependencies import (
-    get_current_partner,
-    verify_capability,
-)
-from app.api.routes.olorin.errors import get_error_message, OlorinErrors
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -206,7 +202,9 @@ async def get_reference_explanation(
         if not explanation:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=get_error_message(OlorinErrors.REFERENCE_NOT_FOUND, reference_id=reference_id),
+                detail=get_error_message(
+                    OlorinErrors.REFERENCE_NOT_FOUND, reference_id=reference_id
+                ),
             )
 
         # Record minimal usage

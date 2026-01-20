@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 # Try to import Pinecone
 try:
     from pinecone import Pinecone, ServerlessSpec
+
     PINECONE_AVAILABLE = True
 except ImportError:
     PINECONE_AVAILABLE = False
@@ -24,6 +25,7 @@ except ImportError:
 # Try to import OpenAI for embeddings
 try:
     from openai import AsyncOpenAI
+
     OPENAI_AVAILABLE = True
 except ImportError:
     OPENAI_AVAILABLE = False
@@ -73,7 +75,9 @@ class SearchClientManager:
 
                 # Get or create index
                 index_name = settings.PINECONE_INDEX_NAME
-                existing_indexes = [idx.name for idx in self._pinecone_client.list_indexes()]
+                existing_indexes = [
+                    idx.name for idx in self._pinecone_client.list_indexes()
+                ]
 
                 if index_name not in existing_indexes:
                     logger.info(f"Creating Pinecone index: {index_name}")

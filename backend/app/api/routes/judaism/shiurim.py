@@ -9,18 +9,21 @@ Handles:
 
 from typing import Optional
 
-from fastapi import APIRouter, Query
-
 from app.services.torah_content_service import torah_content_service
+from fastapi import APIRouter, Query
 
 router = APIRouter()
 
 
 @router.get("/shiurim")
 async def get_shiurim(
-    category: Optional[str] = Query(None, description="Category filter (e.g., 'parasha')"),
+    category: Optional[str] = Query(
+        None, description="Category filter (e.g., 'parasha')"
+    ),
     rabbi: Optional[str] = Query(None, description="Filter by rabbi name"),
-    source: Optional[str] = Query(None, description="Filter by source (e.g., 'YU Torah')"),
+    source: Optional[str] = Query(
+        None, description="Filter by source (e.g., 'YU Torah')"
+    ),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
 ) -> dict:

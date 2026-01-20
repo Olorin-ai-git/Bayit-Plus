@@ -97,28 +97,34 @@ async def auto_link_unlinked_episodes(
         for episode in unlinked:
             series_name = episode.extracted_series_name
             if not series_name:
-                series_name, _, _ = extract_series_info_from_title(episode.title_en or "")
+                series_name, _, _ = extract_series_info_from_title(
+                    episode.title_en or ""
+                )
 
             if not series_name:
                 results["skipped"] += 1
-                results["details"].append({
-                    "episode_id": episode.content_id,
-                    "title": episode.title,
-                    "action": "skipped",
-                    "reason": "Could not extract series name from title",
-                })
+                results["details"].append(
+                    {
+                        "episode_id": episode.content_id,
+                        "title": episode.title,
+                        "action": "skipped",
+                        "reason": "Could not extract series name from title",
+                    }
+                )
                 continue
 
             series, confidence = await find_matching_series(series_name)
 
             if not series or confidence < confidence_threshold:
                 results["skipped"] += 1
-                results["details"].append({
-                    "episode_id": episode.content_id,
-                    "title": episode.title,
-                    "action": "skipped",
-                    "reason": f"No match with sufficient confidence (best: {confidence:.2f})",
-                })
+                results["details"].append(
+                    {
+                        "episode_id": episode.content_id,
+                        "title": episode.title,
+                        "action": "skipped",
+                        "reason": f"No match with sufficient confidence (best: {confidence:.2f})",
+                    }
+                )
                 continue
 
             link_result = await link_episode_to_series(
@@ -133,22 +139,26 @@ async def auto_link_unlinked_episodes(
 
             if link_result.success:
                 results["linked"] += 1
-                results["details"].append({
-                    "episode_id": episode.content_id,
-                    "title": episode.title,
-                    "action": "linked" if not dry_run else "would_link",
-                    "series_id": str(series.id),
-                    "series_title": series.title,
-                    "confidence": confidence,
-                })
+                results["details"].append(
+                    {
+                        "episode_id": episode.content_id,
+                        "title": episode.title,
+                        "action": "linked" if not dry_run else "would_link",
+                        "series_id": str(series.id),
+                        "series_title": series.title,
+                        "confidence": confidence,
+                    }
+                )
             else:
                 results["failed"] += 1
-                results["details"].append({
-                    "episode_id": episode.content_id,
-                    "title": episode.title,
-                    "action": "failed",
-                    "error": link_result.error,
-                })
+                results["details"].append(
+                    {
+                        "episode_id": episode.content_id,
+                        "title": episode.title,
+                        "action": "failed",
+                        "error": link_result.error,
+                    }
+                )
 
     except Exception as e:
         logger.error(f"Error in auto_link_unlinked_episodes: {e}", exc_info=True)

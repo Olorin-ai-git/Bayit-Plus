@@ -3,13 +3,15 @@ Video Chapters Models.
 Stores AI-generated chapters for content navigation.
 """
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
 
 class ChapterItemModel(BaseModel):
     """A single chapter within a video"""
+
     start_time: float  # seconds
     end_time: float  # seconds
     title: str
@@ -24,6 +26,7 @@ class VideoChapters(Document):
     Stores chapters for a piece of content.
     Chapters can be AI-generated or manually created.
     """
+
     content_id: str
     content_type: str = "vod"  # vod, live (for recorded live content)
     content_title: str
@@ -94,6 +97,7 @@ class VideoChapters(Document):
 # API Response Models
 class ChapterResponse(BaseModel):
     """API response for a single chapter"""
+
     start_time: float
     end_time: float
     title: str
@@ -111,6 +115,7 @@ class ChapterResponse(BaseModel):
 
 class VideoChaptersResponse(BaseModel):
     """API response for video chapters"""
+
     content_id: str
     content_title: str
     total_duration: float

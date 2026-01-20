@@ -6,13 +6,14 @@ Replaces the legacy Category system.
 """
 
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends, Query, Request
-from pydantic import BaseModel, Field
 
-from app.models.user import User
+from app.models.admin import AuditAction, Permission
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection, SectionSubcategory
-from app.models.admin import Permission, AuditAction
+from app.models.user import User
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from pydantic import BaseModel, Field
+
 from .admin_content_utils import has_permission, log_audit
 
 router = APIRouter()
@@ -20,10 +21,11 @@ router = APIRouter()
 
 class SectionCreateRequest(BaseModel):
     """Request model for creating a section."""
+
     name: str = Field(..., min_length=1, max_length=100)
     name_en: Optional[str] = None
     name_es: Optional[str] = None
-    slug: str = Field(..., min_length=1, max_length=50, pattern=r'^[a-z0-9-]+$')
+    slug: str = Field(..., min_length=1, max_length=50, pattern=r"^[a-z0-9-]+$")
     description: Optional[str] = None
     description_en: Optional[str] = None
     description_es: Optional[str] = None
@@ -40,6 +42,7 @@ class SectionCreateRequest(BaseModel):
 
 class SectionUpdateRequest(BaseModel):
     """Request model for updating a section."""
+
     name: Optional[str] = None
     name_en: Optional[str] = None
     name_es: Optional[str] = None
@@ -60,10 +63,11 @@ class SectionUpdateRequest(BaseModel):
 
 class SubcategoryCreateRequest(BaseModel):
     """Request model for creating a subcategory."""
+
     name: str = Field(..., min_length=1, max_length=100)
     name_en: Optional[str] = None
     name_es: Optional[str] = None
-    slug: str = Field(..., min_length=1, max_length=50, pattern=r'^[a-z0-9-]+$')
+    slug: str = Field(..., min_length=1, max_length=50, pattern=r"^[a-z0-9-]+$")
     description: Optional[str] = None
     order: int = 0
     is_active: bool = True
@@ -71,6 +75,7 @@ class SubcategoryCreateRequest(BaseModel):
 
 class SubcategoryUpdateRequest(BaseModel):
     """Request model for updating a subcategory."""
+
     name: Optional[str] = None
     name_en: Optional[str] = None
     name_es: Optional[str] = None
@@ -85,7 +90,7 @@ async def get_categories(
     is_active: Optional[bool] = None,
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=100, le=500),
-    current_user: User = Depends(has_permission(Permission.CONTENT_READ))
+    current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
 ):
     """Get all sections with pagination (aliased as categories for backward compatibility)."""
     query = ContentSection.find()
@@ -100,24 +105,26 @@ async def get_categories(
     result_items = []
     for item in items:
         content_count = await Content.find({"section_ids": str(item.id)}).count()
-        result_items.append({
-            "id": str(item.id),
-            "name": item.name,
-            "name_en": item.name_en,
-            "name_es": item.name_es,
-            "slug": item.slug,
-            "description": item.description,
-            "thumbnail": item.thumbnail,
-            "icon": item.icon,
-            "color": item.color,
-            "order": item.order,
-            "is_active": item.is_active,
-            "show_on_homepage": item.show_on_homepage,
-            "show_on_nav": item.show_on_nav,
-            "supports_subcategories": item.supports_subcategories,
-            "content_count": content_count,
-            "created_at": item.created_at.isoformat() if item.created_at else None,
-        })
+        result_items.append(
+            {
+                "id": str(item.id),
+                "name": item.name,
+                "name_en": item.name_en,
+                "name_es": item.name_es,
+                "slug": item.slug,
+                "description": item.description,
+                "thumbnail": item.thumbnail,
+                "icon": item.icon,
+                "color": item.color,
+                "order": item.order,
+                "is_active": item.is_active,
+                "show_on_homepage": item.show_on_homepage,
+                "show_on_nav": item.show_on_nav,
+                "supports_subcategories": item.supports_subcategories,
+                "content_count": content_count,
+                "created_at": item.created_at.isoformat() if item.created_at else None,
+            }
+        )
 
     return {
         "items": result_items,
@@ -131,7 +138,7 @@ async def get_categories(
 @router.get("/categories/{category_id}")
 async def get_category(
     category_id: str,
-    current_user: User = Depends(has_permission(Permission.CONTENT_READ))
+    current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
 ):
     """Get single section by ID."""
     try:
@@ -144,17 +151,24 @@ async def get_category(
 
     subcategories = []
     if section.supports_subcategories:
-        subcats = await SectionSubcategory.find(
-            SectionSubcategory.section_id == str(section.id)
-        ).sort("order").to_list()
-        subcategories = [{
-            "id": str(sub.id),
-            "name": sub.name,
-            "name_en": sub.name_en,
-            "slug": sub.slug,
-            "order": sub.order,
-            "is_active": sub.is_active,
-        } for sub in subcats]
+        subcats = (
+            await SectionSubcategory.find(
+                SectionSubcategory.section_id == str(section.id)
+            )
+            .sort("order")
+            .to_list()
+        )
+        subcategories = [
+            {
+                "id": str(sub.id),
+                "name": sub.name,
+                "name_en": sub.name_en,
+                "slug": sub.slug,
+                "order": sub.order,
+                "is_active": sub.is_active,
+            }
+            for sub in subcats
+        ]
 
     content_count = await Content.find({"section_ids": str(section.id)}).count()
 
@@ -186,7 +200,7 @@ async def get_category(
 async def create_category(
     data: SectionCreateRequest,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE)),
 ):
     """Create new section."""
     if await ContentSection.find_one(ContentSection.slug == data.slug):
@@ -218,7 +232,7 @@ async def create_category(
         "section",
         str(section.id),
         {"name": section.name, "slug": section.slug},
-        request
+        request,
     )
 
     return {"id": str(section.id), "name": section.name, "slug": section.slug}
@@ -229,7 +243,7 @@ async def update_category(
     category_id: str,
     data: SectionUpdateRequest,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
 ):
     """Update section fields."""
     try:
@@ -290,7 +304,10 @@ async def update_category(
         section.is_active = data.is_active
 
     if data.show_on_homepage is not None:
-        changes["show_on_homepage"] = {"old": section.show_on_homepage, "new": data.show_on_homepage}
+        changes["show_on_homepage"] = {
+            "old": section.show_on_homepage,
+            "new": data.show_on_homepage,
+        }
         section.show_on_homepage = data.show_on_homepage
 
     if data.show_on_nav is not None:
@@ -310,7 +327,7 @@ async def update_category(
         "section",
         category_id,
         changes,
-        request
+        request,
     )
 
     return {"message": "Section updated", "id": category_id}
@@ -320,7 +337,7 @@ async def update_category(
 async def delete_category(
     category_id: str,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_DELETE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_DELETE)),
 ):
     """Delete section (fails if content exists)."""
     try:
@@ -335,7 +352,7 @@ async def delete_category(
     if content_count > 0:
         raise HTTPException(
             status_code=400,
-            detail=f"Cannot delete section with {content_count} content items"
+            detail=f"Cannot delete section with {content_count} content items",
         )
 
     subcategory_count = await SectionSubcategory.find(
@@ -344,7 +361,7 @@ async def delete_category(
     if subcategory_count > 0:
         raise HTTPException(
             status_code=400,
-            detail=f"Cannot delete section with {subcategory_count} subcategories"
+            detail=f"Cannot delete section with {subcategory_count} subcategories",
         )
 
     await log_audit(
@@ -353,7 +370,7 @@ async def delete_category(
         "section",
         category_id,
         {"name": section.name, "slug": section.slug},
-        request
+        request,
     )
 
     await section.delete()
@@ -365,7 +382,7 @@ async def delete_category(
 async def reorder_categories(
     order_data: dict,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
 ):
     """Reorder sections by dragging (bulk update)."""
     for section_id, pos in order_data.items():
@@ -383,7 +400,7 @@ async def reorder_categories(
         "section",
         None,
         {"action": "bulk_reorder", "count": len(order_data)},
-        request
+        request,
     )
 
     return {"message": "Sections reordered"}
@@ -392,7 +409,7 @@ async def reorder_categories(
 @router.get("/categories/{category_id}/subcategories")
 async def get_subcategories(
     category_id: str,
-    current_user: User = Depends(has_permission(Permission.CONTENT_READ))
+    current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
 ):
     """Get subcategories for a section."""
     try:
@@ -403,23 +420,28 @@ async def get_subcategories(
     if not section:
         raise HTTPException(status_code=404, detail="Section not found")
 
-    subcats = await SectionSubcategory.find(
-        SectionSubcategory.section_id == category_id
-    ).sort("order").to_list()
+    subcats = (
+        await SectionSubcategory.find(SectionSubcategory.section_id == category_id)
+        .sort("order")
+        .to_list()
+    )
 
     return {
         "section_id": category_id,
         "section_name": section.name,
-        "subcategories": [{
-            "id": str(sub.id),
-            "name": sub.name,
-            "name_en": sub.name_en,
-            "name_es": sub.name_es,
-            "slug": sub.slug,
-            "description": sub.description,
-            "order": sub.order,
-            "is_active": sub.is_active,
-        } for sub in subcats]
+        "subcategories": [
+            {
+                "id": str(sub.id),
+                "name": sub.name,
+                "name_en": sub.name_en,
+                "name_es": sub.name_es,
+                "slug": sub.slug,
+                "description": sub.description,
+                "order": sub.order,
+                "is_active": sub.is_active,
+            }
+            for sub in subcats
+        ],
     }
 
 
@@ -428,7 +450,7 @@ async def create_subcategory(
     category_id: str,
     data: SubcategoryCreateRequest,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE)),
 ):
     """Create a subcategory under a section."""
     try:
@@ -440,11 +462,13 @@ async def create_subcategory(
         raise HTTPException(status_code=404, detail="Section not found")
 
     if not section.supports_subcategories:
-        raise HTTPException(status_code=400, detail="Section does not support subcategories")
+        raise HTTPException(
+            status_code=400, detail="Section does not support subcategories"
+        )
 
     existing = await SectionSubcategory.find_one(
         SectionSubcategory.section_id == category_id,
-        SectionSubcategory.slug == data.slug
+        SectionSubcategory.slug == data.slug,
     )
     if existing:
         raise HTTPException(status_code=400, detail="Subcategory slug already exists")
@@ -467,7 +491,7 @@ async def create_subcategory(
         "subcategory",
         str(subcategory.id),
         {"name": subcategory.name, "section": section.name},
-        request
+        request,
     )
 
     return {"id": str(subcategory.id), "name": subcategory.name}
@@ -478,7 +502,7 @@ async def update_subcategory(
     subcategory_id: str,
     data: SubcategoryUpdateRequest,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
 ):
     """Update a subcategory."""
     try:
@@ -498,7 +522,7 @@ async def update_subcategory(
     if data.slug is not None:
         existing = await SectionSubcategory.find_one(
             SectionSubcategory.section_id == subcategory.section_id,
-            SectionSubcategory.slug == data.slug
+            SectionSubcategory.slug == data.slug,
         )
         if existing and str(existing.id) != subcategory_id:
             raise HTTPException(status_code=400, detail="Slug already exists")
@@ -518,7 +542,7 @@ async def update_subcategory(
         "subcategory",
         subcategory_id,
         {"name": subcategory.name},
-        request
+        request,
     )
 
     return {"message": "Subcategory updated", "id": subcategory_id}
@@ -528,7 +552,7 @@ async def update_subcategory(
 async def delete_subcategory(
     subcategory_id: str,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_DELETE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_DELETE)),
 ):
     """Delete a subcategory."""
     try:
@@ -543,7 +567,7 @@ async def delete_subcategory(
     if content_count > 0:
         raise HTTPException(
             status_code=400,
-            detail=f"Cannot delete subcategory with {content_count} content items"
+            detail=f"Cannot delete subcategory with {content_count} content items",
         )
 
     await log_audit(
@@ -552,7 +576,7 @@ async def delete_subcategory(
         "subcategory",
         subcategory_id,
         {"name": subcategory.name},
-        request
+        request,
     )
 
     await subcategory.delete()

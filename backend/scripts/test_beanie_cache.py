@@ -4,14 +4,15 @@
 import asyncio
 import os
 import sys
-from motor.motor_asyncio import AsyncIOMotorClient
+
 from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorClient
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.core.config import settings
-from app.models.content import Content
 from app.core.database import connect_to_mongo
+from app.models.content import Content
 
 
 async def test_cache():
@@ -35,7 +36,7 @@ async def test_cache():
     print(f"  Stream URL: {movie.stream_url}\n")
 
     # Compare
-    if direct_doc.get('stream_url') == movie.stream_url:
+    if direct_doc.get("stream_url") == movie.stream_url:
         print("✅ URLs match!")
     else:
         print("❌ URLs DON'T match!")

@@ -4,19 +4,20 @@ MongoDB models for support tickets, conversations, and analytics
 """
 
 from datetime import datetime, timezone
-from typing import Optional, List, Literal
+from typing import List, Literal, Optional
+
 from beanie import Document, PydanticObjectId
 from pydantic import BaseModel, Field
 
-
 # Type definitions
-TicketStatus = Literal['open', 'in_progress', 'resolved', 'closed']
-TicketPriority = Literal['low', 'medium', 'high', 'urgent']
-TicketCategory = Literal['billing', 'technical', 'feature', 'general']
+TicketStatus = Literal["open", "in_progress", "resolved", "closed"]
+TicketPriority = Literal["low", "medium", "high", "urgent"]
+TicketCategory = Literal["billing", "technical", "feature", "general"]
 
 
 class TicketNote(BaseModel):
     """Internal note on a support ticket (for admins)"""
+
     author_id: str
     author_name: str
     content: str
@@ -26,9 +27,10 @@ class TicketNote(BaseModel):
 
 class TicketMessage(BaseModel):
     """Message in a support ticket thread"""
+
     author_id: str
     author_name: str
-    author_role: Literal['user', 'support', 'system']
+    author_role: Literal["user", "support", "system"]
     content: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     attachments: List[str] = Field(default_factory=list)
@@ -36,6 +38,7 @@ class TicketMessage(BaseModel):
 
 class SupportTicket(Document):
     """Support ticket document"""
+
     # User information
     user_id: PydanticObjectId
     user_email: str
@@ -44,10 +47,10 @@ class SupportTicket(Document):
     # Ticket details
     subject: str
     message: str
-    category: TicketCategory = 'general'
-    status: TicketStatus = 'open'
-    priority: TicketPriority = 'medium'
-    language: str = 'en'
+    category: TicketCategory = "general"
+    status: TicketStatus = "open"
+    priority: TicketPriority = "medium"
+    language: str = "en"
 
     # Voice chat context (if ticket created from voice support)
     voice_conversation_id: Optional[str] = None
@@ -90,15 +93,18 @@ class SupportTicket(Document):
 
 class SupportConversation(Document):
     """Voice support conversation for context building"""
+
     user_id: PydanticObjectId
-    language: str = 'en'
+    language: str = "en"
 
     # Conversation messages
     messages: List[dict] = Field(default_factory=list)  # role, content, timestamp
 
     # Context
     app_context: Optional[dict] = None  # Current screen, recent actions, etc.
-    docs_referenced: List[str] = Field(default_factory=list)  # Doc paths used in context
+    docs_referenced: List[str] = Field(
+        default_factory=list
+    )  # Doc paths used in context
 
     # Status
     escalated: bool = False
@@ -123,6 +129,7 @@ class SupportConversation(Document):
 
 class SupportAnalytics(Document):
     """Daily support analytics snapshot"""
+
     date: datetime  # Date of the snapshot (day granularity)
 
     # Ticket metrics
@@ -160,6 +167,7 @@ class SupportAnalytics(Document):
 
 class FAQEntry(Document):
     """FAQ entry for support knowledge base"""
+
     question_key: str  # i18n key for question
     answer_key: str  # i18n key for answer
     category: str  # general, billing, technical, features

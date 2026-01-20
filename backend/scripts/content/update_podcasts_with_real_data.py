@@ -2,10 +2,10 @@
 Update podcasts with real episode data from working RSS feeds + Israeli podcast samples.
 """
 import asyncio
-from pymongo import MongoClient
 from datetime import datetime, timedelta
-from app.services.podcast_scraper import scrape_all_podcasts
 
+from app.services.podcast_scraper import scrape_all_podcasts
+from pymongo import MongoClient
 
 # Israeli podcasts from 103FM with realistic episode samples
 ISRAELI_PODCASTS = {
@@ -158,9 +158,9 @@ async def main():
                     "episodes": episodes,
                     "updated_at": datetime.utcnow(),
                 },
-                "$setOnInsert": {"created_at": datetime.utcnow()}
+                "$setOnInsert": {"created_at": datetime.utcnow()},
             },
-            upsert=True
+            upsert=True,
         )
         if result.upserted_id:
             print(f"   ✓ created\n")

@@ -8,17 +8,17 @@ Widgets are only created if they don't already exist (idempotent).
 import logging
 from datetime import datetime
 
+from app.models.content import LiveChannel
 from app.models.widget import (
     Widget,
-    WidgetType,
-    WidgetContentType,
     WidgetContent,
+    WidgetContentType,
     WidgetPosition,
+    WidgetType,
 )
-from app.models.content import LiveChannel
 from app.services.startup.defaults import (
-    FLIGHT_WIDGETS,
     CHANNEL_WIDGETS,
+    FLIGHT_WIDGETS,
     PODCAST_WIDGETS,
     YNET_WIDGET_CONFIG,
 )
@@ -31,13 +31,17 @@ async def _create_flight_widgets() -> int:
     created_count = 0
 
     for config in FLIGHT_WIDGETS:
-        existing = await Widget.find_one({
-            "type": WidgetType.SYSTEM,
-            "title": config["title"],
-        })
+        existing = await Widget.find_one(
+            {
+                "type": WidgetType.SYSTEM,
+                "title": config["title"],
+            }
+        )
 
         if existing:
-            logger.info(f"Flight widget '{config['title']}' already exists: {existing.id}")
+            logger.info(
+                f"Flight widget '{config['title']}' already exists: {existing.id}"
+            )
             continue
 
         widget = Widget(
@@ -82,10 +86,12 @@ async def _create_ynet_widget() -> bool:
     """Create or update Ynet mivzakim widget. Returns True if created/updated."""
     config = YNET_WIDGET_CONFIG
 
-    existing = await Widget.find_one({
-        "type": WidgetType.SYSTEM,
-        "title": config["title"],
-    })
+    existing = await Widget.find_one(
+        {
+            "type": WidgetType.SYSTEM,
+            "title": config["title"],
+        }
+    )
 
     if existing:
         # Update existing widget to use CUSTOM type if it was IFRAME
@@ -140,10 +146,12 @@ async def _create_podcast_widgets() -> int:
     created_count = 0
 
     for config in PODCAST_WIDGETS:
-        existing = await Widget.find_one({
-            "type": WidgetType.SYSTEM,
-            "title": config["title"],
-        })
+        existing = await Widget.find_one(
+            {
+                "type": WidgetType.SYSTEM,
+                "title": config["title"],
+            }
+        )
 
         if existing:
             logger.info(
@@ -196,23 +204,29 @@ async def _create_channel_widgets() -> int:
         channel_num = config["channel_num"]
 
         # Check if widget already exists
-        existing = await Widget.find_one({
-            "type": WidgetType.SYSTEM,
-            "title": {"$regex": f"channel.*{channel_num}", "$options": "i"},
-        })
+        existing = await Widget.find_one(
+            {
+                "type": WidgetType.SYSTEM,
+                "title": {"$regex": f"channel.*{channel_num}", "$options": "i"},
+            }
+        )
 
         if existing:
-            logger.info(f"Default Channel {channel_num} widget already exists: {existing.id}")
+            logger.info(
+                f"Default Channel {channel_num} widget already exists: {existing.id}"
+            )
             continue
 
         # Try to find the channel in live channels
-        channel = await LiveChannel.find_one({
-            "$or": [
-                {"name": {"$regex": f"channel.*{channel_num}", "$options": "i"}},
-                {"name": {"$regex": f"ערוץ.*{channel_num}", "$options": "i"}},
-                {"name": {"$regex": f"{channel_num}.*channel", "$options": "i"}},
-            ]
-        })
+        channel = await LiveChannel.find_one(
+            {
+                "$or": [
+                    {"name": {"$regex": f"channel.*{channel_num}", "$options": "i"}},
+                    {"name": {"$regex": f"ערוץ.*{channel_num}", "$options": "i"}},
+                    {"name": {"$regex": f"{channel_num}.*channel", "$options": "i"}},
+                ]
+            }
+        )
 
         widget = Widget(
             type=WidgetType.SYSTEM,

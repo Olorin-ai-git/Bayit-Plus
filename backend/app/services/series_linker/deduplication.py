@@ -8,19 +8,17 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from beanie import PydanticObjectId
-
 from app.core.config import settings
 from app.models.content import Content
 from app.models.librarian import LibrarianAction
 from app.services.series_linker.constants import DeduplicationResult
+from beanie import PydanticObjectId
 
 logger = logging.getLogger(__name__)
 
 
 def select_episode_to_keep(
-    episodes: List[Content],
-    strategy: Optional[str] = None
+    episodes: List[Content], strategy: Optional[str] = None
 ) -> Content:
     """
     Select which episode to keep from a group of duplicates.
@@ -38,10 +36,12 @@ def select_episode_to_keep(
         strategy = settings.SERIES_LINKER_DUPLICATE_RESOLUTION_STRATEGY
 
     if strategy == "keep_highest_quality":
+
         def quality_key(e: Content) -> tuple:
             size = e.file_size or 0
             height = (e.video_metadata or {}).get("height", 0) or 0
             return (size, height)
+
         return max(episodes, key=quality_key)
 
     elif strategy == "keep_oldest":
@@ -51,6 +51,7 @@ def select_episode_to_keep(
         return max(episodes, key=lambda e: e.created_at or datetime.min)
 
     elif strategy == "keep_most_complete":
+
         def completeness_score(e: Content) -> float:
             score = 0.0
             if e.description:
@@ -64,8 +65,9 @@ def select_episode_to_keep(
             if e.has_subtitles:
                 score += 1
             if e.file_size:
-                score += (e.file_size / 1_000_000_000)
+                score += e.file_size / 1_000_000_000
             return score
+
         return max(episodes, key=completeness_score)
 
     return max(episodes, key=lambda e: (e.file_size or 0))
@@ -77,7 +79,7 @@ async def resolve_duplicate_episode_group(
     action: str = "unpublish",
     audit_id: Optional[str] = None,
     dry_run: bool = False,
-    reason: str = ""
+    reason: str = "",
 ) -> DeduplicationResult:
     """
     Resolve a group of duplicate episodes.
@@ -102,9 +104,7 @@ async def resolve_duplicate_episode_group(
     try:
         # Batch fetch all episodes in a single query (avoid N+1 queries)
         episode_object_ids = [PydanticObjectId(eid) for eid in episode_ids]
-        episodes = await Content.find(
-            {"_id": {"$in": episode_object_ids}}
-        ).to_list()
+        episodes = await Content.find({"_id": {"$in": episode_object_ids}}).to_list()
 
         if len(episodes) < 2:
             result.success = False
@@ -161,7 +161,9 @@ async def resolve_duplicate_episode_group(
                 )
                 await lib_action.insert()
 
-        logger.info(f"Resolved duplicates: kept {keep_episode.id}, {action}ed {result.duplicates_resolved}")
+        logger.info(
+            f"Resolved duplicates: kept {keep_episode.id}, {action}ed {result.duplicates_resolved}"
+        )
 
     except Exception as e:
         logger.error(f"Error resolving duplicate group: {e}", exc_info=True)

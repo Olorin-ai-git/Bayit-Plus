@@ -10,11 +10,11 @@ SERIES_TOOLS = [
                 "limit": {
                     "type": "integer",
                     "description": "Maximum number of unlinked episodes to return (default 100)",
-                    "default": 100
+                    "default": 100,
                 }
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "link_episode_to_series",
@@ -24,27 +24,27 @@ SERIES_TOOLS = [
             "properties": {
                 "episode_id": {
                     "type": "string",
-                    "description": "The ID of the episode content item"
+                    "description": "The ID of the episode content item",
                 },
                 "series_id": {
                     "type": "string",
-                    "description": "The ID of the parent series"
+                    "description": "The ID of the parent series",
                 },
                 "season": {
                     "type": "integer",
-                    "description": "Season number (optional)"
+                    "description": "Season number (optional)",
                 },
                 "episode": {
                     "type": "integer",
-                    "description": "Episode number (optional)"
+                    "description": "Episode number (optional)",
                 },
                 "reason": {
                     "type": "string",
-                    "description": "Brief explanation of why you're linking this episode"
-                }
+                    "description": "Brief explanation of why you're linking this episode",
+                },
             },
-            "required": ["episode_id", "series_id", "reason"]
-        }
+            "required": ["episode_id", "series_id", "reason"],
+        },
     },
     {
         "name": "auto_link_episodes",
@@ -55,16 +55,16 @@ SERIES_TOOLS = [
                 "limit": {
                     "type": "integer",
                     "description": "Maximum number of episodes to process (default 50)",
-                    "default": 50
+                    "default": 50,
                 },
                 "confidence_threshold": {
                     "type": "number",
                     "description": "Minimum confidence score (0-1) required for auto-linking (default 0.9)",
-                    "default": 0.9
-                }
+                    "default": 0.9,
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "create_series_from_episode",
@@ -74,23 +74,23 @@ SERIES_TOOLS = [
             "properties": {
                 "episode_id": {
                     "type": "string",
-                    "description": "The ID of the episode to create a series from"
+                    "description": "The ID of the episode to create a series from",
                 },
                 "series_title": {
                     "type": "string",
-                    "description": "The title for the new series"
+                    "description": "The title for the new series",
                 },
                 "tmdb_id": {
                     "type": "integer",
-                    "description": "Optional TMDB ID for the series to fetch metadata"
+                    "description": "Optional TMDB ID for the series to fetch metadata",
                 },
                 "reason": {
                     "type": "string",
-                    "description": "Brief explanation of why you're creating this series"
-                }
+                    "description": "Brief explanation of why you're creating this series",
+                },
             },
-            "required": ["episode_id", "series_title"]
-        }
+            "required": ["episode_id", "series_title"],
+        },
     },
     {
         "name": "sync_series_posters_to_episodes",
@@ -100,16 +100,16 @@ SERIES_TOOLS = [
             "properties": {
                 "series_id": {
                     "type": "string",
-                    "description": "Optional: Specific series ID to process. If not provided, processes all series."
+                    "description": "Optional: Specific series ID to process. If not provided, processes all series.",
                 },
                 "fetch_from_tmdb": {
                     "type": "boolean",
                     "description": "If true, fetch missing posters from TMDB when tmdb_id is available (default true)",
-                    "default": True
-                }
+                    "default": True,
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "find_misclassified_episodes",
@@ -120,11 +120,11 @@ SERIES_TOOLS = [
                 "limit": {
                     "type": "integer",
                     "description": "Maximum number of misclassified episodes to find (default 100)",
-                    "default": 100
+                    "default": 100,
                 }
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "fix_misclassified_series",
@@ -134,20 +134,20 @@ SERIES_TOOLS = [
             "properties": {
                 "series_name": {
                     "type": "string",
-                    "description": "Name of the series to fix (must match exactly)"
+                    "description": "Name of the series to fix (must match exactly)",
                 },
                 "tmdb_id": {
                     "type": "integer",
-                    "description": "Optional: TMDB ID for the series. Will search TMDB by name if not provided."
+                    "description": "Optional: TMDB ID for the series. Will search TMDB by name if not provided.",
                 },
                 "fetch_tmdb_metadata": {
                     "type": "boolean",
                     "description": "If true, fetch poster/metadata from TMDB (default true)",
-                    "default": True
-                }
+                    "default": True,
+                },
             },
-            "required": ["series_name"]
-        }
+            "required": ["series_name"],
+        },
     },
     {
         "name": "organize_all_series",
@@ -158,21 +158,21 @@ SERIES_TOOLS = [
                 "fetch_tmdb_metadata": {
                     "type": "boolean",
                     "description": "If true, fetch metadata from TMDB for each series (default true)",
-                    "default": True
+                    "default": True,
                 },
                 "propagate_to_episodes": {
                     "type": "boolean",
                     "description": "If true, apply series poster/backdrop to all linked episodes (default true)",
-                    "default": True
+                    "default": True,
                 },
                 "include_hebrew": {
                     "type": "boolean",
                     "description": "If true, process Hebrew series with Hebrew-to-English title mapping for TMDB lookup (default true)",
-                    "default": True
-                }
+                    "default": True,
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "find_duplicate_episodes",
@@ -182,11 +182,11 @@ SERIES_TOOLS = [
             "properties": {
                 "series_id": {
                     "type": "string",
-                    "description": "Optional: Filter to a specific series ID"
+                    "description": "Optional: Filter to a specific series ID",
                 }
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "resolve_duplicate_episodes",
@@ -197,24 +197,24 @@ SERIES_TOOLS = [
                 "episode_ids": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "List of duplicate episode IDs in the group"
+                    "description": "List of duplicate episode IDs in the group",
                 },
                 "keep_id": {
                     "type": "string",
-                    "description": "ID of the episode to keep (auto-selects based on quality if not provided)"
+                    "description": "ID of the episode to keep (auto-selects based on quality if not provided)",
                 },
                 "action": {
                     "type": "string",
                     "description": "What to do with duplicates: 'unpublish' (default) or 'delete'",
                     "enum": ["unpublish", "delete"],
-                    "default": "unpublish"
+                    "default": "unpublish",
                 },
                 "reason": {
                     "type": "string",
-                    "description": "Brief explanation of why you're resolving these duplicates"
-                }
+                    "description": "Brief explanation of why you're resolving these duplicates",
+                },
             },
-            "required": ["episode_ids"]
-        }
+            "required": ["episode_ids"],
+        },
     },
 ]

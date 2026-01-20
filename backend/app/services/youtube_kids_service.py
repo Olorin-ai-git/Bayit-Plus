@@ -12,15 +12,14 @@ Target Channels:
 
 import json
 import logging
-from datetime import datetime
-from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 import httpx
-
+from app.core.config import settings
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +31,7 @@ YOUTUBE_API_BASE = "https://www.googleapis.com/youtube/v3"
 @dataclass
 class YouTubeVideo:
     """Represents a YouTube video with metadata."""
+
     video_id: str
     title: str
     title_en: Optional[str] = None
@@ -221,6 +221,7 @@ class YouTubeKidsService:
         Parse ISO 8601 duration (PT1H2M3S) to human readable format.
         """
         import re
+
         if not duration_str:
             return ""
 
@@ -252,9 +253,7 @@ class YouTubeKidsService:
             return f"{minutes}:{seconds:02d}"
 
     async def get_channel_videos(
-        self,
-        channel_id: str,
-        max_results: int = 50
+        self, channel_id: str, max_results: int = 50
     ) -> List[Dict[str, Any]]:
         """
         Get videos from a YouTube channel using the Data API.
@@ -289,7 +288,9 @@ class YouTubeKidsService:
                 logger.error(f"Channel not found: {channel_id}")
                 return []
 
-            uploads_playlist_id = items[0]["contentDetails"]["relatedPlaylists"]["uploads"]
+            uploads_playlist_id = items[0]["contentDetails"]["relatedPlaylists"][
+                "uploads"
+            ]
 
             # Step 2: Get videos from uploads playlist
             playlist_url = f"{YOUTUBE_API_BASE}/playlistItems"
@@ -324,7 +325,9 @@ class YouTubeKidsService:
 
             response = await client.get(videos_url, params=videos_params)
             if response.status_code != 200:
-                logger.error(f"Failed to get video details: HTTP {response.status_code}")
+                logger.error(
+                    f"Failed to get video details: HTTP {response.status_code}"
+                )
                 return []
 
             videos_data = response.json()
@@ -338,10 +341,10 @@ class YouTubeKidsService:
                 # Get best thumbnail
                 thumbnails = snippet.get("thumbnails", {})
                 thumbnail_url = (
-                    thumbnails.get("maxres", {}).get("url") or
-                    thumbnails.get("high", {}).get("url") or
-                    thumbnails.get("medium", {}).get("url") or
-                    thumbnails.get("default", {}).get("url", "")
+                    thumbnails.get("maxres", {}).get("url")
+                    or thumbnails.get("high", {}).get("url")
+                    or thumbnails.get("medium", {}).get("url")
+                    or thumbnails.get("default", {}).get("url", "")
                 )
 
                 # Parse published date
@@ -349,21 +352,27 @@ class YouTubeKidsService:
                 published_at = None
                 if published_str:
                     try:
-                        published_at = datetime.fromisoformat(published_str.replace("Z", "+00:00"))
+                        published_at = datetime.fromisoformat(
+                            published_str.replace("Z", "+00:00")
+                        )
                     except Exception:
                         pass
 
-                videos.append({
-                    "video_id": item["id"],
-                    "title": snippet.get("title", ""),
-                    "description": snippet.get("description", "")[:500],
-                    "channel_id": snippet.get("channelId", ""),
-                    "channel_title": snippet.get("channelTitle", ""),
-                    "published_at": published_at,
-                    "thumbnail_url": thumbnail_url,
-                    "duration": self._parse_duration(content_details.get("duration", "")),
-                    "view_count": int(statistics.get("viewCount", 0)),
-                })
+                videos.append(
+                    {
+                        "video_id": item["id"],
+                        "title": snippet.get("title", ""),
+                        "description": snippet.get("description", "")[:500],
+                        "channel_id": snippet.get("channelId", ""),
+                        "channel_title": snippet.get("channelTitle", ""),
+                        "published_at": published_at,
+                        "thumbnail_url": thumbnail_url,
+                        "duration": self._parse_duration(
+                            content_details.get("duration", "")
+                        ),
+                        "view_count": int(statistics.get("viewCount", 0)),
+                    }
+                )
 
             return videos
 
@@ -380,9 +389,7 @@ class YouTubeKidsService:
         return None
 
     async def import_channel_content(
-        self,
-        channel_info: Dict[str, Any],
-        max_videos: int = 20
+        self, channel_info: Dict[str, Any], max_videos: int = 20
     ) -> Dict[str, Any]:
         """
         Import content from a single YouTube channel.
@@ -405,14 +412,20 @@ class YouTubeKidsService:
         try:
             videos = await self.get_channel_videos(channel_id, max_videos)
 
-            category_id = await self._ensure_category(channel_info.get("category_key", "educational"))
+            category_id = await self._ensure_category(
+                channel_info.get("category_key", "educational")
+            )
 
             for video in videos:
                 try:
                     # Check if video already exists
-                    existing = await Content.find_one({
-                        "stream_url": self._youtube_to_stream_url(video["video_id"]),
-                    })
+                    existing = await Content.find_one(
+                        {
+                            "stream_url": self._youtube_to_stream_url(
+                                video["video_id"]
+                            ),
+                        }
+                    )
                     if existing:
                         skipped += 1
                         continue
@@ -420,14 +433,18 @@ class YouTubeKidsService:
                     # Create content entry
                     content = Content(
                         title=video["title"],
-                        title_en=video["title"] if channel_info.get("language") == "en" else None,
+                        title_en=video["title"]
+                        if channel_info.get("language") == "en"
+                        else None,
                         description=video["description"],
                         category_id=category_id or "",
                         category_name=channel_info.get("category_key", "educational"),
                         director=video["channel_title"],
                         duration=video["duration"],
-                        thumbnail=video["thumbnail_url"] or self._youtube_to_thumbnail(video["video_id"]),
-                        backdrop=video["thumbnail_url"] or self._youtube_to_thumbnail(video["video_id"]),
+                        thumbnail=video["thumbnail_url"]
+                        or self._youtube_to_thumbnail(video["video_id"]),
+                        backdrop=video["thumbnail_url"]
+                        or self._youtube_to_thumbnail(video["video_id"]),
                         stream_url=self._youtube_to_stream_url(video["video_id"]),
                         content_type="vod",
                         view_count=video["view_count"],
@@ -496,21 +513,27 @@ class YouTubeKidsService:
                 custom_ids = json.loads(settings.KIDS_YOUTUBE_CHANNEL_IDS)
                 for channel_id in custom_ids:
                     # Check if not already in registry
-                    existing = [c for c in all_channels if c["channel_id"] == channel_id]
+                    existing = [
+                        c for c in all_channels if c["channel_id"] == channel_id
+                    ]
                     if not existing:
-                        all_channels.append({
-                            "channel_id": channel_id,
-                            "name": f"Custom Channel {channel_id}",
-                            "language": "en",
-                            "age_rating": 5,
-                            "category_key": "educational",
-                            "educational_tags": [],
-                        })
+                        all_channels.append(
+                            {
+                                "channel_id": channel_id,
+                                "name": f"Custom Channel {channel_id}",
+                                "language": "en",
+                                "age_rating": 5,
+                                "category_key": "educational",
+                                "educational_tags": [],
+                            }
+                        )
             except json.JSONDecodeError:
                 logger.warning("Invalid KIDS_YOUTUBE_CHANNEL_IDS JSON format")
 
         for channel_info in all_channels:
-            result = await self.import_channel_content(channel_info, max_videos_per_channel)
+            result = await self.import_channel_content(
+                channel_info, max_videos_per_channel
+            )
             channel_results.append(result)
 
             if "error" not in result:
@@ -575,14 +598,16 @@ class YouTubeKidsService:
                 snippet = item.get("snippet", {})
                 thumbnails = snippet.get("thumbnails", {})
 
-                videos.append({
-                    "video_id": item["id"]["videoId"],
-                    "title": snippet.get("title", ""),
-                    "description": snippet.get("description", "")[:300],
-                    "channel_title": snippet.get("channelTitle", ""),
-                    "thumbnail_url": thumbnails.get("high", {}).get("url", ""),
-                    "published_at": snippet.get("publishedAt", ""),
-                })
+                videos.append(
+                    {
+                        "video_id": item["id"]["videoId"],
+                        "title": snippet.get("title", ""),
+                        "description": snippet.get("description", "")[:300],
+                        "channel_title": snippet.get("channelTitle", ""),
+                        "thumbnail_url": thumbnails.get("high", {}).get("url", ""),
+                        "published_at": snippet.get("publishedAt", ""),
+                    }
+                )
 
             return videos
 

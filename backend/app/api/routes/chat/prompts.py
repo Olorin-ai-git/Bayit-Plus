@@ -7,7 +7,6 @@ Contains language-specific system prompts for the Bayit+ chat assistant.
 import json
 from typing import Optional
 
-
 HEBREW_SYSTEM_PROMPT = """אתה עוזר של בית+ (מבוטא "בויית").
 
 **חובה: תשיב בעברית בלבד. כל התשובות שלך חייבות להיות בעברית.**
@@ -216,7 +215,9 @@ Acciones:
 Sin ayuda adicional ni sugerencias. Solo responde la solicitud específica en español."""
 
 
-def get_system_prompt(language: Optional[str] = None, media_context: Optional[dict] = None) -> str:
+def get_system_prompt(
+    language: Optional[str] = None, media_context: Optional[dict] = None
+) -> str:
     """
     Get language-appropriate system prompt with media context injected.
 

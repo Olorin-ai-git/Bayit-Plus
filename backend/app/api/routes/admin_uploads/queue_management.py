@@ -8,8 +8,7 @@ import asyncio
 import logging
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-
+from app.api.routes.admin_uploads.dependencies import has_permission, job_to_response
 from app.models.admin import Permission
 from app.models.upload import (
     ContentType,
@@ -20,7 +19,7 @@ from app.models.upload import (
 )
 from app.models.user import User
 from app.services.upload_service import upload_service
-from app.api.routes.admin_uploads.dependencies import has_permission, job_to_response
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -233,7 +232,11 @@ async def get_upload_history(
             await UploadJob.find(
                 In(
                     UploadJob.status,
-                    [UploadStatus.COMPLETED, UploadStatus.FAILED, UploadStatus.CANCELLED],
+                    [
+                        UploadStatus.COMPLETED,
+                        UploadStatus.FAILED,
+                        UploadStatus.CANCELLED,
+                    ],
                 )
             )
             .sort("-completed_at")

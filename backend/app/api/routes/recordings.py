@@ -5,15 +5,15 @@ Endpoints for managing live stream recordings
 
 from datetime import datetime
 from typing import Optional
-from fastapi import APIRouter, HTTPException, status, Depends, Query
-from pydantic import BaseModel, Field
 
-from app.models.user import User
-from app.models.recording import RecordingSession, Recording, RecordingSchedule
-from app.models.content import LiveChannel
 from app.core.security import get_current_active_user
+from app.models.content import LiveChannel
+from app.models.recording import Recording, RecordingSchedule, RecordingSession
+from app.models.user import User
 from app.services.live_recording_service import live_recording_service
 from app.services.recording_quota_service import recording_quota_service
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, Field
 
 router = APIRouter()
 
@@ -90,13 +90,13 @@ class QuotaResponse(BaseModel):
 
 
 def get_current_premium_user(
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ) -> User:
     """Dependency to ensure user has premium access"""
     if not current_user.can_access_premium_features():
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Premium subscription required for recording feature"
+            detail="Premium subscription required for recording feature",
         )
     return current_user
 
@@ -104,7 +104,7 @@ def get_current_premium_user(
 @router.post("/start", response_model=RecordingSessionResponse)
 async def start_recording(
     request: StartRecordingRequest,
-    current_user: User = Depends(get_current_premium_user)
+    current_user: User = Depends(get_current_premium_user),
 ):
     """
     Start manual recording of live channel.
@@ -116,37 +116,31 @@ async def start_recording(
         channel = await LiveChannel.get(request.channel_id)
         if not channel:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Channel not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Channel not found"
             )
 
         if not channel.is_active:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Channel is not active"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Channel is not active"
             )
 
         # Check if user already has an active recording
         existing_session = await live_recording_service.get_active_session(
-            str(current_user.id),
-            request.channel_id
+            str(current_user.id), request.channel_id
         )
 
         if existing_session:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Recording already in progress on {existing_session.channel_name}"
+                detail=f"Recording already in progress on {existing_session.channel_name}",
             )
 
         # Check quota
-        quota_check = await recording_quota_service.check_quota(
-            str(current_user.id)
-        )
+        quota_check = await recording_quota_service.check_quota(str(current_user.id))
 
         if not quota_check["allowed"]:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=quota_check["reason"]
+                status_code=status.HTTP_400_BAD_REQUEST, detail=quota_check["reason"]
             )
 
         # Start recording
@@ -156,7 +150,7 @@ async def start_recording(
             stream_url=channel.stream_url,
             subtitle_enabled=request.subtitle_enabled,
             subtitle_target_language=request.subtitle_target_language,
-            trigger_type="manual"
+            trigger_type="manual",
         )
 
         return RecordingSessionResponse(
@@ -169,7 +163,7 @@ async def start_recording(
             duration_seconds=session.duration_seconds,
             file_size_bytes=session.file_size_bytes,
             subtitle_enabled=session.subtitle_enabled,
-            subtitle_target_language=session.subtitle_target_language
+            subtitle_target_language=session.subtitle_target_language,
         )
 
     except HTTPException:
@@ -177,14 +171,13 @@ async def start_recording(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to start recording: {str(e)}"
+            detail=f"Failed to start recording: {str(e)}",
         )
 
 
 @router.post("/{session_id}/stop", response_model=RecordingResponse)
 async def stop_recording(
-    session_id: str,
-    current_user: User = Depends(get_current_premium_user)
+    session_id: str, current_user: User = Depends(get_current_premium_user)
 ):
     """
     Stop active recording.
@@ -197,19 +190,18 @@ async def stop_recording(
         if not session:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Recording session not found"
+                detail="Recording session not found",
             )
 
         if session.user_id != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Not authorized to stop this recording"
+                detail="Not authorized to stop this recording",
             )
 
         # Stop recording
         recording = await live_recording_service.stop_recording(
-            session_id,
-            str(current_user.id)
+            session_id, str(current_user.id)
         )
 
         return RecordingResponse(
@@ -224,7 +216,7 @@ async def stop_recording(
             video_url=recording.video_url,
             subtitle_url=recording.subtitle_url,
             auto_delete_at=recording.auto_delete_at,
-            view_count=recording.view_count
+            view_count=recording.view_count,
         )
 
     except HTTPException:
@@ -232,7 +224,7 @@ async def stop_recording(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to stop recording: {str(e)}"
+            detail=f"Failed to stop recording: {str(e)}",
         )
 
 
@@ -240,7 +232,7 @@ async def stop_recording(
 async def list_recordings(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     List user's recordings with pagination.
@@ -250,14 +242,16 @@ async def list_recordings(
         skip = (page - 1) * page_size
 
         # Get total count
-        total = await Recording.find(
-            Recording.user_id == str(current_user.id)
-        ).count()
+        total = await Recording.find(Recording.user_id == str(current_user.id)).count()
 
         # Get recordings
-        recordings = await Recording.find(
-            Recording.user_id == str(current_user.id)
-        ).sort(-Recording.recorded_at).skip(skip).limit(page_size).to_list()
+        recordings = (
+            await Recording.find(Recording.user_id == str(current_user.id))
+            .sort(-Recording.recorded_at)
+            .skip(skip)
+            .limit(page_size)
+            .to_list()
+        )
 
         # Calculate total pages
         total_pages = (total + page_size - 1) // page_size
@@ -275,7 +269,7 @@ async def list_recordings(
                 video_url=r.video_url,
                 subtitle_url=r.subtitle_url,
                 auto_delete_at=r.auto_delete_at,
-                view_count=r.view_count
+                view_count=r.view_count,
             )
             for r in recordings
         ]
@@ -285,20 +279,19 @@ async def list_recordings(
             total=total,
             page=page,
             page_size=page_size,
-            total_pages=total_pages
+            total_pages=total_pages,
         )
 
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to list recordings: {str(e)}"
+            detail=f"Failed to list recordings: {str(e)}",
         )
 
 
 @router.get("/{recording_id}", response_model=RecordingResponse)
 async def get_recording(
-    recording_id: str,
-    current_user: User = Depends(get_current_active_user)
+    recording_id: str, current_user: User = Depends(get_current_active_user)
 ):
     """
     Get recording details.
@@ -309,15 +302,14 @@ async def get_recording(
         recording = await Recording.get(recording_id)
         if not recording:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Recording not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Recording not found"
             )
 
         # Verify ownership
         if recording.user_id != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Not authorized to access this recording"
+                detail="Not authorized to access this recording",
             )
 
         # Update view stats
@@ -337,7 +329,7 @@ async def get_recording(
             video_url=recording.video_url,
             subtitle_url=recording.subtitle_url,
             auto_delete_at=recording.auto_delete_at,
-            view_count=recording.view_count
+            view_count=recording.view_count,
         )
 
     except HTTPException:
@@ -345,14 +337,13 @@ async def get_recording(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get recording: {str(e)}"
+            detail=f"Failed to get recording: {str(e)}",
         )
 
 
 @router.delete("/{recording_id}")
 async def delete_recording(
-    recording_id: str,
-    current_user: User = Depends(get_current_active_user)
+    recording_id: str, current_user: User = Depends(get_current_active_user)
 ):
     """
     Delete recording and release quota.
@@ -361,25 +352,24 @@ async def delete_recording(
         recording = await Recording.get(recording_id)
         if not recording:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Recording not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Recording not found"
             )
 
         # Verify ownership
         if recording.user_id != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Not authorized to delete this recording"
+                detail="Not authorized to delete this recording",
             )
 
         # Release quota
         await recording_quota_service.release_quota(
-            recording.user_id,
-            recording.file_size_bytes
+            recording.user_id, recording.file_size_bytes
         )
 
         # Delete files from storage (local/S3/GCS)
         from app.core.storage import get_storage_provider
+
         storage = get_storage_provider()
 
         if recording.video_url:
@@ -397,21 +387,19 @@ async def delete_recording(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to delete recording: {str(e)}"
+            detail=f"Failed to delete recording: {str(e)}",
         )
 
 
 @router.get("/active/sessions", response_model=list[RecordingSessionResponse])
-async def get_active_recordings(
-    current_user: User = Depends(get_current_active_user)
-):
+async def get_active_recordings(current_user: User = Depends(get_current_active_user)):
     """
     Get user's active recording sessions.
     """
     try:
         sessions = await RecordingSession.find(
             RecordingSession.user_id == str(current_user.id),
-            RecordingSession.status == "recording"
+            RecordingSession.status == "recording",
         ).to_list()
 
         return [
@@ -425,7 +413,7 @@ async def get_active_recordings(
                 duration_seconds=s.duration_seconds,
                 file_size_bytes=s.file_size_bytes,
                 subtitle_enabled=s.subtitle_enabled,
-                subtitle_target_language=s.subtitle_target_language
+                subtitle_target_language=s.subtitle_target_language,
             )
             for s in sessions
         ]
@@ -433,14 +421,12 @@ async def get_active_recordings(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get active recordings: {str(e)}"
+            detail=f"Failed to get active recordings: {str(e)}",
         )
 
 
 @router.get("/quota/status", response_model=QuotaResponse)
-async def get_recording_quota(
-    current_user: User = Depends(get_current_active_user)
-):
+async def get_recording_quota(current_user: User = Depends(get_current_active_user)):
     """
     Get user's recording quota status.
     """
@@ -454,5 +440,5 @@ async def get_recording_quota(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get quota status: {str(e)}"
+            detail=f"Failed to get quota status: {str(e)}",
         )

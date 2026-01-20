@@ -2,8 +2,9 @@
 Migrate nested episode arrays to separate PodcastEpisode documents.
 """
 import asyncio
-from pymongo import MongoClient
 from datetime import datetime
+
+from pymongo import MongoClient
 
 
 async def migrate_episodes():
@@ -40,10 +41,7 @@ async def migrate_episodes():
             total_episodes += 1
 
         # Remove the episodes array from the podcast document
-        db.podcasts.update_one(
-            {"_id": podcast["_id"]},
-            {"$unset": {"episodes": ""}}
-        )
+        db.podcasts.update_one({"_id": podcast["_id"]}, {"$unset": {"episodes": ""}})
 
     print(f"\n✅ Successfully migrated {total_episodes} episodes!")
     print(f"   Episodes are now stored in separate podcast_episodes collection")

@@ -2,10 +2,11 @@
 AI Chapter Generator Service.
 Uses Claude AI to generate smart chapters for news broadcasts and long-form content.
 """
-from datetime import datetime
-from typing import List, Optional, Dict, Any, Union
-from dataclasses import dataclass, field
 import json
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Union
+
 import anthropic
 from app.core.config import settings
 
@@ -40,6 +41,7 @@ def parse_duration_to_seconds(duration: Union[str, int, float]) -> float:
 @dataclass
 class ChapterItem:
     """A single chapter in a video"""
+
     start_time: float  # seconds
     end_time: float  # seconds
     title: str  # Hebrew title
@@ -52,6 +54,7 @@ class ChapterItem:
 @dataclass
 class GeneratedChapters:
     """Result of chapter generation"""
+
     chapters: List[ChapterItem]
     content_id: str
     content_title: str
@@ -90,9 +93,13 @@ async def generate_chapters_from_title(
     duration_seconds = parse_duration_to_seconds(duration)
 
     if is_news:
-        return await _generate_news_chapters(content_id, content_title, duration_seconds, description)
+        return await _generate_news_chapters(
+            content_id, content_title, duration_seconds, description
+        )
     else:
-        return await _generate_general_chapters(content_id, content_title, duration_seconds, description)
+        return await _generate_general_chapters(
+            content_id, content_title, duration_seconds, description
+        )
 
 
 async def _generate_news_chapters(
@@ -138,9 +145,7 @@ async def _generate_news_chapters(
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=1500,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+            messages=[{"role": "user", "content": prompt}],
         )
 
         response_text = response.content[0].text.strip()
@@ -157,14 +162,16 @@ async def _generate_news_chapters(
 
         chapters = []
         for c in data.get("chapters", []):
-            chapters.append(ChapterItem(
-                start_time=float(c.get("start_time", 0)),
-                end_time=float(c.get("end_time", duration)),
-                title=c.get("title", ""),
-                title_en=c.get("title_en"),
-                category=c.get("category", "general"),
-                summary=c.get("summary"),
-            ))
+            chapters.append(
+                ChapterItem(
+                    start_time=float(c.get("start_time", 0)),
+                    end_time=float(c.get("end_time", duration)),
+                    title=c.get("title", ""),
+                    title_en=c.get("title_en"),
+                    category=c.get("category", "general"),
+                    summary=c.get("summary"),
+                )
+            )
 
         return GeneratedChapters(
             chapters=chapters,
@@ -276,9 +283,7 @@ async def _generate_general_chapters(
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=1000,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+            messages=[{"role": "user", "content": prompt}],
         )
 
         response_text = response.content[0].text.strip()
@@ -294,14 +299,16 @@ async def _generate_general_chapters(
 
         chapters = []
         for c in data.get("chapters", []):
-            chapters.append(ChapterItem(
-                start_time=float(c.get("start_time", 0)),
-                end_time=float(c.get("end_time", duration)),
-                title=c.get("title", ""),
-                title_en=c.get("title_en"),
-                category="general",
-                summary=c.get("summary"),
-            ))
+            chapters.append(
+                ChapterItem(
+                    start_time=float(c.get("start_time", 0)),
+                    end_time=float(c.get("end_time", duration)),
+                    title=c.get("title", ""),
+                    title_en=c.get("title_en"),
+                    category="general",
+                    summary=c.get("summary"),
+                )
+            )
 
         return GeneratedChapters(
             chapters=chapters,
@@ -380,9 +387,7 @@ async def generate_chapters_from_transcript(
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=2000,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+            messages=[{"role": "user", "content": prompt}],
         )
 
         response_text = response.content[0].text.strip()
@@ -398,15 +403,17 @@ async def generate_chapters_from_transcript(
 
         chapters = []
         for c in data.get("chapters", []):
-            chapters.append(ChapterItem(
-                start_time=float(c.get("start_time", 0)),
-                end_time=float(c.get("end_time", duration_seconds)),
-                title=c.get("title", ""),
-                title_en=c.get("title_en"),
-                category=c.get("category", "general"),
-                summary=c.get("summary"),
-                keywords=c.get("keywords", []),
-            ))
+            chapters.append(
+                ChapterItem(
+                    start_time=float(c.get("start_time", 0)),
+                    end_time=float(c.get("end_time", duration_seconds)),
+                    title=c.get("title", ""),
+                    title_en=c.get("title_en"),
+                    category=c.get("category", "general"),
+                    summary=c.get("summary"),
+                    keywords=c.get("keywords", []),
+                )
+            )
 
         return GeneratedChapters(
             chapters=chapters,
@@ -437,7 +444,9 @@ def chapters_to_dict(gen_chapters: GeneratedChapters) -> Dict[str, Any]:
                 "title": c.title,
                 "title_en": c.title_en,
                 "category": c.category,
-                "category_info": CHAPTER_CATEGORIES.get(c.category, CHAPTER_CATEGORIES["general"]),
+                "category_info": CHAPTER_CATEGORIES.get(
+                    c.category, CHAPTER_CATEGORIES["general"]
+                ),
                 "summary": c.summary,
                 "keywords": c.keywords,
                 "formatted_start": _format_time(c.start_time),

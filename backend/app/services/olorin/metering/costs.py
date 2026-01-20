@@ -30,7 +30,9 @@ def calculate_dubbing_cost(
     """
     metering = _get_metering_config()
     stt_cost = audio_seconds * metering.cost_per_audio_second_stt
-    translation_cost = (characters_translated / 1000) * metering.cost_per_1k_translation_chars
+    translation_cost = (
+        characters_translated / 1000
+    ) * metering.cost_per_1k_translation_chars
     tts_cost = (characters_synthesized / 1000) * metering.cost_per_audio_second_tts * 10
     return stt_cost + translation_cost + tts_cost
 

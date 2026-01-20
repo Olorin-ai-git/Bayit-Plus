@@ -4,13 +4,13 @@ Provides overview statistics and recent activity.
 """
 
 from datetime import datetime, timedelta
+
+from app.models.admin import AuditLog, Transaction, TransactionStatus
+from app.models.user import User
 from fastapi import APIRouter, Depends, Query
 
-from app.models.user import User
-from app.models.admin import Transaction, TransactionStatus, AuditLog
 from .auth import require_admin
 from .models import DashboardStats
-
 
 router = APIRouter()
 
@@ -36,13 +36,15 @@ async def get_dashboard_stats(current_user: User = Depends(require_admin())):
     # Revenue stats from transactions
     today_txns = await Transaction.find(
         Transaction.created_at >= today_start,
-        Transaction.status == TransactionStatus.COMPLETED
+        Transaction.status == TransactionStatus.COMPLETED,
     ).to_list()
     month_txns = await Transaction.find(
         Transaction.created_at >= month_start,
+        Transaction.status == TransactionStatus.COMPLETED,
+    ).to_list()
+    all_txns = await Transaction.find(
         Transaction.status == TransactionStatus.COMPLETED
     ).to_list()
-    all_txns = await Transaction.find(Transaction.status == TransactionStatus.COMPLETED).to_list()
 
     revenue_today = sum(t.amount for t in today_txns)
     revenue_month = sum(t.amount for t in month_txns)
@@ -52,7 +54,7 @@ async def get_dashboard_stats(current_user: User = Depends(require_admin())):
     # Churn rate (users who canceled in last 30 days / active users)
     canceled_30d = await User.find(
         User.subscription_status == "canceled",
-        User.updated_at >= now - timedelta(days=30)
+        User.updated_at >= now - timedelta(days=30),
     ).count()
     churn = (canceled_30d / active_subs * 100) if active_subs > 0 else 0
 
@@ -74,8 +76,7 @@ async def get_dashboard_stats(current_user: User = Depends(require_admin())):
 
 @router.get("/dashboard/activity")
 async def get_recent_activity(
-    limit: int = Query(default=10, le=50),
-    current_user: User = Depends(require_admin())
+    limit: int = Query(default=10, le=50), current_user: User = Depends(require_admin())
 ):
     """Get recent audit log activity."""
     logs = await AuditLog.find().sort(-AuditLog.created_at).limit(limit).to_list()

@@ -5,17 +5,17 @@ Performs vector and text search across content.
 """
 
 import logging
-from typing import Optional, List
+from typing import List, Optional
 
 from app.models.content_embedding import (
-    SemanticSearchResult,
-    SearchQuery,
     DialogueSearchQuery,
+    SearchQuery,
+    SemanticSearchResult,
 )
+from app.services.olorin.content_metadata_service import content_metadata_service
 from app.services.olorin.search.client import client_manager
 from app.services.olorin.search.embedding import generate_embedding
 from app.services.olorin.search.helpers import format_timestamp
-from app.services.olorin.content_metadata_service import content_metadata_service
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +87,9 @@ async def semantic_search(
 
             # Batch load all content documents
             content_ids_to_fetch = [m[0] for m in matches_to_process if m[0]]
-            contents_map = await content_metadata_service.get_contents_batch(content_ids_to_fetch)
+            contents_map = await content_metadata_service.get_contents_batch(
+                content_ids_to_fetch
+            )
 
             # Build results using cached content data
             for content_id, match, metadata in matches_to_process:
@@ -185,14 +187,18 @@ async def dialogue_search(
                     content_ids_to_fetch.add(content_id)
 
             # Batch load all content documents
-            contents_map = await content_metadata_service.get_contents_batch(list(content_ids_to_fetch))
+            contents_map = await content_metadata_service.get_contents_batch(
+                list(content_ids_to_fetch)
+            )
 
             # Build results using cached content data
             for content_id, match, metadata in matches_to_process:
                 content = contents_map.get(content_id) if content_id else None
 
                 timestamp_seconds = metadata.get("start_time")
-                timestamp_formatted = format_timestamp(timestamp_seconds) if timestamp_seconds else None
+                timestamp_formatted = (
+                    format_timestamp(timestamp_seconds) if timestamp_seconds else None
+                )
 
                 results.append(
                     SemanticSearchResult(

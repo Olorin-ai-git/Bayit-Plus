@@ -5,15 +5,21 @@ Helper functions for media context building, Hebronics processing,
 JSON extraction, content name extraction, and text processing.
 """
 
-import re
-import json
-import time
 import difflib
+import json
+import re
+import time
 from typing import Optional
-import anthropic
 
+import anthropic
 from app.core.config import settings
-from app.models.content import Content, LiveChannel, Podcast, PodcastEpisode, RadioStation
+from app.models.content import (
+    Content,
+    LiveChannel,
+    Podcast,
+    PodcastEpisode,
+    RadioStation,
+)
 
 # Initialize Anthropic client
 client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
@@ -35,47 +41,36 @@ async def build_media_context() -> dict:
     current_time = time.time()
 
     # Return cached context if fresh
-    if _media_context_cache and (current_time - _media_context_cache_ts) < MEDIA_CONTEXT_CACHE_TTL:
+    if (
+        _media_context_cache
+        and (current_time - _media_context_cache_ts) < MEDIA_CONTEXT_CACHE_TTL
+    ):
         return _media_context_cache
 
     try:
-        channels = await LiveChannel.find(
-            LiveChannel.is_active == True
-        ).limit(5).to_list()
+        channels = (
+            await LiveChannel.find(LiveChannel.is_active == True).limit(5).to_list()
+        )
 
-        podcasts = await Podcast.find(
-            Podcast.is_active == True
-        ).limit(5).to_list()
+        podcasts = await Podcast.find(Podcast.is_active == True).limit(5).to_list()
 
-        total_channels = await LiveChannel.find(
-            LiveChannel.is_active == True
-        ).count()
+        total_channels = await LiveChannel.find(LiveChannel.is_active == True).count()
 
-        total_podcasts = await Podcast.find(
-            Podcast.is_active == True
-        ).count()
+        total_podcasts = await Podcast.find(Podcast.is_active == True).count()
 
-        total_content = await Content.find(
-            Content.is_published == True
-        ).count()
+        total_content = await Content.find(Content.is_published == True).count()
 
         categories = await Content.distinct("category_name", {"is_published": True})
 
         context = {
-            "channels": [
-                {"name": ch.name, "id": str(ch.id)}
-                for ch in channels
-            ],
-            "podcasts": [
-                {"title": p.title, "id": str(p.id)}
-                for p in podcasts
-            ],
+            "channels": [{"name": ch.name, "id": str(ch.id)} for ch in channels],
+            "podcasts": [{"title": p.title, "id": str(p.id)} for p in podcasts],
             "summary": {
                 "total_channels": total_channels,
                 "total_podcasts": total_podcasts,
                 "total_content_items": total_content,
-                "categories": categories or []
-            }
+                "categories": categories or [],
+            },
         }
 
         _media_context_cache = context
@@ -92,8 +87,8 @@ async def build_media_context() -> dict:
                 "total_channels": 0,
                 "total_podcasts": 0,
                 "total_content_items": 0,
-                "categories": []
-            }
+                "categories": [],
+            },
         }
 
 
@@ -128,7 +123,7 @@ async def process_hebronics_input(text: str) -> dict:
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=300,
-            messages=[{"role": "user", "content": prompt}]
+            messages=[{"role": "user", "content": prompt}],
         )
 
         response_text = response.content[0].text.strip()
@@ -153,7 +148,7 @@ async def process_hebronics_input(text: str) -> dict:
             "keywords": text.split(),
             "content_type": "any",
             "genre": None,
-            "english_terms": []
+            "english_terms": [],
         }
 
 
@@ -170,25 +165,25 @@ def extract_json_from_response(text: str) -> tuple[str, Optional[dict]]:
     json_data = None
 
     # Try XML format first: <action>{...}</action>
-    xml_pattern = r'<action>\s*\n(\{[^}]+\})\s*\n</action>'
+    xml_pattern = r"<action>\s*\n(\{[^}]+\})\s*\n</action>"
     match = re.search(xml_pattern, text, re.DOTALL)
     if match:
         try:
             json_str = match.group(1)
             json_data = json.loads(json_str)
-            text = re.sub(xml_pattern, '', text, flags=re.DOTALL).strip()
+            text = re.sub(xml_pattern, "", text, flags=re.DOTALL).strip()
             return text, json_data
         except json.JSONDecodeError:
             pass
 
     # Try JSON code blocks: ```json\n{...}\n```
-    json_pattern = r'```(?:json)?\s*\n(\{[^}]+\})\n```'
+    json_pattern = r"```(?:json)?\s*\n(\{[^}]+\})\n```"
     match = re.search(json_pattern, text, re.DOTALL)
     if match:
         try:
             json_str = match.group(1)
             json_data = json.loads(json_str)
-            text = re.sub(json_pattern, '', text, flags=re.DOTALL).strip()
+            text = re.sub(json_pattern, "", text, flags=re.DOTALL).strip()
             return text, json_data
         except json.JSONDecodeError:
             pass
@@ -222,7 +217,7 @@ Content name:"""
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=50,
-            messages=[{"role": "user", "content": prompt}]
+            messages=[{"role": "user", "content": prompt}],
         )
 
         return response.content[0].text.strip()
@@ -239,25 +234,25 @@ def strip_markdown(text: str) -> str:
         return text
 
     # Remove JSON code blocks
-    text = re.sub(r'```(?:json)?\s*\n\{[^}]+\}\n```', '', text, flags=re.DOTALL)
+    text = re.sub(r"```(?:json)?\s*\n\{[^}]+\}\n```", "", text, flags=re.DOTALL)
 
     # Remove any remaining code blocks
-    text = re.sub(r'`{3}[^`]*`{3}', '', text, flags=re.DOTALL)
-    text = re.sub(r'`(.+?)`', r'\1', text)
+    text = re.sub(r"`{3}[^`]*`{3}", "", text, flags=re.DOTALL)
+    text = re.sub(r"`(.+?)`", r"\1", text)
 
     # Remove bold
-    text = re.sub(r'\*\*(.+?)\*\*', r'\1', text)
-    text = re.sub(r'__(.+?)__', r'\1', text)
+    text = re.sub(r"\*\*(.+?)\*\*", r"\1", text)
+    text = re.sub(r"__(.+?)__", r"\1", text)
 
     # Remove italic
-    text = re.sub(r'\*(.+?)\*', r'\1', text)
-    text = re.sub(r'_(.+?)_', r'\1', text)
+    text = re.sub(r"\*(.+?)\*", r"\1", text)
+    text = re.sub(r"_(.+?)_", r"\1", text)
 
     # Remove markdown links
-    text = re.sub(r'\[(.+?)\]\(.+?\)', r'\1', text)
+    text = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", text)
 
     # Remove HTML comments
-    text = re.sub(r'<!--.*?-->', '', text, flags=re.DOTALL)
+    text = re.sub(r"<!--.*?-->", "", text, flags=re.DOTALL)
 
     return text.strip()
 

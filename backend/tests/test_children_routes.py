@@ -15,32 +15,32 @@ Tests cover:
 - POST /verify-parent-pin - Verify parent PIN
 """
 
-import pytest
-import pytest_asyncio
 from datetime import datetime
 from typing import Optional
 from unittest.mock import AsyncMock, MagicMock, patch
-from httpx import AsyncClient, ASGITransport
-from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
 
+import pytest
+import pytest_asyncio
+from app.core.config import settings
+from app.core.security import create_access_token, get_password_hash
 from app.main import app
-from app.models.user import User
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection, SectionSubcategory
 from app.models.kids_content import (
+    KidsAgeGroup,
+    KidsAgeGroupsResponse,
     KidsContentAggregatedResponse,
     KidsFeaturedResponse,
     KidsSubcategoriesResponse,
-    KidsAgeGroupsResponse,
     KidsSubcategory,
-    KidsAgeGroup,
 )
-from app.core.config import settings
-from app.core.security import create_access_token, get_password_hash
-
+from app.models.user import User
+from beanie import init_beanie
+from httpx import ASGITransport, AsyncClient
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # Test Fixtures
+
 
 @pytest_asyncio.fixture
 async def db_client():
@@ -48,7 +48,7 @@ async def db_client():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     await init_beanie(
         database=client[f"{settings.MONGODB_DB_NAME}_test_routes"],
-        document_models=[Content, ContentSection, SectionSubcategory, User]
+        document_models=[Content, ContentSection, SectionSubcategory, User],
     )
     yield client
     # Cleanup
@@ -210,6 +210,7 @@ async def async_client():
 
 # Categories Endpoint Tests
 
+
 @pytest.mark.asyncio
 async def test_get_categories_success(async_client, db_client, sample_kids_content):
     """Test GET /categories returns categories list."""
@@ -232,6 +233,7 @@ async def test_get_categories_no_auth_required(async_client, db_client):
 
 # Content Endpoint Tests
 
+
 @pytest.mark.asyncio
 async def test_get_content_success(async_client, db_client, sample_kids_content):
     """Test GET /content returns kids content."""
@@ -245,7 +247,9 @@ async def test_get_content_success(async_client, db_client, sample_kids_content)
 
 
 @pytest.mark.asyncio
-async def test_get_content_with_age_filter(async_client, db_client, sample_kids_content):
+async def test_get_content_with_age_filter(
+    async_client, db_client, sample_kids_content
+):
     """Test GET /content with age_max filter."""
     response = await async_client.get("/api/v1/children/content?age_max=5")
 
@@ -255,7 +259,9 @@ async def test_get_content_with_age_filter(async_client, db_client, sample_kids_
 
 
 @pytest.mark.asyncio
-async def test_get_content_with_pagination(async_client, db_client, sample_kids_content):
+async def test_get_content_with_pagination(
+    async_client, db_client, sample_kids_content
+):
     """Test GET /content with pagination parameters."""
     response = await async_client.get("/api/v1/children/content?page=1&limit=10")
 
@@ -279,6 +285,7 @@ async def test_get_content_pagination_validation(async_client, db_client):
 
 # Featured Endpoint Tests
 
+
 @pytest.mark.asyncio
 async def test_get_featured_success(async_client, db_client, sample_kids_content):
     """Test GET /featured returns featured content."""
@@ -291,7 +298,9 @@ async def test_get_featured_success(async_client, db_client, sample_kids_content
 
 
 @pytest.mark.asyncio
-async def test_get_featured_with_age_filter(async_client, db_client, sample_kids_content):
+async def test_get_featured_with_age_filter(
+    async_client, db_client, sample_kids_content
+):
     """Test GET /featured with age_max filter."""
     response = await async_client.get("/api/v1/children/featured?age_max=5")
 
@@ -301,6 +310,7 @@ async def test_get_featured_with_age_filter(async_client, db_client, sample_kids
 
 
 # Subcategories Endpoint Tests
+
 
 @pytest.mark.asyncio
 async def test_get_subcategories_success(async_client, db_client, kids_subcategories):
@@ -328,6 +338,7 @@ async def test_get_subcategories_structure(async_client, db_client, kids_subcate
 
 
 # Subcategory Content Endpoint Tests
+
 
 @pytest.mark.asyncio
 async def test_get_content_by_subcategory_success(
@@ -370,6 +381,7 @@ async def test_get_content_by_invalid_subcategory(async_client, db_client):
 
 # Age Groups Endpoint Tests
 
+
 @pytest.mark.asyncio
 async def test_get_age_groups_success(async_client, db_client):
     """Test GET /age-groups returns age groups list."""
@@ -398,8 +410,11 @@ async def test_get_age_groups_structure(async_client, db_client):
 
 # Age Group Content Endpoint Tests
 
+
 @pytest.mark.asyncio
-async def test_get_content_by_age_group_success(async_client, db_client, sample_kids_content):
+async def test_get_content_by_age_group_success(
+    async_client, db_client, sample_kids_content
+):
     """Test GET /age-group/{group} returns filtered content."""
     response = await async_client.get("/api/v1/children/age-group/toddlers")
 
@@ -410,7 +425,9 @@ async def test_get_content_by_age_group_success(async_client, db_client, sample_
 
 
 @pytest.mark.asyncio
-async def test_get_content_by_age_group_preschool(async_client, db_client, sample_kids_content):
+async def test_get_content_by_age_group_preschool(
+    async_client, db_client, sample_kids_content
+):
     """Test GET /age-group/preschool returns appropriate content."""
     response = await async_client.get("/api/v1/children/age-group/preschool")
 
@@ -420,9 +437,13 @@ async def test_get_content_by_age_group_preschool(async_client, db_client, sampl
 
 
 @pytest.mark.asyncio
-async def test_get_content_by_age_group_with_pagination(async_client, db_client, sample_kids_content):
+async def test_get_content_by_age_group_with_pagination(
+    async_client, db_client, sample_kids_content
+):
     """Test GET /age-group/{group} with pagination."""
-    response = await async_client.get("/api/v1/children/age-group/elementary?page=1&limit=5")
+    response = await async_client.get(
+        "/api/v1/children/age-group/elementary?page=1&limit=5"
+    )
 
     assert response.status_code == 200
     data = response.json()
@@ -431,6 +452,7 @@ async def test_get_content_by_age_group_with_pagination(async_client, db_client,
 
 
 # Admin Refresh Endpoint Tests
+
 
 @pytest.mark.asyncio
 async def test_admin_refresh_requires_auth(async_client, db_client):
@@ -445,7 +467,7 @@ async def test_admin_refresh_requires_admin(async_client, db_client, user_token)
     """Test POST /admin/refresh requires admin role."""
     response = await async_client.post(
         "/api/v1/children/admin/refresh",
-        headers={"Authorization": f"Bearer {user_token}"}
+        headers={"Authorization": f"Bearer {user_token}"},
     )
 
     assert response.status_code == 403  # Forbidden
@@ -456,7 +478,7 @@ async def test_admin_refresh_success(async_client, db_client, admin_token):
     """Test POST /admin/refresh succeeds for admin."""
     response = await async_client.post(
         "/api/v1/children/admin/refresh",
-        headers={"Authorization": f"Bearer {admin_token}"}
+        headers={"Authorization": f"Bearer {admin_token}"},
     )
 
     assert response.status_code == 200
@@ -467,24 +489,26 @@ async def test_admin_refresh_success(async_client, db_client, admin_token):
 
 # Parental Controls Endpoint Tests
 
+
 @pytest.mark.asyncio
 async def test_parental_controls_requires_auth(async_client, db_client):
     """Test POST /parental-controls requires authentication."""
     response = await async_client.post(
-        "/api/v1/children/parental-controls",
-        json={"kids_pin": "1234"}
+        "/api/v1/children/parental-controls", json={"kids_pin": "1234"}
     )
 
     assert response.status_code == 401
 
 
 @pytest.mark.asyncio
-async def test_parental_controls_set_pin(async_client, db_client, test_user, user_token):
+async def test_parental_controls_set_pin(
+    async_client, db_client, test_user, user_token
+):
     """Test POST /parental-controls sets PIN."""
     response = await async_client.post(
         "/api/v1/children/parental-controls",
         headers={"Authorization": f"Bearer {user_token}"},
-        json={"kids_pin": "1234"}
+        json={"kids_pin": "1234"},
     )
 
     assert response.status_code == 200
@@ -493,12 +517,14 @@ async def test_parental_controls_set_pin(async_client, db_client, test_user, use
 
 
 @pytest.mark.asyncio
-async def test_parental_controls_set_age_limit(async_client, db_client, test_user, user_token):
+async def test_parental_controls_set_age_limit(
+    async_client, db_client, test_user, user_token
+):
     """Test POST /parental-controls sets age limit."""
     response = await async_client.post(
         "/api/v1/children/parental-controls",
         headers={"Authorization": f"Bearer {user_token}"},
-        json={"default_age_limit": 8}
+        json={"default_age_limit": 8},
     )
 
     assert response.status_code == 200
@@ -507,12 +533,14 @@ async def test_parental_controls_set_age_limit(async_client, db_client, test_use
 
 
 @pytest.mark.asyncio
-async def test_parental_controls_set_both(async_client, db_client, test_user, user_token):
+async def test_parental_controls_set_both(
+    async_client, db_client, test_user, user_token
+):
     """Test POST /parental-controls sets both PIN and age limit."""
     response = await async_client.post(
         "/api/v1/children/parental-controls",
         headers={"Authorization": f"Bearer {user_token}"},
-        json={"kids_pin": "5678", "default_age_limit": 10}
+        json={"kids_pin": "5678", "default_age_limit": 10},
     )
 
     assert response.status_code == 200
@@ -520,12 +548,12 @@ async def test_parental_controls_set_both(async_client, db_client, test_user, us
 
 # Verify Parent PIN Endpoint Tests
 
+
 @pytest.mark.asyncio
 async def test_verify_pin_requires_auth(async_client, db_client):
     """Test POST /verify-parent-pin requires authentication."""
     response = await async_client.post(
-        "/api/v1/children/verify-parent-pin",
-        params={"pin": "1234"}
+        "/api/v1/children/verify-parent-pin", params={"pin": "1234"}
     )
 
     assert response.status_code == 401
@@ -537,7 +565,7 @@ async def test_verify_pin_no_pin_set(async_client, db_client, test_user, user_to
     response = await async_client.post(
         "/api/v1/children/verify-parent-pin",
         headers={"Authorization": f"Bearer {user_token}"},
-        params={"pin": "1234"}
+        params={"pin": "1234"},
     )
 
     assert response.status_code == 400
@@ -551,7 +579,7 @@ async def test_verify_pin_correct(async_client, db_client, user_with_pin, parent
     response = await async_client.post(
         "/api/v1/children/verify-parent-pin",
         headers={"Authorization": f"Bearer {parent_token}"},
-        params={"pin": "1234"}
+        params={"pin": "1234"},
     )
 
     assert response.status_code == 200
@@ -560,12 +588,14 @@ async def test_verify_pin_correct(async_client, db_client, user_with_pin, parent
 
 
 @pytest.mark.asyncio
-async def test_verify_pin_incorrect(async_client, db_client, user_with_pin, parent_token):
+async def test_verify_pin_incorrect(
+    async_client, db_client, user_with_pin, parent_token
+):
     """Test POST /verify-parent-pin fails with incorrect PIN."""
     response = await async_client.post(
         "/api/v1/children/verify-parent-pin",
         headers={"Authorization": f"Bearer {parent_token}"},
-        params={"pin": "9999"}
+        params={"pin": "9999"},
     )
 
     assert response.status_code == 401
@@ -574,6 +604,7 @@ async def test_verify_pin_incorrect(async_client, db_client, user_with_pin, pare
 
 
 # By Category Endpoint Tests
+
 
 @pytest.mark.asyncio
 async def test_get_by_category_requires_auth(async_client, db_client):
@@ -590,7 +621,7 @@ async def test_get_by_category_success(
     """Test GET /by-category/{category_id} returns filtered content."""
     response = await async_client.get(
         "/api/v1/children/by-category/educational",
-        headers={"Authorization": f"Bearer {user_token}"}
+        headers={"Authorization": f"Bearer {user_token}"},
     )
 
     assert response.status_code == 200
@@ -605,7 +636,7 @@ async def test_get_by_category_with_filters(
     """Test GET /by-category/{category_id} with filters."""
     response = await async_client.get(
         "/api/v1/children/by-category/music?age_max=5&page=1&limit=10",
-        headers={"Authorization": f"Bearer {user_token}"}
+        headers={"Authorization": f"Bearer {user_token}"},
     )
 
     assert response.status_code == 200
@@ -614,6 +645,7 @@ async def test_get_by_category_with_filters(
 
 
 # Edge Cases
+
 
 @pytest.mark.asyncio
 async def test_empty_database_content(async_client, db_client):

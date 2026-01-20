@@ -293,6 +293,18 @@ export const PlayerScreenMobile: React.FC = () => {
             allowsInlineMediaPlayback
             mediaPlaybackRequiresUserAction={false}
             javaScriptEnabled
+            // Security configuration
+            originWhitelist={['https://', 'youtube.com', 'www.youtube.com']}
+            mixedContentMode="never"
+            allowsFullscreenVideo={true}
+            scalesPageToFit={true}
+            userAgent={`BayitPlus-iOS/${Platform.Version}`}
+            // Disable geolocation access
+            geolocationEnabled={false}
+            // Disable third-party cookies
+            thirdPartyCookiesEnabled={false}
+            // Disable caching for sensitive data
+            cacheEnabled={false}
           />
         ) : (
           <Video

@@ -19,21 +19,20 @@ Usage:
     poetry run python scripts/cleanup_old_olorin_collections.py --execute
 """
 
-import asyncio
 import argparse
+import asyncio
 import logging
 from typing import List
+
 from motor.motor_asyncio import AsyncIOMotorClient
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 from app.core.config import settings
-
 
 # Olorin collections to remove
 OLORIN_COLLECTIONS: List[str] = [
@@ -84,7 +83,9 @@ async def cleanup_collections(dry_run: bool = True) -> bool:
 
     if not dry_run:
         logger.warning("")
-        logger.warning("⚠️  WARNING: This will PERMANENTLY DELETE the following collections:")
+        logger.warning(
+            "⚠️  WARNING: This will PERMANENTLY DELETE the following collections:"
+        )
         for collection in OLORIN_COLLECTIONS:
             logger.warning(f"   - {collection}")
         logger.warning("")
@@ -106,7 +107,7 @@ async def cleanup_collections(dry_run: bool = True) -> bool:
 
     try:
         # Verify connection
-        await client.admin.command('ping')
+        await client.admin.command("ping")
         logger.info("✓ Database connection established")
         logger.info("")
 
@@ -135,8 +136,7 @@ async def cleanup_collections(dry_run: bool = True) -> bool:
                 await collection.drop()
                 total_deleted += count
                 logger.info(
-                    f"✓ {collection_name:30s} | "
-                    f"Deleted {count:6d} documents"
+                    f"✓ {collection_name:30s} | " f"Deleted {count:6d} documents"
                 )
 
         logger.info("")
@@ -146,7 +146,9 @@ async def cleanup_collections(dry_run: bool = True) -> bool:
             logger.info("✓ Dry-run completed successfully")
             logger.info("")
             logger.info("To execute cleanup, run:")
-            logger.info("  poetry run python scripts/cleanup_old_olorin_collections.py --execute")
+            logger.info(
+                "  poetry run python scripts/cleanup_old_olorin_collections.py --execute"
+            )
         else:
             logger.info(f"✓ Cleanup completed - {total_deleted} documents deleted")
             logger.info("")
@@ -158,6 +160,7 @@ async def cleanup_collections(dry_run: bool = True) -> bool:
     except Exception as e:
         logger.error(f"❌ Cleanup failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -174,14 +177,10 @@ def main():
     )
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Preview cleanup without deleting data"
+        "--dry-run", action="store_true", help="Preview cleanup without deleting data"
     )
     group.add_argument(
-        "--execute",
-        action="store_true",
-        help="Execute cleanup and delete collections"
+        "--execute", action="store_true", help="Execute cleanup and delete collections"
     )
 
     args = parser.parse_args()

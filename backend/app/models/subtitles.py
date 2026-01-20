@@ -3,14 +3,16 @@ Subtitle Models.
 Stores subtitle tracks and translation cache.
 """
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
-from pymongo import IndexModel, TEXT
+from pymongo import TEXT, IndexModel
 
 
 class SubtitleCueModel(BaseModel):
     """A single subtitle cue"""
+
     index: int
     start_time: float  # seconds
     end_time: float  # seconds
@@ -23,6 +25,7 @@ class SubtitleTrackDoc(Document):
     Stores subtitle track for content.
     Supports multiple languages per content.
     """
+
     content_id: str
     content_type: str = "vod"  # vod, live
     language: str = "he"  # he, en, ar, ru
@@ -68,9 +71,7 @@ class SubtitleTrackDoc(Document):
 
     @classmethod
     async def get_for_content(
-        cls,
-        content_id: str,
-        language: Optional[str] = None
+        cls, content_id: str, language: Optional[str] = None
     ) -> List["SubtitleTrackDoc"]:
         """Get all subtitle tracks for content"""
         query = cls.find(cls.content_id == content_id)
@@ -82,18 +83,12 @@ class SubtitleTrackDoc(Document):
     async def get_default_track(cls, content_id: str) -> Optional["SubtitleTrackDoc"]:
         """Get default subtitle track for content"""
         # Try to find explicitly marked default
-        track = await cls.find_one(
-            cls.content_id == content_id,
-            cls.is_default == True
-        )
+        track = await cls.find_one(cls.content_id == content_id, cls.is_default == True)
         if track:
             return track
 
         # Fall back to Hebrew
-        return await cls.find_one(
-            cls.content_id == content_id,
-            cls.language == "he"
-        )
+        return await cls.find_one(cls.content_id == content_id, cls.language == "he")
 
 
 class TranslationCacheDoc(Document):
@@ -101,6 +96,7 @@ class TranslationCacheDoc(Document):
     Caches word translations for faster lookup.
     Used by tap-to-translate feature.
     """
+
     word: str
     source_lang: str = "he"
     target_lang: str = "en"
@@ -126,16 +122,13 @@ class TranslationCacheDoc(Document):
 
     @classmethod
     async def get_translation(
-        cls,
-        word: str,
-        source_lang: str = "he",
-        target_lang: str = "en"
+        cls, word: str, source_lang: str = "he", target_lang: str = "en"
     ) -> Optional["TranslationCacheDoc"]:
         """Get cached translation"""
         doc = await cls.find_one(
             cls.word == word,
             cls.source_lang == source_lang,
-            cls.target_lang == target_lang
+            cls.target_lang == target_lang,
         )
         if doc:
             doc.lookup_count += 1
@@ -150,13 +143,13 @@ class TranslationCacheDoc(Document):
         translation: str,
         source_lang: str = "he",
         target_lang: str = "en",
-        **kwargs
+        **kwargs,
     ) -> "TranslationCacheDoc":
         """Cache a translation"""
         existing = await cls.find_one(
             cls.word == word,
             cls.source_lang == source_lang,
-            cls.target_lang == target_lang
+            cls.target_lang == target_lang,
         )
 
         if existing:
@@ -172,7 +165,7 @@ class TranslationCacheDoc(Document):
             translation=translation,
             source_lang=source_lang,
             target_lang=target_lang,
-            **kwargs
+            **kwargs,
         )
         await doc.insert()
         return doc
@@ -183,6 +176,7 @@ class SubtitleSearchCacheDoc(Document):
     Cache for subtitle search results to minimize API calls.
     Stores search results from OpenSubtitles and TMDB.
     """
+
     content_id: str
     imdb_id: Optional[str] = None
     tmdb_id: Optional[int] = None
@@ -204,21 +198,21 @@ class SubtitleSearchCacheDoc(Document):
         indexes = [
             [("content_id", 1), ("language", 1)],
             [("imdb_id", 1), ("language", 1)],
-            "expires_at"  # For TTL cleanup
+            "expires_at",  # For TTL cleanup
         ]
 
     @classmethod
     async def get_cached_search(
-        cls,
-        content_id: str,
-        language: str
+        cls, content_id: str, language: str
     ) -> Optional["SubtitleSearchCacheDoc"]:
         """Get cached search result if not expired"""
-        cache = await cls.find_one({
-            "content_id": content_id,
-            "language": language,
-            "expires_at": {"$gt": datetime.utcnow()}
-        })
+        cache = await cls.find_one(
+            {
+                "content_id": content_id,
+                "language": language,
+                "expires_at": {"$gt": datetime.utcnow()},
+            }
+        )
         if cache:
             cache.hit_count += 1
             await cache.save()
@@ -230,6 +224,7 @@ class SubtitleQuotaTrackerDoc(Document):
     Track OpenSubtitles API usage to respect daily limits.
     One document per day.
     """
+
     date: str  # Format: "YYYY-MM-DD" for daily tracking
     downloads_used: int = 0
     searches_performed: int = 0
@@ -256,6 +251,7 @@ class SubtitleQuotaTrackerDoc(Document):
 # API Response Models
 class SubtitleCueResponse(BaseModel):
     """API response for a subtitle cue"""
+
     index: int
     start_time: float
     end_time: float
@@ -271,6 +267,7 @@ class SubtitleCueResponse(BaseModel):
 
 class SubtitleTrackResponse(BaseModel):
     """API response for subtitle track metadata"""
+
     id: str
     content_id: str
     language: str
@@ -286,6 +283,7 @@ class SubtitleTrackResponse(BaseModel):
 
 class TranslationResponse(BaseModel):
     """API response for word translation"""
+
     word: str
     translation: str
     transliteration: Optional[str] = None

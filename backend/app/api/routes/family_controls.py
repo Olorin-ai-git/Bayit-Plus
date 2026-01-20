@@ -4,27 +4,34 @@ Family Controls API Routes.
 Unified parental control endpoints for kids and youngsters content.
 """
 from typing import Optional
-from fastapi import APIRouter, HTTPException, status, Depends
-from pydantic import BaseModel, Field
 
-from app.models.user import User
-from app.models.family_controls import FamilyControls
-from app.services.family_controls_service import family_controls_service
 from app.core.security import get_current_active_user
-
+from app.models.family_controls import FamilyControls
+from app.models.user import User
+from app.services.family_controls_service import family_controls_service
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 
 router = APIRouter()
 
 
 class FamilyControlsSetupRequest(BaseModel):
     """Request model for initial family controls setup."""
-    pin: str = Field(..., min_length=4, max_length=6, description="Family PIN (4-6 digits)")
-    kids_age_limit: int = Field(12, ge=0, le=12, description="Maximum age for kids content")
-    youngsters_age_limit: int = Field(17, ge=12, le=17, description="Maximum age for youngsters content")
+
+    pin: str = Field(
+        ..., min_length=4, max_length=6, description="Family PIN (4-6 digits)"
+    )
+    kids_age_limit: int = Field(
+        12, ge=0, le=12, description="Maximum age for kids content"
+    )
+    youngsters_age_limit: int = Field(
+        17, ge=12, le=17, description="Maximum age for youngsters content"
+    )
 
 
 class FamilyControlsUpdateRequest(BaseModel):
     """Request model for updating family controls settings."""
+
     kids_age_limit: Optional[int] = Field(None, ge=0, le=12)
     youngsters_age_limit: Optional[int] = Field(None, ge=12, le=17)
     kids_enabled: Optional[bool] = None
@@ -32,7 +39,7 @@ class FamilyControlsUpdateRequest(BaseModel):
     max_content_rating: Optional[str] = Field(
         None,
         pattern="^(G|PG|PG-13)$",
-        description="Maximum content rating (G, PG, or PG-13)"
+        description="Maximum content rating (G, PG, or PG-13)",
     )
     viewing_hours_enabled: Optional[bool] = None
     viewing_start_hour: Optional[int] = Field(None, ge=0, le=23)
@@ -41,11 +48,13 @@ class FamilyControlsUpdateRequest(BaseModel):
 
 class PINVerificationRequest(BaseModel):
     """Request model for PIN verification."""
+
     pin: str = Field(..., min_length=4, max_length=6)
 
 
 class PINUpdateRequest(BaseModel):
     """Request model for updating family PIN."""
+
     old_pin: str = Field(..., min_length=4, max_length=6)
     new_pin: str = Field(..., min_length=4, max_length=6)
 
@@ -288,7 +297,9 @@ async def get_enabled_sections(
         "viewing_hours": {
             "start": controls.viewing_start_hour,
             "end": controls.viewing_end_hour,
-        } if controls.viewing_hours_enabled else None,
+        }
+        if controls.viewing_hours_enabled
+        else None,
         "block_reason": block_reason,
     }
 

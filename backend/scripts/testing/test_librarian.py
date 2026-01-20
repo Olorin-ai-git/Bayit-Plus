@@ -21,43 +21,64 @@ async def test_imports():
         print("\n1. Testing model imports...")
         from app.models.librarian import (
             AuditReport,
+            ClassificationVerificationCache,
             LibrarianAction,
             StreamValidationCache,
-            ClassificationVerificationCache
         )
+
         print("   ✅ All models imported successfully")
 
         print("\n2. Testing service imports...")
-        from app.services.librarian_service import run_daily_audit, determine_audit_scope
+        from app.services.librarian_service import (
+            determine_audit_scope,
+            run_daily_audit,
+        )
+
         print("   ✅ Librarian service imported")
 
-        from app.services.content_auditor import audit_content_items, verify_classifications
+        from app.services.content_auditor import (
+            audit_content_items,
+            verify_classifications,
+        )
+
         print("   ✅ Content auditor imported")
 
-        from app.services.stream_validator import validate_content_streams, validate_stream_url
+        from app.services.stream_validator import (
+            validate_content_streams,
+            validate_stream_url,
+        )
+
         print("   ✅ Stream validator imported")
 
         from app.services.auto_fixer import fix_content_issues, rollback_action
+
         print("   ✅ Auto-fixer imported")
 
         from app.services.database_maintenance import perform_database_maintenance
+
         print("   ✅ Database maintenance imported")
 
-        from app.services.report_generator import send_audit_report, generate_html_report
+        from app.services.report_generator import (
+            generate_html_report,
+            send_audit_report,
+        )
+
         print("   ✅ Report generator imported")
 
         from app.services.email_service import send_email
+
         print("   ✅ Email service imported")
 
         print("\n3. Testing API route imports...")
         from app.api.routes.librarian import router
+
         print("   ✅ Librarian API routes imported")
         print(f"   📍 Routes registered: {len(router.routes)} endpoints")
 
         # List routes
         for route in router.routes:
-            if hasattr(route, 'path') and hasattr(route, 'methods'):
-                methods = ', '.join(route.methods)
+            if hasattr(route, "path") and hasattr(route, "methods"):
+                methods = ", ".join(route.methods)
                 print(f"      {methods:6} {route.path}")
 
         print("\n" + "=" * 80)
@@ -69,11 +90,13 @@ async def test_imports():
     except ImportError as e:
         print(f"\n❌ Import failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
     except Exception as e:
         print(f"\n❌ Error: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -85,8 +108,9 @@ async def test_model_creation():
     print("=" * 80)
 
     try:
-        from app.models.librarian import AuditReport, LibrarianAction
         from datetime import datetime
+
+        from app.models.librarian import AuditReport, LibrarianAction
 
         print("\n1. Creating AuditReport instance...")
         report = AuditReport(
@@ -120,6 +144,7 @@ async def test_model_creation():
     except Exception as e:
         print(f"\n❌ Model creation failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -144,19 +169,24 @@ async def test_configuration():
             print(f"   ⚠️  Anthropic API key not configured (required for AI features)")
 
         print("\n3. Checking Email configuration...")
-        if hasattr(settings, 'SENDGRID_API_KEY') and settings.SENDGRID_API_KEY:
+        if hasattr(settings, "SENDGRID_API_KEY") and settings.SENDGRID_API_KEY:
             print(f"   ✅ SendGrid API key configured")
         else:
-            print(f"   ℹ️  SendGrid API key not configured (email notifications disabled)")
+            print(
+                f"   ℹ️  SendGrid API key not configured (email notifications disabled)"
+            )
 
-        if hasattr(settings, 'ADMIN_EMAIL_ADDRESSES') and settings.ADMIN_EMAIL_ADDRESSES:
-            emails = settings.ADMIN_EMAIL_ADDRESSES.split(',')
+        if (
+            hasattr(settings, "ADMIN_EMAIL_ADDRESSES")
+            and settings.ADMIN_EMAIL_ADDRESSES
+        ):
+            emails = settings.ADMIN_EMAIL_ADDRESSES.split(",")
             print(f"   ✅ Admin emails configured: {len(emails)} recipient(s)")
         else:
             print(f"   ℹ️  Admin emails not configured")
 
         print("\n4. Checking TMDB configuration...")
-        if hasattr(settings, 'TMDB_API_KEY') and settings.TMDB_API_KEY:
+        if hasattr(settings, "TMDB_API_KEY") and settings.TMDB_API_KEY:
             print(f"   ✅ TMDB API key configured")
         else:
             print(f"   ⚠️  TMDB API key not configured (metadata enrichment disabled)")
@@ -170,6 +200,7 @@ async def test_configuration():
     except Exception as e:
         print(f"\n❌ Configuration check failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 

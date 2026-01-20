@@ -3,13 +3,15 @@ Trending Topics Models.
 Stores trending topics and analysis results.
 """
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
 
 class TrendingTopicItem(BaseModel):
     """A single trending topic"""
+
     title: str
     title_en: Optional[str] = None
     category: str = "general"
@@ -24,6 +26,7 @@ class TrendingSnapshot(Document):
     A snapshot of trending topics at a point in time.
     New snapshots are created every 30 minutes.
     """
+
     topics: List[TrendingTopicItem] = Field(default_factory=list)
     overall_mood: str = ""
     top_story: Optional[str] = None
@@ -45,9 +48,7 @@ class TrendingSnapshot(Document):
     @classmethod
     async def get_latest(cls) -> Optional["TrendingSnapshot"]:
         """Get the most recent trending snapshot"""
-        return await cls.find_one(
-            sort=[("analyzed_at", -1)]
-        )
+        return await cls.find_one(sort=[("analyzed_at", -1)])
 
     @classmethod
     async def cleanup_old(cls, keep_hours: int = 24):
@@ -61,6 +62,7 @@ class ContentTrendMatch(Document):
     Links platform content to trending topics.
     Used to show "Trending in Israel" content recommendations.
     """
+
     content_id: str
     content_type: str  # vod, live, radio, podcast
     content_title: str
@@ -86,6 +88,7 @@ class ContentTrendMatch(Document):
 # Response models for API
 class TrendingTopicResponse(BaseModel):
     """API response for a single trending topic"""
+
     title: str
     title_en: Optional[str] = None
     category: str
@@ -101,6 +104,7 @@ class TrendingTopicResponse(BaseModel):
 
 class TrendingAnalysisResponse(BaseModel):
     """API response for trending analysis"""
+
     topics: List[TrendingTopicResponse]
     overall_mood: str
     top_story: Optional[str] = None
@@ -114,6 +118,7 @@ class TrendingAnalysisResponse(BaseModel):
 
 class TrendingContentResponse(BaseModel):
     """API response for content matched to trends"""
+
     id: str
     title: str
     description: Optional[str] = None

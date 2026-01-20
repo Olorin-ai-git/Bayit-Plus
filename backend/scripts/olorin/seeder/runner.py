@@ -7,11 +7,11 @@ Main seeding logic for populating the cultural references knowledge base.
 import logging
 from datetime import datetime, timezone
 
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
-
 from app.core.config import settings
 from app.models.cultural_reference import CulturalReference
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
+
 from scripts.olorin.seeder.data import ALL_REFERENCES
 
 logger = logging.getLogger(__name__)
@@ -100,7 +100,9 @@ async def get_reference_stats() -> dict:
     # Count by category
     categories = {}
     for ref in await CulturalReference.find_all().to_list():
-        cat = ref.category.value if hasattr(ref.category, "value") else str(ref.category)
+        cat = (
+            ref.category.value if hasattr(ref.category, "value") else str(ref.category)
+        )
         categories[cat] = categories.get(cat, 0) + 1
 
     client.close()

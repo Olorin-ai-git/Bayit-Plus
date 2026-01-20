@@ -16,7 +16,8 @@ Collections:
 """
 
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
@@ -31,6 +32,7 @@ class ContentSection(Document):
     Translation keys follow pattern: taxonomy.sections.{slug}
     Description keys follow pattern: taxonomy.sections.{slug}.description
     """
+
     # Identifiers
     slug: str  # Unique identifier (e.g., "movies", "kids", "judaism")
 
@@ -78,6 +80,7 @@ class SectionSubcategory(Document):
     Translation keys follow pattern: taxonomy.subcategories.{slug}
     Description keys follow pattern: taxonomy.subcategories.{slug}.description
     """
+
     # Parent section
     section_id: str  # References ContentSection
 
@@ -85,7 +88,9 @@ class SectionSubcategory(Document):
     slug: str  # Unique within section (e.g., "cartoons", "shiurim")
 
     # i18n translation keys (resolved at runtime via shared/i18n)
-    name_key: Optional[str] = None  # Translation key (e.g., "taxonomy.subcategories.learning-hebrew")
+    name_key: Optional[
+        str
+    ] = None  # Translation key (e.g., "taxonomy.subcategories.learning-hebrew")
     description_key: Optional[str] = None  # Description translation key
 
     # Display
@@ -119,6 +124,7 @@ class Genre(Document):
 
     Translation keys follow pattern: taxonomy.genres.{slug}
     """
+
     # Identifiers
     slug: str  # Unique identifier (e.g., "drama", "comedy", "action")
 
@@ -160,6 +166,7 @@ class Audience(Document):
     Translation keys follow pattern: taxonomy.audiences.{slug}
     Description keys follow pattern: taxonomy.audiences.{slug}.description
     """
+
     # Identifiers
     slug: str  # Unique identifier (e.g., "general", "kids", "family", "mature")
 
@@ -170,7 +177,9 @@ class Audience(Document):
     # Age settings
     min_age: Optional[int] = None  # Minimum recommended age
     max_age: Optional[int] = None  # Maximum recommended age (for kids content)
-    content_ratings: List[str] = Field(default_factory=list)  # Mapped ratings (G, PG, PG-13, etc.)
+    content_ratings: List[str] = Field(
+        default_factory=list
+    )  # Mapped ratings (G, PG, PG-13, etc.)
 
     # Display
     icon: Optional[str] = None
@@ -194,8 +203,10 @@ class Audience(Document):
 
 # Pydantic schemas for API requests/responses
 
+
 class ContentSectionCreate(BaseModel):
     """Schema for creating a content section."""
+
     slug: str
     name_key: str  # i18n translation key (e.g., "taxonomy.sections.movies")
     description_key: Optional[str] = None  # Description translation key
@@ -212,6 +223,7 @@ class ContentSectionCreate(BaseModel):
 
 class ContentSectionUpdate(BaseModel):
     """Schema for updating a content section."""
+
     name_key: Optional[str] = None  # i18n translation key
     description_key: Optional[str] = None  # Description translation key
     icon: Optional[str] = None
@@ -227,6 +239,7 @@ class ContentSectionUpdate(BaseModel):
 
 class SectionSubcategoryCreate(BaseModel):
     """Schema for creating a section sub-category."""
+
     section_id: str
     slug: str
     name_key: str  # i18n translation key (e.g., "taxonomy.subcategories.learning-hebrew")
@@ -239,6 +252,7 @@ class SectionSubcategoryCreate(BaseModel):
 
 class SectionSubcategoryUpdate(BaseModel):
     """Schema for updating a section sub-category."""
+
     name_key: Optional[str] = None  # i18n translation key
     description_key: Optional[str] = None  # Description translation key
     icon: Optional[str] = None
@@ -249,6 +263,7 @@ class SectionSubcategoryUpdate(BaseModel):
 
 class GenreCreate(BaseModel):
     """Schema for creating a genre."""
+
     slug: str
     name_key: str  # i18n translation key (e.g., "taxonomy.genres.drama")
     tmdb_id: Optional[int] = None
@@ -262,6 +277,7 @@ class GenreCreate(BaseModel):
 
 class GenreUpdate(BaseModel):
     """Schema for updating a genre."""
+
     name_key: Optional[str] = None  # i18n translation key
     tmdb_id: Optional[int] = None
     tmdb_name: Optional[str] = None
@@ -274,6 +290,7 @@ class GenreUpdate(BaseModel):
 
 class AudienceCreate(BaseModel):
     """Schema for creating an audience classification."""
+
     slug: str
     name_key: str  # i18n translation key (e.g., "taxonomy.audiences.kids")
     description_key: Optional[str] = None  # Description translation key
@@ -288,6 +305,7 @@ class AudienceCreate(BaseModel):
 
 class AudienceUpdate(BaseModel):
     """Schema for updating an audience classification."""
+
     name_key: Optional[str] = None  # i18n translation key
     description_key: Optional[str] = None  # Description translation key
     min_age: Optional[int] = None

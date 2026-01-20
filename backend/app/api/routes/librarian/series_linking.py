@@ -7,11 +7,10 @@ Handles episode linking to series and duplicate resolution.
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
-
 from app.api.routes.admin import require_admin
 from app.api.routes.librarian.models import LinkEpisodeRequest, ResolveDuplicatesRequest
 from app.models.user import User
+from fastapi import APIRouter, Depends, HTTPException, status
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -19,8 +18,7 @@ logger = logging.getLogger(__name__)
 
 @router.get("/admin/librarian/unlinked-episodes")
 async def get_unlinked_episodes(
-    limit: int = 100,
-    current_user: User = Depends(require_admin())
+    limit: int = 100, current_user: User = Depends(require_admin())
 ):
     """
     Get episodes that are not linked to any parent series.
@@ -41,23 +39,22 @@ async def get_unlinked_episodes(
                     "extracted_series_name": ep.extracted_series_name,
                     "season": ep.season,
                     "episode": ep.episode,
-                    "created_at": ep.created_at.isoformat() if ep.created_at else None
+                    "created_at": ep.created_at.isoformat() if ep.created_at else None,
                 }
                 for ep in unlinked
-            ]
+            ],
         }
 
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get unlinked episodes: {str(e)}"
+            detail=f"Failed to get unlinked episodes: {str(e)}",
         )
 
 
 @router.post("/admin/librarian/link-episode")
 async def link_episode_to_series(
-    request: LinkEpisodeRequest,
-    current_user: User = Depends(require_admin())
+    request: LinkEpisodeRequest, current_user: User = Depends(require_admin())
 ):
     """
     Manually link an episode to its parent series.
@@ -73,7 +70,7 @@ async def link_episode_to_series(
             episode_num=request.episode,
             audit_id=None,
             dry_run=request.dry_run,
-            reason=request.reason or "Manual linking by admin"
+            reason=request.reason or "Manual linking by admin",
         )
 
         if result.success:
@@ -83,12 +80,12 @@ async def link_episode_to_series(
                 "series_id": result.series_id,
                 "series_title": result.series_title,
                 "action": result.action,
-                "dry_run": result.dry_run
+                "dry_run": result.dry_run,
             }
         else:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=result.error or "Failed to link episode"
+                detail=result.error or "Failed to link episode",
             )
 
     except HTTPException:
@@ -96,14 +93,13 @@ async def link_episode_to_series(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to link episode: {str(e)}"
+            detail=f"Failed to link episode: {str(e)}",
         )
 
 
 @router.get("/admin/librarian/duplicate-episodes")
 async def get_duplicate_episodes(
-    series_id: Optional[str] = None,
-    current_user: User = Depends(require_admin())
+    series_id: Optional[str] = None, current_user: User = Depends(require_admin())
 ):
     """
     Get groups of duplicate episodes (same series + season + episode).
@@ -126,23 +122,22 @@ async def get_duplicate_episodes(
                     "episode_ids": group.episode_ids,
                     "episode_titles": group.episode_titles,
                     "file_sizes": group.file_sizes,
-                    "resolutions": group.resolutions
+                    "resolutions": group.resolutions,
                 }
                 for group in duplicates
-            ]
+            ],
         }
 
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get duplicate episodes: {str(e)}"
+            detail=f"Failed to get duplicate episodes: {str(e)}",
         )
 
 
 @router.post("/admin/librarian/resolve-duplicate-episodes")
 async def resolve_duplicate_episodes(
-    request: ResolveDuplicatesRequest,
-    current_user: User = Depends(require_admin())
+    request: ResolveDuplicatesRequest, current_user: User = Depends(require_admin())
 ):
     """
     Resolve a group of duplicate episodes by keeping one and unpublishing/deleting the others.
@@ -157,7 +152,7 @@ async def resolve_duplicate_episodes(
             action=request.action,
             audit_id=None,
             dry_run=request.dry_run,
-            reason=request.reason or "Manual resolution by admin"
+            reason=request.reason or "Manual resolution by admin",
         )
 
         return {
@@ -167,11 +162,11 @@ async def resolve_duplicate_episodes(
             "kept_episode_ids": result.kept_episode_ids,
             "removed_episode_ids": result.removed_episode_ids,
             "dry_run": result.dry_run,
-            "errors": result.errors
+            "errors": result.errors,
         }
 
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to resolve duplicates: {str(e)}"
+            detail=f"Failed to resolve duplicates: {str(e)}",
         )

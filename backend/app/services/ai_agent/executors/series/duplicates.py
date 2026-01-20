@@ -8,16 +8,13 @@ import logging
 from typing import Any, Dict, List, Optional
 
 from app.models.content import Content
-from app.services.ai_agent.executors._shared import (
-    handle_dry_run,
-    log_librarian_action,
-)
+from app.services.ai_agent.executors._shared import handle_dry_run, log_librarian_action
 
 logger = logging.getLogger(__name__)
 
 
 async def execute_find_duplicate_episodes(
-    series_id: Optional[str] = None
+    series_id: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Find duplicate episodes in series.
@@ -34,7 +31,7 @@ async def execute_find_duplicate_episodes(
         query: Dict[str, Any] = {
             "content_type": "episode",
             "season": {"$ne": None},
-            "episode": {"$ne": None}
+            "episode": {"$ne": None},
         }
         if series_id:
             query["series_id"] = series_id
@@ -46,29 +43,24 @@ async def execute_find_duplicate_episodes(
         for ep in episodes:
             key = f"{ep.series_id}:{ep.season}:{ep.episode}"
             if key in seen:
-                duplicates.append({
-                    "season": ep.season,
-                    "episode": ep.episode,
-                    "ids": [seen[key], str(ep.id)]
-                })
+                duplicates.append(
+                    {
+                        "season": ep.season,
+                        "episode": ep.episode,
+                        "ids": [seen[key], str(ep.id)],
+                    }
+                )
             else:
                 seen[key] = str(ep.id)
 
-        return {
-            "success": True,
-            "count": len(duplicates),
-            "duplicates": duplicates
-        }
+        return {"success": True, "count": len(duplicates), "duplicates": duplicates}
     except Exception as e:
         logger.error(f"Error finding duplicate episodes: {e}")
         return {"success": False, "error": str(e)}
 
 
 async def execute_resolve_duplicate_episodes(
-    episode_ids: List[str],
-    keep_id: str,
-    audit_id: str,
-    dry_run: bool = False
+    episode_ids: List[str], keep_id: str, audit_id: str, dry_run: bool = False
 ) -> Dict[str, Any]:
     """
     Resolve duplicate episodes by keeping one and deleting others.
@@ -86,7 +78,7 @@ async def execute_resolve_duplicate_episodes(
         dry_run,
         "keep episode {keep_id}, delete {delete_count} duplicates",
         keep_id=keep_id,
-        delete_count=len(episode_ids) - 1
+        delete_count=len(episode_ids) - 1,
     )
     if dry_run_result:
         return dry_run_result
@@ -110,11 +102,7 @@ async def execute_resolve_duplicate_episodes(
                         issue_type="duplicate_episode",
                     )
 
-        return {
-            "success": True,
-            "kept": keep_id,
-            "deleted": deleted
-        }
+        return {"success": True, "kept": keep_id, "deleted": deleted}
     except Exception as e:
         logger.error(f"Error resolving duplicate episodes: {e}")
         return {"success": False, "error": str(e)}

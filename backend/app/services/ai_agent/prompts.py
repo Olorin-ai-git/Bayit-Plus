@@ -11,7 +11,7 @@ from typing import Dict, List
 LANGUAGE_INSTRUCTIONS: Dict[str, str] = {
     "en": "Communicate in English.",
     "es": "Comunícate en español.",
-    "he": "תקשר בעברית."
+    "he": "תקשר בעברית.",
 }
 
 # Individual capability prompts (to be combined additively)
@@ -86,7 +86,6 @@ Step 5: For non-YouTube content: check_stream_url for each item
 Step 6: Proceed with metadata/subtitle fixes for valid content only
 ```
 """,
-
     "clean_titles": """
 ## Title Cleaning
 Your task includes finding and cleaning dirty titles:
@@ -96,7 +95,6 @@ Your task includes finding and cleaning dirty titles:
 - Use `clean_title` tool for each dirty title found
 - Verify cleaned titles with TMDB search before applying metadata fixes
 """,
-
     "tmdb_metadata": """
 ## TMDB Posters & Metadata
 Your task includes fetching missing posters and metadata from TMDB:
@@ -109,7 +107,6 @@ Your task includes fetching missing posters and metadata from TMDB:
   - Example: "Breaking Bad S05E16" → search for "Breaking Bad"
   - Example: "The Office Season 3 Episode 12" → search for "The Office"
 """,
-
     "subtitles": """
 ## Subtitle Acquisition
 Your task includes acquiring missing subtitles:
@@ -120,7 +117,6 @@ Your task includes acquiring missing subtitles:
 - Respect OpenSubtitles quota (1500/day)
 - Embedded subtitle extraction is FREE and unlimited - prioritize this!
 """,
-
     "verify_classification": """
 ## Classification Verification
 Your task includes verifying and fixing content classification:
@@ -131,7 +127,6 @@ Your task includes verifying and fixing content classification:
   - `reclassify_as_movie(content_id)` for items that should be movies
 - Report how many items were correctly classified vs reclassified
 """,
-
     "remove_duplicates": """
 ## Duplicate Removal
 Your task includes finding and removing duplicate content:
@@ -141,7 +136,6 @@ Your task includes finding and removing duplicate content:
 - Use `resolve_duplicates` tool to handle duplicate groups
 - Log all duplicate resolutions with clear reasoning
 """,
-
     "fix_series_structure": """
 ## Series Structure & Episode Management
 Your task includes fixing series structure issues:
@@ -193,7 +187,6 @@ Step 5: auto_link_episodes()
 - Inconsistent posters look unprofessional
 - Proper series structure enables "Continue Watching" and episode navigation
 """,
-
     "enforce_taxonomy": """
 ## Taxonomy Enforcement (5-Axis Classification System)
 **CRITICAL: Migrate ALL content to new taxonomy - no exceptions!**
@@ -249,7 +242,7 @@ Step 5: auto_link_episodes()
 - דוקומנטרי/Documentaries → section: "documentaries"
 
 **Goal: 100% taxonomy coverage - EVERY item must have proper classification!**
-"""
+""",
 }
 
 # Base prompt sections
@@ -426,12 +419,16 @@ def build_task_specific_initial_prompt(
     enabled_capabilities: List[str],
     dry_run: bool,
     max_iterations: int = 0,  # Kept for backward compatibility, not used in prompt
-    budget_limit_usd: float = 0.0  # Kept for backward compatibility, not used in prompt
+    budget_limit_usd: float = 0.0,  # Kept for backward compatibility, not used in prompt
 ) -> str:
     """Build the initial prompt for task-specific (focused) audits with additive capabilities."""
     capability_prompt = build_combined_capability_prompt(enabled_capabilities)
 
-    mode_text = "DRY RUN - You cannot actually change data, only report what you would do" if dry_run else "LIVE - You can make real changes"
+    mode_text = (
+        "DRY RUN - You cannot actually change data, only report what you would do"
+        if dry_run
+        else "LIVE - You can make real changes"
+    )
 
     return f"""{BASE_PROMPT_HEADER.format(language_instruction=language_instruction)}
 
@@ -452,10 +449,14 @@ def build_comprehensive_initial_prompt(
     filter_instructions: str,
     dry_run: bool,
     max_iterations: int = 0,  # Kept for backward compatibility, not used in prompt
-    budget_limit_usd: float = 0.0  # Kept for backward compatibility, not used in prompt
+    budget_limit_usd: float = 0.0,  # Kept for backward compatibility, not used in prompt
 ) -> str:
     """Build the initial prompt for comprehensive audits."""
-    mode_text = "DRY RUN - You cannot actually change data, only report what you would do" if dry_run else "LIVE - You can make real changes"
+    mode_text = (
+        "DRY RUN - You cannot actually change data, only report what you would do"
+        if dry_run
+        else "LIVE - You can make real changes"
+    )
 
     return f"""You are an autonomous AI Librarian for Bayit+, an Israeli streaming platform.
 

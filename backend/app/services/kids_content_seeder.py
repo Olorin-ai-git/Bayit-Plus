@@ -15,11 +15,11 @@ Categories:
 
 import logging
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
+from app.core.config import settings
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +121,6 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "educational_tags": ["hebrew", "numbers", "math"],
         "content_rating": "G",
     },
-
     # Jewish Kids Content (age 3-10)
     {
         "title": "שיר לשבת - שבת שלום",
@@ -188,7 +187,6 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "educational_tags": ["jewish", "blessings", "prayers"],
         "content_rating": "G",
     },
-
     # Educational Content (age 3-10)
     {
         "title": "למדו על בעלי חיים",
@@ -242,7 +240,6 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "educational_tags": ["science", "body", "health"],
         "content_rating": "G",
     },
-
     # Kids Music (age 3-7)
     {
         "title": "שירי ילדים - מחרוזת",
@@ -283,7 +280,6 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "educational_tags": ["music", "exercise", "body"],
         "content_rating": "G",
     },
-
     # Stories (age 3-10)
     {
         "title": "סיפור לפני השינה - הילד והכוכב",
@@ -324,7 +320,6 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "educational_tags": ["stories", "bible", "jewish"],
         "content_rating": "G",
     },
-
     # Cartoons (age 3-10)
     {
         "title": "הרפתקאות במדבר",
@@ -351,7 +346,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 3,
         "educational_tags": ["animation", "animals", "comedy"],
         "content_rating": "G",
-    }
+    },
 ]
 
 
@@ -400,9 +395,7 @@ class KidsContentSeeder:
         return category_ids
 
     async def seed_content(
-        self,
-        age_max: Optional[int] = None,
-        categories: Optional[List[str]] = None
+        self, age_max: Optional[int] = None, categories: Optional[List[str]] = None
     ) -> Dict[str, Any]:
         """
         Seed kids content into the database.
@@ -484,7 +477,9 @@ class KidsContentSeeder:
                 logger.info(f"Seeded kids content: {item['title']}")
 
             except Exception as e:
-                errors.append(f"Error seeding {item.get('title', 'unknown')}: {str(e)}"),
+                errors.append(
+                    f"Error seeding {item.get('title', 'unknown')}: {str(e)}"
+                ),
                 logger.error(f"Error seeding content: {e}")
 
         return {
@@ -516,18 +511,22 @@ class KidsContentSeeder:
 
         by_category = {}
         for category_key in KIDS_CATEGORIES.keys():
-            count = await Content.find({
-                "is_kids_content": True,
-                "category_name": category_key,
-            }).count()
+            count = await Content.find(
+                {
+                    "is_kids_content": True,
+                    "category_name": category_key,
+                }
+            ).count()
             by_category[category_key] = count
 
         by_age = {}
         for age in [3, 5, 7, 10, 12]:
-            count = await Content.find({
-                "is_kids_content": True,
-                "age_rating": {"$lte": age},
-            }).count()
+            count = await Content.find(
+                {
+                    "is_kids_content": True,
+                    "age_rating": {"$lte": age},
+                }
+            ).count()
             by_age[f"age_{age}_and_under"] = count
 
         return {

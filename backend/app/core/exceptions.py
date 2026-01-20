@@ -3,16 +3,19 @@
 
 class GameError(Exception):
     """Raised when a game operation fails"""
+
     pass
 
 
 class FriendshipError(Exception):
     """Raised when friendship operation fails"""
+
     pass
 
 
 class UploadIntegrityError(Exception):
     """Base exception for upload integrity issues"""
+
     pass
 
 

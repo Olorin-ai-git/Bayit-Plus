@@ -18,25 +18,25 @@ Usage:
     poetry run python scripts/olorin/cleanup_orphans.py --execute
 """
 
-import asyncio
 import argparse
+import asyncio
 import logging
-from typing import List, Set
 from datetime import datetime
-from motor.motor_asyncio import AsyncIOMotorClient
+from typing import List, Set
+
 from beanie import PydanticObjectId
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 from app.core.config import settings
-from app.models.content_embedding import ContentEmbedding, RecapSession
-from app.models.integration_partner import IntegrationPartner, DubbingSession
 from app.models.content import Content, LiveChannel
+from app.models.content_embedding import ContentEmbedding, RecapSession
+from app.models.integration_partner import DubbingSession, IntegrationPartner
 
 
 async def get_all_content_ids(bayit_client: AsyncIOMotorClient) -> Set[str]:
@@ -73,8 +73,7 @@ async def get_all_partner_ids() -> Set[str]:
 
 
 async def cleanup_content_embeddings(
-    valid_content_ids: Set[str],
-    dry_run: bool = True
+    valid_content_ids: Set[str], dry_run: bool = True
 ) -> int:
     """
     Remove ContentEmbedding records with invalid content_id.
@@ -100,9 +99,7 @@ async def cleanup_content_embeddings(
 
                 # Delete in batches
                 if len(batch) >= batch_size:
-                    await ContentEmbedding.find(
-                        {"_id": {"$in": batch}}
-                    ).delete()
+                    await ContentEmbedding.find({"_id": {"$in": batch}}).delete()
                     logger.info(f"  Deleted batch of {len(batch)} orphaned embeddings")
                     batch = []
 
@@ -112,7 +109,9 @@ async def cleanup_content_embeddings(
         logger.info(f"  Deleted final batch of {len(batch)} orphaned embeddings")
 
     if dry_run:
-        logger.info(f"  [DRY-RUN] Found {orphan_count} orphaned ContentEmbedding records")
+        logger.info(
+            f"  [DRY-RUN] Found {orphan_count} orphaned ContentEmbedding records"
+        )
     else:
         logger.info(f"  Deleted {orphan_count} orphaned ContentEmbedding records")
 
@@ -120,8 +119,7 @@ async def cleanup_content_embeddings(
 
 
 async def cleanup_recap_sessions(
-    valid_channel_ids: Set[str],
-    dry_run: bool = True
+    valid_channel_ids: Set[str], dry_run: bool = True
 ) -> int:
     """
     Remove RecapSession records with invalid channel_id.
@@ -147,10 +145,10 @@ async def cleanup_recap_sessions(
 
                 # Delete in batches
                 if len(batch) >= batch_size:
-                    await RecapSession.find(
-                        {"_id": {"$in": batch}}
-                    ).delete()
-                    logger.info(f"  Deleted batch of {len(batch)} orphaned recap sessions")
+                    await RecapSession.find({"_id": {"$in": batch}}).delete()
+                    logger.info(
+                        f"  Deleted batch of {len(batch)} orphaned recap sessions"
+                    )
                     batch = []
 
     # Delete remaining batch
@@ -167,8 +165,7 @@ async def cleanup_recap_sessions(
 
 
 async def cleanup_dubbing_sessions(
-    valid_partner_ids: Set[str],
-    dry_run: bool = True
+    valid_partner_ids: Set[str], dry_run: bool = True
 ) -> int:
     """
     Remove DubbingSession records with invalid partner_id.
@@ -194,10 +191,10 @@ async def cleanup_dubbing_sessions(
 
                 # Delete in batches
                 if len(batch) >= batch_size:
-                    await DubbingSession.find(
-                        {"_id": {"$in": batch}}
-                    ).delete()
-                    logger.info(f"  Deleted batch of {len(batch)} orphaned dubbing sessions")
+                    await DubbingSession.find({"_id": {"$in": batch}}).delete()
+                    logger.info(
+                        f"  Deleted batch of {len(batch)} orphaned dubbing sessions"
+                    )
                     batch = []
 
     # Delete remaining batch
@@ -243,8 +240,8 @@ async def cleanup_orphans(dry_run: bool = True) -> bool:
 
     # Connect to databases
     logger.info("Connecting to databases...")
-    from app.core.database_olorin import connect_to_olorin_mongo, olorin_db
     from app.core.database import connect_to_mongo, db
+    from app.core.database_olorin import connect_to_olorin_mongo, olorin_db
 
     await connect_to_mongo()
     await connect_to_olorin_mongo()
@@ -264,7 +261,9 @@ async def cleanup_orphans(dry_run: bool = True) -> bool:
         # Cleanup each collection
         total_orphans = 0
 
-        orphans_embeddings = await cleanup_content_embeddings(valid_content_ids, dry_run)
+        orphans_embeddings = await cleanup_content_embeddings(
+            valid_content_ids, dry_run
+        )
         total_orphans += orphans_embeddings
 
         orphans_recaps = await cleanup_recap_sessions(valid_channel_ids, dry_run)
@@ -290,7 +289,9 @@ async def cleanup_orphans(dry_run: bool = True) -> bool:
             logger.info("✓ Dry-run completed successfully")
             logger.info("")
             logger.info("To execute cleanup, run:")
-            logger.info("  poetry run python scripts/olorin/cleanup_orphans.py --execute")
+            logger.info(
+                "  poetry run python scripts/olorin/cleanup_orphans.py --execute"
+            )
         else:
             logger.info("")
             logger.info("✓ Cleanup completed successfully")
@@ -302,12 +303,13 @@ async def cleanup_orphans(dry_run: bool = True) -> bool:
     except Exception as e:
         logger.error(f"❌ Cleanup failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
     finally:
-        from app.core.database_olorin import close_olorin_mongo_connection
         from app.core.database import close_mongo_connection
+        from app.core.database_olorin import close_olorin_mongo_connection
 
         await close_mongo_connection()
         await close_olorin_mongo_connection()
@@ -322,14 +324,12 @@ def main():
     )
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Preview orphans without deleting data"
+        "--dry-run", action="store_true", help="Preview orphans without deleting data"
     )
     group.add_argument(
         "--execute",
         action="store_true",
-        help="Execute cleanup and delete orphaned records"
+        help="Execute cleanup and delete orphaned records",
     )
 
     args = parser.parse_args()

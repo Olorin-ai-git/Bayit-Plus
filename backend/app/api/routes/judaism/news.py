@@ -8,9 +8,8 @@ Handles:
 
 from typing import Optional
 
-from fastapi import APIRouter, Query
-
 from app.services.jewish_news_service import jewish_news_service
+from fastapi import APIRouter, Query
 
 router = APIRouter()
 
@@ -18,8 +17,7 @@ router = APIRouter()
 @router.get("/news")
 async def get_jewish_news(
     category: Optional[str] = Query(
-        None,
-        description="Filter by category: news, culture, opinion, torah, community"
+        None, description="Filter by category: news, culture, opinion, torah, community"
     ),
     source: Optional[str] = Query(None, description="Filter by source name"),
     page: int = Query(1, ge=1),

@@ -5,24 +5,23 @@ Supports multiple sources including JTA, Times of Israel, Forward, Tablet, Aish,
 Uses in-memory caching with configurable TTL to reduce API calls.
 """
 
-import logging
 import asyncio
+import logging
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Any
 from email.utils import parsedate_to_datetime
+from typing import Any, Dict, List, Optional
 
 import httpx
-
 from app.core.config import settings
 from app.models.jewish_news import (
-    JewishNewsSource,
+    JewishNewsAggregatedResponse,
     JewishNewsItem,
     JewishNewsItemResponse,
+    JewishNewsSource,
     JewishNewsSourceResponse,
-    JewishNewsAggregatedResponse,
 )
-from app.services.news_scraper import scrape_judaism_news, HeadlineItem
+from app.services.news_scraper import HeadlineItem, scrape_judaism_news
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +75,7 @@ DEFAULT_JEWISH_NEWS_SOURCES = [
     },
     {
         "name": "Chabad.org",
-        "name_he": "חב\"ד",
+        "name_he": 'חב"ד',
         "rss_url": "https://www.chabad.org/tools/rss/rss.xml",
         "website_url": "https://www.chabad.org",
         "logo_url": "https://www.chabad.org/favicon.ico",
@@ -165,7 +164,9 @@ class JewishNewsService:
         except Exception as e:
             logger.error(f"Failed to initialize news sources: {e}")
 
-    async def get_sources(self, active_only: bool = True) -> List[JewishNewsSourceResponse]:
+    async def get_sources(
+        self, active_only: bool = True
+    ) -> List[JewishNewsSourceResponse]:
         """Get list of available news sources."""
         await self.initialize_sources()
 
@@ -251,7 +252,9 @@ class JewishNewsService:
             pub_date_elem = item.find("pubDate")
             desc_elem = item.find("description")
             guid_elem = item.find("guid")
-            author_elem = item.find("author") or item.find("{http://purl.org/dc/elements/1.1/}creator")
+            author_elem = item.find("author") or item.find(
+                "{http://purl.org/dc/elements/1.1/}creator"
+            )
 
             if title_elem is None or title_elem.text is None:
                 continue
@@ -281,19 +284,32 @@ class JewishNewsService:
                 if media_type == "image" or media_type.startswith("image/"):
                     image_url = media_content.get("url")
 
-            items.append({
-                "source_id": str(source.id),
-                "source_name": source.name,
-                "title": title_elem.text.strip(),
-                "link": link_elem.text.strip() if link_elem is not None and link_elem.text else "",
-                "published_at": pub_date,
-                "summary": desc_elem.text.strip() if desc_elem is not None and desc_elem.text else None,
-                "author": author_elem.text.strip() if author_elem is not None and author_elem.text else None,
-                "image_url": image_url,
-                "category": source.category,
-                "guid": (guid_elem.text.strip() if guid_elem is not None and guid_elem.text
-                         else link_elem.text.strip() if link_elem is not None and link_elem.text else ""),
-            })
+            items.append(
+                {
+                    "source_id": str(source.id),
+                    "source_name": source.name,
+                    "title": title_elem.text.strip(),
+                    "link": link_elem.text.strip()
+                    if link_elem is not None and link_elem.text
+                    else "",
+                    "published_at": pub_date,
+                    "summary": desc_elem.text.strip()
+                    if desc_elem is not None and desc_elem.text
+                    else None,
+                    "author": author_elem.text.strip()
+                    if author_elem is not None and author_elem.text
+                    else None,
+                    "image_url": image_url,
+                    "category": source.category,
+                    "guid": (
+                        guid_elem.text.strip()
+                        if guid_elem is not None and guid_elem.text
+                        else link_elem.text.strip()
+                        if link_elem is not None and link_elem.text
+                        else ""
+                    ),
+                }
+            )
 
         return items
 
@@ -306,11 +322,27 @@ class JewishNewsService:
 
         for entry in root.findall("atom:entry", ns) or root.findall("entry"):
             title_elem = entry.find("atom:title", ns) or entry.find("title")
-            link_elem = entry.find("atom:link[@rel='alternate']", ns) or entry.find("atom:link", ns) or entry.find("link")
-            pub_date_elem = entry.find("atom:published", ns) or entry.find("atom:updated", ns) or entry.find("published") or entry.find("updated")
-            summary_elem = entry.find("atom:summary", ns) or entry.find("atom:content", ns) or entry.find("summary") or entry.find("content")
+            link_elem = (
+                entry.find("atom:link[@rel='alternate']", ns)
+                or entry.find("atom:link", ns)
+                or entry.find("link")
+            )
+            pub_date_elem = (
+                entry.find("atom:published", ns)
+                or entry.find("atom:updated", ns)
+                or entry.find("published")
+                or entry.find("updated")
+            )
+            summary_elem = (
+                entry.find("atom:summary", ns)
+                or entry.find("atom:content", ns)
+                or entry.find("summary")
+                or entry.find("content")
+            )
             id_elem = entry.find("atom:id", ns) or entry.find("id")
-            author_elem = entry.find("atom:author/atom:name", ns) or entry.find("author/name")
+            author_elem = entry.find("atom:author/atom:name", ns) or entry.find(
+                "author/name"
+            )
 
             if title_elem is None or title_elem.text is None:
                 continue
@@ -318,28 +350,40 @@ class JewishNewsService:
             # Get link URL
             link_url = ""
             if link_elem is not None:
-                link_url = link_elem.get("href", "") or (link_elem.text.strip() if link_elem.text else "")
+                link_url = link_elem.get("href", "") or (
+                    link_elem.text.strip() if link_elem.text else ""
+                )
 
             # Parse publication date
             pub_date = datetime.utcnow()
             if pub_date_elem is not None and pub_date_elem.text:
                 try:
-                    pub_date = datetime.fromisoformat(pub_date_elem.text.replace("Z", "+00:00"))
+                    pub_date = datetime.fromisoformat(
+                        pub_date_elem.text.replace("Z", "+00:00")
+                    )
                 except Exception:
                     pass
 
-            items.append({
-                "source_id": str(source.id),
-                "source_name": source.name,
-                "title": title_elem.text.strip(),
-                "link": link_url,
-                "published_at": pub_date,
-                "summary": summary_elem.text.strip() if summary_elem is not None and summary_elem.text else None,
-                "author": author_elem.text.strip() if author_elem is not None and author_elem.text else None,
-                "image_url": None,
-                "category": source.category,
-                "guid": id_elem.text.strip() if id_elem is not None and id_elem.text else link_url,
-            })
+            items.append(
+                {
+                    "source_id": str(source.id),
+                    "source_name": source.name,
+                    "title": title_elem.text.strip(),
+                    "link": link_url,
+                    "published_at": pub_date,
+                    "summary": summary_elem.text.strip()
+                    if summary_elem is not None and summary_elem.text
+                    else None,
+                    "author": author_elem.text.strip()
+                    if author_elem is not None and author_elem.text
+                    else None,
+                    "image_url": None,
+                    "category": source.category,
+                    "guid": id_elem.text.strip()
+                    if id_elem is not None and id_elem.text
+                    else link_url,
+                }
+            )
 
         return items
 
@@ -384,18 +428,21 @@ class JewishNewsService:
 
                 for headline in web_headlines:
                     if headline.url not in seen_urls:
-                        all_items.append({
-                            "source_id": "web_search",
-                            "source_name": headline.source or "Web Search",
-                            "title": headline.title,
-                            "link": headline.url,
-                            "published_at": headline.published_at or headline.scraped_at,
-                            "summary": headline.summary,
-                            "author": None,
-                            "image_url": headline.image_url,
-                            "category": headline.category or "news",
-                            "guid": headline.url,
-                        })
+                        all_items.append(
+                            {
+                                "source_id": "web_search",
+                                "source_name": headline.source or "Web Search",
+                                "title": headline.title,
+                                "link": headline.url,
+                                "published_at": headline.published_at
+                                or headline.scraped_at,
+                                "summary": headline.summary,
+                                "author": None,
+                                "image_url": headline.image_url,
+                                "category": headline.category or "news",
+                                "guid": headline.url,
+                            }
+                        )
                         seen_urls.add(headline.url)
 
                 logger.info(f"Added {len(web_headlines)} items from web search")
@@ -403,7 +450,9 @@ class JewishNewsService:
                 logger.error(f"Web search supplement failed: {e}")
 
             # Sort by publication date (newest first)
-            all_items.sort(key=lambda x: x.get("published_at", datetime.min), reverse=True)
+            all_items.sort(
+                key=lambda x: x.get("published_at", datetime.min), reverse=True
+            )
 
             # Cache the combined results
             self._cache.set(cache_key, all_items)
@@ -412,9 +461,15 @@ class JewishNewsService:
         # Apply filters
         filtered_items = cached_items
         if category:
-            filtered_items = [item for item in filtered_items if item.get("category") == category]
+            filtered_items = [
+                item for item in filtered_items if item.get("category") == category
+            ]
         if source_name:
-            filtered_items = [item for item in filtered_items if item.get("source_name") == source_name]
+            filtered_items = [
+                item
+                for item in filtered_items
+                if item.get("source_name") == source_name
+            ]
 
         # Pagination
         total = len(filtered_items)
@@ -467,7 +522,9 @@ class JewishNewsService:
         self, source_name: str, page: int = 1, limit: int = 20
     ) -> JewishNewsAggregatedResponse:
         """Get news from a specific source."""
-        return await self.fetch_all_news(source_name=source_name, page=page, limit=limit)
+        return await self.fetch_all_news(
+            source_name=source_name, page=page, limit=limit
+        )
 
     def clear_cache(self) -> None:
         """Clear the news cache."""

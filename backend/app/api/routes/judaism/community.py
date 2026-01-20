@@ -14,14 +14,13 @@ Handles:
 
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
-
 from app.models.jewish_community import (
-    OrganizationType,
     Denomination,
     KosherCertification,
+    OrganizationType,
 )
 from app.services.community_directory_service import community_directory_service
+from fastapi import APIRouter, HTTPException, Query
 
 router = APIRouter()
 
@@ -34,7 +33,9 @@ async def get_regions() -> dict:
 
 @router.get("/community/synagogues")
 async def get_synagogues(
-    region: Optional[str] = Query(None, description="Region filter (e.g., 'nyc', 'la')"),
+    region: Optional[str] = Query(
+        None, description="Region filter (e.g., 'nyc', 'la')"
+    ),
     denomination: Optional[str] = Query(None, description="Denomination filter"),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
@@ -157,8 +158,12 @@ async def search_community(
     denomination: Optional[str] = Query(None, description="Denomination filter"),
     city: Optional[str] = Query(None, description="City name"),
     state: Optional[str] = Query(None, description="State code"),
-    latitude: Optional[float] = Query(None, description="Latitude for proximity search"),
-    longitude: Optional[float] = Query(None, description="Longitude for proximity search"),
+    latitude: Optional[float] = Query(
+        None, description="Latitude for proximity search"
+    ),
+    longitude: Optional[float] = Query(
+        None, description="Longitude for proximity search"
+    ),
     radius_miles: Optional[int] = Query(None, description="Search radius in miles"),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),

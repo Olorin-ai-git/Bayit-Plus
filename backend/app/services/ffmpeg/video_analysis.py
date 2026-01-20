@@ -98,7 +98,9 @@ async def analyze_video(video_url: str, timeout: int = 30) -> Dict[str, Any]:
         fps = 0.0
         if video_stream and "r_frame_rate" in video_stream:
             try:
-                numerator, denominator = map(int, video_stream["r_frame_rate"].split("/"))
+                numerator, denominator = map(
+                    int, video_stream["r_frame_rate"].split("/")
+                )
                 if denominator > 0:
                     fps = numerator / denominator
             except (ValueError, ZeroDivisionError):
@@ -131,7 +133,9 @@ async def analyze_video(video_url: str, timeout: int = 30) -> Dict[str, Any]:
 
     except subprocess.TimeoutExpired:
         logger.error(f"Video analysis timed out for: {video_url}")
-        raise VideoAnalysisTimeoutError(f"Video analysis timed out after {timeout} seconds")
+        raise VideoAnalysisTimeoutError(
+            f"Video analysis timed out after {timeout} seconds"
+        )
     except subprocess.CalledProcessError as e:
         logger.error(f"ffprobe failed for {video_url}: {e.stderr}")
         raise VideoAnalysisError(f"Failed to analyze video: {e.stderr}")
@@ -309,11 +313,19 @@ def detect_codec(video_path: str, timeout: int = 30) -> Dict[str, str]:
         streams = data.get("streams", [])
 
         video_codec = next(
-            (s.get("codec_name", "unknown") for s in streams if s.get("codec_type") == "video"),
+            (
+                s.get("codec_name", "unknown")
+                for s in streams
+                if s.get("codec_type") == "video"
+            ),
             "unknown",
         )
         audio_codec = next(
-            (s.get("codec_name", "unknown") for s in streams if s.get("codec_type") == "audio"),
+            (
+                s.get("codec_name", "unknown")
+                for s in streams
+                if s.get("codec_type") == "audio"
+            ),
             "unknown",
         )
 
@@ -489,7 +501,9 @@ def analyze_video_quality(video_path: str, timeout: int = 30) -> Dict[str, Any]:
         fps = 0.0
         if "r_frame_rate" in video_stream:
             try:
-                numerator, denominator = map(int, video_stream["r_frame_rate"].split("/"))
+                numerator, denominator = map(
+                    int, video_stream["r_frame_rate"].split("/")
+                )
                 if denominator > 0:
                     fps = numerator / denominator
             except (ValueError, ZeroDivisionError):

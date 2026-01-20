@@ -2,20 +2,20 @@
 Room Manager for Watch Parties.
 Handles watch party creation, joining, leaving, and state management.
 """
-from typing import Optional, List
-from datetime import datetime
 import secrets
 import string
+from datetime import datetime
+from typing import List, Optional
 
 from app.models.realtime import (
-    WatchParty,
-    WatchPartyCreate,
-    WatchPartyResponse,
     ChatMessage,
     ChatMessageCreate,
     ChatMessageResponse,
     ParticipantState,
-    PlaybackSync
+    PlaybackSync,
+    WatchParty,
+    WatchPartyCreate,
+    WatchPartyResponse,
 )
 from app.services.connection_manager import connection_manager
 
@@ -23,7 +23,7 @@ from app.services.connection_manager import connection_manager
 def generate_room_code(length: int = 6) -> str:
     """Generate a random room code (uppercase letters and digits)"""
     chars = string.ascii_uppercase + string.digits
-    return ''.join(secrets.choice(chars) for _ in range(length))
+    return "".join(secrets.choice(chars) for _ in range(length))
 
 
 class RoomManager:
@@ -33,17 +33,13 @@ class RoomManager:
     """
 
     async def create_party(
-        self,
-        host_id: str,
-        host_name: str,
-        data: WatchPartyCreate
+        self, host_id: str, host_name: str, data: WatchPartyCreate
     ) -> WatchParty:
         """Create a new watch party"""
         # Generate unique room code
         room_code = generate_room_code()
         while await WatchParty.find_one(
-            WatchParty.room_code == room_code,
-            WatchParty.ended_at == None
+            WatchParty.room_code == room_code, WatchParty.ended_at == None
         ):
             room_code = generate_room_code()
 
@@ -58,13 +54,8 @@ class RoomManager:
             audio_enabled=data.audio_enabled,
             chat_enabled=data.chat_enabled,
             sync_playback=data.sync_playback,
-            participants=[
-                ParticipantState(
-                    user_id=host_id,
-                    user_name=host_name
-                )
-            ],
-            started_at=datetime.utcnow()
+            participants=[ParticipantState(user_id=host_id, user_name=host_name)],
+            started_at=datetime.utcnow(),
         )
 
         await party.insert()
@@ -77,28 +68,19 @@ class RoomManager:
     async def get_party_by_code(self, room_code: str) -> Optional[WatchParty]:
         """Get an active watch party by room code"""
         return await WatchParty.find_one(
-            WatchParty.room_code == room_code.upper(),
-            WatchParty.ended_at == None
+            WatchParty.room_code == room_code.upper(), WatchParty.ended_at == None
         )
 
     async def get_user_parties(self, user_id: str) -> List[WatchParty]:
         """Get all active parties where user is host or participant"""
         parties = await WatchParty.find(
             WatchParty.ended_at == None,
-            {
-                "$or": [
-                    {"host_id": user_id},
-                    {"participants.user_id": user_id}
-                ]
-            }
+            {"$or": [{"host_id": user_id}, {"participants.user_id": user_id}]},
         ).to_list()
         return parties
 
     async def join_party(
-        self,
-        party_id: str,
-        user_id: str,
-        user_name: str
+        self, party_id: str, user_id: str, user_name: str
     ) -> Optional[WatchParty]:
         """Add a user to a watch party"""
         party = await self.get_party(party_id)
@@ -115,10 +97,7 @@ class RoomManager:
 
         # Add new participant
         party.participants.append(
-            ParticipantState(
-                user_id=user_id,
-                user_name=user_name
-            )
+            ParticipantState(user_id=user_id, user_name=user_name)
         )
         await party.save()
 
@@ -128,29 +107,22 @@ class RoomManager:
                 "type": "participant_joined",
                 "user_id": user_id,
                 "user_name": user_name,
-                "participant_count": party.participant_count
+                "participant_count": party.participant_count,
             },
             str(party.id),
-            exclude_user_id=user_id
+            exclude_user_id=user_id,
         )
 
         return party
 
-    async def leave_party(
-        self,
-        party_id: str,
-        user_id: str
-    ) -> Optional[WatchParty]:
+    async def leave_party(self, party_id: str, user_id: str) -> Optional[WatchParty]:
         """Remove a user from a watch party"""
         party = await self.get_party(party_id)
         if not party:
             return None
 
         # Remove participant
-        party.participants = [
-            p for p in party.participants
-            if p.user_id != user_id
-        ]
+        party.participants = [p for p in party.participants if p.user_id != user_id]
 
         # If host leaves and there are other participants, transfer host
         if party.host_id == user_id and party.participants:
@@ -162,9 +134,9 @@ class RoomManager:
                 {
                     "type": "host_changed",
                     "new_host_id": new_host.user_id,
-                    "new_host_name": new_host.user_name
+                    "new_host_name": new_host.user_name,
                 },
-                str(party.id)
+                str(party.id),
             )
 
         # If no participants left, end the party
@@ -176,9 +148,9 @@ class RoomManager:
                 {
                     "type": "participant_left",
                     "user_id": user_id,
-                    "participant_count": party.participant_count
+                    "participant_count": party.participant_count,
                 },
-                str(party.id)
+                str(party.id),
             )
 
         await party.save()
@@ -195,8 +167,7 @@ class RoomManager:
 
         # Notify all participants
         await connection_manager.broadcast_to_party(
-            {"type": "party_ended"},
-            str(party.id)
+            {"type": "party_ended"}, str(party.id)
         )
 
         return True
@@ -206,7 +177,7 @@ class RoomManager:
         party_id: str,
         user_id: str,
         is_speaking: Optional[bool] = None,
-        is_muted: Optional[bool] = None
+        is_muted: Optional[bool] = None,
     ) -> Optional[WatchParty]:
         """Update a participant's audio/video state"""
         party = await self.get_party(party_id)
@@ -229,20 +200,16 @@ class RoomManager:
                 "type": "participant_state_changed",
                 "user_id": user_id,
                 "is_speaking": is_speaking,
-                "is_muted": is_muted
+                "is_muted": is_muted,
             },
             str(party.id),
-            exclude_user_id=user_id
+            exclude_user_id=user_id,
         )
 
         return party
 
     async def send_chat_message(
-        self,
-        party_id: str,
-        user_id: str,
-        user_name: str,
-        data: ChatMessageCreate
+        self, party_id: str, user_id: str, user_name: str, data: ChatMessageCreate
     ) -> Optional[ChatMessage]:
         """Send a chat message in a watch party with translation support"""
         from app.services.chat_translation_service import chat_translation_service
@@ -265,7 +232,7 @@ class RoomManager:
             user_name=user_name,
             message=data.message,
             message_type=data.message_type,
-            source_language=source_lang
+            source_language=source_lang,
         )
 
         # Get recipient user IDs (all participants except sender)
@@ -307,8 +274,8 @@ class RoomManager:
                         "source_language": source_lang,
                         "is_translated": False,
                         "translation_available": message.has_translations,
-                        "timestamp": message.timestamp.isoformat()
-                    }
+                        "timestamp": message.timestamp.isoformat(),
+                    },
                 }
             else:
                 # Recipient sees translated if available
@@ -332,8 +299,8 @@ class RoomManager:
                         "source_language": source_lang,
                         "is_translated": is_translated,
                         "translation_available": message.has_translations,
-                        "timestamp": message.timestamp.isoformat()
-                    }
+                        "timestamp": message.timestamp.isoformat(),
+                    },
                 }
 
             try:
@@ -344,10 +311,7 @@ class RoomManager:
         return message
 
     async def get_chat_history(
-        self,
-        party_id: str,
-        limit: int = 50,
-        before: Optional[datetime] = None
+        self, party_id: str, limit: int = 50, before: Optional[datetime] = None
     ) -> List[ChatMessage]:
         """Get chat message history for a party"""
         query = ChatMessage.find(ChatMessage.party_id == party_id)
@@ -359,11 +323,7 @@ class RoomManager:
         return list(reversed(messages))
 
     async def sync_playback(
-        self,
-        party_id: str,
-        user_id: str,
-        position: float,
-        is_playing: bool
+        self, party_id: str, user_id: str, position: float, is_playing: bool
     ) -> bool:
         """Sync playback position across party participants"""
         party = await self.get_party(party_id)
@@ -379,19 +339,16 @@ class RoomManager:
                 "type": "playback_sync",
                 "position": position,
                 "is_playing": is_playing,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.utcnow().isoformat(),
             },
             party_id,
-            exclude_user_id=user_id
+            exclude_user_id=user_id,
         )
 
         return True
 
     async def add_reaction(
-        self,
-        message_id: str,
-        user_id: str,
-        emoji: str
+        self, message_id: str, user_id: str, emoji: str
     ) -> Optional[ChatMessage]:
         """Add a reaction to a chat message"""
         message = await ChatMessage.get(message_id)
@@ -412,18 +369,15 @@ class RoomManager:
                     "message_id": message_id,
                     "emoji": emoji,
                     "user_id": user_id,
-                    "action": "add"
+                    "action": "add",
                 },
-                message.party_id
+                message.party_id,
             )
 
         return message
 
     async def remove_reaction(
-        self,
-        message_id: str,
-        user_id: str,
-        emoji: str
+        self, message_id: str, user_id: str, emoji: str
     ) -> Optional[ChatMessage]:
         """Remove a reaction from a chat message"""
         message = await ChatMessage.get(message_id)
@@ -443,9 +397,9 @@ class RoomManager:
                     "message_id": message_id,
                     "emoji": emoji,
                     "user_id": user_id,
-                    "action": "remove"
+                    "action": "remove",
                 },
-                message.party_id
+                message.party_id,
             )
 
         return message
@@ -469,7 +423,7 @@ class RoomManager:
             participant_count=party.participant_count,
             is_active=party.is_active,
             created_at=party.created_at,
-            started_at=party.started_at
+            started_at=party.started_at,
         )
 
 

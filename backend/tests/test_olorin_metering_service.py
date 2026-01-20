@@ -9,28 +9,27 @@ Tests cover:
 - Rate limit checking
 """
 
-import pytest
-import pytest_asyncio
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
-
+import pytest
+import pytest_asyncio
+from app.core.config import settings
 from app.models.integration_partner import (
-    IntegrationPartner,
-    UsageRecord,
-    DubbingSession,
     CapabilityConfig,
+    DubbingSession,
+    IntegrationPartner,
     RateLimitConfig,
+    UsageRecord,
 )
 from app.services.olorin.metering import MeteringService
-from app.core.config import settings
-
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # ============================================
 # Test Fixtures
 # ============================================
+
 
 @pytest_asyncio.fixture
 async def db_client():
@@ -38,7 +37,7 @@ async def db_client():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     await init_beanie(
         database=client[f"{settings.MONGODB_DB_NAME}_metering_test"],
-        document_models=[IntegrationPartner, UsageRecord, DubbingSession]
+        document_models=[IntegrationPartner, UsageRecord, DubbingSession],
     )
     yield client
     # Cleanup
@@ -98,6 +97,7 @@ async def sample_partner(db_client):
 # Dubbing Usage Recording Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_record_dubbing_usage(metering_service, db_client, sample_partner):
     """Test recording dubbing usage."""
@@ -156,6 +156,7 @@ async def test_dubbing_usage_aggregation(metering_service, db_client, sample_par
 # Search Usage Recording Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_record_search_usage(metering_service, db_client, sample_partner):
     """Test recording search usage."""
@@ -197,6 +198,7 @@ async def test_search_usage_aggregation(metering_service, db_client, sample_part
 # Context Usage Recording Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_record_context_usage(metering_service, db_client, sample_partner):
     """Test recording cultural context usage."""
@@ -216,6 +218,7 @@ async def test_record_context_usage(metering_service, db_client, sample_partner)
 # ============================================
 # Recap Usage Recording Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 async def test_record_recap_usage(metering_service, db_client, sample_partner):
@@ -259,6 +262,7 @@ async def test_recap_usage_aggregation(metering_service, db_client, sample_partn
 # Usage Summary Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_get_usage_summary(metering_service, db_client, sample_partner):
     """Test getting usage summary for partner."""
@@ -292,7 +296,9 @@ async def test_get_usage_summary(metering_service, db_client, sample_partner):
 
 
 @pytest.mark.asyncio
-async def test_get_usage_summary_by_capability(metering_service, db_client, sample_partner):
+async def test_get_usage_summary_by_capability(
+    metering_service, db_client, sample_partner
+):
     """Test getting usage summary filtered by capability."""
     await metering_service.record_dubbing_usage(
         partner_id=sample_partner.partner_id,
@@ -318,7 +324,9 @@ async def test_get_usage_summary_by_capability(metering_service, db_client, samp
 
 
 @pytest.mark.asyncio
-async def test_get_usage_summary_date_range(metering_service, db_client, sample_partner):
+async def test_get_usage_summary_date_range(
+    metering_service, db_client, sample_partner
+):
     """Test getting usage summary with date range."""
     await metering_service.record_dubbing_usage(
         partner_id=sample_partner.partner_id,
@@ -343,8 +351,11 @@ async def test_get_usage_summary_date_range(metering_service, db_client, sample_
 # Usage Limit Tests
 # ============================================
 
+
 @pytest.mark.asyncio
-async def test_check_usage_limit_within_limit(metering_service, db_client, sample_partner):
+async def test_check_usage_limit_within_limit(
+    metering_service, db_client, sample_partner
+):
     """Test checking usage when within limit."""
     # Record some usage (small amount)
     await metering_service.record_search_usage(
@@ -397,6 +408,7 @@ async def test_check_usage_limit_no_limit_set(metering_service, db_client):
 # ============================================
 # Session Management Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 async def test_create_dubbing_session(metering_service, db_client, sample_partner):
@@ -461,7 +473,9 @@ async def test_end_dubbing_session(metering_service, db_client, sample_partner):
 
 
 @pytest.mark.asyncio
-async def test_end_dubbing_session_with_error(metering_service, db_client, sample_partner):
+async def test_end_dubbing_session_with_error(
+    metering_service, db_client, sample_partner
+):
     """Test ending a dubbing session with error."""
     await metering_service.create_dubbing_session(
         partner_id=sample_partner.partner_id,
@@ -529,6 +543,7 @@ async def test_get_active_sessions_count(metering_service, db_client, sample_par
 # Cost Calculation Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_dubbing_cost_calculation(metering_service, db_client, sample_partner):
     """Test that dubbing costs are calculated correctly."""
@@ -579,6 +594,7 @@ async def test_llm_cost_calculation(metering_service, db_client, sample_partner)
 # Edge Cases and Error Handling
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_update_nonexistent_session(metering_service, db_client):
     """Test updating non-existent session."""
@@ -619,6 +635,7 @@ async def test_zero_usage_recording(metering_service, db_client, sample_partner)
 # Performance Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_usage_recording_performance(metering_service, db_client, sample_partner):
     """Test usage recording performance."""
@@ -638,7 +655,9 @@ async def test_usage_recording_performance(metering_service, db_client, sample_p
 
 
 @pytest.mark.asyncio
-async def test_session_creation_performance(metering_service, db_client, sample_partner):
+async def test_session_creation_performance(
+    metering_service, db_client, sample_partner
+):
     """Test session creation performance."""
     import time
 

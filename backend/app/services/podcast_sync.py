@@ -5,16 +5,19 @@ Automatically fetches and updates podcast episodes from RSS feeds on server star
 import asyncio
 import logging
 from datetime import datetime, timedelta
-from typing import Optional, List
+from typing import List, Optional
+
 import httpx
-from bs4 import BeautifulSoup
 from app.models.content import Podcast, PodcastEpisode
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
 # Suppress XML parsing warnings
 import warnings
+
 from bs4 import XMLParsedAsHTMLWarning
+
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
 HEADERS = {
@@ -23,7 +26,9 @@ HEADERS = {
 }
 
 
-async def fetch_rss_episodes(rss_url: str, max_episodes: int = 3) -> Optional[List[dict]]:
+async def fetch_rss_episodes(
+    rss_url: str, max_episodes: int = 3
+) -> Optional[List[dict]]:
     """
     Fetch the latest episodes from an RSS feed.
 
@@ -75,7 +80,10 @@ async def fetch_rss_episodes(rss_url: str, max_episodes: int = 3) -> Optional[Li
                 if pubdate_elem:
                     try:
                         from email.utils import parsedate_to_datetime
-                        pub_date = parsedate_to_datetime(pubdate_elem.get_text(strip=True))
+
+                        pub_date = parsedate_to_datetime(
+                            pubdate_elem.get_text(strip=True)
+                        )
                     except:
                         pass
 
@@ -90,14 +98,20 @@ async def fetch_rss_episodes(rss_url: str, max_episodes: int = 3) -> Optional[Li
                 if duration_elem:
                     duration = duration_elem.get_text(strip=True)
 
-                episodes.append({
-                    "title": title_elem.get_text(strip=True),
-                    "description": desc_elem.get_text(strip=True)[:500] if desc_elem else None,
-                    "audio_url": audio_url,
-                    "duration": duration,
-                    "published_at": pub_date,
-                    "guid": guid_elem.get_text(strip=True)[:50] if guid_elem else None,
-                })
+                episodes.append(
+                    {
+                        "title": title_elem.get_text(strip=True),
+                        "description": desc_elem.get_text(strip=True)[:500]
+                        if desc_elem
+                        else None,
+                        "audio_url": audio_url,
+                        "duration": duration,
+                        "published_at": pub_date,
+                        "guid": guid_elem.get_text(strip=True)[:50]
+                        if guid_elem
+                        else None,
+                    }
+                )
 
             logger.info(f"✅ Fetched {len(episodes)} episodes from RSS: {rss_url}")
             return episodes
@@ -133,7 +147,9 @@ async def sync_podcast_episodes(podcast: Podcast, max_episodes: int = 20) -> int
         return 0
 
     # Get existing episode GUIDs to avoid duplicates
-    existing_episodes = await PodcastEpisode.find({"podcast_id": str(podcast.id)}).to_list(length=None)
+    existing_episodes = await PodcastEpisode.find(
+        {"podcast_id": str(podcast.id)}
+    ).to_list(length=None)
     existing_guids = {ep.guid for ep in existing_episodes if ep.guid}
 
     # Add new episodes
@@ -168,10 +184,14 @@ async def sync_podcast_episodes(podcast: Podcast, max_episodes: int = 20) -> int
 
     # Update podcast metadata
     if new_episodes_added > 0:
-        total_episodes = await PodcastEpisode.find({"podcast_id": str(podcast.id)}).count()
-        latest_episodes = await PodcastEpisode.find(
+        total_episodes = await PodcastEpisode.find(
             {"podcast_id": str(podcast.id)}
-        ).sort([("published_at", -1)]).to_list(length=1)
+        ).count()
+        latest_episodes = (
+            await PodcastEpisode.find({"podcast_id": str(podcast.id)})
+            .sort([("published_at", -1)])
+            .to_list(length=1)
+        )
 
         podcast.episode_count = total_episodes
         if latest_episodes:
@@ -197,9 +217,9 @@ async def sync_all_podcasts(max_episodes: int = 20) -> dict:
     Returns:
         Dictionary with sync results
     """
-    logger.info("\n" + "="*80)
+    logger.info("\n" + "=" * 80)
     logger.info("🎙️ Starting Podcast RSS Sync")
-    logger.info("="*80 + "\n")
+    logger.info("=" * 80 + "\n")
 
     # Find all active podcasts with RSS feeds
     podcasts = await Podcast.find(
@@ -229,12 +249,12 @@ async def sync_all_podcasts(max_episodes: int = 20) -> dict:
         except Exception as e:
             logger.error(f"❌ Error syncing {podcast.title}: {str(e)}")
 
-    logger.info("\n" + "="*80)
+    logger.info("\n" + "=" * 80)
     logger.info(f"✅ Podcast Sync Complete")
     logger.info(f"   📚 Total podcasts: {len(podcasts)}")
     logger.info(f"   ✔️ Podcasts with new episodes: {podcasts_synced}")
     logger.info(f"   📝 Total episodes added: {total_episodes_added}")
-    logger.info("="*80 + "\n")
+    logger.info("=" * 80 + "\n")
 
     return {
         "total_podcasts": len(podcasts),

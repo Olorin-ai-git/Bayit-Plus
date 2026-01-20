@@ -5,20 +5,23 @@ All Pydantic models for the chat API endpoints.
 """
 
 from typing import Optional
+
 from pydantic import BaseModel
 
 
 class ChatRequest(BaseModel):
     """Request model for chat messages."""
+
     message: str
     conversation_id: Optional[str] = None
     context: Optional[dict] = None
-    mode: Optional[str] = 'voice_only'
+    mode: Optional[str] = "voice_only"
     language: Optional[str] = None
 
 
 class ChatResponse(BaseModel):
     """Response model for chat messages."""
+
     message: str
     conversation_id: str
     recommendations: Optional[list] = None
@@ -34,12 +37,14 @@ class ChatResponse(BaseModel):
 
 class TranscriptionResponse(BaseModel):
     """Response model for audio transcription."""
+
     text: str
     language: str = "he"
 
 
 class TTSRequest(BaseModel):
     """Request model for text-to-speech."""
+
     text: str
     voice_id: Optional[str] = None
     language: str = "he"
@@ -48,11 +53,13 @@ class TTSRequest(BaseModel):
 
 class HebronicsRequest(BaseModel):
     """Request model for Hebronics processing."""
+
     text: str
 
 
 class HebronicsResponse(BaseModel):
     """Response model for Hebronics processing."""
+
     original: str
     normalized: str
     intent: Optional[str] = None
@@ -64,18 +71,21 @@ class HebronicsResponse(BaseModel):
 
 class ContentItemRequest(BaseModel):
     """Single content item to resolve."""
+
     name: str
     type: str = "any"
 
 
 class ResolveContentRequest(BaseModel):
     """Request to resolve multiple content items by name."""
+
     items: list[ContentItemRequest]
     language: str = "he"
 
 
 class ResolvedContentItem(BaseModel):
     """Resolved content item with stream info."""
+
     id: str
     name: str
     type: str
@@ -87,6 +97,7 @@ class ResolvedContentItem(BaseModel):
 
 class ResolveContentResponse(BaseModel):
     """Response with resolved content items."""
+
     items: list[ResolvedContentItem]
     unresolved: list[str] = []
     total_requested: int
@@ -95,12 +106,14 @@ class ResolveContentResponse(BaseModel):
 
 class VoiceSearchRequest(BaseModel):
     """Request model for voice search."""
+
     transcript: str
     language: str = "he"
 
 
 class VoiceSearchResponse(BaseModel):
     """Response model for voice search."""
+
     original_transcript: str
     normalized_query: str
     intent: Optional[str] = None
@@ -112,6 +125,7 @@ class VoiceSearchResponse(BaseModel):
 
 class ElevenLabsWebhookEvent(BaseModel):
     """ElevenLabs webhook event payload."""
+
     event_type: str
     request_id: Optional[str] = None
     transcription_id: Optional[str] = None
@@ -125,6 +139,7 @@ class ElevenLabsWebhookEvent(BaseModel):
 
 class WebhookResponse(BaseModel):
     """Response for webhook acknowledgment."""
+
     received: bool = True
     event_type: str
     message: str
@@ -132,6 +147,7 @@ class WebhookResponse(BaseModel):
 
 class TranscriptionStatusResponse(BaseModel):
     """Response for transcription status check."""
+
     transcription_id: str
     status: str
     text: Optional[str] = None
@@ -143,6 +159,7 @@ class TranscriptionStatusResponse(BaseModel):
 
 class SFXRequest(BaseModel):
     """Request for sound effect generation."""
+
     gesture: str
     custom_description: Optional[str] = None
     duration_seconds: Optional[float] = None
@@ -150,6 +167,7 @@ class SFXRequest(BaseModel):
 
 class SFXResponse(BaseModel):
     """Response metadata for SFX."""
+
     gesture: str
     description: str
     cached: bool

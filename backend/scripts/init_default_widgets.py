@@ -11,23 +11,31 @@ Or integrate into main.py startup event.
 
 import asyncio
 from datetime import datetime
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
 
 from app.core.config import settings
-from app.models.widget import Widget, WidgetType, WidgetContentType, WidgetContent, WidgetPosition
 from app.models.content import LiveChannel
+from app.models.widget import (
+    Widget,
+    WidgetContent,
+    WidgetContentType,
+    WidgetPosition,
+    WidgetType,
+)
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 
 async def find_channel_12():
     """Find Channel 12 in the live channels collection."""
     # Try to find by name patterns
     channel = await LiveChannel.find_one(
-        {"$or": [
-            {"name": {"$regex": "channel.*12", "$options": "i"}},
-            {"name": {"$regex": "ערוץ.*12", "$options": "i"}},
-            {"name": {"$regex": "12.*channel", "$options": "i"}},
-        ]}
+        {
+            "$or": [
+                {"name": {"$regex": "channel.*12", "$options": "i"}},
+                {"name": {"$regex": "ערוץ.*12", "$options": "i"}},
+                {"name": {"$regex": "12.*channel", "$options": "i"}},
+            ]
+        }
     )
     return channel
 
@@ -36,10 +44,9 @@ async def create_default_channel_12_widget():
     """Create the default Channel 12 widget if it doesn't exist."""
 
     # Check if widget already exists
-    existing = await Widget.find_one({
-        "type": WidgetType.SYSTEM,
-        "title": {"$regex": "channel.*12", "$options": "i"}
-    })
+    existing = await Widget.find_one(
+        {"type": WidgetType.SYSTEM, "title": {"$regex": "channel.*12", "$options": "i"}}
+    )
 
     if existing:
         print(f"[Widgets] Channel 12 widget already exists: {existing.id}")
@@ -49,8 +56,12 @@ async def create_default_channel_12_widget():
     channel = await find_channel_12()
 
     if not channel:
-        print("[Widgets] Channel 12 not found in live channels. Creating widget without channel reference.")
-        print("[Widgets] You can manually update the widget with the correct channel ID later.")
+        print(
+            "[Widgets] Channel 12 not found in live channels. Creating widget without channel reference."
+        )
+        print(
+            "[Widgets] You can manually update the widget with the correct channel ID later."
+        )
 
     # Create the widget
     widget = Widget(
@@ -89,7 +100,9 @@ async def create_default_channel_12_widget():
     if channel:
         print(f"[Widgets] Linked to live channel: {channel.name} ({channel.id})")
     else:
-        print("[Widgets] Widget created but not linked to a channel. Update manually when Channel 12 is added.")
+        print(
+            "[Widgets] Widget created but not linked to a channel. Update manually when Channel 12 is added."
+        )
 
     return widget
 
@@ -103,10 +116,7 @@ async def main():
     database = client[settings.MONGODB_DB_NAME]
 
     # Initialize Beanie
-    await init_beanie(
-        database=database,
-        document_models=[Widget, LiveChannel]
-    )
+    await init_beanie(database=database, document_models=[Widget, LiveChannel])
 
     print("[Widgets] Creating default widgets...")
     await create_default_channel_12_widget()

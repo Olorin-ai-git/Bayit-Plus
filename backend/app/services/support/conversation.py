@@ -44,15 +44,15 @@ async def update_conversation_after_response(
     escalation_reason: Optional[str],
 ) -> None:
     """Update conversation after receiving assistant response."""
-    conversation.messages.append({
-        'role': 'assistant',
-        'content': response_text,
-        'timestamp': datetime.now(timezone.utc).isoformat(),
-    })
+    conversation.messages.append(
+        {
+            "role": "assistant",
+            "content": response_text,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+    )
 
-    conversation.docs_referenced = list(set(
-        conversation.docs_referenced + doc_paths
-    ))
+    conversation.docs_referenced = list(set(conversation.docs_referenced + doc_paths))
 
     if escalation_needed and not conversation.escalated:
         conversation.escalated = True
@@ -80,5 +80,5 @@ async def rate_conversation(
 
         return True
     except Exception as e:
-        logger.error(f'[Support] Error rating conversation: {e}')
+        logger.error(f"[Support] Error rating conversation: {e}")
         return False

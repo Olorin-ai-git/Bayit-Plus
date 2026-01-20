@@ -2,13 +2,14 @@
 Download real podcast cover images from 103FM website and store locally.
 """
 import asyncio
+import hashlib
+import os
+from pathlib import Path
+from urllib.parse import urljoin
+
 import httpx
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
-from pathlib import Path
-import hashlib
-from urllib.parse import urljoin
-import os
 
 
 async def scrape_podcast_covers_with_images():
@@ -17,9 +18,12 @@ async def scrape_podcast_covers_with_images():
 
     try:
         async with httpx.AsyncClient(timeout=15.0, follow_redirects=True) as client:
-            response = await client.get(url, headers={
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            })
+            response = await client.get(
+                url,
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                },
+            )
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, "html.parser")
@@ -37,7 +41,9 @@ async def scrape_podcast_covers_with_images():
             for img_selector, parent_selector in selectors:
                 images = soup.select(img_selector)
                 if images:
-                    print(f"Found {len(images)} images using selector: {img_selector}\n")
+                    print(
+                        f"Found {len(images)} images using selector: {img_selector}\n"
+                    )
 
                     for img in images:
                         src = img.get("src") or img.get("data-src")
@@ -48,7 +54,12 @@ async def scrape_podcast_covers_with_images():
                         name = img.get("alt", "").strip()
 
                         if not name and parent_selector:
-                            parent = img.find_parent(parent_selector.split(".")[0], class_=parent_selector.split(".")[1] if "." in parent_selector else None)
+                            parent = img.find_parent(
+                                parent_selector.split(".")[0],
+                                class_=parent_selector.split(".")[1]
+                                if "." in parent_selector
+                                else None,
+                            )
                             if parent:
                                 name_elem = parent.find(["span", "div", "h3"])
                                 if name_elem:
@@ -109,8 +120,7 @@ async def download_and_update_covers(podcast_data: dict):
             if await download_image(http_client, img_url, file_path):
                 # Update database
                 db.podcasts.update_one(
-                    {"title": podcast_name},
-                    {"$set": {"cover": local_url}}
+                    {"title": podcast_name}, {"$set": {"cover": local_url}}
                 )
                 updated += 1
                 print(f"✓ Downloaded and updated: {podcast_name}")

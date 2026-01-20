@@ -7,26 +7,23 @@ with a unified service that supports any culture dynamically.
 
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
 from app.models.culture import (
     Culture,
     CultureCity,
-    CultureNewsSource,
-    CultureContentItem,
-    CultureResponse,
     CultureCityResponse,
-    CultureNewsSourceResponse,
-    CultureContentItemResponse,
     CultureContentAggregatedResponse,
+    CultureContentItem,
+    CultureContentItemResponse,
     CultureFeaturedResponse,
+    CultureNewsSource,
+    CultureNewsSourceResponse,
+    CultureResponse,
     CultureTimeResponse,
 )
-from app.services.culture_scrapers import (
-    get_scraper,
-    CultureHeadlineItem,
-)
+from app.services.culture_scrapers import CultureHeadlineItem, get_scraper
 
 logger = logging.getLogger(__name__)
 
@@ -280,14 +277,21 @@ class CultureContentService:
                     # Scrape city-specific news
                     headlines = await scraper.scrape_city_news(city_id)
                     for headline in headlines:
-                        all_items.append(self._headline_to_dict(headline, culture_id, city_id))
-                    logger.info(f"Scraped {len(all_items)} items for {culture_id}/{city_id}")
+                        all_items.append(
+                            self._headline_to_dict(headline, culture_id, city_id)
+                        )
+                    logger.info(
+                        f"Scraped {len(all_items)} items for {culture_id}/{city_id}"
+                    )
                 except Exception as e:
                     logger.error(f"Scraper failed for {culture_id}/{city_id}: {e}")
 
             # Sort by relevance then date
             all_items.sort(
-                key=lambda x: (x.get("relevance_score", 0), x.get("published_at", datetime.min)),
+                key=lambda x: (
+                    x.get("relevance_score", 0),
+                    x.get("published_at", datetime.min),
+                ),
                 reverse=True,
             )
 
@@ -329,7 +333,9 @@ class CultureContentService:
             CultureNewsSource.is_active == True,
         ).count()
 
-        last_updated = self._cache.get_last_updated(cache_key) or datetime.now(timezone.utc)
+        last_updated = self._cache.get_last_updated(cache_key) or datetime.now(
+            timezone.utc
+        )
 
         return CultureContentAggregatedResponse(
             items=response_items,
@@ -363,8 +369,10 @@ class CultureContentService:
             if scraper:
                 try:
                     headlines = await scraper.scrape_headlines()
-                    for headline in headlines[:limit * 2]:
-                        all_items.append(self._headline_to_dict(headline, culture_id, None))
+                    for headline in headlines[: limit * 2]:
+                        all_items.append(
+                            self._headline_to_dict(headline, culture_id, None)
+                        )
                 except Exception as e:
                     logger.error(f"Trending scrape failed for {culture_id}: {e}")
 
@@ -494,7 +502,9 @@ class CultureContentService:
 
     # ==================== Cache Operations ====================
 
-    def clear_cache(self, culture_id: Optional[str] = None, city_id: Optional[str] = None) -> None:
+    def clear_cache(
+        self, culture_id: Optional[str] = None, city_id: Optional[str] = None
+    ) -> None:
         """Clear the content cache."""
         if culture_id and city_id:
             self._cache.clear(f"culture_content:{culture_id}:{city_id}")

@@ -5,9 +5,8 @@ This file wraps the extracted bayit-voice-pipeline package for backward compatib
 
 import warnings
 
-from bayit_voice import ElevenLabsRealtimeService as _ExtractedService
-
 from app.core.config import settings
+from bayit_voice import ElevenLabsRealtimeService as _ExtractedService
 
 
 class _SettingsVoiceConfigAdapter:
@@ -36,6 +35,6 @@ class ElevenLabsRealtimeService(_ExtractedService):
             "Importing ElevenLabsRealtimeService from app.services is deprecated. "
             "Use 'from bayit_voice.stt import ElevenLabsRealtimeService' instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         super().__init__(config=_SettingsVoiceConfigAdapter())

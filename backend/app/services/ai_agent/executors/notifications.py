@@ -5,7 +5,7 @@ Functions for sending email notifications to administrators.
 """
 
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
 from app.services.email_service import send_email
@@ -21,7 +21,7 @@ async def execute_send_email_notification(
     items_checked: int,
     issues_found: int,
     issues_fixed: int = 0,
-    manual_action_needed: Optional[List[str]] = None
+    manual_action_needed: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """Send an email notification to administrators about major issues."""
     try:
@@ -30,15 +30,12 @@ async def execute_send_email_notification(
             logger.warning("No admin email addresses configured")
             return {
                 "success": False,
-                "error": "No admin email addresses configured (ADMIN_EMAIL_ADDRESSES)"
+                "error": "No admin email addresses configured (ADMIN_EMAIL_ADDRESSES)",
             }
 
         admin_emails = [e.strip() for e in admin_emails_str.split(",") if e.strip()]
         if not admin_emails:
-            return {
-                "success": False,
-                "error": "No valid admin email addresses found"
-            }
+            return {"success": False, "error": "No valid admin email addresses found"}
 
         severity_emoji = "🔴" if severity == "critical" else "🟠"
         severity_color = "#dc2626" if severity == "critical" else "#f97316"
@@ -153,7 +150,7 @@ async def execute_send_email_notification(
         email_sent = await send_email(
             to_emails=admin_emails,
             subject=f"[Bayit+ {severity.upper()}] {subject}",
-            html_content=html_content
+            html_content=html_content,
         )
 
         if email_sent:
@@ -161,13 +158,13 @@ async def execute_send_email_notification(
             return {
                 "success": True,
                 "message": f"Email sent to {len(admin_emails)} administrator(s)",
-                "recipients": admin_emails
+                "recipients": admin_emails,
             }
         else:
             logger.warning("Failed to send audit alert email")
             return {
                 "success": False,
-                "error": "Failed to send email (check SendGrid configuration)"
+                "error": "Failed to send email (check SendGrid configuration)",
             }
 
     except Exception as e:

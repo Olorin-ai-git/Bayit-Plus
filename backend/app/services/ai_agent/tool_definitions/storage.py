@@ -10,11 +10,11 @@ STORAGE_TOOLS = [
                 "bucket_name": {
                     "type": "string",
                     "description": "GCS bucket name to check (default: bayit-plus-media-new)",
-                    "default": "bayit-plus-media-new"
+                    "default": "bayit-plus-media-new",
                 }
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "list_large_files",
@@ -25,21 +25,21 @@ STORAGE_TOOLS = [
                 "bucket_name": {
                     "type": "string",
                     "description": "GCS bucket name to check (default: bayit-plus-media-new)",
-                    "default": "bayit-plus-media-new"
+                    "default": "bayit-plus-media-new",
                 },
                 "size_threshold_gb": {
                     "type": "number",
                     "description": "Size threshold in GB (default: 5.0)",
-                    "default": 5.0
+                    "default": 5.0,
                 },
                 "limit": {
                     "type": "integer",
                     "description": "Maximum number of large files to return (default: 20)",
-                    "default": 20
-                }
+                    "default": 20,
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "calculate_storage_costs",
@@ -50,16 +50,16 @@ STORAGE_TOOLS = [
                 "bucket_name": {
                     "type": "string",
                     "description": "GCS bucket name to analyze (default: bayit-plus-media-new)",
-                    "default": "bayit-plus-media-new"
+                    "default": "bayit-plus-media-new",
                 },
                 "storage_class": {
                     "type": "string",
                     "description": "GCS storage class for pricing",
                     "enum": ["STANDARD", "NEARLINE", "COLDLINE", "ARCHIVE"],
-                    "default": "STANDARD"
-                }
+                    "default": "STANDARD",
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
 ]

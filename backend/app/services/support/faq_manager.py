@@ -4,7 +4,7 @@ Handles FAQ entry retrieval and feedback recording.
 """
 
 import logging
-from typing import Optional, List
+from typing import List, Optional
 
 from app.models.support import FAQEntry
 
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 async def get_faq_by_category(
     category: Optional[str] = None,
-    language: str = 'en',
+    language: str = "en",
 ) -> List[dict]:
     """Get FAQ entries, optionally filtered by category."""
     query = FAQEntry.find(FAQEntry.is_active == True)  # noqa: E712
@@ -26,15 +26,17 @@ async def get_faq_by_category(
     result = []
     for entry in entries:
         trans = entry.translations.get(language, {})
-        result.append({
-            'id': str(entry.id),
-            'question': trans.get('question', entry.question_key),
-            'answer': trans.get('answer', entry.answer_key),
-            'category': entry.category,
-            'views': entry.views,
-            'helpful_yes': entry.helpful_yes,
-            'helpful_no': entry.helpful_no,
-        })
+        result.append(
+            {
+                "id": str(entry.id),
+                "question": trans.get("question", entry.question_key),
+                "answer": trans.get("answer", entry.answer_key),
+                "category": entry.category,
+                "views": entry.views,
+                "helpful_yes": entry.helpful_yes,
+                "helpful_no": entry.helpful_no,
+            }
+        )
 
     return result
 
@@ -47,7 +49,7 @@ async def record_faq_view(faq_id: str) -> None:
             entry.views += 1
             await entry.save()
     except Exception as e:
-        logger.error(f'[Support] Error recording FAQ view: {e}')
+        logger.error(f"[Support] Error recording FAQ view: {e}")
 
 
 async def record_faq_feedback(
@@ -64,4 +66,4 @@ async def record_faq_feedback(
                 entry.helpful_no += 1
             await entry.save()
     except Exception as e:
-        logger.error(f'[Support] Error recording FAQ feedback: {e}')
+        logger.error(f"[Support] Error recording FAQ feedback: {e}")

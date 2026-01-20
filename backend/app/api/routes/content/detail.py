@@ -5,11 +5,14 @@ Content detail and streaming endpoints.
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
-
-from app.core.security import get_current_active_user, get_optional_user, get_passkey_session
+from app.core.security import (
+    get_current_active_user,
+    get_optional_user,
+    get_passkey_session,
+)
 from app.models.content import Content
 from app.models.user import User
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -34,12 +37,12 @@ async def check_visibility_access(
     Raises:
         HTTPException if access is denied
     """
-    visibility_mode = getattr(content, 'visibility_mode', None) or 'public'
+    visibility_mode = getattr(content, "visibility_mode", None) or "public"
 
-    if visibility_mode == 'public':
+    if visibility_mode == "public":
         return True
 
-    if visibility_mode == 'private':
+    if visibility_mode == "private":
         # Private content is only accessible via direct link and requires passkey for streaming
         if require_stream:
             passkey_session = await get_passkey_session(request)
@@ -50,9 +53,9 @@ async def check_visibility_access(
                 )
         return True
 
-    if visibility_mode == 'passkey_protected':
+    if visibility_mode == "passkey_protected":
         # Free content is always accessible
-        if content.requires_subscription == 'none':
+        if content.requires_subscription == "none":
             return True
 
         # Check for valid passkey session
@@ -81,11 +84,15 @@ async def get_content(
     # Check visibility access (doesn't require stream access for details)
     await check_visibility_access(content, request, require_stream=False)
 
-    related = await Content.find(
-        Content.category_id == content.category_id,
-        Content.id != content.id,
-        Content.is_published == True,
-    ).limit(6).to_list()
+    related = (
+        await Content.find(
+            Content.category_id == content.category_id,
+            Content.id != content.id,
+            Content.is_published == True,
+        )
+        .limit(6)
+        .to_list()
+    )
 
     response = {
         "id": str(content.id),
@@ -103,7 +110,10 @@ async def get_content(
         "is_series": content.is_series,
         "type": "series" if content.is_series else "movie",
         "available_subtitle_languages": content.available_subtitle_languages or [],
-        "has_subtitles": bool(content.available_subtitle_languages and len(content.available_subtitle_languages) > 0),
+        "has_subtitles": bool(
+            content.available_subtitle_languages
+            and len(content.available_subtitle_languages) > 0
+        ),
         "related": [
             {
                 "id": str(item.id),
@@ -130,7 +140,9 @@ async def get_content(
 async def get_stream_url(
     content_id: str,
     request: Request,
-    quality: Optional[str] = Query(None, description="Quality tier to request (4k, 1080p, 720p, 480p)"),
+    quality: Optional[str] = Query(
+        None, description="Quality tier to request (4k, 1080p, 720p, 480p)"
+    ),
     current_user: User = Depends(get_current_active_user),
 ):
     """Get stream URL for content (requires authentication). Supports quality selection."""
@@ -150,7 +162,9 @@ async def get_stream_url(
             user_tier = current_user.subscription_tier
 
             tier_levels = {"basic": 1, "premium": 2, "family": 3}
-            if not user_tier or tier_levels.get(user_tier, 0) < tier_levels.get(required_tier, 1):
+            if not user_tier or tier_levels.get(user_tier, 0) < tier_levels.get(
+                required_tier, 1
+            ):
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Subscription upgrade required",
@@ -162,16 +176,22 @@ async def get_stream_url(
 
     if content.quality_variants:
         for variant in content.quality_variants:
-            available_qualities.append({
-                "quality": variant.get("quality_tier"),
-                "resolution_height": variant.get("resolution_height"),
-                "content_id": variant.get("content_id"),
-            })
+            available_qualities.append(
+                {
+                    "quality": variant.get("quality_tier"),
+                    "resolution_height": variant.get("resolution_height"),
+                    "content_id": variant.get("content_id"),
+                }
+            )
 
         if quality:
             matching_variant = next(
-                (v for v in content.quality_variants if v.get("quality_tier") == quality),
-                None
+                (
+                    v
+                    for v in content.quality_variants
+                    if v.get("quality_tier") == quality
+                ),
+                None,
             )
             if matching_variant:
                 stream_url = matching_variant.get("stream_url", content.stream_url)
@@ -181,16 +201,22 @@ async def get_stream_url(
         primary = await Content.get(content.primary_content_id)
         if primary and primary.quality_variants:
             for variant in primary.quality_variants:
-                available_qualities.append({
-                    "quality": variant.get("quality_tier"),
-                    "resolution_height": variant.get("resolution_height"),
-                    "content_id": variant.get("content_id"),
-                })
+                available_qualities.append(
+                    {
+                        "quality": variant.get("quality_tier"),
+                        "resolution_height": variant.get("resolution_height"),
+                        "content_id": variant.get("content_id"),
+                    }
+                )
 
             if quality:
                 matching_variant = next(
-                    (v for v in primary.quality_variants if v.get("quality_tier") == quality),
-                    None
+                    (
+                        v
+                        for v in primary.quality_variants
+                        if v.get("quality_tier") == quality
+                    ),
+                    None,
                 )
                 if matching_variant:
                     stream_url = matching_variant.get("stream_url", content.stream_url)
@@ -207,11 +233,13 @@ async def get_stream_url(
         elif height >= 480:
             current_quality = "480p"
 
-        available_qualities.append({
-            "quality": current_quality,
-            "resolution_height": height,
-            "content_id": str(content.id),
-        })
+        available_qualities.append(
+            {
+                "quality": current_quality,
+                "resolution_height": height,
+                "content_id": str(content.id),
+            }
+        )
 
     return {
         "url": stream_url,

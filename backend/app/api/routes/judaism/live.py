@@ -5,13 +5,12 @@ Handles:
 - GET /live - Get currently live Torah classes and prayers
 """
 
-from fastapi import APIRouter
-
-from app.models.content import LiveChannel
 from app.api.routes.judaism.constants import (
-    LIVE_CHANNEL_NAME_REGEX,
     LIVE_CHANNEL_CATEGORY_REGEX,
+    LIVE_CHANNEL_NAME_REGEX,
 )
+from app.models.content import LiveChannel
+from fastapi import APIRouter
 
 router = APIRouter()
 
@@ -20,13 +19,15 @@ router = APIRouter()
 async def get_live_shiurim() -> dict:
     """Get currently live Torah classes and prayers."""
     # Get channels that are religious/Jewish content
-    channels = await LiveChannel.find({
-        "is_active": True,
-        "$or": [
-            {"name": {"$regex": LIVE_CHANNEL_NAME_REGEX, "$options": "i"}},
-            {"category": {"$regex": LIVE_CHANNEL_CATEGORY_REGEX, "$options": "i"}},
-        ],
-    }).to_list()
+    channels = await LiveChannel.find(
+        {
+            "is_active": True,
+            "$or": [
+                {"name": {"$regex": LIVE_CHANNEL_NAME_REGEX, "$options": "i"}},
+                {"category": {"$regex": LIVE_CHANNEL_CATEGORY_REGEX, "$options": "i"}},
+            ],
+        }
+    ).to_list()
 
     return {
         "live": [

@@ -24,7 +24,7 @@ LEGAL_TERMS = [
     },
     {
         "reference_id": "bagatz",
-        "canonical_name": "בג\"ץ",
+        "canonical_name": 'בג"ץ',
         "canonical_name_en": "Supreme Court",
         "category": ReferenceCategory.ORGANIZATION,
         "subcategory": "legal",

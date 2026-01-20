@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 # Translation provider imports
 try:
     from google.cloud import translate_v2 as translate
+
     GOOGLE_TRANSLATE_AVAILABLE = True
 except ImportError:
     translate = None
@@ -23,6 +24,7 @@ except ImportError:
 
 try:
     from anthropic import AsyncAnthropic
+
     CLAUDE_AVAILABLE = True
 except ImportError:
     AsyncAnthropic = None

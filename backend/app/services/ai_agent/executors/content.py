@@ -6,7 +6,7 @@ Functions for listing and retrieving content information.
 
 import logging
 import random
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
@@ -18,7 +18,7 @@ async def execute_list_content_items(
     category_id: Optional[str] = None,
     limit: int = 100,
     random_sample: bool = False,
-    skip: int = 0
+    skip: int = 0,
 ) -> Dict[str, Any]:
     """Get a list of content items to audit."""
     try:
@@ -41,7 +41,13 @@ async def execute_list_content_items(
                 items = all_items
         else:
             # Get items with skip/limit for pagination
-            items = await Content.find(query).sort([("created_at", -1)]).skip(skip).limit(limit).to_list()
+            items = (
+                await Content.find(query)
+                .sort([("created_at", -1)])
+                .skip(skip)
+                .limit(limit)
+                .to_list()
+            )
 
         has_more = (skip + len(items)) < total_count
 
@@ -63,10 +69,12 @@ async def execute_list_content_items(
                     "has_description": bool(item.description),
                     "has_stream": bool(item.stream_url),
                     "imdb_rating": item.imdb_rating,
-                    "created_at": item.created_at.isoformat() if item.created_at else None
+                    "created_at": item.created_at.isoformat()
+                    if item.created_at
+                    else None,
                 }
                 for item in items
-            ]
+            ],
         }
     except Exception as e:
         logger.error(f"Error in list_content_items: {str(e)}")
@@ -87,7 +95,9 @@ async def execute_get_content_details(content_id: str) -> Dict[str, Any]:
                 "title": content.title,
                 "title_en": content.title_en,
                 "description": content.description,
-                "category_id": str(content.category_id) if content.category_id else None,
+                "category_id": str(content.category_id)
+                if content.category_id
+                else None,
                 "content_type": content.content_type,
                 "thumbnail": content.thumbnail,  # Primary poster/cover image
                 "poster_url": content.poster_url,  # TMDB poster URL (secondary)
@@ -100,13 +110,19 @@ async def execute_get_content_details(content_id: str) -> Dict[str, Any]:
                 "release_year": content.year,
                 "duration": content.duration,
                 "genre": content.genre,
-                "genres": getattr(content, 'genres', None),  # May not exist in old documents
+                "genres": getattr(
+                    content, "genres", None
+                ),  # May not exist in old documents
                 "director": content.director,
                 "cast": content.cast,
                 "is_published": content.is_published,
-                "created_at": content.created_at.isoformat() if content.created_at else None,
-                "updated_at": content.updated_at.isoformat() if content.updated_at else None
-            }
+                "created_at": content.created_at.isoformat()
+                if content.created_at
+                else None,
+                "updated_at": content.updated_at.isoformat()
+                if content.updated_at
+                else None,
+            },
         }
     except Exception as e:
         logger.error(f"Error in get_content_details: {str(e)}")
@@ -129,10 +145,10 @@ async def execute_get_categories() -> Dict[str, Any]:
                     "slug": cat.slug,
                     "icon": cat.icon,
                     "order": cat.order,
-                    "is_active": cat.is_active
+                    "is_active": cat.is_active,
                 }
                 for cat in categories
-            ]
+            ],
         }
     except Exception as e:
         logger.error(f"Error in get_categories: {str(e)}")

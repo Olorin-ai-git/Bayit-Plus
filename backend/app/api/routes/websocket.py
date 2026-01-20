@@ -2,16 +2,16 @@
 WebSocket handler for real-time watch party communication.
 Handles WebSocket connections, message routing, and real-time events.
 """
-from typing import Optional
-from datetime import datetime
 import json
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
-from jose import jwt, JWTError
+from datetime import datetime
+from typing import Optional
 
 from app.core.config import settings
 from app.models.user import User
 from app.services.connection_manager import connection_manager
 from app.services.room_manager import room_manager
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
+from jose import JWTError, jwt
 
 router = APIRouter()
 
@@ -20,9 +20,7 @@ async def get_user_from_token(token: str) -> Optional[User]:
     """Validate JWT token and return user"""
     try:
         payload = jwt.decode(
-            token,
-            settings.SECRET_KEY,
-            algorithms=[settings.ALGORITHM]
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
         user_id: str = payload.get("sub")
         if user_id is None:
@@ -38,11 +36,7 @@ async def get_user_from_token(token: str) -> Optional[User]:
 
 
 @router.websocket("/ws/party/{party_id}")
-async def party_websocket(
-    websocket: WebSocket,
-    party_id: str,
-    token: str = Query(...)
-):
+async def party_websocket(websocket: WebSocket, party_id: str, token: str = Query(...)):
     """
     WebSocket endpoint for watch party real-time communication.
 
@@ -86,10 +80,7 @@ async def party_websocket(
 
     # Connect to WebSocket
     connection_id = await connection_manager.connect(
-        websocket=websocket,
-        user_id=user_id,
-        user_name=user.name,
-        party_id=party_id
+        websocket=websocket, user_id=user_id, user_name=user.name, party_id=party_id
     )
 
     try:
@@ -111,14 +102,14 @@ async def party_websocket(
                             "user_id": p.user_id,
                             "user_name": p.user_name,
                             "is_muted": p.is_muted,
-                            "is_speaking": p.is_speaking
+                            "is_speaking": p.is_speaking,
                         }
                         for p in party.participants
-                    ]
+                    ],
                 },
-                "user_id": user_id
+                "user_id": user_id,
             },
-            connection_id
+            connection_id,
         )
 
         # Message loop
@@ -132,20 +123,21 @@ async def party_websocket(
                 if msg_type == "ping":
                     await connection_manager.send_personal_message(
                         {"type": "pong", "timestamp": datetime.utcnow().isoformat()},
-                        connection_id
+                        connection_id,
                     )
 
                 elif msg_type == "chat":
                     if party.chat_enabled:
                         from app.models.realtime import ChatMessageCreate
+
                         await room_manager.send_chat_message(
                             party_id=party_id,
                             user_id=user_id,
                             user_name=user.name,
                             data=ChatMessageCreate(
                                 message=message.get("message", ""),
-                                message_type=message.get("message_type", "text")
-                            )
+                                message_type=message.get("message_type", "text"),
+                            ),
                         )
 
                 elif msg_type == "sync":
@@ -154,7 +146,7 @@ async def party_websocket(
                             party_id=party_id,
                             user_id=user_id,
                             position=message.get("position", 0),
-                            is_playing=message.get("is_playing", True)
+                            is_playing=message.get("is_playing", True),
                         )
 
                 elif msg_type == "state":
@@ -162,7 +154,7 @@ async def party_websocket(
                         party_id=party_id,
                         user_id=user_id,
                         is_muted=message.get("is_muted"),
-                        is_speaking=message.get("is_speaking")
+                        is_speaking=message.get("is_speaking"),
                     )
 
                 elif msg_type == "reaction":
@@ -171,24 +163,22 @@ async def party_websocket(
                         await room_manager.add_reaction(
                             message_id=message.get("message_id"),
                             user_id=user_id,
-                            emoji=message.get("emoji", "")
+                            emoji=message.get("emoji", ""),
                         )
                     elif action == "remove":
                         await room_manager.remove_reaction(
                             message_id=message.get("message_id"),
                             user_id=user_id,
-                            emoji=message.get("emoji", "")
+                            emoji=message.get("emoji", ""),
                         )
 
             except json.JSONDecodeError:
                 await connection_manager.send_personal_message(
-                    {"type": "error", "message": "Invalid JSON"},
-                    connection_id
+                    {"type": "error", "message": "Invalid JSON"}, connection_id
                 )
             except Exception as e:
                 await connection_manager.send_personal_message(
-                    {"type": "error", "message": str(e)},
-                    connection_id
+                    {"type": "error", "message": str(e)}, connection_id
                 )
 
     except WebSocketDisconnect:

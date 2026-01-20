@@ -13,7 +13,15 @@ def get_category_from_title(title: str) -> str:
     sports_keywords = ["ספורט", "כדורגל", "כדורסל", "אתלטיקה", "מחלקה"]
     entertainment_keywords = ["בידור", "סרטים", "קולנוע", "מוזיקה", "שחקנים", "ים קול"]
     jewish_keywords = ["יהדות", "תורה", "תפילה", "שבת", "קדוש", "ערך", "זקנים", "צדקה"]
-    education_keywords = ["ספרות", "הסטוריה", "תרבות", "ידע", "מחשבה", "פילוסופיה", "השכלה"]
+    education_keywords = [
+        "ספרות",
+        "הסטוריה",
+        "תרבות",
+        "ידע",
+        "מחשבה",
+        "פילוסופיה",
+        "השכלה",
+    ]
     politics_keywords = ["פוליטיקה", "בחירות", "חוק", "רשת", "ביטחון", "נושא"]
 
     # Check for keywords (case-insensitive)
@@ -59,8 +67,7 @@ def categorize_podcasts():
         category = get_category_from_title(title)
 
         db.podcasts.update_one(
-            {"_id": podcast["_id"]},
-            {"$set": {"category": category}}
+            {"_id": podcast["_id"]}, {"$set": {"category": category}}
         )
 
         categories_count[category] = categories_count.get(category, 0) + 1
@@ -70,7 +77,9 @@ def categorize_podcasts():
     print(f"{'='*80}")
     print(f"\n✅ Categorization complete!\n")
     print("📊 Category Distribution:")
-    for category, count in sorted(categories_count.items(), key=lambda x: x[1], reverse=True):
+    for category, count in sorted(
+        categories_count.items(), key=lambda x: x[1], reverse=True
+    ):
         if count > 0:
             print(f"  • {category.capitalize()}: {count} podcasts")
 

@@ -12,19 +12,18 @@ Usage:
     poetry run python scripts/content/seed_youngsters_content.py --stats
 """
 
-import asyncio
 import argparse
+import asyncio
 import logging
 import sys
 
 # Add parent directory to path for imports
 sys.path.insert(0, "/Users/olorin/Documents/Bayit-Plus/backend")
 
-from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
-
 from app.core.config import settings
 from app.core.database import document_models
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 logging.basicConfig(
     level=logging.INFO,
@@ -63,26 +62,40 @@ async def show_stats():
     logger.info("Gathering youngsters content statistics...")
 
     total = await Content.find({"is_youngsters_content": True}).count()
-    published = await Content.find({"is_youngsters_content": True, "is_published": True}).count()
+    published = await Content.find(
+        {"is_youngsters_content": True, "is_published": True}
+    ).count()
 
     # Count by age rating
-    age_12 = await Content.find({"is_youngsters_content": True, "youngsters_age_rating": 12}).count()
-    age_14 = await Content.find({"is_youngsters_content": True, "youngsters_age_rating": 14}).count()
-    age_17 = await Content.find({"is_youngsters_content": True, "youngsters_age_rating": 17}).count()
+    age_12 = await Content.find(
+        {"is_youngsters_content": True, "youngsters_age_rating": 12}
+    ).count()
+    age_14 = await Content.find(
+        {"is_youngsters_content": True, "youngsters_age_rating": 14}
+    ).count()
+    age_17 = await Content.find(
+        {"is_youngsters_content": True, "youngsters_age_rating": 17}
+    ).count()
 
     # Moderation status
-    pending = await Content.find({
-        "is_youngsters_content": True,
-        "youngsters_moderation_status": {"$in": ["pending", None]},
-    }).count()
-    approved = await Content.find({
-        "is_youngsters_content": True,
-        "youngsters_moderation_status": "approved",
-    }).count()
-    rejected = await Content.find({
-        "is_youngsters_content": True,
-        "youngsters_moderation_status": "rejected",
-    }).count()
+    pending = await Content.find(
+        {
+            "is_youngsters_content": True,
+            "youngsters_moderation_status": {"$in": ["pending", None]},
+        }
+    ).count()
+    approved = await Content.find(
+        {
+            "is_youngsters_content": True,
+            "youngsters_moderation_status": "approved",
+        }
+    ).count()
+    rejected = await Content.find(
+        {
+            "is_youngsters_content": True,
+            "youngsters_moderation_status": "rejected",
+        }
+    ).count()
 
     stats = {
         "total": total,
@@ -115,7 +128,9 @@ async def show_stats():
 
 
 async def main():
-    parser = argparse.ArgumentParser(description="Seed youngsters content from various sources")
+    parser = argparse.ArgumentParser(
+        description="Seed youngsters content from various sources"
+    )
     parser.add_argument(
         "--source",
         choices=["curated", "all"],
@@ -149,7 +164,9 @@ async def main():
     # Initialize database connection
     logger.info("Connecting to MongoDB...")
     client = AsyncIOMotorClient(settings.MONGODB_URL)
-    await init_beanie(database=client[settings.DB_NAME], document_models=document_models)
+    await init_beanie(
+        database=client[settings.DB_NAME], document_models=document_models
+    )
     logger.info("Database initialized")
 
     results = {}

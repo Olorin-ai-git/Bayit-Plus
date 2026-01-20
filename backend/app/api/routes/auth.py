@@ -1,28 +1,37 @@
-from datetime import datetime, timezone
-from urllib.parse import urlencode
-import httpx
 import asyncio
 import random
 import secrets
+from datetime import datetime, timezone
 from typing import Optional
-from fastapi import APIRouter, HTTPException, status, Depends, Request
-from pydantic import BaseModel
-from app.models.user import User, UserCreate, UserLogin, UserUpdate, UserResponse, TokenResponse
+from urllib.parse import urlencode
+
+import httpx
+from app.core.config import settings
+from app.core.rate_limiter import RATE_LIMITING_ENABLED, limiter
 from app.core.security import (
-    get_password_hash,
-    verify_password,
     create_access_token,
     get_current_active_user,
+    get_password_hash,
+    verify_password,
 )
-from app.core.config import settings
-from app.core.rate_limiter import limiter, RATE_LIMITING_ENABLED
+from app.models.user import (
+    TokenResponse,
+    User,
+    UserCreate,
+    UserLogin,
+    UserResponse,
+    UserUpdate,
+)
 from app.services.audit_logger import audit_logger
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel
 
 
 class GoogleAuthCode(BaseModel):
     code: str
     redirect_uri: str | None = None
     state: str | None = None  # CSRF protection token
+
 
 router = APIRouter()
 
@@ -32,13 +41,16 @@ router = APIRouter()
 async def register(request: Request, user_data: UserCreate):
     """Register a new user with enumeration protection."""
     import logging
+
     logger = logging.getLogger(__name__)
-    
+
     # Check if user exists
     existing_user = await User.find_one(User.email == user_data.email)
     if existing_user:
         # ✅ Don't reveal that email exists - log attempt for security monitoring
-        logger.warning(f"Registration attempt for existing email: {user_data.email} from IP: {request.client.host}")
+        logger.warning(
+            f"Registration attempt for existing email: {user_data.email} from IP: {request.client.host}"
+        )
 
         # Security Note: Warning emails for registration attempts on existing accounts
         # are intentionally not implemented to avoid potential abuse as an email
@@ -65,6 +77,7 @@ async def register(request: Request, user_data: UserCreate):
     # Auto-send email verification
     try:
         from app.services.verification_service import verification_service
+
         await verification_service.initiate_email_verification(user)
         logger.info(f"New user registered: {user.email}")
     except Exception as e:
@@ -87,17 +100,22 @@ async def register(request: Request, user_data: UserCreate):
 async def login(request: Request, credentials: UserLogin):
     """Login with email and password - with timing attack protection and account lockout."""
     import logging
+
     logger = logging.getLogger(__name__)
-    
+
     # Always fetch user first
     user = await User.find_one(User.email == credentials.email)
-    
+
     # ✅ Check if account is locked (brute force protection)
     if user and user.account_locked_until:
         if user.account_locked_until > datetime.now(timezone.utc):
             # Account is still locked
-            lockout_remaining = (user.account_locked_until - datetime.now(timezone.utc)).seconds // 60
-            logger.warning(f"Login attempt for locked account: {credentials.email} from IP: {request.client.host}")
+            lockout_remaining = (
+                user.account_locked_until - datetime.now(timezone.utc)
+            ).seconds // 60
+            logger.warning(
+                f"Login attempt for locked account: {credentials.email} from IP: {request.client.host}"
+            )
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Account temporarily locked due to too many failed login attempts. Please try again in {lockout_remaining} minutes.",
@@ -107,7 +125,7 @@ async def login(request: Request, credentials: UserLogin):
             user.account_locked_until = None
             user.failed_login_attempts = 0
             await user.save()
-    
+
     # Constant-time password verification
     # Always verify password even if user doesn't exist to prevent timing attacks
     if user and user.hashed_password:
@@ -118,32 +136,40 @@ async def login(request: Request, credentials: UserLogin):
         fake_hash = "$2b$12$KIXVZJGvCR67Nh8LKTtNGujsS1qPbT85N3jnF8XyZ8JlNHkVVQDNC"
         verify_password(credentials.password, fake_hash)
         password_valid = False
-    
+
     # Check both conditions together
     if not user or not password_valid:
         # ✅ Track failed login attempts for account lockout
         if user:
             user.failed_login_attempts += 1
             user.last_failed_login = datetime.now(timezone.utc)
-            
+
             # Lock account after 5 failed attempts for 30 minutes
             if user.failed_login_attempts >= 5:
-                user.account_locked_until = datetime.now(timezone.utc) + __import__('datetime').timedelta(minutes=30)
+                user.account_locked_until = datetime.now(timezone.utc) + __import__(
+                    "datetime"
+                ).timedelta(minutes=30)
                 await user.save()
-                logger.warning(f"Account locked due to failed attempts: {credentials.email} from IP: {request.client.host}")
+                logger.warning(
+                    f"Account locked due to failed attempts: {credentials.email} from IP: {request.client.host}"
+                )
                 # ✅ Audit log: account locked
                 await audit_logger.log_account_locked(user, request)
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Account temporarily locked due to too many failed login attempts. Please try again in 30 minutes or reset your password.",
                 )
-            
+
             await user.save()
-            logger.warning(f"Failed login attempt ({user.failed_login_attempts}/5): {credentials.email} from IP: {request.client.host}")
-        
+            logger.warning(
+                f"Failed login attempt ({user.failed_login_attempts}/5): {credentials.email} from IP: {request.client.host}"
+            )
+
         # ✅ Audit log: failed login
-        await audit_logger.log_login_failure(credentials.email, request, "invalid_credentials")
-        
+        await audit_logger.log_login_failure(
+            credentials.email, request, "invalid_credentials"
+        )
+
         # Add small random delay to further prevent timing attacks
         await asyncio.sleep(0.1 + random.uniform(0, 0.2))
         raise HTTPException(
@@ -151,19 +177,19 @@ async def login(request: Request, credentials: UserLogin):
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     # ✅ Successful login - reset failed attempts
     if user.failed_login_attempts > 0:
         user.failed_login_attempts = 0
         user.last_failed_login = None
-    
+
     # Check if user is active
     if not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account is inactive. Please contact support.",
         )
-    
+
     # Enforce email verification for non-admin users
     if not user.email_verified and not user.is_admin_role():
         raise HTTPException(
@@ -236,7 +262,7 @@ async def get_google_auth_url(redirect_uri: str | None = None):
     """Get Google OAuth authorization URL with CSRF protection."""
     # Use provided redirect_uri or fall back to configured default
     final_redirect_uri = redirect_uri or settings.GOOGLE_REDIRECT_URI
-    
+
     # Generate cryptographically secure random state token for CSRF protection
     state = secrets.token_urlsafe(32)
 
@@ -262,14 +288,14 @@ async def get_google_auth_url(redirect_uri: str | None = None):
 @limiter.limit("10/minute")
 async def google_callback(request: Request, auth_data: GoogleAuthCode):
     """Handle Google OAuth callback with CSRF validation."""
-    
+
     # Verify state parameter to prevent CSRF attacks
     if not auth_data.state:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Missing state parameter. This request may be forged.",
         )
-    
+
     # Validate state token - checks presence and minimum cryptographic length
     # See Security Note in get_google_auth_url for approach rationale
     if len(auth_data.state) < 16:
@@ -277,14 +303,17 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid state parameter",
         )
-    
+
     # Use provided redirect_uri or fall back to configured default
     final_redirect_uri = auth_data.redirect_uri or settings.GOOGLE_REDIRECT_URI
 
     # Log the OAuth parameters for debugging
     import logging
+
     logger = logging.getLogger(__name__)
-    logger.info(f"Google OAuth callback - code: {auth_data.code[:20]}..., redirect_uri: {final_redirect_uri}, state: {auth_data.state[:10]}...")
+    logger.info(
+        f"Google OAuth callback - code: {auth_data.code[:20]}..., redirect_uri: {final_redirect_uri}, state: {auth_data.state[:10]}..."
+    )
 
     # Exchange code for tokens
     async with httpx.AsyncClient() as client:
@@ -302,10 +331,15 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
         if token_response.status_code != 200:
             # Log the actual error from Google
             error_detail = token_response.json() if token_response.text else {}
-            logger.error(f"Google token exchange failed: status={token_response.status_code}, response={error_detail}")
+            logger.error(
+                f"Google token exchange failed: status={token_response.status_code}, response={error_detail}"
+            )
 
             # Return Google's error message to help debugging
-            google_error = error_detail.get("error_description", error_detail.get("error", "Failed to exchange code for token"))
+            google_error = error_detail.get(
+                "error_description",
+                error_detail.get("error", "Failed to exchange code for token"),
+            )
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Google OAuth error: {google_error}",

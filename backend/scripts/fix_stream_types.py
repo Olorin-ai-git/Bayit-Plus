@@ -4,6 +4,7 @@
 import asyncio
 import os
 import sys
+
 from motor.motor_asyncio import AsyncIOMotorClient
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -17,21 +18,19 @@ async def fix_stream_types():
     content_collection = db["content"]
 
     # Find all content with stream URLs ending in video extensions
-    video_extensions = ['.mp4', '.mkv', '.avi', '.mov', '.webm']
+    video_extensions = [".mp4", ".mkv", ".avi", ".mov", ".webm"]
 
     updated = 0
     for ext in video_extensions:
-        cursor = content_collection.find({
-            "stream_url": {"$regex": f"{ext}$", "$options": "i"},
-            "stream_type": "hls"
-        })
+        cursor = content_collection.find(
+            {"stream_url": {"$regex": f"{ext}$", "$options": "i"}, "stream_type": "hls"}
+        )
 
         async for doc in cursor:
             print(f"Updating {doc.get('title')}: {doc.get('stream_url')}")
 
             result = await content_collection.update_one(
-                {"_id": doc["_id"]},
-                {"$set": {"stream_type": "video"}}
+                {"_id": doc["_id"]}, {"$set": {"stream_type": "video"}}
             )
 
             if result.modified_count > 0:

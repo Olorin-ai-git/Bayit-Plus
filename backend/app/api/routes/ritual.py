@@ -2,22 +2,22 @@
 Morning Ritual API Routes.
 Handles morning routine experience for Israeli expats.
 """
-from typing import Optional, List
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
 from datetime import datetime
+from typing import List, Optional
 
-from app.models.user import User
 from app.core.security import get_current_active_user
+from app.models.user import User
 from app.services.morning_ritual import (
-    is_ritual_time,
-    get_ritual_status,
-    get_morning_playlist,
     generate_ai_brief,
-    get_israel_morning_context,
-    get_user_local_time,
     get_default_ritual_preferences,
+    get_israel_morning_context,
+    get_morning_playlist,
+    get_ritual_status,
+    get_user_local_time,
+    is_ritual_time,
 )
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/ritual", tags=["ritual"])
 
@@ -67,7 +67,7 @@ async def get_ritual_content(
     if not current_user.preferences.get("morning_ritual_enabled", False):
         raise HTTPException(
             status_code=400,
-            detail="Morning ritual is not enabled. Enable it in settings first."
+            detail="Morning ritual is not enabled. Enable it in settings first.",
         )
 
     playlist = await get_morning_playlist(current_user)
@@ -76,8 +76,7 @@ async def get_ritual_content(
         "playlist": playlist,
         "total_items": len(playlist),
         "estimated_duration": sum(
-            item.get("duration_hint", item.get("duration", 300))
-            for item in playlist
+            item.get("duration_hint", item.get("duration", 300)) for item in playlist
         ),
     }
 
@@ -144,7 +143,7 @@ async def update_ritual_preferences(
         if invalid:
             raise HTTPException(
                 status_code=400,
-                detail=f"Invalid content types: {invalid}. Valid: {valid_content}"
+                detail=f"Invalid content types: {invalid}. Valid: {valid_content}",
             )
 
     # Update preferences
@@ -158,7 +157,8 @@ async def update_ritual_preferences(
     return {
         "message": "Ritual preferences updated",
         "preferences": {
-            k: v for k, v in current_user.preferences.items()
+            k: v
+            for k, v in current_user.preferences.items()
             if k.startswith("morning_ritual")
         },
     }
@@ -181,7 +181,9 @@ async def get_ritual_preferences(
 
     return {
         "preferences": prefs,
-        "local_timezone": current_user.preferences.get("local_timezone", "America/New_York"),
+        "local_timezone": current_user.preferences.get(
+            "local_timezone", "America/New_York"
+        ),
     }
 
 

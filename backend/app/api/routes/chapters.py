@@ -2,29 +2,28 @@
 Video Chapters API routes.
 Provides AI-generated chapters for news and long-form content.
 """
-from typing import Optional
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, Query, Body
+from typing import Optional
 
-from app.models.user import User
+from app.core.security import get_current_active_user, get_optional_user
+from app.models.chapters import ChapterItemModel, VideoChapters
 from app.models.content import Content, LiveChannel
-from app.models.chapters import VideoChapters, ChapterItemModel
-from app.core.security import get_optional_user, get_current_active_user
+from app.models.user import User
 from app.services.chapter_generator import (
+    CHAPTER_CATEGORIES,
+    chapters_to_dict,
     generate_chapters_from_title,
     generate_chapters_from_transcript,
-    chapters_to_dict,
-    CHAPTER_CATEGORIES,
     parse_duration_to_seconds,
 )
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
 
 router = APIRouter()
 
 
 @router.get("/{content_id}")
 async def get_chapters(
-    content_id: str,
-    current_user: Optional[User] = Depends(get_optional_user)
+    content_id: str, current_user: Optional[User] = Depends(get_optional_user)
 ):
     """
     Get chapters for a specific content item.
@@ -41,7 +40,10 @@ async def get_chapters(
         raise HTTPException(status_code=404, detail="Content not found")
 
     # Generate chapters on-demand
-    is_news = content.category_name and any(cat.lower() in (content.category_name or "").lower() for cat in ["news", "חדשות"])
+    is_news = content.category_name and any(
+        cat.lower() in (content.category_name or "").lower()
+        for cat in ["news", "חדשות"]
+    )
 
     gen_chapters = await generate_chapters_from_title(
         content_id=content_id,
@@ -84,8 +86,10 @@ async def get_chapters(
 async def generate_chapters(
     content_id: str,
     force: bool = Query(False, description="Force regeneration even if chapters exist"),
-    transcript: Optional[str] = Body(None, description="Optional transcript for better chapters"),
-    current_user: User = Depends(get_current_active_user)
+    transcript: Optional[str] = Body(
+        None, description="Optional transcript for better chapters"
+    ),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Generate or regenerate chapters for content.
@@ -107,7 +111,10 @@ async def generate_chapters(
             }
 
     # Generate chapters
-    is_news = content.category_name and any(cat.lower() in (content.category_name or "").lower() for cat in ["news", "חדשות"])
+    is_news = content.category_name and any(
+        cat.lower() in (content.category_name or "").lower()
+        for cat in ["news", "חדשות"]
+    )
 
     if transcript:
         gen_chapters = await generate_chapters_from_transcript(
@@ -159,8 +166,7 @@ async def generate_chapters(
 
 @router.get("/live/{channel_id}")
 async def get_live_chapters(
-    channel_id: str,
-    current_user: Optional[User] = Depends(get_optional_user)
+    channel_id: str, current_user: Optional[User] = Depends(get_optional_user)
 ):
     """
     Get chapters for live channel content (if recorded).
@@ -184,8 +190,7 @@ async def get_live_chapters(
 
 @router.post("/{content_id}/approve")
 async def approve_chapters(
-    content_id: str,
-    current_user: User = Depends(get_current_active_user)
+    content_id: str, current_user: User = Depends(get_current_active_user)
 ):
     """
     Approve AI-generated chapters (admin only).
@@ -243,7 +248,9 @@ def _format_chapters_response(chapters: VideoChapters) -> dict:
                 "title": c.title,
                 "title_en": c.title_en,
                 "category": c.category,
-                "category_info": CHAPTER_CATEGORIES.get(c.category, CHAPTER_CATEGORIES["general"]),
+                "category_info": CHAPTER_CATEGORIES.get(
+                    c.category, CHAPTER_CATEGORIES["general"]
+                ),
                 "summary": c.summary,
                 "keywords": c.keywords,
                 "formatted_start": _format_time(c.start_time),

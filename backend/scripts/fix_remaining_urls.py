@@ -4,6 +4,7 @@
 import asyncio
 import os
 import sys
+
 from motor.motor_asyncio import AsyncIOMotorClient
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -29,21 +30,22 @@ async def fix_urls():
         new_folder = fix["new"]
 
         # Find all docs with the old folder
-        cursor = content_collection.find({
-            "stream_url": {"$regex": f"movies/{old_folder}/"}
-        })
+        cursor = content_collection.find(
+            {"stream_url": {"$regex": f"movies/{old_folder}/"}}
+        )
 
         async for doc in cursor:
             old_url = doc.get("stream_url", "")
-            new_url = old_url.replace(f"/movies/{old_folder}/", f"/movies/{new_folder}/")
+            new_url = old_url.replace(
+                f"/movies/{old_folder}/", f"/movies/{new_folder}/"
+            )
 
             print(f"{doc.get('title')}:")
             print(f"  Old: {old_url}")
             print(f"  New: {new_url}")
 
             result = await content_collection.update_one(
-                {"_id": doc["_id"]},
-                {"$set": {"stream_url": new_url}}
+                {"_id": doc["_id"]}, {"$set": {"stream_url": new_url}}
             )
 
             if result.modified_count > 0:

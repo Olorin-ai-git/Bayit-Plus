@@ -1,10 +1,11 @@
 from datetime import datetime
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
+
+from app.core.security import get_current_active_user
+from app.models.content import Content, LiveChannel, Podcast
 from app.models.user import User
 from app.models.watchlist import WatchlistItem
-from app.models.content import Content, LiveChannel, Podcast
-from app.core.security import get_current_active_user
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -19,9 +20,11 @@ async def get_watchlist(
     current_user: User = Depends(get_current_active_user),
 ):
     """Get user's watchlist."""
-    items = await WatchlistItem.find(
-        WatchlistItem.user_id == str(current_user.id)
-    ).sort("-added_at").to_list()
+    items = (
+        await WatchlistItem.find(WatchlistItem.user_id == str(current_user.id))
+        .sort("-added_at")
+        .to_list()
+    )
 
     result = []
     for item in items:

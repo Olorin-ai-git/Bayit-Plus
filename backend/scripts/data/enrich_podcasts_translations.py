@@ -39,14 +39,16 @@ async def enrich_podcast_translations():
     print(f"  Skipped: {results['skipped']}")
     print("=" * 80)
 
-    if results['processed'] > 0:
+    if results["processed"] > 0:
         print("\n✅ Detailed Results:")
-        for result in results['results']:
-            if result['needs_update']:
+        for result in results["results"]:
+            if result["needs_update"]:
                 print(f"\n  Podcast ID: {result['item_id']}")
                 print(f"  Fields translated: {len(result['translated_fields'])}")
-                for field_info in result['translated_fields']:
-                    print(f"    • {field_info['field']}: {field_info['translation'][:50]}...")
+                for field_info in result["translated_fields"]:
+                    print(
+                        f"    • {field_info['field']}: {field_info['translation'][:50]}..."
+                    )
 
 
 if __name__ == "__main__":

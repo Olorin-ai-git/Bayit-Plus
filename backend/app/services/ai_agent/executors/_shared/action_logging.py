@@ -5,7 +5,7 @@ Standardized LibrarianAction creation to ensure consistent audit logging across 
 """
 
 import logging
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 from app.models.librarian import LibrarianAction
 
@@ -75,7 +75,9 @@ async def log_librarian_action(
             action.reason = reason
 
         await action.insert()
-        logger.info(f"Logged action {action_type} for content {content_id} in audit {audit_id}")
+        logger.info(
+            f"Logged action {action_type} for content {content_id} in audit {audit_id}"
+        )
 
     except Exception as e:
         logger.error(f"Failed to log librarian action: {e}")

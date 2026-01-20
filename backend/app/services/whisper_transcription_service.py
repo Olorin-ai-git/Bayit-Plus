@@ -2,13 +2,14 @@
 OpenAI Whisper Transcription Service
 Real-time speech-to-text using OpenAI Whisper API
 """
-import logging
 import io
-import wave
+import logging
 import struct
+import wave
 from typing import AsyncIterator, Optional
-from openai import AsyncOpenAI
+
 from app.core.config import settings
+from openai import AsyncOpenAI
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ WHISPER_LANGUAGE_CODES = {
     "ar": "ar",  # Arabic
     "es": "es",  # Spanish
     "ru": "ru",  # Russian
-    "fr": "fr"   # French
+    "fr": "fr",  # French
 }
 
 
@@ -35,7 +36,9 @@ class WhisperTranscriptionService:
         self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
         logger.info("✅ WhisperTranscriptionService initialized")
 
-    def _pcm_to_wav(self, pcm_data: bytes, sample_rate: int = 16000, channels: int = 1) -> bytes:
+    def _pcm_to_wav(
+        self, pcm_data: bytes, sample_rate: int = 16000, channels: int = 1
+    ) -> bytes:
         """
         Convert raw PCM audio data to WAV format.
 
@@ -49,7 +52,7 @@ class WhisperTranscriptionService:
         """
         wav_buffer = io.BytesIO()
 
-        with wave.open(wav_buffer, 'wb') as wav_file:
+        with wave.open(wav_buffer, "wb") as wav_file:
             wav_file.setnchannels(channels)
             wav_file.setsampwidth(2)  # 2 bytes = 16 bits
             wav_file.setframerate(sample_rate)
@@ -58,10 +61,7 @@ class WhisperTranscriptionService:
         return wav_buffer.getvalue()
 
     async def transcribe_audio_chunk(
-        self,
-        audio_data: bytes,
-        source_lang: str = "he",
-        format: str = "wav"
+        self, audio_data: bytes, source_lang: str = "he", format: str = "wav"
     ) -> Optional[str]:
         """
         Transcribe a single audio chunk using Whisper API.
@@ -90,7 +90,7 @@ class WhisperTranscriptionService:
                 model="whisper-1",
                 file=audio_file,
                 language=lang_code,
-                response_format="text"
+                response_format="text",
             )
 
             if transcript and transcript.strip():
@@ -107,7 +107,7 @@ class WhisperTranscriptionService:
         self,
         audio_stream: AsyncIterator[bytes],
         source_lang: str = "he",
-        chunk_duration_ms: int = 5000
+        chunk_duration_ms: int = 5000,
     ) -> AsyncIterator[str]:
         """
         Transcribe streaming audio in real-time.
@@ -135,9 +135,7 @@ class WhisperTranscriptionService:
                 # When buffer reaches target size, transcribe it
                 if len(audio_buffer) >= buffer_size_bytes:
                     transcript = await self.transcribe_audio_chunk(
-                        bytes(audio_buffer),
-                        source_lang=source_lang,
-                        format="wav"
+                        bytes(audio_buffer), source_lang=source_lang, format="wav"
                     )
 
                     if transcript:
@@ -149,9 +147,7 @@ class WhisperTranscriptionService:
             # Process remaining buffer
             if len(audio_buffer) > 0:
                 transcript = await self.transcribe_audio_chunk(
-                    bytes(audio_buffer),
-                    source_lang=source_lang,
-                    format="wav"
+                    bytes(audio_buffer), source_lang=source_lang, format="wav"
                 )
                 if transcript:
                     yield transcript

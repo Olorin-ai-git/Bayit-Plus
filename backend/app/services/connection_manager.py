@@ -2,17 +2,19 @@
 WebSocket Connection Manager for real-time features.
 Manages WebSocket connections for watch parties and live features.
 """
-from typing import Dict, List, Optional, Set
-from fastapi import WebSocket
-from dataclasses import dataclass, field
 import asyncio
 import json
+from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Dict, List, Optional, Set
+
+from fastapi import WebSocket
 
 
 @dataclass
 class Connection:
     """Represents a single WebSocket connection"""
+
     websocket: WebSocket
     user_id: str
     user_name: str
@@ -46,7 +48,7 @@ class ConnectionManager:
         user_id: str,
         user_name: str,
         party_id: Optional[str] = None,
-        skip_accept: bool = False
+        skip_accept: bool = False,
     ) -> str:
         """
         Accept a new WebSocket connection.
@@ -69,7 +71,7 @@ class ConnectionManager:
                 websocket=websocket,
                 user_id=user_id,
                 user_name=user_name,
-                party_id=party_id
+                party_id=party_id,
             )
 
             self._connections[connection_id] = connection
@@ -168,10 +170,7 @@ class ConnectionManager:
         return await self.send_personal_message(message, connection_id)
 
     async def broadcast_to_party(
-        self,
-        message: dict,
-        party_id: str,
-        exclude_user_id: Optional[str] = None
+        self, message: dict, party_id: str, exclude_user_id: Optional[str] = None
     ) -> int:
         """
         Broadcast a message to all connections in a party.
@@ -222,11 +221,13 @@ class ConnectionManager:
         for conn_id in self._party_connections[party_id]:
             if conn_id in self._connections:
                 conn = self._connections[conn_id]
-                users.append({
-                    "user_id": conn.user_id,
-                    "user_name": conn.user_name,
-                    "connected_at": conn.connected_at.isoformat()
-                })
+                users.append(
+                    {
+                        "user_id": conn.user_id,
+                        "user_name": conn.user_name,
+                        "connected_at": conn.connected_at.isoformat(),
+                    }
+                )
 
         return users
 
@@ -263,7 +264,7 @@ class ConnectionManager:
             "user_id": conn.user_id,
             "user_name": conn.user_name,
             "party_id": conn.party_id,
-            "connected_at": conn.connected_at.isoformat()
+            "connected_at": conn.connected_at.isoformat(),
         }
 
     @property

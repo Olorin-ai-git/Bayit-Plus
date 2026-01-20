@@ -6,7 +6,7 @@ authenticated sessions for accessing passkey-protected content.
 """
 
 from datetime import datetime, timedelta
-from typing import Optional, List
+from typing import List, Optional
 
 from beanie import Document
 from pydantic import Field
@@ -30,7 +30,9 @@ class PasskeyCredential(Document):
 
     # Credential metadata
     device_name: Optional[str] = None  # Friendly name (e.g., "iPhone 15 Pro")
-    transports: List[str] = Field(default_factory=list)  # ["usb", "nfc", "ble", "internal", "hybrid"]
+    transports: List[str] = Field(
+        default_factory=list
+    )  # ["usb", "nfc", "ble", "internal", "hybrid"]
     aaguid: Optional[str] = None  # Authenticator Attestation GUID
     credential_type: str = "public-key"  # WebAuthn credential type
 

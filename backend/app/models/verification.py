@@ -4,12 +4,14 @@ Manages temporary tokens for email and phone verification
 """
 from datetime import datetime
 from typing import Optional
+
 from beanie import Document
 from pydantic import Field
 
 
 class VerificationToken(Document):
     """Temporary tokens for email and phone verification."""
+
     user_id: str
     token: str  # UUID4 for email, 6-digit code for phone
     type: str  # "email" or "phone"

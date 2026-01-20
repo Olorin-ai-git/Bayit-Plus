@@ -45,7 +45,9 @@ async def verify_classifications(
             logger.warning(f"Category {category_id} not found")
             continue
 
-        logger.info(f"      Verifying {len(group_contents)} items in category: {category.name_key}")
+        logger.info(
+            f"      Verifying {len(group_contents)} items in category: {category.name_key}"
+        )
         cached_results, uncached_contents = await get_cached_verifications(
             group_contents, category_id, config
         )
@@ -65,14 +67,16 @@ async def verify_classifications(
                         not verification.is_correct
                         and verification.fit_score < config.misclassification_threshold
                     ):
-                        misclassifications.append({
-                            "content_id": verification.content_id,
-                            "current_category": category.name_key,
-                            "suggested_category": verification.suggested_category,
-                            "fit_score": verification.fit_score,
-                            "reasoning": verification.reasoning,
-                            "confidence": (10 - verification.fit_score) / 10.0,
-                        })
+                        misclassifications.append(
+                            {
+                                "content_id": verification.content_id,
+                                "current_category": category.name_key,
+                                "suggested_category": verification.suggested_category,
+                                "fit_score": verification.fit_score,
+                                "reasoning": verification.reasoning,
+                                "confidence": (10 - verification.fit_score) / 10.0,
+                            }
+                        )
             except Exception as e:
                 logger.error(f"Failed to verify batch: {e}")
             await asyncio.sleep(config.rate_limit_delay)
@@ -110,6 +114,7 @@ async def audit_content_items(
     if not dry_run and (missing_metadata or misclassifications):
         logger.info("   Auto-fixing issues...")
         from app.services.auto_fixer import fix_content_issues
+
         await fix_content_issues(missing_metadata, dry_run)
 
     results["issues_found"] = len(missing_metadata) + len(misclassifications)

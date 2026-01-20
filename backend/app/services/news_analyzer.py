@@ -2,10 +2,11 @@
 News Analyzer Service.
 Uses Claude AI to analyze Israeli news headlines and extract trending topics.
 """
-from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Any
-from dataclasses import dataclass, field
 import json
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
 import anthropic
 from app.core.config import settings
 from app.services.news_scraper import HeadlineItem, ScrapedNews, get_cached_headlines
@@ -14,6 +15,7 @@ from app.services.news_scraper import HeadlineItem, ScrapedNews, get_cached_head
 @dataclass
 class TrendingTopic:
     """A trending topic extracted from news"""
+
     title: str  # Hebrew title
     title_en: Optional[str] = None  # English title
     category: str = "general"  # security, politics, tech, culture, sports, economy
@@ -27,6 +29,7 @@ class TrendingTopic:
 @dataclass
 class TrendAnalysis:
     """Complete trend analysis result"""
+
     topics: List[TrendingTopic]
     overall_mood: str  # The general mood/vibe in Israel
     top_story: Optional[str] = None
@@ -54,17 +57,16 @@ async def analyze_headlines(headlines: List[HeadlineItem]) -> TrendAnalysis:
     """
     if not headlines:
         return TrendAnalysis(
-            topics=[],
-            overall_mood="neutral",
-            headline_count=0,
-            sources=[]
+            topics=[], overall_mood="neutral", headline_count=0, sources=[]
         )
 
     # Prepare headlines for analysis
-    headlines_text = "\n".join([
-        f"- {h.title} [{h.source}]" + (f" ({h.category})" if h.category else "")
-        for h in headlines[:40]  # Limit to 40 headlines
-    ])
+    headlines_text = "\n".join(
+        [
+            f"- {h.title} [{h.source}]" + (f" ({h.category})" if h.category else "")
+            for h in headlines[:40]  # Limit to 40 headlines
+        ]
+    )
 
     sources = list(set(h.source for h in headlines))
 
@@ -102,9 +104,7 @@ async def analyze_headlines(headlines: List[HeadlineItem]) -> TrendAnalysis:
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=1500,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+            messages=[{"role": "user", "content": prompt}],
         )
 
         # Parse JSON response
@@ -122,15 +122,17 @@ async def analyze_headlines(headlines: List[HeadlineItem]) -> TrendAnalysis:
 
         topics = []
         for t in data.get("topics", []):
-            topics.append(TrendingTopic(
-                title=t.get("title", ""),
-                title_en=t.get("title_en"),
-                category=t.get("category", "general"),
-                sentiment=t.get("sentiment", "neutral"),
-                importance=t.get("importance", 5),
-                summary=t.get("summary"),
-                keywords=t.get("keywords", []),
-            ))
+            topics.append(
+                TrendingTopic(
+                    title=t.get("title", ""),
+                    title_en=t.get("title_en"),
+                    category=t.get("category", "general"),
+                    sentiment=t.get("sentiment", "neutral"),
+                    importance=t.get("importance", 5),
+                    summary=t.get("summary"),
+                    keywords=t.get("keywords", []),
+                )
+            )
 
         # Sort by importance
         topics.sort(key=lambda x: x.importance, reverse=True)
@@ -162,8 +164,7 @@ async def analyze_headlines(headlines: List[HeadlineItem]) -> TrendAnalysis:
 
 
 async def get_content_recommendations(
-    topics: List[TrendingTopic],
-    available_content: List[Dict[str, Any]]
+    topics: List[TrendingTopic], available_content: List[Dict[str, Any]]
 ) -> List[Dict[str, Any]]:
     """
     Get content recommendations based on trending topics.
@@ -198,11 +199,13 @@ async def get_content_recommendations(
                 score += 1
 
         if score > 0:
-            recommendations.append({
-                **content,
-                "relevance_score": score,
-                "trending_match": True,
-            })
+            recommendations.append(
+                {
+                    **content,
+                    "relevance_score": score,
+                    "trending_match": True,
+                }
+            )
 
     # Sort by relevance score
     recommendations.sort(key=lambda x: x["relevance_score"], reverse=True)
@@ -217,7 +220,9 @@ def topics_to_dict(topics: List[TrendingTopic]) -> List[Dict[str, Any]]:
             "title": t.title,
             "title_en": t.title_en,
             "category": t.category,
-            "category_label": CATEGORY_LABELS.get(t.category, CATEGORY_LABELS["general"]),
+            "category_label": CATEGORY_LABELS.get(
+                t.category, CATEGORY_LABELS["general"]
+            ),
             "sentiment": t.sentiment,
             "importance": t.importance,
             "summary": t.summary,
@@ -284,7 +289,7 @@ def _get_default_trending() -> TrendAnalysis:
             sentiment="negative",
             importance=9,
             summary="דיון ממשלתי על מניעת עלייה בהוצאות החודשיות של הישראלים",
-            keywords=["דלק", "מחירים", "התייקרות", "משק בית"]
+            keywords=["דלק", "מחירים", "התייקרות", "משק בית"],
         ),
         TrendingTopic(
             title="ביטחון ופעילות צבאית",
@@ -293,7 +298,7 @@ def _get_default_trending() -> TrendAnalysis:
             sentiment="neutral",
             importance=10,
             summary="עדכונים על מצב הביטחון ופעולות צה״ל בגבול",
-            keywords=["ביטחון", "צבא", "טרור", "תעונת"]
+            keywords=["ביטחון", "צבא", "טרור", "תעונת"],
         ),
         TrendingTopic(
             title="משחקים ספורטיביים בליגה הישראלית",
@@ -302,7 +307,7 @@ def _get_default_trending() -> TrendAnalysis:
             sentiment="positive",
             importance=7,
             summary="מחזוריות משחקים וניצחונות קבוצות בכדורגל הישראלי",
-            keywords=["כדורגל", "ליגה", "קבוצה", "מטרה"]
+            keywords=["כדורגל", "ליגה", "קבוצה", "מטרה"],
         ),
         TrendingTopic(
             title="פיתוחים טכנולוגיים ויזמות",
@@ -311,7 +316,7 @@ def _get_default_trending() -> TrendAnalysis:
             sentiment="positive",
             importance=8,
             summary="חברות טק ישראליות משיקות פתרונות חדשים בבינה מלאכותית",
-            keywords=["טכנולוגיה", "סטארטאפ", "בינה מלאכותית", "חדשנות"]
+            keywords=["טכנולוגיה", "סטארטאפ", "בינה מלאכותית", "חדשנות"],
         ),
         TrendingTopic(
             title="אירוע תרבותי או בידור בישראל",
@@ -320,8 +325,8 @@ def _get_default_trending() -> TrendAnalysis:
             sentiment="positive",
             importance=6,
             summary="אישורים על סדרה חדשה או קונסרט בערים הגדולות בישראל",
-            keywords=["תרבות", "קולנוע", "מוזיקה", "בידור"]
-        )
+            keywords=["תרבות", "קולנוע", "מוזיקה", "בידור"],
+        ),
     ]
 
     return TrendAnalysis(
@@ -330,7 +335,7 @@ def _get_default_trending() -> TrendAnalysis:
         top_story="ממשלה בישראל דנה בחוקים חדשים להנמכת עלויות המחיה",
         headline_count=5,
         sources=["Default Topics", "Israel News"],
-        analyzed_at=datetime.utcnow()
+        analyzed_at=datetime.utcnow(),
     )
 
 

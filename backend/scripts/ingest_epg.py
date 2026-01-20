@@ -10,11 +10,11 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from app.core.config import settings
+from app.models.content import EPGEntry, LiveChannel
+from app.services.epg_ingestion_service import epg_ingestion_service
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
-from app.models.content import EPGEntry, LiveChannel
-from app.core.config import settings
-from app.services.epg_ingestion_service import epg_ingestion_service
 
 
 async def main():
@@ -28,7 +28,7 @@ async def main():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     await init_beanie(
         database=client[settings.MONGODB_DB_NAME],
-        document_models=[EPGEntry, LiveChannel]
+        document_models=[EPGEntry, LiveChannel],
     )
     print("✓ Connected to MongoDB")
 

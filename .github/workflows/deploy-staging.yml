@@ -6,15 +6,15 @@ on:
   workflow_dispatch:
     inputs:
       skip_tests:
-        description: 'Skip tests before deploy'
+        description: "Skip tests before deploy"
         required: false
-        default: 'false'
+        default: "false"
 
 env:
-  PROJECT_ID: bayit-plus
-  REGION: us-east1
-  SERVICE_NAME: bayit-plus-backend-staging
-  ARTIFACT_REGISTRY: us-east1-docker.pkg.dev/bayit-plus/bayit-plus
+  PROJECT_ID: ${{ vars.GCP_PROJECT_ID || 'bayit-plus' }}
+  REGION: ${{ vars.GCP_REGION || 'us-east1' }}
+  SERVICE_NAME: ${{ vars.STAGING_SERVICE_NAME || 'bayit-plus-backend-staging' }}
+  ARTIFACT_REGISTRY: ${{ vars.GCP_REGION || 'us-east1' }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID || 'bayit-plus' }}/bayit-plus
   IMAGE_NAME: backend
 
 jobs:
@@ -41,7 +41,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install Poetry
         run: |
@@ -57,8 +57,8 @@ jobs:
         env:
           MONGODB_URL: mongodb://localhost:27017
           MONGODB_DB_NAME: bayit_test
-          SECRET_KEY: test-secret-key-for-staging-ci
-          DEBUG: 'true'
+          SECRET_KEY: ${{ github.run_id }}-${{ github.sha }}
+          DEBUG: "true"
         run: poetry run pytest tests/ -v --tb=short
 
   build-and-push:

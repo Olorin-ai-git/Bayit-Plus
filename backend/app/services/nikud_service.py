@@ -3,11 +3,12 @@ Nikud (Vocalization) Service.
 Uses Claude AI to add nikud marks to Hebrew text for heritage speakers.
 Also provides word translation for tap-to-translate feature.
 """
-from typing import Optional, Dict, List, Any
+import hashlib
+import json
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-import json
-import hashlib
+from typing import Any, Dict, List, Optional
+
 import anthropic
 from app.core.config import settings
 
@@ -15,6 +16,7 @@ from app.core.config import settings
 @dataclass
 class TranslationResult:
     """Result of word translation"""
+
     word: str
     translation: str
     transliteration: Optional[str] = None
@@ -60,9 +62,7 @@ async def add_nikud(text: str, use_cache: bool = True) -> str:
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=len(text) * 3,  # Nikud adds characters
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+            messages=[{"role": "user", "content": prompt}],
         )
 
         nikud_text = response.content[0].text.strip()
@@ -106,7 +106,9 @@ async def add_nikud_batch(texts: List[str], use_cache: bool = True) -> List[str]
         return results
 
     # Batch process uncached texts
-    texts_formatted = "\n---\n".join([f"[{i+1}] {t}" for i, t in enumerate(uncached_texts)])
+    texts_formatted = "\n---\n".join(
+        [f"[{i+1}] {t}" for i, t in enumerate(uncached_texts)]
+    )
 
     prompt = f"""הוסף ניקוד לכל אחד מהטקסטים הבאים. החזר כל טקסט בשורה נפרדת, עם המספור המקורי.
 
@@ -123,21 +125,19 @@ async def add_nikud_batch(texts: List[str], use_cache: bool = True) -> List[str]
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=sum(len(t) * 3 for t in uncached_texts),
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+            messages=[{"role": "user", "content": prompt}],
         )
 
         response_text = response.content[0].text.strip()
 
         # Parse response
-        for line in response_text.split('\n'):
+        for line in response_text.split("\n"):
             line = line.strip()
-            if line.startswith('[') and ']' in line:
+            if line.startswith("[") and "]" in line:
                 try:
-                    bracket_end = line.index(']')
+                    bracket_end = line.index("]")
                     idx = int(line[1:bracket_end]) - 1
-                    nikud_text = line[bracket_end + 1:].strip()
+                    nikud_text = line[bracket_end + 1 :].strip()
 
                     if 0 <= idx < len(uncached_texts):
                         original_idx = uncached_indices[idx]
@@ -167,10 +167,7 @@ async def add_nikud_batch(texts: List[str], use_cache: bool = True) -> List[str]
 
 
 async def translate_word(
-    word: str,
-    source_lang: str = "he",
-    target_lang: str = "en",
-    use_cache: bool = True
+    word: str, source_lang: str = "he", target_lang: str = "en", use_cache: bool = True
 ) -> TranslationResult:
     """
     Translate a single word with context.
@@ -212,9 +209,7 @@ Return JSON:
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=300,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+            messages=[{"role": "user", "content": prompt}],
         )
 
         response_text = response.content[0].text.strip()
@@ -250,9 +245,7 @@ Return JSON:
 
 
 async def translate_phrase(
-    phrase: str,
-    source_lang: str = "he",
-    target_lang: str = "en"
+    phrase: str, source_lang: str = "he", target_lang: str = "en"
 ) -> str:
     """
     Translate a phrase or sentence.
@@ -271,9 +264,7 @@ async def translate_phrase(
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=len(phrase) * 2,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+            messages=[{"role": "user", "content": prompt}],
         )
 
         return response.content[0].text.strip()

@@ -9,15 +9,15 @@ Identifies duplicates based on:
 """
 
 import logging
-from typing import List, Dict, Any, Optional, Tuple
-from datetime import datetime
-from collections import defaultdict
 import re
+from collections import defaultdict
+from datetime import datetime
 from difflib import SequenceMatcher
+from typing import Any, Dict, List, Optional, Tuple
 
-from beanie import PydanticObjectId
-from app.models.content import Content
 from app.core.config import settings
+from app.models.content import Content
+from beanie import PydanticObjectId
 
 logger = logging.getLogger(__name__)
 
@@ -41,20 +41,20 @@ class DuplicateDetectionService:
 
         # Remove common file extensions and quality markers
         patterns_to_remove = [
-            r'\.(mp4|mkv|avi|mov|wmv|flv|webm)$',
-            r'\b(1080p|720p|480p|2160p|4k|hd|uhd)\b',
-            r'\b(bluray|bdrip|dvdrip|webrip|hdtv|web-dl)\b',
-            r'\b(x264|x265|hevc|aac|ac3|dts)\b',
-            r'\[.*?\]',  # Remove bracket content like [YTS.MX]
-            r'\(.*?\)',  # Remove parenthetical content
-            r'[-_.]',    # Replace separators with spaces
+            r"\.(mp4|mkv|avi|mov|wmv|flv|webm)$",
+            r"\b(1080p|720p|480p|2160p|4k|hd|uhd)\b",
+            r"\b(bluray|bdrip|dvdrip|webrip|hdtv|web-dl)\b",
+            r"\b(x264|x265|hevc|aac|ac3|dts)\b",
+            r"\[.*?\]",  # Remove bracket content like [YTS.MX]
+            r"\(.*?\)",  # Remove parenthetical content
+            r"[-_.]",  # Replace separators with spaces
         ]
 
         for pattern in patterns_to_remove:
-            normalized = re.sub(pattern, ' ', normalized, flags=re.IGNORECASE)
+            normalized = re.sub(pattern, " ", normalized, flags=re.IGNORECASE)
 
         # Collapse multiple spaces and strip
-        normalized = re.sub(r'\s+', ' ', normalized).strip()
+        normalized = re.sub(r"\s+", " ", normalized).strip()
 
         return normalized
 
@@ -80,32 +80,38 @@ class DuplicateDetectionService:
             # Match only items with file_hash
             {"$match": {"file_hash": {"$ne": None, "$exists": True}}},
             # Group by file_hash
-            {"$group": {
-                "_id": "$file_hash",
-                "count": {"$sum": 1},
-                "items": {"$push": {
-                    "id": {"$toString": "$_id"},
-                    "title": "$title",
-                    "title_en": "$title_en",
-                    "created_at": "$created_at",
-                    "file_size": "$file_size",
-                    "is_published": "$is_published"
-                }}
-            }},
+            {
+                "$group": {
+                    "_id": "$file_hash",
+                    "count": {"$sum": 1},
+                    "items": {
+                        "$push": {
+                            "id": {"$toString": "$_id"},
+                            "title": "$title",
+                            "title_en": "$title_en",
+                            "created_at": "$created_at",
+                            "file_size": "$file_size",
+                            "is_published": "$is_published",
+                        }
+                    },
+                }
+            },
             # Filter to only groups with duplicates
             {"$match": {"count": {"$gt": 1}}},
             # Sort by count descending
-            {"$sort": {"count": -1}}
+            {"$sort": {"count": -1}},
         ]
 
         duplicates = []
         async for group in Content.get_motor_collection().aggregate(pipeline):
-            duplicates.append({
-                "file_hash": group["_id"],
-                "count": group["count"],
-                "items": group["items"],
-                "duplicate_type": "exact_hash"
-            })
+            duplicates.append(
+                {
+                    "file_hash": group["_id"],
+                    "count": group["count"],
+                    "items": group["items"],
+                    "duplicate_type": "exact_hash",
+                }
+            )
 
         logger.info(f"Found {len(duplicates)} groups of hash duplicates")
         return duplicates
@@ -119,29 +125,35 @@ class DuplicateDetectionService:
 
         pipeline = [
             {"$match": {"tmdb_id": {"$ne": None, "$exists": True}}},
-            {"$group": {
-                "_id": "$tmdb_id",
-                "count": {"$sum": 1},
-                "items": {"$push": {
-                    "id": {"$toString": "$_id"},
-                    "title": "$title",
-                    "title_en": "$title_en",
-                    "created_at": "$created_at",
-                    "is_published": "$is_published"
-                }}
-            }},
+            {
+                "$group": {
+                    "_id": "$tmdb_id",
+                    "count": {"$sum": 1},
+                    "items": {
+                        "$push": {
+                            "id": {"$toString": "$_id"},
+                            "title": "$title",
+                            "title_en": "$title_en",
+                            "created_at": "$created_at",
+                            "is_published": "$is_published",
+                        }
+                    },
+                }
+            },
             {"$match": {"count": {"$gt": 1}}},
-            {"$sort": {"count": -1}}
+            {"$sort": {"count": -1}},
         ]
 
         duplicates = []
         async for group in Content.get_motor_collection().aggregate(pipeline):
-            duplicates.append({
-                "tmdb_id": group["_id"],
-                "count": group["count"],
-                "items": group["items"],
-                "duplicate_type": "tmdb_id"
-            })
+            duplicates.append(
+                {
+                    "tmdb_id": group["_id"],
+                    "count": group["count"],
+                    "items": group["items"],
+                    "duplicate_type": "tmdb_id",
+                }
+            )
 
         logger.info(f"Found {len(duplicates)} groups of TMDB duplicates")
         return duplicates
@@ -154,29 +166,35 @@ class DuplicateDetectionService:
 
         pipeline = [
             {"$match": {"imdb_id": {"$ne": None, "$exists": True}}},
-            {"$group": {
-                "_id": "$imdb_id",
-                "count": {"$sum": 1},
-                "items": {"$push": {
-                    "id": {"$toString": "$_id"},
-                    "title": "$title",
-                    "title_en": "$title_en",
-                    "created_at": "$created_at",
-                    "is_published": "$is_published"
-                }}
-            }},
+            {
+                "$group": {
+                    "_id": "$imdb_id",
+                    "count": {"$sum": 1},
+                    "items": {
+                        "$push": {
+                            "id": {"$toString": "$_id"},
+                            "title": "$title",
+                            "title_en": "$title_en",
+                            "created_at": "$created_at",
+                            "is_published": "$is_published",
+                        }
+                    },
+                }
+            },
             {"$match": {"count": {"$gt": 1}}},
-            {"$sort": {"count": -1}}
+            {"$sort": {"count": -1}},
         ]
 
         duplicates = []
         async for group in Content.get_motor_collection().aggregate(pipeline):
-            duplicates.append({
-                "imdb_id": group["_id"],
-                "count": group["count"],
-                "items": group["items"],
-                "duplicate_type": "imdb_id"
-            })
+            duplicates.append(
+                {
+                    "imdb_id": group["_id"],
+                    "count": group["count"],
+                    "items": group["items"],
+                    "duplicate_type": "imdb_id",
+                }
+            )
 
         logger.info(f"Found {len(duplicates)} groups of IMDB duplicates")
         return duplicates
@@ -190,40 +208,44 @@ class DuplicateDetectionService:
 
         pipeline = [
             {"$match": {"title": {"$ne": None, "$exists": True}}},
-            {"$group": {
-                "_id": {"$toLower": "$title"},
-                "count": {"$sum": 1},
-                "items": {"$push": {
-                    "id": {"$toString": "$_id"},
-                    "title": "$title",
-                    "title_en": "$title_en",
-                    "year": "$year",
-                    "created_at": "$created_at",
-                    "file_size": "$file_size",
-                    "is_published": "$is_published",
-                    "content_type": "$content_type"
-                }}
-            }},
+            {
+                "$group": {
+                    "_id": {"$toLower": "$title"},
+                    "count": {"$sum": 1},
+                    "items": {
+                        "$push": {
+                            "id": {"$toString": "$_id"},
+                            "title": "$title",
+                            "title_en": "$title_en",
+                            "year": "$year",
+                            "created_at": "$created_at",
+                            "file_size": "$file_size",
+                            "is_published": "$is_published",
+                            "content_type": "$content_type",
+                        }
+                    },
+                }
+            },
             {"$match": {"count": {"$gt": 1}}},
-            {"$sort": {"count": -1}}
+            {"$sort": {"count": -1}},
         ]
 
         duplicates = []
         async for group in Content.get_motor_collection().aggregate(pipeline):
-            duplicates.append({
-                "exact_title": group["_id"],
-                "count": group["count"],
-                "items": group["items"],
-                "duplicate_type": "exact_name"
-            })
+            duplicates.append(
+                {
+                    "exact_title": group["_id"],
+                    "count": group["count"],
+                    "items": group["items"],
+                    "duplicate_type": "exact_name",
+                }
+            )
 
         logger.info(f"Found {len(duplicates)} groups of exact name duplicates")
         return duplicates
 
     async def find_title_duplicates(
-        self,
-        check_year: bool = True,
-        limit: int = 100
+        self, check_year: bool = True, limit: int = 100
     ) -> List[Dict[str, Any]]:
         """
         Find potential duplicates based on title similarity.
@@ -232,9 +254,7 @@ class DuplicateDetectionService:
         logger.info("Scanning for title-based duplicates...")
 
         # Get all content with titles
-        items = await Content.find(
-            {"title": {"$ne": None, "$exists": True}}
-        ).to_list()
+        items = await Content.find({"title": {"$ne": None, "$exists": True}}).to_list()
 
         # Group by normalized title (and optionally year)
         title_groups: Dict[str, List[Content]] = defaultdict(list)
@@ -256,22 +276,24 @@ class DuplicateDetectionService:
         duplicates = []
         for key, group in title_groups.items():
             if len(group) > 1:
-                duplicates.append({
-                    "normalized_key": key,
-                    "count": len(group),
-                    "items": [
-                        {
-                            "id": str(item.id),
-                            "title": item.title,
-                            "title_en": item.title_en,
-                            "year": item.year,
-                            "created_at": item.created_at,
-                            "is_published": item.is_published
-                        }
-                        for item in group
-                    ],
-                    "duplicate_type": "title_match"
-                })
+                duplicates.append(
+                    {
+                        "normalized_key": key,
+                        "count": len(group),
+                        "items": [
+                            {
+                                "id": str(item.id),
+                                "title": item.title,
+                                "title_en": item.title_en,
+                                "year": item.year,
+                                "created_at": item.created_at,
+                                "is_published": item.is_published,
+                            }
+                            for item in group
+                        ],
+                        "duplicate_type": "title_match",
+                    }
+                )
 
         # Sort by count and limit
         duplicates.sort(key=lambda x: x["count"], reverse=True)
@@ -281,9 +303,7 @@ class DuplicateDetectionService:
         return duplicates
 
     async def find_quality_variants(
-        self,
-        limit: int = 50,
-        unlinked_only: bool = True
+        self, limit: int = 50, unlinked_only: bool = True
     ) -> List[Dict[str, Any]]:
         """
         Find content items that are quality variants of each other.
@@ -296,7 +316,9 @@ class DuplicateDetectionService:
         Returns:
             List of quality variant groups, sorted by resolution (highest first)
         """
-        logger.info("Scanning for quality variants (same content at different resolutions)...")
+        logger.info(
+            "Scanning for quality variants (same content at different resolutions)..."
+        )
 
         # Build match condition
         match_condition: Dict[str, Any] = {
@@ -310,31 +332,37 @@ class DuplicateDetectionService:
 
         pipeline = [
             {"$match": match_condition},
-            {"$group": {
-                "_id": "$tmdb_id",
-                "count": {"$sum": 1},
-                "distinct_heights": {"$addToSet": "$video_metadata.height"},
-                "items": {"$push": {
-                    "id": {"$toString": "$_id"},
-                    "title": "$title",
-                    "title_en": "$title_en",
-                    "resolution_height": "$video_metadata.height",
-                    "resolution_width": "$video_metadata.width",
-                    "stream_url": "$stream_url",
-                    "file_size": "$file_size",
-                    "created_at": "$created_at",
-                    "is_published": "$is_published",
-                    "quality_tier": "$quality_tier",
-                    "is_quality_variant": "$is_quality_variant"
-                }}
-            }},
+            {
+                "$group": {
+                    "_id": "$tmdb_id",
+                    "count": {"$sum": 1},
+                    "distinct_heights": {"$addToSet": "$video_metadata.height"},
+                    "items": {
+                        "$push": {
+                            "id": {"$toString": "$_id"},
+                            "title": "$title",
+                            "title_en": "$title_en",
+                            "resolution_height": "$video_metadata.height",
+                            "resolution_width": "$video_metadata.width",
+                            "stream_url": "$stream_url",
+                            "file_size": "$file_size",
+                            "created_at": "$created_at",
+                            "is_published": "$is_published",
+                            "quality_tier": "$quality_tier",
+                            "is_quality_variant": "$is_quality_variant",
+                        }
+                    },
+                }
+            },
             # Filter to groups with multiple different resolutions
-            {"$match": {
-                "count": {"$gt": 1},
-                "$expr": {"$gt": [{"$size": "$distinct_heights"}, 1]}
-            }},
+            {
+                "$match": {
+                    "count": {"$gt": 1},
+                    "$expr": {"$gt": [{"$size": "$distinct_heights"}, 1]},
+                }
+            },
             {"$sort": {"count": -1}},
-            {"$limit": limit}
+            {"$limit": limit},
         ]
 
         quality_variants = []
@@ -343,7 +371,7 @@ class DuplicateDetectionService:
             sorted_items = sorted(
                 group["items"],
                 key=lambda x: x.get("resolution_height") or 0,
-                reverse=True
+                reverse=True,
             )
 
             # Determine quality tier for each item
@@ -360,22 +388,22 @@ class DuplicateDetectionService:
                 else:
                     item["quality_tier"] = "unknown"
 
-            quality_variants.append({
-                "tmdb_id": group["_id"],
-                "count": group["count"],
-                "distinct_resolutions": len(group["distinct_heights"]),
-                "items": sorted_items,
-                "primary_candidate": sorted_items[0] if sorted_items else None,
-                "variant_type": "quality_resolution"
-            })
+            quality_variants.append(
+                {
+                    "tmdb_id": group["_id"],
+                    "count": group["count"],
+                    "distinct_resolutions": len(group["distinct_heights"]),
+                    "items": sorted_items,
+                    "primary_candidate": sorted_items[0] if sorted_items else None,
+                    "variant_type": "quality_resolution",
+                }
+            )
 
         logger.info(f"Found {len(quality_variants)} groups of quality variants")
         return quality_variants
 
     async def link_quality_variants(
-        self,
-        content_ids: List[str],
-        primary_id: Optional[str] = None
+        self, content_ids: List[str], primary_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Link multiple content items as quality variants of each other.
@@ -391,7 +419,7 @@ class DuplicateDetectionService:
         if len(content_ids) < 2:
             return {
                 "success": False,
-                "error": "At least 2 content IDs required to link variants"
+                "error": "At least 2 content IDs required to link variants",
             }
 
         logger.info(f"Linking {len(content_ids)} content items as quality variants")
@@ -413,13 +441,12 @@ class DuplicateDetectionService:
             return {
                 "success": False,
                 "error": "Less than 2 valid content items found",
-                "errors": errors
+                "errors": errors,
             }
 
         # Sort by resolution height to find primary (highest quality)
         items.sort(
-            key=lambda x: (x.video_metadata or {}).get("height", 0),
-            reverse=True
+            key=lambda x: (x.video_metadata or {}).get("height", 0), reverse=True
         )
 
         # Determine primary content
@@ -448,18 +475,19 @@ class DuplicateDetectionService:
             else:
                 tier = "unknown"
 
-            quality_variants_data.append({
-                "content_id": str(item.id),
-                "quality_tier": tier,
-                "resolution_height": height,
-                "resolution_width": (item.video_metadata or {}).get("width", 0),
-                "stream_url": item.stream_url,
-            })
+            quality_variants_data.append(
+                {
+                    "content_id": str(item.id),
+                    "quality_tier": tier,
+                    "resolution_height": height,
+                    "resolution_width": (item.video_metadata or {}).get("width", 0),
+                    "stream_url": item.stream_url,
+                }
+            )
 
         # Sort variants by resolution (highest first)
         quality_variants_data.sort(
-            key=lambda x: x.get("resolution_height", 0),
-            reverse=True
+            key=lambda x: x.get("resolution_height", 0), reverse=True
         )
 
         # Update primary content
@@ -492,23 +520,21 @@ class DuplicateDetectionService:
             variant.quality_variants = []  # Variants don't store the full list
             variant.updated_at = datetime.utcnow()
             await variant.save()
-            updated_variants.append({
-                "id": str(variant.id),
-                "title": variant.title,
-                "quality_tier": tier
-            })
+            updated_variants.append(
+                {"id": str(variant.id), "title": variant.title, "quality_tier": tier}
+            )
 
         return {
             "success": True,
             "primary": {
                 "id": primary_id_str,
                 "title": primary.title,
-                "quality_tier": quality_variants_data[0]["quality_tier"]
+                "quality_tier": quality_variants_data[0]["quality_tier"],
             },
             "variants_linked": len(updated_variants),
             "variants": updated_variants,
             "quality_options": quality_variants_data,
-            "errors": errors if errors else None
+            "errors": errors if errors else None,
         }
 
     async def find_all_duplicates(self) -> Dict[str, Any]:
@@ -525,16 +551,20 @@ class DuplicateDetectionService:
 
         # Calculate totals
         total_duplicate_groups = (
-            len(hash_duplicates) +
-            len(tmdb_duplicates) +
-            len(imdb_duplicates) +
-            len(exact_name_duplicates) +
-            len(title_duplicates)
+            len(hash_duplicates)
+            + len(tmdb_duplicates)
+            + len(imdb_duplicates)
+            + len(exact_name_duplicates)
+            + len(title_duplicates)
         )
 
         total_duplicate_items = sum(
             d["count"] - 1  # Subtract 1 because one item is the "original"
-            for d in hash_duplicates + tmdb_duplicates + imdb_duplicates + exact_name_duplicates + title_duplicates
+            for d in hash_duplicates
+            + tmdb_duplicates
+            + imdb_duplicates
+            + exact_name_duplicates
+            + title_duplicates
         )
 
         return {
@@ -546,20 +576,17 @@ class DuplicateDetectionService:
                 "imdb_duplicate_groups": len(imdb_duplicates),
                 "exact_name_duplicate_groups": len(exact_name_duplicates),
                 "title_duplicate_groups": len(title_duplicates),
-                "scanned_at": datetime.utcnow().isoformat()
+                "scanned_at": datetime.utcnow().isoformat(),
             },
             "hash_duplicates": hash_duplicates,
             "tmdb_duplicates": tmdb_duplicates,
             "imdb_duplicates": imdb_duplicates,
             "exact_name_duplicates": exact_name_duplicates,
-            "title_duplicates": title_duplicates
+            "title_duplicates": title_duplicates,
         }
 
     async def resolve_duplicate_group(
-        self,
-        content_ids: List[str],
-        keep_id: str,
-        action: str = "unpublish"
+        self, content_ids: List[str], keep_id: str, action: str = "unpublish"
     ) -> Dict[str, Any]:
         """
         Resolve a duplicate group by keeping one item and handling the rest.
@@ -576,7 +603,9 @@ class DuplicateDetectionService:
             raise ValueError(f"keep_id {keep_id} not in content_ids list")
 
         if action not in ["unpublish", "delete", "flag"]:
-            raise ValueError(f"Invalid action: {action}. Must be 'unpublish', 'delete', or 'flag'")
+            raise ValueError(
+                f"Invalid action: {action}. Must be 'unpublish', 'delete', or 'flag'"
+            )
 
         duplicate_ids = [cid for cid in content_ids if cid != keep_id]
         processed = []
@@ -593,36 +622,32 @@ class DuplicateDetectionService:
                     content.is_published = False
                     content.updated_at = datetime.utcnow()
                     await content.save()
-                    processed.append({
-                        "id": dup_id,
-                        "title": content.title,
-                        "action": "unpublished"
-                    })
+                    processed.append(
+                        {"id": dup_id, "title": content.title, "action": "unpublished"}
+                    )
 
                 elif action == "delete":
                     await content.delete()
-                    processed.append({
-                        "id": dup_id,
-                        "title": content.title,
-                        "action": "deleted"
-                    })
+                    processed.append(
+                        {"id": dup_id, "title": content.title, "action": "deleted"}
+                    )
 
                 elif action == "flag":
                     # Add a flag to the content for manual review
-                    if not hasattr(content, 'flags') or content.flags is None:
+                    if not hasattr(content, "flags") or content.flags is None:
                         content.flags = []
-                    content.flags.append({
-                        "type": "duplicate",
-                        "original_id": keep_id,
-                        "flagged_at": datetime.utcnow().isoformat()
-                    })
+                    content.flags.append(
+                        {
+                            "type": "duplicate",
+                            "original_id": keep_id,
+                            "flagged_at": datetime.utcnow().isoformat(),
+                        }
+                    )
                     content.updated_at = datetime.utcnow()
                     await content.save()
-                    processed.append({
-                        "id": dup_id,
-                        "title": content.title,
-                        "action": "flagged"
-                    })
+                    processed.append(
+                        {"id": dup_id, "title": content.title, "action": "flagged"}
+                    )
 
             except Exception as e:
                 errors.append({"id": dup_id, "error": str(e)})
@@ -632,13 +657,11 @@ class DuplicateDetectionService:
             "kept": keep_id,
             "processed": processed,
             "errors": errors,
-            "total_resolved": len(processed)
+            "total_resolved": len(processed),
         }
 
     async def auto_resolve_exact_duplicates(
-        self,
-        dry_run: bool = True,
-        action: str = "unpublish"
+        self, dry_run: bool = True, action: str = "unpublish"
     ) -> Dict[str, Any]:
         """
         Automatically resolve exact hash duplicates by keeping the oldest item.
@@ -659,14 +682,13 @@ class DuplicateDetectionService:
             "items_to_process": 0,
             "items_processed": 0,
             "errors": [],
-            "details": []
+            "details": [],
         }
 
         for group in hash_duplicates:
             # Sort by created_at to keep the oldest
             items = sorted(
-                group["items"],
-                key=lambda x: x.get("created_at") or datetime.min
+                group["items"], key=lambda x: x.get("created_at") or datetime.min
             )
 
             keep_item = items[0]
@@ -677,14 +699,10 @@ class DuplicateDetectionService:
 
             detail = {
                 "file_hash": group["file_hash"],
-                "keeping": {
-                    "id": keep_item["id"],
-                    "title": keep_item["title"]
-                },
+                "keeping": {"id": keep_item["id"], "title": keep_item["title"]},
                 "duplicates": [
-                    {"id": d["id"], "title": d["title"]}
-                    for d in duplicate_items
-                ]
+                    {"id": d["id"], "title": d["title"]} for d in duplicate_items
+                ],
             }
 
             if not dry_run:
@@ -692,7 +710,7 @@ class DuplicateDetectionService:
                     result = await self.resolve_duplicate_group(
                         content_ids=[item["id"] for item in items],
                         keep_id=keep_item["id"],
-                        action=action
+                        action=action,
                     )
                     detail["result"] = result
                     results["items_processed"] += result["total_resolved"]

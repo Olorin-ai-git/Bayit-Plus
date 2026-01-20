@@ -14,7 +14,8 @@ Collections:
 """
 
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
@@ -82,10 +83,10 @@ SUBCATEGORY_PARENT_MAP = {
 class KidsAgeGroup:
     """Age group classifications for kids content."""
 
-    TODDLERS = "toddlers"      # 0-3 years
-    PRESCHOOL = "preschool"    # 3-5 years
+    TODDLERS = "toddlers"  # 0-3 years
+    PRESCHOOL = "preschool"  # 3-5 years
     ELEMENTARY = "elementary"  # 5-10 years
-    PRETEEN = "preteen"        # 10-12 years
+    PRETEEN = "preteen"  # 10-12 years
 
 
 # Age group range definitions (min_age, max_age)

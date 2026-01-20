@@ -10,26 +10,25 @@ Provides:
 """
 
 import logging
-from datetime import datetime, date, timedelta
-from typing import Optional, List, Dict, Any
+from datetime import date, datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 import httpx
-
 from app.core.config import settings
 from app.models.jewish_calendar import (
-    JewishCalendarCache,
+    US_JEWISH_CITIES,
+    CalendarTodayResponse,
+    DafYomi,
+    DafYomiResponse,
     HebrewDate,
     Holiday,
+    JewishCalendarCache,
+    JewishCalendarDay,
     Parasha,
     ShabbatTimes,
-    DafYomi,
-    JewishCalendarDay,
-    US_JEWISH_CITIES,
-    USCity,
     ShabbatTimesResponse,
-    CalendarTodayResponse,
-    DafYomiResponse,
     UpcomingHolidaysResponse,
+    USCity,
 )
 
 logger = logging.getLogger(__name__)
@@ -101,7 +100,9 @@ class JewishCalendarService:
             )
             await cache_entry.insert()
 
-    async def get_hebrew_date(self, gregorian_date: Optional[date] = None) -> HebrewDate:
+    async def get_hebrew_date(
+        self, gregorian_date: Optional[date] = None
+    ) -> HebrewDate:
         """
         Get Hebrew date for a given Gregorian date.
 
@@ -278,10 +279,10 @@ class JewishCalendarService:
                     "maj": "on",  # Major holidays
                     "min": "on",  # Minor holidays
                     "mod": "on",  # Modern holidays
-                    "nx": "on",   # Rosh Chodesh
-                    "ss": "on",   # Special Shabbatot
-                    "s": "on",    # Parasha
-                    "o": "on",    # Omer
+                    "nx": "on",  # Rosh Chodesh
+                    "ss": "on",  # Special Shabbatot
+                    "s": "on",  # Parasha
+                    "o": "on",  # Omer
                     "start": today.isoformat(),
                     "end": today.isoformat(),
                 },
@@ -313,12 +314,14 @@ class JewishCalendarService:
                     except (ValueError, IndexError):
                         pass
                 elif category in ["holiday", "roshchodesh"]:
-                    holidays.append({
-                        "title": item.get("title", ""),
-                        "title_he": item.get("hebrew", ""),
-                        "category": category,
-                        "yomtov": item.get("yomtov", False),
-                    })
+                    holidays.append(
+                        {
+                            "title": item.get("title", ""),
+                            "title_he": item.get("hebrew", ""),
+                            "category": category,
+                            "yomtov": item.get("yomtov", False),
+                        }
+                    )
                     if item.get("yomtov"):
                         is_holiday = True
 
@@ -331,7 +334,8 @@ class JewishCalendarService:
                 hebrew_date_full=f"{hebrew_date.hebrew} {hebrew_date.year}",
                 day_of_week=day_en,
                 day_of_week_he=day_he,
-                is_shabbat=day_of_week_num == 5,  # Saturday (Python weekday 5 = Saturday)
+                is_shabbat=day_of_week_num
+                == 5,  # Saturday (Python weekday 5 = Saturday)
                 is_holiday=is_holiday,
                 parasha=parasha,
                 parasha_he=parasha_he,
@@ -392,8 +396,16 @@ class JewishCalendarService:
             # Parse Daf Yomi info
             display_value = daf_yomi.get("displayValue", {})
             tractate_en = display_value.get("en", "").split()[0]  # e.g., "Berakhot 2"
-            tractate_he = display_value.get("he", "").split()[0] if display_value.get("he") else ""
-            page = display_value.get("en", "").split()[-1] if display_value.get("en") else "2a"
+            tractate_he = (
+                display_value.get("he", "").split()[0]
+                if display_value.get("he")
+                else ""
+            )
+            page = (
+                display_value.get("en", "").split()[-1]
+                if display_value.get("en")
+                else "2a"
+            )
 
             # Build Sefaria URL
             ref = daf_yomi.get("ref", "")
@@ -443,7 +455,7 @@ class JewishCalendarService:
                     "maj": "on",  # Major holidays
                     "min": "on",  # Minor holidays
                     "mod": "on",  # Modern holidays
-                    "nx": "on",   # Rosh Chodesh
+                    "nx": "on",  # Rosh Chodesh
                     "start": today.isoformat(),
                     "end": end_date.isoformat(),
                 },

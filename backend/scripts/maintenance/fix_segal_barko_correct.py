@@ -2,10 +2,11 @@
 Fix Segal-Barko with the correct Apple Podcasts RSS feed.
 """
 import asyncio
-from pymongo import MongoClient
 from datetime import datetime
-from app.core.database import connect_to_mongo, close_mongo_connection
+
+from app.core.database import close_mongo_connection, connect_to_mongo
 from app.services.apple_podcasts_converter import convert_apple_podcasts_to_rss
+from pymongo import MongoClient
 
 
 async def fix_segal_barko():
@@ -16,9 +17,9 @@ async def fix_segal_barko():
     client = MongoClient("mongodb://localhost:27017")
     db = client["bayit_plus"]
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("🔧 Fixing Segal-Barko with Correct RSS Feed")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     print("📱 Converting Apple URL to RSS...")
     conversion = await convert_apple_podcasts_to_rss(apple_url)
@@ -33,7 +34,7 @@ async def fix_segal_barko():
     print(f"✅ Found RSS Feed:\n   {rss_url}\n")
 
     # Find and update the podcast
-    podcast = db.podcasts.find_one({"title": "סג\"ל וברקו - הפודקאסט"})
+    podcast = db.podcasts.find_one({"title": 'סג"ל וברקו - הפודקאסט'})
 
     if not podcast:
         print("❌ Podcast not found")
@@ -42,7 +43,9 @@ async def fix_segal_barko():
         return
 
     # Clear old episodes from this specific podcast only
-    print(f"🧹 This will clear {db.podcast_episodes.count_documents({'podcast_id': str(podcast['_id'])})} episodes from '{PODCAST_NAME}'")
+    print(
+        f"🧹 This will clear {db.podcast_episodes.count_documents({'podcast_id': str(podcast['_id'])})} episodes from '{PODCAST_NAME}'"
+    )
     print("⚠️  Are you sure you want to continue? (yes/no): ", end="")
     response = input().strip().lower()
     if response != "yes":
@@ -71,7 +74,7 @@ async def fix_segal_barko():
     if result.modified_count > 0:
         print("✅ Segal-Barko Updated Successfully!\n")
         print("📻 Podcast Details:")
-        print(f"   Title: סג\"ל וברקו - הפודקאסט")
+        print(f'   Title: סג"ל וברקו - הפודקאסט')
         print(f"   RSS Feed: {rss_url}")
         print(f"\n💡 Next Steps:")
         print("   1. Restart the server")

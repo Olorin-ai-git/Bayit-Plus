@@ -6,8 +6,9 @@ with mocked external services.
 """
 
 import asyncio
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 
 class MockWebSocket:
@@ -26,11 +27,9 @@ class MockWebSocket:
     async def __aiter__(self):
         """Iterate through mock transcripts."""
         import json
+
         for transcript in self.transcripts:
-            yield json.dumps({
-                "type": "transcript",
-                "text": transcript
-            })
+            yield json.dumps({"type": "transcript", "text": transcript})
 
     async def close(self) -> None:
         """Mark connection as closed."""
@@ -70,12 +69,8 @@ class TestLiveTranslationIntegration:
         mock_transcripts = ["שלום", "מה שלומך", "תודה רבה"]
         mock_translations = ["Hello", "How are you", "Thank you very much"]
 
-        with patch(
-            "app.services.live_translation_service.ELEVENLABS_AVAILABLE", True
-        ):
-            with patch(
-                "app.services.live_translation_service.GOOGLE_AVAILABLE", True
-            ):
+        with patch("app.services.live_translation_service.ELEVENLABS_AVAILABLE", True):
+            with patch("app.services.live_translation_service.GOOGLE_AVAILABLE", True):
                 with patch(
                     "app.services.live_translation_service.ElevenLabsRealtimeService"
                 ) as mock_elevenlabs:
@@ -124,9 +119,7 @@ class TestLiveTranslationIntegration:
                         # Run the translation pipeline
                         subtitles = []
                         async for subtitle in service.process_live_audio_to_subtitles(
-                            audio_generator(),
-                            source_lang="he",
-                            target_lang="en"
+                            audio_generator(), source_lang="he", target_lang="en"
                         ):
                             subtitles.append(subtitle)
 
@@ -141,12 +134,8 @@ class TestLiveTranslationIntegration:
         self, mock_elevenlabs_settings, mock_translation_settings
     ):
         """Test that service status correctly reports both providers."""
-        with patch(
-            "app.services.live_translation_service.ELEVENLABS_AVAILABLE", True
-        ):
-            with patch(
-                "app.services.live_translation_service.OPENAI_AVAILABLE", True
-            ):
+        with patch("app.services.live_translation_service.ELEVENLABS_AVAILABLE", True):
+            with patch("app.services.live_translation_service.OPENAI_AVAILABLE", True):
                 with patch(
                     "app.services.live_translation_service.ElevenLabsRealtimeService"
                 ) as mock_elevenlabs:
@@ -180,12 +169,8 @@ class TestLiveTranslationIntegration:
         self, mock_elevenlabs_settings, mock_translation_settings
     ):
         """Test that translation errors return original text gracefully."""
-        with patch(
-            "app.services.live_translation_service.ELEVENLABS_AVAILABLE", True
-        ):
-            with patch(
-                "app.services.live_translation_service.GOOGLE_AVAILABLE", True
-            ):
+        with patch("app.services.live_translation_service.ELEVENLABS_AVAILABLE", True):
+            with patch("app.services.live_translation_service.GOOGLE_AVAILABLE", True):
                 with patch(
                     "app.services.live_translation_service.ElevenLabsRealtimeService"
                 ) as mock_elevenlabs:
@@ -224,7 +209,9 @@ class TestElevenLabsReconnection:
     @pytest.mark.asyncio
     async def test_reconnection_preserves_audio_buffer(self):
         """Test that audio buffer is preserved during reconnection."""
-        with patch("app.services.elevenlabs_realtime_service.settings") as mock_settings:
+        with patch(
+            "app.services.elevenlabs_realtime_service.settings"
+        ) as mock_settings:
             with patch(
                 "app.services.elevenlabs_realtime_service.WEBSOCKETS_AVAILABLE", True
             ):
@@ -256,7 +243,9 @@ class TestElevenLabsReconnection:
     @pytest.mark.asyncio
     async def test_buffer_rolling_prevents_memory_growth(self):
         """Test that buffer rolls to prevent unbounded memory growth."""
-        with patch("app.services.elevenlabs_realtime_service.settings") as mock_settings:
+        with patch(
+            "app.services.elevenlabs_realtime_service.settings"
+        ) as mock_settings:
             with patch(
                 "app.services.elevenlabs_realtime_service.WEBSOCKETS_AVAILABLE", True
             ):
@@ -284,13 +273,9 @@ class TestMultiProviderConfiguration:
     """Test various provider combinations."""
 
     @pytest.mark.asyncio
-    async def test_elevenlabs_with_claude_translation(
-        self, mock_translation_settings
-    ):
+    async def test_elevenlabs_with_claude_translation(self, mock_translation_settings):
         """Test ElevenLabs STT with Claude translation."""
-        with patch(
-            "app.services.live_translation_service.ELEVENLABS_AVAILABLE", True
-        ):
+        with patch("app.services.live_translation_service.ELEVENLABS_AVAILABLE", True):
             with patch(
                 "app.services.live_translation_service.ANTHROPIC_AVAILABLE", True
             ):
@@ -336,7 +321,18 @@ class TestMultiProviderConfiguration:
         """Test that all supported languages have proper codes."""
         from app.services.elevenlabs_realtime_service import ELEVENLABS_LANGUAGE_CODES
 
-        expected_languages = ["he", "en", "ar", "es", "ru", "fr", "de", "it", "pt", "yi"]
+        expected_languages = [
+            "he",
+            "en",
+            "ar",
+            "es",
+            "ru",
+            "fr",
+            "de",
+            "it",
+            "pt",
+            "yi",
+        ]
 
         for lang in expected_languages:
             assert lang in ELEVENLABS_LANGUAGE_CODES

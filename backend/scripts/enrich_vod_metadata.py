@@ -10,16 +10,16 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
+import logging
+
 from app.core.config import settings
 from app.models.content import Content
 from app.services.tmdb_service import tmdb_service
-import logging
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -29,10 +29,7 @@ async def connect_db():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     database = client[settings.MONGODB_DB_NAME]
 
-    await init_beanie(
-        database=database,
-        document_models=[Content]
-    )
+    await init_beanie(database=database, document_models=[Content])
     logger.info("✅ Connected to MongoDB")
 
 
@@ -90,14 +87,12 @@ async def enrich_content(content: Content, dry_run: bool = False) -> bool:
         if is_series:
             logger.info(f"   🎬 Fetching TV series metadata for: {content.title}")
             metadata = await tmdb_service.enrich_series_content(
-                title=content.title,
-                year=content.year
+                title=content.title, year=content.year
             )
         else:
             logger.info(f"   🎬 Fetching movie metadata for: {content.title}")
             metadata = await tmdb_service.enrich_movie_content(
-                title=content.title,
-                year=content.year
+                title=content.title, year=content.year
             )
 
         if not metadata.get("tmdb_id"):
@@ -144,15 +139,15 @@ async def enrich_content(content: Content, dry_run: bool = False) -> bool:
         if metadata.get("director") and not content.director:
             content.director = metadata["director"]
             updated_fields.append("director")
-        
+
         if metadata.get("imdb_rating") is not None and content.imdb_rating is None:
             content.imdb_rating = metadata["imdb_rating"]
             updated_fields.append("imdb_rating")
-        
+
         if metadata.get("imdb_votes") is not None and content.imdb_votes is None:
             content.imdb_votes = metadata["imdb_votes"]
             updated_fields.append("imdb_votes")
-        
+
         if metadata.get("release_year") and not content.year:
             content.year = metadata["release_year"]
             updated_fields.append("year")
@@ -234,14 +229,14 @@ async def main(dry_run: bool = False, limit: int = None):
             return
 
         # Show summary
-        logger.info("\n" + "="*80)
+        logger.info("\n" + "=" * 80)
         logger.info("ENRICHMENT SUMMARY")
-        logger.info("="*80)
+        logger.info("=" * 80)
         for content, missing in needs_update[:10]:  # Show first 10
             logger.info(f"  • {content.title}: Missing {', '.join(missing)}")
         if len(needs_update) > 10:
             logger.info(f"  ... and {len(needs_update) - 10} more")
-        logger.info("="*80 + "\n")
+        logger.info("=" * 80 + "\n")
 
         # Apply limit if specified
         if limit:
@@ -269,14 +264,14 @@ async def main(dry_run: bool = False, limit: int = None):
             await asyncio.sleep(0.5)
 
         # Final summary
-        logger.info("\n" + "="*80)
+        logger.info("\n" + "=" * 80)
         logger.info("ENRICHMENT COMPLETE")
-        logger.info("="*80)
+        logger.info("=" * 80)
         logger.info(f"✅ Successfully enriched: {success_count}")
         logger.info(f"❌ Failed: {failed_count}")
         logger.info(f"⏭️  Skipped (no changes): {skipped_count}")
         logger.info(f"📊 Total processed: {len(needs_update)}")
-        logger.info("="*80)
+        logger.info("=" * 80)
 
         if dry_run:
             logger.info("\n🔍 DRY RUN MODE - No changes were saved to database")
@@ -296,13 +291,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Preview changes without saving to database"
+        help="Preview changes without saving to database",
     )
-    parser.add_argument(
-        "--limit",
-        type=int,
-        help="Maximum number of items to process"
-    )
+    parser.add_argument("--limit", type=int, help="Maximum number of items to process")
 
     args = parser.parse_args()
 

@@ -1,21 +1,25 @@
 """Migrate movies from local MongoDB to Atlas."""
 import asyncio
+
 from motor.motor_asyncio import AsyncIOMotorClient
 
-ATLAS_URL = 'mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/bayit_plus?retryWrites=true&w=majority'
-LOCAL_URL = 'mongodb://localhost:27017'
+ATLAS_URL = "mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/bayit_plus?retryWrites=true&w=majority"
+LOCAL_URL = "mongodb://localhost:27017"
+
 
 async def migrate():
     # Connect to both databases
     local_client = AsyncIOMotorClient(LOCAL_URL)
     atlas_client = AsyncIOMotorClient(ATLAS_URL)
 
-    local_db = local_client['bayit_plus']
-    atlas_db = atlas_client['bayit_plus']
+    local_db = local_client["bayit_plus"]
+    atlas_db = atlas_client["bayit_plus"]
 
     # Get all movies from local
-    local_movies = await local_db.content.find({'category_name': 'Movies'}).to_list(None)
-    print(f'Found {len(local_movies)} movies in local DB')
+    local_movies = await local_db.content.find({"category_name": "Movies"}).to_list(
+        None
+    )
+    print(f"Found {len(local_movies)} movies in local DB")
 
     # Migrate each movie
     migrated = 0
@@ -23,9 +27,9 @@ async def migrate():
 
     for movie in local_movies:
         # Check if already exists in Atlas by file_hash
-        file_hash = movie.get('file_hash')
+        file_hash = movie.get("file_hash")
         if file_hash:
-            existing = await atlas_db.content.find_one({'file_hash': file_hash})
+            existing = await atlas_db.content.find_one({"file_hash": file_hash})
             if existing:
                 print(f"  Skipped: {movie.get('title')} - already in Atlas")
                 skipped += 1
@@ -33,19 +37,22 @@ async def migrate():
 
         # Insert to Atlas
         result = await atlas_db.content.insert_one(movie)
-        print(f"  Migrated: {movie.get('title')} ({movie.get('year')}) - ID: {result.inserted_id}")
+        print(
+            f"  Migrated: {movie.get('title')} ({movie.get('year')}) - ID: {result.inserted_id}"
+        )
         migrated += 1
 
-    print(f'\nMigration complete:')
-    print(f'  Migrated: {migrated}')
-    print(f'  Skipped: {skipped}')
+    print(f"\nMigration complete:")
+    print(f"  Migrated: {migrated}")
+    print(f"  Skipped: {skipped}")
 
     # Verify
-    atlas_count = await atlas_db.content.count_documents({'category_name': 'Movies'})
-    print(f'  Total in Atlas: {atlas_count}')
+    atlas_count = await atlas_db.content.count_documents({"category_name": "Movies"})
+    print(f"  Total in Atlas: {atlas_count}")
 
     local_client.close()
     atlas_client.close()
+
 
 if __name__ == "__main__":
     asyncio.run(migrate())

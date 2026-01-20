@@ -2,21 +2,19 @@
 Password Reset Routes
 Secure password reset flow with token-based verification.
 """
-from datetime import datetime, timezone, timedelta
-from typing import Optional
-import secrets
 import logging
-from fastapi import APIRouter, HTTPException, status, Request
-from pydantic import BaseModel, EmailStr
-from app.models.user import User
-from app.core.security import get_password_hash, verify_password
-from app.core.rate_limiter import limiter
+import secrets
+from datetime import datetime, timedelta, timezone
+from typing import Optional
+
 from app.core.config import settings
+from app.core.rate_limiter import limiter
+from app.core.security import get_current_user, get_password_hash, verify_password
+from app.models.user import User
 from app.services.audit_logger import audit_logger
 from app.services.email_service import send_email
-from fastapi import Depends
-from app.core.security import get_current_user
-
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel, EmailStr
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -24,17 +22,20 @@ router = APIRouter()
 
 class PasswordResetRequest(BaseModel):
     """Request model for password reset."""
+
     email: EmailStr
 
 
 class PasswordResetConfirm(BaseModel):
     """Confirm model for password reset."""
+
     token: str
     new_password: str
 
 
 class ChangePasswordRequest(BaseModel):
     """Request model for password change."""
+
     current_password: str
     new_password: str
 
@@ -44,7 +45,7 @@ class ChangePasswordRequest(BaseModel):
 async def request_password_reset(request: Request, reset_request: PasswordResetRequest):
     """
     Request a password reset link.
-    
+
     Security features:
     - Rate limited to 3 requests per hour
     - Generic response to prevent email enumeration
@@ -55,11 +56,11 @@ async def request_password_reset(request: Request, reset_request: PasswordResetR
     # Always return success to prevent email enumeration
     # But only send email if user exists
     user = await User.find_one(User.email == reset_request.email)
-    
+
     if user:
         # Generate cryptographically secure token
         reset_token = secrets.token_urlsafe(32)
-        
+
         # Set token and expiry (1 hour)
         user.password_reset_token = reset_token
         user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=1)
@@ -107,20 +108,22 @@ async def request_password_reset(request: Request, reset_request: PasswordResetR
         email_sent = await send_email(
             to_emails=[user.email],
             subject="Reset your Bayit+ password",
-            html_content=html_content
+            html_content=html_content,
         )
 
         if email_sent:
             logger.info(f"Password reset email sent to: {user.email}")
         else:
             logger.warning(f"Password reset email could not be sent to: {user.email}")
-        
+
         # ✅ Audit log: password reset requested
         await audit_logger.log_password_reset_request(user.email, request)
     else:
         # Log attempt for non-existent email (potential attack)
-        logger.warning(f"Password reset requested for non-existent email: {reset_request.email} from IP: {request.client.host}")
-    
+        logger.warning(
+            f"Password reset requested for non-existent email: {reset_request.email} from IP: {request.client.host}"
+        )
+
     # Generic response to prevent enumeration
     return {
         "message": "If your email is registered, you will receive a password reset link shortly."
@@ -132,7 +135,7 @@ async def request_password_reset(request: Request, reset_request: PasswordResetR
 async def confirm_password_reset(request: Request, reset_confirm: PasswordResetConfirm):
     """
     Confirm password reset with token.
-    
+
     Security features:
     - Rate limited to 5 attempts per minute
     - Token expires after 1 hour
@@ -143,14 +146,16 @@ async def confirm_password_reset(request: Request, reset_confirm: PasswordResetC
     """
     # Find user by reset token
     user = await User.find_one(User.password_reset_token == reset_confirm.token)
-    
+
     if not user:
-        logger.warning(f"Invalid password reset token attempted from IP: {request.client.host}")
+        logger.warning(
+            f"Invalid password reset token attempted from IP: {request.client.host}"
+        )
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid or expired reset token",
         )
-    
+
     # Check if token is expired
     if user.password_reset_expires < datetime.now(timezone.utc):
         logger.warning(f"Expired password reset token attempted for: {user.email}")
@@ -162,42 +167,41 @@ async def confirm_password_reset(request: Request, reset_confirm: PasswordResetC
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Reset token has expired. Please request a new one.",
         )
-    
+
     # Validate new password (UserCreate validator will check strength)
     # We need to manually validate since we're not using UserCreate here
     from app.models.user import UserCreate
+
     try:
         # This will trigger password validation
         UserCreate(
-            email=user.email,
-            name=user.name,
-            password=reset_confirm.new_password
+            email=user.email, name=user.name, password=reset_confirm.new_password
         )
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
         )
-    
+
     # Update password
     user.hashed_password = get_password_hash(reset_confirm.new_password)
-    
+
     # Clear reset token (single-use)
     user.password_reset_token = None
     user.password_reset_expires = None
-    
+
     # ✅ Reset account lockout on successful password change
     user.failed_login_attempts = 0
     user.last_failed_login = None
     user.account_locked_until = None
-    
+
     await user.save()
-    
+
     logger.info(f"Password reset completed for: {user.email}")
-    
+
     # ✅ Audit log: password reset completed
     await audit_logger.log_password_reset_complete(user, request)
-    
+
     return {
         "message": "Password has been reset successfully. You can now log in with your new password."
     }
@@ -208,7 +212,7 @@ async def confirm_password_reset(request: Request, reset_confirm: PasswordResetC
 async def change_password(
     request: Request,
     change_request: ChangePasswordRequest,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """
     Change password for authenticated user.
@@ -220,7 +224,9 @@ async def change_password(
     - Audit logged
     """
     # Verify current password
-    if not verify_password(change_request.current_password, current_user.hashed_password):
+    if not verify_password(
+        change_request.current_password, current_user.hashed_password
+    ):
         logger.warning(f"Invalid current password for user: {current_user.email}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

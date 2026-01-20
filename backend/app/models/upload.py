@@ -4,15 +4,17 @@ Models for tracking file uploads, queue management, and monitored folders.
 """
 
 from datetime import datetime
-from typing import Optional, Dict, Any, List
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
 from beanie import Document, Indexed
 from pydantic import BaseModel, Field
-from pymongo import IndexModel, ASCENDING
+from pymongo import ASCENDING, IndexModel
 
 
 class ContentType(str, Enum):
     """Type of content being uploaded"""
+
     MOVIE = "movie"
     SERIES = "series"
     AUDIOBOOK = "audiobook"
@@ -24,6 +26,7 @@ class ContentType(str, Enum):
 
 class UploadStatus(str, Enum):
     """Status of an upload job"""
+
     QUEUED = "queued"
     PROCESSING = "processing"
     UPLOADING = "uploading"
@@ -37,47 +40,52 @@ class UploadJob(Document):
     Represents a single upload job in the queue.
     Tracks progress, status, and metadata for uploaded content.
     """
+
     # Job identification
     job_id: Indexed(str, unique=True)  # Unique job identifier
-    
+
     # Content information
     type: ContentType
     source_path: str  # Original file path
     filename: str  # Original filename
     file_size: Optional[int] = None  # Size in bytes
     file_hash: Optional[str] = None  # SHA256 hash for duplicate detection
-    
+
     # Upload status
     status: UploadStatus = UploadStatus.QUEUED
     progress: float = 0.0  # 0-100 percentage
     bytes_uploaded: int = 0
     upload_speed: Optional[float] = None  # bytes per second
     eta_seconds: Optional[int] = None  # Estimated time to completion
-    
+
     # Destination
     destination_url: Optional[str] = None  # Final URL after upload
     gcs_path: Optional[str] = None  # Path in Google Cloud Storage
-    
+
     # Content metadata
     metadata: Dict[str, Any] = Field(default_factory=dict)
-    
+
     # Error handling
     error_message: Optional[str] = None
     retry_count: int = 0
     max_retries: int = 3
-    
+
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-    
+
     # User tracking
     created_by: Optional[str] = None  # User ID who initiated upload
-    
+
     # Processing stages
-    stages: Dict[str, Any] = Field(default_factory=dict)  # Track individual processing stages
-    stage_timings: Dict[str, Dict[str, Any]] = Field(default_factory=dict)  # Track timing for each stage
+    stages: Dict[str, Any] = Field(
+        default_factory=dict
+    )  # Track individual processing stages
+    stage_timings: Dict[str, Dict[str, Any]] = Field(
+        default_factory=dict
+    )  # Track timing for each stage
 
     def get_current_stage(self) -> Optional[str]:
         """Get human-readable current processing stage"""
@@ -94,19 +102,28 @@ class UploadJob(Document):
             elif self.stages.get("subtitle_extraction") == "in_progress":
                 return "Extracting subtitles..."
             return "Completed"
-        
+
         # For processing/uploading status, check which stage is in progress
         if self.stages.get("hash_calculation") == "in_progress":
             return "Calculating hash..."
-        elif self.stages.get("hash_calculation") == "completed" and self.stages.get("metadata_extraction") != "completed":
+        elif (
+            self.stages.get("hash_calculation") == "completed"
+            and self.stages.get("metadata_extraction") != "completed"
+        ):
             if self.stages.get("metadata_extraction") == "in_progress":
                 return "Extracting metadata..."
             return "Verifying duplicate..."
-        elif self.stages.get("metadata_extraction") == "completed" and self.stages.get("gcs_upload") != "completed":
+        elif (
+            self.stages.get("metadata_extraction") == "completed"
+            and self.stages.get("gcs_upload") != "completed"
+        ):
             if self.stages.get("gcs_upload") == "in_progress":
                 return "Uploading to cloud..."
             return "Preparing upload..."
-        elif self.stages.get("gcs_upload") == "completed" and self.stages.get("database_insert") != "completed":
+        elif (
+            self.stages.get("gcs_upload") == "completed"
+            and self.stages.get("database_insert") != "completed"
+        ):
             if self.stages.get("database_insert") == "in_progress":
                 return "Saving to database..."
             return "Finalizing..."
@@ -117,15 +134,15 @@ class UploadJob(Document):
             elif self.stages.get("subtitle_extraction") == "in_progress":
                 return "Extracting subtitles..."
             return "Completed"
-        
+
         # Default based on status
         if self.status == UploadStatus.UPLOADING:
             return "Uploading..."
         elif self.status == UploadStatus.PROCESSING:
             return "Processing..."
-        
+
         return None
-    
+
     class Settings:
         name = "upload_jobs"
         indexes = [
@@ -141,37 +158,40 @@ class MonitoredFolder(Document):
     Represents a folder that is monitored for new content.
     System automatically scans and uploads new files from monitored folders.
     """
+
     # Folder identification
     path: str  # Absolute path to folder
     name: Optional[str] = None  # Friendly name for the folder
-    
+
     # Configuration
     enabled: bool = True
     content_type: ContentType
     auto_upload: bool = True  # Automatically upload new files
     recursive: bool = True  # Scan subdirectories
-    
+
     # Filtering
     file_patterns: List[str] = Field(default_factory=list)  # e.g., ["*.mp4", "*.mkv"]
-    exclude_patterns: List[str] = Field(default_factory=list)  # e.g., ["*.tmp", "*.part"]
-    
+    exclude_patterns: List[str] = Field(
+        default_factory=list
+    )  # e.g., ["*.tmp", "*.part"]
+
     # Scanning status
     last_scanned: Optional[datetime] = None
     scan_interval: int = 3600  # Seconds between scans (default 1 hour)
     files_found: int = 0
     files_uploaded: int = 0
-    
+
     # Error tracking
     last_error: Optional[str] = None
     error_count: int = 0
-    
+
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-    
+
     # User tracking
     created_by: Optional[str] = None  # User ID who created this monitor
-    
+
     class Settings:
         name = "monitored_folders"
         indexes = [
@@ -186,6 +206,7 @@ class BrowserUploadSession(Document):
     Track browser upload sessions with chunk-level detail for resumability.
     Allows uploads to be paused and resumed without losing progress.
     """
+
     # Session identification
     upload_id: Indexed(str, unique=True)
 
@@ -197,7 +218,9 @@ class BrowserUploadSession(Document):
 
     # Chunk tracking
     total_chunks: int
-    chunks_received: List[int] = Field(default_factory=list)  # Indices of received chunks
+    chunks_received: List[int] = Field(
+        default_factory=list
+    )  # Indices of received chunks
     bytes_received: int = 0
 
     # Status tracking
@@ -229,6 +252,7 @@ class UploadHashLock(Document):
     Distributed lock for preventing duplicate uploads during processing.
     Uses MongoDB TTL index for automatic cleanup of stale locks.
     """
+
     file_hash: str  # SHA256 hash of the file
     job_id: str  # ID of the job holding the lock
     acquired_at: datetime = Field(default_factory=datetime.utcnow)
@@ -248,27 +272,28 @@ class UploadStats(Document):
     Aggregated statistics for upload operations.
     Used for dashboard and reporting.
     """
+
     # Time period
     date: datetime = Field(default_factory=datetime.utcnow)
     period: str = "daily"  # daily, weekly, monthly
-    
+
     # Upload statistics
     total_uploads: int = 0
     successful_uploads: int = 0
     failed_uploads: int = 0
     cancelled_uploads: int = 0
-    
+
     # Size statistics
     total_bytes_uploaded: int = 0
     average_file_size: int = 0
-    
+
     # Performance
     average_upload_speed: float = 0.0  # bytes per second
     average_processing_time: float = 0.0  # seconds
-    
+
     # By content type
     uploads_by_type: Dict[str, int] = Field(default_factory=dict)
-    
+
     class Settings:
         name = "upload_stats"
         indexes = [
@@ -279,8 +304,10 @@ class UploadStats(Document):
 
 # ============ Request/Response Models ============
 
+
 class UploadJobCreate(BaseModel):
     """Request model for creating a new upload job"""
+
     source_path: str
     type: ContentType
     metadata: Optional[Dict[str, Any]] = None
@@ -288,6 +315,7 @@ class UploadJobCreate(BaseModel):
 
 class UploadJobResponse(BaseModel):
     """Response model for upload job"""
+
     job_id: str
     type: ContentType
     filename: str
@@ -304,13 +332,14 @@ class UploadJobResponse(BaseModel):
     completed_at: Optional[datetime] = None
     current_stage: Optional[str] = None  # Human-readable current processing stage
     stages: Dict[str, Any] = {}  # Detailed stage status for progress indicator
-    
+
     class Config:
         from_attributes = True
 
 
 class MonitoredFolderCreate(BaseModel):
     """Request model for creating a monitored folder"""
+
     path: str
     name: Optional[str] = None
     content_type: ContentType
@@ -323,6 +352,7 @@ class MonitoredFolderCreate(BaseModel):
 
 class MonitoredFolderUpdate(BaseModel):
     """Request model for updating a monitored folder"""
+
     name: Optional[str] = None
     content_type: Optional[ContentType] = None
     enabled: Optional[bool] = None
@@ -335,6 +365,7 @@ class MonitoredFolderUpdate(BaseModel):
 
 class MonitoredFolderResponse(BaseModel):
     """Response model for monitored folder"""
+
     id: str
     path: str
     name: Optional[str] = None
@@ -351,7 +382,7 @@ class MonitoredFolderResponse(BaseModel):
     last_error: Optional[str] = None
     created_at: datetime
     updated_at: datetime
-    
+
     @classmethod
     def from_orm(cls, obj):
         """Custom from_orm to handle ObjectId conversion"""
@@ -374,13 +405,14 @@ class MonitoredFolderResponse(BaseModel):
             "updated_at": obj.updated_at,
         }
         return cls(**data)
-    
+
     class Config:
         from_attributes = True
 
 
 class QueueStats(BaseModel):
     """Statistics about the upload queue"""
+
     total_jobs: int = 0
     queued: int = 0
     processing: int = 0
@@ -394,6 +426,7 @@ class QueueStats(BaseModel):
 
 class UploadQueueResponse(BaseModel):
     """Response model for queue status"""
+
     stats: QueueStats
     active_job: Optional[UploadJobResponse] = None
     queue: List[UploadJobResponse] = []

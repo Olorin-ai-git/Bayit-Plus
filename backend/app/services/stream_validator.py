@@ -5,9 +5,9 @@ Efficient streaming URL validation without full download
 import asyncio
 import logging
 import time
-from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 import httpx
 from app.models.content import Content, LiveChannel, PodcastEpisode, RadioStation
@@ -25,6 +25,7 @@ CACHE_TTL_HOURS_INVALID = 4  # Cache invalid streams for 4 hours (recheck sooner
 @dataclass
 class StreamValidationResult:
     """Result of a stream validation"""
+
     url: str
     is_valid: bool
     status_code: Optional[int] = None
@@ -34,8 +35,7 @@ class StreamValidationResult:
 
 
 async def validate_content_streams(
-    scope,  # AuditScope
-    audit_id: str
+    scope, audit_id: str  # AuditScope
 ) -> Dict[str, Any]:
     """
     Validate all streaming URLs in the audit scope.
@@ -61,19 +61,21 @@ async def validate_content_streams(
 
     # Content (VOD/movies/series)
     if scope.content_ids:
-        contents = await Content.find(
-            {"_id": {"$in": scope.content_ids}}
-        ).to_list(length=None)
+        contents = await Content.find({"_id": {"$in": scope.content_ids}}).to_list(
+            length=None
+        )
 
         for content in contents:
             if content.stream_url:
-                streams_to_validate.append({
-                    "url": content.stream_url,
-                    "stream_type": content.stream_type,
-                    "content_id": str(content.id),
-                    "content_type": "content",
-                    "title": content.title,
-                })
+                streams_to_validate.append(
+                    {
+                        "url": content.stream_url,
+                        "stream_type": content.stream_type,
+                        "content_id": str(content.id),
+                        "content_type": "content",
+                        "title": content.title,
+                    }
+                )
 
     # Live channels
     if scope.live_channel_ids:
@@ -83,13 +85,15 @@ async def validate_content_streams(
 
         for channel in channels:
             if channel.stream_url:
-                streams_to_validate.append({
-                    "url": channel.stream_url,
-                    "stream_type": channel.stream_type,
-                    "content_id": str(channel.id),
-                    "content_type": "live_channel",
-                    "title": channel.name,
-                })
+                streams_to_validate.append(
+                    {
+                        "url": channel.stream_url,
+                        "stream_type": channel.stream_type,
+                        "content_id": str(channel.id),
+                        "content_type": "live_channel",
+                        "title": channel.name,
+                    }
+                )
 
     # Podcast episodes
     if scope.podcast_episode_ids:
@@ -99,13 +103,15 @@ async def validate_content_streams(
 
         for episode in episodes:
             if episode.audio_url:
-                streams_to_validate.append({
-                    "url": episode.audio_url,
-                    "stream_type": "audio",
-                    "content_id": str(episode.id),
-                    "content_type": "podcast_episode",
-                    "title": episode.title,
-                })
+                streams_to_validate.append(
+                    {
+                        "url": episode.audio_url,
+                        "stream_type": "audio",
+                        "content_id": str(episode.id),
+                        "content_type": "podcast_episode",
+                        "title": episode.title,
+                    }
+                )
 
     # Radio stations
     if scope.radio_station_ids:
@@ -115,13 +121,15 @@ async def validate_content_streams(
 
         for station in stations:
             if station.stream_url:
-                streams_to_validate.append({
-                    "url": station.stream_url,
-                    "stream_type": station.stream_type,
-                    "content_id": str(station.id),
-                    "content_type": "radio_station",
-                    "title": station.name,
-                })
+                streams_to_validate.append(
+                    {
+                        "url": station.stream_url,
+                        "stream_type": station.stream_type,
+                        "content_id": str(station.id),
+                        "content_type": "radio_station",
+                        "title": station.name,
+                    }
+                )
 
     logger.info(f"   Found {len(streams_to_validate)} streams to validate")
     results["total_checked"] = len(streams_to_validate)
@@ -153,38 +161,43 @@ async def validate_content_streams(
                     stream["stream_type"],
                     stream["content_id"],
                     stream["content_type"],
-                    stream["title"]
+                    stream["title"],
                 )
 
         validation_results = await asyncio.gather(
             *[validate_with_semaphore(stream) for stream in uncached_streams],
-            return_exceptions=True
+            return_exceptions=True,
         )
 
         # Process results
         for i, result in enumerate(validation_results):
             if isinstance(result, Exception):
                 logger.error(f"❌ Validation failed: {result}")
-                results["broken_streams"].append({
-                    "url": uncached_streams[i]["url"],
-                    "content_id": uncached_streams[i]["content_id"],
-                    "content_type": uncached_streams[i]["content_type"],
-                    "title": uncached_streams[i]["title"],
-                    "error": str(result),
-                    "fixable": False,
-                })
+                results["broken_streams"].append(
+                    {
+                        "url": uncached_streams[i]["url"],
+                        "content_id": uncached_streams[i]["content_id"],
+                        "content_type": uncached_streams[i]["content_type"],
+                        "title": uncached_streams[i]["title"],
+                        "error": str(result),
+                        "fixable": False,
+                    }
+                )
             elif result.is_valid:
                 results["valid_streams"] += 1
             else:
-                results["broken_streams"].append({
-                    "url": result.url,
-                    "content_id": uncached_streams[i]["content_id"],
-                    "content_type": uncached_streams[i]["content_type"],
-                    "title": uncached_streams[i]["title"],
-                    "status_code": result.status_code,
-                    "error": result.error_message,
-                    "fixable": result.status_code in [403, 404],  # Might be fixable from TMDB
-                })
+                results["broken_streams"].append(
+                    {
+                        "url": result.url,
+                        "content_id": uncached_streams[i]["content_id"],
+                        "content_type": uncached_streams[i]["content_type"],
+                        "title": uncached_streams[i]["title"],
+                        "status_code": result.status_code,
+                        "error": result.error_message,
+                        "fixable": result.status_code
+                        in [403, 404],  # Might be fixable from TMDB
+                    }
+                )
 
     logger.info(f"   ✅ Stream validation complete:")
     logger.info(f"      Valid: {results['valid_streams']}")
@@ -206,24 +219,25 @@ async def filter_cached_streams(
 
     for stream in streams:
         # Check cache
-        cached = await StreamValidationCache.find_one({
-            "stream_url": stream["url"],
-            "expires_at": {"$gt": now}
-        })
+        cached = await StreamValidationCache.find_one(
+            {"stream_url": stream["url"], "expires_at": {"$gt": now}}
+        )
 
         if cached:
             # Use cached result
             if not cached.is_valid:
-                cached_results.append({
-                    "url": stream["url"],
-                    "content_id": stream["content_id"],
-                    "content_type": stream["content_type"],
-                    "title": stream["title"],
-                    "status_code": cached.status_code,
-                    "error": cached.error_message,
-                    "is_valid": False,
-                    "from_cache": True,
-                })
+                cached_results.append(
+                    {
+                        "url": stream["url"],
+                        "content_id": stream["content_id"],
+                        "content_type": stream["content_type"],
+                        "title": stream["title"],
+                        "status_code": cached.status_code,
+                        "error": cached.error_message,
+                        "is_valid": False,
+                        "from_cache": True,
+                    }
+                )
             else:
                 cached_results.append({"is_valid": True})
         else:
@@ -237,7 +251,7 @@ async def validate_stream_url(
     stream_type: str = "hls",
     content_id: Optional[str] = None,
     content_type: Optional[str] = None,
-    title: Optional[str] = None
+    title: Optional[str] = None,
 ) -> StreamValidationResult:
     """
     Efficient stream validation without full download.
@@ -249,16 +263,14 @@ async def validate_stream_url(
     4. Timeout: 10 seconds per check
     5. 3 retry attempts with exponential backoff
     """
-    result = StreamValidationResult(
-        url=url,
-        is_valid=False,
-        stream_type=stream_type
-    )
+    result = StreamValidationResult(url=url, is_valid=False, stream_type=stream_type)
 
     start_time = time.time()
 
     try:
-        async with httpx.AsyncClient(timeout=VALIDATION_TIMEOUT, follow_redirects=True) as client:
+        async with httpx.AsyncClient(
+            timeout=VALIDATION_TIMEOUT, follow_redirects=True
+        ) as client:
             # HEAD request first
             response = await client.head(url)
             response_time = int((time.time() - start_time) * 1000)
@@ -272,7 +284,9 @@ async def validate_stream_url(
                     is_valid = await validate_hls_manifest(client, url)
                     result.is_valid = is_valid
                     if not is_valid:
-                        result.error_message = "HLS manifest invalid or segments inaccessible"
+                        result.error_message = (
+                            "HLS manifest invalid or segments inaccessible"
+                        )
                 else:
                     # For other types, 200 is good enough
                     result.is_valid = True
@@ -376,9 +390,7 @@ async def cleanup_expired_cache():
     """Clean up expired cache entries"""
     try:
         now = datetime.utcnow()
-        result = await StreamValidationCache.find(
-            {"expires_at": {"$lt": now}}
-        ).delete()
+        result = await StreamValidationCache.find({"expires_at": {"$lt": now}}).delete()
 
         if result.deleted_count > 0:
             logger.info(f"🧹 Cleaned up {result.deleted_count} expired cache entries")

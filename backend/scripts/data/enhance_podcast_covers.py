@@ -1,8 +1,9 @@
 """
 Enhance podcast cover images with better visual design.
 """
-from pymongo import MongoClient
 import hashlib
+
+from pymongo import MongoClient
 
 
 def get_gradient_colors(podcast_title: str):
@@ -55,10 +56,7 @@ def update_covers():
         title = podcast["title"]
         poster_url = get_poster_url(title)
 
-        db.podcasts.update_one(
-            {"_id": podcast["_id"]},
-            {"$set": {"cover": poster_url}}
-        )
+        db.podcasts.update_one({"_id": podcast["_id"]}, {"$set": {"cover": poster_url}})
         updated += 1
 
         if updated % 10 == 0:

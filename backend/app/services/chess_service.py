@@ -1,18 +1,18 @@
 """Chess game service for game logic and state management."""
-import chess
 import secrets
 import string
-from typing import Optional, Tuple
 from datetime import datetime
+from typing import Optional, Tuple
 
+import chess
 from app.models.chess import (
+    BotDifficulty,
     ChessGame,
     ChessMove,
     ChessPlayer,
-    PlayerColor,
-    GameStatus,
     GameMode,
-    BotDifficulty,
+    GameStatus,
+    PlayerColor,
 )
 from app.services.bot_chess_service import get_bot_name
 
@@ -20,7 +20,7 @@ from app.services.bot_chess_service import get_bot_name
 def generate_game_code(length: int = 6) -> str:
     """Generate a random game code (uppercase letters and digits)."""
     chars = string.ascii_uppercase + string.digits
-    return ''.join(secrets.choice(chars) for _ in range(length))
+    return "".join(secrets.choice(chars) for _ in range(length))
 
 
 class ChessService:
@@ -46,7 +46,7 @@ class ChessService:
             user_id=host_user_id,
             user_name=host_user_name,
             color=color,
-            time_remaining_ms=time_control * 1000 if time_control else None
+            time_remaining_ms=time_control * 1000 if time_control else None,
         )
 
         game = ChessGame(
@@ -63,14 +63,16 @@ class ChessService:
 
         # For bot games, create the bot player and start immediately
         if game_mode == GameMode.BOT and bot_difficulty:
-            bot_color = PlayerColor.BLACK if color == PlayerColor.WHITE else PlayerColor.WHITE
+            bot_color = (
+                PlayerColor.BLACK if color == PlayerColor.WHITE else PlayerColor.WHITE
+            )
             bot_player = ChessPlayer(
                 user_id="BOT",
                 user_name=get_bot_name(bot_difficulty),
                 color=bot_color,
                 is_connected=True,
                 is_bot=True,
-                time_remaining_ms=time_control * 1000 if time_control else None
+                time_remaining_ms=time_control * 1000 if time_control else None,
             )
 
             if bot_color == PlayerColor.WHITE:
@@ -85,11 +87,7 @@ class ChessService:
         return game
 
     @staticmethod
-    async def join_game(
-        game_code: str,
-        user_id: str,
-        user_name: str
-    ) -> ChessGame:
+    async def join_game(game_code: str, user_id: str, user_name: str) -> ChessGame:
         """Join existing game."""
         game = await ChessGame.find_one(ChessGame.game_code == game_code)
         if not game:
@@ -107,7 +105,7 @@ class ChessService:
             user_id=user_id,
             user_name=user_name,
             color=color,
-            time_remaining_ms=game.time_control * 1000 if game.time_control else None
+            time_remaining_ms=game.time_control * 1000 if game.time_control else None,
         )
 
         if color == PlayerColor.WHITE:
@@ -128,7 +126,7 @@ class ChessService:
         board_fen: str,
         from_square: str,
         to_square: str,
-        promotion: Optional[str] = None
+        promotion: Optional[str] = None,
     ) -> Tuple[bool, Optional[str], Optional[chess.Move]]:
         """
         Validate chess move using python-chess.
@@ -153,7 +151,7 @@ class ChessService:
         user_id: str,
         from_square: str,
         to_square: str,
-        promotion: Optional[str] = None
+        promotion: Optional[str] = None,
     ) -> Tuple[ChessGame, ChessMove]:
         """Execute chess move and update game state."""
         game = await ChessGame.get(game_id)
@@ -164,7 +162,11 @@ class ChessService:
             raise ValueError("Game is not active")
 
         # Verify it's player's turn
-        current_player = game.white_player if game.current_turn == PlayerColor.WHITE else game.black_player
+        current_player = (
+            game.white_player
+            if game.current_turn == PlayerColor.WHITE
+            else game.black_player
+        )
         if not current_player or current_player.user_id != user_id:
             raise ValueError("Not your turn")
 
@@ -207,13 +209,17 @@ class ChessService:
             is_castling=is_castling_move,
             is_en_passant=is_en_passant_move,
             san=san_notation,
-            player=game.current_turn
+            player=game.current_turn,
         )
 
         # Update game state
         game.board_fen = board.fen()
         game.move_history.append(move_record)
-        game.current_turn = PlayerColor.BLACK if game.current_turn == PlayerColor.WHITE else PlayerColor.WHITE
+        game.current_turn = (
+            PlayerColor.BLACK
+            if game.current_turn == PlayerColor.WHITE
+            else PlayerColor.WHITE
+        )
 
         # Check game end conditions
         if board.is_checkmate():
@@ -229,6 +235,7 @@ class ChessService:
         # Record game result if game ended
         if game.status in [GameStatus.CHECKMATE, GameStatus.DRAW, GameStatus.STALEMATE]:
             from app.services.stats_service import StatsService
+
             await StatsService.record_game_result(game)
 
         return game, move_record
@@ -254,6 +261,7 @@ class ChessService:
 
         # Record game result
         from app.services.stats_service import StatsService
+
         await StatsService.record_game_result(game)
 
         return game

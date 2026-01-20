@@ -6,10 +6,11 @@ The GCS folders were cleaned, but database URLs still point to old folder names.
 
 import asyncio
 import os
-import sys
 import re
-from motor.motor_asyncio import AsyncIOMotorClient
+import sys
+
 from google.cloud import storage
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # Add the backend directory to the path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -21,7 +22,7 @@ def extract_folder_and_file(url: str) -> tuple:
     """Extract folder name and file name from GCS URL."""
     # Example: https://storage.googleapis.com/bayit-plus-media-new/movies/310_to_Yuma_BOKUTOX/file.mp4
     # Returns: ("310_to_Yuma_BOKUTOX", "file.mp4")
-    match = re.search(r'/movies/([^/]+)/(.+)$', url)
+    match = re.search(r"/movies/([^/]+)/(.+)$", url)
     if match:
         return match.groups()
     return None, None
@@ -38,23 +39,23 @@ def find_matching_gcs_folder(old_folder: str, gcs_folders: list) -> str:
 
     # Remove common suffixes
     patterns_to_remove = [
-        r'_BOKUTOX$',
-        r'_GAZ$',
-        r'_-AMIABLE$',
-        r'_p_-_MX$',
-        r'_-_MX$',
-        r'_p$',
-        r'_TV_-BoK$',
-        r'_-_MX\]$',
-        r'_p_DD_H264-FGT$',
-        r'_PROPER_-TC_HQ_-See$',
-        r'_Eng$',
-        r'_p_Multi_-DDR$',
-        r'_LINE_XviD-MDMA_cd1$',
+        r"_BOKUTOX$",
+        r"_GAZ$",
+        r"_-AMIABLE$",
+        r"_p_-_MX$",
+        r"_-_MX$",
+        r"_p$",
+        r"_TV_-BoK$",
+        r"_-_MX\]$",
+        r"_p_DD_H264-FGT$",
+        r"_PROPER_-TC_HQ_-See$",
+        r"_Eng$",
+        r"_p_Multi_-DDR$",
+        r"_LINE_XviD-MDMA_cd1$",
     ]
 
     for pattern in patterns_to_remove:
-        cleaned = re.sub(pattern, '', cleaned)
+        cleaned = re.sub(pattern, "", cleaned)
 
     # Check if cleaned version exists
     if cleaned in gcs_folders:
@@ -92,9 +93,9 @@ async def sync_with_cleaned_folders():
     print(f"Found {len(gcs_folders)} GCS folders")
 
     # Find all content with bayit-plus-media-new URLs
-    cursor = content_collection.find({
-        "stream_url": {"$regex": "bayit-plus-media-new/movies"}
-    })
+    cursor = content_collection.find(
+        {"stream_url": {"$regex": "bayit-plus-media-new/movies"}}
+    )
 
     updated_count = 0
     errors = []
@@ -120,7 +121,9 @@ async def sync_with_cleaned_folders():
         if not new_folder:
             error_msg = f"No matching folder for: {old_folder}"
             print(f"\n❌ {title}: {error_msg}")
-            errors.append({"title": title, "old_folder": old_folder, "error": error_msg})
+            errors.append(
+                {"title": title, "old_folder": old_folder, "error": error_msg}
+            )
             continue
 
         # Build new URL
@@ -139,13 +142,20 @@ async def sync_with_cleaned_folders():
         if not blob.exists():
             error_msg = f"File not found in GCS: movies/{new_folder}/{filename}"
             print(f"  ❌ {error_msg}")
-            errors.append({"title": title, "old_folder": old_folder, "new_folder": new_folder, "filename": filename, "error": error_msg})
+            errors.append(
+                {
+                    "title": title,
+                    "old_folder": old_folder,
+                    "new_folder": new_folder,
+                    "filename": filename,
+                    "error": error_msg,
+                }
+            )
             continue
 
         # Update database
         result = await content_collection.update_one(
-            {"_id": doc_id},
-            {"$set": {"stream_url": new_url}}
+            {"_id": doc_id}, {"$set": {"stream_url": new_url}}
         )
 
         if result.modified_count > 0:

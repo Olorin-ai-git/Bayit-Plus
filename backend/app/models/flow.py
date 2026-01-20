@@ -1,11 +1,13 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
 
 class FlowItem(BaseModel):
     """Single item in a flow playlist."""
+
     content_id: str
     content_type: str  # live, radio, vod, podcast
     title: str
@@ -16,6 +18,7 @@ class FlowItem(BaseModel):
 
 class FlowTrigger(BaseModel):
     """Trigger conditions for auto-starting a flow."""
+
     type: str  # "time", "day", "shabbat", "holiday"
     start_time: Optional[str] = None  # "HH:MM" format
     end_time: Optional[str] = None
@@ -139,7 +142,12 @@ SYSTEM_FLOWS = [
         "icon": "",
         "flow_type": "system",
         "triggers": [
-            {"type": "time", "start_time": "07:00", "end_time": "09:00", "skip_shabbat": False}
+            {
+                "type": "time",
+                "start_time": "07:00",
+                "end_time": "09:00",
+                "skip_shabbat": False,
+            }
         ],
         "ai_enabled": True,
         "ai_brief_enabled": True,
@@ -163,9 +171,7 @@ SYSTEM_FLOWS = [
         "description": "תוכן מרגיע לפני השינה",
         "icon": "",
         "flow_type": "system",
-        "triggers": [
-            {"type": "time", "start_time": "20:00", "end_time": "22:00"}
-        ],
+        "triggers": [{"type": "time", "start_time": "20:00", "end_time": "22:00"}],
         "ai_enabled": False,
     },
     {
@@ -176,7 +182,12 @@ SYSTEM_FLOWS = [
         "icon": "",
         "flow_type": "system",
         "triggers": [
-            {"type": "time", "start_time": "16:00", "end_time": "18:00", "days": [0, 1, 2, 3, 4]}
+            {
+                "type": "time",
+                "start_time": "16:00",
+                "end_time": "18:00",
+                "days": [0, 1, 2, 3, 4],
+            }
         ],
         "ai_enabled": False,
     },

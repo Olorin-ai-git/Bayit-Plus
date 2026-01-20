@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import anthropic
-
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
 from app.models.librarian import ClassificationVerificationCache
@@ -25,6 +24,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ClassificationVerification:
     """Result of a classification verification."""
+
     content_id: str
     fit_score: int  # 1-10
     is_correct: bool
@@ -43,21 +43,28 @@ async def get_cached_verifications(
     cache_threshold = datetime.utcnow() - timedelta(days=config.cache_ttl_days)
 
     for content in contents:
-        cached = await ClassificationVerificationCache.find_one({
-            "content_id": str(content.id),
-            "category_id": category_id,
-            "last_verified": {"$gte": cache_threshold},
-        })
+        cached = await ClassificationVerificationCache.find_one(
+            {
+                "content_id": str(content.id),
+                "category_id": category_id,
+                "last_verified": {"$gte": cache_threshold},
+            }
+        )
         if cached:
-            if not cached.is_correct and cached.fit_score < config.misclassification_threshold:
-                cached_misclass.append({
-                    "content_id": str(content.id),
-                    "current_category": cached.category_name,
-                    "suggested_category": cached.suggested_category_name,
-                    "fit_score": cached.fit_score,
-                    "reasoning": cached.reasoning,
-                    "confidence": (10 - cached.fit_score) / 10.0,
-                })
+            if (
+                not cached.is_correct
+                and cached.fit_score < config.misclassification_threshold
+            ):
+                cached_misclass.append(
+                    {
+                        "content_id": str(content.id),
+                        "current_category": cached.category_name,
+                        "suggested_category": cached.suggested_category_name,
+                        "fit_score": cached.fit_score,
+                        "reasoning": cached.reasoning,
+                        "confidence": (10 - cached.fit_score) / 10.0,
+                    }
+                )
         else:
             uncached.append(content)
     return cached_misclass, uncached

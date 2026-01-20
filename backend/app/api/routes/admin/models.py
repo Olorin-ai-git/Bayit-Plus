@@ -3,11 +3,13 @@ Admin response models and shared Pydantic schemas.
 """
 
 from typing import List
+
 from pydantic import BaseModel
 
 
 class DashboardStats(BaseModel):
     """Dashboard statistics response model."""
+
     total_users: int
     active_users: int
     daily_active_users: int
@@ -24,6 +26,7 @@ class DashboardStats(BaseModel):
 
 class PaginatedResponse(BaseModel):
     """Generic paginated response model."""
+
     items: List
     total: int
     page: int

@@ -12,11 +12,10 @@ from datetime import datetime, timezone
 from typing import Optional
 
 import bcrypt
-
 from app.core.config import settings
 from app.models.integration_partner import (
-    IntegrationPartner,
     CapabilityConfig,
+    IntegrationPartner,
     RateLimitConfig,
     WebhookEventType,
 )
@@ -100,7 +99,9 @@ class PartnerService:
 
         return partner, raw_api_key
 
-    async def authenticate_by_api_key(self, api_key: str) -> Optional[IntegrationPartner]:
+    async def authenticate_by_api_key(
+        self, api_key: str
+    ) -> Optional[IntegrationPartner]:
         """
         Authenticate a partner by API key.
 
@@ -175,7 +176,9 @@ class PartnerService:
         logger.info(f"Updated partner {partner_id}: {list(updates.keys())}")
         return partner
 
-    async def regenerate_api_key(self, partner_id: str) -> Optional[tuple[IntegrationPartner, str]]:
+    async def regenerate_api_key(
+        self, partner_id: str
+    ) -> Optional[tuple[IntegrationPartner, str]]:
         """
         Generate a new API key for a partner.
 
@@ -246,7 +249,9 @@ class PartnerService:
             return None
 
         if rate_limits is None:
-            rate_limits = self._get_default_rate_limits(partner.billing_tier, capability)
+            rate_limits = self._get_default_rate_limits(
+                partner.billing_tier, capability
+            )
 
         partner.capabilities[capability] = CapabilityConfig(
             enabled=True,
@@ -299,7 +304,9 @@ class PartnerService:
 
         return partner
 
-    def generate_webhook_signature(self, partner: IntegrationPartner, payload: str) -> str:
+    def generate_webhook_signature(
+        self, partner: IntegrationPartner, payload: str
+    ) -> str:
         """
         Generate HMAC signature for webhook payload.
 
@@ -340,7 +347,9 @@ class PartnerService:
         except Exception:
             return False
 
-    def _get_default_rate_limits(self, billing_tier: str, capability: str) -> RateLimitConfig:
+    def _get_default_rate_limits(
+        self, billing_tier: str, capability: str
+    ) -> RateLimitConfig:
         """Get default rate limits based on billing tier and capability."""
         # Base limits by tier
         tier_multipliers = {

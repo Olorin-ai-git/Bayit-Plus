@@ -1,17 +1,19 @@
 """Set Avatar's thumbnail URL and download the image"""
 import asyncio
-import sys
 import os
+import sys
+
 from dotenv import load_dotenv
 
 load_dotenv()
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
+import logging
+
 from app.models.content import Content
 from app.services.image_storage import download_and_encode_image
-import logging
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,7 +21,9 @@ logger = logging.getLogger(__name__)
 
 async def fix_avatar():
     """Set Avatar's thumbnail URL and download it"""
-    mongodb_uri = os.getenv("MONGODB_URI") or os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+    mongodb_uri = os.getenv("MONGODB_URI") or os.getenv(
+        "MONGODB_URL", "mongodb://localhost:27017"
+    )
     mongodb_db = os.getenv("MONGODB_DB") or os.getenv("MONGODB_DB_NAME", "bayit_plus")
 
     logger.info(f"Connecting to MongoDB: {mongodb_db}")
@@ -46,7 +50,9 @@ async def fix_avatar():
 
     # Now download and encode the image
     logger.info(f"\n📥 Downloading image from: {thumbnail_url}")
-    thumbnail_data = await download_and_encode_image(thumbnail_url, max_size=(800, 1200))
+    thumbnail_data = await download_and_encode_image(
+        thumbnail_url, max_size=(800, 1200)
+    )
 
     if thumbnail_data:
         logger.info(f"✅ Successfully downloaded and encoded image!")

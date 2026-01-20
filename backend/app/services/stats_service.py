@@ -1,8 +1,9 @@
-from typing import List, Optional
 from datetime import datetime
-from app.models.friendship import GameResult, PlayerStats
+from typing import List, Optional
+
 from app.models.chess import ChessGame, GameStatus
-from beanie.operators import Or, And
+from app.models.friendship import GameResult, PlayerStats
+from beanie.operators import And, Or
 
 
 class StatsService:
@@ -11,7 +12,12 @@ class StatsService:
     @staticmethod
     async def record_game_result(game: ChessGame) -> GameResult:
         """Record game result and update player stats"""
-        if game.status not in [GameStatus.CHECKMATE, GameStatus.DRAW, GameStatus.RESIGNED, GameStatus.TIMEOUT]:
+        if game.status not in [
+            GameStatus.CHECKMATE,
+            GameStatus.DRAW,
+            GameStatus.RESIGNED,
+            GameStatus.TIMEOUT,
+        ]:
             raise ValueError("Game is not finished")
 
         # Determine winner
@@ -125,14 +131,11 @@ class StatsService:
 
     @staticmethod
     async def get_match_history(
-        user_id: str,
-        opponent_id: Optional[str] = None,
-        limit: int = 50
+        user_id: str, opponent_id: Optional[str] = None, limit: int = 50
     ) -> List[GameResult]:
         """Get match history for a user, optionally filtered by opponent"""
         query = Or(
-            GameResult.white_player_id == user_id,
-            GameResult.black_player_id == user_id
+            GameResult.white_player_id == user_id, GameResult.black_player_id == user_id
         )
 
         if opponent_id:
@@ -140,8 +143,8 @@ class StatsService:
                 query,
                 Or(
                     GameResult.white_player_id == opponent_id,
-                    GameResult.black_player_id == opponent_id
-                )
+                    GameResult.black_player_id == opponent_id,
+                ),
             )
 
         results = await GameResult.find(query).sort("-played_at").limit(limit).to_list()
@@ -175,26 +178,31 @@ class StatsService:
     @staticmethod
     async def get_leaderboard(limit: int = 100) -> List[dict]:
         """Get top players by rating"""
-        top_stats = await PlayerStats.find().sort("-chess_rating").limit(limit).to_list()
+        top_stats = (
+            await PlayerStats.find().sort("-chess_rating").limit(limit).to_list()
+        )
 
         leaderboard = []
         for idx, stats in enumerate(top_stats, start=1):
             # Get user info
             from app.models.user import User
+
             user = await User.get(stats.user_id)
 
-            leaderboard.append({
-                "rank": idx,
-                "user_id": stats.user_id,
-                "name": user.name if user else "Unknown",
-                "avatar": user.avatar if user else None,
-                "rating": stats.chess_rating,
-                "games_played": stats.chess_games_played,
-                "wins": stats.chess_wins,
-                "losses": stats.chess_losses,
-                "draws": stats.chess_draws,
-                "win_rate": stats.chess_win_rate,
-                "win_streak": stats.current_win_streak,
-            })
+            leaderboard.append(
+                {
+                    "rank": idx,
+                    "user_id": stats.user_id,
+                    "name": user.name if user else "Unknown",
+                    "avatar": user.avatar if user else None,
+                    "rating": stats.chess_rating,
+                    "games_played": stats.chess_games_played,
+                    "wins": stats.chess_wins,
+                    "losses": stats.chess_losses,
+                    "draws": stats.chess_draws,
+                    "win_rate": stats.chess_win_rate,
+                    "win_streak": stats.current_win_streak,
+                }
+            )
 
         return leaderboard

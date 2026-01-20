@@ -4,15 +4,14 @@ Youth Content Filter Service.
 AI-powered filtering for trending topics and news to ensure age-appropriate content
 for youngsters (ages 12-17). Filters out mature content, violence, and inappropriate themes.
 """
-from typing import List, Optional
-from dataclasses import dataclass
 import json
 import logging
-import anthropic
+from dataclasses import dataclass
+from typing import List, Optional
 
+import anthropic
 from app.core.config import settings
 from app.services.news_analyzer import TrendingTopic
-
 
 logger = logging.getLogger(__name__)
 
@@ -36,51 +35,138 @@ YOUTH_CAUTION_CATEGORIES = {
 # Keywords that indicate inappropriate content for youth
 YOUTH_UNSAFE_KEYWORDS = [
     # Violence
-    "violence", "אלימות", "terror", "טרור", "war", "מלחמה", "killed", "נהרג",
-    "death", "מוות", "wounded", "פצוע", "attack", "פיגוע", "bombing", "הפצצה",
-    "shooting", "ירי", "stabbing", "דקירה", "murder", "רצח", "assault", "תקיפה",
-
+    "violence",
+    "אלימות",
+    "terror",
+    "טרור",
+    "war",
+    "מלחמה",
+    "killed",
+    "נהרג",
+    "death",
+    "מוות",
+    "wounded",
+    "פצוע",
+    "attack",
+    "פיגוע",
+    "bombing",
+    "הפצצה",
+    "shooting",
+    "ירי",
+    "stabbing",
+    "דקירה",
+    "murder",
+    "רצח",
+    "assault",
+    "תקיפה",
     # Sexual content
-    "sexual", "מיני", "rape", "אונס", "harassment", "הטרדה מינית",
-
+    "sexual",
+    "מיני",
+    "rape",
+    "אונס",
+    "harassment",
+    "הטרדה מינית",
     # Drugs and alcohol
-    "drugs", "סמים", "narcotics", "נרקוטיקה", "alcohol abuse", "שימוש באלכוהול",
-
+    "drugs",
+    "סמים",
+    "narcotics",
+    "נרקוטיקה",
+    "alcohol abuse",
+    "שימוש באלכוהול",
     # Crime
-    "crime scene", "זירת פשע", "corruption", "שחיתות", "fraud", "הונאה",
-
+    "crime scene",
+    "זירת פשע",
+    "corruption",
+    "שחיתות",
+    "fraud",
+    "הונאה",
     # Mature themes
-    "adult content", "תוכן למבוגרים", "explicit", "מפורש", "graphic", "גרפי",
+    "adult content",
+    "תוכן למבוגרים",
+    "explicit",
+    "מפורש",
+    "graphic",
+    "גרפי",
 ]
 
 # Keywords that indicate safe/educational content for youth
 YOUTH_SAFE_KEYWORDS = [
     # Education
-    "education", "חינוך", "school", "בית ספר", "university", "אוניברסיטה",
-    "learning", "למידה", "study", "לימודים", "science", "מדע",
-
+    "education",
+    "חינוך",
+    "school",
+    "בית ספר",
+    "university",
+    "אוניברסיטה",
+    "learning",
+    "למידה",
+    "study",
+    "לימודים",
+    "science",
+    "מדע",
     # Technology
-    "tech", "טכנולוגיה", "innovation", "חדשנות", "startup", "סטארטאפ",
-    "app", "אפליקציה", "coding", "תכנות", "AI", "בינה מלאכותית",
-    "gaming", "גיימינג", "esports", "ספורט אלקטרוני",
-
+    "tech",
+    "טכנולוגיה",
+    "innovation",
+    "חדשנות",
+    "startup",
+    "סטארטאפ",
+    "app",
+    "אפליקציה",
+    "coding",
+    "תכנות",
+    "AI",
+    "בינה מלאכותית",
+    "gaming",
+    "גיימינג",
+    "esports",
+    "ספורט אלקטרוני",
     # Sports
-    "sports", "ספורט", "basketball", "כדורסל", "football", "כדורגל",
-    "olympics", "אולימפיאדה", "championship", "אליפות", "team", "קבוצה",
-
+    "sports",
+    "ספורט",
+    "basketball",
+    "כדורסל",
+    "football",
+    "כדורגל",
+    "olympics",
+    "אולימפיאדה",
+    "championship",
+    "אליפות",
+    "team",
+    "קבוצה",
     # Culture
-    "music", "מוזיקה", "film", "סרט", "festival", "פסטיבל",
-    "art", "אמנות", "culture", "תרבות", "concert", "קונצרט",
-
+    "music",
+    "מוזיקה",
+    "film",
+    "סרט",
+    "festival",
+    "פסטיבל",
+    "art",
+    "אמנות",
+    "culture",
+    "תרבות",
+    "concert",
+    "קונצרט",
     # Positive news
-    "achievement", "הישג", "success", "הצלחה", "winner", "מנצח",
-    "innovation", "חדשנות", "discovery", "גילוי", "breakthrough", "פריצת דרך",
+    "achievement",
+    "הישג",
+    "success",
+    "הצלחה",
+    "winner",
+    "מנצח",
+    "innovation",
+    "חדשנות",
+    "discovery",
+    "גילוי",
+    "breakthrough",
+    "פריצת דרך",
 ]
 
 
 @dataclass
 class FilteredTopic:
     """A trending topic with youth appropriateness rating."""
+
     topic: TrendingTopic
     is_appropriate: bool
     confidence: float  # 0.0-1.0
@@ -88,9 +174,7 @@ class FilteredTopic:
 
 
 async def filter_topics_for_youth(
-    topics: List[TrendingTopic],
-    age_group: Optional[str] = None,
-    use_ai: bool = True
+    topics: List[TrendingTopic], age_group: Optional[str] = None, use_ai: bool = True
 ) -> List[TrendingTopic]:
     """
     Filter trending topics for youth appropriateness.
@@ -134,7 +218,9 @@ def _is_topic_safe_quick(topic: TrendingTopic) -> bool:
         # Check for unsafe keywords
         for unsafe_keyword in YOUTH_UNSAFE_KEYWORDS:
             if unsafe_keyword.lower() in combined_text_lower:
-                logger.debug(f"Topic '{topic.title}' filtered: contains unsafe keyword '{unsafe_keyword}'")
+                logger.debug(
+                    f"Topic '{topic.title}' filtered: contains unsafe keyword '{unsafe_keyword}'"
+                )
                 return False
 
         return True
@@ -147,7 +233,9 @@ def _is_topic_safe_quick(topic: TrendingTopic) -> bool:
         # Check for unsafe keywords
         for unsafe_keyword in YOUTH_UNSAFE_KEYWORDS:
             if unsafe_keyword.lower() in combined_text_lower:
-                logger.debug(f"Topic '{topic.title}' filtered: contains unsafe keyword '{unsafe_keyword}'")
+                logger.debug(
+                    f"Topic '{topic.title}' filtered: contains unsafe keyword '{unsafe_keyword}'"
+                )
                 return False
 
         # If no unsafe keywords, check if it has safe keywords
@@ -161,7 +249,9 @@ def _is_topic_safe_quick(topic: TrendingTopic) -> bool:
             return True
 
         # No explicit safe or unsafe signals - be conservative
-        logger.debug(f"Topic '{topic.title}' filtered: caution category with no clear safe indicators")
+        logger.debug(
+            f"Topic '{topic.title}' filtered: caution category with no clear safe indicators"
+        )
         return False
 
     # Unknown categories - be conservative
@@ -170,8 +260,7 @@ def _is_topic_safe_quick(topic: TrendingTopic) -> bool:
 
 
 async def _ai_filter_topics(
-    topics: List[TrendingTopic],
-    age_group: Optional[str] = None
+    topics: List[TrendingTopic], age_group: Optional[str] = None
 ) -> List[TrendingTopic]:
     """
     Use Claude AI to intelligently filter topics for youth appropriateness.
@@ -188,10 +277,12 @@ async def _ai_filter_topics(
     }.get(age_group, "ages 12-17")
 
     # Prepare topics for analysis
-    topics_text = "\n".join([
-        f"{i+1}. {t.title} ({t.category}) - {t.summary or 'No summary'}"
-        for i, t in enumerate(topics)
-    ])
+    topics_text = "\n".join(
+        [
+            f"{i+1}. {t.title} ({t.category}) - {t.summary or 'No summary'}"
+            for i, t in enumerate(topics)
+        ]
+    )
 
     prompt = f"""You are a content moderator for a youth platform serving {age_description}.
 
@@ -218,9 +309,7 @@ Consider the age group ({age_description}) when making decisions. Be protective 
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=500,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+            messages=[{"role": "user", "content": prompt}],
         )
 
         # Parse JSON response
@@ -243,7 +332,9 @@ Consider the age group ({age_description}) when making decisions. Be protective 
             if 1 <= idx <= len(topics):
                 filtered_topics.append(topics[idx - 1])
 
-        logger.info(f"AI filtered {len(topics)} topics down to {len(filtered_topics)} appropriate for youth")
+        logger.info(
+            f"AI filtered {len(topics)} topics down to {len(filtered_topics)} appropriate for youth"
+        )
         return filtered_topics
 
     except json.JSONDecodeError as e:

@@ -52,10 +52,12 @@ async def find_series_via_tmdb(
         tmdb_id = search_result.get("id")
 
         # Check if we have a series with this TMDB ID
-        existing = await Content.find_one({
-            "is_series": True,
-            "tmdb_id": tmdb_id,
-        })
+        existing = await Content.find_one(
+            {
+                "is_series": True,
+                "tmdb_id": tmdb_id,
+            }
+        )
 
         if existing:
             logger.info(f"Found series via TMDB ID {tmdb_id}: '{existing.title}'")
@@ -68,6 +70,7 @@ async def find_series_via_tmdb(
                 from app.services.series_linker.series_creator import (
                     create_series_from_tmdb,
                 )
+
                 new_series = await create_series_from_tmdb(
                     details,
                     series_name,

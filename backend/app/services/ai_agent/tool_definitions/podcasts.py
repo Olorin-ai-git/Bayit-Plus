@@ -9,15 +9,15 @@ PODCAST_TOOLS = [
             "properties": {
                 "podcast_id": {
                     "type": "string",
-                    "description": "Optional: Specific podcast ID to manage. If not provided, manages all podcasts."
+                    "description": "Optional: Specific podcast ID to manage. If not provided, manages all podcasts.",
                 },
                 "max_episodes_to_keep": {
                     "type": "integer",
                     "description": "Maximum number of episodes to keep per podcast (default: 3)",
-                    "default": 3
-                }
+                    "default": 3,
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
 ]

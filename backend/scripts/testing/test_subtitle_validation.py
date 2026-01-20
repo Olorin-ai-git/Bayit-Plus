@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from datetime import datetime
+
 from app.models.content import Content
 
 
@@ -43,7 +44,9 @@ async def test_subtitle_validation():
     print(f"   Issues found: {result1[0]['issues'] if result1 else 'None'}")
     assert result1, "Should find issues"
     assert "missing_subtitles" in result1[0]["issues"], "Should flag missing_subtitles"
-    assert "insufficient_subtitle_languages" in result1[0]["issues"], "Should flag insufficient languages"
+    assert (
+        "insufficient_subtitle_languages" in result1[0]["issues"]
+    ), "Should flag insufficient languages"
     print("   ✅ PASS: Detected missing subtitles and insufficient languages")
 
     # Test Case 2: Movie with only 1 language (insufficient)
@@ -67,8 +70,12 @@ async def test_subtitle_validation():
     result2 = await check_metadata_completeness([content2])
     print(f"   Issues found: {result2[0]['issues'] if result2 else 'None'}")
     assert result2, "Should find issues"
-    assert "missing_subtitles" not in result2[0]["issues"], "Should NOT flag missing_subtitles (has_subtitles=True)"
-    assert "insufficient_subtitle_languages" in result2[0]["issues"], "Should flag insufficient languages (only 1)"
+    assert (
+        "missing_subtitles" not in result2[0]["issues"]
+    ), "Should NOT flag missing_subtitles (has_subtitles=True)"
+    assert (
+        "insufficient_subtitle_languages" in result2[0]["issues"]
+    ), "Should flag insufficient languages (only 1)"
     print("   ✅ PASS: Detected insufficient languages (1 < 3)")
 
     # Test Case 3: Movie with 2 languages (still insufficient)
@@ -92,7 +99,9 @@ async def test_subtitle_validation():
     result3 = await check_metadata_completeness([content3])
     print(f"   Issues found: {result3[0]['issues'] if result3 else 'None'}")
     assert result3, "Should find issues"
-    assert "insufficient_subtitle_languages" in result3[0]["issues"], "Should flag insufficient languages (2 < 3)"
+    assert (
+        "insufficient_subtitle_languages" in result3[0]["issues"]
+    ), "Should flag insufficient languages (2 < 3)"
     print("   ✅ PASS: Detected insufficient languages (2 < 3)")
 
     # Test Case 4: Movie with exactly 3 languages (VALID)
@@ -117,8 +126,12 @@ async def test_subtitle_validation():
     print(f"   Issues found: {result4[0]['issues'] if result4 else 'None'}")
     # Should have no subtitle-related issues
     if result4:
-        assert "missing_subtitles" not in result4[0]["issues"], "Should NOT flag missing_subtitles"
-        assert "insufficient_subtitle_languages" not in result4[0]["issues"], "Should NOT flag insufficient languages (has 3)"
+        assert (
+            "missing_subtitles" not in result4[0]["issues"]
+        ), "Should NOT flag missing_subtitles"
+        assert (
+            "insufficient_subtitle_languages" not in result4[0]["issues"]
+        ), "Should NOT flag insufficient languages (has 3)"
     print("   ✅ PASS: No subtitle issues detected (has 3 languages)")
 
     # Test Case 5: Series with 1 language (should be OK - only movies require 3)
@@ -142,7 +155,9 @@ async def test_subtitle_validation():
     print(f"   Issues found: {result5[0]['issues'] if result5 else 'None'}")
     # Series shouldn't be flagged for insufficient languages
     if result5:
-        assert "insufficient_subtitle_languages" not in result5[0]["issues"], "Should NOT flag series for insufficient languages"
+        assert (
+            "insufficient_subtitle_languages" not in result5[0]["issues"]
+        ), "Should NOT flag series for insufficient languages"
     print("   ✅ PASS: Series not flagged (only movies require 3 languages)")
 
     # Test Case 6: Movie with 6 languages (more than minimum - VALID)
@@ -159,14 +174,23 @@ async def test_subtitle_validation():
         imdb_id="tt1234571",
         is_series=False,
         has_subtitles=True,
-        available_subtitle_languages=["en", "he", "es", "ar", "ru", "fr"],  # 6 languages
+        available_subtitle_languages=[
+            "en",
+            "he",
+            "es",
+            "ar",
+            "ru",
+            "fr",
+        ],  # 6 languages
         duration="02:00:00",
     )
 
     result6 = await check_metadata_completeness([content6])
     print(f"   Issues found: {result6[0]['issues'] if result6 else 'None'}")
     if result6:
-        assert "insufficient_subtitle_languages" not in result6[0]["issues"], "Should NOT flag (has 6 languages)"
+        assert (
+            "insufficient_subtitle_languages" not in result6[0]["issues"]
+        ), "Should NOT flag (has 6 languages)"
     print("   ✅ PASS: No subtitle issues detected (has 6 languages)")
 
     print("\n" + "=" * 80)

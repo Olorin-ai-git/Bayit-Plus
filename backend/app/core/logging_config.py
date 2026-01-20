@@ -3,9 +3,9 @@ Production logging configuration for Cloud Run
 Uses structured logging compatible with Google Cloud Logging
 Includes correlation ID for end-to-end request tracing
 """
+import json
 import logging
 import sys
-import json
 from typing import Any
 
 
@@ -16,6 +16,7 @@ def _get_correlation_id() -> str | None:
     """
     try:
         from app.middleware.correlation_id import get_correlation_id
+
         return get_correlation_id()
     except ImportError:
         return None

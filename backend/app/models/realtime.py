@@ -1,11 +1,13 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
 
 class ParticipantState(BaseModel):
     """State of a participant in a watch party"""
+
     user_id: str
     user_name: str
     is_speaking: bool = False
@@ -16,6 +18,7 @@ class ParticipantState(BaseModel):
 
 class WatchParty(Document):
     """A watch party / viewing room for shared content viewing"""
+
     host_id: str
     host_name: str
     content_id: str
@@ -63,6 +66,7 @@ class WatchParty(Document):
 
 class ChatMessage(Document):
     """A chat message in a watch party"""
+
     party_id: str
     user_id: str
     user_name: str
@@ -72,7 +76,9 @@ class ChatMessage(Document):
     # Translation fields
     source_language: str = "he"
     has_translations: bool = False
-    translations: dict = Field(default_factory=dict)  # {"en": "translated text", "es": "texto traducido"}
+    translations: dict = Field(
+        default_factory=dict
+    )  # {"en": "translated text", "es": "texto traducido"}
 
     # For reactions
     reactions: dict = Field(default_factory=dict)  # {"emoji": ["user_id1", "user_id2"]}
@@ -89,6 +95,7 @@ class ChatMessage(Document):
 
 class WatchPartyCreate(BaseModel):
     """Request model for creating a watch party"""
+
     content_id: str
     content_type: str  # live, vod
     content_title: Optional[str] = None
@@ -100,6 +107,7 @@ class WatchPartyCreate(BaseModel):
 
 class WatchPartyResponse(BaseModel):
     """Response model for watch party data"""
+
     id: str
     host_id: str
     host_name: str
@@ -124,12 +132,14 @@ class WatchPartyResponse(BaseModel):
 
 class ChatMessageCreate(BaseModel):
     """Request model for sending a chat message"""
+
     message: str
     message_type: str = "text"
 
 
 class ChatMessageResponse(BaseModel):
     """Response model for chat message"""
+
     id: str
     party_id: str
     user_id: str
@@ -149,6 +159,7 @@ class ChatMessageResponse(BaseModel):
 
 class PlaybackSync(BaseModel):
     """Model for syncing playback position"""
+
     party_id: str
     user_id: str
     position: float  # Current playback position in seconds

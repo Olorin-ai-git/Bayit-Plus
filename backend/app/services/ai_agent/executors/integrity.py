@@ -7,7 +7,7 @@ These wrap the existing upload_integrity_service functionality.
 """
 
 import logging
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
 from app.models.content import Content
 
@@ -28,12 +28,16 @@ async def execute_get_integrity_status() -> Dict[str, Any]:
             "stuck_upload_jobs": status.stuck_upload_jobs,
             "stale_hash_locks": status.stale_hash_locks,
             "issues_found": status.issues_found,
-            "last_checked": status.last_checked.isoformat() if status.last_checked else None,
+            "last_checked": status.last_checked.isoformat()
+            if status.last_checked
+            else None,
             "message": (
                 f"Found {status.orphaned_gcs_files} orphaned GCS files, "
                 f"{status.orphaned_content_records} orphaned content records, "
                 f"{status.stuck_upload_jobs} stuck jobs"
-            ) if status.issues_found else "No integrity issues found"
+            )
+            if status.issues_found
+            else "No integrity issues found",
         }
 
     except Exception as e:
@@ -42,16 +46,14 @@ async def execute_get_integrity_status() -> Dict[str, Any]:
 
 
 async def execute_find_orphaned_gcs_files(
-    prefix: Optional[str] = None,
-    limit: int = 100
+    prefix: Optional[str] = None, limit: int = 100
 ) -> Dict[str, Any]:
     """Find GCS files that have no corresponding Content record."""
     try:
         from app.services.upload_service.integrity import upload_integrity_service
 
         orphans = await upload_integrity_service.find_orphaned_gcs_files(
-            prefix=prefix,
-            limit=limit
+            prefix=prefix, limit=limit
         )
 
         return {
@@ -62,11 +64,13 @@ async def execute_find_orphaned_gcs_files(
                     "gcs_path": orphan.gcs_path,
                     "public_url": orphan.public_url,
                     "size_bytes": orphan.size_bytes,
-                    "created_at": orphan.created_at.isoformat() if orphan.created_at else None
+                    "created_at": orphan.created_at.isoformat()
+                    if orphan.created_at
+                    else None,
                 }
                 for orphan in orphans
             ],
-            "message": f"Found {len(orphans)} orphaned GCS files"
+            "message": f"Found {len(orphans)} orphaned GCS files",
         }
 
     except Exception as e:
@@ -74,14 +78,14 @@ async def execute_find_orphaned_gcs_files(
         return {"success": False, "error": str(e)}
 
 
-async def execute_find_orphaned_content_records(
-    limit: int = 100
-) -> Dict[str, Any]:
+async def execute_find_orphaned_content_records(limit: int = 100) -> Dict[str, Any]:
     """Find Content records whose GCS files no longer exist."""
     try:
         from app.services.upload_service.integrity import upload_integrity_service
 
-        orphans = await upload_integrity_service.find_orphaned_content_records(limit=limit)
+        orphans = await upload_integrity_service.find_orphaned_content_records(
+            limit=limit
+        )
 
         return {
             "success": True,
@@ -92,11 +96,13 @@ async def execute_find_orphaned_content_records(
                     "title": orphan.title,
                     "stream_url": orphan.stream_url,
                     "file_hash": orphan.file_hash,
-                    "created_at": orphan.created_at.isoformat() if orphan.created_at else None
+                    "created_at": orphan.created_at.isoformat()
+                    if orphan.created_at
+                    else None,
                 }
                 for orphan in orphans
             ],
-            "message": f"Found {len(orphans)} orphaned Content records"
+            "message": f"Found {len(orphans)} orphaned Content records",
         }
 
     except Exception as e:
@@ -104,9 +110,7 @@ async def execute_find_orphaned_content_records(
         return {"success": False, "error": str(e)}
 
 
-async def execute_find_stuck_upload_jobs(
-    threshold_minutes: int = 30
-) -> Dict[str, Any]:
+async def execute_find_stuck_upload_jobs(threshold_minutes: int = 30) -> Dict[str, Any]:
     """Find upload jobs stuck in processing state."""
     try:
         from app.services.upload_service.integrity import upload_integrity_service
@@ -123,13 +127,15 @@ async def execute_find_stuck_upload_jobs(
                     "job_id": job.job_id,
                     "filename": job.filename,
                     "status": job.status,
-                    "started_at": job.started_at.isoformat() if job.started_at else None,
+                    "started_at": job.started_at.isoformat()
+                    if job.started_at
+                    else None,
                     "stuck_minutes": job.stuck_minutes,
-                    "current_stage": job.current_stage
+                    "current_stage": job.current_stage,
                 }
                 for job in stuck_jobs
             ],
-            "message": f"Found {len(stuck_jobs)} stuck upload jobs (>{threshold_minutes} minutes)"
+            "message": f"Found {len(stuck_jobs)} stuck upload jobs (>{threshold_minutes} minutes)",
         }
 
     except Exception as e:
@@ -138,9 +144,7 @@ async def execute_find_stuck_upload_jobs(
 
 
 async def execute_cleanup_orphans(
-    dry_run: bool = True,
-    limit: int = 100,
-    cleanup_type: str = "all"
+    dry_run: bool = True, limit: int = 100, cleanup_type: str = "all"
 ) -> Dict[str, Any]:
     """
     Clean up orphaned files and records.
@@ -157,35 +161,35 @@ async def execute_cleanup_orphans(
             "success": True,
             "dry_run": dry_run,
             "gcs_cleanup": None,
-            "content_cleanup": None
+            "content_cleanup": None,
         }
 
         if cleanup_type in ["all", "gcs"]:
             gcs_result = await upload_integrity_service.cleanup_orphaned_gcs_files(
-                dry_run=dry_run,
-                limit=limit
+                dry_run=dry_run, limit=limit
             )
             results["gcs_cleanup"] = {
                 "success": gcs_result.success,
                 "items_found": gcs_result.items_found,
                 "items_cleaned": gcs_result.items_cleaned,
                 "items_failed": gcs_result.items_failed,
-                "errors": gcs_result.errors
+                "errors": gcs_result.errors,
             }
             if not gcs_result.success:
                 results["success"] = False
 
         if cleanup_type in ["all", "content"]:
-            content_result = await upload_integrity_service.cleanup_orphaned_content_records(
-                dry_run=dry_run,
-                limit=limit
+            content_result = (
+                await upload_integrity_service.cleanup_orphaned_content_records(
+                    dry_run=dry_run, limit=limit
+                )
             )
             results["content_cleanup"] = {
                 "success": content_result.success,
                 "items_found": content_result.items_found,
                 "items_cleaned": content_result.items_cleaned,
                 "items_failed": content_result.items_failed,
-                "errors": content_result.errors
+                "errors": content_result.errors,
             }
             if not content_result.success:
                 results["success"] = False
@@ -213,16 +217,14 @@ async def execute_cleanup_orphans(
 
 
 async def execute_recover_stuck_jobs(
-    dry_run: bool = True,
-    threshold_minutes: int = 30
+    dry_run: bool = True, threshold_minutes: int = 30
 ) -> Dict[str, Any]:
     """Recover stuck upload jobs by marking them as failed and optionally requeuing."""
     try:
         from app.services.upload_service.integrity import upload_integrity_service
 
         result = await upload_integrity_service.recover_stuck_jobs(
-            dry_run=dry_run,
-            threshold_minutes=threshold_minutes
+            dry_run=dry_run, threshold_minutes=threshold_minutes
         )
 
         action = "would recover" if dry_run else "recovered"
@@ -235,7 +237,7 @@ async def execute_recover_stuck_jobs(
             "jobs_failed": result.jobs_failed,
             "errors": result.errors,
             "details": result.details,
-            "message": f"{action.capitalize()} {result.jobs_recovered}/{result.jobs_found} stuck jobs"
+            "message": f"{action.capitalize()} {result.jobs_recovered}/{result.jobs_found} stuck jobs",
         }
 
     except Exception as e:
@@ -244,16 +246,14 @@ async def execute_recover_stuck_jobs(
 
 
 async def execute_run_full_cleanup(
-    dry_run: bool = True,
-    limit: int = 100
+    dry_run: bool = True, limit: int = 100
 ) -> Dict[str, Any]:
     """Run a full cleanup of all integrity issues."""
     try:
         from app.services.upload_service.integrity import upload_integrity_service
 
         result = await upload_integrity_service.run_full_cleanup(
-            dry_run=dry_run,
-            limit=limit
+            dry_run=dry_run, limit=limit
         )
 
         return {
@@ -264,7 +264,9 @@ async def execute_run_full_cleanup(
             "gcs_cleanup": result["gcs_cleanup"],
             "content_cleanup": result["content_cleanup"],
             "job_recovery": result["job_recovery"],
-            "message": "Full cleanup completed" if result["overall_success"] else "Full cleanup completed with errors"
+            "message": "Full cleanup completed"
+            if result["overall_success"]
+            else "Full cleanup completed with errors",
         }
 
     except Exception as e:
@@ -276,7 +278,7 @@ async def execute_validate_youtube_links(
     limit: int = 100,
     category_id: Optional[str] = None,
     include_kids: bool = True,
-    use_cache: bool = True
+    use_cache: bool = True,
 ) -> Dict[str, Any]:
     """
     Validate YouTube video links in the content library.
@@ -300,7 +302,7 @@ async def execute_validate_youtube_links(
             limit=limit,
             category_id=category_id,
             include_kids=include_kids,
-            use_cache=use_cache
+            use_cache=use_cache,
         )
 
         return result
@@ -311,9 +313,7 @@ async def execute_validate_youtube_links(
 
 
 async def execute_flag_broken_youtube_videos(
-    content_ids: List[str],
-    audit_id: Optional[str] = None,
-    dry_run: bool = True
+    content_ids: List[str], audit_id: Optional[str] = None, dry_run: bool = True
 ) -> Dict[str, Any]:
     """
     Flag content items with broken YouTube videos for manual review.
@@ -343,11 +343,13 @@ async def execute_flag_broken_youtube_videos(
                     continue
 
                 if dry_run:
-                    flagged_items.append({
-                        "content_id": content_id,
-                        "title": content.title,
-                        "would_flag": True
-                    })
+                    flagged_items.append(
+                        {
+                            "content_id": content_id,
+                            "title": content.title,
+                            "would_flag": True,
+                        }
+                    )
                     flagged += 1
                 else:
                     from datetime import datetime
@@ -361,11 +363,13 @@ async def execute_flag_broken_youtube_videos(
 
                     await content.save()
 
-                    flagged_items.append({
-                        "content_id": content_id,
-                        "title": content.title,
-                        "flagged": True
-                    })
+                    flagged_items.append(
+                        {
+                            "content_id": content_id,
+                            "title": content.title,
+                            "flagged": True,
+                        }
+                    )
                     flagged += 1
 
                     logger.info(f"Flagged content with broken YouTube: {content.title}")
@@ -381,7 +385,7 @@ async def execute_flag_broken_youtube_videos(
             "flagged_count": flagged,
             "flagged_items": flagged_items,
             "errors": errors,
-            "message": f"{action.capitalize()} {flagged} content items with broken YouTube videos"
+            "message": f"{action.capitalize()} {flagged} content items with broken YouTube videos",
         }
 
     except Exception as e:
@@ -403,8 +407,8 @@ async def execute_get_youtube_content_stats() -> Dict[str, Any]:
             "is_published": True,
             "$or": [
                 {"stream_url": {"$regex": "youtube\\.com|youtu\\.be"}},
-                {"trailer_url": {"$regex": "youtube\\.com|youtu\\.be"}}
-            ]
+                {"trailer_url": {"$regex": "youtube\\.com|youtu\\.be"}},
+            ],
         }
 
         total_youtube = await Content.find(youtube_query).count()
@@ -417,7 +421,7 @@ async def execute_get_youtube_content_stats() -> Dict[str, Any]:
         flagged_query = {
             **youtube_query,
             "needs_review": True,
-            "review_issue_type": "broken_youtube"
+            "review_issue_type": "broken_youtube",
         }
         flagged_youtube = await Content.find(flagged_query).count()
 
@@ -428,7 +432,7 @@ async def execute_get_youtube_content_stats() -> Dict[str, Any]:
                 {"thumbnail": None},
                 {"thumbnail": ""},
                 {"thumbnail": {"$exists": False}},
-            ]
+            ],
         }
         missing_posters = await Content.find(missing_poster_query).count()
 
@@ -437,7 +441,7 @@ async def execute_get_youtube_content_stats() -> Dict[str, Any]:
             {"$match": youtube_query},
             {"$group": {"_id": "$category_id", "count": {"$sum": 1}}},
             {"$sort": {"count": -1}},
-            {"$limit": 10}
+            {"$limit": 10},
         ]
 
         category_counts = await Content.aggregate(pipeline).to_list()
@@ -453,7 +457,7 @@ async def execute_get_youtube_content_stats() -> Dict[str, Any]:
                 {"category_id": item["_id"], "count": item["count"]}
                 for item in category_counts
             ],
-            "message": f"Found {total_youtube} items with YouTube URLs ({kids_youtube} kids, {missing_posters} missing posters)"
+            "message": f"Found {total_youtube} items with YouTube URLs ({kids_youtube} kids, {missing_posters} missing posters)",
         }
 
     except Exception as e:
@@ -465,7 +469,7 @@ async def execute_fix_youtube_posters(
     limit: int = 100,
     category_id: Optional[str] = None,
     include_kids: bool = True,
-    dry_run: bool = True
+    dry_run: bool = True,
 ) -> Dict[str, Any]:
     """
     Fix missing or low-quality posters/thumbnails for YouTube content.
@@ -489,7 +493,7 @@ async def execute_fix_youtube_posters(
             limit=limit,
             category_id=category_id,
             include_kids=include_kids,
-            dry_run=dry_run
+            dry_run=dry_run,
         )
 
         return result
@@ -500,8 +504,7 @@ async def execute_fix_youtube_posters(
 
 
 async def execute_find_youtube_missing_posters(
-    limit: int = 100,
-    include_kids: bool = True
+    limit: int = 100, include_kids: bool = True
 ) -> Dict[str, Any]:
     """
     Find YouTube content items that are missing proper thumbnails/posters.
@@ -519,8 +522,7 @@ async def execute_find_youtube_missing_posters(
         from app.services.youtube_validator import find_youtube_content_missing_posters
 
         result = await find_youtube_content_missing_posters(
-            limit=limit,
-            include_kids=include_kids
+            limit=limit, include_kids=include_kids
         )
 
         return result

@@ -4,15 +4,17 @@ MongoDB models for third-party platform integration, usage tracking, and billing
 """
 
 from datetime import datetime, timezone
-from typing import Optional, List, Literal
-from beanie import Document, PydanticObjectId
-from pydantic import BaseModel, Field, EmailStr
-from pymongo import IndexModel, ASCENDING, DESCENDING
+from typing import List, Literal, Optional
 
+from beanie import Document, PydanticObjectId
+from pydantic import BaseModel, EmailStr, Field
+from pymongo import ASCENDING, DESCENDING, IndexModel
 
 # Type definitions
 BillingTier = Literal["free", "standard", "enterprise"]
-CapabilityType = Literal["realtime_dubbing", "semantic_search", "recap_agent", "cultural_context"]
+CapabilityType = Literal[
+    "realtime_dubbing", "semantic_search", "recap_agent", "cultural_context"
+]
 UsageGranularity = Literal["hourly", "daily", "monthly"]
 WebhookEventType = Literal[
     "session.started",
@@ -45,19 +47,29 @@ class IntegrationPartner(Document):
     """Third-party platform integration configuration."""
 
     # Identification
-    partner_id: str = Field(..., description="Unique slug identifier (e.g., 'netflix-israel')")
+    partner_id: str = Field(
+        ..., description="Unique slug identifier (e.g., 'netflix-israel')"
+    )
     name: str = Field(..., description="Display name in Hebrew")
     name_en: Optional[str] = Field(default=None, description="Display name in English")
 
     # Authentication
     api_key_hash: str = Field(..., description="Hashed API key (bcrypt)")
-    api_key_prefix: str = Field(..., description="First 8 characters of API key for identification")
-    webhook_secret: Optional[str] = Field(default=None, description="Secret for webhook signature verification")
+    api_key_prefix: str = Field(
+        ..., description="First 8 characters of API key for identification"
+    )
+    webhook_secret: Optional[str] = Field(
+        default=None, description="Secret for webhook signature verification"
+    )
 
     # Contact information
     contact_email: EmailStr = Field(..., description="Primary contact email")
-    contact_name: Optional[str] = Field(default=None, description="Primary contact name")
-    technical_contact_email: Optional[EmailStr] = Field(default=None, description="Technical contact email")
+    contact_name: Optional[str] = Field(
+        default=None, description="Primary contact name"
+    )
+    technical_contact_email: Optional[EmailStr] = Field(
+        default=None, description="Technical contact email"
+    )
 
     # Capabilities (feature flags per partner)
     capabilities: dict[str, CapabilityConfig] = Field(
@@ -74,7 +86,9 @@ class IntegrationPartner(Document):
     billing_email: Optional[EmailStr] = Field(default=None)
 
     # Webhooks
-    webhook_url: Optional[str] = Field(default=None, description="URL to receive webhook events")
+    webhook_url: Optional[str] = Field(
+        default=None, description="URL to receive webhook events"
+    )
     webhook_events: List[WebhookEventType] = Field(
         default_factory=list,
         description="List of event types to send to webhook",
@@ -95,12 +109,18 @@ class IntegrationPartner(Document):
     # Timestamps
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    last_active_at: Optional[datetime] = Field(default=None, description="Last API request timestamp")
+    last_active_at: Optional[datetime] = Field(
+        default=None, description="Last API request timestamp"
+    )
 
     class Settings:
         name = "integration_partners"
         indexes = [
-            IndexModel([("partner_id", ASCENDING)], unique=True),
+            IndexModel(
+                [("partner_id", ASCENDING)],
+                unique=True,
+                name="partner_id_unique",
+            ),
             "api_key_prefix",
             "is_active",
             "billing_tier",
@@ -124,7 +144,9 @@ class UsageRecord(Document):
 
     # Identification
     partner_id: str = Field(..., description="Partner identifier")
-    capability: str = Field(..., description="Capability type (e.g., 'realtime_dubbing')")
+    capability: str = Field(
+        ..., description="Capability type (e.g., 'realtime_dubbing')"
+    )
 
     # Usage metrics
     request_count: int = Field(default=0, ge=0)
@@ -153,7 +175,11 @@ class UsageRecord(Document):
             "granularity",
             [("partner_id", 1), ("capability", 1), ("period_start", -1)],
             [("partner_id", 1), ("period_start", -1)],
-            [("partner_id", 1), ("granularity", 1), ("period_start", -1)],  # Billing period optimization
+            [
+                ("partner_id", 1),
+                ("granularity", 1),
+                ("period_start", -1),
+            ],  # Billing period optimization
         ]
 
 
@@ -167,7 +193,9 @@ class DubbingSession(Document):
     # Configuration
     source_language: str = Field(default="he", description="Source language code")
     target_language: str = Field(default="en", description="Target language code")
-    voice_id: Optional[str] = Field(default=None, description="ElevenLabs voice ID used")
+    voice_id: Optional[str] = Field(
+        default=None, description="ElevenLabs voice ID used"
+    )
 
     # Metrics
     audio_seconds_processed: float = Field(default=0.0, ge=0.0)
@@ -195,7 +223,9 @@ class DubbingSession(Document):
     # Timestamps
     started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     ended_at: Optional[datetime] = Field(default=None)
-    last_activity_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_activity_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
 
     # Client metadata
     client_ip: Optional[str] = Field(default=None)

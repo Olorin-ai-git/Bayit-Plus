@@ -1,10 +1,10 @@
 """Translation cache service with two-tier caching (in-memory LRU + MongoDB)."""
 import hashlib
 import logging
+from collections import OrderedDict
 from datetime import datetime, timedelta
 from functools import lru_cache
-from typing import Optional, Dict, Tuple
-from collections import OrderedDict
+from typing import Dict, Optional, Tuple
 
 from app.core.config import settings
 from app.models.chat_translation import ChatTranslationCacheDoc
@@ -67,10 +67,7 @@ class TranslationCacheService:
 
     @classmethod
     async def get_cached_translation(
-        cls,
-        text: str,
-        source_lang: str,
-        target_lang: str
+        cls, text: str, source_lang: str, target_lang: str
     ) -> Optional[str]:
         """
         Get a cached translation if available.
@@ -110,8 +107,7 @@ class TranslationCacheService:
 
                 # Store in memory cache for future lookups
                 memory_cache.put(
-                    cache_key,
-                    (doc.original_text, doc.source_lang, doc.translated_text)
+                    cache_key, (doc.original_text, doc.source_lang, doc.translated_text)
                 )
 
                 logger.debug(f"Translation cache hit (MongoDB): {cache_key[:8]}...")
@@ -124,11 +120,7 @@ class TranslationCacheService:
 
     @classmethod
     async def store_translation(
-        cls,
-        text: str,
-        source_lang: str,
-        target_lang: str,
-        translated_text: str
+        cls, text: str, source_lang: str, target_lang: str, translated_text: str
     ) -> None:
         """
         Store a translation in both cache tiers.
@@ -150,7 +142,9 @@ class TranslationCacheService:
 
         # Store in MongoDB cache (Tier 2)
         try:
-            expires_at = datetime.utcnow() + timedelta(days=settings.CHAT_TRANSLATION_CACHE_TTL_DAYS)
+            expires_at = datetime.utcnow() + timedelta(
+                days=settings.CHAT_TRANSLATION_CACHE_TTL_DAYS
+            )
 
             existing = await ChatTranslationCacheDoc.find_one(
                 ChatTranslationCacheDoc.message_hash == cache_key
@@ -168,7 +162,7 @@ class TranslationCacheService:
                     target_lang=target_lang,
                     original_text=text,
                     translated_text=translated_text,
-                    expires_at=expires_at
+                    expires_at=expires_at,
                 )
                 await doc.insert()
 
@@ -179,11 +173,7 @@ class TranslationCacheService:
 
     @classmethod
     async def get_or_translate(
-        cls,
-        text: str,
-        source_lang: str,
-        target_lang: str,
-        translator_func
+        cls, text: str, source_lang: str, target_lang: str, translator_func
     ) -> Tuple[str, bool]:
         """
         Get cached translation or execute translator function.
@@ -244,7 +234,9 @@ class TranslationCacheService:
                 ChatTranslationCacheDoc.expires_at < datetime.utcnow()
             ).count()
 
-            memory_size = len(cls._get_memory_cache()._cache) if cls._memory_cache else 0
+            memory_size = (
+                len(cls._get_memory_cache()._cache) if cls._memory_cache else 0
+            )
 
             return {
                 "mongodb_total": total,

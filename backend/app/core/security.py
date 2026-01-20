@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
-from typing import Optional, List, Callable
+from typing import Callable, List, Optional
+
+from app.core.config import settings
+from app.models.passkey_credential import PasskeySession
+from app.models.user import User
+from fastapi import Depends, HTTPException, Request, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status, Request
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from app.core.config import settings
-from app.models.user import User
-from app.models.passkey_credential import PasskeySession
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
@@ -106,7 +107,7 @@ async def get_current_premium_user(
     if not current_user.can_access_premium_features():
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Premium subscription required for this feature"
+            detail="Premium subscription required for this feature",
         )
     return current_user
 
@@ -126,6 +127,7 @@ def require_role(allowed_roles: List[str]) -> Callable:
         async def admin_endpoint(current_user: User = Depends(require_role(['admin']))):
             ...
     """
+
     async def role_checker(
         current_user: User = Depends(get_current_active_user),
     ) -> User:
@@ -136,7 +138,7 @@ def require_role(allowed_roles: List[str]) -> Callable:
         if current_user.role not in allowed_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Access denied. Required role: {', '.join(allowed_roles)}"
+                detail=f"Access denied. Required role: {', '.join(allowed_roles)}",
             )
         return current_user
 

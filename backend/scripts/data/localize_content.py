@@ -16,16 +16,15 @@ Examples:
 """
 
 import asyncio
-import sys
 import os
-from typing import Optional, Dict, Any
+import sys
 from datetime import datetime
+from typing import Any, Dict, Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from app.core.database import connect_to_mongo
 from app.services.content_localization import localization_processor
-
 
 CONTENT_TYPES = ["podcast", "content", "livechannel", "radio", "category"]
 
@@ -184,6 +183,7 @@ def main():
     except Exception as e:
         print(f"\n❌ Fatal error: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
 

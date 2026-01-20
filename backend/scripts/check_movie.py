@@ -4,8 +4,9 @@
 import asyncio
 import os
 import sys
-from motor.motor_asyncio import AsyncIOMotorClient
+
 from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorClient
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -22,9 +23,9 @@ async def check_movie():
     print("Checking movie in database...")
 
     # Check if it has the old bucket URL
-    all_with_old_bucket = await content_collection.count_documents({
-        "stream_url": {"$regex": "storage.googleapis.com/bayit-plus-media-new/movies"}
-    })
+    all_with_old_bucket = await content_collection.count_documents(
+        {"stream_url": {"$regex": "storage.googleapis.com/bayit-plus-media-new/movies"}}
+    )
 
     print(f"Total movies still with old bucket URL: {all_with_old_bucket}")
 

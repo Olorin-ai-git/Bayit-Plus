@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
@@ -51,13 +52,15 @@ class Profile(Document):
     pin: Optional[str] = None  # Hashed PIN for profile lock
 
     # Profile-specific preferences
-    preferences: dict = Field(default_factory=lambda: {
-        "language": "he",
-        "subtitles_enabled": True,
-        "nikud_enabled": False,
-        "autoplay_next": True,
-        "subtitle_language": "he",
-    })
+    preferences: dict = Field(
+        default_factory=lambda: {
+            "language": "he",
+            "subtitles_enabled": True,
+            "nikud_enabled": False,
+            "autoplay_next": True,
+            "subtitle_language": "he",
+        }
+    )
 
     # Profile-specific data
     favorite_categories: List[str] = Field(default_factory=list)

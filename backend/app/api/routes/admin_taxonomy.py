@@ -9,32 +9,33 @@ Admin endpoints for managing the content classification system:
 - Migration operations
 """
 
+import logging
 from datetime import datetime
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Query, Depends
-from app.models.content_taxonomy import (
-    ContentSection,
-    SectionSubcategory,
-    Genre,
-    Audience,
-    ContentSectionCreate,
-    ContentSectionUpdate,
-    SectionSubcategoryCreate,
-    SectionSubcategoryUpdate,
-    GenreCreate,
-    GenreUpdate,
-    AudienceCreate,
-    AudienceUpdate,
-)
-from app.services.content_taxonomy_migration import (
-    seed_all_taxonomy,
-    run_full_migration,
-    get_migration_status,
-)
+
 from app.api.routes.admin_content_utils import log_audit
 from app.core.security import get_current_active_user
+from app.models.content_taxonomy import (
+    Audience,
+    AudienceCreate,
+    AudienceUpdate,
+    ContentSection,
+    ContentSectionCreate,
+    ContentSectionUpdate,
+    Genre,
+    GenreCreate,
+    GenreUpdate,
+    SectionSubcategory,
+    SectionSubcategoryCreate,
+    SectionSubcategoryUpdate,
+)
 from app.models.user import User
-import logging
+from app.services.content_taxonomy_migration import (
+    get_migration_status,
+    run_full_migration,
+    seed_all_taxonomy,
+)
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 router = APIRouter(prefix="/taxonomy", tags=["admin-taxonomy"])
 logger = logging.getLogger(__name__)
@@ -43,6 +44,7 @@ logger = logging.getLogger(__name__)
 # ============================================================================
 # SECTIONS ADMIN ENDPOINTS
 # ============================================================================
+
 
 @router.get("/sections")
 async def admin_list_sections(
@@ -132,7 +134,9 @@ async def admin_create_section(
     # Check for duplicate slug
     existing = await ContentSection.find_one(ContentSection.slug == data.slug)
     if existing:
-        raise HTTPException(status_code=400, detail="Section with this slug already exists")
+        raise HTTPException(
+            status_code=400, detail="Section with this slug already exists"
+        )
 
     section = ContentSection(**data.model_dump())
     await section.insert()
@@ -227,6 +231,7 @@ async def admin_reorder_sections(
 # SUBCATEGORIES ADMIN ENDPOINTS
 # ============================================================================
 
+
 @router.get("/subcategories")
 async def admin_list_subcategories(
     section_id: Optional[str] = Query(None, description="Filter by section ID"),
@@ -281,7 +286,10 @@ async def admin_create_subcategory(
         SectionSubcategory.slug == data.slug,
     )
     if existing:
-        raise HTTPException(status_code=400, detail="Subcategory with this slug already exists in this section")
+        raise HTTPException(
+            status_code=400,
+            detail="Subcategory with this slug already exists in this section",
+        )
 
     subcategory = SectionSubcategory(**data.model_dump())
     await subcategory.insert()
@@ -350,6 +358,7 @@ async def admin_delete_subcategory(
 # GENRES ADMIN ENDPOINTS
 # ============================================================================
 
+
 @router.get("/genres")
 async def admin_list_genres(
     include_inactive: bool = Query(False),
@@ -390,7 +399,9 @@ async def admin_create_genre(
     """Create a new genre."""
     existing = await Genre.find_one(Genre.slug == data.slug)
     if existing:
-        raise HTTPException(status_code=400, detail="Genre with this slug already exists")
+        raise HTTPException(
+            status_code=400, detail="Genre with this slug already exists"
+        )
 
     genre = Genre(**data.model_dump())
     await genre.insert()
@@ -459,6 +470,7 @@ async def admin_delete_genre(
 # AUDIENCES ADMIN ENDPOINTS
 # ============================================================================
 
+
 @router.get("/audiences")
 async def admin_list_audiences(
     include_inactive: bool = Query(False),
@@ -502,7 +514,9 @@ async def admin_create_audience(
     """Create a new audience classification."""
     existing = await Audience.find_one(Audience.slug == data.slug)
     if existing:
-        raise HTTPException(status_code=400, detail="Audience with this slug already exists")
+        raise HTTPException(
+            status_code=400, detail="Audience with this slug already exists"
+        )
 
     audience = Audience(**data.model_dump())
     await audience.insert()
@@ -571,6 +585,7 @@ async def admin_delete_audience(
 # MIGRATION ADMIN ENDPOINTS
 # ============================================================================
 
+
 @router.get("/migration/status")
 async def admin_migration_status(
     current_user: User = Depends(get_current_active_user),
@@ -611,7 +626,9 @@ async def admin_seed_taxonomy(
 
 @router.post("/migration/run")
 async def admin_run_migration(
-    dry_run: bool = Query(False, description="If True, only log changes without saving"),
+    dry_run: bool = Query(
+        False, description="If True, only log changes without saving"
+    ),
     current_user: User = Depends(get_current_active_user),
 ):
     """Run full taxonomy migration."""

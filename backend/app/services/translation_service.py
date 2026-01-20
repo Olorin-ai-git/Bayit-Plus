@@ -5,9 +5,8 @@ This file wraps the extracted bayit-translation package for backward compatibili
 
 import warnings
 
-from bayit_translation import TranslationService as _ExtractedService
-
 from app.core.config import settings
+from bayit_translation import TranslationService as _ExtractedService
 
 
 class _SettingsTranslationConfigAdapter:
@@ -48,6 +47,6 @@ class TranslationService(_ExtractedService):
             "Importing TranslationService from app.services is deprecated. "
             "Use 'from bayit_translation import TranslationService' instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         super().__init__(config=_SettingsTranslationConfigAdapter())

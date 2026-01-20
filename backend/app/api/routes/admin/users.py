@@ -5,19 +5,20 @@ Provides CRUD operations and user administration.
 
 from datetime import datetime
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends, Query, Request
+
+from app.models.admin import AuditAction, AuditLog, Permission
+from app.models.user import User, UserAdminUpdate
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
-from app.models.user import User, UserAdminUpdate
-from app.models.admin import Permission, AuditLog, AuditAction
 from .auth import has_permission, log_audit
-
 
 router = APIRouter()
 
 
 class UsersFilter(BaseModel):
     """User filtering parameters."""
+
     search: Optional[str] = None
     role: Optional[str] = None
     status: Optional[str] = None
@@ -34,17 +35,19 @@ async def get_users(
     subscription: Optional[str] = None,
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, le=100),
-    current_user: User = Depends(has_permission(Permission.USERS_READ))
+    current_user: User = Depends(has_permission(Permission.USERS_READ)),
 ):
     """Get paginated list of users with filters."""
     query = User.find()
 
     if search:
         query = query.find(
-            {"$or": [
-                {"email": {"$regex": search, "$options": "i"}},
-                {"name": {"$regex": search, "$options": "i"}},
-            ]}
+            {
+                "$or": [
+                    {"email": {"$regex": search, "$options": "i"}},
+                    {"name": {"$regex": search, "$options": "i"}},
+                ]
+            }
         )
     if role:
         query = query.find(User.role == role)
@@ -70,8 +73,7 @@ async def get_users(
 
 @router.get("/users/{user_id}")
 async def get_user(
-    user_id: str,
-    current_user: User = Depends(has_permission(Permission.USERS_READ))
+    user_id: str, current_user: User = Depends(has_permission(Permission.USERS_READ))
 ):
     """Get user details."""
     user = await User.get(user_id)
@@ -85,7 +87,7 @@ async def update_user(
     user_id: str,
     updates: UserAdminUpdate,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.USERS_UPDATE))
+    current_user: User = Depends(has_permission(Permission.USERS_UPDATE)),
 ):
     """Update user details."""
     user = await User.get(user_id)
@@ -107,17 +109,29 @@ async def update_user(
         user.is_active = updates.is_active
     if updates.role is not None:
         if current_user.role != "super_admin" and updates.role == "super_admin":
-            raise HTTPException(status_code=403, detail="Only super_admin can assign super_admin role")
+            raise HTTPException(
+                status_code=403, detail="Only super_admin can assign super_admin role"
+            )
         changes["role"] = {"old": user.role, "new": updates.role}
         user.role = updates.role
     if updates.custom_permissions is not None:
-        changes["custom_permissions"] = {"old": user.custom_permissions, "new": updates.custom_permissions}
+        changes["custom_permissions"] = {
+            "old": user.custom_permissions,
+            "new": updates.custom_permissions,
+        }
         user.custom_permissions = updates.custom_permissions
 
     user.updated_at = datetime.utcnow()
     await user.save()
 
-    await log_audit(str(current_user.id), AuditAction.USER_UPDATED, "user", user_id, changes, request)
+    await log_audit(
+        str(current_user.id),
+        AuditAction.USER_UPDATED,
+        "user",
+        user_id,
+        changes,
+        request,
+    )
 
     return user.to_admin_response()
 
@@ -126,7 +140,7 @@ async def update_user(
 async def delete_user(
     user_id: str,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.USERS_DELETE))
+    current_user: User = Depends(has_permission(Permission.USERS_DELETE)),
 ):
     """Delete a user."""
     user = await User.get(user_id)
@@ -136,7 +150,14 @@ async def delete_user(
     if user.role == "super_admin":
         raise HTTPException(status_code=403, detail="Cannot delete super_admin")
 
-    await log_audit(str(current_user.id), AuditAction.USER_DELETED, "user", user_id, {"email": user.email}, request)
+    await log_audit(
+        str(current_user.id),
+        AuditAction.USER_DELETED,
+        "user",
+        user_id,
+        {"email": user.email},
+        request,
+    )
     await user.delete()
 
     return {"message": "User deleted"}
@@ -147,7 +168,7 @@ async def ban_user(
     user_id: str,
     reason: str = Query(...),
     request: Request = None,
-    current_user: User = Depends(has_permission(Permission.USERS_UPDATE))
+    current_user: User = Depends(has_permission(Permission.USERS_UPDATE)),
 ):
     """Ban a user."""
     user = await User.get(user_id)
@@ -160,7 +181,14 @@ async def ban_user(
     user.is_active = False
     await user.save()
 
-    await log_audit(str(current_user.id), AuditAction.USER_UPDATED, "user", user_id, {"action": "ban", "reason": reason}, request)
+    await log_audit(
+        str(current_user.id),
+        AuditAction.USER_UPDATED,
+        "user",
+        user_id,
+        {"action": "ban", "reason": reason},
+        request,
+    )
 
     return {"message": "User banned"}
 
@@ -169,14 +197,21 @@ async def ban_user(
 async def admin_reset_password(
     user_id: str,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.USERS_UPDATE))
+    current_user: User = Depends(has_permission(Permission.USERS_UPDATE)),
 ):
     """Trigger password reset for user."""
     user = await User.get(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    await log_audit(str(current_user.id), AuditAction.USER_UPDATED, "user", user_id, {"action": "password_reset_requested"}, request)
+    await log_audit(
+        str(current_user.id),
+        AuditAction.USER_UPDATED,
+        "user",
+        user_id,
+        {"action": "password_reset_requested"},
+        request,
+    )
 
     return {"message": "Password reset email sent"}
 
@@ -185,10 +220,15 @@ async def admin_reset_password(
 async def get_user_activity(
     user_id: str,
     limit: int = Query(default=20, le=100),
-    current_user: User = Depends(has_permission(Permission.USERS_READ))
+    current_user: User = Depends(has_permission(Permission.USERS_READ)),
 ):
     """Get user's audit log activity."""
-    logs = await AuditLog.find(AuditLog.user_id == user_id).sort(-AuditLog.created_at).limit(limit).to_list()
+    logs = (
+        await AuditLog.find(AuditLog.user_id == user_id)
+        .sort(-AuditLog.created_at)
+        .limit(limit)
+        .to_list()
+    )
     return [
         {
             "id": str(log.id),
@@ -206,11 +246,17 @@ async def get_user_activity(
 async def get_user_billing(
     user_id: str,
     limit: int = Query(default=20, le=100),
-    current_user: User = Depends(has_permission(Permission.BILLING_READ))
+    current_user: User = Depends(has_permission(Permission.BILLING_READ)),
 ):
     """Get user's billing history."""
     from app.models.admin import Transaction
-    transactions = await Transaction.find(Transaction.user_id == user_id).sort(-Transaction.created_at).limit(limit).to_list()
+
+    transactions = (
+        await Transaction.find(Transaction.user_id == user_id)
+        .sort(-Transaction.created_at)
+        .limit(limit)
+        .to_list()
+    )
     return [
         {
             "id": str(t.id),

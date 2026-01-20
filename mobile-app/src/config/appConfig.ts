@@ -3,27 +3,28 @@
  * Extends shared config pattern with mobile-specific settings
  */
 
-import { Platform } from 'react-native';
+import { Platform } from "react-native";
 
 // Get app mode from environment or default to production
-const APP_MODE: 'demo' | 'production' = (process.env.APP_MODE as 'demo' | 'production') || 'production';
+const APP_MODE: "demo" | "production" =
+  (process.env.APP_MODE as "demo" | "production") || "production";
 
-export const isDemo = APP_MODE === 'demo';
-export const isProduction = APP_MODE === 'production';
+export const isDemo = APP_MODE === "demo";
+export const isProduction = APP_MODE === "production";
 
 // Get correct API URL based on platform
 const getApiBaseUrl = () => {
   if (!__DEV__) {
-    return 'https://api.bayit.tv/api/v1';
+    return "https://api.bayit.tv/api/v1";
   }
   // In development:
-  if (Platform.OS === 'web') {
-    return 'http://localhost:8000/api/v1';
+  if (Platform.OS === "web") {
+    return "http://localhost:8000/api/v1";
   }
-  if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:8000/api/v1';  // Android emulator localhost
+  if (Platform.OS === "android") {
+    return "http://10.0.2.2:8000/api/v1"; // Android emulator localhost
   }
-  return 'http://localhost:8000/api/v1';  // iOS simulator
+  return "http://localhost:8000/api/v1"; // iOS simulator
 };
 
 export const API_BASE_URL = getApiBaseUrl();
@@ -75,10 +76,12 @@ export const config = {
   // Voice settings
   voice: {
     enabled: true,
-    wakeWordEnabled: true,
+    // Wake word detection is disabled - requires WakeWordModule.swift implementation
+    // with Picovoice SDK for "Hey Bayit" keyword spotting. See ios/BayitPlus/README.md.
+    wakeWordEnabled: false,
     alwaysOnListening: false, // User-configurable
-    languages: ['he', 'en', 'es'],
-    defaultLanguage: 'he',
+    languages: ["he", "en", "es"],
+    defaultLanguage: "he",
   },
 };
 

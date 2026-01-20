@@ -2,12 +2,13 @@
 Israel Time Service.
 Handles Israel timezone, Shabbat detection, and Jewish calendar integration.
 """
-from datetime import datetime, timedelta, date
-from typing import Optional, Tuple
 from dataclasses import dataclass
-import pytz
-import httpx
+from datetime import date, datetime, timedelta
 from functools import lru_cache
+from typing import Optional, Tuple
+
+import httpx
+import pytz
 
 # Israel timezone
 ISRAEL_TZ = pytz.timezone("Asia/Jerusalem")
@@ -24,6 +25,7 @@ US_TIMEZONES = {
 @dataclass
 class ShabbatTimes:
     """Shabbat candle lighting and havdalah times"""
+
     candle_lighting: datetime
     havdalah: datetime
     parasha: Optional[str] = None
@@ -33,6 +35,7 @@ class ShabbatTimes:
 @dataclass
 class ShabbatStatus:
     """Current Shabbat status"""
+
     is_shabbat: bool
     is_erev_shabbat: bool  # Friday before candle lighting
     time_until_shabbat: Optional[timedelta] = None
@@ -43,6 +46,7 @@ class ShabbatStatus:
 @dataclass
 class IsraelTimeInfo:
     """Complete Israel time information"""
+
     israel_time: datetime
     israel_time_formatted: str
     local_time: datetime
@@ -95,7 +99,7 @@ def format_date_hebrew(dt: datetime) -> str:
 async def fetch_shabbat_times(
     latitude: float = 32.0853,  # Tel Aviv default
     longitude: float = 34.7818,
-    target_date: Optional[date] = None
+    target_date: Optional[date] = None,
 ) -> Optional[ShabbatTimes]:
     """
     Fetch Shabbat times from HebCal API.
@@ -125,9 +129,7 @@ async def fetch_shabbat_times(
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(
-                "https://www.hebcal.com/shabbat",
-                params=params,
-                timeout=10.0
+                "https://www.hebcal.com/shabbat", params=params, timeout=10.0
             )
             response.raise_for_status()
             data = response.json()
@@ -159,7 +161,7 @@ async def fetch_shabbat_times(
                     candle_lighting=candle_lighting,
                     havdalah=havdalah,
                     parasha=parasha,
-                    parasha_hebrew=parasha_hebrew
+                    parasha_hebrew=parasha_hebrew,
                 )
 
     except Exception as e:
@@ -169,13 +171,14 @@ async def fetch_shabbat_times(
 
 
 def calculate_shabbat_status(
-    now: datetime,
-    shabbat_times: Optional[ShabbatTimes]
+    now: datetime, shabbat_times: Optional[ShabbatTimes]
 ) -> ShabbatStatus:
     """Calculate current Shabbat status"""
     if not shabbat_times:
         # Fallback: estimate based on day of week
-        israel_now = now.astimezone(ISRAEL_TZ) if now.tzinfo else ISRAEL_TZ.localize(now)
+        israel_now = (
+            now.astimezone(ISRAEL_TZ) if now.tzinfo else ISRAEL_TZ.localize(now)
+        )
         weekday = israel_now.weekday()
 
         # Friday after ~18:00 or Saturday before ~20:00
@@ -192,8 +195,8 @@ def calculate_shabbat_status(
 
     is_shabbat = shabbat_times.candle_lighting <= israel_now < shabbat_times.havdalah
     is_erev_shabbat = (
-        israel_now.date() == shabbat_times.candle_lighting.date() and
-        israel_now < shabbat_times.candle_lighting
+        israel_now.date() == shabbat_times.candle_lighting.date()
+        and israel_now < shabbat_times.candle_lighting
     )
 
     time_until_shabbat = None
@@ -210,12 +213,12 @@ def calculate_shabbat_status(
         is_erev_shabbat=is_erev_shabbat,
         time_until_shabbat=time_until_shabbat,
         time_until_havdalah=time_until_havdalah,
-        shabbat_times=shabbat_times
+        shabbat_times=shabbat_times,
     )
 
 
 async def get_israel_time_info(
-    local_timezone: str = "America/New_York"
+    local_timezone: str = "America/New_York",
 ) -> IsraelTimeInfo:
     """Get complete Israel time information"""
     israel_time = get_israel_time()
@@ -232,7 +235,7 @@ async def get_israel_time_info(
         local_time_formatted=format_time(local_time),
         local_timezone=local_timezone,
         day_of_week_hebrew=HEBREW_DAYS.get(israel_time.weekday(), ""),
-        shabbat_status=shabbat_status
+        shabbat_status=shabbat_status,
     )
 
 

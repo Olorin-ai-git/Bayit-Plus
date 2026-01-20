@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Any
-from app.models.content import EPGEntry, LiveChannel
+from typing import Any, Dict, List, Optional
+
 from app.core.config import settings
+from app.models.content import EPGEntry, LiveChannel
 
 
 class EPGService:
@@ -16,7 +17,7 @@ class EPGService:
         channel_ids: Optional[List[str]] = None,
         start_time: Optional[datetime] = None,
         end_time: Optional[datetime] = None,
-        timezone: str = "UTC"
+        timezone: str = "UTC",
     ) -> Dict[str, Any]:
         """
         Get EPG data for specified channels and time range
@@ -39,7 +40,7 @@ class EPGService:
         # Build query filter
         query_filter: Dict[str, Any] = {
             "start_time": {"$lte": end_time},
-            "end_time": {"$gte": start_time}
+            "end_time": {"$gte": start_time},
         }
 
         if channel_ids:
@@ -50,11 +51,15 @@ class EPGService:
 
         # Get channel details
         if channel_ids:
-            channels = await LiveChannel.find(
-                {"_id": {"$in": channel_ids}, "is_active": True}
-            ).sort("order").to_list()
+            channels = (
+                await LiveChannel.find({"_id": {"$in": channel_ids}, "is_active": True})
+                .sort("order")
+                .to_list()
+            )
         else:
-            channels = await LiveChannel.find({"is_active": True}).sort("order").to_list()
+            channels = (
+                await LiveChannel.find({"is_active": True}).sort("order").to_list()
+            )
 
         # Convert to dict format
         programs_data = [self._program_to_dict(program) for program in programs]
@@ -66,8 +71,8 @@ class EPGService:
             "current_time": datetime.utcnow().isoformat(),
             "time_window": {
                 "start": start_time.isoformat(),
-                "end": end_time.isoformat()
-            }
+                "end": end_time.isoformat(),
+            },
         }
 
     async def search_epg(
@@ -76,7 +81,7 @@ class EPGService:
         channel_ids: Optional[List[str]] = None,
         start_time: Optional[datetime] = None,
         end_time: Optional[datetime] = None,
-        category: Optional[str] = None
+        category: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
         Traditional text search in EPG data
@@ -119,9 +124,7 @@ class EPGService:
         return [self._program_to_dict(program) for program in results]
 
     async def get_channel_schedule(
-        self,
-        channel_id: str,
-        date: Optional[datetime] = None
+        self, channel_id: str, date: Optional[datetime] = None
     ) -> List[Dict[str, Any]]:
         """
         Get full day schedule for a specific channel
@@ -141,10 +144,16 @@ class EPGService:
         end_of_day = start_of_day + timedelta(days=1)
 
         # Fetch programs
-        programs = await EPGEntry.find({
-            "channel_id": channel_id,
-            "start_time": {"$gte": start_of_day, "$lt": end_of_day}
-        }).sort("start_time").to_list()
+        programs = (
+            await EPGEntry.find(
+                {
+                    "channel_id": channel_id,
+                    "start_time": {"$gte": start_of_day, "$lt": end_of_day},
+                }
+            )
+            .sort("start_time")
+            .to_list()
+        )
 
         return [self._program_to_dict(program) for program in programs]
 
@@ -159,11 +168,13 @@ class EPGService:
             Current program or None
         """
         now = datetime.utcnow()
-        program = await EPGEntry.find_one({
-            "channel_id": channel_id,
-            "start_time": {"$lte": now},
-            "end_time": {"$gte": now}
-        })
+        program = await EPGEntry.find_one(
+            {
+                "channel_id": channel_id,
+                "start_time": {"$lte": now},
+                "end_time": {"$gte": now},
+            }
+        )
 
         return self._program_to_dict(program) if program else None
 
@@ -178,10 +189,10 @@ class EPGService:
             Next program or None
         """
         now = datetime.utcnow()
-        program = await EPGEntry.find_one({
-            "channel_id": channel_id,
-            "start_time": {"$gt": now}
-        }, sort=[("start_time", 1)])
+        program = await EPGEntry.find_one(
+            {"channel_id": channel_id, "start_time": {"$gt": now}},
+            sort=[("start_time", 1)],
+        )
 
         return self._program_to_dict(program) if program else None
 
@@ -194,7 +205,9 @@ class EPGService:
             "description": program.description,
             "start_time": program.start_time.isoformat(),
             "end_time": program.end_time.isoformat(),
-            "duration_seconds": int((program.end_time - program.start_time).total_seconds()),
+            "duration_seconds": int(
+                (program.end_time - program.start_time).total_seconds()
+            ),
             "category": program.category,
             "thumbnail": program.thumbnail,
             "cast": program.cast or [],
@@ -204,7 +217,7 @@ class EPGService:
             "recording_id": program.recording_id,
             "is_past": program.end_time < datetime.utcnow(),
             "is_now": program.start_time <= datetime.utcnow() <= program.end_time,
-            "is_future": program.start_time > datetime.utcnow()
+            "is_future": program.start_time > datetime.utcnow(),
         }
 
     def _channel_to_dict(self, channel: LiveChannel) -> Dict[str, Any]:
@@ -224,5 +237,5 @@ class EPGService:
             "available_translation_languages": channel.available_translation_languages,
             "is_active": channel.is_active,
             "order": channel.order,
-            "requires_subscription": channel.requires_subscription
+            "requires_subscription": channel.requires_subscription,
         }

@@ -1,22 +1,29 @@
 from typing import Optional
-from fastapi import APIRouter, HTTPException, status, Depends, Query
-from pydantic import BaseModel
+
 from app.models.user import User
 from app.models.youngsters_content import (
+    YoungstersAgeGroupsResponse,
     YoungstersContentAggregatedResponse,
     YoungstersFeaturedResponse,
     YoungstersSubcategoriesResponse,
-    YoungstersAgeGroupsResponse,
 )
 from app.services.youngsters_content_service import YoungstersContentService
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel
 
 
 class CategoriesResponse(BaseModel):
     """Response model for youngsters categories."""
+
     data: list
 
 
-from app.core.security import get_current_active_user, get_optional_user, get_password_hash, verify_password
+from app.core.security import (
+    get_current_active_user,
+    get_optional_user,
+    get_password_hash,
+    verify_password,
+)
 
 
 class ParentalControlsUpdate(BaseModel):
@@ -67,7 +74,9 @@ async def get_youngsters_featured(
     return await youngsters_content_service.get_featured_content()
 
 
-@router.get("/by-category/{category_id}", response_model=YoungstersContentAggregatedResponse)
+@router.get(
+    "/by-category/{category_id}", response_model=YoungstersContentAggregatedResponse
+)
 async def get_youngsters_by_category(
     category_id: str,
     age_max: Optional[int] = Query(None),
@@ -166,7 +175,9 @@ async def get_youngsters_by_age_group(
 
 @router.get("/trending")
 async def get_youngsters_trending(
-    age_group: Optional[str] = Query(None, description="Age group filter (middle_school, high_school)"),
+    age_group: Optional[str] = Query(
+        None, description="Age group filter (middle_school, high_school)"
+    ),
     limit: int = Query(10, ge=1, le=20),
     current_user: Optional[User] = Depends(get_optional_user),
 ):

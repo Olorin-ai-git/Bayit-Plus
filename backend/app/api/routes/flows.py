@@ -1,10 +1,17 @@
 from datetime import datetime
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, status, Depends, Query
-from app.models.user import User
-from app.models.flow import Flow, FlowCreate, FlowUpdate, FlowResponse, FlowItem, SYSTEM_FLOWS
-from app.core.security import get_current_active_user
 
+from app.core.security import get_current_active_user
+from app.models.flow import (
+    SYSTEM_FLOWS,
+    Flow,
+    FlowCreate,
+    FlowItem,
+    FlowResponse,
+    FlowUpdate,
+)
+from app.models.user import User
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 router = APIRouter()
 
@@ -226,7 +233,9 @@ async def add_flow_item(
     """Add content item to a flow."""
     flow = await Flow.get(flow_id)
 
-    if not flow or (flow.flow_type == "custom" and flow.user_id != str(current_user.id)):
+    if not flow or (
+        flow.flow_type == "custom" and flow.user_id != str(current_user.id)
+    ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Flow not found",
@@ -255,7 +264,9 @@ async def remove_flow_item(
     """Remove content item from a flow."""
     flow = await Flow.get(flow_id)
 
-    if not flow or (flow.flow_type == "custom" and flow.user_id != str(current_user.id)):
+    if not flow or (
+        flow.flow_type == "custom" and flow.user_id != str(current_user.id)
+    ):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Flow not found",
@@ -334,63 +345,81 @@ async def get_flow_content(
 
         if "בוקר" in flow_name or "morning" in flow_name.lower():
             # Morning flow: news, weather-related content
-            live_channels = await LiveChannel.find(
-                LiveChannel.category.in_(["news", "music"])
-            ).limit(3).to_list()
+            live_channels = (
+                await LiveChannel.find(LiveChannel.category.in_(["news", "music"]))
+                .limit(3)
+                .to_list()
+            )
             for ch in live_channels:
-                content_items.append({
-                    "content_id": str(ch.id),
-                    "content_type": "live",
-                    "title": ch.name,
-                    "thumbnail": ch.logo,
-                    "duration_hint": 1800,
-                    "order": len(content_items),
-                })
+                content_items.append(
+                    {
+                        "content_id": str(ch.id),
+                        "content_type": "live",
+                        "title": ch.name,
+                        "thumbnail": ch.logo,
+                        "duration_hint": 1800,
+                        "order": len(content_items),
+                    }
+                )
 
         elif "שבת" in flow_name or "shabbat" in flow_name.lower():
             # Shabbat flow: Jewish music, relaxing content
-            radio_stations = await RadioStation.find(
-                RadioStation.category.in_(["jewish", "music", "religious"])
-            ).limit(3).to_list()
+            radio_stations = (
+                await RadioStation.find(
+                    RadioStation.category.in_(["jewish", "music", "religious"])
+                )
+                .limit(3)
+                .to_list()
+            )
             for st in radio_stations:
-                content_items.append({
-                    "content_id": str(st.id),
-                    "content_type": "radio",
-                    "title": st.name,
-                    "thumbnail": st.logo,
-                    "duration_hint": 3600,
-                    "order": len(content_items),
-                })
+                content_items.append(
+                    {
+                        "content_id": str(st.id),
+                        "content_type": "radio",
+                        "title": st.name,
+                        "thumbnail": st.logo,
+                        "duration_hint": 3600,
+                        "order": len(content_items),
+                    }
+                )
 
         elif "שינה" in flow_name or "bedtime" in flow_name.lower():
             # Bedtime flow: relaxing music
-            radio_stations = await RadioStation.find(
-                RadioStation.category.in_(["music", "relaxing"])
-            ).limit(2).to_list()
+            radio_stations = (
+                await RadioStation.find(
+                    RadioStation.category.in_(["music", "relaxing"])
+                )
+                .limit(2)
+                .to_list()
+            )
             for st in radio_stations:
-                content_items.append({
-                    "content_id": str(st.id),
-                    "content_type": "radio",
-                    "title": st.name,
-                    "thumbnail": st.logo,
-                    "duration_hint": 1800,
-                    "order": len(content_items),
-                })
+                content_items.append(
+                    {
+                        "content_id": str(st.id),
+                        "content_type": "radio",
+                        "title": st.name,
+                        "thumbnail": st.logo,
+                        "duration_hint": 1800,
+                        "order": len(content_items),
+                    }
+                )
 
         elif "ילדים" in flow_name or "kids" in flow_name.lower():
             # Kids flow: children's content
-            kids_content = await Content.find(
-                Content.is_kids_content == True
-            ).limit(5).to_list()
+            kids_content = (
+                await Content.find(Content.is_kids_content == True).limit(5).to_list()
+            )
             for c in kids_content:
-                content_items.append({
-                    "content_id": str(c.id),
-                    "content_type": "vod",
-                    "title": c.title,
-                    "thumbnail": c.thumbnail,
-                    "duration_hint": c.duration or 1200,
-                    "order": len(content_items),
-                })
+                content_items.append(
+                    {
+                        "content_id": str(c.id),
+                        "content_type": "vod",
+                        "title": c.title,
+                        "thumbnail": c.thumbnail,
+                        "duration_hint": c.duration or 1200,
+                        "order": len(content_items),
+                    }
+                )
 
     return {
         "flow": flow.to_response(),

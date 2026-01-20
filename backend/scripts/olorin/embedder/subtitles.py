@@ -11,6 +11,7 @@ from typing import List, Optional
 from app.core.config import settings
 from app.models.content_embedding import ContentEmbedding
 from app.models.subtitles import SubtitleTrackDoc
+
 from scripts.olorin.embedder.client import EmbeddingClient
 
 logger = logging.getLogger(__name__)
@@ -143,7 +144,7 @@ async def _embed_subtitle_segments(
     # Upsert in batches
     batch_size = 100
     for i in range(0, len(vectors_to_upsert), batch_size):
-        batch = vectors_to_upsert[i:i + batch_size]
+        batch = vectors_to_upsert[i : i + batch_size]
         if not client.upsert_vectors(batch):
             stats["errors"] += len(batch)
 

@@ -4,6 +4,7 @@
 import asyncio
 import os
 import sys
+
 from motor.motor_asyncio import AsyncIOMotorClient
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -17,14 +18,16 @@ async def update_all():
     content_collection = db["content"]
 
     # Find all with old bucket URL
-    cursor = content_collection.find({
-        "stream_url": {"$regex": "storage.googleapis.com/bayit-plus-media-new/movies"}
-    })
+    cursor = content_collection.find(
+        {"stream_url": {"$regex": "storage.googleapis.com/bayit-plus-media-new/movies"}}
+    )
 
     updated = 0
     async for doc in cursor:
         old_url = doc.get("stream_url", "")
-        new_url = old_url.replace("bayit-plus-media-new/movies", "bayit-plus-media-new/movies")
+        new_url = old_url.replace(
+            "bayit-plus-media-new/movies", "bayit-plus-media-new/movies"
+        )
 
         print(f"Updating: {doc.get('title')}")
         print(f"  ID: {doc['_id']}")
@@ -32,8 +35,7 @@ async def update_all():
         print(f"  New: {new_url}")
 
         result = await content_collection.update_one(
-            {"_id": doc["_id"]},
-            {"$set": {"stream_url": new_url}}
+            {"_id": doc["_id"]}, {"$set": {"stream_url": new_url}}
         )
 
         if result.modified_count > 0:

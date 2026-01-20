@@ -10,33 +10,30 @@ import time
 from typing import Optional
 
 import httpx
-
 from app.services.youtube_validator.constants import (
-    THUMBNAIL_QUALITIES,
     DEFAULT_THUMBNAIL_QUALITY,
     HTTP_STATUS_OK,
-    get_validation_timeout,
+    THUMBNAIL_QUALITIES,
     get_thumbnail_min_size_bytes,
     get_thumbnail_timeout,
+    get_validation_timeout,
+)
+from app.services.youtube_validator.metadata_validator import (
+    has_api_key,
+    validate_with_api,
+    validate_with_oembed,
 )
 from app.services.youtube_validator.models import YouTubeValidationResult
 from app.services.youtube_validator.url_parser import (
     extract_video_id,
     get_thumbnail_url,
 )
-from app.services.youtube_validator.metadata_validator import (
-    validate_with_oembed,
-    validate_with_api,
-    has_api_key,
-)
-
 
 logger = logging.getLogger(__name__)
 
 
 async def validate_youtube_video(
-    url: str,
-    use_api: bool = False
+    url: str, use_api: bool = False
 ) -> YouTubeValidationResult:
     """
     Validate a single YouTube video URL.
@@ -74,14 +71,14 @@ async def validate_youtube_video(
             url=url,
             video_id=video_id,
             error_message="Request timeout",
-            response_time_ms=int((time.time() - start_time) * 1000)
+            response_time_ms=int((time.time() - start_time) * 1000),
         )
     except httpx.ConnectError:
         return YouTubeValidationResult.create_error(
             url=url,
             video_id=video_id,
             error_message="Connection failed",
-            response_time_ms=int((time.time() - start_time) * 1000)
+            response_time_ms=int((time.time() - start_time) * 1000),
         )
     except Exception as e:
         logger.error(f"Error validating YouTube video {video_id}: {e}")
@@ -89,7 +86,7 @@ async def validate_youtube_video(
             url=url,
             video_id=video_id,
             error_message=str(e),
-            response_time_ms=int((time.time() - start_time) * 1000)
+            response_time_ms=int((time.time() - start_time) * 1000),
         )
 
 

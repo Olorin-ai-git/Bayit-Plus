@@ -7,20 +7,20 @@ Maintains access to Bayit+ Content model for metadata operations.
 
 import logging
 from typing import Optional
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
 
 from app.core.config import settings
+from app.models.content_embedding import ContentEmbedding, RecapSession
+from app.models.cultural_reference import CulturalReference
 
 # Olorin.ai Platform models
 from app.models.integration_partner import (
+    DubbingSession,
     IntegrationPartner,
     UsageRecord,
-    DubbingSession,
     WebhookDelivery,
 )
-from app.models.content_embedding import ContentEmbedding, RecapSession
-from app.models.cultural_reference import CulturalReference
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 logger = logging.getLogger(__name__)
 
@@ -53,11 +53,11 @@ async def connect_to_olorin_mongo() -> None:
     # Create Olorin database client with connection pool configuration
     olorin_db.client = AsyncIOMotorClient(
         mongodb_url,
-        maxPoolSize=50,           # Maximum connections in pool
-        minPoolSize=10,           # Minimum connections to maintain
-        maxIdleTimeMS=30000,      # Close idle connections after 30s
+        maxPoolSize=50,  # Maximum connections in pool
+        minPoolSize=10,  # Minimum connections to maintain
+        maxIdleTimeMS=30000,  # Close idle connections after 30s
         waitQueueTimeoutMS=5000,  # Fail fast if pool exhausted
-        connectTimeoutMS=10000,   # Connection timeout
+        connectTimeoutMS=10000,  # Connection timeout
         serverSelectionTimeoutMS=10000,  # Server selection timeout
     )
 
@@ -84,16 +84,14 @@ async def connect_to_olorin_mongo() -> None:
     if mongodb_url != settings.MONGODB_URL:
         olorin_db.bayit_client = AsyncIOMotorClient(
             settings.MONGODB_URL,
-            maxPoolSize=50,           # Maximum connections in pool
-            minPoolSize=10,           # Minimum connections to maintain
-            maxIdleTimeMS=30000,      # Close idle connections after 30s
+            maxPoolSize=50,  # Maximum connections in pool
+            minPoolSize=10,  # Minimum connections to maintain
+            maxIdleTimeMS=30000,  # Close idle connections after 30s
             waitQueueTimeoutMS=5000,  # Fail fast if pool exhausted
-            connectTimeoutMS=10000,   # Connection timeout
+            connectTimeoutMS=10000,  # Connection timeout
             serverSelectionTimeoutMS=10000,  # Server selection timeout
         )
-        logger.info(
-            "Established Bayit+ database reference for Content metadata access"
-        )
+        logger.info("Established Bayit+ database reference for Content metadata access")
     else:
         # Same connection, just reference it
         olorin_db.bayit_client = olorin_db.client
@@ -120,6 +118,7 @@ def get_olorin_database():
     if not settings.olorin.database.use_separate_database:
         # Fallback to main database
         from app.core.database import get_database
+
         return get_database()
 
     if not olorin_db.client:
@@ -135,6 +134,7 @@ def get_bayit_database():
     if not settings.olorin.database.use_separate_database:
         # Fallback to main database
         from app.core.database import get_database
+
         return get_database()
 
     if not olorin_db.bayit_client:

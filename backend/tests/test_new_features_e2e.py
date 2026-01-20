@@ -6,18 +6,22 @@ End-to-end tests for new features:
 """
 
 import asyncio
-import pytest
 import os
 import sys
-from unittest.mock import patch, AsyncMock
 from datetime import datetime
+from unittest.mock import AsyncMock, patch
+
+import pytest
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Load environment variables from .env
 from dotenv import load_dotenv
-env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env')
+
+env_path = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"
+)
 load_dotenv(env_path)
 
 # Set up test environment defaults
@@ -33,9 +37,12 @@ class TestTMDBConfiguration:
         """Verify TMDB API key is in environment"""
         try:
             from app.core.config import settings
-            api_key = getattr(settings, 'tmdb_api_key', None) or os.getenv('TMDB_API_KEY')
+
+            api_key = getattr(settings, "tmdb_api_key", None) or os.getenv(
+                "TMDB_API_KEY"
+            )
         except Exception:
-            api_key = os.getenv('TMDB_API_KEY')
+            api_key = os.getenv("TMDB_API_KEY")
 
         if api_key:
             assert len(api_key) > 10, "TMDB API key should be a valid length"
@@ -47,17 +54,19 @@ class TestTMDBConfiguration:
         """Verify TMDB service module exists"""
         try:
             from app.services import tmdb_service
+
             print("✓ TMDB service module found")
 
             # Check for key functions
-            if hasattr(tmdb_service, 'get_movie_details'):
+            if hasattr(tmdb_service, "get_movie_details"):
                 print("✓ get_movie_details function available")
-            if hasattr(tmdb_service, 'search_movie'):
+            if hasattr(tmdb_service, "search_movie"):
                 print("✓ search_movie function available")
         except ImportError as e:
             # Check alternative locations
             try:
                 from app.services.content_enrichment import tmdb
+
                 print("✓ TMDB module found in content_enrichment")
             except ImportError:
                 print(f"⚠ TMDB service not found: {e}")
@@ -70,7 +79,7 @@ class TestDuplicateDetectionService:
         """Verify duplicate detection service can be imported"""
         from app.services.duplicate_detection_service import (
             DuplicateDetectionService,
-            get_duplicate_detection_service
+            get_duplicate_detection_service,
         )
 
         service = get_duplicate_detection_service()
@@ -108,17 +117,13 @@ class TestDuplicateDetectionService:
 
         # Same movie, different formats
         sim1 = service._calculate_title_similarity(
-            "The Matrix 1999 1080p BluRay",
-            "The Matrix (1999) 720p HDTV"
+            "The Matrix 1999 1080p BluRay", "The Matrix (1999) 720p HDTV"
         )
         assert sim1 >= 0.7, f"Similar titles should have high similarity: {sim1}"
         print(f"✓ Same movie similarity: {sim1:.2f}")
 
         # Different movies
-        sim2 = service._calculate_title_similarity(
-            "The Matrix",
-            "Inception"
-        )
+        sim2 = service._calculate_title_similarity("The Matrix", "Inception")
         assert sim2 < 0.5, f"Different movies should have low similarity: {sim2}"
         print(f"✓ Different movie similarity: {sim2:.2f}")
 
@@ -130,11 +135,15 @@ class TestDuplicateDetectionService:
         service = DuplicateDetectionService()
 
         # Mock the database methods
-        with patch.object(service, 'find_hash_duplicates', new_callable=AsyncMock) as mock_hash, \
-             patch.object(service, 'find_tmdb_duplicates', new_callable=AsyncMock) as mock_tmdb, \
-             patch.object(service, 'find_imdb_duplicates', new_callable=AsyncMock) as mock_imdb, \
-             patch.object(service, 'find_title_duplicates', new_callable=AsyncMock) as mock_title:
-
+        with patch.object(
+            service, "find_hash_duplicates", new_callable=AsyncMock
+        ) as mock_hash, patch.object(
+            service, "find_tmdb_duplicates", new_callable=AsyncMock
+        ) as mock_tmdb, patch.object(
+            service, "find_imdb_duplicates", new_callable=AsyncMock
+        ) as mock_imdb, patch.object(
+            service, "find_title_duplicates", new_callable=AsyncMock
+        ) as mock_title:
             mock_hash.return_value = [{"file_hash": "abc123", "count": 2, "items": []}]
             mock_tmdb.return_value = []
             mock_imdb.return_value = []
@@ -163,10 +172,10 @@ class TestOpenSubtitlesService:
     def test_service_import(self):
         """Verify OpenSubtitles service can be imported"""
         from app.services.opensubtitles_service import (
-            OpenSubtitlesService,
-            MAX_RETRIES,
             INITIAL_RETRY_DELAY,
-            MAX_RETRY_DELAY
+            MAX_RETRIES,
+            MAX_RETRY_DELAY,
+            OpenSubtitlesService,
         )
 
         assert MAX_RETRIES == 3
@@ -176,7 +185,7 @@ class TestOpenSubtitlesService:
 
     def test_api_key_configured(self):
         """Verify OpenSubtitles API key is configured"""
-        api_key = os.getenv('OPENSUBTITLES_API_KEY')
+        api_key = os.getenv("OPENSUBTITLES_API_KEY")
 
         if api_key:
             assert len(api_key) > 10, "API key should be valid length"
@@ -192,23 +201,24 @@ class TestOpenSubtitlesService:
         service = OpenSubtitlesService()
 
         # Check required attributes
-        assert hasattr(service, 'api_key')
-        assert hasattr(service, 'base_url')
-        assert hasattr(service, 'client')
-        assert hasattr(service, 'jwt_token')
+        assert hasattr(service, "api_key")
+        assert hasattr(service, "base_url")
+        assert hasattr(service, "client")
+        assert hasattr(service, "jwt_token")
 
         print("✓ OpenSubtitlesService initialized correctly")
 
     @pytest.mark.asyncio
     async def test_retry_logic_structure(self):
         """Test that retry logic constants and structure are properly defined"""
-        from app.services.opensubtitles_service import (
-            OpenSubtitlesService,
-            MAX_RETRIES,
-            INITIAL_RETRY_DELAY,
-            MAX_RETRY_DELAY
-        )
         import inspect
+
+        from app.services.opensubtitles_service import (
+            INITIAL_RETRY_DELAY,
+            MAX_RETRIES,
+            MAX_RETRY_DELAY,
+            OpenSubtitlesService,
+        )
 
         service = OpenSubtitlesService()
 
@@ -219,12 +229,16 @@ class TestOpenSubtitlesService:
 
         # Verify _make_request has retry logic by checking source code
         source = inspect.getsource(service._make_request)
-        assert "retry" in source.lower() or "MAX_RETRIES" in source, \
-            "_make_request should contain retry logic"
-        assert "asyncio.sleep" in source or "await" in source, \
-            "_make_request should be async with potential delays"
+        assert (
+            "retry" in source.lower() or "MAX_RETRIES" in source
+        ), "_make_request should contain retry logic"
+        assert (
+            "asyncio.sleep" in source or "await" in source
+        ), "_make_request should be async with potential delays"
 
-        print(f"✓ Retry constants: MAX_RETRIES={MAX_RETRIES}, INITIAL_DELAY={INITIAL_RETRY_DELAY}s, MAX_DELAY={MAX_RETRY_DELAY}s")
+        print(
+            f"✓ Retry constants: MAX_RETRIES={MAX_RETRIES}, INITIAL_DELAY={INITIAL_RETRY_DELAY}s, MAX_DELAY={MAX_RETRY_DELAY}s"
+        )
         print("✓ Retry logic verified in _make_request source")
 
 
@@ -241,7 +255,7 @@ class TestAIAgentTools:
             "check_api_configuration",
             "find_duplicates",
             "resolve_duplicates",
-            "find_missing_metadata"
+            "find_missing_metadata",
         ]
 
         for tool in expected_tools:
@@ -253,8 +267,12 @@ class TestAIAgentTools:
         from app.services.ai_agent_service import TOOLS as AI_AGENT_TOOLS
 
         for tool in AI_AGENT_TOOLS:
-            if tool["name"] in ["check_api_configuration", "find_duplicates",
-                                "resolve_duplicates", "find_missing_metadata"]:
+            if tool["name"] in [
+                "check_api_configuration",
+                "find_duplicates",
+                "resolve_duplicates",
+                "find_missing_metadata",
+            ]:
                 assert "description" in tool
                 assert "input_schema" in tool
                 assert tool["input_schema"]["type"] == "object"
@@ -266,18 +284,16 @@ class TestEnvironmentConfiguration:
 
     def test_env_example_has_tmdb(self):
         """Verify .env.example includes TMDB configuration"""
-        env_example_path = os.path.join(
-            os.path.dirname(__file__),
-            '..',
-            '.env.example'
-        )
+        env_example_path = os.path.join(os.path.dirname(__file__), "..", ".env.example")
 
         if os.path.exists(env_example_path):
             with open(env_example_path) as f:
                 content = f.read()
 
-            assert 'TMDB_API_KEY' in content, ".env.example should have TMDB_API_KEY"
-            assert 'TMDB_API_TOKEN' in content, ".env.example should have TMDB_API_TOKEN"
+            assert "TMDB_API_KEY" in content, ".env.example should have TMDB_API_KEY"
+            assert (
+                "TMDB_API_TOKEN" in content
+            ), ".env.example should have TMDB_API_TOKEN"
             print("✓ .env.example has TMDB configuration")
         else:
             print("⚠ .env.example not found at expected path")
@@ -285,27 +301,30 @@ class TestEnvironmentConfiguration:
     def test_cloudbuild_has_secrets(self):
         """Verify cloudbuild.yaml includes new secrets"""
         cloudbuild_path = os.path.join(
-            os.path.dirname(__file__),
-            '..',
-            '..',
-            'cloudbuild.yaml'
+            os.path.dirname(__file__), "..", "..", "cloudbuild.yaml"
         )
 
         # Try backend-specific cloudbuild first
         backend_cloudbuild = os.path.join(
-            os.path.dirname(__file__),
-            '..',
-            'cloudbuild.yaml'
+            os.path.dirname(__file__), "..", "cloudbuild.yaml"
         )
 
-        path_to_check = backend_cloudbuild if os.path.exists(backend_cloudbuild) else cloudbuild_path
+        path_to_check = (
+            backend_cloudbuild
+            if os.path.exists(backend_cloudbuild)
+            else cloudbuild_path
+        )
 
         if os.path.exists(path_to_check):
             with open(path_to_check) as f:
                 content = f.read()
 
-            assert 'tmdb-api-key' in content.lower(), "cloudbuild should have TMDB secret"
-            assert 'picovoice-access-key' in content.lower(), "cloudbuild should have Picovoice secret"
+            assert (
+                "tmdb-api-key" in content.lower()
+            ), "cloudbuild should have TMDB secret"
+            assert (
+                "picovoice-access-key" in content.lower()
+            ), "cloudbuild should have Picovoice secret"
             print(f"✓ {path_to_check} has required secrets")
         else:
             print("⚠ cloudbuild.yaml not found")
@@ -313,9 +332,9 @@ class TestEnvironmentConfiguration:
 
 def run_sync_tests():
     """Run synchronous tests"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Running End-to-End Tests for New Features")
-    print("="*60 + "\n")
+    print("=" * 60 + "\n")
 
     # TMDB Tests
     print("\n--- TMDB Configuration Tests ---")
@@ -348,9 +367,9 @@ def run_sync_tests():
     env_tests.test_env_example_has_tmdb()
     env_tests.test_cloudbuild_has_secrets()
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Synchronous Tests Complete!")
-    print("="*60 + "\n")
+    print("=" * 60 + "\n")
 
 
 async def run_async_tests():

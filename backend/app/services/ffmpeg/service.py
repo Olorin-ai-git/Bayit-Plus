@@ -186,7 +186,9 @@ class FFmpegService:
         """
         return get_bitrate(video_path, timeout)
 
-    def analyze_video_quality(self, video_path: str, timeout: int = 30) -> Dict[str, Any]:
+    def analyze_video_quality(
+        self, video_path: str, timeout: int = 30
+    ) -> Dict[str, Any]:
         """
         Analyze video quality metrics.
 
@@ -220,7 +222,9 @@ class FFmpegService:
         Returns:
             Subtitle content as string
         """
-        return await extract_subtitle_track(video_url, track_index, output_format, timeout)
+        return await extract_subtitle_track(
+            video_url, track_index, output_format, timeout
+        )
 
     async def extract_all_subtitles(
         self,
@@ -241,7 +245,9 @@ class FFmpegService:
         Returns:
             List of dictionaries containing subtitle data
         """
-        return await extract_all_subtitles(video_url, languages, max_parallel, max_subtitles)
+        return await extract_all_subtitles(
+            video_url, languages, max_parallel, max_subtitles
+        )
 
     def embed_subtitles(
         self,
@@ -264,7 +270,9 @@ class FFmpegService:
         Returns:
             Path to the output video file
         """
-        return embed_subtitles(video_path, subtitle_path, output_path, language, timeout)
+        return embed_subtitles(
+            video_path, subtitle_path, output_path, language, timeout
+        )
 
     def convert_subtitles(
         self,
@@ -371,7 +379,9 @@ class FFmpegService:
         Returns:
             Path to the saved thumbnail
         """
-        return await extract_thumbnail_from_video(video_path, output_path, timestamp_seconds)
+        return await extract_thumbnail_from_video(
+            video_path, output_path, timestamp_seconds
+        )
 
     async def capture_screenshot(
         self,
@@ -474,7 +484,12 @@ class FFmpegService:
             Path to the transcoded video file
         """
         return await transcode_video(
-            input_path, output_path, target_codec, target_resolution, target_bitrate, timeout
+            input_path,
+            output_path,
+            target_codec,
+            target_resolution,
+            target_bitrate,
+            timeout,
         )
 
     async def compress_video(
@@ -498,7 +513,9 @@ class FFmpegService:
         Returns:
             Path to the compressed video file
         """
-        return await compress_video(input_path, output_path, target_size_mb, crf, timeout)
+        return await compress_video(
+            input_path, output_path, target_size_mb, crf, timeout
+        )
 
     async def resize_video(
         self,
@@ -544,7 +561,9 @@ class FFmpegService:
         Returns:
             Path to the extracted audio file
         """
-        return await extract_audio(input_path, output_path, audio_codec, audio_bitrate, timeout)
+        return await extract_audio(
+            input_path, output_path, audio_codec, audio_bitrate, timeout
+        )
 
     async def convert_to_hls(
         self,

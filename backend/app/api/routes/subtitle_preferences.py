@@ -3,12 +3,13 @@ Subtitle Preferences API Routes
 Manage user's preferred subtitle language for each content item.
 """
 
-from fastapi import APIRouter, HTTPException, Depends
+import logging
+from datetime import datetime, timezone
+
+from app.core.security import get_current_active_user
 from app.models.subtitle_preferences import SubtitlePreference
 from app.models.user import User
-from app.core.security import get_current_active_user
-from datetime import datetime, timezone
-import logging
+from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -16,8 +17,7 @@ logger = logging.getLogger(__name__)
 
 @router.get("/preferences/{content_id}")
 async def get_subtitle_preference(
-    content_id: str,
-    current_user: User = Depends(get_current_active_user)
+    content_id: str, current_user: User = Depends(get_current_active_user)
 ):
     """
     Get user's preferred subtitle language for a specific content item.
@@ -29,33 +29,35 @@ async def get_subtitle_preference(
         # Look up user's preference for this content
         preference = await SubtitlePreference.find_one(
             SubtitlePreference.user_id == str(current_user.id),
-            SubtitlePreference.content_id == content_id
+            SubtitlePreference.content_id == content_id,
         )
 
         if preference:
             return {
                 "content_id": content_id,
                 "preferred_language": preference.preferred_language,
-                "last_used_at": preference.last_used_at
+                "last_used_at": preference.last_used_at,
             }
 
         # No preference set - return defaults in priority order
         return {
             "content_id": content_id,
             "preferred_language": None,  # Will use fallback: he > en
-            "fallback_order": ["he", "en"]
+            "fallback_order": ["he", "en"],
         }
 
     except Exception as e:
         logger.error(f"Error fetching subtitle preference: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Failed to fetch subtitle preference")
+        raise HTTPException(
+            status_code=500, detail="Failed to fetch subtitle preference"
+        )
 
 
 @router.post("/preferences/{content_id}")
 async def set_subtitle_preference(
     content_id: str,
     language: str,
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Set user's preferred subtitle language for a specific content item.
@@ -72,7 +74,7 @@ async def set_subtitle_preference(
         # Check if preference already exists
         existing = await SubtitlePreference.find_one(
             SubtitlePreference.user_id == str(current_user.id),
-            SubtitlePreference.content_id == content_id
+            SubtitlePreference.content_id == content_id,
         )
 
         if existing:
@@ -82,28 +84,32 @@ async def set_subtitle_preference(
             existing.last_used_at = datetime.now(timezone.utc)
             await existing.save()
 
-            logger.info(f"Updated subtitle preference for user {current_user.id}, content {content_id}: {language}")
+            logger.info(
+                f"Updated subtitle preference for user {current_user.id}, content {content_id}: {language}"
+            )
 
             return {
                 "status": "updated",
                 "content_id": content_id,
-                "preferred_language": language
+                "preferred_language": language,
             }
         else:
             # Create new preference
             preference = SubtitlePreference(
                 user_id=str(current_user.id),
                 content_id=content_id,
-                preferred_language=language
+                preferred_language=language,
             )
             await preference.insert()
 
-            logger.info(f"Created subtitle preference for user {current_user.id}, content {content_id}: {language}")
+            logger.info(
+                f"Created subtitle preference for user {current_user.id}, content {content_id}: {language}"
+            )
 
             return {
                 "status": "created",
                 "content_id": content_id,
-                "preferred_language": language
+                "preferred_language": language,
             }
 
     except HTTPException:
@@ -115,8 +121,7 @@ async def set_subtitle_preference(
 
 @router.delete("/preferences/{content_id}")
 async def delete_subtitle_preference(
-    content_id: str,
-    current_user: User = Depends(get_current_active_user)
+    content_id: str, current_user: User = Depends(get_current_active_user)
 ):
     """
     Delete user's subtitle preference for a specific content item.
@@ -125,7 +130,7 @@ async def delete_subtitle_preference(
     try:
         preference = await SubtitlePreference.find_one(
             SubtitlePreference.user_id == str(current_user.id),
-            SubtitlePreference.content_id == content_id
+            SubtitlePreference.content_id == content_id,
         )
 
         if not preference:
@@ -133,25 +138,27 @@ async def delete_subtitle_preference(
 
         await preference.delete()
 
-        logger.info(f"Deleted subtitle preference for user {current_user.id}, content {content_id}")
+        logger.info(
+            f"Deleted subtitle preference for user {current_user.id}, content {content_id}"
+        )
 
         return {
             "status": "deleted",
             "content_id": content_id,
-            "message": "Preference deleted. Will use default fallback (Hebrew > English)"
+            "message": "Preference deleted. Will use default fallback (Hebrew > English)",
         }
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error deleting subtitle preference: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Failed to delete subtitle preference")
+        raise HTTPException(
+            status_code=500, detail="Failed to delete subtitle preference"
+        )
 
 
 @router.get("/preferences")
-async def get_all_preferences(
-    current_user: User = Depends(get_current_active_user)
-):
+async def get_all_preferences(current_user: User = Depends(get_current_active_user)):
     """
     Get all subtitle preferences for the current user.
     Useful for syncing preferences across devices.
@@ -166,11 +173,11 @@ async def get_all_preferences(
                 {
                     "content_id": pref.content_id,
                     "preferred_language": pref.preferred_language,
-                    "last_used_at": pref.last_used_at
+                    "last_used_at": pref.last_used_at,
                 }
                 for pref in preferences
             ],
-            "total": len(preferences)
+            "total": len(preferences),
         }
 
     except Exception as e:

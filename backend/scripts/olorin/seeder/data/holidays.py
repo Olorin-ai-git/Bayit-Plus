@@ -13,7 +13,7 @@ HOLIDAYS = [
         "canonical_name_en": "Yom Kippur",
         "category": ReferenceCategory.EVENT,
         "subcategory": "holiday",
-        "aliases": ["יום הכיפורים", "יוה\"כ"],
+        "aliases": ["יום הכיפורים", 'יוה"כ'],
         "aliases_en": ["Day of Atonement"],
         "short_explanation": "היום הקדוש ביותר ביהדות, יום צום וכפרה",
         "short_explanation_en": "The holiest day in Judaism, a day of fasting and atonement",

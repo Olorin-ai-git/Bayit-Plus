@@ -5,12 +5,12 @@ Supports:
 - Ynet Mivzakim (Breaking News) RSS feed
 """
 
-import logging
 import asyncio
+import logging
 import xml.etree.ElementTree as ET
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import List, Optional
-from dataclasses import dataclass
 
 import httpx
 
@@ -26,6 +26,7 @@ CACHE_TTL_SECONDS = 120
 @dataclass
 class NewsItem:
     """A single news item."""
+
     title: str
     link: str
     published: str
@@ -108,10 +109,16 @@ async def fetch_ynet_mivzakim(limit: int = 10) -> List[NewsItem]:
 
                 news_item = NewsItem(
                     title=title_elem.text.strip(),
-                    link=link_elem.text.strip() if link_elem is not None and link_elem.text else "",
-                    published=pub_date_elem.text.strip() if pub_date_elem is not None and pub_date_elem.text else "",
-                    summary=desc_elem.text.strip() if desc_elem is not None and desc_elem.text else "",
-                    source="ynet"
+                    link=link_elem.text.strip()
+                    if link_elem is not None and link_elem.text
+                    else "",
+                    published=pub_date_elem.text.strip()
+                    if pub_date_elem is not None and pub_date_elem.text
+                    else "",
+                    summary=desc_elem.text.strip()
+                    if desc_elem is not None and desc_elem.text
+                    else "",
+                    source="ynet",
                 )
                 items.append(news_item)
 

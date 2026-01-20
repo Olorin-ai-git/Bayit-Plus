@@ -11,20 +11,20 @@ Provides comprehensive search endpoints for:
 """
 
 import logging
-from typing import Optional, List
-from fastapi import APIRouter, HTTPException, status, Depends, Query, Body
-from pydantic import BaseModel, Field
+from typing import List, Optional
 
-from app.models.user import User
+from app.core.config import settings
+from app.core.security import get_current_premium_user, get_optional_user
 from app.models.search_analytics import SearchQuery
-from app.core.security import get_optional_user, get_current_premium_user
+from app.models.user import User
 from app.services.unified_search_service import (
-    UnifiedSearchService,
     SearchFilters,
-    SearchResults
+    SearchResults,
+    UnifiedSearchService,
 )
 from app.services.vod_llm_search_service import VODLLMSearchService
-from app.core.config import settings
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
+from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/search", tags=["search"])
 logger = logging.getLogger(__name__)
@@ -36,6 +36,7 @@ llm_search = VODLLMSearchService()
 
 class LLMSearchRequest(BaseModel):
     """Request model for LLM natural language search"""
+
     query: str = Field(..., min_length=1, description="Natural language query")
     include_user_context: bool = Field(True, description="Include user preferences")
     limit: int = Field(20, ge=1, le=50, description="Maximum results")
@@ -43,7 +44,10 @@ class LLMSearchRequest(BaseModel):
 
 class ClickTrackingRequest(BaseModel):
     """Request model for tracking search result clicks"""
-    search_query_id: Optional[str] = Field(None, description="Optional search query log ID")
+
+    search_query_id: Optional[str] = Field(
+        None, description="Optional search query log ID"
+    )
     content_id: str = Field(..., description="Clicked content ID")
     position: int = Field(..., ge=1, description="Position in results (1-indexed)")
     time_to_click_ms: int = Field(..., ge=0, description="Time from search to click")
@@ -52,18 +56,26 @@ class ClickTrackingRequest(BaseModel):
 @router.get("/unified", response_model=SearchResults)
 async def unified_search_endpoint(
     query: str = Query("", description="Search query text"),
-    content_types: List[str] = Query(["vod"], description="Content types: vod, live, radio, podcast"),
+    content_types: List[str] = Query(
+        ["vod"], description="Content types: vod, live, radio, podcast"
+    ),
     genres: Optional[List[str]] = Query(None, description="Filter by genres"),
     year_min: Optional[int] = Query(None, ge=1900, le=2100, description="Minimum year"),
     year_max: Optional[int] = Query(None, ge=1900, le=2100, description="Maximum year"),
-    rating_min: Optional[float] = Query(None, ge=0, le=10, description="Minimum rating"),
-    subtitle_languages: Optional[List[str]] = Query(None, description="Required subtitle languages"),
-    subscription_tier: Optional[str] = Query(None, description="Filter by tier: basic, premium, family"),
+    rating_min: Optional[float] = Query(
+        None, ge=0, le=10, description="Minimum rating"
+    ),
+    subtitle_languages: Optional[List[str]] = Query(
+        None, description="Required subtitle languages"
+    ),
+    subscription_tier: Optional[str] = Query(
+        None, description="Filter by tier: basic, premium, family"
+    ),
     is_kids_content: Optional[bool] = Query(None, description="Filter kids content"),
     search_in_subtitles: bool = Query(False, description="Enable subtitle text search"),
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(20, ge=1, le=50, description="Results per page"),
-    current_user: Optional[User] = Depends(get_optional_user)
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Unified search across all content with advanced filtering.
@@ -91,7 +103,7 @@ async def unified_search_endpoint(
             subtitle_languages=subtitle_languages,
             subscription_tier=subscription_tier,
             is_kids_content=is_kids_content,
-            search_in_subtitles=search_in_subtitles
+            search_in_subtitles=search_in_subtitles,
         )
 
         # Execute search
@@ -100,19 +112,23 @@ async def unified_search_endpoint(
             filters=filters,
             page=page,
             limit=limit,
-            user_subscription_tier=current_user.subscription_tier if current_user else None
+            user_subscription_tier=current_user.subscription_tier
+            if current_user
+            else None,
         )
 
         # Log search analytics
         await SearchQuery.log_search(
             query=query,
-            search_type="subtitle" if search_in_subtitles else ("text" if query.strip() else "metadata_only"),
+            search_type="subtitle"
+            if search_in_subtitles
+            else ("text" if query.strip() else "metadata_only"),
             result_count=results.total,
             execution_time_ms=results.execution_time_ms,
             filters=filters.dict(),
             user_id=str(current_user.id) if current_user else None,
             cache_hit=results.cache_hit,
-            platform=None  # Could be extracted from User-Agent header
+            platform=None,  # Could be extracted from User-Agent header
         )
 
         return results
@@ -121,7 +137,7 @@ async def unified_search_endpoint(
         logger.error(f"Unified search failed: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Search failed: {str(e)}"
+            detail=f"Search failed: {str(e)}",
         )
 
 
@@ -131,7 +147,7 @@ async def search_in_subtitles(
     content_types: List[str] = Query(["vod"], description="Content types to search"),
     language: Optional[str] = Query(None, description="Subtitle language filter"),
     limit: int = Query(20, ge=1, le=50, description="Maximum results"),
-    current_user: Optional[User] = Depends(get_optional_user)
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Search for specific dialogue within subtitle files.
@@ -144,16 +160,10 @@ async def search_in_subtitles(
     - Shows timestamp and highlighted text for each match
     """
     try:
-        filters = SearchFilters(
-            content_types=content_types,
-            search_in_subtitles=True
-        )
+        filters = SearchFilters(content_types=content_types, search_in_subtitles=True)
 
         results = await unified_search.search(
-            query=query,
-            filters=filters,
-            page=1,
-            limit=limit
+            query=query, filters=filters, page=1, limit=limit
         )
 
         # Log analytics
@@ -163,7 +173,7 @@ async def search_in_subtitles(
             result_count=results.total,
             execution_time_ms=results.execution_time_ms,
             filters={"language": language, "content_types": content_types},
-            user_id=str(current_user.id) if current_user else None
+            user_id=str(current_user.id) if current_user else None,
         )
 
         return results
@@ -172,14 +182,14 @@ async def search_in_subtitles(
         logger.error(f"Subtitle search failed: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Subtitle search failed: {str(e)}"
+            detail=f"Subtitle search failed: {str(e)}",
         )
 
 
 @router.get("/suggestions")
 async def get_search_suggestions(
     query: str = Query(..., min_length=2, description="Partial query for autocomplete"),
-    limit: int = Query(5, ge=1, le=10, description="Maximum suggestions")
+    limit: int = Query(5, ge=1, le=10, description="Maximum suggestions"),
 ):
     """
     Get autocomplete suggestions for search query.
@@ -195,23 +205,19 @@ async def get_search_suggestions(
     try:
         suggestions = await unified_search.get_suggestions(query, limit)
 
-        return {
-            "query": query,
-            "suggestions": suggestions
-        }
+        return {"query": query, "suggestions": suggestions}
 
     except Exception as e:
         logger.error(f"Suggestions failed: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get suggestions: {str(e)}"
+            detail=f"Failed to get suggestions: {str(e)}",
         )
 
 
 @router.post("/llm")
 async def llm_natural_language_search(
-    request: LLMSearchRequest,
-    current_user: User = Depends(get_current_premium_user)
+    request: LLMSearchRequest, current_user: User = Depends(get_current_premium_user)
 ):
     """
     Natural language search using Claude AI (Premium Feature).
@@ -231,16 +237,20 @@ async def llm_natural_language_search(
     """
     try:
         # Build user context
-        user_context = {
-            "preferred_language": current_user.preferred_language if hasattr(current_user, "preferred_language") else None,
-            "subscription_tier": current_user.subscription_tier,
-        } if request.include_user_context else {}
+        user_context = (
+            {
+                "preferred_language": current_user.preferred_language
+                if hasattr(current_user, "preferred_language")
+                else None,
+                "subscription_tier": current_user.subscription_tier,
+            }
+            if request.include_user_context
+            else {}
+        )
 
         # Execute LLM search
         results = await llm_search.search(
-            query=request.query,
-            user_context=user_context,
-            limit=request.limit
+            query=request.query, user_context=user_context, limit=request.limit
         )
 
         # Log analytics
@@ -254,7 +264,7 @@ async def llm_natural_language_search(
                 filters=interpretation.get("extracted_criteria", {}),
                 user_id=str(current_user.id),
                 llm_interpretation=interpretation.get("text"),
-                llm_confidence=interpretation.get("confidence")
+                llm_confidence=interpretation.get("confidence"),
             )
 
         return results
@@ -263,7 +273,7 @@ async def llm_natural_language_search(
         logger.error(f"LLM search failed: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"LLM search failed: {str(e)}"
+            detail=f"LLM search failed: {str(e)}",
         )
 
 
@@ -289,14 +299,14 @@ async def get_filter_options():
         logger.error(f"Failed to get filter options: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get filter options: {str(e)}"
+            detail=f"Failed to get filter options: {str(e)}",
         )
 
 
 @router.post("/analytics/click")
 async def track_search_click(
     request: ClickTrackingRequest,
-    current_user: Optional[User] = Depends(get_optional_user)
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Track when a user clicks on a search result.
@@ -314,27 +324,20 @@ async def track_search_click(
                 await query_log.log_click(
                     content_id=request.content_id,
                     position=request.position,
-                    time_to_click_ms=request.time_to_click_ms
+                    time_to_click_ms=request.time_to_click_ms,
                 )
 
-        return {
-            "success": True,
-            "message": "Click tracked successfully"
-        }
+        return {"success": True, "message": "Click tracked successfully"}
 
     except Exception as e:
         logger.error(f"Failed to track click: {e}", exc_info=True)
         # Don't fail the request, just log the error
-        return {
-            "success": False,
-            "message": "Failed to track click (non-critical)"
-        }
+        return {"success": False, "message": "Failed to track click (non-critical)"}
 
 
 @router.get("/analytics/popular")
 async def get_popular_searches(
-    limit: int = Query(10, ge=1, le=50),
-    days: int = Query(7, ge=1, le=90)
+    limit: int = Query(10, ge=1, le=50), days: int = Query(7, ge=1, le=90)
 ):
     """
     Get most popular search queries.
@@ -348,23 +351,19 @@ async def get_popular_searches(
     """
     try:
         popular = await SearchQuery.get_popular_queries(limit=limit, days=days)
-        return {
-            "queries": popular,
-            "period_days": days
-        }
+        return {"queries": popular, "period_days": days}
 
     except Exception as e:
         logger.error(f"Failed to get popular searches: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get popular searches: {str(e)}"
+            detail=f"Failed to get popular searches: {str(e)}",
         )
 
 
 @router.get("/analytics/no-results")
 async def get_no_result_queries(
-    limit: int = Query(20, ge=1, le=100),
-    days: int = Query(7, ge=1, le=90)
+    limit: int = Query(20, ge=1, le=100), days: int = Query(7, ge=1, le=90)
 ):
     """
     Get queries that returned no results (content gaps).
@@ -378,23 +377,18 @@ async def get_no_result_queries(
     """
     try:
         no_results = await SearchQuery.get_no_result_queries(limit=limit, days=days)
-        return {
-            "queries": no_results,
-            "period_days": days
-        }
+        return {"queries": no_results, "period_days": days}
 
     except Exception as e:
         logger.error(f"Failed to get no-result queries: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get no-result queries: {str(e)}"
+            detail=f"Failed to get no-result queries: {str(e)}",
         )
 
 
 @router.get("/analytics/metrics")
-async def get_search_metrics(
-    days: int = Query(7, ge=1, le=90)
-):
+async def get_search_metrics(days: int = Query(7, ge=1, le=90)):
     """
     Get aggregated search metrics.
 
@@ -413,12 +407,12 @@ async def get_search_metrics(
         return {
             "click_through_rate": ctr,
             "search_type_distribution": search_types,
-            "period_days": days
+            "period_days": days,
         }
 
     except Exception as e:
         logger.error(f"Failed to get search metrics: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get search metrics: {str(e)}"
+            detail=f"Failed to get search metrics: {str(e)}",
         )

@@ -11,22 +11,15 @@ Deployed independently from main Bayit+ backend for:
 import logging
 from contextlib import asynccontextmanager
 
+from app.api.routes.olorin import cultural_context, dubbing, partners, recap, search
+from app.core.config import settings
+from app.core.database import close_mongo_connection, connect_to_mongo
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter
-from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-
-from app.core.config import settings
-from app.core.database import connect_to_mongo, close_mongo_connection
-from app.api.routes.olorin import (
-    partners,
-    search,
-    dubbing,
-    recap,
-    cultural_context,
-)
+from slowapi.util import get_remote_address
 
 # Configure logging
 logging.basicConfig(
@@ -54,6 +47,7 @@ async def lifespan(app: FastAPI):
     # Initialize services based on enabled features
     if settings.olorin.semantic_search_enabled:
         from app.services.olorin.search.client import client_manager
+
         await client_manager.initialize()
         logger.info("Semantic search service initialized")
 
@@ -89,6 +83,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Health check endpoint
 @app.get("/health")
 async def health_check():
@@ -98,6 +93,7 @@ async def health_check():
         "service": "olorin-platform",
         "version": "0.1.0",
     }
+
 
 # Include Olorin API routes
 API_PREFIX = f"/api/{settings.olorin.api_version}/olorin"
@@ -140,6 +136,7 @@ if settings.olorin.cultural_context_enabled:
         prefix=f"{API_PREFIX}/cultural-context",
         tags=["Cultural Context"],
     )
+
 
 # Error handlers
 @app.exception_handler(Exception)

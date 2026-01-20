@@ -20,18 +20,18 @@ test_urls = {
     ],
     "Elephant Dream": [
         "https://commondatastorage.googleapis.com/gtv-videos-library/sample/ElephantsDream.mp4",
-    ]
+    ],
 }
 
 print("🎬 Testing Alternative Public Domain Sources\n")
-print("="*80)
+print("=" * 80)
 
 working_urls = {}
 
 for title, urls in test_urls.items():
     print(f"\n📽️ {title}")
     found = False
-    
+
     for url in urls:
         try:
             response = requests.head(url, timeout=5, allow_redirects=True)
@@ -44,13 +44,12 @@ for title, urls in test_urls.items():
                 print(f"   ❌ HTTP {response.status_code}")
         except Exception as e:
             print(f"   ❌ Error")
-    
+
     if not found:
         print(f"   ⚠️  No working URL")
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print("\n✅ VERIFIED WORKING URLS:\n")
 for title, url in working_urls.items():
     print(f"{title}")
     print(f"  {url}\n")
-

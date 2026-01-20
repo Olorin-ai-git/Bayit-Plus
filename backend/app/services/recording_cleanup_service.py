@@ -4,6 +4,7 @@ Handles deletion and cleanup of recordings
 """
 
 import logging
+
 from app.models.recording import Recording, RecordingSubtitleCue
 from app.services.recording_quota_service import recording_quota_service
 
@@ -36,16 +37,18 @@ class RecordingCleanupService:
             for cue in subtitle_cues:
                 await cue.delete()
 
-            logger.info(f"Deleted {len(subtitle_cues)} subtitle cues for recording {recording_id}")
+            logger.info(
+                f"Deleted {len(subtitle_cues)} subtitle cues for recording {recording_id}"
+            )
 
             # Release quota
             await recording_quota_service.release_quota(
-                user_id,
-                recording.file_size_bytes
+                user_id, recording.file_size_bytes
             )
 
             # Delete files from storage (local/S3/GCS)
             from app.core.storage import get_storage_provider
+
             storage = get_storage_provider()
 
             if recording.video_url:

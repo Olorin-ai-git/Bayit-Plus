@@ -2,10 +2,11 @@
 Fetch podcast cover images from 103FM website and update database.
 """
 import asyncio
+from urllib.parse import urljoin
+
 import httpx
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
-from urllib.parse import urljoin
 
 
 async def scrape_podcast_covers():
@@ -14,9 +15,12 @@ async def scrape_podcast_covers():
 
     try:
         async with httpx.AsyncClient(timeout=15.0, follow_redirects=True) as client:
-            response = await client.get(url, headers={
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            })
+            response = await client.get(
+                url,
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                },
+            )
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, "html.parser")
@@ -83,8 +87,7 @@ async def update_podcast_covers(podcast_covers: dict):
 
     for podcast_name, cover_url in podcast_covers.items():
         result = db.podcasts.update_one(
-            {"title": podcast_name},
-            {"$set": {"cover": cover_url}}
+            {"title": podcast_name}, {"$set": {"cover": cover_url}}
         )
 
         if result.matched_count > 0:
@@ -110,9 +113,21 @@ async def use_placeholder_covers():
 
     # Use a color-based placeholder service
     placeholder_colors = [
-        "FF6B6B", "4ECDC4", "45B7D1", "FFA07A", "98D8C8",
-        "F7DC6F", "BB8FCE", "85C1E2", "F8B88B", "AED6F1",
-        "85C1E2", "F5B041", "BB8FCE", "52BE80", "DC7633"
+        "FF6B6B",
+        "4ECDC4",
+        "45B7D1",
+        "FFA07A",
+        "98D8C8",
+        "F7DC6F",
+        "BB8FCE",
+        "85C1E2",
+        "F8B88B",
+        "AED6F1",
+        "85C1E2",
+        "F5B041",
+        "BB8FCE",
+        "52BE80",
+        "DC7633",
     ]
 
     updated = 0
@@ -125,8 +140,7 @@ async def use_placeholder_covers():
         placeholder_url = f"https://ui-avatars.com/api/?name={podcast['title']}&background={color}&color=fff&size=300&font-size=0.4&bold=true"
 
         db.podcasts.update_one(
-            {"_id": podcast["_id"]},
-            {"$set": {"cover": placeholder_url}}
+            {"_id": podcast["_id"]}, {"$set": {"cover": placeholder_url}}
         )
         updated += 1
 
@@ -141,7 +155,9 @@ async def main():
     if podcast_covers:
         await update_podcast_covers(podcast_covers)
     else:
-        print("\n⚠️  No covers found from scraping, using placeholder images instead...")
+        print(
+            "\n⚠️  No covers found from scraping, using placeholder images instead..."
+        )
         await use_placeholder_covers()
 
 

@@ -5,7 +5,7 @@ Functions for checking API configuration, finding duplicates, and quality varian
 """
 
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from app.models.content import Content
 
@@ -20,20 +20,20 @@ async def execute_check_api_configuration() -> Dict[str, Any]:
         api_status = {
             "tmdb": {
                 "configured": bool(settings.TMDB_API_KEY),
-                "description": "The Movie Database - metadata, posters, ratings"
+                "description": "The Movie Database - metadata, posters, ratings",
             },
             "opensubtitles": {
                 "configured": bool(settings.OPENSUBTITLES_API_KEY),
-                "description": "OpenSubtitles - subtitle downloads"
+                "description": "OpenSubtitles - subtitle downloads",
             },
             "anthropic": {
                 "configured": bool(settings.ANTHROPIC_API_KEY),
-                "description": "Claude AI - content analysis"
+                "description": "Claude AI - content analysis",
             },
             "sendgrid": {
                 "configured": bool(settings.SENDGRID_API_KEY),
-                "description": "Email notifications"
-            }
+                "description": "Email notifications",
+            },
         }
 
         configured_count = sum(1 for api in api_status.values() if api["configured"])
@@ -57,7 +57,7 @@ async def execute_check_api_configuration() -> Dict[str, Any]:
             "total_apis": total_count,
             "apis": api_status,
             "recommendations": recommendations,
-            "message": f"{configured_count}/{total_count} APIs configured"
+            "message": f"{configured_count}/{total_count} APIs configured",
         }
     except Exception as e:
         logger.error(f"Error checking API configuration: {str(e)}")
@@ -73,17 +73,14 @@ async def execute_find_duplicates(detection_type: str = "all") -> Dict[str, Any]
 
         if detection_type == "all":
             result = await service.find_all_duplicates()
-            return {
-                "success": True,
-                **result
-            }
+            return {"success": True, **result}
         elif detection_type == "hash":
             duplicates = await service.find_hash_duplicates()
             return {
                 "success": True,
                 "detection_type": "hash",
                 "duplicate_groups": len(duplicates),
-                "duplicates": duplicates[:20]
+                "duplicates": duplicates[:20],
             }
         elif detection_type == "tmdb":
             duplicates = await service.find_tmdb_duplicates()
@@ -91,7 +88,7 @@ async def execute_find_duplicates(detection_type: str = "all") -> Dict[str, Any]
                 "success": True,
                 "detection_type": "tmdb",
                 "duplicate_groups": len(duplicates),
-                "duplicates": duplicates[:20]
+                "duplicates": duplicates[:20],
             }
         elif detection_type == "imdb":
             duplicates = await service.find_imdb_duplicates()
@@ -99,7 +96,7 @@ async def execute_find_duplicates(detection_type: str = "all") -> Dict[str, Any]
                 "success": True,
                 "detection_type": "imdb",
                 "duplicate_groups": len(duplicates),
-                "duplicates": duplicates[:20]
+                "duplicates": duplicates[:20],
             }
         elif detection_type == "exact_name":
             duplicates = await service.find_exact_name_duplicates()
@@ -107,7 +104,7 @@ async def execute_find_duplicates(detection_type: str = "all") -> Dict[str, Any]
                 "success": True,
                 "detection_type": "exact_name",
                 "duplicate_groups": len(duplicates),
-                "duplicates": duplicates[:20]
+                "duplicates": duplicates[:20],
             }
         elif detection_type == "title":
             duplicates = await service.find_title_duplicates()
@@ -115,12 +112,12 @@ async def execute_find_duplicates(detection_type: str = "all") -> Dict[str, Any]
                 "success": True,
                 "detection_type": "title",
                 "duplicate_groups": len(duplicates),
-                "duplicates": duplicates[:20]
+                "duplicates": duplicates[:20],
             }
         else:
             return {
                 "success": False,
-                "error": f"Unknown detection type: {detection_type}"
+                "error": f"Unknown detection type: {detection_type}",
             }
 
     except Exception as e:
@@ -132,7 +129,7 @@ async def execute_resolve_duplicates(
     content_ids: List[str],
     keep_id: str,
     action: str = "unpublish",
-    audit_id: str = None
+    audit_id: str = None,
 ) -> Dict[str, Any]:
     """Resolve a group of duplicate content items."""
     from app.services.duplicate_detection_service import get_duplicate_detection_service
@@ -140,22 +137,16 @@ async def execute_resolve_duplicates(
     try:
         service = get_duplicate_detection_service()
         result = await service.resolve_duplicate_group(
-            content_ids=content_ids,
-            keep_id=keep_id,
-            action=action
+            content_ids=content_ids, keep_id=keep_id, action=action
         )
-        return {
-            "success": result["success"],
-            **result
-        }
+        return {"success": result["success"], **result}
     except Exception as e:
         logger.error(f"Error resolving duplicates: {str(e)}")
         return {"success": False, "error": str(e)}
 
 
 async def execute_find_quality_variants(
-    limit: int = 50,
-    unlinked_only: bool = True
+    limit: int = 50, unlinked_only: bool = True
 ) -> Dict[str, Any]:
     """Find content items that are quality variants of each other."""
     from app.services.duplicate_detection_service import get_duplicate_detection_service
@@ -163,15 +154,14 @@ async def execute_find_quality_variants(
     try:
         service = get_duplicate_detection_service()
         variants = await service.find_quality_variants(
-            limit=limit,
-            unlinked_only=unlinked_only
+            limit=limit, unlinked_only=unlinked_only
         )
 
         return {
             "success": True,
             "variant_groups": len(variants),
             "groups": variants[:20],
-            "message": f"Found {len(variants)} groups of content with multiple quality versions"
+            "message": f"Found {len(variants)} groups of content with multiple quality versions",
         }
     except Exception as e:
         logger.error(f"Error finding quality variants: {str(e)}")
@@ -179,9 +169,7 @@ async def execute_find_quality_variants(
 
 
 async def execute_link_quality_variants(
-    content_ids: List[str],
-    primary_id: Optional[str] = None,
-    audit_id: str = None
+    content_ids: List[str], primary_id: Optional[str] = None, audit_id: str = None
 ) -> Dict[str, Any]:
     """Link multiple content items as quality variants."""
     from app.services.duplicate_detection_service import get_duplicate_detection_service
@@ -189,8 +177,7 @@ async def execute_link_quality_variants(
     try:
         service = get_duplicate_detection_service()
         result = await service.link_quality_variants(
-            content_ids=content_ids,
-            primary_id=primary_id
+            content_ids=content_ids, primary_id=primary_id
         )
         return result
     except Exception as e:
@@ -199,8 +186,7 @@ async def execute_link_quality_variants(
 
 
 async def execute_find_missing_metadata(
-    limit: int = 100,
-    missing_fields: List[str] = None
+    limit: int = 100, missing_fields: List[str] = None
 ) -> Dict[str, Any]:
     """Find content items missing important metadata."""
     if missing_fields is None:
@@ -212,9 +198,12 @@ async def execute_find_missing_metadata(
             or_conditions.append({field: {"$in": [None, ""]}})
             or_conditions.append({field: {"$exists": False}})
 
-        items = await Content.find(
-            {"$or": or_conditions, "is_published": True}
-        ).sort([("created_at", -1)]).limit(limit).to_list()
+        items = (
+            await Content.find({"$or": or_conditions, "is_published": True})
+            .sort([("created_at", -1)])
+            .limit(limit)
+            .to_list()
+        )
 
         results = []
         for item in items:
@@ -235,13 +224,17 @@ async def execute_find_missing_metadata(
                 missing.append("genre")
 
             if missing:
-                results.append({
-                    "id": str(item.id),
-                    "title": item.title,
-                    "title_en": item.title_en,
-                    "missing_fields": missing,
-                    "created_at": item.created_at.isoformat() if item.created_at else None
-                })
+                results.append(
+                    {
+                        "id": str(item.id),
+                        "title": item.title,
+                        "title_en": item.title_en,
+                        "missing_fields": missing,
+                        "created_at": item.created_at.isoformat()
+                        if item.created_at
+                        else None,
+                    }
+                )
 
         field_counts = {field: 0 for field in missing_fields}
         for r in results:
@@ -254,7 +247,7 @@ async def execute_find_missing_metadata(
             "total_found": len(results),
             "items": results,
             "missing_field_counts": field_counts,
-            "message": f"Found {len(results)} items with missing metadata"
+            "message": f"Found {len(results)} items with missing metadata",
         }
 
     except Exception as e:

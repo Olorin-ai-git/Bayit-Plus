@@ -5,18 +5,18 @@ This module provides processors for translating different content types.
 Each processor handles the specific fields for its content type.
 """
 
-from typing import Optional, Dict, Any, List, Type
-from beanie import Document
+from typing import Any, Dict, List, Optional, Type
 
 from app.models.content import (
     Content,
     LiveChannel,
-    RadioStation,
     Podcast,
-    PodcastEpisode
+    PodcastEpisode,
+    RadioStation,
 )
 from app.models.content_taxonomy import ContentSection
 from app.services.translation_service import translation_service
+from beanie import Document
 
 
 class ContentLocalizationProcessor:
@@ -42,15 +42,12 @@ class ContentLocalizationProcessor:
             "content": ["title", "description", "genre"],
             "livechannel": ["name", "description"],
             "radio": ["name", "description", "genre"],
-            "category": ["name", "description"]
+            "category": ["name", "description"],
         }
         return field_mappings.get(content_type, [])
 
     async def process_item(
-        self,
-        item: Document,
-        content_type: str,
-        languages: List[str] = None
+        self, item: Document, content_type: str, languages: List[str] = None
     ) -> Dict[str, Any]:
         """
         Process a single content item for translation.
@@ -90,18 +87,22 @@ class ContentLocalizationProcessor:
                 )
 
                 translated_text = await self.translation_service.translate_field(
-                    source_value,
-                    lang_code,
-                    max_tokens
+                    source_value, lang_code, max_tokens
                 )
 
                 if translated_text:
                     setattr(item, target_field_name, translated_text)
-                    translated_fields.append({
-                        "field": target_field_name,
-                        "original": source_value[:50] + "..." if len(source_value) > 50 else source_value,
-                        "translation": translated_text[:50] + "..." if len(translated_text) > 50 else translated_text
-                    })
+                    translated_fields.append(
+                        {
+                            "field": target_field_name,
+                            "original": source_value[:50] + "..."
+                            if len(source_value) > 50
+                            else source_value,
+                            "translation": translated_text[:50] + "..."
+                            if len(translated_text) > 50
+                            else translated_text,
+                        }
+                    )
                     needs_update = True
 
         if needs_update:
@@ -110,13 +111,10 @@ class ContentLocalizationProcessor:
         return {
             "item_id": str(item.id),
             "needs_update": needs_update,
-            "translated_fields": translated_fields
+            "translated_fields": translated_fields,
         }
 
-    async def process_podcast(
-        self,
-        podcast_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+    async def process_podcast(self, podcast_id: Optional[str] = None) -> Dict[str, Any]:
         """
         Process podcast(s) for translation.
 
@@ -136,7 +134,7 @@ class ContentLocalizationProcessor:
                 "type": "podcast",
                 "total": 1,
                 "processed": 1 if result["needs_update"] else 0,
-                "results": [result]
+                "results": [result],
             }
         else:
             podcasts = await Podcast.find_all().to_list()
@@ -154,13 +152,10 @@ class ContentLocalizationProcessor:
                 "total": len(podcasts),
                 "processed": processed_count,
                 "skipped": len(podcasts) - processed_count,
-                "results": results
+                "results": results,
             }
 
-    async def process_content(
-        self,
-        content_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+    async def process_content(self, content_id: Optional[str] = None) -> Dict[str, Any]:
         """
         Process content (VOD) for translation.
 
@@ -180,7 +175,7 @@ class ContentLocalizationProcessor:
                 "type": "content",
                 "total": 1,
                 "processed": 1 if result["needs_update"] else 0,
-                "results": [result]
+                "results": [result],
             }
         else:
             content_items = await Content.find_all().to_list()
@@ -198,12 +193,11 @@ class ContentLocalizationProcessor:
                 "total": len(content_items),
                 "processed": processed_count,
                 "skipped": len(content_items) - processed_count,
-                "results": results
+                "results": results,
             }
 
     async def process_live_channel(
-        self,
-        channel_id: Optional[str] = None
+        self, channel_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Process live channel(s) for translation.
@@ -224,7 +218,7 @@ class ContentLocalizationProcessor:
                 "type": "livechannel",
                 "total": 1,
                 "processed": 1 if result["needs_update"] else 0,
-                "results": [result]
+                "results": [result],
             }
         else:
             channels = await LiveChannel.find_all().to_list()
@@ -242,12 +236,11 @@ class ContentLocalizationProcessor:
                 "total": len(channels),
                 "processed": processed_count,
                 "skipped": len(channels) - processed_count,
-                "results": results
+                "results": results,
             }
 
     async def process_radio_station(
-        self,
-        station_id: Optional[str] = None
+        self, station_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Process radio station(s) for translation.
@@ -268,7 +261,7 @@ class ContentLocalizationProcessor:
                 "type": "radio",
                 "total": 1,
                 "processed": 1 if result["needs_update"] else 0,
-                "results": [result]
+                "results": [result],
             }
         else:
             stations = await RadioStation.find_all().to_list()
@@ -286,12 +279,11 @@ class ContentLocalizationProcessor:
                 "total": len(stations),
                 "processed": processed_count,
                 "skipped": len(stations) - processed_count,
-                "results": results
+                "results": results,
             }
 
     async def process_category(
-        self,
-        category_id: Optional[str] = None
+        self, category_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Process category/categories for translation.
@@ -312,7 +304,7 @@ class ContentLocalizationProcessor:
                 "type": "category",
                 "total": 1,
                 "processed": 1 if result["needs_update"] else 0,
-                "results": [result]
+                "results": [result],
             }
         else:
             categories = await ContentSection.find_all().to_list()
@@ -330,7 +322,7 @@ class ContentLocalizationProcessor:
                 "total": len(categories),
                 "processed": processed_count,
                 "skipped": len(categories) - processed_count,
-                "results": results
+                "results": results,
             }
 
 

@@ -412,18 +412,73 @@ YOUNGSTERS_SUBCATEGORIES_SEED_DATA = [
 ]
 
 
-
 # Taxonomy seed data using i18n translation keys
 # Translations are in shared/i18n/locales/{lang}.json under taxonomy.sections.*
 SECTIONS_SEED_DATA = [
-    {"slug": "movies", "name_key": "taxonomy.sections.movies", "icon": "film", "color": "#E50914", "order": 1, "show_on_homepage": True},
-    {"slug": "series", "name_key": "taxonomy.sections.series", "icon": "tv", "color": "#0080FF", "order": 2, "show_on_homepage": True},
-    {"slug": "kids", "name_key": "taxonomy.sections.kids", "icon": "baby", "color": "#FF6B35", "order": 3, "show_on_homepage": True},
-    {"slug": "youngsters", "name_key": "taxonomy.sections.youngsters", "icon": "users", "color": "#8B5CF6", "order": 4, "show_on_homepage": True},
-    {"slug": "music", "name_key": "taxonomy.sections.music", "icon": "music", "color": "#1DB954", "order": 5, "show_on_homepage": True},
-    {"slug": "documentaries", "name_key": "taxonomy.sections.documentaries", "icon": "video", "color": "#FF9500", "order": 6, "show_on_homepage": True},
-    {"slug": "podcasts", "name_key": "taxonomy.sections.podcasts", "icon": "microphone", "color": "#9C27B0", "order": 7, "show_on_homepage": True},
-    {"slug": "live", "name_key": "taxonomy.sections.live", "icon": "broadcast", "color": "#FF3B30", "order": 8, "show_on_homepage": True}
+    {
+        "slug": "movies",
+        "name_key": "taxonomy.sections.movies",
+        "icon": "film",
+        "color": "#E50914",
+        "order": 1,
+        "show_on_homepage": True,
+    },
+    {
+        "slug": "series",
+        "name_key": "taxonomy.sections.series",
+        "icon": "tv",
+        "color": "#0080FF",
+        "order": 2,
+        "show_on_homepage": True,
+    },
+    {
+        "slug": "kids",
+        "name_key": "taxonomy.sections.kids",
+        "icon": "baby",
+        "color": "#FF6B35",
+        "order": 3,
+        "show_on_homepage": True,
+    },
+    {
+        "slug": "youngsters",
+        "name_key": "taxonomy.sections.youngsters",
+        "icon": "users",
+        "color": "#8B5CF6",
+        "order": 4,
+        "show_on_homepage": True,
+    },
+    {
+        "slug": "music",
+        "name_key": "taxonomy.sections.music",
+        "icon": "music",
+        "color": "#1DB954",
+        "order": 5,
+        "show_on_homepage": True,
+    },
+    {
+        "slug": "documentaries",
+        "name_key": "taxonomy.sections.documentaries",
+        "icon": "video",
+        "color": "#FF9500",
+        "order": 6,
+        "show_on_homepage": True,
+    },
+    {
+        "slug": "podcasts",
+        "name_key": "taxonomy.sections.podcasts",
+        "icon": "microphone",
+        "color": "#9C27B0",
+        "order": 7,
+        "show_on_homepage": True,
+    },
+    {
+        "slug": "live",
+        "name_key": "taxonomy.sections.live",
+        "icon": "broadcast",
+        "color": "#FF3B30",
+        "order": 8,
+        "show_on_homepage": True,
+    },
 ]
 
 
@@ -449,7 +504,7 @@ async def seed_sections() -> Dict[str, str]:
                 show_on_nav=section_data.get("show_on_nav", True),
                 is_active=True,
                 created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+                updated_at=datetime.utcnow(),
             )
             await section.insert()
             section_map[section_data["slug"]] = str(section.id)
@@ -469,10 +524,9 @@ async def seed_kids_subcategories(section_map: Dict[str, str]) -> Dict[str, str]
 
     for subcat_data in KIDS_SUBCATEGORIES_SEED_DATA:
         slug = subcat_data["slug"]
-        existing = await SectionSubcategory.find_one({
-            "section_id": kids_section_id,
-            "slug": slug
-        })
+        existing = await SectionSubcategory.find_one(
+            {"section_id": kids_section_id, "slug": slug}
+        )
 
         if existing:
             subcategory_map[slug] = str(existing.id)
@@ -505,10 +559,9 @@ async def seed_youngsters_subcategories(section_map: Dict[str, str]) -> Dict[str
 
     for subcat_data in YOUNGSTERS_SUBCATEGORIES_SEED_DATA:
         slug = subcat_data["slug"]
-        existing = await SectionSubcategory.find_one({
-            "section_id": youngsters_section_id,
-            "slug": slug
-        })
+        existing = await SectionSubcategory.find_one(
+            {"section_id": youngsters_section_id, "slug": slug}
+        )
 
         if existing:
             subcategory_map[slug] = str(existing.id)
@@ -550,7 +603,9 @@ async def seed_all_taxonomy() -> Dict[str, any]:
     }
 
 
-async def migrate_content_to_new_taxonomy(section_map: Dict[str, str], dry_run: bool = False) -> Dict:
+async def migrate_content_to_new_taxonomy(
+    section_map: Dict[str, str], dry_run: bool = False
+) -> Dict:
     """Migrate existing content from legacy category to new taxonomy."""
     logger.info("🔄 Starting content migration to new taxonomy...")
 
@@ -592,7 +647,7 @@ async def migrate_content_to_new_taxonomy(section_map: Dict[str, str], dry_run: 
         "migrated": migrated_count,
         "skipped": skipped_count,
         "errors": error_count,
-        "dry_run": dry_run
+        "dry_run": dry_run,
     }
 
 
@@ -669,7 +724,7 @@ LEGACY_CATEGORY_TO_SECTION_MAP = {
     "music": "music",
     "documentaries": "documentaries",
     "podcasts": "podcasts",
-    "live": "live"
+    "live": "live",
 }
 
 LEGACY_CATEGORY_TO_GENRE_MAP = {}
@@ -685,20 +740,22 @@ async def get_migration_status() -> Dict:
         count = await Content.find({"category_id": str(section.id)}).count()
         section_counts[section.slug] = count
 
-    unmigrated = await Content.find({
-        "$or": [
-            {"category_id": {"$exists": False}},
-            {"category_id": None},
-            {"category_id": ""}
-        ]
-    }).count()
+    unmigrated = await Content.find(
+        {
+            "$or": [
+                {"category_id": {"$exists": False}},
+                {"category_id": None},
+                {"category_id": ""},
+            ]
+        }
+    ).count()
 
     return {
         "total_sections": len(sections),
         "total_content": total_content,
         "section_distribution": section_counts,
         "unmigrated_content": unmigrated,
-        "migration_complete": unmigrated == 0
+        "migration_complete": unmigrated == 0,
     }
 
 
@@ -735,11 +792,18 @@ async def run_full_migration(dry_run: bool = False) -> Dict:
         },
         "final_status": {
             "total_content": status.get("total_content", 0),
-            "migrated_content": status.get("total_content", 0) - status.get("unmigrated_content", 0),
+            "migrated_content": status.get("total_content", 0)
+            - status.get("unmigrated_content", 0),
             "migration_percentage": round(
-                (1 - status.get("unmigrated_content", 0) / max(status.get("total_content", 1), 1)) * 100, 1
+                (
+                    1
+                    - status.get("unmigrated_content", 0)
+                    / max(status.get("total_content", 1), 1)
+                )
+                * 100,
+                1,
             ),
             "content_by_section": status.get("section_distribution", {}),
         },
-        "dry_run": dry_run
+        "dry_run": dry_run,
     }

@@ -7,22 +7,21 @@ REST API endpoints for session management.
 import json
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, status
-
+from app.api.routes.olorin.dependencies import get_current_partner, verify_capability
+from app.api.routes.olorin.dubbing_routes import state
+from app.api.routes.olorin.dubbing_routes.models import (
+    CreateSessionRequest,
+    SessionEndResponse,
+    SessionResponse,
+    VoiceInfo,
+    VoicesResponse,
+)
+from app.api.routes.olorin.errors import OlorinErrors, get_error_message
 from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
 from app.services.olorin.metering_service import metering_service
 from app.services.olorin.realtime_dubbing_service import RealtimeDubbingService
-from app.api.routes.olorin.dependencies import get_current_partner, verify_capability
-from app.api.routes.olorin.dubbing_routes.models import (
-    CreateSessionRequest,
-    SessionResponse,
-    SessionEndResponse,
-    VoiceInfo,
-    VoicesResponse,
-)
-from app.api.routes.olorin.dubbing_routes import state
-from app.api.routes.olorin.errors import get_error_message, OlorinErrors
+from fastapi import APIRouter, Depends, HTTPException, status
 
 logger = logging.getLogger(__name__)
 
@@ -48,12 +47,15 @@ async def create_session(
 
     config = partner.get_capability_config("realtime_dubbing")
     if config:
-        active_count = await metering_service.get_active_sessions_count(partner.partner_id)
+        active_count = await metering_service.get_active_sessions_count(
+            partner.partner_id
+        )
         if active_count >= config.rate_limits.concurrent_sessions:
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                 detail=get_error_message(
-                    OlorinErrors.MAX_SESSIONS_REACHED, limit=config.rate_limits.concurrent_sessions
+                    OlorinErrors.MAX_SESSIONS_REACHED,
+                    limit=config.rate_limits.concurrent_sessions,
                 ),
             )
 
@@ -87,7 +89,9 @@ async def create_session(
     state.add_service(service.session_id, service)
     ws_url = f"/api/v1/olorin/dubbing/ws/{service.session_id}"
 
-    logger.info(f"Created dubbing session: {service.session_id} for partner {partner.partner_id}")
+    logger.info(
+        f"Created dubbing session: {service.session_id} for partner {partner.partner_id}"
+    )
 
     return SessionResponse(
         session_id=service.session_id,

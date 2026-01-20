@@ -10,25 +10,25 @@ Tests cover:
 """
 
 import os
-import pytest
 import warnings
-from pydantic import ValidationError
 
+import pytest
+from app.core.config_validation import ConfigValidationError, validate_olorin_config
 from app.core.olorin_config import (
+    CulturalContextConfig,
+    DubbingConfig,
+    EmbeddingConfig,
     OlorinSettings,
     PartnerAPIConfig,
     PineconeConfig,
-    EmbeddingConfig,
-    DubbingConfig,
     RecapConfig,
-    CulturalContextConfig,
 )
-from app.core.config_validation import ConfigValidationError, validate_olorin_config
-
+from pydantic import ValidationError
 
 # ============================================
 # PartnerAPIConfig Tests
 # ============================================
+
 
 def test_partner_api_config_defaults():
     """Test PartnerAPIConfig default values."""
@@ -40,7 +40,9 @@ def test_partner_api_config_defaults():
 
 def test_partner_api_config_from_env(monkeypatch):
     """Test PartnerAPIConfig loading from environment variables."""
-    monkeypatch.setenv("PARTNER_API_KEY_SALT", "test_salt_32_characters_minimum_length_required")
+    monkeypatch.setenv(
+        "PARTNER_API_KEY_SALT", "test_salt_32_characters_minimum_length_required"
+    )
     monkeypatch.setenv("PARTNER_DEFAULT_RATE_LIMIT_RPM", "120")
     monkeypatch.setenv("PARTNER_WEBHOOK_TIMEOUT_SECONDS", "15.0")
 
@@ -79,6 +81,7 @@ def test_partner_api_config_rate_limit_bounds():
 # PineconeConfig Tests
 # ============================================
 
+
 def test_pinecone_config_defaults():
     """Test PineconeConfig default values."""
     config = PineconeConfig()
@@ -102,6 +105,7 @@ def test_pinecone_config_from_env(monkeypatch):
 # ============================================
 # EmbeddingConfig Tests
 # ============================================
+
 
 def test_embedding_config_defaults():
     """Test EmbeddingConfig default values."""
@@ -140,6 +144,7 @@ def test_embedding_config_dimensions_bounds():
 # ============================================
 # DubbingConfig Tests
 # ============================================
+
 
 def test_dubbing_config_defaults():
     """Test DubbingConfig default values."""
@@ -185,6 +190,7 @@ def test_dubbing_config_validation():
 # RecapConfig Tests
 # ============================================
 
+
 def test_recap_config_defaults():
     """Test RecapConfig default values."""
     config = RecapConfig()
@@ -225,6 +231,7 @@ def test_recap_config_validation():
 # ============================================
 # CulturalContextConfig Tests
 # ============================================
+
 
 def test_cultural_context_config_defaults():
     """Test CulturalContextConfig default values."""
@@ -267,6 +274,7 @@ def test_cultural_context_config_validation():
 # OlorinSettings Tests
 # ============================================
 
+
 def test_olorin_settings_defaults():
     """Test OlorinSettings default values and nested configs."""
     settings = OlorinSettings()
@@ -293,7 +301,9 @@ def test_olorin_settings_from_env(monkeypatch):
     monkeypatch.setenv("OLORIN_SEMANTIC_SEARCH_ENABLED", "true")
 
     # Partner config
-    monkeypatch.setenv("PARTNER_API_KEY_SALT", "test_salt_32_characters_minimum_length_required")
+    monkeypatch.setenv(
+        "PARTNER_API_KEY_SALT", "test_salt_32_characters_minimum_length_required"
+    )
     monkeypatch.setenv("PARTNER_DEFAULT_RATE_LIMIT_RPM", "120")
 
     # Pinecone config
@@ -307,7 +317,10 @@ def test_olorin_settings_from_env(monkeypatch):
     assert settings.semantic_search_enabled is True
 
     # Check nested configs
-    assert settings.partner.api_key_salt == "test_salt_32_characters_minimum_length_required"
+    assert (
+        settings.partner.api_key_salt
+        == "test_salt_32_characters_minimum_length_required"
+    )
     assert settings.partner.default_rate_limit_rpm == 120
     assert settings.pinecone.api_key == "test-pinecone-key"
     assert settings.pinecone.index_name == "custom-index"
@@ -317,7 +330,9 @@ def test_olorin_settings_validate_enabled_features_no_errors():
     """Test validate_enabled_features returns no errors when properly configured."""
     settings = OlorinSettings(
         semantic_search_enabled=True,
-        partner=PartnerAPIConfig(api_key_salt="test_salt_32_characters_minimum_length_required"),
+        partner=PartnerAPIConfig(
+            api_key_salt="test_salt_32_characters_minimum_length_required"
+        ),
         pinecone=PineconeConfig(api_key="test-api-key"),
         embedding=EmbeddingConfig(model="text-embedding-3-small"),
     )
@@ -330,7 +345,9 @@ def test_olorin_settings_validate_semantic_search_missing_pinecone():
     """Test validate_enabled_features detects missing Pinecone configuration."""
     settings = OlorinSettings(
         semantic_search_enabled=True,
-        partner=PartnerAPIConfig(api_key_salt="test_salt_32_characters_minimum_length_required"),
+        partner=PartnerAPIConfig(
+            api_key_salt="test_salt_32_characters_minimum_length_required"
+        ),
         pinecone=PineconeConfig(api_key=""),  # Missing API key
     )
 
@@ -354,6 +371,7 @@ def test_olorin_settings_validate_missing_partner_salt():
 # ============================================
 # Backward Compatibility Tests
 # ============================================
+
 
 def test_backward_compatible_properties(monkeypatch):
     """Test that backward-compatible properties work with deprecation warnings."""
@@ -383,9 +401,18 @@ def test_backward_compatible_properties_values():
         # Test property delegation
         assert settings.PINECONE_ENVIRONMENT == settings.olorin.pinecone.environment
         assert settings.EMBEDDING_MODEL == settings.olorin.embedding.model
-        assert settings.DUBBING_MAX_CONCURRENT_SESSIONS == settings.olorin.dubbing.max_concurrent_sessions
-        assert settings.RECAP_MAX_CONTEXT_TOKENS == settings.olorin.recap.max_context_tokens
-        assert settings.CULTURAL_DETECTION_MIN_CONFIDENCE == settings.olorin.cultural.detection_min_confidence
+        assert (
+            settings.DUBBING_MAX_CONCURRENT_SESSIONS
+            == settings.olorin.dubbing.max_concurrent_sessions
+        )
+        assert (
+            settings.RECAP_MAX_CONTEXT_TOKENS
+            == settings.olorin.recap.max_context_tokens
+        )
+        assert (
+            settings.CULTURAL_DETECTION_MIN_CONFIDENCE
+            == settings.olorin.cultural.detection_min_confidence
+        )
         assert settings.OLORIN_DUBBING_ENABLED == settings.olorin.dubbing_enabled
 
 
@@ -393,12 +420,15 @@ def test_backward_compatible_properties_values():
 # Integration Tests
 # ============================================
 
+
 def test_full_config_integration(monkeypatch):
     """Test full Olorin configuration integration."""
     # Set all environment variables
     monkeypatch.setenv("OLORIN_DUBBING_ENABLED", "true")
     monkeypatch.setenv("OLORIN_SEMANTIC_SEARCH_ENABLED", "true")
-    monkeypatch.setenv("PARTNER_API_KEY_SALT", "integration_test_salt_32_characters_minimum")
+    monkeypatch.setenv(
+        "PARTNER_API_KEY_SALT", "integration_test_salt_32_characters_minimum"
+    )
     monkeypatch.setenv("PINECONE_API_KEY", "integration-test-key")
     monkeypatch.setenv("EMBEDDING_MODEL", "text-embedding-3-large")
     monkeypatch.setenv("EMBEDDING_DIMENSIONS", "3072")
@@ -408,7 +438,9 @@ def test_full_config_integration(monkeypatch):
     # Verify all settings loaded correctly
     assert settings.dubbing_enabled is True
     assert settings.semantic_search_enabled is True
-    assert settings.partner.api_key_salt == "integration_test_salt_32_characters_minimum"
+    assert (
+        settings.partner.api_key_salt == "integration_test_salt_32_characters_minimum"
+    )
     assert settings.pinecone.api_key == "integration-test-key"
     assert settings.embedding.model == "text-embedding-3-large"
     assert settings.embedding.dimensions == 3072
@@ -422,7 +454,9 @@ def test_config_validation_with_missing_dependencies(monkeypatch):
     """Test configuration validation fails when dependencies are missing."""
     # Enable semantic search without Pinecone configuration
     monkeypatch.setenv("OLORIN_SEMANTIC_SEARCH_ENABLED", "true")
-    monkeypatch.setenv("PARTNER_API_KEY_SALT", "test_salt_32_characters_minimum_length_required")
+    monkeypatch.setenv(
+        "PARTNER_API_KEY_SALT", "test_salt_32_characters_minimum_length_required"
+    )
     monkeypatch.setenv("PINECONE_API_KEY", "")  # Missing
 
     settings = OlorinSettings()

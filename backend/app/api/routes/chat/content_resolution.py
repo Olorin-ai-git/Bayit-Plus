@@ -5,20 +5,22 @@ Endpoints for processing mixed-language input, resolving content names,
 and handling voice search queries.
 """
 
+from app.core.security import get_current_active_user
+from app.models.content import Content, LiveChannel, Podcast
+from app.models.user import User
 from fastapi import APIRouter, Depends
 
-from app.core.security import get_current_active_user
-from app.models.user import User
-from app.models.content import Content, LiveChannel, Podcast
-
-from .models import (
-    HebronicsRequest, HebronicsResponse, ResolveContentRequest,
-    ResolveContentResponse, VoiceSearchRequest, VoiceSearchResponse,
-    ResolvedContentItem
-)
 from .helpers import process_hebronics_input
+from .models import (
+    HebronicsRequest,
+    HebronicsResponse,
+    ResolveContentRequest,
+    ResolveContentResponse,
+    ResolvedContentItem,
+    VoiceSearchRequest,
+    VoiceSearchResponse,
+)
 from .services import resolve_single_content
-
 
 router = APIRouter()
 
@@ -44,9 +46,7 @@ async def resolve_content(
 
     for item in request.items:
         result = await resolve_single_content(
-            name=item.name,
-            content_type=item.type,
-            language=request.language
+            name=item.name, content_type=item.type, language=request.language
         )
 
         if result:
@@ -63,7 +63,7 @@ async def resolve_content(
         items=resolved_items,
         unresolved=unresolved,
         total_requested=len(request.items),
-        total_resolved=len(resolved_items)
+        total_resolved=len(resolved_items),
     )
 
 
@@ -81,53 +81,65 @@ async def voice_search(
         content_type = processed.get("content_type", "any")
 
         if content_type in ["any", "movie", "series"]:
-            vod_results = await Content.find(
-                Content.is_published == True  # noqa: E712
-            ).limit(6).to_list()
+            vod_results = (
+                await Content.find(Content.is_published == True)  # noqa: E712
+                .limit(6)
+                .to_list()
+            )
 
-            search_results.extend([
-                {
-                    "id": str(item.id),
-                    "title": item.title,
-                    "description": item.description,
-                    "thumbnail": item.thumbnail,
-                    "type": "vod",
-                    "content_type": item.content_type,
-                }
-                for item in vod_results
-            ])
+            search_results.extend(
+                [
+                    {
+                        "id": str(item.id),
+                        "title": item.title,
+                        "description": item.description,
+                        "thumbnail": item.thumbnail,
+                        "type": "vod",
+                        "content_type": item.content_type,
+                    }
+                    for item in vod_results
+                ]
+            )
 
         if content_type in ["any", "channel"]:
-            channels = await LiveChannel.find(
-                LiveChannel.is_active == True  # noqa: E712
-            ).limit(4).to_list()
+            channels = (
+                await LiveChannel.find(LiveChannel.is_active == True)  # noqa: E712
+                .limit(4)
+                .to_list()
+            )
 
-            search_results.extend([
-                {
-                    "id": str(ch.id),
-                    "title": ch.name,
-                    "description": ch.description,
-                    "thumbnail": ch.logo,
-                    "type": "live",
-                }
-                for ch in channels
-            ])
+            search_results.extend(
+                [
+                    {
+                        "id": str(ch.id),
+                        "title": ch.name,
+                        "description": ch.description,
+                        "thumbnail": ch.logo,
+                        "type": "live",
+                    }
+                    for ch in channels
+                ]
+            )
 
         if content_type in ["any", "podcast"]:
-            podcasts = await Podcast.find(
-                Podcast.is_published == True  # noqa: E712
-            ).limit(4).to_list()
+            podcasts = (
+                await Podcast.find(Podcast.is_published == True)  # noqa: E712
+                .limit(4)
+                .to_list()
+            )
 
-            search_results.extend([
-                {
-                    "id": str(pod.id),
-                    "title": pod.title,
-                    "description": pod.description,
-                    "thumbnail": pod.thumbnail,
-                    "type": "podcast",
-                }
-                for pod in podcasts
-            ])
+            search_results.extend(
+                [
+                    {
+                        "id": str(pod.id),
+                        "title": pod.title,
+                        "description": pod.description,
+                        "thumbnail": pod.thumbnail,
+                        "type": "podcast",
+                    }
+                    for pod in podcasts
+                ]
+            )
 
     return VoiceSearchResponse(
         original_transcript=request.transcript,

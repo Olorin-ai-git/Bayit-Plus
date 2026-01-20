@@ -10,29 +10,28 @@ Tests cover:
 - Result ranking and scoring
 """
 
+from typing import List
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 import pytest_asyncio
-from unittest.mock import AsyncMock, MagicMock, patch
-from typing import List
-
-from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
-
+from app.core.config import settings
 from app.models.content import Content
 from app.models.content_embedding import (
     ContentEmbedding,
-    SearchQuery,
     DialogueSearchQuery,
+    SearchQuery,
     SemanticSearchResult,
 )
 from app.models.integration_partner import IntegrationPartner, UsageRecord
 from app.services.olorin.search.service import VectorSearchService
-from app.core.config import settings
-
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # ============================================
 # Test Fixtures
 # ============================================
+
 
 @pytest_asyncio.fixture
 async def db_client():
@@ -40,7 +39,7 @@ async def db_client():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     await init_beanie(
         database=client[f"{settings.MONGODB_DB_NAME}_search_test"],
-        document_models=[Content, ContentEmbedding, IntegrationPartner, UsageRecord]
+        document_models=[Content, ContentEmbedding, IntegrationPartner, UsageRecord],
     )
     yield client
     # Cleanup
@@ -92,6 +91,7 @@ async def sample_partner(db_client):
 # Service Initialization Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_service_initialization(search_service, db_client):
     """Test search service can be instantiated."""
@@ -119,6 +119,7 @@ async def test_service_initialize_failure(mock_init, search_service, db_client):
 # ============================================
 # Embedding Generation Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 @patch("app.services.olorin.search.service.generate_embedding")
@@ -160,6 +161,7 @@ async def test_generate_embedding_hebrew(mock_embed, search_service, db_client):
 # ============================================
 # Content Indexing Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 @patch("app.services.olorin.search.service.index_content")
@@ -238,6 +240,7 @@ async def test_index_content_with_partner(
 # Subtitle Indexing Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 @patch("app.services.olorin.search.service.index_subtitles")
 async def test_index_subtitles(mock_index, search_service, sample_content, db_client):
@@ -278,14 +281,13 @@ async def test_index_subtitles_custom_segment_duration(
         segment_duration=60.0,
     )
 
-    mock_index.assert_called_with(
-        str(sample_content.id), subtitles, "he", 60.0, None
-    )
+    mock_index.assert_called_with(str(sample_content.id), subtitles, "he", 60.0, None)
 
 
 # ============================================
 # Semantic Search Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 @patch("app.services.olorin.search.service.semantic_search", new_callable=AsyncMock)
@@ -400,6 +402,7 @@ async def test_semantic_search_pagination(mock_search, search_service, db_client
 # Dialogue Search Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 @patch("app.services.olorin.search.service.dialogue_search", new_callable=AsyncMock)
 async def test_dialogue_search_basic(mock_search, search_service, db_client):
@@ -469,6 +472,7 @@ async def test_dialogue_search_with_partner(
 # Edge Cases and Error Handling
 # ============================================
 
+
 @pytest.mark.asyncio
 @patch("app.services.olorin.search.service.semantic_search", new_callable=AsyncMock)
 async def test_search_empty_results(mock_search, search_service, db_client):
@@ -518,6 +522,7 @@ async def test_embedding_error_handling(mock_embed, search_service, db_client):
 # ============================================
 # Performance Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 @patch("app.services.olorin.search.service.semantic_search", new_callable=AsyncMock)

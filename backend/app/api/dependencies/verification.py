@@ -2,13 +2,13 @@
 Verification Dependencies
 Middleware for checking user verification status
 """
-from fastapi import Depends, HTTPException, status
-from app.models.user import User
 from app.core.security import get_current_active_user
+from app.models.user import User
+from fastapi import Depends, HTTPException, status
 
 
 async def require_verified_user(
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ) -> User:
     """
     Require verified user OR admin role.
@@ -27,15 +27,13 @@ async def require_verified_user(
                 "message": "Please verify your email and phone to access this feature",
                 "email_verified": current_user.email_verified,
                 "phone_verified": current_user.phone_verified,
-            }
+            },
         )
 
     return current_user
 
 
-async def can_watch_vod(
-    current_user: User = Depends(require_verified_user)
-) -> User:
+async def can_watch_vod(current_user: User = Depends(require_verified_user)) -> User:
     """
     Require Basic plan or higher, or admin role.
 
@@ -49,15 +47,15 @@ async def can_watch_vod(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
                 "error": "subscription_required",
-                "message": "Please subscribe to watch VOD content"
-            }
+                "message": "Please subscribe to watch VOD content",
+            },
         )
 
     return current_user
 
 
 async def can_create_widgets(
-    current_user: User = Depends(require_verified_user)
+    current_user: User = Depends(require_verified_user),
 ) -> User:
     """
     Require Premium plan or higher, or admin role.
@@ -72,8 +70,8 @@ async def can_create_widgets(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
                 "error": "premium_required",
-                "message": "Upgrade to Premium to create widgets"
-            }
+                "message": "Upgrade to Premium to create widgets",
+            },
         )
 
     return current_user

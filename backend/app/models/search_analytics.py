@@ -10,7 +10,8 @@ Tracks search queries, user behavior, and search performance for:
 """
 
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
+
 from beanie import Document
 from pydantic import Field
 
@@ -79,7 +80,7 @@ class SearchQuery(Document):
         llm_interpretation: Optional[str] = None,
         llm_confidence: Optional[float] = None,
         platform: Optional[str] = None,
-        session_id: Optional[str] = None
+        session_id: Optional[str] = None,
     ) -> "SearchQuery":
         """
         Log a search query.
@@ -111,16 +112,13 @@ class SearchQuery(Document):
             llm_interpretation=llm_interpretation,
             llm_confidence=llm_confidence,
             platform=platform,
-            session_id=session_id
+            session_id=session_id,
         )
         await log_entry.insert()
         return log_entry
 
     async def log_click(
-        self,
-        content_id: str,
-        position: int,
-        time_to_click_ms: int
+        self, content_id: str, position: int, time_to_click_ms: int
     ) -> None:
         """
         Log a click on a search result.
@@ -136,7 +134,9 @@ class SearchQuery(Document):
         await self.save()
 
     @classmethod
-    async def get_popular_queries(cls, limit: int = 10, days: int = 7) -> list[Dict[str, Any]]:
+    async def get_popular_queries(
+        cls, limit: int = 10, days: int = 7
+    ) -> list[Dict[str, Any]]:
         """
         Get most popular search queries.
 
@@ -153,26 +153,25 @@ class SearchQuery(Document):
 
         pipeline = [
             {"$match": {"timestamp": {"$gte": cutoff_date}}},
-            {"$group": {
-                "_id": "$query",
-                "count": {"$sum": 1},
-                "avg_results": {"$avg": "$result_count"}
-            }},
+            {
+                "$group": {
+                    "_id": "$query",
+                    "count": {"$sum": 1},
+                    "avg_results": {"$avg": "$result_count"},
+                }
+            },
             {"$sort": {"count": -1}},
             {"$limit": limit},
-            {"$project": {
-                "query": "$_id",
-                "count": 1,
-                "avg_results": 1,
-                "_id": 0
-            }}
+            {"$project": {"query": "$_id", "count": 1, "avg_results": 1, "_id": 0}},
         ]
 
         results = await cls.get_motor_collection().aggregate(pipeline).to_list(None)
         return results
 
     @classmethod
-    async def get_no_result_queries(cls, limit: int = 20, days: int = 7) -> list[Dict[str, Any]]:
+    async def get_no_result_queries(
+        cls, limit: int = 20, days: int = 7
+    ) -> list[Dict[str, Any]]:
         """
         Get queries that returned no results (content gaps).
 
@@ -188,23 +187,11 @@ class SearchQuery(Document):
         cutoff_date = datetime.utcnow() - timedelta(days=days)
 
         pipeline = [
-            {
-                "$match": {
-                    "timestamp": {"$gte": cutoff_date},
-                    "result_count": 0
-                }
-            },
-            {"$group": {
-                "_id": "$query",
-                "count": {"$sum": 1}
-            }},
+            {"$match": {"timestamp": {"$gte": cutoff_date}, "result_count": 0}},
+            {"$group": {"_id": "$query", "count": {"$sum": 1}}},
             {"$sort": {"count": -1}},
             {"$limit": limit},
-            {"$project": {
-                "query": "$_id",
-                "count": 1,
-                "_id": 0
-            }}
+            {"$project": {"query": "$_id", "count": 1, "_id": 0}},
         ]
 
         results = await cls.get_motor_collection().aggregate(pipeline).to_list(None)
@@ -227,15 +214,15 @@ class SearchQuery(Document):
 
         pipeline = [
             {"$match": {"timestamp": {"$gte": cutoff_date}}},
-            {"$group": {
-                "_id": None,
-                "total_searches": {"$sum": 1},
-                "clicked_searches": {
-                    "$sum": {
-                        "$cond": [{"$ne": ["$clicked_result_id", None]}, 1, 0]
-                    }
+            {
+                "$group": {
+                    "_id": None,
+                    "total_searches": {"$sum": 1},
+                    "clicked_searches": {
+                        "$sum": {"$cond": [{"$ne": ["$clicked_result_id", None]}, 1, 0]}
+                    },
                 }
-            }}
+            },
         ]
 
         results = await cls.get_motor_collection().aggregate(pipeline).to_list(None)
@@ -263,15 +250,8 @@ class SearchQuery(Document):
 
         pipeline = [
             {"$match": {"timestamp": {"$gte": cutoff_date}}},
-            {"$group": {
-                "_id": "$search_type",
-                "count": {"$sum": 1}
-            }},
-            {"$project": {
-                "search_type": "$_id",
-                "count": 1,
-                "_id": 0
-            }}
+            {"$group": {"_id": "$search_type", "count": {"$sum": 1}}},
+            {"$project": {"search_type": "$_id", "count": 1, "_id": 0}},
         ]
 
         results = await cls.get_motor_collection().aggregate(pipeline).to_list(None)
@@ -323,7 +303,9 @@ class SearchPerformanceMetrics(Document):
         ]
 
     @classmethod
-    async def generate_daily_snapshot(cls, date: Optional[datetime] = None) -> "SearchPerformanceMetrics":
+    async def generate_daily_snapshot(
+        cls, date: Optional[datetime] = None
+    ) -> "SearchPerformanceMetrics":
         """
         Generate daily performance snapshot.
 
@@ -349,9 +331,9 @@ class SearchPerformanceMetrics(Document):
         start_of_day = datetime(date.year, date.month, date.day)
         end_of_day = start_of_day + timedelta(days=1)
 
-        queries = await SearchQuery.find({
-            "timestamp": {"$gte": start_of_day, "$lt": end_of_day}
-        }).to_list()
+        queries = await SearchQuery.find(
+            {"timestamp": {"$gte": start_of_day, "$lt": end_of_day}}
+        ).to_list()
 
         if not queries:
             # No data for this day
@@ -364,7 +346,11 @@ class SearchPerformanceMetrics(Document):
 
         execution_times = [q.execution_time_ms for q in queries]
         avg_execution_time = sum(execution_times) / len(execution_times)
-        p95_execution_time = sorted(execution_times)[int(len(execution_times) * 0.95)] if execution_times else 0
+        p95_execution_time = (
+            sorted(execution_times)[int(len(execution_times) * 0.95)]
+            if execution_times
+            else 0
+        )
 
         cache_hits = sum(1 for q in queries if q.cache_hit)
         cache_hit_rate = (cache_hits / total_searches) * 100
@@ -404,7 +390,7 @@ class SearchPerformanceMetrics(Document):
             llm_search_count=search_types.get("llm", 0),
             metadata_only_search_count=search_types.get("metadata_only", 0),
             top_queries=top_queries,
-            top_no_result_queries=top_no_result
+            top_no_result_queries=top_no_result,
         )
 
         await snapshot.insert()

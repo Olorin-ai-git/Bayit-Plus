@@ -14,11 +14,11 @@ NOTIFICATION_TOOLS = [
                 },
                 "subject": {
                     "type": "string",
-                    "description": "Email subject line (should be concise and attention-grabbing)"
+                    "description": "Email subject line (should be concise and attention-grabbing)",
                 },
                 "summary": {
                     "type": "string",
-                    "description": "Brief summary of what was found (2-3 sentences)"
+                    "description": "Brief summary of what was found (2-3 sentences)",
                 },
                 "critical_issues": {
                     "type": "array",
@@ -28,30 +28,40 @@ NOTIFICATION_TOOLS = [
                             "title": {"type": "string"},
                             "description": {"type": "string"},
                             "affected_items": {"type": "integer"},
-                            "priority": {"type": "string", "enum": ["high", "critical"]}
-                        }
+                            "priority": {
+                                "type": "string",
+                                "enum": ["high", "critical"],
+                            },
+                        },
                     },
-                    "description": "List of critical issues found (3-5 most important)"
+                    "description": "List of critical issues found (3-5 most important)",
                 },
                 "items_checked": {
                     "type": "integer",
-                    "description": "Total items checked"
+                    "description": "Total items checked",
                 },
                 "issues_found": {
                     "type": "integer",
-                    "description": "Total issues found"
+                    "description": "Total issues found",
                 },
                 "issues_fixed": {
                     "type": "integer",
-                    "description": "Issues fixed automatically"
+                    "description": "Issues fixed automatically",
                 },
                 "manual_action_needed": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "Specific actions administrators should take"
-                }
+                    "description": "Specific actions administrators should take",
+                },
             },
-            "required": ["severity", "subject", "summary", "critical_issues", "items_checked", "issues_found"]
-        }
+            "required": [
+                "severity",
+                "subject",
+                "summary",
+                "critical_issues",
+                "items_checked",
+                "issues_found",
+            ],
+        },
     },
 ]

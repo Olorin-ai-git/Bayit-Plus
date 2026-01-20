@@ -10,24 +10,23 @@ Tests cover:
 - Metering integration
 """
 
+from datetime import datetime, timezone
+from typing import Optional
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 import pytest_asyncio
-from datetime import datetime, timezone
-from unittest.mock import AsyncMock, MagicMock, patch
-from typing import Optional
-
-from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
-
+from app.core.config import settings
 from app.models.content_embedding import RecapSession
 from app.models.integration_partner import IntegrationPartner, UsageRecord
 from app.services.olorin.recap_agent_service import RecapAgentService
-from app.core.config import settings
-
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # ============================================
 # Test Fixtures
 # ============================================
+
 
 @pytest_asyncio.fixture
 async def db_client():
@@ -35,7 +34,7 @@ async def db_client():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     await init_beanie(
         database=client[f"{settings.MONGODB_DB_NAME}_olorin_test"],
-        document_models=[RecapSession, IntegrationPartner, UsageRecord]
+        document_models=[RecapSession, IntegrationPartner, UsageRecord],
     )
     yield client
     # Cleanup
@@ -68,6 +67,7 @@ async def sample_partner(db_client):
 # ============================================
 # Session Management Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 async def test_create_session(recap_service, db_client):
@@ -172,6 +172,7 @@ async def test_get_active_sessions(recap_service, db_client):
 # Transcript Segment Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_add_transcript_segment(recap_service, db_client):
     """Test adding transcript segments to session."""
@@ -256,6 +257,7 @@ async def test_add_segment_session_not_found(recap_service, db_client):
 # Recap Generation Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_generate_recap_empty_session(recap_service, db_client):
     """Test generating recap for session with no transcripts."""
@@ -323,12 +325,14 @@ async def test_generate_recap_with_claude(recap_service, db_client):
     # Mock the Claude client
     mock_response = MagicMock()
     mock_response.content = [MagicMock()]
-    mock_response.content[0].text = '''
+    mock_response.content[
+        0
+    ].text = """
     {
         "summary": "The broadcast discussed three important political points.",
         "key_points": ["Point 1", "Point 2", "Point 3"]
     }
-    '''
+    """
     mock_response.usage = MagicMock()
     mock_response.usage.input_tokens = 100
     mock_response.usage.output_tokens = 50
@@ -337,11 +341,7 @@ async def test_generate_recap_with_claude(recap_service, db_client):
     mock_claude.messages.create = AsyncMock(return_value=mock_response)
 
     # Patch the service's Claude client
-    with patch.object(
-        recap_service,
-        "_get_claude_client",
-        return_value=mock_claude
-    ):
+    with patch.object(recap_service, "_get_claude_client", return_value=mock_claude):
         result = await recap_service.generate_recap(
             session_id=session.session_id,
             window_minutes=15,
@@ -357,6 +357,7 @@ async def test_generate_recap_with_claude(recap_service, db_client):
 # ============================================
 # Transcript Text Building Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 async def test_build_transcript_text(recap_service, db_client):
@@ -392,6 +393,7 @@ async def test_build_transcript_text_no_speaker(recap_service, db_client):
 # Edge Cases and Error Handling
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_recap_stores_in_session(recap_service, db_client):
     """Test that generated recaps are stored in session."""
@@ -415,11 +417,7 @@ async def test_recap_stores_in_session(recap_service, db_client):
     mock_claude = AsyncMock()
     mock_claude.messages.create = AsyncMock(return_value=mock_response)
 
-    with patch.object(
-        recap_service,
-        "_get_claude_client",
-        return_value=mock_claude
-    ):
+    with patch.object(recap_service, "_get_claude_client", return_value=mock_claude):
         await recap_service.generate_recap(
             session_id=session.session_id,
             target_language="en",
@@ -453,11 +451,7 @@ async def test_multiple_recaps_stored(recap_service, db_client):
     mock_claude = AsyncMock()
     mock_claude.messages.create = AsyncMock(return_value=mock_response)
 
-    with patch.object(
-        recap_service,
-        "_get_claude_client",
-        return_value=mock_claude
-    ):
+    with patch.object(recap_service, "_get_claude_client", return_value=mock_claude):
         # Generate multiple recaps
         await recap_service.generate_recap(session.session_id, target_language="en")
         await recap_service.generate_recap(session.session_id, target_language="he")
@@ -469,6 +463,7 @@ async def test_multiple_recaps_stored(recap_service, db_client):
 # ============================================
 # Performance Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 async def test_session_creation_performance(recap_service, db_client):

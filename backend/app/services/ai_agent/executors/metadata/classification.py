@@ -24,12 +24,14 @@ async def execute_recategorize_content(
     confidence: int,
     reason: str,
     audit_id: str,
-    dry_run: bool = False
+    dry_run: bool = False,
 ) -> Dict[str, Any]:
     """Recategorize content to a different category."""
     dry_run_result = handle_dry_run(
-        dry_run, "recategorize {content_id} to {category}",
-        content_id=content_id, category=new_category_slug
+        dry_run,
+        "recategorize {content_id} to {category}",
+        content_id=content_id,
+        category=new_category_slug,
     )
     if dry_run_result:
         return dry_run_result
@@ -48,7 +50,7 @@ async def execute_recategorize_content(
         old_category = content.category_name
         before_state = {
             "category_id": content.category_id,
-            "category_name": content.category_name
+            "category_name": content.category_name,
         }
 
         content.category_id = str(category.id)
@@ -66,14 +68,19 @@ async def execute_recategorize_content(
             ),
             issue_type="misclassification",
             before_state=before_state,
-            after_state={"category_id": str(category.id), "category_name": category.name},
+            after_state={
+                "category_id": str(category.id),
+                "category_name": category.name,
+            },
             confidence=confidence,
             reason=reason,
         )
 
         return {
-            "success": True, "updated": True,
-            "old_category": old_category, "new_category": category.name
+            "success": True,
+            "updated": True,
+            "old_category": old_category,
+            "new_category": category.name,
         }
     except Exception as e:
         logger.error(f"Error recategorizing: {e}")
@@ -81,10 +88,7 @@ async def execute_recategorize_content(
 
 
 async def execute_reclassify_as_series(
-    content_id: str,
-    audit_id: str,
-    reason: str,
-    dry_run: bool = False
+    content_id: str, audit_id: str, reason: str, dry_run: bool = False
 ) -> Dict[str, Any]:
     """Reclassify movie content as a series."""
     dry_run_result = handle_dry_run(
@@ -102,7 +106,10 @@ async def execute_reclassify_as_series(
         if error:
             return {"success": False, "error": "Series category not found"}
 
-        before_state = {"category_id": content.category_id, "is_series": content.is_series}
+        before_state = {
+            "category_id": content.category_id,
+            "is_series": content.is_series,
+        }
 
         content.category_id = str(category.id)
         content.category_name = "Series"
@@ -128,10 +135,7 @@ async def execute_reclassify_as_series(
 
 
 async def execute_reclassify_as_movie(
-    content_id: str,
-    audit_id: str,
-    reason: str,
-    dry_run: bool = False
+    content_id: str, audit_id: str, reason: str, dry_run: bool = False
 ) -> Dict[str, Any]:
     """Reclassify series content as a movie."""
     dry_run_result = handle_dry_run(

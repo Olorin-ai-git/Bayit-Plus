@@ -5,22 +5,28 @@ Provides CRUD operations for promotional campaigns.
 
 from datetime import datetime
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends, Query, Request
+
+from app.models.admin import (
+    AuditAction,
+    Campaign,
+    CampaignStatus,
+    CampaignType,
+    DiscountType,
+    Permission,
+    TargetAudience,
+)
+from app.models.user import User
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
-from app.models.user import User
-from app.models.admin import (
-    Campaign, CampaignType, CampaignStatus, DiscountType, TargetAudience,
-    Permission, AuditAction
-)
 from .auth import has_permission, log_audit
-
 
 router = APIRouter()
 
 
 class CampaignCreate(BaseModel):
     """Campaign creation schema."""
+
     name: str
     description: Optional[str] = None
     type: CampaignType
@@ -39,7 +45,7 @@ async def get_campaigns(
     type: Optional[str] = None,
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, le=100),
-    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_READ))
+    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_READ)),
 ):
     """Get campaigns list."""
     query = Campaign.find()
@@ -51,7 +57,9 @@ async def get_campaigns(
 
     total = await query.count()
     skip = (page - 1) * page_size
-    campaigns = await query.sort(-Campaign.created_at).skip(skip).limit(page_size).to_list()
+    campaigns = (
+        await query.sort(-Campaign.created_at).skip(skip).limit(page_size).to_list()
+    )
 
     return {
         "items": [
@@ -68,7 +76,9 @@ async def get_campaigns(
                 "usage_count": c.usage_count,
                 "start_date": c.start_date.isoformat(),
                 "end_date": c.end_date.isoformat() if c.end_date else None,
-                "target_audience": c.target_audience.model_dump() if c.target_audience else None,
+                "target_audience": c.target_audience.model_dump()
+                if c.target_audience
+                else None,
                 "created_by": c.created_by,
                 "created_at": c.created_at.isoformat(),
             }
@@ -85,7 +95,7 @@ async def get_campaigns(
 async def create_campaign(
     data: CampaignCreate,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_CREATE))
+    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_CREATE)),
 ):
     """Create a new campaign."""
     if data.promo_code:
@@ -108,7 +118,14 @@ async def create_campaign(
     )
     await campaign.insert()
 
-    await log_audit(str(current_user.id), AuditAction.CAMPAIGN_CREATED, "campaign", str(campaign.id), {"name": data.name}, request)
+    await log_audit(
+        str(current_user.id),
+        AuditAction.CAMPAIGN_CREATED,
+        "campaign",
+        str(campaign.id),
+        {"name": data.name},
+        request,
+    )
 
     return {"id": str(campaign.id), "message": "Campaign created"}
 
@@ -116,7 +133,7 @@ async def create_campaign(
 @router.get("/campaigns/{campaign_id}")
 async def get_campaign(
     campaign_id: str,
-    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_READ))
+    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_READ)),
 ):
     """Get campaign details."""
     campaign = await Campaign.get(campaign_id)
@@ -136,7 +153,9 @@ async def get_campaign(
         "usage_count": campaign.usage_count,
         "start_date": campaign.start_date.isoformat(),
         "end_date": campaign.end_date.isoformat() if campaign.end_date else None,
-        "target_audience": campaign.target_audience.model_dump() if campaign.target_audience else None,
+        "target_audience": campaign.target_audience.model_dump()
+        if campaign.target_audience
+        else None,
         "created_by": campaign.created_by,
         "created_at": campaign.created_at.isoformat(),
         "updated_at": campaign.updated_at.isoformat(),
@@ -148,7 +167,7 @@ async def update_campaign(
     campaign_id: str,
     data: CampaignCreate,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_UPDATE))
+    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_UPDATE)),
 ):
     """Update campaign."""
     campaign = await Campaign.get(campaign_id)
@@ -173,7 +192,14 @@ async def update_campaign(
         campaign.promo_code = data.promo_code
 
     await campaign.save()
-    await log_audit(str(current_user.id), AuditAction.CAMPAIGN_UPDATED, "campaign", campaign_id, {"name": data.name}, request)
+    await log_audit(
+        str(current_user.id),
+        AuditAction.CAMPAIGN_UPDATED,
+        "campaign",
+        campaign_id,
+        {"name": data.name},
+        request,
+    )
 
     return {"message": "Campaign updated"}
 
@@ -182,7 +208,7 @@ async def update_campaign(
 async def activate_campaign(
     campaign_id: str,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_UPDATE))
+    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_UPDATE)),
 ):
     """Activate a campaign."""
     campaign = await Campaign.get(campaign_id)
@@ -193,7 +219,14 @@ async def activate_campaign(
     campaign.updated_at = datetime.utcnow()
     await campaign.save()
 
-    await log_audit(str(current_user.id), AuditAction.CAMPAIGN_ACTIVATED, "campaign", campaign_id, {}, request)
+    await log_audit(
+        str(current_user.id),
+        AuditAction.CAMPAIGN_ACTIVATED,
+        "campaign",
+        campaign_id,
+        {},
+        request,
+    )
 
     return {"message": "Campaign activated"}
 
@@ -202,7 +235,7 @@ async def activate_campaign(
 async def deactivate_campaign(
     campaign_id: str,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_UPDATE))
+    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_UPDATE)),
 ):
     """Deactivate a campaign."""
     campaign = await Campaign.get(campaign_id)
@@ -220,14 +253,21 @@ async def deactivate_campaign(
 async def delete_campaign(
     campaign_id: str,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_DELETE))
+    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_DELETE)),
 ):
     """Delete a campaign."""
     campaign = await Campaign.get(campaign_id)
     if not campaign:
         raise HTTPException(status_code=404, detail="Campaign not found")
 
-    await log_audit(str(current_user.id), AuditAction.CAMPAIGN_DELETED, "campaign", campaign_id, {"name": campaign.name}, request)
+    await log_audit(
+        str(current_user.id),
+        AuditAction.CAMPAIGN_DELETED,
+        "campaign",
+        campaign_id,
+        {"name": campaign.name},
+        request,
+    )
     await campaign.delete()
 
     return {"message": "Campaign deleted"}
@@ -236,7 +276,7 @@ async def delete_campaign(
 @router.get("/campaigns/validate/{promo_code}")
 async def validate_promo_code(
     promo_code: str,
-    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_READ))
+    current_user: User = Depends(has_permission(Permission.CAMPAIGNS_READ)),
 ):
     """Validate a promo code."""
     campaign = await Campaign.find_one(Campaign.promo_code == promo_code)

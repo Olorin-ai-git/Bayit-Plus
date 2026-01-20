@@ -41,7 +41,9 @@ REQUIRED_FIELDS: list[FieldRequirement] = [
     FieldRequirement("GCP_PROJECT_ID", "Google Cloud Project ID", True, "gcp"),
     # Frontend URLs (Required for email/verification)
     FieldRequirement("FRONTEND_URL", "Frontend URL for email links", True, "frontend"),
-    FieldRequirement("FRONTEND_WEB_URL", "Web frontend URL for verification", True, "frontend"),
+    FieldRequirement(
+        "FRONTEND_WEB_URL", "Web frontend URL for verification", True, "frontend"
+    ),
     # CORS (Required for production)
     FieldRequirement("BACKEND_CORS_ORIGINS", "Allowed CORS origins", True, "security"),
 ]
@@ -57,11 +59,17 @@ OPTIONAL_FIELDS: list[FieldRequirement] = [
     FieldRequirement("ELEVENLABS_API_KEY", "ElevenLabs API key", False, "ai"),
     # Google OAuth (Optional)
     FieldRequirement("GOOGLE_CLIENT_ID", "Google OAuth client ID", False, "oauth"),
-    FieldRequirement("GOOGLE_CLIENT_SECRET", "Google OAuth client secret", False, "oauth"),
-    FieldRequirement("GOOGLE_REDIRECT_URI", "Google OAuth redirect URI", False, "oauth"),
+    FieldRequirement(
+        "GOOGLE_CLIENT_SECRET", "Google OAuth client secret", False, "oauth"
+    ),
+    FieldRequirement(
+        "GOOGLE_REDIRECT_URI", "Google OAuth redirect URI", False, "oauth"
+    ),
     # Storage (Optional - defaults to local)
     FieldRequirement("GCS_BUCKET_NAME", "GCS bucket name for media", False, "storage"),
-    FieldRequirement("CDN_BASE_URL", "CDN base URL for serving media", False, "storage"),
+    FieldRequirement(
+        "CDN_BASE_URL", "CDN base URL for serving media", False, "storage"
+    ),
     # TMDB (Optional but recommended)
     FieldRequirement("TMDB_API_KEY", "TMDB API key for metadata", False, "content"),
     # Email (Optional)
@@ -80,36 +88,85 @@ OPTIONAL_FIELDS: list[FieldRequirement] = [
 # Librarian Agent fields (all required if librarian is used)
 LIBRARIAN_FIELDS: list[FieldRequirement] = [
     # Daily Audit
-    FieldRequirement("LIBRARIAN_DAILY_AUDIT_CRON", "Daily audit cron schedule", True, "librarian"),
-    FieldRequirement("LIBRARIAN_DAILY_AUDIT_TIME", "Daily audit time description", True, "librarian"),
-    FieldRequirement("LIBRARIAN_DAILY_AUDIT_MODE", "Daily audit mode", True, "librarian"),
-    FieldRequirement("LIBRARIAN_DAILY_AUDIT_COST", "Daily audit cost estimate", True, "librarian"),
-    FieldRequirement("LIBRARIAN_DAILY_AUDIT_STATUS", "Daily audit status", True, "librarian"),
     FieldRequirement(
-        "LIBRARIAN_DAILY_AUDIT_DESCRIPTION", "Daily audit description", True, "librarian"
+        "LIBRARIAN_DAILY_AUDIT_CRON", "Daily audit cron schedule", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_DAILY_AUDIT_TIME", "Daily audit time description", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_DAILY_AUDIT_MODE", "Daily audit mode", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_DAILY_AUDIT_COST", "Daily audit cost estimate", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_DAILY_AUDIT_STATUS", "Daily audit status", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_DAILY_AUDIT_DESCRIPTION",
+        "Daily audit description",
+        True,
+        "librarian",
     ),
     # Weekly Audit
-    FieldRequirement("LIBRARIAN_WEEKLY_AUDIT_CRON", "Weekly audit cron schedule", True, "librarian"),
-    FieldRequirement("LIBRARIAN_WEEKLY_AUDIT_TIME", "Weekly audit time description", True, "librarian"),
-    FieldRequirement("LIBRARIAN_WEEKLY_AUDIT_MODE", "Weekly audit mode", True, "librarian"),
-    FieldRequirement("LIBRARIAN_WEEKLY_AUDIT_COST", "Weekly audit cost estimate", True, "librarian"),
-    FieldRequirement("LIBRARIAN_WEEKLY_AUDIT_STATUS", "Weekly audit status", True, "librarian"),
     FieldRequirement(
-        "LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION", "Weekly audit description", True, "librarian"
+        "LIBRARIAN_WEEKLY_AUDIT_CRON", "Weekly audit cron schedule", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_WEEKLY_AUDIT_TIME",
+        "Weekly audit time description",
+        True,
+        "librarian",
+    ),
+    FieldRequirement(
+        "LIBRARIAN_WEEKLY_AUDIT_MODE", "Weekly audit mode", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_WEEKLY_AUDIT_COST", "Weekly audit cost estimate", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_WEEKLY_AUDIT_STATUS", "Weekly audit status", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION",
+        "Weekly audit description",
+        True,
+        "librarian",
     ),
     # Limits
-    FieldRequirement("LIBRARIAN_MAX_ITERATIONS", "Max audit iterations", True, "librarian"),
-    FieldRequirement("LIBRARIAN_DEFAULT_BUDGET_USD", "Default budget in USD", True, "librarian"),
-    FieldRequirement("LIBRARIAN_MIN_BUDGET_USD", "Minimum budget in USD", True, "librarian"),
-    FieldRequirement("LIBRARIAN_MAX_BUDGET_USD", "Maximum budget in USD", True, "librarian"),
-    FieldRequirement("LIBRARIAN_BUDGET_STEP_USD", "Budget step in USD", True, "librarian"),
+    FieldRequirement(
+        "LIBRARIAN_MAX_ITERATIONS", "Max audit iterations", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_DEFAULT_BUDGET_USD", "Default budget in USD", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_MIN_BUDGET_USD", "Minimum budget in USD", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_MAX_BUDGET_USD", "Maximum budget in USD", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_BUDGET_STEP_USD", "Budget step in USD", True, "librarian"
+    ),
     # Pagination
-    FieldRequirement("LIBRARIAN_REPORTS_LIMIT", "Reports pagination limit", True, "librarian"),
-    FieldRequirement("LIBRARIAN_ACTIONS_LIMIT", "Actions pagination limit", True, "librarian"),
-    FieldRequirement("LIBRARIAN_ACTIVITY_PAGE_SIZE", "Activity page size", True, "librarian"),
+    FieldRequirement(
+        "LIBRARIAN_REPORTS_LIMIT", "Reports pagination limit", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_ACTIONS_LIMIT", "Actions pagination limit", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_ACTIVITY_PAGE_SIZE", "Activity page size", True, "librarian"
+    ),
     # UI
-    FieldRequirement("LIBRARIAN_ID_TRUNCATE_LENGTH", "ID truncation length", True, "librarian"),
-    FieldRequirement("LIBRARIAN_MODAL_MAX_HEIGHT", "Modal max height in px", True, "librarian"),
+    FieldRequirement(
+        "LIBRARIAN_ID_TRUNCATE_LENGTH", "ID truncation length", True, "librarian"
+    ),
+    FieldRequirement(
+        "LIBRARIAN_MODAL_MAX_HEIGHT", "Modal max height in px", True, "librarian"
+    ),
 ]
 
 
@@ -148,7 +205,8 @@ def validate_required_config() -> None:
     # Check librarian fields (only if librarian feature is being used)
     # We check if any librarian field is set to determine if the feature is active
     librarian_in_use = any(
-        hasattr(settings, field.field_name) and getattr(settings, field.field_name, None)
+        hasattr(settings, field.field_name)
+        and getattr(settings, field.field_name, None)
         for field in LIBRARIAN_FIELDS
     )
 
@@ -211,22 +269,24 @@ def validate_olorin_config() -> None:
     errors.extend(olorin_errors)
 
     # Additional cross-cutting validation
-    if any([
-        settings.olorin.dubbing_enabled,
-        settings.olorin.semantic_search_enabled,
-        settings.olorin.cultural_context_enabled,
-        settings.olorin.recap_enabled
-    ]):
+    if any(
+        [
+            settings.olorin.dubbing_enabled,
+            settings.olorin.semantic_search_enabled,
+            settings.olorin.cultural_context_enabled,
+            settings.olorin.recap_enabled,
+        ]
+    ):
         # At least one Olorin feature is enabled - validate partner API configuration
         if not settings.olorin.partner.api_key_salt:
             errors.append(
                 "PARTNER_API_KEY_SALT is required when any Olorin feature is enabled. "
-                "Generate with: python -c \"import secrets; print(secrets.token_urlsafe(32))\""
+                'Generate with: python -c "import secrets; print(secrets.token_urlsafe(32))"'
             )
         elif len(settings.olorin.partner.api_key_salt) < 32:
             errors.append(
                 f"PARTNER_API_KEY_SALT must be at least 32 characters (got {len(settings.olorin.partner.api_key_salt)}). "
-                "Generate with: python -c \"import secrets; print(secrets.token_urlsafe(32))\""
+                'Generate with: python -c "import secrets; print(secrets.token_urlsafe(32))"'
             )
 
     # Validate semantic search dependencies

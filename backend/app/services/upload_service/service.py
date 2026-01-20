@@ -5,40 +5,38 @@ Main UploadService class that orchestrates file uploads, queue processing,
 and coordinates with GCS, metadata, content, and background modules.
 """
 
-import os
 import asyncio
 import hashlib
 import logging
-from pathlib import Path
-from typing import Optional, List, Dict, Any
+import os
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
-from beanie.operators import In
-from motor.motor_asyncio import AsyncIOMotorClient
-
 from app.core.config import settings
-from app.models.upload import (
-    UploadJob,
-    UploadStatus,
-    ContentType,
-    UploadJobResponse,
-    QueueStats,
-)
-from app.services.tmdb_service import TMDBService
-
-from .gcs import gcs_uploader
-from .metadata import metadata_extractor
-from .content import content_creator
-from .background import background_enricher
-from .lock import upload_lock_manager
-from .transaction import UploadTransaction
-
 from app.core.exceptions import (
     DuplicateContentError,
     HashLockConflictError,
     TransactionRollbackError,
 )
+from app.models.upload import (
+    ContentType,
+    QueueStats,
+    UploadJob,
+    UploadJobResponse,
+    UploadStatus,
+)
+from app.services.tmdb_service import TMDBService
+from beanie.operators import In
+from motor.motor_asyncio import AsyncIOMotorClient
+
+from .background import background_enricher
+from .content import content_creator
+from .gcs import gcs_uploader
+from .lock import upload_lock_manager
+from .metadata import metadata_extractor
+from .transaction import UploadTransaction
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +75,9 @@ class UploadService:
     async def _calculate_file_hash(self, file_path: str) -> str:
         """Calculate SHA256 hash asynchronously in executor."""
         loop = asyncio.get_event_loop()
-        return await loop.run_in_executor(None, self._calculate_file_hash_sync, file_path)
+        return await loop.run_in_executor(
+            None, self._calculate_file_hash_sync, file_path
+        )
 
     async def enqueue_upload(
         self,
@@ -95,16 +95,23 @@ class UploadService:
 
         file_size = path.stat().st_size
 
-        file_size_gb = file_size / (1024 ** 3)
+        file_size_gb = file_size / (1024**3)
         if file_size_gb > 10:
-            raise ValueError(f"File too large ({file_size_gb:.1f}GB, max 10GB): {path.name}")
+            raise ValueError(
+                f"File too large ({file_size_gb:.1f}GB, max 10GB): {path.name}"
+            )
 
         existing_job = await UploadJob.find_one(
             UploadJob.filename == path.name,
-            In(UploadJob.status, [UploadStatus.QUEUED, UploadStatus.PROCESSING, UploadStatus.UPLOADING])
+            In(
+                UploadJob.status,
+                [UploadStatus.QUEUED, UploadStatus.PROCESSING, UploadStatus.UPLOADING],
+            ),
         )
         if existing_job:
-            logger.warning(f"File with same name already queued: {path.name} (job: {existing_job.job_id})")
+            logger.warning(
+                f"File with same name already queued: {path.name} (job: {existing_job.job_id})"
+            )
             raise ValueError(f"File already in upload queue: {existing_job.filename}")
 
         job = UploadJob(
@@ -160,12 +167,17 @@ class UploadService:
         try:
             while True:
                 if self._queue_paused:
-                    logger.warning(f"Queue paused during processing: {self._pause_reason}")
+                    logger.warning(
+                        f"Queue paused during processing: {self._pause_reason}"
+                    )
                     break
 
-                jobs = await UploadJob.find(
-                    UploadJob.status == UploadStatus.QUEUED
-                ).sort("+created_at").limit(1).to_list()
+                jobs = (
+                    await UploadJob.find(UploadJob.status == UploadStatus.QUEUED)
+                    .sort("+created_at")
+                    .limit(1)
+                    .to_list()
+                )
 
                 job = jobs[0] if jobs else None
 
@@ -201,7 +213,7 @@ class UploadService:
                 hash_lock_acquired = await upload_lock_manager.acquire_hash_lock(
                     file_hash=job.file_hash,
                     job_id=job.job_id,
-                    timeout_seconds=1800  # 30 minutes for large uploads
+                    timeout_seconds=1800,  # 30 minutes for large uploads
                 )
 
                 if not hash_lock_acquired:
@@ -212,9 +224,11 @@ class UploadService:
                 # Re-check for duplicates after acquiring lock (double-check pattern)
                 client = AsyncIOMotorClient(settings.MONGODB_URL)
                 db = client[settings.MONGODB_DB_NAME]
-                existing_content = await db.content.find_one({'file_hash': job.file_hash})
+                existing_content = await db.content.find_one(
+                    {"file_hash": job.file_hash}
+                )
                 if existing_content:
-                    existing_title = existing_content.get('title', job.filename)
+                    existing_title = existing_content.get("title", job.filename)
                     raise DuplicateContentError(job.file_hash, existing_title)
 
             # Stage 1: Extract metadata
@@ -225,20 +239,22 @@ class UploadService:
                 job.stages["subtitle_extraction"] = "scheduled"
                 job.metadata["local_source_path"] = job.source_path
                 await job.save()
-                logger.info(f"Subtitle extraction scheduled for background: {job.source_path}")
+                logger.info(
+                    f"Subtitle extraction scheduled for background: {job.source_path}"
+                )
 
             # Stage 2: Upload to GCS with compensation
             await transaction.execute_with_compensation(
                 action=lambda: self._process_upload_stage(job),
                 compensation=lambda: self._compensate_gcs_upload(job),
-                action_name="gcs_upload"
+                action_name="gcs_upload",
             )
 
             # Stage 3: Create content entry in database with compensation
             await transaction.execute_with_compensation(
                 action=lambda: self._process_database_stage(job),
                 compensation=lambda: self._compensate_database_insert(job),
-                action_name="database_insert"
+                action_name="database_insert",
             )
 
             # All stages successful - commit transaction
@@ -275,7 +291,7 @@ class UploadService:
 
     async def _compensate_database_insert(self, job: UploadJob) -> bool:
         """Compensation action: Delete created Content record."""
-        content_id = job.metadata.get('content_id')
+        content_id = job.metadata.get("content_id")
         if content_id:
             try:
                 from app.models.content import Content
@@ -301,10 +317,12 @@ class UploadService:
         if not os.path.exists(job.source_path):
             raise FileNotFoundError(f"Source file not found: {job.source_path}")
 
-        pre_calculated_hash = job.metadata.get('pre_calculated_hash')
+        pre_calculated_hash = job.metadata.get("pre_calculated_hash")
 
         if pre_calculated_hash:
-            logger.info(f"Using cached hash for {job.filename}: {pre_calculated_hash[:16]}...")
+            logger.info(
+                f"Using cached hash for {job.filename}: {pre_calculated_hash[:16]}..."
+            )
             job.file_hash = pre_calculated_hash
             job.stages["hash_calculation"] = "completed"
             job.progress = 10.0
@@ -312,7 +330,9 @@ class UploadService:
             await self._broadcast_queue_update()
         else:
             job.stages["hash_calculation"] = "in_progress"
-            job.stage_timings["hash_calculation"] = {"started": datetime.utcnow().isoformat()}
+            job.stage_timings["hash_calculation"] = {
+                "started": datetime.utcnow().isoformat()
+            }
             job.progress = 5.0
             await job.save()
             await self._broadcast_queue_update()
@@ -324,8 +344,12 @@ class UploadService:
             logger.info(f"Hash calculated: {job.file_hash[:16]}...")
 
             job.stages["hash_calculation"] = "completed"
-            job.stage_timings["hash_calculation"]["completed"] = datetime.utcnow().isoformat()
-            job.stage_timings["hash_calculation"]["duration_seconds"] = round(hash_duration, 2)
+            job.stage_timings["hash_calculation"][
+                "completed"
+            ] = datetime.utcnow().isoformat()
+            job.stage_timings["hash_calculation"]["duration_seconds"] = round(
+                hash_duration, 2
+            )
             job.progress = 10.0
             await job.save()
             await self._broadcast_queue_update()
@@ -334,9 +358,11 @@ class UploadService:
         client = AsyncIOMotorClient(settings.MONGODB_URL)
         db = client[settings.MONGODB_DB_NAME]
 
-        existing_content = await db.content.find_one({'file_hash': job.file_hash})
+        existing_content = await db.content.find_one({"file_hash": job.file_hash})
         if existing_content:
-            logger.warning(f"Duplicate file detected: {job.filename} (hash: {job.file_hash[:16]}...)")
+            logger.warning(
+                f"Duplicate file detected: {job.filename} (hash: {job.file_hash[:16]}...)"
+            )
             job.status = UploadStatus.FAILED
             job.error_message = f"Duplicate: Already in library as '{existing_content.get('title', job.filename)}'"
             job.completed_at = datetime.utcnow()
@@ -350,7 +376,9 @@ class UploadService:
     async def _process_metadata_stage(self, job: UploadJob):
         """Extract metadata from file."""
         job.stages["metadata_extraction"] = "in_progress"
-        job.stage_timings["metadata_extraction"] = {"started": datetime.utcnow().isoformat()}
+        job.stage_timings["metadata_extraction"] = {
+            "started": datetime.utcnow().isoformat()
+        }
         job.progress = 15.0
         await job.save()
         await self._broadcast_queue_update()
@@ -368,8 +396,12 @@ class UploadService:
 
         job.metadata.update(metadata)
         job.stages["metadata_extraction"] = "completed"
-        job.stage_timings["metadata_extraction"]["completed"] = datetime.utcnow().isoformat()
-        job.stage_timings["metadata_extraction"]["duration_seconds"] = round(metadata_duration, 2)
+        job.stage_timings["metadata_extraction"][
+            "completed"
+        ] = datetime.utcnow().isoformat()
+        job.stage_timings["metadata_extraction"]["duration_seconds"] = round(
+            metadata_duration, 2
+        )
         job.progress = 20.0
         await job.save()
         await self._broadcast_queue_update()
@@ -384,8 +416,7 @@ class UploadService:
 
         gcs_start_time = datetime.utcnow()
         destination_url = await gcs_uploader.upload_file(
-            job,
-            on_progress=lambda p, b, s, e: self._broadcast_queue_update()
+            job, on_progress=lambda p, b, s, e: self._broadcast_queue_update()
         )
         gcs_duration = (datetime.utcnow() - gcs_start_time).total_seconds()
 
@@ -401,7 +432,9 @@ class UploadService:
     async def _process_database_stage(self, job: UploadJob):
         """Create content entry in database."""
         job.stages["database_insert"] = "in_progress"
-        job.stage_timings["database_insert"] = {"started": datetime.utcnow().isoformat()}
+        job.stage_timings["database_insert"] = {
+            "started": datetime.utcnow().isoformat()
+        }
         job.progress = 96.0
         await job.save()
         await self._broadcast_queue_update()
@@ -411,7 +444,9 @@ class UploadService:
         db_duration = (datetime.utcnow() - db_start_time).total_seconds()
 
         job.stages["database_insert"] = "completed"
-        job.stage_timings["database_insert"]["completed"] = datetime.utcnow().isoformat()
+        job.stage_timings["database_insert"][
+            "completed"
+        ] = datetime.utcnow().isoformat()
         job.stage_timings["database_insert"]["duration_seconds"] = round(db_duration, 2)
         job.progress = 98.0
         await job.save()
@@ -422,20 +457,25 @@ class UploadService:
         if job.type == ContentType.MOVIE and job.metadata.get("content_id"):
             job.stages["imdb_lookup"] = "scheduled"
             await job.save()
-            asyncio.create_task(background_enricher.fetch_imdb_info(
-                job.metadata.get("content_id"),
-                job.job_id
-            ))
+            asyncio.create_task(
+                background_enricher.fetch_imdb_info(
+                    job.metadata.get("content_id"), job.job_id
+                )
+            )
         else:
             job.stages["imdb_lookup"] = "skipped"
             await job.save()
 
-        if job.stages.get("subtitle_extraction") == "scheduled" and job.metadata.get("local_source_path"):
-            asyncio.create_task(background_enricher.extract_subtitles(
-                job.metadata.get("content_id"),
-                job.metadata.get("local_source_path"),
-                job.job_id
-            ))
+        if job.stages.get("subtitle_extraction") == "scheduled" and job.metadata.get(
+            "local_source_path"
+        ):
+            asyncio.create_task(
+                background_enricher.extract_subtitles(
+                    job.metadata.get("content_id"),
+                    job.metadata.get("local_source_path"),
+                    job.job_id,
+                )
+            )
         elif job.type != ContentType.MOVIE:
             job.stages["subtitle_extraction"] = "skipped"
             await job.save()
@@ -443,17 +483,18 @@ class UploadService:
         await self._broadcast_queue_update()
 
     async def _handle_job_failure(
-        self,
-        job: UploadJob,
-        error: Exception,
-        transaction: UploadTransaction = None
+        self, job: UploadJob, error: Exception, transaction: UploadTransaction = None
     ):
         """Handle job failure with rollback and retry logic."""
         logger.error(f"Job {job.job_id} failed: {error}", exc_info=True)
 
         # Perform transaction rollback if there are compensations registered
         rollback_result = None
-        if transaction and transaction.is_active and transaction.get_compensation_count() > 0:
+        if (
+            transaction
+            and transaction.is_active
+            and transaction.get_compensation_count() > 0
+        ):
             logger.info(
                 f"Initiating rollback for job {job.job_id} with "
                 f"{transaction.get_compensation_count()} compensation actions"
@@ -466,12 +507,12 @@ class UploadService:
                     f"{rollback_result.actions_failed}/{rollback_result.actions_attempted} failed"
                 )
                 # Store rollback failure info in job metadata for debugging
-                job.metadata['rollback_result'] = {
-                    'success': rollback_result.success,
-                    'actions_attempted': rollback_result.actions_attempted,
-                    'actions_succeeded': rollback_result.actions_succeeded,
-                    'actions_failed': rollback_result.actions_failed,
-                    'errors': rollback_result.errors,
+                job.metadata["rollback_result"] = {
+                    "success": rollback_result.success,
+                    "actions_attempted": rollback_result.actions_attempted,
+                    "actions_succeeded": rollback_result.actions_succeeded,
+                    "actions_failed": rollback_result.actions_failed,
+                    "errors": rollback_result.errors,
                 }
             else:
                 logger.info(
@@ -493,7 +534,9 @@ class UploadService:
 
         if is_duplicate_error:
             # Duplicate errors should not be retried
-            logger.info(f"Job {job.job_id} failed due to duplicate content - not retrying")
+            logger.info(
+                f"Job {job.job_id} failed due to duplicate content - not retrying"
+            )
             return
 
         if is_file_not_found:
@@ -519,7 +562,9 @@ class UploadService:
 
         if is_credential_error:
             self._consecutive_credential_failures += 1
-            logger.warning(f"Credential failure detected ({self._consecutive_credential_failures}/3)")
+            logger.warning(
+                f"Credential failure detected ({self._consecutive_credential_failures}/3)"
+            )
 
             if self._consecutive_credential_failures >= 3:
                 self._queue_paused = True
@@ -535,7 +580,9 @@ class UploadService:
         if job.retry_count < job.max_retries:
             job.status = UploadStatus.QUEUED
             await job.save()
-            logger.info(f"Job {job.job_id} requeued for retry ({job.retry_count}/{job.max_retries})")
+            logger.info(
+                f"Job {job.job_id} requeued for retry ({job.retry_count}/{job.max_retries})"
+            )
 
     def _is_credential_error(self, error: Exception) -> bool:
         """Check if error is related to GCS credentials."""
@@ -553,15 +600,19 @@ class UploadService:
             "permission denied",
         ]
 
-        return any(indicator in error_str for indicator in credential_indicators) or \
-               "DefaultCredentialsError" in error_type
+        return (
+            any(indicator in error_str for indicator in credential_indicators)
+            or "DefaultCredentialsError" in error_type
+        )
 
     async def _notify_queue_paused(self):
         """Notify about queue pause and update stats."""
         try:
             logger.error(f"Upload queue paused after 3 consecutive credential failures")
             logger.error(f"Reason: {self._pause_reason}")
-            logger.error(f"Solution: Configure GOOGLE_APPLICATION_CREDENTIALS environment variable")
+            logger.error(
+                f"Solution: Configure GOOGLE_APPLICATION_CREDENTIALS environment variable"
+            )
 
             await self._broadcast_queue_update()
 
@@ -570,9 +621,11 @@ class UploadService:
 
     async def get_queue(self) -> List[UploadJob]:
         """Get all queued jobs."""
-        return await UploadJob.find(
-            UploadJob.status == UploadStatus.QUEUED
-        ).sort("+created_at").to_list()
+        return (
+            await UploadJob.find(UploadJob.status == UploadStatus.QUEUED)
+            .sort("+created_at")
+            .to_list()
+        )
 
     async def get_active_job(self) -> Optional[UploadJob]:
         """Get currently processing job."""
@@ -582,9 +635,21 @@ class UploadService:
 
     async def get_recent_completed(self, limit: int = 10) -> List[UploadJob]:
         """Get recently completed jobs."""
-        return await UploadJob.find(
-            In(UploadJob.status, [UploadStatus.COMPLETED, UploadStatus.FAILED, UploadStatus.CANCELLED])
-        ).sort("-completed_at").limit(limit).to_list()
+        return (
+            await UploadJob.find(
+                In(
+                    UploadJob.status,
+                    [
+                        UploadStatus.COMPLETED,
+                        UploadStatus.FAILED,
+                        UploadStatus.CANCELLED,
+                    ],
+                )
+            )
+            .sort("-completed_at")
+            .limit(limit)
+            .to_list()
+        )
 
     async def get_job(self, job_id: str) -> Optional[UploadJob]:
         """Get a specific job by ID."""
@@ -597,7 +662,11 @@ class UploadService:
         if not job:
             return False
 
-        if job.status in [UploadStatus.COMPLETED, UploadStatus.FAILED, UploadStatus.CANCELLED]:
+        if job.status in [
+            UploadStatus.COMPLETED,
+            UploadStatus.FAILED,
+            UploadStatus.CANCELLED,
+        ]:
             return False
 
         job.status = UploadStatus.CANCELLED
@@ -612,7 +681,10 @@ class UploadService:
     async def clear_queue(self) -> dict:
         """Clear the upload queue by cancelling all queued and processing jobs."""
         active_jobs = await UploadJob.find(
-            In(UploadJob.status, [UploadStatus.QUEUED, UploadStatus.PROCESSING, UploadStatus.UPLOADING])
+            In(
+                UploadJob.status,
+                [UploadStatus.QUEUED, UploadStatus.PROCESSING, UploadStatus.UPLOADING],
+            )
         ).to_list()
 
         cancelled_count = 0
@@ -628,7 +700,7 @@ class UploadService:
         return {
             "success": True,
             "cancelled_count": cancelled_count,
-            "message": f"Cleared {cancelled_count} job(s) from queue"
+            "message": f"Cleared {cancelled_count} job(s) from queue",
         }
 
     async def resume_queue(self):
@@ -653,9 +725,11 @@ class UploadService:
         for job in failed_and_cancelled:
             if job.error_message:
                 error_lower = job.error_message.lower()
-                if ('duplicate' in error_lower or
-                    'already in library' in error_lower or
-                    'already exists' in error_lower):
+                if (
+                    "duplicate" in error_lower
+                    or "already in library" in error_lower
+                    or "already exists" in error_lower
+                ):
                     skipped_count += 1
                 else:
                     actual_failed_count += 1
@@ -664,9 +738,15 @@ class UploadService:
 
         stats = QueueStats(
             total_jobs=await UploadJob.count(),
-            queued=await UploadJob.find(UploadJob.status == UploadStatus.QUEUED).count(),
-            processing=await UploadJob.find(In(UploadJob.status, [UploadStatus.PROCESSING, UploadStatus.UPLOADING])).count(),
-            completed=await UploadJob.find(UploadJob.status == UploadStatus.COMPLETED).count(),
+            queued=await UploadJob.find(
+                UploadJob.status == UploadStatus.QUEUED
+            ).count(),
+            processing=await UploadJob.find(
+                In(UploadJob.status, [UploadStatus.PROCESSING, UploadStatus.UPLOADING])
+            ).count(),
+            completed=await UploadJob.find(
+                UploadJob.status == UploadStatus.COMPLETED
+            ).count(),
             failed=actual_failed_count,
             cancelled=0,
             skipped=skipped_count,
@@ -694,10 +774,18 @@ class UploadService:
 
                 message = {
                     "type": "queue_update",
-                    "stats": stats.model_dump(mode='json'),
-                    "active_job": self._job_to_response(active_job).model_dump(mode='json') if active_job else None,
-                    "queue": [self._job_to_response(j).model_dump(mode='json') for j in queue],
-                    "recent_completed": [self._job_to_response(j).model_dump(mode='json') for j in recent],
+                    "stats": stats.model_dump(mode="json"),
+                    "active_job": self._job_to_response(active_job).model_dump(
+                        mode="json"
+                    )
+                    if active_job
+                    else None,
+                    "queue": [
+                        self._job_to_response(j).model_dump(mode="json") for j in queue
+                    ],
+                    "recent_completed": [
+                        self._job_to_response(j).model_dump(mode="json") for j in recent
+                    ],
                     "queue_paused": self._queue_paused,
                     "pause_reason": self._pause_reason,
                 }

@@ -6,7 +6,7 @@ OpenAI and Pinecone client initialization and embedding generation.
 
 import asyncio
 import logging
-from typing import Optional, List
+from typing import List, Optional
 
 from app.core.config import settings
 
@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 # Check for required dependencies
 try:
     from openai import AsyncOpenAI
+
     OPENAI_AVAILABLE = True
 except ImportError:
     AsyncOpenAI = None
@@ -23,6 +24,7 @@ except ImportError:
 
 try:
     from pinecone import Pinecone
+
     PINECONE_AVAILABLE = True
 except ImportError:
     Pinecone = None
@@ -62,8 +64,11 @@ class EmbeddingClient:
         if index_name not in existing_indexes:
             logger.info(f"Creating Pinecone index: {index_name}")
             if not self.dry_run:
-                region = settings.PINECONE_ENVIRONMENT.split("-")[0] \
-                    if "-" in settings.PINECONE_ENVIRONMENT else "us-east-1"
+                region = (
+                    settings.PINECONE_ENVIRONMENT.split("-")[0]
+                    if "-" in settings.PINECONE_ENVIRONMENT
+                    else "us-east-1"
+                )
                 self._pinecone_client.create_index(
                     name=index_name,
                     dimension=settings.EMBEDDING_DIMENSIONS,

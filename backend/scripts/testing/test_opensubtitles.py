@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Test OpenSubtitles integration"""
 import asyncio
-from app.core.database import connect_to_mongo, close_mongo_connection
-from app.services.opensubtitles_service import get_opensubtitles_service
+
+from app.core.database import close_mongo_connection, connect_to_mongo
 from app.services.external_subtitle_service import ExternalSubtitleService
+from app.services.opensubtitles_service import get_opensubtitles_service
 
 
 async def test_quota():
@@ -14,7 +15,9 @@ async def test_quota():
     print(f"✅ Service initialized")
     print(f"   API Base URL: {service.base_url}")
     print(f"   Daily Limit: {service.daily_limit}")
-    print(f"   Rate Limit: {service.rate_limit_requests} requests/{service.rate_limit_window}s")
+    print(
+        f"   Rate Limit: {service.rate_limit_requests} requests/{service.rate_limit_window}s"
+    )
 
     # Check quota
     quota = await service.check_quota_available()
@@ -64,6 +67,7 @@ async def main():
     except Exception as e:
         print(f"\n❌ Test failed: {str(e)}")
         import traceback
+
         traceback.print_exc()
     finally:
         # Close database connection

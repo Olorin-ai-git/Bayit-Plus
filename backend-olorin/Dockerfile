@@ -4,7 +4,10 @@
 FROM python:3.11-slim AS base
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq5 \
+    ffmpeg \
     curl \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
@@ -15,25 +18,29 @@ RUN pip install --no-cache-dir poetry==2.1.1
 # Set working directory
 WORKDIR /app
 
-# Copy Poetry configuration
-COPY ../backend/pyproject.toml ../backend/poetry.lock* ./
+# Copy Poetry configuration from backend directory
+COPY backend/pyproject.toml backend/poetry.lock* ./
 
 # Configure Poetry to not create virtual environment in Docker
 RUN poetry config virtualenvs.create false
 
-# Install dependencies (production only, no dev dependencies)
-RUN poetry install --no-interaction --no-ansi --no-dev
+# Install dependencies (production only)
+RUN poetry install --no-interaction --no-ansi --without dev
 
 # Copy application code from main backend
-COPY ../backend/app ./app
+COPY backend/app ./app
 
-# Copy packages (Olorin packages are installed via Poetry)
-COPY ../packages /packages
+# Copy Olorin packages
+COPY packages /packages
+
+# Create non-root user (security best practice)
+RUN useradd -m -u 1000 appuser && chown -R appuser /app
+USER appuser
 
 # Set environment variables
-ENV PYTHONUNBUFFERED=1
-ENV ENVIRONMENT=production
-ENV PORT=8080
+ENV PYTHONUNBUFFERED=1 \
+    ENVIRONMENT=production \
+    PORT=8080
 
 # Expose port
 EXPOSE 8080
@@ -43,4 +50,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD curl -f http://localhost:8080/health || exit 1
 
 # Run Olorin FastAPI application
-CMD ["poetry", "run", "uvicorn", "app.olorin_main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "app.olorin_main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "2"]

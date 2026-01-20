@@ -6,12 +6,11 @@ Functions for fixing missing or low-quality thumbnails on YouTube content.
 
 import logging
 from datetime import datetime
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
 from app.models.content import Content
 from app.services.youtube_validator.url_parser import extract_video_id
 from app.services.youtube_validator.video_validator import get_best_youtube_thumbnail
-
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +30,10 @@ def thumbnail_needs_fix(current_thumbnail: str) -> bool:
 
     # Already has YouTube thumbnail, check if it's the best quality
     if "youtube.com/vi" in current_thumbnail or "img.youtube.com" in current_thumbnail:
-        if "maxresdefault" not in current_thumbnail and "sddefault" not in current_thumbnail:
+        if (
+            "maxresdefault" not in current_thumbnail
+            and "sddefault" not in current_thumbnail
+        ):
             return True
         return False
 
@@ -46,7 +48,7 @@ async def fix_youtube_thumbnails(
     limit: int = 100,
     category_id: Optional[str] = None,
     include_kids: bool = True,
-    dry_run: bool = True
+    dry_run: bool = True,
 ) -> Dict[str, Any]:
     """
     Fix missing or low-quality thumbnails for YouTube content.
@@ -79,14 +81,12 @@ async def fix_youtube_thumbnails(
 
 
 async def _fetch_youtube_content(
-    limit: int,
-    category_id: Optional[str],
-    include_kids: bool
+    limit: int, category_id: Optional[str], include_kids: bool
 ) -> List[Content]:
     """Fetch YouTube content from database."""
     query: Dict[str, Any] = {
         "is_published": True,
-        "$or": [{"stream_url": {"$regex": "youtube\\.com|youtu\\.be"}}]
+        "$or": [{"stream_url": {"$regex": "youtube\\.com|youtu\\.be"}}],
     }
     if category_id:
         query["category_id"] = category_id
@@ -105,24 +105,24 @@ def _initialize_results(dry_run: bool, total: int) -> Dict[str, Any]:
         "already_good": 0,
         "failed": 0,
         "fixed_items": [],
-        "errors": []
+        "errors": [],
     }
 
 
 async def _process_content_thumbnail(
-    content: Content,
-    results: Dict[str, Any],
-    dry_run: bool
+    content: Content, results: Dict[str, Any], dry_run: bool
 ) -> None:
     """Process a single content item's thumbnail."""
     try:
         video_id = extract_video_id(content.stream_url)
         if not video_id:
-            results["errors"].append({
-                "content_id": str(content.id),
-                "title": content.title,
-                "error": "Could not extract video ID"
-            })
+            results["errors"].append(
+                {
+                    "content_id": str(content.id),
+                    "title": content.title,
+                    "error": "Could not extract video ID",
+                }
+            )
             results["failed"] += 1
             return
 
@@ -133,22 +133,24 @@ async def _process_content_thumbnail(
 
         best_thumbnail = await get_best_youtube_thumbnail(video_id)
         if not best_thumbnail:
-            results["errors"].append({
-                "content_id": str(content.id),
-                "title": content.title,
-                "error": "Could not fetch thumbnail"
-            })
+            results["errors"].append(
+                {
+                    "content_id": str(content.id),
+                    "title": content.title,
+                    "error": "Could not fetch thumbnail",
+                }
+            )
             results["failed"] += 1
             return
 
-        await _apply_thumbnail_fix(content, video_id, current_thumbnail, best_thumbnail, results, dry_run)
+        await _apply_thumbnail_fix(
+            content, video_id, current_thumbnail, best_thumbnail, results, dry_run
+        )
 
     except Exception as e:
-        results["errors"].append({
-            "content_id": str(content.id),
-            "title": content.title,
-            "error": str(e)
-        })
+        results["errors"].append(
+            {"content_id": str(content.id), "title": content.title, "error": str(e)}
+        )
         results["failed"] += 1
 
 
@@ -158,31 +160,35 @@ async def _apply_thumbnail_fix(
     old_thumbnail: str,
     new_thumbnail: str,
     results: Dict[str, Any],
-    dry_run: bool
+    dry_run: bool,
 ) -> None:
     """Apply thumbnail fix to content."""
     if dry_run:
-        results["fixed_items"].append({
-            "content_id": str(content.id),
-            "title": content.title,
-            "video_id": video_id,
-            "old_thumbnail": old_thumbnail or "(none)",
-            "new_thumbnail": new_thumbnail,
-            "would_fix": True
-        })
+        results["fixed_items"].append(
+            {
+                "content_id": str(content.id),
+                "title": content.title,
+                "video_id": video_id,
+                "old_thumbnail": old_thumbnail or "(none)",
+                "new_thumbnail": new_thumbnail,
+                "would_fix": True,
+            }
+        )
     else:
         content.thumbnail = new_thumbnail
         content.backdrop = new_thumbnail
         content.poster_url = new_thumbnail
         content.updated_at = datetime.utcnow()
         await content.save()
-        results["fixed_items"].append({
-            "content_id": str(content.id),
-            "title": content.title,
-            "video_id": video_id,
-            "old_thumbnail": old_thumbnail or "(none)",
-            "new_thumbnail": new_thumbnail,
-            "fixed": True
-        })
+        results["fixed_items"].append(
+            {
+                "content_id": str(content.id),
+                "title": content.title,
+                "video_id": video_id,
+                "old_thumbnail": old_thumbnail or "(none)",
+                "new_thumbnail": new_thumbnail,
+                "fixed": True,
+            }
+        )
         logger.info(f"Fixed thumbnail for: {content.title[:50]}...")
     results["thumbnails_fixed"] += 1

@@ -3,13 +3,19 @@ Database Maintenance Service
 MongoDB Atlas health checks and referential integrity validation
 """
 import logging
-from typing import Dict, Any, List
 from datetime import datetime
+from typing import Any, Dict, List
 
-from motor.motor_asyncio import AsyncIOMotorClient
 from app.core.database import db
 from app.models.content import Content
-from app.models.content_taxonomy import ContentSection, LiveChannel, Podcast, PodcastEpisode, EPGEntry
+from app.models.content_taxonomy import (
+    ContentSection,
+    EPGEntry,
+    LiveChannel,
+    Podcast,
+    PodcastEpisode,
+)
+from motor.motor_asyncio import AsyncIOMotorClient
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +61,9 @@ async def perform_database_maintenance() -> Dict[str, Any]:
         # 2. Index validation
         logger.info("   Validating indexes...")
         index_status = await validate_indexes()
-        results["index_status"] = "all_present" if index_status["all_present"] else "missing_indexes"
+        results["index_status"] = (
+            "all_present" if index_status["all_present"] else "missing_indexes"
+        )
 
         if not index_status["all_present"]:
             results["recommendations"].append(
@@ -65,7 +73,9 @@ async def perform_database_maintenance() -> Dict[str, Any]:
         # 3. Referential integrity checks
         logger.info("   Checking referential integrity...")
         integrity_results = await check_referential_integrity()
-        results["referential_integrity"] = "passed" if integrity_results["passed"] else "failed"
+        results["referential_integrity"] = (
+            "passed" if integrity_results["passed"] else "failed"
+        )
         results["orphaned_items"] = integrity_results["orphaned"]
 
         if not integrity_results["passed"]:
@@ -118,11 +128,7 @@ async def check_connection_health() -> bool:
 
 async def validate_indexes() -> Dict[str, Any]:
     """Validate that all required indexes exist"""
-    result = {
-        "all_present": True,
-        "missing": [],
-        "collections_checked": []
-    }
+    result = {"all_present": True, "missing": [], "collections_checked": []}
 
     # Define expected indexes for key collections
     expected_indexes = {
@@ -194,13 +200,15 @@ async def check_referential_integrity() -> Dict[str, Any]:
         ).to_list(length=None)
 
         for content in invalid_category_content:
-            result["orphaned"].append({
-                "type": "invalid_category",
-                "content_id": str(content.id),
-                "title": content.title,
-                "invalid_category_id": content.category_id,
-                "fixable": True,
-            })
+            result["orphaned"].append(
+                {
+                    "type": "invalid_category",
+                    "content_id": str(content.id),
+                    "title": content.title,
+                    "invalid_category_id": content.category_id,
+                    "fixable": True,
+                }
+            )
 
         result["checks_performed"] += 1
 
@@ -212,15 +220,19 @@ async def check_referential_integrity() -> Dict[str, Any]:
 
         for episode in series_episodes:
             # Check if parent series exists
-            parent = await Content.find_one({"_id": episode.series_id, "is_series": True})
+            parent = await Content.find_one(
+                {"_id": episode.series_id, "is_series": True}
+            )
             if not parent:
-                result["orphaned"].append({
-                    "type": "orphaned_episode",
-                    "content_id": str(episode.id),
-                    "title": episode.title,
-                    "missing_series_id": episode.series_id,
-                    "fixable": False,
-                })
+                result["orphaned"].append(
+                    {
+                        "type": "orphaned_episode",
+                        "content_id": str(episode.id),
+                        "title": episode.title,
+                        "missing_series_id": episode.series_id,
+                        "fixable": False,
+                    }
+                )
 
         result["checks_performed"] += 1
 
@@ -234,13 +246,15 @@ async def check_referential_integrity() -> Dict[str, Any]:
         ).to_list(length=None)
 
         for episode in orphaned_episodes:
-            result["orphaned"].append({
-                "type": "orphaned_podcast_episode",
-                "episode_id": str(episode.id),
-                "title": episode.title,
-                "missing_podcast_id": episode.podcast_id,
-                "fixable": False,
-            })
+            result["orphaned"].append(
+                {
+                    "type": "orphaned_podcast_episode",
+                    "episode_id": str(episode.id),
+                    "title": episode.title,
+                    "missing_podcast_id": episode.podcast_id,
+                    "fixable": False,
+                }
+            )
 
         result["checks_performed"] += 1
 
@@ -254,13 +268,15 @@ async def check_referential_integrity() -> Dict[str, Any]:
         ).to_list(length=None)
 
         for epg in orphaned_epg:
-            result["orphaned"].append({
-                "type": "orphaned_epg_entry",
-                "epg_id": str(epg.id),
-                "title": epg.title,
-                "missing_channel_id": epg.channel_id,
-                "fixable": False,
-            })
+            result["orphaned"].append(
+                {
+                    "type": "orphaned_epg_entry",
+                    "epg_id": str(epg.id),
+                    "title": epg.title,
+                    "missing_channel_id": epg.channel_id,
+                    "fixable": False,
+                }
+            )
 
         result["checks_performed"] += 1
 

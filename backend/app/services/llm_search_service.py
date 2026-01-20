@@ -6,13 +6,13 @@ Uses Claude AI to interpret natural language queries and search EPG data intelli
 import json
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
+
 from anthropic import Anthropic
 from anthropic.types import Message
-
 from app.core.config import settings
 from app.models.content import EPGEntry, LiveChannel
-from beanie.operators import RegEx, And, Or, In
+from beanie.operators import And, In, Or, RegEx
 
 logger = logging.getLogger(__name__)
 
@@ -26,14 +26,14 @@ class LLMSearchService:
     def __init__(self):
         self.client = client
         self.model = settings.CLAUDE_MODEL
-        self.max_results = getattr(settings, 'LLM_SEARCH_MAX_RESULTS', 50)
-        self.timeout = getattr(settings, 'LLM_SEARCH_TIMEOUT_SECONDS', 30)
+        self.max_results = getattr(settings, "LLM_SEARCH_MAX_RESULTS", 50)
+        self.timeout = getattr(settings, "LLM_SEARCH_TIMEOUT_SECONDS", 30)
 
     async def search(
         self,
         query: str,
         timezone: str = "UTC",
-        user_context: Optional[Dict[str, Any]] = None
+        user_context: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Execute natural language search on EPG data.
@@ -68,23 +68,15 @@ class LLMSearchService:
                 "interpretation": interpretation,
                 "results": results,
                 "total_results": len(results),
-                "execution_time_ms": interpretation.get("execution_time_ms", 0)
+                "execution_time_ms": interpretation.get("execution_time_ms", 0),
             }
 
         except Exception as e:
             logger.error(f"LLM search failed: {e}", exc_info=True)
-            return {
-                "success": False,
-                "query": query,
-                "error": str(e),
-                "results": []
-            }
+            return {"success": False, "query": query, "error": str(e), "results": []}
 
     async def _interpret_query(
-        self,
-        query: str,
-        timezone: str,
-        user_context: Optional[Dict[str, Any]]
+        self, query: str, timezone: str, user_context: Optional[Dict[str, Any]]
     ) -> Dict[str, Any]:
         """
         Use Claude to interpret the natural language query and extract search criteria.
@@ -145,13 +137,8 @@ Respond with a JSON object ONLY (no markdown, no explanation):
             message: Message = self.client.messages.create(
                 model=self.model,
                 max_tokens=1000,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                temperature=0.3  # Lower temperature for more consistent JSON
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.3,  # Lower temperature for more consistent JSON
             )
 
             # Extract JSON from response
@@ -160,7 +147,9 @@ Respond with a JSON object ONLY (no markdown, no explanation):
 
             # Parse JSON (strip markdown code blocks if present)
             if "```json" in response_text:
-                response_text = response_text.split("```json")[1].split("```")[0].strip()
+                response_text = (
+                    response_text.split("```json")[1].split("```")[0].strip()
+                )
             elif "```" in response_text:
                 response_text = response_text.split("```")[1].split("```")[0].strip()
 
@@ -170,7 +159,9 @@ Respond with a JSON object ONLY (no markdown, no explanation):
             execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
             interpretation["execution_time_ms"] = execution_time
 
-            logger.info(f"Query interpreted: {interpretation.get('interpretation_summary', 'N/A')}")
+            logger.info(
+                f"Query interpreted: {interpretation.get('interpretation_summary', 'N/A')}"
+            )
             return interpretation
 
         except json.JSONDecodeError as e:
@@ -189,10 +180,13 @@ Respond with a JSON object ONLY (no markdown, no explanation):
                 "needs_ranking": True,
                 "confidence": 0.5,
                 "interpretation_summary": f"Simple keyword search for: {query}",
-                "execution_time_ms": (datetime.utcnow() - start_time).total_seconds() * 1000
+                "execution_time_ms": (datetime.utcnow() - start_time).total_seconds()
+                * 1000,
             }
 
-    async def _build_mongo_query(self, interpretation: Dict[str, Any]) -> Dict[str, Any]:
+    async def _build_mongo_query(
+        self, interpretation: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Build MongoDB query from Claude's interpretation.
         """
@@ -234,7 +228,7 @@ Respond with a JSON object ONLY (no markdown, no explanation):
                 "kids": ["kids", "children", "ילדים"],
                 "movies": ["movies", "סרטים"],
                 "series": ["series", "סדרות"],
-                "entertainment": ["entertainment", "בידור"]
+                "entertainment": ["entertainment", "בידור"],
             }
 
             db_genres = []
@@ -291,11 +285,15 @@ Respond with a JSON object ONLY (no markdown, no explanation):
             else:
                 # Use explicit start/end if provided
                 if time_range.get("start"):
-                    start = datetime.fromisoformat(time_range["start"].replace("Z", "+00:00"))
+                    start = datetime.fromisoformat(
+                        time_range["start"].replace("Z", "+00:00")
+                    )
                     conditions.append({"start_time": {"$gte": start}})
 
                 if time_range.get("end"):
-                    end = datetime.fromisoformat(time_range["end"].replace("Z", "+00:00"))
+                    end = datetime.fromisoformat(
+                        time_range["end"].replace("Z", "+00:00")
+                    )
                     conditions.append({"start_time": {"$lt": end}})
 
         # Build final query
@@ -307,16 +305,16 @@ Respond with a JSON object ONLY (no markdown, no explanation):
             return {"start_time": {"$gte": now - timedelta(hours=2)}}
 
     async def _execute_search(
-        self,
-        mongo_query: Any,
-        interpretation: Dict[str, Any]
+        self, mongo_query: Any, interpretation: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
         """
         Execute the MongoDB query and return results.
         """
         try:
             # Execute query with limit
-            programs = await EPGEntry.find(mongo_query).limit(self.max_results).to_list()
+            programs = (
+                await EPGEntry.find(mongo_query).limit(self.max_results).to_list()
+            )
 
             # Convert to dict and add relevance score placeholder
             results = []
@@ -334,7 +332,7 @@ Respond with a JSON object ONLY (no markdown, no explanation):
                     "genres": program.genres or [],
                     "rating": program.rating,
                     "director": program.director,
-                    "relevance_score": 1.0  # Placeholder, will be updated in ranking
+                    "relevance_score": 1.0,  # Placeholder, will be updated in ranking
                 }
                 results.append(result)
 
@@ -346,10 +344,7 @@ Respond with a JSON object ONLY (no markdown, no explanation):
             return []
 
     async def _rank_results(
-        self,
-        query: str,
-        results: List[Dict[str, Any]],
-        interpretation: Dict[str, Any]
+        self, query: str, results: List[Dict[str, Any]], interpretation: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
         """
         Use Claude to rank search results by relevance.
@@ -366,9 +361,11 @@ Respond with a JSON object ONLY (no markdown, no explanation):
                 {
                     "id": r["id"],
                     "title": r["title"],
-                    "description": r.get("description", "")[:200],  # Limit description length
+                    "description": r.get("description", "")[
+                        :200
+                    ],  # Limit description length
                     "category": r.get("category"),
-                    "cast": r.get("cast", [])[:5]  # Limit cast list
+                    "cast": r.get("cast", [])[:5],  # Limit cast list
                 }
                 for r in results_to_rank
             ]
@@ -392,14 +389,16 @@ Respond with a JSON array of program IDs in order of relevance (most relevant fi
                 model=self.model,
                 max_tokens=500,
                 messages=[{"role": "user", "content": prompt}],
-                temperature=0.3
+                temperature=0.3,
             )
 
             response_text = message.content[0].text
 
             # Parse JSON
             if "```json" in response_text:
-                response_text = response_text.split("```json")[1].split("```")[0].strip()
+                response_text = (
+                    response_text.split("```json")[1].split("```")[0].strip()
+                )
             elif "```" in response_text:
                 response_text = response_text.split("```")[1].split("```")[0].strip()
 

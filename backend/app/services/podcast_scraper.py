@@ -3,17 +3,19 @@ Podcast Scraper Service.
 Fetches podcast episodes from real RSS feeds.
 """
 import asyncio
-from datetime import datetime
-from typing import List, Optional, Dict, Any
+import hashlib
 from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import httpx
 from bs4 import BeautifulSoup
-import hashlib
 
 
 @dataclass
 class PodcastEpisodeData:
     """A single podcast episode from RSS feed"""
+
     title: str
     description: Optional[str] = None
     episode_number: Optional[int] = None
@@ -31,6 +33,7 @@ class PodcastEpisodeData:
 @dataclass
 class PodcastData:
     """Podcast feed data with episodes"""
+
     title: str
     author: Optional[str] = None
     description: Optional[str] = None
@@ -102,7 +105,9 @@ async def fetch_rss_feed(rss_url: str) -> Optional[PodcastData]:
                         # Parse RFC 2822 date
                         from email.utils import parsedate_to_datetime
 
-                        pub_date = parsedate_to_datetime(ep_pubdate.get_text(strip=True))
+                        pub_date = parsedate_to_datetime(
+                            ep_pubdate.get_text(strip=True)
+                        )
                     except:
                         pub_date = None
 
@@ -192,9 +197,7 @@ async def scrape_all_podcasts() -> Dict[str, PodcastData]:
     """
     Scrape all configured podcasts concurrently.
     """
-    tasks = [
-        fetch_rss_feed(config["rss_url"]) for config in REAL_PODCASTS.values()
-    ]
+    tasks = [fetch_rss_feed(config["rss_url"]) for config in REAL_PODCASTS.values()]
 
     results = await asyncio.gather(*tasks, return_exceptions=True)
 

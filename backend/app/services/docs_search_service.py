@@ -3,17 +3,14 @@ Documentation Search Service
 Provides search functionality across documentation articles and FAQ entries.
 """
 
+import json
 import logging
 import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional, List, Dict, Any
-import json
+from typing import Any, Dict, List, Optional
 
-from app.models.documentation import (
-    DocumentationArticle,
-    DocumentationSearchLog,
-)
+from app.models.documentation import DocumentationArticle, DocumentationSearchLog
 from app.models.support import FAQEntry
 
 logger = logging.getLogger(__name__)
@@ -30,7 +27,7 @@ class DocsSearchService:
     async def search(
         self,
         query: str,
-        language: str = 'en',
+        language: str = "en",
         category: Optional[str] = None,
         audience: Optional[str] = None,
         platform: Optional[str] = None,
@@ -56,7 +53,7 @@ class DocsSearchService:
         """
         query = query.strip()
         if not query:
-            return {'articles': [], 'faq': [], 'total': 0}
+            return {"articles": [], "faq": [], "total": 0}
 
         # Search both articles and FAQ
         articles = await self._search_articles(
@@ -89,11 +86,11 @@ class DocsSearchService:
         )
 
         return {
-            'articles': articles,
-            'faq': faq_results,
-            'total': total,
-            'query': query,
-            'language': language,
+            "articles": articles,
+            "faq": faq_results,
+            "total": total,
+            "query": query,
+            "language": language,
         }
 
     async def _search_articles(
@@ -115,45 +112,47 @@ class DocsSearchService:
         if not manifest:
             return results
 
-        articles = manifest.get('articles', [])
+        articles = manifest.get("articles", [])
 
         for article in articles:
             # Check if article supports the requested language
-            if language not in article.get('languages', ['en']):
+            if language not in article.get("languages", ["en"]):
                 continue
 
             # Apply filters
-            if category and article.get('category') != category:
+            if category and article.get("category") != category:
                 continue
 
             if audience:
-                article_audiences = article.get('audiences', ['user'])
+                article_audiences = article.get("audiences", ["user"])
                 if audience not in article_audiences:
                     continue
 
             if platform:
-                article_platforms = article.get('platforms', ['all'])
-                if 'all' not in article_platforms and platform not in article_platforms:
+                article_platforms = article.get("platforms", ["all"])
+                if "all" not in article_platforms and platform not in article_platforms:
                     continue
 
             # Calculate relevance score
             score = self._calculate_article_score(article, query_lower, query_words)
 
             if score > 0:
-                results.append({
-                    'id': article['id'],
-                    'slug': article['slug'],
-                    'title_key': article['title_key'],
-                    'category': article['category'],
-                    'subcategory': article.get('subcategory'),
-                    'difficulty': article.get('difficulty', 'beginner'),
-                    'platforms': article.get('platforms', ['all']),
-                    'score': score,
-                    'type': 'article',
-                })
+                results.append(
+                    {
+                        "id": article["id"],
+                        "slug": article["slug"],
+                        "title_key": article["title_key"],
+                        "category": article["category"],
+                        "subcategory": article.get("subcategory"),
+                        "difficulty": article.get("difficulty", "beginner"),
+                        "platforms": article.get("platforms", ["all"]),
+                        "score": score,
+                        "type": "article",
+                    }
+                )
 
         # Sort by relevance score
-        results.sort(key=lambda x: x['score'], reverse=True)
+        results.sort(key=lambda x: x["score"], reverse=True)
 
         return results[:limit]
 
@@ -167,7 +166,7 @@ class DocsSearchService:
         score = 0.0
 
         # Check keywords (high weight)
-        keywords = article.get('keywords', [])
+        keywords = article.get("keywords", [])
         keywords_lower = [k.lower() for k in keywords]
 
         for word in query_words:
@@ -177,24 +176,24 @@ class DocsSearchService:
                 score += 5.0
 
         # Check slug (medium weight)
-        slug = article.get('slug', '').lower()
+        slug = article.get("slug", "").lower()
         for word in query_words:
             if word in slug:
                 score += 3.0
 
         # Check title key for hints (lower weight)
-        title_key = article.get('title_key', '').lower()
+        title_key = article.get("title_key", "").lower()
         for word in query_words:
             if word in title_key:
                 score += 2.0
 
         # Check category match
-        category = article.get('category', '').lower()
+        category = article.get("category", "").lower()
         if query_lower in category:
             score += 2.0
 
         # Boost featured articles
-        if article.get('is_featured'):
+        if article.get("is_featured"):
             score *= 1.2
 
         return score
@@ -224,8 +223,8 @@ class DocsSearchService:
             if not trans:
                 continue
 
-            question = trans.get('question', '')
-            answer = trans.get('answer', '')
+            question = trans.get("question", "")
+            answer = trans.get("answer", "")
 
             # Calculate relevance score
             score = self._calculate_faq_score(
@@ -237,20 +236,22 @@ class DocsSearchService:
             )
 
             if score > 0:
-                results.append({
-                    'id': str(entry.id),
-                    'question': question,
-                    'answer': answer,
-                    'category': entry.category,
-                    'views': entry.views,
-                    'helpful_yes': entry.helpful_yes,
-                    'helpful_no': entry.helpful_no,
-                    'score': score,
-                    'type': 'faq',
-                })
+                results.append(
+                    {
+                        "id": str(entry.id),
+                        "question": question,
+                        "answer": answer,
+                        "category": entry.category,
+                        "views": entry.views,
+                        "helpful_yes": entry.helpful_yes,
+                        "helpful_no": entry.helpful_no,
+                        "score": score,
+                        "type": "faq",
+                    }
+                )
 
         # Sort by relevance score
-        results.sort(key=lambda x: x['score'], reverse=True)
+        results.sort(key=lambda x: x["score"], reverse=True)
 
         return results[:limit]
 
@@ -307,11 +308,15 @@ class DocsSearchService:
         try:
             manifest_path = (
                 Path(__file__).parent.parent.parent.parent
-                / 'shared' / 'data' / 'support' / 'docs' / 'manifest.json'
+                / "shared"
+                / "data"
+                / "support"
+                / "docs"
+                / "manifest.json"
             )
 
             if manifest_path.exists():
-                with open(manifest_path, 'r', encoding='utf-8') as f:
+                with open(manifest_path, "r", encoding="utf-8") as f:
                     self._manifest_cache = json.load(f)
                     self._manifest_loaded_at = now
                     return self._manifest_cache
@@ -348,7 +353,7 @@ class DocsSearchService:
 
     async def get_popular_searches(
         self,
-        language: str = 'en',
+        language: str = "en",
         limit: int = 10,
         days: int = 7,
     ) -> List[Dict[str, Any]]:
@@ -360,29 +365,29 @@ class DocsSearchService:
         # Aggregate searches
         pipeline = [
             {
-                '$match': {
-                    'language': language,
-                    'created_at': {'$gte': cutoff},
+                "$match": {
+                    "language": language,
+                    "created_at": {"$gte": cutoff},
                 }
             },
             {
-                '$group': {
-                    '_id': {'$toLower': '$query'},
-                    'count': {'$sum': 1},
-                    'avg_results': {'$avg': '$results_count'},
+                "$group": {
+                    "_id": {"$toLower": "$query"},
+                    "count": {"$sum": 1},
+                    "avg_results": {"$avg": "$results_count"},
                 }
             },
-            {'$sort': {'count': -1}},
-            {'$limit': limit},
+            {"$sort": {"count": -1}},
+            {"$limit": limit},
         ]
 
         try:
             results = await DocumentationSearchLog.aggregate(pipeline).to_list()
             return [
                 {
-                    'query': r['_id'],
-                    'count': r['count'],
-                    'avg_results': round(r['avg_results'], 1),
+                    "query": r["_id"],
+                    "count": r["count"],
+                    "avg_results": round(r["avg_results"], 1),
                 }
                 for r in results
             ]
@@ -392,7 +397,7 @@ class DocsSearchService:
 
     async def get_zero_result_searches(
         self,
-        language: str = 'en',
+        language: str = "en",
         limit: int = 20,
         days: int = 7,
     ) -> List[Dict[str, Any]]:
@@ -403,28 +408,28 @@ class DocsSearchService:
 
         pipeline = [
             {
-                '$match': {
-                    'language': language,
-                    'created_at': {'$gte': cutoff},
-                    'results_count': 0,
+                "$match": {
+                    "language": language,
+                    "created_at": {"$gte": cutoff},
+                    "results_count": 0,
                 }
             },
             {
-                '$group': {
-                    '_id': {'$toLower': '$query'},
-                    'count': {'$sum': 1},
+                "$group": {
+                    "_id": {"$toLower": "$query"},
+                    "count": {"$sum": 1},
                 }
             },
-            {'$sort': {'count': -1}},
-            {'$limit': limit},
+            {"$sort": {"count": -1}},
+            {"$limit": limit},
         ]
 
         try:
             results = await DocumentationSearchLog.aggregate(pipeline).to_list()
             return [
                 {
-                    'query': r['_id'],
-                    'count': r['count'],
+                    "query": r["_id"],
+                    "count": r["count"],
                 }
                 for r in results
             ]
@@ -435,13 +440,16 @@ class DocsSearchService:
     async def get_article_content(
         self,
         slug: str,
-        language: str = 'en',
+        language: str = "en",
     ) -> Optional[Dict[str, Any]]:
         """Get full article content by slug."""
         try:
             docs_path = (
                 Path(__file__).parent.parent.parent.parent
-                / 'shared' / 'data' / 'support' / 'docs'
+                / "shared"
+                / "data"
+                / "support"
+                / "docs"
             )
             article_path = docs_path / language / f"{slug}.md"
 
@@ -454,23 +462,23 @@ class DocsSearchService:
             except ValueError:
                 return None
 
-            with open(article_path, 'r', encoding='utf-8') as f:
+            with open(article_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # Get metadata from manifest
             manifest = await self._get_manifest()
             metadata = {}
             if manifest:
-                for article in manifest.get('articles', []):
-                    if article.get('slug') == slug:
+                for article in manifest.get("articles", []):
+                    if article.get("slug") == slug:
                         metadata = article
                         break
 
             return {
-                'slug': slug,
-                'language': language,
-                'content': content,
-                'metadata': metadata,
+                "slug": slug,
+                "language": language,
+                "content": content,
+                "metadata": metadata,
             }
 
         except Exception as e:

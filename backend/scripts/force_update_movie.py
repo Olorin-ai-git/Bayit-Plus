@@ -4,8 +4,9 @@
 import asyncio
 import os
 import sys
-from motor.motor_asyncio import AsyncIOMotorClient
+
 from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorClient
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -25,9 +26,9 @@ async def force_update():
         {
             "$set": {
                 "stream_url": "https://storage.googleapis.com/bayit-plus-media-new/movies/25th_Hour/25th.Hour.2002.HDTV.720p.AC3.5.1-BoK.mkv",
-                "stream_type": "video"
+                "stream_type": "video",
             }
-        }
+        },
     )
 
     print(f"Matched: {result.matched_count}")

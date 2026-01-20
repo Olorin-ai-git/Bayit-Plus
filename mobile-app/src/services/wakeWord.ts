@@ -7,7 +7,7 @@
  * - Automatic restart after detection
  */
 
-import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
+import { NativeModules, NativeEventEmitter, Platform } from "react-native";
 
 const { WakeWordModule } = NativeModules;
 
@@ -25,7 +25,7 @@ class WakeWordService {
   private isActive: boolean = false;
 
   constructor() {
-    if (Platform.OS === 'ios' && WakeWordModule) {
+    if (Platform.OS === "ios" && WakeWordModule) {
       this.eventEmitter = new NativeEventEmitter(WakeWordModule);
     }
   }
@@ -36,14 +36,15 @@ class WakeWordService {
    */
   async setLanguage(languageCode: string): Promise<void> {
     if (!WakeWordModule) {
-      throw new Error('WakeWordModule not available');
+      console.warn("[WakeWordService] Wake word detection not available");
+      return;
     }
 
     try {
       const result = await WakeWordModule.setLanguage(languageCode);
-      console.log('[WakeWordService] Language set:', result);
+      console.log("[WakeWordService] Language set:", result);
     } catch (error) {
-      console.error('[WakeWordService] Failed to set language:', error);
+      console.error("[WakeWordService] Failed to set language:", error);
       throw error;
     }
   }
@@ -54,14 +55,18 @@ class WakeWordService {
    */
   async setCustomWakeWords(words: string[]): Promise<void> {
     if (!WakeWordModule) {
-      throw new Error('WakeWordModule not available');
+      console.warn("[WakeWordService] Wake word detection not available");
+      return;
     }
 
     try {
       await WakeWordModule.setCustomWakeWords(words);
-      console.log('[WakeWordService] Custom wake words set:', words);
+      console.log("[WakeWordService] Custom wake words set:", words);
     } catch (error) {
-      console.error('[WakeWordService] Failed to set custom wake words:', error);
+      console.error(
+        "[WakeWordService] Failed to set custom wake words:",
+        error,
+      );
       throw error;
     }
   }
@@ -71,25 +76,34 @@ class WakeWordService {
    */
   async startListening(): Promise<void> {
     if (!WakeWordModule || !this.eventEmitter) {
-      throw new Error('WakeWordModule not available');
+      console.warn(
+        "[WakeWordService] Wake word detection not available - feature requires native WakeWordModule implementation",
+      );
+      return;
     }
 
     try {
       // Set up event listener
       this.detectionSubscription = this.eventEmitter.addListener(
-        'WakeWordDetected',
+        "WakeWordDetected",
         (detection: WakeWordDetection) => {
-          console.log('[WakeWordService] Wake word detected:', detection.wakeWord);
+          console.log(
+            "[WakeWordService] Wake word detected:",
+            detection.wakeWord,
+          );
           this.detectionListeners.forEach((listener) => listener(detection));
-        }
+        },
       );
 
       // Start native detection
       const result = await WakeWordModule.startListening();
       this.isActive = true;
-      console.log('[WakeWordService] Wake word detection started:', result);
+      console.log("[WakeWordService] Wake word detection started:", result);
     } catch (error) {
-      console.error('[WakeWordService] Failed to start wake word detection:', error);
+      console.error(
+        "[WakeWordService] Failed to start wake word detection:",
+        error,
+      );
       this.cleanup();
       throw error;
     }
@@ -107,9 +121,12 @@ class WakeWordService {
       await WakeWordModule.stopListening();
       this.isActive = false;
       this.cleanup();
-      console.log('[WakeWordService] Wake word detection stopped');
+      console.log("[WakeWordService] Wake word detection stopped");
     } catch (error) {
-      console.error('[WakeWordService] Failed to stop wake word detection:', error);
+      console.error(
+        "[WakeWordService] Failed to stop wake word detection:",
+        error,
+      );
     }
   }
 
@@ -125,7 +142,7 @@ class WakeWordService {
       const result = await WakeWordModule.isActive();
       return result.active;
     } catch (error) {
-      console.error('[WakeWordService] Failed to check active status:', error);
+      console.error("[WakeWordService] Failed to check active status:", error);
       return false;
     }
   }
@@ -141,7 +158,9 @@ class WakeWordService {
    * Remove detection listener
    */
   removeDetectionListener(listener: WakeWordDetectionListener): void {
-    this.detectionListeners = this.detectionListeners.filter((l) => l !== listener);
+    this.detectionListeners = this.detectionListeners.filter(
+      (l) => l !== listener,
+    );
   }
 
   /**

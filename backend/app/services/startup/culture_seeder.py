@@ -65,7 +65,11 @@ ISRAELI_CITIES_DATA = [
             CultureCityCategory(
                 id="kotel",
                 name="Western Wall",
-                name_localized={"he": "הכותל המערבי", "en": "Western Wall", "es": "Muro Occidental"},
+                name_localized={
+                    "he": "הכותל המערבי",
+                    "en": "Western Wall",
+                    "es": "Muro Occidental",
+                },
                 icon_emoji="🕎",
                 keywords_native=["כותל", "הכותל המערבי"],
                 keywords_english=["kotel", "western wall"],
@@ -75,9 +79,13 @@ ISRAELI_CITIES_DATA = [
             CultureCityCategory(
                 id="idf-ceremony",
                 name="IDF Ceremonies",
-                name_localized={"he": "טקסי צה\"ל", "en": "IDF Ceremonies", "es": "Ceremonias de las FDI"},
+                name_localized={
+                    "he": 'טקסי צה"ל',
+                    "en": "IDF Ceremonies",
+                    "es": "Ceremonias de las FDI",
+                },
                 icon_emoji="🎖️",
-                keywords_native=["טקס צה\"ל", "השבעה"],
+                keywords_native=['טקס צה"ל', "השבעה"],
                 keywords_english=["idf ceremony", "swearing in"],
                 display_order=1,
                 is_active=True,
@@ -85,7 +93,11 @@ ISRAELI_CITIES_DATA = [
             CultureCityCategory(
                 id="holy-sites",
                 name="Holy Sites",
-                name_localized={"he": "מקומות קדושים", "en": "Holy Sites", "es": "Lugares Sagrados"},
+                name_localized={
+                    "he": "מקומות קדושים",
+                    "en": "Holy Sites",
+                    "es": "Lugares Sagrados",
+                },
                 icon_emoji="✡️",
                 keywords_native=["מקומות קדושים", "עיר דוד"],
                 keywords_english=["holy sites", "city of david"],
@@ -336,7 +348,11 @@ JAPANESE_CITIES_DATA = [
             CultureCityCategory(
                 id="anime",
                 name="Anime & Manga",
-                name_localized={"ja": "アニメ・漫画", "en": "Anime & Manga", "he": "אנימה ומנגה"},
+                name_localized={
+                    "ja": "アニメ・漫画",
+                    "en": "Anime & Manga",
+                    "he": "אנימה ומנגה",
+                },
                 icon_emoji="🎌",
                 keywords_native=["アニメ", "漫画", "秋葉原"],
                 keywords_english=["anime", "manga", "akihabara"],
@@ -378,7 +394,11 @@ JAPANESE_CITIES_DATA = [
             CultureCityCategory(
                 id="temples",
                 name="Temples & Shrines",
-                name_localized={"ja": "寺社仏閣", "en": "Temples & Shrines", "he": "מקדשים"},
+                name_localized={
+                    "ja": "寺社仏閣",
+                    "en": "Temples & Shrines",
+                    "he": "מקדשים",
+                },
                 icon_emoji="⛩️",
                 keywords_native=["寺", "神社", "仏閣"],
                 keywords_english=["temple", "shrine", "spiritual"],
@@ -388,7 +408,11 @@ JAPANESE_CITIES_DATA = [
             CultureCityCategory(
                 id="tradition",
                 name="Traditional Culture",
-                name_localized={"ja": "伝統文化", "en": "Traditional Culture", "he": "תרבות מסורתית"},
+                name_localized={
+                    "ja": "伝統文化",
+                    "en": "Traditional Culture",
+                    "he": "תרבות מסורתית",
+                },
                 icon_emoji="🎎",
                 keywords_native=["伝統", "着物", "芸者"],
                 keywords_english=["tradition", "kimono", "geisha"],
@@ -494,7 +518,11 @@ KOREAN_CITIES_DATA = [
             CultureCityCategory(
                 id="kpop",
                 name="K-Pop & Entertainment",
-                name_localized={"ko": "K-Pop & 엔터테인먼트", "en": "K-Pop & Entertainment", "he": "קיי-פופ ובידור"},
+                name_localized={
+                    "ko": "K-Pop & 엔터테인먼트",
+                    "en": "K-Pop & Entertainment",
+                    "he": "קיי-פופ ובידור",
+                },
                 icon_emoji="🎤",
                 keywords_native=["케이팝", "아이돌", "강남"],
                 keywords_english=["kpop", "idol", "gangnam"],
@@ -556,7 +584,11 @@ KOREAN_CITIES_DATA = [
             CultureCityCategory(
                 id="film",
                 name="Film & Festivals",
-                name_localized={"ko": "영화 & 축제", "en": "Film & Festivals", "he": "קולנוע ופסטיבלים"},
+                name_localized={
+                    "ko": "영화 & 축제",
+                    "en": "Film & Festivals",
+                    "he": "קולנוע ופסטיבלים",
+                },
                 icon_emoji="🎬",
                 keywords_native=["부산국제영화제", "영화", "축제"],
                 keywords_english=["biff", "film festival", "cinema"],
@@ -640,7 +672,11 @@ INDIAN_CITIES_DATA = [
             CultureCityCategory(
                 id="street-food",
                 name="Street Food",
-                name_localized={"hi": "स्ट्रीट फूड", "en": "Street Food", "he": "אוכל רחוב"},
+                name_localized={
+                    "hi": "स्ट्रीट फूड",
+                    "en": "Street Food",
+                    "he": "אוכל רחוב",
+                },
                 icon_emoji="🍛",
                 keywords_native=["वड़ा पाव", "पाव भाजी", "स्ट्रीट फूड"],
                 keywords_english=["vada pav", "pav bhaji", "street food"],
@@ -672,7 +708,11 @@ INDIAN_CITIES_DATA = [
             CultureCityCategory(
                 id="history",
                 name="History & Heritage",
-                name_localized={"hi": "इतिहास और विरासत", "en": "History & Heritage", "he": "היסטוריה ומורשת"},
+                name_localized={
+                    "hi": "इतिहास और विरासत",
+                    "en": "History & Heritage",
+                    "he": "היסטוריה ומורשת",
+                },
                 icon_emoji="🏛️",
                 keywords_native=["लाल किला", "कुतुब मीनार", "इतिहास"],
                 keywords_english=["red fort", "qutub minar", "history"],
@@ -682,7 +722,11 @@ INDIAN_CITIES_DATA = [
             CultureCityCategory(
                 id="politics",
                 name="Politics & Government",
-                name_localized={"hi": "राजनीति और सरकार", "en": "Politics & Government", "he": "פוליטיקה וממשל"},
+                name_localized={
+                    "hi": "राजनीति और सरकार",
+                    "en": "Politics & Government",
+                    "he": "פוליטיקה וממשל",
+                },
                 icon_emoji="🏛️",
                 keywords_native=["संसद", "सरकार", "राजनीति"],
                 keywords_english=["parliament", "government", "politics"],
@@ -714,7 +758,11 @@ INDIAN_CITIES_DATA = [
             CultureCityCategory(
                 id="tech",
                 name="Technology & Startups",
-                name_localized={"hi": "प्रौद्योगिकी और स्टार्टअप", "en": "Technology & Startups", "he": "טכנולוגיה וסטארטאפים"},
+                name_localized={
+                    "hi": "प्रौद्योगिकी और स्टार्टअप",
+                    "en": "Technology & Startups",
+                    "he": "טכנולוגיה וסטארטאפים",
+                },
                 icon_emoji="💻",
                 keywords_native=["आईटी", "स्टार्टअप", "टेक"],
                 keywords_english=["it", "startup", "tech"],
@@ -724,7 +772,11 @@ INDIAN_CITIES_DATA = [
             CultureCityCategory(
                 id="gardens",
                 name="Gardens & Parks",
-                name_localized={"hi": "उद्यान और पार्क", "en": "Gardens & Parks", "he": "גנים ופארקים"},
+                name_localized={
+                    "hi": "उद्यान और पार्क",
+                    "en": "Gardens & Parks",
+                    "he": "גנים ופארקים",
+                },
                 icon_emoji="🌳",
                 keywords_native=["लालबाग", "कब्बन पार्क", "उद्यान"],
                 keywords_english=["lalbagh", "cubbon park", "gardens"],
@@ -787,7 +839,9 @@ async def init_default_cultures() -> None:
                     cities_created += 1
                     logger.info(f"    ✓ Created city: {city_data['name']}")
             else:
-                logger.debug(f"{culture_info['name']} culture already exists - skipping")
+                logger.debug(
+                    f"{culture_info['name']} culture already exists - skipping"
+                )
 
         if cultures_created > 0 or cities_created > 0:
             logger.info(

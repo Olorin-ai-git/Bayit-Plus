@@ -5,12 +5,14 @@ Vector embeddings for semantic search with timestamp deep-linking.
 """
 
 from datetime import datetime, timezone
-from typing import Optional, List, Literal
+from typing import List, Literal, Optional
+
 from beanie import Document, PydanticObjectId
 from pydantic import BaseModel, Field, field_validator
 
-
-EmbeddingType = Literal["title", "description", "subtitle_segment", "dialogue", "summary"]
+EmbeddingType = Literal[
+    "title", "description", "subtitle_segment", "dialogue", "summary"
+]
 
 
 class ContentEmbedding(Document):
@@ -18,14 +20,24 @@ class ContentEmbedding(Document):
 
     # Content reference
     content_id: str = Field(..., description="Reference to content document")
-    content_type: Optional[str] = Field(default=None, description="movie, series, episode, etc.")
+    content_type: Optional[str] = Field(
+        default=None, description="movie, series, episode, etc."
+    )
 
     # Embedding type and metadata
     embedding_type: EmbeddingType = Field(..., description="Type of content embedded")
-    segment_index: Optional[int] = Field(default=None, description="Index for subtitle segments")
-    segment_start_time: Optional[float] = Field(default=None, description="Start time in seconds")
-    segment_end_time: Optional[float] = Field(default=None, description="End time in seconds")
-    segment_text: Optional[str] = Field(default=None, description="Original text that was embedded")
+    segment_index: Optional[int] = Field(
+        default=None, description="Index for subtitle segments"
+    )
+    segment_start_time: Optional[float] = Field(
+        default=None, description="Start time in seconds"
+    )
+    segment_end_time: Optional[float] = Field(
+        default=None, description="End time in seconds"
+    )
+    segment_text: Optional[str] = Field(
+        default=None, description="Original text that was embedded"
+    )
 
     # Embedding info
     embedding_model: str = Field(..., description="Model used for embedding")
@@ -98,7 +110,9 @@ class DialogueSearchQuery(BaseModel):
 
     query: str = Field(..., min_length=2, max_length=500)
     language: str = Field(default="he")
-    content_id: Optional[str] = Field(default=None, description="Limit to specific content")
+    content_id: Optional[str] = Field(
+        default=None, description="Limit to specific content"
+    )
     limit: int = Field(default=50, ge=1, le=200)
     min_score: float = Field(default=0.6, ge=0.0, le=1.0)
 
@@ -107,7 +121,9 @@ class IndexContentRequest(BaseModel):
     """Request to index content for semantic search."""
 
     content_id: str
-    force_reindex: bool = Field(default=False, description="Re-index even if already indexed")
+    force_reindex: bool = Field(
+        default=False, description="Re-index even if already indexed"
+    )
 
 
 class IndexingStatus(BaseModel):
@@ -128,7 +144,9 @@ class RecapSession(Document):
     # Session identification
     session_id: str = Field(..., description="Unique session identifier")
     partner_id: Optional[str] = Field(default=None)
-    channel_id: Optional[str] = Field(default=None, description="Live channel being watched")
+    channel_id: Optional[str] = Field(
+        default=None, description="Live channel being watched"
+    )
     stream_url: Optional[str] = Field(default=None)
 
     # Transcript accumulation
@@ -150,7 +168,9 @@ class RecapSession(Document):
     # Timestamps
     started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     ended_at: Optional[datetime] = Field(default=None)
-    last_updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
 
     @field_validator("transcript_segments")
     @classmethod

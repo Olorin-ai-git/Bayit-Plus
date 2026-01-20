@@ -11,9 +11,9 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PYTHON_VERSION: '3.11'
-  NODE_VERSION: '20'
-  POETRY_VERSION: '1.8.0'
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "20"
+  POETRY_VERSION: "1.8.0"
 
 jobs:
   detect-changes:
@@ -101,15 +101,14 @@ jobs:
       - name: Run mypy type checking
         working-directory: backend
         run: poetry run mypy app --ignore-missing-imports
-        continue-on-error: true
 
       - name: Run pytest with coverage
         working-directory: backend
         env:
           MONGODB_URL: mongodb://localhost:27017
           MONGODB_DB_NAME: bayit_test
-          SECRET_KEY: test-secret-key-for-ci
-          DEBUG: 'true'
+          SECRET_KEY: ${{ github.run_id }}-${{ github.sha }}
+          DEBUG: "true"
         run: |
           poetry run pytest tests/ \
             --cov=app \
@@ -118,7 +117,6 @@ jobs:
             --cov-fail-under=70 \
             -v \
             --tb=short
-        continue-on-error: true
 
       - name: Upload coverage report
         if: always()
@@ -142,7 +140,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: web/package-lock.json
 
       - name: Install dependencies
@@ -172,7 +170,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: partner-portal/package-lock.json
 
       - name: Install dependencies
@@ -202,7 +200,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: mobile-app/package-lock.json
 
       - name: Install dependencies
@@ -221,7 +219,8 @@ jobs:
   pr-summary:
     name: PR validation summary
     runs-on: ubuntu-latest
-    needs: [backend-checks, web-checks, partner-portal-checks, mobile-app-checks]
+    needs:
+      [backend-checks, web-checks, partner-portal-checks, mobile-app-checks]
     if: always()
 
     steps:
@@ -239,7 +238,13 @@ jobs:
       - name: Check critical failures
         if: |
           needs.backend-checks.result == 'failure' ||
-          needs.web-checks.result == 'failure'
+          needs.web-checks.result == 'failure' ||
+          needs.partner-portal-checks.result == 'failure' ||
+          needs.mobile-app-checks.result == 'failure'
         run: |
           echo "Critical validation failed!"
+          echo "Backend: ${{ needs.backend-checks.result }}"
+          echo "Web: ${{ needs.web-checks.result }}"
+          echo "Partner Portal: ${{ needs.partner-portal-checks.result }}"
+          echo "Mobile App: ${{ needs.mobile-app-checks.result }}"
           exit 1

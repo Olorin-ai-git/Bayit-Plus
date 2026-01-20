@@ -6,8 +6,9 @@ including initialization, connection management, and transcription flow.
 """
 
 import asyncio
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 
 @pytest.fixture
@@ -107,9 +108,7 @@ class TestElevenLabsRealtimeServiceConnect:
         service._connected = True
         service._session_confirmed = True
 
-        with patch(
-            "app.services.elevenlabs_realtime_service.logger"
-        ) as mock_logger:
+        with patch("app.services.elevenlabs_realtime_service.logger") as mock_logger:
             await service.connect("he")
             mock_logger.warning.assert_called_once()
 
@@ -133,11 +132,13 @@ class TestElevenLabsRealtimeServiceReconnect:
     """Test reconnection logic."""
 
     @pytest.mark.asyncio
-    async def test_reconnect_max_attempts_exceeded(self, mock_settings, mock_websockets):
+    async def test_reconnect_max_attempts_exceeded(
+        self, mock_settings, mock_websockets
+    ):
         """Test that reconnection stops after max attempts."""
         from app.services.elevenlabs_realtime_service import (
-            ElevenLabsRealtimeService,
             MAX_RECONNECT_ATTEMPTS,
+            ElevenLabsRealtimeService,
         )
 
         service = ElevenLabsRealtimeService()
@@ -155,9 +156,9 @@ class TestElevenLabsRealtimeServiceReconnect:
         mock_websockets.connect = AsyncMock(return_value=mock_ws)
 
         from app.services.elevenlabs_realtime_service import (
-            ElevenLabsRealtimeService,
             INITIAL_RECONNECT_DELAY_SEC,
             RECONNECT_BACKOFF_MULTIPLIER,
+            ElevenLabsRealtimeService,
         )
 
         service = ElevenLabsRealtimeService()

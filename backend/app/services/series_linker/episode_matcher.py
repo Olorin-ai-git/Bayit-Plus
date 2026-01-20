@@ -48,14 +48,14 @@ def extract_series_info_from_title(
 
             if len(groups) == 3:
                 # Full match: series, season, episode
-                series_name = groups[0].strip().strip('-').strip()
+                series_name = groups[0].strip().strip("-").strip()
                 season = int(groups[1])
                 episode = int(groups[2])
                 return series_name, season, episode
 
             elif len(groups) == 2:
                 # EP format: series, episode (assume season 1)
-                series_name = groups[0].strip().strip('-').strip()
+                series_name = groups[0].strip().strip("-").strip()
                 episode = int(groups[1])
                 return series_name, 1, episode
 
@@ -91,16 +91,25 @@ async def find_matching_series_by_similarity(
     normalized_name = series_name.lower().strip()
 
     # Strategy 1: Exact match (case-insensitive)
-    exact_match = await Content.find_one({
-        "is_series": True,
-        "$or": [
-            {"title": {"$regex": f"^{re.escape(series_name)}$", "$options": "i"}},
-            {"title_en": {"$regex": f"^{re.escape(series_name)}$", "$options": "i"}},
-        ]
-    })
+    exact_match = await Content.find_one(
+        {
+            "is_series": True,
+            "$or": [
+                {"title": {"$regex": f"^{re.escape(series_name)}$", "$options": "i"}},
+                {
+                    "title_en": {
+                        "$regex": f"^{re.escape(series_name)}$",
+                        "$options": "i",
+                    }
+                },
+            ],
+        }
+    )
 
     if exact_match:
-        logger.info(f"Found exact series match: '{exact_match.title}' for '{series_name}'")
+        logger.info(
+            f"Found exact series match: '{exact_match.title}' for '{series_name}'"
+        )
         return exact_match, 1.0
 
     # Strategy 2: Similarity matching

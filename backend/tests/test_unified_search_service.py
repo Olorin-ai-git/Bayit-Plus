@@ -12,21 +12,21 @@ Tests cover:
 - Performance benchmarks
 """
 
+from datetime import datetime, timedelta
+from typing import Any, Dict, List
+
 import pytest
 import pytest_asyncio
-from datetime import datetime, timedelta
-from typing import List, Dict, Any
+from app.core.config import settings
+from app.models.content import Content
+from app.models.subtitles import SubtitleCueModel, SubtitleTrackDoc
+from app.services.search_cache import SearchCacheService
+from app.services.unified_search_service import SearchFilters, UnifiedSearchService
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from app.services.unified_search_service import UnifiedSearchService, SearchFilters
-from app.services.search_cache import SearchCacheService
-from app.models.content import Content
-from app.models.subtitles import SubtitleTrackDoc, SubtitleCueModel
-from app.core.config import settings
-
-
 # Test Fixtures
+
 
 @pytest_asyncio.fixture
 async def db_client():
@@ -34,7 +34,7 @@ async def db_client():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     await init_beanie(
         database=client[f"{settings.MONGODB_DB_NAME}_test"],
-        document_models=[Content, SubtitleTrackDoc]
+        document_models=[Content, SubtitleTrackDoc],
     )
     yield client
     # Cleanup
@@ -190,15 +190,13 @@ async def sample_subtitles(db_client, sample_content):
 
 # Text Search Tests
 
+
 @pytest.mark.asyncio
 async def test_basic_text_search(search_service, sample_content):
     """Test basic text search functionality."""
     filters = SearchFilters(contentTypes=["vod"])
     results = await search_service.search(
-        query="Fauda",
-        filters=filters,
-        page=1,
-        limit=20
+        query="Fauda", filters=filters, page=1, limit=20
     )
 
     assert results["success"] is True
@@ -214,19 +212,13 @@ async def test_multilingual_search(search_service, sample_content):
 
     # Search in Hebrew
     results = await search_service.search(
-        query="שטיסל",
-        filters=filters,
-        page=1,
-        limit=20
+        query="שטיסל", filters=filters, page=1, limit=20
     )
     assert len(results["results"]) == 1
 
     # Search in English
     results = await search_service.search(
-        query="Shtisel",
-        filters=filters,
-        page=1,
-        limit=20
+        query="Shtisel", filters=filters, page=1, limit=20
     )
     assert len(results["results"]) == 1
 
@@ -236,10 +228,7 @@ async def test_cast_search(search_service, sample_content):
     """Test search by cast member."""
     filters = SearchFilters(contentTypes=["vod"])
     results = await search_service.search(
-        query="Lior Raz",
-        filters=filters,
-        page=1,
-        limit=20
+        query="Lior Raz", filters=filters, page=1, limit=20
     )
 
     assert len(results["results"]) >= 1
@@ -251,10 +240,7 @@ async def test_director_search(search_service, sample_content):
     """Test search by director."""
     filters = SearchFilters(contentTypes=["vod"])
     results = await search_service.search(
-        query="Eran Kolirin",
-        filters=filters,
-        page=1,
-        limit=20
+        query="Eran Kolirin", filters=filters, page=1, limit=20
     )
 
     assert len(results["results"]) == 1
@@ -263,19 +249,12 @@ async def test_director_search(search_service, sample_content):
 
 # Genre Filter Tests
 
+
 @pytest.mark.asyncio
 async def test_genre_filter_single(search_service, sample_content):
     """Test filtering by single genre."""
-    filters = SearchFilters(
-        contentTypes=["vod"],
-        genres=["Drama"]
-    )
-    results = await search_service.search(
-        query="",
-        filters=filters,
-        page=1,
-        limit=20
-    )
+    filters = SearchFilters(contentTypes=["vod"], genres=["Drama"])
+    results = await search_service.search(query="", filters=filters, page=1, limit=20)
 
     assert len(results["results"]) >= 2
     for result in results["results"]:
@@ -285,36 +264,20 @@ async def test_genre_filter_single(search_service, sample_content):
 @pytest.mark.asyncio
 async def test_genre_filter_multiple(search_service, sample_content):
     """Test filtering by multiple genres (OR logic)."""
-    filters = SearchFilters(
-        contentTypes=["vod"],
-        genres=["Action", "Comedy"]
-    )
-    results = await search_service.search(
-        query="",
-        filters=filters,
-        page=1,
-        limit=20
-    )
+    filters = SearchFilters(contentTypes=["vod"], genres=["Action", "Comedy"])
+    results = await search_service.search(query="", filters=filters, page=1, limit=20)
 
     assert len(results["results"]) >= 2
 
 
 # Year Filter Tests
 
+
 @pytest.mark.asyncio
 async def test_year_range_filter(search_service, sample_content):
     """Test filtering by year range."""
-    filters = SearchFilters(
-        contentTypes=["vod"],
-        yearMin=2010,
-        yearMax=2020
-    )
-    results = await search_service.search(
-        query="",
-        filters=filters,
-        page=1,
-        limit=20
-    )
+    filters = SearchFilters(contentTypes=["vod"], yearMin=2010, yearMax=2020)
+    results = await search_service.search(query="", filters=filters, page=1, limit=20)
 
     for result in results["results"]:
         assert 2010 <= result.get("year", 0) <= 2020
@@ -323,16 +286,8 @@ async def test_year_range_filter(search_service, sample_content):
 @pytest.mark.asyncio
 async def test_year_min_only(search_service, sample_content):
     """Test filtering with minimum year only."""
-    filters = SearchFilters(
-        contentTypes=["vod"],
-        yearMin=2013
-    )
-    results = await search_service.search(
-        query="",
-        filters=filters,
-        page=1,
-        limit=20
-    )
+    filters = SearchFilters(contentTypes=["vod"], yearMin=2013)
+    results = await search_service.search(query="", filters=filters, page=1, limit=20)
 
     for result in results["results"]:
         assert result.get("year", 0) >= 2013
@@ -340,19 +295,12 @@ async def test_year_min_only(search_service, sample_content):
 
 # Rating Filter Tests
 
+
 @pytest.mark.asyncio
 async def test_rating_filter(search_service, sample_content):
     """Test filtering by minimum rating."""
-    filters = SearchFilters(
-        contentTypes=["vod"],
-        ratingMin=8.0
-    )
-    results = await search_service.search(
-        query="",
-        filters=filters,
-        page=1,
-        limit=20
-    )
+    filters = SearchFilters(contentTypes=["vod"], ratingMin=8.0)
+    results = await search_service.search(query="", filters=filters, page=1, limit=20)
 
     for result in results["results"]:
         assert result.get("rating", 0) >= 8.0
@@ -360,19 +308,12 @@ async def test_rating_filter(search_service, sample_content):
 
 # Subtitle Language Filter Tests
 
+
 @pytest.mark.asyncio
 async def test_subtitle_language_filter(search_service, sample_content):
     """Test filtering by subtitle language."""
-    filters = SearchFilters(
-        contentTypes=["vod"],
-        subtitleLanguages=["en"]
-    )
-    results = await search_service.search(
-        query="",
-        filters=filters,
-        page=1,
-        limit=20
-    )
+    filters = SearchFilters(contentTypes=["vod"], subtitleLanguages=["en"])
+    results = await search_service.search(query="", filters=filters, page=1, limit=20)
 
     for result in results["results"]:
         assert "en" in result.get("available_subtitle_languages", [])
@@ -380,19 +321,12 @@ async def test_subtitle_language_filter(search_service, sample_content):
 
 # Kids Content Filter Tests
 
+
 @pytest.mark.asyncio
 async def test_kids_content_only(search_service, sample_content):
     """Test filtering for kids content only."""
-    filters = SearchFilters(
-        contentTypes=["vod"],
-        isKidsContent=True
-    )
-    results = await search_service.search(
-        query="",
-        filters=filters,
-        page=1,
-        limit=20
-    )
+    filters = SearchFilters(contentTypes=["vod"], isKidsContent=True)
+    results = await search_service.search(query="", filters=filters, page=1, limit=20)
 
     assert len(results["results"]) >= 1
     for result in results["results"]:
@@ -402,16 +336,8 @@ async def test_kids_content_only(search_service, sample_content):
 @pytest.mark.asyncio
 async def test_exclude_kids_content(search_service, sample_content):
     """Test excluding kids content."""
-    filters = SearchFilters(
-        contentTypes=["vod"],
-        isKidsContent=False
-    )
-    results = await search_service.search(
-        query="",
-        filters=filters,
-        page=1,
-        limit=20
-    )
+    filters = SearchFilters(contentTypes=["vod"], isKidsContent=False)
+    results = await search_service.search(query="", filters=filters, page=1, limit=20)
 
     for result in results["results"]:
         assert result.get("is_kids_content") is False
@@ -419,18 +345,13 @@ async def test_exclude_kids_content(search_service, sample_content):
 
 # Subtitle Search Tests
 
+
 @pytest.mark.asyncio
 async def test_subtitle_search_basic(search_service, sample_subtitles):
     """Test basic subtitle text search."""
-    filters = SearchFilters(
-        contentTypes=["vod"],
-        searchInSubtitles=True
-    )
+    filters = SearchFilters(contentTypes=["vod"], searchInSubtitles=True)
     results = await search_service.search(
-        query="Shalom",
-        filters=filters,
-        page=1,
-        limit=20
+        query="Shalom", filters=filters, page=1, limit=20
     )
 
     assert len(results["results"]) >= 1
@@ -441,15 +362,9 @@ async def test_subtitle_search_basic(search_service, sample_subtitles):
 @pytest.mark.asyncio
 async def test_subtitle_match_timestamps(search_service, sample_subtitles):
     """Test that subtitle matches include timestamps."""
-    filters = SearchFilters(
-        contentTypes=["vod"],
-        searchInSubtitles=True
-    )
+    filters = SearchFilters(contentTypes=["vod"], searchInSubtitles=True)
     results = await search_service.search(
-        query="mission",
-        filters=filters,
-        page=1,
-        limit=20
+        query="mission", filters=filters, page=1, limit=20
     )
 
     if results["results"]:
@@ -463,6 +378,7 @@ async def test_subtitle_match_timestamps(search_service, sample_subtitles):
 
 # Combined Filter Tests
 
+
 @pytest.mark.asyncio
 async def test_combined_filters(search_service, sample_content):
     """Test multiple filters combined."""
@@ -472,14 +388,9 @@ async def test_combined_filters(search_service, sample_content):
         yearMin=2013,
         yearMax=2020,
         ratingMin=8.0,
-        subtitleLanguages=["en"]
+        subtitleLanguages=["en"],
     )
-    results = await search_service.search(
-        query="",
-        filters=filters,
-        page=1,
-        limit=20
-    )
+    results = await search_service.search(query="", filters=filters, page=1, limit=20)
 
     for result in results["results"]:
         assert "Drama" in result.get("genres", [])
@@ -490,27 +401,18 @@ async def test_combined_filters(search_service, sample_content):
 
 # Pagination Tests
 
+
 @pytest.mark.asyncio
 async def test_pagination(search_service, sample_content):
     """Test result pagination."""
     filters = SearchFilters(contentTypes=["vod"])
 
     # Page 1
-    page1 = await search_service.search(
-        query="",
-        filters=filters,
-        page=1,
-        limit=2
-    )
+    page1 = await search_service.search(query="", filters=filters, page=1, limit=2)
     assert len(page1["results"]) <= 2
 
     # Page 2
-    page2 = await search_service.search(
-        query="",
-        filters=filters,
-        page=2,
-        limit=2
-    )
+    page2 = await search_service.search(query="", filters=filters, page=2, limit=2)
 
     # Ensure different results
     page1_ids = [r["id"] for r in page1["results"]]
@@ -520,19 +422,18 @@ async def test_pagination(search_service, sample_content):
 
 # Autocomplete Tests
 
+
 @pytest.mark.asyncio
 async def test_autocomplete_suggestions(search_service, sample_content):
     """Test autocomplete suggestions."""
-    suggestions = await search_service.get_suggestions(
-        query="Fa",
-        limit=5
-    )
+    suggestions = await search_service.get_suggestions(query="Fa", limit=5)
 
     assert isinstance(suggestions, list)
     assert "Fauda" in suggestions
 
 
 # Filter Options Tests
+
 
 @pytest.mark.asyncio
 async def test_get_filter_options(search_service, sample_content):
@@ -552,6 +453,7 @@ async def test_get_filter_options(search_service, sample_content):
 
 # Cache Tests
 
+
 @pytest.mark.asyncio
 async def test_search_caching(search_service, sample_content):
     """Test that search results are cached."""
@@ -559,24 +461,19 @@ async def test_search_caching(search_service, sample_content):
 
     # First search - cache miss
     result1 = await search_service.search(
-        query="Fauda",
-        filters=filters,
-        page=1,
-        limit=20
+        query="Fauda", filters=filters, page=1, limit=20
     )
     assert result1.get("cache_hit") is False or "cache_hit" not in result1
 
     # Second search - should hit cache
     result2 = await search_service.search(
-        query="Fauda",
-        filters=filters,
-        page=1,
-        limit=20
+        query="Fauda", filters=filters, page=1, limit=20
     )
     assert result2.get("cache_hit") is True
 
 
 # Performance Tests
+
 
 @pytest.mark.asyncio
 async def test_search_performance(search_service, sample_content):
@@ -587,10 +484,7 @@ async def test_search_performance(search_service, sample_content):
 
     start = time.time()
     results = await search_service.search(
-        query="Drama",
-        filters=filters,
-        page=1,
-        limit=20
+        query="Drama", filters=filters, page=1, limit=20
     )
     duration = (time.time() - start) * 1000  # Convert to ms
 
@@ -603,17 +497,11 @@ async def test_subtitle_search_performance(search_service, sample_subtitles):
     """Test subtitle search performance benchmarks."""
     import time
 
-    filters = SearchFilters(
-        contentTypes=["vod"],
-        searchInSubtitles=True
-    )
+    filters = SearchFilters(contentTypes=["vod"], searchInSubtitles=True)
 
     start = time.time()
     results = await search_service.search(
-        query="mission",
-        filters=filters,
-        page=1,
-        limit=20
+        query="mission", filters=filters, page=1, limit=20
     )
     duration = (time.time() - start) * 1000
 
@@ -623,16 +511,12 @@ async def test_subtitle_search_performance(search_service, sample_subtitles):
 
 # Edge Case Tests
 
+
 @pytest.mark.asyncio
 async def test_empty_query(search_service, sample_content):
     """Test search with empty query returns all content."""
     filters = SearchFilters(contentTypes=["vod"])
-    results = await search_service.search(
-        query="",
-        filters=filters,
-        page=1,
-        limit=20
-    )
+    results = await search_service.search(query="", filters=filters, page=1, limit=20)
 
     assert results["success"] is True
     assert len(results["results"]) > 0
@@ -643,10 +527,7 @@ async def test_no_results(search_service, sample_content):
     """Test search with no matching results."""
     filters = SearchFilters(contentTypes=["vod"])
     results = await search_service.search(
-        query="NonexistentMovieThatDoesNotExist12345",
-        filters=filters,
-        page=1,
-        limit=20
+        query="NonexistentMovieThatDoesNotExist12345", filters=filters, page=1, limit=20
     )
 
     assert results["success"] is True
@@ -659,10 +540,7 @@ async def test_special_characters_query(search_service, sample_content):
     """Test search with special characters."""
     filters = SearchFilters(contentTypes=["vod"])
     results = await search_service.search(
-        query="Band's",
-        filters=filters,
-        page=1,
-        limit=20
+        query="Band's", filters=filters, page=1, limit=20
     )
 
     assert results["success"] is True

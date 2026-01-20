@@ -31,7 +31,10 @@ class VerificationService:
 
         hour_ago = datetime.utcnow() - timedelta(hours=1)
         if user.last_verification_attempt > hour_ago:
-            if user.verification_attempts >= settings.MAX_VERIFICATION_ATTEMPTS_PER_HOUR:
+            if (
+                user.verification_attempts
+                >= settings.MAX_VERIFICATION_ATTEMPTS_PER_HOUR
+            ):
                 logger.warning(f"Rate limit exceeded for user {user.id}")
                 return False
 
@@ -54,14 +57,16 @@ class VerificationService:
             raise Exception("Too many verification attempts. Please try again later.")
 
         token = str(uuid.uuid4())
-        expires_at = datetime.utcnow() + timedelta(hours=settings.EMAIL_VERIFICATION_TOKEN_EXPIRE_HOURS)
+        expires_at = datetime.utcnow() + timedelta(
+            hours=settings.EMAIL_VERIFICATION_TOKEN_EXPIRE_HOURS
+        )
 
         verification_token = VerificationToken(
             user_id=str(user.id),
             token=token,
             type="email",
             contact=user.email,
-            expires_at=expires_at
+            expires_at=expires_at,
         )
         await verification_token.insert()
 
@@ -94,7 +99,7 @@ class VerificationService:
         success = await send_email(
             to_emails=[user.email],
             subject="Verify your Bayit+ account",
-            html_content=html_content
+            html_content=html_content,
         )
 
         if success:
@@ -112,8 +117,7 @@ class VerificationService:
             User if verification successful, None otherwise
         """
         verification_token = await VerificationToken.find_one(
-            VerificationToken.token == token,
-            VerificationToken.type == "email"
+            VerificationToken.token == token, VerificationToken.type == "email"
         )
 
         if not verification_token or not verification_token.is_valid():
@@ -154,14 +158,16 @@ class VerificationService:
             raise Exception("Invalid phone number format")
 
         code = twilio_service.generate_code()
-        expires_at = datetime.utcnow() + timedelta(minutes=settings.PHONE_VERIFICATION_CODE_EXPIRE_MINUTES)
+        expires_at = datetime.utcnow() + timedelta(
+            minutes=settings.PHONE_VERIFICATION_CODE_EXPIRE_MINUTES
+        )
 
         verification_token = VerificationToken(
             user_id=str(user.id),
             token=code,
             type="phone",
             contact=formatted_phone,
-            expires_at=expires_at
+            expires_at=expires_at,
         )
         await verification_token.insert()
 
@@ -187,7 +193,7 @@ class VerificationService:
         verification_token = await VerificationToken.find_one(
             VerificationToken.user_id == str(user.id),
             VerificationToken.type == "phone",
-            VerificationToken.token == code
+            VerificationToken.token == code,
         )
 
         if not verification_token or not verification_token.is_valid():

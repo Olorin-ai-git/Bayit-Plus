@@ -4,11 +4,11 @@ Provides comprehensive security event logging.
 """
 import logging
 from datetime import datetime, timezone
-from typing import Optional, Dict, Any
-from fastapi import Request
+from typing import Any, Dict, Optional
+
 from app.models.security_audit import SecurityAuditLog
 from app.models.user import User
-
+from fastapi import Request
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ class AuditLogger:
     """
     Service for logging security events to database and application logs.
     """
-    
+
     @staticmethod
     async def log_event(
         event_type: str,
@@ -31,7 +31,7 @@ class AuditLogger:
     ) -> None:
         """
         Log a security event.
-        
+
         Args:
             event_type: Type of event (login, logout, register, etc.)
             status: Status (success, failure, warning, error)
@@ -47,14 +47,14 @@ class AuditLogger:
             if user:
                 user_id = str(user.id)
                 user_email = user.email
-            
+
             # Extract request info
             ip_address = None
             user_agent = None
             if request:
                 ip_address = request.client.host if request.client else None
                 user_agent = request.headers.get("user-agent", "Unknown")
-            
+
             # Create audit log entry
             audit_log = SecurityAuditLog(
                 event_type=event_type,
@@ -67,17 +67,17 @@ class AuditLogger:
                 metadata=metadata or {},
                 created_at=datetime.now(timezone.utc),
             )
-            
+
             # Save to database (async)
             await audit_log.insert()
-            
+
             # Also log to application logs
             log_message = f"[AUDIT] {event_type.upper()} - {status.upper()}: {details}"
             if user_email:
                 log_message += f" | User: {user_email}"
             if ip_address:
                 log_message += f" | IP: {ip_address}"
-            
+
             if status == "success":
                 logger.info(log_message)
             elif status == "failure":
@@ -86,13 +86,15 @@ class AuditLogger:
                 logger.error(log_message)
             else:
                 logger.info(log_message)
-        
+
         except Exception as e:
             # Never let audit logging break the application
             logger.error(f"Failed to create audit log: {e}")
-    
+
     @staticmethod
-    async def log_login_success(user: User, request: Request, method: str = "email_password") -> None:
+    async def log_login_success(
+        user: User, request: Request, method: str = "email_password"
+    ) -> None:
         """Log successful login."""
         await AuditLogger.log_event(
             event_type="login",
@@ -102,9 +104,11 @@ class AuditLogger:
             request=request,
             metadata={"method": method},
         )
-    
+
     @staticmethod
-    async def log_login_failure(email: str, request: Request, reason: str = "invalid_credentials") -> None:
+    async def log_login_failure(
+        email: str, request: Request, reason: str = "invalid_credentials"
+    ) -> None:
         """Log failed login attempt."""
         await AuditLogger.log_event(
             event_type="login",
@@ -114,7 +118,7 @@ class AuditLogger:
             request=request,
             metadata={"reason": reason},
         )
-    
+
     @staticmethod
     async def log_account_locked(user: User, request: Request) -> None:
         """Log account lockout event."""
@@ -126,7 +130,7 @@ class AuditLogger:
             request=request,
             metadata={"failed_attempts": user.failed_login_attempts},
         )
-    
+
     @staticmethod
     async def log_registration(user: User, request: Request) -> None:
         """Log new user registration."""
@@ -137,9 +141,11 @@ class AuditLogger:
             user=user,
             request=request,
         )
-    
+
     @staticmethod
-    async def log_email_verification(user: User, request: Optional[Request] = None) -> None:
+    async def log_email_verification(
+        user: User, request: Optional[Request] = None
+    ) -> None:
         """Log email verification."""
         await AuditLogger.log_event(
             event_type="email_verification",
@@ -148,7 +154,7 @@ class AuditLogger:
             user=user,
             request=request,
         )
-    
+
     @staticmethod
     async def log_password_change(user: User, request: Request) -> None:
         """Log password change."""
@@ -159,7 +165,7 @@ class AuditLogger:
             user=user,
             request=request,
         )
-    
+
     @staticmethod
     async def log_password_reset_request(email: str, request: Request) -> None:
         """Log password reset request."""
@@ -170,7 +176,7 @@ class AuditLogger:
             user_email=email,
             request=request,
         )
-    
+
     @staticmethod
     async def log_password_reset_complete(user: User, request: Request) -> None:
         """Log completed password reset."""
@@ -181,9 +187,11 @@ class AuditLogger:
             user=user,
             request=request,
         )
-    
+
     @staticmethod
-    async def log_oauth_login(user: User, request: Request, provider: str = "google") -> None:
+    async def log_oauth_login(
+        user: User, request: Request, provider: str = "google"
+    ) -> None:
         """Log OAuth login."""
         await AuditLogger.log_event(
             event_type="oauth_login",

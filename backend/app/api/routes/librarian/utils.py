@@ -5,19 +5,14 @@ Librarian utility functions.
 import asyncio
 import logging
 
-from beanie import PydanticObjectId
-
 from app.models.librarian import AuditReport
 from app.services.audit_task_manager import audit_task_manager
+from beanie import PydanticObjectId
 
 logger = logging.getLogger(__name__)
 
 
-async def run_audit_with_tracking(
-    audit_id: str,
-    audit_func,
-    **kwargs
-):
+async def run_audit_with_tracking(audit_id: str, audit_func, **kwargs):
     """
     Wrapper to run an audit function and track it with the task manager.
     Handles cancellation and cleanup properly.

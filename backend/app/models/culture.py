@@ -11,7 +11,8 @@ Collections:
 """
 
 from datetime import datetime, timezone
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
@@ -21,9 +22,13 @@ class CultureCityCategory(BaseModel):
 
     id: str  # e.g., "history", "food", "tech"
     name: str  # English display name
-    name_localized: Dict[str, str] = Field(default_factory=dict)  # {"he": "...", "en": "..."}
+    name_localized: Dict[str, str] = Field(
+        default_factory=dict
+    )  # {"he": "...", "en": "..."}
     icon_emoji: str = ""  # e.g., "🏛️", "🍜", "💻"
-    keywords_native: List[str] = Field(default_factory=list)  # Keywords in native language
+    keywords_native: List[str] = Field(
+        default_factory=list
+    )  # Keywords in native language
     keywords_english: List[str] = Field(default_factory=list)  # Keywords in English
     display_order: int = 0
     is_active: bool = True
@@ -54,7 +59,9 @@ class Culture(Document):
     # Identity
     culture_id: str  # "israeli", "chinese", "japanese", "korean", "indian"
     name: str  # Display name in English
-    name_localized: Dict[str, str] = Field(default_factory=dict)  # {"he": "...", "en": "...", "es": "..."}
+    name_localized: Dict[str, str] = Field(
+        default_factory=dict
+    )  # {"he": "...", "en": "...", "es": "..."}
     flag_emoji: str = ""  # "🇮🇱", "🇨🇳", "🇯🇵", "🇰🇷", "🇮🇳"
     country_code: str = ""  # ISO 3166-1 alpha-2: IL, CN, JP, KR, IN
 
@@ -106,7 +113,9 @@ class CultureCity(Document):
     city_id: str  # "jerusalem", "tokyo", "shanghai", "seoul", "mumbai"
     culture_id: str  # Reference to Culture.culture_id
     name: str  # English name
-    name_localized: Dict[str, str] = Field(default_factory=dict)  # {"he": "...", "en": "...", "es": "..."}
+    name_localized: Dict[str, str] = Field(
+        default_factory=dict
+    )  # {"he": "...", "en": "...", "es": "..."}
     name_native: Optional[str] = None  # Name in native script: "東京", "上海", "서울"
 
     # Location
@@ -217,7 +226,9 @@ class CultureContentItem(Document):
     # Content
     title: str
     title_native: Optional[str] = None  # Title in native script
-    title_localized: Dict[str, str] = Field(default_factory=dict)  # {"he": "...", "en": "..."}
+    title_localized: Dict[str, str] = Field(
+        default_factory=dict
+    )  # {"he": "...", "en": "..."}
     url: str
     published_at: datetime
     summary: Optional[str] = None
@@ -227,7 +238,9 @@ class CultureContentItem(Document):
 
     # Classification
     category: str = "general"
-    category_label: Dict[str, str] = Field(default_factory=dict)  # {"he": "...", "en": "..."}
+    category_label: Dict[str, str] = Field(
+        default_factory=dict
+    )  # {"he": "...", "en": "..."}
     tags: List[str] = Field(default_factory=list)
 
     # Scoring

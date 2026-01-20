@@ -1,9 +1,10 @@
 """Test image download directly without full app initialization"""
 import asyncio
-import httpx
-from io import BytesIO
-from PIL import Image
 import base64
+from io import BytesIO
+
+import httpx
+from PIL import Image
 
 
 async def test_download():
@@ -13,10 +14,10 @@ async def test_download():
     print(f"📥 Attempting to download: {url}\n")
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Referer': 'https://www.google.com/'
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Referer": "https://www.google.com/",
     }
 
     try:
@@ -34,14 +35,17 @@ async def test_download():
             print(f"   Original size: {image.size}")
 
             # Convert and resize
-            if image.mode in ('RGBA', 'LA', 'P'):
-                background = Image.new('RGB', image.size, (255, 255, 255))
-                if image.mode == 'P':
-                    image = image.convert('RGBA')
-                background.paste(image, mask=image.split()[-1] if image.mode in ('RGBA', 'LA') else None)
+            if image.mode in ("RGBA", "LA", "P"):
+                background = Image.new("RGB", image.size, (255, 255, 255))
+                if image.mode == "P":
+                    image = image.convert("RGBA")
+                background.paste(
+                    image,
+                    mask=image.split()[-1] if image.mode in ("RGBA", "LA") else None,
+                )
                 image = background
-            elif image.mode != 'RGB':
-                image = image.convert('RGB')
+            elif image.mode != "RGB":
+                image = image.convert("RGB")
 
             # Resize
             max_size = (800, 1200)
@@ -51,10 +55,10 @@ async def test_download():
 
             # Convert to base64
             buffer = BytesIO()
-            image.save(buffer, format='JPEG', quality=85, optimize=True)
+            image.save(buffer, format="JPEG", quality=85, optimize=True)
             buffer.seek(0)
 
-            image_data = base64.b64encode(buffer.getvalue()).decode('utf-8')
+            image_data = base64.b64encode(buffer.getvalue()).decode("utf-8")
             data_uri = f"data:image/jpeg;base64,{image_data}"
 
             print(f"\n✅ Image processed successfully!")

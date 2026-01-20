@@ -10,27 +10,27 @@ Tests cover:
 - Discovery status transitions
 """
 
-import pytest
-import pytest_asyncio
 from datetime import datetime
 from typing import List, Optional
-from unittest.mock import patch, MagicMock
-from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
-from bson import ObjectId
+from unittest.mock import MagicMock, patch
 
+import pytest
+import pytest_asyncio
+from app.core.config import settings
+from app.models.kids_content import KidsSubcategory
 from app.services.mcp_content_discovery import (
-    MCPContentDiscoveryService,
     ContentDiscoveryQueue,
     DiscoveryResult,
     DiscoveryStatus,
+    MCPContentDiscoveryService,
     mcp_content_discovery_service,
 )
-from app.models.kids_content import KidsSubcategory
-from app.core.config import settings
-
+from beanie import init_beanie
+from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # Test Fixtures
+
 
 @pytest_asyncio.fixture
 async def db_client():
@@ -38,7 +38,7 @@ async def db_client():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     await init_beanie(
         database=client[f"{settings.MONGODB_DB_NAME}_test_mcp"],
-        document_models=[ContentDiscoveryQueue]
+        document_models=[ContentDiscoveryQueue],
     )
     yield client
     # Cleanup
@@ -127,6 +127,7 @@ async def sample_queue_items(db_client):
 
 # MCP Enabled/Disabled Tests
 
+
 @pytest.mark.asyncio
 async def test_mcp_enabled_check(mcp_service):
     """Test MCP enabled check based on ANTHROPIC_API_KEY."""
@@ -137,7 +138,7 @@ async def test_mcp_enabled_check(mcp_service):
 @pytest.mark.asyncio
 async def test_search_youtube_channels_mcp_disabled(mcp_service):
     """Test YouTube search returns empty when MCP is disabled."""
-    with patch.object(mcp_service, 'mcp_enabled', False):
+    with patch.object(mcp_service, "mcp_enabled", False):
         results = await mcp_service.search_youtube_channels(
             subcategory=KidsSubcategory.LEARNING_HEBREW,
             language="he",
@@ -149,7 +150,7 @@ async def test_search_youtube_channels_mcp_disabled(mcp_service):
 @pytest.mark.asyncio
 async def test_search_youtube_channels_no_queries(mcp_service):
     """Test YouTube search with unknown subcategory returns empty."""
-    with patch.object(mcp_service, 'mcp_enabled', True):
+    with patch.object(mcp_service, "mcp_enabled", True):
         results = await mcp_service.search_youtube_channels(
             subcategory="unknown-subcategory",
             language="he",
@@ -161,7 +162,7 @@ async def test_search_youtube_channels_no_queries(mcp_service):
 @pytest.mark.asyncio
 async def test_discover_educational_sites_mcp_disabled(mcp_service):
     """Test educational site discovery returns empty when MCP is disabled."""
-    with patch.object(mcp_service, 'mcp_enabled', False):
+    with patch.object(mcp_service, "mcp_enabled", False):
         results = await mcp_service.discover_educational_sites(
             subcategory=KidsSubcategory.YOUNG_SCIENCE,
             language="he",
@@ -171,6 +172,7 @@ async def test_discover_educational_sites_mcp_disabled(mcp_service):
 
 
 # Search Query Generation Tests
+
 
 def test_get_subcategory_search_queries_hebrew(mcp_service):
     """Test Hebrew search query generation for subcategories."""
@@ -227,9 +229,10 @@ def test_get_subcategory_search_queries_unknown(mcp_service):
 
 # Educational Sites Configuration Tests
 
+
 def test_get_educational_sites_no_config(mcp_service):
     """Test educational sites returns empty when not configured."""
-    with patch.object(settings, 'KIDS_EDUCATIONAL_SITES_CONFIG', ''):
+    with patch.object(settings, "KIDS_EDUCATIONAL_SITES_CONFIG", ""):
         sites = mcp_service._get_educational_sites_for_subcategory(
             subcategory=KidsSubcategory.LEARNING_HEBREW
         )
@@ -239,7 +242,7 @@ def test_get_educational_sites_no_config(mcp_service):
 
 def test_get_educational_sites_invalid_json(mcp_service):
     """Test educational sites handles invalid JSON gracefully."""
-    with patch.object(settings, 'KIDS_EDUCATIONAL_SITES_CONFIG', 'invalid-json'):
+    with patch.object(settings, "KIDS_EDUCATIONAL_SITES_CONFIG", "invalid-json"):
         sites = mcp_service._get_educational_sites_for_subcategory(
             subcategory=KidsSubcategory.LEARNING_HEBREW
         )
@@ -250,7 +253,7 @@ def test_get_educational_sites_invalid_json(mcp_service):
 def test_get_educational_sites_valid_config(mcp_service):
     """Test educational sites parses valid config correctly."""
     config = '{"learning-hebrew": ["https://site1.com", "https://site2.com"]}'
-    with patch.object(settings, 'KIDS_EDUCATIONAL_SITES_CONFIG', config):
+    with patch.object(settings, "KIDS_EDUCATIONAL_SITES_CONFIG", config):
         sites = mcp_service._get_educational_sites_for_subcategory(
             subcategory=KidsSubcategory.LEARNING_HEBREW
         )
@@ -262,7 +265,7 @@ def test_get_educational_sites_valid_config(mcp_service):
 def test_get_educational_sites_subcategory_not_in_config(mcp_service):
     """Test educational sites returns empty for unconfigured subcategory."""
     config = '{"learning-hebrew": ["https://site1.com"]}'
-    with patch.object(settings, 'KIDS_EDUCATIONAL_SITES_CONFIG', config):
+    with patch.object(settings, "KIDS_EDUCATIONAL_SITES_CONFIG", config):
         sites = mcp_service._get_educational_sites_for_subcategory(
             subcategory=KidsSubcategory.YOUNG_SCIENCE
         )
@@ -271,6 +274,7 @@ def test_get_educational_sites_subcategory_not_in_config(mcp_service):
 
 
 # Queue Management Tests
+
 
 @pytest.mark.asyncio
 async def test_queue_for_review(mcp_service, db_client):
@@ -316,6 +320,7 @@ async def test_queue_for_review_without_channel(mcp_service, db_client):
 
 # Get Pending Queue Tests
 
+
 @pytest.mark.asyncio
 async def test_get_pending_queue(mcp_service, sample_queue_items):
     """Test getting pending queue items."""
@@ -328,7 +333,9 @@ async def test_get_pending_queue(mcp_service, sample_queue_items):
 
 
 @pytest.mark.asyncio
-async def test_get_pending_queue_with_subcategory_filter(mcp_service, sample_queue_items):
+async def test_get_pending_queue_with_subcategory_filter(
+    mcp_service, sample_queue_items
+):
     """Test getting pending queue filtered by subcategory."""
     result = await mcp_service.get_pending_queue(
         subcategory=KidsSubcategory.LEARNING_HEBREW
@@ -360,12 +367,12 @@ async def test_get_pending_queue_empty(mcp_service, db_client):
 
 # Approve Item Tests
 
+
 @pytest.mark.asyncio
 async def test_approve_item_success(mcp_service, sample_queue_items):
     """Test approving a pending item."""
     pending_item = next(
-        item for item in sample_queue_items
-        if item.status == DiscoveryStatus.PENDING
+        item for item in sample_queue_items if item.status == DiscoveryStatus.PENDING
     )
 
     approved = await mcp_service.approve_item(
@@ -393,12 +400,12 @@ async def test_approve_item_not_found(mcp_service, db_client):
 
 # Reject Item Tests
 
+
 @pytest.mark.asyncio
 async def test_reject_item_success(mcp_service, sample_queue_items):
     """Test rejecting a pending item."""
     pending_item = next(
-        item for item in sample_queue_items
-        if item.status == DiscoveryStatus.PENDING
+        item for item in sample_queue_items if item.status == DiscoveryStatus.PENDING
     )
 
     rejected = await mcp_service.reject_item(
@@ -429,6 +436,7 @@ async def test_reject_item_not_found(mcp_service, db_client):
 
 # Discovery Status Tests
 
+
 def test_discovery_status_values():
     """Test DiscoveryStatus enum values."""
     assert DiscoveryStatus.PENDING == "pending"
@@ -438,6 +446,7 @@ def test_discovery_status_values():
 
 
 # DiscoveryResult Model Tests
+
 
 def test_discovery_result_creation():
     """Test DiscoveryResult model creation."""
@@ -474,6 +483,7 @@ def test_discovery_result_with_all_fields():
 
 
 # ContentDiscoveryQueue Model Tests
+
 
 @pytest.mark.asyncio
 async def test_content_discovery_queue_creation(db_client):
@@ -513,6 +523,7 @@ async def test_content_discovery_queue_defaults(db_client):
 
 # Index Tests
 
+
 @pytest.mark.asyncio
 async def test_queue_indexes_exist(db_client):
     """Test that required indexes are defined."""
@@ -532,6 +543,7 @@ async def test_queue_indexes_exist(db_client):
 
 # Global Service Instance Test
 
+
 def test_global_service_instance_exists():
     """Test that global service instance is created."""
     assert mcp_content_discovery_service is not None
@@ -539,6 +551,7 @@ def test_global_service_instance_exists():
 
 
 # Edge Cases
+
 
 @pytest.mark.asyncio
 async def test_queue_with_special_characters(mcp_service, db_client):

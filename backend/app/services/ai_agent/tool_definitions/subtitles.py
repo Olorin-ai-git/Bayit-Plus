@@ -9,15 +9,15 @@ SUBTITLE_TOOLS = [
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item to scan and extract subtitles from"
+                    "description": "The ID of the content item to scan and extract subtitles from",
                 },
                 "auto_extract": {
                     "type": "boolean",
-                    "description": "Whether to automatically extract and save found subtitles (default: true)"
-                }
+                    "description": "Whether to automatically extract and save found subtitles (default: true)",
+                },
             },
-            "required": ["content_id"]
-        }
+            "required": ["content_id"],
+        },
     },
     {
         "name": "extract_video_subtitles",
@@ -27,16 +27,16 @@ SUBTITLE_TOOLS = [
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item"
+                    "description": "The ID of the content item",
                 },
                 "languages": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "Optional: Specific languages to extract. If not provided, extracts all."
-                }
+                    "description": "Optional: Specific languages to extract. If not provided, extracts all.",
+                },
             },
-            "required": ["content_id"]
-        }
+            "required": ["content_id"],
+        },
     },
     {
         "name": "verify_required_subtitles",
@@ -46,17 +46,17 @@ SUBTITLE_TOOLS = [
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item to verify"
+                    "description": "The ID of the content item to verify",
                 },
                 "required_languages": {
                     "type": "array",
                     "items": {"type": "string"},
                     "description": "Required language codes (default: ['en', 'he', 'es'])",
-                    "default": ["en", "he", "es"]
-                }
+                    "default": ["en", "he", "es"],
+                },
             },
-            "required": ["content_id"]
-        }
+            "required": ["content_id"],
+        },
     },
     {
         "name": "search_external_subtitles",
@@ -64,23 +64,20 @@ SUBTITLE_TOOLS = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "content_id": {
-                    "type": "string",
-                    "description": "Content item ID"
-                },
+                "content_id": {"type": "string", "description": "Content item ID"},
                 "language": {
                     "type": "string",
-                    "description": "Language code (he, en, es, ar, ru, fr)"
+                    "description": "Language code (he, en, es, ar, ru, fr)",
                 },
                 "sources": {
                     "type": "array",
                     "items": {"type": "string"},
                     "description": "Sources to search (opensubtitles, tmdb)",
-                    "default": ["opensubtitles", "tmdb"]
-                }
+                    "default": ["opensubtitles", "tmdb"],
+                },
             },
-            "required": ["content_id", "language"]
-        }
+            "required": ["content_id", "language"],
+        },
     },
     {
         "name": "download_external_subtitle",
@@ -88,17 +85,14 @@ SUBTITLE_TOOLS = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "content_id": {
-                    "type": "string",
-                    "description": "Content item ID"
-                },
+                "content_id": {"type": "string", "description": "Content item ID"},
                 "language": {
                     "type": "string",
-                    "description": "Language code (he, en, es, ar, ru, fr)"
-                }
+                    "description": "Language code (he, en, es, ar, ru, fr)",
+                },
             },
-            "required": ["content_id", "language"]
-        }
+            "required": ["content_id", "language"],
+        },
     },
     {
         "name": "batch_download_subtitles",
@@ -109,30 +103,26 @@ SUBTITLE_TOOLS = [
                 "content_ids": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "List of content IDs to process"
+                    "description": "List of content IDs to process",
                 },
                 "languages": {
                     "type": "array",
                     "items": {"type": "string"},
                     "description": "Languages to fetch. Maximum 3 languages allowed. Default: ['he', 'en', 'es']",
-                    "default": ["he", "en", "es"]
+                    "default": ["he", "en", "es"],
                 },
                 "max_downloads": {
                     "type": "integer",
                     "description": "Maximum downloads to perform (respects daily quota)",
-                    "default": 20
-                }
+                    "default": 20,
+                },
             },
-            "required": ["content_ids"]
-        }
+            "required": ["content_ids"],
+        },
     },
     {
         "name": "check_subtitle_quota",
         "description": "Check remaining OpenSubtitles download quota for today. Free tier limit is 20 downloads per day.",
-        "input_schema": {
-            "type": "object",
-            "properties": {},
-            "required": []
-        }
+        "input_schema": {"type": "object", "properties": {}, "required": []},
     },
 ]

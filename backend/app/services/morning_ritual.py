@@ -4,12 +4,13 @@ Provides personalized morning content experience for Israeli expats.
 Auto-plays curated content during morning hours (configurable 7-9 AM local time).
 """
 from datetime import datetime, time, timedelta
-from typing import Optional, List, Dict, Any
-import pytz
+from typing import Any, Dict, List, Optional
+
 import anthropic
+import pytz
 from app.core.config import settings
-from app.models.user import User
 from app.models.content import Content, LiveChannel, RadioStation
+from app.models.user import User
 
 # Initialize Claude client
 client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
@@ -72,9 +73,8 @@ def get_israel_morning_context() -> Dict[str, Any]:
         activity = "בישראל עכשיו לילה"
 
     # Check if it's a weekend in Israel (Friday evening to Saturday evening)
-    is_shabbat = (
-        (israel_now.weekday() == 4 and israel_hour >= 18) or
-        (israel_now.weekday() == 5 and israel_hour < 20)
+    is_shabbat = (israel_now.weekday() == 4 and israel_hour >= 18) or (
+        israel_now.weekday() == 5 and israel_hour < 20
     )
 
     return {
@@ -83,7 +83,9 @@ def get_israel_morning_context() -> Dict[str, Any]:
         "time_of_day": time_of_day,
         "activity_message": activity,
         "is_shabbat": is_shabbat,
-        "day_name_he": ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"][israel_now.weekday()],
+        "day_name_he": ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"][
+            israel_now.weekday()
+        ],
     }
 
 
@@ -93,69 +95,88 @@ async def get_morning_playlist(user: User) -> List[Dict[str, Any]]:
     Includes news, weather brief, and favorite content.
     """
     playlist = []
-    ritual_content = user.preferences.get("morning_ritual_content", ["news", "weather", "radio"])
+    ritual_content = user.preferences.get(
+        "morning_ritual_content", ["news", "weather", "radio"]
+    )
 
     # 1. Start with news channel if requested
     if "news" in ritual_content:
-        news_channels = await LiveChannel.find(
-            LiveChannel.is_active == True,
-            LiveChannel.category == "news"
-        ).limit(3).to_list()
+        news_channels = (
+            await LiveChannel.find(
+                LiveChannel.is_active == True, LiveChannel.category == "news"
+            )
+            .limit(3)
+            .to_list()
+        )
 
         if news_channels:
             # Prefer Kan News or Reshet 13
             preferred = next(
                 (ch for ch in news_channels if "כאן" in ch.name or "13" in ch.name),
-                news_channels[0]
+                news_channels[0],
             )
-            playlist.append({
-                "id": str(preferred.id),
-                "title": f"חדשות הבוקר - {preferred.name}",
-                "type": "live",
-                "stream_url": preferred.stream_url,
-                "thumbnail": preferred.logo,
-                "duration_hint": 300,  # 5 minutes suggested
-                "category": "news",
-            })
+            playlist.append(
+                {
+                    "id": str(preferred.id),
+                    "title": f"חדשות הבוקר - {preferred.name}",
+                    "type": "live",
+                    "stream_url": preferred.stream_url,
+                    "thumbnail": preferred.logo,
+                    "duration_hint": 300,  # 5 minutes suggested
+                    "category": "news",
+                }
+            )
 
     # 2. Add radio if requested (background audio option)
     if "radio" in ritual_content:
-        radio_stations = await RadioStation.find(
-            RadioStation.is_active == True
-        ).limit(5).to_list()
+        radio_stations = (
+            await RadioStation.find(RadioStation.is_active == True).limit(5).to_list()
+        )
 
         if radio_stations:
             # Prefer Galei Zahal or Kan Bet
             preferred = next(
-                (st for st in radio_stations if "גלצ" in st.name or "גלי צה\"ל" in st.name or "כאן ב" in st.name),
-                radio_stations[0]
+                (
+                    st
+                    for st in radio_stations
+                    if "גלצ" in st.name or 'גלי צה"ל' in st.name or "כאן ב" in st.name
+                ),
+                radio_stations[0],
             )
-            playlist.append({
-                "id": str(preferred.id),
-                "title": f"רדיו בוקר - {preferred.name}",
-                "type": "radio",
-                "stream_url": preferred.stream_url,
-                "thumbnail": preferred.logo,
-                "duration_hint": 600,  # 10 minutes suggested
-                "category": "radio",
-            })
+            playlist.append(
+                {
+                    "id": str(preferred.id),
+                    "title": f"רדיו בוקר - {preferred.name}",
+                    "type": "radio",
+                    "stream_url": preferred.stream_url,
+                    "thumbnail": preferred.logo,
+                    "duration_hint": 600,  # 10 minutes suggested
+                    "category": "radio",
+                }
+            )
 
     # 3. Add VOD content (short clips, morning shows)
     if "clips" in ritual_content:
-        morning_content = await Content.find(
-            Content.is_published == True,
-            Content.duration <= 600,  # Under 10 minutes
-        ).limit(3).to_list()
+        morning_content = (
+            await Content.find(
+                Content.is_published == True,
+                Content.duration <= 600,  # Under 10 minutes
+            )
+            .limit(3)
+            .to_list()
+        )
 
         for item in morning_content:
-            playlist.append({
-                "id": str(item.id),
-                "title": item.title,
-                "type": "vod",
-                "thumbnail": item.thumbnail,
-                "duration": item.duration,
-                "category": "clips",
-            })
+            playlist.append(
+                {
+                    "id": str(item.id),
+                    "title": item.title,
+                    "type": "vod",
+                    "thumbnail": item.thumbnail,
+                    "duration": item.duration,
+                    "category": "clips",
+                }
+            )
 
     return playlist
 
@@ -197,13 +218,14 @@ async def generate_ai_brief(user: User) -> Dict[str, Any]:
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=300,
-            messages=[{"role": "user", "content": prompt}]
+            messages=[{"role": "user", "content": prompt}],
         )
 
         response_text = response.content[0].text.strip()
 
         # Parse JSON
         import json
+
         if response_text.startswith("```json"):
             response_text = response_text[7:]
         if response_text.startswith("```"):

@@ -17,11 +17,13 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from app.core.config import settings
 from app.core.database import connect_to_mongo
-from app.services.content_taxonomy_migration import run_full_migration, get_migration_status
+from app.services.content_taxonomy_migration import (
+    get_migration_status,
+    run_full_migration,
+)
 
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -52,7 +54,9 @@ async def main():
     logger.info(f"Migration Stats:")
     logger.info(f"  - Total processed: {results['migration_stats']['total']}")
     logger.info(f"  - Migrated: {results['migration_stats']['migrated']}")
-    logger.info(f"  - Already migrated: {results['migration_stats']['already_migrated']}")
+    logger.info(
+        f"  - Already migrated: {results['migration_stats']['already_migrated']}"
+    )
     logger.info(f"  - Skipped: {results['migration_stats']['skipped']}")
     logger.info(f"  - Errors: {results['migration_stats']['errors']}")
     logger.info("")
@@ -60,7 +64,9 @@ async def main():
     logger.info(f"  - Total content: {results['final_status']['total_content']}")
     logger.info(f"  - Migrated content: {results['final_status']['migrated_content']}")
     logger.info(f"  - Migration %: {results['final_status']['migration_percentage']}%")
-    logger.info(f"  - Content by section: {results['final_status']['content_by_section']}")
+    logger.info(
+        f"  - Content by section: {results['final_status']['content_by_section']}"
+    )
 
 
 if __name__ == "__main__":

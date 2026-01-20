@@ -151,7 +151,9 @@ def check_ffprobe_installed() -> bool:
     except subprocess.TimeoutExpired:
         raise FFmpegNotInstalledError("ffprobe version check timed out")
     except Exception as e:
-        raise FFmpegNotInstalledError(f"Failed to verify ffprobe installation: {str(e)}")
+        raise FFmpegNotInstalledError(
+            f"Failed to verify ffprobe installation: {str(e)}"
+        )
 
 
 def validate_video_file(video_path: str) -> bool:
@@ -220,7 +222,10 @@ def validate_codec_support(codec: str) -> Dict[str, Any]:
             text=True,
             timeout=10,
         )
-        if decoder_result.returncode == 0 and codec.lower() in decoder_result.stdout.lower():
+        if (
+            decoder_result.returncode == 0
+            and codec.lower() in decoder_result.stdout.lower()
+        ):
             result["can_decode"] = True
             result["supported"] = True
 
@@ -231,7 +236,10 @@ def validate_codec_support(codec: str) -> Dict[str, Any]:
             text=True,
             timeout=10,
         )
-        if encoder_result.returncode == 0 and codec.lower() in encoder_result.stdout.lower():
+        if (
+            encoder_result.returncode == 0
+            and codec.lower() in encoder_result.stdout.lower()
+        ):
             result["can_encode"] = True
             result["supported"] = True
 

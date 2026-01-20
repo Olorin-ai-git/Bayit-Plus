@@ -44,9 +44,7 @@ async def update_dubbing_session(
     **updates,
 ) -> Optional[DubbingSession]:
     """Update a dubbing session."""
-    session = await DubbingSession.find_one(
-        DubbingSession.session_id == session_id
-    )
+    session = await DubbingSession.find_one(DubbingSession.session_id == session_id)
     if not session:
         return None
 
@@ -65,9 +63,7 @@ async def end_dubbing_session(
     error_message: Optional[str] = None,
 ) -> Optional[DubbingSession]:
     """End a dubbing session and record final metrics."""
-    session = await DubbingSession.find_one(
-        DubbingSession.session_id == session_id
-    )
+    session = await DubbingSession.find_one(DubbingSession.session_id == session_id)
     if not session:
         return None
 
@@ -105,9 +101,7 @@ async def end_dubbing_session(
 
 async def get_dubbing_session(session_id: str) -> Optional[DubbingSession]:
     """Get a dubbing session by ID."""
-    return await DubbingSession.find_one(
-        DubbingSession.session_id == session_id
-    )
+    return await DubbingSession.find_one(DubbingSession.session_id == session_id)
 
 
 async def get_active_sessions_count(partner_id: str) -> int:

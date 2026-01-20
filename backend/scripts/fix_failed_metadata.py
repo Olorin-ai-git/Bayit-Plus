@@ -4,23 +4,23 @@ Cleans up titles with release tags and retries TMDB enrichment
 """
 
 import asyncio
-import sys
 import re
+import sys
 from pathlib import Path
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
+import logging
+
 from app.core.config import settings
 from app.models.content import Content
 from app.services.tmdb_service import tmdb_service
-import logging
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -38,68 +38,68 @@ def clean_title(title: str) -> str:
     original = title
 
     # Remove file extensions
-    title = re.sub(r'\.(mkv|mp4|avi|mov)$', '', title, flags=re.IGNORECASE)
+    title = re.sub(r"\.(mkv|mp4|avi|mov)$", "", title, flags=re.IGNORECASE)
 
     # Remove resolution/quality indicators
     # 1080p, 720p, 2160p, 4K, UHD, HD, BluRay, BRRip, WEBRip, etc.
     quality_patterns = [
-        r'\b(2160|1080|720|480|360)p?\b',
-        r'\b(4K|UHD|HD|SD)\b',
-        r'\b(BluRay|BRRip|BDRip|WEBRip|WEB-DL|HDRip|DVDRip)\b',
-        r'\b(PROPER|REPACK|INTERNAL|LIMITED)\b',
+        r"\b(2160|1080|720|480|360)p?\b",
+        r"\b(4K|UHD|HD|SD)\b",
+        r"\b(BluRay|BRRip|BDRip|WEBRip|WEB-DL|HDRip|DVDRip)\b",
+        r"\b(PROPER|REPACK|INTERNAL|LIMITED)\b",
     ]
     for pattern in quality_patterns:
-        title = re.sub(pattern, '', title, flags=re.IGNORECASE)
+        title = re.sub(pattern, "", title, flags=re.IGNORECASE)
 
     # Remove codec info
     # x264, x265, H264, H265, HEVC, AAC, AC3, DTS, etc.
     codec_patterns = [
-        r'\b(x264|x265|H\.?264|H\.?265|HEVC|XviD|DivX)\b',
-        r'\b(AAC|AC3|DTS|MP3|FLAC)\b',
-        r'\b(5\.1|7\.1|2\.0)\b',
+        r"\b(x264|x265|H\.?264|H\.?265|HEVC|XviD|DivX)\b",
+        r"\b(AAC|AC3|DTS|MP3|FLAC)\b",
+        r"\b(5\.1|7\.1|2\.0)\b",
     ]
     for pattern in codec_patterns:
-        title = re.sub(pattern, '', title, flags=re.IGNORECASE)
+        title = re.sub(pattern, "", title, flags=re.IGNORECASE)
 
     # Remove release group tags (usually at the end)
     # -EVO, -MX, -POOP, -HighCode, etc.
-    title = re.sub(r'-[A-Z0-9]+\]?$', '', title, flags=re.IGNORECASE)
-    title = re.sub(r'\[[A-Z0-9]+\]$', '', title, flags=re.IGNORECASE)
+    title = re.sub(r"-[A-Z0-9]+\]?$", "", title, flags=re.IGNORECASE)
+    title = re.sub(r"\[[A-Z0-9]+\]$", "", title, flags=re.IGNORECASE)
 
     # Remove common release keywords
     release_keywords = [
-        r'\bRip\b',
-        r'\bUpscaled\b',
-        r'\bmultisub\b',
-        r'\bExtended\b',
-        r'\bUnrated\b',
-        r'\bDirector\'?s? Cut\b',
-        r'\bTheatrical\b',
-        r'\bRemastered\b',
-        r'\bUltra\b',
-        r'\bEdition\b',
-        r'\bRemix\b',
-        r'\bSoup\b',  # Release group
-        r'\banoXmous\b',  # Release group
-        r'\bHighCode\b',  # Release group
-        r'\bN O K\b',  # Release group
-        r'\bChina\b',  # Region indicator
+        r"\bRip\b",
+        r"\bUpscaled\b",
+        r"\bmultisub\b",
+        r"\bExtended\b",
+        r"\bUnrated\b",
+        r"\bDirector\'?s? Cut\b",
+        r"\bTheatrical\b",
+        r"\bRemastered\b",
+        r"\bUltra\b",
+        r"\bEdition\b",
+        r"\bRemix\b",
+        r"\bSoup\b",  # Release group
+        r"\banoXmous\b",  # Release group
+        r"\bHighCode\b",  # Release group
+        r"\bN O K\b",  # Release group
+        r"\bChina\b",  # Region indicator
     ]
     for keyword in release_keywords:
-        title = re.sub(keyword, '', title, flags=re.IGNORECASE)
+        title = re.sub(keyword, "", title, flags=re.IGNORECASE)
 
     # Remove standalone 'p' (usually part of "1080p" but sometimes separated)
-    title = re.sub(r'\s+p\s+', ' ', title, flags=re.IGNORECASE)
-    title = re.sub(r'\s+p$', '', title, flags=re.IGNORECASE)
+    title = re.sub(r"\s+p\s+", " ", title, flags=re.IGNORECASE)
+    title = re.sub(r"\s+p$", "", title, flags=re.IGNORECASE)
 
     # Remove extra spaces, dashes, brackets
-    title = re.sub(r'\s+', ' ', title)  # Multiple spaces to single
-    title = re.sub(r'\s*-\s*$', '', title)  # Trailing dash
-    title = re.sub(r'^\s*-\s*', '', title)  # Leading dash
+    title = re.sub(r"\s+", " ", title)  # Multiple spaces to single
+    title = re.sub(r"\s*-\s*$", "", title)  # Trailing dash
+    title = re.sub(r"^\s*-\s*", "", title)  # Leading dash
     title = title.strip()
 
     # Remove trailing/leading special characters
-    title = title.strip(' -[]()_.')
+    title = title.strip(" -[]()_.")
 
     logger.debug(f"   🧹 Cleaned: '{original}' -> '{title}'")
     return title
@@ -110,10 +110,7 @@ async def connect_db():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     database = client[settings.MONGODB_DB_NAME]
 
-    await init_beanie(
-        database=database,
-        document_models=[Content]
-    )
+    await init_beanie(database=database, document_models=[Content])
     logger.info("✅ Connected to MongoDB")
 
 
@@ -138,14 +135,12 @@ async def enrich_with_cleaned_title(content: Content, dry_run: bool = False) -> 
         if is_series:
             logger.info(f"   🎬 Fetching TV series metadata")
             metadata = await tmdb_service.enrich_series_content(
-                title=cleaned_title,
-                year=content.year
+                title=cleaned_title, year=content.year
             )
         else:
             logger.info(f"   🎬 Fetching movie metadata")
             metadata = await tmdb_service.enrich_movie_content(
-                title=cleaned_title,
-                year=content.year
+                title=cleaned_title, year=content.year
             )
 
         if not metadata.get("tmdb_id"):
@@ -190,15 +185,15 @@ async def enrich_with_cleaned_title(content: Content, dry_run: bool = False) -> 
         if metadata.get("director") and not content.director:
             content.director = metadata["director"]
             updated_fields.append("director")
-        
+
         if metadata.get("imdb_rating") is not None and content.imdb_rating is None:
             content.imdb_rating = metadata["imdb_rating"]
             updated_fields.append("imdb_rating")
-        
+
         if metadata.get("imdb_votes") is not None and content.imdb_votes is None:
             content.imdb_votes = metadata["imdb_votes"]
             updated_fields.append("imdb_votes")
-        
+
         if metadata.get("release_year") and not content.year:
             content.year = metadata["release_year"]
             updated_fields.append("year")
@@ -259,9 +254,7 @@ async def main(dry_run: bool = False):
         # Find all content without TMDB ID (these are the ones that failed)
         logger.info("🔍 Finding content without TMDB metadata...")
 
-        failed_content = await Content.find(
-            Content.tmdb_id == None
-        ).to_list()
+        failed_content = await Content.find(Content.tmdb_id == None).to_list()
 
         logger.info(f"📋 Found {len(failed_content)} items without TMDB ID")
 
@@ -270,14 +263,14 @@ async def main(dry_run: bool = False):
             return
 
         # Show summary
-        logger.info("\n" + "="*80)
+        logger.info("\n" + "=" * 80)
         logger.info("ITEMS TO FIX")
-        logger.info("="*80)
+        logger.info("=" * 80)
         for item in failed_content[:10]:
             logger.info(f"  • {item.title}")
         if len(failed_content) > 10:
             logger.info(f"  ... and {len(failed_content) - 10} more")
-        logger.info("="*80 + "\n")
+        logger.info("=" * 80 + "\n")
 
         # Process each item
         success_count = 0
@@ -298,13 +291,13 @@ async def main(dry_run: bool = False):
             await asyncio.sleep(0.5)
 
         # Final summary
-        logger.info("\n" + "="*80)
+        logger.info("\n" + "=" * 80)
         logger.info("FIX COMPLETE")
-        logger.info("="*80)
+        logger.info("=" * 80)
         logger.info(f"✅ Successfully fixed: {success_count}")
         logger.info(f"❌ Still failed: {failed_count}")
         logger.info(f"📊 Total processed: {len(failed_content)}")
-        logger.info("="*80)
+        logger.info("=" * 80)
 
         if dry_run:
             logger.info("\n🔍 DRY RUN MODE - No changes were saved to database")
@@ -324,7 +317,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Preview changes without saving to database"
+        help="Preview changes without saving to database",
     )
 
     args = parser.parse_args()

@@ -9,21 +9,21 @@ CONTENT_TOOLS = [
             "properties": {
                 "category_id": {
                     "type": "string",
-                    "description": "Optional: Filter by category ID"
+                    "description": "Optional: Filter by category ID",
                 },
                 "limit": {
                     "type": "integer",
                     "description": "Maximum number of items to return (default 20, max 100)",
-                    "default": 20
+                    "default": 20,
                 },
                 "random_sample": {
                     "type": "boolean",
                     "description": "If true, return random sample instead of newest items",
-                    "default": False
-                }
+                    "default": False,
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "get_content_details",
@@ -33,19 +33,15 @@ CONTENT_TOOLS = [
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item to inspect"
+                    "description": "The ID of the content item to inspect",
                 }
             },
-            "required": ["content_id"]
-        }
+            "required": ["content_id"],
+        },
     },
     {
         "name": "get_categories",
         "description": "Get all available categories in the system. Use this to understand category structure and verify correct categorization.",
-        "input_schema": {
-            "type": "object",
-            "properties": {},
-            "required": []
-        }
+        "input_schema": {"type": "object", "properties": {}, "required": []},
     },
 ]

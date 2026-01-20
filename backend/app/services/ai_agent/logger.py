@@ -4,8 +4,8 @@ AI Agent Logger
 Database logging utilities for streaming logs to UI in real-time.
 """
 
-import uuid
 import logging
+import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING, Dict, Optional
 
@@ -56,7 +56,7 @@ async def log_to_database(
     source: str = "AI Agent",
     item_name: str = None,
     content_id: str = None,
-    metadata: dict = None
+    metadata: dict = None,
 ):
     """
     Append a structured log entry to the audit report's execution_logs array.
@@ -85,7 +85,7 @@ async def log_to_database(
             "timestamp": datetime.utcnow().isoformat(),
             "level": level,
             "message": message,
-            "source": source
+            "source": source,
         }
 
         # Add optional structured fields

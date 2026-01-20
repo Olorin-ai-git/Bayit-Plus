@@ -10,40 +10,45 @@ Widget Types:
 """
 
 from datetime import datetime
-from typing import Optional, List
 from enum import Enum
+from typing import List, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
 
 class WidgetType(str, Enum):
     """Type of widget ownership"""
-    SYSTEM = "system"      # Admin-created, visible to targeted users
+
+    SYSTEM = "system"  # Admin-created, visible to targeted users
     PERSONAL = "personal"  # User-created, visible only to owner
 
 
 class WidgetContentType(str, Enum):
     """Type of content displayed in widget"""
+
     LIVE_CHANNEL = "live_channel"  # Live TV stream
-    IFRAME = "iframe"              # External embed URL
-    PODCAST = "podcast"            # Podcast episode
-    VOD = "vod"                    # Video on demand
-    RADIO = "radio"                # Radio station
-    LIVE = "live"                  # Generic live content
-    CUSTOM = "custom"              # Custom React component
+    IFRAME = "iframe"  # External embed URL
+    PODCAST = "podcast"  # Podcast episode
+    VOD = "vod"  # Video on demand
+    RADIO = "radio"  # Radio station
+    LIVE = "live"  # Generic live content
+    CUSTOM = "custom"  # Custom React component
 
 
 class WidgetPosition(BaseModel):
     """Position and size of widget on screen"""
-    x: float = 20.0           # Pixels from left (or right in RTL)
-    y: float = 100.0          # Pixels from top
-    width: int = 320          # Widget width in pixels
-    height: int = 180         # Widget height in pixels (16:9 ratio default)
-    z_index: int = 100        # Layering order
+
+    x: float = 20.0  # Pixels from left (or right in RTL)
+    y: float = 100.0  # Pixels from top
+    width: int = 320  # Widget width in pixels
+    height: int = 180  # Widget height in pixels (16:9 ratio default)
+    z_index: int = 100  # Layering order
 
 
 class WidgetContent(BaseModel):
     """Content configuration for widget"""
+
     content_type: WidgetContentType
 
     # For LIVE_CHANNEL type
@@ -71,13 +76,13 @@ class Widget(Document):
     """
 
     # Identity
-    type: WidgetType                          # system or personal
-    user_id: Optional[str] = None             # Only for personal widgets (owner)
+    type: WidgetType  # system or personal
+    user_id: Optional[str] = None  # Only for personal widgets (owner)
 
     # Display
     title: str
     description: Optional[str] = None
-    icon: Optional[str] = None                # Icon URL or emoji
+    icon: Optional[str] = None  # Icon URL or emoji
 
     # Content
     content: WidgetContent
@@ -86,11 +91,11 @@ class Widget(Document):
     position: WidgetPosition = Field(default_factory=WidgetPosition)
 
     # Behavior flags
-    is_active: bool = True                    # Whether widget is enabled
-    is_muted: bool = True                     # Default mute state (all muted by default)
-    is_visible: bool = True                   # Default visibility state
-    is_closable: bool = True                  # Allow users to close
-    is_draggable: bool = True                 # Allow users to reposition
+    is_active: bool = True  # Whether widget is enabled
+    is_muted: bool = True  # Default mute state (all muted by default)
+    is_visible: bool = True  # Default visibility state
+    is_closable: bool = True  # Allow users to close
+    is_draggable: bool = True  # Allow users to reposition
 
     # Targeting (for system widgets)
     visible_to_roles: List[str] = Field(default_factory=lambda: ["user"])
@@ -98,10 +103,10 @@ class Widget(Document):
     target_pages: List[str] = Field(default_factory=list)  # Empty = all pages
 
     # Ordering
-    order: int = 0                            # Display order when multiple widgets
+    order: int = 0  # Display order when multiple widgets
 
     # Metadata
-    created_by: Optional[str] = None          # Admin user ID for system widgets
+    created_by: Optional[str] = None  # Admin user ID for system widgets
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -120,8 +125,10 @@ class Widget(Document):
 
 # Pydantic schemas for API requests/responses
 
+
 class WidgetCreateRequest(BaseModel):
     """Request schema for creating a widget"""
+
     title: str
     description: Optional[str] = None
     icon: Optional[str] = None
@@ -139,6 +146,7 @@ class WidgetCreateRequest(BaseModel):
 
 class WidgetUpdateRequest(BaseModel):
     """Request schema for updating a widget (all fields optional)"""
+
     title: Optional[str] = None
     description: Optional[str] = None
     icon: Optional[str] = None
@@ -157,6 +165,7 @@ class WidgetUpdateRequest(BaseModel):
 
 class WidgetPositionUpdate(BaseModel):
     """Request schema for updating widget position only"""
+
     x: float
     y: float
     width: Optional[int] = None
@@ -165,6 +174,7 @@ class WidgetPositionUpdate(BaseModel):
 
 class WidgetResponse(BaseModel):
     """Response schema for widget data"""
+
     id: str
     type: WidgetType
     user_id: Optional[str] = None

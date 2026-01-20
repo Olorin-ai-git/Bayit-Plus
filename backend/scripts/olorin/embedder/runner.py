@@ -9,13 +9,13 @@ import asyncio
 import logging
 import sys
 
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
-
 from app.core.config import settings
 from app.models.content import Content
 from app.models.content_embedding import ContentEmbedding
 from app.models.subtitles import SubtitleTrackDoc
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
+
 from scripts.olorin.embedder.client import EmbeddingClient
 from scripts.olorin.embedder.content import embed_content_metadata
 from scripts.olorin.embedder.subtitles import embed_subtitles
@@ -26,7 +26,9 @@ logger = logging.getLogger(__name__)
 class ContentEmbedder:
     """Batch content embedder for Olorin.ai semantic search."""
 
-    def __init__(self, batch_size: int = 100, force: bool = False, dry_run: bool = False):
+    def __init__(
+        self, batch_size: int = 100, force: bool = False, dry_run: bool = False
+    ):
         """Initialize embedder with options."""
         self.batch_size = batch_size
         self.force = force
@@ -106,7 +108,9 @@ async def main():
         document_models=[Content, ContentEmbedding, SubtitleTrackDoc],
     )
 
-    logger.info(f"Starting content embedding (type={args.content_type}, dry_run={args.dry_run})")
+    logger.info(
+        f"Starting content embedding (type={args.content_type}, dry_run={args.dry_run})"
+    )
 
     embedder = ContentEmbedder(
         batch_size=args.batch_size,

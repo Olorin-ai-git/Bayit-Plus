@@ -2,68 +2,145 @@
 # Builds and deploys independent Olorin backend to Cloud Run
 
 steps:
-  # Build Docker image
-  - name: 'gcr.io/cloud-builders/docker'
+  # Validate required secrets exist
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: bash
     args:
-      - 'build'
-      - '-t'
-      - 'gcr.io/$PROJECT_ID/olorin-backend:$COMMIT_SHA'
-      - '-t'
-      - 'gcr.io/$PROJECT_ID/olorin-backend:latest'
-      - '-f'
-      - 'backend-olorin/Dockerfile'
-      - '.'
-    id: 'build-image'
+      - "-c"
+      - |
+        echo "Validating required secrets..."
+        REQUIRED_SECRETS=(
+          "MONGODB_URL"
+          "ANTHROPIC_API_KEY"
+          "OPENAI_API_KEY"
+          "ELEVENLABS_API_KEY"
+          "PINECONE_API_KEY"
+          "PARTNER_API_KEY_SALT"
+        )
+
+        for secret in "${REQUIRED_SECRETS[@]}"; do
+          if ! gcloud secrets describe $secret --project=$PROJECT_ID &>/dev/null; then
+            echo "ERROR: Required secret $secret not found"
+            exit 1
+          fi
+          echo "✓ Secret $secret exists"
+        done
+        echo "All required secrets validated"
+    id: "validate-secrets"
+
+  # Build Docker image
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/olorin-backend:$COMMIT_SHA"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/olorin-backend:latest"
+      - "-f"
+      - "backend-olorin/Dockerfile"
+      - "."
+    id: "build-image"
+    waitFor: ["validate-secrets"]
 
   # Push image to Container Registry
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: "gcr.io/cloud-builders/docker"
     args:
-      - 'push'
-      - 'gcr.io/$PROJECT_ID/olorin-backend:$COMMIT_SHA'
-    id: 'push-image-sha'
+      - "push"
+      - "gcr.io/$PROJECT_ID/olorin-backend:$COMMIT_SHA"
+    id: "push-image-sha"
+    waitFor: ["build-image"]
 
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: "gcr.io/cloud-builders/docker"
     args:
-      - 'push'
-      - 'gcr.io/$PROJECT_ID/olorin-backend:latest'
-    id: 'push-image-latest'
+      - "push"
+      - "gcr.io/$PROJECT_ID/olorin-backend:latest"
+    id: "push-image-latest"
+    waitFor: ["build-image"]
 
   # Deploy to Cloud Run
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: gcloud
     args:
-      - 'run'
-      - 'deploy'
-      - 'olorin-backend'
-      - '--image=gcr.io/$PROJECT_ID/olorin-backend:$COMMIT_SHA'
-      - '--region=us-east1'
-      - '--platform=managed'
-      - '--allow-unauthenticated'
-      - '--min-instances=1'
-      - '--max-instances=20'
-      - '--memory=2Gi'
-      - '--cpu=2'
-      - '--timeout=60s'
-      - '--concurrency=80'
-      - '--set-env-vars=ENVIRONMENT=production'
-      - '--set-env-vars=PROJECT_ID=$PROJECT_ID'
-      - '--set-secrets=MONGODB_URL=MONGODB_URL:latest'
-      - '--set-secrets=ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest'
-      - '--set-secrets=OPENAI_API_KEY=OPENAI_API_KEY:latest'
-      - '--set-secrets=ELEVENLABS_API_KEY=ELEVENLABS_API_KEY:latest'
-      - '--set-secrets=PINECONE_API_KEY=PINECONE_API_KEY:latest'
-      - '--set-secrets=PARTNER_API_KEY_SALT=PARTNER_API_KEY_SALT:latest'
-    id: 'deploy-cloud-run'
+      - "run"
+      - "deploy"
+      - "olorin-backend"
+      - "--image=gcr.io/$PROJECT_ID/olorin-backend:$COMMIT_SHA"
+      - "--region=us-east1"
+      - "--platform=managed"
+      - "--allow-unauthenticated"
+      - "--min-instances=0"
+      - "--max-instances=10"
+      - "--memory=1Gi"
+      - "--cpu=1"
+      - "--timeout=120s"
+      - "--concurrency=50"
+      - "--set-env-vars=ENVIRONMENT=production,PROJECT_ID=$PROJECT_ID,API_V1_PREFIX=/api/v1,DEBUG=false,GCP_PROJECT_ID=$PROJECT_ID,LOG_LEVEL=INFO,SENTRY_ENVIRONMENT=production,SENTRY_TRACES_SAMPLE_RATE=0.2,OLORIN_DUBBING_ENABLED=false,OLORIN_SEMANTIC_SEARCH_ENABLED=false,OLORIN_CULTURAL_CONTEXT_ENABLED=false,OLORIN_RECAP_ENABLED=false,PINECONE_ENVIRONMENT=us-east-1-aws,PINECONE_INDEX_NAME=olorin-content,EMBEDDING_MODEL=text-embedding-3-small,EMBEDDING_DIMENSIONS=1536"
+      - "--set-secrets=MONGODB_URL=MONGODB_URL:latest,ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest,ELEVENLABS_API_KEY=ELEVENLABS_API_KEY:latest,PINECONE_API_KEY=PINECONE_API_KEY:latest,PARTNER_API_KEY_SALT=PARTNER_API_KEY_SALT:latest"
+    id: "deploy-cloud-run"
+    waitFor: ["push-image-sha"]
+
+  # Health check and automatic rollback if deployment fails
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: bash
+    waitFor: ["deploy-cloud-run"]
+    args:
+      - "-c"
+      - |
+        set -e
+        echo "Waiting for service to be ready..."
+        sleep 30
+
+        SERVICE_URL=$(gcloud run services describe olorin-backend \
+          --region=us-east1 \
+          --format='value(status.url)')
+
+        echo "Service URL: $SERVICE_URL"
+
+        # Health check with retries
+        MAX_RETRIES=5
+        RETRY_COUNT=0
+        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+          echo "Health check attempt $((RETRY_COUNT + 1))/$MAX_RETRIES..."
+          if curl -sf "$SERVICE_URL/health" -o /dev/null; then
+            echo "✓ Health check passed!"
+            exit 0
+          fi
+          RETRY_COUNT=$((RETRY_COUNT + 1))
+          echo "Health check failed, retrying in 10s..."
+          sleep 10
+        done
+
+        echo "ERROR: Health check failed after $MAX_RETRIES attempts"
+        echo "Rolling back to previous revision..."
+
+        # Get previous revision
+        PREV_REVISION=$(gcloud run revisions list \
+          --service=olorin-backend \
+          --region=us-east1 \
+          --format='value(name)' \
+          --limit=2 | tail -1)
+
+        if [ -n "$PREV_REVISION" ]; then
+          echo "Rolling back to: $PREV_REVISION"
+          gcloud run services update-traffic olorin-backend \
+            --region=us-east1 \
+            --to-revisions=$PREV_REVISION=100
+          echo "Rollback complete"
+        else
+          echo "No previous revision found - cannot rollback"
+        fi
+        exit 1
+    id: "health-check-and-rollback"
 
 # Build timeout
-timeout: '1200s'
+timeout: "1200s"
 
 # Images to push to Container Registry
 images:
-  - 'gcr.io/$PROJECT_ID/olorin-backend:$COMMIT_SHA'
-  - 'gcr.io/$PROJECT_ID/olorin-backend:latest'
+  - "gcr.io/$PROJECT_ID/olorin-backend:$COMMIT_SHA"
+  - "gcr.io/$PROJECT_ID/olorin-backend:latest"
 
 # Build options
 options:
-  machineType: 'N1_HIGHCPU_8'
+  machineType: "N1_HIGHCPU_8"
   logging: CLOUD_LOGGING_ONLY

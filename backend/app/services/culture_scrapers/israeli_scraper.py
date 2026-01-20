@@ -7,19 +7,19 @@ Migrated from jerusalem_content_service.py to support the Global Cultures system
 
 import logging
 from datetime import datetime, timezone
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 from app.services.culture_scrapers.base_scraper import (
     BaseCultureScraper,
     CultureHeadlineItem,
 )
 from app.services.news_scraper import (
-    scrape_ynet,
-    scrape_walla,
-    scrape_mako,
-    scrape_jerusalem_news,
-    scrape_tel_aviv_news,
     HeadlineItem,
+    scrape_jerusalem_news,
+    scrape_mako,
+    scrape_tel_aviv_news,
+    scrape_walla,
+    scrape_ynet,
 )
 
 logger = logging.getLogger(__name__)
@@ -42,23 +42,64 @@ class IsraeliScraper(BaseCultureScraper):
     # Hebrew keywords by category
     keywords_native = {
         # Jerusalem categories
-        "kotel": ["כותל", "הכותל המערבי", "העיר העתיקה", "הר הבית", "עיר דוד", "הר הזיתים"],
-        "idf-ceremony": ["טקס צה\"ל", "טקס צהל", "השבעה", "גיוס", "בר מצווה", "בת מצווה", "טקס סיום", "חיילים בכותל"],
+        "kotel": [
+            "כותל",
+            "הכותל המערבי",
+            "העיר העתיקה",
+            "הר הבית",
+            "עיר דוד",
+            "הר הזיתים",
+        ],
+        "idf-ceremony": [
+            'טקס צה"ל',
+            "טקס צהל",
+            "השבעה",
+            "גיוס",
+            "בר מצווה",
+            "בת מצווה",
+            "טקס סיום",
+            "חיילים בכותל",
+        ],
         "diaspora": ["תפוצות", "עלייה", "תגלית", "יהדות העולם", "עולים", "נפש בנפש"],
         "holy-sites": ["מערת המכפלה", "קבר רחל", "מקומות קדושים"],
         "jerusalem-events": ["אירוע בירושלים", "פסטיבל ירושלים", "ירושלים"],
-
         # Tel Aviv categories
         "beaches": ["חוף", "ים", "חוף הים", "תל אביב חוף"],
         "nightlife": ["מועדון", "לילה", "בילוי", "בר", "מסיבה"],
         "tech": ["הייטק", "סטארטאפ", "טכנולוגיה", "חדשנות"],
         "culture": ["תרבות", "אמנות", "מוזיקה", "תיאטרון", "גלריה"],
         "food": ["אוכל", "מסעדה", "שוק", "שף", "מטבח"],
-
         # Politics & Security
-        "politics": ["ממשלה", "כנסת", "בחירות", "ראש הממשלה", "שר", "פוליטיקה", "קואליציה", "אופוזיציה", "נתניהו", "ארדואן", "טורקיה", "כורדים", "דרוזים"],
-        "security": ["ביטחון", "צה\"ל", "צבא", "מלחמה", "פיגוע", "טרור", "חמאס", "חיזבאללה", "עזה", "גבול", "רקטות", "ברזל", "מבצע"],
-
+        "politics": [
+            "ממשלה",
+            "כנסת",
+            "בחירות",
+            "ראש הממשלה",
+            "שר",
+            "פוליטיקה",
+            "קואליציה",
+            "אופוזיציה",
+            "נתניהו",
+            "ארדואן",
+            "טורקיה",
+            "כורדים",
+            "דרוזים",
+        ],
+        "security": [
+            "ביטחון",
+            'צה"ל',
+            "צבא",
+            "מלחמה",
+            "פיגוע",
+            "טרור",
+            "חמאס",
+            "חיזבאללה",
+            "עזה",
+            "גבול",
+            "רקטות",
+            "ברזל",
+            "מבצע",
+        ],
         # General
         "general": ["ישראל", "חדשות"],
     }
@@ -66,23 +107,80 @@ class IsraeliScraper(BaseCultureScraper):
     # English keywords by category
     keywords_english = {
         # Jerusalem categories
-        "kotel": ["jerusalem", "kotel", "western wall", "old city", "temple mount", "city of david", "mount of olives", "har habayit"],
-        "idf-ceremony": ["idf ceremony", "swearing in", "graduation", "bar mitzvah", "bat mitzvah", "military ceremony", "soldiers kotel"],
-        "diaspora": ["diaspora", "aliyah", "birthright", "world jewry", "jewish world", "jews abroad", "olim", "nefesh b'nefesh"],
-        "holy-sites": ["cave of the patriarchs", "rachel's tomb", "machpela", "holy sites", "sacred places"],
+        "kotel": [
+            "jerusalem",
+            "kotel",
+            "western wall",
+            "old city",
+            "temple mount",
+            "city of david",
+            "mount of olives",
+            "har habayit",
+        ],
+        "idf-ceremony": [
+            "idf ceremony",
+            "swearing in",
+            "graduation",
+            "bar mitzvah",
+            "bat mitzvah",
+            "military ceremony",
+            "soldiers kotel",
+        ],
+        "diaspora": [
+            "diaspora",
+            "aliyah",
+            "birthright",
+            "world jewry",
+            "jewish world",
+            "jews abroad",
+            "olim",
+            "nefesh b'nefesh",
+        ],
+        "holy-sites": [
+            "cave of the patriarchs",
+            "rachel's tomb",
+            "machpela",
+            "holy sites",
+            "sacred places",
+        ],
         "jerusalem-events": ["jerusalem event", "jerusalem festival"],
-
         # Tel Aviv categories
         "beaches": ["beach", "sea", "seaside", "tel aviv beach", "mediterranean"],
         "nightlife": ["club", "nightlife", "party", "bar", "entertainment"],
         "tech": ["tech", "startup", "technology", "innovation", "silicon wadi"],
         "culture": ["culture", "art", "music", "theater", "gallery", "bauhaus"],
         "food": ["food", "restaurant", "market", "chef", "cuisine"],
-
         # Politics & Security
-        "politics": ["government", "knesset", "election", "prime minister", "minister", "politics", "coalition", "opposition", "netanyahu", "erdogan", "turkey", "kurds", "druze"],
-        "security": ["security", "idf", "army", "war", "attack", "terror", "hamas", "hezbollah", "gaza", "border", "rockets", "iron dome", "operation"],
-
+        "politics": [
+            "government",
+            "knesset",
+            "election",
+            "prime minister",
+            "minister",
+            "politics",
+            "coalition",
+            "opposition",
+            "netanyahu",
+            "erdogan",
+            "turkey",
+            "kurds",
+            "druze",
+        ],
+        "security": [
+            "security",
+            "idf",
+            "army",
+            "war",
+            "attack",
+            "terror",
+            "hamas",
+            "hezbollah",
+            "gaza",
+            "border",
+            "rockets",
+            "iron dome",
+            "operation",
+        ],
         # General
         "general": ["israel", "news"],
     }
@@ -90,10 +188,26 @@ class IsraeliScraper(BaseCultureScraper):
     # Category labels
     category_labels = {
         "kotel": {"he": "הכותל המערבי", "en": "Western Wall", "es": "Muro Occidental"},
-        "idf-ceremony": {"he": "טקסי צה\"ל", "en": "IDF Ceremonies", "es": "Ceremonias de las FDI"},
-        "diaspora": {"he": "קשר לתפוצות", "en": "Diaspora Connection", "es": "Conexion con la Diaspora"},
-        "holy-sites": {"he": "מקומות קדושים", "en": "Holy Sites", "es": "Lugares Sagrados"},
-        "jerusalem-events": {"he": "אירועים בירושלים", "en": "Jerusalem Events", "es": "Eventos en Jerusalen"},
+        "idf-ceremony": {
+            "he": 'טקסי צה"ל',
+            "en": "IDF Ceremonies",
+            "es": "Ceremonias de las FDI",
+        },
+        "diaspora": {
+            "he": "קשר לתפוצות",
+            "en": "Diaspora Connection",
+            "es": "Conexion con la Diaspora",
+        },
+        "holy-sites": {
+            "he": "מקומות קדושים",
+            "en": "Holy Sites",
+            "es": "Lugares Sagrados",
+        },
+        "jerusalem-events": {
+            "he": "אירועים בירושלים",
+            "en": "Jerusalem Events",
+            "es": "Eventos en Jerusalen",
+        },
         "beaches": {"he": "חופים", "en": "Beaches", "es": "Playas"},
         "nightlife": {"he": "חיי לילה", "en": "Nightlife", "es": "Vida Nocturna"},
         "tech": {"he": "הייטק", "en": "Tech", "es": "Tecnologia"},
@@ -110,7 +224,13 @@ class IsraeliScraper(BaseCultureScraper):
             "name": "Jerusalem",
             "name_native": "ירושלים",
             "default_category": "jerusalem-events",
-            "priority_categories": ["kotel", "idf-ceremony", "diaspora", "holy-sites", "jerusalem-events"],
+            "priority_categories": [
+                "kotel",
+                "idf-ceremony",
+                "diaspora",
+                "holy-sites",
+                "jerusalem-events",
+            ],
             "scrape_function": "scrape_jerusalem_news",
         },
         "tel-aviv": {

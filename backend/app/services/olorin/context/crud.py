@@ -99,15 +99,21 @@ async def get_references_by_category(
     limit: int = 100,
 ) -> List[CulturalReference]:
     """Get references by category."""
-    return await CulturalReference.find(
-        CulturalReference.category == category
-    ).sort(-CulturalReference.lookup_count).limit(limit).to_list()
+    return (
+        await CulturalReference.find(CulturalReference.category == category)
+        .sort(-CulturalReference.lookup_count)
+        .limit(limit)
+        .to_list()
+    )
 
 
 async def get_popular_references(
     limit: int = 50,
 ) -> List[CulturalReference]:
     """Get most frequently accessed references."""
-    return await CulturalReference.find_all().sort(
-        -CulturalReference.lookup_count
-    ).limit(limit).to_list()
+    return (
+        await CulturalReference.find_all()
+        .sort(-CulturalReference.lookup_count)
+        .limit(limit)
+        .to_list()
+    )

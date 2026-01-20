@@ -4,13 +4,14 @@ MongoDB document models for admin functionality
 """
 
 from datetime import datetime
-from typing import Optional, List, Dict, Any
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
-
 # ============ ENUMS ============
+
 
 class Role(str, Enum):
     SUPER_ADMIN = "super_admin"
@@ -54,25 +55,54 @@ class Permission(str, Enum):
 ROLE_PERMISSIONS: Dict[Role, List[Permission]] = {
     Role.SUPER_ADMIN: list(Permission),
     Role.ADMIN: [
-        Permission.USERS_READ, Permission.USERS_CREATE, Permission.USERS_UPDATE,
-        Permission.CONTENT_READ, Permission.CONTENT_CREATE, Permission.CONTENT_UPDATE, Permission.CONTENT_DELETE,
-        Permission.CAMPAIGNS_READ, Permission.CAMPAIGNS_CREATE, Permission.CAMPAIGNS_UPDATE, Permission.CAMPAIGNS_DELETE,
-        Permission.BILLING_READ, Permission.BILLING_REFUND, Permission.BILLING_EXPORT,
-        Permission.SUBSCRIPTIONS_READ, Permission.SUBSCRIPTIONS_CREATE, Permission.SUBSCRIPTIONS_UPDATE, Permission.SUBSCRIPTIONS_CANCEL, Permission.SUBSCRIPTIONS_DELETE,
-        Permission.MARKETING_READ, Permission.MARKETING_CREATE, Permission.MARKETING_SEND,
-        Permission.ANALYTICS_READ, Permission.ANALYTICS_EXPORT,
+        Permission.USERS_READ,
+        Permission.USERS_CREATE,
+        Permission.USERS_UPDATE,
+        Permission.CONTENT_READ,
+        Permission.CONTENT_CREATE,
+        Permission.CONTENT_UPDATE,
+        Permission.CONTENT_DELETE,
+        Permission.CAMPAIGNS_READ,
+        Permission.CAMPAIGNS_CREATE,
+        Permission.CAMPAIGNS_UPDATE,
+        Permission.CAMPAIGNS_DELETE,
+        Permission.BILLING_READ,
+        Permission.BILLING_REFUND,
+        Permission.BILLING_EXPORT,
+        Permission.SUBSCRIPTIONS_READ,
+        Permission.SUBSCRIPTIONS_CREATE,
+        Permission.SUBSCRIPTIONS_UPDATE,
+        Permission.SUBSCRIPTIONS_CANCEL,
+        Permission.SUBSCRIPTIONS_DELETE,
+        Permission.MARKETING_READ,
+        Permission.MARKETING_CREATE,
+        Permission.MARKETING_SEND,
+        Permission.ANALYTICS_READ,
+        Permission.ANALYTICS_EXPORT,
         Permission.SYSTEM_LOGS,
     ],
     Role.CONTENT_MANAGER: [
-        Permission.CONTENT_READ, Permission.CONTENT_CREATE, Permission.CONTENT_UPDATE, Permission.CONTENT_DELETE,
-        Permission.CAMPAIGNS_READ, Permission.CAMPAIGNS_CREATE, Permission.CAMPAIGNS_UPDATE,
+        Permission.CONTENT_READ,
+        Permission.CONTENT_CREATE,
+        Permission.CONTENT_UPDATE,
+        Permission.CONTENT_DELETE,
+        Permission.CAMPAIGNS_READ,
+        Permission.CAMPAIGNS_CREATE,
+        Permission.CAMPAIGNS_UPDATE,
         Permission.ANALYTICS_READ,
     ],
     Role.BILLING_ADMIN: [
         Permission.USERS_READ,
-        Permission.BILLING_READ, Permission.BILLING_REFUND, Permission.BILLING_EXPORT,
-        Permission.SUBSCRIPTIONS_READ, Permission.SUBSCRIPTIONS_CREATE, Permission.SUBSCRIPTIONS_UPDATE, Permission.SUBSCRIPTIONS_CANCEL, Permission.SUBSCRIPTIONS_DELETE,
-        Permission.ANALYTICS_READ, Permission.ANALYTICS_EXPORT,
+        Permission.BILLING_READ,
+        Permission.BILLING_REFUND,
+        Permission.BILLING_EXPORT,
+        Permission.SUBSCRIPTIONS_READ,
+        Permission.SUBSCRIPTIONS_CREATE,
+        Permission.SUBSCRIPTIONS_UPDATE,
+        Permission.SUBSCRIPTIONS_CANCEL,
+        Permission.SUBSCRIPTIONS_DELETE,
+        Permission.ANALYTICS_READ,
+        Permission.ANALYTICS_EXPORT,
     ],
     Role.SUPPORT: [
         Permission.USERS_READ,
@@ -86,6 +116,7 @@ ROLE_PERMISSIONS: Dict[Role, List[Permission]] = {
 
 
 # ============ CAMPAIGN ============
+
 
 class CampaignType(str, Enum):
     PROMOTIONAL = "promotional"
@@ -140,6 +171,7 @@ class Campaign(Document):
 
 # ============ TRANSACTION ============
 
+
 class TransactionStatus(str, Enum):
     PENDING = "pending"
     COMPLETED = "completed"
@@ -173,6 +205,7 @@ class Transaction(Document):
 
 # ============ REFUND ============
 
+
 class RefundStatus(str, Enum):
     PENDING = "pending"
     APPROVED = "approved"
@@ -197,6 +230,7 @@ class Refund(Document):
 
 
 # ============ AUDIT LOG ============
+
 
 class AuditAction(str, Enum):
     USER_CREATED = "user_created"
@@ -263,6 +297,7 @@ class AuditLog(Document):
 
 # ============ EMAIL CAMPAIGN ============
 
+
 class MarketingStatus(str, Enum):
     DRAFT = "draft"
     SCHEDULED = "scheduled"
@@ -303,6 +338,7 @@ class EmailCampaign(Document):
 
 # ============ PUSH NOTIFICATION ============
 
+
 class PushNotification(Document):
     title: str
     body: str
@@ -324,6 +360,7 @@ class PushNotification(Document):
 
 # ============ SYSTEM SETTINGS ============
 
+
 class SystemSettings(Document):
     key: str  # Singleton key = "system_settings"
     default_plan: str = "free"
@@ -333,15 +370,17 @@ class SystemSettings(Document):
     support_email: str = "support@bayit.tv"
     terms_url: str = "https://bayit.tv/terms"
     privacy_url: str = "https://bayit.tv/privacy"
-    feature_flags: Dict[str, bool] = Field(default_factory=lambda: {
-        "new_player": True,
-        "dark_mode": True,
-        "offline_mode": False,
-        "recommendations": True,
-        "social_features": False,
-        "live_chat": True,
-        "analytics_v2": False,
-    })
+    feature_flags: Dict[str, bool] = Field(
+        default_factory=lambda: {
+            "new_player": True,
+            "dark_mode": True,
+            "offline_mode": False,
+            "recommendations": True,
+            "social_features": False,
+            "live_chat": True,
+            "analytics_v2": False,
+        }
+    )
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     updated_by: Optional[str] = None
 
@@ -350,6 +389,7 @@ class SystemSettings(Document):
 
 
 # ============ SUBSCRIPTION PLAN ============
+
 
 class SubscriptionPlan(Document):
     name: str

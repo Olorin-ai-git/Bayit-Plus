@@ -12,13 +12,16 @@ This directory contains **deployment files only** - no Python code is duplicated
 backend-olorin/
 ├── Dockerfile          # Olorin-specific Docker image
 ├── cloudbuild.yaml     # Cloud Build deployment config
-├── README.md           # This file
-└── pyproject.toml      # Dependency manifest (reference only)
+└── README.md           # This file
 ```
+
+**No Code Duplication**: This directory contains ONLY deployment configurations.
+All Python code resides in `/backend/app/` to maintain single source of truth.
 
 ### Code Location
 
 All Python code resides in `../backend/app/`:
+
 - Entry point: `backend/app/olorin_main.py` (Olorin FastAPI app)
 - Shared code: `backend/app/` (all services, models, routes)
 - No code duplication - single source of truth
@@ -46,6 +49,7 @@ gcloud builds submit --config=backend-olorin/cloudbuild.yaml
 ### Environment Variables
 
 Required secrets (configured in Cloud Run):
+
 - `MONGODB_URL` - MongoDB connection string
 - `ANTHROPIC_API_KEY` - Claude API key
 - `OPENAI_API_KEY` - OpenAI API key for embeddings
@@ -54,6 +58,7 @@ Required secrets (configured in Cloud Run):
 - `PARTNER_API_KEY_SALT` - Salt for API key hashing
 
 Feature flags (environment variables):
+
 - `OLORIN_SEMANTIC_SEARCH_ENABLED` - Enable semantic search (default: false)
 - `OLORIN_DUBBING_ENABLED` - Enable dubbing (default: false)
 - `OLORIN_RECAP_ENABLED` - Enable recap agent (default: false)
@@ -62,26 +67,31 @@ Feature flags (environment variables):
 ## Scaling Configuration
 
 **Cloud Run Settings:**
-- Min instances: 1 (always warm)
-- Max instances: 20 (partner API bursts)
-- Memory: 2 GiB
-- CPU: 2 vCPU
-- Timeout: 60s
-- Concurrency: 80 requests per instance
+
+- Min instances: 0 (scale-to-zero for cost optimization)
+- Max instances: 10 (can increase based on metrics)
+- Memory: 1 GiB (monitor for OOM, increase if needed)
+- CPU: 1 vCPU (monitor CPU utilization, increase if needed)
+- Timeout: 120s (allows time for AI operations)
+- Concurrency: 50 requests per instance (conservative for AI workloads)
 
 **Rationale:**
-- Higher max instances than Bayit+ backend (20 vs 10)
-- Partner APIs can have burst traffic patterns
-- Independent scaling prevents Bayit+ user traffic from affecting partners
+
+- Scale-to-zero reduces cost when no partner traffic
+- Conservative resource allocation - scale up based on actual metrics
+- Longer timeout accommodates AI/ML processing
+- Lower concurrency ensures quality of service for AI operations
 
 ## Monitoring
 
 **Health Check:**
+
 - Endpoint: `GET /health`
 - Interval: 30s
 - Timeout: 10s
 
 **Logs:**
+
 - Cloud Logging enabled
 - Structured JSON logging
 - Sentry integration for error tracking
@@ -99,25 +109,27 @@ API Gateway routes traffic to this service:
 
 ## Differences from Main Backend
 
-| Aspect | Bayit+ Backend | Olorin Backend |
-|--------|----------------|----------------|
-| Entry point | `app.main:app` | `app.olorin_main:app` |
-| Routes | All Bayit+ routes | Olorin routes only |
-| Users | B2C streaming users | B2B partners |
-| Scaling | Max 10 instances | Max 20 instances |
-| Rate limiting | User-based | Partner-based |
-| Database | Bayit+ collections | Olorin collections |
+| Aspect        | Bayit+ Backend      | Olorin Backend        |
+| ------------- | ------------------- | --------------------- |
+| Entry point   | `app.main:app`      | `app.olorin_main:app` |
+| Routes        | All Bayit+ routes   | Olorin routes only    |
+| Users         | B2C streaming users | B2B partners          |
+| Scaling       | Max 10 instances    | Max 10 instances      |
+| Rate limiting | User-based          | Partner-based         |
+| Database      | Bayit+ collections  | Olorin collections    |
 
 ## Development
 
 ### Testing Olorin Deployment
 
 1. Build Docker image locally:
+
    ```bash
    docker build -f backend-olorin/Dockerfile -t olorin-backend:local .
    ```
 
 2. Run container:
+
    ```bash
    docker run -p 8080:8080 \
      -e MONGODB_URL="..." \
@@ -142,7 +154,9 @@ gcloud run services update-traffic olorin-backend \
 
 ## Cost Optimization
 
-- Minimum 1 instance ensures sub-200ms cold start latency for partner APIs
-- Auto-scaling to 20 instances handles traffic spikes without over-provisioning
-- 2 GiB memory supports AI model loading and vector operations
+- Scale-to-zero (min 0 instances) reduces costs when no partner traffic
+- Auto-scaling to 10 instances handles traffic spikes (can increase based on metrics)
+- 1 GiB memory initial allocation (monitor for OOM, increase if needed)
+- 1 vCPU initial allocation (monitor CPU utilization, increase if needed)
 - Same codebase as main backend = no duplicate maintenance costs
+- Conservative configuration - scale up based on actual production metrics

@@ -1,20 +1,23 @@
 """Check what's actually stored for Avatar in the database"""
 import asyncio
-import sys
 import os
+import sys
+
 from dotenv import load_dotenv
 
 load_dotenv()
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
 from app.models.content import Content
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 
 async def check_avatar():
     """Check Avatar's full data"""
-    mongodb_uri = os.getenv("MONGODB_URI") or os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+    mongodb_uri = os.getenv("MONGODB_URI") or os.getenv(
+        "MONGODB_URL", "mongodb://localhost:27017"
+    )
     mongodb_db = os.getenv("MONGODB_DB") or os.getenv("MONGODB_DB_NAME", "bayit_plus")
 
     client = AsyncIOMotorClient(mongodb_uri)

@@ -4,8 +4,9 @@ Unit Tests for Translation Service
 Tests the universal translation service functionality.
 """
 
+from unittest.mock import AsyncMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, AsyncMock
 from app.services.translation_service import TranslationService
 
 
@@ -38,7 +39,7 @@ class TestTranslationService:
 
         assert "Unsupported language code" in str(exc_info.value)
 
-    @patch('app.services.translation_service.Anthropic')
+    @patch("app.services.translation_service.Anthropic")
     def test_translate_text_success(self, mock_anthropic, translation_service):
         """Test successful text translation."""
         mock_client = Mock()
@@ -53,7 +54,7 @@ class TestTranslationService:
         assert result == "Hello"
         mock_client.messages.create.assert_called_once()
 
-    @patch('app.services.translation_service.Anthropic')
+    @patch("app.services.translation_service.Anthropic")
     def test_translate_text_removes_prefix(self, mock_anthropic, translation_service):
         """Test that Translation: prefix is removed."""
         mock_client = Mock()
@@ -68,7 +69,7 @@ class TestTranslationService:
         assert result == "Hello"
         assert "Translation:" not in result
 
-    @patch('app.services.translation_service.Anthropic')
+    @patch("app.services.translation_service.Anthropic")
     def test_translate_text_handles_quotes(self, mock_anthropic, translation_service):
         """Test that quotes are stripped from translation."""
         mock_client = Mock()
@@ -83,7 +84,7 @@ class TestTranslationService:
         assert result == "Hello"
         assert '"' not in result
 
-    @patch('app.services.translation_service.Anthropic')
+    @patch("app.services.translation_service.Anthropic")
     def test_translate_text_error_handling(self, mock_anthropic, translation_service):
         """Test error handling during translation."""
         mock_client = Mock()
@@ -98,7 +99,7 @@ class TestTranslationService:
     @pytest.mark.asyncio
     async def test_translate_field_async(self, translation_service):
         """Test async field translation."""
-        with patch.object(translation_service, 'translate_text', return_value="Hello"):
+        with patch.object(translation_service, "translate_text", return_value="Hello"):
             result = await translation_service.translate_field("שלום", "en")
             assert result == "Hello"
 
@@ -111,14 +112,14 @@ class TestTranslationService:
     @pytest.mark.asyncio
     async def test_translate_fields_multiple(self, translation_service):
         """Test translating multiple fields at once."""
-        fields = {
-            "title": "שלום",
-            "description": "זה תיאור",
-            "author": "יוסי כהן"
-        }
+        fields = {"title": "שלום", "description": "זה תיאור", "author": "יוסי כהן"}
 
-        with patch.object(translation_service, 'translate_field') as mock_translate:
-            mock_translate.side_effect = ["Hello", "This is a description", "Yossi Cohen"]
+        with patch.object(translation_service, "translate_field") as mock_translate:
+            mock_translate.side_effect = [
+                "Hello",
+                "This is a description",
+                "Yossi Cohen",
+            ]
 
             results = await translation_service.translate_fields(fields, "en")
 
@@ -129,9 +130,7 @@ class TestTranslationService:
     def test_get_translation_stats(self, translation_service):
         """Test translation statistics calculation."""
         stats = translation_service.get_translation_stats(
-            original_count=100,
-            translated_count=85,
-            field_count=340
+            original_count=100, translated_count=85, field_count=340
         )
 
         assert stats["total_items"] == 100
@@ -143,9 +142,7 @@ class TestTranslationService:
     def test_get_translation_stats_zero_items(self, translation_service):
         """Test translation statistics with zero items."""
         stats = translation_service.get_translation_stats(
-            original_count=0,
-            translated_count=0,
-            field_count=0
+            original_count=0, translated_count=0, field_count=0
         )
 
         assert stats["success_rate"] == 0
@@ -153,8 +150,7 @@ class TestTranslationService:
     def test_validate_translation_success(self, translation_service):
         """Test translation validation success case."""
         result = translation_service.validate_translation(
-            original_text="שלום עולם",
-            translated_text="Hello World"
+            original_text="שלום עולם", translated_text="Hello World"
         )
 
         assert result is True
@@ -162,8 +158,7 @@ class TestTranslationService:
     def test_validate_translation_same_text(self, translation_service):
         """Test validation when text is the same (already in target language)."""
         result = translation_service.validate_translation(
-            original_text="Hello",
-            translated_text="Hello"
+            original_text="Hello", translated_text="Hello"
         )
 
         assert result is True
@@ -171,8 +166,7 @@ class TestTranslationService:
     def test_validate_translation_empty(self, translation_service):
         """Test validation fails for empty translation."""
         result = translation_service.validate_translation(
-            original_text="שלום",
-            translated_text=""
+            original_text="שלום", translated_text=""
         )
 
         assert result is False
@@ -182,7 +176,7 @@ class TestTranslationService:
         result = translation_service.validate_translation(
             original_text="שלום עולם זה טקסט ארוך מאוד",
             translated_text="Hi",
-            min_length_ratio=0.5
+            min_length_ratio=0.5,
         )
 
         assert result is False
@@ -192,7 +186,7 @@ class TestTranslationService:
         result = translation_service.validate_translation(
             original_text="שלום",
             translated_text="This is a very long translation that is too long for the original",
-            max_length_ratio=2.0
+            max_length_ratio=2.0,
         )
 
         assert result is False

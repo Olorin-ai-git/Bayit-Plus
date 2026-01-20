@@ -28,11 +28,11 @@ Returns a list of violations found and suggestions for fixes.""",
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item to validate"
+                    "description": "The ID of the content item to validate",
                 }
             },
-            "required": ["content_id"]
-        }
+            "required": ["content_id"],
+        },
     },
     {
         "name": "suggest_taxonomy_classification",
@@ -53,11 +53,11 @@ This is a non-destructive analysis tool - it only suggests, doesn't modify.""",
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item to analyze"
+                    "description": "The ID of the content item to analyze",
                 }
             },
-            "required": ["content_id"]
-        }
+            "required": ["content_id"],
+        },
     },
     {
         "name": "apply_taxonomy_classification",
@@ -78,44 +78,44 @@ Use suggest_taxonomy_classification first to get recommended values.""",
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item to classify"
+                    "description": "The ID of the content item to classify",
                 },
                 "section_ids": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "Section IDs the content should appear in"
+                    "description": "Section IDs the content should appear in",
                 },
                 "primary_section_id": {
                     "type": "string",
-                    "description": "Main section ID for display priority"
+                    "description": "Main section ID for display priority",
                 },
                 "content_format": {
                     "type": "string",
                     "enum": ["movie", "series", "documentary", "short", "clip"],
-                    "description": "Structural content type"
+                    "description": "Structural content type",
                 },
                 "audience_id": {
                     "type": "string",
-                    "description": "Audience classification ID"
+                    "description": "Audience classification ID",
                 },
                 "genre_ids": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "Genre IDs to assign"
+                    "description": "Genre IDs to assign",
                 },
                 "topic_tags": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "Topic tags to assign"
+                    "description": "Topic tags to assign",
                 },
                 "subcategory_ids": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "Subcategory IDs to assign"
-                }
+                    "description": "Subcategory IDs to assign",
+                },
             },
-            "required": ["content_id"]
-        }
+            "required": ["content_id"],
+        },
     },
     {
         "name": "batch_migrate_taxonomy",
@@ -136,15 +136,15 @@ Processes content in batches and returns migration statistics.""",
                 "batch_size": {
                     "type": "integer",
                     "description": "Number of items to process (default: 50, max: 200)",
-                    "default": 50
+                    "default": 50,
                 },
                 "section_filter": {
                     "type": "string",
-                    "description": "Optional: Only migrate content that would belong to this section slug"
-                }
+                    "description": "Optional: Only migrate content that would belong to this section slug",
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "get_taxonomy_summary",
@@ -156,11 +156,7 @@ Returns:
 - List of all active audiences with content counts
 - Migration status (how many items migrated vs pending)
 - Any potential issues detected (orphaned references, etc.)""",
-        "input_schema": {
-            "type": "object",
-            "properties": {},
-            "required": []
-        }
+        "input_schema": {"type": "object", "properties": {}, "required": []},
     },
     {
         "name": "list_taxonomy_violations",
@@ -181,7 +177,7 @@ Returns a list of violating content IDs with specific violations for each.""",
                 "limit": {
                     "type": "integer",
                     "description": "Maximum number of violations to return (default: 100)",
-                    "default": 100
+                    "default": 100,
                 },
                 "violation_type": {
                     "type": "string",
@@ -191,12 +187,12 @@ Returns a list of violating content IDs with specific violations for each.""",
                         "invalid_genre",
                         "invalid_subcategory",
                         "invalid_format",
-                        "all"
+                        "all",
                     ],
-                    "description": "Type of violation to look for (default: all)"
-                }
+                    "description": "Type of violation to look for (default: all)",
+                },
             },
-            "required": []
-        }
-    }
+            "required": [],
+        },
+    },
 ]

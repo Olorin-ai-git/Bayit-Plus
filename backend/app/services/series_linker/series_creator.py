@@ -65,6 +65,7 @@ async def create_series_from_tmdb(
 
         # Find the appropriate category for series
         from app.models.content_taxonomy import ContentSection as Category
+
         series_category = await Category.find_one({"slug": "series"})
         if not series_category:
             series_category = await Category.find_one({"slug": "tv"})
@@ -98,7 +99,9 @@ async def create_series_from_tmdb(
         )
 
         await new_series.insert()
-        logger.info(f"Created new series from TMDB: '{new_series.title}' (ID: {new_series.id})")
+        logger.info(
+            f"Created new series from TMDB: '{new_series.title}' (ID: {new_series.id})"
+        )
 
         return new_series
 

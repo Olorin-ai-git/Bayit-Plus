@@ -8,15 +8,14 @@ Handles:
 
 from typing import Optional
 
-from fastapi import APIRouter, Query
-
-from app.models.content import Content
-from app.api.routes.judaism.schemas import JudaismContentResponse
 from app.api.routes.judaism.constants import (
     JUDAISM_CATEGORIES,
     JUDAISM_CONTENT_REGEX,
     JUDAISM_TITLE_REGEX,
 )
+from app.api.routes.judaism.schemas import JudaismContentResponse
+from app.models.content import Content
+from fastapi import APIRouter, Query
 
 router = APIRouter()
 
@@ -70,8 +69,8 @@ async def get_judaism_content(
                     {"series_id": {"$exists": False}},
                     {"series_id": ""},
                 ]
-            }
-        ]
+            },
+        ],
     }
 
     # Filter by specific subcategory

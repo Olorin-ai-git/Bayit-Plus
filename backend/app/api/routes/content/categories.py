@@ -8,13 +8,12 @@ Legacy Category model is deprecated.
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
-
 from app.api.routes.content.utils import convert_to_proxy_url, is_series_by_category
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection, SectionSubcategory
 from app.services.subtitle_enrichment import enrich_content_items_with_subtitles
 from app.utils.i18n import get_multilingual_names
+from fastapi import APIRouter, HTTPException, Query
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -27,28 +26,34 @@ async def get_categories():
 
     Returns sections from the new taxonomy system.
     """
-    sections = await ContentSection.find(
-        ContentSection.is_active == True
-    ).sort("order").to_list()
+    sections = (
+        await ContentSection.find(ContentSection.is_active == True)
+        .sort("order")
+        .to_list()
+    )
 
     result_items = []
     for section in sections:
         # Resolve multilingual names from i18n
-        names = get_multilingual_names(section.name_key, slug=section.slug, taxonomy_type="sections")
+        names = get_multilingual_names(
+            section.name_key, slug=section.slug, taxonomy_type="sections"
+        )
 
-        result_items.append({
-            "id": str(section.id),
-            "name": names["he"],  # Hebrew as default
-            "name_en": names["en"],
-            "name_es": names["es"],
-            "slug": section.slug,
-            "thumbnail": section.thumbnail,
-            "icon": section.icon,
-            "color": section.color,
-            "show_on_homepage": section.show_on_homepage,
-            "show_on_nav": section.show_on_nav,
-            "supports_subcategories": section.supports_subcategories,
-        })
+        result_items.append(
+            {
+                "id": str(section.id),
+                "name": names["he"],  # Hebrew as default
+                "name_en": names["en"],
+                "name_es": names["es"],
+                "slug": section.slug,
+                "thumbnail": section.thumbnail,
+                "icon": section.icon,
+                "color": section.color,
+                "show_on_homepage": section.show_on_homepage,
+                "show_on_nav": section.show_on_nav,
+                "supports_subcategories": section.supports_subcategories,
+            }
+        )
 
     return {"categories": result_items}
 
@@ -58,9 +63,11 @@ async def get_sections():
     """
     Get all content sections with subcategories.
     """
-    sections = await ContentSection.find(
-        ContentSection.is_active == True
-    ).sort("order").to_list()
+    sections = (
+        await ContentSection.find(ContentSection.is_active == True)
+        .sort("order")
+        .to_list()
+    )
 
     result = []
     for section in sections:
@@ -68,45 +75,59 @@ async def get_sections():
         subcategories = []
 
         if section.supports_subcategories:
-            subcats = await SectionSubcategory.find(
-                SectionSubcategory.section_id == section_id,
-                SectionSubcategory.is_active == True
-            ).sort("order").to_list()
+            subcats = (
+                await SectionSubcategory.find(
+                    SectionSubcategory.section_id == section_id,
+                    SectionSubcategory.is_active == True,
+                )
+                .sort("order")
+                .to_list()
+            )
 
             subcategories = []
             for sub in subcats:
-                sub_names = get_multilingual_names(sub.name_key, slug=sub.slug, taxonomy_type="subcategories")
-                subcategories.append({
-                    "id": str(sub.id),
-                    "slug": sub.slug,
-                    "name": sub_names["he"],
-                    "name_en": sub_names["en"],
-                    "name_es": sub_names["es"],
-                })
+                sub_names = get_multilingual_names(
+                    sub.name_key, slug=sub.slug, taxonomy_type="subcategories"
+                )
+                subcategories.append(
+                    {
+                        "id": str(sub.id),
+                        "slug": sub.slug,
+                        "name": sub_names["he"],
+                        "name_en": sub_names["en"],
+                        "name_es": sub_names["es"],
+                    }
+                )
 
-        content_count = await Content.find({
-            "section_ids": section_id,
-            "is_published": True,
-        }).count()
+        content_count = await Content.find(
+            {
+                "section_ids": section_id,
+                "is_published": True,
+            }
+        ).count()
 
         # Resolve multilingual names from i18n
-        section_names = get_multilingual_names(section.name_key, slug=section.slug, taxonomy_type="sections")
+        section_names = get_multilingual_names(
+            section.name_key, slug=section.slug, taxonomy_type="sections"
+        )
 
-        result.append({
-            "id": section_id,
-            "slug": section.slug,
-            "name": section_names["he"],
-            "name_en": section_names["en"],
-            "name_es": section_names["es"],
-            "icon": section.icon,
-            "color": section.color,
-            "thumbnail": section.thumbnail,
-            "show_on_homepage": section.show_on_homepage,
-            "show_on_nav": section.show_on_nav,
-            "supports_subcategories": section.supports_subcategories,
-            "subcategories": subcategories,
-            "content_count": content_count,
-        })
+        result.append(
+            {
+                "id": section_id,
+                "slug": section.slug,
+                "name": section_names["he"],
+                "name_en": section_names["en"],
+                "name_es": section_names["es"],
+                "icon": section.icon,
+                "color": section.color,
+                "thumbnail": section.thumbnail,
+                "show_on_homepage": section.show_on_homepage,
+                "show_on_nav": section.show_on_nav,
+                "supports_subcategories": section.supports_subcategories,
+                "subcategories": subcategories,
+                "content_count": content_count,
+            }
+        )
 
     return {"sections": result}
 
@@ -153,7 +174,9 @@ async def get_by_category(
     total = await Content.find(content_filter).count()
 
     # Resolve section names
-    section_names = get_multilingual_names(section.name_key, slug=section.slug, taxonomy_type="sections")
+    section_names = get_multilingual_names(
+        section.name_key, slug=section.slug, taxonomy_type="sections"
+    )
 
     result_items = []
     for item in items:
@@ -264,21 +287,27 @@ async def get_subcategory_content(
 
     result_items = []
     for item in items:
-        result_items.append({
-            "id": str(item.id),
-            "title": item.title,
-            "thumbnail": item.thumbnail_data or item.thumbnail or item.poster_url,
-            "duration": item.duration,
-            "year": item.year,
-            "type": "series" if item.is_series else "movie",
-            "is_series": item.is_series,
-        })
+        result_items.append(
+            {
+                "id": str(item.id),
+                "title": item.title,
+                "thumbnail": item.thumbnail_data or item.thumbnail or item.poster_url,
+                "duration": item.duration,
+                "year": item.year,
+                "type": "series" if item.is_series else "movie",
+                "is_series": item.is_series,
+            }
+        )
 
     result_items = await enrich_content_items_with_subtitles(result_items)
 
     # Resolve multilingual names
-    section_names = get_multilingual_names(section.name_key, slug=section.slug, taxonomy_type="sections")
-    subcategory_names = get_multilingual_names(subcategory.name_key, slug=subcategory.slug, taxonomy_type="subcategories")
+    section_names = get_multilingual_names(
+        section.name_key, slug=section.slug, taxonomy_type="sections"
+    )
+    subcategory_names = get_multilingual_names(
+        subcategory.name_key, slug=subcategory.slug, taxonomy_type="subcategories"
+    )
 
     return {
         "section": {

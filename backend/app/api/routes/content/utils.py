@@ -5,9 +5,8 @@ Content utility functions.
 import logging
 from datetime import timedelta
 
-from google.cloud import storage
-
 from app.core.config import settings
+from google.cloud import storage
 
 logger = logging.getLogger(__name__)
 
@@ -66,13 +65,16 @@ def generate_signed_url_if_needed(url: str) -> str:
         return url
 
 
-def convert_to_proxy_url(url: str, base_url: str = "https://api.bayit.tv/api/v1/proxy/media") -> str:
+def convert_to_proxy_url(
+    url: str, base_url: str = "https://api.bayit.tv/api/v1/proxy/media"
+) -> str:
     """Convert GCS URL to proxied URL through our backend."""
     if not url or "storage.googleapis.com" not in url:
         return url
 
     try:
         import base64
+
         encoded_url = base64.urlsafe_b64encode(url.encode()).decode()
         return f"{base_url}/{encoded_url}"
     except Exception as e:

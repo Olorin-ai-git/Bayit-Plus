@@ -10,28 +10,27 @@ Tests cover:
 - Metering integration
 """
 
+import asyncio
+from typing import Optional
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 import pytest_asyncio
-import asyncio
-from unittest.mock import AsyncMock, MagicMock, patch
-from typing import Optional
-
-from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
-
+from app.core.config import settings
 from app.models.integration_partner import (
+    DubbingSession,
     IntegrationPartner,
     UsageRecord,
-    DubbingSession,
 )
-from app.services.olorin.dubbing.service import RealtimeDubbingService
 from app.services.olorin.dubbing.models import DubbingMessage, DubbingMetrics
-from app.core.config import settings
-
+from app.services.olorin.dubbing.service import RealtimeDubbingService
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # ============================================
 # Test Fixtures
 # ============================================
+
 
 @pytest_asyncio.fixture
 async def db_client():
@@ -39,7 +38,7 @@ async def db_client():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     await init_beanie(
         database=client[f"{settings.MONGODB_DB_NAME}_dubbing_test"],
-        document_models=[IntegrationPartner, UsageRecord, DubbingSession]
+        document_models=[IntegrationPartner, UsageRecord, DubbingSession],
     )
     yield client
     # Cleanup
@@ -76,6 +75,7 @@ def dubbing_service(sample_partner):
 # ============================================
 # Service Initialization Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 async def test_service_creation(sample_partner, db_client):
@@ -127,13 +127,19 @@ async def test_service_initial_state(dubbing_service, db_client):
 # Service Lifecycle Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 @patch("app.services.olorin.dubbing.service.pipeline.process_transcripts")
 @patch("app.services.olorin.dubbing.translation.TranslationProvider.initialize")
 @patch("app.services.olorin.dubbing.service.ElevenLabsRealtimeService")
 @patch("app.services.olorin.dubbing.service.metering_service")
 async def test_service_start(
-    mock_metering, mock_stt_class, mock_translate_init, mock_pipeline, dubbing_service, db_client
+    mock_metering,
+    mock_stt_class,
+    mock_translate_init,
+    mock_pipeline,
+    dubbing_service,
+    db_client,
 ):
     """Test starting dubbing service."""
     # Setup mocks
@@ -156,7 +162,12 @@ async def test_service_start(
 @patch("app.services.olorin.dubbing.service.ElevenLabsRealtimeService")
 @patch("app.services.olorin.dubbing.service.metering_service")
 async def test_service_start_already_running(
-    mock_metering, mock_stt_class, mock_translate_init, mock_pipeline, dubbing_service, db_client
+    mock_metering,
+    mock_stt_class,
+    mock_translate_init,
+    mock_pipeline,
+    dubbing_service,
+    db_client,
 ):
     """Test starting service that's already running."""
     mock_stt = AsyncMock()
@@ -176,9 +187,9 @@ async def test_service_start_already_running(
 @patch("app.services.olorin.dubbing.service.metering_service")
 async def test_service_stop(mock_metering, dubbing_service, db_client):
     """Test stopping dubbing service."""
-    mock_metering.end_dubbing_session = AsyncMock(return_value=MagicMock(
-        estimated_cost_usd=0.05
-    ))
+    mock_metering.end_dubbing_session = AsyncMock(
+        return_value=MagicMock(estimated_cost_usd=0.05)
+    )
     mock_metering.update_dubbing_session = AsyncMock()
 
     # Manually set running state
@@ -196,9 +207,9 @@ async def test_service_stop(mock_metering, dubbing_service, db_client):
 @patch("app.services.olorin.dubbing.service.metering_service")
 async def test_service_stop_with_error(mock_metering, dubbing_service, db_client):
     """Test stopping service with error message."""
-    mock_metering.end_dubbing_session = AsyncMock(return_value=MagicMock(
-        estimated_cost_usd=0.0
-    ))
+    mock_metering.end_dubbing_session = AsyncMock(
+        return_value=MagicMock(estimated_cost_usd=0.0)
+    )
     mock_metering.update_dubbing_session = AsyncMock()
 
     dubbing_service._running = True
@@ -216,13 +227,19 @@ async def test_service_stop_with_error(mock_metering, dubbing_service, db_client
 # Audio Processing Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 @patch("app.services.olorin.dubbing.service.pipeline.process_transcripts")
 @patch("app.services.olorin.dubbing.translation.TranslationProvider.initialize")
 @patch("app.services.olorin.dubbing.service.ElevenLabsRealtimeService")
 @patch("app.services.olorin.dubbing.service.metering_service")
 async def test_process_audio_chunk(
-    mock_metering, mock_stt_class, mock_translate_init, mock_pipeline, dubbing_service, db_client
+    mock_metering,
+    mock_stt_class,
+    mock_translate_init,
+    mock_pipeline,
+    dubbing_service,
+    db_client,
 ):
     """Test processing audio chunk."""
     mock_stt = AsyncMock()
@@ -254,7 +271,12 @@ async def test_process_audio_chunk_not_running(dubbing_service, db_client):
 @patch("app.services.olorin.dubbing.service.ElevenLabsRealtimeService")
 @patch("app.services.olorin.dubbing.service.metering_service")
 async def test_process_audio_sets_segment_time(
-    mock_metering, mock_stt_class, mock_translate_init, mock_pipeline, dubbing_service, db_client
+    mock_metering,
+    mock_stt_class,
+    mock_translate_init,
+    mock_pipeline,
+    dubbing_service,
+    db_client,
 ):
     """Test that processing audio sets segment start time."""
     mock_stt = AsyncMock()
@@ -277,6 +299,7 @@ async def test_process_audio_sets_segment_time(
 # ============================================
 # Message Receiving Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 async def test_receive_messages_session_started(dubbing_service, db_client):
@@ -364,6 +387,7 @@ async def test_receive_messages_dubbed_audio(dubbing_service, db_client):
 # Metrics Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_metrics_initial_state(dubbing_service, db_client):
     """Test metrics initial state."""
@@ -391,6 +415,7 @@ async def test_metrics_property(dubbing_service, db_client):
 # ============================================
 # DubbingMessage Tests
 # ============================================
+
 
 def test_dubbing_message_creation():
     """Test DubbingMessage creation."""
@@ -444,6 +469,7 @@ def test_dubbing_message_dubbed_audio():
 # ============================================
 # DubbingMetrics Tests
 # ============================================
+
 
 def test_dubbing_metrics_creation():
     """Test DubbingMetrics creation."""
@@ -508,22 +534,28 @@ def test_dubbing_metrics_avg_total_latency():
 # Integration Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 @patch("app.services.olorin.dubbing.service.pipeline.process_transcripts")
 @patch("app.services.olorin.dubbing.translation.TranslationProvider.initialize")
 @patch("app.services.olorin.dubbing.service.ElevenLabsRealtimeService")
 @patch("app.services.olorin.dubbing.service.metering_service")
 async def test_full_session_lifecycle(
-    mock_metering, mock_stt_class, mock_translate_init, mock_pipeline, sample_partner, db_client
+    mock_metering,
+    mock_stt_class,
+    mock_translate_init,
+    mock_pipeline,
+    sample_partner,
+    db_client,
 ):
     """Test complete session lifecycle."""
     # Setup mocks
     mock_stt = AsyncMock()
     mock_stt_class.return_value = mock_stt
     mock_metering.create_dubbing_session = AsyncMock()
-    mock_metering.end_dubbing_session = AsyncMock(return_value=MagicMock(
-        estimated_cost_usd=0.10
-    ))
+    mock_metering.end_dubbing_session = AsyncMock(
+        return_value=MagicMock(estimated_cost_usd=0.10)
+    )
     mock_metering.update_dubbing_session = AsyncMock()
     mock_translate_init.return_value = None
     mock_pipeline.return_value = None
@@ -554,6 +586,7 @@ async def test_full_session_lifecycle(
 # Error Handling Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 @patch("app.services.olorin.dubbing.translation.TranslationProvider.initialize")
 @patch("app.services.olorin.dubbing.service.ElevenLabsRealtimeService")
@@ -579,6 +612,7 @@ async def test_start_handles_stt_failure(
 # ============================================
 # Reset Segment Time Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 async def test_reset_segment_time(dubbing_service, db_client):

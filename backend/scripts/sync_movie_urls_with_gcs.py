@@ -7,20 +7,19 @@ Fixes 404 errors by updating database URLs to match GCS.
 import asyncio
 import re
 import subprocess
-from motor.motor_asyncio import AsyncIOMotorClient
 from difflib import SequenceMatcher
 
+from motor.motor_asyncio import AsyncIOMotorClient
+
 # MongoDB connection
-MONGODB_URL = 'mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/bayit_plus?retryWrites=true&w=majority'
-GCS_BUCKET = 'bayit-plus-media-new'
+MONGODB_URL = "mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/bayit_plus?retryWrites=true&w=majority"
+GCS_BUCKET = "bayit-plus-media-new"
 
 
 def get_gcs_movie_folders():
     """Get list of all movie folders in GCS."""
     result = subprocess.run(
-        ['gsutil', 'ls', f'gs://{GCS_BUCKET}/movies/'],
-        capture_output=True,
-        text=True
+        ["gsutil", "ls", f"gs://{GCS_BUCKET}/movies/"], capture_output=True, text=True
     )
 
     if result.returncode != 0:
@@ -28,10 +27,10 @@ def get_gcs_movie_folders():
         return []
 
     folders = []
-    for line in result.stdout.strip().split('\n'):
+    for line in result.stdout.strip().split("\n"):
         if line.strip():
             # Extract folder name from gs://bucket/movies/FOLDER_NAME/
-            folder_name = line.strip().rstrip('/').split('/')[-1]
+            folder_name = line.strip().rstrip("/").split("/")[-1]
             folders.append(folder_name)
 
     return folders
@@ -45,21 +44,21 @@ def find_best_match(old_folder: str, gcs_folders: list) -> str:
 
     # Try simple cleanup patterns
     cleaned = old_folder
-    cleaned = re.sub(r'_com_', '_', cleaned)
-    cleaned = re.sub(r'_-?AMIABLE$', '', cleaned)
-    cleaned = re.sub(r'_TV_-?BoK$', '', cleaned)
-    cleaned = re.sub(r'_p_-?hV$', '', cleaned)
-    cleaned = re.sub(r'_BOKUTOX$', '', cleaned)
-    cleaned = re.sub(r'_-_MX\]?$', '', cleaned)
-    cleaned = re.sub(r'_Rip_-?Sample$', '', cleaned)
-    cleaned = re.sub(r'_p$', '', cleaned)
-    cleaned = re.sub(r'_-_MX$', '', cleaned)
-    cleaned = re.sub(r'_Rip_XViD-juggs$', '', cleaned)
-    cleaned = re.sub(r'_Rip_XviD_-?EVO$', '', cleaned)
-    cleaned = re.sub(r'_GAZ$', '', cleaned)
-    cleaned = re.sub(r'_Eng$', '', cleaned)
-    cleaned = re.sub(r'_DD_H264-FGT$', '', cleaned)
-    cleaned = re.sub(r'^[\d-]+_', '', cleaned)  # Remove numeric prefix
+    cleaned = re.sub(r"_com_", "_", cleaned)
+    cleaned = re.sub(r"_-?AMIABLE$", "", cleaned)
+    cleaned = re.sub(r"_TV_-?BoK$", "", cleaned)
+    cleaned = re.sub(r"_p_-?hV$", "", cleaned)
+    cleaned = re.sub(r"_BOKUTOX$", "", cleaned)
+    cleaned = re.sub(r"_-_MX\]?$", "", cleaned)
+    cleaned = re.sub(r"_Rip_-?Sample$", "", cleaned)
+    cleaned = re.sub(r"_p$", "", cleaned)
+    cleaned = re.sub(r"_-_MX$", "", cleaned)
+    cleaned = re.sub(r"_Rip_XViD-juggs$", "", cleaned)
+    cleaned = re.sub(r"_Rip_XviD_-?EVO$", "", cleaned)
+    cleaned = re.sub(r"_GAZ$", "", cleaned)
+    cleaned = re.sub(r"_Eng$", "", cleaned)
+    cleaned = re.sub(r"_DD_H264-FGT$", "", cleaned)
+    cleaned = re.sub(r"^[\d-]+_", "", cleaned)  # Remove numeric prefix
 
     if cleaned in gcs_folders:
         return cleaned
@@ -89,22 +88,22 @@ async def sync_movie_urls():
 
     print("\nConnecting to MongoDB...")
     client = AsyncIOMotorClient(MONGODB_URL)
-    db = client['bayit_plus']
+    db = client["bayit_plus"]
 
     print("Fetching movies from database...")
-    movies = await db.content.find({'category_name': 'Movies'}).to_list(length=None)
+    movies = await db.content.find({"category_name": "Movies"}).to_list(length=None)
     print(f"Found {len(movies)} movies in database")
 
     updates = []
     not_found = []
 
     for movie in movies:
-        stream_url = movie.get('stream_url', '')
-        if not stream_url or f'{GCS_BUCKET}/movies/' not in stream_url:
+        stream_url = movie.get("stream_url", "")
+        if not stream_url or f"{GCS_BUCKET}/movies/" not in stream_url:
             continue
 
         # Extract folder name and filename from URL
-        match = re.search(r'movies/([^/]+)/(.+)$', stream_url)
+        match = re.search(r"movies/([^/]+)/(.+)$", stream_url)
         if not match:
             continue
 
@@ -115,20 +114,21 @@ async def sync_movie_urls():
         new_folder = find_best_match(old_folder, gcs_folders)
 
         if new_folder and new_folder != old_folder:
-            new_url = stream_url.replace(f'movies/{old_folder}/', f'movies/{new_folder}/')
-            updates.append({
-                'id': movie['_id'],
-                'title': movie.get('title', 'N/A'),
-                'old_folder': old_folder,
-                'new_folder': new_folder,
-                'old_url': stream_url,
-                'new_url': new_url
-            })
+            new_url = stream_url.replace(
+                f"movies/{old_folder}/", f"movies/{new_folder}/"
+            )
+            updates.append(
+                {
+                    "id": movie["_id"],
+                    "title": movie.get("title", "N/A"),
+                    "old_folder": old_folder,
+                    "new_folder": new_folder,
+                    "old_url": stream_url,
+                    "new_url": new_url,
+                }
+            )
         elif not new_folder:
-            not_found.append({
-                'title': movie.get('title', 'N/A'),
-                'folder': old_folder
-            })
+            not_found.append({"title": movie.get("title", "N/A"), "folder": old_folder})
 
     print(f"\n✅ Found {len(updates)} URLs to update")
     print(f"⚠️  Could not find match for {len(not_found)} movies")
@@ -151,8 +151,7 @@ async def sync_movie_urls():
 
         for update in updates:
             result = await db.content.update_one(
-                {'_id': update['id']},
-                {'$set': {'stream_url': update['new_url']}}
+                {"_id": update["id"]}, {"$set": {"stream_url": update["new_url"]}}
             )
             if result.modified_count > 0:
                 updated_count += 1
@@ -167,5 +166,5 @@ async def sync_movie_urls():
             print(f"   ... and {len(not_found) - 10} more")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(sync_movie_urls())

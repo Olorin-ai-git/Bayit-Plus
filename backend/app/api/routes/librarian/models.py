@@ -16,6 +16,7 @@ class TriggerAuditRequest(BaseModel):
     capabilities are combined into the audit prompt. Disabling all options runs
     a comprehensive audit that checks everything.
     """
+
     audit_type: str = "daily_incremental"
     dry_run: bool = False
     use_ai_agent: bool = False
@@ -121,12 +122,14 @@ class LibrarianConfigResponse(BaseModel):
 
 class InterjectMessageRequest(BaseModel):
     """Request model for injecting a message into a running audit."""
+
     message: str
     source: str = "admin"
 
 
 class InterjectMessageResponse(BaseModel):
     """Response model for interject message endpoint."""
+
     success: bool
     message: str
     audit_id: str

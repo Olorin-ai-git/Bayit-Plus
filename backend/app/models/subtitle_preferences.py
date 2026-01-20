@@ -6,6 +6,7 @@ Priority: User preference > Hebrew > English
 
 from datetime import datetime, timezone
 from typing import Optional
+
 from beanie import Document, Indexed
 from pydantic import Field
 
@@ -15,6 +16,7 @@ class SubtitlePreference(Document):
     Store user's preferred subtitle language for specific content.
     Enables remembering subtitle choices per content per user.
     """
+
     user_id: Indexed(str)
     content_id: Indexed(str)
     preferred_language: str  # ISO 639-1 code: "en", "he", "es", etc.

@@ -9,30 +9,29 @@ Tests cover:
 - Multi-language support
 """
 
+from typing import List
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 import pytest_asyncio
-from unittest.mock import AsyncMock, MagicMock, patch
-from typing import List
-
-from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
-
+from app.core.config import settings
 from app.models.cultural_reference import (
-    CulturalReference,
-    DetectedReference,
     ContextDetectionRequest,
     ContextDetectionResponse,
+    CulturalReference,
+    DetectedReference,
     EnrichedText,
     ReferenceExplanation,
 )
 from app.models.integration_partner import IntegrationPartner, UsageRecord
 from app.services.olorin.context.service import CulturalContextService
-from app.core.config import settings
-
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # ============================================
 # Test Fixtures
 # ============================================
+
 
 @pytest_asyncio.fixture
 async def db_client():
@@ -40,7 +39,7 @@ async def db_client():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     await init_beanie(
         database=client[f"{settings.MONGODB_DB_NAME}_context_test"],
-        document_models=[CulturalReference, IntegrationPartner, UsageRecord]
+        document_models=[CulturalReference, IntegrationPartner, UsageRecord],
     )
     yield client
     # Cleanup
@@ -94,6 +93,7 @@ async def sample_partner(db_client):
 # ============================================
 # Reference Detection Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 async def test_detect_references_empty_text(context_service, db_client):
@@ -219,7 +219,7 @@ async def test_detect_references_min_confidence(
             end_position=14,
             confidence=0.9,  # Above threshold - should be kept
             short_explanation="high confidence result",
-        )
+        ),
     ]
 
     request = ContextDetectionRequest(
@@ -262,6 +262,7 @@ async def test_detect_references_target_language(
 # ============================================
 # Reference Explanation Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 @patch("app.services.olorin.context.service.get_explanation")
@@ -335,6 +336,7 @@ async def test_explain_reference_multiple_languages(
 # Text Enrichment Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_enrich_text_no_references(context_service, db_client):
     """Test enriching text with no cultural references."""
@@ -352,9 +354,7 @@ async def test_enrich_text_no_references(context_service, db_client):
 
 @pytest.mark.asyncio
 @patch.object(CulturalContextService, "detect_references")
-async def test_enrich_text_with_references(
-    mock_detect, context_service, db_client
-):
+async def test_enrich_text_with_references(mock_detect, context_service, db_client):
     """Test enriching text with detected references."""
     mock_detect.return_value = ContextDetectionResponse(
         original_text="ביבי אמר היום",
@@ -440,6 +440,7 @@ async def test_enrich_text_multiple_references(mock_detect, context_service, db_
 # Category Browsing Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 @patch("app.services.olorin.context.crud.get_references_by_category")
 async def test_get_references_by_category(mock_get, context_service, db_client):
@@ -501,6 +502,7 @@ async def test_get_references_by_category_with_limit(
 # Popular References Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 @patch("app.services.olorin.context.crud.get_popular_references")
 async def test_get_popular_references(mock_get, context_service, db_client):
@@ -523,6 +525,7 @@ async def test_get_popular_references(mock_get, context_service, db_client):
 # ============================================
 # Reference Management Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 @patch("app.services.olorin.context.crud.add_reference")
@@ -587,6 +590,7 @@ async def test_update_reference_not_found(mock_update, context_service, db_clien
 # Edge Cases and Error Handling
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_detect_references_long_text(context_service, db_client):
     """Test detection with very long text."""
@@ -623,6 +627,7 @@ async def test_detect_references_special_characters(
 # ============================================
 # Performance Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 @patch("app.services.olorin.context.service.pattern_based_detection")

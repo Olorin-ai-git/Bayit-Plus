@@ -13,9 +13,7 @@ from app.models.content import Content
 logger = logging.getLogger(__name__)
 
 
-async def execute_find_unlinked_episodes(
-    limit: int | None = None
-) -> Dict[str, Any]:
+async def execute_find_unlinked_episodes(limit: int | None = None) -> Dict[str, Any]:
     """
     Find episodes not linked to parent series.
 
@@ -28,10 +26,16 @@ async def execute_find_unlinked_episodes(
     try:
         effective_limit = limit or settings.SERIES_LINKER_AUTO_LINK_BATCH_SIZE
 
-        episodes = await Content.find({
-            "content_type": "episode",
-            "$or": [{"series_id": None}, {"series_id": ""}]
-        }).limit(effective_limit).to_list()
+        episodes = (
+            await Content.find(
+                {
+                    "content_type": "episode",
+                    "$or": [{"series_id": None}, {"series_id": ""}],
+                }
+            )
+            .limit(effective_limit)
+            .to_list()
+        )
 
         return {
             "success": True,
@@ -41,10 +45,10 @@ async def execute_find_unlinked_episodes(
                     "id": str(e.id),
                     "title": e.title,
                     "season": e.season,
-                    "episode": e.episode
+                    "episode": e.episode,
                 }
                 for e in episodes
-            ]
+            ],
         }
     except Exception as e:
         logger.error(f"Error finding unlinked episodes: {e}")

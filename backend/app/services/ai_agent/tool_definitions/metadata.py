@@ -7,23 +7,20 @@ METADATA_TOOLS = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "title": {
-                    "type": "string",
-                    "description": "Title to search for"
-                },
+                "title": {"type": "string", "description": "Title to search for"},
                 "year": {
                     "type": "integer",
-                    "description": "Optional: Release year to improve search accuracy"
+                    "description": "Optional: Release year to improve search accuracy",
                 },
                 "content_type": {
                     "type": "string",
                     "description": "Type of content: 'movie' or 'series'",
                     "enum": ["movie", "series"],
-                    "default": "movie"
-                }
+                    "default": "movie",
+                },
             },
-            "required": ["title"]
-        }
+            "required": ["title"],
+        },
     },
     {
         "name": "fix_missing_poster",
@@ -33,15 +30,15 @@ METADATA_TOOLS = [
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item"
+                    "description": "The ID of the content item",
                 },
                 "reason": {
                     "type": "string",
-                    "description": "Brief explanation of why you're fixing this"
-                }
+                    "description": "Brief explanation of why you're fixing this",
+                },
             },
-            "required": ["content_id", "reason"]
-        }
+            "required": ["content_id", "reason"],
+        },
     },
     {
         "name": "fix_missing_metadata",
@@ -51,15 +48,15 @@ METADATA_TOOLS = [
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item"
+                    "description": "The ID of the content item",
                 },
                 "reason": {
                     "type": "string",
-                    "description": "Brief explanation of what metadata is missing and why you're fixing it"
-                }
+                    "description": "Brief explanation of what metadata is missing and why you're fixing it",
+                },
             },
-            "required": ["content_id", "reason"]
-        }
+            "required": ["content_id", "reason"],
+        },
     },
     {
         "name": "recategorize_content",
@@ -69,23 +66,23 @@ METADATA_TOOLS = [
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item"
+                    "description": "The ID of the content item",
                 },
                 "new_category_id": {
                     "type": "string",
-                    "description": "The ID of the category to move it to"
+                    "description": "The ID of the category to move it to",
                 },
                 "reason": {
                     "type": "string",
-                    "description": "Detailed explanation of why this recategorization is correct"
+                    "description": "Detailed explanation of why this recategorization is correct",
                 },
                 "confidence": {
                     "type": "number",
-                    "description": "Your confidence level (0-100) that this is the correct category"
-                }
+                    "description": "Your confidence level (0-100) that this is the correct category",
+                },
             },
-            "required": ["content_id", "new_category_id", "reason", "confidence"]
-        }
+            "required": ["content_id", "new_category_id", "reason", "confidence"],
+        },
     },
     {
         "name": "reclassify_as_series",
@@ -95,15 +92,15 @@ METADATA_TOOLS = [
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item to reclassify"
+                    "description": "The ID of the content item to reclassify",
                 },
                 "reason": {
                     "type": "string",
-                    "description": "Explanation of why this should be classified as a series"
-                }
+                    "description": "Explanation of why this should be classified as a series",
+                },
             },
-            "required": ["content_id", "reason"]
-        }
+            "required": ["content_id", "reason"],
+        },
     },
     {
         "name": "reclassify_as_movie",
@@ -113,15 +110,15 @@ METADATA_TOOLS = [
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item to reclassify"
+                    "description": "The ID of the content item to reclassify",
                 },
                 "reason": {
                     "type": "string",
-                    "description": "Explanation of why this should be classified as a movie"
-                }
+                    "description": "Explanation of why this should be classified as a movie",
+                },
             },
-            "required": ["content_id", "reason"]
-        }
+            "required": ["content_id", "reason"],
+        },
     },
     {
         "name": "flag_for_manual_review",
@@ -131,26 +128,32 @@ METADATA_TOOLS = [
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item"
+                    "description": "The ID of the content item",
                 },
                 "issue_type": {
                     "type": "string",
                     "description": "Type of issue",
-                    "enum": ["missing_metadata", "misclassification", "duplicate", "quality_issue", "other"]
+                    "enum": [
+                        "missing_metadata",
+                        "misclassification",
+                        "duplicate",
+                        "quality_issue",
+                        "other",
+                    ],
                 },
                 "reason": {
                     "type": "string",
-                    "description": "Detailed explanation of the issue and why it needs manual review"
+                    "description": "Detailed explanation of the issue and why it needs manual review",
                 },
                 "priority": {
                     "type": "string",
                     "description": "Priority level",
                     "enum": ["low", "medium", "high", "critical"],
-                    "default": "medium"
-                }
+                    "default": "medium",
+                },
             },
-            "required": ["content_id", "issue_type", "reason"]
-        }
+            "required": ["content_id", "issue_type", "reason"],
+        },
     },
     {
         "name": "delete_broken_content",
@@ -160,19 +163,19 @@ METADATA_TOOLS = [
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item to delete"
+                    "description": "The ID of the content item to delete",
                 },
                 "reason": {
                     "type": "string",
-                    "description": "Reason for deletion (e.g., 'Stream URL returned 404')"
+                    "description": "Reason for deletion (e.g., 'Stream URL returned 404')",
                 },
                 "stream_check_result": {
                     "type": "string",
-                    "description": "The result from check_stream_url that confirms the stream is broken"
-                }
+                    "description": "The result from check_stream_url that confirms the stream is broken",
+                },
             },
-            "required": ["content_id", "reason"]
-        }
+            "required": ["content_id", "reason"],
+        },
     },
     {
         "name": "clean_title",
@@ -182,22 +185,22 @@ METADATA_TOOLS = [
             "properties": {
                 "content_id": {
                     "type": "string",
-                    "description": "The ID of the content item with messy title"
+                    "description": "The ID of the content item with messy title",
                 },
                 "cleaned_title": {
                     "type": "string",
-                    "description": "The cleaned version of the title"
+                    "description": "The cleaned version of the title",
                 },
                 "cleaned_title_en": {
                     "type": "string",
-                    "description": "The cleaned English title (optional)"
+                    "description": "The cleaned English title (optional)",
                 },
                 "reason": {
                     "type": "string",
-                    "description": "Brief explanation of what you cleaned"
-                }
+                    "description": "Brief explanation of what you cleaned",
+                },
             },
-            "required": ["content_id", "cleaned_title", "reason"]
-        }
+            "required": ["content_id", "cleaned_title", "reason"],
+        },
     },
 ]

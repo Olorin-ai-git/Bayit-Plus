@@ -6,19 +6,19 @@ Manages live stream recording sessions
 import logging
 import os
 from datetime import datetime
-from typing import Optional
 from pathlib import Path
+from typing import Optional
 
 try:
     import psutil
 except ImportError:
     psutil = None
 
-from app.models.recording import RecordingSession, Recording
+from app.core.config import settings
 from app.models.content import LiveChannel
+from app.models.recording import Recording, RecordingSession
 from app.models.user import User
 from app.services.ffmpeg_service import ffmpeg_service
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -37,8 +37,8 @@ class LiveRecordingService:
         stream_url: str,
         subtitle_enabled: bool = False,
         subtitle_target_language: Optional[str] = None,
-        trigger_type: str = 'manual',
-        schedule_id: Optional[str] = None
+        trigger_type: str = "manual",
+        schedule_id: Optional[str] = None,
     ) -> RecordingSession:
         """
         Start a new recording session.
@@ -72,7 +72,7 @@ class LiveRecordingService:
             # Check if user already has an active recording
             existing_session = await RecordingSession.find_one(
                 RecordingSession.user_id == user_id,
-                RecordingSession.status == "recording"
+                RecordingSession.status == "recording",
             )
 
             if existing_session:
@@ -82,10 +82,13 @@ class LiveRecordingService:
 
             # Check recording quota
             if not user.recording_quota.has_storage_available():
-                raise Exception("Storage quota exceeded. Delete old recordings to free up space.")
+                raise Exception(
+                    "Storage quota exceeded. Delete old recordings to free up space."
+                )
 
             # Generate recording ID first
             import uuid
+
             recording_id = str(uuid.uuid4())
             output_path = str(self.temp_dir / f"{recording_id}.mp4")
 
@@ -100,7 +103,7 @@ class LiveRecordingService:
                 subtitle_target_language=subtitle_target_language,
                 trigger_type=trigger_type,
                 schedule_id=schedule_id,
-                output_path=output_path
+                output_path=output_path,
             )
 
             # Start FFmpeg recording
@@ -109,7 +112,7 @@ class LiveRecordingService:
                     stream_url=stream_url,
                     output_path=session.output_path,
                     recording_id=session.recording_id,
-                    max_duration_seconds=user.recording_quota.max_recording_duration_seconds
+                    max_duration_seconds=user.recording_quota.max_recording_duration_seconds,
                 )
 
                 session.ffmpeg_pid = ffmpeg_process.pid
@@ -142,11 +145,7 @@ class LiveRecordingService:
             logger.error(f"Failed to start recording: {str(e)}")
             raise
 
-    async def stop_recording(
-        self,
-        session_id: str,
-        user_id: str
-    ) -> Recording:
+    async def stop_recording(self, session_id: str, user_id: str) -> Recording:
         """
         Stop recording and process.
 
@@ -184,7 +183,9 @@ class LiveRecordingService:
             if session.ffmpeg_pid:
                 try:
                     if psutil is None:
-                        logger.error("psutil not available - cannot stop FFmpeg process gracefully")
+                        logger.error(
+                            "psutil not available - cannot stop FFmpeg process gracefully"
+                        )
                         raise Exception("psutil library not installed")
 
                     # Get process handle
@@ -202,8 +203,8 @@ class LiveRecordingService:
             # Get video info
             if os.path.exists(session.output_path):
                 video_info = await ffmpeg_service.get_video_info(session.output_path)
-                session.duration_seconds = int(video_info['duration'])
-                session.file_size_bytes = video_info['size']
+                session.duration_seconds = int(video_info["duration"])
+                session.file_size_bytes = video_info["size"]
                 await session.save()
             else:
                 raise Exception("Recording file not found")
@@ -212,7 +213,9 @@ class LiveRecordingService:
             from app.core.config import settings
 
             if settings.STORAGE_TYPE == "local":
-                video_url = f"/uploads/recordings/{os.path.basename(session.output_path)}"
+                video_url = (
+                    f"/uploads/recordings/{os.path.basename(session.output_path)}"
+                )
                 thumbnail_url = None
             elif settings.STORAGE_TYPE in ("s3", "gcs"):
                 raise NotImplementedError(
@@ -223,7 +226,9 @@ class LiveRecordingService:
                 raise ValueError(f"Invalid STORAGE_TYPE: {settings.STORAGE_TYPE}")
 
             # Create Recording document
-            recording = Recording.from_session(session, video_url, session.file_size_bytes)
+            recording = Recording.from_session(
+                session, video_url, session.file_size_bytes
+            )
             recording.thumbnail = thumbnail_url
 
             # Subtitle capture is not yet implemented
@@ -265,9 +270,7 @@ class LiveRecordingService:
             raise
 
     async def get_active_session(
-        self,
-        user_id: str,
-        channel_id: Optional[str] = None
+        self, user_id: str, channel_id: Optional[str] = None
     ) -> Optional[RecordingSession]:
         """
         Get active recording session for user.
@@ -280,8 +283,7 @@ class LiveRecordingService:
             Active RecordingSession or None
         """
         query = RecordingSession.find(
-            RecordingSession.user_id == user_id,
-            RecordingSession.status == "recording"
+            RecordingSession.user_id == user_id, RecordingSession.status == "recording"
         )
 
         if channel_id:
@@ -290,10 +292,7 @@ class LiveRecordingService:
         return await query.first_or_none()
 
     async def update_session_progress(
-        self,
-        session_id: str,
-        duration_seconds: int,
-        file_size_bytes: int
+        self, session_id: str, duration_seconds: int, file_size_bytes: int
     ):
         """
         Update recording progress.
@@ -314,11 +313,7 @@ class LiveRecordingService:
         except Exception as e:
             logger.error(f"Failed to update session progress: {str(e)}")
 
-    async def handle_recording_error(
-        self,
-        session_id: str,
-        error: Exception
-    ):
+    async def handle_recording_error(self, session_id: str, error: Exception):
         """
         Handle recording failure.
 

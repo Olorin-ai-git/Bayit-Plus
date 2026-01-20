@@ -5,8 +5,8 @@ Supports SendGrid and SMTP
 """
 import logging
 from typing import List, Optional
-import httpx
 
+import httpx
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ async def send_email(
     to_emails: List[str],
     subject: str,
     html_content: str,
-    from_email: Optional[str] = None
+    from_email: Optional[str] = None,
 ) -> bool:
     """
     Send email using configured email service.
@@ -39,10 +39,12 @@ async def send_email(
         logger.warning("No recipient emails provided")
         return False
 
-    from_email = from_email or getattr(settings, 'SENDGRID_FROM_EMAIL', 'noreply@bayitplus.com')
+    from_email = from_email or getattr(
+        settings, "SENDGRID_FROM_EMAIL", "noreply@bayitplus.com"
+    )
 
     # Try SendGrid first
-    if hasattr(settings, 'SENDGRID_API_KEY') and settings.SENDGRID_API_KEY:
+    if hasattr(settings, "SENDGRID_API_KEY") and settings.SENDGRID_API_KEY:
         return await send_via_sendgrid(to_emails, subject, html_content, from_email)
 
     # Fallback: Just log the email
@@ -55,10 +57,7 @@ async def send_email(
 
 
 async def send_via_sendgrid(
-    to_emails: List[str],
-    subject: str,
-    html_content: str,
-    from_email: str
+    to_emails: List[str], subject: str, html_content: str, from_email: str
 ) -> bool:
     """
     Send email via SendGrid API.
@@ -71,25 +70,18 @@ async def send_via_sendgrid(
         # Build personalizations for multiple recipients
         personalizations = []
         for to_email in to_emails:
-            personalizations.append({
-                "to": [{"email": to_email}]
-            })
+            personalizations.append({"to": [{"email": to_email}]})
 
         payload = {
             "personalizations": personalizations,
             "from": {"email": from_email},
             "subject": subject,
-            "content": [
-                {
-                    "type": "text/html",
-                    "value": html_content
-                }
-            ]
+            "content": [{"type": "text/html", "value": html_content}],
         }
 
         headers = {
             "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         async with httpx.AsyncClient(timeout=30.0) as client:
@@ -110,10 +102,7 @@ async def send_via_sendgrid(
 
 # Future: SMTP support
 async def send_via_smtp(
-    to_emails: List[str],
-    subject: str,
-    html_content: str,
-    from_email: str
+    to_emails: List[str], subject: str, html_content: str, from_email: str
 ) -> bool:
     """
     Send email via SMTP (future implementation).

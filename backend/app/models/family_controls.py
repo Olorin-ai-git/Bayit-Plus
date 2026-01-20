@@ -6,6 +6,7 @@ Provides age-based restrictions, content rating limits, and optional time-based 
 """
 from datetime import datetime
 from typing import Optional
+
 from beanie import Document
 from pydantic import Field
 
@@ -16,6 +17,7 @@ class FamilyControls(Document):
 
     Replaces separate kids/youngsters PIN systems with a single family control model.
     """
+
     # Parent/guardian user ID
     user_id: str = Field(..., description="Parent/guardian user ID")
 
@@ -24,44 +26,41 @@ class FamilyControls(Document):
 
     # Age restrictions per section
     kids_age_limit: int = Field(
-        default=12,
-        ge=0,
-        le=12,
-        description="Maximum age for kids content (0-12)"
+        default=12, ge=0, le=12, description="Maximum age for kids content (0-12)"
     )
     youngsters_age_limit: int = Field(
         default=17,
         ge=12,
         le=17,
-        description="Maximum age for youngsters content (12-17)"
+        description="Maximum age for youngsters content (12-17)",
     )
 
     # Section access controls
     kids_enabled: bool = Field(default=True, description="Enable kids content access")
-    youngsters_enabled: bool = Field(default=True, description="Enable youngsters content access")
+    youngsters_enabled: bool = Field(
+        default=True, description="Enable youngsters content access"
+    )
 
     # Content rating restrictions
     max_content_rating: str = Field(
-        default="PG-13",
-        description="Maximum allowed content rating (G, PG, PG-13)"
+        default="PG-13", description="Maximum allowed content rating (G, PG, PG-13)"
     )
 
     # Time-based restrictions (optional)
     viewing_hours_enabled: bool = Field(
-        default=False,
-        description="Enable time-based viewing restrictions"
+        default=False, description="Enable time-based viewing restrictions"
     )
     viewing_start_hour: int = Field(
         default=6,
         ge=0,
         le=23,
-        description="Start hour for allowed viewing (24-hour format)"
+        description="Start hour for allowed viewing (24-hour format)",
     )
     viewing_end_hour: int = Field(
         default=22,
         ge=0,
         le=23,
-        description="End hour for allowed viewing (24-hour format)"
+        description="End hour for allowed viewing (24-hour format)",
     )
 
     # Timestamps
@@ -75,7 +74,9 @@ class FamilyControls(Document):
         ]
 
     @classmethod
-    async def get_or_create_for_user(cls, user_id: str, pin_hash: str) -> "FamilyControls":
+    async def get_or_create_for_user(
+        cls, user_id: str, pin_hash: str
+    ) -> "FamilyControls":
         """
         Get existing family controls or create default for user.
 
@@ -156,7 +157,10 @@ class FamilyControls(Document):
         if self.viewing_start_hour <= self.viewing_end_hour:
             return self.viewing_start_hour <= current_hour < self.viewing_end_hour
         else:
-            return current_hour >= self.viewing_start_hour or current_hour < self.viewing_end_hour
+            return (
+                current_hour >= self.viewing_start_hour
+                or current_hour < self.viewing_end_hour
+            )
 
     def is_content_allowed(self, content_rating: str, is_kids: bool = False) -> bool:
         """
@@ -196,6 +200,7 @@ class FamilyControls(Document):
 # Response models
 class FamilyControlsResponse(Document):
     """API response model for family controls."""
+
     user_id: str
     kids_age_limit: int
     youngsters_age_limit: int
@@ -214,6 +219,7 @@ class FamilyControlsResponse(Document):
 
 class FamilyControlsUpdate(Document):
     """Request model for updating family controls."""
+
     new_pin: Optional[str] = None
     kids_age_limit: Optional[int] = Field(None, ge=0, le=12)
     youngsters_age_limit: Optional[int] = Field(None, ge=12, le=17)

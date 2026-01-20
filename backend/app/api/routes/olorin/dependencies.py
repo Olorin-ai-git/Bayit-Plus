@@ -7,14 +7,13 @@ Authentication, rate limiting, and capability verification.
 import logging
 from typing import Optional, Tuple
 
-from fastapi import Header, HTTPException, status, Request
-
+from app.api.routes.olorin.errors import OlorinErrors, get_error_message
 from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
-from app.services.olorin.partner_service import partner_service
 from app.services.olorin.metering_service import metering_service
+from app.services.olorin.partner_service import partner_service
 from app.services.olorin.rate_limiter import partner_rate_limiter
-from app.api.routes.olorin.errors import get_error_message, OlorinErrors
+from fastapi import Header, HTTPException, Request, status
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +39,9 @@ async def get_current_partner(
     if not x_olorin_api_key:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=get_error_message(OlorinErrors.MISSING_API_KEY, header=API_KEY_HEADER),
+            detail=get_error_message(
+                OlorinErrors.MISSING_API_KEY, header=API_KEY_HEADER
+            ),
             headers={"WWW-Authenticate": "ApiKey"},
         )
 
@@ -104,7 +105,9 @@ async def verify_capability(
         )
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=get_error_message(OlorinErrors.CAPABILITY_DISABLED, capability=capability),
+            detail=get_error_message(
+                OlorinErrors.CAPABILITY_DISABLED, capability=capability
+            ),
         )
 
     # Step 2: Check partner has capability enabled
@@ -118,7 +121,9 @@ async def verify_capability(
         )
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=get_error_message(OlorinErrors.CAPABILITY_NOT_ENABLED, capability=capability),
+            detail=get_error_message(
+                OlorinErrors.CAPABILITY_NOT_ENABLED, capability=capability
+            ),
         )
 
     if not cap_config.enabled:
@@ -129,7 +134,9 @@ async def verify_capability(
         )
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=get_error_message(OlorinErrors.CAPABILITY_NOT_ENABLED, capability=capability),
+            detail=get_error_message(
+                OlorinErrors.CAPABILITY_NOT_ENABLED, capability=capability
+            ),
         )
 
     # Step 3: Check usage limits (may have per-partner overrides)

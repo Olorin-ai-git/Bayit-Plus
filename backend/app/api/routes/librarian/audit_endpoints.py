@@ -9,9 +9,6 @@ import logging
 from datetime import datetime
 from typing import List, Optional
 
-from beanie import PydanticObjectId
-from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, status
-
 from app.api.routes.admin import require_admin
 from app.api.routes.librarian.models import (
     ActionResponse,
@@ -29,6 +26,8 @@ from app.services.ai_agent_service import run_ai_agent_audit
 from app.services.audit_task_manager import audit_task_manager
 from app.services.auto_fixer import rollback_action
 from app.services.librarian_service import run_daily_audit
+from beanie import PydanticObjectId
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, status
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -38,7 +37,7 @@ logger = logging.getLogger(__name__)
 async def trigger_scheduled_audit(
     request: TriggerAuditRequest,
     background_tasks: BackgroundTasks,
-    user_agent: Optional[str] = Header(None)
+    user_agent: Optional[str] = Header(None),
 ):
     """
     Internal endpoint for Cloud Scheduler to trigger audits.
@@ -47,7 +46,7 @@ async def trigger_scheduled_audit(
     if not user_agent or "Google-Cloud-Scheduler" not in user_agent:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="This endpoint can only be called by Google Cloud Scheduler"
+            detail="This endpoint can only be called by Google Cloud Scheduler",
         )
 
     try:
@@ -57,38 +56,36 @@ async def trigger_scheduled_audit(
                 audit_type="ai_agent",
                 dry_run=request.dry_run,
                 max_iterations=request.max_iterations,
-                budget_limit_usd=request.budget_limit_usd
+                budget_limit_usd=request.budget_limit_usd,
             )
 
             return TriggerAuditResponse(
                 audit_id="running",
                 status="started",
-                message=f"🤖 AI Agent audit started (autonomous mode, {'DRY RUN' if request.dry_run else 'LIVE'}). Claude will decide what to check and fix. Check back soon for results."
+                message=f"🤖 AI Agent audit started (autonomous mode, {'DRY RUN' if request.dry_run else 'LIVE'}). Claude will decide what to check and fix. Check back soon for results.",
             )
         else:
             valid_types = ["daily_incremental", "weekly_full", "manual"]
             if request.audit_type not in valid_types:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Invalid audit_type. Must be one of: {', '.join(valid_types + ['ai_agent'])}"
+                    detail=f"Invalid audit_type. Must be one of: {', '.join(valid_types + ['ai_agent'])}",
                 )
 
             background_tasks.add_task(
-                run_daily_audit,
-                audit_type=request.audit_type,
-                dry_run=request.dry_run
+                run_daily_audit, audit_type=request.audit_type, dry_run=request.dry_run
             )
 
             return TriggerAuditResponse(
                 audit_id="running",
                 status="started",
-                message=f"Librarian audit started ({request.audit_type}, rule-based mode). Check back soon for results."
+                message=f"Librarian audit started ({request.audit_type}, rule-based mode). Check back soon for results.",
             )
 
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to trigger audit: {str(e)}"
+            detail=f"Failed to trigger audit: {str(e)}",
         )
 
 
@@ -97,7 +94,7 @@ async def trigger_librarian_audit(
     request: TriggerAuditRequest,
     background_tasks: BackgroundTasks,
     current_user: User = Depends(require_admin()),
-    accept_language: Optional[str] = Header(None, alias="Accept-Language")
+    accept_language: Optional[str] = Header(None, alias="Accept-Language"),
 ):
     """
     Trigger a librarian audit.
@@ -120,7 +117,8 @@ async def trigger_librarian_audit(
             execution_time_seconds=0,
             metadata={
                 "dry_run": request.dry_run,
-                "use_ai_agent": request.use_ai_agent or request.audit_type == "ai_agent",
+                "use_ai_agent": request.use_ai_agent
+                or request.audit_type == "ai_agent",
                 "language": language,
                 "last_24_hours_only": request.last_24_hours_only,
                 "validate_integrity": request.validate_integrity,
@@ -129,7 +127,7 @@ async def trigger_librarian_audit(
                 "opensubtitles_enabled": request.opensubtitles_enabled,
                 "classify_only": request.classify_only,
                 "remove_duplicates": request.remove_duplicates,
-            }
+            },
         )
         await audit.save()
         audit_id = audit.audit_id
@@ -158,14 +156,14 @@ async def trigger_librarian_audit(
             return TriggerAuditResponse(
                 audit_id=audit_id,
                 status="started",
-                message=f"🤖 AI Agent audit started (autonomous mode, {'DRY RUN' if request.dry_run else 'LIVE'}). Claude will decide what to check and fix. Check back soon for results."
+                message=f"🤖 AI Agent audit started (autonomous mode, {'DRY RUN' if request.dry_run else 'LIVE'}). Claude will decide what to check and fix. Check back soon for results.",
             )
         else:
             valid_types = ["daily_incremental", "weekly_full", "manual"]
             if request.audit_type not in valid_types:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Invalid audit_type. Must be one of: {', '.join(valid_types + ['ai_agent'])}"
+                    detail=f"Invalid audit_type. Must be one of: {', '.join(valid_types + ['ai_agent'])}",
                 )
 
             task = asyncio.create_task(
@@ -178,7 +176,7 @@ async def trigger_librarian_audit(
                     last_24_hours_only=request.last_24_hours_only,
                     cyb_titles_only=request.cyb_titles_only,
                     tmdb_posters_only=request.tmdb_posters_only,
-                    opensubtitles_enabled=request.opensubtitles_enabled
+                    opensubtitles_enabled=request.opensubtitles_enabled,
                 )
             )
             audit_task_manager.register_task(audit_id, task)
@@ -186,13 +184,13 @@ async def trigger_librarian_audit(
             return TriggerAuditResponse(
                 audit_id=audit_id,
                 status="started",
-                message=f"Librarian audit started ({request.audit_type}, rule-based mode). Check back soon for results."
+                message=f"Librarian audit started ({request.audit_type}, rule-based mode). Check back soon for results.",
             )
 
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to trigger audit: {str(e)}"
+            detail=f"Failed to trigger audit: {str(e)}",
         )
 
 
@@ -200,7 +198,7 @@ async def trigger_librarian_audit(
 async def get_audit_reports(
     limit: int = 10,
     audit_type: Optional[str] = None,
-    current_user: User = Depends(require_admin())
+    current_user: User = Depends(require_admin()),
 ):
     """Get recent audit reports."""
     try:
@@ -208,7 +206,12 @@ async def get_audit_reports(
         if audit_type:
             query["audit_type"] = audit_type
 
-        reports = await AuditReport.find(query).sort([("audit_date", -1)]).limit(limit).to_list()
+        reports = (
+            await AuditReport.find(query)
+            .sort([("audit_date", -1)])
+            .limit(limit)
+            .to_list()
+        )
 
         audit_ids = [r.audit_id for r in reports]
         action_counts = {}
@@ -227,7 +230,7 @@ async def get_audit_reports(
                 summary=report.summary,
                 content_results=report.content_results,
                 issues_count=action_counts.get(report.audit_id, 0),
-                fixes_count=action_counts.get(report.audit_id, 0)
+                fixes_count=action_counts.get(report.audit_id, 0),
             )
             for report in reports
         ]
@@ -235,14 +238,13 @@ async def get_audit_reports(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to fetch reports: {str(e)}"
+            detail=f"Failed to fetch reports: {str(e)}",
         )
 
 
 @router.get("/admin/librarian/reports/{audit_id}")
 async def get_audit_report_detail(
-    audit_id: str,
-    current_user: User = Depends(require_admin())
+    audit_id: str, current_user: User = Depends(require_admin())
 ):
     """Get detailed audit report by ID."""
     try:
@@ -250,8 +252,7 @@ async def get_audit_report_detail(
 
         if not report:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Audit report not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Audit report not found"
             )
 
         return {
@@ -283,28 +284,26 @@ async def get_audit_report_detail(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to fetch report: {str(e)}"
+            detail=f"Failed to fetch report: {str(e)}",
         )
 
 
 @router.delete("/admin/librarian/reports")
-async def clear_audit_reports(
-    current_user: User = Depends(require_admin())
-):
+async def clear_audit_reports(current_user: User = Depends(require_admin())):
     """Clear all audit reports from the database."""
     try:
         result = await AuditReport.find_all().delete()
-        deleted_count = result.deleted_count if hasattr(result, 'deleted_count') else 0
+        deleted_count = result.deleted_count if hasattr(result, "deleted_count") else 0
 
         return {
             "deleted_count": deleted_count,
-            "message": f"Successfully cleared {deleted_count} audit report(s)"
+            "message": f"Successfully cleared {deleted_count} audit report(s)",
         }
 
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to clear audit reports: {str(e)}"
+            detail=f"Failed to clear audit reports: {str(e)}",
         )
 
 
@@ -313,7 +312,7 @@ async def get_librarian_actions(
     audit_id: Optional[str] = None,
     action_type: Optional[str] = None,
     limit: int = 50,
-    current_user: User = Depends(require_admin())
+    current_user: User = Depends(require_admin()),
 ):
     """Get librarian actions/fixes."""
     try:
@@ -323,7 +322,12 @@ async def get_librarian_actions(
         if action_type:
             query["action_type"] = action_type
 
-        actions = await LibrarianAction.find(query).sort([("timestamp", -1)]).limit(limit).to_list()
+        actions = (
+            await LibrarianAction.find(query)
+            .sort([("timestamp", -1)])
+            .limit(limit)
+            .to_list()
+        )
 
         content_ids = [action.content_id for action in actions]
         contents = await Content.find({"_id": {"$in": content_ids}}).to_list()
@@ -344,7 +348,7 @@ async def get_librarian_actions(
                 confidence_score=action.confidence_score,
                 auto_approved=action.auto_approved,
                 rolled_back=action.rolled_back,
-                content_title=content_title_map.get(action.content_id)
+                content_title=content_title_map.get(action.content_id),
             )
             for action in actions
         ]
@@ -352,28 +356,24 @@ async def get_librarian_actions(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to fetch actions: {str(e)}"
+            detail=f"Failed to fetch actions: {str(e)}",
         )
 
 
 @router.post("/admin/librarian/actions/{action_id}/rollback")
 async def rollback_librarian_action(
-    action_id: str,
-    current_user: User = Depends(require_admin())
+    action_id: str, current_user: User = Depends(require_admin())
 ):
     """Rollback a specific librarian action."""
     try:
         result = await rollback_action(action_id)
 
         if result.success:
-            return {
-                "success": True,
-                "message": "Action rolled back successfully"
-            }
+            return {"success": True, "message": "Action rolled back successfully"}
         else:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=result.error_message or "Rollback failed"
+                detail=result.error_message or "Rollback failed",
             )
 
     except HTTPException:
@@ -381,15 +381,12 @@ async def rollback_librarian_action(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to rollback action: {str(e)}"
+            detail=f"Failed to rollback action: {str(e)}",
         )
 
 
 @router.post("/admin/librarian/audits/{audit_id}/pause")
-async def pause_audit(
-    audit_id: str,
-    current_user: User = Depends(require_admin())
-):
+async def pause_audit(audit_id: str, current_user: User = Depends(require_admin())):
     """Pause a running audit."""
     try:
         try:
@@ -400,21 +397,20 @@ async def pause_audit(
 
         if not audit:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Audit not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Audit not found"
             )
 
         if audit.status not in ["in_progress", "running"]:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Cannot pause audit with status: {audit.status}"
+                detail=f"Cannot pause audit with status: {audit.status}",
             )
 
         success = await audit_task_manager.pause_task(audit_id)
         if not success:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Running audit task not found"
+                detail="Running audit task not found",
             )
 
         audit.status = "paused"
@@ -427,15 +423,12 @@ async def pause_audit(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to pause audit: {str(e)}"
+            detail=f"Failed to pause audit: {str(e)}",
         )
 
 
 @router.post("/admin/librarian/audits/{audit_id}/resume")
-async def resume_audit(
-    audit_id: str,
-    current_user: User = Depends(require_admin())
-):
+async def resume_audit(audit_id: str, current_user: User = Depends(require_admin())):
     """Resume a paused audit."""
     try:
         try:
@@ -446,21 +439,20 @@ async def resume_audit(
 
         if not audit:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Audit not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Audit not found"
             )
 
         if audit.status != "paused":
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Cannot resume audit with status: {audit.status}"
+                detail=f"Cannot resume audit with status: {audit.status}",
             )
 
         success = await audit_task_manager.resume_task(audit_id)
         if not success:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Paused audit task not found"
+                detail="Paused audit task not found",
             )
 
         audit.status = "in_progress"
@@ -473,15 +465,12 @@ async def resume_audit(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to resume audit: {str(e)}"
+            detail=f"Failed to resume audit: {str(e)}",
         )
 
 
 @router.post("/admin/librarian/audits/{audit_id}/cancel")
-async def cancel_audit(
-    audit_id: str,
-    current_user: User = Depends(require_admin())
-):
+async def cancel_audit(audit_id: str, current_user: User = Depends(require_admin())):
     """Cancel a running or paused audit."""
     try:
         try:
@@ -492,14 +481,13 @@ async def cancel_audit(
 
         if not audit:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Audit not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Audit not found"
             )
 
         if audit.status in ["completed", "failed", "cancelled"]:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Cannot cancel audit with status: {audit.status}"
+                detail=f"Cannot cancel audit with status: {audit.status}",
             )
 
         await audit_task_manager.cancel_task(audit_id)
@@ -514,15 +502,18 @@ async def cancel_audit(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to cancel audit: {str(e)}"
+            detail=f"Failed to cancel audit: {str(e)}",
         )
 
 
-@router.post("/admin/librarian/audits/{audit_id}/interject", response_model=InterjectMessageResponse)
+@router.post(
+    "/admin/librarian/audits/{audit_id}/interject",
+    response_model=InterjectMessageResponse,
+)
 async def interject_audit_message(
     audit_id: str,
     request: InterjectMessageRequest,
-    current_user: User = Depends(require_admin())
+    current_user: User = Depends(require_admin()),
 ):
     """
     Inject a message into a running audit's conversation with Claude.
@@ -538,23 +529,23 @@ async def interject_audit_message(
             if not audit:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Audit not found. It may have been deleted or cleared."
+                    detail="Audit not found. It may have been deleted or cleared.",
                 )
 
             if audit.status == "completed":
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="This audit has already completed. Start a new audit to send messages."
+                    detail="This audit has already completed. Start a new audit to send messages.",
                 )
             elif audit.status == "failed":
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="This audit failed before completion. Start a new audit to try again."
+                    detail="This audit failed before completion. Start a new audit to try again.",
                 )
             elif audit.status == "cancelled":
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="This audit was cancelled. Start a new audit to continue working."
+                    detail="This audit was cancelled. Start a new audit to continue working.",
                 )
             else:
                 audit.status = "completed"
@@ -562,7 +553,7 @@ async def interject_audit_message(
                 await audit.save()
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="This audit just finished. Refresh to see results, or start a new audit."
+                    detail="This audit just finished. Refresh to see results, or start a new audit.",
                 )
 
         try:
@@ -573,34 +564,33 @@ async def interject_audit_message(
 
         if not audit:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Audit not found."
+                status_code=status.HTTP_404_NOT_FOUND, detail="Audit not found."
             )
 
         if not request.message or not request.message.strip():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Please enter a message to send to the AI agent."
+                detail="Please enter a message to send to the AI agent.",
             )
 
         success = audit_task_manager.queue_message(
-            audit_id=audit_id,
-            message=request.message.strip(),
-            source=request.source
+            audit_id=audit_id, message=request.message.strip(), source=request.source
         )
 
         if not success:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Unable to send message - the audit just finished."
+                detail="Unable to send message - the audit just finished.",
             )
 
-        logger.info(f"Admin interjection queued for audit {audit_id}: {request.message[:100]}...")
+        logger.info(
+            f"Admin interjection queued for audit {audit_id}: {request.message[:100]}..."
+        )
 
         return InterjectMessageResponse(
             success=True,
             message="Interjection queued successfully. It will be delivered at the next agent iteration.",
-            audit_id=audit_id
+            audit_id=audit_id,
         )
 
     except HTTPException:
@@ -609,5 +599,5 @@ async def interject_audit_message(
         logger.error(f"Failed to interject message for audit {audit_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to interject message: {str(e)}"
+            detail=f"Failed to interject message: {str(e)}",
         )

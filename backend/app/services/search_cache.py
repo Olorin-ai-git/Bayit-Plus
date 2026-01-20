@@ -9,8 +9,8 @@ import hashlib
 import json
 import logging
 import time
-from typing import Dict, Any, Optional
 from datetime import datetime, timedelta
+from typing import Any, Dict, Optional
 
 from app.core.config import settings
 
@@ -87,7 +87,9 @@ class SearchCacheService:
         logger.debug(f"Cache HIT: {cache_key} (age: {age:.1f}s)")
         return self._cache[cache_key]
 
-    def set(self, cache_key: str, results: Dict[str, Any], ttl: Optional[int] = None) -> None:
+    def set(
+        self, cache_key: str, results: Dict[str, Any], ttl: Optional[int] = None
+    ) -> None:
         """
         Cache search results with TTL.
 
@@ -100,12 +102,12 @@ class SearchCacheService:
         self._cache_timestamps[cache_key] = time.time()
 
         used_ttl = ttl or self.default_ttl
-        logger.debug(f"Cache SET: {cache_key} (TTL: {used_ttl}s, size: {len(results.get('results', []))} items)")
+        logger.debug(
+            f"Cache SET: {cache_key} (TTL: {used_ttl}s, size: {len(results.get('results', []))} items)"
+        )
 
     def get_cached_results(
-        self,
-        query: str,
-        filters: Dict[str, Any]
+        self, query: str, filters: Dict[str, Any]
     ) -> Optional[Dict[str, Any]]:
         """
         Get cached results for query and filters.
@@ -125,7 +127,7 @@ class SearchCacheService:
         query: str,
         filters: Dict[str, Any],
         results: Dict[str, Any],
-        ttl: Optional[int] = None
+        ttl: Optional[int] = None,
     ) -> None:
         """
         Cache search results for query and filters.
@@ -139,7 +141,9 @@ class SearchCacheService:
         cache_key = self.generate_cache_key(query, filters)
         self.set(cache_key, results, ttl)
 
-    def invalidate(self, query: Optional[str] = None, filters: Optional[Dict[str, Any]] = None) -> None:
+    def invalidate(
+        self, query: Optional[str] = None, filters: Optional[Dict[str, Any]] = None
+    ) -> None:
         """
         Invalidate specific cache entry or all entries.
 
@@ -192,11 +196,13 @@ class SearchCacheService:
             "default_ttl": self.default_ttl,
             "oldest_entry_age": (
                 time.time() - min(self._cache_timestamps.values())
-                if self._cache_timestamps else 0
+                if self._cache_timestamps
+                else 0
             ),
             "newest_entry_age": (
                 time.time() - max(self._cache_timestamps.values())
-                if self._cache_timestamps else 0
+                if self._cache_timestamps
+                else 0
             ),
         }
 

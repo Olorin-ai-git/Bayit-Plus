@@ -2,18 +2,20 @@
 Device Pairing Manager for QR-based TV authentication.
 Manages pairing sessions and WebSocket connections for device pairing.
 """
-from typing import Dict, Optional
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from fastapi import WebSocket
 import asyncio
-import secrets
-import json
 import base64
 import io
+import json
+import secrets
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from typing import Dict, Optional
+
+from fastapi import WebSocket
 
 try:
     import qrcode
+
     HAS_QRCODE = True
 except ImportError:
     HAS_QRCODE = False
@@ -22,6 +24,7 @@ except ImportError:
 @dataclass
 class PairingSession:
     """Represents a device pairing session"""
+
     session_id: str
     session_token: str
     qr_code_data: str  # Base64 PNG
@@ -29,7 +32,9 @@ class PairingSession:
     expires_at: datetime = None
     tv_websocket: Optional[WebSocket] = None
     companion_websocket: Optional[WebSocket] = None
-    status: str = "waiting"  # waiting, scanning, authenticating, success, failed, expired
+    status: str = (
+        "waiting"  # waiting, scanning, authenticating, success, failed, expired
+    )
     companion_device_info: Optional[dict] = None
     authenticated_user_id: Optional[str] = None
     authenticated_token: Optional[str] = None
@@ -70,7 +75,9 @@ class PairingManager:
             return ""
 
         # Create URL for companion to scan
-        qr_url = f"{base_url}/tv-login?session={data['session_id']}&token={data['token']}"
+        qr_url = (
+            f"{base_url}/tv-login?session={data['session_id']}&token={data['token']}"
+        )
 
         qr = qrcode.QRCode(
             version=1,
@@ -88,7 +95,9 @@ class PairingManager:
         img.save(buffer, format="PNG")
         return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
-    async def create_session(self, base_url: str = "https://bayit.plus") -> PairingSession:
+    async def create_session(
+        self, base_url: str = "https://bayit.plus"
+    ) -> PairingSession:
         """Create a new pairing session"""
         async with self._lock:
             session_id = self._generate_session_id()
@@ -167,10 +176,12 @@ class PairingManager:
             # Notify TV that companion connected
             if session.tv_websocket:
                 try:
-                    await session.tv_websocket.send_json({
-                        "type": "companion_connected",
-                        "device_info": device_info,
-                    })
+                    await session.tv_websocket.send_json(
+                        {
+                            "type": "companion_connected",
+                            "device_info": device_info,
+                        }
+                    )
                 except Exception:
                     pass
 
@@ -188,9 +199,11 @@ class PairingManager:
             # Notify TV
             if session.tv_websocket:
                 try:
-                    await session.tv_websocket.send_json({
-                        "type": "authenticating",
-                    })
+                    await session.tv_websocket.send_json(
+                        {
+                            "type": "authenticating",
+                        }
+                    )
                 except Exception:
                     pass
 
@@ -216,11 +229,13 @@ class PairingManager:
             # Notify TV with auth credentials
             if session.tv_websocket:
                 try:
-                    await session.tv_websocket.send_json({
-                        "type": "pairing_success",
-                        "user": user_data,
-                        "token": access_token,
-                    })
+                    await session.tv_websocket.send_json(
+                        {
+                            "type": "pairing_success",
+                            "user": user_data,
+                            "token": access_token,
+                        }
+                    )
                 except Exception:
                     pass
 
@@ -238,10 +253,12 @@ class PairingManager:
             # Notify TV
             if session.tv_websocket:
                 try:
-                    await session.tv_websocket.send_json({
-                        "type": "pairing_failed",
-                        "reason": reason,
-                    })
+                    await session.tv_websocket.send_json(
+                        {
+                            "type": "pairing_failed",
+                            "reason": reason,
+                        }
+                    )
                 except Exception:
                     pass
 
@@ -258,9 +275,11 @@ class PairingManager:
         # Notify TV
         if session.tv_websocket:
             try:
-                await session.tv_websocket.send_json({
-                    "type": "session_expired",
-                })
+                await session.tv_websocket.send_json(
+                    {
+                        "type": "session_expired",
+                    }
+                )
                 await session.tv_websocket.close()
             except Exception:
                 pass
@@ -293,17 +312,18 @@ class PairingManager:
         """Remove all expired sessions. Returns count of removed sessions."""
         async with self._lock:
             expired = [
-                sid for sid, session in self._sessions.items()
-                if session.is_expired()
+                sid for sid, session in self._sessions.items() if session.is_expired()
             ]
 
             for sid in expired:
                 session = self._sessions[sid]
                 if session.tv_websocket:
                     try:
-                        await session.tv_websocket.send_json({
-                            "type": "session_expired",
-                        })
+                        await session.tv_websocket.send_json(
+                            {
+                                "type": "session_expired",
+                            }
+                        )
                         await session.tv_websocket.close()
                     except Exception:
                         pass

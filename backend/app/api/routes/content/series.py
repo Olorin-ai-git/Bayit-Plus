@@ -5,11 +5,10 @@ Series-specific endpoints.
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException
-
 from app.core.security import get_optional_user
 from app.models.content import Content
 from app.models.user import User
+from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -72,10 +71,14 @@ async def get_series_details(
     if not series or not series.is_published or not series.is_series:
         raise HTTPException(status_code=404, detail="Series not found")
 
-    episodes = await Content.find(
-        Content.series_id == series_id,
-        Content.is_published == True,
-    ).sort([("season", 1), ("episode", 1)]).to_list()
+    episodes = (
+        await Content.find(
+            Content.series_id == series_id,
+            Content.is_published == True,
+        )
+        .sort([("season", 1), ("episode", 1)])
+        .to_list()
+    )
 
     seasons_map = {}
     for ep in episodes:
@@ -91,12 +94,16 @@ async def get_series_details(
 
     seasons = sorted(seasons_map.values(), key=lambda x: x["season_number"])
 
-    related = await Content.find(
-        Content.category_id == series.category_id,
-        Content.id != series.id,
-        Content.is_published == True,
-        Content.is_series == True,
-    ).limit(6).to_list()
+    related = (
+        await Content.find(
+            Content.category_id == series.category_id,
+            Content.id != series.id,
+            Content.is_published == True,
+            Content.is_series == True,
+        )
+        .limit(6)
+        .to_list()
+    )
 
     return {
         "id": str(series.id),
@@ -117,7 +124,10 @@ async def get_series_details(
         "tmdb_id": series.tmdb_id,
         "imdb_id": series.imdb_id,
         "available_subtitle_languages": series.available_subtitle_languages or [],
-        "has_subtitles": bool(series.available_subtitle_languages and len(series.available_subtitle_languages) > 0),
+        "has_subtitles": bool(
+            series.available_subtitle_languages
+            and len(series.available_subtitle_languages) > 0
+        ),
         "seasons": seasons,
         "related": [
             {
@@ -139,10 +149,14 @@ async def get_series_seasons(series_id: str):
     if not series or not series.is_published or not series.is_series:
         raise HTTPException(status_code=404, detail="Series not found")
 
-    episodes = await Content.find(
-        Content.series_id == series_id,
-        Content.is_published == True,
-    ).sort([("season", 1), ("episode", 1)]).to_list()
+    episodes = (
+        await Content.find(
+            Content.series_id == series_id,
+            Content.is_published == True,
+        )
+        .sort([("season", 1), ("episode", 1)])
+        .to_list()
+    )
 
     seasons_map = {}
     for ep in episodes:
@@ -168,11 +182,15 @@ async def get_season_episodes(series_id: str, season_num: int):
     if not series or not series.is_published or not series.is_series:
         raise HTTPException(status_code=404, detail="Series not found")
 
-    episodes = await Content.find(
-        Content.series_id == series_id,
-        Content.season == season_num,
-        Content.is_published == True,
-    ).sort("episode").to_list()
+    episodes = (
+        await Content.find(
+            Content.series_id == series_id,
+            Content.season == season_num,
+            Content.is_published == True,
+        )
+        .sort("episode")
+        .to_list()
+    )
 
     return {
         "series_id": series_id,

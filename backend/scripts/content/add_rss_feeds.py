@@ -2,12 +2,13 @@
 Add RSS feed URLs to podcasts in the database.
 """
 import asyncio
-from pymongo import MongoClient
 from datetime import datetime
+
+from pymongo import MongoClient
 
 # Podcast-to-RSS mapping with verified feeds
 PODCAST_RSS_MAPPING = {
-    "סג\"ל וברקו - הפודקאסט": "https://feeds.podcastone.com/rss2/embedded-feed/1706618000",
+    'סג"ל וברקו - הפודקאסט': "https://feeds.podcastone.com/rss2/embedded-feed/1706618000",
     "עושים היסטוריה": "https://feeds.podcastone.com/rss2/embedded-feed/1569610537",
     "גיקטיים": "https://feeds.podcastone.com/rss2/embedded-feed/1630251491",
     "כאן כלכלה": "https://feeds.podcastone.com/rss2/kan-economy",

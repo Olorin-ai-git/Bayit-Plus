@@ -7,13 +7,12 @@ Handles detection and cleanup of orphaned files, records, and stuck jobs.
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-
+from app.api.routes.admin_uploads.dependencies import has_permission
+from app.api.routes.admin_uploads.models import CleanupResponse, IntegrityStatusResponse
 from app.models.admin import Permission
 from app.models.user import User
 from app.services.upload_service.integrity import upload_integrity_service
-from app.api.routes.admin_uploads.dependencies import has_permission
-from app.api.routes.admin_uploads.models import CleanupResponse, IntegrityStatusResponse
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -107,7 +106,9 @@ async def run_integrity_cleanup(
 
 @router.get("/uploads/integrity/orphaned-files")
 async def list_orphaned_gcs_files(
-    prefix: Optional[str] = Query(default=None, description="GCS path prefix to filter"),
+    prefix: Optional[str] = Query(
+        default=None, description="GCS path prefix to filter"
+    ),
     limit: int = Query(default=50, le=200),
     current_user: User = Depends(has_permission(Permission.CONTENT_CREATE)),
 ):

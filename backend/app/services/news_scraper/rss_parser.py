@@ -11,8 +11,6 @@ from email.utils import parsedate_to_datetime
 from typing import List
 
 import httpx
-from bs4 import BeautifulSoup
-
 from app.services.news_scraper.constants import (
     MAX_SEARCH_RESULTS,
     MIN_RSS_TITLE_LENGTH,
@@ -20,6 +18,7 @@ from app.services.news_scraper.constants import (
     RSS_HEADERS,
 )
 from app.services.news_scraper.models import HeadlineItem, clean_cdata
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +90,9 @@ async def search_google_news_rss(
     """Search Google News RSS for fresh news content."""
     headlines: List[HeadlineItem] = []
     encoded_query = urllib.parse.quote(query)
-    rss_url = f"https://news.google.com/rss/search?q={encoded_query}&hl=he&gl=IL&ceid=IL:he"
+    rss_url = (
+        f"https://news.google.com/rss/search?q={encoded_query}&hl=he&gl=IL&ceid=IL:he"
+    )
 
     try:
         async with httpx.AsyncClient(

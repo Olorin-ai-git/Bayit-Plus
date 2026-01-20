@@ -7,17 +7,16 @@ Handles Chinese news sources (Sina, Sohu, NetEase, Xinhua) with Mandarin and Eng
 import logging
 import re
 from datetime import datetime, timezone
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 import httpx
-from bs4 import BeautifulSoup
-
+from app.core.config import settings
 from app.services.culture_scrapers.base_scraper import (
+    DEFAULT_HEADERS,
     BaseCultureScraper,
     CultureHeadlineItem,
-    DEFAULT_HEADERS,
 )
-from app.core.config import settings
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
@@ -41,30 +40,71 @@ class ChineseScraper(BaseCultureScraper):
         # History & Culture
         "history": ["历史", "故宫", "长城", "文化遗产", "古迹", "博物馆", "传统"],
         "culture": ["文化", "艺术", "音乐", "戏曲", "书法", "国画", "京剧"],
-
         # Modern categories
         "finance": ["金融", "股市", "经济", "投资", "银行", "贸易", "商业"],
         "tech": ["科技", "创新", "人工智能", "互联网", "电商", "创业", "高科技"],
         "food": ["美食", "餐厅", "料理", "小吃", "饮食", "厨师"],
         "expat": ["华人", "海外华人", "留学", "移民", "华侨"],
-
         # Cities
         "beijing": ["北京", "首都", "天安门", "故宫", "颐和园"],
         "shanghai": ["上海", "浦东", "外滩", "陆家嘴"],
-
         # General
         "general": ["中国", "新闻", "资讯"],
     }
 
     # English keywords by category
     keywords_english = {
-        "history": ["history", "forbidden city", "great wall", "heritage", "museum", "ancient", "traditional"],
-        "culture": ["culture", "art", "music", "opera", "calligraphy", "painting", "theater"],
-        "finance": ["finance", "stock market", "economy", "investment", "banking", "trade", "business"],
-        "tech": ["tech", "technology", "innovation", "ai", "internet", "e-commerce", "startup"],
+        "history": [
+            "history",
+            "forbidden city",
+            "great wall",
+            "heritage",
+            "museum",
+            "ancient",
+            "traditional",
+        ],
+        "culture": [
+            "culture",
+            "art",
+            "music",
+            "opera",
+            "calligraphy",
+            "painting",
+            "theater",
+        ],
+        "finance": [
+            "finance",
+            "stock market",
+            "economy",
+            "investment",
+            "banking",
+            "trade",
+            "business",
+        ],
+        "tech": [
+            "tech",
+            "technology",
+            "innovation",
+            "ai",
+            "internet",
+            "e-commerce",
+            "startup",
+        ],
         "food": ["food", "restaurant", "cuisine", "dim sum", "cooking", "chef"],
-        "expat": ["chinese diaspora", "overseas chinese", "study abroad", "immigration", "chinese community"],
-        "beijing": ["beijing", "capital", "tiananmen", "forbidden city", "summer palace"],
+        "expat": [
+            "chinese diaspora",
+            "overseas chinese",
+            "study abroad",
+            "immigration",
+            "chinese community",
+        ],
+        "beijing": [
+            "beijing",
+            "capital",
+            "tiananmen",
+            "forbidden city",
+            "summer palace",
+        ],
         "shanghai": ["shanghai", "pudong", "bund", "lujiazui"],
         "general": ["china", "news", "chinese"],
     }
@@ -76,7 +116,12 @@ class ChineseScraper(BaseCultureScraper):
         "finance": {"zh": "金融", "en": "Finance", "he": "פיננסים", "es": "Finanzas"},
         "tech": {"zh": "科技", "en": "Tech", "he": "טכנולוגיה", "es": "Tecnologia"},
         "food": {"zh": "美食", "en": "Food", "he": "אוכל", "es": "Comida"},
-        "expat": {"zh": "海外华人", "en": "Expat", "he": "קהילה סינית", "es": "Comunidad China"},
+        "expat": {
+            "zh": "海外华人",
+            "en": "Expat",
+            "he": "קהילה סינית",
+            "es": "Comunidad China",
+        },
         "beijing": {"zh": "北京", "en": "Beijing", "he": "בייג'ינג", "es": "Beijing"},
         "shanghai": {"zh": "上海", "en": "Shanghai", "he": "שנגחאי", "es": "Shanghai"},
         "general": {"zh": "综合", "en": "General", "he": "כללי", "es": "General"},
@@ -252,7 +297,9 @@ class ChineseScraper(BaseCultureScraper):
                     description_elem = item.find("description")
                     if description_elem:
                         summary_html = description_elem.get_text()
-                        summary = BeautifulSoup(summary_html, "html.parser").get_text(strip=True)[:200]
+                        summary = BeautifulSoup(summary_html, "html.parser").get_text(
+                            strip=True
+                        )[:200]
 
                     # Get publication date
                     published_at = None
@@ -260,7 +307,10 @@ class ChineseScraper(BaseCultureScraper):
                     if pub_date_elem:
                         try:
                             from email.utils import parsedate_to_datetime
-                            published_at = parsedate_to_datetime(pub_date_elem.get_text())
+
+                            published_at = parsedate_to_datetime(
+                                pub_date_elem.get_text()
+                            )
                         except Exception:
                             published_at = datetime.now(timezone.utc)
 

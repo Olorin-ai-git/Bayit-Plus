@@ -10,17 +10,17 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
+import logging
+
 from app.core.config import settings
 from app.models.content import Content
 from app.models.librarian import LibrarianAction
 from app.services.auto_fixer import clean_title, fix_missing_metadata
-import logging
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -30,18 +30,15 @@ async def connect_db():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     database = client[settings.MONGODB_DB_NAME]
 
-    await init_beanie(
-        database=database,
-        document_models=[Content, LibrarianAction]
-    )
+    await init_beanie(database=database, document_models=[Content, LibrarianAction])
     logger.info("✅ Connected to MongoDB")
 
 
 def test_clean_title_function():
     """Test the clean_title function with various inputs"""
-    logger.info("\n" + "="*80)
+    logger.info("\n" + "=" * 80)
     logger.info("TESTING CLEAN_TITLE FUNCTION")
-    logger.info("="*80)
+    logger.info("=" * 80)
 
     test_cases = [
         ("Coco p Rip -EVO", "Coco"),
@@ -62,7 +59,7 @@ def test_clean_title_function():
         if not passed:
             all_passed = False
 
-    logger.info("="*80)
+    logger.info("=" * 80)
     if all_passed:
         logger.info("✅ All clean_title tests passed!")
     else:
@@ -73,18 +70,18 @@ def test_clean_title_function():
 
 async def test_auto_fixer_integration():
     """Test the auto_fixer's ability to handle messy titles"""
-    logger.info("\n" + "="*80)
+    logger.info("\n" + "=" * 80)
     logger.info("TESTING AUTO_FIXER INTEGRATION")
-    logger.info("="*80)
+    logger.info("=" * 80)
 
     try:
         # Find a content item without TMDB ID (failed enrichment)
-        failed_content = await Content.find_one(
-            Content.tmdb_id == None
-        )
+        failed_content = await Content.find_one(Content.tmdb_id == None)
 
         if not failed_content:
-            logger.info("ℹ️  No content without TMDB ID found (all items already enriched)")
+            logger.info(
+                "ℹ️  No content without TMDB ID found (all items already enriched)"
+            )
             logger.info("Creating a test item with messy title...")
 
             # Create a temporary test item
@@ -93,7 +90,7 @@ async def test_auto_fixer_integration():
                 year=2002,
                 is_series=False,
                 is_published=True,
-                content_type="movie"
+                content_type="movie",
             )
             await test_content.insert()
             logger.info(f"✅ Created test item: {test_content.title}")
@@ -110,10 +107,10 @@ async def test_auto_fixer_integration():
         result = await fix_missing_metadata(
             content_id=test_id,
             issues=["missing_tmdb_id", "missing_thumbnail", "missing_backdrop"],
-            audit_id="test-audit-001"
+            audit_id="test-audit-001",
         )
 
-        logger.info("\n" + "-"*80)
+        logger.info("\n" + "-" * 80)
         if result.success:
             logger.info("✅ AUTO_FIXER SUCCESS!")
             logger.info(f"   Fields updated: {result.fields_updated}")
@@ -150,21 +147,20 @@ async def test_auto_fixer_integration():
     except Exception as e:
         logger.error(f"❌ Test failed with exception: {str(e)}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 async def test_real_failed_items():
     """Test on real failed items from the database"""
-    logger.info("\n" + "="*80)
+    logger.info("\n" + "=" * 80)
     logger.info("TESTING ON REAL FAILED ITEMS")
-    logger.info("="*80)
+    logger.info("=" * 80)
 
     try:
         # Find up to 3 items without TMDB ID
-        failed_items = await Content.find(
-            Content.tmdb_id == None
-        ).limit(3).to_list()
+        failed_items = await Content.find(Content.tmdb_id == None).limit(3).to_list()
 
         if not failed_items:
             logger.info("✨ No failed items found - all content already enriched!")
@@ -175,7 +171,7 @@ async def test_real_failed_items():
         for idx, item in enumerate(failed_items, 1):
             logger.info(f"  {idx}. {item.title} ({item.year})")
 
-        logger.info("\n" + "-"*80)
+        logger.info("\n" + "-" * 80)
 
         success_count = 0
         for idx, item in enumerate(failed_items, 1):
@@ -184,7 +180,7 @@ async def test_real_failed_items():
             result = await fix_missing_metadata(
                 content_id=str(item.id),
                 issues=["missing_tmdb_id", "missing_thumbnail"],
-                audit_id="test-audit-real"
+                audit_id="test-audit-real",
             )
 
             if result.success:
@@ -193,15 +189,18 @@ async def test_real_failed_items():
             else:
                 logger.warning(f"   ⚠️  Failed: {result.error_message}")
 
-        logger.info("\n" + "="*80)
-        logger.info(f"RESULTS: {success_count}/{len(failed_items)} items successfully enriched")
-        logger.info("="*80)
+        logger.info("\n" + "=" * 80)
+        logger.info(
+            f"RESULTS: {success_count}/{len(failed_items)} items successfully enriched"
+        )
+        logger.info("=" * 80)
 
         return success_count > 0
 
     except Exception as e:
         logger.error(f"❌ Test failed: {str(e)}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -209,7 +208,7 @@ async def test_real_failed_items():
 async def main():
     """Run all tests"""
     logger.info("🧪 LIBRARIAN TITLE CLEANING TEST SUITE")
-    logger.info("="*80)
+    logger.info("=" * 80)
 
     # Test 1: Clean title function
     test1_passed = test_clean_title_function()
@@ -222,13 +221,19 @@ async def main():
     test3_passed = await test_real_failed_items()
 
     # Final summary
-    logger.info("\n" + "="*80)
+    logger.info("\n" + "=" * 80)
     logger.info("FINAL TEST RESULTS")
-    logger.info("="*80)
-    logger.info(f"✅ Clean Title Function:      {'PASSED' if test1_passed else 'FAILED'}")
-    logger.info(f"✅ Auto-Fixer Integration:    {'PASSED' if test2_passed else 'FAILED'}")
-    logger.info(f"✅ Real Failed Items Test:    {'PASSED' if test3_passed else 'FAILED'}")
-    logger.info("="*80)
+    logger.info("=" * 80)
+    logger.info(
+        f"✅ Clean Title Function:      {'PASSED' if test1_passed else 'FAILED'}"
+    )
+    logger.info(
+        f"✅ Auto-Fixer Integration:    {'PASSED' if test2_passed else 'FAILED'}"
+    )
+    logger.info(
+        f"✅ Real Failed Items Test:    {'PASSED' if test3_passed else 'FAILED'}"
+    )
+    logger.info("=" * 80)
 
     all_passed = test1_passed and test2_passed and test3_passed
     if all_passed:

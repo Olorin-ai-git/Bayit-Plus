@@ -7,17 +7,19 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.core.database import connect_to_mongo, close_mongo_connection
-from app.models.upload import MonitoredFolder, ContentType
 from datetime import datetime
+
+from app.core.database import close_mongo_connection, connect_to_mongo
+from app.models.upload import ContentType, MonitoredFolder
+
 
 async def main():
     await connect_to_mongo()
-    
+
     # Check if already exists
     local_vod_path = "/Users/olorin/Documents/Bayit-Plus/backend/uploads/vod"
     existing = await MonitoredFolder.find_one(MonitoredFolder.path == local_vod_path)
-    
+
     if existing:
         print(f"✅ Folder already exists: {existing.name} (ID: {existing.id})")
     else:
@@ -36,8 +38,9 @@ async def main():
         await folder.insert()
         print(f"✅ Created monitored folder: {folder.name} (ID: {folder.id})")
         print(f"   Path: {folder.path}")
-    
+
     await close_mongo_connection()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

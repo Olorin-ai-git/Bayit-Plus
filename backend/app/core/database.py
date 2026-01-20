@@ -1,70 +1,115 @@
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
 from typing import List, Type
-from beanie import Document
-from app.core.config import settings
 
-# Models
-from app.models.user import User
-from app.models.verification import VerificationToken
-from app.models.content import Content, LiveChannel, EPGEntry, RadioStation, Podcast, PodcastEpisode
-from app.models.content_taxonomy import ContentSection, SectionSubcategory, Genre, Audience
-from app.models.subscription import Subscription, Invoice
-from app.models.watchlist import WatchlistItem, WatchHistory, Conversation
-from app.models.profile import Profile
-from app.models.flow import Flow
-from app.models.realtime import WatchParty, ChatMessage
-from app.models.trending import TrendingSnapshot, ContentTrendMatch
-from app.models.chapters import VideoChapters
-from app.models.subtitles import (
-    SubtitleTrackDoc,
-    TranslationCacheDoc,
-    SubtitleSearchCacheDoc,
-    SubtitleQuotaTrackerDoc,
-)
-from app.models.subtitle_preferences import SubtitlePreference
-from app.models.admin import (
-    Campaign, Transaction, Refund, AuditLog,
-    EmailCampaign, PushNotification, SystemSettings, SubscriptionPlan,
-)
-from app.models.security_audit import SecurityAuditLog
-from app.models.widget import Widget
-from app.models.user_system_widget import UserSystemWidget
-from app.models.librarian import AuditReport, LibrarianAction, StreamValidationCache, ClassificationVerificationCache
-from app.models.recording import RecordingSession, Recording, RecordingSchedule, RecordingSubtitleCue
-from app.models.upload import UploadJob, MonitoredFolder, UploadStats, BrowserUploadSession, UploadHashLock
-from app.api.routes.favorites import Favorite
 from app.api.routes.downloads import Download
-from app.models.chess import ChessGame, ChessChatMessage
-from app.models.friendship import FriendRequest, UserFriendship, GameResult, PlayerStats
+from app.api.routes.favorites import Favorite
+from app.core.config import settings
+from app.models.admin import (
+    AuditLog,
+    Campaign,
+    EmailCampaign,
+    PushNotification,
+    Refund,
+    SubscriptionPlan,
+    SystemSettings,
+    Transaction,
+)
+from app.models.chapters import VideoChapters
 from app.models.chat_translation import ChatTranslationCacheDoc
+from app.models.chess import ChessChatMessage, ChessGame
+from app.models.content import (
+    Content,
+    EPGEntry,
+    LiveChannel,
+    Podcast,
+    PodcastEpisode,
+    RadioStation,
+)
+from app.models.content_embedding import ContentEmbedding, RecapSession
+from app.models.content_taxonomy import (
+    Audience,
+    ContentSection,
+    Genre,
+    SectionSubcategory,
+)
+from app.models.cultural_reference import CulturalReference
+from app.models.culture import (
+    Culture,
+    CultureCity,
+    CultureContentItem,
+    CultureNewsSource,
+)
 from app.models.direct_message import DirectMessage
-from app.models.jewish_news import JewishNewsSource, JewishNewsItem
-from app.models.jewish_calendar import JewishCalendarCache
-from app.models.jewish_community import JewishOrganization, CommunityEvent, ScrapingJob
-from app.models.jerusalem_content import JerusalemContentSource, JerusalemContentItem
-from app.models.tel_aviv_content import TelAvivContentSource, TelAvivContentItem
-from app.models.support import SupportTicket, SupportConversation, SupportAnalytics, FAQEntry
 from app.models.documentation import (
     DocumentationArticle,
     DocumentationCategory,
     DocumentationFeedback,
     DocumentationSearchLog,
 )
-from app.models.culture import Culture, CultureCity, CultureNewsSource, CultureContentItem
-from app.models.kids_content import KidsContentSource
-from app.models.youngsters_content import YoungstersContentSource
 from app.models.family_controls import FamilyControls
-from app.services.mcp_content_discovery import ContentDiscoveryQueue
+from app.models.flow import Flow
+from app.models.friendship import FriendRequest, GameResult, PlayerStats, UserFriendship
+
 # Olorin.ai Platform models
 from app.models.integration_partner import (
+    DubbingSession,
     IntegrationPartner,
     UsageRecord,
-    DubbingSession,
     WebhookDelivery,
 )
-from app.models.content_embedding import ContentEmbedding, RecapSession
-from app.models.cultural_reference import CulturalReference
+from app.models.jerusalem_content import JerusalemContentItem, JerusalemContentSource
+from app.models.jewish_calendar import JewishCalendarCache
+from app.models.jewish_community import CommunityEvent, JewishOrganization, ScrapingJob
+from app.models.jewish_news import JewishNewsItem, JewishNewsSource
+from app.models.kids_content import KidsContentSource
+from app.models.librarian import (
+    AuditReport,
+    ClassificationVerificationCache,
+    LibrarianAction,
+    StreamValidationCache,
+)
+from app.models.profile import Profile
+from app.models.realtime import ChatMessage, WatchParty
+from app.models.recording import (
+    Recording,
+    RecordingSchedule,
+    RecordingSession,
+    RecordingSubtitleCue,
+)
+from app.models.security_audit import SecurityAuditLog
+from app.models.subscription import Invoice, Subscription
+from app.models.subtitle_preferences import SubtitlePreference
+from app.models.subtitles import (
+    SubtitleQuotaTrackerDoc,
+    SubtitleSearchCacheDoc,
+    SubtitleTrackDoc,
+    TranslationCacheDoc,
+)
+from app.models.support import (
+    FAQEntry,
+    SupportAnalytics,
+    SupportConversation,
+    SupportTicket,
+)
+from app.models.tel_aviv_content import TelAvivContentItem, TelAvivContentSource
+from app.models.trending import ContentTrendMatch, TrendingSnapshot
+from app.models.upload import (
+    BrowserUploadSession,
+    MonitoredFolder,
+    UploadHashLock,
+    UploadJob,
+    UploadStats,
+)
+
+# Models
+from app.models.user import User
+from app.models.user_system_widget import UserSystemWidget
+from app.models.verification import VerificationToken
+from app.models.watchlist import Conversation, WatchHistory, WatchlistItem
+from app.models.widget import Widget
+from app.models.youngsters_content import YoungstersContentSource
+from app.services.mcp_content_discovery import ContentDiscoveryQueue
+from beanie import Document, init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 
 class Database:
@@ -78,11 +123,11 @@ async def connect_to_mongo():
     """Create database connection with connection pool configuration."""
     db.client = AsyncIOMotorClient(
         settings.MONGODB_URL,
-        maxPoolSize=100,          # Maximum connections in pool (higher for main app)
-        minPoolSize=20,           # Minimum connections to maintain
-        maxIdleTimeMS=30000,      # Close idle connections after 30s
+        maxPoolSize=100,  # Maximum connections in pool (higher for main app)
+        minPoolSize=20,  # Minimum connections to maintain
+        maxIdleTimeMS=30000,  # Close idle connections after 30s
         waitQueueTimeoutMS=5000,  # Fail fast if pool exhausted
-        connectTimeoutMS=10000,   # Connection timeout
+        connectTimeoutMS=10000,  # Connection timeout
         serverSelectionTimeoutMS=10000,  # Server selection timeout
     )
 
@@ -208,15 +253,17 @@ async def connect_to_mongo():
     # When Phase 2 (separate database) is enabled, Olorin models are managed separately
     if not settings.olorin.database.use_separate_database:
         # Phase 1: Olorin models in main database
-        document_models.extend([
-            IntegrationPartner,
-            UsageRecord,
-            DubbingSession,
-            WebhookDelivery,
-            ContentEmbedding,
-            RecapSession,
-            CulturalReference,
-        ])
+        document_models.extend(
+            [
+                IntegrationPartner,
+                UsageRecord,
+                DubbingSession,
+                WebhookDelivery,
+                ContentEmbedding,
+                RecapSession,
+                CulturalReference,
+            ]
+        )
         print("Olorin models included in main database (Phase 1)")
     else:
         # Phase 2: Olorin models in separate database

@@ -8,11 +8,10 @@ import logging
 from datetime import datetime
 from typing import Optional
 
-from beanie import PydanticObjectId
-
 from app.models.content import Content
 from app.models.librarian import LibrarianAction
 from app.services.series_linker.constants import LinkingResult
+from beanie import PydanticObjectId
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +120,9 @@ async def link_episode_to_series(
             )
             await action.insert()
 
-        logger.info(f"Linked '{episode.title}' to '{series.title}' (S{final_season}E{final_episode})")
+        logger.info(
+            f"Linked '{episode.title}' to '{series.title}' (S{final_season}E{final_episode})"
+        )
 
         return LinkingResult(
             success=True,

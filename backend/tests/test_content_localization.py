@@ -4,11 +4,12 @@ Unit Tests for Content Localization Processor
 Tests the content type processors for localization.
 """
 
+from unittest.mock import AsyncMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from app.services.content_localization import ContentLocalizationProcessor
-from app.models.content import Podcast, Content, LiveChannel, RadioStation
+from app.models.content import Content, LiveChannel, Podcast, RadioStation
 from app.models.content_taxonomy import ContentSection
+from app.services.content_localization import ContentLocalizationProcessor
 
 
 class TestContentLocalizationProcessor:
@@ -82,9 +83,7 @@ class TestContentLocalizationProcessor:
         mock_podcast.save = AsyncMock()
 
         with patch.object(
-            processor.translation_service,
-            'translate_field',
-            return_value="Translated"
+            processor.translation_service, "translate_field", return_value="Translated"
         ):
             result = await processor.process_item(mock_podcast, "podcast")
 
@@ -155,13 +154,13 @@ class TestContentLocalizationProcessor:
         mock_podcast.category_es = None
         mock_podcast.save = AsyncMock()
 
-        with patch('app.services.content_localization.Podcast') as mock_podcast_class:
+        with patch("app.services.content_localization.Podcast") as mock_podcast_class:
             mock_podcast_class.get = AsyncMock(return_value=mock_podcast)
 
             with patch.object(
                 processor.translation_service,
-                'translate_field',
-                return_value="Translated"
+                "translate_field",
+                return_value="Translated",
             ):
                 result = await processor.process_podcast("test123")
 
@@ -173,7 +172,7 @@ class TestContentLocalizationProcessor:
     @pytest.mark.asyncio
     async def test_process_podcast_not_found(self, processor):
         """Test processing a podcast that doesn't exist."""
-        with patch('app.services.content_localization.Podcast') as mock_podcast_class:
+        with patch("app.services.content_localization.Podcast") as mock_podcast_class:
             mock_podcast_class.get = AsyncMock(return_value=None)
 
             result = await processor.process_podcast("nonexistent")
@@ -213,14 +212,16 @@ class TestContentLocalizationProcessor:
             mock_podcast.save = AsyncMock()
             mock_podcasts.append(mock_podcast)
 
-        with patch('app.services.content_localization.Podcast') as mock_podcast_class:
+        with patch("app.services.content_localization.Podcast") as mock_podcast_class:
             mock_podcast_class.find_all = Mock()
-            mock_podcast_class.find_all.return_value.to_list = AsyncMock(return_value=mock_podcasts)
+            mock_podcast_class.find_all.return_value.to_list = AsyncMock(
+                return_value=mock_podcasts
+            )
 
             with patch.object(
                 processor.translation_service,
-                'translate_field',
-                return_value="Translated"
+                "translate_field",
+                return_value="Translated",
             ):
                 result = await processor.process_podcast()
 
@@ -244,13 +245,13 @@ class TestContentLocalizationProcessor:
         mock_content.genre_es = None
         mock_content.save = AsyncMock()
 
-        with patch('app.services.content_localization.Content') as mock_content_class:
+        with patch("app.services.content_localization.Content") as mock_content_class:
             mock_content_class.get = AsyncMock(return_value=mock_content)
 
             with patch.object(
                 processor.translation_service,
-                'translate_field',
-                return_value="Translated"
+                "translate_field",
+                return_value="Translated",
             ):
                 result = await processor.process_content("test123")
 
@@ -271,13 +272,15 @@ class TestContentLocalizationProcessor:
         mock_channel.description_es = None
         mock_channel.save = AsyncMock()
 
-        with patch('app.services.content_localization.LiveChannel') as mock_channel_class:
+        with patch(
+            "app.services.content_localization.LiveChannel"
+        ) as mock_channel_class:
             mock_channel_class.get = AsyncMock(return_value=mock_channel)
 
             with patch.object(
                 processor.translation_service,
-                'translate_field',
-                return_value="Translated"
+                "translate_field",
+                return_value="Translated",
             ):
                 result = await processor.process_live_channel("test123")
 
@@ -301,13 +304,15 @@ class TestContentLocalizationProcessor:
         mock_station.genre_es = None
         mock_station.save = AsyncMock()
 
-        with patch('app.services.content_localization.RadioStation') as mock_station_class:
+        with patch(
+            "app.services.content_localization.RadioStation"
+        ) as mock_station_class:
             mock_station_class.get = AsyncMock(return_value=mock_station)
 
             with patch.object(
                 processor.translation_service,
-                'translate_field',
-                return_value="Translated"
+                "translate_field",
+                return_value="Translated",
             ):
                 result = await processor.process_radio_station("test123")
 
@@ -328,13 +333,15 @@ class TestContentLocalizationProcessor:
         mock_category.description_es = None
         mock_category.save = AsyncMock()
 
-        with patch('app.services.content_localization.ContentSection') as mock_category_class:
+        with patch(
+            "app.services.content_localization.ContentSection"
+        ) as mock_category_class:
             mock_category_class.get = AsyncMock(return_value=mock_category)
 
             with patch.object(
                 processor.translation_service,
-                'translate_field',
-                return_value="Translated"
+                "translate_field",
+                return_value="Translated",
             ):
                 result = await processor.process_category("test123")
 

@@ -1,17 +1,19 @@
 """Add landscape backdrop for Avatar and download it"""
 import asyncio
-import sys
 import os
+import sys
+
 from dotenv import load_dotenv
 
 load_dotenv()
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
+import logging
+
 from app.models.content import Content
 from app.services.image_storage import download_and_encode_image
-import logging
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,7 +21,9 @@ logger = logging.getLogger(__name__)
 
 async def add_backdrop():
     """Add landscape backdrop for Avatar"""
-    mongodb_uri = os.getenv("MONGODB_URI") or os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+    mongodb_uri = os.getenv("MONGODB_URI") or os.getenv(
+        "MONGODB_URL", "mongodb://localhost:27017"
+    )
     mongodb_db = os.getenv("MONGODB_DB") or os.getenv("MONGODB_DB_NAME", "bayit_plus")
 
     logger.info(f"Connecting to MongoDB: {mongodb_db}")
@@ -61,8 +65,12 @@ async def add_backdrop():
         logger.info(f"✅ Avatar now has landscape backdrop for carousel")
 
         logger.info(f"\n📊 Avatar Summary:")
-        logger.info(f"  - thumbnail (portrait): {'YES' if avatar.thumbnail_data else 'NO'}")
-        logger.info(f"  - backdrop (landscape): {'YES' if avatar.backdrop_data else 'NO'}")
+        logger.info(
+            f"  - thumbnail (portrait): {'YES' if avatar.thumbnail_data else 'NO'}"
+        )
+        logger.info(
+            f"  - backdrop (landscape): {'YES' if avatar.backdrop_data else 'NO'}"
+        )
         logger.info(f"  - is_featured: {avatar.is_featured}")
     else:
         logger.error(f"❌ Failed to download backdrop from {backdrop_url}")

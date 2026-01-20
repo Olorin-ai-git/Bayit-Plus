@@ -4,8 +4,9 @@
 import asyncio
 import os
 import sys
-from motor.motor_asyncio import AsyncIOMotorClient
+
 from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorClient
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -26,7 +27,9 @@ async def find_all():
     # Look in content collection
     content_collection = db["content"]
 
-    doc = await content_collection.find_one({"_id": ObjectId("6964193ff7dfde7d50ef0a6f")})
+    doc = await content_collection.find_one(
+        {"_id": ObjectId("6964193ff7dfde7d50ef0a6f")}
+    )
     if doc:
         print("Found in 'content' collection:")
         print(f"  Title: {doc.get('title')}")
@@ -38,7 +41,9 @@ async def find_all():
     # Check if there's a movies collection
     if "movies" in collections:
         movies_collection = db["movies"]
-        doc = await movies_collection.find_one({"_id": ObjectId("6964193ff7dfde7d50ef0a6f")})
+        doc = await movies_collection.find_one(
+            {"_id": ObjectId("6964193ff7dfde7d50ef0a6f")}
+        )
         if doc:
             print("\nFound in 'movies' collection:")
             print(f"  Title: {doc.get('title')}")

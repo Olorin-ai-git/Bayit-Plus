@@ -8,13 +8,13 @@ from typing import Optional, Tuple
 
 from app.services.support.constants import (
     BILLING_KEYWORDS,
-    SECURITY_KEYWORDS,
     ESCALATION_KEYWORDS,
-    UNCERTAIN_PHRASES,
     ESCALATION_REASON_BILLING,
-    ESCALATION_REASON_SECURITY,
-    ESCALATION_REASON_NO_DOCS,
     ESCALATION_REASON_LOW_CONFIDENCE,
+    ESCALATION_REASON_NO_DOCS,
+    ESCALATION_REASON_SECURITY,
+    SECURITY_KEYWORDS,
+    UNCERTAIN_PHRASES,
 )
 
 
@@ -32,7 +32,7 @@ def check_escalation(
     if any(kw in query_lower for kw in SECURITY_KEYWORDS):
         return True, ESCALATION_REASON_SECURITY
 
-    if not context.get('docs') and not context.get('faq'):
+    if not context.get("docs") and not context.get("faq"):
         if any(kw in query_lower for kw in ESCALATION_KEYWORDS):
             return True, ESCALATION_REASON_NO_DOCS
 
@@ -45,11 +45,11 @@ def check_escalation(
 
 def clean_for_tts(text: str) -> str:
     """Clean text for TTS readability by removing markdown and URLs."""
-    text = re.sub(r'\*\*(.+?)\*\*', r'\1', text)
-    text = re.sub(r'\*(.+?)\*', r'\1', text)
-    text = re.sub(r'`(.+?)`', r'\1', text)
-    text = re.sub(r'\[(.+?)\]\(.+?\)', r'\1', text)
-    text = re.sub(r'https?://\S+', '', text)
+    text = re.sub(r"\*\*(.+?)\*\*", r"\1", text)
+    text = re.sub(r"\*(.+?)\*", r"\1", text)
+    text = re.sub(r"`(.+?)`", r"\1", text)
+    text = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", text)
+    text = re.sub(r"https?://\S+", "", text)
     return text.strip()
 
 
@@ -64,12 +64,12 @@ def build_chat_result(
 ) -> dict:
     """Build the chat response dictionary."""
     return {
-        'message': response_text,
-        'conversation_id': conversation_id,
-        'language': language,
-        'spoken_response': clean_for_tts(response_text),
-        'docs_referenced': doc_paths,
-        'escalation_needed': escalation_needed,
-        'escalation_reason': escalation_reason,
-        'confidence': confidence,
+        "message": response_text,
+        "conversation_id": conversation_id,
+        "language": language,
+        "spoken_response": clean_for_tts(response_text),
+        "docs_referenced": doc_paths,
+        "escalation_needed": escalation_needed,
+        "escalation_reason": escalation_reason,
+        "confidence": confidence,
     }

@@ -12,13 +12,15 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from app.services.unified_search_service import UnifiedSearchService, SearchFilters
 from app.services.docs_search_service import docs_search_service
+from app.services.unified_search_service import SearchFilters, UnifiedSearchService
 
 logger = logging.getLogger(__name__)
 
 # Path to user guide documentation
-USER_GUIDE_DOCS_PATH = Path(__file__).parent.parent.parent.parent / 'shared' / 'data' / 'support' / 'docs'
+USER_GUIDE_DOCS_PATH = (
+    Path(__file__).parent.parent.parent.parent / "shared" / "data" / "support" / "docs"
+)
 
 # All available documentation categories
 DOCUMENTATION_CATEGORIES = [
@@ -47,37 +49,37 @@ CHAT_TOOLS = [
             "properties": {
                 "query": {
                     "type": "string",
-                    "description": "Search query - can be title, genre, actor, director, or descriptive terms"
+                    "description": "Search query - can be title, genre, actor, director, or descriptive terms",
                 },
                 "content_type": {
                     "type": "string",
                     "enum": ["vod", "live", "radio", "podcast"],
-                    "description": "Filter by content type (default: vod for movies/series)"
+                    "description": "Filter by content type (default: vod for movies/series)",
                 },
                 "genres": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "Filter by genres (e.g., ['action', 'comedy', 'drama', 'documentary'])"
+                    "description": "Filter by genres (e.g., ['action', 'comedy', 'drama', 'documentary'])",
                 },
                 "year_min": {
                     "type": "integer",
-                    "description": "Minimum year filter (e.g., 1990)"
+                    "description": "Minimum year filter (e.g., 1990)",
                 },
                 "year_max": {
                     "type": "integer",
-                    "description": "Maximum year filter (e.g., 2020)"
+                    "description": "Maximum year filter (e.g., 2020)",
                 },
                 "is_kids_content": {
                     "type": "boolean",
-                    "description": "Filter for children's content only"
+                    "description": "Filter for children's content only",
                 },
                 "limit": {
                     "type": "integer",
-                    "description": "Maximum number of results to return (default: 5, max: 10)"
-                }
+                    "description": "Maximum number of results to return (default: 5, max: 10)",
+                },
             },
-            "required": ["query"]
-        }
+            "required": ["query"],
+        },
     },
     {
         "name": "lookup_user_guide",
@@ -100,7 +102,7 @@ CHAT_TOOLS = [
             "properties": {
                 "topic": {
                     "type": "string",
-                    "description": "The topic or question to search for in the documentation"
+                    "description": "The topic or question to search for in the documentation",
                 },
                 "category": {
                     "type": "string",
@@ -113,24 +115,24 @@ CHAT_TOOLS = [
                         "parents",
                         "admin",
                         "developer",
-                        "platform-guides"
+                        "platform-guides",
                     ],
-                    "description": "Optionally filter by category to narrow down results"
+                    "description": "Optionally filter by category to narrow down results",
                 },
                 "audience": {
                     "type": "string",
                     "enum": ["user", "parent", "admin", "developer"],
-                    "description": "Optionally filter by target audience"
+                    "description": "Optionally filter by target audience",
                 },
                 "language": {
                     "type": "string",
                     "enum": ["en", "he", "es"],
-                    "description": "Language for the help content (default: matches user's language)"
-                }
+                    "description": "Language for the help content (default: matches user's language)",
+                },
             },
-            "required": ["topic"]
-        }
-    }
+            "required": ["topic"],
+        },
+    },
 ]
 
 
@@ -141,7 +143,7 @@ async def execute_search_content(
     year_min: int | None = None,
     year_max: int | None = None,
     is_kids_content: bool | None = None,
-    limit: int = 5
+    limit: int = 5,
 ) -> dict[str, Any]:
     """
     Execute content search using UnifiedSearchService.
@@ -168,7 +170,7 @@ async def execute_search_content(
         genres=genres,
         year_min=year_min,
         year_max=year_max,
-        is_kids_content=is_kids_content
+        is_kids_content=is_kids_content,
     )
 
     logger.info(f"[ChatTool] Searching: query='{query}', filters={filters}")
@@ -176,13 +178,12 @@ async def execute_search_content(
     # Execute search
     search_service = UnifiedSearchService()
     results = await search_service.search(
-        query=query,
-        filters=filters,
-        page=1,
-        limit=limit
+        query=query, filters=filters, page=1, limit=limit
     )
 
-    logger.info(f"[ChatTool] Found {results.total} results in {results.execution_time_ms}ms")
+    logger.info(
+        f"[ChatTool] Found {results.total} results in {results.execution_time_ms}ms"
+    )
 
     # Format results for Claude - include only essential fields
     formatted_results = []
@@ -199,7 +200,7 @@ async def execute_search_content(
             "director": item.get("director"),
             "cast": item.get("cast"),
             "thumbnail": item.get("thumbnail"),
-            "is_kids_content": item.get("is_kids_content", False)
+            "is_kids_content": item.get("is_kids_content", False),
         }
         formatted_results.append(formatted_item)
 
@@ -211,8 +212,8 @@ async def execute_search_content(
             "content_type": content_type,
             "genres": genres,
             "year_range": f"{year_min or 'any'}-{year_max or 'any'}",
-            "kids_only": is_kids_content
-        }
+            "kids_only": is_kids_content,
+        },
     }
 
 
@@ -229,7 +230,7 @@ async def execute_lookup_user_guide(
     topic: str,
     category: str | None = None,
     audience: str | None = None,
-    language: str = "en"
+    language: str = "en",
 ) -> dict[str, Any]:
     """
     Search the comprehensive documentation system for relevant help content.
@@ -260,13 +261,13 @@ async def execute_lookup_user_guide(
         limit=10,
     )
 
-    articles = search_results.get('articles', [])
-    faq_results = search_results.get('faq', [])
+    articles = search_results.get("articles", [])
+    faq_results = search_results.get("faq", [])
 
     # Load content for top 3 articles
     article_results = []
     for article in articles[:3]:
-        slug = article.get('slug', '')
+        slug = article.get("slug", "")
         content_data = await docs_search_service.get_article_content(
             slug=slug,
             language=language,
@@ -274,30 +275,34 @@ async def execute_lookup_user_guide(
 
         content = ""
         if content_data:
-            content = content_data.get('content', '')
+            content = content_data.get("content", "")
             # Truncate to first 1000 chars to save tokens while providing useful context
             if len(content) > 1000:
-                content = content[:1000].rsplit('\n', 1)[0] + "\n..."
+                content = content[:1000].rsplit("\n", 1)[0] + "\n..."
 
-        article_results.append({
-            "title": article.get('title_key', slug),
-            "slug": slug,
-            "category": article.get('category', ''),
-            "subcategory": article.get('subcategory'),
-            "content": content,
-            "relevance_score": article.get('score', 0),
-            "platforms": article.get('platforms', ['all']),
-        })
+        article_results.append(
+            {
+                "title": article.get("title_key", slug),
+                "slug": slug,
+                "category": article.get("category", ""),
+                "subcategory": article.get("subcategory"),
+                "content": content,
+                "relevance_score": article.get("score", 0),
+                "platforms": article.get("platforms", ["all"]),
+            }
+        )
 
     # Format FAQ results
     faq_formatted = []
     for faq in faq_results[:3]:
-        faq_formatted.append({
-            "question": faq.get('question', ''),
-            "answer": faq.get('answer', ''),
-            "category": faq.get('category', ''),
-            "relevance_score": faq.get('score', 0),
-        })
+        faq_formatted.append(
+            {
+                "question": faq.get("question", ""),
+                "answer": faq.get("answer", ""),
+                "category": faq.get("category", ""),
+                "relevance_score": faq.get("score", 0),
+            }
+        )
 
     total_found = len(articles) + len(faq_results)
 
@@ -318,7 +323,9 @@ async def execute_lookup_user_guide(
     }
 
 
-async def execute_chat_tool(tool_name: str, tool_input: dict[str, Any]) -> dict[str, Any]:
+async def execute_chat_tool(
+    tool_name: str, tool_input: dict[str, Any]
+) -> dict[str, Any]:
     """
     Execute a chat tool and return results.
 
@@ -340,14 +347,14 @@ async def execute_chat_tool(tool_name: str, tool_input: dict[str, Any]) -> dict[
             year_min=tool_input.get("year_min"),
             year_max=tool_input.get("year_max"),
             is_kids_content=tool_input.get("is_kids_content"),
-            limit=tool_input.get("limit", 5)
+            limit=tool_input.get("limit", 5),
         )
     elif tool_name == "lookup_user_guide":
         return await execute_lookup_user_guide(
             topic=tool_input.get("topic", ""),
             category=tool_input.get("category"),
             audience=tool_input.get("audience"),
-            language=tool_input.get("language", "en")
+            language=tool_input.get("language", "en"),
         )
     else:
         raise ValueError(f"Unknown tool: {tool_name}")

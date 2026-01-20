@@ -5,21 +5,21 @@ Main service class that coordinates cultural reference operations.
 """
 
 import logging
-from typing import Optional, List
+from typing import List, Optional
 
 from app.core.config import settings
 from app.models.cultural_reference import (
-    CulturalReference,
-    DetectedReference,
     ContextDetectionRequest,
     ContextDetectionResponse,
+    CulturalReference,
+    DetectedReference,
     EnrichedText,
     ReferenceExplanation,
 )
-from app.services.olorin.context.cache import AliasCache
-from app.services.olorin.context.detection import pattern_based_detection, ai_detection
-from app.services.olorin.context.explanation import get_explanation
 from app.services.olorin.context import crud
+from app.services.olorin.context.cache import AliasCache
+from app.services.olorin.context.detection import ai_detection, pattern_based_detection
+from app.services.olorin.context.explanation import get_explanation
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +80,9 @@ class CulturalContextService:
 
         # Get explanations in target language
         for ref in detected:
-            explanation = await get_explanation(ref.reference_id, request.target_language)
+            explanation = await get_explanation(
+                ref.reference_id, request.target_language
+            )
             if explanation:
                 if request.target_language == "en":
                     ref.short_explanation_en = explanation.short_explanation
@@ -136,19 +138,19 @@ class CulturalContextService:
         for ref in sorted_refs:
             marker = f"[{ref.reference_id}]"
             enriched = (
-                enriched[: ref.end_position]
-                + marker
-                + enriched[ref.end_position:]
+                enriched[: ref.end_position] + marker + enriched[ref.end_position :]
             )
 
-            annotations.append({
-                "reference_id": ref.reference_id,
-                "matched_text": ref.matched_text,
-                "canonical_name": ref.canonical_name,
-                "canonical_name_en": ref.canonical_name_en,
-                "category": ref.category,
-                "explanation": ref.short_explanation_en or ref.short_explanation,
-            })
+            annotations.append(
+                {
+                    "reference_id": ref.reference_id,
+                    "matched_text": ref.matched_text,
+                    "canonical_name": ref.canonical_name,
+                    "canonical_name_en": ref.canonical_name_en,
+                    "category": ref.category,
+                    "explanation": ref.short_explanation_en or ref.short_explanation,
+                }
+            )
 
         return EnrichedText(
             original_text=text,

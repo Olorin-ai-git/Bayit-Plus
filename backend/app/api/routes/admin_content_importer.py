@@ -4,12 +4,13 @@ Import public/free content from various sources
 """
 
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, Depends, Request, status
+
+from app.models.admin import AuditAction, Permission
+from app.models.user import User
+from app.services.content_importer import ContentImporter
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 
-from app.models.user import User
-from app.models.admin import Permission, AuditAction
-from app.services.content_importer import ContentImporter
 from .admin_content_utils import has_permission, log_audit
 
 router = APIRouter()
@@ -17,6 +18,7 @@ router = APIRouter()
 
 class ImportFreeContentRequest(BaseModel):
     """Request model for importing free content."""
+
     source_type: str
     source_name: str
     import_all: bool = True
@@ -27,7 +29,7 @@ class ImportFreeContentRequest(BaseModel):
 @router.get("/content/import/sources/{source_type}")
 async def get_free_content_sources(
     source_type: str,
-    current_user: User = Depends(has_permission(Permission.CONTENT_READ))
+    current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
 ):
     """Get available free content sources for a given type."""
     try:
@@ -39,7 +41,7 @@ async def get_free_content_sources(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get sources: {str(e)}"
+            detail=f"Failed to get sources: {str(e)}",
         )
 
 
@@ -47,7 +49,7 @@ async def get_free_content_sources(
 async def import_free_content(
     data: ImportFreeContentRequest,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE)),
 ):
     """
     Import free/test content from public sources.
@@ -64,9 +66,7 @@ async def import_free_content(
 
         if data.source_type == "live_tv":
             channels = await ContentImporter.import_live_channels(
-                data.source_name,
-                data.import_all,
-                data.items
+                data.source_name, data.import_all, data.items
             )
             imported_count = len(channels)
 
@@ -74,35 +74,29 @@ async def import_free_content(
             if not data.category_id:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="category_id is required for VOD imports"
+                    detail="category_id is required for VOD imports",
                 )
             content_list = await ContentImporter.import_vod_content(
-                data.source_name,
-                data.category_id,
-                data.import_all,
-                data.items
+                data.source_name, data.category_id, data.import_all, data.items
             )
             imported_count = len(content_list)
 
         elif data.source_type == "radio":
             stations = await ContentImporter.import_radio_stations(
-                data.source_name,
-                data.import_all,
-                data.items
+                data.source_name, data.import_all, data.items
             )
             imported_count = len(stations)
 
         elif data.source_type == "podcasts":
             podcasts = await ContentImporter.import_public_podcasts(
-                data.import_all,
-                data.items
+                data.import_all, data.items
             )
             imported_count = len(podcasts)
 
         else:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Unknown source type: {data.source_type}"
+                detail=f"Unknown source type: {data.source_type}",
             )
 
         await log_audit(
@@ -116,7 +110,7 @@ async def import_free_content(
                 "imported_count": imported_count,
                 "import_all": data.import_all,
             },
-            request
+            request,
         )
 
         skipped_count = requested_count - imported_count if requested_count > 0 else 0
@@ -124,7 +118,9 @@ async def import_free_content(
         if skipped_count > 0:
             message += f" ({skipped_count} already existed)"
         elif imported_count == 0 and requested_count > 0:
-            message = f"No new items imported - all {requested_count} items already exist"
+            message = (
+                f"No new items imported - all {requested_count} items already exist"
+            )
 
         return {
             "message": message,
@@ -139,5 +135,5 @@ async def import_free_content(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Import failed: {str(e)}"
+            detail=f"Import failed: {str(e)}",
         )

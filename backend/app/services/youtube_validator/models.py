@@ -13,6 +13,7 @@ from app.services.youtube_validator.constants import VIDEO_STATUS_ERROR
 @dataclass
 class YouTubeValidationResult:
     """Result of YouTube video validation."""
+
     url: str
     video_id: str
     is_valid: bool
@@ -28,7 +29,7 @@ class YouTubeValidationResult:
         url: str,
         video_id: str,
         error_message: str,
-        response_time_ms: Optional[int] = None
+        response_time_ms: Optional[int] = None,
     ) -> "YouTubeValidationResult":
         """
         Create an error result.
@@ -48,7 +49,7 @@ class YouTubeValidationResult:
             is_valid=False,
             status=VIDEO_STATUS_ERROR,
             error_message=error_message,
-            response_time_ms=response_time_ms
+            response_time_ms=response_time_ms,
         )
 
     @classmethod
@@ -67,5 +68,5 @@ class YouTubeValidationResult:
             video_id="",
             is_valid=False,
             status=VIDEO_STATUS_ERROR,
-            error_message="Could not extract video ID from URL"
+            error_message="Could not extract video ID from URL",
         )

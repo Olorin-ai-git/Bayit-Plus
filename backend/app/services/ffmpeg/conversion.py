@@ -371,7 +371,9 @@ async def compress_video(
                 )
 
             if process.returncode != 0:
-                raise VideoConversionError(f"Failed to compress video: {stderr.decode()}")
+                raise VideoConversionError(
+                    f"Failed to compress video: {stderr.decode()}"
+                )
 
         if not os.path.exists(output_path):
             raise VideoConversionError("Output file was not created")

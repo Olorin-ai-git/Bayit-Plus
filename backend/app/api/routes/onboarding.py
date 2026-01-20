@@ -4,12 +4,12 @@ Provides a conversational interface powered by Claude for frictionless signup.
 """
 from datetime import datetime
 from typing import Optional
+
+from app.core.security import create_access_token, get_password_hash
+from app.models.user import TokenResponse, User, UserResponse
+from app.services.ai_onboarding import OnboardingStep, ai_onboarding_service
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, EmailStr
-from app.models.user import User, UserResponse, TokenResponse
-from app.core.security import get_password_hash, create_access_token
-from app.services.ai_onboarding import ai_onboarding_service, OnboardingStep
-
 
 router = APIRouter()
 
@@ -17,6 +17,7 @@ router = APIRouter()
 # ============================================================================
 # Request/Response Models
 # ============================================================================
+
 
 class StartOnboardingRequest(BaseModel):
     language: str = "he"  # "he" or "en"
@@ -60,6 +61,7 @@ class CompleteOnboardingResponse(BaseModel):
 # ============================================================================
 # REST Endpoints
 # ============================================================================
+
 
 @router.post("/start", response_model=StartOnboardingResponse)
 async def start_onboarding(request: StartOnboardingRequest):
@@ -112,9 +114,9 @@ async def send_message(request: SendMessageRequest):
 
     # Check if ready for completion
     ready = (
-        session.collected_data.get("name") and
-        session.collected_data.get("email") and
-        session.collected_data.get("email_confirmed", False)
+        session.collected_data.get("name")
+        and session.collected_data.get("email")
+        and session.collected_data.get("email_confirmed", False)
     )
 
     return SendMessageResponse(
@@ -168,6 +170,7 @@ async def complete_onboarding(request: CompleteOnboardingRequest):
 
     # Generate password if not provided
     import secrets
+
     password = request.password or secrets.token_urlsafe(16)
 
     # Create user

@@ -3,15 +3,17 @@ Subtitle Service.
 Handles parsing and processing of VTT/SRT subtitle files.
 """
 import re
-from datetime import timedelta
-from typing import List, Optional, Dict, Any
 from dataclasses import dataclass, field
+from datetime import timedelta
+from typing import Any, Dict, List, Optional
+
 import httpx
 
 
 @dataclass
 class SubtitleCue:
     """A single subtitle cue/segment"""
+
     index: int
     start_time: float  # seconds
     end_time: float  # seconds
@@ -22,6 +24,7 @@ class SubtitleCue:
 @dataclass
 class SubtitleTrack:
     """A complete subtitle track"""
+
     cues: List[SubtitleCue]
     language: str = "he"
     format: str = "vtt"  # vtt or srt
@@ -30,7 +33,7 @@ class SubtitleTrack:
 
 def parse_timestamp_vtt(timestamp: str) -> float:
     """Parse VTT timestamp (HH:MM:SS.mmm or MM:SS.mmm) to seconds"""
-    parts = timestamp.strip().split(':')
+    parts = timestamp.strip().split(":")
 
     if len(parts) == 3:
         hours, minutes, seconds = parts
@@ -41,8 +44,8 @@ def parse_timestamp_vtt(timestamp: str) -> float:
         return 0.0
 
     # Handle milliseconds
-    if '.' in seconds:
-        secs, ms = seconds.split('.')
+    if "." in seconds:
+        secs, ms = seconds.split(".")
         return int(hours) * 3600 + int(minutes) * 60 + int(secs) + int(ms) / 1000
     else:
         return int(hours) * 3600 + int(minutes) * 60 + float(seconds)
@@ -51,7 +54,7 @@ def parse_timestamp_vtt(timestamp: str) -> float:
 def parse_timestamp_srt(timestamp: str) -> float:
     """Parse SRT timestamp (HH:MM:SS,mmm) to seconds"""
     # SRT uses comma for milliseconds
-    timestamp = timestamp.replace(',', '.')
+    timestamp = timestamp.replace(",", ".")
     return parse_timestamp_vtt(timestamp)
 
 
@@ -61,11 +64,11 @@ def parse_vtt(content: str) -> SubtitleTrack:
     Returns a SubtitleTrack with all cues.
     """
     cues = []
-    lines = content.strip().split('\n')
+    lines = content.strip().split("\n")
 
     # Skip WEBVTT header
     i = 0
-    while i < len(lines) and not '-->' in lines[i]:
+    while i < len(lines) and not "-->" in lines[i]:
         i += 1
 
     cue_index = 0
@@ -73,10 +76,10 @@ def parse_vtt(content: str) -> SubtitleTrack:
         line = lines[i].strip()
 
         # Look for timestamp line
-        if '-->' in line:
+        if "-->" in line:
             try:
                 # Parse timestamps
-                parts = line.split('-->')
+                parts = line.split("-->")
                 start_time = parse_timestamp_vtt(parts[0].strip())
                 # End time might have position info after it
                 end_part = parts[1].strip().split()[0]
@@ -87,18 +90,20 @@ def parse_vtt(content: str) -> SubtitleTrack:
                 text_lines = []
                 while i < len(lines) and lines[i].strip():
                     # Remove VTT styling tags
-                    text = re.sub(r'<[^>]+>', '', lines[i])
+                    text = re.sub(r"<[^>]+>", "", lines[i])
                     text_lines.append(text.strip())
                     i += 1
 
                 if text_lines:
                     cue_index += 1
-                    cues.append(SubtitleCue(
-                        index=cue_index,
-                        start_time=start_time,
-                        end_time=end_time,
-                        text=' '.join(text_lines)
-                    ))
+                    cues.append(
+                        SubtitleCue(
+                            index=cue_index,
+                            start_time=start_time,
+                            end_time=end_time,
+                            text=" ".join(text_lines),
+                        )
+                    )
             except Exception as e:
                 print(f"Error parsing VTT cue at line {i}: {e}")
                 i += 1
@@ -115,10 +120,10 @@ def parse_srt(content: str) -> SubtitleTrack:
     """
     cues = []
     # Split by double newlines to get cue blocks
-    blocks = re.split(r'\n\s*\n', content.strip())
+    blocks = re.split(r"\n\s*\n", content.strip())
 
     for block in blocks:
-        lines = block.strip().split('\n')
+        lines = block.strip().split("\n")
         if len(lines) < 2:
             continue
 
@@ -135,22 +140,24 @@ def parse_srt(content: str) -> SubtitleTrack:
                 text_lines = lines[1:]
 
             # Parse timestamp
-            if '-->' in timestamp_line:
-                parts = timestamp_line.split('-->')
+            if "-->" in timestamp_line:
+                parts = timestamp_line.split("-->")
                 start_time = parse_timestamp_srt(parts[0].strip())
                 end_time = parse_timestamp_srt(parts[1].strip())
 
-                text = ' '.join(line.strip() for line in text_lines)
+                text = " ".join(line.strip() for line in text_lines)
                 # Remove HTML tags
-                text = re.sub(r'<[^>]+>', '', text)
+                text = re.sub(r"<[^>]+>", "", text)
 
                 if text:
-                    cues.append(SubtitleCue(
-                        index=index,
-                        start_time=start_time,
-                        end_time=end_time,
-                        text=text
-                    ))
+                    cues.append(
+                        SubtitleCue(
+                            index=index,
+                            start_time=start_time,
+                            end_time=end_time,
+                            text=text,
+                        )
+                    )
         except Exception as e:
             print(f"Error parsing SRT block: {e}")
             continue
@@ -177,7 +184,7 @@ async def fetch_subtitles(url: str) -> Optional[SubtitleTrack]:
             content = response.text
 
             # Detect format
-            if url.endswith('.srt') or not content.strip().startswith('WEBVTT'):
+            if url.endswith(".srt") or not content.strip().startswith("WEBVTT"):
                 format = "srt"
             else:
                 format = "vtt"
@@ -198,13 +205,12 @@ def get_cue_at_time(track: SubtitleTrack, time: float) -> Optional[SubtitleCue]:
 
 
 def get_cues_in_range(
-    track: SubtitleTrack,
-    start_time: float,
-    end_time: float
+    track: SubtitleTrack, start_time: float, end_time: float
 ) -> List[SubtitleCue]:
     """Get all cues within a time range"""
     return [
-        cue for cue in track.cues
+        cue
+        for cue in track.cues
         if cue.start_time < end_time and cue.end_time > start_time
     ]
 
@@ -216,16 +222,18 @@ def extract_words(text: str) -> List[Dict[str, Any]]:
     """
     # Split on whitespace and punctuation, keeping positions
     words = []
-    pattern = r'[\u0590-\u05FF\w]+'  # Hebrew and Latin word characters
+    pattern = r"[\u0590-\u05FF\w]+"  # Hebrew and Latin word characters
 
     for match in re.finditer(pattern, text):
         word = match.group()
-        words.append({
-            "word": word,
-            "start": match.start(),
-            "end": match.end(),
-            "is_hebrew": bool(re.search(r'[\u0590-\u05FF]', word)),
-        })
+        words.append(
+            {
+                "word": word,
+                "start": match.start(),
+                "end": match.end(),
+                "is_hebrew": bool(re.search(r"[\u0590-\u05FF]", word)),
+            }
+        )
 
     return words
 

@@ -5,25 +5,24 @@ Provides CRUD endpoints for managing cultures, cities, and news sources.
 Requires admin authentication.
 """
 
-from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
-
-from fastapi import APIRouter, Query, Depends, HTTPException
-from pydantic import BaseModel, Field
+from typing import Any, Dict, List, Optional
 
 from app.api.routes.admin import require_admin
-from app.models.user import User
 from app.models.culture import (
     Culture,
     CultureCity,
-    CultureNewsSource,
     CultureCityCategory,
-    ScrapingConfig,
-    CultureResponse,
     CultureCityResponse,
+    CultureNewsSource,
     CultureNewsSourceResponse,
+    CultureResponse,
+    ScrapingConfig,
 )
+from app.models.user import User
 from app.services.culture_content_service import culture_content_service
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
 
 router = APIRouter()
 
@@ -181,7 +180,9 @@ async def create_culture(
 
     # If this is set as default, unset other defaults
     if data.is_default:
-        await Culture.find(Culture.is_default == True).update({"$set": {"is_default": False}})
+        await Culture.find(Culture.is_default == True).update(
+            {"$set": {"is_default": False}}
+        )
 
     culture = Culture(**data.model_dump())
     await culture.insert()
@@ -222,7 +223,9 @@ async def update_culture(
 
     # If this is set as default, unset other defaults
     if data.is_default:
-        await Culture.find(Culture.is_default == True).update({"$set": {"is_default": False}})
+        await Culture.find(Culture.is_default == True).update(
+            {"$set": {"is_default": False}}
+        )
 
     # Update fields
     update_data = {k: v for k, v in data.model_dump().items() if v is not None}
@@ -513,7 +516,9 @@ async def create_source(
     )
 
 
-@router.put("/{culture_id}/sources/{source_id}", response_model=CultureNewsSourceResponse)
+@router.put(
+    "/{culture_id}/sources/{source_id}", response_model=CultureNewsSourceResponse
+)
 async def update_source(
     culture_id: str,
     source_id: str,
@@ -590,6 +595,7 @@ async def refresh_culture_cache(
     """Refresh the content cache for a culture."""
     culture_content_service.clear_cache(culture_id, city_id)
     return {
-        "message": f"Cache cleared for {culture_id}" + (f"/{city_id}" if city_id else ""),
+        "message": f"Cache cleared for {culture_id}"
+        + (f"/{city_id}" if city_id else ""),
         "status": "success",
     }

@@ -8,12 +8,11 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 import httpx
-from bs4 import BeautifulSoup
-
 from app.core.config import settings
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +20,7 @@ logger = logging.getLogger(__name__)
 # Default HTTP headers for web requests
 DEFAULT_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                  "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
 }
@@ -40,7 +39,9 @@ class CultureHeadlineItem:
     image_url: Optional[str] = None
 
     # Localized content
-    title_native: Optional[str] = None  # Title in native script (Chinese, Japanese, etc.)
+    title_native: Optional[
+        str
+    ] = None  # Title in native script (Chinese, Japanese, etc.)
     summary_native: Optional[str] = None
 
     # Classification
@@ -111,7 +112,9 @@ class BaseCultureScraper(ABC):
             await self._client.aclose()
             self._client = None
 
-    async def fetch_html(self, url: str, headers: Optional[Dict[str, str]] = None) -> Optional[str]:
+    async def fetch_html(
+        self, url: str, headers: Optional[Dict[str, str]] = None
+    ) -> Optional[str]:
         """Fetch HTML content from a URL."""
         try:
             client = await self.get_client()
@@ -262,9 +265,7 @@ class BaseCultureScraper(ABC):
 
         return filtered
 
-    def get_category_label(
-        self, category_id: str, language: str = "en"
-    ) -> str:
+    def get_category_label(self, category_id: str, language: str = "en") -> str:
         """Get localized label for a category."""
         if category_id in self.category_labels:
             labels = self.category_labels[category_id]
@@ -275,9 +276,11 @@ class BaseCultureScraper(ABC):
         """Get all available categories with labels."""
         categories = []
         for category_id, labels in self.category_labels.items():
-            categories.append({
-                "id": category_id,
-                "name": labels.get("en", category_id),
-                "name_localized": labels,
-            })
+            categories.append(
+                {
+                    "id": category_id,
+                    "name": labels.get("en", category_id),
+                    "name_localized": labels,
+                }
+            )
         return categories

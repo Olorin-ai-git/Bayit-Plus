@@ -11,30 +11,29 @@ import base64
 import logging
 import secrets
 from datetime import datetime, timedelta
-from typing import Optional, List, Tuple
-
-from webauthn import (
-    generate_registration_options,
-    verify_registration_response,
-    generate_authentication_options,
-    verify_authentication_response,
-    options_to_json,
-)
-from webauthn.helpers import bytes_to_base64url, base64url_to_bytes
-from webauthn.helpers.structs import (
-    AuthenticatorSelectionCriteria,
-    UserVerificationRequirement,
-    ResidentKeyRequirement,
-    AuthenticatorAttachment,
-    PublicKeyCredentialDescriptor,
-    AuthenticatorTransport,
-)
+from typing import List, Optional, Tuple
 
 from app.core.config import get_settings
 from app.models.passkey_credential import (
+    PasskeyChallenge,
     PasskeyCredential,
     PasskeySession,
-    PasskeyChallenge,
+)
+from webauthn import (
+    generate_authentication_options,
+    generate_registration_options,
+    options_to_json,
+    verify_authentication_response,
+    verify_registration_response,
+)
+from webauthn.helpers import base64url_to_bytes, bytes_to_base64url
+from webauthn.helpers.structs import (
+    AuthenticatorAttachment,
+    AuthenticatorSelectionCriteria,
+    AuthenticatorTransport,
+    PublicKeyCredentialDescriptor,
+    ResidentKeyRequirement,
+    UserVerificationRequirement,
 )
 
 logger = logging.getLogger(__name__)
@@ -80,9 +79,9 @@ class WebAuthnService:
         exclude_credentials = [
             PublicKeyCredentialDescriptor(
                 id=base64url_to_bytes(cred.credential_id),
-                transports=[
-                    AuthenticatorTransport(t) for t in cred.transports if t
-                ] if cred.transports else None,
+                transports=[AuthenticatorTransport(t) for t in cred.transports if t]
+                if cred.transports
+                else None,
             )
             for cred in existing_credentials
         ]
@@ -108,7 +107,9 @@ class WebAuthnService:
         )
 
         # Store challenge for verification
-        challenge_expiry = datetime.utcnow() + timedelta(seconds=self.challenge_expiry_seconds)
+        challenge_expiry = datetime.utcnow() + timedelta(
+            seconds=self.challenge_expiry_seconds
+        )
         challenge_doc = PasskeyChallenge(
             challenge=bytes_to_base64url(options.challenge),
             challenge_type="registration",
@@ -150,7 +151,9 @@ class WebAuthnService:
         )
 
         if not challenge_doc or not challenge_doc.is_valid():
-            raise ValueError("Challenge expired or not found. Please start registration again.")
+            raise ValueError(
+                "Challenge expired or not found. Please start registration again."
+            )
 
         # Mark challenge as used
         challenge_doc.is_used = True
@@ -176,10 +179,12 @@ class WebAuthnService:
 
         # Extract transports if provided
         transports = []
-        if hasattr(credential, 'response') and hasattr(credential['response'], 'transports'):
-            transports = credential['response']['transports']
-        elif 'transports' in credential.get('response', {}):
-            transports = credential['response']['transports']
+        if hasattr(credential, "response") and hasattr(
+            credential["response"], "transports"
+        ):
+            transports = credential["response"]["transports"]
+        elif "transports" in credential.get("response", {}):
+            transports = credential["response"]["transports"]
 
         # Store the credential
         passkey = PasskeyCredential(
@@ -189,12 +194,18 @@ class WebAuthnService:
             sign_count=verification.sign_count,
             device_name=device_name,
             transports=transports,
-            aaguid=bytes_to_base64url(verification.aaguid) if verification.aaguid else None,
-            attestation_format=verification.fmt if hasattr(verification, 'fmt') else None,
+            aaguid=bytes_to_base64url(verification.aaguid)
+            if verification.aaguid
+            else None,
+            attestation_format=verification.fmt
+            if hasattr(verification, "fmt")
+            else None,
         )
         await passkey.insert()
 
-        logger.info(f"Passkey registered for user {user_id}, credential_id: {credential_id[:20]}...")
+        logger.info(
+            f"Passkey registered for user {user_id}, credential_id: {credential_id[:20]}..."
+        )
 
         return passkey
 
@@ -228,9 +239,9 @@ class WebAuthnService:
             allow_credentials = [
                 PublicKeyCredentialDescriptor(
                     id=base64url_to_bytes(cred.credential_id),
-                    transports=[
-                        AuthenticatorTransport(t) for t in cred.transports if t
-                    ] if cred.transports else None,
+                    transports=[AuthenticatorTransport(t) for t in cred.transports if t]
+                    if cred.transports
+                    else None,
                 )
                 for cred in credentials
             ]
@@ -244,7 +255,9 @@ class WebAuthnService:
         )
 
         # Store challenge
-        challenge_expiry = datetime.utcnow() + timedelta(seconds=self.challenge_expiry_seconds)
+        challenge_expiry = datetime.utcnow() + timedelta(
+            seconds=self.challenge_expiry_seconds
+        )
         qr_session_id = secrets.token_urlsafe(32) if is_qr_flow else None
 
         challenge_doc = PasskeyChallenge(
@@ -309,7 +322,7 @@ class WebAuthnService:
             raise ValueError("Challenge expired or not found. Please try again.")
 
         # Find the credential
-        credential_id = credential.get('id') or credential.get('rawId')
+        credential_id = credential.get("id") or credential.get("rawId")
         passkey = await PasskeyCredential.find_one(
             PasskeyCredential.credential_id == credential_id,
             PasskeyCredential.is_active == True,
@@ -440,7 +453,9 @@ class WebAuthnService:
                 "id": str(cred.id),
                 "device_name": cred.device_name,
                 "created_at": cred.created_at.isoformat(),
-                "last_used_at": cred.last_used_at.isoformat() if cred.last_used_at else None,
+                "last_used_at": cred.last_used_at.isoformat()
+                if cred.last_used_at
+                else None,
             }
             for cred in credentials
         ]

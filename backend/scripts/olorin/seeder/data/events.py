@@ -60,7 +60,7 @@ HISTORICAL_EVENTS = [
         "subcategory": "historical",
         "aliases": ["אוסלו", "הסכם אוסלו"],
         "aliases_en": ["Oslo", "Oslo Peace Process"],
-        "short_explanation": "הסכמי שלום בין ישראל לאש\"ף שנחתמו ב-1993",
+        "short_explanation": 'הסכמי שלום בין ישראל לאש"ף שנחתמו ב-1993',
         "short_explanation_en": "Peace agreements between Israel and PLO signed in 1993",
         "short_explanation_es": "Acuerdos de paz entre Israel y la OLP firmados en 1993",
         "relevance_keywords": ["שלום", "רבין", "ערפאת"],

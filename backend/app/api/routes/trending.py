@@ -2,32 +2,32 @@
 Trending Topics API routes.
 Provides trending topics from Israeli news and content recommendations.
 """
-from typing import Optional, List
 from datetime import datetime
-from fastapi import APIRouter, Depends, Query, HTTPException
+from typing import List, Optional
 
-from app.models.user import User
-from app.models.content import Content, LiveChannel, RadioStation, Podcast
+from app.core.security import get_optional_user
+from app.models.content import Content, LiveChannel, Podcast, RadioStation
 from app.models.trending import (
-    TrendingSnapshot,
-    TrendingTopicItem,
     TrendingAnalysisResponse,
     TrendingContentResponse,
+    TrendingSnapshot,
+    TrendingTopicItem,
 )
-from app.core.security import get_optional_user
-from app.services.news_scraper import get_cached_headlines, headlines_to_dict
+from app.models.user import User
 from app.services.news_analyzer import (
-    get_trending_analysis,
-    analysis_to_dict,
     CATEGORY_LABELS,
+    analysis_to_dict,
+    get_trending_analysis,
 )
+from app.services.news_scraper import get_cached_headlines, headlines_to_dict
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 router = APIRouter()
 
 
 @router.get("/topics")
 async def get_trending_topics(
-    current_user: Optional[User] = Depends(get_optional_user)
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Get current trending topics from Israeli news.
@@ -41,7 +41,9 @@ async def get_trending_topics(
                 "title": t.title,
                 "title_en": t.title_en,
                 "category": t.category,
-                "category_label": CATEGORY_LABELS.get(t.category, CATEGORY_LABELS["general"]),
+                "category_label": CATEGORY_LABELS.get(
+                    t.category, CATEGORY_LABELS["general"]
+                ),
                 "sentiment": t.sentiment,
                 "importance": t.importance,
                 "summary": t.summary,
@@ -59,7 +61,9 @@ async def get_trending_topics(
 
 @router.get("/headlines")
 async def get_headlines(
-    source: Optional[str] = Query(None, description="Filter by source: ynet, walla, mako"),
+    source: Optional[str] = Query(
+        None, description="Filter by source: ynet, walla, mako"
+    ),
     limit: int = Query(20, le=50),
 ):
     """
@@ -84,7 +88,7 @@ async def get_headlines(
 @router.get("/recommendations")
 async def get_trending_recommendations(
     limit: int = Query(10, le=20),
-    current_user: Optional[User] = Depends(get_optional_user)
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Get content recommendations based on what's trending in Israel.
@@ -110,9 +114,7 @@ async def get_trending_recommendations(
     recommendations = []
 
     # Search VOD content
-    vod_content = await Content.find(
-        Content.is_published == True
-    ).limit(100).to_list()
+    vod_content = await Content.find(Content.is_published == True).limit(100).to_list()
 
     for content in vod_content:
         score = 0
@@ -136,20 +138,20 @@ async def get_trending_recommendations(
                     matched_topic = matched_topic or topic.title
 
         if score > 0 and matched_topic:
-            recommendations.append({
-                "id": str(content.id),
-                "title": content.title,
-                "description": content.description,
-                "thumbnail": content.thumbnail,
-                "type": "vod",
-                "trending_topic": matched_topic,
-                "relevance_score": score,
-            })
+            recommendations.append(
+                {
+                    "id": str(content.id),
+                    "title": content.title,
+                    "description": content.description,
+                    "thumbnail": content.thumbnail,
+                    "type": "vod",
+                    "trending_topic": matched_topic,
+                    "relevance_score": score,
+                }
+            )
 
     # Search live channels
-    channels = await LiveChannel.find(
-        LiveChannel.is_active == True
-    ).to_list()
+    channels = await LiveChannel.find(LiveChannel.is_active == True).to_list()
 
     for channel in channels:
         score = 0
@@ -166,15 +168,17 @@ async def get_trending_recommendations(
                     break
 
         if score > 0 and matched_topic:
-            recommendations.append({
-                "id": str(channel.id),
-                "title": channel.name,
-                "description": channel.description,
-                "thumbnail": channel.thumbnail or channel.logo,
-                "type": "live",
-                "trending_topic": matched_topic,
-                "relevance_score": score,
-            })
+            recommendations.append(
+                {
+                    "id": str(channel.id),
+                    "title": channel.name,
+                    "description": channel.description,
+                    "thumbnail": channel.thumbnail or channel.logo,
+                    "type": "live",
+                    "trending_topic": matched_topic,
+                    "relevance_score": score,
+                }
+            )
 
     # Sort by relevance
     recommendations.sort(key=lambda x: x["relevance_score"], reverse=True)
@@ -183,17 +187,14 @@ async def get_trending_recommendations(
     return {
         "recommendations": recommendations,
         "trending_topics": [
-            {"title": t.title, "category": t.category}
-            for t in analysis.topics[:3]
+            {"title": t.title, "category": t.category} for t in analysis.topics[:3]
         ],
         "analyzed_at": analysis.analyzed_at.isoformat(),
     }
 
 
 @router.get("/summary")
-async def get_daily_summary(
-    current_user: Optional[User] = Depends(get_optional_user)
-):
+async def get_daily_summary(current_user: Optional[User] = Depends(get_optional_user)):
     """
     Get a brief AI-generated summary of what's happening in Israel today.
     Perfect for the "Morning Ritual" feature.
@@ -239,7 +240,9 @@ async def get_daily_summary(
             {
                 "title": t.title,
                 "category": t.category,
-                "category_label": CATEGORY_LABELS.get(t.category, CATEGORY_LABELS["general"]),
+                "category_label": CATEGORY_LABELS.get(
+                    t.category, CATEGORY_LABELS["general"]
+                ),
                 "importance": t.importance,
             }
             for t in analysis.topics
@@ -251,8 +254,7 @@ async def get_daily_summary(
 
 @router.get("/category/{category}")
 async def get_topics_by_category(
-    category: str,
-    current_user: Optional[User] = Depends(get_optional_user)
+    category: str, current_user: Optional[User] = Depends(get_optional_user)
 ):
     """
     Get trending topics filtered by category.
@@ -262,15 +264,12 @@ async def get_topics_by_category(
     if category not in valid_categories:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid category. Must be one of: {', '.join(valid_categories)}"
+            detail=f"Invalid category. Must be one of: {', '.join(valid_categories)}",
         )
 
     analysis = await get_trending_analysis()
 
-    filtered_topics = [
-        t for t in analysis.topics
-        if t.category == category
-    ]
+    filtered_topics = [t for t in analysis.topics if t.category == category]
 
     return {
         "category": category,

@@ -3,16 +3,22 @@ Admin Widget Management Routes - CRUD operations for system widgets
 """
 
 from datetime import datetime
-from typing import Optional, List
-from fastapi import APIRouter, HTTPException, Depends, Query, Request
-from pydantic import BaseModel
+from typing import List, Optional
 
+from app.models.admin import AuditAction, Permission
 from app.models.user import User
 from app.models.widget import (
-    Widget, WidgetType, WidgetContent, WidgetPosition,
-    WidgetCreateRequest, WidgetUpdateRequest, WidgetResponse
+    Widget,
+    WidgetContent,
+    WidgetCreateRequest,
+    WidgetPosition,
+    WidgetResponse,
+    WidgetType,
+    WidgetUpdateRequest,
 )
-from app.models.admin import Permission, AuditAction
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from pydantic import BaseModel
+
 from .admin_content_utils import has_permission, log_audit
 
 router = APIRouter()
@@ -64,7 +70,7 @@ async def get_widgets(
     is_active: Optional[bool] = None,
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=100, le=500),
-    current_user: User = Depends(has_permission(Permission.CONTENT_READ))
+    current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
 ):
     """Get all widgets with pagination and filters."""
     query = Widget.find()
@@ -78,7 +84,12 @@ async def get_widgets(
         query = query.find(Widget.is_active == is_active)
 
     total = await query.count()
-    items = await query.sort(Widget.order).skip((page - 1) * page_size).limit(page_size).to_list()
+    items = (
+        await query.sort(Widget.order)
+        .skip((page - 1) * page_size)
+        .limit(page_size)
+        .to_list()
+    )
 
     return {
         "items": [_widget_dict(item) for item in items],
@@ -92,7 +103,7 @@ async def get_widgets(
 @router.get("/widgets/{widget_id}")
 async def get_widget(
     widget_id: str,
-    current_user: User = Depends(has_permission(Permission.CONTENT_READ))
+    current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
 ):
     """Get single widget by ID."""
     try:
@@ -110,7 +121,7 @@ async def get_widget(
 async def create_widget(
     data: WidgetCreateRequest,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE)),
 ):
     """Create new system widget."""
     widget = Widget(
@@ -138,7 +149,7 @@ async def create_widget(
         "widget",
         str(widget.id),
         {"title": widget.title, "type": widget.type.value},
-        request
+        request,
     )
 
     return {"id": str(widget.id), "title": widget.title}
@@ -149,7 +160,7 @@ async def update_widget(
     widget_id: str,
     data: WidgetUpdateRequest,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
 ):
     """Update widget fields."""
     try:
@@ -203,13 +214,16 @@ async def update_widget(
         widget.is_draggable = data.is_draggable
 
     if data.visible_to_roles is not None:
-        changes["visible_to_roles"] = {"old": widget.visible_to_roles, "new": data.visible_to_roles}
+        changes["visible_to_roles"] = {
+            "old": widget.visible_to_roles,
+            "new": data.visible_to_roles,
+        }
         widget.visible_to_roles = data.visible_to_roles
 
     if data.visible_to_subscription_tiers is not None:
         changes["visible_to_subscription_tiers"] = {
             "old": widget.visible_to_subscription_tiers,
-            "new": data.visible_to_subscription_tiers
+            "new": data.visible_to_subscription_tiers,
         }
         widget.visible_to_subscription_tiers = data.visible_to_subscription_tiers
 
@@ -230,7 +244,7 @@ async def update_widget(
         "widget",
         widget_id,
         changes,
-        request
+        request,
     )
 
     return {"message": "Widget updated", "id": widget_id}
@@ -240,7 +254,7 @@ async def update_widget(
 async def delete_widget(
     widget_id: str,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_DELETE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_DELETE)),
 ):
     """Delete widget."""
     try:
@@ -257,7 +271,7 @@ async def delete_widget(
         "widget",
         widget_id,
         {"title": widget.title},
-        request
+        request,
     )
 
     await widget.delete()
@@ -269,7 +283,7 @@ async def delete_widget(
 async def publish_widget(
     widget_id: str,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
 ):
     """Activate/publish a widget."""
     try:
@@ -290,7 +304,7 @@ async def publish_widget(
         "widget",
         widget_id,
         {"title": widget.title},
-        request
+        request,
     )
 
     return {"message": "Widget published", "id": widget_id}
@@ -300,7 +314,7 @@ async def publish_widget(
 async def unpublish_widget(
     widget_id: str,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
 ):
     """Deactivate/unpublish a widget."""
     try:
@@ -321,7 +335,7 @@ async def unpublish_widget(
         "widget",
         widget_id,
         {"title": widget.title},
-        request
+        request,
     )
 
     return {"message": "Widget unpublished", "id": widget_id}
@@ -329,6 +343,7 @@ async def unpublish_widget(
 
 class ReorderRequest(BaseModel):
     """Request body for reordering widgets."""
+
     order_data: dict  # widget_id -> order position
 
 
@@ -336,7 +351,7 @@ class ReorderRequest(BaseModel):
 async def reorder_widgets(
     data: ReorderRequest,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE))
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
 ):
     """Reorder widgets by dragging (bulk update)."""
     for widget_id, position in data.order_data.items():
@@ -353,7 +368,7 @@ async def reorder_widgets(
         "widget",
         None,
         {"action": "bulk_reorder", "count": len(data.order_data)},
-        request
+        request,
     )
 
     return {"message": "Widgets reordered"}

@@ -10,22 +10,22 @@ Discovery results are queued for admin review before being added to the library.
 """
 
 import logging
-from datetime import datetime
-from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
-
-from beanie import Document
-from pydantic import BaseModel, Field
+from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
-from app.models.kids_content import KidsSubcategory, SUBCATEGORY_PARENT_MAP
+from app.models.kids_content import SUBCATEGORY_PARENT_MAP, KidsSubcategory
+from beanie import Document
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
 
 class DiscoveryStatus(str, Enum):
     """Status of a discovered content item."""
+
     PENDING = "pending"
     APPROVED = "approved"
     REJECTED = "rejected"
@@ -38,6 +38,7 @@ class ContentDiscoveryQueue(Document):
 
     Discovered content goes through this queue before being added to the library.
     """
+
     # Source information
     source_type: str  # youtube, website, archive, podcast
     source_url: str
@@ -88,6 +89,7 @@ class ContentDiscoveryQueue(Document):
 
 class DiscoveryResult(BaseModel):
     """Result of a content discovery operation."""
+
     source_type: str
     source_url: str
     title: str
@@ -258,9 +260,13 @@ class MCPContentDiscoveryService:
             query["suggested_subcategory"] = subcategory
 
         total = await ContentDiscoveryQueue.find(query).count()
-        items = await ContentDiscoveryQueue.find(query).skip(
-            (page - 1) * limit
-        ).limit(limit).sort("-discovered_at").to_list()
+        items = (
+            await ContentDiscoveryQueue.find(query)
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .sort("-discovered_at")
+            .to_list()
+        )
 
         return {
             "items": items,
@@ -444,7 +450,9 @@ class MCPContentDiscoveryService:
 
         sites_config = settings.KIDS_EDUCATIONAL_SITES_CONFIG
         if not sites_config:
-            logger.debug("No educational sites configured (KIDS_EDUCATIONAL_SITES_CONFIG empty)")
+            logger.debug(
+                "No educational sites configured (KIDS_EDUCATIONAL_SITES_CONFIG empty)"
+            )
             return []
 
         try:

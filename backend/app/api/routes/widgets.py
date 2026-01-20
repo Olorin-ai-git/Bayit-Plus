@@ -6,17 +6,22 @@ add system widgets to their collection via /widgets/system/add.
 """
 
 from datetime import datetime
-from typing import Optional, List
-from bson import ObjectId
-from fastapi import APIRouter, HTTPException, Depends, Query
+from typing import List, Optional
 
-from app.models.user import User
-from app.models.widget import (
-    Widget, WidgetType, WidgetContent, WidgetPosition,
-    WidgetCreateRequest, WidgetUpdateRequest, WidgetPositionUpdate
-)
-from app.models.user_system_widget import UserSystemWidget
 from app.core.security import get_current_active_user, get_optional_user
+from app.models.user import User
+from app.models.user_system_widget import UserSystemWidget
+from app.models.widget import (
+    Widget,
+    WidgetContent,
+    WidgetCreateRequest,
+    WidgetPosition,
+    WidgetPositionUpdate,
+    WidgetType,
+    WidgetUpdateRequest,
+)
+from bson import ObjectId
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 router = APIRouter()
 
@@ -64,7 +69,7 @@ def _widget_dict(w: Widget) -> dict:
 @router.get("")
 async def get_my_widgets(
     page_path: Optional[str] = None,
-    current_user: Optional[User] = Depends(get_optional_user)
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Get all widgets applicable to current user.
@@ -86,17 +91,25 @@ async def get_my_widgets(
         return {"items": [], "total": 0}
 
     # Get personal widgets for this user
-    personal_widgets = await Widget.find(
-        Widget.type == WidgetType.PERSONAL,
-        Widget.user_id == user_id,
-        Widget.is_active == True
-    ).sort(Widget.order).to_list()
+    personal_widgets = (
+        await Widget.find(
+            Widget.type == WidgetType.PERSONAL,
+            Widget.user_id == user_id,
+            Widget.is_active == True,
+        )
+        .sort(Widget.order)
+        .to_list()
+    )
 
     # Get user's subscribed system widgets
-    user_subscriptions = await UserSystemWidget.find(
-        UserSystemWidget.user_id == user_id,
-        UserSystemWidget.is_visible == True  # Only visible (not closed)
-    ).sort(UserSystemWidget.order).to_list()
+    user_subscriptions = (
+        await UserSystemWidget.find(
+            UserSystemWidget.user_id == user_id,
+            UserSystemWidget.is_visible == True,  # Only visible (not closed)
+        )
+        .sort(UserSystemWidget.order)
+        .to_list()
+    )
 
     # Build list of subscribed system widgets
     subscribed_system_widgets = []
@@ -104,8 +117,7 @@ async def get_my_widgets(
         # Get the actual widget documents
         widget_ids = [ObjectId(sub.widget_id) for sub in user_subscriptions]
         system_widgets = await Widget.find(
-            {"_id": {"$in": widget_ids}},
-            Widget.is_active == True
+            {"_id": {"$in": widget_ids}}, Widget.is_active == True
         ).to_list()
 
         # Create lookup for widget documents and subscriptions
@@ -120,7 +132,9 @@ async def get_my_widgets(
 
             # Check page targeting if specified
             if page_path and widget.target_pages:
-                if not any(page_path.startswith(target) for target in widget.target_pages):
+                if not any(
+                    page_path.startswith(target) for target in widget.target_pages
+                ):
                     continue
 
             # Create widget dict with user's preferences applied
@@ -141,7 +155,9 @@ async def get_my_widgets(
             subscribed_system_widgets.append(widget_data)
 
     # Combine and return - system widgets first, then personal
-    all_widgets = subscribed_system_widgets + [_widget_dict(w) for w in personal_widgets]
+    all_widgets = subscribed_system_widgets + [
+        _widget_dict(w) for w in personal_widgets
+    ]
 
     return {
         "items": all_widgets,
@@ -151,8 +167,7 @@ async def get_my_widgets(
 
 @router.get("/{widget_id}")
 async def get_widget(
-    widget_id: str,
-    current_user: User = Depends(get_current_active_user)
+    widget_id: str, current_user: User = Depends(get_current_active_user)
 ):
     """Get a specific widget by ID."""
     try:
@@ -173,8 +188,7 @@ async def get_widget(
 
 @router.post("")
 async def create_personal_widget(
-    data: WidgetCreateRequest,
-    current_user: User = Depends(get_current_active_user)
+    data: WidgetCreateRequest, current_user: User = Depends(get_current_active_user)
 ):
     """Create a new personal widget for the current user."""
     widget = Widget(
@@ -205,7 +219,7 @@ async def create_personal_widget(
 async def update_personal_widget(
     widget_id: str,
     data: WidgetUpdateRequest,
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ):
     """Update a personal widget (owner only)."""
     try:
@@ -258,8 +272,7 @@ async def update_personal_widget(
 
 @router.delete("/{widget_id}")
 async def delete_personal_widget(
-    widget_id: str,
-    current_user: User = Depends(get_current_active_user)
+    widget_id: str, current_user: User = Depends(get_current_active_user)
 ):
     """Delete a personal widget (owner only)."""
     try:
@@ -287,7 +300,7 @@ async def delete_personal_widget(
 async def update_widget_position(
     widget_id: str,
     data: WidgetPositionUpdate,
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Update widget position (lightweight endpoint for drag operations).
@@ -323,8 +336,7 @@ async def update_widget_position(
     else:
         # For system widgets, update user's subscription preference
         subscription = await UserSystemWidget.find_one(
-            UserSystemWidget.user_id == user_id,
-            UserSystemWidget.widget_id == widget_id
+            UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
         )
 
         if not subscription:
@@ -348,8 +360,7 @@ async def update_widget_position(
 
 @router.post("/{widget_id}/close")
 async def close_widget(
-    widget_id: str,
-    current_user: User = Depends(get_current_active_user)
+    widget_id: str, current_user: User = Depends(get_current_active_user)
 ):
     """
     Close/hide a widget for the current user.
@@ -380,8 +391,7 @@ async def close_widget(
     else:
         # For system widgets, update user's subscription
         subscription = await UserSystemWidget.find_one(
-            UserSystemWidget.user_id == user_id,
-            UserSystemWidget.widget_id == widget_id
+            UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
         )
 
         if not subscription:

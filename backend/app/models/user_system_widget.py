@@ -8,10 +8,10 @@ system widgets to display, rather than auto-pushing all system widgets.
 
 from datetime import datetime
 from typing import Optional
-from beanie import Document
-from pydantic import BaseModel, Field
 
 from app.models.widget import WidgetPosition
+from beanie import Document
+from pydantic import BaseModel, Field
 
 
 class UserSystemWidget(Document):
@@ -24,16 +24,16 @@ class UserSystemWidget(Document):
     """
 
     # Identity
-    user_id: str                                    # Reference to User
-    widget_id: str                                  # Reference to Widget (system type)
+    user_id: str  # Reference to User
+    widget_id: str  # Reference to Widget (system type)
 
     # When added
     added_at: datetime = Field(default_factory=datetime.utcnow)
 
     # User's custom preferences for this widget (overrides widget defaults)
-    position: Optional[WidgetPosition] = None       # Custom position override
-    is_muted: bool = True                           # User's mute preference
-    is_visible: bool = True                         # User hasn't closed it
+    position: Optional[WidgetPosition] = None  # Custom position override
+    is_muted: bool = True  # User's mute preference
+    is_visible: bool = True  # User hasn't closed it
 
     # User's preferred order for this widget
     order: int = 0
@@ -50,8 +50,10 @@ class UserSystemWidget(Document):
 
 # Pydantic schemas for API requests/responses
 
+
 class UserSystemWidgetResponse(BaseModel):
     """Response schema for user's system widget subscription"""
+
     id: str
     user_id: str
     widget_id: str
@@ -67,6 +69,7 @@ class UserSystemWidgetResponse(BaseModel):
 
 class UserSystemWidgetPositionUpdate(BaseModel):
     """Request schema for updating user's widget position"""
+
     x: float
     y: float
     width: Optional[int] = None
@@ -75,6 +78,7 @@ class UserSystemWidgetPositionUpdate(BaseModel):
 
 class UserSystemWidgetPreferencesUpdate(BaseModel):
     """Request schema for updating user's widget preferences"""
+
     is_muted: Optional[bool] = None
     is_visible: Optional[bool] = None
     order: Optional[int] = None

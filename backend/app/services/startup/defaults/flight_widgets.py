@@ -27,7 +27,7 @@ class FlightWidgetConfig(TypedDict):
 FLIGHT_WIDGETS: list[FlightWidgetConfig] = [
     {
         "title": "TLV Departures",
-        "description": "טיסות יוצאות מנתב\"ג",
+        "description": 'טיסות יוצאות מנתב"ג',
         "icon": "✈️",
         "iframe_url": "https://www.avionio.com/widget/en/TLV/departures?autoheight=1",
         "order": 10,
@@ -35,7 +35,7 @@ FLIGHT_WIDGETS: list[FlightWidgetConfig] = [
     },
     {
         "title": "TLV Arrivals",
-        "description": "טיסות נוחתות בנתב\"ג",
+        "description": 'טיסות נוחתות בנתב"ג',
         "icon": "🛬",
         "iframe_url": "https://www.avionio.com/widget/en/TLV/arrivals?autoheight=1",
         "order": 11,

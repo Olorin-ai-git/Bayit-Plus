@@ -3,14 +3,15 @@ EPG Ingestion Service
 Fetches real EPG data from external sources and updates the database
 """
 import asyncio
-import httpx
-from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional
-from bs4 import BeautifulSoup
-import xml.etree.ElementTree as ET
-from app.models.content import EPGEntry, LiveChannel
-from app.core.config import settings
 import logging
+import xml.etree.ElementTree as ET
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
+import httpx
+from app.core.config import settings
+from app.models.content import EPGEntry, LiveChannel
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +24,8 @@ class EPGIngestionService:
             timeout=30.0,
             follow_redirects=True,
             headers={
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-            }
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            },
         )
 
     async def ingest_kan11_epg(self) -> int:
@@ -48,25 +49,31 @@ class EPGIngestionService:
             url = "https://www.kan.org.il/tv-guide/api/schedule"
 
             try:
-                response = await self.client.get(url, params={
-                    "station": "kan11",
-                    "date": datetime.now().strftime("%Y-%m-%d")
-                })
+                response = await self.client.get(
+                    url,
+                    params={
+                        "station": "kan11",
+                        "date": datetime.now().strftime("%Y-%m-%d"),
+                    },
+                )
                 response.raise_for_status()
                 data = response.json()
 
                 # Parse and store programs
                 programs_created = await self._process_kan11_schedule(
-                    str(kan11.id),
-                    data
+                    str(kan11.id), data
                 )
 
-                logger.info(f"Successfully ingested {programs_created} programs for Kan 11")
+                logger.info(
+                    f"Successfully ingested {programs_created} programs for Kan 11"
+                )
                 return programs_created
 
             except httpx.HTTPStatusError as e:
                 if e.response.status_code == 403:
-                    logger.warning("Kan.org.il returned 403 - may require Israeli IP/VPN")
+                    logger.warning(
+                        "Kan.org.il returned 403 - may require Israeli IP/VPN"
+                    )
                     # Fall back to alternative source
                     return await self._ingest_from_alternative_source(str(kan11.id))
                 raise
@@ -76,9 +83,7 @@ class EPGIngestionService:
             return 0
 
     async def _process_kan11_schedule(
-        self,
-        channel_id: str,
-        schedule_data: Dict[str, Any]
+        self, channel_id: str, schedule_data: Dict[str, Any]
     ) -> int:
         """Process Kan 11 schedule data and create EPG entries"""
         programs_created = 0
@@ -94,11 +99,13 @@ class EPGIngestionService:
                 )
 
                 # Check if entry already exists
-                existing = await EPGEntry.find_one({
-                    "channel_id": channel_id,
-                    "start_time": start_time,
-                    "title": program.get("title", "")
-                })
+                existing = await EPGEntry.find_one(
+                    {
+                        "channel_id": channel_id,
+                        "start_time": start_time,
+                        "title": program.get("title", ""),
+                    }
+                )
 
                 if existing:
                     continue
@@ -116,7 +123,7 @@ class EPGIngestionService:
                     genres=program.get("genres", []),
                     rating=program.get("rating"),
                     director=program.get("director"),
-                    recording_id=None
+                    recording_id=None,
                 )
 
                 await entry.insert()
@@ -151,7 +158,9 @@ class EPGIngestionService:
                 if response.status_code == 200:
                     programs = await self._parse_xmltv(channel_id, response.text)
                     if programs > 0:
-                        logger.info(f"Successfully fetched {programs} programs from {url}")
+                        logger.info(
+                            f"Successfully fetched {programs} programs from {url}"
+                        )
                         return programs
             except Exception as e:
                 logger.debug(f"Failed to fetch from {url}: {str(e)}")
@@ -182,10 +191,9 @@ class EPGIngestionService:
                     category_elem = programme.find("category")
 
                     # Check if exists
-                    existing = await EPGEntry.find_one({
-                        "channel_id": channel_id,
-                        "start_time": start_time
-                    })
+                    existing = await EPGEntry.find_one(
+                        {"channel_id": channel_id, "start_time": start_time}
+                    )
 
                     if existing:
                         continue
@@ -196,13 +204,15 @@ class EPGIngestionService:
                         description=desc_elem.text if desc_elem is not None else "",
                         start_time=start_time,
                         end_time=end_time,
-                        category=category_elem.text if category_elem is not None else "",
+                        category=category_elem.text
+                        if category_elem is not None
+                        else "",
                         thumbnail=None,
                         cast=[],
                         genres=[],
                         rating=None,
                         director=None,
-                        recording_id=None
+                        recording_id=None,
                     )
 
                     await entry.insert()
@@ -250,17 +260,16 @@ class EPGIngestionService:
                 continue
 
             # Try to fetch from multiple sources
-            count = await self._fetch_channel_epg(str(channel.id), channel.name, xmltv_id)
+            count = await self._fetch_channel_epg(
+                str(channel.id), channel.name, xmltv_id
+            )
             results[channel.name] = count
 
         logger.info(f"EPG ingestion complete: {results}")
         return results
 
     async def _fetch_channel_epg(
-        self,
-        channel_id: str,
-        channel_name: str,
-        xmltv_id: str
+        self, channel_id: str, channel_name: str, xmltv_id: str
     ) -> int:
         """Fetch EPG for a specific channel from available sources"""
 
@@ -277,7 +286,9 @@ class EPGIngestionService:
                     data = response.json()
                     count = await self._process_generic_schedule(channel_id, data)
                     if count > 0:
-                        logger.info(f"Fetched {count} programs for {channel_name} from {url}")
+                        logger.info(
+                            f"Fetched {count} programs for {channel_name} from {url}"
+                        )
                         return count
             except Exception as e:
                 logger.debug(f"Failed to fetch from {url}: {str(e)}")
@@ -298,7 +309,9 @@ class EPGIngestionService:
                 response = await self.client.get(url)
                 if response.status_code == 200:
                     content = response.text
-                    count = await self._parse_xmltv_for_channel(channel_id, xmltv_id, content)
+                    count = await self._parse_xmltv_for_channel(
+                        channel_id, xmltv_id, content
+                    )
                     if count > 0:
                         return count
             except Exception as e:
@@ -308,10 +321,7 @@ class EPGIngestionService:
         return 0
 
     async def _parse_xmltv_for_channel(
-        self,
-        channel_id: str,
-        xmltv_id: str,
-        xml_content: str
+        self, channel_id: str, xmltv_id: str, xml_content: str
     ) -> int:
         """Parse XMLTV for specific channel"""
         try:
@@ -330,10 +340,9 @@ class EPGIngestionService:
                     desc_elem = programme.find("desc")
                     category_elem = programme.find("category")
 
-                    existing = await EPGEntry.find_one({
-                        "channel_id": channel_id,
-                        "start_time": start_time
-                    })
+                    existing = await EPGEntry.find_one(
+                        {"channel_id": channel_id, "start_time": start_time}
+                    )
 
                     if existing:
                         continue
@@ -344,13 +353,15 @@ class EPGIngestionService:
                         description=desc_elem.text if desc_elem is not None else "",
                         start_time=start_time,
                         end_time=end_time,
-                        category=category_elem.text if category_elem is not None else "",
+                        category=category_elem.text
+                        if category_elem is not None
+                        else "",
                         thumbnail=None,
                         cast=[],
                         genres=[],
                         rating=None,
                         director=None,
-                        recording_id=None
+                        recording_id=None,
                     )
 
                     await entry.insert()
@@ -367,9 +378,7 @@ class EPGIngestionService:
             return 0
 
     async def _process_generic_schedule(
-        self,
-        channel_id: str,
-        schedule_data: Dict[str, Any]
+        self, channel_id: str, schedule_data: Dict[str, Any]
     ) -> int:
         """Process generic schedule data from various Israeli sources"""
         programs_created = 0
@@ -380,19 +389,28 @@ class EPGIngestionService:
         for program in programs:
             try:
                 # Try different time field names
-                start_time_str = program.get("start_time") or program.get("startTime") or program.get("start")
-                end_time_str = program.get("end_time") or program.get("endTime") or program.get("end")
+                start_time_str = (
+                    program.get("start_time")
+                    or program.get("startTime")
+                    or program.get("start")
+                )
+                end_time_str = (
+                    program.get("end_time")
+                    or program.get("endTime")
+                    or program.get("end")
+                )
 
                 if not start_time_str or not end_time_str:
                     continue
 
-                start_time = datetime.fromisoformat(start_time_str.replace("Z", "+00:00"))
+                start_time = datetime.fromisoformat(
+                    start_time_str.replace("Z", "+00:00")
+                )
                 end_time = datetime.fromisoformat(end_time_str.replace("Z", "+00:00"))
 
-                existing = await EPGEntry.find_one({
-                    "channel_id": channel_id,
-                    "start_time": start_time
-                })
+                existing = await EPGEntry.find_one(
+                    {"channel_id": channel_id, "start_time": start_time}
+                )
 
                 if existing:
                     continue
@@ -409,7 +427,7 @@ class EPGIngestionService:
                     genres=program.get("genres", []),
                     rating=program.get("rating"),
                     director=program.get("director"),
-                    recording_id=None
+                    recording_id=None,
                 )
 
                 await entry.insert()
@@ -425,9 +443,7 @@ class EPGIngestionService:
         """Remove EPG entries older than specified days"""
         cutoff_date = datetime.utcnow() - timedelta(days=days_to_keep)
 
-        result = await EPGEntry.find({
-            "end_time": {"$lt": cutoff_date}
-        }).delete()
+        result = await EPGEntry.find({"end_time": {"$lt": cutoff_date}}).delete()
 
         logger.info(f"Cleaned up {result.deleted_count} old EPG entries")
         return result.deleted_count

@@ -1,13 +1,17 @@
 from datetime import datetime
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, status, Depends, UploadFile, File
-from pydantic import BaseModel, Field
-from app.models.user import User
-from app.models.profile import Profile, ProfileCreate, ProfileUpdate, ProfileResponse
-from app.core.security import get_current_active_user, get_password_hash, verify_password
-from app.core.config import settings
-from app.core.storage import storage
 
+from app.core.config import settings
+from app.core.security import (
+    get_current_active_user,
+    get_password_hash,
+    verify_password,
+)
+from app.core.storage import storage
+from app.models.profile import Profile, ProfileCreate, ProfileResponse, ProfileUpdate
+from app.models.user import User
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from pydantic import BaseModel, Field
 
 # Profile limits by subscription tier
 PROFILE_LIMITS = {
@@ -272,10 +276,15 @@ async def get_profile_recommendations(
     # Get watch history for this profile
     from app.models.watchlist import WatchHistory
 
-    history = await WatchHistory.find(
-        WatchHistory.user_id == str(current_user.id),
-        WatchHistory.profile_id == profile_id,
-    ).sort(-WatchHistory.last_watched_at).limit(50).to_list()
+    history = (
+        await WatchHistory.find(
+            WatchHistory.user_id == str(current_user.id),
+            WatchHistory.profile_id == profile_id,
+        )
+        .sort(-WatchHistory.last_watched_at)
+        .limit(50)
+        .to_list()
+    )
 
     # Build basic recommendations based on watched content types and categories
     # In a real implementation, this would use ML or Claude API
@@ -289,11 +298,13 @@ async def get_profile_recommendations(
     # Get incomplete content
     incomplete = [h for h in history if not h.completed and h.progress_percent < 90]
     for item in incomplete[:5]:
-        recommendations["continue_watching"].append({
-            "content_id": item.content_id,
-            "content_type": item.content_type,
-            "progress_percent": item.progress_percent,
-        })
+        recommendations["continue_watching"].append(
+            {
+                "content_id": item.content_id,
+                "content_type": item.content_type,
+                "progress_percent": item.progress_percent,
+            }
+        )
 
     return {
         "profile_id": profile_id,
@@ -377,7 +388,9 @@ class VoicePreferences(BaseModel):
     text_size: str = "medium"  # small, medium, large
     hold_button_mode: bool = False  # Fallback to press-and-hold remote button
     silence_threshold_ms: int = 2000  # Wait N ms of silence before processing
-    vad_sensitivity: str = "low"  # Voice Activity Detection sensitivity: low, medium, high
+    vad_sensitivity: str = (
+        "low"  # Voice Activity Detection sensitivity: low, medium, high
+    )
     # Wake word activation (mutually exclusive with always-listening - we use wake word only)
     wake_word_enabled: bool = True  # ENABLED by default - listen for "Buyit"
     wake_word: str = "buyit"
@@ -388,7 +401,9 @@ class VoicePreferences(BaseModel):
     voice_feedback_enabled: bool = True
     # TTS settings
     tts_enabled: bool = True
-    tts_voice_id: str = Field(default_factory=lambda: settings.ELEVENLABS_DEFAULT_VOICE_ID)  # From environment config
+    tts_voice_id: str = Field(
+        default_factory=lambda: settings.ELEVENLABS_DEFAULT_VOICE_ID
+    )  # From environment config
     tts_speed: float = 1.0  # 0.5-2.0
     tts_volume: float = 1.0  # 0-1
 
@@ -396,6 +411,7 @@ class VoicePreferences(BaseModel):
 # Home page section configuration
 class HomeSectionConfig(BaseModel):
     """Configuration for a single home page section."""
+
     id: str  # Section identifier (continue_watching, live_tv, trending, jerusalem, featured, categories)
     labelKey: str  # i18n label key
     visible: bool = True  # Whether section is visible
@@ -405,18 +421,61 @@ class HomeSectionConfig(BaseModel):
 
 class HomePagePreferences(BaseModel):
     """Home page section visibility and ordering preferences."""
+
     sections: List[HomeSectionConfig]
 
 
 # Default home page sections configuration
 DEFAULT_HOME_SECTIONS = [
-    {"id": "continue_watching", "labelKey": "home.continueWatching", "visible": True, "order": 0, "icon": "▶️"},
-    {"id": "live_tv", "labelKey": "home.liveTV", "visible": True, "order": 1, "icon": "📺"},
-    {"id": "trending", "labelKey": "home.trendingInIsrael", "visible": True, "order": 2, "icon": "🔥"},
-    {"id": "jerusalem", "labelKey": "home.jerusalemConnection", "visible": True, "order": 3, "icon": "🕌"},
-    {"id": "tel_aviv", "labelKey": "home.telAvivConnection", "visible": True, "order": 4, "icon": "🏙️"},
-    {"id": "featured", "labelKey": "home.featuredContent", "visible": True, "order": 5, "icon": "⭐"},
-    {"id": "categories", "labelKey": "home.categories", "visible": True, "order": 6, "icon": "📂"},
+    {
+        "id": "continue_watching",
+        "labelKey": "home.continueWatching",
+        "visible": True,
+        "order": 0,
+        "icon": "▶️",
+    },
+    {
+        "id": "live_tv",
+        "labelKey": "home.liveTV",
+        "visible": True,
+        "order": 1,
+        "icon": "📺",
+    },
+    {
+        "id": "trending",
+        "labelKey": "home.trendingInIsrael",
+        "visible": True,
+        "order": 2,
+        "icon": "🔥",
+    },
+    {
+        "id": "jerusalem",
+        "labelKey": "home.jerusalemConnection",
+        "visible": True,
+        "order": 3,
+        "icon": "🕌",
+    },
+    {
+        "id": "tel_aviv",
+        "labelKey": "home.telAvivConnection",
+        "visible": True,
+        "order": 4,
+        "icon": "🏙️",
+    },
+    {
+        "id": "featured",
+        "labelKey": "home.featuredContent",
+        "visible": True,
+        "order": 5,
+        "icon": "⭐",
+    },
+    {
+        "id": "categories",
+        "labelKey": "home.categories",
+        "visible": True,
+        "order": 6,
+        "icon": "📂",
+    },
 ]
 
 DEFAULT_HOME_PAGE_SETTINGS = {
@@ -429,7 +488,9 @@ async def get_ai_preferences(
     current_user: User = Depends(get_current_active_user),
 ):
     """Get AI preferences for current user."""
-    ai_settings = current_user.preferences.get("ai_settings", DEFAULT_AI_SETTINGS.copy())
+    ai_settings = current_user.preferences.get(
+        "ai_settings", DEFAULT_AI_SETTINGS.copy()
+    )
     return ai_settings
 
 
@@ -442,7 +503,10 @@ async def update_ai_preferences(
     current_user.preferences["ai_settings"] = preferences.model_dump()
     current_user.updated_at = datetime.utcnow()
     await current_user.save()
-    return {"message": "AI preferences updated", "preferences": current_user.preferences["ai_settings"]}
+    return {
+        "message": "AI preferences updated",
+        "preferences": current_user.preferences["ai_settings"],
+    }
 
 
 @router.get("/preferences/voice")
@@ -465,7 +529,10 @@ async def update_voice_preferences(
     current_user.preferences["voice_settings"] = preferences.model_dump()
     current_user.updated_at = datetime.utcnow()
     await current_user.save()
-    return {"message": "Voice preferences updated", "preferences": current_user.preferences["voice_settings"]}
+    return {
+        "message": "Voice preferences updated",
+        "preferences": current_user.preferences["voice_settings"],
+    }
 
 
 @router.get("/preferences/home_page")
@@ -484,10 +551,12 @@ async def get_home_page_preferences(
     # Add any new default sections that weren't saved
     for default_section in DEFAULT_HOME_SECTIONS:
         if default_section["id"] not in saved_section_ids:
-            merged_sections.append({
-                **default_section,
-                "order": len(merged_sections),  # Place new sections at the end
-            })
+            merged_sections.append(
+                {
+                    **default_section,
+                    "order": len(merged_sections),  # Place new sections at the end
+                }
+            )
 
     return {"sections": merged_sections}
 
@@ -501,7 +570,10 @@ async def update_home_page_preferences(
     current_user.preferences["home_page_settings"] = preferences.model_dump()
     current_user.updated_at = datetime.utcnow()
     await current_user.save()
-    return {"message": "Home page preferences updated", "preferences": current_user.preferences["home_page_settings"]}
+    return {
+        "message": "Home page preferences updated",
+        "preferences": current_user.preferences["home_page_settings"],
+    }
 
 
 @router.post("/avatar/upload")
@@ -525,18 +597,12 @@ async def upload_avatar(
         current_user.updated_at = datetime.utcnow()
         await current_user.save()
 
-        return {
-            "url": url,
-            "message": "Avatar uploaded successfully"
-        }
+        return {"url": url, "message": "Avatar uploaded successfully"}
 
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Upload failed: {str(e)}"
+            detail=f"Upload failed: {str(e)}",
         )

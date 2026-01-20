@@ -2,19 +2,19 @@
 WebSocket handler for real-time chess game communication.
 Handles WebSocket connections, chess moves, and chat messages.
 """
-from typing import Optional
-from datetime import datetime
+import asyncio
 import json
 import logging
-import asyncio
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
-from jose import jwt, JWTError
+from datetime import datetime
+from typing import Optional
 
 from app.core.config import settings
+from app.models.chess import ChessChatMessage, ChessGame, GameMode, PlayerColor
 from app.models.user import User
-from app.models.chess import ChessGame, ChessChatMessage, GameMode, PlayerColor
-from app.services.chess_service import chess_service
 from app.services.bot_chess_service import get_bot_move
+from app.services.chess_service import chess_service
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
+from jose import JWTError, jwt
 
 # Bot move delay in seconds for natural feel
 BOT_MOVE_DELAY_SECONDS = 0.8
@@ -59,9 +59,7 @@ async def get_user_from_token(token: str) -> Optional[User]:
     """Validate JWT token and return user."""
     try:
         payload = jwt.decode(
-            token,
-            settings.SECRET_KEY,
-            algorithms=[settings.ALGORITHM]
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
         user_id: str = payload.get("sub")
         if user_id is None:
@@ -82,7 +80,11 @@ async def execute_bot_move(game: ChessGame, game_code: str) -> None:
         return
 
     # Determine if it's the bot's turn
-    current_player = game.white_player if game.current_turn == PlayerColor.WHITE else game.black_player
+    current_player = (
+        game.white_player
+        if game.current_turn == PlayerColor.WHITE
+        else game.black_player
+    )
     if not current_player or not current_player.is_bot:
         return
 
@@ -96,8 +98,7 @@ async def execute_bot_move(game: ChessGame, game_code: str) -> None:
     try:
         # Get bot's move
         from_square, to_square, promotion = await get_bot_move(
-            game.board_fen,
-            game.bot_difficulty
+            game.board_fen, game.bot_difficulty
         )
 
         # Execute the move using the bot's user_id
@@ -106,7 +107,7 @@ async def execute_bot_move(game: ChessGame, game_code: str) -> None:
             user_id="BOT",
             from_square=from_square,
             to_square=to_square,
-            promotion=promotion
+            promotion=promotion,
         )
 
         # Broadcast bot's move to all players
@@ -118,9 +119,9 @@ async def execute_bot_move(game: ChessGame, game_code: str) -> None:
                     "move": move_record.dict(),
                     "board_fen": game.board_fen,
                     "current_turn": game.current_turn,
-                    "status": game.status
-                }
-            }
+                    "status": game.status,
+                },
+            },
         )
 
         # Check if game ended after bot's move
@@ -132,32 +133,20 @@ async def execute_bot_move(game: ChessGame, game_code: str) -> None:
 
             await broadcast_to_game(
                 game_code,
-                {
-                    "type": "game_end",
-                    "data": {
-                        "status": game.status,
-                        "winner": winner
-                    }
-                }
+                {"type": "game_end", "data": {"status": game.status, "winner": winner}},
             )
 
     except Exception as e:
         logger.error(f"[Chess] Bot move failed: {e}")
         # Broadcast error to players
         await broadcast_to_game(
-            game_code,
-            {
-                "type": "error",
-                "message": f"Bot move failed: {str(e)}"
-            }
+            game_code, {"type": "error", "message": f"Bot move failed: {str(e)}"}
         )
 
 
 @router.websocket("/ws/chess/{game_code}")
 async def chess_websocket(
-    websocket: WebSocket,
-    game_code: str,
-    token: str = Query(...)
+    websocket: WebSocket, game_code: str, token: str = Query(...)
 ):
     """
     WebSocket endpoint for real-time chess game.
@@ -202,7 +191,9 @@ async def chess_websocket(
     is_black_player = game.black_player and game.black_player.user_id == user_id
 
     if not is_white_player and not is_black_player:
-        logger.warning(f"[Chess] User {user_id} ({user.name}) not a player in game {game_code}")
+        logger.warning(
+            f"[Chess] User {user_id} ({user.name}) not a player in game {game_code}"
+        )
         await websocket.close(code=4003, reason="You are not a player in this game")
         return
 
@@ -212,35 +203,45 @@ async def chess_websocket(
     if game_code not in active_game_connections:
         active_game_connections[game_code] = []
     active_game_connections[game_code].append(websocket)
-    logger.info(f"[Chess] Added connection to game {game_code}. Total connections: {len(active_game_connections[game_code])}")
+    logger.info(
+        f"[Chess] Added connection to game {game_code}. Total connections: {len(active_game_connections[game_code])}"
+    )
 
     try:
         # Send initial game state directly
-        await websocket.send_json({
-            "type": "game_state",
-            "data": {
-                "id": str(game.id),
-                "game_code": game.game_code,
-                "white_player": game.white_player.dict() if game.white_player else None,
-                "black_player": game.black_player.dict() if game.black_player else None,
-                "current_turn": game.current_turn,
-                "status": game.status,
-                "board_fen": game.board_fen,
-                "move_history": [move.dict() for move in game.move_history],
-                "chat_enabled": game.chat_enabled,
-                "voice_enabled": game.voice_enabled,
-                "game_mode": game.game_mode,
-                "bot_difficulty": game.bot_difficulty
+        await websocket.send_json(
+            {
+                "type": "game_state",
+                "data": {
+                    "id": str(game.id),
+                    "game_code": game.game_code,
+                    "white_player": game.white_player.dict()
+                    if game.white_player
+                    else None,
+                    "black_player": game.black_player.dict()
+                    if game.black_player
+                    else None,
+                    "current_turn": game.current_turn,
+                    "status": game.status,
+                    "board_fen": game.board_fen,
+                    "move_history": [move.dict() for move in game.move_history],
+                    "chat_enabled": game.chat_enabled,
+                    "voice_enabled": game.voice_enabled,
+                    "game_mode": game.game_mode,
+                    "bot_difficulty": game.bot_difficulty,
+                },
             }
-        })
+        )
         logger.info(f"[Chess] Sent initial game state to {user.name}")
 
         # If it's a bot game and the bot plays white, make the first move
-        if (game.game_mode == GameMode.BOT and
-            game.status == "active" and
-            game.white_player and
-            game.white_player.is_bot and
-            len(game.move_history) == 0):
+        if (
+            game.game_mode == GameMode.BOT
+            and game.status == "active"
+            and game.white_player
+            and game.white_player.is_bot
+            and len(game.move_history) == 0
+        ):
             asyncio.create_task(execute_bot_move(game, game_code))
 
         # Message loop
@@ -264,7 +265,7 @@ async def chess_websocket(
                             user_id=user_id,
                             from_square=message["from"],
                             to_square=message["to"],
-                            promotion=message.get("promotion")
+                            promotion=message.get("promotion"),
                         )
 
                         # Broadcast move to both players
@@ -276,9 +277,9 @@ async def chess_websocket(
                                     "move": move_record.dict(),
                                     "board_fen": game.board_fen,
                                     "current_turn": game.current_turn,
-                                    "status": game.status
-                                }
-                            }
+                                    "status": game.status,
+                                },
+                            },
                         )
 
                         # Check if game ended
@@ -286,21 +287,25 @@ async def chess_websocket(
                             winner = None
                             if game.status == "checkmate":
                                 # The player who just moved wins
-                                winner = "white" if move_record.player == "white" else "black"
+                                winner = (
+                                    "white"
+                                    if move_record.player == "white"
+                                    else "black"
+                                )
 
                             await broadcast_to_game(
                                 game_code,
                                 {
                                     "type": "game_end",
-                                    "data": {
-                                        "status": game.status,
-                                        "winner": winner
-                                    }
-                                }
+                                    "data": {"status": game.status, "winner": winner},
+                                },
                             )
                         else:
                             # If game is still active and it's a bot game, execute bot move
-                            if game.game_mode == GameMode.BOT and game.status == "active":
+                            if (
+                                game.game_mode == GameMode.BOT
+                                and game.status == "active"
+                            ):
                                 # Use asyncio.create_task to avoid blocking the WebSocket
                                 asyncio.create_task(execute_bot_move(game, game_code))
 
@@ -313,10 +318,14 @@ async def chess_websocket(
                     is_bot_request = "@bot" in chat_text.lower()
 
                     # Import translation service
-                    from app.services.chat_translation_service import chat_translation_service
+                    from app.services.chat_translation_service import (
+                        chat_translation_service,
+                    )
 
                     # Detect language
-                    detection = await chat_translation_service.detect_language(chat_text)
+                    detection = await chat_translation_service.detect_language(
+                        chat_text
+                    )
                     source_lang = detection.detected_language
 
                     chat_msg = ChessChatMessage(
@@ -325,7 +334,7 @@ async def chess_websocket(
                         user_name=user.name,
                         message=chat_text,
                         is_bot_request=is_bot_request,
-                        source_language=source_lang
+                        source_language=source_lang,
                     )
 
                     # Get AI advice if bot is tagged
@@ -333,27 +342,41 @@ async def chess_websocket(
                         try:
                             # Import here to avoid circular dependency
                             from app.services.ai_chess_service import get_chess_advice
+
                             advice = await get_chess_advice(game.board_fen, chat_text)
                             chat_msg.bot_response = advice
                         except Exception as e:
-                            chat_msg.bot_response = f"Sorry, I couldn't provide advice: {str(e)}"
+                            chat_msg.bot_response = (
+                                f"Sorry, I couldn't provide advice: {str(e)}"
+                            )
 
                     # Get opponent info for translation
                     opponent_id = None
                     if game.white_player and game.white_player.user_id == user_id:
-                        opponent_id = game.black_player.user_id if game.black_player else None
+                        opponent_id = (
+                            game.black_player.user_id if game.black_player else None
+                        )
                     elif game.black_player and game.black_player.user_id == user_id:
-                        opponent_id = game.white_player.user_id if game.white_player else None
+                        opponent_id = (
+                            game.white_player.user_id if game.white_player else None
+                        )
 
                     # Translate for opponent if needed
                     if opponent_id:
-                        should_translate, target_lang = await chat_translation_service.should_translate_for_user(opponent_id)
+                        (
+                            should_translate,
+                            target_lang,
+                        ) = await chat_translation_service.should_translate_for_user(
+                            opponent_id
+                        )
                         if should_translate and source_lang != target_lang:
                             result = await chat_translation_service.translate_message(
                                 chat_text, source_lang, target_lang
                             )
                             if result.translated_text != chat_text:
-                                chat_msg.translations = {target_lang: result.translated_text}
+                                chat_msg.translations = {
+                                    target_lang: result.translated_text
+                                }
                                 chat_msg.has_translations = True
 
                     await chat_msg.insert()
@@ -365,10 +388,7 @@ async def chess_websocket(
                     sender_data["is_translated"] = False
                     sender_data["translation_available"] = chat_msg.has_translations
 
-                    await websocket.send_json({
-                        "type": "chat",
-                        "data": sender_data
-                    })
+                    await websocket.send_json({"type": "chat", "data": sender_data})
 
                     # For the opponent - show translated if available
                     if opponent_id and game_code in active_game_connections:
@@ -381,18 +401,21 @@ async def chess_websocket(
                         else:
                             opponent_data["display_message"] = chat_text
                             opponent_data["is_translated"] = False
-                        opponent_data["translation_available"] = chat_msg.has_translations
+                        opponent_data[
+                            "translation_available"
+                        ] = chat_msg.has_translations
 
                         # Broadcast to opponent only
                         for ws in active_game_connections[game_code]:
                             if ws != websocket:
                                 try:
-                                    await ws.send_json({
-                                        "type": "chat",
-                                        "data": opponent_data
-                                    })
+                                    await ws.send_json(
+                                        {"type": "chat", "data": opponent_data}
+                                    )
                                 except Exception as e:
-                                    logger.warning(f"[Chess] Failed to send chat to opponent: {e}")
+                                    logger.warning(
+                                        f"[Chess] Failed to send chat to opponent: {e}"
+                                    )
 
                 elif msg_type == "resign":
                     # Handle resignation
@@ -409,11 +432,8 @@ async def chess_websocket(
                             game_code,
                             {
                                 "type": "game_end",
-                                "data": {
-                                    "status": game.status,
-                                    "winner": winner
-                                }
-                            }
+                                "data": {"status": game.status, "winner": winner},
+                            },
                         )
                     except ValueError as e:
                         await websocket.send_json({"type": "error", "message": str(e)})
@@ -427,11 +447,8 @@ async def chess_websocket(
                             game_code,
                             {
                                 "type": "game_end",
-                                "data": {
-                                    "status": game.status,
-                                    "winner": None
-                                }
-                            }
+                                "data": {"status": game.status, "winner": None},
+                            },
                         )
                     except ValueError as e:
                         await websocket.send_json({"type": "error", "message": str(e)})
@@ -439,7 +456,9 @@ async def chess_websocket(
             except json.JSONDecodeError:
                 await websocket.send_json({"type": "error", "message": "Invalid JSON"})
             except KeyError as e:
-                await websocket.send_json({"type": "error", "message": f"Missing required field: {str(e)}"})
+                await websocket.send_json(
+                    {"type": "error", "message": f"Missing required field: {str(e)}"}
+                )
             except Exception as e:
                 await websocket.send_json({"type": "error", "message": str(e)})
 
@@ -450,14 +469,20 @@ async def chess_websocket(
         if game_code in active_game_connections:
             try:
                 active_game_connections[game_code].remove(websocket)
-                logger.info(f"[Chess] Removed connection from game {game_code}. Remaining: {len(active_game_connections[game_code])}")
+                logger.info(
+                    f"[Chess] Removed connection from game {game_code}. Remaining: {len(active_game_connections[game_code])}"
+                )
 
                 # Clean up empty game connection list
                 if not active_game_connections[game_code]:
                     del active_game_connections[game_code]
-                    logger.info(f"[Chess] Removed empty connection list for game {game_code}")
+                    logger.info(
+                        f"[Chess] Removed empty connection list for game {game_code}"
+                    )
             except ValueError:
-                logger.warning(f"[Chess] Connection not found in game {game_code} during cleanup")
+                logger.warning(
+                    f"[Chess] Connection not found in game {game_code} during cleanup"
+                )
 
         # Update player connection status
         game = await ChessGame.find_one(ChessGame.game_code == game_code)
@@ -469,4 +494,6 @@ async def chess_websocket(
 
             game.updated_at = datetime.utcnow()
             await game.save()
-            logger.info(f"[Chess] Updated player connection status for {user.name} in game {game_code}")
+            logger.info(
+                f"[Chess] Updated player connection status for {user.name} in game {game_code}"
+            )

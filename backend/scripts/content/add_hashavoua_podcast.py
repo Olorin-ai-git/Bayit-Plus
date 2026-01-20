@@ -3,15 +3,17 @@
 Add 'השבוע - פודקאסט הארץ' podcast to database
 """
 import asyncio
-import feedparser
-from datetime import datetime
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
 import sys
-sys.path.append('.')
+from datetime import datetime
 
-from app.models.content import Podcast, PodcastEpisode
+import feedparser
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
+
+sys.path.append(".")
+
 from app.core.config import settings
+from app.models.content import Podcast, PodcastEpisode
 
 
 async def add_hashavoua_podcast():
@@ -69,36 +71,35 @@ async def add_hashavoua_podcast():
         updated = 0
 
         for idx, entry in enumerate(episodes_to_add, 1):
-            title = entry.get('title', 'Untitled Episode')
+            title = entry.get("title", "Untitled Episode")
 
             # Extract audio URL
             audio_url = None
-            if hasattr(entry, 'enclosures') and entry.enclosures:
-                audio_url = entry.enclosures[0].get('href')
-            elif hasattr(entry, 'links'):
+            if hasattr(entry, "enclosures") and entry.enclosures:
+                audio_url = entry.enclosures[0].get("href")
+            elif hasattr(entry, "links"):
                 for link in entry.links:
-                    if link.get('type', '').startswith('audio/'):
-                        audio_url = link.get('href')
+                    if link.get("type", "").startswith("audio/"):
+                        audio_url = link.get("href")
                         break
 
             # Parse published date
             published_date = None
-            if hasattr(entry, 'published_parsed') and entry.published_parsed:
+            if hasattr(entry, "published_parsed") and entry.published_parsed:
                 published_date = datetime(*entry.published_parsed[:6])
 
             # Get description
-            description = entry.get('summary', entry.get('description', ''))
+            description = entry.get("summary", entry.get("description", ""))
 
             # Get duration
             duration = None
-            if hasattr(entry, 'itunes_duration'):
+            if hasattr(entry, "itunes_duration"):
                 duration = entry.itunes_duration
 
             # Check if episode exists
-            existing_ep = await PodcastEpisode.find_one({
-                "podcast_id": str(podcast.id),
-                "title": title
-            })
+            existing_ep = await PodcastEpisode.find_one(
+                {"podcast_id": str(podcast.id), "title": title}
+            )
 
             if existing_ep:
                 updated += 1
@@ -123,9 +124,11 @@ async def add_hashavoua_podcast():
             PodcastEpisode.podcast_id == str(podcast.id)
         ).count()
 
-        latest_ep = await PodcastEpisode.find(
-            PodcastEpisode.podcast_id == str(podcast.id)
-        ).sort(-PodcastEpisode.published_at).first_or_none()
+        latest_ep = (
+            await PodcastEpisode.find(PodcastEpisode.podcast_id == str(podcast.id))
+            .sort(-PodcastEpisode.published_at)
+            .first_or_none()
+        )
 
         podcast.episode_count = total_episodes
         if latest_ep:
@@ -142,6 +145,7 @@ async def add_hashavoua_podcast():
     except Exception as e:
         print(f"❌ Error: {str(e)}")
         import traceback
+
         traceback.print_exc()
 
     finally:

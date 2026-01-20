@@ -11,6 +11,7 @@ from typing import List
 from app.core.config import settings
 from app.models.content import Content
 from app.models.content_embedding import ContentEmbedding
+
 from scripts.olorin.embedder.client import EmbeddingClient
 
 logger = logging.getLogger(__name__)
@@ -92,7 +93,9 @@ async def _process_content_batch(
         description = content.description or ""
         description_en = content.description_en or ""
 
-        combined_text = f"{title} {title_en} {title_es} {description} {description_en}".strip()
+        combined_text = (
+            f"{title} {title_en} {title_es} {description} {description_en}".strip()
+        )
 
         if not combined_text:
             stats["skipped"] += 1
@@ -116,11 +119,13 @@ async def _process_content_batch(
         if content.genre_ids:
             metadata["genre_ids"] = content.genre_ids[:10]
 
-        vectors_to_upsert.append({
-            "id": vector_id,
-            "values": embedding,
-            "metadata": metadata,
-        })
+        vectors_to_upsert.append(
+            {
+                "id": vector_id,
+                "values": embedding,
+                "metadata": metadata,
+            }
+        )
 
         if not dry_run:
             embedding_doc = ContentEmbedding(

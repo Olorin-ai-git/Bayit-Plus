@@ -7,6 +7,7 @@ Changes: gs://bayit-plus-media/movies -> gs://bayit-plus-media-new/movies
 import asyncio
 import os
 import sys
+
 from motor.motor_asyncio import AsyncIOMotorClient
 
 # Add the backend directory to the path
@@ -32,15 +33,17 @@ async def update_bucket_urls():
     new_bucket = "bayit-plus-media-new"
 
     # Count documents to update
-    count = await content_collection.count_documents({
-        "$or": [
-            {"stream_url": {"$regex": old_bucket}},
-            {"preview_url": {"$regex": old_bucket}},
-            {"trailer_url": {"$regex": old_bucket}},
-            {"poster_url": {"$regex": old_bucket}},
-            {"backdrop_url": {"$regex": old_bucket}},
-        ]
-    })
+    count = await content_collection.count_documents(
+        {
+            "$or": [
+                {"stream_url": {"$regex": old_bucket}},
+                {"preview_url": {"$regex": old_bucket}},
+                {"trailer_url": {"$regex": old_bucket}},
+                {"poster_url": {"$regex": old_bucket}},
+                {"backdrop_url": {"$regex": old_bucket}},
+            ]
+        }
+    )
 
     print(f"\nFound {count} documents with old bucket URLs")
 
@@ -49,15 +52,17 @@ async def update_bucket_urls():
         return
 
     # Find all documents that need updating
-    cursor = content_collection.find({
-        "$or": [
-            {"stream_url": {"$regex": old_bucket}},
-            {"preview_url": {"$regex": old_bucket}},
-            {"trailer_url": {"$regex": old_bucket}},
-            {"poster_url": {"$regex": old_bucket}},
-            {"backdrop_url": {"$regex": old_bucket}},
-        ]
-    })
+    cursor = content_collection.find(
+        {
+            "$or": [
+                {"stream_url": {"$regex": old_bucket}},
+                {"preview_url": {"$regex": old_bucket}},
+                {"trailer_url": {"$regex": old_bucket}},
+                {"poster_url": {"$regex": old_bucket}},
+                {"backdrop_url": {"$regex": old_bucket}},
+            ]
+        }
+    )
 
     updated_count = 0
 
@@ -66,7 +71,13 @@ async def update_bucket_urls():
         updates = {}
 
         # Check each URL field
-        for field in ["stream_url", "preview_url", "trailer_url", "poster_url", "backdrop_url"]:
+        for field in [
+            "stream_url",
+            "preview_url",
+            "trailer_url",
+            "poster_url",
+            "backdrop_url",
+        ]:
             if field in doc and doc[field] and old_bucket in doc[field]:
                 new_url = doc[field].replace(old_bucket, new_bucket)
                 updates[field] = new_url
@@ -76,8 +87,7 @@ async def update_bucket_urls():
 
         if updates:
             result = await content_collection.update_one(
-                {"_id": doc_id},
-                {"$set": updates}
+                {"_id": doc_id}, {"$set": updates}
             )
             if result.modified_count > 0:
                 updated_count += 1

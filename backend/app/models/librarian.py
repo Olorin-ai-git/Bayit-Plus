@@ -4,7 +4,8 @@ Models for audit reports, actions, and stream validation cache
 """
 import uuid
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
+
 from beanie import Document
 from pydantic import Field
 
@@ -14,6 +15,7 @@ class AuditReport(Document):
     Comprehensive audit report for a librarian run.
     Stores all findings, fixes, and health metrics.
     """
+
     audit_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     audit_date: datetime = Field(default_factory=datetime.utcnow)
     audit_type: str  # "daily_incremental", "weekly_full", "manual"
@@ -102,6 +104,7 @@ class LibrarianAction(Document):
     Individual action taken by the librarian agent.
     Includes rollback capability and audit trail.
     """
+
     action_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     audit_id: str  # Links to parent AuditReport
     timestamp: datetime = Field(default_factory=datetime.utcnow)
@@ -148,6 +151,7 @@ class StreamValidationCache(Document):
     Cache for stream validation results to avoid redundant checks.
     TTL: 48 hours for valid streams, 4 hours for invalid streams.
     """
+
     stream_url: str  # Unique identifier
     last_validated: datetime = Field(default_factory=datetime.utcnow)
     is_valid: bool = False
@@ -185,6 +189,7 @@ class ClassificationVerificationCache(Document):
     Cache for AI classification verification results.
     TTL: 7 days to avoid redundant Claude API calls.
     """
+
     content_id: str
     category_id: str
     last_verified: datetime = Field(default_factory=datetime.utcnow)

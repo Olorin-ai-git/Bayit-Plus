@@ -11,6 +11,7 @@ Usage:
 """
 import asyncio
 import sys
+
 import httpx
 from pymongo import MongoClient
 
@@ -32,7 +33,9 @@ async def search_apple_podcasts(query: str, limit: int = 5) -> list:
     """
     try:
         # Use iTunes Search API
-        url = f"https://itunes.apple.com/search?term={query}&entity=podcast&limit={limit}"
+        url = (
+            f"https://itunes.apple.com/search?term={query}&entity=podcast&limit={limit}"
+        )
 
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.get(url, headers=HEADERS)
@@ -42,13 +45,15 @@ async def search_apple_podcasts(query: str, limit: int = 5) -> list:
             results = []
 
             for result in data.get("results", []):
-                results.append({
-                    "id": result.get("trackId"),
-                    "name": result.get("trackName"),
-                    "artist": result.get("artistName"),
-                    "country": result.get("trackId"),  # For building URL
-                    "url": f"https://podcasts.apple.com/podcast/{result.get('trackName').replace(' ', '-')}/id{result.get('trackId')}",
-                })
+                results.append(
+                    {
+                        "id": result.get("trackId"),
+                        "name": result.get("trackName"),
+                        "artist": result.get("artistName"),
+                        "country": result.get("trackId"),  # For building URL
+                        "url": f"https://podcasts.apple.com/podcast/{result.get('trackName').replace(' ', '-')}/id{result.get('trackId')}",
+                    }
+                )
 
             return results
 
@@ -70,9 +75,9 @@ async def search_and_display():
         client.close()
         return
 
-    print("\n" + "="*100)
+    print("\n" + "=" * 100)
     print(f"🔍 Searching for Apple Podcasts URLs ({len(podcasts)} podcasts)")
-    print("="*100 + "\n")
+    print("=" * 100 + "\n")
 
     mapping = {}
     found_count = 0
@@ -102,9 +107,9 @@ async def search_and_display():
         await asyncio.sleep(0.5)
 
     # Print Python dict format for copy-paste
-    print("\n" + "="*100)
+    print("\n" + "=" * 100)
     print("📝 Found Podcasts - Copy this to bulk_update_podcasts.py:")
-    print("="*100 + "\n")
+    print("=" * 100 + "\n")
     print("PODCASTS_MAPPING = {")
     for title, url in mapping.items():
         print(f'    "{title}": "{url}",')

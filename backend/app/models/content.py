@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Optional, List, Union, Dict, Any
+from typing import Any, Dict, List, Optional, Union
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
@@ -49,11 +50,17 @@ class Content(Document):
 
     # === NEW TAXONOMY FIELDS (5-axis classification system) ===
     # Section: Where content lives in navigation (can appear in multiple sections)
-    section_ids: List[str] = Field(default_factory=list)  # ["movies", "judaism"] - cross-listing
-    primary_section_id: Optional[str] = None  # Main section for sorting/display priority
+    section_ids: List[str] = Field(
+        default_factory=list
+    )  # ["movies", "judaism"] - cross-listing
+    primary_section_id: Optional[
+        str
+    ] = None  # Main section for sorting/display priority
 
     # Format: Structural content type
-    content_format: Optional[str] = None  # "movie", "series", "documentary", "short", "clip"
+    content_format: Optional[
+        str
+    ] = None  # "movie", "series", "documentary", "short", "clip"
 
     # Audience: Age appropriateness
     audience_id: Optional[str] = None  # "general", "kids", "family", "mature"
@@ -74,11 +81,17 @@ class Content(Document):
     # Metadata
     duration: Optional[str] = None  # e.g., "1:45:00"
     year: Optional[int] = None
-    rating: Optional[Union[str, float]] = None  # e.g., "PG-13" or 7.839 (accepts both for compatibility)
-    genre: Optional[str] = None  # Primary genre (legacy field, kept for backward compatibility)
+    rating: Optional[
+        Union[str, float]
+    ] = None  # e.g., "PG-13" or 7.839 (accepts both for compatibility)
+    genre: Optional[
+        str
+    ] = None  # Primary genre (legacy field, kept for backward compatibility)
     genre_en: Optional[str] = None  # English genre translation
     genre_es: Optional[str] = None  # Spanish genre translation
-    genres: Optional[List[str]] = None  # Multiple genres from TMDB (legacy - use genre_ids)
+    genres: Optional[
+        List[str]
+    ] = None  # Multiple genres from TMDB (legacy - use genre_ids)
     cast: Optional[List[str]] = None
     director: Optional[str] = None
     content_type: Optional[str] = None  # Legacy - use content_format instead
@@ -93,7 +106,9 @@ class Content(Document):
 
     # Subtitle tracking
     has_subtitles: bool = False
-    available_subtitle_languages: List[str] = Field(default_factory=list)  # ["en", "he", "es"]
+    available_subtitle_languages: List[str] = Field(
+        default_factory=list
+    )  # ["en", "he", "es"]
     embedded_subtitle_count: int = 0  # Number of subtitle tracks in MKV file
     subtitle_extraction_status: Optional[str] = None  # "pending", "completed", "failed"
     subtitle_last_checked: Optional[datetime] = None
@@ -148,7 +163,9 @@ class Content(Document):
     is_kids_content: bool = False
     age_rating: Optional[int] = None  # Minimum age (e.g., 3, 7, 12)
     content_rating: Optional[str] = None  # G, PG, etc.
-    educational_tags: List[str] = Field(default_factory=list)  # ["hebrew", "math", "music"]
+    educational_tags: List[str] = Field(
+        default_factory=list
+    )  # ["hebrew", "math", "music"]
 
     # Kids content moderation
     kids_moderation_status: Optional[str] = None  # "pending", "approved", "rejected"
@@ -158,16 +175,22 @@ class Content(Document):
     # Youngsters content fields (ages 12-17)
     is_youngsters_content: bool = False
     youngsters_age_rating: Optional[int] = None  # Age rating (12, 14, 17)
-    youngsters_moderation_status: Optional[str] = None  # "pending", "approved", "rejected"
+    youngsters_moderation_status: Optional[
+        str
+    ] = None  # "pending", "approved", "rejected"
     youngsters_moderated_by: Optional[str] = None  # User ID who moderated
     youngsters_moderated_at: Optional[datetime] = None  # When moderation occurred
-    youngsters_educational_tags: List[str] = Field(default_factory=list)  # ["study-help", "career-prep", etc.]
+    youngsters_educational_tags: List[str] = Field(
+        default_factory=list
+    )  # ["study-help", "career-prep", etc.]
 
     # Manual review flags (set by AI agent for broken streams, integrity issues, etc.)
     needs_review: bool = False
     review_reason: Optional[str] = None
     review_priority: Optional[str] = None  # "low", "medium", "high", "critical"
-    review_issue_type: Optional[str] = None  # "broken_stream", "missing_metadata", "duplicate", etc.
+    review_issue_type: Optional[
+        str
+    ] = None  # "broken_stream", "missing_metadata", "duplicate", etc.
     review_flagged_at: Optional[datetime] = None
 
     # Analytics
@@ -265,7 +288,20 @@ class LiveChannel(Document):
     # Real-time subtitle support (Premium feature)
     supports_live_subtitles: bool = False
     primary_language: str = "he"  # Source language for live translation
-    available_translation_languages: List[str] = Field(default_factory=lambda: ["en", "es", "ar", "ru", "fr", "de", "it", "pt", "yi", "he"])
+    available_translation_languages: List[str] = Field(
+        default_factory=lambda: [
+            "en",
+            "es",
+            "ar",
+            "ru",
+            "fr",
+            "de",
+            "it",
+            "pt",
+            "yi",
+            "he",
+        ]
+    )
 
     # Visibility
     is_active: bool = True

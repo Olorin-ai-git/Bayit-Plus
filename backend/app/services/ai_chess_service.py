@@ -33,7 +33,7 @@ Keep your response under 100 words. Be encouraging and educational."""
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=300,
-            messages=[{"role": "user", "content": prompt}]
+            messages=[{"role": "user", "content": prompt}],
         )
 
         # Extract text from response

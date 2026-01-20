@@ -18,9 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 async def execute_sync_series_posters_to_episodes(
-    series_id: str,
-    audit_id: str,
-    dry_run: bool = False
+    series_id: str, audit_id: str, dry_run: bool = False
 ) -> Dict[str, Any]:
     """
     Sync series posters to all episodes.
@@ -36,9 +34,7 @@ async def execute_sync_series_posters_to_episodes(
         Dictionary with success status, updated count, and total episodes.
     """
     dry_run_result = handle_dry_run(
-        dry_run,
-        "sync posters for series {series_id}",
-        series_id=series_id
+        dry_run, "sync posters for series {series_id}", series_id=series_id
     )
     if dry_run_result:
         return dry_run_result
@@ -87,7 +83,7 @@ async def execute_sync_series_posters_to_episodes(
         return {
             "success": True,
             "updated": updated_count,
-            "total_episodes": len(episodes)
+            "total_episodes": len(episodes),
         }
     except Exception as e:
         logger.error(f"Error syncing series posters for {series_id}: {e}")

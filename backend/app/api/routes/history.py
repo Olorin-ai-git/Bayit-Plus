@@ -1,11 +1,12 @@
 from datetime import datetime
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends, Query
-from pydantic import BaseModel
+
+from app.core.security import get_current_active_user
+from app.models.content import Content
 from app.models.user import User
 from app.models.watchlist import WatchHistory
-from app.models.content import Content
-from app.core.security import get_current_active_user
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -26,25 +27,31 @@ async def get_history(
     """Get user's watch history."""
     skip = (page - 1) * limit
 
-    items = await WatchHistory.find(
-        WatchHistory.user_id == str(current_user.id)
-    ).sort("-last_watched_at").skip(skip).limit(limit).to_list()
+    items = (
+        await WatchHistory.find(WatchHistory.user_id == str(current_user.id))
+        .sort("-last_watched_at")
+        .skip(skip)
+        .limit(limit)
+        .to_list()
+    )
 
     result = []
     for item in items:
         content = await Content.get(item.content_id)
         if content:
-            result.append({
-                "id": str(content.id),
-                "title": content.title,
-                "thumbnail": content.thumbnail,
-                "duration": content.duration,
-                "type": item.content_type,
-                "progress": item.progress_percent,
-                "position": item.position,
-                "completed": item.completed,
-                "lastWatched": item.last_watched_at.isoformat(),
-            })
+            result.append(
+                {
+                    "id": str(content.id),
+                    "title": content.title,
+                    "thumbnail": content.thumbnail,
+                    "duration": content.duration,
+                    "type": item.content_type,
+                    "progress": item.progress_percent,
+                    "position": item.position,
+                    "completed": item.completed,
+                    "lastWatched": item.last_watched_at.isoformat(),
+                }
+            )
 
     total = await WatchHistory.find(
         WatchHistory.user_id == str(current_user.id)
@@ -63,25 +70,32 @@ async def get_continue_watching(
     current_user: User = Depends(get_current_active_user),
 ):
     """Get content to continue watching (in progress, not completed)."""
-    items = await WatchHistory.find(
-        WatchHistory.user_id == str(current_user.id),
-        WatchHistory.completed == False,
-        WatchHistory.progress_percent > 5,  # At least 5% watched
-    ).sort("-last_watched_at").limit(10).to_list()
+    items = (
+        await WatchHistory.find(
+            WatchHistory.user_id == str(current_user.id),
+            WatchHistory.completed == False,
+            WatchHistory.progress_percent > 5,  # At least 5% watched
+        )
+        .sort("-last_watched_at")
+        .limit(10)
+        .to_list()
+    )
 
     result = []
     for item in items:
         content = await Content.get(item.content_id)
         if content:
-            result.append({
-                "id": str(content.id),
-                "title": content.title,
-                "thumbnail": content.thumbnail,
-                "duration": content.duration,
-                "type": item.content_type,
-                "progress": item.progress_percent,
-                "position": item.position,
-            })
+            result.append(
+                {
+                    "id": str(content.id),
+                    "title": content.title,
+                    "thumbnail": content.thumbnail,
+                    "duration": content.duration,
+                    "type": item.content_type,
+                    "progress": item.progress_percent,
+                    "position": item.position,
+                }
+            )
 
     return {"items": result}
 
@@ -175,7 +189,5 @@ async def clear_history(
     current_user: User = Depends(get_current_active_user),
 ):
     """Clear all watch history."""
-    await WatchHistory.find(
-        WatchHistory.user_id == str(current_user.id)
-    ).delete()
+    await WatchHistory.find(WatchHistory.user_id == str(current_user.id)).delete()
     return {"message": "History cleared"}

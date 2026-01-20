@@ -3,13 +3,13 @@ Add Channel 12 to live channels and link widget
 """
 
 import asyncio
-from datetime import datetime, UTC
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
+from datetime import UTC, datetime
 
 from app.core.config import settings
-from app.models.widget import Widget, WidgetType
 from app.models.content import LiveChannel
+from app.models.widget import Widget, WidgetType
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 
 async def main():
@@ -18,13 +18,12 @@ async def main():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     database = client[settings.MONGODB_DB_NAME]
 
-    await init_beanie(
-        database=database,
-        document_models=[Widget, LiveChannel]
-    )
+    await init_beanie(database=database, document_models=[Widget, LiveChannel])
 
     # Check if Channel 12 already exists
-    existing = await LiveChannel.find_one({"name": {"$regex": "channel.*12|ערוץ.*12", "$options": "i"}})
+    existing = await LiveChannel.find_one(
+        {"name": {"$regex": "channel.*12|ערוץ.*12", "$options": "i"}}
+    )
 
     if existing:
         print(f"[Setup] Channel 12 already exists: {existing.id}")
@@ -54,10 +53,9 @@ async def main():
         print(f"[Setup] Created Channel 12: {channel.id}")
 
     # Find and update the widget
-    widget = await Widget.find_one({
-        "type": WidgetType.SYSTEM,
-        "title": {"$regex": "channel.*12", "$options": "i"}
-    })
+    widget = await Widget.find_one(
+        {"type": WidgetType.SYSTEM, "title": {"$regex": "channel.*12", "$options": "i"}}
+    )
 
     if widget:
         widget.content.live_channel_id = str(channel.id)

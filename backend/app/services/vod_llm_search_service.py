@@ -8,27 +8,31 @@ and semantic ranking.
 import json
 import logging
 from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from anthropic import Anthropic
-from pydantic import BaseModel, Field
-
 from app.core.config import settings
 from app.models.content import Content
 from app.services.unified_search_service import SearchFilters, UnifiedSearchService
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
 
 class SearchIntent(BaseModel):
     """Interpreted search intent from natural language query"""
+
     genres: Optional[List[str]] = Field(None, description="Extracted genres")
     cast: Optional[List[str]] = Field(None, description="Actors/Cast members")
     director: Optional[str] = Field(None, description="Director name")
     year_min: Optional[int] = Field(None, description="Minimum year")
     year_max: Optional[int] = Field(None, description="Maximum year")
-    content_type: Optional[str] = Field(None, description="movie, series, documentary, etc.")
-    subtitle_languages: Optional[List[str]] = Field(None, description="Required subtitle languages")
+    content_type: Optional[str] = Field(
+        None, description="movie, series, documentary, etc."
+    )
+    subtitle_languages: Optional[List[str]] = Field(
+        None, description="Required subtitle languages"
+    )
     themes: Optional[List[str]] = Field(None, description="Thematic content")
     origin: Optional[str] = Field(None, description="Country/origin")
     is_kids_content: Optional[bool] = Field(None, description="Family-friendly filter")
@@ -53,10 +57,7 @@ class VODLLMSearchService:
         self.unified_search = UnifiedSearchService()
 
     async def search(
-        self,
-        query: str,
-        user_context: Optional[Dict[str, Any]] = None,
-        limit: int = 20
+        self, query: str, user_context: Optional[Dict[str, Any]] = None, limit: int = 20
     ) -> Dict[str, Any]:
         """
         Execute natural language search on VOD content.
@@ -100,32 +101,27 @@ class VODLLMSearchService:
                         "genres": interpretation.genres,
                         "cast": interpretation.cast,
                         "director": interpretation.director,
-                        "year_range": [interpretation.year_min, interpretation.year_max] if interpretation.year_min or interpretation.year_max else None,
+                        "year_range": [interpretation.year_min, interpretation.year_max]
+                        if interpretation.year_min or interpretation.year_max
+                        else None,
                         "content_type": interpretation.content_type,
                         "subtitle_languages": interpretation.subtitle_languages,
                         "themes": interpretation.themes,
                         "origin": interpretation.origin,
-                        "is_kids_content": interpretation.is_kids_content
-                    }
+                        "is_kids_content": interpretation.is_kids_content,
+                    },
                 },
                 "results": results,
                 "total_results": len(results),
-                "execution_time_ms": execution_time
+                "execution_time_ms": execution_time,
             }
 
         except Exception as e:
             logger.error(f"LLM VOD search failed: {e}", exc_info=True)
-            return {
-                "success": False,
-                "query": query,
-                "error": str(e),
-                "results": []
-            }
+            return {"success": False, "query": query, "error": str(e), "results": []}
 
     async def _interpret_query(
-        self,
-        query: str,
-        user_context: Optional[Dict[str, Any]]
+        self, query: str, user_context: Optional[Dict[str, Any]]
     ) -> SearchIntent:
         """
         Use Claude to interpret natural language query.
@@ -203,7 +199,7 @@ Now interpret: "{query}"
             response = self.client.messages.create(
                 model=self.model,
                 max_tokens=1000,
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{"role": "user", "content": prompt}],
             )
 
             # Parse JSON response
@@ -222,8 +218,7 @@ Now interpret: "{query}"
             logger.error(f"Error interpreting query with Claude: {e}", exc_info=True)
             # Fallback to simple interpretation
             return SearchIntent(
-                interpretation=f"Simple search for: {query}",
-                confidence=0.3
+                interpretation=f"Simple search for: {query}", confidence=0.3
             )
 
     def _interpretation_to_filters(self, interpretation: SearchIntent) -> SearchFilters:
@@ -236,14 +231,11 @@ Now interpret: "{query}"
             year_min=interpretation.year_min,
             year_max=interpretation.year_max,
             subtitle_languages=interpretation.subtitle_languages,
-            is_kids_content=interpretation.is_kids_content
+            is_kids_content=interpretation.is_kids_content,
         )
 
     async def _execute_search(
-        self,
-        filters: SearchFilters,
-        interpretation: SearchIntent,
-        limit: int
+        self, filters: SearchFilters, interpretation: SearchIntent, limit: int
     ) -> List[Dict[str, Any]]:
         """
         Execute search using unified search service with interpretation-based filters.
@@ -264,19 +256,13 @@ Now interpret: "{query}"
 
         # Use unified search service
         search_results = await self.unified_search.search(
-            query=query,
-            filters=filters,
-            page=1,
-            limit=limit
+            query=query, filters=filters, page=1, limit=limit
         )
 
         return search_results.results
 
     async def _rank_results(
-        self,
-        query: str,
-        results: List[Dict[str, Any]],
-        interpretation: SearchIntent
+        self, query: str, results: List[Dict[str, Any]], interpretation: SearchIntent
     ) -> List[Dict[str, Any]]:
         """
         Use Claude to semantically rank search results by relevance.
@@ -300,7 +286,7 @@ Now interpret: "{query}"
                 "genres": result.get("genres", []),
                 "year": result.get("year"),
                 "cast": (result.get("cast", []) or [])[:3],  # First 3 cast members
-                "director": result.get("director")
+                "director": result.get("director"),
             }
             result_summaries.append(summary)
 
@@ -331,7 +317,7 @@ Respond with JSON array only (no explanation):
             response = self.client.messages.create(
                 model=self.model,
                 max_tokens=500,
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{"role": "user", "content": prompt}],
             )
 
             # Parse ranking

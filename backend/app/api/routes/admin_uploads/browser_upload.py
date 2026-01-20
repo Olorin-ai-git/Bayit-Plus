@@ -11,14 +11,13 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
-
+from app.api.routes.admin_uploads.dependencies import has_permission
 from app.core.config import settings
 from app.models.admin import Permission
 from app.models.upload import BrowserUploadSession, ContentType, UploadJobResponse
 from app.models.user import User
 from app.services.upload_service import upload_service
-from app.api.routes.admin_uploads.dependencies import has_permission
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -328,7 +327,8 @@ async def get_resume_info(
         # Check if session expired (> 48 hours old)
         if datetime.utcnow() - session.started_at > timedelta(hours=48):
             raise HTTPException(
-                status_code=status.HTTP_410_GONE, detail="Session expired (>48 hours old)"
+                status_code=status.HTTP_410_GONE,
+                detail="Session expired (>48 hours old)",
             )
 
         # Calculate missing chunks

@@ -11,14 +11,14 @@ Content includes:
 """
 
 import logging
-import httpx
-from datetime import datetime
-from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
+import httpx
+from app.core.config import settings
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +29,7 @@ ARCHIVE_ORG_API_BASE = "https://archive.org"
 @dataclass
 class ArchiveItem:
     """Represents an Archive.org item."""
+
     identifier: str
     title: str
     description: str = ""
@@ -91,7 +92,6 @@ PUBLIC_DOMAIN_KIDS_CONTENT: List[Dict[str, Any]] = [
         "category_key": "cartoons",
         "educational_tags": ["animation", "classic", "comedy"],
     },
-
     # Educational Films
     {
         "identifier": "our_mr_sun",
@@ -129,7 +129,6 @@ PUBLIC_DOMAIN_KIDS_CONTENT: List[Dict[str, Any]] = [
         "category_key": "educational",
         "educational_tags": ["science", "nature", "insects"],
     },
-
     # Fairy Tales & Stories
     {
         "identifier": "cinderella_1922",
@@ -154,7 +153,7 @@ PUBLIC_DOMAIN_KIDS_CONTENT: List[Dict[str, Any]] = [
         "age_rating": 5,
         "category_key": "stories",
         "educational_tags": ["fairy_tale", "animation", "classic"],
-    }
+    },
 ]
 
 
@@ -170,10 +169,7 @@ class KidsPublicDomainImporter:
     async def _get_client(self) -> httpx.AsyncClient:
         """Get or create HTTP client."""
         if self.http_client is None or self.http_client.is_closed:
-            self.http_client = httpx.AsyncClient(
-                timeout=30.0,
-                follow_redirects=True
-            )
+            self.http_client = httpx.AsyncClient(timeout=30.0, follow_redirects=True)
         return self.http_client
 
     async def close(self):
@@ -223,7 +219,9 @@ class KidsPublicDomainImporter:
 
             # Check if it has video files
             files = metadata.get("files", [])
-            video_files = [f for f in files if f.get("format") in ["MPEG4", "h.264", "Ogg Video"]]
+            video_files = [
+                f for f in files if f.get("format") in ["MPEG4", "h.264", "Ogg Video"]
+            ]
 
             if not video_files:
                 return {
@@ -249,7 +247,7 @@ class KidsPublicDomainImporter:
         self,
         verify_availability: bool = True,
         age_max: Optional[int] = None,
-        categories: Optional[List[str]] = None
+        categories: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
         Import curated public domain kids content.
@@ -297,7 +295,9 @@ class KidsPublicDomainImporter:
                         continue
 
                 # Get category ID
-                category_id = await self._ensure_category(item.get("category_key", "cartoons"))
+                category_id = await self._ensure_category(
+                    item.get("category_key", "cartoons")
+                )
                 if not category_id:
                     # Create a fallback kids category
                     category_id = await self._ensure_category("educational")
@@ -327,7 +327,7 @@ class KidsPublicDomainImporter:
                     requires_subscription="basic",
                     # Timestamps
                     created_at=datetime.utcnow(),
-                    updated_at=datetime.utcnow()
+                    updated_at=datetime.utcnow(),
                 )
 
                 await content.insert()
@@ -347,9 +347,7 @@ class KidsPublicDomainImporter:
         }
 
     async def search_archive_kids_content(
-        self,
-        query: str,
-        max_results: int = 20
+        self, query: str, max_results: int = 20
     ) -> List[Dict[str, Any]]:
         """
         Search Archive.org for kids-appropriate content.
@@ -372,7 +370,14 @@ class KidsPublicDomainImporter:
             search_url = f"{ARCHIVE_ORG_API_BASE}/advancedsearch.php"
             params = {
                 "q": f"{query} AND mediatype:movies AND (licenseurl:*publicdomain* OR licenseurl:*creativecommons*)",
-                "fl[]": ["identifier", "title", "description", "creator", "date", "runtime"],
+                "fl[]": [
+                    "identifier",
+                    "title",
+                    "description",
+                    "creator",
+                    "date",
+                    "runtime",
+                ],
                 "rows": max_results,
                 "page": 1,
                 "output": "json",
@@ -389,15 +394,17 @@ class KidsPublicDomainImporter:
 
             results = []
             for doc in docs:
-                results.append({
-                    "identifier": doc.get("identifier"),
-                    "title": doc.get("title"),
-                    "description": doc.get("description", ""),
-                    "creator": doc.get("creator"),
-                    "date": doc.get("date"),
-                    "runtime": doc.get("runtime"),
-                    "preview_url": f"https://archive.org/details/{doc.get('identifier')}",
-                })
+                results.append(
+                    {
+                        "identifier": doc.get("identifier"),
+                        "title": doc.get("title"),
+                        "description": doc.get("description", ""),
+                        "creator": doc.get("creator"),
+                        "date": doc.get("date"),
+                        "runtime": doc.get("runtime"),
+                        "preview_url": f"https://archive.org/details/{doc.get('identifier')}",
+                    }
+                )
 
             return results
 

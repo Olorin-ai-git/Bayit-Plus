@@ -17,10 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 async def execute_fix_missing_poster(
-    content_id: str,
-    audit_id: str,
-    reason: str,
-    dry_run: bool = False
+    content_id: str, audit_id: str, reason: str, dry_run: bool = False
 ) -> Dict[str, Any]:
     """
     Fix missing poster for content by fetching from TMDB.
@@ -35,9 +32,7 @@ async def execute_fix_missing_poster(
         Dict with success status and fix results
     """
     dry_run_result = handle_dry_run(
-        dry_run,
-        "fix missing poster for {content_id}",
-        content_id=content_id
+        dry_run, "fix missing poster for {content_id}", content_id=content_id
     )
     if dry_run_result:
         return dry_run_result
@@ -48,6 +43,7 @@ async def execute_fix_missing_poster(
             return error
 
         from app.services.auto_fixer import fix_missing_metadata
+
         result = await fix_missing_metadata(content_id)
 
         if result.get("fixed"):
@@ -66,9 +62,7 @@ async def execute_fix_missing_poster(
 
 
 async def execute_fix_missing_metadata(
-    content_id: str,
-    audit_id: str,
-    dry_run: bool = False
+    content_id: str, audit_id: str, dry_run: bool = False
 ) -> Dict[str, Any]:
     """
     Fix missing metadata fields for content.
@@ -82,15 +76,14 @@ async def execute_fix_missing_metadata(
         Dict with success status and fix results
     """
     dry_run_result = handle_dry_run(
-        dry_run,
-        "fix metadata for {content_id}",
-        content_id=content_id
+        dry_run, "fix metadata for {content_id}", content_id=content_id
     )
     if dry_run_result:
         return dry_run_result
 
     try:
         from app.services.auto_fixer import fix_missing_metadata
+
         return await fix_missing_metadata(content_id)
     except Exception as e:
         logger.error(f"Error fixing metadata: {e}")
@@ -98,10 +91,7 @@ async def execute_fix_missing_metadata(
 
 
 async def execute_delete_broken_content(
-    content_id: str,
-    audit_id: str,
-    reason: str,
-    dry_run: bool = False
+    content_id: str, audit_id: str, reason: str, dry_run: bool = False
 ) -> Dict[str, Any]:
     """
     Delete broken/invalid content.
@@ -116,9 +106,7 @@ async def execute_delete_broken_content(
         Dict with success status and deletion results
     """
     dry_run_result = handle_dry_run(
-        dry_run,
-        "delete {content_id}",
-        content_id=content_id
+        dry_run, "delete {content_id}", content_id=content_id
     )
     if dry_run_result:
         return dry_run_result
@@ -146,9 +134,7 @@ async def execute_delete_broken_content(
 
 
 async def execute_flag_for_manual_review(
-    content_id: str,
-    audit_id: str,
-    reason: str
+    content_id: str, audit_id: str, reason: str
 ) -> Dict[str, Any]:
     """
     Flag content for manual review.

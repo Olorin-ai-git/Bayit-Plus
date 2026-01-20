@@ -15,26 +15,26 @@ Implements multi-tier fallback strategy to ensure content is never empty.
 
 import logging
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
 from app.models.content import Content
+from app.models.content_taxonomy import ContentSection, SectionSubcategory
 from app.models.kids_content import (
-    KidsContentSource,
-    KidsContentCategory,
-    KidsSubcategory,
-    KidsAgeGroup,
     AGE_GROUP_RANGES,
     SUBCATEGORY_PARENT_MAP,
-    KidsContentItemResponse,
-    KidsContentAggregatedResponse,
-    KidsFeaturedResponse,
-    KidsSubcategoryResponse,
-    KidsSubcategoriesResponse,
+    KidsAgeGroup,
     KidsAgeGroupResponse,
     KidsAgeGroupsResponse,
+    KidsContentAggregatedResponse,
+    KidsContentCategory,
+    KidsContentItemResponse,
+    KidsContentSource,
+    KidsFeaturedResponse,
+    KidsSubcategoriesResponse,
+    KidsSubcategory,
+    KidsSubcategoryResponse,
 )
-from app.models.content_taxonomy import SectionSubcategory, ContentSection
 
 logger = logging.getLogger(__name__)
 
@@ -164,104 +164,208 @@ KIDS_KEYWORDS_EN = {
 # Subcategory-specific keyword filters
 SUBCATEGORY_KEYWORDS_HE = {
     KidsSubcategory.LEARNING_HEBREW: [
-        "לימוד עברית", "אלף בית", "אותיות", "ניקוד", "קריאה בעברית",
-        "כתיבה בעברית", "מילים חדשות", "אוצר מילים",
+        "לימוד עברית",
+        "אלף בית",
+        "אותיות",
+        "ניקוד",
+        "קריאה בעברית",
+        "כתיבה בעברית",
+        "מילים חדשות",
+        "אוצר מילים",
     ],
     KidsSubcategory.YOUNG_SCIENCE: [
-        "מדע צעיר", "ניסויים", "מעבדה", "חקירה", "גילוי",
-        "פיזיקה לילדים", "כימיה לילדים", "מדענים צעירים",
+        "מדע צעיר",
+        "ניסויים",
+        "מעבדה",
+        "חקירה",
+        "גילוי",
+        "פיזיקה לילדים",
+        "כימיה לילדים",
+        "מדענים צעירים",
     ],
     KidsSubcategory.MATH_FUN: [
-        "מתמטיקה", "חשבון", "מספרים", "חיבור", "חיסור",
-        "כפל", "חילוק", "גיאומטריה לילדים",
+        "מתמטיקה",
+        "חשבון",
+        "מספרים",
+        "חיבור",
+        "חיסור",
+        "כפל",
+        "חילוק",
+        "גיאומטריה לילדים",
     ],
     KidsSubcategory.NATURE_ANIMALS: [
-        "טבע", "חיות", "בעלי חיים", "צמחים", "יער",
-        "אוקיינוס", "חי וצומח", "דינוזאורים", "ג'ונגל",
+        "טבע",
+        "חיות",
+        "בעלי חיים",
+        "צמחים",
+        "יער",
+        "אוקיינוס",
+        "חי וצומח",
+        "דינוזאורים",
+        "ג'ונגל",
     ],
     KidsSubcategory.INTERACTIVE: [
-        "אינטראקטיבי", "משחק", "השתתפות", "יחד", "פעילות",
-        "חידות", "בוא נשחק",
+        "אינטראקטיבי",
+        "משחק",
+        "השתתפות",
+        "יחד",
+        "פעילות",
+        "חידות",
+        "בוא נשחק",
     ],
     KidsSubcategory.HEBREW_SONGS: [
-        "שירים בעברית", "שירי ילדים", "שירים ישראליים",
-        "שיר ישראלי", "מוסיקה ישראלית לילדים",
+        "שירים בעברית",
+        "שירי ילדים",
+        "שירים ישראליים",
+        "שיר ישראלי",
+        "מוסיקה ישראלית לילדים",
     ],
     KidsSubcategory.NURSERY_RHYMES: [
-        "שירי פעוטות", "שירי עריסה", "ניני יה", "לילה טוב",
-        "שירים לתינוקות", "פעוטון",
+        "שירי פעוטות",
+        "שירי עריסה",
+        "ניני יה",
+        "לילה טוב",
+        "שירים לתינוקות",
+        "פעוטון",
     ],
     KidsSubcategory.KIDS_MOVIES: [
-        "סרט לילדים", "סרט מצויר ארוך", "סרט משפחתי",
+        "סרט לילדים",
+        "סרט מצויר ארוך",
+        "סרט משפחתי",
         "סרט קולנוע לילדים",
     ],
     KidsSubcategory.KIDS_SERIES: [
-        "סדרה לילדים", "סדרת ילדים", "פרקים", "עונה",
+        "סדרה לילדים",
+        "סדרת ילדים",
+        "פרקים",
+        "עונה",
         "תוכנית טלוויזיה לילדים",
     ],
     KidsSubcategory.JEWISH_HOLIDAYS: [
-        "חגי ישראל", "חגים יהודיים", "חנוכה לילדים",
-        "פסח לילדים", "פורים לילדים", "סוכות לילדים",
-        "ראש השנה לילדים", "יום כיפור לילדים",
+        "חגי ישראל",
+        "חגים יהודיים",
+        "חנוכה לילדים",
+        "פסח לילדים",
+        "פורים לילדים",
+        "סוכות לילדים",
+        "ראש השנה לילדים",
+        "יום כיפור לילדים",
     ],
     KidsSubcategory.TORAH_STORIES: [
-        "סיפורי תורה", "סיפורים מהתנ״ך", "פרשת השבוע",
-        "אבות", "משה רבנו", "אברהם אבינו", "דוד המלך",
+        "סיפורי תורה",
+        "סיפורים מהתנ״ך",
+        "פרשת השבוע",
+        "אבות",
+        "משה רבנו",
+        "אברהם אבינו",
+        "דוד המלך",
     ],
     KidsSubcategory.BEDTIME_STORIES: [
-        "סיפורי ערב טוב", "סיפור לפני השינה", "לילה טוב",
-        "חלומות פז", "סיפורים מרגיעים",
+        "סיפורי ערב טוב",
+        "סיפור לפני השינה",
+        "לילה טוב",
+        "חלומות פז",
+        "סיפורים מרגיעים",
     ],
 }
 
 SUBCATEGORY_KEYWORDS_EN = {
     KidsSubcategory.LEARNING_HEBREW: [
-        "learn hebrew", "hebrew alphabet", "alef bet", "hebrew letters",
-        "read hebrew", "write hebrew", "hebrew vocabulary",
+        "learn hebrew",
+        "hebrew alphabet",
+        "alef bet",
+        "hebrew letters",
+        "read hebrew",
+        "write hebrew",
+        "hebrew vocabulary",
     ],
     KidsSubcategory.YOUNG_SCIENCE: [
-        "young science", "science experiments", "science for kids",
-        "stem kids", "discover science", "lab experiments",
+        "young science",
+        "science experiments",
+        "science for kids",
+        "stem kids",
+        "discover science",
+        "lab experiments",
     ],
     KidsSubcategory.MATH_FUN: [
-        "fun math", "math for kids", "numbers game", "counting",
-        "addition", "subtraction", "numberblocks",
+        "fun math",
+        "math for kids",
+        "numbers game",
+        "counting",
+        "addition",
+        "subtraction",
+        "numberblocks",
     ],
     KidsSubcategory.NATURE_ANIMALS: [
-        "nature", "animals", "wildlife", "zoo", "ocean",
-        "dinosaurs", "jungle", "pets", "farm animals",
+        "nature",
+        "animals",
+        "wildlife",
+        "zoo",
+        "ocean",
+        "dinosaurs",
+        "jungle",
+        "pets",
+        "farm animals",
     ],
     KidsSubcategory.INTERACTIVE: [
-        "interactive", "play along", "join in", "participate",
-        "games", "puzzles", "riddles",
+        "interactive",
+        "play along",
+        "join in",
+        "participate",
+        "games",
+        "puzzles",
+        "riddles",
     ],
     KidsSubcategory.HEBREW_SONGS: [
-        "hebrew songs", "israeli songs", "songs in hebrew",
+        "hebrew songs",
+        "israeli songs",
+        "songs in hebrew",
         "israeli children songs",
     ],
     KidsSubcategory.NURSERY_RHYMES: [
-        "nursery rhymes", "lullaby", "baby songs", "toddler songs",
-        "cocomelon", "little baby bum",
+        "nursery rhymes",
+        "lullaby",
+        "baby songs",
+        "toddler songs",
+        "cocomelon",
+        "little baby bum",
     ],
     KidsSubcategory.KIDS_MOVIES: [
-        "kids movie", "children movie", "family movie",
-        "animated movie", "feature film kids",
+        "kids movie",
+        "children movie",
+        "family movie",
+        "animated movie",
+        "feature film kids",
     ],
     KidsSubcategory.KIDS_SERIES: [
-        "kids series", "children series", "tv show kids",
-        "episodes", "cartoon series",
+        "kids series",
+        "children series",
+        "tv show kids",
+        "episodes",
+        "cartoon series",
     ],
     KidsSubcategory.JEWISH_HOLIDAYS: [
-        "jewish holidays kids", "hanukkah for kids", "passover for kids",
-        "purim for kids", "sukkot kids", "rosh hashanah kids",
+        "jewish holidays kids",
+        "hanukkah for kids",
+        "passover for kids",
+        "purim for kids",
+        "sukkot kids",
+        "rosh hashanah kids",
     ],
     KidsSubcategory.TORAH_STORIES: [
-        "torah stories", "bible stories kids", "parsha",
-        "moses story", "abraham story", "david king",
+        "torah stories",
+        "bible stories kids",
+        "parsha",
+        "moses story",
+        "abraham story",
+        "david king",
     ],
     KidsSubcategory.BEDTIME_STORIES: [
-        "bedtime stories", "goodnight stories", "sleep stories",
-        "calming stories", "story before sleep",
+        "bedtime stories",
+        "goodnight stories",
+        "sleep stories",
+        "calming stories",
+        "story before sleep",
     ],
 }
 
@@ -599,9 +703,11 @@ class KidsContentService:
         return normalized_score, matched_keywords, max_category
 
     def _categorize_content(
-        self, title: str, description: Optional[str] = None,
+        self,
+        title: str,
+        description: Optional[str] = None,
         educational_tags: Optional[List[str]] = None,
-        genre: Optional[str] = None
+        genre: Optional[str] = None,
     ) -> str:
         """Categorize content based on title, description, tags, and genre."""
         text = f"{title} {description or ''} {genre or ''}".lower()
@@ -646,8 +752,10 @@ class KidsContentService:
         return KidsContentCategory.ALL
 
     def _detect_subcategory(
-        self, title: str, description: Optional[str] = None,
-        educational_tags: Optional[List[str]] = None
+        self,
+        title: str,
+        description: Optional[str] = None,
+        educational_tags: Optional[List[str]] = None,
     ) -> Optional[str]:
         """Detect subcategory based on content metadata."""
         text = f"{title} {description or ''}".lower()
@@ -710,17 +818,12 @@ class KidsContentService:
     def _content_to_dict(self, content: Content) -> Dict[str, Any]:
         """Convert Content document to response dict format."""
         category = self._categorize_content(
-            content.title,
-            content.description,
-            content.educational_tags,
-            content.genre
+            content.title, content.description, content.educational_tags, content.genre
         )
 
         # Detect subcategory
         subcategory = self._detect_subcategory(
-            content.title,
-            content.description,
-            content.educational_tags
+            content.title, content.description, content.educational_tags
         )
 
         # Determine age group
@@ -741,7 +844,9 @@ class KidsContentService:
             "age_rating": content.age_rating,
             "category": category,
             "subcategory": subcategory,
-            "subcategory_label": SUBCATEGORY_LABELS.get(subcategory) if subcategory else None,
+            "subcategory_label": SUBCATEGORY_LABELS.get(subcategory)
+            if subcategory
+            else None,
             "age_group": age_group,
             "educational_tags": content.educational_tags or [],
             "relevance_score": max(score, 5.0),  # Base score for DB content
@@ -775,7 +880,9 @@ class KidsContentService:
                 from app.models.content_taxonomy import ContentSection
 
                 # Get kids section ID
-                kids_section = await ContentSection.find_one(ContentSection.slug == "kids")
+                kids_section = await ContentSection.find_one(
+                    ContentSection.slug == "kids"
+                )
                 kids_section_id = str(kids_section.id) if kids_section else None
 
                 # Build query with proper $and to avoid overwriting $or
@@ -844,7 +951,8 @@ class KidsContentService:
                     # Filter seed by age if specified
                     if age_max is not None:
                         cached_items = [
-                            item for item in cached_items
+                            item
+                            for item in cached_items
                             if (item.get("age_rating") or 0) <= age_max
                         ]
 
@@ -928,13 +1036,41 @@ class KidsContentService:
                 "icon": icon,
             }
             for category_id, labels, icon in [
-                (KidsContentCategory.ALL, KIDS_CATEGORY_LABELS[KidsContentCategory.ALL], ""),
-                (KidsContentCategory.CARTOONS, KIDS_CATEGORY_LABELS[KidsContentCategory.CARTOONS], ""),
-                (KidsContentCategory.EDUCATIONAL, KIDS_CATEGORY_LABELS[KidsContentCategory.EDUCATIONAL], ""),
-                (KidsContentCategory.MUSIC, KIDS_CATEGORY_LABELS[KidsContentCategory.MUSIC], ""),
-                (KidsContentCategory.HEBREW, KIDS_CATEGORY_LABELS[KidsContentCategory.HEBREW], ""),
-                (KidsContentCategory.STORIES, KIDS_CATEGORY_LABELS[KidsContentCategory.STORIES], ""),
-                (KidsContentCategory.JEWISH, KIDS_CATEGORY_LABELS[KidsContentCategory.JEWISH], ""),
+                (
+                    KidsContentCategory.ALL,
+                    KIDS_CATEGORY_LABELS[KidsContentCategory.ALL],
+                    "",
+                ),
+                (
+                    KidsContentCategory.CARTOONS,
+                    KIDS_CATEGORY_LABELS[KidsContentCategory.CARTOONS],
+                    "",
+                ),
+                (
+                    KidsContentCategory.EDUCATIONAL,
+                    KIDS_CATEGORY_LABELS[KidsContentCategory.EDUCATIONAL],
+                    "",
+                ),
+                (
+                    KidsContentCategory.MUSIC,
+                    KIDS_CATEGORY_LABELS[KidsContentCategory.MUSIC],
+                    "",
+                ),
+                (
+                    KidsContentCategory.HEBREW,
+                    KIDS_CATEGORY_LABELS[KidsContentCategory.HEBREW],
+                    "",
+                ),
+                (
+                    KidsContentCategory.STORIES,
+                    KIDS_CATEGORY_LABELS[KidsContentCategory.STORIES],
+                    "",
+                ),
+                (
+                    KidsContentCategory.JEWISH,
+                    KIDS_CATEGORY_LABELS[KidsContentCategory.JEWISH],
+                    "",
+                ),
             ]
         ]
 
@@ -965,16 +1101,18 @@ class KidsContentService:
             kids_section = await ContentSection.find_one(ContentSection.slug == "kids")
             if not kids_section:
                 return KidsSubcategoriesResponse(
-                    subcategories=[],
-                    total=0,
-                    grouped_by_parent={}
+                    subcategories=[], total=0, grouped_by_parent={}
                 )
 
             # Get subcategories from database
-            subcategories = await SectionSubcategory.find(
-                SectionSubcategory.section_id == str(kids_section.id),
-                SectionSubcategory.is_active == True
-            ).sort("order").to_list()
+            subcategories = (
+                await SectionSubcategory.find(
+                    SectionSubcategory.section_id == str(kids_section.id),
+                    SectionSubcategory.is_active == True,
+                )
+                .sort("order")
+                .to_list()
+            )
 
             subcategory_responses = []
             grouped_by_parent: Dict[str, List[Dict]] = {}
@@ -1003,16 +1141,18 @@ class KidsContentService:
                 # Group by parent category
                 if parent_category not in grouped_by_parent:
                     grouped_by_parent[parent_category] = []
-                grouped_by_parent[parent_category].append({
-                    "slug": subcat.slug,
-                    "name": subcat.name,
-                    "name_en": subcat.name_en,
-                })
+                grouped_by_parent[parent_category].append(
+                    {
+                        "slug": subcat.slug,
+                        "name": subcat.name,
+                        "name_en": subcat.name_en,
+                    }
+                )
 
             return KidsSubcategoriesResponse(
                 subcategories=subcategory_responses,
                 total=len(subcategory_responses),
-                grouped_by_parent=grouped_by_parent
+                grouped_by_parent=grouped_by_parent,
             )
 
         except Exception as e:
@@ -1022,23 +1162,25 @@ class KidsContentService:
             for slug in SUBCATEGORY_LABELS:
                 labels = SUBCATEGORY_LABELS[slug]
                 parent = SUBCATEGORY_PARENT_MAP.get(slug, "educational")
-                fallback_subcategories.append(KidsSubcategoryResponse(
-                    id=slug,
-                    slug=slug,
-                    name=labels["he"],
-                    name_en=labels["en"],
-                    name_es=labels.get("es", labels["en"]),
-                    parent_category=parent,
-                    min_age=0,
-                    max_age=12,
-                    content_count=0,
-                    order=0,
-                ))
+                fallback_subcategories.append(
+                    KidsSubcategoryResponse(
+                        id=slug,
+                        slug=slug,
+                        name=labels["he"],
+                        name_en=labels["en"],
+                        name_es=labels.get("es", labels["en"]),
+                        parent_category=parent,
+                        min_age=0,
+                        max_age=12,
+                        content_count=0,
+                        order=0,
+                    )
+                )
 
             return KidsSubcategoriesResponse(
                 subcategories=fallback_subcategories,
                 total=len(fallback_subcategories),
-                grouped_by_parent={}
+                grouped_by_parent={},
             )
 
     async def get_content_by_subcategory(
@@ -1058,7 +1200,8 @@ class KidsContentService:
 
         # Filter by subcategory
         filtered_items = [
-            item for item in content_response.items
+            item
+            for item in content_response.items
             if item.subcategory == subcategory_slug
         ]
 
@@ -1088,21 +1231,20 @@ class KidsContentService:
 
         for group_slug, (min_age, max_age) in AGE_GROUP_RANGES.items():
             labels = AGE_GROUP_LABELS.get(group_slug, {})
-            age_groups.append(KidsAgeGroupResponse(
-                id=group_slug,
-                slug=group_slug,
-                name=labels.get("he", group_slug),
-                name_en=labels.get("en", group_slug),
-                name_es=labels.get("es", group_slug),
-                min_age=min_age,
-                max_age=max_age,
-                content_count=0,  # Will be populated dynamically
-            ))
+            age_groups.append(
+                KidsAgeGroupResponse(
+                    id=group_slug,
+                    slug=group_slug,
+                    name=labels.get("he", group_slug),
+                    name_en=labels.get("en", group_slug),
+                    name_es=labels.get("es", group_slug),
+                    min_age=min_age,
+                    max_age=max_age,
+                    content_count=0,  # Will be populated dynamically
+                )
+            )
 
-        return KidsAgeGroupsResponse(
-            age_groups=age_groups,
-            total=len(age_groups)
-        )
+        return KidsAgeGroupsResponse(age_groups=age_groups, total=len(age_groups))
 
     async def get_content_by_age_group(
         self,
@@ -1132,7 +1274,8 @@ class KidsContentService:
 
         # Filter by age group (age_rating should be >= min_age and <= max_age)
         filtered_items = [
-            item for item in content_response.items
+            item
+            for item in content_response.items
             if item.age_rating is not None and min_age <= item.age_rating <= max_age
         ]
 

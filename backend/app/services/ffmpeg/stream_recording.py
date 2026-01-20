@@ -266,7 +266,9 @@ async def download_video_from_url(
             )
         except asyncio.TimeoutError:
             process.kill()
-            raise StreamRecordingTimeoutError(f"Video download timed out after {timeout} seconds")
+            raise StreamRecordingTimeoutError(
+                f"Video download timed out after {timeout} seconds"
+            )
 
         if process.returncode != 0:
             raise StreamRecordingError(f"Failed to download video: {stderr.decode()}")

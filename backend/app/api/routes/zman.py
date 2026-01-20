@@ -2,22 +2,22 @@
 Zman Yisrael API routes.
 Provides Israel time, Shabbat information, and curated Shabbat content.
 """
-from typing import Optional, List
 from datetime import datetime
-from fastapi import APIRouter, Depends, Query
+from typing import List, Optional
 
-from app.models.user import User
+from app.core.security import get_current_active_user, get_optional_user
 from app.models.content import Content, RadioStation
-from app.core.security import get_optional_user, get_current_active_user
+from app.models.user import User
 from app.services.israel_time import (
+    HEBREW_DAYS,
+    calculate_shabbat_status,
+    fetch_shabbat_times,
+    format_time,
     get_israel_time,
     get_israel_time_info,
-    fetch_shabbat_times,
-    calculate_shabbat_status,
-    format_time,
     timedelta_to_str,
-    HEBREW_DAYS,
 )
+from fastapi import APIRouter, Depends, Query
 
 router = APIRouter()
 
@@ -25,7 +25,7 @@ router = APIRouter()
 @router.get("/time")
 async def get_time(
     timezone: str = Query(default="America/New_York"),
-    current_user: Optional[User] = Depends(get_optional_user)
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Get current Israel time with Shabbat status.
@@ -51,7 +51,7 @@ async def get_time(
         "shabbat": {
             "is_shabbat": info.shabbat_status.is_shabbat,
             "is_erev_shabbat": info.shabbat_status.is_erev_shabbat,
-        }
+        },
     }
 
     # Add countdown information
@@ -82,8 +82,12 @@ async def get_time(
 
 @router.get("/shabbat")
 async def get_shabbat_times(
-    latitude: float = Query(default=32.0853, description="Latitude (default: Tel Aviv)"),
-    longitude: float = Query(default=34.7818, description="Longitude (default: Tel Aviv)"),
+    latitude: float = Query(
+        default=32.0853, description="Latitude (default: Tel Aviv)"
+    ),
+    longitude: float = Query(
+        default=34.7818, description="Longitude (default: Tel Aviv)"
+    ),
 ):
     """
     Get Shabbat times for a specific location.
@@ -111,7 +115,7 @@ async def get_shabbat_times(
 
 @router.get("/shabbat-content")
 async def get_shabbat_content(
-    current_user: Optional[User] = Depends(get_optional_user)
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Get curated Shabbat content.
@@ -121,20 +125,24 @@ async def get_shabbat_content(
     shabbat_categories = ["family", "music", "documentary", "kids", "jewish"]
 
     # Get VOD content suitable for Shabbat
-    vod_content = await Content.find(
-        {
-            "$or": [
-                {"categories": {"$in": shabbat_categories}},
-                {"tags": {"$in": ["shabbat", "family", "jewish", "israeli"]}},
-            ],
-            "is_published": True,
-        }
-    ).limit(20).to_list()
+    vod_content = (
+        await Content.find(
+            {
+                "$or": [
+                    {"categories": {"$in": shabbat_categories}},
+                    {"tags": {"$in": ["shabbat", "family", "jewish", "israeli"]}},
+                ],
+                "is_published": True,
+            }
+        )
+        .limit(20)
+        .to_list()
+    )
 
     # Get radio stations (music for Shabbat atmosphere)
-    radio_stations = await RadioStation.find(
-        RadioStation.is_active == True
-    ).limit(10).to_list()
+    radio_stations = (
+        await RadioStation.find(RadioStation.is_active == True).limit(10).to_list()
+    )
 
     # Format response
     return {
@@ -151,7 +159,7 @@ async def get_shabbat_content(
                     "duration": content.duration,
                 }
                 for content in vod_content[:6]
-            ]
+            ],
         },
         "family": {
             "title": "לכל המשפחה",
@@ -164,8 +172,9 @@ async def get_shabbat_content(
                     "type": "vod",
                 }
                 for content in vod_content
-                if "family" in (content.categories or []) or "kids" in (content.categories or [])
-            ][:8]
+                if "family" in (content.categories or [])
+                or "kids" in (content.categories or [])
+            ][:8],
         },
         "music": {
             "title": "מוזיקה לשבת",
@@ -179,7 +188,7 @@ async def get_shabbat_content(
                     "type": "radio",
                 }
                 for station in radio_stations
-            ]
+            ],
         },
         "atmosphere": {
             "message": "שבת שלום!",
@@ -187,7 +196,7 @@ async def get_shabbat_content(
             "theme": "shabbat",
             "background_color": "#1a1a2e",
             "accent_color": "#ffd700",
-        }
+        },
     }
 
 
@@ -196,7 +205,7 @@ async def update_zman_preferences(
     show_israel_time: Optional[bool] = None,
     shabbat_mode_enabled: Optional[bool] = None,
     local_timezone: Optional[str] = None,
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
 ):
     """Update user's Zman Yisrael preferences"""
     preferences = current_user.preferences or {}
@@ -219,7 +228,7 @@ async def update_zman_preferences(
             "show_israel_time": preferences.get("show_israel_time", True),
             "shabbat_mode_enabled": preferences.get("shabbat_mode_enabled", True),
             "local_timezone": preferences.get("local_timezone", "America/New_York"),
-        }
+        },
     }
 
 
@@ -231,14 +240,22 @@ async def get_supported_timezones():
             {"id": "America/New_York", "name": "Eastern Time (ET)", "offset": "-05:00"},
             {"id": "America/Chicago", "name": "Central Time (CT)", "offset": "-06:00"},
             {"id": "America/Denver", "name": "Mountain Time (MT)", "offset": "-07:00"},
-            {"id": "America/Los_Angeles", "name": "Pacific Time (PT)", "offset": "-08:00"},
+            {
+                "id": "America/Los_Angeles",
+                "name": "Pacific Time (PT)",
+                "offset": "-08:00",
+            },
             {"id": "America/Phoenix", "name": "Arizona (MST)", "offset": "-07:00"},
-            {"id": "America/Anchorage", "name": "Alaska Time (AKT)", "offset": "-09:00"},
+            {
+                "id": "America/Anchorage",
+                "name": "Alaska Time (AKT)",
+                "offset": "-09:00",
+            },
             {"id": "Pacific/Honolulu", "name": "Hawaii Time (HST)", "offset": "-10:00"},
             {"id": "Europe/London", "name": "London (GMT)", "offset": "+00:00"},
             {"id": "Europe/Paris", "name": "Paris (CET)", "offset": "+01:00"},
             {"id": "Europe/Berlin", "name": "Berlin (CET)", "offset": "+01:00"},
             {"id": "Asia/Jerusalem", "name": "Israel (IST)", "offset": "+02:00"},
         ],
-        "default": "America/New_York"
+        "default": "America/New_York",
     }

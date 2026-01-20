@@ -3,10 +3,11 @@ Update podcasts with REAL data from 103FM website.
 Scrapes actual podcast names and creates them with sample episodes.
 """
 import asyncio
-from pymongo import MongoClient
 from datetime import datetime, timedelta
+
 import httpx
 from bs4 import BeautifulSoup
+from pymongo import MongoClient
 
 
 async def scrape_103fm_podcasts():
@@ -15,9 +16,12 @@ async def scrape_103fm_podcasts():
 
     try:
         async with httpx.AsyncClient(timeout=15.0, follow_redirects=True) as client:
-            response = await client.get(url, headers={
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            })
+            response = await client.get(
+                url,
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                },
+            )
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, "html.parser")

@@ -6,17 +6,16 @@ Endpoints for partner registration, configuration, and usage tracking.
 
 import logging
 from datetime import datetime, timezone
-from typing import Optional, List
+from typing import List, Optional
 
+from app.api.routes.olorin.dependencies import get_current_partner
+from app.api.routes.olorin.errors import OlorinErrors, get_error_message
+from app.core.rate_limiter import limiter
+from app.models.integration_partner import IntegrationPartner, WebhookEventType
+from app.services.olorin.metering_service import metering_service
+from app.services.olorin.partner_service import partner_service
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr, Field
-
-from app.models.integration_partner import IntegrationPartner, WebhookEventType
-from app.services.olorin.partner_service import partner_service
-from app.services.olorin.metering_service import metering_service
-from app.api.routes.olorin.dependencies import get_current_partner
-from app.api.routes.olorin.errors import get_error_message, OlorinErrors
-from app.core.rate_limiter import limiter
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +35,9 @@ class PartnerRegisterRequest(BaseModel):
     name_en: Optional[str] = Field(None, max_length=100)
     contact_email: EmailStr
     contact_name: Optional[str] = Field(None, max_length=100)
-    billing_tier: str = Field(default="standard", pattern=r"^(free|standard|enterprise)$")
+    billing_tier: str = Field(
+        default="standard", pattern=r"^(free|standard|enterprise)$"
+    )
     capabilities: Optional[List[str]] = Field(
         default=None,
         description="List of capabilities to enable (realtime_dubbing, semantic_search, etc.)",
@@ -48,7 +49,9 @@ class PartnerRegisterResponse(BaseModel):
 
     partner_id: str
     name: str
-    api_key: str = Field(..., description="Store this securely - it cannot be retrieved again")
+    api_key: str = Field(
+        ..., description="Store this securely - it cannot be retrieved again"
+    )
     api_key_prefix: str
     billing_tier: str
     capabilities: List[str]
@@ -103,7 +106,9 @@ class UsageSummaryResponse(BaseModel):
 class ApiKeyRegenerateResponse(BaseModel):
     """Response with new API key."""
 
-    api_key: str = Field(..., description="Store this securely - it cannot be retrieved again")
+    api_key: str = Field(
+        ..., description="Store this securely - it cannot be retrieved again"
+    )
     api_key_prefix: str
 
 

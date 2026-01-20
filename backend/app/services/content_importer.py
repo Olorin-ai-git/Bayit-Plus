@@ -3,12 +3,17 @@ Content Importer Service
 Import free/test content from various public sources for testing
 """
 
-from typing import List, Optional, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import httpx
-
-from app.models.content import Content, LiveChannel, RadioStation, Podcast, PodcastEpisode
-
+from app.models.content import (
+    Content,
+    LiveChannel,
+    Podcast,
+    PodcastEpisode,
+    RadioStation,
+)
 
 # ============ FREE CONTENT SOURCES ============
 
@@ -180,6 +185,7 @@ PUBLIC_PODCASTS = [
 
 # ============ IMPORTER SERVICE ============
 
+
 class ContentImporter:
     """Service for importing test content from public sources"""
 
@@ -205,7 +211,9 @@ class ContentImporter:
                 "somafm": {
                     "name": "Soma FM Streams",
                     "description": "Quality internet radio from Soma FM",
-                    "items": [s for s in PUBLIC_RADIO_STREAMS if s["id"].startswith("somafm")],
+                    "items": [
+                        s for s in PUBLIC_RADIO_STREAMS if s["id"].startswith("somafm")
+                    ],
                 },
                 "bbc": {
                     "name": "BBC World Service",
@@ -234,13 +242,17 @@ class ContentImporter:
         imported = []
 
         if source_name == "apple_bipbop":
-            items_to_import = APPLE_BIPBOP_STREAMS if import_all else [
-                s for s in APPLE_BIPBOP_STREAMS if s["id"] in (items or [])
-            ]
+            items_to_import = (
+                APPLE_BIPBOP_STREAMS
+                if import_all
+                else [s for s in APPLE_BIPBOP_STREAMS if s["id"] in (items or [])]
+            )
 
             for item in items_to_import:
                 # Check if channel already exists by stream_url
-                existing = await LiveChannel.find_one(LiveChannel.stream_url == item["stream_url"])
+                existing = await LiveChannel.find_one(
+                    LiveChannel.stream_url == item["stream_url"]
+                )
                 if existing:
                     continue  # Skip duplicate
 
@@ -270,17 +282,20 @@ class ContentImporter:
         imported = []
 
         if source_name == "public_domain":
-            items_to_import = PUBLIC_DOMAIN_MOVIES if import_all else [
-                s for s in PUBLIC_DOMAIN_MOVIES if s["id"] in (items or [])
-            ]
+            items_to_import = (
+                PUBLIC_DOMAIN_MOVIES
+                if import_all
+                else [s for s in PUBLIC_DOMAIN_MOVIES if s["id"] in (items or [])]
+            )
 
             for item in items_to_import:
                 # Check if content already exists by stream_url or title+year
-                existing = await Content.find_one(Content.stream_url == item["stream_url"])
+                existing = await Content.find_one(
+                    Content.stream_url == item["stream_url"]
+                )
                 if not existing and item.get("year"):
                     existing = await Content.find_one(
-                        Content.title == item["title"],
-                        Content.year == item.get("year")
+                        Content.title == item["title"], Content.year == item.get("year")
                     )
                 if existing:
                     continue  # Skip duplicate
@@ -330,7 +345,9 @@ class ContentImporter:
 
         for station in stations:
             # Check if station already exists by stream_url
-            existing = await RadioStation.find_one(RadioStation.stream_url == station["stream_url"])
+            existing = await RadioStation.find_one(
+                RadioStation.stream_url == station["stream_url"]
+            )
             if existing:
                 continue  # Skip duplicate
 
@@ -379,7 +396,9 @@ class ContentImporter:
             description = desc_match.group(1) if desc_match else ""
 
             # Try to extract image
-            image_match = re.search(r"<image>.*?<url>([^<]+)</url>", rss_content, re.DOTALL)
+            image_match = re.search(
+                r"<image>.*?<url>([^<]+)</url>", rss_content, re.DOTALL
+            )
             cover = image_match.group(1) if image_match else ""
 
             podcast = Podcast(
@@ -406,17 +425,23 @@ class ContentImporter:
         """Import podcasts from predefined public feeds"""
         imported = []
 
-        items_to_import = PUBLIC_PODCASTS if import_all else [
-            p for p in PUBLIC_PODCASTS if p["id"] in (items or [])
-        ]
+        items_to_import = (
+            PUBLIC_PODCASTS
+            if import_all
+            else [p for p in PUBLIC_PODCASTS if p["id"] in (items or [])]
+        )
 
         for podcast_info in items_to_import:
             # Check if podcast already exists by rss_feed or title
             existing = None
             if podcast_info.get("rss_feed"):
-                existing = await Podcast.find_one(Podcast.rss_feed == podcast_info["rss_feed"])
+                existing = await Podcast.find_one(
+                    Podcast.rss_feed == podcast_info["rss_feed"]
+                )
             if not existing:
-                existing = await Podcast.find_one(Podcast.title == podcast_info["title"])
+                existing = await Podcast.find_one(
+                    Podcast.title == podcast_info["title"]
+                )
             if existing:
                 continue  # Skip duplicate
 
@@ -452,7 +477,9 @@ async def import_public_domain_movies(
     items: Optional[List[str]] = None,
 ) -> List[Content]:
     """Convenience function to import public domain movies"""
-    return await ContentImporter.import_vod_content("public_domain", category_id, import_all, items)
+    return await ContentImporter.import_vod_content(
+        "public_domain", category_id, import_all, items
+    )
 
 
 async def import_somafm_stations(

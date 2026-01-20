@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends, Query
-from app.models.content import LiveChannel, EPGEntry
+
+from app.core.security import get_current_active_user, get_optional_user
+from app.models.content import EPGEntry, LiveChannel
 from app.models.user import User
-from app.core.security import get_optional_user, get_current_active_user
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 router = APIRouter()
 
@@ -60,11 +61,15 @@ async def get_channel(
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     today_end = today_start + timedelta(days=1)
 
-    schedule = await EPGEntry.find(
-        EPGEntry.channel_id == channel_id,
-        EPGEntry.start_time >= today_start,
-        EPGEntry.start_time < today_end,
-    ).sort("start_time").to_list()
+    schedule = (
+        await EPGEntry.find(
+            EPGEntry.channel_id == channel_id,
+            EPGEntry.start_time >= today_start,
+            EPGEntry.start_time < today_end,
+        )
+        .sort("start_time")
+        .to_list()
+    )
 
     return {
         "id": str(channel.id),
@@ -110,11 +115,15 @@ async def get_epg(
     day_start = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
     day_end = day_start + timedelta(days=1)
 
-    entries = await EPGEntry.find(
-        EPGEntry.channel_id == channel_id,
-        EPGEntry.start_time >= day_start,
-        EPGEntry.start_time < day_end,
-    ).sort("start_time").to_list()
+    entries = (
+        await EPGEntry.find(
+            EPGEntry.channel_id == channel_id,
+            EPGEntry.start_time >= day_start,
+            EPGEntry.start_time < day_end,
+        )
+        .sort("start_time")
+        .to_list()
+    )
 
     now = datetime.utcnow()
 
@@ -161,7 +170,9 @@ async def get_stream_url(
             tier_levels = {"basic": 1, "premium": 2, "family": 3}
 
             # Check if user has required tier
-            if not user_tier or tier_levels.get(user_tier, 0) < tier_levels.get(required_tier, 1):
+            if not user_tier or tier_levels.get(user_tier, 0) < tier_levels.get(
+                required_tier, 1
+            ):
                 raise HTTPException(
                     status_code=403,
                     detail=f"This channel requires {required_tier} subscription",

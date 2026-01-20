@@ -8,7 +8,7 @@
  * - Permission handling
  */
 
-import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
+import { NativeModules, NativeEventEmitter, Platform } from "react-native";
 
 const { SpeechModule } = NativeModules;
 
@@ -34,7 +34,7 @@ class SpeechService {
   private errorListeners: SpeechErrorListener[] = [];
 
   constructor() {
-    if (Platform.OS === 'ios' && SpeechModule) {
+    if (Platform.OS === "ios" && SpeechModule) {
       this.eventEmitter = new NativeEventEmitter(SpeechModule);
     }
   }
@@ -44,14 +44,14 @@ class SpeechService {
    */
   async requestPermissions(): Promise<{ granted: boolean }> {
     if (!SpeechModule) {
-      throw new Error('SpeechModule not available');
+      throw new Error("SpeechModule not available");
     }
 
     try {
       const result = await SpeechModule.requestPermissions();
       return result;
     } catch (error: any) {
-      console.error('[SpeechService] Permission request failed:', error);
+      console.error("[SpeechService] Permission request failed:", error);
       throw error;
     }
   }
@@ -68,7 +68,7 @@ class SpeechService {
       const result = await SpeechModule.checkPermissions();
       return result;
     } catch (error) {
-      console.error('[SpeechService] Permission check failed:', error);
+      console.error("[SpeechService] Permission check failed:", error);
       return { microphone: false, speech: false };
     }
   }
@@ -79,14 +79,14 @@ class SpeechService {
    */
   async setLanguage(languageCode: string): Promise<void> {
     if (!SpeechModule) {
-      throw new Error('SpeechModule not available');
+      throw new Error("SpeechModule not available");
     }
 
     try {
       await SpeechModule.setLanguage(languageCode);
-      console.log('[SpeechService] Language set to:', languageCode);
+      console.log("[SpeechService] Language set to:", languageCode);
     } catch (error) {
-      console.error('[SpeechService] Failed to set language:', error);
+      console.error("[SpeechService] Failed to set language:", error);
       throw error;
     }
   }
@@ -96,30 +96,31 @@ class SpeechService {
    */
   async startRecognition(): Promise<void> {
     if (!SpeechModule || !this.eventEmitter) {
-      throw new Error('SpeechModule not available');
+      throw new Error("SpeechModule not available");
     }
 
     try {
       // Set up event listeners
+      // Note: Event names must match what SpeechModule.swift emits
       this.resultSubscription = this.eventEmitter.addListener(
-        'SpeechRecognitionResult',
+        "onSpeechRecognitionResult",
         (result: SpeechRecognitionResult) => {
           this.resultListeners.forEach((listener) => listener(result));
-        }
+        },
       );
 
       this.errorSubscription = this.eventEmitter.addListener(
-        'SpeechRecognitionError',
+        "onSpeechRecognitionError",
         (error: { error: string }) => {
           this.errorListeners.forEach((listener) => listener(error));
-        }
+        },
       );
 
       // Start native recognition
       await SpeechModule.startRecognition();
-      console.log('[SpeechService] Recognition started');
+      console.log("[SpeechService] Recognition started");
     } catch (error) {
-      console.error('[SpeechService] Failed to start recognition:', error);
+      console.error("[SpeechService] Failed to start recognition:", error);
       this.cleanup();
       throw error;
     }
@@ -136,9 +137,9 @@ class SpeechService {
     try {
       await SpeechModule.stopRecognition();
       this.cleanup();
-      console.log('[SpeechService] Recognition stopped');
+      console.log("[SpeechService] Recognition stopped");
     } catch (error) {
-      console.error('[SpeechService] Failed to stop recognition:', error);
+      console.error("[SpeechService] Failed to stop recognition:", error);
     }
   }
 

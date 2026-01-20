@@ -43,8 +43,16 @@ async def get_explanation(
         short_exp = ref.short_explanation_en or ref.short_explanation
         detailed_exp = ref.detailed_explanation_en or ref.detailed_explanation
     elif language == "es":
-        short_exp = ref.short_explanation_es or ref.short_explanation_en or ref.short_explanation
-        detailed_exp = ref.detailed_explanation_es or ref.detailed_explanation_en or ref.detailed_explanation
+        short_exp = (
+            ref.short_explanation_es
+            or ref.short_explanation_en
+            or ref.short_explanation
+        )
+        detailed_exp = (
+            ref.detailed_explanation_es
+            or ref.detailed_explanation_en
+            or ref.detailed_explanation
+        )
     else:
         short_exp = ref.short_explanation
         detailed_exp = ref.detailed_explanation
@@ -84,8 +92,12 @@ def get_localized_explanation(
         )
     elif language == "es":
         return (
-            ref.short_explanation_es or ref.short_explanation_en or ref.short_explanation,
-            ref.detailed_explanation_es or ref.detailed_explanation_en or ref.detailed_explanation,
+            ref.short_explanation_es
+            or ref.short_explanation_en
+            or ref.short_explanation,
+            ref.detailed_explanation_es
+            or ref.detailed_explanation_en
+            or ref.detailed_explanation,
         )
     else:
         return ref.short_explanation, ref.detailed_explanation

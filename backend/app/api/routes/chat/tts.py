@@ -5,15 +5,13 @@ Endpoints for text-to-speech conversion using ElevenLabs APIs.
 """
 
 import httpx
-from fastapi import APIRouter, HTTPException, Depends
-from fastapi.responses import StreamingResponse
-
 from app.core.config import settings
 from app.core.security import get_current_active_user
 from app.models.user import User
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
 
 from .models import TTSRequest
-
 
 router = APIRouter()
 
@@ -41,7 +39,7 @@ async def text_to_speech(
     if len(request.text) > TTS_MAX_TEXT_LENGTH:
         raise HTTPException(
             status_code=400,
-            detail=f"Text is too long (max {TTS_MAX_TEXT_LENGTH} characters)"
+            detail=f"Text is too long (max {TTS_MAX_TEXT_LENGTH} characters)",
         )
 
     voice_id = request.voice_id or settings.ELEVENLABS_DEFAULT_VOICE_ID
@@ -52,14 +50,14 @@ async def text_to_speech(
 
         # Use eleven_v3 model for Hebrew and Spanish for better quality
         model_to_use = request.model_id
-        if request.language in ['he', 'es']:
-            model_to_use = 'eleven_v3'
+        if request.language in ["he", "es"]:
+            model_to_use = "eleven_v3"
             print(f"[TTS] Using eleven_v3 model for {request.language} text")
 
         request_body = {
             "text": request.text,
             "model_id": model_to_use,
-            "voice_settings": {"stability": 0.5, "similarity_boost": 0.75}
+            "voice_settings": {"stability": 0.5, "similarity_boost": 0.75},
         }
 
         async with httpx.AsyncClient() as http_client:
@@ -87,16 +85,12 @@ async def text_to_speech(
                 headers={
                     "Content-Disposition": 'inline; filename="tts.mp3"',
                     "Cache-Control": "no-store",
-                }
+                },
             )
 
     except httpx.TimeoutException:
         raise HTTPException(
-            status_code=504,
-            detail="TTS service timed out. Please try again."
+            status_code=504, detail="TTS service timed out. Please try again."
         )
     except httpx.RequestError as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"TTS service error: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"TTS service error: {str(e)}")

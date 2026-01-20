@@ -5,12 +5,12 @@ Enables time-shifted playback of past programs using recorded streams.
 
 import logging
 from datetime import datetime, timedelta
-from typing import Optional, Dict, Any
-from beanie.operators import And
+from typing import Any, Dict, Optional
 
 from app.core.config import settings
 from app.models.content import EPGEntry, LiveChannel
 from app.models.recording import Recording, RecordingSession
+from beanie.operators import And
 
 logger = logging.getLogger(__name__)
 
@@ -19,13 +19,11 @@ class CatchUpService:
     """Service for catch-up TV (time-shifted playback)"""
 
     def __init__(self):
-        self.retention_days = getattr(settings, 'CATCHUP_RETENTION_DAYS', 7)
-        self.max_duration_hours = getattr(settings, 'CATCHUP_MAX_DURATION_HOURS', 4)
+        self.retention_days = getattr(settings, "CATCHUP_RETENTION_DAYS", 7)
+        self.max_duration_hours = getattr(settings, "CATCHUP_MAX_DURATION_HOURS", 4)
 
     async def get_catchup_stream(
-        self,
-        program_id: str,
-        user_id: str
+        self, program_id: str, user_id: str
     ) -> Optional[Dict[str, Any]]:
         """
         Get catch-up stream URL for a past program.
@@ -75,11 +73,17 @@ class CatchUpService:
                 "recording_id": recording.id,
                 "stream_url": recording.video_url,
                 "seek_seconds": seek_seconds,
-                "duration_seconds": (program.end_time - program.start_time).total_seconds(),
-                "subtitle_url": recording.subtitle_url if recording.subtitle_enabled else None,
+                "duration_seconds": (
+                    program.end_time - program.start_time
+                ).total_seconds(),
+                "subtitle_url": recording.subtitle_url
+                if recording.subtitle_enabled
+                else None,
                 "thumbnail": program.thumbnail or recording.thumbnail,
                 "channel_name": recording.channel_name,
-                "available_until": (program.start_time + timedelta(days=self.retention_days)).isoformat()
+                "available_until": (
+                    program.start_time + timedelta(days=self.retention_days)
+                ).isoformat(),
             }
 
         except Exception as e:
@@ -87,9 +91,7 @@ class CatchUpService:
             return None
 
     async def _find_covering_recording(
-        self,
-        program: EPGEntry,
-        user_id: str
+        self, program: EPGEntry, user_id: str
     ) -> Optional[Recording]:
         """
         Find a recording that covers the program's time range.
@@ -109,7 +111,7 @@ class CatchUpService:
                 {"channel_id": program.channel_id},
                 {"started_at": {"$lte": program.start_time}},
                 {"ended_at": {"$gte": program.end_time}},
-                {"status": "completed"}
+                {"status": "completed"},
             )
         ).to_list()
 
@@ -128,9 +130,7 @@ class CatchUpService:
         return recordings[0]
 
     async def _calculate_seek_position(
-        self,
-        program: EPGEntry,
-        recording: Recording
+        self, program: EPGEntry, recording: Recording
     ) -> int:
         """
         Calculate seek position in seconds from recording start.
@@ -146,10 +146,7 @@ class CatchUpService:
 
         return int(seek_seconds)
 
-    async def check_availability(
-        self,
-        program_id: str
-    ) -> Dict[str, Any]:
+    async def check_availability(self, program_id: str) -> Dict[str, Any]:
         """
         Check if catch-up is available for a program.
 
@@ -160,10 +157,7 @@ class CatchUpService:
             # Get EPG program
             program = await EPGEntry.get(program_id)
             if not program:
-                return {
-                    "available": False,
-                    "reason": "program_not_found"
-                }
+                return {"available": False, "reason": "program_not_found"}
 
             # Check if program is past
             now = datetime.utcnow()
@@ -171,7 +165,7 @@ class CatchUpService:
                 return {
                     "available": False,
                     "reason": "not_aired_yet",
-                    "starts_at": program.start_time.isoformat()
+                    "starts_at": program.start_time.isoformat(),
                 }
 
             # Check retention period
@@ -180,7 +174,7 @@ class CatchUpService:
                 return {
                     "available": False,
                     "reason": "retention_expired",
-                    "expired_at": cutoff_date.isoformat()
+                    "expired_at": cutoff_date.isoformat(),
                 }
 
             # Check if recording exists
@@ -189,7 +183,7 @@ class CatchUpService:
                     {"channel_id": program.channel_id},
                     {"started_at": {"$lte": program.start_time}},
                     {"ended_at": {"$gte": program.end_time}},
-                    {"status": "completed"}
+                    {"status": "completed"},
                 )
             ).to_list()
 
@@ -197,28 +191,24 @@ class CatchUpService:
                 return {
                     "available": False,
                     "reason": "no_recording",
-                    "message": "This program was not recorded"
+                    "message": "This program was not recorded",
                 }
 
             return {
                 "available": True,
                 "program_id": program_id,
                 "program_title": program.title,
-                "available_until": (program.start_time + timedelta(days=self.retention_days)).isoformat()
+                "available_until": (
+                    program.start_time + timedelta(days=self.retention_days)
+                ).isoformat(),
             }
 
         except Exception as e:
             logger.error(f"Failed to check catch-up availability: {e}", exc_info=True)
-            return {
-                "available": False,
-                "reason": "error",
-                "message": str(e)
-            }
+            return {"available": False, "reason": "error", "message": str(e)}
 
     async def get_available_catchup_programs(
-        self,
-        channel_id: Optional[str] = None,
-        limit: int = 50
+        self, channel_id: Optional[str] = None, limit: int = 50
     ) -> list[Dict[str, Any]]:
         """
         Get list of programs available for catch-up.
@@ -237,15 +227,18 @@ class CatchUpService:
 
             query_conditions = [
                 {"start_time": {"$gte": cutoff_date, "$lt": now}},
-                {"end_time": {"$lt": now}}
+                {"end_time": {"$lt": now}},
             ]
 
             if channel_id:
                 query_conditions.append({"channel_id": channel_id})
 
-            programs = await EPGEntry.find(
-                And(*query_conditions)
-            ).sort("-start_time").limit(limit).to_list()
+            programs = (
+                await EPGEntry.find(And(*query_conditions))
+                .sort("-start_time")
+                .limit(limit)
+                .to_list()
+            )
 
             # Filter programs that have recordings
             available_programs = []
@@ -255,27 +248,33 @@ class CatchUpService:
                         {"channel_id": program.channel_id},
                         {"started_at": {"$lte": program.start_time}},
                         {"ended_at": {"$gte": program.end_time}},
-                        {"status": "completed"}
+                        {"status": "completed"},
                     )
                 ).to_list()
 
                 if recordings:
-                    available_programs.append({
-                        "id": str(program.id),
-                        "title": program.title,
-                        "description": program.description,
-                        "channel_id": program.channel_id,
-                        "start_time": program.start_time.isoformat(),
-                        "end_time": program.end_time.isoformat(),
-                        "thumbnail": program.thumbnail,
-                        "category": program.category,
-                        "available_until": (program.start_time + timedelta(days=self.retention_days)).isoformat()
-                    })
+                    available_programs.append(
+                        {
+                            "id": str(program.id),
+                            "title": program.title,
+                            "description": program.description,
+                            "channel_id": program.channel_id,
+                            "start_time": program.start_time.isoformat(),
+                            "end_time": program.end_time.isoformat(),
+                            "thumbnail": program.thumbnail,
+                            "category": program.category,
+                            "available_until": (
+                                program.start_time + timedelta(days=self.retention_days)
+                            ).isoformat(),
+                        }
+                    )
 
             return available_programs
 
         except Exception as e:
-            logger.error(f"Failed to get available catch-up programs: {e}", exc_info=True)
+            logger.error(
+                f"Failed to get available catch-up programs: {e}", exc_info=True
+            )
             return []
 
 

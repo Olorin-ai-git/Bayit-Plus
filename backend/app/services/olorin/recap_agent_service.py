@@ -6,21 +6,18 @@ Real-time summaries for late-joiners to live broadcasts.
 
 import logging
 import uuid
-from datetime import datetime, timezone, timedelta
-from typing import Optional, List
+from datetime import datetime, timedelta, timezone
+from typing import List, Optional
 
 from app.core.config import settings
-from app.models.content_embedding import (
-    RecapSession,
-    TranscriptSegment,
-    RecapEntry,
-)
+from app.models.content_embedding import RecapEntry, RecapSession, TranscriptSegment
 
 logger = logging.getLogger(__name__)
 
 # Try to import Claude for summarization
 try:
     from anthropic import AsyncAnthropic
+
     CLAUDE_AVAILABLE = True
 except ImportError:
     CLAUDE_AVAILABLE = False
@@ -87,7 +84,9 @@ class RecapAgentService:
         """Get max recaps per session from config."""
         return settings.olorin.recap.max_recaps_per_session
 
-    def _trim_segments_if_needed(self, segments: List[dict], max_segments: int) -> List[dict]:
+    def _trim_segments_if_needed(
+        self, segments: List[dict], max_segments: int
+    ) -> List[dict]:
         """
         Trim segments to max size using FIFO (remove oldest).
 
@@ -146,9 +145,7 @@ class RecapAgentService:
         Returns:
             Updated session or None if not found
         """
-        session = await RecapSession.find_one(
-            RecapSession.session_id == session_id
-        )
+        session = await RecapSession.find_one(RecapSession.session_id == session_id)
         if not session:
             return None
 
@@ -191,9 +188,7 @@ class RecapAgentService:
         Returns:
             Recap dict with summary and key points
         """
-        session = await RecapSession.find_one(
-            RecapSession.session_id == session_id
-        )
+        session = await RecapSession.find_one(RecapSession.session_id == session_id)
         if not session:
             return None
 
@@ -220,7 +215,8 @@ class RecapAgentService:
 
         # Filter segments in window
         segments_in_window = [
-            s for s in session.transcript_segments
+            s
+            for s in session.transcript_segments
             if s.get("timestamp", 0) >= window_start
         ]
 
@@ -291,15 +287,11 @@ class RecapAgentService:
 
     async def get_session(self, session_id: str) -> Optional[RecapSession]:
         """Get a recap session by ID."""
-        return await RecapSession.find_one(
-            RecapSession.session_id == session_id
-        )
+        return await RecapSession.find_one(RecapSession.session_id == session_id)
 
     async def end_session(self, session_id: str) -> Optional[RecapSession]:
         """End a recap session."""
-        session = await RecapSession.find_one(
-            RecapSession.session_id == session_id
-        )
+        session = await RecapSession.find_one(RecapSession.session_id == session_id)
         if not session:
             return None
 
@@ -394,7 +386,7 @@ Focus on:
 
         try:
             content = response.content[0].text
-            json_match = re.search(r'\{[\s\S]*\}', content)
+            json_match = re.search(r"\{[\s\S]*\}", content)
             if json_match:
                 data = json.loads(json_match.group())
                 return (

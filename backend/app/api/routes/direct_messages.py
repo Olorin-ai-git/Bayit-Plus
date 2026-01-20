@@ -1,33 +1,38 @@
 """Direct messaging REST API routes for friends."""
 from datetime import datetime
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
-from beanie.operators import Or, And
 
 from app.core.security import get_current_user
-from app.models.user import User
 from app.models.direct_message import (
+    ConversationSummary,
     DirectMessage,
     DirectMessageCreate,
     DirectMessageResponse,
-    ConversationSummary,
 )
-from app.services.friendship_service import FriendshipService
+from app.models.user import User
 from app.services.chat_translation_service import chat_translation_service
+from app.services.friendship_service import FriendshipService
+from beanie.operators import And, Or
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 router = APIRouter(prefix="/dm", tags=["direct-messages"])
 
 
 def _build_message_response(
-    message: DirectMessage,
-    viewer_id: str,
-    include_translation: bool = True
+    message: DirectMessage, viewer_id: str, include_translation: bool = True
 ) -> DirectMessageResponse:
     """Build a DirectMessageResponse from a DirectMessage document."""
     # Determine display message based on viewer
-    if include_translation and message.has_translation and message.receiver_id == viewer_id:
+    if (
+        include_translation
+        and message.has_translation
+        and message.receiver_id == viewer_id
+    ):
         display_message = message.translated_text or message.message
-        is_translated = message.translated_text is not None and message.translated_text != message.message
+        is_translated = (
+            message.translated_text is not None
+            and message.translated_text != message.message
+        )
     else:
         display_message = message.message
         is_translated = False
@@ -55,9 +60,7 @@ def _build_message_response(
 
 @router.post("/{friend_id}", response_model=DirectMessageResponse)
 async def send_direct_message(
-    friend_id: str,
-    request: DirectMessageCreate,
-    user: User = Depends(get_current_user)
+    friend_id: str, request: DirectMessageCreate, user: User = Depends(get_current_user)
 ):
     """Send a direct message to a friend."""
     user_id = str(user.id)
@@ -76,7 +79,10 @@ async def send_direct_message(
     source_lang = detection.detected_language
 
     # Check if receiver needs translation
-    should_translate, target_lang = await chat_translation_service.should_translate_for_user(friend_id)
+    (
+        should_translate,
+        target_lang,
+    ) = await chat_translation_service.should_translate_for_user(friend_id)
 
     translated_text = None
     has_translation = False
@@ -114,26 +120,28 @@ async def get_conversation(
     friend_id: str,
     limit: int = Query(default=50, le=200),
     before: Optional[datetime] = None,
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
 ):
     """Get conversation history with a friend."""
     user_id = str(user.id)
 
     # Verify friendship
     if not await FriendshipService.are_friends(user_id, friend_id):
-        raise HTTPException(status_code=403, detail="You can only view conversations with friends")
+        raise HTTPException(
+            status_code=403, detail="You can only view conversations with friends"
+        )
 
     # Build query for messages between these two users
     query = DirectMessage.find(
         Or(
             And(
                 DirectMessage.sender_id == user_id,
-                DirectMessage.receiver_id == friend_id
+                DirectMessage.receiver_id == friend_id,
             ),
             And(
                 DirectMessage.sender_id == friend_id,
-                DirectMessage.receiver_id == user_id
-            )
+                DirectMessage.receiver_id == user_id,
+            ),
         )
     )
 
@@ -149,9 +157,7 @@ async def get_conversation(
 
 
 @router.get("/conversations", response_model=List[ConversationSummary])
-async def list_conversations(
-    user: User = Depends(get_current_user)
-):
+async def list_conversations(user: User = Depends(get_current_user)):
     """List all DM conversations with most recent message."""
     user_id = str(user.id)
 
@@ -164,18 +170,22 @@ async def list_conversations(
         friend_id = friend["user_id"]
 
         # Get most recent message
-        last_message = await DirectMessage.find(
-            Or(
-                And(
-                    DirectMessage.sender_id == user_id,
-                    DirectMessage.receiver_id == friend_id
-                ),
-                And(
-                    DirectMessage.sender_id == friend_id,
-                    DirectMessage.receiver_id == user_id
+        last_message = (
+            await DirectMessage.find(
+                Or(
+                    And(
+                        DirectMessage.sender_id == user_id,
+                        DirectMessage.receiver_id == friend_id,
+                    ),
+                    And(
+                        DirectMessage.sender_id == friend_id,
+                        DirectMessage.receiver_id == user_id,
+                    ),
                 )
             )
-        ).sort(-DirectMessage.timestamp).first_or_none()
+            .sort(-DirectMessage.timestamp)
+            .first_or_none()
+        )
 
         if not last_message:
             continue
@@ -185,18 +195,20 @@ async def list_conversations(
             And(
                 DirectMessage.sender_id == friend_id,
                 DirectMessage.receiver_id == user_id,
-                DirectMessage.read == False
+                DirectMessage.read == False,
             )
         ).count()
 
-        conversations.append(ConversationSummary(
-            friend_id=friend_id,
-            friend_name=friend["name"],
-            friend_avatar=friend.get("avatar"),
-            last_message=last_message.message[:100],
-            last_message_at=last_message.timestamp,
-            unread_count=unread_count,
-        ))
+        conversations.append(
+            ConversationSummary(
+                friend_id=friend_id,
+                friend_name=friend["name"],
+                friend_avatar=friend.get("avatar"),
+                last_message=last_message.message[:100],
+                last_message_at=last_message.timestamp,
+                unread_count=unread_count,
+            )
+        )
 
     # Sort by most recent message
     conversations.sort(key=lambda c: c.last_message_at, reverse=True)
@@ -205,10 +217,7 @@ async def list_conversations(
 
 
 @router.patch("/{message_id}/read")
-async def mark_as_read(
-    message_id: str,
-    user: User = Depends(get_current_user)
-):
+async def mark_as_read(message_id: str, user: User = Depends(get_current_user)):
     """Mark a message as read."""
     user_id = str(user.id)
 
@@ -218,7 +227,9 @@ async def mark_as_read(
 
     # Only receiver can mark as read
     if message.receiver_id != user_id:
-        raise HTTPException(status_code=403, detail="Can only mark received messages as read")
+        raise HTTPException(
+            status_code=403, detail="Can only mark received messages as read"
+        )
 
     if not message.read:
         message.read = True
@@ -229,35 +240,31 @@ async def mark_as_read(
 
 
 @router.patch("/read-all/{friend_id}")
-async def mark_all_as_read(
-    friend_id: str,
-    user: User = Depends(get_current_user)
-):
+async def mark_all_as_read(friend_id: str, user: User = Depends(get_current_user)):
     """Mark all messages from a friend as read."""
     user_id = str(user.id)
 
     # Verify friendship
     if not await FriendshipService.are_friends(user_id, friend_id):
-        raise HTTPException(status_code=403, detail="You can only manage messages from friends")
+        raise HTTPException(
+            status_code=403, detail="You can only manage messages from friends"
+        )
 
     # Update all unread messages from this friend
     result = await DirectMessage.find(
         And(
             DirectMessage.sender_id == friend_id,
             DirectMessage.receiver_id == user_id,
-            DirectMessage.read == False
+            DirectMessage.read == False,
         )
-    ).update_many(
-        {"$set": {"read": True, "read_at": datetime.utcnow()}}
-    )
+    ).update_many({"$set": {"read": True, "read_at": datetime.utcnow()}})
 
     return {"success": True, "updated_count": result.modified_count if result else 0}
 
 
 @router.post("/{message_id}/translate")
 async def translate_message_on_demand(
-    message_id: str,
-    user: User = Depends(get_current_user)
+    message_id: str, user: User = Depends(get_current_user)
 ):
     """Manually translate a message (for users with auto-translate off)."""
     user_id = str(user.id)
@@ -268,15 +275,15 @@ async def translate_message_on_demand(
 
     # Verify user is part of this conversation
     if message.sender_id != user_id and message.receiver_id != user_id:
-        raise HTTPException(status_code=403, detail="Not authorized to view this message")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to view this message"
+        )
 
     # Get user's preferred language
     target_lang = user.preferred_language or "he"
 
     result = await chat_translation_service.translate_message(
-        message.message,
-        message.source_language,
-        target_lang
+        message.message, message.source_language, target_lang
     )
 
     return {
@@ -285,15 +292,13 @@ async def translate_message_on_demand(
         "translated": result.translated_text,
         "source_language": message.source_language,
         "target_language": target_lang,
-        "is_cached": result.is_cached
+        "is_cached": result.is_cached,
     }
 
 
 @router.post("/{message_id}/react")
 async def add_reaction(
-    message_id: str,
-    emoji: str = Query(...),
-    user: User = Depends(get_current_user)
+    message_id: str, emoji: str = Query(...), user: User = Depends(get_current_user)
 ):
     """Add a reaction to a message."""
     user_id = str(user.id)
@@ -304,7 +309,9 @@ async def add_reaction(
 
     # Verify user is part of this conversation
     if message.sender_id != user_id and message.receiver_id != user_id:
-        raise HTTPException(status_code=403, detail="Not authorized to react to this message")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to react to this message"
+        )
 
     # Add reaction
     if emoji not in message.reactions:
@@ -319,9 +326,7 @@ async def add_reaction(
 
 @router.delete("/{message_id}/react")
 async def remove_reaction(
-    message_id: str,
-    emoji: str = Query(...),
-    user: User = Depends(get_current_user)
+    message_id: str, emoji: str = Query(...), user: User = Depends(get_current_user)
 ):
     """Remove a reaction from a message."""
     user_id = str(user.id)
@@ -332,7 +337,9 @@ async def remove_reaction(
 
     # Verify user is part of this conversation
     if message.sender_id != user_id and message.receiver_id != user_id:
-        raise HTTPException(status_code=403, detail="Not authorized to modify reactions on this message")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to modify reactions on this message"
+        )
 
     # Remove reaction
     if emoji in message.reactions and user_id in message.reactions[emoji]:

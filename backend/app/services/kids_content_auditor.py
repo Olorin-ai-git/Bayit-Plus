@@ -16,10 +16,9 @@ import json
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
 import anthropic
-
 from app.core.config import settings
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
@@ -31,6 +30,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class KidsClassificationResult:
     """Result of a kids content classification verification."""
+
     content_id: str
     is_appropriate: bool
     suggested_age_rating: int  # 3, 5, 7, 10, 12
@@ -44,6 +44,7 @@ class KidsClassificationResult:
 @dataclass
 class KidsAuditResult:
     """Complete result of kids content audit."""
+
     total_items: int = 0
     healthy_items: int = 0
     age_rating_issues: List[Dict[str, Any]] = field(default_factory=list)
@@ -53,9 +54,7 @@ class KidsAuditResult:
 
 
 async def audit_kids_content(
-    audit_id: str,
-    dry_run: bool = False,
-    content_ids: Optional[List[str]] = None
+    audit_id: str, dry_run: bool = False, content_ids: Optional[List[str]] = None
 ) -> Dict[str, Any]:
     """
     Audit all kids content for appropriateness and correct classification.
@@ -86,7 +85,7 @@ async def audit_kids_content(
             "message": "No kids content to audit",
             "kids_audit_results": {
                 "total_kids_items": 0,
-            }
+            },
         }
 
     # Verify each item
@@ -94,34 +93,44 @@ async def audit_kids_content(
         verification = await verify_kids_classification(content, audit_id, dry_run)
 
         if not verification.is_appropriate:
-            result.inappropriate_flags.append({
-                "content_id": str(content.id),
-                "title": content.title[:50],
-                "issues": verification.issues,
-                "reasoning": verification.reasoning,
-            })
+            result.inappropriate_flags.append(
+                {
+                    "content_id": str(content.id),
+                    "title": content.title[:50],
+                    "issues": verification.issues,
+                    "reasoning": verification.reasoning,
+                }
+            )
         elif verification.suggested_age_rating != verification.current_age_rating:
-            result.age_rating_issues.append({
-                "content_id": str(content.id),
-                "title": content.title[:50],
-                "current_age_rating": verification.current_age_rating,
-                "suggested_age_rating": verification.suggested_age_rating,
-                "reasoning": verification.reasoning,
-            })
-        elif verification.suggested_tags and set(verification.suggested_tags) != set(content.educational_tags):
-            result.missing_educational_tags.append({
-                "content_id": str(content.id),
-                "title": content.title[:50],
-                "current_tags": content.educational_tags,
-                "suggested_tags": verification.suggested_tags,
-            })
+            result.age_rating_issues.append(
+                {
+                    "content_id": str(content.id),
+                    "title": content.title[:50],
+                    "current_age_rating": verification.current_age_rating,
+                    "suggested_age_rating": verification.suggested_age_rating,
+                    "reasoning": verification.reasoning,
+                }
+            )
+        elif verification.suggested_tags and set(verification.suggested_tags) != set(
+            content.educational_tags
+        ):
+            result.missing_educational_tags.append(
+                {
+                    "content_id": str(content.id),
+                    "title": content.title[:50],
+                    "current_tags": content.educational_tags,
+                    "suggested_tags": verification.suggested_tags,
+                }
+            )
         else:
             result.healthy_items += 1
 
         # Rate limiting
         await asyncio.sleep(0.2)
 
-    logger.info(f"   ✅ Kids audit complete: {result.healthy_items}/{result.total_items} healthy")
+    logger.info(
+        f"   ✅ Kids audit complete: {result.healthy_items}/{result.total_items} healthy"
+    )
 
     return {
         "status": "completed",
@@ -133,14 +142,12 @@ async def audit_kids_content(
             "category_issues": result.category_issues,
             "inappropriate_flags": result.inappropriate_flags,
             "missing_educational_tags": result.missing_educational_tags,
-        }
+        },
     }
 
 
 async def verify_kids_classification(
-    content: Content,
-    audit_id: str,
-    dry_run: bool = False
+    content: Content, audit_id: str, dry_run: bool = False
 ) -> KidsClassificationResult:
     """
     Use Claude AI to verify content is appropriate for kids and correctly categorized.
@@ -158,7 +165,7 @@ async def verify_kids_classification(
         content_id=str(content.id),
         is_appropriate=True,
         suggested_age_rating=content.age_rating or 7,
-        current_age_rating=content.age_rating
+        current_age_rating=content.age_rating,
     )
 
     try:
@@ -208,7 +215,7 @@ Return ONLY JSON, no additional text."""
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=500,
-            messages=[{"role": "user", "content": prompt}]
+            messages=[{"role": "user", "content": prompt}],
         )
 
         response_text = response.content[0].text.strip()
@@ -237,11 +244,15 @@ Return ONLY JSON, no additional text."""
             # Update age rating if significantly different
             if result.suggested_age_rating != content.age_rating:
                 content.age_rating = result.suggested_age_rating
-                changes_made.append(f"age_rating: {content.age_rating} -> {result.suggested_age_rating}")
+                changes_made.append(
+                    f"age_rating: {content.age_rating} -> {result.suggested_age_rating}"
+                )
 
             # Add missing educational tags
             if result.suggested_tags:
-                new_tags = list(set(content.educational_tags) | set(result.suggested_tags))
+                new_tags = list(
+                    set(content.educational_tags) | set(result.suggested_tags)
+                )
                 if new_tags != content.educational_tags:
                     content.educational_tags = new_tags
                     changes_made.append(f"added_tags: {result.suggested_tags}")
@@ -272,7 +283,7 @@ Return ONLY JSON, no additional text."""
                     },
                     auto_approved=result.is_appropriate,
                     confidence_score=result.confidence,
-                    description=f"Kids classification for '{content.title}': {', '.join(changes_made)}"
+                    description=f"Kids classification for '{content.title}': {', '.join(changes_made)}",
                 )
                 await action.insert()
 
@@ -291,26 +302,32 @@ async def verify_age_ratings() -> Dict[str, Any]:
     Returns:
         Summary of age rating verification.
     """
-    kids_content = await Content.find({
-        "is_kids_content": True,
-        "is_published": True,
-    }).to_list()
+    kids_content = await Content.find(
+        {
+            "is_kids_content": True,
+            "is_published": True,
+        }
+    ).to_list()
 
     issues = []
     for content in kids_content:
         if content.age_rating is None:
-            issues.append({
-                "content_id": str(content.id),
-                "title": content.title[:50],
-                "issue": "missing_age_rating",
-            })
+            issues.append(
+                {
+                    "content_id": str(content.id),
+                    "title": content.title[:50],
+                    "issue": "missing_age_rating",
+                }
+            )
         elif content.age_rating not in [3, 5, 7, 10, 12]:
-            issues.append({
-                "content_id": str(content.id),
-                "title": content.title[:50],
-                "issue": "invalid_age_rating",
-                "current_rating": content.age_rating,
-            })
+            issues.append(
+                {
+                    "content_id": str(content.id),
+                    "title": content.title[:50],
+                    "issue": "invalid_age_rating",
+                    "current_rating": content.age_rating,
+                }
+            )
 
     return {
         "total_checked": len(kids_content),
@@ -326,19 +343,23 @@ async def validate_educational_tags() -> Dict[str, Any]:
     Returns:
         Summary of tag validation.
     """
-    kids_content = await Content.find({
-        "is_kids_content": True,
-        "is_published": True,
-    }).to_list()
+    kids_content = await Content.find(
+        {
+            "is_kids_content": True,
+            "is_published": True,
+        }
+    ).to_list()
 
     missing_tags = []
     for content in kids_content:
         if not content.educational_tags:
-            missing_tags.append({
-                "content_id": str(content.id),
-                "title": content.title[:50],
-                "category": content.category_name,
-            })
+            missing_tags.append(
+                {
+                    "content_id": str(content.id),
+                    "title": content.title[:50],
+                    "category": content.category_name,
+                }
+            )
 
     return {
         "total_checked": len(kids_content),
@@ -355,13 +376,20 @@ async def check_kids_categories() -> Dict[str, Any]:
         Summary of category verification.
     """
     VALID_KIDS_CATEGORIES = {
-        "cartoons", "educational", "music", "hebrew", "stories", "jewish"
+        "cartoons",
+        "educational",
+        "music",
+        "hebrew",
+        "stories",
+        "jewish",
     }
 
-    kids_content = await Content.find({
-        "is_kids_content": True,
-        "is_published": True,
-    }).to_list()
+    kids_content = await Content.find(
+        {
+            "is_kids_content": True,
+            "is_published": True,
+        }
+    ).to_list()
 
     category_issues = []
     category_distribution = {}
@@ -374,12 +402,14 @@ async def check_kids_categories() -> Dict[str, Any]:
 
         # Check if in valid kids category
         if cat_name not in VALID_KIDS_CATEGORIES:
-            category_issues.append({
-                "content_id": str(content.id),
-                "title": content.title[:50],
-                "current_category": cat_name,
-                "issue": "not_in_kids_category",
-            })
+            category_issues.append(
+                {
+                    "content_id": str(content.id),
+                    "title": content.title[:50],
+                    "current_category": cat_name,
+                    "issue": "not_in_kids_category",
+                }
+            )
 
     return {
         "total_checked": len(kids_content),
@@ -396,27 +426,37 @@ async def detect_inappropriate_content() -> Dict[str, Any]:
     Returns:
         List of flagged content items.
     """
-    kids_content = await Content.find({
-        "is_kids_content": True,
-        "is_published": True,
-        "$or": [
-            {"kids_moderation_status": None},
-            {"kids_moderation_status": "pending"},
-        ]
-    }).limit(100).to_list()
+    kids_content = (
+        await Content.find(
+            {
+                "is_kids_content": True,
+                "is_published": True,
+                "$or": [
+                    {"kids_moderation_status": None},
+                    {"kids_moderation_status": "pending"},
+                ],
+            }
+        )
+        .limit(100)
+        .to_list()
+    )
 
     flagged = []
 
     for content in kids_content:
-        verification = await verify_kids_classification(content, "detection_audit", dry_run=True)
+        verification = await verify_kids_classification(
+            content, "detection_audit", dry_run=True
+        )
 
         if not verification.is_appropriate:
-            flagged.append({
-                "content_id": str(content.id),
-                "title": content.title[:50],
-                "issues": verification.issues,
-                "reasoning": verification.reasoning,
-            })
+            flagged.append(
+                {
+                    "content_id": str(content.id),
+                    "title": content.title[:50],
+                    "issues": verification.issues,
+                    "reasoning": verification.reasoning,
+                }
+            )
 
         # Rate limiting
         await asyncio.sleep(0.3)
@@ -457,7 +497,7 @@ async def sync_kids_categories() -> Dict[str, Any]:
                 slug=slug,
                 description=f"Kids content: {category_data['name_en']}",
                 icon=category_data["icon"],
-                is_active=True
+                is_active=True,
             )
             await category.insert()
             created += 1
@@ -477,36 +517,46 @@ async def get_kids_audit_summary() -> Dict[str, Any]:
         Summary statistics for admin dashboard.
     """
     total = await Content.find({"is_kids_content": True}).count()
-    published = await Content.find({"is_kids_content": True, "is_published": True}).count()
+    published = await Content.find(
+        {"is_kids_content": True, "is_published": True}
+    ).count()
 
     # By age rating
     age_distribution = {}
     for age in [3, 5, 7, 10, 12]:
-        count = await Content.find({
-            "is_kids_content": True,
-            "age_rating": age,
-        }).count()
+        count = await Content.find(
+            {
+                "is_kids_content": True,
+                "age_rating": age,
+            }
+        ).count()
         age_distribution[f"age_{age}"] = count
 
     # By category
     category_distribution = {}
     for cat in ["cartoons", "educational", "music", "hebrew", "stories", "jewish"]:
-        count = await Content.find({
-            "is_kids_content": True,
-            "category_name": cat,
-        }).count()
+        count = await Content.find(
+            {
+                "is_kids_content": True,
+                "category_name": cat,
+            }
+        ).count()
         category_distribution[cat] = count
 
     # Moderation status
-    pending = await Content.find({
-        "is_kids_content": True,
-        "kids_moderation_status": "pending",
-    }).count()
+    pending = await Content.find(
+        {
+            "is_kids_content": True,
+            "kids_moderation_status": "pending",
+        }
+    ).count()
 
-    approved = await Content.find({
-        "is_kids_content": True,
-        "kids_moderation_status": "approved",
-    }).count()
+    approved = await Content.find(
+        {
+            "is_kids_content": True,
+            "kids_moderation_status": "approved",
+        }
+    ).count()
 
     return {
         "total_kids_content": total,
@@ -516,5 +566,5 @@ async def get_kids_audit_summary() -> Dict[str, Any]:
         "moderation": {
             "pending": pending,
             "approved": approved,
-        }
+        },
     }

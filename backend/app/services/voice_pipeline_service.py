@@ -14,7 +14,7 @@ import base64
 import json
 import logging
 from dataclasses import dataclass
-from typing import Optional, AsyncIterator, Callable, Awaitable
+from typing import AsyncIterator, Awaitable, Callable, Optional
 
 from app.core.config import settings
 from app.models.user import User
@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class PipelineMessage:
     """Message type for voice pipeline communication."""
+
     type: str  # audio, commit, cancel, transcript_partial, transcript_final, llm_chunk, tts_audio, complete, error
     data: Optional[str] = None  # Base64 audio data or text
     text: Optional[str] = None  # Text content
@@ -199,9 +200,9 @@ class VoicePipelineService:
 
         try:
             # Send commit signal to STT
-            await self.stt_service.websocket.send(json.dumps({
-                "message_type": "commit"
-            }))
+            await self.stt_service.websocket.send(
+                json.dumps({"message_type": "commit"})
+            )
             logger.info("📤 Sent manual commit signal to STT")
         except Exception as e:
             logger.error(f"Error sending commit: {e}")
@@ -234,11 +235,13 @@ class VoicePipelineService:
                 self._detected_language = detected_lang
 
                 # Send partial transcript to client
-                await self._output_queue.put(PipelineMessage(
-                    type="transcript_final",
-                    text=transcript,
-                    language=detected_lang,
-                ))
+                await self._output_queue.put(
+                    PipelineMessage(
+                        type="transcript_final",
+                        text=transcript,
+                        language=detected_lang,
+                    )
+                )
 
                 # Start LLM → TTS pipeline
                 if self._llm_tts_task and not self._llm_tts_task.done():
@@ -257,10 +260,12 @@ class VoicePipelineService:
             pass
         except Exception as e:
             logger.error(f"Error processing transcripts: {e}")
-            await self._output_queue.put(PipelineMessage(
-                type="error",
-                message=str(e),
-            ))
+            await self._output_queue.put(
+                PipelineMessage(
+                    type="error",
+                    message=str(e),
+                )
+            )
 
     async def _process_llm_tts(self, transcript: str, language: str) -> None:
         """
@@ -306,10 +311,12 @@ class VoicePipelineService:
                                 # Send to TTS
                                 await llm_text_queue.put(text)
                                 # Send to client for display
-                                await self._output_queue.put(PipelineMessage(
-                                    type="llm_chunk",
-                                    text=text,
-                                ))
+                                await self._output_queue.put(
+                                    PipelineMessage(
+                                        type="llm_chunk",
+                                        text=text,
+                                    )
+                                )
 
                         elif chunk_type == "complete":
                             # Store completion data
@@ -317,17 +324,21 @@ class VoicePipelineService:
                             self.conversation_id = chunk.get("conversation_id")
 
                         elif chunk_type == "error":
-                            await self._output_queue.put(PipelineMessage(
-                                type="error",
-                                message=chunk.get("message", "LLM error"),
-                            ))
+                            await self._output_queue.put(
+                                PipelineMessage(
+                                    type="error",
+                                    message=chunk.get("message", "LLM error"),
+                                )
+                            )
 
                 except Exception as e:
                     logger.error(f"LLM streaming error: {e}")
-                    await self._output_queue.put(PipelineMessage(
-                        type="error",
-                        message=str(e),
-                    ))
+                    await self._output_queue.put(
+                        PipelineMessage(
+                            type="error",
+                            message=str(e),
+                        )
+                    )
                 finally:
                     # Signal end of text stream
                     await llm_text_queue.put(None)
@@ -344,10 +355,12 @@ class VoicePipelineService:
                 audio_chunk_count += 1
                 # Encode audio and send to client
                 audio_b64 = base64.b64encode(audio_chunk).decode("utf-8")
-                await self._output_queue.put(PipelineMessage(
-                    type="tts_audio",
-                    data=audio_b64,
-                ))
+                await self._output_queue.put(
+                    PipelineMessage(
+                        type="tts_audio",
+                        data=audio_b64,
+                    )
+                )
 
             # Wait for LLM task to complete
             await llm_task
@@ -355,21 +368,25 @@ class VoicePipelineService:
             logger.info(f"🔊 Streamed {audio_chunk_count} audio chunks")
 
             # Send completion message
-            await self._output_queue.put(PipelineMessage(
-                type="complete",
-                conversation_id=self.conversation_id,
-                escalation_needed=completion_data.get("escalation_needed", False),
-            ))
+            await self._output_queue.put(
+                PipelineMessage(
+                    type="complete",
+                    conversation_id=self.conversation_id,
+                    escalation_needed=completion_data.get("escalation_needed", False),
+                )
+            )
 
         except asyncio.CancelledError:
             logger.info("LLM/TTS task cancelled")
             raise
         except Exception as e:
             logger.error(f"Error in LLM/TTS pipeline: {e}")
-            await self._output_queue.put(PipelineMessage(
-                type="error",
-                message=str(e),
-            ))
+            await self._output_queue.put(
+                PipelineMessage(
+                    type="error",
+                    message=str(e),
+                )
+            )
         finally:
             if self.tts_service:
                 await self.tts_service.close()
@@ -384,10 +401,7 @@ class VoicePipelineService:
         """
         while self._running or not self._output_queue.empty():
             try:
-                message = await asyncio.wait_for(
-                    self._output_queue.get(),
-                    timeout=0.5
-                )
+                message = await asyncio.wait_for(self._output_queue.get(), timeout=0.5)
                 yield message
             except asyncio.TimeoutError:
                 if not self._running and self._output_queue.empty():

@@ -7,13 +7,15 @@ Collections:
 """
 
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
 
 class JewishNewsSourceCreate(BaseModel):
     """Request model for creating a Jewish news source."""
+
     name: str
     rss_url: str
     category: str
@@ -27,6 +29,7 @@ class JewishNewsSource(Document):
 
     Sources include major US Jewish publications like JTA, Forward, Tablet, etc.
     """
+
     name: str
     name_he: Optional[str] = None
     rss_url: str
@@ -56,6 +59,7 @@ class JewishNewsItem(Document):
 
     Items are stored with a TTL index for automatic cleanup after cache expiration.
     """
+
     source_id: str  # Reference to JewishNewsSource
     source_name: str  # Denormalized for quick display
     title: str
@@ -86,6 +90,7 @@ class JewishNewsItem(Document):
 
 class JewishNewsItemResponse(BaseModel):
     """Response model for a Jewish news item."""
+
     id: str
     source_name: str
     title: str
@@ -105,6 +110,7 @@ class JewishNewsItemResponse(BaseModel):
 
 class JewishNewsSourceResponse(BaseModel):
     """Response model for a Jewish news source."""
+
     id: str
     name: str
     name_he: Optional[str] = None
@@ -120,6 +126,7 @@ class JewishNewsSourceResponse(BaseModel):
 
 class JewishNewsAggregatedResponse(BaseModel):
     """Aggregated news response with pagination."""
+
     items: List[JewishNewsItemResponse]
     pagination: dict
     sources_count: int

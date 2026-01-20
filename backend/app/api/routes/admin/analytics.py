@@ -5,21 +5,22 @@ Endpoints for analytics and reporting
 
 from datetime import datetime, timedelta
 from typing import Optional
+
+from app.models.admin import Permission
+from app.models.user import User
 from fastapi import APIRouter, Depends
 
-from app.models.user import User
-from app.models.admin import Permission
 from .auth import has_permission
-
 
 router = APIRouter()
 
 
 # ============ ANALYTICS ENDPOINTS ============
 
+
 @router.get("/analytics/churn")
 async def get_churn_analytics(
-    current_user: User = Depends(has_permission(Permission.ANALYTICS_READ))
+    current_user: User = Depends(has_permission(Permission.ANALYTICS_READ)),
 ):
     """Get churn analytics."""
     now = datetime.utcnow()
@@ -27,12 +28,12 @@ async def get_churn_analytics(
     # Monthly churn rate
     active_start = await User.find(
         User.subscription_status == "active",
-        User.created_at <= now - timedelta(days=30)
+        User.created_at <= now - timedelta(days=30),
     ).count()
 
     canceled_30d = await User.find(
         User.subscription_status == "canceled",
-        User.updated_at >= now - timedelta(days=30)
+        User.updated_at >= now - timedelta(days=30),
     ).count()
 
     churn_rate = (canceled_30d / active_start * 100) if active_start > 0 else 0
@@ -41,7 +42,7 @@ async def get_churn_analytics(
     at_risk = await User.find(
         User.subscription_status == "active",
         User.subscription_end_date <= now + timedelta(days=7),
-        User.subscription_end_date >= now
+        User.subscription_end_date >= now,
     ).count()
 
     # Recovered (canceled then resubscribed)
@@ -58,7 +59,7 @@ async def get_churn_analytics(
 @router.get("/analytics/audience-count")
 async def get_audience_count(
     segment: Optional[str] = None,
-    current_user: User = Depends(has_permission(Permission.MARKETING_READ))
+    current_user: User = Depends(has_permission(Permission.MARKETING_READ)),
 ):
     """Get audience count based on filter."""
     if segment == "all_users":

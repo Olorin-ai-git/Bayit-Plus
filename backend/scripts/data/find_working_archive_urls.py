@@ -21,18 +21,18 @@ test_urls = {
         "https://archive.org/download/TheGreatTrainRobbery/greattrainrobbery_512kb.mp4",
         "https://ia800200.us.archive.org/24/items/TheGreatTrainRobbery/greattrainrobbery_512kb.mp4",
         "https://archive.org/download/GreatTrainRobbery_1/GreatTrainRobbery_512kb.mp4",
-    ]
+    ],
 }
 
 print("🎬 Testing Archive.org URLs for public domain movies\n")
-print("="*80)
+print("=" * 80)
 
 working_urls = {}
 
 for title, urls in test_urls.items():
     print(f"\n📽️ {title}")
     found = False
-    
+
     for url in urls:
         try:
             response = requests.head(url, timeout=5, allow_redirects=True)
@@ -45,13 +45,12 @@ for title, urls in test_urls.items():
                 print(f"   ❌ HTTP {response.status_code} - {url[:60]}...")
         except Exception as e:
             print(f"   ❌ Error - {url[:60]}...")
-    
+
     if not found:
         print(f"   ⚠️  No working URL found")
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print("\n✅ WORKING URLS:\n")
 for title, url in working_urls.items():
     print(f"{title}")
     print(f"  {url}\n")
-

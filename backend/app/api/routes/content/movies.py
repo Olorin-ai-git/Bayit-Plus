@@ -5,13 +5,12 @@ Movie-specific endpoints.
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException
-
 from app.core.config import settings
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.content import Content
 from app.models.user import User
 from app.services.tmdb_service import tmdb_service
+from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -78,7 +77,9 @@ async def debug_movie(movie_id: str):
     return {
         "direct_db_url": direct_doc.get("stream_url") if direct_doc else None,
         "beanie_url": movie.stream_url if movie else None,
-        "match": direct_doc.get("stream_url") == movie.stream_url if (direct_doc and movie) else False
+        "match": direct_doc.get("stream_url") == movie.stream_url
+        if (direct_doc and movie)
+        else False,
     }
 
 
@@ -92,12 +93,16 @@ async def get_movie_details(
     if not movie or not movie.is_published or movie.is_series:
         raise HTTPException(status_code=404, detail="Movie not found")
 
-    related = await Content.find(
-        Content.category_id == movie.category_id,
-        Content.id != movie.id,
-        Content.is_published == True,
-        Content.is_series == False,
-    ).limit(6).to_list()
+    related = (
+        await Content.find(
+            Content.category_id == movie.category_id,
+            Content.id != movie.id,
+            Content.is_published == True,
+            Content.is_series == False,
+        )
+        .limit(6)
+        .to_list()
+    )
 
     return {
         "id": str(movie.id),
@@ -120,7 +125,10 @@ async def get_movie_details(
         "imdb_rating": movie.imdb_rating,
         "imdb_votes": movie.imdb_votes,
         "available_subtitle_languages": movie.available_subtitle_languages or [],
-        "has_subtitles": bool(movie.available_subtitle_languages and len(movie.available_subtitle_languages) > 0),
+        "has_subtitles": bool(
+            movie.available_subtitle_languages
+            and len(movie.available_subtitle_languages) > 0
+        ),
         "related": [
             {
                 "id": str(item.id),

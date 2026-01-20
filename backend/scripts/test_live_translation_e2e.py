@@ -14,8 +14,8 @@ Usage:
 
 import asyncio
 import json
-import sys
 import os
+import sys
 from datetime import datetime
 
 # Add backend to path
@@ -42,8 +42,8 @@ async def test_health_endpoints():
     """Test health check endpoints."""
     print_header("Testing Health Check Endpoints")
 
-    from fastapi.testclient import TestClient
     from app.main import app
+    from fastapi.testclient import TestClient
 
     client = TestClient(app)
     results = []
@@ -67,7 +67,7 @@ async def test_health_endpoints():
         print_result(
             "Live translation health check",
             passed,
-            f"STT: {data.get('stt_provider')}, Translation: {data.get('translation_provider')}"
+            f"STT: {data.get('stt_provider')}, Translation: {data.get('translation_provider')}",
         )
         print(f"   └─ Providers available: {json.dumps(data.get('providers', {}))}")
         results.append(passed)
@@ -82,8 +82,8 @@ async def test_service_initialization():
     """Test LiveTranslationService initialization with different providers."""
     print_header("Testing Service Initialization")
 
-    from app.services.live_translation_service import LiveTranslationService
     from app.core.config import settings
+    from app.services.live_translation_service import LiveTranslationService
 
     test_cases = [
         ("elevenlabs", "google", "ElevenLabs STT + Google Translate"),
@@ -97,15 +97,14 @@ async def test_service_initialization():
     for stt, translation, description in test_cases:
         try:
             service = LiveTranslationService(
-                provider=stt,
-                translation_provider=translation
+                provider=stt, translation_provider=translation
             )
             status = service.verify_service_availability()
             passed = status.get("speech_to_text") and status.get("translate")
             print_result(
                 description,
                 passed,
-                f"STT: {status.get('speech_to_text')}, Translate: {status.get('translate')}"
+                f"STT: {status.get('speech_to_text')}, Translate: {status.get('translate')}",
             )
             results.append(passed)
         except Exception as e:
@@ -119,11 +118,11 @@ async def test_elevenlabs_service():
     """Test ElevenLabs realtime service directly."""
     print_header("Testing ElevenLabs Realtime Service")
 
-    from app.services.elevenlabs_realtime_service import (
-        ElevenLabsRealtimeService,
-        WEBSOCKETS_AVAILABLE,
-    )
     from app.core.config import settings
+    from app.services.elevenlabs_realtime_service import (
+        WEBSOCKETS_AVAILABLE,
+        ElevenLabsRealtimeService,
+    )
 
     results = []
 
@@ -141,7 +140,9 @@ async def test_elevenlabs_service():
     # Test service availability
     try:
         available = service.verify_service_availability()
-        print_result("Service availability", available, f"WebSockets: {WEBSOCKETS_AVAILABLE}")
+        print_result(
+            "Service availability", available, f"WebSockets: {WEBSOCKETS_AVAILABLE}"
+        )
         results.append(available)
     except Exception as e:
         print_result("Service availability", False, str(e))
@@ -152,7 +153,9 @@ async def test_elevenlabs_service():
         test_audio = b"\x00" * 1600  # 100ms of 16kHz audio
         await service.send_audio_chunk(test_audio)
         passed = len(service._audio_buffer) == 1
-        print_result("Audio buffering", passed, f"Buffer size: {len(service._audio_buffer)}")
+        print_result(
+            "Audio buffering", passed, f"Buffer size: {len(service._audio_buffer)}"
+        )
         results.append(passed)
     except Exception as e:
         print_result("Audio buffering", False, str(e))
@@ -163,7 +166,11 @@ async def test_elevenlabs_service():
         for i in range(150):
             await service.send_audio_chunk(bytes([i % 256]))
         passed = len(service._audio_buffer) == 100
-        print_result("Buffer rolling (max 100)", passed, f"Buffer size: {len(service._audio_buffer)}")
+        print_result(
+            "Buffer rolling (max 100)",
+            passed,
+            f"Buffer size: {len(service._audio_buffer)}",
+        )
         results.append(passed)
     except Exception as e:
         print_result("Buffer rolling", False, str(e))
@@ -183,7 +190,9 @@ async def test_translation_providers():
 
     # Test Google Translate
     try:
-        service = LiveTranslationService(provider="whisper", translation_provider="google")
+        service = LiveTranslationService(
+            provider="whisper", translation_provider="google"
+        )
         result = await service.translate_text(test_text, "he", "en")
         passed = result and len(result) > 0 and result != test_text
         print_result("Google Translate", passed, f"'{test_text}' -> '{result}'")
@@ -194,7 +203,9 @@ async def test_translation_providers():
 
     # Test OpenAI Translation
     try:
-        service = LiveTranslationService(provider="whisper", translation_provider="openai")
+        service = LiveTranslationService(
+            provider="whisper", translation_provider="openai"
+        )
         result = await service.translate_text(test_text, "he", "en")
         passed = result and len(result) > 0
         print_result("OpenAI Translate", passed, f"'{test_text}' -> '{result}'")
@@ -205,7 +216,9 @@ async def test_translation_providers():
 
     # Test Claude Translation
     try:
-        service = LiveTranslationService(provider="elevenlabs", translation_provider="claude")
+        service = LiveTranslationService(
+            provider="elevenlabs", translation_provider="claude"
+        )
         result = await service.translate_text(test_text, "he", "en")
         passed = result and len(result) > 0
         print_result("Claude Translate", passed, f"'{test_text}' -> '{result}'")
@@ -227,11 +240,15 @@ async def test_websocket_endpoint():
 
     # Check that the WebSocket route exists
     try:
-        routes = [r for r in router.routes if hasattr(r, 'path')]
-        ws_routes = [r for r in routes if '/subtitles' in r.path or 'live' in r.path]
+        routes = [r for r in router.routes if hasattr(r, "path")]
+        ws_routes = [r for r in routes if "/subtitles" in r.path or "live" in r.path]
         passed = len(ws_routes) > 0
         route_paths = [r.path for r in ws_routes] if ws_routes else []
-        print_result("WebSocket route exists", passed, f"Found {len(ws_routes)} route(s): {route_paths}")
+        print_result(
+            "WebSocket route exists",
+            passed,
+            f"Found {len(ws_routes)} route(s): {route_paths}",
+        )
         results.append(passed)
     except Exception as e:
         print_result("WebSocket route exists", False, str(e))
@@ -251,8 +268,7 @@ async def test_full_pipeline_simulation():
     # Create service with ElevenLabs + Google (recommended production config)
     try:
         service = LiveTranslationService(
-            provider="elevenlabs",
-            translation_provider="google"
+            provider="elevenlabs", translation_provider="google"
         )
 
         # Verify both services are ready
@@ -263,7 +279,7 @@ async def test_full_pipeline_simulation():
         print_result(
             "Pipeline initialization",
             stt_ready and translate_ready,
-            f"STT ready: {stt_ready}, Translate ready: {translate_ready}"
+            f"STT ready: {stt_ready}, Translate ready: {translate_ready}",
         )
         results.append(stt_ready and translate_ready)
 
@@ -277,11 +293,7 @@ async def test_full_pipeline_simulation():
         for hebrew, src, tgt in test_texts:
             translated = await service.translate_text(hebrew, src, tgt)
             passed = translated and len(translated) > 0
-            print_result(
-                f"Translate '{hebrew}'",
-                passed,
-                f"Result: '{translated}'"
-            )
+            print_result(f"Translate '{hebrew}'", passed, f"Result: '{translated}'")
             results.append(passed)
 
     except Exception as e:

@@ -49,7 +49,7 @@ async def execute_create_series_from_episode(
             is_series=True,
             content_type="series",
             stream_url="",
-            is_published=True
+            is_published=True,
         )
         await series.insert()
 
@@ -68,7 +68,7 @@ async def execute_create_series_from_episode(
         return {
             "success": True,
             "series_id": str(series.id),
-            "series_title": title_base
+            "series_title": title_base,
         }
     except Exception as e:
         logger.error(f"Error creating series from episode {episode_id}: {e}")
@@ -76,24 +76,30 @@ async def execute_create_series_from_episode(
 
 
 async def execute_find_misclassified_episodes(
-    limit: int | None = None
+    limit: int | None = None,
 ) -> Dict[str, Any]:
     """Find content items misclassified as series when they should be episodes."""
     try:
         effective_limit = limit or settings.SERIES_LINKER_AUTO_LINK_BATCH_SIZE
 
-        misclassified = await Content.find({
-            "is_series": True,
-            "$or": [
-                {"title": {"$regex": "S[0-9]{2}E[0-9]{2}", "$options": "i"}},
-                {"title": {"$regex": "Episode [0-9]+", "$options": "i"}}
-            ]
-        }).limit(effective_limit).to_list()
+        misclassified = (
+            await Content.find(
+                {
+                    "is_series": True,
+                    "$or": [
+                        {"title": {"$regex": "S[0-9]{2}E[0-9]{2}", "$options": "i"}},
+                        {"title": {"$regex": "Episode [0-9]+", "$options": "i"}},
+                    ],
+                }
+            )
+            .limit(effective_limit)
+            .to_list()
+        )
 
         return {
             "success": True,
             "count": len(misclassified),
-            "items": [{"id": str(m.id), "title": m.title} for m in misclassified]
+            "items": [{"id": str(m.id), "title": m.title} for m in misclassified],
         }
     except Exception as e:
         logger.error(f"Error finding misclassified episodes: {e}")
@@ -115,13 +121,19 @@ async def execute_fix_misclassified_series(
         if error:
             return error
 
-        before_state = {"is_series": content.is_series, "content_type": content.content_type}
+        before_state = {
+            "is_series": content.is_series,
+            "content_type": content.content_type,
+        }
 
         content.is_series = False
         content.content_type = "episode"
         await content.save()
 
-        after_state = {"is_series": content.is_series, "content_type": content.content_type}
+        after_state = {
+            "is_series": content.is_series,
+            "content_type": content.content_type,
+        }
 
         await log_librarian_action(
             audit_id=audit_id,

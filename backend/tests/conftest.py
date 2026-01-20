@@ -2,19 +2,20 @@
 Pytest configuration and fixtures for Bayit+ backend tests.
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add backend directory to path
 backend_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(backend_dir))
 
+from typing import Optional
+
 import pytest
 import pytest_asyncio
-from typing import Optional
-from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 
 @pytest.fixture
@@ -35,6 +36,7 @@ def mock_settings():
 def mock_kids_subcategory():
     """Mock kids subcategory for testing."""
     from app.models.kids_content import KidsSubcategory
+
     return KidsSubcategory.LEARNING_HEBREW
 
 
@@ -42,14 +44,15 @@ def mock_kids_subcategory():
 def mock_age_group():
     """Mock age group for testing."""
     from app.models.kids_content import KidsAgeGroup
+
     return KidsAgeGroup.PRESCHOOL
 
 
 @pytest.fixture
 def sample_discovery_result():
     """Sample discovery result for testing."""
-    from app.services.mcp_content_discovery import DiscoveryResult
     from app.models.kids_content import KidsSubcategory
+    from app.services.mcp_content_discovery import DiscoveryResult
 
     return DiscoveryResult(
         source_type="youtube",
@@ -65,18 +68,10 @@ def sample_discovery_result():
 
 def pytest_configure(config):
     """Configure pytest markers."""
-    config.addinivalue_line(
-        "markers", "asyncio: mark test as async"
-    )
-    config.addinivalue_line(
-        "markers", "slow: mark test as slow running"
-    )
-    config.addinivalue_line(
-        "markers", "integration: mark test as integration test"
-    )
-    config.addinivalue_line(
-        "markers", "olorin: mark test as Olorin platform test"
-    )
+    config.addinivalue_line("markers", "asyncio: mark test as async")
+    config.addinivalue_line("markers", "slow: mark test as slow running")
+    config.addinivalue_line("markers", "integration: mark test as integration test")
+    config.addinivalue_line("markers", "olorin: mark test as Olorin platform test")
     config.addinivalue_line(
         "markers", "phase2: mark test as Phase 2 (separate database) test"
     )
@@ -85,6 +80,7 @@ def pytest_configure(config):
 # ============================================
 # Olorin Database Test Fixtures (Phase 2)
 # ============================================
+
 
 @pytest_asyncio.fixture
 async def olorin_db_client():
@@ -95,14 +91,14 @@ async def olorin_db_client():
     Creates a separate test database for Olorin models.
     """
     from app.core.config import settings
-    from app.models.integration_partner import (
-        IntegrationPartner,
-        UsageRecord,
-        DubbingSession,
-        WebhookDelivery,
-    )
     from app.models.content_embedding import ContentEmbedding, RecapSession
     from app.models.cultural_reference import CulturalReference
+    from app.models.integration_partner import (
+        DubbingSession,
+        IntegrationPartner,
+        UsageRecord,
+        WebhookDelivery,
+    )
 
     # Use test database name
     test_db_name = f"{settings.olorin.database.mongodb_db_name}_test"

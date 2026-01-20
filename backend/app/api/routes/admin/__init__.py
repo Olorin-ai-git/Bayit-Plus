@@ -5,21 +5,22 @@ Provides comprehensive admin functionality across multiple sub-modules.
 
 from fastapi import APIRouter
 
+from .analytics import router as analytics_router
+from .audit import router as audit_router
+
 # Import auth utilities for external use
-from .auth import require_admin, has_permission, log_audit
+from .auth import has_permission, log_audit, require_admin
+from .billing import router as billing_router
+from .campaigns import router as campaigns_router
 
 # Import all routers
 from .dashboard import router as dashboard_router
-from .users import router as users_router
-from .campaigns import router as campaigns_router
-from .billing import router as billing_router
-from .subscriptions import router as subscriptions_router
-from .plans import router as plans_router
 from .marketing import router as marketing_router
-from .settings import router as settings_router
-from .audit import router as audit_router
-from .analytics import router as analytics_router
+from .plans import router as plans_router
 from .recordings import router as recordings_router
+from .settings import router as settings_router
+from .subscriptions import router as subscriptions_router
+from .users import router as users_router
 
 # Create main admin router
 router = APIRouter()
@@ -37,4 +38,4 @@ router.include_router(audit_router, tags=["admin-audit"])
 router.include_router(analytics_router, tags=["admin-analytics"])
 router.include_router(recordings_router, tags=["admin-recordings"])
 
-__all__ = ['router', 'require_admin', 'has_permission', 'log_audit']
+__all__ = ["router", "require_admin", "has_permission", "log_audit"]

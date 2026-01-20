@@ -51,9 +51,7 @@ class SlidingWindowCounter:
     def _cleanup_old_buckets(self, current_time: float) -> None:
         """Remove buckets outside the window."""
         cutoff = current_time - self.window_seconds
-        self._buckets = [
-            (ts, count) for ts, count in self._buckets if ts > cutoff
-        ]
+        self._buckets = [(ts, count) for ts, count in self._buckets if ts > cutoff]
 
 
 class PartnerRateLimiter:
@@ -69,9 +67,9 @@ class PartnerRateLimiter:
     def __init__(self):
         """Initialize the rate limiter."""
         # Nested dict: partner_id -> capability -> time_window -> counter
-        self._counters: Dict[str, Dict[str, Dict[str, SlidingWindowCounter]]] = defaultdict(
-            lambda: defaultdict(dict)
-        )
+        self._counters: Dict[
+            str, Dict[str, Dict[str, SlidingWindowCounter]]
+        ] = defaultdict(lambda: defaultdict(dict))
         self._lock = asyncio.Lock()
 
     def _get_counter(
@@ -107,9 +105,7 @@ class PartnerRateLimiter:
         async with self._lock:
             # Check minute limit
             if rate_limits.requests_per_minute:
-                counter = self._get_counter(
-                    partner_id, capability, "minute", 60
-                )
+                counter = self._get_counter(partner_id, capability, "minute", 60)
                 count = await counter.get_count()
                 if count >= rate_limits.requests_per_minute:
                     logger.warning(
@@ -123,9 +119,7 @@ class PartnerRateLimiter:
 
             # Check hour limit
             if rate_limits.requests_per_hour:
-                counter = self._get_counter(
-                    partner_id, capability, "hour", 3600
-                )
+                counter = self._get_counter(partner_id, capability, "hour", 3600)
                 count = await counter.get_count()
                 if count >= rate_limits.requests_per_hour:
                     logger.warning(
@@ -139,9 +133,7 @@ class PartnerRateLimiter:
 
             # Check day limit
             if rate_limits.requests_per_day:
-                counter = self._get_counter(
-                    partner_id, capability, "day", 86400
-                )
+                counter = self._get_counter(partner_id, capability, "day", 86400)
                 count = await counter.get_count()
                 if count >= rate_limits.requests_per_day:
                     logger.warning(

@@ -114,7 +114,9 @@ async def extract_subtitle_track(
         return subtitle_content
 
     except subprocess.TimeoutExpired:
-        logger.error(f"Subtitle extraction timed out for track {track_index} after {timeout}s")
+        logger.error(
+            f"Subtitle extraction timed out for track {track_index} after {timeout}s"
+        )
         raise SubtitleExtractionTimeoutError(
             f"Subtitle extraction timed out after {timeout} seconds"
         )
@@ -123,11 +125,15 @@ async def extract_subtitle_track(
         raise SubtitleExtractionError(f"Failed to extract subtitle track: {e.stderr}")
     except IOError as e:
         logger.error(f"File operation failed during subtitle extraction: {str(e)}")
-        raise SubtitleExtractionError(f"Failed to read extracted subtitle file: {str(e)}")
+        raise SubtitleExtractionError(
+            f"Failed to read extracted subtitle file: {str(e)}"
+        )
     except SubtitleExtractionError:
         raise
     except Exception as e:
-        logger.error(f"Unexpected error extracting subtitle track {track_index}: {str(e)}")
+        logger.error(
+            f"Unexpected error extracting subtitle track {track_index}: {str(e)}"
+        )
         raise SubtitleExtractionError(f"Unexpected error: {str(e)}")
     finally:
         # Cleanup temporary file
@@ -268,7 +274,9 @@ async def extract_all_subtitles(
 
             # Filter by language if specified (compare normalized codes)
             if languages and language not in languages:
-                skipped_language.append(f"{language_raw}->{language} (not in {languages})")
+                skipped_language.append(
+                    f"{language_raw}->{language} (not in {languages})"
+                )
                 continue
 
             # Store normalized language code in track
@@ -303,7 +311,9 @@ async def extract_all_subtitles(
         # Step 4: Extract tracks in parallel with semaphore to limit concurrency
         semaphore = asyncio.Semaphore(max_parallel)
 
-        async def extract_with_semaphore(track: Dict[str, Any]) -> Optional[Dict[str, str]]:
+        async def extract_with_semaphore(
+            track: Dict[str, Any]
+        ) -> Optional[Dict[str, str]]:
             async with semaphore:
                 try:
                     content = await extract_subtitle_track(
@@ -409,7 +419,9 @@ def embed_subtitles(
         return output_path
 
     except subprocess.TimeoutExpired:
-        raise SubtitleExtractionError(f"Subtitle embedding timed out after {timeout} seconds")
+        raise SubtitleExtractionError(
+            f"Subtitle embedding timed out after {timeout} seconds"
+        )
     except subprocess.CalledProcessError as e:
         raise SubtitleExtractionError(f"Failed to embed subtitles: {e.stderr}")
     except Exception as e:
@@ -466,7 +478,9 @@ def convert_subtitles(
         return output_path
 
     except subprocess.TimeoutExpired:
-        raise SubtitleExtractionError(f"Subtitle conversion timed out after {timeout} seconds")
+        raise SubtitleExtractionError(
+            f"Subtitle conversion timed out after {timeout} seconds"
+        )
     except subprocess.CalledProcessError as e:
         raise SubtitleExtractionError(f"Failed to convert subtitles: {e.stderr}")
     except Exception as e:
@@ -527,10 +541,14 @@ async def burn_subtitles(
             )
         except asyncio.TimeoutError:
             process.kill()
-            raise SubtitleExtractionError(f"Subtitle burning timed out after {timeout} seconds")
+            raise SubtitleExtractionError(
+                f"Subtitle burning timed out after {timeout} seconds"
+            )
 
         if process.returncode != 0:
-            raise SubtitleExtractionError(f"Failed to burn subtitles: {stderr.decode()}")
+            raise SubtitleExtractionError(
+                f"Failed to burn subtitles: {stderr.decode()}"
+            )
 
         logger.info(f"Successfully burned subtitles to {output_path}")
         return output_path

@@ -64,9 +64,15 @@ class CircuitBreaker:
 
         # Load from config if not provided
         config = settings.olorin.resilience
-        self.failure_threshold = failure_threshold or config.circuit_breaker_failure_threshold
-        self.recovery_timeout = recovery_timeout or config.circuit_breaker_recovery_timeout_seconds
-        self.half_open_max_calls = half_open_max_calls or config.circuit_breaker_half_open_max_calls
+        self.failure_threshold = (
+            failure_threshold or config.circuit_breaker_failure_threshold
+        )
+        self.recovery_timeout = (
+            recovery_timeout or config.circuit_breaker_recovery_timeout_seconds
+        )
+        self.half_open_max_calls = (
+            half_open_max_calls or config.circuit_breaker_half_open_max_calls
+        )
 
         # State tracking
         self._state = CircuitState.CLOSED

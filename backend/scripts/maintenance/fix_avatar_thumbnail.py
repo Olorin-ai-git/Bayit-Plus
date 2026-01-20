@@ -1,14 +1,15 @@
 """Script to manually trigger Avatar thumbnail download with fixed headers"""
 import asyncio
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
-import sys
 import os
+import sys
+
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from app.models.content import Content
 from app.core.config import settings
+from app.models.content import Content
 from app.services.image_storage import download_and_encode_image
 
 
@@ -30,12 +31,17 @@ async def fix_avatar_thumbnail():
     print(f"   Current thumbnail_data: {'YES' if avatar.thumbnail_data else 'NO'}")
 
     # Use the thumbnail URL that's already in the database, or the Wikipedia one
-    thumbnail_url = avatar.thumbnail or "https://upload.wikimedia.org/wikipedia/en/d/d6/Avatar_%282009_film%29_poster.jpg"
+    thumbnail_url = (
+        avatar.thumbnail
+        or "https://upload.wikimedia.org/wikipedia/en/d/d6/Avatar_%282009_film%29_poster.jpg"
+    )
 
     print(f"\n📥 Downloading image from: {thumbnail_url}")
 
     # Download and encode the image
-    thumbnail_data = await download_and_encode_image(thumbnail_url, max_size=(800, 1200))
+    thumbnail_data = await download_and_encode_image(
+        thumbnail_url, max_size=(800, 1200)
+    )
 
     if thumbnail_data:
         print(f"✅ Successfully downloaded and encoded image!")

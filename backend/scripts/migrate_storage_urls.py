@@ -13,8 +13,9 @@ Usage:
 import asyncio
 import os
 import sys
-from motor.motor_asyncio import AsyncIOMotorClient
 from typing import List
+
+from motor.motor_asyncio import AsyncIOMotorClient
 
 
 async def migrate_urls():
@@ -31,7 +32,9 @@ async def migrate_urls():
         print("  - MONGODB_URL")
         print("  - MONGODB_DB_NAME")
         print("  - OLD_STORAGE_DOMAIN (e.g., 's3.amazonaws.com/your-bucket')")
-        print("  - NEW_STORAGE_DOMAIN (e.g., 'storage.googleapis.com/bayit-plus-media')")
+        print(
+            "  - NEW_STORAGE_DOMAIN (e.g., 'storage.googleapis.com/bayit-plus-media')"
+        )
         sys.exit(1)
 
     print(f"Connecting to MongoDB: {mongodb_url}")
@@ -85,8 +88,7 @@ async def migrate_urls():
 
                     # Update the document
                     result = await collection.update_one(
-                        {"_id": doc["_id"]},
-                        {"$set": {field: new_url}}
+                        {"_id": doc["_id"]}, {"$set": {field: new_url}}
                     )
 
                     if result.modified_count > 0:

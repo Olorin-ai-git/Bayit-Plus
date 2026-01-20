@@ -9,10 +9,9 @@ import logging
 from datetime import datetime, timedelta
 from typing import Optional
 
-from pymongo.errors import DuplicateKeyError
-
-from app.models.upload import UploadHashLock
 from app.core.config import settings
+from app.models.upload import UploadHashLock
+from pymongo.errors import DuplicateKeyError
 
 logger = logging.getLogger(__name__)
 
@@ -35,10 +34,7 @@ class UploadLockManager:
         self._default_timeout = default_timeout_seconds
 
     async def acquire_hash_lock(
-        self,
-        file_hash: str,
-        job_id: str,
-        timeout_seconds: Optional[int] = None
+        self, file_hash: str, job_id: str, timeout_seconds: Optional[int] = None
     ) -> bool:
         """
         Attempt to acquire a lock for a file hash.
@@ -99,13 +95,14 @@ class UploadLockManager:
         """
         try:
             result = await UploadHashLock.find_one(
-                UploadHashLock.file_hash == file_hash,
-                UploadHashLock.job_id == job_id
+                UploadHashLock.file_hash == file_hash, UploadHashLock.job_id == job_id
             )
 
             if result:
                 await result.delete()
-                logger.info(f"Released hash lock for {file_hash[:16]}... (job: {job_id})")
+                logger.info(
+                    f"Released hash lock for {file_hash[:16]}... (job: {job_id})"
+                )
                 return True
             else:
                 logger.warning(
@@ -119,10 +116,7 @@ class UploadLockManager:
             return False
 
     async def extend_lock(
-        self,
-        file_hash: str,
-        job_id: str,
-        additional_seconds: int
+        self, file_hash: str, job_id: str, additional_seconds: int
     ) -> bool:
         """
         Extend the expiration time of an existing lock.
@@ -137,14 +131,17 @@ class UploadLockManager:
         """
         try:
             lock = await UploadHashLock.find_one(
-                UploadHashLock.file_hash == file_hash,
-                UploadHashLock.job_id == job_id
+                UploadHashLock.file_hash == file_hash, UploadHashLock.job_id == job_id
             )
 
             if lock:
-                lock.expires_at = datetime.utcnow() + timedelta(seconds=additional_seconds)
+                lock.expires_at = datetime.utcnow() + timedelta(
+                    seconds=additional_seconds
+                )
                 await lock.save()
-                logger.debug(f"Extended hash lock for {file_hash[:16]}... by {additional_seconds}s")
+                logger.debug(
+                    f"Extended hash lock for {file_hash[:16]}... by {additional_seconds}s"
+                )
                 return True
             return False
 
@@ -163,9 +160,7 @@ class UploadLockManager:
             True if the hash is locked, False otherwise
         """
         try:
-            lock = await UploadHashLock.find_one(
-                UploadHashLock.file_hash == file_hash
-            )
+            lock = await UploadHashLock.find_one(UploadHashLock.file_hash == file_hash)
             return lock is not None
 
         except Exception as e:
@@ -183,9 +178,7 @@ class UploadLockManager:
             Dict with lock info or None if not locked
         """
         try:
-            lock = await UploadHashLock.find_one(
-                UploadHashLock.file_hash == file_hash
-            )
+            lock = await UploadHashLock.find_one(UploadHashLock.file_hash == file_hash)
 
             if lock:
                 return {
@@ -194,8 +187,7 @@ class UploadLockManager:
                     "acquired_at": lock.acquired_at,
                     "expires_at": lock.expires_at,
                     "remaining_seconds": max(
-                        0,
-                        (lock.expires_at - datetime.utcnow()).total_seconds()
+                        0, (lock.expires_at - datetime.utcnow()).total_seconds()
                     ),
                 }
             return None

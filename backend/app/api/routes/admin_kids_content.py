@@ -11,15 +11,19 @@ Endpoints for managing kids content:
 
 import logging
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from pydantic import BaseModel, Field
-
-from app.models.user import User
+from app.api.routes.admin_content_utils import (
+    AuditAction,
+    Permission,
+    has_permission,
+    log_audit,
+)
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
-from app.api.routes.admin_content_utils import has_permission, log_audit, Permission, AuditAction
+from app.models.user import User
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -28,31 +32,47 @@ router = APIRouter()
 
 # Request/Response Models
 
+
 class SeedKidsContentRequest(BaseModel):
     """Request for seeding kids content."""
-    age_max: Optional[int] = Field(default=None, description="Maximum age rating to seed")
-    categories: Optional[List[str]] = Field(default=None, description="Category keys to seed")
+
+    age_max: Optional[int] = Field(
+        default=None, description="Maximum age rating to seed"
+    )
+    categories: Optional[List[str]] = Field(
+        default=None, description="Category keys to seed"
+    )
 
 
 class ImportArchiveRequest(BaseModel):
     """Request for importing public domain content."""
-    verify_availability: bool = Field(default=True, description="Verify each item is accessible")
-    age_max: Optional[int] = Field(default=None, description="Maximum age rating to import")
-    categories: Optional[List[str]] = Field(default=None, description="Category keys to import")
+
+    verify_availability: bool = Field(
+        default=True, description="Verify each item is accessible"
+    )
+    age_max: Optional[int] = Field(
+        default=None, description="Maximum age rating to import"
+    )
+    categories: Optional[List[str]] = Field(
+        default=None, description="Category keys to import"
+    )
 
 
 class SyncPodcastsRequest(BaseModel):
     """Request for syncing kids podcasts."""
+
     pass
 
 
 class SyncYouTubeRequest(BaseModel):
     """Request for syncing YouTube channels."""
+
     max_videos_per_channel: int = Field(default=20, ge=1, le=50)
 
 
 class CurateContentRequest(BaseModel):
     """Request for curating kids content."""
+
     is_kids_content: Optional[bool] = None
     age_rating: Optional[int] = Field(default=None, ge=3, le=18)
     content_rating: Optional[str] = None
@@ -62,12 +82,14 @@ class CurateContentRequest(BaseModel):
 
 class TagVodRequest(BaseModel):
     """Request for tagging VOD as kids content."""
+
     category_id: Optional[str] = None
     limit: Optional[int] = Field(default=100, ge=1, le=1000)
     dry_run: bool = True
 
 
 # Routes
+
 
 @router.post("/kids/seed")
 async def seed_kids_content(
@@ -356,15 +378,19 @@ async def get_kids_content_stats(
     podcast_stats = await kids_podcast_service.get_kids_podcast_stats()
 
     # Get moderation stats
-    pending_moderation = await Content.find({
-        "is_kids_content": True,
-        "kids_moderation_status": "pending",
-    }).count()
+    pending_moderation = await Content.find(
+        {
+            "is_kids_content": True,
+            "kids_moderation_status": "pending",
+        }
+    ).count()
 
-    approved_content = await Content.find({
-        "is_kids_content": True,
-        "kids_moderation_status": "approved",
-    }).count()
+    approved_content = await Content.find(
+        {
+            "is_kids_content": True,
+            "kids_moderation_status": "approved",
+        }
+    ).count()
 
     return {
         "content_stats": seeder_stats,
@@ -421,21 +447,30 @@ async def get_pending_moderation(
     """
     skip = (page - 1) * page_size
 
-    content = await Content.find({
-        "is_kids_content": True,
-        "$or": [
-            {"kids_moderation_status": "pending"},
-            {"kids_moderation_status": None},
-        ],
-    }).skip(skip).limit(page_size).to_list()
+    content = (
+        await Content.find(
+            {
+                "is_kids_content": True,
+                "$or": [
+                    {"kids_moderation_status": "pending"},
+                    {"kids_moderation_status": None},
+                ],
+            }
+        )
+        .skip(skip)
+        .limit(page_size)
+        .to_list()
+    )
 
-    total = await Content.find({
-        "is_kids_content": True,
-        "$or": [
-            {"kids_moderation_status": "pending"},
-            {"kids_moderation_status": None},
-        ],
-    }).count()
+    total = await Content.find(
+        {
+            "is_kids_content": True,
+            "$or": [
+                {"kids_moderation_status": "pending"},
+                {"kids_moderation_status": None},
+            ],
+        }
+    ).count()
 
     return {
         "items": [

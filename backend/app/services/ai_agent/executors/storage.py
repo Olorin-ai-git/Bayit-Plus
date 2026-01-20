@@ -5,7 +5,7 @@ Functions for checking storage usage, finding large files, and calculating costs
 """
 
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
 
 from app.core.config import settings
 
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 async def execute_check_storage_usage(
-    bucket_name: str = "bayit-plus-media-new"
+    bucket_name: str = "bayit-plus-media-new",
 ) -> Dict[str, Any]:
     """Check Google Cloud Storage bucket usage statistics."""
     try:
@@ -40,9 +40,7 @@ async def execute_check_storage_usage(
         total_size_gb = total_size / (1024 * 1024 * 1024)
 
         sorted_types = sorted(
-            type_breakdown.items(),
-            key=lambda x: x[1]["size"],
-            reverse=True
+            type_breakdown.items(), key=lambda x: x[1]["size"], reverse=True
         )[:10]
 
         return {
@@ -54,10 +52,10 @@ async def execute_check_storage_usage(
                 {
                     "type": ext,
                     "count": data["count"],
-                    "size_gb": round(data["size"] / (1024 * 1024 * 1024), 2)
+                    "size_gb": round(data["size"] / (1024 * 1024 * 1024), 2),
                 }
                 for ext, data in sorted_types
-            ]
+            ],
         }
 
     except Exception as e:
@@ -68,7 +66,7 @@ async def execute_check_storage_usage(
 async def execute_list_large_files(
     bucket_name: str = "bayit-plus-media-new",
     size_threshold_gb: float = 5.0,
-    limit: int = 20
+    limit: int = 20,
 ) -> Dict[str, Any]:
     """Find files larger than a specified size threshold."""
     try:
@@ -83,12 +81,16 @@ async def execute_list_large_files(
         blobs = bucket.list_blobs()
         for blob in blobs:
             if blob.size >= threshold_bytes:
-                large_files.append({
-                    "name": blob.name,
-                    "size_gb": round(blob.size / (1024 * 1024 * 1024), 2),
-                    "content_type": blob.content_type,
-                    "created": blob.time_created.isoformat() if blob.time_created else None
-                })
+                large_files.append(
+                    {
+                        "name": blob.name,
+                        "size_gb": round(blob.size / (1024 * 1024 * 1024), 2),
+                        "content_type": blob.content_type,
+                        "created": blob.time_created.isoformat()
+                        if blob.time_created
+                        else None,
+                    }
+                )
 
         large_files.sort(key=lambda x: x["size_gb"], reverse=True)
         large_files = large_files[:limit]
@@ -98,7 +100,7 @@ async def execute_list_large_files(
             "bucket_name": bucket_name,
             "threshold_gb": size_threshold_gb,
             "large_files_count": len(large_files),
-            "large_files": large_files
+            "large_files": large_files,
         }
 
     except Exception as e:
@@ -107,8 +109,7 @@ async def execute_list_large_files(
 
 
 async def execute_calculate_storage_costs(
-    bucket_name: str = "bayit-plus-media-new",
-    storage_class: str = "STANDARD"
+    bucket_name: str = "bayit-plus-media-new", storage_class: str = "STANDARD"
 ) -> Dict[str, Any]:
     """Calculate estimated monthly storage costs."""
     try:
@@ -117,7 +118,7 @@ async def execute_calculate_storage_costs(
             "STANDARD": 0.026,
             "NEARLINE": 0.010,
             "COLDLINE": 0.004,
-            "ARCHIVE": 0.0012
+            "ARCHIVE": 0.0012,
         }
 
         price_per_gb = pricing.get(storage_class, pricing["STANDARD"])
@@ -136,7 +137,7 @@ async def execute_calculate_storage_costs(
             "total_size_gb": total_size_gb,
             "price_per_gb_usd": price_per_gb,
             "estimated_monthly_cost_usd": round(monthly_cost, 2),
-            "file_count": usage.get("file_count", 0)
+            "file_count": usage.get("file_count", 0),
         }
 
     except Exception as e:

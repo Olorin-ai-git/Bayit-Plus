@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 # Try to import Claude
 try:
     from anthropic import AsyncAnthropic
+
     CLAUDE_AVAILABLE = True
 except ImportError:
     AsyncAnthropic = None
@@ -54,7 +55,7 @@ async def pattern_based_detection(
         if len(alias) < 3:
             continue
 
-        pattern = re.compile(r'\b' + re.escape(alias) + r'\b', re.IGNORECASE)
+        pattern = re.compile(r"\b" + re.escape(alias) + r"\b", re.IGNORECASE)
         for match in pattern.finditer(text):
             if ref_id not in matches_by_ref_id:
                 matches_by_ref_id[ref_id] = []
@@ -65,9 +66,7 @@ async def pattern_based_detection(
 
     # Batch load all referenced CulturalReference documents
     ref_ids = list(matches_by_ref_id.keys())
-    refs = await CulturalReference.find(
-        {"reference_id": {"$in": ref_ids}}
-    ).to_list()
+    refs = await CulturalReference.find({"reference_id": {"$in": ref_ids}}).to_list()
     refs_by_id = {r.reference_id: r for r in refs}
 
     # Build detected references using cached data
@@ -78,7 +77,9 @@ async def pattern_based_detection(
             continue
 
         for match, _alias in match_list:
-            confidence = 0.9 if match.group().lower() == ref.canonical_name.lower() else 0.8
+            confidence = (
+                0.9 if match.group().lower() == ref.canonical_name.lower() else 0.8
+            )
 
             if confidence >= min_confidence:
                 detected.append(
@@ -165,7 +166,7 @@ Only include references that require cultural context. Do not include common nam
         tokens_used = response.usage.input_tokens + response.usage.output_tokens
 
         content = response.content[0].text
-        json_match = re.search(r'\{[\s\S]*\}', content)
+        json_match = re.search(r"\{[\s\S]*\}", content)
         if json_match:
             data = json.loads(json_match.group())
             for ref_data in data.get("references", []):

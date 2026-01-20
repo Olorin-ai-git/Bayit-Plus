@@ -7,15 +7,13 @@ Endpoints for audio transcription using ElevenLabs Speech-to-Text API.
 from typing import Optional
 
 import httpx
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form
-
 from app.core.config import settings
 from app.core.security import get_current_active_user
 from app.models.user import User
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
 from .models import TranscriptionResponse, TranscriptionStatusResponse
 from .services import pending_transcriptions
-
 
 router = APIRouter()
 
@@ -29,7 +27,7 @@ ALLOWED_AUDIO_TYPES = [
     "audio/mp3",
     "audio/mpeg",
     "audio/ogg",
-    "audio/m4a"
+    "audio/m4a",
 ]
 
 
@@ -70,7 +68,7 @@ async def transcribe_audio(
                     "file": (
                         audio.filename or "recording.webm",
                         content,
-                        audio.content_type
+                        audio.content_type,
                     ),
                 },
                 data=request_data,
@@ -79,7 +77,9 @@ async def transcribe_audio(
 
             if response.status_code != 200:
                 error_detail = response.text
-                print(f"[STT] ElevenLabs API error {response.status_code}: {error_detail}")
+                print(
+                    f"[STT] ElevenLabs API error {response.status_code}: {error_detail}"
+                )
                 raise HTTPException(
                     status_code=500,
                     detail=f"ElevenLabs API error: {error_detail}",
@@ -104,33 +104,29 @@ async def transcribe_audio(
                 )
 
             return TranscriptionResponse(
-                text=transcribed_text,
-                language=detected_language
+                text=transcribed_text, language=detected_language
             )
 
     except httpx.TimeoutException:
         raise HTTPException(
-            status_code=504,
-            detail="Transcription timed out. Please try again."
+            status_code=504, detail="Transcription timed out. Please try again."
         )
     except httpx.RequestError as e:
         raise HTTPException(
-            status_code=500,
-            detail=f"Transcription service error: {str(e)}"
+            status_code=500, detail=f"Transcription service error: {str(e)}"
         )
 
 
-@router.get("/transcription/{transcription_id}", response_model=TranscriptionStatusResponse)
+@router.get(
+    "/transcription/{transcription_id}", response_model=TranscriptionStatusResponse
+)
 async def get_transcription_status(
     transcription_id: str,
     current_user: User = Depends(get_current_active_user),
 ) -> TranscriptionStatusResponse:
     """Check the status of a pending transcription."""
     if transcription_id not in pending_transcriptions:
-        raise HTTPException(
-            status_code=404,
-            detail="Transcription not found"
-        )
+        raise HTTPException(status_code=404, detail="Transcription not found")
 
     data = pending_transcriptions[transcription_id]
 
@@ -141,5 +137,5 @@ async def get_transcription_status(
         language_code=data.get("language_code"),
         audio_duration=data.get("audio_duration"),
         error=data.get("error"),
-        processed=data.get("processed")
+        processed=data.get("processed"),
     )

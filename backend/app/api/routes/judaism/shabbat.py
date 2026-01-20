@@ -10,19 +10,18 @@ from datetime import datetime, timedelta
 from typing import Any
 
 import pytz
-from fastapi import APIRouter, Query
-
+from app.api.routes.judaism.constants import (
+    EREV_SHABBAT_HOURS_BEFORE,
+    JEWISH_MUSIC_REGEX,
+    SHABBAT_ACTIVITIES_REGEX,
+    SHABBAT_END_ACTIVITIES_REGEX,
+    SHABBAT_KEYWORDS_REGEX,
+)
+from app.api.routes.judaism.schemas import JudaismContentResponse
 from app.models.content import Content
 from app.models.jewish_calendar import US_JEWISH_CITIES
 from app.services.jewish_calendar_service import jewish_calendar_service
-from app.api.routes.judaism.schemas import JudaismContentResponse
-from app.api.routes.judaism.constants import (
-    SHABBAT_KEYWORDS_REGEX,
-    SHABBAT_ACTIVITIES_REGEX,
-    SHABBAT_END_ACTIVITIES_REGEX,
-    JEWISH_MUSIC_REGEX,
-    EREV_SHABBAT_HOURS_BEFORE,
-)
+from fastapi import APIRouter, Query
 
 router = APIRouter()
 
@@ -94,9 +93,22 @@ async def get_shabbat_featured() -> dict:
 
         if parasha and parasha.lower() in title_lower:
             parasha_content.append(item)
-        elif "music" in genre_lower or "song" in title_lower or "\u05d6\u05de\u05d9\u05e8\u05d5\u05ea" in title_lower:
+        elif (
+            "music" in genre_lower
+            or "song" in title_lower
+            or "\u05d6\u05de\u05d9\u05e8\u05d5\u05ea" in title_lower
+        ):
             music_content.append(item)
-        elif any(kw in title_lower for kw in ["candle", "\u05e0\u05e8\u05d5\u05ea", "challah", "\u05d7\u05dc\u05d4", "prep"]):
+        elif any(
+            kw in title_lower
+            for kw in [
+                "candle",
+                "\u05e0\u05e8\u05d5\u05ea",
+                "challah",
+                "\u05d7\u05dc\u05d4",
+                "prep",
+            ]
+        ):
             preparation_content.append(item)
         else:
             featured_items.append(item)
@@ -111,7 +123,12 @@ async def get_shabbat_featured() -> dict:
             "preparation": preparation_content[:4],
             "featured": featured_items[:4],
         },
-        "all_content": [*parasha_content, *music_content, *preparation_content, *featured_items][:12],
+        "all_content": [
+            *parasha_content,
+            *music_content,
+            *preparation_content,
+            *featured_items,
+        ][:12],
     }
 
 
@@ -126,7 +143,9 @@ async def get_shabbat_status(
     Returns timing information for Shabbat mode detection on frontend.
     """
     # Get Shabbat times
-    shabbat_times = await jewish_calendar_service.get_shabbat_times(city=city, state=state)
+    shabbat_times = await jewish_calendar_service.get_shabbat_times(
+        city=city, state=state
+    )
     calendar = await jewish_calendar_service.get_today()
 
     now = datetime.now(pytz.UTC)

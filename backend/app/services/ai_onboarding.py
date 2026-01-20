@@ -2,14 +2,15 @@
 AI Onboarding Service for voice-based account creation.
 Uses Claude to power a conversational onboarding experience.
 """
-from typing import Optional, List, Tuple
+import asyncio
+import json
+import re
+import secrets
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-import asyncio
-import secrets
-import re
-import json
+from typing import List, Optional, Tuple
+
 import anthropic
 from app.core.config import settings
 
@@ -27,15 +28,18 @@ class OnboardingStep(str, Enum):
 @dataclass
 class OnboardingSession:
     """Represents an AI onboarding conversation session"""
+
     conversation_id: str
     current_step: OnboardingStep
     messages: List[dict] = field(default_factory=list)
-    collected_data: dict = field(default_factory=lambda: {
-        "name": None,
-        "email": None,
-        "email_confirmed": False,
-        "password": None,
-    })
+    collected_data: dict = field(
+        default_factory=lambda: {
+            "name": None,
+            "email": None,
+            "email_confirmed": False,
+            "password": None,
+        }
+    )
     mascot_mood: str = "neutral"
     mascot_animation: str = "idle"
     created_at: datetime = field(default_factory=datetime.utcnow)
@@ -187,7 +191,9 @@ Response format (JSON):
         pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
         return bool(re.match(pattern, email))
 
-    async def start_session(self, language: str = "he") -> Tuple[OnboardingSession, str]:
+    async def start_session(
+        self, language: str = "he"
+    ) -> Tuple[OnboardingSession, str]:
         """
         Start a new onboarding session.
         Returns the session and initial greeting message.
@@ -209,10 +215,12 @@ Response format (JSON):
             else:
                 greeting = "Shalom! I'm Bayit! 🏠 What's your name?"
 
-            session.messages.append({
-                "role": "assistant",
-                "content": greeting,
-            })
+            session.messages.append(
+                {
+                    "role": "assistant",
+                    "content": greeting,
+                }
+            )
             session.current_step = OnboardingStep.NAME_COLLECTION
             session.mascot_mood = "happy"
             session.mascot_animation = "wave"
@@ -233,15 +241,16 @@ Response format (JSON):
             return None, "Session not found"
 
         # Add user message to history
-        session.messages.append({
-            "role": "user",
-            "content": user_message,
-        })
+        session.messages.append(
+            {
+                "role": "user",
+                "content": user_message,
+            }
+        )
 
         # Build context for Claude
         system_prompt = (
-            self.SYSTEM_PROMPT_HE if session.language == "he"
-            else self.SYSTEM_PROMPT_EN
+            self.SYSTEM_PROMPT_HE if session.language == "he" else self.SYSTEM_PROMPT_EN
         )
 
         context = f"""Current step: {session.current_step.value}
@@ -301,7 +310,10 @@ If this is voice input and looks like spelled letters, convert to text."""
             # Handle email confirmation
             if session.current_step == OnboardingStep.EMAIL_VERIFICATION:
                 user_lower = user_message.lower()
-                if any(word in user_lower for word in ["כן", "נכון", "yes", "correct", "yeah", "בטח"]):
+                if any(
+                    word in user_lower
+                    for word in ["כן", "נכון", "yes", "correct", "yeah", "בטח"]
+                ):
                     session.collected_data["email_confirmed"] = True
                     session.current_step = OnboardingStep.ACCOUNT_CREATION
                 elif any(word in user_lower for word in ["לא", "no", "wrong", "טעות"]):
@@ -316,10 +328,12 @@ If this is voice input and looks like spelled letters, convert to text."""
             message = ai_response.get("message", response_text)
 
             # Add assistant response to history
-            session.messages.append({
-                "role": "assistant",
-                "content": message,
-            })
+            session.messages.append(
+                {
+                    "role": "assistant",
+                    "content": message,
+                }
+            )
 
             return session, message
 
@@ -337,7 +351,9 @@ If this is voice input and looks like spelled letters, convert to text."""
         if not session:
             return None, {}
 
-        if not session.collected_data.get("name") or not session.collected_data.get("email"):
+        if not session.collected_data.get("name") or not session.collected_data.get(
+            "email"
+        ):
             return session, {"error": "Missing required data"}
 
         session.current_step = OnboardingStep.COMPLETE

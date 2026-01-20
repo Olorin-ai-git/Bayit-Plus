@@ -10,10 +10,9 @@ import uuid
 from contextvars import ContextVar
 from typing import Callable
 
+from app.core.config import settings
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
-
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -122,6 +121,7 @@ class CorrelationIdMiddleware(BaseHTTPMiddleware):
         # Add to Sentry scope if Sentry is enabled
         try:
             import sentry_sdk
+
             sentry_sdk.set_tag("correlation_id", correlation_id)
         except ImportError:
             pass

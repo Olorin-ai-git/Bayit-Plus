@@ -2,12 +2,14 @@
 Pydantic request/response models for Judaism routes.
 """
 
-from typing import Optional, List
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 
 class JudaismContentResponse(BaseModel):
     """Response model for Judaism content items."""
+
     id: str
     title: str
     title_en: Optional[str] = None
@@ -22,6 +24,7 @@ class JudaismContentResponse(BaseModel):
 
 class JudaismCategoryItem(BaseModel):
     """Judaism category item."""
+
     id: str
     name: str
     name_en: str
@@ -31,22 +34,26 @@ class JudaismCategoryItem(BaseModel):
 
 class CategoriesResponse(BaseModel):
     """Response for categories endpoint."""
+
     categories: List[JudaismCategoryItem]
 
 
 class ContentListResponse(BaseModel):
     """Response for content list endpoints."""
+
     content: List[JudaismContentResponse]
     pagination: dict
 
 
 class FeaturedResponse(BaseModel):
     """Response for featured content endpoint."""
+
     featured: List[JudaismContentResponse]
 
 
 class LiveShiurItem(BaseModel):
     """Live shiur/class item."""
+
     id: str
     name: str
     description: Optional[str] = None
@@ -57,16 +64,19 @@ class LiveShiurItem(BaseModel):
 
 class LiveShiurimResponse(BaseModel):
     """Response for live shiurim endpoint."""
+
     live: List[LiveShiurItem]
 
 
 class DailyShiurResponse(BaseModel):
     """Response for daily shiur endpoint."""
+
     daily_shiur: Optional[JudaismContentResponse] = None
 
 
 class ShabbatFeaturedSection(BaseModel):
     """Shabbat featured content section."""
+
     parasha_content: List[JudaismContentResponse] = Field(default_factory=list)
     shabbat_music: List[JudaismContentResponse] = Field(default_factory=list)
     preparation: List[JudaismContentResponse] = Field(default_factory=list)
@@ -75,6 +85,7 @@ class ShabbatFeaturedSection(BaseModel):
 
 class ShabbatFeaturedResponse(BaseModel):
     """Response for Shabbat featured endpoint."""
+
     parasha: str
     parasha_he: str
     is_shabbat: bool
@@ -84,6 +95,7 @@ class ShabbatFeaturedResponse(BaseModel):
 
 class ShabbatStatusResponse(BaseModel):
     """Response for Shabbat status endpoint."""
+
     status: str
     is_erev_shabbat: bool
     is_shabbat: bool

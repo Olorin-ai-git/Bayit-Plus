@@ -5,13 +5,12 @@ Manages unified parental controls for kids and youngsters content.
 Handles PIN verification, settings management, and migration from legacy controls.
 """
 import logging
-from typing import Optional
 from datetime import datetime
+from typing import Optional
 
+from app.core.security import get_password_hash, verify_password
 from app.models.family_controls import FamilyControls, FamilyControlsResponse
 from app.models.user import User
-from app.core.security import get_password_hash, verify_password
-
 
 logger = logging.getLogger(__name__)
 
@@ -187,13 +186,14 @@ class FamilyControlsService:
         if controls.is_viewing_allowed_now():
             return True, None
 
-        return False, f"Viewing is only allowed between {controls.viewing_start_hour}:00 and {controls.viewing_end_hour}:00"
+        return (
+            False,
+            f"Viewing is only allowed between {controls.viewing_start_hour}:00 and {controls.viewing_end_hour}:00",
+        )
 
     @staticmethod
     async def check_content_allowed(
-        user_id: str,
-        content_rating: str,
-        is_kids: bool = False
+        user_id: str, content_rating: str, is_kids: bool = False
     ) -> tuple[bool, Optional[str]]:
         """
         Check if specific content is allowed based on controls.
@@ -213,7 +213,10 @@ class FamilyControlsService:
 
         if not controls.is_content_allowed(content_rating, is_kids):
             section = "Kids" if is_kids else "Youngsters"
-            return False, f"{section} content with rating {content_rating} is not allowed"
+            return (
+                False,
+                f"{section} content with rating {content_rating} is not allowed",
+            )
 
         return True, None
 
@@ -230,7 +233,9 @@ class FamilyControlsService:
         """
         # Check if user has legacy kids or youngsters PINs
         has_kids_pin = hasattr(user, "kids_pin_hash") and user.kids_pin_hash
-        has_youngsters_pin = hasattr(user, "youngsters_pin_hash") and user.youngsters_pin_hash
+        has_youngsters_pin = (
+            hasattr(user, "youngsters_pin_hash") and user.youngsters_pin_hash
+        )
 
         if not has_kids_pin and not has_youngsters_pin:
             logger.info(f"No legacy controls to migrate for user {user.id}")
@@ -258,7 +263,9 @@ class FamilyControlsService:
         )
 
         await controls.save()
-        logger.info(f"Migrated legacy controls to unified family controls for user {user.id}")
+        logger.info(
+            f"Migrated legacy controls to unified family controls for user {user.id}"
+        )
 
         return controls
 

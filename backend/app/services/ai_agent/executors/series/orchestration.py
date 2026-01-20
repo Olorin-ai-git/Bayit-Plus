@@ -17,8 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 async def execute_organize_all_series(
-    audit_id: str,
-    dry_run: bool = False
+    audit_id: str, dry_run: bool = False
 ) -> Dict[str, Any]:
     """
     Organize all series: link episodes, sync posters, fix duplicates.
@@ -48,9 +47,7 @@ async def execute_organize_all_series(
 
         for series in all_series:
             result = await execute_sync_series_posters_to_episodes(
-                str(series.id),
-                audit_id,
-                dry_run=False
+                str(series.id), audit_id, dry_run=False
             )
             if result.get("success"):
                 synced += result.get("updated", 0)
@@ -59,7 +56,7 @@ async def execute_organize_all_series(
             "success": True,
             "linked_episodes": link_result.get("linked", 0),
             "synced_posters": synced,
-            "series_processed": len(all_series)
+            "series_processed": len(all_series),
         }
     except Exception as e:
         logger.error(f"Error organizing all series: {e}")

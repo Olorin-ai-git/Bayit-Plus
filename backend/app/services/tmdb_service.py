@@ -3,10 +3,11 @@ TMDB Service
 Fetch movie/series metadata from The Movie Database (TMDB) API
 """
 
-from typing import Optional, Dict, Any, List
-import httpx
-from datetime import datetime
 import logging
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+import httpx
 
 logger = logging.getLogger(__name__)
 
@@ -20,12 +21,17 @@ class TMDBService:
     def __init__(self):
         # Import here to avoid circular dependency
         from app.core.config import settings
+
         self.api_key = settings.TMDB_API_KEY
         if not self.api_key:
-            logger.warning("⚠️ TMDB_API_KEY is not configured. TMDB metadata fetching will not work.")
+            logger.warning(
+                "⚠️ TMDB_API_KEY is not configured. TMDB metadata fetching will not work."
+            )
         self.client = httpx.AsyncClient(timeout=10.0)
 
-    async def _make_request(self, endpoint: str, params: Optional[Dict] = None) -> Optional[Dict]:
+    async def _make_request(
+        self, endpoint: str, params: Optional[Dict] = None
+    ) -> Optional[Dict]:
         """Make a request to TMDB API"""
         if not self.api_key:
             logger.error("❌ TMDB API key not configured - cannot make request to TMDB")
@@ -53,7 +59,9 @@ class TMDBService:
             logger.error(f"❌ TMDB API error: {endpoint} - {str(e)}")
             return None
 
-    async def search_movie(self, title: str, year: Optional[int] = None) -> Optional[Dict]:
+    async def search_movie(
+        self, title: str, year: Optional[int] = None
+    ) -> Optional[Dict]:
         """
         Search for a movie by title.
         Returns the first matching result.
@@ -67,7 +75,9 @@ class TMDBService:
             return data["results"][0]
         return None
 
-    async def search_tv_series(self, title: str, year: Optional[int] = None) -> Optional[Dict]:
+    async def search_tv_series(
+        self, title: str, year: Optional[int] = None
+    ) -> Optional[Dict]:
         """
         Search for a TV series by title.
         Returns the first matching result.
@@ -87,7 +97,7 @@ class TMDBService:
         """
         data = await self._make_request(
             f"/movie/{tmdb_id}",
-            params={"append_to_response": "external_ids,videos,credits"}
+            params={"append_to_response": "external_ids,videos,credits"},
         )
         return data
 
@@ -97,7 +107,7 @@ class TMDBService:
         """
         data = await self._make_request(
             f"/tv/{tmdb_id}",
-            params={"append_to_response": "external_ids,videos,credits"}
+            params={"append_to_response": "external_ids,videos,credits"},
         )
         return data
 
@@ -149,7 +159,9 @@ class TMDBService:
             return ""
         return f"{self.IMAGE_BASE_URL}/{size}{path}"
 
-    async def enrich_movie_content(self, title: str, year: Optional[int] = None) -> Dict[str, Any]:
+    async def enrich_movie_content(
+        self, title: str, year: Optional[int] = None
+    ) -> Dict[str, Any]:
         """
         Search for a movie and return enriched metadata.
         Returns dict with tmdb_id, imdb_id, imdb_rating, trailer_url, etc.
@@ -199,11 +211,13 @@ class TMDBService:
         result["overview"] = details.get("overview")
         result["runtime"] = details.get("runtime")
         result["genres"] = [g.get("name") for g in details.get("genres", [])]
-        
+
         # Extract ratings (TMDB provides vote_average, not IMDB rating directly)
-        result["imdb_rating"] = details.get("vote_average")  # TMDB's rating (0-10 scale)
+        result["imdb_rating"] = details.get(
+            "vote_average"
+        )  # TMDB's rating (0-10 scale)
         result["imdb_votes"] = details.get("vote_count")
-        
+
         # Extract release date and year
         release_date = details.get("release_date")  # Format: "YYYY-MM-DD"
         if release_date:
@@ -211,7 +225,7 @@ class TMDBService:
                 result["release_year"] = int(release_date.split("-")[0])
             except (ValueError, IndexError):
                 pass
-        
+
         # Extract additional metadata
         result["original_title"] = details.get("original_title")
         result["original_language"] = details.get("original_language")
@@ -238,13 +252,19 @@ class TMDBService:
 
         # Get trailer
         videos = details.get("videos", {}).get("results", [])
-        trailers = [v for v in videos if v.get("type") == "Trailer" and v.get("site") == "YouTube"]
+        trailers = [
+            v
+            for v in videos
+            if v.get("type") == "Trailer" and v.get("site") == "YouTube"
+        ]
         if trailers:
             result["trailer_url"] = self.get_youtube_embed_url(trailers[0]["key"])
 
         return result
 
-    async def enrich_series_content(self, title: str, year: Optional[int] = None) -> Dict[str, Any]:
+    async def enrich_series_content(
+        self, title: str, year: Optional[int] = None
+    ) -> Dict[str, Any]:
         """
         Search for a TV series and return enriched metadata.
         """
@@ -294,11 +314,11 @@ class TMDBService:
         result["total_seasons"] = details.get("number_of_seasons")
         result["total_episodes"] = details.get("number_of_episodes")
         result["genres"] = [g.get("name") for g in details.get("genres", [])]
-        
+
         # Extract ratings (TMDB provides vote_average)
         result["imdb_rating"] = details.get("vote_average")
         result["imdb_votes"] = details.get("vote_count")
-        
+
         # Extract first air date and year
         first_air_date = details.get("first_air_date")  # Format: "YYYY-MM-DD"
         if first_air_date:
@@ -306,7 +326,7 @@ class TMDBService:
                 result["release_year"] = int(first_air_date.split("-")[0])
             except (ValueError, IndexError):
                 pass
-        
+
         # Extract additional metadata
         result["original_title"] = details.get("original_name")
         result["original_language"] = details.get("original_language")
@@ -329,7 +349,11 @@ class TMDBService:
 
         # Get trailer
         videos = details.get("videos", {}).get("results", [])
-        trailers = [v for v in videos if v.get("type") == "Trailer" and v.get("site") == "YouTube"]
+        trailers = [
+            v
+            for v in videos
+            if v.get("type") == "Trailer" and v.get("site") == "YouTube"
+        ]
         if trailers:
             result["trailer_url"] = self.get_youtube_embed_url(trailers[0]["key"])
 

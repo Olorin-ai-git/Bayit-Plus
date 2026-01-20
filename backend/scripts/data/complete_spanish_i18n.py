@@ -6,10 +6,11 @@ Automatically translates missing Spanish translation keys using Claude API.
 """
 
 import json
-import sys
 import os
+import sys
 from pathlib import Path
-from typing import Dict, Any, List, Tuple
+from typing import Any, Dict, List, Tuple
+
 from anthropic import Anthropic
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -18,17 +19,17 @@ from app.core.config import settings
 
 def load_json(file_path: Path) -> Dict[str, Any]:
     """Load JSON file."""
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
 def save_json(file_path: Path, data: Dict[str, Any]) -> None:
     """Save JSON file with proper formatting."""
-    with open(file_path, 'w', encoding='utf-8') as f:
+    with open(file_path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
-def get_all_keys(obj: Any, prefix: str = '') -> List[str]:
+def get_all_keys(obj: Any, prefix: str = "") -> List[str]:
     """Get all nested keys from a dictionary."""
     keys = []
     if isinstance(obj, dict):
@@ -43,7 +44,7 @@ def get_all_keys(obj: Any, prefix: str = '') -> List[str]:
 
 def get_value_by_path(obj: Dict[str, Any], path: str) -> Any:
     """Get value from nested dictionary by dot-separated path."""
-    keys = path.split('.')
+    keys = path.split(".")
     value = obj
     for key in keys:
         if isinstance(value, dict) and key in value:
@@ -55,7 +56,7 @@ def get_value_by_path(obj: Dict[str, Any], path: str) -> Any:
 
 def set_value_by_path(obj: Dict[str, Any], path: str, value: Any) -> None:
     """Set value in nested dictionary by dot-separated path."""
-    keys = path.split('.')
+    keys = path.split(".")
     target = obj
     for key in keys[:-1]:
         if key not in target:
@@ -83,13 +84,13 @@ Spanish translation:"""
         message = client.messages.create(
             model=settings.CLAUDE_MODEL,
             max_tokens=settings.CLAUDE_MAX_TOKENS_SHORT,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+            messages=[{"role": "user", "content": prompt}],
         )
 
         response_text = message.content[0].text.strip()
-        response_text = response_text.replace("Translation:", "").replace("translation:", "")
+        response_text = response_text.replace("Translation:", "").replace(
+            "translation:", ""
+        )
         response_text = response_text.replace("Spanish:", "").replace("spanish:", "")
         response_text = response_text.strip().strip('"').strip("'")
 
@@ -100,8 +101,7 @@ Spanish translation:"""
 
 
 def find_missing_translations(
-    en_data: Dict[str, Any],
-    es_data: Dict[str, Any]
+    en_data: Dict[str, Any], es_data: Dict[str, Any]
 ) -> List[Tuple[str, str]]:
     """Find keys that exist in English but missing in Spanish."""
     en_keys = set(get_all_keys(en_data))

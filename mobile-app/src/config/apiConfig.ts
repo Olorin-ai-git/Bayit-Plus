@@ -4,7 +4,7 @@
  * Use this file to configure the backend API connection
  */
 
-import { Platform } from 'react-native';
+import { Platform } from "react-native";
 
 /**
  * Environment Configuration
@@ -17,14 +17,14 @@ export const Config = {
   // Backend API URLs
   API_URLS: {
     // Production API (Firebase Hosting -> Cloud Run)
-    production: 'https://api.bayit.tv/api/v1',
+    production: "https://api.bayit.tv/api/v1",
 
     // Development - Local backend
-    // For physical iPhone: use your Mac's local IP address
+    // For physical iPhone: Set IOS_DEV_API_URL environment variable with your Mac's IP
     // For simulator: localhost works
     development: {
-      ios: 'http://192.168.1.160:8000/api/v1', // Your Mac's IP for physical device
-      android: 'http://10.0.2.2:8000/api/v1', // Android emulator special address
+      ios: process.env.IOS_DEV_API_URL || "http://localhost:8000/api/v1",
+      android: process.env.ANDROID_DEV_API_URL || "http://10.0.2.2:8000/api/v1",
     },
   },
 
@@ -42,7 +42,7 @@ export const getApiBaseUrl = (): string => {
   }
 
   // Development mode - platform specific
-  if (Platform.OS === 'android') {
+  if (Platform.OS === "android") {
     return Config.API_URLS.development.android;
   }
 

@@ -21,17 +21,18 @@ from typing import Dict, List, Optional, Set
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from dotenv import load_dotenv
+
 load_dotenv(Path(__file__).parent.parent / ".env")
 
 import logging
-from motor.motor_asyncio import AsyncIOMotorClient
+
 from app.core.config import settings
 from app.services.tmdb_service import TMDBService
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -59,25 +60,26 @@ class MissingEpisodeFinder:
 
     async def find_all_series(self) -> List[dict]:
         """Find all series parent documents."""
-        series_parents = await self.db.content.find({
-            "is_series": True,
-            "$or": [
-                {"series_id": None},
-                {"series_id": {"$exists": False}},
-                {"content_type": "series"}
-            ],
-            "episode": None
-        }).to_list(None)
+        series_parents = await self.db.content.find(
+            {
+                "is_series": True,
+                "$or": [
+                    {"series_id": None},
+                    {"series_id": {"$exists": False}},
+                    {"content_type": "series"},
+                ],
+                "episode": None,
+            }
+        ).to_list(None)
 
         logger.info(f"Found {len(series_parents)} series in database")
         return series_parents
 
     async def get_episodes_for_series(self, series_id: str) -> List[dict]:
         """Get all episodes for a series from database."""
-        episodes = await self.db.content.find({
-            "series_id": series_id,
-            "is_series": True
-        }).to_list(None)
+        episodes = await self.db.content.find(
+            {"series_id": series_id, "is_series": True}
+        ).to_list(None)
         return episodes
 
     def group_episodes_by_season(self, episodes: List[dict]) -> Dict[int, Set[int]]:
@@ -90,7 +92,9 @@ class MissingEpisodeFinder:
                 seasons[season_num].add(episode_num)
         return dict(seasons)
 
-    async def get_tmdb_series_info(self, series_name: str, tmdb_id: Optional[int] = None) -> Optional[Dict]:
+    async def get_tmdb_series_info(
+        self, series_name: str, tmdb_id: Optional[int] = None
+    ) -> Optional[Dict]:
         """Get series info from TMDB including all seasons and episodes."""
         # Use existing TMDB ID if available
         if tmdb_id:
@@ -105,7 +109,9 @@ class MissingEpisodeFinder:
         if not search_result:
             # Try with English name if it's Hebrew
             if any(0x0590 <= ord(c) <= 0x05FF for c in series_name):
-                logger.warning(f"   ⚠️ No TMDB result for '{series_name}' - try adding to HEBREW_SERIES_MAPPING")
+                logger.warning(
+                    f"   ⚠️ No TMDB result for '{series_name}' - try adding to HEBREW_SERIES_MAPPING"
+                )
             return None
 
         tmdb_id = search_result.get("id")
@@ -134,7 +140,7 @@ class MissingEpisodeFinder:
             seasons_info[season_num] = {
                 "episode_count": episode_count,
                 "name": season.get("name"),
-                "air_date": season.get("air_date")
+                "air_date": season.get("air_date"),
             }
 
         return {
@@ -143,7 +149,7 @@ class MissingEpisodeFinder:
             "total_seasons": total_seasons,
             "total_episodes": total_episodes,
             "status": details.get("status"),
-            "seasons": seasons_info
+            "seasons": seasons_info,
         }
 
     async def analyze_series(self, series: dict) -> Dict:
@@ -170,10 +176,12 @@ class MissingEpisodeFinder:
                 "db_episodes": len(db_episodes),
                 "db_seasons": db_seasons,
                 "missing_seasons": {},
-                "total_missing": 0
+                "total_missing": 0,
             }
 
-        logger.info(f"   ✅ TMDB: {tmdb_info['name']} - {tmdb_info['total_seasons']} seasons, {tmdb_info['total_episodes']} episodes")
+        logger.info(
+            f"   ✅ TMDB: {tmdb_info['name']} - {tmdb_info['total_seasons']} seasons, {tmdb_info['total_episodes']} episodes"
+        )
 
         # Compare each season
         missing_seasons = {}
@@ -191,17 +199,23 @@ class MissingEpisodeFinder:
                     "expected": expected_count,
                     "have": len(db_episode_nums),
                     "missing": missing_episodes,
-                    "present": sorted(db_episode_nums)
+                    "present": sorted(db_episode_nums),
                 }
                 total_missing += len(missing_episodes)
-                logger.info(f"   Season {season_num}: have {len(db_episode_nums)}/{expected_count}, missing: {missing_episodes}")
+                logger.info(
+                    f"   Season {season_num}: have {len(db_episode_nums)}/{expected_count}, missing: {missing_episodes}"
+                )
             else:
-                logger.info(f"   Season {season_num}: ✓ complete ({len(db_episode_nums)}/{expected_count})")
+                logger.info(
+                    f"   Season {season_num}: ✓ complete ({len(db_episode_nums)}/{expected_count})"
+                )
 
         # Check for seasons in DB but not in TMDB (might be specials or errors)
         extra_seasons = set(db_seasons.keys()) - set(tmdb_info["seasons"].keys())
         if extra_seasons:
-            logger.warning(f"   ⚠️ Extra seasons in DB not in TMDB: {sorted(extra_seasons)}")
+            logger.warning(
+                f"   ⚠️ Extra seasons in DB not in TMDB: {sorted(extra_seasons)}"
+            )
 
         return {
             "name": series_name,
@@ -216,7 +230,7 @@ class MissingEpisodeFinder:
             "db_seasons": {k: sorted(v) for k, v in db_seasons.items()},
             "missing_seasons": missing_seasons,
             "total_missing": total_missing,
-            "extra_seasons": sorted(extra_seasons) if extra_seasons else []
+            "extra_seasons": sorted(extra_seasons) if extra_seasons else [],
         }
 
     async def run_analysis(self):
@@ -249,7 +263,9 @@ class MissingEpisodeFinder:
 
         # Series with missing episodes
         with_missing = [r for r in self.results if r["total_missing"] > 0]
-        complete = [r for r in self.results if r["tmdb_found"] and r["total_missing"] == 0]
+        complete = [
+            r for r in self.results if r["tmdb_found"] and r["total_missing"] == 0
+        ]
         not_found = [r for r in self.results if not r["tmdb_found"]]
 
         if with_missing:
@@ -258,13 +274,17 @@ class MissingEpisodeFinder:
             for r in sorted(with_missing, key=lambda x: -x["total_missing"]):
                 logger.info(f"\n{r['name']} (TMDB: {r.get('tmdb_name', 'N/A')})")
                 logger.info(f"   Status: {r.get('tmdb_status', 'Unknown')}")
-                logger.info(f"   TMDB expects: {r.get('tmdb_total_episodes', '?')} episodes across {r.get('tmdb_total_seasons', '?')} seasons")
+                logger.info(
+                    f"   TMDB expects: {r.get('tmdb_total_episodes', '?')} episodes across {r.get('tmdb_total_seasons', '?')} seasons"
+                )
                 logger.info(f"   We have: {r['db_episodes']} episodes")
                 logger.info(f"   Missing: {r['total_missing']} episodes")
 
                 for season_num, season_data in sorted(r["missing_seasons"].items()):
                     logger.info(f"\n   Season {season_num}:")
-                    logger.info(f"      Have: {season_data['have']}/{season_data['expected']}")
+                    logger.info(
+                        f"      Have: {season_data['have']}/{season_data['expected']}"
+                    )
                     logger.info(f"      Present: {season_data['present']}")
                     logger.info(f"      Missing: {season_data['missing']}")
 
@@ -272,7 +292,9 @@ class MissingEpisodeFinder:
             logger.info("\n\n✅ COMPLETE SERIES:")
             logger.info("-" * 60)
             for r in sorted(complete, key=lambda x: x["name"]):
-                seasons_str = ", ".join(f"S{k}:{len(v)}" for k, v in sorted(r["db_seasons"].items()))
+                seasons_str = ", ".join(
+                    f"S{k}:{len(v)}" for k, v in sorted(r["db_seasons"].items())
+                )
                 logger.info(f"   ✓ {r['name']} ({seasons_str})")
 
         if not_found:

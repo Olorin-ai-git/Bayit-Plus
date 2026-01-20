@@ -13,12 +13,12 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-from beanie.operators import In
-from motor.motor_asyncio import AsyncIOMotorClient
-
 from app.core.config import settings
 from app.models.content import Content
 from app.models.upload import UploadJob, UploadStatus
+from beanie.operators import In
+from motor.motor_asyncio import AsyncIOMotorClient
+
 from .gcs import gcs_uploader
 
 logger = logging.getLogger(__name__)
@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class OrphanedFile:
     """Represents an orphaned GCS file."""
+
     gcs_path: str
     public_url: str
     size_bytes: Optional[int] = None
@@ -36,6 +37,7 @@ class OrphanedFile:
 @dataclass
 class OrphanedRecord:
     """Represents an orphaned database record."""
+
     content_id: str
     title: str
     stream_url: str
@@ -46,6 +48,7 @@ class OrphanedRecord:
 @dataclass
 class StuckJob:
     """Represents a stuck upload job."""
+
     job_id: str
     filename: str
     status: str
@@ -57,6 +60,7 @@ class StuckJob:
 @dataclass
 class CleanupResult:
     """Result of a cleanup operation."""
+
     success: bool
     items_found: int
     items_cleaned: int
@@ -69,6 +73,7 @@ class CleanupResult:
 @dataclass
 class RecoveryResult:
     """Result of a job recovery operation."""
+
     success: bool
     jobs_found: int
     jobs_recovered: int
@@ -81,6 +86,7 @@ class RecoveryResult:
 @dataclass
 class IntegrityStatus:
     """Overall integrity status."""
+
     orphaned_gcs_files: int = 0
     orphaned_content_records: int = 0
     stuck_upload_jobs: int = 0
@@ -133,13 +139,14 @@ class UploadIntegrityService:
 
             # Count stale hash locks
             from .lock import upload_lock_manager
+
             stale_count = await upload_lock_manager.cleanup_stale_locks()
             status.stale_hash_locks = stale_count
 
             status.issues_found = (
-                status.orphaned_gcs_files > 0 or
-                status.orphaned_content_records > 0 or
-                status.stuck_upload_jobs > 0
+                status.orphaned_gcs_files > 0
+                or status.orphaned_content_records > 0
+                or status.stuck_upload_jobs > 0
             )
 
         except Exception as e:
@@ -148,9 +155,7 @@ class UploadIntegrityService:
         return status
 
     async def find_orphaned_gcs_files(
-        self,
-        prefix: str = None,
-        limit: int = 100
+        self, prefix: str = None, limit: int = 100
     ) -> List[OrphanedFile]:
         """
         Find GCS files that have no corresponding Content record.
@@ -176,7 +181,10 @@ class UploadIntegrityService:
                         break
 
                     # Skip non-video files
-                    if not any(gcs_path.endswith(ext) for ext in ['.mp4', '.mkv', '.webm', '.avi', '.mov']):
+                    if not any(
+                        gcs_path.endswith(ext)
+                        for ext in [".mp4", ".mkv", ".webm", ".avi", ".mov"]
+                    ):
                         continue
 
                     # Build the expected public URL
@@ -186,10 +194,12 @@ class UploadIntegrityService:
                     content = await Content.find_one(Content.stream_url == public_url)
 
                     if not content:
-                        orphans.append(OrphanedFile(
-                            gcs_path=gcs_path,
-                            public_url=public_url,
-                        ))
+                        orphans.append(
+                            OrphanedFile(
+                                gcs_path=gcs_path,
+                                public_url=public_url,
+                            )
+                        )
                         logger.debug(f"Found orphaned GCS file: {gcs_path}")
 
             logger.info(f"Found {len(orphans)} orphaned GCS files")
@@ -200,8 +210,7 @@ class UploadIntegrityService:
         return orphans
 
     async def find_orphaned_content_records(
-        self,
-        limit: int = 100
+        self, limit: int = 100
     ) -> List[OrphanedRecord]:
         """
         Find Content records whose GCS files no longer exist.
@@ -216,15 +225,19 @@ class UploadIntegrityService:
 
         try:
             # Find all Content with GCS URLs
-            gcs_url_pattern = f"https://storage.googleapis.com/{settings.GCS_BUCKET_NAME}/"
+            gcs_url_pattern = (
+                f"https://storage.googleapis.com/{settings.GCS_BUCKET_NAME}/"
+            )
 
             client = AsyncIOMotorClient(settings.MONGODB_URL)
             db = client[settings.MONGODB_DB_NAME]
 
             # Query for content with GCS URLs
-            cursor = db.content.find({
-                "stream_url": {"$regex": f"^{re.escape(gcs_url_pattern)}"}
-            }).limit(limit * 2)  # Get more to account for filtering
+            cursor = db.content.find(
+                {"stream_url": {"$regex": f"^{re.escape(gcs_url_pattern)}"}}
+            ).limit(
+                limit * 2
+            )  # Get more to account for filtering
 
             async for content_doc in cursor:
                 if len(orphans) >= limit:
@@ -240,14 +253,18 @@ class UploadIntegrityService:
                     exists = await gcs_uploader.file_exists(gcs_path)
 
                     if not exists:
-                        orphans.append(OrphanedRecord(
-                            content_id=str(content_doc["_id"]),
-                            title=content_doc.get("title", "Unknown"),
-                            stream_url=stream_url,
-                            file_hash=content_doc.get("file_hash"),
-                            created_at=content_doc.get("created_at"),
-                        ))
-                        logger.debug(f"Found orphaned Content record: {content_doc.get('title')}")
+                        orphans.append(
+                            OrphanedRecord(
+                                content_id=str(content_doc["_id"]),
+                                title=content_doc.get("title", "Unknown"),
+                                stream_url=stream_url,
+                                file_hash=content_doc.get("file_hash"),
+                                created_at=content_doc.get("created_at"),
+                            )
+                        )
+                        logger.debug(
+                            f"Found orphaned Content record: {content_doc.get('title')}"
+                        )
 
             logger.info(f"Found {len(orphans)} orphaned Content records")
 
@@ -257,8 +274,7 @@ class UploadIntegrityService:
         return orphans
 
     async def find_stuck_upload_jobs(
-        self,
-        threshold_minutes: int = None
+        self, threshold_minutes: int = None
     ) -> List[StuckJob]:
         """
         Find upload jobs that are stuck in processing state.
@@ -277,7 +293,7 @@ class UploadIntegrityService:
 
             jobs = await UploadJob.find(
                 In(UploadJob.status, [UploadStatus.PROCESSING, UploadStatus.UPLOADING]),
-                UploadJob.started_at < cutoff_time
+                UploadJob.started_at < cutoff_time,
             ).to_list()
 
             for job in jobs:
@@ -285,14 +301,16 @@ class UploadIntegrityService:
                     (datetime.utcnow() - job.started_at).total_seconds() / 60
                 )
 
-                stuck_jobs.append(StuckJob(
-                    job_id=job.job_id,
-                    filename=job.filename,
-                    status=job.status.value,
-                    started_at=job.started_at,
-                    stuck_minutes=stuck_minutes,
-                    current_stage=job.get_current_stage(),
-                ))
+                stuck_jobs.append(
+                    StuckJob(
+                        job_id=job.job_id,
+                        filename=job.filename,
+                        status=job.status.value,
+                        started_at=job.started_at,
+                        stuck_minutes=stuck_minutes,
+                        current_stage=job.get_current_stage(),
+                    )
+                )
 
             logger.info(f"Found {len(stuck_jobs)} stuck upload jobs")
 
@@ -302,9 +320,7 @@ class UploadIntegrityService:
         return stuck_jobs
 
     async def cleanup_orphaned_gcs_files(
-        self,
-        dry_run: bool = True,
-        limit: int = 100
+        self, dry_run: bool = True, limit: int = 100
     ) -> CleanupResult:
         """
         Clean up orphaned GCS files.
@@ -330,20 +346,24 @@ class UploadIntegrityService:
 
             for orphan in orphans:
                 if dry_run:
-                    result.details.append({
-                        "action": "would_delete",
-                        "gcs_path": orphan.gcs_path,
-                        "public_url": orphan.public_url,
-                    })
+                    result.details.append(
+                        {
+                            "action": "would_delete",
+                            "gcs_path": orphan.gcs_path,
+                            "public_url": orphan.public_url,
+                        }
+                    )
                     result.items_cleaned += 1
                 else:
                     deleted = await gcs_uploader.delete_file(orphan.gcs_path)
                     if deleted:
                         result.items_cleaned += 1
-                        result.details.append({
-                            "action": "deleted",
-                            "gcs_path": orphan.gcs_path,
-                        })
+                        result.details.append(
+                            {
+                                "action": "deleted",
+                                "gcs_path": orphan.gcs_path,
+                            }
+                        )
                         logger.info(f"Deleted orphaned GCS file: {orphan.gcs_path}")
                     else:
                         result.items_failed += 1
@@ -364,9 +384,7 @@ class UploadIntegrityService:
         return result
 
     async def cleanup_orphaned_content_records(
-        self,
-        dry_run: bool = True,
-        limit: int = 100
+        self, dry_run: bool = True, limit: int = 100
     ) -> CleanupResult:
         """
         Clean up orphaned Content records (where GCS file is missing).
@@ -394,12 +412,14 @@ class UploadIntegrityService:
 
             for orphan in orphans:
                 if dry_run:
-                    result.details.append({
-                        "action": "would_delete",
-                        "content_id": orphan.content_id,
-                        "title": orphan.title,
-                        "stream_url": orphan.stream_url,
-                    })
+                    result.details.append(
+                        {
+                            "action": "would_delete",
+                            "content_id": orphan.content_id,
+                            "title": orphan.title,
+                            "stream_url": orphan.stream_url,
+                        }
+                    )
                     result.items_cleaned += 1
                 else:
                     try:
@@ -409,11 +429,13 @@ class UploadIntegrityService:
                         if content:
                             await content.delete()
                             result.items_cleaned += 1
-                            result.details.append({
-                                "action": "deleted",
-                                "content_id": orphan.content_id,
-                                "title": orphan.title,
-                            })
+                            result.details.append(
+                                {
+                                    "action": "deleted",
+                                    "content_id": orphan.content_id,
+                                    "title": orphan.title,
+                                }
+                            )
                             logger.info(f"Deleted orphaned Content: {orphan.title}")
                     except Exception as e:
                         result.items_failed += 1
@@ -434,9 +456,7 @@ class UploadIntegrityService:
         return result
 
     async def recover_stuck_jobs(
-        self,
-        dry_run: bool = True,
-        threshold_minutes: int = None
+        self, dry_run: bool = True, threshold_minutes: int = None
     ) -> RecoveryResult:
         """
         Recover stuck upload jobs by marking them as failed and requeuing.
@@ -462,18 +482,18 @@ class UploadIntegrityService:
 
             for stuck in stuck_jobs:
                 if dry_run:
-                    result.details.append({
-                        "action": "would_recover",
-                        "job_id": stuck.job_id,
-                        "filename": stuck.filename,
-                        "stuck_minutes": stuck.stuck_minutes,
-                    })
+                    result.details.append(
+                        {
+                            "action": "would_recover",
+                            "job_id": stuck.job_id,
+                            "filename": stuck.filename,
+                            "stuck_minutes": stuck.stuck_minutes,
+                        }
+                    )
                     result.jobs_recovered += 1
                 else:
                     try:
-                        job = await UploadJob.find_one(
-                            UploadJob.job_id == stuck.job_id
-                        )
+                        job = await UploadJob.find_one(UploadJob.job_id == stuck.job_id)
                         if job:
                             # Clean up any partial uploads
                             if job.gcs_path:
@@ -494,11 +514,13 @@ class UploadIntegrityService:
 
                             await job.save()
                             result.jobs_recovered += 1
-                            result.details.append({
-                                "action": "recovered",
-                                "job_id": stuck.job_id,
-                                "new_status": job.status.value,
-                            })
+                            result.details.append(
+                                {
+                                    "action": "recovered",
+                                    "job_id": stuck.job_id,
+                                    "new_status": job.status.value,
+                                }
+                            )
                             logger.info(f"Recovered stuck job: {stuck.job_id}")
 
                     except Exception as e:
@@ -519,11 +541,7 @@ class UploadIntegrityService:
 
         return result
 
-    async def run_full_cleanup(
-        self,
-        dry_run: bool = True,
-        limit: int = 100
-    ) -> dict:
+    async def run_full_cleanup(self, dry_run: bool = True, limit: int = 100) -> dict:
         """
         Run a full cleanup of all integrity issues.
 
@@ -585,7 +603,9 @@ class UploadIntegrityService:
 
         results["completed_at"] = datetime.utcnow().isoformat()
 
-        logger.info(f"Full cleanup complete: overall_success={results['overall_success']}")
+        logger.info(
+            f"Full cleanup complete: overall_success={results['overall_success']}"
+        )
 
         return results
 

@@ -1,20 +1,29 @@
 from typing import Optional
-from fastapi import APIRouter, HTTPException, status, Depends, Query
-from pydantic import BaseModel
-from app.models.user import User
+
 from app.models.kids_content import (
+    KidsAgeGroupsResponse,
     KidsContentAggregatedResponse,
     KidsFeaturedResponse,
     KidsSubcategoriesResponse,
-    KidsAgeGroupsResponse,
 )
+from app.models.user import User
 from app.services.kids_content_service import kids_content_service
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel
 
 
 class CategoriesResponse(BaseModel):
     """Response model for kids categories."""
+
     data: list
-from app.core.security import get_current_active_user, get_optional_user, get_password_hash, verify_password
+
+
+from app.core.security import (
+    get_current_active_user,
+    get_optional_user,
+    get_password_hash,
+    verify_password,
+)
 
 
 class ParentalControlsUpdate(BaseModel):
@@ -146,7 +155,7 @@ async def refresh_cache(
 ):
     """Clear the kids content cache to force refresh."""
     # Check if user has admin permissions
-    if not getattr(current_user, 'is_admin', False):
+    if not getattr(current_user, "is_admin", False):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required",

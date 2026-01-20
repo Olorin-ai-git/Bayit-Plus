@@ -1,13 +1,10 @@
-from typing import List, Optional, Tuple
 from datetime import datetime
-from app.models.friendship import (
-    FriendRequest,
-    UserFriendship,
-    FriendRequestStatus,
-)
-from app.models.user import User
+from typing import List, Optional, Tuple
+
 from app.core.exceptions import FriendshipError
-from beanie.operators import In, Or, And
+from app.models.friendship import FriendRequest, FriendRequestStatus, UserFriendship
+from app.models.user import User
+from beanie.operators import And, In, Or
 
 
 class FriendshipService:
@@ -15,9 +12,7 @@ class FriendshipService:
 
     @staticmethod
     async def send_friend_request(
-        sender_id: str,
-        receiver_id: str,
-        message: Optional[str] = None
+        sender_id: str, receiver_id: str, message: Optional[str] = None
     ) -> FriendRequest:
         """Send a friend request"""
         if sender_id == receiver_id:
@@ -33,7 +28,7 @@ class FriendshipService:
             And(
                 FriendRequest.sender_id == sender_id,
                 FriendRequest.receiver_id == receiver_id,
-                FriendRequest.status == FriendRequestStatus.PENDING
+                FriendRequest.status == FriendRequestStatus.PENDING,
             )
         )
         if existing:
@@ -142,12 +137,12 @@ class FriendshipService:
             Or(
                 And(
                     UserFriendship.user1_id == user_id,
-                    UserFriendship.user2_id == friend_id
+                    UserFriendship.user2_id == friend_id,
                 ),
                 And(
                     UserFriendship.user1_id == friend_id,
-                    UserFriendship.user2_id == user_id
-                )
+                    UserFriendship.user2_id == user_id,
+                ),
             )
         )
 
@@ -169,12 +164,16 @@ class FriendshipService:
     @staticmethod
     async def get_friends(user_id: str, limit: int = 100) -> List[dict]:
         """Get user's friend list with basic info"""
-        friendships = await UserFriendship.find(
-            Or(
-                UserFriendship.user1_id == user_id,
-                UserFriendship.user2_id == user_id
+        friendships = (
+            await UserFriendship.find(
+                Or(
+                    UserFriendship.user1_id == user_id,
+                    UserFriendship.user2_id == user_id,
+                )
             )
-        ).limit(limit).to_list()
+            .limit(limit)
+            .to_list()
+        )
 
         friends = []
         for friendship in friendships:
@@ -201,21 +200,31 @@ class FriendshipService:
         return friends
 
     @staticmethod
-    async def get_pending_requests(user_id: str) -> Tuple[List[FriendRequest], List[FriendRequest]]:
+    async def get_pending_requests(
+        user_id: str,
+    ) -> Tuple[List[FriendRequest], List[FriendRequest]]:
         """Get incoming and outgoing pending requests"""
-        incoming = await FriendRequest.find(
-            And(
-                FriendRequest.receiver_id == user_id,
-                FriendRequest.status == FriendRequestStatus.PENDING
+        incoming = (
+            await FriendRequest.find(
+                And(
+                    FriendRequest.receiver_id == user_id,
+                    FriendRequest.status == FriendRequestStatus.PENDING,
+                )
             )
-        ).sort("-sent_at").to_list()
+            .sort("-sent_at")
+            .to_list()
+        )
 
-        outgoing = await FriendRequest.find(
-            And(
-                FriendRequest.sender_id == user_id,
-                FriendRequest.status == FriendRequestStatus.PENDING
+        outgoing = (
+            await FriendRequest.find(
+                And(
+                    FriendRequest.sender_id == user_id,
+                    FriendRequest.status == FriendRequestStatus.PENDING,
+                )
             )
-        ).sort("-sent_at").to_list()
+            .sort("-sent_at")
+            .to_list()
+        )
 
         return incoming, outgoing
 
@@ -226,34 +235,32 @@ class FriendshipService:
             Or(
                 And(
                     UserFriendship.user1_id == user1_id,
-                    UserFriendship.user2_id == user2_id
+                    UserFriendship.user2_id == user2_id,
                 ),
                 And(
                     UserFriendship.user1_id == user2_id,
-                    UserFriendship.user2_id == user1_id
-                )
+                    UserFriendship.user2_id == user1_id,
+                ),
             )
         )
         return friendship is not None
 
     @staticmethod
     async def search_users(
-        query: str,
-        current_user_id: str,
-        limit: int = 20
+        query: str, current_user_id: str, limit: int = 20
     ) -> List[dict]:
         """Search for users to add as friends"""
         # Search by name (case-insensitive)
-        users = await User.find(
-            User.name.regex(query, "i")
-        ).limit(limit).to_list()
+        users = await User.find(User.name.regex(query, "i")).limit(limit).to_list()
 
         # Get current user's friends
         friends = await FriendshipService.get_friends(current_user_id)
         friend_ids = {f["user_id"] for f in friends}
 
         # Get pending requests
-        incoming, outgoing = await FriendshipService.get_pending_requests(current_user_id)
+        incoming, outgoing = await FriendshipService.get_pending_requests(
+            current_user_id
+        )
         incoming_ids = {r.sender_id for r in incoming}
         outgoing_ids = {r.receiver_id for r in outgoing}
 

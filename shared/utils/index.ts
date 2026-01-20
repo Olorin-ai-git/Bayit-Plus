@@ -11,7 +11,7 @@ export {
   getLocalizedCategory,
   getLocalizedContent,
   getLocalizedContents,
-} from './contentLocalization';
+} from "./contentLocalization";
 
 // Formatters
 export {
@@ -19,17 +19,10 @@ export {
   formatDate,
   formatTime,
   formatFileSize,
-} from './formatters';
+} from "./formatters";
 
 // Platform Detection
-export {
-  isWeb,
-  isMobile,
-  isTV,
-  isIOS,
-  isAndroid,
-  Platform,
-} from './platform';
+export { isWeb, isMobile, isTV, isIOS, isAndroid, Platform } from "./platform";
 
 // RTL Helpers
 export {
@@ -39,37 +32,29 @@ export {
   reverseArray,
   getTextAlign,
   getFlexDirection,
-} from './rtlHelpers';
+} from "./rtlHelpers";
 
 // Logger
 export {
   logger,
   LogLevel,
-} from './logger';
+  initLoggerSentry,
+  setCorrelationId,
+  getCorrelationId,
+  generateCorrelationId,
+} from "./logger";
 
 // Admin Constants
-export {
-  ADMIN_ROUTES,
-  ADMIN_PERMISSIONS,
-  ADMIN_ROLES,
-} from './adminConstants';
+export { ADMIN_ROUTES, ADMIN_PERMISSIONS, ADMIN_ROLES } from "./adminConstants";
 
 // Audio Buffer Manager
-export {
-  AudioBufferManager,
-} from './audioBufferManager';
+export { AudioBufferManager } from "./audioBufferManager";
 
 // VAD Detector
-export {
-  VADDetector,
-  VADConfig,
-} from './vadDetector';
+export { VADDetector, VADConfig } from "./vadDetector";
 
 // Wake Word Detector
-export {
-  WakeWordDetector,
-  WakeWordConfig,
-} from './wakeWordDetector';
+export { WakeWordDetector, WakeWordConfig } from "./wakeWordDetector";
 
 // YouTube Helpers
 export {
@@ -78,5 +63,5 @@ export {
   getYouTubeThumbnailUrl,
   getYouTubeThumbnailFromUrl,
   getContentPosterUrl,
-} from './youtube';
-export type { YouTubeThumbnailQuality } from './youtube';
+} from "./youtube";
+export type { YouTubeThumbnailQuality } from "./youtube";

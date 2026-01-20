@@ -1,25 +1,29 @@
 """Chess game models for multiplayer chess functionality."""
+from datetime import datetime
+from enum import Enum
+from typing import List, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
-from datetime import datetime
-from typing import List, Optional
-from enum import Enum
 
 
 class PlayerColor(str, Enum):
     """Chess player color enum."""
+
     WHITE = "white"
     BLACK = "black"
 
 
 class GameMode(str, Enum):
     """Chess game mode enum."""
+
     PVP = "pvp"
     BOT = "bot"
 
 
 class BotDifficulty(str, Enum):
     """Bot difficulty level enum."""
+
     EASY = "easy"
     MEDIUM = "medium"
     HARD = "hard"
@@ -27,6 +31,7 @@ class BotDifficulty(str, Enum):
 
 class GameStatus(str, Enum):
     """Chess game status enum."""
+
     WAITING = "waiting"
     ACTIVE = "active"
     CHECKMATE = "checkmate"
@@ -38,9 +43,10 @@ class GameStatus(str, Enum):
 
 class ChessMove(BaseModel):
     """Individual chess move model."""
+
     from_square: str  # e.g., "e2"
-    to_square: str    # e.g., "e4"
-    piece: str        # e.g., "p" (pawn), "N" (knight)
+    to_square: str  # e.g., "e4"
+    piece: str  # e.g., "p" (pawn), "N" (knight)
     captured: Optional[str] = None
     promotion: Optional[str] = None
     is_castling: bool = False
@@ -52,6 +58,7 @@ class ChessMove(BaseModel):
 
 class ChessPlayer(BaseModel):
     """Chess player information model."""
+
     user_id: str
     user_name: str
     color: PlayerColor
@@ -63,12 +70,15 @@ class ChessPlayer(BaseModel):
 
 class ChessGame(Document):
     """Chess game document model."""
+
     game_code: str = Field(..., unique=True, index=True)  # 6-char join code
     white_player: Optional[ChessPlayer] = None
     black_player: Optional[ChessPlayer] = None
     current_turn: PlayerColor = PlayerColor.WHITE
     status: GameStatus = GameStatus.WAITING
-    board_fen: str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"  # Initial position
+    board_fen: str = (
+        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"  # Initial position
+    )
     move_history: List[ChessMove] = []
     chat_enabled: bool = True
     voice_enabled: bool = True
@@ -82,12 +92,14 @@ class ChessGame(Document):
 
     class Settings:
         """Beanie document settings."""
+
         name = "chess_games"
         indexes = ["game_code", "status", "created_at"]
 
 
 class ChessChatMessage(Document):
     """Chess game chat message document model."""
+
     game_id: str = Field(..., index=True)
     user_id: str
     user_name: str
@@ -104,5 +116,6 @@ class ChessChatMessage(Document):
 
     class Settings:
         """Beanie document settings."""
+
         name = "chess_chat_messages"
         indexes = ["game_id", "timestamp"]

@@ -9,7 +9,7 @@ from app.models.cultural_reference import ReferenceCategory
 MILITARY_TERMS = [
     {
         "reference_id": "idf",
-        "canonical_name": "צה\"ל",
+        "canonical_name": 'צה"ל',
         "canonical_name_en": "IDF",
         "category": ReferenceCategory.ORGANIZATION,
         "subcategory": "military",
@@ -39,11 +39,11 @@ MILITARY_TERMS = [
     },
     {
         "reference_id": "shin_bet",
-        "canonical_name": "שב\"כ",
+        "canonical_name": 'שב"כ',
         "canonical_name_en": "Shin Bet",
         "category": ReferenceCategory.ORGANIZATION,
         "subcategory": "intelligence",
-        "aliases": ["שירות הביטחון הכללי", "השב\"כ"],
+        "aliases": ["שירות הביטחון הכללי", 'השב"כ'],
         "aliases_en": ["Shabak", "ISA"],
         "short_explanation": "שירות הביטחון הפנימי של ישראל",
         "short_explanation_en": "Israel's internal security service",

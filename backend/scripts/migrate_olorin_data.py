@@ -15,32 +15,32 @@ Usage:
     poetry run python scripts/migrate_olorin_data.py --verify
 """
 
-import asyncio
 import argparse
+import asyncio
 import logging
-from typing import Dict, List, Type
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import Document, init_beanie
 from datetime import datetime
+from typing import Dict, List, Type
+
+from beanie import Document, init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
-# Olorin models
-from app.models.integration_partner import (
-    IntegrationPartner,
-    UsageRecord,
-    DubbingSession,
-    WebhookDelivery,
-)
+from app.core.config import settings
 from app.models.content_embedding import ContentEmbedding, RecapSession
 from app.models.cultural_reference import CulturalReference
-from app.core.config import settings
 
+# Olorin models
+from app.models.integration_partner import (
+    DubbingSession,
+    IntegrationPartner,
+    UsageRecord,
+    WebhookDelivery,
+)
 
 # Collection mapping: model_class -> collection_name
 OLORIN_COLLECTIONS: Dict[Type[Document], str] = {
@@ -55,9 +55,7 @@ OLORIN_COLLECTIONS: Dict[Type[Document], str] = {
 
 
 async def get_collection_count(
-    client: AsyncIOMotorClient,
-    db_name: str,
-    collection_name: str
+    client: AsyncIOMotorClient, db_name: str, collection_name: str
 ) -> int:
     """Get document count for a collection."""
     db = client[db_name]
@@ -70,7 +68,7 @@ async def copy_collection(
     target_client: AsyncIOMotorClient,
     target_db_name: str,
     collection_name: str,
-    dry_run: bool = True
+    dry_run: bool = True,
 ) -> Dict[str, int]:
     """
     Copy documents from source collection to target collection.
@@ -97,7 +95,7 @@ async def copy_collection(
             "source_count": source_count,
             "target_count_before": target_count_before,
             "target_count_after": target_count_before,
-            "copied": 0
+            "copied": 0,
         }
 
     if dry_run:
@@ -106,7 +104,7 @@ async def copy_collection(
             "source_count": source_count,
             "target_count_before": target_count_before,
             "target_count_after": target_count_before,
-            "copied": 0
+            "copied": 0,
         }
 
     # Execute migration using upsert pattern for idempotency
@@ -120,14 +118,14 @@ async def copy_collection(
         # Upsert in batches of 1000 for idempotent re-runnable migration
         batch_size = 1000
         for i in range(0, len(documents), batch_size):
-            batch = documents[i:i + batch_size]
+            batch = documents[i : i + batch_size]
 
             # Build bulk write operations with upsert
             operations = [
                 UpdateOne(
                     {"_id": doc["_id"]},  # Match by _id
-                    {"$set": doc},         # Update entire document
-                    upsert=True            # Insert if doesn't exist
+                    {"$set": doc},  # Update entire document
+                    upsert=True,  # Insert if doesn't exist
                 )
                 for doc in batch
             ]
@@ -146,7 +144,7 @@ async def copy_collection(
         "source_count": source_count,
         "target_count_before": target_count_before,
         "target_count_after": target_count_after,
-        "copied": target_count_after - target_count_before
+        "copied": target_count_after - target_count_before,
     }
 
 
@@ -200,8 +198,8 @@ async def migrate_data(dry_run: bool = True) -> bool:
 
     try:
         # Verify connections
-        await source_client.admin.command('ping')
-        await target_client.admin.command('ping')
+        await source_client.admin.command("ping")
+        await target_client.admin.command("ping")
         logger.info("✓ Database connections established")
         logger.info("")
 
@@ -218,7 +216,7 @@ async def migrate_data(dry_run: bool = True) -> bool:
                 target_client=target_client,
                 target_db_name=target_db_name,
                 collection_name=collection_name,
-                dry_run=dry_run
+                dry_run=dry_run,
             )
 
             migration_stats[collection_name] = stats
@@ -258,16 +256,21 @@ async def migrate_data(dry_run: bool = True) -> bool:
             logger.info("✓ Migration completed successfully")
             logger.info("")
             logger.info("Next steps:")
-            logger.info("  1. Verify data: poetry run python scripts/migrate_olorin_data.py --verify")
+            logger.info(
+                "  1. Verify data: poetry run python scripts/migrate_olorin_data.py --verify"
+            )
             logger.info("  2. Run application tests: poetry run pytest")
             logger.info("  3. After verification, cleanup old data:")
-            logger.info("     poetry run python scripts/cleanup_old_olorin_collections.py")
+            logger.info(
+                "     poetry run python scripts/cleanup_old_olorin_collections.py"
+            )
 
         return True
 
     except Exception as e:
         logger.error(f"❌ Migration failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -350,19 +353,15 @@ def main():
     )
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Preview migration without copying data"
+        "--dry-run", action="store_true", help="Preview migration without copying data"
     )
     group.add_argument(
-        "--execute",
-        action="store_true",
-        help="Execute migration and copy data"
+        "--execute", action="store_true", help="Execute migration and copy data"
     )
     group.add_argument(
         "--verify",
         action="store_true",
-        help="Verify migration by comparing document counts"
+        help="Verify migration by comparing document counts",
     )
 
     args = parser.parse_args()

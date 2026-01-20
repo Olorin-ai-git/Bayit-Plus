@@ -9,14 +9,16 @@ Stores scraped data from:
 """
 
 from datetime import datetime
-from typing import Optional, List, Tuple
 from enum import Enum
+from typing import List, Optional, Tuple
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
 
 class OrganizationType(str, Enum):
     """Types of Jewish community organizations."""
+
     SYNAGOGUE = "synagogue"
     JCC = "jcc"
     SCHOOL = "school"
@@ -37,6 +39,7 @@ class OrganizationType(str, Enum):
 
 class Denomination(str, Enum):
     """Jewish denominations."""
+
     ORTHODOX = "orthodox"
     MODERN_ORTHODOX = "modern_orthodox"
     CONSERVATIVE = "conservative"
@@ -50,6 +53,7 @@ class Denomination(str, Enum):
 
 class KosherCertification(str, Enum):
     """Kosher certification types."""
+
     OU = "ou"
     OK = "ok"
     STAR_K = "star_k"
@@ -63,6 +67,7 @@ class KosherCertification(str, Enum):
 
 class USRegion(str, Enum):
     """Major US Jewish community regions."""
+
     NYC = "nyc"
     LA = "la"
     CHICAGO = "chicago"
@@ -80,6 +85,7 @@ class USRegion(str, Enum):
 
 class GeoLocation(BaseModel):
     """Geographic coordinates for geospatial queries."""
+
     type: str = "Point"
     coordinates: Tuple[float, float]  # [longitude, latitude]
 
@@ -90,6 +96,7 @@ class JewishOrganization(Document):
 
     Data sourced from various directories via web scraping.
     """
+
     name: str
     name_he: Optional[str] = None
     organization_type: OrganizationType
@@ -115,10 +122,14 @@ class JewishOrganization(Document):
     website: Optional[str] = None
 
     # Hours of operation
-    hours: Optional[dict] = None  # {"sunday": "9:00-17:00", "monday": "9:00-17:00", ...}
+    hours: Optional[
+        dict
+    ] = None  # {"sunday": "9:00-17:00", "monday": "9:00-17:00", ...}
 
     # Services offered (for synagogues)
-    services: List[str] = Field(default_factory=list)  # ["shabbat", "daily_minyan", "youth", "mikvah"]
+    services: List[str] = Field(
+        default_factory=list
+    )  # ["shabbat", "daily_minyan", "youth", "mikvah"]
 
     # Kosher info (for restaurants/food establishments)
     kosher_certification: Optional[KosherCertification] = None
@@ -175,6 +186,7 @@ class CommunityEvent(Document):
 
     Events can be scraped from organization websites or entered manually.
     """
+
     organization_id: str  # Reference to JewishOrganization
     organization_name: str  # Denormalized for quick display
     title: str
@@ -233,6 +245,7 @@ class ScrapingJob(Document):
 
     Stores job status and results for admin monitoring.
     """
+
     source: str  # "chabad", "ou_kosher", "jcc_association", "mikvah_org"
     region: Optional[str] = None  # Target region if applicable
     status: str  # "pending", "running", "completed", "failed"
@@ -259,8 +272,10 @@ class ScrapingJob(Document):
 
 # Response models
 
+
 class OrganizationResponse(BaseModel):
     """Response model for a Jewish organization."""
+
     id: str
     name: str
     name_he: Optional[str] = None
@@ -291,6 +306,7 @@ class OrganizationResponse(BaseModel):
 
 class EventResponse(BaseModel):
     """Response model for a community event."""
+
     id: str
     organization_id: str
     organization_name: str
@@ -315,6 +331,7 @@ class EventResponse(BaseModel):
 
 class CommunitySearchResponse(BaseModel):
     """Response model for community directory search."""
+
     organizations: List[OrganizationResponse]
     pagination: dict
     region: Optional[str] = None
@@ -323,6 +340,7 @@ class CommunitySearchResponse(BaseModel):
 
 class RegionInfo(BaseModel):
     """Information about a supported US region."""
+
     id: str
     name: str
     name_he: Optional[str] = None
@@ -332,4 +350,5 @@ class RegionInfo(BaseModel):
 
 class RegionsResponse(BaseModel):
     """Response model for available regions endpoint."""
+
     regions: List[RegionInfo]

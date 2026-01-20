@@ -10,33 +10,32 @@ Focuses on:
 Uses existing news_scraper infrastructure with Jerusalem keyword filtering.
 """
 
-import logging
 import asyncio
+import logging
 import re
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 import httpx
-from bs4 import BeautifulSoup
-
 from app.core.config import settings
 from app.models.jerusalem_content import (
-    JerusalemContentSource,
-    JerusalemContentItem,
-    JerusalemContentCategory,
-    JerusalemContentItemResponse,
-    JerusalemContentSourceResponse,
     JerusalemContentAggregatedResponse,
+    JerusalemContentCategory,
+    JerusalemContentItem,
+    JerusalemContentItemResponse,
+    JerusalemContentSource,
+    JerusalemContentSourceResponse,
     JerusalemFeaturedResponse,
 )
 from app.services.news_scraper import (
-    scrape_ynet,
-    scrape_walla,
-    scrape_mako,
-    scrape_jerusalem_news,
-    HeadlineItem,
     HEADERS,
+    HeadlineItem,
+    scrape_jerusalem_news,
+    scrape_mako,
+    scrape_walla,
+    scrape_ynet,
 )
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +92,7 @@ JERUSALEM_KEYWORDS_HE = {
         "הר הזיתים",
     ],
     "ceremonies": [
-        "טקס צה\"ל",
+        'טקס צה"ל',
         "טקס צהל",
         "השבעה",
         "גיוס",
@@ -119,12 +118,36 @@ JERUSALEM_KEYWORDS_HE = {
 
 # Category labels for UI
 JERUSALEM_CATEGORY_LABELS = {
-    JerusalemContentCategory.KOTEL: {"he": "הכותל המערבי", "en": "Western Wall", "es": "Muro Occidental"},
-    JerusalemContentCategory.IDF_CEREMONY: {"he": "טקסי צה\"ל", "en": "IDF Ceremonies", "es": "Ceremonias de las FDI"},
-    JerusalemContentCategory.DIASPORA: {"he": "קשר לתפוצות", "en": "Diaspora Connection", "es": "Conexion con la Diaspora"},
-    JerusalemContentCategory.HOLY_SITES: {"he": "מקומות קדושים", "en": "Holy Sites", "es": "Lugares Sagrados"},
-    JerusalemContentCategory.JERUSALEM_EVENTS: {"he": "אירועים בירושלים", "en": "Jerusalem Events", "es": "Eventos en Jerusalen"},
-    JerusalemContentCategory.GENERAL: {"he": "ירושלים", "en": "Jerusalem", "es": "Jerusalen"},
+    JerusalemContentCategory.KOTEL: {
+        "he": "הכותל המערבי",
+        "en": "Western Wall",
+        "es": "Muro Occidental",
+    },
+    JerusalemContentCategory.IDF_CEREMONY: {
+        "he": 'טקסי צה"ל',
+        "en": "IDF Ceremonies",
+        "es": "Ceremonias de las FDI",
+    },
+    JerusalemContentCategory.DIASPORA: {
+        "he": "קשר לתפוצות",
+        "en": "Diaspora Connection",
+        "es": "Conexion con la Diaspora",
+    },
+    JerusalemContentCategory.HOLY_SITES: {
+        "he": "מקומות קדושים",
+        "en": "Holy Sites",
+        "es": "Lugares Sagrados",
+    },
+    JerusalemContentCategory.JERUSALEM_EVENTS: {
+        "he": "אירועים בירושלים",
+        "en": "Jerusalem Events",
+        "es": "Eventos en Jerusalen",
+    },
+    JerusalemContentCategory.GENERAL: {
+        "he": "ירושלים",
+        "en": "Jerusalem",
+        "es": "Jerusalen",
+    },
 }
 
 
@@ -191,8 +214,8 @@ SEED_JERUSALEM_CONTENT = [
         "title_en": "IDF Swearing-In Ceremonies at the Western Wall",
         "url": "https://www.idf.il/",
         "published_at": datetime.utcnow(),
-        "summary": "חיילי צה\"ל נשבעים אמונים למדינת ישראל בטקסים מרגשים ברחבת הכותל המערבי",
-        "summary_he": "חיילי צה\"ל נשבעים אמונים למדינת ישראל בכותל",
+        "summary": 'חיילי צה"ל נשבעים אמונים למדינת ישראל בטקסים מרגשים ברחבת הכותל המערבי',
+        "summary_he": 'חיילי צה"ל נשבעים אמונים למדינת ישראל בכותל',
         "summary_en": "IDF soldiers swear allegiance at the Western Wall",
         "image_url": None,
         "category": JerusalemContentCategory.IDF_CEREMONY,
@@ -352,7 +375,9 @@ class JerusalemContentService:
                         if "כותל" in keyword:
                             category_scores[JerusalemContentCategory.KOTEL] += 3
                         else:
-                            category_scores[JerusalemContentCategory.JERUSALEM_EVENTS] += 1
+                            category_scores[
+                                JerusalemContentCategory.JERUSALEM_EVENTS
+                            ] += 1
                     elif category_key == "ceremonies":
                         category_scores[JerusalemContentCategory.IDF_CEREMONY] += 3
                     elif category_key == "diaspora":
@@ -373,7 +398,9 @@ class JerusalemContentService:
                         if "kotel" in keyword or "western wall" in keyword:
                             category_scores[JerusalemContentCategory.KOTEL] += 2
                         else:
-                            category_scores[JerusalemContentCategory.JERUSALEM_EVENTS] += 1
+                            category_scores[
+                                JerusalemContentCategory.JERUSALEM_EVENTS
+                            ] += 1
                     elif category_key == "ceremonies":
                         category_scores[JerusalemContentCategory.IDF_CEREMONY] += 2
                     elif category_key == "diaspora":
@@ -401,7 +428,7 @@ class JerusalemContentService:
             return JerusalemContentCategory.KOTEL
 
         # Check for IDF ceremonies
-        idf_keywords = ["צה\"ל", "צהל", "idf", "השבעה", "גיוס", "חיילים", "soldiers"]
+        idf_keywords = ['צה"ל', "צהל", "idf", "השבעה", "גיוס", "חיילים", "soldiers"]
         if any(kw in text for kw in idf_keywords):
             return JerusalemContentCategory.IDF_CEREMONY
 
@@ -411,7 +438,13 @@ class JerusalemContentService:
             return JerusalemContentCategory.DIASPORA
 
         # Check for holy sites
-        holy_keywords = ["מערת המכפלה", "קבר רחל", "הר הבית", "temple mount", "holy site"]
+        holy_keywords = [
+            "מערת המכפלה",
+            "קבר רחל",
+            "הר הבית",
+            "temple mount",
+            "holy site",
+        ]
         if any(kw in text for kw in holy_keywords):
             return JerusalemContentCategory.HOLY_SITES
 
@@ -432,7 +465,7 @@ class JerusalemContentService:
             tags.append("ירושלים")
         if "כותל" in text or "הכותל" in text:
             tags.append("כותל")
-        if "צה\"ל" in text or "צהל" in text:
+        if 'צה"ל' in text or "צהל" in text:
             tags.append("צהל")
         if "עלייה" in text or "עולים" in text:
             tags.append("עלייה")
@@ -467,19 +500,21 @@ class JerusalemContentService:
             )
 
             if score >= settings.JERUSALEM_CONTENT_MIN_RELEVANCE_SCORE:
-                jerusalem_items.append({
-                    "source_name": headline.source,
-                    "title": headline.title,
-                    "title_he": headline.title,  # Hebrew source
-                    "url": headline.url,
-                    "published_at": headline.published_at or headline.scraped_at,
-                    "summary": headline.summary,
-                    "image_url": headline.image_url,
-                    "category": category,
-                    "tags": matched_keywords[:5],  # Top 5 keywords as tags
-                    "relevance_score": score,
-                    "matched_keywords": matched_keywords,
-                })
+                jerusalem_items.append(
+                    {
+                        "source_name": headline.source,
+                        "title": headline.title,
+                        "title_he": headline.title,  # Hebrew source
+                        "url": headline.url,
+                        "published_at": headline.published_at or headline.scraped_at,
+                        "summary": headline.summary,
+                        "image_url": headline.image_url,
+                        "category": category,
+                        "tags": matched_keywords[:5],  # Top 5 keywords as tags
+                        "relevance_score": score,
+                        "matched_keywords": matched_keywords,
+                    }
+                )
 
         return jerusalem_items
 
@@ -511,18 +546,20 @@ class JerusalemContentService:
                     for h in search_headlines:
                         # Categorize based on title/summary content
                         item_category = self._categorize_content(h.title, h.summary)
-                        all_items.append({
-                            "source_name": h.source,
-                            "title": h.title,
-                            "title_he": h.title,
-                            "url": h.url,
-                            "published_at": h.published_at or h.scraped_at,
-                            "summary": h.summary,
-                            "image_url": h.image_url,
-                            "category": item_category,
-                            "tags": self._extract_tags(h.title, h.summary),
-                            "relevance_score": 8.0,
-                        })
+                        all_items.append(
+                            {
+                                "source_name": h.source,
+                                "title": h.title,
+                                "title_he": h.title,
+                                "url": h.url,
+                                "published_at": h.published_at or h.scraped_at,
+                                "summary": h.summary,
+                                "image_url": h.image_url,
+                                "category": item_category,
+                                "tags": self._extract_tags(h.title, h.summary),
+                                "relevance_score": 8.0,
+                            }
+                        )
                     logger.info(f"Web search found {len(all_items)} Jerusalem items")
             except Exception as e:
                 logger.error(f"Web search failed: {e}")
@@ -556,7 +593,10 @@ class JerusalemContentService:
 
             # Sort by relevance score then publication date
             all_items.sort(
-                key=lambda x: (x["relevance_score"], x.get("published_at", datetime.min)),
+                key=lambda x: (
+                    x["relevance_score"],
+                    x.get("published_at", datetime.min),
+                ),
                 reverse=True,
             )
 
@@ -568,7 +608,9 @@ class JerusalemContentService:
                 # Try to get stale cache (ignore TTL) if no new content found
                 stale_items = self._cache._cache.get(cache_key)
                 if stale_items:
-                    cached_items = stale_items[0]  # Get items from tuple (items, timestamp)
+                    cached_items = stale_items[
+                        0
+                    ]  # Get items from tuple (items, timestamp)
                     logger.warning("No new Jerusalem content found, using stale cache")
                 else:
                     # Use seed content as fallback - content must always be available
@@ -704,11 +746,33 @@ class JerusalemContentService:
                 "icon": icon,
             }
             for category_id, labels, icon in [
-                (JerusalemContentCategory.KOTEL, JERUSALEM_CATEGORY_LABELS[JerusalemContentCategory.KOTEL], "🕎"),
-                (JerusalemContentCategory.IDF_CEREMONY, JERUSALEM_CATEGORY_LABELS[JerusalemContentCategory.IDF_CEREMONY], "🎖️"),
-                (JerusalemContentCategory.DIASPORA, JERUSALEM_CATEGORY_LABELS[JerusalemContentCategory.DIASPORA], "🌍"),
-                (JerusalemContentCategory.HOLY_SITES, JERUSALEM_CATEGORY_LABELS[JerusalemContentCategory.HOLY_SITES], "✡️"),
-                (JerusalemContentCategory.JERUSALEM_EVENTS, JERUSALEM_CATEGORY_LABELS[JerusalemContentCategory.JERUSALEM_EVENTS], "🇮🇱"),
+                (
+                    JerusalemContentCategory.KOTEL,
+                    JERUSALEM_CATEGORY_LABELS[JerusalemContentCategory.KOTEL],
+                    "🕎",
+                ),
+                (
+                    JerusalemContentCategory.IDF_CEREMONY,
+                    JERUSALEM_CATEGORY_LABELS[JerusalemContentCategory.IDF_CEREMONY],
+                    "🎖️",
+                ),
+                (
+                    JerusalemContentCategory.DIASPORA,
+                    JERUSALEM_CATEGORY_LABELS[JerusalemContentCategory.DIASPORA],
+                    "🌍",
+                ),
+                (
+                    JerusalemContentCategory.HOLY_SITES,
+                    JERUSALEM_CATEGORY_LABELS[JerusalemContentCategory.HOLY_SITES],
+                    "✡️",
+                ),
+                (
+                    JerusalemContentCategory.JERUSALEM_EVENTS,
+                    JERUSALEM_CATEGORY_LABELS[
+                        JerusalemContentCategory.JERUSALEM_EVENTS
+                    ],
+                    "🇮🇱",
+                ),
             ]
         ]
 

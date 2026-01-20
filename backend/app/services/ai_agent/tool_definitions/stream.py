@@ -9,16 +9,16 @@ STREAM_TOOLS = [
             "properties": {
                 "url": {
                     "type": "string",
-                    "description": "The streaming URL to validate"
+                    "description": "The streaming URL to validate",
                 },
                 "stream_type": {
                     "type": "string",
                     "description": "Type of stream: 'hls', 'dash', or 'audio'",
                     "enum": ["hls", "dash", "audio"],
-                    "default": "hls"
-                }
+                    "default": "hls",
+                },
             },
-            "required": ["url"]
-        }
+            "required": ["url"],
+        },
     },
 ]

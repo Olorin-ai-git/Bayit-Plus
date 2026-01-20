@@ -74,7 +74,9 @@ class AliasCache:
             logger.debug(f"LRU evicted alias: {evicted_key}")
 
         if evicted > 0:
-            logger.info(f"LRU evicted {evicted} entries, cache size: {len(self._cache)}")
+            logger.info(
+                f"LRU evicted {evicted} entries, cache size: {len(self._cache)}"
+            )
 
         return evicted
 
@@ -140,9 +142,13 @@ class AliasCache:
 
             for ref in references:
                 # Add canonical names
-                self._add_entry(ref.canonical_name.lower(), ref.reference_id, current_time)
+                self._add_entry(
+                    ref.canonical_name.lower(), ref.reference_id, current_time
+                )
                 if ref.canonical_name_en:
-                    self._add_entry(ref.canonical_name_en.lower(), ref.reference_id, current_time)
+                    self._add_entry(
+                        ref.canonical_name_en.lower(), ref.reference_id, current_time
+                    )
 
                 # Add aliases
                 for alias in ref.aliases:

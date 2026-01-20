@@ -1,8 +1,9 @@
+from datetime import datetime
+from enum import Enum
+from typing import Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
-from datetime import datetime
-from typing import Optional
-from enum import Enum
 
 
 class FriendRequestStatus(str, Enum):
@@ -14,6 +15,7 @@ class FriendRequestStatus(str, Enum):
 
 class FriendRequest(Document):
     """Friend request model - tracks pending and historical friend requests"""
+
     sender_id: str = Field(..., index=True)
     sender_name: str
     sender_avatar: Optional[str] = None
@@ -40,6 +42,7 @@ class FriendRequest(Document):
 
 class UserFriendship(Document):
     """Bidirectional friendship model - created when request is accepted"""
+
     user1_id: str = Field(..., index=True)
     user1_name: str
     user1_avatar: Optional[str] = None
@@ -65,6 +68,7 @@ class UserFriendship(Document):
 
 class GameResult(Document):
     """Individual game result for statistics tracking"""
+
     game_id: str = Field(..., unique=True, index=True)
     game_type: str = "chess"  # Future: other game types
 
@@ -95,6 +99,7 @@ class GameResult(Document):
 
 class PlayerStats(Document):
     """Aggregated player statistics for quick access"""
+
     user_id: str = Field(..., unique=True, index=True)
 
     # Chess statistics

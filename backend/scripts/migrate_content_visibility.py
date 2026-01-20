@@ -72,7 +72,9 @@ async def migrate_content_visibility(dry_run: bool = False) -> dict:
 
     if dry_run:
         print("\n[DRY RUN] No changes will be made.")
-        print(f"Would update {len(content_to_update)} content items to visibility_mode='public'")
+        print(
+            f"Would update {len(content_to_update)} content items to visibility_mode='public'"
+        )
         return stats
 
     # Update content in batches
@@ -88,7 +90,9 @@ async def migrate_content_visibility(dry_run: bool = False) -> dict:
                 print(f"Error updating content {content.id}: {e}")
                 stats["errors"] += 1
 
-        print(f"Progress: {min(i + batch_size, len(content_to_update))}/{len(content_to_update)}")
+        print(
+            f"Progress: {min(i + batch_size, len(content_to_update))}/{len(content_to_update)}"
+        )
 
     stats["completed_at"] = datetime.utcnow().isoformat()
     print(f"\nMigration completed!")
@@ -98,7 +102,9 @@ async def migrate_content_visibility(dry_run: bool = False) -> dict:
     return stats
 
 
-async def set_vod_to_protected(dry_run: bool = False, category_ids: Optional[list[str]] = None) -> dict:
+async def set_vod_to_protected(
+    dry_run: bool = False, category_ids: Optional[list[str]] = None
+) -> dict:
     """
     Set VOD content (movies/series) to passkey_protected visibility.
 
@@ -144,9 +150,13 @@ async def set_vod_to_protected(dry_run: bool = False, category_ids: Optional[lis
     if dry_run:
         print("\n[DRY RUN] No changes will be made.")
         # Count free content
-        free_count = sum(1 for c in content_to_update if c.requires_subscription == "none")
+        free_count = sum(
+            1 for c in content_to_update if c.requires_subscription == "none"
+        )
         stats["skipped_free"] = free_count
-        print(f"Would update {stats['total_vod'] - free_count} items to passkey_protected")
+        print(
+            f"Would update {stats['total_vod'] - free_count} items to passkey_protected"
+        )
         print(f"Would skip {free_count} free content items")
         return stats
 

@@ -5,7 +5,7 @@ Common content validation and retrieval patterns to eliminate duplication across
 """
 
 import logging
-from typing import Dict, Any, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
@@ -13,7 +13,9 @@ from app.models.content_taxonomy import ContentSection
 logger = logging.getLogger(__name__)
 
 
-async def get_content_or_error(content_id: str) -> Tuple[Optional[Content], Optional[Dict[str, Any]]]:
+async def get_content_or_error(
+    content_id: str,
+) -> Tuple[Optional[Content], Optional[Dict[str, Any]]]:
     """
     Fetch content by ID or return error dict.
 
@@ -42,8 +44,7 @@ async def get_content_or_error(content_id: str) -> Tuple[Optional[Content], Opti
 
 
 async def get_content_section_or_error(
-    identifier: str,
-    by_slug: bool = False
+    identifier: str, by_slug: bool = False
 ) -> Tuple[Optional[ContentSection], Optional[Dict[str, Any]]]:
     """
     Fetch ContentSection by ID or slug, or return error dict.
@@ -101,8 +102,7 @@ async def validate_content_exists(content_id: str) -> Optional[Dict[str, Any]]:
 
 
 async def validate_content_section_exists(
-    identifier: str,
-    by_slug: bool = False
+    identifier: str, by_slug: bool = False
 ) -> Optional[Dict[str, Any]]:
     """
     Validate that ContentSection exists, returning error dict if not.
@@ -150,8 +150,4 @@ def handle_dry_run(dry_run: bool, operation: str, **kwargs) -> Optional[Dict[str
         return None
 
     message = operation.format(**kwargs) if kwargs else operation
-    return {
-        "success": True,
-        "dry_run": True,
-        "message": f"[DRY RUN] Would {message}"
-    }
+    return {"success": True, "dry_run": True, "message": f"[DRY RUN] Would {message}"}

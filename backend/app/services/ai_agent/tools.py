@@ -20,6 +20,6 @@ def get_language_name(code: str) -> str:
         "es": "Spanish",
         "ar": "Arabic",
         "ru": "Russian",
-        "fr": "French"
+        "fr": "French",
     }
     return lang_map.get(code, code.upper())

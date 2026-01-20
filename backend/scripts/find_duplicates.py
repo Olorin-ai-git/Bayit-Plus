@@ -4,8 +4,9 @@
 import asyncio
 import os
 import sys
-from motor.motor_asyncio import AsyncIOMotorClient
+
 from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorClient
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -18,7 +19,9 @@ async def find_duplicates():
     content_collection = db["content"]
 
     # Find all documents with title containing "25th Hour"
-    cursor = content_collection.find({"title": {"$regex": "25th Hour", "$options": "i"}})
+    cursor = content_collection.find(
+        {"title": {"$regex": "25th Hour", "$options": "i"}}
+    )
 
     print("All '25th Hour' movies:")
     async for doc in cursor:

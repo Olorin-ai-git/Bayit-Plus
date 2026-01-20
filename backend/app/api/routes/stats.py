@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends
 from app.core.security import get_current_user
-from app.services.stats_service import StatsService
 from app.models.user import User
-
+from app.services.stats_service import StatsService
+from fastapi import APIRouter, Depends
 
 router = APIRouter(prefix="/stats", tags=["stats"])
 
@@ -22,20 +21,14 @@ async def get_user_stats(user_id: str):
 
 
 @router.get("/history")
-async def get_my_match_history(
-    limit: int = 50,
-    user: User = Depends(get_current_user)
-):
+async def get_my_match_history(limit: int = 50, user: User = Depends(get_current_user)):
     """Get current user's match history"""
     history = await StatsService.get_match_history(str(user.id), limit=limit)
     return {"games": [g.dict() for g in history]}
 
 
 @router.get("/head-to-head/{opponent_id}")
-async def get_head_to_head(
-    opponent_id: str,
-    user: User = Depends(get_current_user)
-):
+async def get_head_to_head(opponent_id: str, user: User = Depends(get_current_user)):
     """Get head-to-head statistics vs opponent"""
     stats = await StatsService.get_head_to_head_stats(str(user.id), opponent_id)
     return stats

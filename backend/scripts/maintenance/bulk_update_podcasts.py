@@ -5,10 +5,11 @@ This script updates multiple podcasts at once with RSS feeds from Apple Podcasts
 """
 import asyncio
 import json
-from pymongo import MongoClient
 from datetime import datetime
-from app.core.database import connect_to_mongo, close_mongo_connection
+
+from app.core.database import close_mongo_connection, connect_to_mongo
 from app.services.apple_podcasts_converter import convert_apple_podcasts_to_rss
+from pymongo import MongoClient
 
 # Auto-discovered using iTunes API - 63 out of 73 podcasts found
 PODCASTS_MAPPING_JSON = """{
@@ -90,9 +91,9 @@ async def bulk_update_podcasts():
     client = MongoClient("mongodb://localhost:27017")
     db = client["bayit_plus"]
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print(f"🎙️ Bulk Podcast RSS Update - {len(PODCASTS_MAPPING)} Podcasts")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     results = {
         "success": 0,
@@ -102,7 +103,9 @@ async def bulk_update_podcasts():
     }
 
     for i, (podcast_title, apple_url) in enumerate(PODCASTS_MAPPING.items(), 1):
-        print(f"[{i:2d}/{len(PODCASTS_MAPPING)}] {podcast_title}...", end=" ", flush=True)
+        print(
+            f"[{i:2d}/{len(PODCASTS_MAPPING)}] {podcast_title}...", end=" ", flush=True
+        )
 
         # Find podcast in database
         podcast = db.podcasts.find_one({"title": podcast_title})
@@ -148,9 +151,9 @@ async def bulk_update_podcasts():
             results["errors"].append(f"{podcast_title}: {str(e)}")
 
     # Print summary
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("📊 Bulk Update Summary")
-    print("="*80)
+    print("=" * 80)
     print(f"   ✅ Successful: {results['success']}")
     print(f"   ❌ Failed: {results['failed']}")
     print(f"   ⚠️ Not Found: {results['not_found']}")
@@ -164,7 +167,7 @@ async def bulk_update_podcasts():
             print(f"   ... and {len(results['errors']) - 5} more")
 
     print("\n💡 Next Step: Restart the server to auto-sync all podcasts")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     client.close()
     await close_mongo_connection()

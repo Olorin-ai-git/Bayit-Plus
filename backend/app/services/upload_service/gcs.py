@@ -11,15 +11,18 @@ import logging
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Callable, Any
+from typing import Any, Callable, Optional
 
 import requests.exceptions
 import urllib3.exceptions
-from google.cloud import storage as gcs_storage
-from google.api_core.exceptions import ServiceUnavailable, TooManyRequests, InternalServerError
-
 from app.core.config import settings
 from app.models.upload import UploadJob
+from google.api_core.exceptions import (
+    InternalServerError,
+    ServiceUnavailable,
+    TooManyRequests,
+)
+from google.cloud import storage as gcs_storage
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +48,9 @@ class GCSUploader:
         if isinstance(exception, (FileNotFoundError, PermissionError)):
             return False
 
-        if isinstance(exception, (ServiceUnavailable, TooManyRequests, InternalServerError)):
+        if isinstance(
+            exception, (ServiceUnavailable, TooManyRequests, InternalServerError)
+        ):
             return True
 
         error_str = str(exception).lower()
@@ -67,18 +72,21 @@ class GCSUploader:
         if any(pattern in error_str for pattern in retryable_patterns):
             return True
 
-        if isinstance(exception, (
-            requests.exceptions.Timeout,
-            requests.exceptions.ConnectionError,
-            urllib3.exceptions.TimeoutError,
-            urllib3.exceptions.ProtocolError,
-            TimeoutError,
-            ConnectionError,
-            BrokenPipeError,
-        )):
+        if isinstance(
+            exception,
+            (
+                requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
+                urllib3.exceptions.TimeoutError,
+                urllib3.exceptions.ProtocolError,
+                TimeoutError,
+                ConnectionError,
+                BrokenPipeError,
+            ),
+        ):
             return True
 
-        cause = getattr(exception, '__cause__', None)
+        cause = getattr(exception, "__cause__", None)
         if cause and cause is not exception:
             return self.is_retryable_error(cause)
 
@@ -89,28 +97,28 @@ class GCSUploader:
         ext = Path(filename).suffix.lower()
 
         content_types = {
-            '.mp4': 'video/mp4',
-            '.mkv': 'video/x-matroska',
-            '.avi': 'video/x-msvideo',
-            '.mov': 'video/quicktime',
-            '.webm': 'video/webm',
-            '.mp3': 'audio/mpeg',
-            '.m4a': 'audio/mp4',
-            '.wav': 'audio/wav',
-            '.jpg': 'image/jpeg',
-            '.jpeg': 'image/jpeg',
-            '.png': 'image/png',
-            '.webp': 'image/webp',
-            '.srt': 'text/plain',
-            '.vtt': 'text/vtt',
+            ".mp4": "video/mp4",
+            ".mkv": "video/x-matroska",
+            ".avi": "video/x-msvideo",
+            ".mov": "video/quicktime",
+            ".webm": "video/webm",
+            ".mp3": "audio/mpeg",
+            ".m4a": "audio/mp4",
+            ".wav": "audio/wav",
+            ".jpg": "image/jpeg",
+            ".jpeg": "image/jpeg",
+            ".png": "image/png",
+            ".webp": "image/webp",
+            ".srt": "text/plain",
+            ".vtt": "text/vtt",
         }
 
-        return content_types.get(ext, 'application/octet-stream')
+        return content_types.get(ext, "application/octet-stream")
 
     async def upload_file(
         self,
         job: UploadJob,
-        on_progress: Optional[Callable[[float, int, float, Optional[int]], Any]] = None
+        on_progress: Optional[Callable[[float, int, float, Optional[int]], Any]] = None,
     ) -> Optional[str]:
         """
         Upload file to Google Cloud Storage with progress tracking.
@@ -132,11 +140,17 @@ class GCSUploader:
             content_type_path = job.type.value + "s"
             filename = Path(job.filename).name
 
-            if job.metadata.get('title'):
-                safe_title = re.sub(r'[^\w\s-]', '', job.metadata['title']).replace(' ', '_')
+            if job.metadata.get("title"):
+                safe_title = re.sub(r"[^\w\s-]", "", job.metadata["title"]).replace(
+                    " ", "_"
+                )
                 destination_blob_name = f"{content_type_path}/{safe_title}/{filename}"
             else:
-                file_hash = job.file_hash[:8] if job.file_hash else hashlib.md5(job.source_path.encode()).hexdigest()[:8]
+                file_hash = (
+                    job.file_hash[:8]
+                    if job.file_hash
+                    else hashlib.md5(job.source_path.encode()).hexdigest()[:8]
+                )
                 destination_blob_name = f"{content_type_path}/{file_hash}_{filename}"
 
             job.gcs_path = destination_blob_name
@@ -188,14 +202,20 @@ class GCSUploader:
                     chunk = self.file.read(size)
                     if chunk:
                         self.state.bytes_read += len(chunk)
-                        upload_progress = (self.state.bytes_read / self.file_size) * 70.0
+                        upload_progress = (
+                            self.state.bytes_read / self.file_size
+                        ) * 70.0
                         self.state.progress = 25.0 + upload_progress
 
                         elapsed = (datetime.utcnow() - self.start_time).total_seconds()
                         if elapsed > 0:
                             self.state.upload_speed = self.state.bytes_read / elapsed
                             remaining_bytes = self.file_size - self.state.bytes_read
-                            self.state.eta_seconds = int(remaining_bytes / self.state.upload_speed) if self.state.upload_speed > 0 else None
+                            self.state.eta_seconds = (
+                                int(remaining_bytes / self.state.upload_speed)
+                                if self.state.upload_speed > 0
+                                else None
+                            )
 
                     return chunk
 
@@ -219,7 +239,7 @@ class GCSUploader:
                                 progress_state.progress,
                                 progress_state.bytes_read,
                                 progress_state.upload_speed,
-                                progress_state.eta_seconds
+                                progress_state.eta_seconds,
                             )
                         last_bytes = progress_state.bytes_read
                     await asyncio.sleep(1)
@@ -238,8 +258,10 @@ class GCSUploader:
 
                 for attempt in range(max_retries + 1):
                     try:
-                        with open(job.source_path, 'rb') as file_obj:
-                            progress_wrapper = ProgressFileWrapper(file_obj, progress_state, file_size, start_time)
+                        with open(job.source_path, "rb") as file_obj:
+                            progress_wrapper = ProgressFileWrapper(
+                                file_obj, progress_state, file_size, start_time
+                            )
                             blob.upload_from_file(
                                 progress_wrapper,
                                 content_type=content_type,
@@ -258,7 +280,7 @@ class GCSUploader:
                             raise
 
                         if attempt < max_retries:
-                            delay = min(initial_delay * (2 ** attempt), max_delay)
+                            delay = min(initial_delay * (2**attempt), max_delay)
                             progress_state.retry_count = attempt + 1
 
                             logger.warning(
@@ -271,7 +293,9 @@ class GCSUploader:
 
                             time.sleep(delay)
                         else:
-                            logger.error(f"Upload failed after {max_retries + 1} attempts: {e}")
+                            logger.error(
+                                f"Upload failed after {max_retries + 1} attempts: {e}"
+                            )
                             raise
 
                 if last_exception:
@@ -286,7 +310,9 @@ class GCSUploader:
                 await updater_task
 
             if progress_state.retry_count > 0:
-                logger.info(f"Upload succeeded after {progress_state.retry_count} retries")
+                logger.info(
+                    f"Upload succeeded after {progress_state.retry_count} retries"
+                )
 
             job.progress = 95.0
             job.bytes_uploaded = file_size
@@ -309,7 +335,6 @@ class GCSUploader:
             logger.error(f"GCS upload failed: {e}", exc_info=True)
             return None
 
-
     async def delete_file(self, gcs_path: str) -> bool:
         """
         Delete a file from GCS.
@@ -330,7 +355,9 @@ class GCSUploader:
                 logger.info(f"Deleted GCS file: {gcs_path}")
                 return True
             else:
-                logger.debug(f"GCS file not found (already deleted or never existed): {gcs_path}")
+                logger.debug(
+                    f"GCS file not found (already deleted or never existed): {gcs_path}"
+                )
                 return True
 
         except Exception as e:
@@ -354,7 +381,9 @@ class GCSUploader:
             return blob.exists()
 
         except Exception as e:
-            logger.error(f"Failed to check GCS file existence {gcs_path}: {e}", exc_info=True)
+            logger.error(
+                f"Failed to check GCS file existence {gcs_path}: {e}", exc_info=True
+            )
             return False
 
     async def list_files(self, prefix: str) -> list:
@@ -374,7 +403,9 @@ class GCSUploader:
             return [blob.name for blob in blobs]
 
         except Exception as e:
-            logger.error(f"Failed to list GCS files with prefix {prefix}: {e}", exc_info=True)
+            logger.error(
+                f"Failed to list GCS files with prefix {prefix}: {e}", exc_info=True
+            )
             return []
 
 

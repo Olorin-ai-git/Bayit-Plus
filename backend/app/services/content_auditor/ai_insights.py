@@ -6,10 +6,9 @@ import logging
 from typing import Any, Dict, List
 
 import anthropic
-
 from app.services.content_auditor.constants import (
-    AIInsightsConfig,
     SUPPORTED_INSIGHT_LANGUAGES,
+    AIInsightsConfig,
     get_ai_insights_config,
     get_anthropic_api_key,
     get_claude_model,
@@ -18,7 +17,9 @@ from app.services.content_auditor.constants import (
 logger = logging.getLogger(__name__)
 
 
-def build_english_prompt(summary_data: Dict[str, Any], sample_issues: Dict[str, Any]) -> str:
+def build_english_prompt(
+    summary_data: Dict[str, Any], sample_issues: Dict[str, Any]
+) -> str:
     """Build English prompt for AI insights."""
     return f"""You are an AI librarian for the Bayit+ system. Analyze the following audit results and identify patterns and recommendations.
 
@@ -45,7 +46,9 @@ Return JSON:
 }}"""
 
 
-def build_spanish_prompt(summary_data: Dict[str, Any], sample_issues: Dict[str, Any]) -> str:
+def build_spanish_prompt(
+    summary_data: Dict[str, Any], sample_issues: Dict[str, Any]
+) -> str:
     """Build Spanish prompt for AI insights."""
     return f"""Eres un bibliotecario AI para el sistema Bayit+. Analiza los siguientes resultados de auditoria e identifica patrones y recomendaciones.
 
@@ -72,7 +75,9 @@ Devuelve JSON:
 }}"""
 
 
-def build_hebrew_prompt(summary_data: Dict[str, Any], sample_issues: Dict[str, Any]) -> str:
+def build_hebrew_prompt(
+    summary_data: Dict[str, Any], sample_issues: Dict[str, Any]
+) -> str:
     """Build Hebrew prompt for AI insights."""
     return f"""You are an AI librarian for the Bayit+ system. Analyze the following audit results and identify patterns and recommendations. Respond in Hebrew.
 
@@ -144,9 +149,15 @@ async def generate_ai_insights(audit_report: Any, language: str = "en") -> List[
             "orphaned_items_count": len(audit_report.orphaned_items),
         }
         sample_issues = {
-            "broken_streams": audit_report.broken_streams[:config.sample_broken_streams],
-            "missing_metadata": audit_report.missing_metadata[:config.sample_missing_metadata],
-            "misclassifications": audit_report.misclassifications[:config.sample_misclassifications],
+            "broken_streams": audit_report.broken_streams[
+                : config.sample_broken_streams
+            ],
+            "missing_metadata": audit_report.missing_metadata[
+                : config.sample_missing_metadata
+            ],
+            "misclassifications": audit_report.misclassifications[
+                : config.sample_misclassifications
+            ],
         }
         if language not in SUPPORTED_INSIGHT_LANGUAGES:
             language = "en"

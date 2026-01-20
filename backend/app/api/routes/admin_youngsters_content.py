@@ -12,15 +12,19 @@ Endpoints for managing youngsters content (ages 12-17):
 
 import logging
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from pydantic import BaseModel, Field
-
-from app.models.user import User
+from app.api.routes.admin_content_utils import (
+    AuditAction,
+    Permission,
+    has_permission,
+    log_audit,
+)
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
-from app.api.routes.admin_content_utils import has_permission, log_audit, Permission, AuditAction
+from app.models.user import User
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -29,32 +33,50 @@ router = APIRouter()
 
 # Request/Response Models
 
+
 class SeedYoungstersContentRequest(BaseModel):
     """Request for seeding youngsters content."""
-    age_max: Optional[int] = Field(default=None, ge=12, le=17, description="Maximum age rating to seed")
-    categories: Optional[List[str]] = Field(default=None, description="Category keys to seed")
-    clear_existing: bool = Field(default=False, description="Clear existing youngsters content before seeding")
+
+    age_max: Optional[int] = Field(
+        default=None, ge=12, le=17, description="Maximum age rating to seed"
+    )
+    categories: Optional[List[str]] = Field(
+        default=None, description="Category keys to seed"
+    )
+    clear_existing: bool = Field(
+        default=False, description="Clear existing youngsters content before seeding"
+    )
 
 
 class ImportArchiveRequest(BaseModel):
     """Request for importing public domain content (PG-13 and below)."""
-    verify_availability: bool = Field(default=True, description="Verify each item is accessible")
-    age_max: Optional[int] = Field(default=None, ge=12, le=17, description="Maximum age rating to import")
-    categories: Optional[List[str]] = Field(default=None, description="Category keys to import")
+
+    verify_availability: bool = Field(
+        default=True, description="Verify each item is accessible"
+    )
+    age_max: Optional[int] = Field(
+        default=None, ge=12, le=17, description="Maximum age rating to import"
+    )
+    categories: Optional[List[str]] = Field(
+        default=None, description="Category keys to import"
+    )
 
 
 class SyncPodcastsRequest(BaseModel):
     """Request for syncing youngsters podcasts."""
+
     pass
 
 
 class SyncYouTubeRequest(BaseModel):
     """Request for syncing YouTube channels."""
+
     max_videos_per_channel: int = Field(default=20, ge=1, le=50)
 
 
 class CurateContentRequest(BaseModel):
     """Request for curating youngsters content."""
+
     is_youngsters_content: Optional[bool] = None
     youngsters_age_rating: Optional[int] = Field(default=None, ge=12, le=17)
     content_rating: Optional[str] = None  # Must be PG-13 or below
@@ -64,12 +86,14 @@ class CurateContentRequest(BaseModel):
 
 class TagVodRequest(BaseModel):
     """Request for tagging VOD as youngsters content."""
+
     category_id: Optional[str] = None
     limit: Optional[int] = Field(default=100, ge=1, le=1000)
     dry_run: bool = True
 
 
 # Routes
+
 
 @router.post("/youngsters/seed")
 async def seed_youngsters_content(
@@ -291,7 +315,7 @@ async def curate_content(
     if data.content_rating and data.content_rating not in ALLOWED_RATINGS:
         raise HTTPException(
             status_code=400,
-            detail=f"Content rating must be PG-13 or below. Allowed: {', '.join(ALLOWED_RATINGS)}"
+            detail=f"Content rating must be PG-13 or below. Allowed: {', '.join(ALLOWED_RATINGS)}",
         )
 
     # Store before state for audit
@@ -413,33 +437,41 @@ async def get_youngsters_content_stats(
     seeder_stats = await seeder.get_seeding_stats()
 
     # Get moderation stats
-    pending_moderation = await Content.find({
-        "is_youngsters_content": True,
-        "youngsters_moderation_status": "pending",
-    }).count()
+    pending_moderation = await Content.find(
+        {
+            "is_youngsters_content": True,
+            "youngsters_moderation_status": "pending",
+        }
+    ).count()
 
-    approved_content = await Content.find({
-        "is_youngsters_content": True,
-        "youngsters_moderation_status": "approved",
-    }).count()
+    approved_content = await Content.find(
+        {
+            "is_youngsters_content": True,
+            "youngsters_moderation_status": "approved",
+        }
+    ).count()
 
     # Get content by age rating
     age_rating_distribution = {}
     for age in [12, 13, 14, 15, 16, 17]:
-        count = await Content.find({
-            "is_youngsters_content": True,
-            "youngsters_age_rating": age,
-        }).count()
+        count = await Content.find(
+            {
+                "is_youngsters_content": True,
+                "youngsters_age_rating": age,
+            }
+        ).count()
         if count > 0:
             age_rating_distribution[age] = count
 
     # Get content by rating (PG-13 compliance check)
     content_rating_distribution = {}
     for rating in ["G", "PG", "PG-13", "TV-G", "TV-PG", "TV-14"]:
-        count = await Content.find({
-            "is_youngsters_content": True,
-            "content_rating": rating,
-        }).count()
+        count = await Content.find(
+            {
+                "is_youngsters_content": True,
+                "content_rating": rating,
+            }
+        ).count()
         if count > 0:
             content_rating_distribution[rating] = count
 
@@ -505,21 +537,30 @@ async def get_pending_moderation(
     """
     skip = (page - 1) * page_size
 
-    content = await Content.find({
-        "is_youngsters_content": True,
-        "$or": [
-            {"youngsters_moderation_status": "pending"},
-            {"youngsters_moderation_status": None},
-        ],
-    }).skip(skip).limit(page_size).to_list()
+    content = (
+        await Content.find(
+            {
+                "is_youngsters_content": True,
+                "$or": [
+                    {"youngsters_moderation_status": "pending"},
+                    {"youngsters_moderation_status": None},
+                ],
+            }
+        )
+        .skip(skip)
+        .limit(page_size)
+        .to_list()
+    )
 
-    total = await Content.find({
-        "is_youngsters_content": True,
-        "$or": [
-            {"youngsters_moderation_status": "pending"},
-            {"youngsters_moderation_status": None},
-        ],
-    }).count()
+    total = await Content.find(
+        {
+            "is_youngsters_content": True,
+            "$or": [
+                {"youngsters_moderation_status": "pending"},
+                {"youngsters_moderation_status": None},
+            ],
+        }
+    ).count()
 
     return {
         "items": [

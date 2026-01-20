@@ -11,9 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 async def execute_search_tmdb(
-    title: str,
-    year: Optional[int] = None,
-    content_type: str = "movie"
+    title: str, year: Optional[int] = None, content_type: str = "movie"
 ) -> Dict[str, Any]:
     """
     Search TMDB for content metadata.
@@ -36,7 +34,8 @@ async def execute_search_tmdb(
         tmdb = TMDBService()
         is_movie = content_type in ("movie", "film")
         search_result = await (
-            tmdb.search_movie(title, year) if is_movie
+            tmdb.search_movie(title, year)
+            if is_movie
             else tmdb.search_tv_series(title, year)
         )
 
@@ -44,12 +43,13 @@ async def execute_search_tmdb(
             return {
                 "success": True,
                 "found": False,
-                "message": f"No results found for '{title}'"
+                "message": f"No results found for '{title}'",
             }
 
         tmdb_id = search_result.get("id")
         details = await (
-            tmdb.get_movie_details(tmdb_id) if is_movie
+            tmdb.get_movie_details(tmdb_id)
+            if is_movie
             else tmdb.get_tv_series_details(tmdb_id)
         )
 
@@ -57,7 +57,7 @@ async def execute_search_tmdb(
             return {
                 "success": True,
                 "found": False,
-                "message": f"Could not fetch details for TMDB ID {tmdb_id}"
+                "message": f"Could not fetch details for TMDB ID {tmdb_id}",
             }
 
         release_date = details.get("release_date") or details.get("first_air_date", "")
@@ -72,8 +72,8 @@ async def execute_search_tmdb(
                 "backdrop_path": details.get("backdrop_path"),
                 "release_year": release_date[:4] if release_date else None,
                 "imdb_rating": details.get("vote_average"),
-                "genres": [g.get("name") for g in details.get("genres", [])]
-            }
+                "genres": [g.get("name") for g in details.get("genres", [])],
+            },
         }
     except Exception as e:
         logger.error(f"Error in search_tmdb: {e}")

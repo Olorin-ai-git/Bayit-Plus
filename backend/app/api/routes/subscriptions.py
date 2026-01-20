@@ -1,11 +1,12 @@
 from datetime import datetime
-from fastapi import APIRouter, HTTPException, Depends, Request
-from pydantic import BaseModel
+
 import stripe
-from app.models.user import User
-from app.models.subscription import Subscription, SUBSCRIPTION_PLANS
 from app.core.config import settings
 from app.core.security import get_current_active_user
+from app.models.subscription import SUBSCRIPTION_PLANS, Subscription
+from app.models.user import User
+from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -60,7 +61,9 @@ async def get_current_subscription(
             "plan": plan.name if plan else subscription.plan_id,
             "status": subscription.status,
             "billingPeriod": subscription.billing_period,
-            "currentPeriodEnd": subscription.current_period_end.isoformat() if subscription.current_period_end else None,
+            "currentPeriodEnd": subscription.current_period_end.isoformat()
+            if subscription.current_period_end
+            else None,
             "cancelAtPeriodEnd": subscription.cancel_at_period_end,
             "price": f"${plan.price}/month" if plan else None,
         }
@@ -76,8 +79,7 @@ async def create_checkout(
     # Admins cannot checkout (they have free premium)
     if current_user.is_admin_role():
         raise HTTPException(
-            status_code=400,
-            detail="Admin users have complimentary premium access"
+            status_code=400, detail="Admin users have complimentary premium access"
         )
 
     # Regular users need verification
@@ -89,7 +91,7 @@ async def create_checkout(
                 "message": "Please verify your email and phone before subscribing",
                 "email_verified": current_user.email_verified,
                 "phone_verified": current_user.phone_verified,
-            }
+            },
         )
 
     if request.plan_id not in SUBSCRIPTION_PLANS:
@@ -125,7 +127,10 @@ async def create_checkout(
             cancel_url=f"{settings.BACKEND_CORS_ORIGINS[0]}/subscribe",
             subscription_data={
                 "trial_period_days": 7,
-                "metadata": {"user_id": str(current_user.id), "plan_id": request.plan_id},
+                "metadata": {
+                    "user_id": str(current_user.id),
+                    "plan_id": request.plan_id,
+                },
             },
         )
         return {"checkoutUrl": checkout_session.url}
@@ -152,7 +157,9 @@ async def cancel_subscription(
         )
         subscription.cancel_at_period_end = True
         await subscription.save()
-        return {"message": "Subscription will be canceled at the end of the billing period"}
+        return {
+            "message": "Subscription will be canceled at the end of the billing period"
+        }
     except stripe.error.StripeError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -211,8 +218,12 @@ async def handle_checkout_completed(session: dict):
         stripe_price_id=stripe_sub["items"]["data"][0]["price"]["id"],
         current_period_start=datetime.fromtimestamp(stripe_sub.current_period_start),
         current_period_end=datetime.fromtimestamp(stripe_sub.current_period_end),
-        trial_start=datetime.fromtimestamp(stripe_sub.trial_start) if stripe_sub.trial_start else None,
-        trial_end=datetime.fromtimestamp(stripe_sub.trial_end) if stripe_sub.trial_end else None,
+        trial_start=datetime.fromtimestamp(stripe_sub.trial_start)
+        if stripe_sub.trial_start
+        else None,
+        trial_end=datetime.fromtimestamp(stripe_sub.trial_end)
+        if stripe_sub.trial_end
+        else None,
     )
     await subscription.insert()
 
@@ -237,7 +248,9 @@ async def handle_subscription_updated(stripe_sub: dict):
         return
 
     subscription.status = stripe_sub["status"]
-    subscription.current_period_end = datetime.fromtimestamp(stripe_sub["current_period_end"])
+    subscription.current_period_end = datetime.fromtimestamp(
+        stripe_sub["current_period_end"]
+    )
     subscription.cancel_at_period_end = stripe_sub.get("cancel_at_period_end", False)
     subscription.updated_at = datetime.utcnow()
     await subscription.save()
@@ -246,7 +259,9 @@ async def handle_subscription_updated(stripe_sub: dict):
     user = await User.get(subscription.user_id)
     if user:
         user.subscription_status = stripe_sub["status"]
-        user.subscription_end_date = datetime.fromtimestamp(stripe_sub["current_period_end"])
+        user.subscription_end_date = datetime.fromtimestamp(
+            stripe_sub["current_period_end"]
+        )
         await user.save()
 
 

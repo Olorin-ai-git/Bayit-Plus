@@ -18,26 +18,26 @@ Enforces PG-13 content rating limits for youth safety.
 
 import logging
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
 from app.models.content import Content
+from app.models.content_taxonomy import ContentSection, SectionSubcategory
 from app.models.youngsters_content import (
-    YoungstersContentSource,
-    YoungstersContentCategory,
-    YoungstersSubcategory,
-    YoungstersAgeGroup,
     AGE_GROUP_RANGES,
     SUBCATEGORY_PARENT_MAP,
-    YoungstersContentItemResponse,
-    YoungstersContentAggregatedResponse,
-    YoungstersFeaturedResponse,
-    YoungstersSubcategoryResponse,
-    YoungstersSubcategoriesResponse,
+    YoungstersAgeGroup,
     YoungstersAgeGroupResponse,
     YoungstersAgeGroupsResponse,
+    YoungstersContentAggregatedResponse,
+    YoungstersContentCategory,
+    YoungstersContentItemResponse,
+    YoungstersContentSource,
+    YoungstersFeaturedResponse,
+    YoungstersSubcategoriesResponse,
+    YoungstersSubcategory,
+    YoungstersSubcategoryResponse,
 )
-from app.models.content_taxonomy import SectionSubcategory, ContentSection
 
 logger = logging.getLogger(__name__)
 
@@ -225,139 +225,274 @@ YOUNGSTERS_KEYWORDS_EN = {
 # Subcategory-specific keyword filters
 SUBCATEGORY_KEYWORDS_HE = {
     YoungstersSubcategory.TIKTOK_TRENDS: [
-        "TikTok", "טיקטוק", "טרנד TikTok", "וידאו ויראלי", "אתגר TikTok",
+        "TikTok",
+        "טיקטוק",
+        "טרנד TikTok",
+        "וידאו ויראלי",
+        "אתגר TikTok",
     ],
     YoungstersSubcategory.VIRAL_VIDEOS: [
-        "ויראלי", "וידאו ויראלי", "התפוצצות ברשת", "צפו המון",
+        "ויראלי",
+        "וידאו ויראלי",
+        "התפוצצות ברשת",
+        "צפו המון",
     ],
     YoungstersSubcategory.MEMES: [
-        "מימז", "ממים", "בדיחות ברשת", "קומיקס",
+        "מימז",
+        "ממים",
+        "בדיחות ברשת",
+        "קומיקס",
     ],
     YoungstersSubcategory.ISRAEL_NEWS: [
-        "חדשות ישראל", "ישראל", "חדשות מקומיות", "אקטואליה ישראלית",
+        "חדשות ישראל",
+        "ישראל",
+        "חדשות מקומיות",
+        "אקטואליה ישראלית",
     ],
     YoungstersSubcategory.WORLD_NEWS: [
-        "חדשות העולם", "בעולם", "חדשות בינלאומיות", "גלובלי",
+        "חדשות העולם",
+        "בעולם",
+        "חדשות בינלאומיות",
+        "גלובלי",
     ],
     YoungstersSubcategory.SCIENCE_NEWS: [
-        "חדשות מדע", "מדע", "מחקר", "גילוי מדעי", "טכנולוגיה",
+        "חדשות מדע",
+        "מדע",
+        "מחקר",
+        "גילוי מדעי",
+        "טכנולוגיה",
     ],
     YoungstersSubcategory.SPORTS_NEWS: [
-        "חדשות ספורט", "ספורט", "עדכוני ספורט", "תוצאות משחק",
+        "חדשות ספורט",
+        "ספורט",
+        "עדכוני ספורט",
+        "תוצאות משחק",
     ],
     YoungstersSubcategory.MUSIC_CULTURE: [
-        "תרבות מוזיקלית", "סצנת מוזיקה", "אומנים", "פסטיבלים",
+        "תרבות מוזיקלית",
+        "סצנת מוזיקה",
+        "אומנים",
+        "פסטיבלים",
     ],
     YoungstersSubcategory.FILM_CULTURE: [
-        "תרבות קולנוע", "סרטים", "קולנוע", "ביקורת סרטים",
+        "תרבות קולנוע",
+        "סרטים",
+        "קולנוע",
+        "ביקורת סרטים",
     ],
     YoungstersSubcategory.ART_CULTURE: [
-        "אמנות", "גלריה", "ציור", "פיסול", "אמנות רחוב",
+        "אמנות",
+        "גלריה",
+        "ציור",
+        "פיסול",
+        "אמנות רחוב",
     ],
     YoungstersSubcategory.FOOD_CULTURE: [
-        "תרבות אוכל", "אוכל", "מתכונים", "בישול", "מסעדות",
+        "תרבות אוכל",
+        "אוכל",
+        "מתכונים",
+        "בישול",
+        "מסעדות",
     ],
     YoungstersSubcategory.STUDY_HELP: [
-        "עזרה בלימודים", "סיכומים", "בגרויות", "הכנה למבחן", "שיעורים",
+        "עזרה בלימודים",
+        "סיכומים",
+        "בגרויות",
+        "הכנה למבחן",
+        "שיעורים",
     ],
     YoungstersSubcategory.CAREER_PREP: [
-        "הכנה לקריירה", "מקצועות", "השכלה גבוהה", "אוניברסיטה", "קורסים",
+        "הכנה לקריירה",
+        "מקצועות",
+        "השכלה גבוהה",
+        "אוניברסיטה",
+        "קורסים",
     ],
     YoungstersSubcategory.LIFE_SKILLS: [
-        "מיומנויות חיים", "חיים עצמאיים", "כישורים אישיים", "ניהול כסף",
+        "מיומנויות חיים",
+        "חיים עצמאיים",
+        "כישורים אישיים",
+        "ניהול כסף",
     ],
     YoungstersSubcategory.TEEN_MOVIES: [
-        "סרטי נוער", "סרטים לבני נוער", "דרמה נוערית",
+        "סרטי נוער",
+        "סרטים לבני נוער",
+        "דרמה נוערית",
     ],
     YoungstersSubcategory.TEEN_SERIES: [
-        "סדרות נוער", "סדרות לבני נוער", "נטפליקס נוער",
+        "סדרות נוער",
+        "סדרות לבני נוער",
+        "נטפליקס נוער",
     ],
     YoungstersSubcategory.GAMING: [
-        "גיימינג", "משחקי וידאו", "פורטנייט", "e-sports", "גיימרים",
+        "גיימינג",
+        "משחקי וידאו",
+        "פורטנייט",
+        "e-sports",
+        "גיימרים",
     ],
     YoungstersSubcategory.CODING: [
-        "קודינג", "תכנות", "פיתוח", "למידת קוד", "פייתון", "JavaScript",
+        "קודינג",
+        "תכנות",
+        "פיתוח",
+        "למידת קוד",
+        "פייתון",
+        "JavaScript",
     ],
     YoungstersSubcategory.GADGETS: [
-        "גאדג'טים", "טכנולוגיה", "אייפון", "סמארטפון", "ביקורות טכנולוגיות",
+        "גאדג'טים",
+        "טכנולוגיה",
+        "אייפון",
+        "סמארטפון",
+        "ביקורות טכנולוגיות",
     ],
     YoungstersSubcategory.BAR_BAT_MITZVAH: [
-        "בר מצווה", "בת מצווה", "מצווה", "13 שנים", "טקס בר מצווה",
+        "בר מצווה",
+        "בת מצווה",
+        "מצווה",
+        "13 שנים",
+        "טקס בר מצווה",
     ],
     YoungstersSubcategory.TEEN_TORAH: [
-        "תורה לנוער", "שיעור תורה", "פרשת השבוע", "גמרא לנוער",
+        "תורה לנוער",
+        "שיעור תורה",
+        "פרשת השבוע",
+        "גמרא לנוער",
     ],
     YoungstersSubcategory.JEWISH_HISTORY: [
-        "היסטוריה יהודית", "תולדות עם ישראל", "אירועים יהודיים", "שואה",
+        "היסטוריה יהודית",
+        "תולדות עם ישראל",
+        "אירועים יהודיים",
+        "שואה",
     ],
 }
 
 SUBCATEGORY_KEYWORDS_EN = {
     YoungstersSubcategory.TIKTOK_TRENDS: [
-        "tiktok trends", "tiktok challenge", "viral tiktok",
+        "tiktok trends",
+        "tiktok challenge",
+        "viral tiktok",
     ],
     YoungstersSubcategory.VIRAL_VIDEOS: [
-        "viral video", "viral", "trending video", "went viral",
+        "viral video",
+        "viral",
+        "trending video",
+        "went viral",
     ],
     YoungstersSubcategory.MEMES: [
-        "memes", "funny memes", "internet memes",
+        "memes",
+        "funny memes",
+        "internet memes",
     ],
     YoungstersSubcategory.ISRAEL_NEWS: [
-        "israel news", "israel", "israeli news",
+        "israel news",
+        "israel",
+        "israeli news",
     ],
     YoungstersSubcategory.WORLD_NEWS: [
-        "world news", "international news", "global news",
+        "world news",
+        "international news",
+        "global news",
     ],
     YoungstersSubcategory.SCIENCE_NEWS: [
-        "science news", "science", "research", "scientific discovery",
+        "science news",
+        "science",
+        "research",
+        "scientific discovery",
     ],
     YoungstersSubcategory.SPORTS_NEWS: [
-        "sports news", "sports updates", "game results",
+        "sports news",
+        "sports updates",
+        "game results",
     ],
     YoungstersSubcategory.MUSIC_CULTURE: [
-        "music culture", "music scene", "artists", "festivals",
+        "music culture",
+        "music scene",
+        "artists",
+        "festivals",
     ],
     YoungstersSubcategory.FILM_CULTURE: [
-        "film culture", "movies", "cinema", "film reviews",
+        "film culture",
+        "movies",
+        "cinema",
+        "film reviews",
     ],
     YoungstersSubcategory.ART_CULTURE: [
-        "art", "gallery", "painting", "street art",
+        "art",
+        "gallery",
+        "painting",
+        "street art",
     ],
     YoungstersSubcategory.FOOD_CULTURE: [
-        "food culture", "recipes", "cooking", "restaurants",
+        "food culture",
+        "recipes",
+        "cooking",
+        "restaurants",
     ],
     YoungstersSubcategory.STUDY_HELP: [
-        "study help", "exam prep", "homework help", "tutoring",
+        "study help",
+        "exam prep",
+        "homework help",
+        "tutoring",
     ],
     YoungstersSubcategory.CAREER_PREP: [
-        "career prep", "college", "university", "courses",
+        "career prep",
+        "college",
+        "university",
+        "courses",
     ],
     YoungstersSubcategory.LIFE_SKILLS: [
-        "life skills", "personal skills", "money management",
+        "life skills",
+        "personal skills",
+        "money management",
     ],
     YoungstersSubcategory.TEEN_MOVIES: [
-        "teen movies", "youth movies", "teen drama",
+        "teen movies",
+        "youth movies",
+        "teen drama",
     ],
     YoungstersSubcategory.TEEN_SERIES: [
-        "teen series", "youth series", "netflix teen",
+        "teen series",
+        "youth series",
+        "netflix teen",
     ],
     YoungstersSubcategory.GAMING: [
-        "gaming", "video games", "fortnite", "e-sports", "gamers",
+        "gaming",
+        "video games",
+        "fortnite",
+        "e-sports",
+        "gamers",
     ],
     YoungstersSubcategory.CODING: [
-        "coding", "programming", "learn to code", "python", "javascript",
+        "coding",
+        "programming",
+        "learn to code",
+        "python",
+        "javascript",
     ],
     YoungstersSubcategory.GADGETS: [
-        "gadgets", "tech", "iphone", "smartphone", "tech reviews",
+        "gadgets",
+        "tech",
+        "iphone",
+        "smartphone",
+        "tech reviews",
     ],
     YoungstersSubcategory.BAR_BAT_MITZVAH: [
-        "bar mitzvah", "bat mitzvah", "mitzvah", "13 years",
+        "bar mitzvah",
+        "bat mitzvah",
+        "mitzvah",
+        "13 years",
     ],
     YoungstersSubcategory.TEEN_TORAH: [
-        "teen torah", "torah class", "parsha", "gemara",
+        "teen torah",
+        "torah class",
+        "parsha",
+        "gemara",
     ],
     YoungstersSubcategory.JEWISH_HISTORY: [
-        "jewish history", "history of israel", "holocaust",
+        "jewish history",
+        "history of israel",
+        "holocaust",
     ],
 }
 
@@ -772,9 +907,11 @@ class YoungstersContentService:
         return normalized_score, matched_keywords, max_category
 
     def _categorize_content(
-        self, title: str, description: Optional[str] = None,
+        self,
+        title: str,
+        description: Optional[str] = None,
         educational_tags: Optional[List[str]] = None,
-        genre: Optional[str] = None
+        genre: Optional[str] = None,
     ) -> str:
         """Categorize content based on title, description, tags, and genre."""
         text = f"{title} {description or ''} {genre or ''}".lower()
@@ -799,7 +936,14 @@ class YoungstersContentService:
             return YoungstersContentCategory.NEWS
 
         # Check for Jewish content
-        jewish_keywords = ["בר מצווה", "בת מצווה", "תורה", "יהדות", "bar mitzvah", "torah"]
+        jewish_keywords = [
+            "בר מצווה",
+            "בת מצווה",
+            "תורה",
+            "יהדות",
+            "bar mitzvah",
+            "torah",
+        ]
         if any(kw in text for kw in jewish_keywords):
             return YoungstersContentCategory.JUDAISM
 
@@ -836,8 +980,10 @@ class YoungstersContentService:
         return YoungstersContentCategory.ALL
 
     def _detect_subcategory(
-        self, title: str, description: Optional[str] = None,
-        educational_tags: Optional[List[str]] = None
+        self,
+        title: str,
+        description: Optional[str] = None,
+        educational_tags: Optional[List[str]] = None,
     ) -> Optional[str]:
         """Detect subcategory based on content metadata."""
         text = f"{title} {description or ''}".lower()
@@ -911,18 +1057,20 @@ class YoungstersContentService:
             content.title,
             content.description,
             content.youngsters_educational_tags or content.educational_tags,
-            content.genre
+            content.genre,
         )
 
         # Detect subcategory
         subcategory = self._detect_subcategory(
             content.title,
             content.description,
-            content.youngsters_educational_tags or content.educational_tags
+            content.youngsters_educational_tags or content.educational_tags,
         )
 
         # Determine age group
-        age_group = self._determine_age_group(content.youngsters_age_rating or content.age_rating)
+        age_group = self._determine_age_group(
+            content.youngsters_age_rating or content.age_rating
+        )
 
         # Calculate relevance score
         score, keywords, _ = self._calculate_relevance_score(
@@ -939,9 +1087,13 @@ class YoungstersContentService:
             "age_rating": content.youngsters_age_rating or content.age_rating,
             "category": category,
             "subcategory": subcategory,
-            "subcategory_label": SUBCATEGORY_LABELS.get(subcategory) if subcategory else None,
+            "subcategory_label": SUBCATEGORY_LABELS.get(subcategory)
+            if subcategory
+            else None,
             "age_group": age_group,
-            "educational_tags": content.youngsters_educational_tags or content.educational_tags or [],
+            "educational_tags": content.youngsters_educational_tags
+            or content.educational_tags
+            or [],
             "relevance_score": max(score, 5.0),  # Base score for DB content
             "source_type": "database",
         }
@@ -975,8 +1127,12 @@ class YoungstersContentService:
                 from app.models.content_taxonomy import ContentSection
 
                 # Get youngsters section ID
-                youngsters_section = await ContentSection.find_one(ContentSection.slug == "youngsters")
-                youngsters_section_id = str(youngsters_section.id) if youngsters_section else None
+                youngsters_section = await ContentSection.find_one(
+                    ContentSection.slug == "youngsters"
+                )
+                youngsters_section_id = (
+                    str(youngsters_section.id) if youngsters_section else None
+                )
 
                 # Build query with proper $and to avoid overwriting $or
                 series_filter = {
@@ -1012,13 +1168,15 @@ class YoungstersContentService:
                     and_conditions.append({"youngsters_age_rating": {"$lte": 17}})
 
                 # PG-13 content rating filter
-                and_conditions.append({
-                    "$or": [
-                        {"content_rating": {"$in": YOUNGSTERS_ALLOWED_RATINGS}},
-                        {"content_rating": None},
-                        {"content_rating": {"$exists": False}},
-                    ]
-                })
+                and_conditions.append(
+                    {
+                        "$or": [
+                            {"content_rating": {"$in": YOUNGSTERS_ALLOWED_RATINGS}},
+                            {"content_rating": None},
+                            {"content_rating": {"$exists": False}},
+                        ]
+                    }
+                )
 
                 query: Dict[str, Any] = {"$and": and_conditions}
 
@@ -1030,7 +1188,9 @@ class YoungstersContentService:
                         item_dict = self._content_to_dict(content)
                         all_items.append(item_dict)
 
-                logger.info(f"Database returned {len(all_items)} youngsters content items")
+                logger.info(
+                    f"Database returned {len(all_items)} youngsters content items"
+                )
 
             except Exception as e:
                 logger.error(f"Database query failed: {e}")
@@ -1058,7 +1218,8 @@ class YoungstersContentService:
                     # Filter seed by age if specified
                     if age_max is not None:
                         cached_items = [
-                            item for item in cached_items
+                            item
+                            for item in cached_items
                             if (item.get("age_rating") or 0) <= age_max
                         ]
 
@@ -1165,7 +1326,9 @@ class YoungstersContentService:
             from app.models.content_taxonomy import ContentSection
 
             # Get youngsters section
-            youngsters_section = await ContentSection.find_one(ContentSection.slug == "youngsters")
+            youngsters_section = await ContentSection.find_one(
+                ContentSection.slug == "youngsters"
+            )
             if not youngsters_section:
                 logger.warning("Youngsters section not found in taxonomy")
                 return YoungstersSubcategoriesResponse(
@@ -1184,7 +1347,9 @@ class YoungstersContentService:
             grouped_by_parent = {}
 
             for subcat in subcategories:
-                parent_category = SUBCATEGORY_PARENT_MAP.get(subcat.slug, YoungstersContentCategory.ALL)
+                parent_category = SUBCATEGORY_PARENT_MAP.get(
+                    subcat.slug, YoungstersContentCategory.ALL
+                )
 
                 response_subcat = YoungstersSubcategoryResponse(
                     id=str(subcat.id),
@@ -1232,7 +1397,8 @@ class YoungstersContentService:
 
             # Filter by subcategory
             filtered_items = [
-                item for item in all_content.items
+                item
+                for item in all_content.items
                 if item.subcategory == subcategory_slug
             ]
 
@@ -1402,7 +1568,9 @@ class YoungstersContentService:
 
         try:
             # Fetch news items
-            news_items = await fetch_ynet_mivzakim(limit=limit * 3)  # Fetch extra for filtering
+            news_items = await fetch_ynet_mivzakim(
+                limit=limit * 3
+            )  # Fetch extra for filtering
 
             if not news_items:
                 return {
@@ -1424,13 +1592,15 @@ class YoungstersContentService:
                         break
 
                 if is_safe:
-                    youth_news.append({
-                        "title": item.title,
-                        "link": item.link,
-                        "published": item.published,
-                        "summary": item.summary,
-                        "source": item.source,
-                    })
+                    youth_news.append(
+                        {
+                            "title": item.title,
+                            "link": item.link,
+                            "published": item.published,
+                            "summary": item.summary,
+                            "source": item.source,
+                        }
+                    )
 
                 if len(youth_news) >= limit:
                     break

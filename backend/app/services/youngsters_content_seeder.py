@@ -17,11 +17,11 @@ Categories:
 
 import logging
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
+from app.core.config import settings
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -129,7 +129,6 @@ YOUNGSTERS_CONTENT_SEED: List[Dict[str, Any]] = [
         "educational_tags": ["life-skills", "money-management"],
         "content_rating": "PG",
     },
-
     # Jewish Teen Content (age 12-17)
     {
         "title": "הכנה לבר מצווה - מדריך מלא",
@@ -170,7 +169,6 @@ YOUNGSTERS_CONTENT_SEED: List[Dict[str, Any]] = [
         "educational_tags": ["jewish-history", "holocaust", "history"],
         "content_rating": "PG-13",
     },
-
     # Tech & Coding Content (age 12-17)
     {
         "title": "למידת Python למתחילים",
@@ -211,7 +209,6 @@ YOUNGSTERS_CONTENT_SEED: List[Dict[str, Any]] = [
         "educational_tags": ["gaming", "fortnite", "video-games"],
         "content_rating": "PG-13",
     },
-
     # News Content (age 12-17)
     {
         "title": "חדשות השבוע לנוער",
@@ -252,7 +249,6 @@ YOUNGSTERS_CONTENT_SEED: List[Dict[str, Any]] = [
         "educational_tags": ["sports-news", "nba", "basketball"],
         "content_rating": "PG",
     },
-
     # Culture Content (age 12-17)
     {
         "title": "סצנת המוזיקה בישראל",
@@ -293,7 +289,6 @@ YOUNGSTERS_CONTENT_SEED: List[Dict[str, Any]] = [
         "educational_tags": ["art-culture", "street-art", "tel-aviv"],
         "content_rating": "PG",
     },
-
     # Sports Content (age 12-17)
     {
         "title": "מכבי תל אביב - שיאי העונה",
@@ -321,7 +316,6 @@ YOUNGSTERS_CONTENT_SEED: List[Dict[str, Any]] = [
         "educational_tags": ["sports", "running", "fitness"],
         "content_rating": "PG",
     },
-
     # Trending Content (age 12-17)
     {
         "title": "TikTok טרנדים השבוע",
@@ -375,7 +369,9 @@ class YoungstersContentSeeder:
         category_map = {}
 
         # Get or create youngsters section
-        youngsters_section = await ContentSection.find_one(ContentSection.slug == "youngsters")
+        youngsters_section = await ContentSection.find_one(
+            ContentSection.slug == "youngsters"
+        )
 
         if not youngsters_section:
             logger.info("Creating youngsters section in taxonomy")
@@ -481,7 +477,9 @@ class YoungstersContentSeeder:
                     existing.is_youngsters_content = True
                     existing.youngsters_age_rating = item.get("age_rating")
                     existing.content_rating = item.get("content_rating", "PG")
-                    existing.youngsters_educational_tags = item.get("educational_tags", [])
+                    existing.youngsters_educational_tags = item.get(
+                        "educational_tags", []
+                    )
                     existing.section_ids = [section_id]
                     existing.primary_section_id = section_id
                     existing.updated_at = datetime.utcnow()
@@ -545,7 +543,9 @@ class YoungstersContentSeeder:
         """
         logger.warning("Clearing all youngsters content")
 
-        deleted_count = await Content.find(Content.is_youngsters_content == True).delete()
+        deleted_count = await Content.find(
+            Content.is_youngsters_content == True
+        ).delete()
 
         stats = {"deleted_count": deleted_count}
         logger.info(f"Cleared {deleted_count} youngsters content items")

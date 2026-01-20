@@ -5,7 +5,7 @@ Generates well-formatted, detailed audit summaries for UI display.
 """
 
 import logging
-from typing import Dict, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict
 
 from app.services.ai_agent.logger import log_to_database
 
@@ -20,7 +20,7 @@ async def log_comprehensive_summary(
     completion_summary: Dict[str, Any],
     execution_time: float,
     iteration: int,
-    total_cost: float
+    total_cost: float,
 ):
     """
     Log a comprehensive, well-formatted audit summary to execution logs.
@@ -42,7 +42,9 @@ async def log_comprehensive_summary(
     flagged = completion_summary.get("flagged_for_review", 0)
     health_score = completion_summary.get("health_score", 0)
 
-    summary_lines.append(f"**TOTAL COVERAGE:** All **{total_items} content items** systematically processed!")
+    summary_lines.append(
+        f"**TOTAL COVERAGE:** All **{total_items} content items** systematically processed!"
+    )
     summary_lines.append("")
     summary_lines.append("**RESULTS BREAKDOWN:**")
     summary_lines.append(f"- **Items Processed:** {total_items} (100% coverage)")
@@ -50,8 +52,18 @@ async def log_comprehensive_summary(
     summary_lines.append(f"- **Issues Auto-Fixed:** {issues_fixed}")
     summary_lines.append(f"- **Flagged for Manual Review:** {flagged}")
     if health_score > 0:
-        health_emoji = "GREEN" if health_score >= 90 else "YELLOW" if health_score >= 70 else "ORANGE" if health_score >= 50 else "RED"
-        summary_lines.append(f"- **Library Health Score:** [{health_emoji}] {health_score}/100")
+        health_emoji = (
+            "GREEN"
+            if health_score >= 90
+            else "YELLOW"
+            if health_score >= 70
+            else "ORANGE"
+            if health_score >= 50
+            else "RED"
+        )
+        summary_lines.append(
+            f"- **Library Health Score:** [{health_emoji}] {health_score}/100"
+        )
     summary_lines.append("")
 
     # Subtitle Statistics
@@ -63,15 +75,26 @@ async def log_comprehensive_summary(
         extracted = subtitle_stats.get("subtitles_extracted_from_video", 0)
         downloaded = subtitle_stats.get("subtitles_downloaded_external", 0)
 
-        summary_lines.append(f"- Items with all required subtitles (he, en, es): **{items_with_all}**")
+        summary_lines.append(
+            f"- Items with all required subtitles (he, en, es): **{items_with_all}**"
+        )
         summary_lines.append(f"- Items missing subtitles: **{items_missing}**")
         summary_lines.append(f"- Subtitles extracted from video files: **{extracted}**")
-        summary_lines.append(f"- Subtitles downloaded from external sources: **{downloaded}**")
+        summary_lines.append(
+            f"- Subtitles downloaded from external sources: **{downloaded}**"
+        )
 
         by_language = subtitle_stats.get("by_language", {})
         if by_language:
             summary_lines.append("  - **By Language:**")
-            lang_names = {"he": "Hebrew", "en": "English", "es": "Spanish", "ar": "Arabic", "ru": "Russian", "fr": "French"}
+            lang_names = {
+                "he": "Hebrew",
+                "en": "English",
+                "es": "Spanish",
+                "ar": "Arabic",
+                "ru": "Russian",
+                "fr": "French",
+            }
             for lang_code, count in sorted(by_language.items()):
                 lang_name = lang_names.get(lang_code, lang_code.upper())
                 summary_lines.append(f"    - {lang_name}: **{count}** tracks")
@@ -79,7 +102,9 @@ async def log_comprehensive_summary(
         quota_used = subtitle_stats.get("opensubtitles_quota_used", 0)
         quota_remaining = subtitle_stats.get("opensubtitles_quota_remaining", 0)
         if quota_used > 0 or quota_remaining > 0:
-            summary_lines.append(f"- OpenSubtitles quota used: **{quota_used}** (remaining: **{quota_remaining}**)")
+            summary_lines.append(
+                f"- OpenSubtitles quota used: **{quota_used}** (remaining: **{quota_remaining}**)"
+            )
         summary_lines.append("")
 
     # Metadata Statistics
@@ -94,9 +119,13 @@ async def log_comprehensive_summary(
         if posters_fixed > 0:
             summary_lines.append(f"- Missing posters added: **{posters_fixed}**")
         if metadata_updated > 0:
-            summary_lines.append(f"- Metadata updated (description, genres, year, IMDB): **{metadata_updated}**")
+            summary_lines.append(
+                f"- Metadata updated (description, genres, year, IMDB): **{metadata_updated}**"
+            )
         if titles_cleaned > 0:
-            summary_lines.append(f"- Titles cleaned (removed junk, extensions, quality markers): **{titles_cleaned}**")
+            summary_lines.append(
+                f"- Titles cleaned (removed junk, extensions, quality markers): **{titles_cleaned}**"
+            )
         if tmdb_searches > 0:
             summary_lines.append(f"- TMDB API searches performed: **{tmdb_searches}**")
         summary_lines.append("")
@@ -112,7 +141,9 @@ async def log_comprehensive_summary(
             medium_conf = categorization_stats.get("medium_confidence_moves", 0)
 
             summary_lines.append(f"- Items recategorized: **{items_recategorized}**")
-            summary_lines.append(f"- Average confidence score: **{avg_confidence:.1f}%**")
+            summary_lines.append(
+                f"- Average confidence score: **{avg_confidence:.1f}%**"
+            )
             summary_lines.append(f"  - High confidence (>95%): **{high_conf}**")
             summary_lines.append(f"  - Medium confidence (90-95%): **{medium_conf}**")
             summary_lines.append("")
@@ -127,12 +158,18 @@ async def log_comprehensive_summary(
             streams_broken = stream_stats.get("streams_broken", 0)
             avg_response = stream_stats.get("avg_response_time_ms", 0)
 
-            health_pct = (streams_healthy / streams_checked * 100) if streams_checked > 0 else 0
+            health_pct = (
+                (streams_healthy / streams_checked * 100) if streams_checked > 0 else 0
+            )
             summary_lines.append(f"- Streams checked: **{streams_checked}**")
-            summary_lines.append(f"- Healthy streams: **{streams_healthy}** ({health_pct:.1f}%)")
+            summary_lines.append(
+                f"- Healthy streams: **{streams_healthy}** ({health_pct:.1f}%)"
+            )
             summary_lines.append(f"- Broken/inaccessible: **{streams_broken}**")
             if avg_response > 0:
-                summary_lines.append(f"- Average response time: **{avg_response:.0f}ms**")
+                summary_lines.append(
+                    f"- Average response time: **{avg_response:.0f}ms**"
+                )
             summary_lines.append("")
 
     # Storage Statistics
@@ -148,7 +185,9 @@ async def log_comprehensive_summary(
             summary_lines.append(f"- Total storage used: **{total_size:.2f} GB**")
             summary_lines.append(f"- Total files: **{file_count:,}**")
             if monthly_cost > 0:
-                summary_lines.append(f"- Estimated monthly cost: **${monthly_cost:.2f}**")
+                summary_lines.append(
+                    f"- Estimated monthly cost: **${monthly_cost:.2f}**"
+                )
             if large_files > 0:
                 summary_lines.append(f"- Large files found (>5GB): **{large_files}**")
             summary_lines.append("")
@@ -179,11 +218,15 @@ async def log_comprehensive_summary(
             "broken_streams": "Broken Streams",
             "misclassifications": "Misclassifications",
             "quality_issues": "Quality Issues",
-            "other": "Other"
+            "other": "Other",
         }
-        for issue_type, count in sorted(issue_breakdown.items(), key=lambda x: x[1], reverse=True):
+        for issue_type, count in sorted(
+            issue_breakdown.items(), key=lambda x: x[1], reverse=True
+        ):
             if count > 0:
-                label = issue_labels.get(issue_type, issue_type.replace("_", " ").title())
+                label = issue_labels.get(
+                    issue_type, issue_type.replace("_", " ").title()
+                )
                 summary_lines.append(f"- {label}: **{count}**")
         summary_lines.append("")
 
@@ -199,20 +242,28 @@ async def log_comprehensive_summary(
             "title_cleanups": "Title Cleanups",
             "recategorizations": "Recategorizations",
             "stream_validations": "Stream Validations",
-            "manual_reviews_flagged": "Manual Reviews Flagged"
+            "manual_reviews_flagged": "Manual Reviews Flagged",
         }
-        for action_type, count in sorted(action_breakdown.items(), key=lambda x: x[1], reverse=True):
+        for action_type, count in sorted(
+            action_breakdown.items(), key=lambda x: x[1], reverse=True
+        ):
             if count > 0:
-                label = action_labels.get(action_type, action_type.replace("_", " ").title())
+                label = action_labels.get(
+                    action_type, action_type.replace("_", " ").title()
+                )
                 summary_lines.append(f"- {label}: **{count}**")
         summary_lines.append("")
 
     # Performance Metrics
     summary_lines.append("### **PERFORMANCE METRICS:**")
-    summary_lines.append(f"- Execution time: **{execution_time:.1f}s** ({execution_time/60:.1f} minutes)")
+    summary_lines.append(
+        f"- Execution time: **{execution_time:.1f}s** ({execution_time/60:.1f} minutes)"
+    )
     summary_lines.append(f"- Agent iterations: **{iteration}**")
     summary_lines.append(f"- API cost: **${total_cost:.4f}**")
-    items_per_minute = (total_items / (execution_time / 60)) if execution_time > 0 else 0
+    items_per_minute = (
+        (total_items / (execution_time / 60)) if execution_time > 0 else 0
+    )
     summary_lines.append(f"- Processing speed: **{items_per_minute:.1f} items/minute**")
     summary_lines.append("")
 
@@ -233,13 +284,10 @@ async def log_comprehensive_summary(
 
     # Completion Message
     summary_lines.append("---")
-    summary_lines.append("**Audit completed successfully!** All findings and actions have been logged.")
+    summary_lines.append(
+        "**Audit completed successfully!** All findings and actions have been logged."
+    )
 
     # Join all lines and log to database
     full_summary = "\n".join(summary_lines)
-    await log_to_database(
-        audit_report,
-        "info",
-        full_summary,
-        "AI Agent"
-    )
+    await log_to_database(audit_report, "info", full_summary, "AI Agent")

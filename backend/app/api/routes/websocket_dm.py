@@ -2,19 +2,18 @@
 WebSocket handler for real-time direct messaging between friends.
 Handles WebSocket connections, message sending, and read receipts.
 """
-from typing import Optional, Dict, List
-from datetime import datetime
 import json
 import logging
-
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
-from jose import jwt, JWTError
+from datetime import datetime
+from typing import Dict, List, Optional
 
 from app.core.config import settings
-from app.models.user import User
 from app.models.direct_message import DirectMessage
-from app.services.friendship_service import FriendshipService
+from app.models.user import User
 from app.services.chat_translation_service import chat_translation_service
+from app.services.friendship_service import FriendshipService
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
+from jose import JWTError, jwt
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -56,9 +55,7 @@ async def get_user_from_token(token: str) -> Optional[User]:
     """Validate JWT token and return user."""
     try:
         payload = jwt.decode(
-            token,
-            settings.SECRET_KEY,
-            algorithms=[settings.ALGORITHM]
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
         user_id: str = payload.get("sub")
         if user_id is None:
@@ -73,15 +70,15 @@ async def get_user_from_token(token: str) -> Optional[User]:
         return None
 
 
-def build_message_payload(
-    message: DirectMessage,
-    viewer_id: str
-) -> dict:
+def build_message_payload(message: DirectMessage, viewer_id: str) -> dict:
     """Build a message payload for WebSocket transmission."""
     # Determine display message based on viewer
     if message.has_translation and message.receiver_id == viewer_id:
         display_message = message.translated_text or message.message
-        is_translated = message.translated_text is not None and message.translated_text != message.message
+        is_translated = (
+            message.translated_text is not None
+            and message.translated_text != message.message
+        )
     else:
         display_message = message.message
         is_translated = False
@@ -107,11 +104,7 @@ def build_message_payload(
 
 
 @router.websocket("/ws/dm/{friend_id}")
-async def dm_websocket(
-    websocket: WebSocket,
-    friend_id: str,
-    token: str = Query(...)
-):
+async def dm_websocket(websocket: WebSocket, friend_id: str, token: str = Query(...)):
     """
     WebSocket endpoint for real-time direct messaging with a friend.
 
@@ -156,22 +149,28 @@ async def dm_websocket(
         await websocket.close(code=4004, reason="Friend not found")
         return
 
-    logger.info(f"[DM] User {user.name} ({user_id}) connected to chat with {friend.name} ({friend_id})")
+    logger.info(
+        f"[DM] User {user.name} ({user_id}) connected to chat with {friend.name} ({friend_id})"
+    )
 
     # Add connection to active connections
     if user_id not in active_dm_connections:
         active_dm_connections[user_id] = []
     active_dm_connections[user_id].append(websocket)
-    logger.info(f"[DM] Added connection for user {user_id}. Total connections: {len(active_dm_connections[user_id])}")
+    logger.info(
+        f"[DM] Added connection for user {user_id}. Total connections: {len(active_dm_connections[user_id])}"
+    )
 
     try:
         # Send connection confirmation
-        await websocket.send_json({
-            "type": "connected",
-            "friend_id": friend_id,
-            "friend_name": friend.name,
-            "friend_avatar": friend.avatar,
-        })
+        await websocket.send_json(
+            {
+                "type": "connected",
+                "friend_id": friend_id,
+                "friend_name": friend.name,
+                "friend_avatar": friend.avatar,
+            }
+        )
 
         # Message loop
         while True:
@@ -192,7 +191,9 @@ async def dm_websocket(
                     message_type = message.get("message_type", "text")
 
                     if not text:
-                        await websocket.send_json({"type": "error", "message": "Empty message"})
+                        await websocket.send_json(
+                            {"type": "error", "message": "Empty message"}
+                        )
                         continue
 
                     # Detect language
@@ -200,7 +201,12 @@ async def dm_websocket(
                     source_lang = detection.detected_language
 
                     # Check if receiver needs translation
-                    should_translate, target_lang = await chat_translation_service.should_translate_for_user(friend_id)
+                    (
+                        should_translate,
+                        target_lang,
+                    ) = await chat_translation_service.should_translate_for_user(
+                        friend_id
+                    )
 
                     translated_text = None
                     has_translation = False
@@ -233,15 +239,13 @@ async def dm_websocket(
                     # Broadcast to sender (all their connections)
                     sender_payload = build_message_payload(dm, user_id)
                     await broadcast_to_user(
-                        user_id,
-                        {"type": "message", "data": sender_payload}
+                        user_id, {"type": "message", "data": sender_payload}
                     )
 
                     # Broadcast to receiver (all their connections)
                     receiver_payload = build_message_payload(dm, friend_id)
                     await broadcast_to_user(
-                        friend_id,
-                        {"type": "message", "data": receiver_payload}
+                        friend_id, {"type": "message", "data": receiver_payload}
                     )
 
                 elif msg_type == "typing":
@@ -252,8 +256,8 @@ async def dm_websocket(
                             "type": "typing",
                             "user_id": user_id,
                             "user_name": user.name,
-                            "timestamp": datetime.utcnow().isoformat()
-                        }
+                            "timestamp": datetime.utcnow().isoformat(),
+                        },
                     )
 
                 elif msg_type == "read":
@@ -272,8 +276,8 @@ async def dm_websocket(
                                 {
                                     "type": "read",
                                     "message_id": message_id,
-                                    "read_at": dm.read_at.isoformat()
-                                }
+                                    "read_at": dm.read_at.isoformat(),
+                                },
                             )
 
                 elif msg_type == "react":
@@ -282,7 +286,9 @@ async def dm_websocket(
                     emoji = message.get("emoji")
                     if message_id and emoji:
                         dm = await DirectMessage.get(message_id)
-                        if dm and (dm.sender_id == user_id or dm.receiver_id == user_id):
+                        if dm and (
+                            dm.sender_id == user_id or dm.receiver_id == user_id
+                        ):
                             if emoji not in dm.reactions:
                                 dm.reactions[emoji] = []
                             if user_id not in dm.reactions[emoji]:
@@ -295,7 +301,7 @@ async def dm_websocket(
                                     "message_id": message_id,
                                     "emoji": emoji,
                                     "user_id": user_id,
-                                    "action": "add"
+                                    "action": "add",
                                 }
                                 await broadcast_to_user(user_id, reaction_msg)
                                 await broadcast_to_user(friend_id, reaction_msg)
@@ -306,7 +312,9 @@ async def dm_websocket(
                     emoji = message.get("emoji")
                     if message_id and emoji:
                         dm = await DirectMessage.get(message_id)
-                        if dm and (dm.sender_id == user_id or dm.receiver_id == user_id):
+                        if dm and (
+                            dm.sender_id == user_id or dm.receiver_id == user_id
+                        ):
                             if emoji in dm.reactions and user_id in dm.reactions[emoji]:
                                 dm.reactions[emoji].remove(user_id)
                                 if not dm.reactions[emoji]:
@@ -319,7 +327,7 @@ async def dm_websocket(
                                     "message_id": message_id,
                                     "emoji": emoji,
                                     "user_id": user_id,
-                                    "action": "remove"
+                                    "action": "remove",
                                 }
                                 await broadcast_to_user(user_id, reaction_msg)
                                 await broadcast_to_user(friend_id, reaction_msg)
@@ -327,7 +335,9 @@ async def dm_websocket(
             except json.JSONDecodeError:
                 await websocket.send_json({"type": "error", "message": "Invalid JSON"})
             except KeyError as e:
-                await websocket.send_json({"type": "error", "message": f"Missing required field: {str(e)}"})
+                await websocket.send_json(
+                    {"type": "error", "message": f"Missing required field: {str(e)}"}
+                )
             except Exception as e:
                 logger.error(f"[DM] Error handling message: {e}")
                 await websocket.send_json({"type": "error", "message": str(e)})
@@ -339,10 +349,16 @@ async def dm_websocket(
         if user_id in active_dm_connections:
             try:
                 active_dm_connections[user_id].remove(websocket)
-                logger.info(f"[DM] Removed connection for user {user_id}. Remaining: {len(active_dm_connections[user_id])}")
+                logger.info(
+                    f"[DM] Removed connection for user {user_id}. Remaining: {len(active_dm_connections[user_id])}"
+                )
 
                 if not active_dm_connections[user_id]:
                     del active_dm_connections[user_id]
-                    logger.info(f"[DM] Removed empty connection list for user {user_id}")
+                    logger.info(
+                        f"[DM] Removed empty connection list for user {user_id}"
+                    )
             except ValueError:
-                logger.warning(f"[DM] Connection not found for user {user_id} during cleanup")
+                logger.warning(
+                    f"[DM] Connection not found for user {user_id} during cleanup"
+                )

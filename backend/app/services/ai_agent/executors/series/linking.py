@@ -19,10 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 async def execute_link_episode_to_series(
-    episode_id: str,
-    series_id: str,
-    audit_id: str,
-    dry_run: bool = False
+    episode_id: str, series_id: str, audit_id: str, dry_run: bool = False
 ) -> Dict[str, Any]:
     """
     Link episode to parent series.
@@ -40,7 +37,7 @@ async def execute_link_episode_to_series(
         dry_run,
         "link episode {episode_id} to series {series_id}",
         episode_id=episode_id,
-        series_id=series_id
+        series_id=series_id,
     )
     if dry_run_result:
         return dry_run_result
@@ -82,8 +79,7 @@ async def execute_link_episode_to_series(
 
 
 async def execute_auto_link_episodes(
-    audit_id: str,
-    dry_run: bool = False
+    audit_id: str, dry_run: bool = False
 ) -> Dict[str, Any]:
     """
     Auto-link unlinked episodes to series by matching titles.
@@ -100,10 +96,16 @@ async def execute_auto_link_episodes(
     try:
         batch_size = settings.SERIES_LINKER_AUTO_LINK_BATCH_SIZE
 
-        unlinked = await Content.find({
-            "content_type": "episode",
-            "$or": [{"series_id": None}, {"series_id": ""}]
-        }).limit(batch_size).to_list()
+        unlinked = (
+            await Content.find(
+                {
+                    "content_type": "episode",
+                    "$or": [{"series_id": None}, {"series_id": ""}],
+                }
+            )
+            .limit(batch_size)
+            .to_list()
+        )
 
         linked_count = 0
 
@@ -112,13 +114,12 @@ async def execute_auto_link_episodes(
             title_base = _extract_series_title(episode.title)
 
             # Search for matching series by title
-            series = await Content.find_one({
-                "is_series": True,
-                "$or": [
-                    {"title": title_base},
-                    {"title_en": title_base}
-                ]
-            })
+            series = await Content.find_one(
+                {
+                    "is_series": True,
+                    "$or": [{"title": title_base}, {"title_en": title_base}],
+                }
+            )
 
             if series and not dry_run:
                 episode.series_id = str(series.id)
@@ -135,11 +136,7 @@ async def execute_auto_link_episodes(
 
                 linked_count += 1
 
-        return {
-            "success": True,
-            "linked": linked_count,
-            "dry_run": dry_run
-        }
+        return {"success": True, "linked": linked_count, "dry_run": dry_run}
     except Exception as e:
         logger.error(f"Error auto-linking episodes: {e}")
         return {"success": False, "error": str(e)}

@@ -24,7 +24,7 @@ class PodcastWidgetConfig(TypedDict):
 PODCAST_WIDGETS: list[PodcastWidgetConfig] = [
     {
         "podcast_id": "69618106c3cadc264da3effd",
-        "title": "סג\"ל וברקו - הפודקאסט",
+        "title": 'סג"ל וברקו - הפודקאסט',
         "description": "פודקאסט מ-103FM",
         "icon": "🎙️",
         "order": 2,

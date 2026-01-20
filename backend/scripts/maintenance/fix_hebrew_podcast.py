@@ -4,12 +4,12 @@ Replace incorrect New York Times episodes with correct Hebrew episodes
 Fetches real audio URLs from RSS feed
 """
 import asyncio
-from pymongo import MongoClient
 from datetime import datetime, timedelta
-from bson import ObjectId
+
 import httpx
 from bs4 import BeautifulSoup
-
+from bson import ObjectId
+from pymongo import MongoClient
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
@@ -48,21 +48,39 @@ async def fetch_segal_barko_episodes():
                         pubdate_elem = item.find("pubDate")
                         duration_elem = item.find("duration")
 
-                        title = title_elem.get_text(strip=True) if title_elem else f"סג\"ל וברקו - פרק {i}"
-                        description = desc_elem.get_text(strip=True)[:200] if desc_elem else f"פרק {i} של סג\"ל וברקו"
-                        audio_url = audio_elem.get("url") if audio_elem and audio_elem.get("url") else None
-                        duration = duration_elem.get_text(strip=True) if duration_elem else "45:00"
+                        title = (
+                            title_elem.get_text(strip=True)
+                            if title_elem
+                            else f'סג"ל וברקו - פרק {i}'
+                        )
+                        description = (
+                            desc_elem.get_text(strip=True)[:200]
+                            if desc_elem
+                            else f'פרק {i} של סג"ל וברקו'
+                        )
+                        audio_url = (
+                            audio_elem.get("url")
+                            if audio_elem and audio_elem.get("url")
+                            else None
+                        )
+                        duration = (
+                            duration_elem.get_text(strip=True)
+                            if duration_elem
+                            else "45:00"
+                        )
 
-                        episodes.append({
-                            "title": title,
-                            "description": description,
-                            "episode_number": i,
-                            "season_number": 1,
-                            "audio_url": audio_url,
-                            "duration": duration,
-                            "published_at": datetime.now() - timedelta(days=4 - i),
-                            "thumbnail": "http://localhost:8000/uploads/podcasts/placeholder-microphone.jpg",
-                        })
+                        episodes.append(
+                            {
+                                "title": title,
+                                "description": description,
+                                "episode_number": i,
+                                "season_number": 1,
+                                "audio_url": audio_url,
+                                "duration": duration,
+                                "published_at": datetime.now() - timedelta(days=4 - i),
+                                "thumbnail": "http://localhost:8000/uploads/podcasts/placeholder-microphone.jpg",
+                            }
+                        )
 
                     return episodes
 
@@ -74,8 +92,8 @@ async def fetch_segal_barko_episodes():
     print("⚠️ Could not fetch from RSS, using 103FM stream URLs")
     return [
         {
-            "title": "סג\"ל וברקו - פרק 3",
-            "description": "פרק שלישי של סג\"ל וברקו - תוכנית משעשעת ומעניינת מתוך תחנת 103FM",
+            "title": 'סג"ל וברקו - פרק 3',
+            "description": 'פרק שלישי של סג"ל וברקו - תוכנית משעשעת ומעניינת מתוך תחנת 103FM',
             "episode_number": 3,
             "season_number": 1,
             "audio_url": "https://103fm.maariv.co.il/stream/segal-barko-3.aac",
@@ -84,8 +102,8 @@ async def fetch_segal_barko_episodes():
             "thumbnail": "http://localhost:8000/uploads/podcasts/placeholder-microphone.jpg",
         },
         {
-            "title": "סג\"ל וברקו - פרק 2",
-            "description": "פרק שני של סג\"ל וברקו - תוכנית משעשעת ומעניינת מתוך תחנת 103FM",
+            "title": 'סג"ל וברקו - פרק 2',
+            "description": 'פרק שני של סג"ל וברקו - תוכנית משעשעת ומעניינת מתוך תחנת 103FM',
             "episode_number": 2,
             "season_number": 1,
             "audio_url": "https://103fm.maariv.co.il/stream/segal-barko-2.aac",
@@ -94,8 +112,8 @@ async def fetch_segal_barko_episodes():
             "thumbnail": "http://localhost:8000/uploads/podcasts/placeholder-microphone.jpg",
         },
         {
-            "title": "סג\"ל וברקו - פרק 1",
-            "description": "פרק ראשון של סג\"ל וברקו - תוכנית משעשעת ומעניינת מתוך תחנת 103FM",
+            "title": 'סג"ל וברקו - פרק 1',
+            "description": 'פרק ראשון של סג"ל וברקו - תוכנית משעשעת ומעניינת מתוך תחנת 103FM',
             "episode_number": 1,
             "season_number": 1,
             "audio_url": "https://103fm.maariv.co.il/stream/segal-barko-1.aac",
@@ -111,7 +129,7 @@ async def fix_hebrew_podcast():
     client = MongoClient("mongodb://localhost:27017")
     db = client["bayit_plus"]
 
-    podcast_title = "סג\"ל וברקו - הפודקאסט"
+    podcast_title = 'סג"ל וברקו - הפודקאסט'
 
     # Fetch real episodes with audio URLs
     print("🎙️ Fetching real episodes with audio URLs...\n")

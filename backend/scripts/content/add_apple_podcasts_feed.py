@@ -9,10 +9,11 @@ Or specify podcast title:
 """
 import asyncio
 import sys
-from pymongo import MongoClient
 from datetime import datetime
-from app.core.database import connect_to_mongo, close_mongo_connection
+
+from app.core.database import close_mongo_connection, connect_to_mongo
 from app.services.apple_podcasts_converter import convert_apple_podcasts_to_rss
+from pymongo import MongoClient
 
 
 async def add_apple_podcasts_feed(apple_url: str, podcast_title: str = None):
@@ -26,9 +27,9 @@ async def add_apple_podcasts_feed(apple_url: str, podcast_title: str = None):
     # Connect to database
     await connect_to_mongo()
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("🍎 Apple Podcasts RSS Feed Converter")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     # Convert Apple URL to RSS
     print(f"Converting Apple Podcasts URL...")
@@ -60,7 +61,9 @@ async def add_apple_podcasts_feed(apple_url: str, podcast_title: str = None):
         podcasts = list(db.podcasts.find({"rss_feed": None}).limit(5))
         if not podcasts:
             print("❌ No podcasts without RSS feed found")
-            print("   Specify podcast title: python add_apple_podcasts_feed.py <url> <title>")
+            print(
+                "   Specify podcast title: python add_apple_podcasts_feed.py <url> <title>"
+            )
             client.close()
             await close_mongo_connection()
             return
@@ -99,15 +102,21 @@ async def add_apple_podcasts_feed(apple_url: str, podcast_title: str = None):
     client.close()
     await close_mongo_connection()
 
-    print("\n" + "="*80 + "\n")
+    print("\n" + "=" * 80 + "\n")
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: poetry run python add_apple_podcasts_feed.py <apple_url> [podcast_title]")
+        print(
+            "Usage: poetry run python add_apple_podcasts_feed.py <apple_url> [podcast_title]"
+        )
         print("\nExample:")
-        print('  poetry run python add_apple_podcasts_feed.py "https://podcasts.apple.com/us/podcast/בן-וינוף-בקיצור-103fm/id1643491580"')
-        print('  poetry run python add_apple_podcasts_feed.py "https://podcasts.apple.com/us/podcast/בן-וינוף-בקיצור-103fm/id1643491580" "Podcast Title"')
+        print(
+            '  poetry run python add_apple_podcasts_feed.py "https://podcasts.apple.com/us/podcast/בן-וינוף-בקיצור-103fm/id1643491580"'
+        )
+        print(
+            '  poetry run python add_apple_podcasts_feed.py "https://podcasts.apple.com/us/podcast/בן-וינוף-בקיצור-103fm/id1643491580" "Podcast Title"'
+        )
         sys.exit(1)
 
     apple_url = sys.argv[1]

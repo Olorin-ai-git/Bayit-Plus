@@ -7,16 +7,15 @@ Supports:
 - Chabad Multimedia
 """
 
-import logging
 import asyncio
+import logging
 import xml.etree.ElementTree as ET
-from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Any
-from email.utils import parsedate_to_datetime
 from dataclasses import dataclass
+from datetime import datetime, timedelta
+from email.utils import parsedate_to_datetime
+from typing import Any, Dict, List, Optional
 
 import httpx
-
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -25,6 +24,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class TorahShiur:
     """A single Torah shiur/class."""
+
     id: str
     title: str
     title_he: Optional[str]
@@ -107,9 +107,7 @@ class TorahContentService:
     def __init__(self):
         self._cache = TorahCache(ttl_minutes=30)
 
-    async def fetch_rss_feed(
-        self, source: Dict[str, str]
-    ) -> List[TorahShiur]:
+    async def fetch_rss_feed(self, source: Dict[str, str]) -> List[TorahShiur]:
         """Fetch and parse RSS feed from a Torah content source."""
         items: List[TorahShiur] = []
         rss_url = source.get("rss_url", "")
@@ -163,7 +161,9 @@ class TorahContentService:
             pub_date_elem = item.find("pubDate")
             desc_elem = item.find("description")
             guid_elem = item.find("guid")
-            author_elem = item.find("author") or item.find("{http://purl.org/dc/elements/1.1/}creator")
+            author_elem = item.find("author") or item.find(
+                "{http://purl.org/dc/elements/1.1/}creator"
+            )
 
             if title_elem is None or title_elem.text is None:
                 continue
@@ -196,9 +196,15 @@ class TorahContentService:
 
             # Check media:content
             for ns_prefix in ["media", "{http://search.yahoo.com/mrss/}"]:
-                media_content = item.find(f"{ns_prefix}content") if ns_prefix.startswith("{") else item.find("{http://search.yahoo.com/mrss/}content")
+                media_content = (
+                    item.find(f"{ns_prefix}content")
+                    if ns_prefix.startswith("{")
+                    else item.find("{http://search.yahoo.com/mrss/}content")
+                )
                 if media_content is not None:
-                    media_type = media_content.get("medium", media_content.get("type", ""))
+                    media_type = media_content.get(
+                        "medium", media_content.get("type", "")
+                    )
                     media_url = media_content.get("url", "")
                     if "audio" in media_type and not audio_url:
                         audio_url = media_url
@@ -212,12 +218,16 @@ class TorahContentService:
                         duration = media_content.get("duration")
 
             # Check iTunes duration
-            itunes_duration = item.find("{http://www.itunes.org/dtds/podcast-1.0.dtd}duration")
+            itunes_duration = item.find(
+                "{http://www.itunes.org/dtds/podcast-1.0.dtd}duration"
+            )
             if itunes_duration is not None and itunes_duration.text:
                 duration = itunes_duration.text
 
             # Get image from iTunes
-            itunes_image = item.find("{http://www.itunes.org/dtds/podcast-1.0.dtd}image")
+            itunes_image = item.find(
+                "{http://www.itunes.org/dtds/podcast-1.0.dtd}image"
+            )
             if itunes_image is not None and not image_url:
                 image_url = itunes_image.get("href")
 
@@ -234,8 +244,12 @@ class TorahContentService:
                 id=item_id,
                 title=title_elem.text.strip(),
                 title_he=None,  # Could add translation
-                description=desc_elem.text.strip() if desc_elem is not None and desc_elem.text else None,
-                rabbi=author_elem.text.strip() if author_elem is not None and author_elem.text else None,
+                description=desc_elem.text.strip()
+                if desc_elem is not None and desc_elem.text
+                else None,
+                rabbi=author_elem.text.strip()
+                if author_elem is not None and author_elem.text
+                else None,
                 rabbi_he=None,
                 category=category,
                 source=source_name,
@@ -244,7 +258,9 @@ class TorahContentService:
                 audio_url=audio_url,
                 video_url=video_url,
                 image_url=image_url,
-                link=link_elem.text.strip() if link_elem is not None and link_elem.text else "",
+                link=link_elem.text.strip()
+                if link_elem is not None and link_elem.text
+                else "",
             )
             items.append(shiur)
 
@@ -291,22 +307,23 @@ class TorahContentService:
 
         if category:
             filtered_items = [
-                item for item in filtered_items
+                item
+                for item in filtered_items
                 if item.category.lower() == category.lower()
             ]
 
         if rabbi:
             rabbi_lower = rabbi.lower()
             filtered_items = [
-                item for item in filtered_items
+                item
+                for item in filtered_items
                 if item.rabbi and rabbi_lower in item.rabbi.lower()
             ]
 
         if source:
             source_lower = source.lower()
             filtered_items = [
-                item for item in filtered_items
-                if source_lower in item.source.lower()
+                item for item in filtered_items if source_lower in item.source.lower()
             ]
 
         # Pagination

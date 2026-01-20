@@ -5,29 +5,31 @@ This is the main entry point for the FastAPI application.
 All initialization logic is delegated to specialized modules.
 """
 
-from contextlib import asynccontextmanager
 import logging
+from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
+from app.api.router_registry import register_all_routers, register_upload_serving
 from app.core.config import settings
-from app.core.database import connect_to_mongo, close_mongo_connection
-from app.core.database_olorin import connect_to_olorin_mongo, close_olorin_mongo_connection
-from app.core.logging_config import setup_logging
 from app.core.config_validation import log_configuration_warnings
+from app.core.database import close_mongo_connection, connect_to_mongo
+from app.core.database_olorin import (
+    close_olorin_mongo_connection,
+    connect_to_olorin_mongo,
+)
+from app.core.logging_config import setup_logging
 from app.core.sentry_config import init_sentry
-from app.services.olorin.content_metadata_service import content_metadata_service
 from app.middleware.correlation_id import CorrelationIdMiddleware
 from app.middleware.request_timing import RequestTimingMiddleware
+from app.services.olorin.content_metadata_service import content_metadata_service
 from app.services.startup import (
-    init_default_widgets,
     init_default_cultures,
+    init_default_widgets,
     start_background_tasks,
     stop_background_tasks,
 )
-from app.api.router_registry import register_all_routers, register_upload_serving
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 # Initialize structured logging for Cloud Run
 setup_logging(debug=settings.DEBUG)
@@ -59,7 +61,9 @@ def _validate_configuration() -> None:
 
     # Check SendGrid if email is needed
     if hasattr(settings, "SENDGRID_API_KEY") and not settings.SENDGRID_API_KEY:
-        warnings.append("SENDGRID_API_KEY not configured - email notifications will not work")
+        warnings.append(
+            "SENDGRID_API_KEY not configured - email notifications will not work"
+        )
 
     # Validate storage configuration
     if settings.STORAGE_TYPE == "gcs":

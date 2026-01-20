@@ -5,19 +5,15 @@ Endpoints for real-time summaries of live broadcasts.
 """
 
 import logging
-from typing import Optional, List
+from typing import List, Optional
 
+from app.api.routes.olorin.dependencies import get_current_partner, verify_capability
+from app.api.routes.olorin.errors import OlorinErrors, get_error_message
+from app.models.integration_partner import IntegrationPartner
+from app.services.olorin.metering_service import metering_service
+from app.services.olorin.recap_agent_service import recap_agent_service
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
-
-from app.models.integration_partner import IntegrationPartner
-from app.services.olorin.recap_agent_service import recap_agent_service
-from app.services.olorin.metering_service import metering_service
-from app.api.routes.olorin.dependencies import (
-    get_current_partner,
-    verify_capability,
-)
-from app.api.routes.olorin.errors import get_error_message, OlorinErrors
 
 logger = logging.getLogger(__name__)
 
@@ -179,7 +175,9 @@ async def add_transcript(
         if session.status != "active":
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=get_error_message(OlorinErrors.SESSION_INVALID_STATUS, status=session.status),
+                detail=get_error_message(
+                    OlorinErrors.SESSION_INVALID_STATUS, status=session.status
+                ),
             )
 
         # Add segment
@@ -263,7 +261,8 @@ async def generate_recap(
         await metering_service.record_recap_usage(
             partner_id=partner.partner_id,
             tokens_used=result.get("tokens_used", 0),
-            transcript_seconds=result.get("window_end_seconds", 0) - result.get("window_start_seconds", 0),
+            transcript_seconds=result.get("window_end_seconds", 0)
+            - result.get("window_start_seconds", 0),
         )
 
         return RecapResponse(
@@ -389,9 +388,13 @@ async def list_sessions(
         )
     else:
         from app.models.content_embedding import RecapSession
-        sessions = await RecapSession.find(
-            RecapSession.partner_id == partner.partner_id
-        ).sort(-RecapSession.started_at).limit(100).to_list()
+
+        sessions = (
+            await RecapSession.find(RecapSession.partner_id == partner.partner_id)
+            .sort(-RecapSession.started_at)
+            .limit(100)
+            .to_list()
+        )
 
     items = [
         SessionResponse(

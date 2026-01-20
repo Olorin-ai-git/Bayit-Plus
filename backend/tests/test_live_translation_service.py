@@ -5,43 +5,36 @@ These tests verify the LiveTranslationService functionality with
 multiple STT and translation providers (Google, Whisper, ElevenLabs).
 """
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 
 @pytest.fixture
 def mock_google_available():
     """Mock Google Cloud availability."""
-    with patch(
-        "app.services.live_translation_service.GOOGLE_AVAILABLE", True
-    ):
+    with patch("app.services.live_translation_service.GOOGLE_AVAILABLE", True):
         yield
 
 
 @pytest.fixture
 def mock_openai_available():
     """Mock OpenAI availability."""
-    with patch(
-        "app.services.live_translation_service.OPENAI_AVAILABLE", True
-    ):
+    with patch("app.services.live_translation_service.OPENAI_AVAILABLE", True):
         yield
 
 
 @pytest.fixture
 def mock_elevenlabs_available():
     """Mock ElevenLabs availability."""
-    with patch(
-        "app.services.live_translation_service.ELEVENLABS_AVAILABLE", True
-    ):
+    with patch("app.services.live_translation_service.ELEVENLABS_AVAILABLE", True):
         yield
 
 
 @pytest.fixture
 def mock_anthropic_available():
     """Mock Anthropic availability."""
-    with patch(
-        "app.services.live_translation_service.ANTHROPIC_AVAILABLE", True
-    ):
+    with patch("app.services.live_translation_service.ANTHROPIC_AVAILABLE", True):
         yield
 
 
@@ -65,18 +58,14 @@ class TestLiveTranslationServiceInit:
         self, mock_settings, mock_google_available
     ):
         """Test initialization with Google STT and Google Translate."""
-        with patch(
-            "app.services.live_translation_service.speech"
-        ) as mock_speech:
+        with patch("app.services.live_translation_service.speech") as mock_speech:
             with patch(
                 "app.services.live_translation_service.translate"
             ) as mock_translate:
                 mock_speech.SpeechClient.return_value = MagicMock()
                 mock_translate.Client.return_value = MagicMock()
 
-                from app.services.live_translation_service import (
-                    LiveTranslationService,
-                )
+                from app.services.live_translation_service import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="google", translation_provider="google"
@@ -100,9 +89,7 @@ class TestLiveTranslationServiceInit:
         with patch.object(
             live_service, "WhisperTranscriptionService", create=True
         ) as mock_whisper:
-            with patch.object(
-                live_service, "AsyncOpenAI"
-            ) as mock_openai:
+            with patch.object(live_service, "AsyncOpenAI") as mock_openai:
                 mock_whisper.return_value = mock_whisper_service
                 mock_openai.return_value = mock_openai_client
 
@@ -128,9 +115,7 @@ class TestLiveTranslationServiceInit:
                 mock_elevenlabs.return_value = MagicMock()
                 mock_translate.Client.return_value = MagicMock()
 
-                from app.services.live_translation_service import (
-                    LiveTranslationService,
-                )
+                from app.services.live_translation_service import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="elevenlabs", translation_provider="google"
@@ -157,9 +142,7 @@ class TestLiveTranslationServiceInit:
                 mock_elevenlabs.return_value = MagicMock()
                 mock_anthropic.return_value = MagicMock()
 
-                from app.services.live_translation_service import (
-                    LiveTranslationService,
-                )
+                from app.services.live_translation_service import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="elevenlabs", translation_provider="claude"
@@ -175,9 +158,7 @@ class TestLiveTranslationServiceInit:
         from app.services.live_translation_service import LiveTranslationService
 
         with pytest.raises(ValueError) as exc_info:
-            LiveTranslationService(
-                provider="invalid", translation_provider="google"
-            )
+            LiveTranslationService(provider="invalid", translation_provider="google")
 
         assert "Invalid STT provider" in str(exc_info.value)
 
@@ -190,9 +171,7 @@ class TestLiveTranslationServiceInit:
         ) as mock_elevenlabs:
             mock_elevenlabs.return_value = MagicMock()
 
-            from app.services.live_translation_service import (
-                LiveTranslationService,
-            )
+            from app.services.live_translation_service import LiveTranslationService
 
             with pytest.raises(ValueError) as exc_info:
                 LiveTranslationService(
@@ -220,9 +199,7 @@ class TestLiveTranslationServiceVerify:
                 mock_elevenlabs.return_value = mock_elevenlabs_instance
                 mock_openai.return_value = MagicMock()
 
-                from app.services.live_translation_service import (
-                    LiveTranslationService,
-                )
+                from app.services.live_translation_service import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="elevenlabs", translation_provider="openai"
@@ -257,9 +234,7 @@ class TestLiveTranslationServiceTranslate:
                 }
                 mock_translate.Client.return_value = mock_translate_client
 
-                from app.services.live_translation_service import (
-                    LiveTranslationService,
-                )
+                from app.services.live_translation_service import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="elevenlabs", translation_provider="google"
@@ -297,9 +272,7 @@ class TestLiveTranslationServiceTranslate:
                 )
                 mock_openai.return_value = mock_openai_instance
 
-                from app.services.live_translation_service import (
-                    LiveTranslationService,
-                )
+                from app.services.live_translation_service import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="elevenlabs", translation_provider="openai"
@@ -337,9 +310,7 @@ class TestLiveTranslationServiceTranslate:
                 )
                 mock_anthropic.return_value = mock_anthropic_instance
 
-                from app.services.live_translation_service import (
-                    LiveTranslationService,
-                )
+                from app.services.live_translation_service import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="elevenlabs", translation_provider="claude"
@@ -362,14 +333,10 @@ class TestLiveTranslationServiceTranslate:
             ) as mock_translate:
                 mock_elevenlabs.return_value = MagicMock()
                 mock_translate_client = MagicMock()
-                mock_translate_client.translate.side_effect = Exception(
-                    "API error"
-                )
+                mock_translate_client.translate.side_effect = Exception("API error")
                 mock_translate.Client.return_value = mock_translate_client
 
-                from app.services.live_translation_service import (
-                    LiveTranslationService,
-                )
+                from app.services.live_translation_service import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="elevenlabs", translation_provider="google"

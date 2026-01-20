@@ -5,11 +5,11 @@ Knowledge base for Israeli/Jewish cultural references.
 """
 
 from datetime import datetime, timezone
-from typing import Optional, List, Literal
+from typing import List, Literal, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
-from pymongo import IndexModel, ASCENDING, DESCENDING
-
+from pymongo import ASCENDING, DESCENDING, IndexModel
 
 # Category types for cultural references
 ReferenceCategory = Literal[
@@ -74,7 +74,9 @@ class CulturalReference(Document):
     # Identification
     reference_id: str = Field(..., description="Normalized unique identifier")
     canonical_name: str = Field(..., description="Primary name in Hebrew")
-    canonical_name_en: Optional[str] = Field(default=None, description="Primary name in English")
+    canonical_name_en: Optional[str] = Field(
+        default=None, description="Primary name in English"
+    )
 
     # Classification
     category: ReferenceCategory = Field(...)
@@ -82,15 +84,23 @@ class CulturalReference(Document):
 
     # Alternative names/spellings
     aliases: List[str] = Field(default_factory=list, description="All Hebrew aliases")
-    aliases_en: List[str] = Field(default_factory=list, description="All English aliases")
-    aliases_es: List[str] = Field(default_factory=list, description="All Spanish aliases")
+    aliases_en: List[str] = Field(
+        default_factory=list, description="All English aliases"
+    )
+    aliases_es: List[str] = Field(
+        default_factory=list, description="All Spanish aliases"
+    )
 
     # Explanations (multilingual)
-    short_explanation: str = Field(..., description="1-2 sentence explanation in Hebrew")
+    short_explanation: str = Field(
+        ..., description="1-2 sentence explanation in Hebrew"
+    )
     short_explanation_en: Optional[str] = Field(default=None)
     short_explanation_es: Optional[str] = Field(default=None)
 
-    detailed_explanation: Optional[str] = Field(default=None, description="Full explanation in Hebrew")
+    detailed_explanation: Optional[str] = Field(
+        default=None, description="Full explanation in Hebrew"
+    )
     detailed_explanation_en: Optional[str] = Field(default=None)
     detailed_explanation_es: Optional[str] = Field(default=None)
 
@@ -159,7 +169,9 @@ class ContextDetectionRequest(BaseModel):
     language: str = Field(default="he", description="Input text language")
     target_language: str = Field(default="en", description="Language for explanations")
     min_confidence: float = Field(default=0.7, ge=0.0, le=1.0)
-    include_detailed: bool = Field(default=False, description="Include detailed explanations")
+    include_detailed: bool = Field(
+        default=False, description="Include detailed explanations"
+    )
 
 
 class ContextDetectionResponse(BaseModel):

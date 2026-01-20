@@ -9,40 +9,43 @@ import logging
 from typing import Any
 
 import sentry_sdk
-from sentry_sdk.integrations.fastapi import FastApiIntegration
-from sentry_sdk.integrations.starlette import StarletteIntegration
-from sentry_sdk.integrations.logging import LoggingIntegration
-
 from app.core.config import settings
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
+from sentry_sdk.integrations.starlette import StarletteIntegration
 
 logger = logging.getLogger(__name__)
 
 
 # Sensitive fields to scrub from events
-SENSITIVE_FIELDS = frozenset({
-    "password",
-    "secret",
-    "token",
-    "api_key",
-    "apikey",
-    "authorization",
-    "auth",
-    "credentials",
-    "private_key",
-    "access_token",
-    "refresh_token",
-    "jwt",
-    "session",
-    "cookie",
-    "credit_card",
-    "card_number",
-    "cvv",
-    "ssn",
-    "social_security",
-})
+SENSITIVE_FIELDS = frozenset(
+    {
+        "password",
+        "secret",
+        "token",
+        "api_key",
+        "apikey",
+        "authorization",
+        "auth",
+        "credentials",
+        "private_key",
+        "access_token",
+        "refresh_token",
+        "jwt",
+        "session",
+        "cookie",
+        "credit_card",
+        "card_number",
+        "cvv",
+        "ssn",
+        "social_security",
+    }
+)
 
 
-def _scrub_sensitive_data(event: dict[str, Any], hint: dict[str, Any]) -> dict[str, Any] | None:
+def _scrub_sensitive_data(
+    event: dict[str, Any], hint: dict[str, Any]
+) -> dict[str, Any] | None:
     """
     Scrub sensitive data from Sentry events before sending.
 
@@ -164,7 +167,9 @@ def init_sentry() -> bool:
         return False
 
 
-def capture_exception(exc: Exception, context: dict[str, Any] | None = None) -> str | None:
+def capture_exception(
+    exc: Exception, context: dict[str, Any] | None = None
+) -> str | None:
     """
     Capture an exception and send to Sentry.
 
@@ -185,7 +190,9 @@ def capture_exception(exc: Exception, context: dict[str, Any] | None = None) -> 
         return sentry_sdk.capture_exception(exc)
 
 
-def capture_message(message: str, level: str = "info", context: dict[str, Any] | None = None) -> str | None:
+def capture_message(
+    message: str, level: str = "info", context: dict[str, Any] | None = None
+) -> str | None:
     """
     Capture a message and send to Sentry.
 
@@ -207,7 +214,9 @@ def capture_message(message: str, level: str = "info", context: dict[str, Any] |
         return sentry_sdk.capture_message(message, level=level)
 
 
-def set_user(user_id: str, email: str | None = None, username: str | None = None) -> None:
+def set_user(
+    user_id: str, email: str | None = None, username: str | None = None
+) -> None:
     """
     Set the current user context for Sentry events.
 
@@ -219,11 +228,13 @@ def set_user(user_id: str, email: str | None = None, username: str | None = None
     if not settings.SENTRY_DSN:
         return
 
-    sentry_sdk.set_user({
-        "id": user_id,
-        "email": email,
-        "username": username,
-    })
+    sentry_sdk.set_user(
+        {
+            "id": user_id,
+            "email": email,
+            "username": username,
+        }
+    )
 
 
 def set_tag(key: str, value: str) -> None:

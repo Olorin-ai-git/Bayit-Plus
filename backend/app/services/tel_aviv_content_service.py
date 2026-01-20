@@ -13,27 +13,27 @@ Focuses on:
 Uses existing news_scraper infrastructure with Tel Aviv keyword filtering.
 """
 
-import logging
 import asyncio
+import logging
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
 from app.models.tel_aviv_content import (
-    TelAvivContentSource,
-    TelAvivContentItem,
-    TelAvivContentCategory,
-    TelAvivContentItemResponse,
-    TelAvivContentSourceResponse,
     TelAvivContentAggregatedResponse,
+    TelAvivContentCategory,
+    TelAvivContentItem,
+    TelAvivContentItemResponse,
+    TelAvivContentSource,
+    TelAvivContentSourceResponse,
     TelAvivFeaturedResponse,
 )
 from app.services.news_scraper import (
-    scrape_ynet,
-    scrape_walla,
+    HeadlineItem,
     scrape_mako,
     scrape_tel_aviv_news,
-    HeadlineItem,
+    scrape_walla,
+    scrape_ynet,
 )
 
 logger = logging.getLogger(__name__)
@@ -180,13 +180,37 @@ TEL_AVIV_KEYWORDS_EN = {
 # Category labels for UI
 TEL_AVIV_CATEGORY_LABELS = {
     TelAvivContentCategory.BEACHES: {"he": "חופים", "en": "Beaches", "es": "Playas"},
-    TelAvivContentCategory.NIGHTLIFE: {"he": "חיי לילה", "en": "Nightlife", "es": "Vida Nocturna"},
-    TelAvivContentCategory.CULTURE: {"he": "תרבות ואמנות", "en": "Culture & Art", "es": "Cultura y Arte"},
-    TelAvivContentCategory.MUSIC: {"he": "מוזיקה", "en": "Music Scene", "es": "Escena Musical"},
-    TelAvivContentCategory.FOOD: {"he": "אוכל ומסעדות", "en": "Food & Dining", "es": "Gastronomia"},
-    TelAvivContentCategory.TECH: {"he": "סטארטאפים והייטק", "en": "Tech & Startups", "es": "Tecnologia"},
+    TelAvivContentCategory.NIGHTLIFE: {
+        "he": "חיי לילה",
+        "en": "Nightlife",
+        "es": "Vida Nocturna",
+    },
+    TelAvivContentCategory.CULTURE: {
+        "he": "תרבות ואמנות",
+        "en": "Culture & Art",
+        "es": "Cultura y Arte",
+    },
+    TelAvivContentCategory.MUSIC: {
+        "he": "מוזיקה",
+        "en": "Music Scene",
+        "es": "Escena Musical",
+    },
+    TelAvivContentCategory.FOOD: {
+        "he": "אוכל ומסעדות",
+        "en": "Food & Dining",
+        "es": "Gastronomia",
+    },
+    TelAvivContentCategory.TECH: {
+        "he": "סטארטאפים והייטק",
+        "en": "Tech & Startups",
+        "es": "Tecnologia",
+    },
     TelAvivContentCategory.EVENTS: {"he": "אירועים", "en": "Events", "es": "Eventos"},
-    TelAvivContentCategory.GENERAL: {"he": "תל אביב", "en": "Tel Aviv", "es": "Tel Aviv"},
+    TelAvivContentCategory.GENERAL: {
+        "he": "תל אביב",
+        "en": "Tel Aviv",
+        "es": "Tel Aviv",
+    },
 }
 
 
@@ -471,22 +495,58 @@ class TelAvivContentService:
             return TelAvivContentCategory.BEACHES
 
         # Check for nightlife
-        nightlife_keywords = ["לילה", "nightlife", "בר", "bar", "מועדון", "club", "רוטשילד", "פלורנטין"]
+        nightlife_keywords = [
+            "לילה",
+            "nightlife",
+            "בר",
+            "bar",
+            "מועדון",
+            "club",
+            "רוטשילד",
+            "פלורנטין",
+        ]
         if any(kw in text for kw in nightlife_keywords):
             return TelAvivContentCategory.NIGHTLIFE
 
         # Check for culture
-        culture_keywords = ["מוזיאון", "museum", "גלריה", "gallery", "תיאטרון", "theater", "אמנות", "art", "באוהאוס"]
+        culture_keywords = [
+            "מוזיאון",
+            "museum",
+            "גלריה",
+            "gallery",
+            "תיאטרון",
+            "theater",
+            "אמנות",
+            "art",
+            "באוהאוס",
+        ]
         if any(kw in text for kw in culture_keywords):
             return TelAvivContentCategory.CULTURE
 
         # Check for music
-        music_keywords = ["הופעה", "concert", "מוסיקה", "music", "פסטיבל", "festival", "זמר"]
+        music_keywords = [
+            "הופעה",
+            "concert",
+            "מוסיקה",
+            "music",
+            "פסטיבל",
+            "festival",
+            "זמר",
+        ]
         if any(kw in text for kw in music_keywords):
             return TelAvivContentCategory.MUSIC
 
         # Check for food
-        food_keywords = ["מסעדה", "restaurant", "אוכל", "food", "שוק", "market", "בית קפה", "cafe"]
+        food_keywords = [
+            "מסעדה",
+            "restaurant",
+            "אוכל",
+            "food",
+            "שוק",
+            "market",
+            "בית קפה",
+            "cafe",
+        ]
         if any(kw in text for kw in food_keywords):
             return TelAvivContentCategory.FOOD
 
@@ -545,19 +605,21 @@ class TelAvivContentService:
             )
 
             if score >= settings.TEL_AVIV_CONTENT_MIN_RELEVANCE_SCORE:
-                tel_aviv_items.append({
-                    "source_name": headline.source,
-                    "title": headline.title,
-                    "title_he": headline.title,  # Hebrew source
-                    "url": headline.url,
-                    "published_at": headline.published_at or headline.scraped_at,
-                    "summary": headline.summary,
-                    "image_url": headline.image_url,
-                    "category": category,
-                    "tags": matched_keywords[:5],  # Top 5 keywords as tags
-                    "relevance_score": score,
-                    "matched_keywords": matched_keywords,
-                })
+                tel_aviv_items.append(
+                    {
+                        "source_name": headline.source,
+                        "title": headline.title,
+                        "title_he": headline.title,  # Hebrew source
+                        "url": headline.url,
+                        "published_at": headline.published_at or headline.scraped_at,
+                        "summary": headline.summary,
+                        "image_url": headline.image_url,
+                        "category": category,
+                        "tags": matched_keywords[:5],  # Top 5 keywords as tags
+                        "relevance_score": score,
+                        "matched_keywords": matched_keywords,
+                    }
+                )
 
         return tel_aviv_items
 
@@ -589,18 +651,20 @@ class TelAvivContentService:
                     for h in search_headlines:
                         # Categorize based on title/summary content
                         item_category = self._categorize_content(h.title, h.summary)
-                        all_items.append({
-                            "source_name": h.source,
-                            "title": h.title,
-                            "title_he": h.title,
-                            "url": h.url,
-                            "published_at": h.published_at or h.scraped_at,
-                            "summary": h.summary,
-                            "image_url": h.image_url,
-                            "category": item_category,
-                            "tags": self._extract_tags(h.title, h.summary),
-                            "relevance_score": 8.0,
-                        })
+                        all_items.append(
+                            {
+                                "source_name": h.source,
+                                "title": h.title,
+                                "title_he": h.title,
+                                "url": h.url,
+                                "published_at": h.published_at or h.scraped_at,
+                                "summary": h.summary,
+                                "image_url": h.image_url,
+                                "category": item_category,
+                                "tags": self._extract_tags(h.title, h.summary),
+                                "relevance_score": 8.0,
+                            }
+                        )
                     logger.info(f"Web search found {len(all_items)} Tel Aviv items")
             except Exception as e:
                 logger.error(f"Web search failed: {e}")
@@ -634,7 +698,10 @@ class TelAvivContentService:
 
             # Sort by relevance score then publication date
             all_items.sort(
-                key=lambda x: (x["relevance_score"], x.get("published_at", datetime.min)),
+                key=lambda x: (
+                    x["relevance_score"],
+                    x.get("published_at", datetime.min),
+                ),
                 reverse=True,
             )
 
@@ -646,7 +713,9 @@ class TelAvivContentService:
                 # Try to get stale cache (ignore TTL) if no new content found
                 stale_items = self._cache._cache.get(cache_key)
                 if stale_items:
-                    cached_items = stale_items[0]  # Get items from tuple (items, timestamp)
+                    cached_items = stale_items[
+                        0
+                    ]  # Get items from tuple (items, timestamp)
                     logger.warning("No new Tel Aviv content found, using stale cache")
                 else:
                     # Use seed content as fallback - content must always be available
@@ -790,13 +859,41 @@ class TelAvivContentService:
                 "icon": icon,
             }
             for category_id, labels, icon in [
-                (TelAvivContentCategory.BEACHES, TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.BEACHES], "🏖️"),
-                (TelAvivContentCategory.NIGHTLIFE, TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.NIGHTLIFE], "🌃"),
-                (TelAvivContentCategory.CULTURE, TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.CULTURE], "🎭"),
-                (TelAvivContentCategory.MUSIC, TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.MUSIC], "🎵"),
-                (TelAvivContentCategory.FOOD, TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.FOOD], "🍽️"),
-                (TelAvivContentCategory.TECH, TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.TECH], "💻"),
-                (TelAvivContentCategory.EVENTS, TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.EVENTS], "🎉"),
+                (
+                    TelAvivContentCategory.BEACHES,
+                    TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.BEACHES],
+                    "🏖️",
+                ),
+                (
+                    TelAvivContentCategory.NIGHTLIFE,
+                    TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.NIGHTLIFE],
+                    "🌃",
+                ),
+                (
+                    TelAvivContentCategory.CULTURE,
+                    TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.CULTURE],
+                    "🎭",
+                ),
+                (
+                    TelAvivContentCategory.MUSIC,
+                    TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.MUSIC],
+                    "🎵",
+                ),
+                (
+                    TelAvivContentCategory.FOOD,
+                    TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.FOOD],
+                    "🍽️",
+                ),
+                (
+                    TelAvivContentCategory.TECH,
+                    TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.TECH],
+                    "💻",
+                ),
+                (
+                    TelAvivContentCategory.EVENTS,
+                    TEL_AVIV_CATEGORY_LABELS[TelAvivContentCategory.EVENTS],
+                    "🎉",
+                ),
             ]
         ]
 

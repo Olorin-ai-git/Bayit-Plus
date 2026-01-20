@@ -4,11 +4,7 @@ DIAGNOSTICS_TOOLS = [
     {
         "name": "check_api_configuration",
         "description": "Check which external APIs are configured and ready to use (TMDB, OpenSubtitles, Anthropic, SendGrid). Use this at the start of an audit to understand what tools are available.",
-        "input_schema": {
-            "type": "object",
-            "properties": {},
-            "required": []
-        }
+        "input_schema": {"type": "object", "properties": {}, "required": []},
     },
     {
         "name": "find_duplicates",
@@ -20,11 +16,11 @@ DIAGNOSTICS_TOOLS = [
                     "type": "string",
                     "description": "Detection method to use",
                     "enum": ["all", "hash", "tmdb", "imdb", "exact_name", "title"],
-                    "default": "all"
+                    "default": "all",
                 }
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "resolve_duplicates",
@@ -35,21 +31,21 @@ DIAGNOSTICS_TOOLS = [
                 "content_ids": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "List of content IDs in the duplicate group"
+                    "description": "List of content IDs in the duplicate group",
                 },
                 "keep_id": {
                     "type": "string",
-                    "description": "The ID of the content item to keep"
+                    "description": "The ID of the content item to keep",
                 },
                 "action": {
                     "type": "string",
                     "description": "What to do with duplicates",
                     "enum": ["unpublish", "delete"],
-                    "default": "unpublish"
-                }
+                    "default": "unpublish",
+                },
             },
-            "required": ["content_ids", "keep_id"]
-        }
+            "required": ["content_ids", "keep_id"],
+        },
     },
     {
         "name": "find_quality_variants",
@@ -60,16 +56,16 @@ DIAGNOSTICS_TOOLS = [
                 "limit": {
                     "type": "integer",
                     "description": "Maximum number of variant groups to return",
-                    "default": 50
+                    "default": 50,
                 },
                 "unlinked_only": {
                     "type": "boolean",
                     "description": "Only show variants that aren't already linked",
-                    "default": True
-                }
+                    "default": True,
+                },
             },
-            "required": []
-        }
+            "required": [],
+        },
     },
     {
         "name": "link_quality_variants",
@@ -80,15 +76,15 @@ DIAGNOSTICS_TOOLS = [
                 "content_ids": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "List of content IDs to link as variants"
+                    "description": "List of content IDs to link as variants",
                 },
                 "primary_id": {
                     "type": "string",
-                    "description": "Optional: ID of the primary/preferred version"
-                }
+                    "description": "Optional: ID of the primary/preferred version",
+                },
             },
-            "required": ["content_ids"]
-        }
+            "required": ["content_ids"],
+        },
     },
     {
         "name": "find_missing_metadata",
@@ -99,19 +95,27 @@ DIAGNOSTICS_TOOLS = [
                 "limit": {
                     "type": "integer",
                     "description": "Maximum number of items to return",
-                    "default": 100
+                    "default": 100,
                 },
                 "missing_fields": {
                     "type": "array",
                     "items": {
                         "type": "string",
-                        "enum": ["description", "poster_url", "thumbnail", "tmdb_id", "imdb_id", "year", "genre"]
+                        "enum": [
+                            "description",
+                            "poster_url",
+                            "thumbnail",
+                            "tmdb_id",
+                            "imdb_id",
+                            "year",
+                            "genre",
+                        ],
                     },
                     "description": "Which fields to check for missing values",
-                    "default": ["description", "poster_url", "thumbnail"]
-                }
+                    "default": ["description", "poster_url", "thumbnail"],
+                },
             },
-            "required": []
-        }
-    }
+            "required": [],
+        },
+    },
 ]

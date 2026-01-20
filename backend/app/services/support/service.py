@@ -5,14 +5,13 @@ Delegates to specialized modules for ticket, chat, FAQ, and analytics operations
 """
 
 from datetime import datetime
-from typing import Optional, List, Tuple, AsyncIterator
+from typing import AsyncIterator, List, Optional, Tuple
 
 import anthropic
-
 from app.core.config import settings
 from app.models.support import SupportTicket
 from app.models.user import User
-from app.services.support import ticket_manager, voice_chat, faq_manager, analytics
+from app.services.support import analytics, faq_manager, ticket_manager, voice_chat
 from app.services.support.conversation import rate_conversation as _rate_conversation
 
 
@@ -31,26 +30,50 @@ class SupportService:
     # Voice Support Chat
 
     async def chat(
-        self, message: str, user: User, language: str = 'en',
-        conversation_id: Optional[str] = None, app_context: Optional[dict] = None,
+        self,
+        message: str,
+        user: User,
+        language: str = "en",
+        conversation_id: Optional[str] = None,
+        app_context: Optional[dict] = None,
     ) -> dict:
         """Process a voice support chat message."""
         return await voice_chat.chat(
-            self.async_client, message, user, language, conversation_id, app_context, self.max_tokens
+            self.async_client,
+            message,
+            user,
+            language,
+            conversation_id,
+            app_context,
+            self.max_tokens,
         )
 
     async def chat_streaming(
-        self, message: str, user: User, language: str = 'en',
-        conversation_id: Optional[str] = None, app_context: Optional[dict] = None,
+        self,
+        message: str,
+        user: User,
+        language: str = "en",
+        conversation_id: Optional[str] = None,
+        app_context: Optional[dict] = None,
     ) -> AsyncIterator[dict]:
         """Process a voice support chat message with streaming response."""
         async for chunk in voice_chat.chat_streaming(
-            self.async_client, message, user, language, conversation_id, app_context, self.max_tokens
+            self.async_client,
+            message,
+            user,
+            language,
+            conversation_id,
+            app_context,
+            self.max_tokens,
         ):
             yield chunk
 
     async def rate_conversation(
-        self, conversation_id: str, user: User, rating: int, feedback: Optional[str] = None,
+        self,
+        conversation_id: str,
+        user: User,
+        rating: int,
+        feedback: Optional[str] = None,
     ) -> bool:
         """Rate a support conversation."""
         return await _rate_conversation(conversation_id, user, rating, feedback)
@@ -58,8 +81,13 @@ class SupportService:
     # Ticket Management
 
     async def create_ticket(
-        self, user: User, subject: str, message: str, category: str = 'general',
-        priority: Optional[str] = None, language: str = 'en',
+        self,
+        user: User,
+        subject: str,
+        message: str,
+        category: str = "general",
+        priority: Optional[str] = None,
+        language: str = "en",
         voice_conversation_id: Optional[str] = None,
     ) -> SupportTicket:
         """Create a new support ticket."""
@@ -68,20 +96,31 @@ class SupportService:
         )
 
     async def get_ticket(
-        self, ticket_id: str, user: Optional[User] = None, is_admin: bool = False,
+        self,
+        ticket_id: str,
+        user: Optional[User] = None,
+        is_admin: bool = False,
     ) -> Optional[SupportTicket]:
         """Get a ticket by ID, with permission check."""
         return await ticket_manager.get_ticket(ticket_id, user, is_admin)
 
     async def list_user_tickets(
-        self, user: User, page: int = 1, page_size: int = 20, status: Optional[str] = None,
+        self,
+        user: User,
+        page: int = 1,
+        page_size: int = 20,
+        status: Optional[str] = None,
     ) -> Tuple[List[SupportTicket], int]:
         """List tickets for a user."""
         return await ticket_manager.list_user_tickets(user, page, page_size, status)
 
     async def list_admin_tickets(
-        self, page: int = 1, page_size: int = 20, status: Optional[str] = None,
-        priority: Optional[str] = None, category: Optional[str] = None,
+        self,
+        page: int = 1,
+        page_size: int = 20,
+        status: Optional[str] = None,
+        priority: Optional[str] = None,
+        category: Optional[str] = None,
         assigned_to: Optional[str] = None,
     ) -> Tuple[List[SupportTicket], int, dict]:
         """List tickets for admin with filters and stats."""
@@ -90,8 +129,12 @@ class SupportService:
         )
 
     async def update_ticket(
-        self, ticket_id: str, admin: User, status: Optional[str] = None,
-        priority: Optional[str] = None, assigned_to: Optional[str] = None,
+        self,
+        ticket_id: str,
+        admin: User,
+        status: Optional[str] = None,
+        priority: Optional[str] = None,
+        assigned_to: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ) -> Optional[SupportTicket]:
         """Update ticket (admin only)."""
@@ -100,13 +143,22 @@ class SupportService:
         )
 
     async def add_ticket_message(
-        self, ticket_id: str, author: User, content: str, is_support: bool = False,
+        self,
+        ticket_id: str,
+        author: User,
+        content: str,
+        is_support: bool = False,
     ) -> Optional[SupportTicket]:
         """Add a message to a ticket thread."""
-        return await ticket_manager.add_ticket_message(ticket_id, author, content, is_support)
+        return await ticket_manager.add_ticket_message(
+            ticket_id, author, content, is_support
+        )
 
     async def add_ticket_note(
-        self, ticket_id: str, admin: User, content: str,
+        self,
+        ticket_id: str,
+        admin: User,
+        content: str,
     ) -> Optional[SupportTicket]:
         """Add an internal note to a ticket (admin only)."""
         return await ticket_manager.add_ticket_note(ticket_id, admin, content)
@@ -114,7 +166,9 @@ class SupportService:
     # FAQ Management
 
     async def get_faq_by_category(
-        self, category: Optional[str] = None, language: str = 'en',
+        self,
+        category: Optional[str] = None,
+        language: str = "en",
     ) -> List[dict]:
         """Get FAQ entries, optionally filtered by category."""
         return await faq_manager.get_faq_by_category(category, language)
@@ -130,7 +184,9 @@ class SupportService:
     # Analytics
 
     async def get_analytics(
-        self, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None,
+        self,
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None,
     ) -> dict:
         """Get support analytics for a date range."""
         return await analytics.get_analytics(start_date, end_date)

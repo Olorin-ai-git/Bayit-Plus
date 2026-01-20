@@ -5,10 +5,9 @@ Adapter that wraps Bayit+ Content model to implement Olorin IndexableContent pro
 
 from typing import Optional
 
-from olorin import IndexableContent, SearchableContent
-
 from app.core.config import settings
 from app.models.content import Content
+from olorin import IndexableContent, SearchableContent
 
 
 class BayitContentAdapter:
@@ -48,7 +47,10 @@ class BayitContentAdapter:
     def original_language(self) -> str:
         """Original language code (e.g., 'he', 'en')."""
         # Use content's language field if available, otherwise use configured default
-        return getattr(self._content, 'language', None) or settings.olorin.default_content_language
+        return (
+            getattr(self._content, "language", None)
+            or settings.olorin.default_content_language
+        )
 
     @property
     def genres(self) -> list[str]:
@@ -124,19 +126,25 @@ class BayitContentAdapter:
 
         # Add series info if applicable
         if self._content.is_series:
-            meta.update({
-                "season": self._content.season,
-                "episode": self._content.episode,
-                "series_id": str(self._content.series_id) if self._content.series_id else None,
-            })
+            meta.update(
+                {
+                    "season": self._content.season,
+                    "episode": self._content.episode,
+                    "series_id": str(self._content.series_id)
+                    if self._content.series_id
+                    else None,
+                }
+            )
 
         # Add TMDB info if available
         if self._content.tmdb_id:
-            meta.update({
-                "tmdb_id": self._content.tmdb_id,
-                "imdb_id": self._content.imdb_id,
-                "imdb_rating": self._content.imdb_rating,
-            })
+            meta.update(
+                {
+                    "tmdb_id": self._content.tmdb_id,
+                    "imdb_id": self._content.imdb_id,
+                    "imdb_rating": self._content.imdb_rating,
+                }
+            )
 
         # Filter out None values
         return {k: v for k, v in meta.items() if v is not None}

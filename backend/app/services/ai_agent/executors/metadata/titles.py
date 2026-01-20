@@ -9,20 +9,17 @@ from datetime import datetime
 from typing import Any, Dict
 
 from app.services.ai_agent.executors._shared import (
+    create_action_description,
     get_content_or_error,
     handle_dry_run,
     log_librarian_action,
-    create_action_description,
 )
 
 logger = logging.getLogger(__name__)
 
 
 async def execute_clean_title(
-    content_id: str,
-    new_title: str,
-    audit_id: str,
-    dry_run: bool = False
+    content_id: str, new_title: str, audit_id: str, dry_run: bool = False
 ) -> Dict[str, Any]:
     """
     Clean/fix content title.
@@ -40,7 +37,7 @@ async def execute_clean_title(
         dry_run,
         "rename {content_id} to '{new_title}'",
         content_id=content_id,
-        new_title=new_title
+        new_title=new_title,
     )
     if dry_run_result:
         return dry_run_result
@@ -59,7 +56,7 @@ async def execute_clean_title(
             action="Cleaned title",
             content_title=old_title,
             old_value=old_title,
-            new_value=new_title
+            new_value=new_title,
         )
 
         await log_librarian_action(
@@ -76,7 +73,7 @@ async def execute_clean_title(
             "success": True,
             "updated": True,
             "old_title": old_title,
-            "new_title": new_title
+            "new_title": new_title,
         }
     except Exception as e:
         logger.error(f"Error cleaning title: {e}")

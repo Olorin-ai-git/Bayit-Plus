@@ -4,20 +4,20 @@ on:
   workflow_dispatch:
     inputs:
       staging_verification:
-        description: 'Confirm staging has been tested'
+        description: "Confirm staging has been tested"
         required: true
         type: boolean
         default: false
       rollback_revision:
-        description: 'Revision to rollback to (leave empty for new deploy)'
+        description: "Revision to rollback to (leave empty for new deploy)"
         required: false
         type: string
 
 env:
-  PROJECT_ID: bayit-plus
-  REGION: us-east1
-  SERVICE_NAME: bayit-plus-backend
-  ARTIFACT_REGISTRY: us-east1-docker.pkg.dev/bayit-plus/bayit-plus
+  PROJECT_ID: ${{ vars.GCP_PROJECT_ID || 'bayit-plus' }}
+  REGION: ${{ vars.GCP_REGION || 'us-east1' }}
+  SERVICE_NAME: ${{ vars.PRODUCTION_SERVICE_NAME || 'bayit-plus-backend' }}
+  ARTIFACT_REGISTRY: ${{ vars.GCP_REGION || 'us-east1' }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID || 'bayit-plus' }}/bayit-plus
   IMAGE_NAME: backend
 
 jobs:

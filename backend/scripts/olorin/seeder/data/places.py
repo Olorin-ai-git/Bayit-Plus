@@ -28,7 +28,7 @@ PLACES = [
         "canonical_name_en": "Tel Aviv",
         "category": ReferenceCategory.PLACE,
         "subcategory": "city",
-        "aliases": ["תל אביב-יפו", "ת\"א"],
+        "aliases": ["תל אביב-יפו", 'ת"א'],
         "aliases_en": ["TLV"],
         "short_explanation": "העיר השנייה בגודלה בישראל, מרכז תרבותי וכלכלי",
         "short_explanation_en": "Second largest city in Israel, cultural and economic center",

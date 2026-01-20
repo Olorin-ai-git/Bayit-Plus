@@ -10,26 +10,25 @@ Tests cover:
 - Webhook configuration
 """
 
-import pytest
-import pytest_asyncio
 from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
-
+import pytest
+import pytest_asyncio
+from app.core.config import settings
 from app.models.integration_partner import (
     IntegrationPartner,
-    UsageRecord,
     RateLimitConfig,
+    UsageRecord,
 )
 from app.services.olorin.partner_service import PartnerService
-from app.core.config import settings
-
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # ============================================
 # Test Fixtures
 # ============================================
+
 
 @pytest_asyncio.fixture
 async def db_client():
@@ -37,7 +36,7 @@ async def db_client():
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     await init_beanie(
         database=client[f"{settings.MONGODB_DB_NAME}_partner_test"],
-        document_models=[IntegrationPartner, UsageRecord]
+        document_models=[IntegrationPartner, UsageRecord],
     )
     yield client
     # Cleanup
@@ -54,6 +53,7 @@ async def partner_service(db_client):
 # ============================================
 # Partner Registration Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 async def test_create_partner(partner_service, db_client):
@@ -124,6 +124,7 @@ async def test_create_duplicate_partner(partner_service, db_client):
 # API Key Authentication Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_authenticate_valid_key(partner_service, db_client):
     """Test authentication with valid API key."""
@@ -142,7 +143,9 @@ async def test_authenticate_valid_key(partner_service, db_client):
 @pytest.mark.asyncio
 async def test_authenticate_invalid_key(partner_service, db_client):
     """Test authentication with invalid API key."""
-    authenticated = await partner_service.authenticate_by_api_key("invalid-api-key-12345")
+    authenticated = await partner_service.authenticate_by_api_key(
+        "invalid-api-key-12345"
+    )
     assert authenticated is None
 
 
@@ -220,6 +223,7 @@ async def test_regenerate_api_key_not_found(partner_service, db_client):
 # Capability Management Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_enable_capability(partner_service, db_client):
     """Test enabling a capability for partner."""
@@ -276,13 +280,16 @@ async def test_enable_capability_with_custom_rate_limits(partner_service, db_cli
     )
 
     updated = await partner_service.get_partner(partner.partner_id)
-    assert updated.capabilities["semantic_search"].rate_limits.requests_per_minute == 100
+    assert (
+        updated.capabilities["semantic_search"].rate_limits.requests_per_minute == 100
+    )
     assert updated.capabilities["semantic_search"].rate_limits.requests_per_hour == 1000
 
 
 # ============================================
 # Partner Lifecycle Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 async def test_get_partner(partner_service, db_client):
@@ -377,6 +384,7 @@ async def test_unsuspend_partner(partner_service, db_client):
 # Webhook Configuration Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_configure_webhook(partner_service, db_client):
     """Test configuring webhook for partner."""
@@ -460,6 +468,7 @@ async def test_generate_webhook_signature_no_secret(partner_service, db_client):
 # Rate Limit Tests
 # ============================================
 
+
 @pytest.mark.asyncio
 async def test_default_rate_limits_by_tier(partner_service, db_client):
     """Test that rate limits are set correctly by billing tier."""
@@ -492,6 +501,7 @@ async def test_default_rate_limits_by_tier(partner_service, db_client):
 # ============================================
 # Edge Cases and Error Handling
 # ============================================
+
 
 @pytest.mark.asyncio
 async def test_enable_capability_not_found(partner_service, db_client):
@@ -528,6 +538,7 @@ async def test_configure_webhook_not_found(partner_service, db_client):
 # ============================================
 # Performance Tests
 # ============================================
+
 
 @pytest.mark.asyncio
 async def test_partner_creation_performance(partner_service, db_client):

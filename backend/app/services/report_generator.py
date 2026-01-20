@@ -27,24 +27,27 @@ async def send_audit_report(audit_report: AuditReport):
 
         # Send email if configured
         try:
-            from app.services.email_service import send_email
             from app.core.config import settings
+            from app.services.email_service import send_email
 
-            if hasattr(settings, 'ADMIN_EMAIL_ADDRESSES') and settings.ADMIN_EMAIL_ADDRESSES:
+            if (
+                hasattr(settings, "ADMIN_EMAIL_ADDRESSES")
+                and settings.ADMIN_EMAIL_ADDRESSES
+            ):
                 admin_emails = settings.ADMIN_EMAIL_ADDRESSES.split(",")
                 admin_emails = [email.strip() for email in admin_emails]
 
                 subject = f"[Bayit+] Daily Librarian Report - {audit_report.audit_date.strftime('%Y-%m-%d')}"
 
                 await send_email(
-                    to_emails=admin_emails,
-                    subject=subject,
-                    html_content=html_report
+                    to_emails=admin_emails, subject=subject, html_content=html_report
                 )
 
                 logger.info(f"   ✅ Email sent to {len(admin_emails)} recipients")
             else:
-                logger.info(f"   ℹ️  No admin email addresses configured, skipping email")
+                logger.info(
+                    f"   ℹ️  No admin email addresses configured, skipping email"
+                )
 
         except ImportError:
             logger.warning("   ⚠️ Email service not configured")
@@ -76,7 +79,9 @@ def generate_html_report(audit_report: AuditReport) -> str:
     health_percentage = (healthy_items / total_items * 100) if total_items > 0 else 100
 
     # Status emoji
-    status_emoji = "✅" if health_percentage >= 90 else "⚠️" if health_percentage >= 70 else "❌"
+    status_emoji = (
+        "✅" if health_percentage >= 90 else "⚠️" if health_percentage >= 70 else "❌"
+    )
 
     # Format execution time
     exec_time = audit_report.execution_time_seconds
@@ -247,8 +252,8 @@ def generate_html_report(audit_report: AuditReport) -> str:
             <ul>
 """
             for stream in audit_report.broken_streams[:5]:  # Show first 5
-                title = stream.get('title', 'Unknown')
-                error = stream.get('error', 'Unknown error')
+                title = stream.get("title", "Unknown")
+                error = stream.get("error", "Unknown error")
                 html += f"                <li>{title}: {error}</li>\n"
 
             if len(audit_report.broken_streams) > 5:
@@ -266,8 +271,8 @@ def generate_html_report(audit_report: AuditReport) -> str:
             <ul>
 """
             for item in audit_report.missing_metadata[:5]:
-                title = item.get('title', 'Unknown')
-                issues = ', '.join(item.get('issues', []))
+                title = item.get("title", "Unknown")
+                issues = ", ".join(item.get("issues", []))
                 html += f"                <li>{title}: {issues}</li>\n"
 
             if len(audit_report.missing_metadata) > 5:
@@ -285,10 +290,10 @@ def generate_html_report(audit_report: AuditReport) -> str:
             <ul>
 """
             for item in audit_report.misclassifications[:5]:
-                content_id = item.get('content_id', 'Unknown')
-                current_cat = item.get('current_category', 'Unknown')
-                suggested_cat = item.get('suggested_category', 'Unknown')
-                confidence = item.get('confidence', 0) * 100
+                content_id = item.get("content_id", "Unknown")
+                current_cat = item.get("current_category", "Unknown")
+                suggested_cat = item.get("suggested_category", "Unknown")
+                confidence = item.get("confidence", 0) * 100
                 html += f"                <li>ID {content_id}: {current_cat} → {suggested_cat} ({confidence:.0f}% confidence)</li>\n"
 
             if len(audit_report.misclassifications) > 5:
@@ -308,8 +313,8 @@ def generate_html_report(audit_report: AuditReport) -> str:
         <div class="section-title">🔧 Actions Taken ({issues_fixed} fixes)</div>
 """
         for fix in audit_report.fixes_applied[:10]:  # Show first 10
-            description = fix.get('description', 'No description')
-            action_type = fix.get('action_type', 'unknown')
+            description = fix.get("description", "No description")
+            action_type = fix.get("action_type", "unknown")
             html += f"""
         <div class="fix-list">
             <strong>{action_type}:</strong> {description}
@@ -340,11 +345,15 @@ def generate_html_report(audit_report: AuditReport) -> str:
     # Database health
     db_health = audit_report.database_health
     if isinstance(db_health, dict):
-        connection_status = db_health.get('connection_status', 'unknown')
-        integrity_status = db_health.get('referential_integrity', 'unknown')
+        connection_status = db_health.get("connection_status", "unknown")
+        integrity_status = db_health.get("referential_integrity", "unknown")
 
-        status_badge = "badge-success" if connection_status == "healthy" else "badge-danger"
-        integrity_badge = "badge-success" if integrity_status == "passed" else "badge-warning"
+        status_badge = (
+            "badge-success" if connection_status == "healthy" else "badge-danger"
+        )
+        integrity_badge = (
+            "badge-success" if integrity_status == "passed" else "badge-warning"
+        )
 
         html += f"""
     <div class="section">
