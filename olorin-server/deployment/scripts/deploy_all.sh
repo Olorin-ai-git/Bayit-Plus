@@ -11,6 +11,7 @@
 #   --skip-tests         Skip test suite execution
 #   --skip-quality       Skip quality checks (tox)
 #   --skip-build         Skip Docker build (deploy existing image)
+#   --skip-secrets-check Skip GCP Secret Manager verification
 #   --dry-run            Show what would be done without executing
 #   --parallel           Run independent deployments in parallel
 #   --force              Skip confirmation prompts
@@ -514,6 +515,10 @@ main() {
                 ;;
             --skip-build)
                 SKIP_BUILD=true
+                shift
+                ;;
+            --skip-secrets-check)
+                SKIP_SECRETS_CHECK=true
                 shift
                 ;;
             --dry-run)
