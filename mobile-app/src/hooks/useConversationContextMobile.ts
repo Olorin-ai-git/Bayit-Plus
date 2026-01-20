@@ -16,9 +16,9 @@
  * - Search query tracking
  */
 
-import { useEffect, useState } from 'react';
-import { useRoute } from '@react-navigation/native';
-import { voiceCommandProcessor } from '@bayit/shared-services';
+import { useEffect, useState } from "react";
+import { useRoute } from "@react-navigation/native";
+import { voiceCommandProcessor } from "@bayit/shared-services";
 
 export interface ConversationContextData {
   currentRoute: string;
@@ -33,15 +33,17 @@ interface UseConversationContextMobileOptions {
 }
 
 export function useConversationContextMobile(
-  options: UseConversationContextMobileOptions = {}
+  options: UseConversationContextMobileOptions = {},
 ) {
   const { maxHistoryLength = 10 } = options;
   const route = useRoute();
 
   const [visibleContentIds, setVisibleContentIds] = useState<string[]>([]);
-  const [lastMentionedContentIds, setLastMentionedContentIds] = useState<string[]>([]);
+  const [lastMentionedContentIds, setLastMentionedContentIds] = useState<
+    string[]
+  >([]);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
-  const [lastSearchQuery, setLastSearchQuery] = useState('');
+  const [lastSearchQuery, setLastSearchQuery] = useState("");
 
   // Update voice command processor context whenever local state changes
   useEffect(() => {
@@ -60,7 +62,10 @@ export function useConversationContextMobile(
    * Example: When HomeScreen loads and displays featured content
    */
   const registerVisibleContent = (ids: string[]) => {
-    console.log('[ConversationContext] Registered visible content:', ids.length);
+    console.log(
+      "[ConversationContext] Registered visible content:",
+      ids.length,
+    );
     setVisibleContentIds(ids);
   };
 
@@ -84,7 +89,7 @@ export function useConversationContextMobile(
    * Useful for detecting repeated commands or user intent shifts
    */
   const recordCommand = (transcript: string) => {
-    console.log('[ConversationContext] Recorded command:', transcript);
+    console.log("[ConversationContext] Recorded command:", transcript);
     setCommandHistory((prev) => {
       const updated = [transcript, ...prev].slice(0, maxHistoryLength);
       return updated;
@@ -96,7 +101,7 @@ export function useConversationContextMobile(
    * Helps with "find more like this" or "refine search" commands
    */
   const recordSearchQuery = (query: string) => {
-    console.log('[ConversationContext] Recorded search query:', query);
+    console.log("[ConversationContext] Recorded search query:", query);
     setLastSearchQuery(query);
   };
 
@@ -113,14 +118,19 @@ export function useConversationContextMobile(
    * For "play it again" type commands
    */
   const getLastMentionedContentId = (): string | null => {
-    return lastMentionedContentIds.length > 0 ? lastMentionedContentIds[0] : null;
+    return lastMentionedContentIds.length > 0
+      ? lastMentionedContentIds[0]
+      : null;
   };
 
   /**
    * Check if this command was recently issued
    * Used to detect repeated commands
    */
-  const wasRecentlyCommandedWith = (keyword: string, withinLastN: number = 3): boolean => {
+  const wasRecentlyCommandedWith = (
+    keyword: string,
+    withinLastN: number = 3,
+  ): boolean => {
     return commandHistory
       .slice(0, withinLastN)
       .some((cmd) => cmd.toLowerCase().includes(keyword.toLowerCase()));
@@ -134,25 +144,28 @@ export function useConversationContextMobile(
    * - User: "Play that" → resolves to last mentioned or first visible content
    * - User: "Show more like this" → resolves to last search query
    */
-  const resolveContextualReference = (): { contentId?: string; context: string } => {
+  const resolveContextualReference = (): {
+    contentId?: string;
+    context: string;
+  } => {
     // Priority: last mentioned > first visible > last search
     const contentId = getLastMentionedContentId() || getFirstVisibleContentId();
 
     if (contentId) {
       return {
         contentId,
-        context: 'visible_content',
+        context: "visible_content",
       };
     }
 
     if (lastSearchQuery) {
       return {
-        context: 'search_results',
+        context: "search_results",
       };
     }
 
     return {
-      context: 'none',
+      context: "none",
     };
   };
 
@@ -161,11 +174,11 @@ export function useConversationContextMobile(
    * Call when starting a new conversation or user navigates away
    */
   const clear = () => {
-    console.log('[ConversationContext] Cleared context');
+    console.log("[ConversationContext] Cleared context");
     setVisibleContentIds([]);
     setLastMentionedContentIds([]);
     setCommandHistory([]);
-    setLastSearchQuery('');
+    setLastSearchQuery("");
   };
 
   return {

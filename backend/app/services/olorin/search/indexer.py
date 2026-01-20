@@ -3,6 +3,7 @@ Content Indexer
 
 Indexes content and subtitles for semantic search.
 Uses IndexableContent protocol for loose coupling.
+Includes resilience patterns for external service calls.
 """
 
 import logging
@@ -15,6 +16,7 @@ from app.services.olorin.content_metadata_service import content_metadata_servic
 from app.services.olorin.search.client import client_manager
 from app.services.olorin.search.embedding import generate_embedding
 from app.services.olorin.search.helpers import generate_vector_id, group_subtitles
+from app.services.olorin.search.pinecone_ops import safe_pinecone_upsert
 from olorin import IndexableContent
 
 logger = logging.getLogger(__name__)
@@ -89,10 +91,10 @@ async def index_content(
                 vectors_to_upsert.append(desc_result["vector"])
                 embeddings_to_save.append(desc_result["embedding"])
 
-        # Upsert to Pinecone
+        # Upsert to Pinecone with resilience
         pinecone_index = client_manager.pinecone_index
         if vectors_to_upsert and pinecone_index:
-            pinecone_index.upsert(vectors=vectors_to_upsert)
+            await safe_pinecone_upsert(pinecone_index, vectors_to_upsert)
 
         # Save to MongoDB
         for embedding in embeddings_to_save:
@@ -232,16 +234,16 @@ async def index_subtitles(
                 )
             )
 
-            # Batch upsert every 100 vectors
+            # Batch upsert every 100 vectors with resilience
             pinecone_index = client_manager.pinecone_index
             if len(vectors_to_upsert) >= 100 and pinecone_index:
-                pinecone_index.upsert(vectors=vectors_to_upsert)
+                await safe_pinecone_upsert(pinecone_index, vectors_to_upsert)
                 vectors_to_upsert = []
 
-        # Upsert remaining vectors
+        # Upsert remaining vectors with resilience
         pinecone_index = client_manager.pinecone_index
         if vectors_to_upsert and pinecone_index:
-            pinecone_index.upsert(vectors=vectors_to_upsert)
+            await safe_pinecone_upsert(pinecone_index, vectors_to_upsert)
 
         # Save to MongoDB
         for embedding in embeddings_to_save:

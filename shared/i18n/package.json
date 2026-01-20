@@ -1,9 +1,17 @@
 {
-  "name": "@bayit/shared-i18n",
+  "name": "@olorin/i18n",
   "version": "1.0.0",
-  "description": "Shared i18n configuration and locales for Bayit+ apps",
+  "description": "Olorin.ai Unified Internationalization - Multilingual support across all platforms",
+  "type": "module",
   "main": "index.ts",
   "types": "index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./web": "./web.ts",
+    "./native": "./native.ts",
+    "./types": "./types.ts",
+    "./protocols": "./protocols.ts"
+  },
   "peerDependencies": {
     "i18next": ">=21",
     "react-i18next": ">=12"

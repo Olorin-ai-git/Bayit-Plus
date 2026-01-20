@@ -1,4 +1,5 @@
 # COMPREHENSIVE SECURITY AUDIT REPORT
+
 ## Bayit+ iOS React Native Mobile App
 
 **Audit Date:** January 20, 2026
@@ -15,13 +16,13 @@ The Bayit+ iOS mobile application contains **critical security vulnerabilities**
 
 ### Key Statistics
 
-| Category | Count | Status |
-|----------|-------|--------|
-| **CRITICAL** vulnerabilities | 2 | 🔴 ACTIVE |
-| **HIGH** severity issues | 4 | 🟡 REQUIRES FIX |
-| **MEDIUM** severity findings | 3 | 🟠 IMPORTANT |
-| **LOW** recommendations | 5 | 🟢 ADVISORY |
-| **Compliance Failures** | 6 | ❌ FAIL |
+| Category                     | Count | Status          |
+| ---------------------------- | ----- | --------------- |
+| **CRITICAL** vulnerabilities | 2     | 🔴 ACTIVE       |
+| **HIGH** severity issues     | 4     | 🟡 REQUIRES FIX |
+| **MEDIUM** severity findings | 3     | 🟠 IMPORTANT    |
+| **LOW** recommendations      | 5     | 🟢 ADVISORY     |
+| **Compliance Failures**      | 6     | ❌ FAIL         |
 
 ### Remediation Status
 
@@ -42,6 +43,7 @@ The Bayit+ iOS mobile application contains **critical security vulnerabilities**
 **Location:** `/Users/olorin/Documents/Bayit-Plus/mobile-app/.env` (Lines 6-18)
 
 #### Current State
+
 ```env
 # File exists on developer machine with real credentials
 ELEVENLABS_API_KEY=sk_63c958e380a6c81f4fc63880ca3b9af3d6f8b5ca05ba92ac
@@ -50,27 +52,32 @@ SENTRY_DSN=https://cf75c674a6980b83e7eed8ee5e227a2a@o4510740497367040.ingest.us.
 ```
 
 #### Good News
+
 ✅ `.env` file is **NOT** currently tracked in git
 ✅ `.gitignore` properly configured with `.env` rules
 ✅ Only locally on developer machines
 
 #### The Problem
+
 ❌ Credentials exist in plaintext on developer machines
 ❌ Could be exposed through:
-   - Accidental git add before commit
-   - IDE auto-commit features
-   - Cloud sync services (Dropbox, iCloud)
-   - Shared development machines
-   - System backups and archives
-❌ If exposed, any attacker can abuse third-party services
-❌ Violates OWASP, App Store, and production standards
+
+- Accidental git add before commit
+- IDE auto-commit features
+- Cloud sync services (Dropbox, iCloud)
+- Shared development machines
+- System backups and archives
+  ❌ If exposed, any attacker can abuse third-party services
+  ❌ Violates OWASP, App Store, and production standards
 
 #### Impact Assessment
+
 **Likelihood:** HIGH (developer error is inevitable)
 **Impact:** CRITICAL (full service compromise)
 **Risk Rating:** 10/10
 
 #### Attack Scenarios
+
 1. **Accidental Exposure:** Developer accidentally commits .env
 2. **Cloud Sync Leak:** Credentials synced to cloud storage
 3. **Machine Compromise:** Attacker gains access to developer machine
@@ -78,11 +85,13 @@ SENTRY_DSN=https://cf75c674a6980b83e7eed8ee5e227a2a@o4510740497367040.ingest.us.
 5. **Supply Chain:** Compromised CI/CD pipeline captures secrets
 
 #### Recommended Action
+
 ```
 TIMELINE: IMMEDIATE - BEFORE ANY RELEASE
 ```
 
 **Step 1: Revoke Exposed Credentials (15 min)**
+
 ```bash
 # ElevenLabs Dashboard
 # 1. Go to https://elevenlabs.io/app/settings/api-keys
@@ -105,12 +114,14 @@ TIMELINE: IMMEDIATE - BEFORE ANY RELEASE
 Currently, the mobile app calls third-party services directly with credentials. This is wrong.
 
 **Current (Wrong):**
+
 ```
 Mobile App → [Contains ElevenLabs Key] → ElevenLabs
 Mobile App → [Contains Picovoice Key] → Picovoice
 ```
 
 **Required (Correct):**
+
 ```
 Mobile App → Backend [Contains All Keys] → ElevenLabs
 Mobile App → Backend [Contains All Keys] → Picovoice
@@ -118,6 +129,7 @@ Mobile App → Backend [Contains All Keys] → Sentry
 ```
 
 **Backend Endpoint Examples:**
+
 ```python
 # backend/app/api/v1/tts.py
 @router.post("/tts/synthesize")
@@ -152,22 +164,24 @@ async def log_error(error_data: ErrorReport):
 ```
 
 **Step 3: Update Mobile App (2 hours)**
+
 ```typescript
 // OLD (Remove from mobile app):
-import { ElevenLabs } from "elevenlabs"
+import { ElevenLabs } from "elevenlabs";
 const client = new ElevenLabs({
-  apiKey: process.env.ELEVENLABS_API_KEY  // DELETE THIS
-})
+  apiKey: process.env.ELEVENLABS_API_KEY, // DELETE THIS
+});
 
 // NEW (Replace with backend calls):
 const response = await fetch("https://api.bayit.tv/api/v1/tts/synthesize", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ text, voice, language })
-})
+  body: JSON.stringify({ text, voice, language }),
+});
 ```
 
 **Step 4: Remove from Local Machine (5 min)**
+
 ```bash
 # After new credentials are in backend:
 rm ~/.../mobile-app/.env
@@ -185,14 +199,16 @@ cp .env.example .env
 **Location:** `src/utils/sentry.ts` (Lines 13-15)
 
 #### Current Implementation
+
 ```typescript
 // ⚠️ PROBLEM: Silently falls back to empty string
-const SENTRY_DSN = process.env.SENTRY_DSN || '';
-const SENTRY_ENVIRONMENT = process.env.SENTRY_ENVIRONMENT || 'development';
-const SENTRY_RELEASE = process.env.SENTRY_RELEASE || '';
+const SENTRY_DSN = process.env.SENTRY_DSN || "";
+const SENTRY_ENVIRONMENT = process.env.SENTRY_ENVIRONMENT || "development";
+const SENTRY_RELEASE = process.env.SENTRY_RELEASE || "";
 ```
 
 #### Impact
+
 - ❌ App fails silently if required credentials missing
 - ❌ No fail-fast mechanism for missing critical config
 - ❌ Difficult to debug production issues
@@ -200,6 +216,7 @@ const SENTRY_RELEASE = process.env.SENTRY_RELEASE || '';
 - ❌ Could lead to data loss or security bypass
 
 #### Required Fix
+
 ```typescript
 // ✅ CORRECT: Fail fast with clear error
 const validateEnvironment = () => {
@@ -207,24 +224,24 @@ const validateEnvironment = () => {
   const API_BASE_URL = process.env.API_BASE_URL;
 
   // Fail fast in production
-  if (!SENTRY_DSN && process.env.NODE_ENV === 'production') {
+  if (!SENTRY_DSN && process.env.NODE_ENV === "production") {
     throw new Error(
-      'CRITICAL: SENTRY_DSN environment variable is required in production. ' +
-      'Without it, errors cannot be tracked. See .env.example for setup.'
+      "CRITICAL: SENTRY_DSN environment variable is required in production. " +
+        "Without it, errors cannot be tracked. See .env.example for setup.",
     );
   }
 
   if (!API_BASE_URL) {
     throw new Error(
-      'CRITICAL: API_BASE_URL environment variable is required. ' +
-      'The app cannot connect to the backend without it. See .env.example.'
+      "CRITICAL: API_BASE_URL environment variable is required. " +
+        "The app cannot connect to the backend without it. See .env.example.",
     );
   }
 
   return {
     SENTRY_DSN: SENTRY_DSN || undefined,
     API_BASE_URL,
-    SENTRY_ENVIRONMENT: process.env.SENTRY_ENVIRONMENT || 'development',
+    SENTRY_ENVIRONMENT: process.env.SENTRY_ENVIRONMENT || "development",
   };
 };
 
@@ -245,6 +262,7 @@ export const config = validateEnvironment();
 **Attack:** Man-in-the-Middle (MITM)
 
 #### Current Implementation
+
 ```typescript
 // ❌ VULNERABLE: No certificate validation
 const response = await fetch(`${API_BASE_URL}/content/${id}/stream`);
@@ -253,7 +271,9 @@ const response = await fetch(`${API_BASE_URL}/chapters/${id}`);
 ```
 
 #### Vulnerability Details
+
 **Threat Model:**
+
 ```
 Normal Connection:
 User iPhone → [Secure Channel] → api.bayit.tv
@@ -270,6 +290,7 @@ Attacker Can:
 ```
 
 #### Risk Scenarios
+
 - **Public WiFi:** Attacker on same network intercepts all data
 - **Compromised Network:** ISP or network admin with MITM capabilities
 - **Mobile Carrier:** Carrier-level attacks (known to occur in some countries)
@@ -278,6 +299,7 @@ Attacker Can:
 #### Recommended Fix
 
 **Option 1: Certificate Pinning with react-native-network-security-config (Android)**
+
 ```typescript
 import NetworkSecurityConfig from "react-native-network-security-config";
 
@@ -293,6 +315,7 @@ if (Platform.OS === "android") {
 ```
 
 **Option 2: Custom Fetch Interceptor with React Query (Both iOS & Android)**
+
 ```typescript
 import axios from "axios";
 import tls from "react-native-tls";
@@ -322,6 +345,7 @@ secureApiClient.interceptors.request.use(async (config) => {
 ```
 
 **Option 3: Enforce HTTPS Only + Security Headers**
+
 ```typescript
 const secureConfig: AxiosRequestConfig = {
   httpAgent: null, // No HTTP
@@ -348,6 +372,7 @@ export const apiClient = axios.create({
 **Attack Type:** Path Traversal / Authorization Bypass
 
 #### Vulnerable Code
+
 ```typescript
 const { id, title, type } = route.params;
 
@@ -358,6 +383,7 @@ const response = await fetch(`${API_BASE_URL}/chapters/${id}`);
 ```
 
 #### Attack Scenario
+
 ```
 Attacker navigation:
 Player.tsx receives: id = "../../../admin/users"
@@ -372,6 +398,7 @@ Result: Attacker accesses unauthorized endpoint!
 ```
 
 #### Recommended Fix
+
 ```typescript
 // ✅ CORRECT: Strict validation
 function validateContentId(id: unknown): string {
@@ -433,6 +460,7 @@ export const PlayerScreenMobile: React.FC = () => {
 **Location:** All fetch() calls throughout app
 
 #### Current Implementation
+
 ```typescript
 // ❌ PROBLEM: Each component manages its own fetch
 // No centralized auth, error handling, or security policies
@@ -444,6 +472,7 @@ return response.json();
 ```
 
 #### Why This Matters
+
 - ❌ No automatic authentication token injection
 - ❌ No consistent error handling
 - ❌ No request/response logging control
@@ -451,6 +480,7 @@ return response.json();
 - ❌ Difficult to add rate limiting, retries, metrics
 
 #### Recommended Fix
+
 ```typescript
 // ✅ CORRECT: Centralized API client with interceptors
 import axios, { AxiosInstance, AxiosError } from "axios";
@@ -486,7 +516,7 @@ export const createSecureApiClient = (): AxiosInstance => {
 
       return config;
     },
-    (error) => Promise.reject(error)
+    (error) => Promise.reject(error),
   );
 
   // Response interceptor - handle auth failures & errors
@@ -510,7 +540,7 @@ export const createSecureApiClient = (): AxiosInstance => {
       if (error.response?.status === 429) {
         const retryAfter = parseInt(
           error.response.headers["retry-after"] || "60",
-          10
+          10,
         );
         console.warn(`[API] Rate limited. Retry after ${retryAfter}s`);
         // Implement exponential backoff
@@ -533,7 +563,7 @@ export const createSecureApiClient = (): AxiosInstance => {
       }
 
       return Promise.reject(error);
-    }
+    },
   );
 
   return client;
@@ -556,14 +586,16 @@ const response = await apiClient.get(`/content/${contentId}/stream`);
 **Location:** 146+ console calls throughout `src/`
 
 #### Current Implementation
+
 ```typescript
 // ❌ PROBLEM: All logs at all times
-console.log('[TTSService] Speaking:', text);
-console.error('[TTSService] Failed to speak:', error);
-console.warn('[Sentry] DSN not configured');
+console.log("[TTSService] Speaking:", text);
+console.error("[TTSService] Failed to speak:", error);
+console.warn("[Sentry] DSN not configured");
 ```
 
 #### Issues
+
 - ❌ Development logs sent to Sentry in production
 - ❌ Sensitive data not filtered from logs
 - ❌ No log level control
@@ -571,6 +603,7 @@ console.warn('[Sentry] DSN not configured');
 - ❌ Crashes services could capture logs with PII
 
 #### Recommended Fix
+
 ```typescript
 // ✅ CORRECT: Environment-aware logging
 export const logger = {
@@ -628,6 +661,7 @@ logger.debug("Stream URL loaded", { id: contentId }); // Won't send streamUrl
 **Location:** `src/screens/PlayerScreenMobile.tsx` (Lines 38-52)
 
 #### Current Implementation
+
 ```typescript
 // ❌ PROBLEM: Weak regex allows malicious patterns
 const getYouTubeVideoId = (url: string): string | null => {
@@ -645,6 +679,7 @@ const getYouTubeVideoId = (url: string): string | null => {
 ```
 
 #### Attack Scenarios
+
 ```
 Attack 1: URL encoding bypass
 URL: youtube.com/embed/valid%2F..%2Fadmin
@@ -663,6 +698,7 @@ In WebView: Protocol handler called!
 ```
 
 #### Recommended Fix
+
 ```typescript
 // ✅ CORRECT: Strict video ID validation
 const YOUTUBE_VIDEO_ID_REGEX = /^[a-zA-Z0-9_-]{11}$/;
@@ -735,6 +771,7 @@ if (!videoId) {
 **Location:** `src/utils/sentry.ts` (Lines 40-49)
 
 #### Current Implementation
+
 ```typescript
 // ⚠️ INCOMPLETE: Only checks first level
 const scrubObject = (obj: Record<string, unknown>): void => {
@@ -750,12 +787,14 @@ const scrubObject = (obj: Record<string, unknown>): void => {
 ```
 
 #### Issues
+
 - ⚠️ Recursive check only for non-matching keys
 - ⚠️ Array elements not checked
 - ⚠️ Could miss: `user.authentication.bearer_token`
 - ⚠️ Deep nesting might not be fully scrubbed
 
 #### Recommended Fix
+
 ```typescript
 // ✅ CORRECT: Deep recursive scrubbing
 const scrubSensitiveData = (data: any, depth = 0, maxDepth = 10): any => {
@@ -828,18 +867,21 @@ const scrubSensitiveData = (data: any, depth = 0, maxDepth = 10): any => {
 **Location:** All fetch/axios calls throughout app
 
 #### Current State
+
 ```typescript
 // ❌ PROBLEM: No rate limiting, no retry logic
 const response = await fetch(`${API_BASE_URL}/content/${id}/stream`);
 ```
 
 #### Vulnerability
+
 - ❌ DoS attack: Rapid requests exhaust server/network
 - ❌ Excessive API charges from third-party services
 - ❌ Poor performance during network issues
 - ❌ No backoff on server errors (429, 503)
 
 #### Recommended Fix
+
 ```typescript
 // ✅ CORRECT: Client-side rate limiting with exponential backoff
 import { RateLimiter } from "limiter";
@@ -852,7 +894,7 @@ const apiLimiter = new RateLimiter({
 // Implement with exponential backoff
 async function fetchWithRateLimit<T>(
   url: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<T> {
   const maxRetries = 3;
   let retryCount = 0;
@@ -871,10 +913,11 @@ async function fetchWithRateLimit<T>(
 
       // Rate limited - extract retry-after
       if (response.status === 429) {
-        const retryAfter = parseInt(response.headers.get("retry-after") || "60", 10);
-        console.warn(
-          `Rate limited. Waiting ${retryAfter}s before retry`
+        const retryAfter = parseInt(
+          response.headers.get("retry-after") || "60",
+          10,
         );
+        console.warn(`Rate limited. Waiting ${retryAfter}s before retry`);
         await sleep(retryAfter * 1000);
         retryCount++;
         continue;
@@ -910,7 +953,7 @@ async function fetchWithRateLimit<T>(
 // Usage
 try {
   const stream = await fetchWithRateLimit<StreamData>(
-    `${API_BASE_URL}/content/${contentId}/stream`
+    `${API_BASE_URL}/content/${contentId}/stream`,
   );
 } catch (error) {
   showErrorToast("Failed to load stream");
@@ -927,15 +970,17 @@ try {
 **Location:** `src/utils/biometricAuth.ts`
 
 #### Note
+
 This was flagged as a stub implementation in the previous audit. Verify if it has been replaced with real biometric authentication using `expo-local-authentication`.
 
 #### Required Implementation
+
 ```typescript
 // ✅ CORRECT: Use real biometric APIs
 import * as LocalAuthentication from "expo-local-authentication";
 
 export async function authenticateAsync(
-  options: BiometricAuthOptions = {}
+  options: BiometricAuthOptions = {},
 ): Promise<AuthenticationResult> {
   try {
     // Check if hardware available
@@ -957,12 +1002,13 @@ export async function authenticateAsync(
     }
 
     // Get supported types
-    const supported = await LocalAuthentication.supportedAuthenticationTypesAsync();
+    const supported =
+      await LocalAuthentication.supportedAuthenticationTypesAsync();
     const hasBiometrics =
+      supported.includes(LocalAuthentication.AuthenticationType.FINGERPRINT) ||
       supported.includes(
-        LocalAuthentication.AuthenticationType.FINGERPRINT
-      ) ||
-      supported.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION);
+        LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION,
+      );
 
     if (!hasBiometrics) {
       return {
@@ -1001,9 +1047,11 @@ export async function authenticateAsync(
 ## LOW SEVERITY RECOMMENDATIONS (🟢 ADVISORY)
 
 ### 1. WebView Security Hardening
+
 **Location:** `src/screens/PlayerScreenMobile.tsx` (WebView component)
 
 **Recommendation:**
+
 ```typescript
 // Add security attributes
 <WebView
@@ -1032,16 +1080,19 @@ export async function authenticateAsync(
 ```
 
 ### 2. Add Request/Response Validation
+
 - Validate all API responses match expected schema
 - Use TypeScript for strict typing
 - Implement Zod or similar for runtime validation
 
 ### 3. Implement Security Headers
+
 - Add `X-Content-Type-Options: nosniff`
 - Add `X-Frame-Options: DENY`
 - Add `Content-Security-Policy` if available in WebView
 
 ### 4. Add Dependency Vulnerability Scanning
+
 ```bash
 npm audit
 npm audit fix
@@ -1049,6 +1100,7 @@ npm audit fix
 ```
 
 ### 5. Implement Error Boundary
+
 - Catch unexpected errors gracefully
 - Don't expose stack traces to users
 - Log structured errors to monitoring service
@@ -1112,35 +1164,35 @@ PHASE 5: TESTING & VALIDATION
 
 ### OWASP Compliance
 
-| Category | OWASP Guideline | Status | Notes |
-|----------|-----------------|--------|-------|
-| **A02:2021** | Cryptographic Failures | ❌ FAIL | Credentials exposed |
-| **A03:2021** | Injection | ⚠️ WARNING | Path traversal risk |
-| **A07:2021** | Auth Failures | ⚠️ WARNING | Biometric stub noted |
-| **Mobile M1** | Improper Credentials | ❌ FAIL | In .env file |
-| **Mobile M3** | Insecure Transport | ❌ FAIL | No cert pinning |
-| **Mobile M4** | Insecure Logging | ⚠️ WARNING | Unfiltered logs |
-| **Mobile M5** | Reverse Engineering | ⚠️ WARNING | Code not obfuscated |
+| Category      | OWASP Guideline        | Status     | Notes                |
+| ------------- | ---------------------- | ---------- | -------------------- |
+| **A02:2021**  | Cryptographic Failures | ❌ FAIL    | Credentials exposed  |
+| **A03:2021**  | Injection              | ⚠️ WARNING | Path traversal risk  |
+| **A07:2021**  | Auth Failures          | ⚠️ WARNING | Biometric stub noted |
+| **Mobile M1** | Improper Credentials   | ❌ FAIL    | In .env file         |
+| **Mobile M3** | Insecure Transport     | ❌ FAIL    | No cert pinning      |
+| **Mobile M4** | Insecure Logging       | ⚠️ WARNING | Unfiltered logs      |
+| **Mobile M5** | Reverse Engineering    | ⚠️ WARNING | Code not obfuscated  |
 
 ### OWASP MASVS Level 1
 
-| Requirement | Status | Evidence |
-|-------------|--------|----------|
-| Credentials not hardcoded | ❌ FAIL | .env file exists |
-| HTTPS for all network | ⚠️ PARTIAL | No cert pinning |
-| Input validation | ⚠️ PARTIAL | Missing on stream IDs |
-| Error handling secure | ⚠️ PARTIAL | Unfiltered logs |
-| Code not debuggable prod | ⚠️ UNKNOWN | Needs verification |
+| Requirement               | Status     | Evidence              |
+| ------------------------- | ---------- | --------------------- |
+| Credentials not hardcoded | ❌ FAIL    | .env file exists      |
+| HTTPS for all network     | ⚠️ PARTIAL | No cert pinning       |
+| Input validation          | ⚠️ PARTIAL | Missing on stream IDs |
+| Error handling secure     | ⚠️ PARTIAL | Unfiltered logs       |
+| Code not debuggable prod  | ⚠️ UNKNOWN | Needs verification    |
 
 ### Apple App Store Requirements
 
-| Requirement | Status | Notes |
-|-------------|--------|-------|
-| No hardcoded credentials | ❌ FAIL | Must fix before submission |
-| HTTPS required | ✅ PASS | Using HTTPS |
-| Data privacy | ⚠️ REVIEW | Check privacy policy |
-| Security best practices | ⚠️ WARNING | Multiple issues |
-| Encryption required | ⚠️ REVIEW | Verify in transit |
+| Requirement              | Status     | Notes                      |
+| ------------------------ | ---------- | -------------------------- |
+| No hardcoded credentials | ❌ FAIL    | Must fix before submission |
+| HTTPS required           | ✅ PASS    | Using HTTPS                |
+| Data privacy             | ⚠️ REVIEW  | Check privacy policy       |
+| Security best practices  | ⚠️ WARNING | Multiple issues            |
+| Encryption required      | ⚠️ REVIEW  | Verify in transit          |
 
 ---
 
@@ -1210,6 +1262,7 @@ LOW IMPACT   │ 🟢 LOW                   │ 🟢 LOW
 **Current Score: 32/100** (Unsafe for Production)
 
 **Score Breakdown:**
+
 ```
 Credential Security:     10/25 (Critical - Exposed)
 Network Security:        15/25 (High - No pinning)
@@ -1242,14 +1295,14 @@ TOTAL:                   32/100 (UNSAFE)
 
 ### Audit Details
 
-| Field | Value |
-|-------|-------|
-| Auditor | Security Specialist (Claude Code) |
-| Date | January 20, 2026 |
-| Scope | Complete security assessment |
-| Duration | Comprehensive codebase review |
-| Methodology | OWASP Top 10, MASVS, CWE analysis |
-| Confidence | High (100+ findings cross-verified) |
+| Field       | Value                               |
+| ----------- | ----------------------------------- |
+| Auditor     | Security Specialist (Claude Code)   |
+| Date        | January 20, 2026                    |
+| Scope       | Complete security assessment        |
+| Duration    | Comprehensive codebase review       |
+| Methodology | OWASP Top 10, MASVS, CWE analysis   |
+| Confidence  | High (100+ findings cross-verified) |
 
 ### Next Steps
 
@@ -1321,4 +1374,3 @@ openssl s_client -connect api.bayit.tv:443 -showcerts
 **Last Updated:** January 20, 2026
 **Classification:** Internal - Security Sensitive
 **Distribution:** Security Team, Engineering Leadership, Product Team
-

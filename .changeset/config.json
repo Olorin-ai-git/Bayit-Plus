@@ -6,9 +6,7 @@
   ],
   "commit": false,
   "fixed": [],
-  "linked": [
-    ["@olorin/glass-ui", "@olorin/design-tokens"]
-  ],
+  "linked": [["@olorin/glass-ui", "@olorin/design-tokens"]],
   "access": "restricted",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",

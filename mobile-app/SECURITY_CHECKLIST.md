@@ -1,4 +1,5 @@
 # Mobile App Security Checklist
+
 ## Pre-Release & Ongoing Compliance
 
 **Last Updated:** January 20, 2026
@@ -9,6 +10,7 @@
 ## PHASE 1: EMERGENCY RESPONSE ⏱️ 4 Hours
 
 ### Credential Revocation
+
 - [ ] **ElevenLabs API Key Revoked**
   - Old Key: `sk_63c958e380a6c81f4fc63880ca3b9af3d6f8b5ca05ba92ac`
   - Status: ⏳ PENDING
@@ -28,21 +30,26 @@
   - Verification: Old DSN disabled
 
 ### Git History Verification
+
 - [ ] **Credentials NOT in git history**
+
   ```bash
   git log -S "sk_63c958e" --oneline  # Should be empty
   git log -S "Iiy+q/Lv" --oneline     # Should be empty
   ```
+
   - Status: ⏳ PENDING
 
 - [ ] **.env file properly gitignored**
   ```bash
   grep "\.env" .gitignore | head -3
   ```
+
   - Expected: `.env`, `.env.*`, `.env.local`
   - Status: ✅ VERIFIED
 
 ### Credential Storage Update
+
 - [ ] **New credentials in backend .env only**
   - ElevenLabs: `ELEVENLABS_API_KEY=sk_[new]`
   - Picovoice: `PICOVOICE_ACCESS_KEY=[new]`
@@ -62,6 +69,7 @@
 ### Backend API Proxies
 
 #### TTS Endpoint
+
 - [ ] **Backend endpoint created: `/api/v1/tts/synthesize`**
   - File: `backend/app/api/v1/routes/tts.py`
   - Status: ⏳ PENDING
@@ -82,6 +90,7 @@
   - Status: ⏳ PENDING
 
 #### Wake Word Endpoint
+
 - [ ] **Backend endpoint created: `/api/v1/wake-word/detect`**
   - File: `backend/app/api/v1/routes/wake_word.py`
   - Status: ⏳ PENDING
@@ -96,6 +105,7 @@
   - Status: ⏳ PENDING
 
 #### Error Proxy Endpoint
+
 - [ ] **Backend error endpoint: `/api/v1/errors`**
   - File: `backend/app/api/v1/routes/errors.py`
   - Status: ⏳ PENDING
@@ -112,6 +122,7 @@
 ### Mobile App Updates
 
 #### Remove Direct Credentials
+
 - [ ] **No ElevenLabs imports in mobile code**
   - Search: `grep -r "elevenlabs" src/`
   - Expected: No matches
@@ -126,6 +137,7 @@
   - Status: ⏳ PENDING
 
 #### Use Backend Proxies
+
 - [ ] **TTS service updated to use `/api/v1/tts/synthesize`**
   - File: `src/services/tts.ts`
   - Status: ⏳ PENDING
@@ -139,6 +151,7 @@
   - Status: ⏳ PENDING
 
 #### Environment Validation
+
 - [ ] **Environment variables validated at startup**
   - File: `src/config/environment.ts`
   - Fail-fast for missing critical vars
@@ -150,6 +163,7 @@
   - Status: ⏳ PENDING
 
 #### Certificate Pinning
+
 - [ ] **Certificate pinning implemented**
   - iOS: Use URLSessionConfiguration
   - Android: react-native-network-security-config
@@ -162,6 +176,7 @@
   - Status: ⏳ PENDING
 
 #### Input Validation
+
 - [ ] **Stream IDs validated before API calls**
   - File: `src/utils/validation.ts`
   - Pattern: `^[a-zA-Z0-9_-]+$`
@@ -251,15 +266,19 @@
 ### Build & Deployment
 
 - [ ] **Production build successful**
+
   ```bash
   npm run build
   ```
+
   - Status: ⏳ PENDING
 
 - [ ] **No credentials in build**
+
   ```bash
   strings ios/main.jsbundle | grep "sk_"  # Empty
   ```
+
   - Status: ⏳ PENDING
 
 - [ ] **No credentials in build artifacts**
@@ -323,9 +342,11 @@
 ### Dependency Scan
 
 - [ ] **npm audit passing**
+
   ```bash
   npm audit
   ```
+
   - Status: ⏳ PENDING
 
 - [ ] **No critical vulnerabilities**
@@ -347,6 +368,7 @@
 ## COMPLIANCE VERIFICATION
 
 ### OWASP Top 10
+
 - [ ] **A02:2021 - Cryptographic Failures** - ✅ PASS
   - Credentials not exposed
   - Proper key management
@@ -358,6 +380,7 @@
   - Tokens properly managed
 
 ### OWASP MASVS Level 1
+
 - [ ] **MSTG-AUTH-1** - ✅ Credentials not hardcoded
 - [ ] **MSTG-CRYPTO-1** - ✅ Encryption used for sensitive data
 - [ ] **MSTG-CRYPTO-2** - ✅ HTTPS enforced
@@ -366,6 +389,7 @@
 - [ ] **MSTG-CODE-2** - ✅ Debugging disabled in production
 
 ### App Store Requirements
+
 - [ ] **No hardcoded credentials** - ✅ PASS
 - [ ] **HTTPS for all connections** - ✅ PASS
 - [ ] **Privacy policy present** - ✅ PASS
@@ -377,6 +401,7 @@
 ## DOCUMENTATION
 
 ### Documentation Updated
+
 - [ ] **README.md includes security setup**
   - How to set .env
   - Backend credential requirements
@@ -393,6 +418,7 @@
   - Status: ⏳ PENDING
 
 ### Code Comments Added
+
 - [ ] **Security-related code commented**
   - Why certificate pinning
   - Why backend proxies
@@ -403,6 +429,7 @@
 ## ONGOING MAINTENANCE
 
 ### Monthly Tasks
+
 - [ ] **Review audit logs**
   - Check for suspicious activity
   - Investigate anomalies
@@ -419,6 +446,7 @@
   - Schedule: 1st of month
 
 ### Quarterly Tasks
+
 - [ ] **Rotate secrets**
   - Generate new API keys
   - Revoke old keys
@@ -435,6 +463,7 @@
   - Schedule: Quarterly
 
 ### Annual Tasks
+
 - [ ] **Full security audit**
   - External penetration testing
   - Code review by specialist
@@ -459,23 +488,23 @@
 **Required Approvals:**
 
 - [ ] **CTO/Tech Lead**
-  - Name: _________________
-  - Date: _________________
+  - Name: ********\_********
+  - Date: ********\_********
   - Approved: ☐ Yes ☐ No
 
 - [ ] **Security Lead**
-  - Name: _________________
-  - Date: _________________
+  - Name: ********\_********
+  - Date: ********\_********
   - Approved: ☐ Yes ☐ No
 
 - [ ] **Mobile Engineering Lead**
-  - Name: _________________
-  - Date: _________________
+  - Name: ********\_********
+  - Date: ********\_********
   - Approved: ☐ Yes ☐ No
 
 - [ ] **Product Manager**
-  - Name: _________________
-  - Date: _________________
+  - Name: ********\_********
+  - Date: ********\_********
   - Approved: ☐ Yes ☐ No
 
 ### Release Status
@@ -493,6 +522,7 @@ Re-check Date: [After Phase 2 completion]
 ## QUICK REFERENCE
 
 ### Critical Deadlines
+
 - **Day 1:** Revoke credentials (4 hours)
 - **Day 2-3:** Implement backend proxies (16 hours)
 - **Day 4:** Security hardening (8 hours)
@@ -500,12 +530,14 @@ Re-check Date: [After Phase 2 completion]
 - **Total:** 36 hours (1 week)
 
 ### Key Contacts
+
 - **Security:** [Name/Email]
 - **Backend Lead:** [Name/Email]
 - **Mobile Lead:** [Name/Email]
 - **DevOps:** [Name/Email]
 
 ### Important Files
+
 - `.env` - Local configuration (NOT in git)
 - `.env.example` - Configuration template
 - `SECURITY_AUDIT_COMPREHENSIVE.md` - Detailed findings

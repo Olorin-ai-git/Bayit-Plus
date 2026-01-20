@@ -138,6 +138,7 @@ jobs:
             --min-instances 0 \
             --concurrency 80 \
             --port 8080 \
+            --cpu-boost \
             --set-env-vars "API_V1_PREFIX=/api/v1,STORAGE_TYPE=gcs,DEBUG=true,GCP_PROJECT_ID=bayit-plus,SENTRY_ENVIRONMENT=staging,LOG_LEVEL=DEBUG" \
             --set-secrets "SECRET_KEY=bayit-secret-key:latest,MONGODB_URL=mongodb-staging-url:latest,MONGODB_DB_NAME=mongodb-staging-db-name:latest"
 

@@ -30,5 +30,21 @@ target 'BayitPlus' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Disable Sentry profiler to fix C++ compilation errors on arm64 simulator
+    installer.pods_project.targets.each do |target|
+      if target.name == 'Sentry'
+        target.build_configurations.each do |config|
+          # Disable Sentry profiler feature
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited)'
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] += ' SENTRY_DISABLE_PROFILER_FEATURE=1 SENTRY_PROFILER_ENABLED=0'
+
+          # Disable problematic C++ optimization
+          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'gnu++17'
+          config.build_settings['CLANG_CXX_LIBRARY'] = 'libc++'
+          config.build_settings['GCC_OPTIMIZATION_LEVEL'] = '0'
+        end
+      end
+    end
   end
 end

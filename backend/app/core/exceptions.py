@@ -1,22 +1,42 @@
-"""Custom exceptions for the Bayit Plus application."""
+"""Custom exceptions for the Bayit Plus application.
+
+Extends olorin-shared base exceptions with platform-specific error types.
+"""
+
+from olorin_shared.errors import OlorinException, InternalError
 
 
-class GameError(Exception):
+class GameError(InternalError):
     """Raised when a game operation fails"""
 
-    pass
+    def __init__(self, message: str = "Game operation failed", details=None):
+        super().__init__(
+            message=message,
+            error_code="GAME_ERROR",
+            details=details
+        )
 
 
-class FriendshipError(Exception):
+class FriendshipError(InternalError):
     """Raised when friendship operation fails"""
 
-    pass
+    def __init__(self, message: str = "Friendship operation failed", details=None):
+        super().__init__(
+            message=message,
+            error_code="FRIENDSHIP_ERROR",
+            details=details
+        )
 
 
-class UploadIntegrityError(Exception):
+class UploadIntegrityError(InternalError):
     """Base exception for upload integrity issues"""
 
-    pass
+    def __init__(self, message: str = "Upload integrity check failed", details=None):
+        super().__init__(
+            message=message,
+            error_code="UPLOAD_INTEGRITY_ERROR",
+            details=details
+        )
 
 
 class DuplicateContentError(UploadIntegrityError):

@@ -91,12 +91,10 @@ jobs:
       - name: Run Black formatting check
         working-directory: backend
         run: poetry run black --check app tests
-        continue-on-error: true
 
       - name: Run isort import sorting check
         working-directory: backend
         run: poetry run isort --check-only app tests
-        continue-on-error: true
 
       - name: Run mypy type checking
         working-directory: backend
@@ -150,7 +148,6 @@ jobs:
       - name: Run linting
         working-directory: web
         run: npm run lint
-        continue-on-error: true
 
       - name: Build production bundle
         working-directory: web
@@ -180,7 +177,6 @@ jobs:
       - name: Run linting
         working-directory: partner-portal
         run: npm run lint
-        continue-on-error: true
 
       - name: Build production bundle
         working-directory: partner-portal
@@ -210,11 +206,10 @@ jobs:
       - name: Run linting
         working-directory: mobile-app
         run: npm run lint
-        continue-on-error: true
 
       - name: Type check
         working-directory: mobile-app
-        run: npm run type-check || true
+        run: npm run type-check
 
   pr-summary:
     name: PR validation summary

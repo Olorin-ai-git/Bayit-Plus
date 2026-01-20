@@ -3,41 +3,41 @@
  * Main app entry point with navigation and context providers
  */
 
-import React, { useEffect, useState, useCallback } from 'react';
-import { StatusBar, View, StyleSheet } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { I18nextProvider } from 'react-i18next';
-import i18n, { loadSavedLanguage } from '@bayit/shared-i18n';
+import React, { useEffect, useState, useCallback } from "react";
+import { StatusBar, View, StyleSheet } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { I18nextProvider } from "react-i18next";
+import i18n, { loadSavedLanguage } from "@bayit/shared-i18n";
 
 // Initialize Sentry error tracking (before any other imports that might throw)
-import { initSentry, withSentryErrorBoundary } from './src/utils/sentry';
-import logger from './src/utils/logger';
+import { initSentry, withSentryErrorBoundary } from "./src/utils/sentry";
+import logger from "./src/utils/logger";
 
 const sentryEnabled = initSentry();
 if (sentryEnabled) {
-  logger.info('Sentry error tracking enabled', 'App');
+  logger.info("Sentry error tracking enabled", "App");
 }
 
 // Context Providers
-import { ProfileProvider } from '@bayit/shared-contexts';
-import { ModalProvider } from '@bayit/shared-contexts';
+import { ProfileProvider } from "@bayit/shared-contexts";
+import { ModalProvider } from "@bayit/shared-contexts";
 
 // Navigation
-import { linking } from './src/navigation/linking';
+import { linking } from "./src/navigation/linking";
 
 // App Content (contains voice hooks and navigation)
-import { AppContent } from './src/components/AppContent';
+import { AppContent } from "./src/components/AppContent";
 
 // Splash Screen
-import { SplashScreen } from './src/components/SplashScreen';
+import { SplashScreen } from "./src/components/SplashScreen";
 
 // Import stores to initialize them
-import { useAuthStore } from '@bayit/shared-stores';
+import { useAuthStore } from "@bayit/shared-stores";
 
 // Utilities
-import { errorHandler, accessibilityService } from './src/utils';
+import { errorHandler, accessibilityService } from "./src/utils";
 
 function App(): React.JSX.Element {
   const [isReady, setIsReady] = useState(false);
@@ -56,10 +56,10 @@ function App(): React.JSX.Element {
         // Initialize accessibility service
         await accessibilityService.initialize();
 
-        logger.info('Initialization complete', 'App');
+        logger.info("Initialization complete", "App");
         setIsReady(true);
       } catch (error) {
-        logger.error('Initialization failed', 'App', error);
+        logger.error("Initialization failed", "App", error);
         setIsReady(true); // Still allow app to load
       }
     };
@@ -68,12 +68,12 @@ function App(): React.JSX.Element {
   }, []);
 
   const handleSplashComplete = useCallback(() => {
-    logger.info('Splash complete, showing main app', 'App');
+    logger.info("Splash complete, showing main app", "App");
     setShowSplash(false);
   }, []);
 
   if (!isReady) {
-    return <View style={{ flex: 1, backgroundColor: '#000' }} />;
+    return <View style={{ flex: 1, backgroundColor: "#000" }} />;
   }
 
   return (
@@ -81,7 +81,10 @@ function App(): React.JSX.Element {
       <I18nextProvider i18n={i18n}>
         <SafeAreaProvider>
           {showSplash ? (
-            <SplashScreen onComplete={handleSplashComplete} minimumDuration={2000} />
+            <SplashScreen
+              onComplete={handleSplashComplete}
+              minimumDuration={2000}
+            />
           ) : (
             <ModalProvider>
               <ProfileProvider>

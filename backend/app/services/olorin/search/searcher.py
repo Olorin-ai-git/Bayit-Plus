@@ -2,6 +2,7 @@
 Semantic Search Operations
 
 Performs vector and text search across content.
+Includes resilience patterns for external service calls.
 """
 
 import logging
@@ -16,6 +17,7 @@ from app.services.olorin.content_metadata_service import content_metadata_servic
 from app.services.olorin.search.client import client_manager
 from app.services.olorin.search.embedding import generate_embedding
 from app.services.olorin.search.helpers import format_timestamp
+from app.services.olorin.search.pinecone_ops import safe_pinecone_query
 
 logger = logging.getLogger(__name__)
 
@@ -55,16 +57,19 @@ async def semantic_search(
         if not query.include_timestamps:
             filter_dict["embedding_type"] = {"$in": ["title", "description"]}
 
-        # Query Pinecone
+        # Query Pinecone with resilience
         pinecone_index = client_manager.pinecone_index
+        pinecone_results = None
         if pinecone_index:
-            pinecone_results = pinecone_index.query(
+            pinecone_results = await safe_pinecone_query(
+                pinecone_index,
                 vector=query_embedding,
                 top_k=query.limit * 2,
-                filter=filter_dict if filter_dict else None,
+                filter_dict=filter_dict if filter_dict else None,
                 include_metadata=True,
             )
 
+        if pinecone_results:
             # First pass: collect unique content IDs and their match data
             seen_content_ids = set()
             matches_to_process = []
@@ -161,16 +166,19 @@ async def dialogue_search(
         if query.content_id:
             filter_dict["content_id"] = query.content_id
 
-        # Query Pinecone
+        # Query Pinecone with resilience
         pinecone_index = client_manager.pinecone_index
+        pinecone_results = None
         if pinecone_index:
-            pinecone_results = pinecone_index.query(
+            pinecone_results = await safe_pinecone_query(
+                pinecone_index,
                 vector=query_embedding,
                 top_k=query.limit,
-                filter=filter_dict,
+                filter_dict=filter_dict,
                 include_metadata=True,
             )
 
+        if pinecone_results:
             # First pass: collect matches and content IDs
             matches_to_process = []
             content_ids_to_fetch = set()
