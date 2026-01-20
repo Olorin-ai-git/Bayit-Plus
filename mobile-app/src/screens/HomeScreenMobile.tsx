@@ -1,19 +1,21 @@
 /**
  * HomeScreenMobile
  *
- * Mobile-optimized home screen with responsive layout
- * Features:
- * - Pull-to-refresh
+ * Mobile-optimized home screen with virtualized list rendering
+ * PERFORMANCE OPTIMIZATIONS:
+ * - Replaced ScrollView with SectionList for virtual rendering
+ * - Only visible items are rendered (critical for performance)
+ * - Supports pull-to-refresh
  * - Responsive grid columns (1 hero phone, 2 tablet)
  * - Content rows with 2-4 columns based on device
  * - Horizontal scrolling carousels
  * - Morning ritual check
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   View,
-  ScrollView,
+  SectionList,
   RefreshControl,
   StyleSheet,
   Text,
@@ -22,13 +24,26 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-// import { AnimatedLogo } from '@bayit/shared-components';
 import { ContentRow } from '@bayit/shared-components';
 import { GlassCarousel } from '@bayit/shared-components';
-// import { DualClock } from '@bayit/shared-components';
-import { TrendingRow, JerusalemRow, TelAvivRow, ShabbatModeBanner, ShabbatEveSection, GlassCheckbox } from '@bayit/shared-components';
-import { contentService, liveService, historyService, ritualService } from '@bayit/shared-services';
-import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
+import {
+  TrendingRow,
+  JerusalemRow,
+  TelAvivRow,
+  ShabbatModeBanner,
+  ShabbatEveSection,
+  GlassCheckbox,
+} from '@bayit/shared-components';
+import {
+  contentService,
+  liveService,
+  historyService,
+  ritualService,
+} from '@bayit/shared-services';
+import {
+  getLocalizedName,
+  getLocalizedDescription,
+} from '@bayit/shared-utils';
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
 import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
@@ -53,6 +68,13 @@ interface CarouselItem {
   badge?: string;
 }
 
+interface Section {
+  title: string;
+  data: any[];
+  renderItem: (item: any) => React.ReactNode;
+  id: string;
+}
+
 export const HomeScreenMobile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
@@ -65,7 +87,9 @@ export const HomeScreenMobile: React.FC = () => {
   const [continueWatching, setContinueWatching] = useState<ContentItem[]>([]);
   const [featured, setFeatured] = useState<ContentItem[]>([]);
   const [liveChannels, setLiveChannels] = useState<ContentItem[]>([]);
-  const [categories, setCategories] = useState<{ name: string; items: ContentItem[] }[]>([]);
+  const [categories, setCategories] = useState<
+    { name: string; items: ContentItem[] }[]
+  >([]);
   const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false);
 
   const currentLang = i18n.language;
@@ -81,7 +105,9 @@ export const HomeScreenMobile: React.FC = () => {
 
   const checkMorningRitual = async () => {
     try {
-      const result = await ritualService.shouldShow() as { show_ritual: boolean };
+      const result = (await ritualService.shouldShow()) as {
+        show_ritual: boolean;
+      };
       // Note: Morning ritual navigation disabled for mobile
       // Users can access via proactive suggestion banner or menu instead
       // if (result.show_ritual) {
@@ -105,10 +131,14 @@ export const HomeScreenMobile: React.FC = () => {
       ]);
 
       // Extract results with fallbacks for failed requests
-      const featuredRes = results[0].status === 'fulfilled' ? results[0].value : { items: [], hero: null };
-      const liveRes = results[1].status === 'fulfilled' ? results[1].value : { channels: [] };
-      const historyRes = results[2].status === 'fulfilled' ? results[2].value : { items: [] };
-      const categoriesRes = results[3].status === 'fulfilled' ? results[3].value : { categories: [] };
+      const featuredRes =
+        results[0].status === 'fulfilled' ? results[0].value : { items: [] };
+      const liveRes =
+        results[1].status === 'fulfilled' ? results[1].value : { channels: [] };
+      const historyRes =
+        results[2].status === 'fulfilled' ? results[2].value : { items: [] };
+      const categoriesRes =
+        results[3].status === 'fulfilled' ? results[3].value : { categories: [] };
 
       // Log any failures for debugging
       results.forEach((result, index) => {
@@ -124,25 +154,32 @@ export const HomeScreenMobile: React.FC = () => {
       const featuredItems = featuredRes.items || featuredRes.picks || [];
 
       // Carousel uses hero + spotlight items
-      const carouselData = [...heroItems, ...spotlightItems].map((item: any) => ({
-        id: item.id,
-        title: getLocalizedName(item, currentLang),
-        subtitle: formatContentMetadata(item),
-        description: getLocalizedDescription(item, currentLang),
-        image: optimizeTMDBImageUrl(item.thumbnail || item.image, 'backdrop'),
-        badge: item.badge,
-      }));
+      const carouselData = [...heroItems, ...spotlightItems].map(
+        (item: any) => ({
+          id: item.id,
+          title: getLocalizedName(item, currentLang),
+          subtitle: formatContentMetadata(item),
+          description: getLocalizedDescription(item, currentLang),
+          image: optimizeTMDBImageUrl(
+            item.thumbnail || item.image,
+            'backdrop'
+          ),
+          badge: item.badge,
+        })
+      );
 
       setCarouselItems(carouselData);
 
       // Continue watching
-      const continueWatchingData = (historyRes.items || []).map((item: any) => ({
-        id: item.id,
-        title: getLocalizedName(item, currentLang),
-        subtitle: item.subtitle,
-        thumbnail: optimizeTMDBImageUrl(item.thumbnail, 'poster'),
-        type: item.type,
-      }));
+      const continueWatchingData = (historyRes.items || []).map(
+        (item: any) => ({
+          id: item.id,
+          title: getLocalizedName(item, currentLang),
+          subtitle: item.subtitle,
+          thumbnail: optimizeTMDBImageUrl(item.thumbnail, 'poster'),
+          type: item.type,
+        })
+      );
       setContinueWatching(continueWatchingData);
 
       // Featured content
@@ -156,26 +193,30 @@ export const HomeScreenMobile: React.FC = () => {
       setFeatured(featuredData);
 
       // Live channels
-      const liveData = (liveRes.channels || []).slice(0, 8).map((channel: any) => ({
-        id: channel.id,
-        title: getLocalizedName(channel, currentLang),
-        subtitle: channel.number,
-        thumbnail: optimizeTMDBImageUrl(channel.thumbnail, 'poster'),
-        type: 'live',
-      }));
+      const liveData = (liveRes.channels || [])
+        .slice(0, 8)
+        .map((channel: any) => ({
+          id: channel.id,
+          title: getLocalizedName(channel, currentLang),
+          subtitle: channel.number,
+          thumbnail: optimizeTMDBImageUrl(channel.thumbnail, 'poster'),
+          type: 'live',
+        }));
       setLiveChannels(liveData);
 
       // Categories
-      const categoriesData = (categoriesRes.categories || []).map((cat: any) => ({
-        name: getLocalizedName(cat, currentLang),
-        items: (cat.items || []).map((item: any) => ({
-          id: item.id,
-          title: getLocalizedName(item, currentLang),
-          subtitle: item.subtitle,
-          thumbnail: optimizeTMDBImageUrl(item.thumbnail, 'poster'),
-          type: item.type,
-        })),
-      }));
+      const categoriesData = (categoriesRes.categories || []).map(
+        (cat: any) => ({
+          name: getLocalizedName(cat, currentLang),
+          items: (cat.items || []).map((item: any) => ({
+            id: item.id,
+            title: getLocalizedName(item, currentLang),
+            subtitle: item.subtitle,
+            thumbnail: optimizeTMDBImageUrl(item.thumbnail, 'poster'),
+            type: item.type,
+          })),
+        })
+      );
       setCategories(categoriesData);
 
       setIsLoading(false);
@@ -207,10 +248,214 @@ export const HomeScreenMobile: React.FC = () => {
     }
   };
 
+  // Memoize sections to prevent unnecessary re-renders
+  const sections: Section[] = useMemo(() => {
+    const sectionArray: Section[] = [];
+
+    // Header section (logo + banners + carousel)
+    sectionArray.push({
+      id: 'header',
+      title: '',
+      data: ['header'],
+      renderItem: () => (
+        <View>
+          <View style={styles.header}>
+            <Image
+              source={require('../../../shared/assets/images/logos/logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </View>
+          <ShabbatModeBanner />
+          <ShabbatEveSection
+            onNavigate={(route: string) =>
+              navigation.navigate(route.split('?')[0] as never)
+            }
+          />
+          {carouselItems.length > 0 && (
+            <View style={styles.section}>
+              <GlassCarousel
+                items={carouselItems}
+                onItemPress={(item: CarouselItem) =>
+                  handleContentPress(item as ContentItem)
+                }
+                autoPlay={true}
+                height={isPhone ? 200 : 300}
+              />
+            </View>
+          )}
+        </View>
+      ),
+    });
+
+    // Continue watching section
+    if (continueWatching.length > 0) {
+      sectionArray.push({
+        id: 'continueWatching',
+        title: t('home.continueWatching'),
+        data: [continueWatching],
+        renderItem: (items: ContentItem[]) => (
+          <View style={styles.section}>
+            <ContentRow
+              items={items}
+              onItemPress={handleContentPress}
+              columns={contentColumns}
+            />
+          </View>
+        ),
+      });
+    }
+
+    // Trending section
+    sectionArray.push({
+      id: 'trending',
+      title: t('trending.title'),
+      data: ['trending'],
+      renderItem: () => (
+        <View style={styles.section}>
+          <TrendingRow
+            onItemPress={handleContentPress}
+            columns={contentColumns}
+          />
+        </View>
+      ),
+    });
+
+    // Jerusalem section
+    sectionArray.push({
+      id: 'jerusalem',
+      title: '',
+      data: ['jerusalem'],
+      renderItem: () => (
+        <View style={styles.section}>
+          <JerusalemRow />
+        </View>
+      ),
+    });
+
+    // Tel Aviv section
+    sectionArray.push({
+      id: 'telAviv',
+      title: '',
+      data: ['telAviv'],
+      renderItem: () => (
+        <View style={styles.section}>
+          <TelAvivRow />
+        </View>
+      ),
+    });
+
+    // Filter section
+    sectionArray.push({
+      id: 'filters',
+      title: '',
+      data: ['filters'],
+      renderItem: () => (
+        <View style={styles.filterSection}>
+          <GlassCheckbox
+            label={t(
+              'home.showOnlyWithSubtitles',
+              'Show only with subtitles'
+            )}
+            checked={showOnlyWithSubtitles}
+            onChange={setShowOnlyWithSubtitles}
+          />
+        </View>
+      ),
+    });
+
+    // Live channels section
+    if (liveChannels.length > 0) {
+      sectionArray.push({
+        id: 'liveChannels',
+        title: t('home.liveNow'),
+        data: [liveChannels],
+        renderItem: (items: ContentItem[]) => (
+          <View style={styles.section}>
+            <ContentRow
+              items={items}
+              onItemPress={handleContentPress}
+              columns={contentColumns}
+            />
+          </View>
+        ),
+      });
+    }
+
+    // Featured section
+    if (featured.length > 0) {
+      sectionArray.push({
+        id: 'featured',
+        title: t('home.featured'),
+        data: [featured],
+        renderItem: (items: ContentItem[]) => (
+          <View style={styles.section}>
+            <ContentRow
+              items={items}
+              onItemPress={handleContentPress}
+              columns={contentColumns}
+            />
+          </View>
+        ),
+      });
+    }
+
+    // Categories sections - only show if they have items
+    categories
+      .filter((category) => category.items && category.items.length > 0)
+      .forEach((category) => {
+        sectionArray.push({
+          id: `category-${category.name}`,
+          title: category.name,
+          data: [category.items],
+          renderItem: (items: ContentItem[]) => (
+            <View
+              style={[
+                styles.section,
+                { paddingHorizontal: isRTL ? spacing.md : spacing.xs },
+              ]}
+            >
+              <ContentRow
+                items={items}
+                onItemPress={handleContentPress}
+                columns={contentColumns}
+              />
+            </View>
+          ),
+        });
+      });
+
+    // Bottom spacer
+    sectionArray.push({
+      id: 'spacer',
+      title: '',
+      data: ['spacer'],
+      renderItem: () => <View style={styles.bottomSpacer} />,
+    });
+
+    return sectionArray;
+  }, [
+    carouselItems,
+    continueWatching,
+    featured,
+    liveChannels,
+    categories,
+    showOnlyWithSubtitles,
+    contentColumns,
+    isPhone,
+    isRTL,
+    t,
+  ]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        style={styles.container}
+      <SectionList
+        sections={sections.map((section) => ({
+          title: section.title,
+          data: section.data,
+          renderItem: ({ item }) => section.renderItem(item),
+        }))}
+        keyExtractor={(item, index) => index.toString()}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -219,117 +464,24 @@ export const HomeScreenMobile: React.FC = () => {
             colors={[colors.primary]}
           />
         }
-      >
-      {/* Header with logo */}
-      <View style={styles.header}>
-        <Image
-          source={require('../../../shared/assets/images/logos/logo.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-      </View>
-
-      {/* Shabbat Mode Banner - appears during Shabbat */}
-      <ShabbatModeBanner />
-
-      {/* Shabbat Eve Section - appears on Friday before candle lighting */}
-      <ShabbatEveSection onNavigate={(route: string) => navigation.navigate(route.split('?')[0] as never)} />
-
-      {/* Hero carousel */}
-      {carouselItems.length > 0 && (
-        <View style={styles.section}>
-          <GlassCarousel
-            items={carouselItems}
-            onItemPress={(item: CarouselItem) => handleContentPress(item as ContentItem)}
-            autoPlay={true}
-            height={isPhone ? 200 : 300}
-          />
-        </View>
-      )}
-
-      {/* Continue watching */}
-      {continueWatching.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('home.continueWatching')}</Text>
-          <ContentRow
-            items={continueWatching}
-            onItemPress={handleContentPress}
-            columns={contentColumns}
-          />
-        </View>
-      )}
-
-      {/* Trending */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('trending.title')}</Text>
-        <TrendingRow
-          onItemPress={handleContentPress}
-          columns={contentColumns}
-        />
-      </View>
-
-      {/* Jerusalem Connection */}
-      <View style={styles.section}>
-        <JerusalemRow />
-      </View>
-
-      {/* Tel Aviv Connection */}
-      <View style={styles.section}>
-        <TelAvivRow />
-      </View>
-
-      {/* Content Filters */}
-      <View style={styles.filterSection}>
-        <GlassCheckbox
-          label={t('home.showOnlyWithSubtitles', 'Show only with subtitles')}
-          checked={showOnlyWithSubtitles}
-          onChange={setShowOnlyWithSubtitles}
-        />
-      </View>
-
-      {/* Live channels */}
-      {liveChannels.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('home.liveNow')}</Text>
-          <ContentRow
-            items={liveChannels}
-            onItemPress={handleContentPress}
-            columns={contentColumns}
-          />
-        </View>
-      )}
-
-      {/* Featured */}
-      {featured.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('home.featured')}</Text>
-          <ContentRow
-            items={featured}
-            onItemPress={handleContentPress}
-            columns={contentColumns}
-          />
-        </View>
-      )}
-
-      {/* Categories - only show if they have items */}
-      {categories
-        .filter((category) => category.items && category.items.length > 0)
-        .map((category) => (
-          <View key={category.name} style={styles.section}>
-            <Text style={[styles.sectionTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
-              {category.name}
+        renderSectionHeader={({ section: { title } }) =>
+          title ? (
+            <Text
+              style={[
+                styles.sectionTitle,
+                { textAlign: isRTL ? 'right' : 'left' },
+              ]}
+            >
+              {title}
             </Text>
-            <ContentRow
-              items={category.items}
-              onItemPress={handleContentPress}
-              columns={contentColumns}
-            />
-          </View>
-        ))}
-
-      {/* Bottom spacing */}
-      <View style={styles.bottomSpacer} />
-    </ScrollView>
+          ) : null
+        }
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        updateCellsBatchingPeriod={50}
+        initialNumToRender={10}
+        scrollIndicatorInsets={{ right: 1 }}
+      />
     </SafeAreaView>
   );
 };
@@ -338,9 +490,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,
-  },
-  container: {
-    flex: 1,
   },
   header: {
     flexDirection: 'row',
@@ -353,12 +502,6 @@ const styles = StyleSheet.create({
   logo: {
     width: 100,
     height: 36,
-  },
-  headerTitle: {
-    ...typography.h2,
-    color: colors.text,
-    fontWeight: '700',
-    writingDirection: 'auto', // Supports RTL/LTR automatically
   },
   section: {
     marginBottom: spacing.md,
@@ -374,6 +517,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     paddingHorizontal: spacing.sm,
     marginBottom: spacing.xs,
+    backgroundColor: colors.background,
   },
   bottomSpacer: {
     height: spacing.xl,
