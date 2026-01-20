@@ -10,6 +10,10 @@
 
 import { api } from './client';
 
+// Type definitions for WebAuthn credential options (can be any since we're using dynamic import)
+type PublicKeyCredentialCreationOptionsJSON = Record<string, any>;
+type PublicKeyCredentialRequestOptionsJSON = Record<string, any>;
+
 // Dynamic import to handle missing dependency in React Native environments
 let startRegistration: any;
 let startAuthentication: any;
@@ -23,11 +27,10 @@ try {
 } catch (e) {
   // @simplewebauthn/browser not available (e.g., in React Native environments)
   // These functions will be undefined if accessed
-  console.warn('[passkeyServices] @simplewebauthn/browser not available - passkey features will be unavailable');
+  if (typeof console !== 'undefined' && console.warn) {
+    console.warn('[passkeyServices] @simplewebauthn/browser not available - passkey features will be unavailable');
+  }
 }
-
-type PublicKeyCredentialCreationOptionsJSON = any;
-type PublicKeyCredentialRequestOptionsJSON = any;
 
 // ============================================
 // Types
