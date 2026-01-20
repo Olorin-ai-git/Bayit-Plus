@@ -90,41 +90,41 @@ steps:
         echo "Waiting for service to be ready..."
         sleep 30
 
-        SERVICE_URL=$(gcloud run services describe olorin-backend \
+        SERVICE_URL=$$(gcloud run services describe olorin-backend \
           --region=us-east1 \
           --format='value(status.url)')
 
-        echo "Service URL: $SERVICE_URL"
+        echo "Service URL: $$SERVICE_URL"
 
         # Health check with retries
         MAX_RETRIES=5
         RETRY_COUNT=0
-        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-          echo "Health check attempt $((RETRY_COUNT + 1))/$MAX_RETRIES..."
-          if curl -sf "$SERVICE_URL/health" -o /dev/null; then
+        while [ $$RETRY_COUNT -lt $$MAX_RETRIES ]; do
+          echo "Health check attempt $$((RETRY_COUNT + 1))/$$MAX_RETRIES..."
+          if curl -sf "$$SERVICE_URL/health" -o /dev/null; then
             echo "✓ Health check passed!"
             exit 0
           fi
-          RETRY_COUNT=$((RETRY_COUNT + 1))
+          RETRY_COUNT=$$((RETRY_COUNT + 1))
           echo "Health check failed, retrying in 10s..."
           sleep 10
         done
 
-        echo "ERROR: Health check failed after $MAX_RETRIES attempts"
+        echo "ERROR: Health check failed after $$MAX_RETRIES attempts"
         echo "Rolling back to previous revision..."
 
         # Get previous revision
-        PREV_REVISION=$(gcloud run revisions list \
+        PREV_REVISION=$$(gcloud run revisions list \
           --service=olorin-backend \
           --region=us-east1 \
           --format='value(name)' \
           --limit=2 | tail -1)
 
-        if [ -n "$PREV_REVISION" ]; then
-          echo "Rolling back to: $PREV_REVISION"
+        if [ -n "$$PREV_REVISION" ]; then
+          echo "Rolling back to: $$PREV_REVISION"
           gcloud run services update-traffic olorin-backend \
             --region=us-east1 \
-            --to-revisions=$PREV_REVISION=100
+            --to-revisions=$$PREV_REVISION=100
           echo "Rollback complete"
         else
           echo "No previous revision found - cannot rollback"
