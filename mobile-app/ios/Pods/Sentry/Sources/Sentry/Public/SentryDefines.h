@@ -60,10 +60,7 @@
 #    define SENTRY_HAS_REACHABILITY 0
 #endif
 
-@class SentryBreadcrumb;
-@class SentryEvent;
-@class SentrySamplingContext;
-@class SentryUserFeedbackConfiguration;
+@class SentryEvent, SentryBreadcrumb, SentrySamplingContext;
 @protocol SentrySpan;
 
 /**
@@ -137,6 +134,16 @@ typedef NSNumber *_Nullable (^SentryTracesSamplerCallback)(
  * @param span The span to be used.
  */
 typedef void (^SentrySpanCallback)(id<SentrySpan> _Nullable span);
+
+/**
+ * A callback block which gets called right before a metric is about to be emitted.
+
+ * @param key  The key of the metric.
+ * @param tags A dictionary of key-value pairs associated with the metric.
+ * @return BOOL YES if the metric should be emitted, NO otherwise.
+ */
+typedef BOOL (^SentryBeforeEmitMetricCallback)(
+    NSString *_Nonnull key, NSDictionary<NSString *, NSString *> *_Nonnull tags);
 
 /**
  * Log level.

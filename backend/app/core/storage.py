@@ -3,7 +3,9 @@ Storage abstraction layer
 Supports both local file storage and AWS S3
 """
 
+import logging
 import os
+from abc import ABC, abstractmethod
 from io import BytesIO
 from pathlib import Path
 from typing import Optional, Tuple
@@ -13,25 +15,31 @@ from app.core.config import settings
 from fastapi import UploadFile
 from PIL import Image
 
+logger = logging.getLogger(__name__)
 
-class StorageProvider:
+
+class StorageProvider(ABC):
     """Abstract base for storage providers"""
 
+    @abstractmethod
     async def upload_image(self, file: UploadFile, image_type: str) -> str:
         """Upload image and return URL/path"""
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     async def validate_url(self, url: str) -> bool:
         """Validate that a URL is accessible"""
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def get_presigned_url(self, filename: str, content_type: str) -> dict:
         """Get presigned URL for direct upload (S3 only)"""
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     async def delete_file(self, url: str) -> bool:
         """Delete file from storage. Returns True if successful"""
-        raise NotImplementedError
+        pass
 
 
 class LocalStorageProvider(StorageProvider):
@@ -129,7 +137,7 @@ class LocalStorageProvider(StorageProvider):
 
         except Exception as e:
             # If optimization fails, return original
-            print(f"Image optimization failed: {e}")
+            logger.warning(f"Image optimization failed: {e}")
             return image_bytes, "JPEG"
 
     async def validate_url(self, url: str) -> bool:
@@ -163,7 +171,7 @@ class LocalStorageProvider(StorageProvider):
                 return True
             return False
         except Exception as e:
-            print(f"Failed to delete local file {url}: {e}")
+            logger.error(f"Failed to delete local file {url}: {e}")
             return False
 
 
@@ -289,7 +297,7 @@ class S3StorageProvider(StorageProvider):
                 return output.getvalue(), "JPEG"
 
         except Exception as e:
-            print(f"Image optimization failed: {e}")
+            logger.warning(f"Image optimization failed: {e}")
             return image_bytes, "JPEG"
 
     async def validate_url(self, url: str) -> bool:
@@ -346,7 +354,7 @@ class S3StorageProvider(StorageProvider):
             self.s3_client.delete_object(Bucket=self.bucket, Key=key)
             return True
         except self.ClientError as e:
-            print(f"Failed to delete S3 file {url}: {e}")
+            logger.error(f"Failed to delete S3 file {url}: {e}")
             return False
 
 
@@ -487,7 +495,7 @@ class GCSStorageProvider(StorageProvider):
                 return output.getvalue(), "JPEG"
 
         except Exception as e:
-            print(f"Image optimization failed: {e}")
+            logger.warning(f"Image optimization failed: {e}")
             return image_bytes, "JPEG"
 
     async def validate_url(self, url: str) -> bool:
@@ -542,19 +550,15 @@ class GCSStorageProvider(StorageProvider):
             blob.delete()
             return True
         except self.exceptions.NotFound:
-            print(f"GCS file not found: {url}")
+            logger.warning(f"GCS file not found: {url}")
             return False
         except Exception as e:
-            print(f"Failed to delete GCS file {url}: {e}")
+            logger.error(f"Failed to delete GCS file {url}: {e}")
             return False
 
 
 def get_storage_provider() -> StorageProvider:
     """Get configured storage provider"""
-    import logging
-
-    logger = logging.getLogger(__name__)
-
     if settings.STORAGE_TYPE == "gcs":
         try:
             return GCSStorageProvider()

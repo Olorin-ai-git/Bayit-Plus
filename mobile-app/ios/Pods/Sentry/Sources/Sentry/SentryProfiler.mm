@@ -56,7 +56,7 @@ sentry_manageTraceProfilerOnStartSDK(SentryOptions *options, SentryHub *hub)
 }
 
 @implementation SentryProfiler {
-    std::unique_ptr<SamplingProfiler> _samplingProfiler;
+    std::shared_ptr<SamplingProfiler> _samplingProfiler;
 }
 
 + (void)load
@@ -165,7 +165,7 @@ sentry_manageTraceProfilerOnStartSDK(SentryOptions *options, SentryHub *hub)
 
     SentryProfilerState *const state = [[SentryProfilerState alloc] init];
     self.state = state;
-    _samplingProfiler = std::make_unique<SamplingProfiler>(
+    _samplingProfiler = std::make_shared<SamplingProfiler>(
         [state](auto &backtrace) {
             Backtrace backtraceCopy = backtrace;
             backtraceCopy.absoluteTimestamp

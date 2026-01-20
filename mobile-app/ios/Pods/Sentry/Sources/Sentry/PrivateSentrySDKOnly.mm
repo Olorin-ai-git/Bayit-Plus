@@ -11,7 +11,7 @@
 #import "SentryOptions.h"
 #import "SentrySDK+Private.h"
 #import "SentrySerialization.h"
-#import "SentrySessionReplayIntegration+Private.h"
+#import "SentrySessionReplayIntegration.h"
 #import "SentrySwift.h"
 #import "SentryThreadHandle.hpp"
 #import "SentryUser+Private.h"
@@ -21,6 +21,7 @@
 #import <SentryFramesTracker.h>
 #import <SentryScope+Private.h>
 #import <SentryScreenshot.h>
+#import <SentrySessionReplayIntegration.h>
 #import <SentryUser.h>
 
 #if SENTRY_TARGET_PROFILING_SUPPORTED
@@ -350,26 +351,13 @@ static BOOL _framesTrackingMeasurementHybridSDKMode = NO;
 
 + (void)addReplayIgnoreClasses:(NSArray<Class> *_Nonnull)classes
 {
-    [[PrivateSentrySDKOnly getReplayIntegration].viewPhotographer addIgnoreClasses:classes];
+    [SentryViewPhotographer.shared addIgnoreClasses:classes];
 }
 
 + (void)addReplayRedactClasses:(NSArray<Class> *_Nonnull)classes
 {
-    [[PrivateSentrySDKOnly getReplayIntegration].viewPhotographer addRedactClasses:classes];
+    [SentryViewPhotographer.shared addRedactClasses:classes];
 }
-
-+ (void)setIgnoreContainerClass:(Class _Nonnull)containerClass
-{
-    [[PrivateSentrySDKOnly getReplayIntegration].viewPhotographer
-        setIgnoreContainerClass:containerClass];
-}
-
-+ (void)setRedactContainerClass:(Class _Nonnull)containerClass
-{
-    [[PrivateSentrySDKOnly getReplayIntegration].viewPhotographer
-        setRedactContainerClass:containerClass];
-}
-
 #endif
 
 @end

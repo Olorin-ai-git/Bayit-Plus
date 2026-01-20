@@ -13,12 +13,25 @@ from app.services.olorin.resilience import PINECONE_BREAKER, circuit_breaker
 
 logger = logging.getLogger(__name__)
 
-# Pinecone can raise various exceptions on network/service issues
+# Import Pinecone exceptions if available for specific error handling
+try:
+    from pinecone.exceptions import PineconeApiException, PineconeException
+
+    PINECONE_SDK_EXCEPTIONS = (PineconeException, PineconeApiException)
+except ImportError:
+    # Fallback for older SDK versions or if import fails
+    PINECONE_SDK_EXCEPTIONS = ()
+
+# Only retry on transient/network errors, not on validation or auth errors
+# ConnectionError: Network connectivity issues
+# TimeoutError: Request timeouts
+# OSError: Low-level network errors (socket errors, etc.)
+# PineconeException: SDK-level errors (may include rate limits, server errors)
 PINECONE_RETRYABLE_EXCEPTIONS = (
     ConnectionError,
     TimeoutError,
     OSError,
-    Exception,  # Pinecone SDK exceptions vary by version
+    *PINECONE_SDK_EXCEPTIONS,
 )
 
 

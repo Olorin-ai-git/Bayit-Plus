@@ -4,6 +4,8 @@
 
 #    import "SentryClient+Private.h"
 #    import "SentryDateUtils.h"
+#    import "SentryDebugImageProvider.h"
+#    import "SentryDebugMeta.h"
 #    import "SentryDependencyContainer.h"
 #    import "SentryDevice.h"
 #    import "SentryEnvelope.h"
@@ -11,10 +13,12 @@
 #    import "SentryEnvelopeItemType.h"
 #    import "SentryEvent+Private.h"
 #    import "SentryFormatter.h"
+#    import "SentryHub.h"
 #    import "SentryInternalDefines.h"
 #    import "SentryLog.h"
 #    import "SentryMeta.h"
 #    import "SentryMetricProfiler.h"
+#    import "SentryOptions.h"
 #    import "SentryProfileTimeseries.h"
 #    import "SentryProfiledTracerConcurrency.h"
 #    import "SentryProfiler+Private.h"
@@ -27,6 +31,7 @@
 #    import "SentryScope+Private.h"
 #    import "SentrySerialization.h"
 #    import "SentrySwift.h"
+#    import "SentryThread.h"
 #    import "SentryTime.h"
 #    import "SentryTracer+Private.h"
 #    import "SentryTransaction.h"
@@ -346,16 +351,22 @@ SentryEnvelope *_Nullable sentry_continuousProfileChunkEnvelope(
     return [[SentryEnvelope alloc] initWithId:chunkID singleItem:envelopeItem];
 }
 
-SentryEnvelopeItem *_Nullable sentry_traceProfileEnvelopeItem(SentryHub *hub,
-    SentryProfiler *profiler, NSDictionary<NSString *, id> *profilingData,
+SentryEnvelopeItem *_Nullable sentry_traceProfileEnvelopeItem(
     SentryTransaction *transaction, NSDate *startTimestamp)
 {
+    SENTRY_LOG_DEBUG(@"Creating profiling envelope item");
+    const auto profiler = sentry_profilerForFinishedTracer(transaction.trace.internalID);
+    if (!profiler) {
+        return nil;
+    }
+
     const auto payload = sentry_serializedTraceProfileData(
-        profilingData, transaction.startSystemTime, transaction.endSystemTime,
+        [profiler.state copyProfilingData], transaction.startSystemTime, transaction.endSystemTime,
         sentry_profilerTruncationReasonName(profiler.truncationReason),
         [profiler.metricProfiler serializeTraceProfileMetricsBetween:transaction.startSystemTime
                                                                  and:transaction.endSystemTime],
-        [SentryDependencyContainer.sharedInstance.debugImageProvider getDebugImagesCrashed:NO], hub
+        [SentryDependencyContainer.sharedInstance.debugImageProvider getDebugImagesCrashed:NO],
+        transaction.trace.hub
 #    if SENTRY_HAS_UIKIT
         ,
         profiler.screenFrameData

@@ -8,8 +8,8 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        _traceId = [[SentryId alloc] init];
-        _spanId = [[SentrySpanId alloc] init];
+        self.traceId = [[SentryId alloc] init];
+        self.spanId = [[SentrySpanId alloc] init];
     }
     return self;
 }

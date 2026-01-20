@@ -6,7 +6,8 @@
 #    import <SentryFileManager.h>
 #    import <SentryLog.h>
 
-@interface SentryWatchdogTerminationScopeObserver ()
+@interface
+SentryWatchdogTerminationScopeObserver ()
 
 @property (strong, nonatomic) SentryFileManager *fileManager;
 @property (strong, nonatomic) NSFileHandle *fileHandle;
@@ -162,11 +163,6 @@
 }
 
 - (void)setUser:(nullable SentryUser *)user
-{
-    // Left blank on purpose
-}
-
-- (void)setTraceContext:(nullable NSDictionary<NSString *, id> *)traceContext
 {
     // Left blank on purpose
 }

@@ -1,15 +1,8 @@
 #import "SentryInAppLogic.h"
-#import "SentryLog.h"
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-@interface SentryInAppLogic ()
-
-@property (nonnull, readonly) NSArray<NSString *> *inAppExcludes;
-
-@end
 
 @implementation SentryInAppLogic
 
@@ -17,19 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
                         inAppExcludes:(NSArray<NSString *> *)inAppExcludes
 {
     if (self = [super init]) {
-        NSMutableArray<NSString *> *includes =
-            [[NSMutableArray alloc] initWithCapacity:inAppIncludes.count];
-        for (NSString *include in inAppIncludes) {
-            [includes addObject:include.lowercaseString];
-        }
-        _inAppIncludes = includes;
-
-        NSMutableArray<NSString *> *excludes =
-            [[NSMutableArray alloc] initWithCapacity:inAppExcludes.count];
-        for (NSString *exclude in inAppExcludes) {
-            [excludes addObject:exclude.lowercaseString];
-        }
-        _inAppExcludes = excludes;
+        _inAppIncludes = inAppIncludes;
+        _inAppExcludes = inAppExcludes;
     }
 
     return self;
@@ -41,17 +23,13 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    NSString *imageNameLastPathComponent = imageName.lastPathComponent.lowercaseString;
-
     for (NSString *inAppInclude in self.inAppIncludes) {
-        if ([SentryInAppLogic isImageNameLastPathComponentInApp:imageNameLastPathComponent
-                                                   inAppInclude:inAppInclude])
-
+        if ([SentryInAppLogic isImageNameInApp:imageName inAppInclude:inAppInclude])
             return YES;
     }
 
-    for (NSString *inAppExclude in self.inAppExcludes) {
-        if ([imageNameLastPathComponent hasPrefix:inAppExclude])
+    for (NSString *inAppExlude in self.inAppExcludes) {
+        if ([imageName.lastPathComponent.lowercaseString hasPrefix:inAppExlude.lowercaseString])
             return NO;
     }
 
@@ -70,15 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)isImageNameInApp:(NSString *)imageName inAppInclude:(NSString *)inAppInclude
 {
-    return [SentryInAppLogic
-        isImageNameLastPathComponentInApp:imageName.lastPathComponent.lowercaseString
-                             inAppInclude:inAppInclude.lowercaseString];
-}
-
-+ (BOOL)isImageNameLastPathComponentInApp:(NSString *)imageNameLastPathComponent
-                             inAppInclude:(NSString *)inAppInclude
-{
-    return [imageNameLastPathComponent hasPrefix:inAppInclude];
+    return [imageName.lastPathComponent.lowercaseString hasPrefix:inAppInclude.lowercaseString];
 }
 
 @end

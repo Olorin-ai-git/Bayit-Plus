@@ -35,8 +35,6 @@ SENTRY_NO_INIT
 
 - (void)reportFullyDisplayed;
 
-- (void)finishSpansIfNotFinished;
-
 @end
 
 NS_ASSUME_NONNULL_END

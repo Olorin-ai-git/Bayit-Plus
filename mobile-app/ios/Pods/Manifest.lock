@@ -52,6 +52,7 @@ PODS:
     - React-RCTText (= 0.83.1)
     - React-RCTVibration (= 0.83.1)
   - React-callinvoker (0.83.1)
+  - React-Codegen (0.1.0)
   - React-Core (0.83.1):
     - boost
     - DoubleConversion
@@ -2976,36 +2977,16 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNSentry (5.36.0):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
+  - RNSentry (5.30.0):
     - hermes-engine
     - RCT-Folly
-    - RCT-Folly/Fabric
     - RCTRequired
     - RCTTypeSafety
+    - React-Codegen
     - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
     - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - Sentry/HybridSDK (= 8.41.0)
-    - SocketRocket
-    - Yoga
+    - Sentry/HybridSDK (= 8.34.0)
   - RNShareMenu (6.0.0):
     - React
   - RNSVG (15.15.1):
@@ -3065,7 +3046,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Sentry/HybridSDK (8.41.0)
+  - Sentry/HybridSDK (8.34.0)
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
@@ -3167,6 +3148,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - React-Codegen
     - Sentry
     - SocketRocket
 
@@ -3374,6 +3356,7 @@ SPEC CHECKSUMS:
   RCTTypeSafety: 27927d0ca04e419ed9467578b3e6297e37210b5c
   React: 4bc1f928568ad4bcfd147260f907b4ea5873a03b
   React-callinvoker: 87f8728235a0dc62e9dc19b3851c829d9347d015
+  React-Codegen: 4b8b4817cea7a54b83851d4c1f91f79aa73de30a
   React-Core: 76bed73b02821e5630e7f2cb2e82432ee964695d
   React-CoreModules: 752dbfdaeb096658aa0adc4a03ba6214815a08df
   React-cxxreact: b6798528aa601c6db66e6adc7e2da2b059c8be74
@@ -3446,13 +3429,13 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: be4f1b4bf0398c30b59b76ed92ecb0a2ff3a69c6
   RNReanimated: 9584a0e858e678d4859eb139b2e67fd92115cfb0
   RNScreens: ffbb0296608eb3560de641a711bbdb663ed1f6b4
-  RNSentry: dff3a6d097637324badbb1c40ceb01d7f62febd3
+  RNSentry: 3c324116d33c3a4cab726799c2926a00c2678c25
   RNShareMenu: e1cdfa3b9af89416afc75a80377cfd0de4f30ded
   RNSVG: ba3c3bc3cf413f32d1a7012274fe503c6fc1eadd
-  Sentry: 54d0fe6c0df448497c8ed4cce66ccf7027e1823e
+  Sentry: 1183df2306eea74ff0564c4bb1c2577ccd15d054
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 5456bb010373068fc92221140921b09d126b116e
 
-PODFILE CHECKSUM: 51d5fb639fa702a8b2fa3eb44b356a2b6e0fc181
+PODFILE CHECKSUM: c669cdf0bf1197be1cdf43489afe490f609fb755
 
 COCOAPODS: 1.16.2

@@ -3,9 +3,26 @@
  *
  * Initializes Sentry SDK for React Native with error tracking,
  * native crash reporting, and integrates with the shared logger.
+ *
+ * Provides no-op fallback implementations if Sentry is not available.
  */
 
-import * as Sentry from "@sentry/react-native";
+let Sentry: any;
+try {
+  Sentry = require("@sentry/react-native");
+} catch {
+  // Sentry not installed - provide no-op implementations
+  Sentry = {
+    init: () => {},
+    captureException: () => {},
+    captureMessage: () => {},
+    setUser: () => {},
+    setTag: () => {},
+    wrap: (component: any) => component,
+    nativeCrash: () => {},
+  };
+}
+
 import { initLoggerSentry } from "@bayit/shared/utils/logger";
 import { initErrorBoundarySentry } from "@bayit/shared/components/ErrorBoundary";
 
@@ -173,7 +190,9 @@ export const withSentryErrorBoundary = Sentry.wrap;
  * Create a native crash for testing (only works in production builds).
  */
 export const testNativeCrash = (): void => {
-  Sentry.nativeCrash();
+  if (Sentry?.nativeCrash) {
+    Sentry.nativeCrash();
+  }
 };
 
-export default Sentry;
+export default Sentry || {};

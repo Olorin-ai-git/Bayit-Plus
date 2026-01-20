@@ -65,13 +65,13 @@ class SentryOnDemandReplay: NSObject, SentryReplayVideoMaker {
     convenience init(outputPath: String) {
         self.init(outputPath: outputPath,
                   workingQueue: SentryDispatchQueueWrapper(name: "io.sentry.onDemandReplay", attributes: nil),
-                  dateProvider: SentryDefaultCurrentDateProvider())
+                  dateProvider: SentryCurrentDateProvider())
     }
     
     convenience init(withContentFrom outputPath: String) {
         self.init(withContentFrom: outputPath,
                   workingQueue: SentryDispatchQueueWrapper(name: "io.sentry.onDemandReplay", attributes: nil),
-                  dateProvider: SentryDefaultCurrentDateProvider())
+                  dateProvider: SentryCurrentDateProvider())
     }
     
     func addFrameAsync(image: UIImage, forScreen: String?) {

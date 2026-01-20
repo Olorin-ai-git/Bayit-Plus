@@ -1,10 +1,12 @@
 #import "SentryDefines.h"
 
-@protocol SentryANRTracker;
+@class SentryANRTracker;
+@class SentryANRTrackerV2;
 @class SentryAppStateManager;
 @class SentryBinaryImageCache;
 @class SentryCrash;
 @class SentryCrashWrapper;
+@class SentryCurrentDateProvider;
 @class SentryDebugImageProvider;
 @class SentryDispatchFactory;
 @class SentryDispatchQueueWrapper;
@@ -19,8 +21,6 @@
 @class SentryThreadWrapper;
 @class SentryThreadInspector;
 @protocol SentryRandom;
-@protocol SentryCurrentDateProvider;
-@protocol SentryRateLimits;
 
 #if SENTRY_HAS_METRIC_KIT
 @class SentryMXManager;
@@ -63,16 +63,17 @@ SENTRY_NO_INIT
 @property (nonatomic, strong) SentryDispatchQueueWrapper *dispatchQueueWrapper;
 @property (nonatomic, strong) SentryNSNotificationCenterWrapper *notificationCenterWrapper;
 @property (nonatomic, strong) SentryDebugImageProvider *debugImageProvider;
+@property (nonatomic, strong) SentryANRTracker *anrTracker;
+@property (nonatomic, strong) SentryANRTrackerV2 *anrTrackerV2;
 @property (nonatomic, strong) SentryNSProcessInfoWrapper *processInfoWrapper;
 @property (nonatomic, strong) SentrySystemWrapper *systemWrapper;
 @property (nonatomic, strong) SentryDispatchFactory *dispatchFactory;
 @property (nonatomic, strong) SentryNSTimerFactory *timerFactory;
-@property (nonatomic, strong) id<SentryCurrentDateProvider> dateProvider;
+@property (nonatomic, strong) SentryCurrentDateProvider *dateProvider;
 @property (nonatomic, strong) SentryBinaryImageCache *binaryImageCache;
 @property (nonatomic, strong) SentryExtraContextProvider *extraContextProvider;
 @property (nonatomic, strong) SentrySysctl *sysctlWrapper;
 @property (nonatomic, strong) SentryThreadInspector *threadInspector;
-@property (nonatomic, strong) id<SentryRateLimits> rateLimits;
 
 #if SENTRY_UIKIT_AVAILABLE
 @property (nonatomic, strong) SentryFramesTracker *framesTracker;
@@ -89,10 +90,8 @@ SENTRY_NO_INIT
 @property (nonatomic, strong) SentryReachability *reachability;
 #endif // !TARGET_OS_WATCH
 
-- (id<SentryANRTracker>)getANRTracker:(NSTimeInterval)timeout;
-#if SENTRY_HAS_UIKIT
-- (id<SentryANRTracker>)getANRTracker:(NSTimeInterval)timeout isV2Enabled:(BOOL)isV2Enabled;
-#endif // SENTRY_HAS_UIKIT
+- (SentryANRTracker *)getANRTracker:(NSTimeInterval)timeout;
+- (SentryANRTrackerV2 *)getANRTrackerV2:(NSTimeInterval)timeout;
 
 #if SENTRY_HAS_METRIC_KIT
 @property (nonatomic, strong) SentryMXManager *metricKitManager API_AVAILABLE(

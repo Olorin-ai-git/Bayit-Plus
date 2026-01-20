@@ -2,12 +2,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol SentryCurrentDateProvider;
+@class SentryCurrentDateProvider;
 
 @interface SentryDateUtil : NSObject
 SENTRY_NO_INIT
 
-- (instancetype)initWithCurrentDateProvider:(id<SentryCurrentDateProvider>)currentDateProvider;
+- (instancetype)initWithCurrentDateProvider:(SentryCurrentDateProvider *)currentDateProvider;
 
 - (BOOL)isInFuture:(NSDate *_Nullable)date;
 

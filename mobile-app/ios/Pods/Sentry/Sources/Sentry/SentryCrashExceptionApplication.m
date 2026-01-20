@@ -1,18 +1,16 @@
-#import <Foundation/Foundation.h>
-
-#if TARGET_OS_OSX
-
-#    import "SentryCrash.h"
-#    import "SentryCrashExceptionApplication.h"
-#    import "SentryDependencyContainer.h"
-#    import "SentrySDK.h"
-#    import "SentryUncaughtNSExceptions.h"
+#import "SentryCrashExceptionApplication.h"
+#import "SentryCrash.h"
+#import "SentryDependencyContainer.h"
+#import "SentrySDK.h"
 
 @implementation SentryCrashExceptionApplication
 
+#if TARGET_OS_OSX
+
 - (void)reportException:(NSException *)exception
 {
-    [SentryUncaughtNSExceptions configureCrashOnExceptions];
+    [[NSUserDefaults standardUserDefaults]
+        registerDefaults:@{ @"NSApplicationCrashOnExceptions" : @YES }];
     SentryCrash *crash = SentryDependencyContainer.sharedInstance.crashReporter;
     if (nil != crash.uncaughtExceptionHandler && nil != exception) {
         crash.uncaughtExceptionHandler(exception);
@@ -26,6 +24,6 @@
     abort();
 }
 
-@end
+#endif
 
-#endif // TARGET_OS_OSX
+@end

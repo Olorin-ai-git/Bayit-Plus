@@ -35,6 +35,8 @@ bool sentrycrashccd_hasThreadStarted(void);
 void sentrycrashccd_freeze(void);
 void sentrycrashccd_unfreeze(void);
 
+SentryCrashThread *sentrycrashccd_getAllThreads(int *threadCount);
+
 const char *sentrycrashccd_getThreadName(SentryCrashThread thread);
 
 const char *sentrycrashccd_getQueueName(SentryCrashThread thread);

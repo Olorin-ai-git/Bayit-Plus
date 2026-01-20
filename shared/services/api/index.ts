@@ -122,16 +122,18 @@ export const cultureService = isDemo ? demoCultureService : apiCultureService;
 // Security services - No demo mode (requires real auth)
 export { securityService };
 
-// Passkey services - No demo mode (requires real auth)
-export { passkeyService, checkPasskeySupport } from './passkeyServices';
-export type {
-  PasskeyCredential,
-  RegistrationOptionsResponse,
-  AuthenticationOptionsResponse,
-  AuthenticationResult,
-  QRStatus,
-  SessionStatus,
-} from './passkeyServices';
+// Passkey services - Web/Browser only (requires @simplewebauthn/browser)
+// NOTE: Not re-exported from barrel. Import directly from './passkeyServices' instead.
+// This avoids module resolution errors in React Native builds.
+// export { passkeyService, checkPasskeySupport } from './passkeyServices';
+// export type {
+//   PasskeyCredential,
+//   RegistrationOptionsResponse,
+//   AuthenticationOptionsResponse,
+//   AuthenticationResult,
+//   QRStatus,
+//   SessionStatus,
+// } from './passkeyServices';
 
 // Re-export API services for direct access
 export {

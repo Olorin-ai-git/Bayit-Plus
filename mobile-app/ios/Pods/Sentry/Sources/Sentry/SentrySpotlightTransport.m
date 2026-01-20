@@ -12,7 +12,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SentrySpotlightTransport ()
+@interface
+SentrySpotlightTransport ()
 
 @property (nonatomic, strong) id<SentryRequestManager> requestManager;
 @property (nonatomic, strong) SentryNSURLRequestBuilder *requestBuilder;
@@ -70,10 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    url:self.apiURL
                                                       didFailWithError:&requestError];
 
-    if (nil == request || nil != requestError) {
-        if (nil != requestError) {
-            SENTRY_LOG_ERROR(@"Unable to build envelope request with error %@", requestError);
-        }
+    if (requestError) {
+        SENTRY_LOG_ERROR(@"Unable to build envelope request with error %@", requestError);
         return;
     }
 
@@ -84,11 +83,6 @@ NS_ASSUME_NONNULL_BEGIN
                 SENTRY_LOG_ERROR(@"Error while performing request %@", requestError);
             }
         }];
-}
-
-- (void)storeEnvelope:(SentryEnvelope *)envelope
-{
-    [self sendEnvelope:envelope];
 }
 
 - (SentryFlushResult)flush:(NSTimeInterval)timeout

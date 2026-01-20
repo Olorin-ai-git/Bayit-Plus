@@ -9,6 +9,7 @@ from typing import Optional
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
+from olorin_i18n import I18nConfig
 
 
 class PartnerAPIConfig(BaseSettings):
@@ -396,6 +397,10 @@ class OlorinSettings(BaseSettings):
     database: DatabaseConfig = Field(
         default_factory=DatabaseConfig,
         description="Olorin database configuration",
+    )
+    i18n: I18nConfig = Field(
+        default_factory=I18nConfig,
+        description="Internationalization configuration for multilingual support",
     )
 
     class Config:
