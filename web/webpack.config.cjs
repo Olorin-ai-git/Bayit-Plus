@@ -46,6 +46,7 @@ module.exports = (env, argv) => {
       extensions: ['.web.tsx', '.web.ts', '.web.jsx', '.web.js', '.tsx', '.ts', '.jsx', '.js', '.json'],
       modules: [
         path.resolve(__dirname, 'node_modules'),
+        path.resolve(__dirname, '../node_modules'),
         'node_modules',
       ],
       alias: {

@@ -147,7 +147,7 @@ class Settings(BaseSettings):
     CDN_BASE_URL: str = ""
 
     # Upload Monitoring Configuration
-    UPLOAD_MONITOR_ENABLED: bool = False  # Disabled auto-scan to prevent server overload
+    UPLOAD_MONITOR_ENABLED: bool = True  # Controlled by DEBUG mode in background_tasks.py
     UPLOAD_MONITOR_INTERVAL: int = 3600  # Seconds between scans (default: 1 hour)
     UPLOAD_DEFAULT_FOLDERS: str = ""  # Comma-separated paths to monitor on startup
 

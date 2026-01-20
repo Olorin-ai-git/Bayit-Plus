@@ -9,12 +9,19 @@ This module handles background tasks that run periodically:
 import asyncio
 import json
 import logging
+import os
 import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
 from app.core.config import settings
+
+
+def _is_running_locally() -> bool:
+    """Check if server is running locally (not on Cloud Run)."""
+    # Cloud Run sets K_SERVICE environment variable
+    return os.getenv("K_SERVICE") is None
 
 logger = logging.getLogger(__name__)
 
@@ -153,11 +160,13 @@ def start_background_tasks() -> None:
     """Start all background tasks."""
     global _running_tasks
 
-    # Folder monitoring (if enabled)
-    if settings.UPLOAD_MONITOR_ENABLED:
+    # Folder monitoring (only when running locally, not on Cloud Run)
+    if settings.UPLOAD_MONITOR_ENABLED and _is_running_locally():
         task = asyncio.create_task(_scan_monitored_folders_task())
         _running_tasks.append(task)
-        logger.info("Started folder monitoring background task")
+        logger.info("Started folder monitoring background task (local server only)")
+    elif settings.UPLOAD_MONITOR_ENABLED and not _is_running_locally():
+        logger.info("Folder monitoring disabled on Cloud Run (K_SERVICE detected)")
 
     # Upload session cleanup (always runs)
     task = asyncio.create_task(_cleanup_upload_sessions_task())
