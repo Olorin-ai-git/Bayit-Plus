@@ -30,6 +30,9 @@ RUN sed -i 's|file:///Users/olorin/Documents/Bayit-Plus/packages|file:///package
 # Configure Poetry to not create virtual environment in Docker
 RUN poetry config virtualenvs.create false
 
+# Regenerate lock file with updated paths
+RUN poetry lock --no-update
+
 # Install dependencies
 RUN poetry install --no-interaction --no-ansi
 
