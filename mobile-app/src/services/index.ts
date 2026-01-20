@@ -17,3 +17,15 @@ export type { WidgetData, WidgetInfo } from './widgetKit';
 export { siriService } from './siri';
 
 export { carPlayService } from './carPlay';
+
+// Backend Proxy Service - for secure third-party API credential management
+export { backendProxyService } from './backendProxyService';
+export type {
+  TTSSynthesizeRequest,
+  TTSVoice,
+  WakeWordDetectRequest,
+  WakeWordDetectResponse,
+  WakeWordModel,
+  AnalyticsEvent,
+  AnalyticsResponse,
+} from './backendProxyService';
