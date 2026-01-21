@@ -1,58 +1,89 @@
-# Olorin - Generative AI Agentic Solutions for Enterprise Fraud Prevention
+# Olorin.ai Ecosystem
 
-**Advanced AI-powered fraud detection and investigation platform leveraging multi-agent systems and real-time analytics.**
+**Unified AI-powered enterprise platform delivering fraud detection, media streaming, professional CV services, and marketing solutions.**
 
 ## 🏗️ Project Architecture
 
-Olorin is built as a comprehensive multi-component system:
+Olorin is built as a comprehensive monorepo with multiple specialized platforms:
 
 ```
 olorin/
-├── olorin-server/          # Python FastAPI backend
-├── olorin-front/           # React frontend application  
-├── olorin-web-portal/      # Marketing website
+├── olorin-core/            # Shared packages (@olorin/*)
+├── olorin-fraud/           # Fraud Detection Platform
+│   ├── backend/            # Python FastAPI + AI/ML agents
+│   └── frontend/           # React TypeScript microservices
+├── olorin-media/           # Media Platforms (git subtrees)
+│   ├── bayit-plus/         # Bayit+ Streaming Platform
+│   └── israeli-radio-manager/  # Radio Management Platform
+├── olorin-cv/              # CV Platform (git subtree)
+│   └── cvplus/             # Professional CV/Resume Builder
+├── olorin-omen/            # Omen Platform (git subtree)
+│   └── ios-app/            # iOS Application
+├── olorin-portals/         # Marketing Websites
+│   ├── portal-fraud/       # Fraud Detection Marketing
+│   ├── portal-streaming/   # Bayit+ Marketing
+│   ├── portal-radio/       # Radio Manager Marketing
+│   └── portal-main/        # Main Olorin.ai Portal
 ├── docs/                   # Comprehensive documentation
-├── project-management/     # Project planning & status files
-└── test/                   # Cross-component tests
+└── scripts/                # Build and deployment scripts
 ```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- **Python 3.11+** with Poetry
-- **Node.js 18+** with npm
+- **Python 3.11+** with Poetry (for fraud backend)
+- **Node.js 20+** with npm 10+ (for all frontend services)
 - **Git** for version control
+- **Turbo** for monorepo orchestration (installed automatically)
 
-### Backend Server (olorin-server)
+### Monorepo Setup
 ```bash
-cd olorin-server
-poetry install
-poetry run python -m app.local_server
-```
-
-### Frontend Application (olorin-front)
-```bash
-cd olorin-front
+# Install all dependencies across platforms
 npm install
-npm start                                    # Development
-TSC_COMPILE_ON_ERROR=true npm run build    # Production
+
+# Start all Olorin services
+npm run olorin
+
+# Or start individual platforms
+npm run dev:fraud        # Fraud Detection Platform
+npm run dev:media        # Media Platforms
+npm run dev:cv           # CV Platform
+
+# Build all platforms
+npm run build
+
+# Or build individual platforms
+npm run build:fraud
+npm run build:media
+npm run build:cv
+npm run build:portals
 ```
 
-### Web Portal (olorin-web-portal)
+### Git Subtrees Management
 ```bash
-cd olorin-web-portal
-npm install --legacy-peer-deps
-npm start                                    # Development
-npm run build                               # Production
+# Pull updates from upstream repositories
+npm run subtree:pull
+
+# Push changes back to upstream repositories
+npm run subtree:push
+
+# Or use the sync script directly
+./scripts/sync-subtrees.sh pull bayit-plus
+./scripts/sync-subtrees.sh pull israeli-radio-manager
+./scripts/sync-subtrees.sh pull cvplus
+./scripts/sync-subtrees.sh pull omen
 ```
 
-## 📊 Component Status
+## 📊 Platform Status
 
-| Component | Status | Build | Deployment |
-|-----------|--------|-------|------------|
-| **olorin-server** | ✅ Fully Functional | ✅ Ready | ✅ Production Ready |
-| **olorin-front** | ✅ Functional | ⚠️ With Warnings | ✅ Production Ready |
-| **olorin-web-portal** | ✅ Fully Functional | ✅ Clean | ✅ Production Ready |
+| Platform | Status | Build | Deployment |
+|----------|--------|-------|------------|
+| **Fraud Detection** | ✅ Fully Functional | ✅ Ready | ✅ Production Ready |
+| **Bayit+ Streaming** | ✅ Fully Functional | ✅ Ready | ✅ Production Ready |
+| **Israeli Radio Manager** | ✅ Fully Functional | ✅ Ready | ✅ Production Ready |
+| **CV Plus** | ✅ Functional | ✅ Ready | 🚧 In Development |
+| **Omen iOS** | ✅ Functional | ✅ Ready | 🚧 In Development |
+| **Marketing Portals** | ✅ Fully Functional | ✅ Ready | ✅ Production Ready |
 | **Documentation** | ✅ Complete | N/A | ✅ Ready |
 
 ## 🛠️ Development
@@ -83,20 +114,33 @@ Comprehensive documentation is available in the `/docs` directory:
 
 ## 🔧 Technical Stack
 
-### Backend (olorin-server)
-- **Framework**: FastAPI (Python)
-- **Dependencies**: Poetry management
-- **Features**: AI agents, real-time analytics, fraud detection
+### Monorepo Infrastructure
+- **Package Manager**: npm workspaces
+- **Build Orchestration**: Turbo (caching, task scheduling)
+- **Git Strategy**: Subtrees for platform independence
+- **Shared Packages**: @olorin/* (core, auth, ui-components)
 
-### Frontend (olorin-front)  
-- **Framework**: React 18 with TypeScript
-- **Build**: Create React App with custom configurations
-- **Features**: Investigation interface, real-time dashboards
+### Fraud Detection Platform
+- **Backend**: FastAPI (Python 3.11+), Poetry, LangChain, MongoDB
+- **Frontend**: React 18 + TypeScript, Webpack Module Federation (6 microservices)
+- **Features**: AI agents, real-time analytics, investigation dashboard
 
-### Web Portal (olorin-web-portal)
+### Media Platforms (Bayit+, Israeli Radio)
+- **Backend**: FastAPI (Python), Firebase, GCS
+- **Frontend**: React Native (mobile/tvOS), React (web)
+- **Styling**: TailwindCSS + @bayit/glass components
+- **Features**: VOD streaming, live radio, content management
+
+### CV Plus Platform
+- **Backend**: Firebase Functions (TypeScript)
+- **Frontend**: React + TypeScript
+- **Architecture**: Nx monorepo with modular packages
+- **Features**: AI-enhanced CV generation, templates, export
+
+### Marketing Portals
 - **Framework**: React with TypeScript
-- **Styling**: Tailwind CSS
-- **Features**: Marketing site, multi-language support
+- **Styling**: Tailwind CSS + shared design system
+- **Features**: Multi-language, responsive, SEO-optimized
 
 ## 🚀 Deployment
 
