@@ -41,16 +41,22 @@ async def lifespan(app: FastAPI):
     logger.info(f"Environment: {settings.ENVIRONMENT}")
     logger.info(f"API Version: {settings.OLORIN_API_VERSION}")
 
-    # Connect to MongoDB
-    await connect_to_mongo()
-    logger.info("Database connection established")
+    # Connect to MongoDB (non-blocking - allow startup even if DB unavailable)
+    try:
+        await connect_to_mongo()
+        logger.info("Database connection established")
+    except Exception as e:
+        logger.warning(f"Failed to establish database connection on startup: {e}")
+        logger.info("Continuing startup without database - will retry on first request")
 
-    # Initialize services based on enabled features
+    # Initialize services based on enabled features (non-blocking)
     if settings.OLORIN_SEMANTIC_SEARCH_ENABLED:
-        from app.services.olorin.search.client import client_manager
-
-        await client_manager.initialize()
-        logger.info("Semantic search service initialized")
+        try:
+            from app.services.olorin.search.client import client_manager
+            await client_manager.initialize()
+            logger.info("Semantic search service initialized")
+        except Exception as e:
+            logger.warning(f"Failed to initialize semantic search: {e}")
 
     logger.info("Olorin Platform ready")
 
@@ -58,8 +64,11 @@ async def lifespan(app: FastAPI):
 
     # Shutdown
     logger.info("Shutting down Olorin Platform")
-    await close_mongo_connection()
-    logger.info("Database connections closed")
+    try:
+        await close_mongo_connection()
+        logger.info("Database connections closed")
+    except Exception as e:
+        logger.warning(f"Error during shutdown: {e}")
 
 
 # Create FastAPI application
