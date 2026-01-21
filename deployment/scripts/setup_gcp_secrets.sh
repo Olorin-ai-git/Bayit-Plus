@@ -188,6 +188,17 @@ create_or_update_secret "bayit-apple-team-id" "APPLE_TEAM_ID"
 create_or_update_secret "bayit-apple-bundle-id-ios" "APPLE_BUNDLE_ID_IOS"
 create_or_update_secret "bayit-apple-bundle-id-tvos" "APPLE_BUNDLE_ID_TVOS"
 
+# Olorin Platform Secrets
+print_info "Olorin Platform..."
+create_or_update_secret "olorin-pinecone-api-key" "PINECONE_API_KEY"
+create_or_update_secret "olorin-partner-api-key-salt" "PARTNER_API_KEY_SALT"
+create_or_update_secret "olorin-secret-key" "SECRET_KEY"
+
+# Turborepo Remote Cache (for CI/CD build caching)
+print_info "Turborepo Remote Cache..."
+create_or_update_secret "turbo-token" "TURBO_TOKEN"
+create_or_update_secret "turbo-team" "TURBO_TEAM"
+
 # Note: The APNs .p8 key file (APPLE_KEY_PATH) should be stored separately
 # as a file-based secret or mounted as a volume in Cloud Run/GKE
 
@@ -221,6 +232,8 @@ ALL_SECRETS=(
     "bayit-chabad-multimedia-rss-url" "bayit-torahanytime-rss-url"
     "bayit-apple-key-id" "bayit-apple-team-id"
     "bayit-apple-bundle-id-ios" "bayit-apple-bundle-id-tvos"
+    "olorin-pinecone-api-key" "olorin-partner-api-key-salt" "olorin-secret-key"
+    "turbo-token" "turbo-team"
 )
 
 for secret in "${ALL_SECRETS[@]}"; do
@@ -249,6 +262,8 @@ echo "  - Voice (Picovoice)"
 echo "  - Librarian Agent"
 echo "  - Judaism Section"
 echo "  - Apple Push Notifications (APNs)"
+echo "  - Olorin Platform (Pinecone, Partner API, JWT)"
+echo "  - Turborepo Remote Cache"
 echo ""
 echo "Service account with access: $SERVICE_ACCOUNT"
 echo ""
