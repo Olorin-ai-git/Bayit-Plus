@@ -11,7 +11,7 @@ bash backend-olorin/DEPLOY.sh
 
 The script will:
 1. ✓ Verify GCP project access (bayit-plus)
-2. ✓ Check all 7 required secrets exist
+2. ✓ Check all 8 required secrets exist
 3. ✓ Validate Cloud Build configuration
 4. ✓ Optionally validate Docker image locally
 5. ✓ Show deployment configuration summary
@@ -44,6 +44,7 @@ gcloud secrets describe bayit-openai-api-key --project=bayit-plus
 gcloud secrets describe bayit-elevenlabs-api-key --project=bayit-plus
 gcloud secrets describe olorin-pinecone-api-key --project=bayit-plus
 gcloud secrets describe olorin-partner-api-key-salt --project=bayit-plus
+gcloud secrets describe olorin-secret-key --project=bayit-plus
 
 # Or check all at once
 gcloud secrets list --project=bayit-plus --format="table(name)"
