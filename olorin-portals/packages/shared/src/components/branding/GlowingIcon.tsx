@@ -1,9 +1,10 @@
 import React from 'react';
+import { AccentColor } from '../../types/branding.types';
 
 export interface GlowingIconProps {
   icon: React.ReactNode;
   className?: string;
-  color?: 'main' | 'fraud' | 'streaming' | 'radio' | 'omen' | 'purple';
+  color?: AccentColor;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   animate?: boolean;
 }

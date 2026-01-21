@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { WizardLogo } from '../branding/WizardLogo';
+import { PortalDomain } from '../../types/branding.types';
 
 export interface NavItem {
   name: string;
@@ -16,7 +17,7 @@ export interface NavDropdownGroup {
 }
 
 export interface HeaderProps {
-  domain?: 'main' | 'fraud' | 'streaming' | 'radio' | 'omen';
+  domain?: PortalDomain;
   navigation?: NavItem[];
   dropdowns?: NavDropdownGroup[];
   showDemo?: boolean;

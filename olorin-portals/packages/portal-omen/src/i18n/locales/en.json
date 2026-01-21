@@ -2,83 +2,272 @@
   "nav": {
     "home": "Home",
     "features": "Features",
-    "predictions": "Predictions",
+    "translation": "Languages",
     "pricing": "Pricing",
     "demo": "Live Demo",
     "contact": "Contact",
     "getStarted": "Get Started"
   },
   "hero": {
-    "title": "AI-POWERED",
-    "titleHighlight": "PREDICTIVE INTELLIGENCE",
-    "subtitle": "Transform data into actionable forecasts with AI",
-    "description": "Unlock the power of predictive analytics and intelligent forecasting for data-driven decisions",
+    "title": "REAL-TIME",
+    "titleHighlight": "SPEECH TRANSLATION",
+    "subtitle": "Break language barriers instantly with AI-powered transcription, translation, and voice synthesis",
+    "description": "Break language barriers instantly with AI-powered transcription, translation, and voice synthesis",
     "ctaExplore": "Learn More",
-    "ctaDemo": "Request Demo"
+    "ctaDemo": "Try Demo"
   },
   "features": {
-    "sectionTitle": "Predictive Intelligence Features",
-    "aiPredictions": {
-      "title": "AI-Driven Predictions",
-      "description": "Advanced machine learning models that anticipate trends and outcomes with exceptional accuracy"
-    },
-    "forecasting": {
-      "title": "Intelligent Forecasting",
-      "description": "Real-time forecasting engines that adapt to changing patterns and deliver actionable insights"
-    },
-    "insights": {
-      "title": "Actionable Insights",
-      "description": "Transform complex predictions into clear, actionable recommendations for strategic decisions"
-    }
+    "sectionTitle": "AI-Powered Translation Features",
+    "transcription": { "title": "Live Transcription", "description": "Real-time speech-to-text powered by OpenAI Realtime API with 16kHz audio capture" },
+    "translation": { "title": "Instant Translation", "description": "Simultaneous translation to Spanish, French, German, Japanese, and Mandarin" },
+    "tts": { "title": "AI Voice Synthesis", "description": "Hear translations spoken in natural AI voices via ElevenLabs with 4 voice options" }
   },
   "workflow": {
     "sectionTitle": "How It Works",
-    "sectionSubtitle": "AI-powered predictive intelligence in 4 steps",
-    "step1": {
-      "title": "Data Integration",
-      "description": "Seamlessly connect your data sources for comprehensive analysis"
-    },
-    "step2": {
-      "title": "AI Model Training",
-      "description": "Advanced algorithms learn patterns and relationships in your data"
-    },
-    "step3": {
-      "title": "Prediction Generation",
-      "description": "Generate accurate forecasts and identify emerging trends"
-    },
-    "step4": {
-      "title": "Actionable Delivery",
-      "description": "Deliver insights through dashboards and automated alerts"
-    }
+    "sectionSubtitle": "Real-time speech translation in 4 steps",
+    "step1": { "title": "Speak", "description": "Speak naturally into your iPhone microphone" },
+    "step2": { "title": "Transcribe", "description": "AI instantly converts speech to text in real-time" },
+    "step3": { "title": "Translate", "description": "Your words are translated to your chosen language" },
+    "step4": { "title": "Listen", "description": "Hear the translation spoken in a natural AI voice" }
+  },
+  "languages": {
+    "title": "Supported Languages",
+    "subtitle": "Translate between English and 5 major world languages"
   },
   "capabilities": {
-    "title": "Core Capabilities",
-    "realTime": {
-      "title": "Real-Time Analysis",
-      "description": "Continuous monitoring and instant predictions as data changes"
-    },
-    "riskAssessment": {
-      "title": "Risk Assessment",
-      "description": "Identify and quantify potential risks before they materialize"
-    },
-    "earlyWarning": {
-      "title": "Early Warning System",
-      "description": "Proactive alerts for anomalies and emerging patterns"
-    },
-    "trendAnalysis": {
-      "title": "Trend Analysis",
-      "description": "Uncover hidden patterns and long-term trend predictions"
-    }
-  },
-  "stats": {
-    "accuracy": "95% Prediction Accuracy",
-    "speed": "10x Faster Insights",
-    "coverage": "360° Data Coverage",
-    "reduction": "60% Risk Reduction"
+    "title": "Platform Capabilities",
+    "wearable": { "title": "Wearable Display", "description": "Stream translations to ESP32 display glasses via Bluetooth LE" },
+    "actionButton": { "title": "Action Button", "description": "Quick-start translation with iPhone 15/16 Action Button" },
+    "languages": { "title": "5 Languages", "description": "Spanish, French, German, Japanese, and Mandarin support" },
+    "voices": { "title": "AI Voices", "description": "4 natural voice options: Rachel, Adam, Bella, Arnold" }
   },
   "cta": {
-    "title": "Ready to Predict the Future?",
-    "subtitle": "Join forward-thinking organizations leveraging AI-powered predictive intelligence with Olorin.AI",
-    "button": "Request a Demo"
+    "title": "Break Language Barriers Today",
+    "subtitle": "Download Omen and communicate freely in any language",
+    "button": "Get Early Access",
+    "platforms": "Available for iPhone 15/16 • iOS 17.0+ • ESP32 Wearable Support"
+  },
+  "contactPage": {
+    "title": "Get In Touch",
+    "subtitle": "Interested in Omen? Let us know how we can help",
+    "formTitle": "Tell Us About Your Needs",
+    "infoTitle": "Contact Information",
+    "form": {
+      "name": "Full Name",
+      "email": "Email Address",
+      "company": "Company (Optional)",
+      "phone": "Phone Number",
+      "useCase": "Use Case",
+      "selectUseCase": "Select your primary use case",
+      "interest": "Interest",
+      "selectInterest": "What are you interested in?",
+      "message": "Your Message",
+      "messagePlaceholder": "Tell us about your translation needs..."
+    },
+    "submit": "Send Message",
+    "sending": "Sending...",
+    "success": "Thank you! We'll be in touch soon.",
+    "error": "Something went wrong. Please try again or email us directly.",
+    "scheduleTitle": "Want a Demo?",
+    "scheduleSubtitle": "See Omen's real-time translation in action",
+    "scheduleCta": "Schedule Demo"
+  },
+  "demoPage": {
+    "title": "Experience",
+    "titleHighlight": "Real-Time Translation",
+    "subtitle": "See how Omen breaks language barriers with AI-powered speech translation",
+    "scheduleCta": "Schedule Live Demo",
+    "stepsTitle": "Translation Flow",
+    "steps": {
+      "speak": { "title": "Speak", "description": "Natural speech input" },
+      "transcribe": { "title": "Transcribe", "description": "Real-time text conversion" },
+      "translate": { "title": "Translate", "description": "Instant language translation" },
+      "output": { "title": "Output", "description": "Voice or display output" }
+    },
+    "featuresTitle": "Platform Features",
+    "features": {
+      "realtime": { "title": "Real-Time Processing", "description": "Sub-100ms latency for natural conversations" },
+      "languages": { "title": "5 Languages", "description": "Spanish, French, German, Japanese, Mandarin" },
+      "voices": { "title": "Natural Voices", "description": "4 AI voice options via ElevenLabs" },
+      "wearable": { "title": "Wearable Display", "description": "ESP32 glasses integration" },
+      "actionButton": { "title": "Action Button", "description": "iPhone 15/16 quick start" },
+      "bluetooth": { "title": "Bluetooth LE", "description": "Seamless device connectivity" }
+    },
+    "sections": {
+      "transcription": { "title": "Live Transcription", "description": "Real-time speech-to-text with visual waveform display", "f1": "16kHz audio capture", "f2": "OpenAI Realtime API", "f3": "Live waveform visualization", "f4": "Noise reduction" },
+      "translation": { "title": "Instant Translation", "description": "Simultaneous translation with 100ms debounced streaming", "f1": "5 target languages", "f2": "Context-aware translation", "f3": "Streaming output", "f4": "Conversation history" },
+      "wearable": { "title": "Wearable Integration", "description": "Stream translations to ESP32 display glasses", "f1": "Bluetooth LE connection", "f2": "Real-time text streaming", "f3": "Hands-free operation", "f4": "Low power consumption" }
+    },
+    "platformsTitle": "Supported Platforms",
+    "ctaTitle": "Ready to Try Omen?",
+    "ctaSubtitle": "Get early access and break language barriers today",
+    "ctaButton": "Get Early Access"
+  },
+  "pricingPage": {
+    "title": "Simple",
+    "titleHighlight": "Pricing",
+    "subtitle": "Choose the plan that fits your translation needs",
+    "free": {
+      "name": "Free",
+      "price": "$0",
+      "priceNote": "Forever free",
+      "description": "Try Omen with basic translation features",
+      "cta": "Download Free",
+      "f1": "30 minutes/month translation",
+      "f2": "2 languages",
+      "f3": "Basic voice synthesis",
+      "f4": "Wearable support",
+      "f5": "Priority processing",
+      "f6": "API access"
+    },
+    "premium": {
+      "name": "Premium",
+      "badge": "Most Popular",
+      "price": "Contact Us",
+      "priceNote": "Monthly subscription",
+      "description": "Unlimited translation for power users",
+      "cta": "Get Premium",
+      "f1": "Unlimited translation",
+      "f2": "All 5 languages",
+      "f3": "All 4 AI voices",
+      "f4": "ESP32 wearable support",
+      "f5": "Priority processing",
+      "f6": "Custom voice profiles"
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "price": "Custom",
+      "priceNote": "Volume pricing",
+      "description": "Custom solutions for organizations",
+      "cta": "Contact Sales",
+      "f1": "Unlimited translation",
+      "f2": "All languages + custom",
+      "f3": "All AI voices + custom",
+      "f4": "Wearable fleet management",
+      "f5": "Dedicated infrastructure",
+      "f6": "API access + SDKs"
+    },
+    "comparisonTitle": "Plan Comparison",
+    "faqTitle": "Questions & Answers",
+    "faq": {
+      "q1": "Which devices support Omen?",
+      "a1": "Omen requires iPhone 15 or 16 with iOS 17.0 or later. The ESP32 wearable display is optional and sold separately.",
+      "q2": "How does the wearable display work?",
+      "a2": "The ESP32 display connects via Bluetooth LE and shows translations in real-time, allowing for discreet, hands-free reading.",
+      "q3": "Can I use Omen offline?",
+      "a3": "Omen requires an internet connection for AI transcription and translation. We're exploring offline capabilities for future releases."
+    },
+    "ctaTitle": "Ready to Break Language Barriers?",
+    "ctaSubtitle": "Start translating in real-time today",
+    "ctaButton": "Get Started"
+  },
+  "featuresPage": {
+    "title": "Powerful",
+    "titleHighlight": "Translation Features",
+    "subtitle": "AI-powered speech translation for seamless cross-language communication",
+    "transcription": {
+      "title": "Speech Transcription",
+      "description": "Real-time speech-to-text with industry-leading accuracy",
+      "realtime": { "title": "Real-Time Capture", "description": "Live speech-to-text with 16kHz audio quality", "h1": "16kHz sample rate", "h2": "Low-latency streaming", "h3": "Noise cancellation" },
+      "accuracy": { "title": "High Accuracy", "description": "OpenAI Realtime API for best-in-class transcription", "h1": "Context-aware processing", "h2": "Accent recognition", "h3": "Punctuation handling" },
+      "waveform": { "title": "Visual Feedback", "description": "Live waveform visualization during speech", "h1": "Real-time waveform", "h2": "Audio level indicators", "h3": "Speech detection" }
+    },
+    "translation": {
+      "title": "AI Translation",
+      "description": "Instant translation powered by advanced AI models",
+      "instant": { "title": "Instant Translation", "description": "Sub-100ms translation latency for natural flow", "h1": "100ms debounced streaming", "h2": "Context preservation", "h3": "Natural phrasing" },
+      "languages": { "title": "5 Languages", "description": "Support for major world languages", "h1": "Spanish", "h2": "French, German", "h3": "Japanese, Mandarin" },
+      "tts": { "title": "Voice Synthesis", "description": "Natural AI voices via ElevenLabs", "h1": "4 voice options", "h2": "Streaming audio", "h3": "Natural intonation" }
+    },
+    "hardware": {
+      "title": "Hardware Integration",
+      "description": "Seamless integration with iPhone and wearable devices",
+      "wearable": { "title": "ESP32 Display", "description": "Stream translations to smart glasses", "h1": "Bluetooth LE connection", "h2": "Real-time text display", "h3": "All-day battery" },
+      "actionButton": { "title": "Action Button", "description": "One-press activation on iPhone 15/16", "h1": "Quick start translation", "h2": "Custom actions", "h3": "Hands-free mode" },
+      "bluetooth": { "title": "Bluetooth LE", "description": "Low-energy wireless connectivity", "h1": "Automatic pairing", "h2": "Stable connection", "h3": "Multi-device support" }
+    },
+    "techSpecsTitle": "Technical Specifications",
+    "workflowTitle": "Translation Pipeline",
+    "workflow": {
+      "s1": { "title": "Capture", "description": "Audio input" },
+      "s2": { "title": "Transcribe", "description": "Speech to text" },
+      "s3": { "title": "Translate", "description": "Language conversion" },
+      "s4": { "title": "Synthesize", "description": "Voice output" }
+    },
+    "ctaTitle": "Experience Real-Time Translation",
+    "ctaSubtitle": "Download Omen and communicate without language barriers",
+    "ctaButton": "Get Early Access"
+  },
+  "translationPage": {
+    "title": "Translation",
+    "titleHighlight": "Use Cases",
+    "subtitle": "Real-time speech translation for every situation",
+    "travel": {
+      "title": "Travel & Tourism",
+      "industry": "Travel",
+      "challenge": "Travelers struggle to communicate in foreign countries, missing authentic experiences and facing difficulties with directions, dining, and local interactions.",
+      "solution": "Omen provides instant translation in 5 languages, letting travelers communicate naturally with locals through speech or the wearable display.",
+      "r1": { "metric": "Languages", "value": "5" },
+      "r2": { "metric": "Latency", "value": "<100ms" },
+      "r3": { "metric": "Voices", "value": "4" },
+      "r4": { "metric": "Wearable", "value": "Yes" },
+      "f1": "Real-time conversation translation",
+      "f2": "Discreet wearable display",
+      "f3": "Natural AI voice output",
+      "f4": "Works anywhere with data",
+      "testimonial": { "quote": "Omen transformed my trip to Japan. I could finally have real conversations with locals.", "author": "Frequent Traveler", "role": "Beta Tester" }
+    },
+    "business": {
+      "title": "Business Meetings",
+      "industry": "Business",
+      "challenge": "International business meetings require expensive interpreters or suffer from communication barriers that slow negotiations.",
+      "solution": "Omen enables real-time translation during meetings, allowing natural conversation flow without waiting for interpretation.",
+      "r1": { "metric": "Real-Time", "value": "Yes" },
+      "r2": { "metric": "Natural Flow", "value": "100%" },
+      "r3": { "metric": "Cost Savings", "value": "90%" },
+      "r4": { "metric": "Privacy", "value": "Secure" },
+      "f1": "Live meeting translation",
+      "f2": "Confidential processing",
+      "f3": "Professional voice options",
+      "f4": "Conversation history"
+    },
+    "accessibility": {
+      "title": "Accessibility",
+      "industry": "Accessibility",
+      "challenge": "Hearing-impaired individuals and those with speech difficulties need visual aids to participate in conversations.",
+      "solution": "The ESP32 wearable display shows real-time transcriptions and translations, enabling full participation in any conversation.",
+      "r1": { "metric": "Visual Output", "value": "Real-Time" },
+      "r2": { "metric": "Wearable", "value": "Included" },
+      "r3": { "metric": "Hands-Free", "value": "Yes" },
+      "r4": { "metric": "Battery", "value": "All Day" },
+      "f1": "Real-time captions",
+      "f2": "Discreet glasses display",
+      "f3": "Large text options",
+      "f4": "Vibration alerts"
+    },
+    "learning": {
+      "title": "Language Learning",
+      "industry": "Education",
+      "challenge": "Language learners need immersive practice but lack access to native speakers for real conversation.",
+      "solution": "Omen helps learners practice pronunciation, understand native speech, and build confidence through real-world translation assistance.",
+      "r1": { "metric": "Practice", "value": "Unlimited" },
+      "r2": { "metric": "Feedback", "value": "Instant" },
+      "r3": { "metric": "Languages", "value": "5" },
+      "r4": { "metric": "Progress", "value": "Tracked" },
+      "f1": "Pronunciation feedback",
+      "f2": "Native speaker models",
+      "f3": "Conversation practice",
+      "f4": "Learning mode"
+    },
+    "statsTitle": "Platform Capabilities",
+    "stats": {
+      "languages": "Languages Supported",
+      "latency": "Translation Latency",
+      "voices": "AI Voice Options",
+      "availability": "Availability"
+    },
+    "ctaTitle": "Start Translating Today",
+    "ctaSubtitle": "Download Omen and communicate in any language",
+    "ctaButton": "Get Early Access"
   }
 }

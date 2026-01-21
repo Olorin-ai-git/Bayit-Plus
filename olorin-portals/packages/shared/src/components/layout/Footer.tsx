@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Linkedin, Twitter } from 'lucide-react';
 import { WizardLogo } from '../branding/WizardLogo';
+import { PortalDomain } from '../../types/branding.types';
 
 export interface FooterLink {
   name: string;
@@ -9,7 +10,7 @@ export interface FooterLink {
 }
 
 export interface FooterProps {
-  domain?: 'main' | 'fraud' | 'streaming' | 'radio' | 'omen';
+  domain?: PortalDomain;
   companyDescription?: string;
   quickLinks?: FooterLink[];
   email?: string;

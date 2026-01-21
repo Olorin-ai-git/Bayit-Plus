@@ -9,45 +9,49 @@
   },
   "hero": {
     "title": "OLORIN.AI:",
-    "titleHighlight": "The Future of Generative Solutions",
+    "titleHighlight": "AI Solutions for Real Problems",
     "subtitle": "Agentic AI-Based Solutions Across Industries",
-    "description": "Empowering businesses with intelligent AI agents for fraud detection, media streaming, and radio management",
+    "description": "Building intelligent AI agents for fraud detection, media streaming, radio management, and speech translation",
     "ctaExplore": "Explore Our Solutions",
     "ctaGetStarted": "Get Started"
   },
   "solutions": {
     "sectionTitle": "Our Solutions",
-    "sectionSubtitle": "Discover how our AI-powered solutions transform your business",
+    "sectionSubtitle": "AI-powered products solving real business challenges",
     "fraud": {
-      "title": "AI-Powered Fraud Prevention",
-      "description": "Detect and prevent fraud in real-time with 6 specialized AI agents",
-      "cta": "Learn More"
+      "title": "Fraud Prevention",
+      "description": "Multi-agent AI system for real-time fraud detection and investigation",
+      "cta": "Learn More",
+      "badge": "POC"
     },
     "streaming": {
-      "title": "AI-Driven Media Streaming",
-      "description": "Optimize content delivery with intelligent streaming solutions",
-      "cta": "Learn More"
+      "title": "Media Streaming",
+      "description": "AI-optimized content delivery powering Bayit+ streaming platform",
+      "cta": "Learn More",
+      "badge": "Active"
     },
     "radio": {
-      "title": "Intelligent Radio Management",
-      "description": "Automate and enhance radio operations with AI",
-      "cta": "Learn More"
+      "title": "Radio Management",
+      "description": "Intelligent automation for radio stations with AI scheduling and analytics",
+      "cta": "Learn More",
+      "badge": "Active"
     },
-    "generative": {
-      "title": "Custom AI Solutions",
-      "description": "Build tailored agentic AI for your business needs",
-      "cta": "Contact Us"
+    "omen": {
+      "title": "Speech Translation",
+      "description": "Real-time speech transcription and translation iOS app with wearable support",
+      "cta": "Learn More",
+      "badge": "Coming Soon"
     }
   },
   "about": {
     "title": "About Olorin.AI",
     "mission": {
       "title": "Our Mission",
-      "content": "To revolutionize industries with cutting-edge agentic AI solutions that empower businesses to achieve unprecedented efficiency and intelligence"
+      "content": "To build practical AI solutions that solve real business problems, starting with fraud detection, media streaming, radio automation, and speech translation"
     },
     "vision": {
       "title": "Our Vision",
-      "content": "A future where AI agents seamlessly collaborate with humans to solve complex challenges across fraud detection, media distribution, and broadcast management"
+      "content": "AI-powered tools that businesses can actually use today - not theoretical research, but working products that deliver measurable value"
     },
     "team": {
       "title": "Our Team",
@@ -55,7 +59,23 @@
     },
     "technology": {
       "title": "Our Technology",
-      "subtitle": "Cutting-edge AI powered by advanced machine learning"
+      "subtitle": "Practical AI powered by modern machine learning"
+    }
+  },
+  "highlights": {
+    "title": "Why Olorin.AI",
+    "subtitle": "What makes our AI solutions different",
+    "ai": {
+      "title": "Agentic AI Architecture",
+      "description": "Multi-agent systems that work together to solve complex problems"
+    },
+    "active": {
+      "title": "Active Products",
+      "description": "Real products in production, not just demos or prototypes"
+    },
+    "global": {
+      "title": "Global Ready",
+      "description": "Multi-language support with RTL and 10 language options"
     }
   },
   "knowledgeHub": {
@@ -80,7 +100,7 @@
   },
   "contact": {
     "title": "Get In Touch",
-    "subtitle": "Ready to transform your business with AI?",
+    "subtitle": "Interested in our AI solutions? Let's talk",
     "form": {
       "name": "Name",
       "email": "Email",
@@ -95,24 +115,20 @@
       "title": "Contact Information",
       "email": "contact@olorin.ai",
       "phone": "+1 (201) 397-9142",
-      "address": "185 Madison Ave.\nCresskill 07626 USA",
+      "address": "Teaneck, NJ, USA",
       "hours": "Mon - Fri: 9:00 AM - 6:00 PM EST"
     }
   },
-  "trustIndicators": {
-    "title": "Trusted By Industry Leaders",
-    "certifications": "SOC 2, GDPR, CCPA, ISO 27001 Compliant"
-  },
   "cta": {
-    "title": "Ready to Transform Your Business?",
-    "subtitle": "Join hundreds of companies using Olorin.AI to detect fraud, optimize streaming, and manage radio operations",
-    "button": "Schedule a Demo"
+    "title": "Ready to Explore Our Solutions?",
+    "subtitle": "See how Olorin.AI can help with fraud detection, media streaming, radio automation, or speech translation",
+    "button": "Contact Us"
   },
   "footer": {
-    "description": "Leading the future of enterprise AI with Generative AI agentic solutions across fraud detection, media streaming, and radio management.",
+    "description": "Building practical AI solutions for fraud detection, media streaming, radio management, and speech translation.",
     "quickLinks": "Quick Links",
     "contactInfo": "Contact Info",
-    "copyright": "© 2026 Olorin.ai. All rights reserved.",
+    "copyright": "© 2026 Olorin.ai LLC. All rights reserved.",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service"
   }

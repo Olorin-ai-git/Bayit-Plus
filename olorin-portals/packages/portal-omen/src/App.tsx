@@ -3,16 +3,20 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Header, Footer, LanguageSelector } from '@olorin/shared';
 import { useTranslation } from 'react-i18next';
 import HomePage from './pages/HomePage';
+import FeaturesPage from './pages/FeaturesPage';
+import TranslationPage from './pages/TranslationPage';
+import PricingPage from './pages/PricingPage';
+import DemoPage from './pages/DemoPage';
+import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   const { t } = useTranslation();
 
-  // Navigation configuration for omen portal
   const navigation = [
     { name: t('nav.home'), href: '/' },
     { name: t('nav.features'), href: '/features' },
-    { name: t('nav.predictions'), href: '/predictions' },
+    { name: t('nav.translation'), href: '/translation' },
   ];
 
   const dropdowns = [
@@ -41,17 +45,21 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            {/* Additional routes will be added here */}
+            <Route path="/features" element={<FeaturesPage />} />
+            <Route path="/translation" element={<TranslationPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/demo" element={<DemoPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
         <Footer
           domain="omen"
-          companyDescription="AI-powered predictive intelligence delivering actionable insights and forecasting solutions for data-driven decision making."
+          companyDescription="Real-time speech translation iOS app with AI-powered transcription, instant translation, and voice synthesis for breaking language barriers."
           quickLinks={[
             { name: String(t('nav.home')), href: '/' },
             { name: String(t('nav.features')), href: '/features' },
-            { name: String(t('nav.predictions')), href: '/predictions' },
+            { name: String(t('nav.translation')), href: '/translation' },
             { name: String(t('nav.contact')), href: '/contact' },
           ]}
         />

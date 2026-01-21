@@ -22,104 +22,488 @@
   "agents": {
     "sectionTitle": "How Our Agents Explore",
     "sectionSubtitle": "Six specialized AI agents working together to detect fraud",
-    "location": {
-      "title": "Location Agents",
-      "description": "Analyze geographic patterns and detect location anomalies in real-time"
-    },
-    "network": {
-      "title": "Network Agents",
-      "description": "Monitor network behavior and identify suspicious connections"
-    },
-    "authentication": {
-      "title": "Authentication Agents",
-      "description": "Verify identity and detect authentication fraud with advanced biometrics"
-    },
-    "behavioral": {
-      "title": "Behavioral Biometrics Agents",
-      "description": "Analyze user behavior patterns and detect anomalies"
-    },
-    "device": {
-      "title": "Device Agents",
-      "description": "Monitor device fingerprints and detect compromised devices"
-    },
-    "velocity": {
-      "title": "Velocity Agents",
-      "description": "Track transaction velocity and identify unusual patterns"
-    }
+    "location": { "title": "Location Agents", "description": "Analyze geographic patterns and detect location anomalies in real-time" },
+    "network": { "title": "Network Agents", "description": "Monitor network behavior and identify suspicious connections" },
+    "authentication": { "title": "Authentication Agents", "description": "Verify identity and detect authentication fraud with advanced biometrics" },
+    "behavioral": { "title": "Behavioral Biometrics Agents", "description": "Analyze user behavior patterns and detect anomalies" },
+    "device": { "title": "Device Agents", "description": "Monitor device fingerprints and detect compromised devices" },
+    "velocity": { "title": "Velocity Agents", "description": "Track transaction velocity and identify unusual patterns" }
   },
   "workflow": {
     "sectionTitle": "Intelligent Agent Workflow",
     "sectionSubtitle": "How our AI agents collaborate to prevent fraud",
-    "step1": {
-      "title": "Data Ingestion",
-      "description": "Collect data from multiple sources in real-time"
-    },
-    "step2": {
-      "title": "Cross-Domain Analysis",
-      "description": "AI agents collaborate to analyze patterns across domains"
-    },
-    "step3": {
-      "title": "Anomaly Detection",
-      "description": "Identify suspicious activities with machine learning"
-    },
-    "step4": {
-      "title": "Real-Time Scoring",
-      "description": "Generate fraud risk scores and actionable recommendations"
-    }
+    "step1": { "title": "Data Ingestion", "description": "Collect data from multiple sources in real-time" },
+    "step2": { "title": "Cross-Domain Analysis", "description": "AI agents collaborate to analyze patterns across domains" },
+    "step3": { "title": "Anomaly Detection", "description": "Identify suspicious activities with machine learning" },
+    "step4": { "title": "Real-Time Scoring", "description": "Generate fraud risk scores and actionable recommendations" }
   },
   "features": {
     "sectionTitle": "Advanced Fraud Detection Features",
-    "realTime": {
-      "title": "Real-Time Threat Analysis",
-      "description": "Detect and respond to fraud attempts in under 1 second"
-    },
-    "instantAlert": {
-      "title": "Instant Alert AI",
-      "description": "Automated alerts with intelligent prioritization"
-    },
-    "predictive": {
-      "title": "Predictive Protection",
-      "description": "Prevent fraud before it happens with predictive models"
-    }
+    "realTime": { "title": "Real-Time Threat Analysis", "description": "Detect and respond to fraud attempts in under 1 second" },
+    "instantAlert": { "title": "Instant Alert AI", "description": "Automated alerts with intelligent prioritization" },
+    "predictive": { "title": "Predictive Protection", "description": "Prevent fraud before it happens with predictive models" }
   },
   "successStory": {
-    "title": "Success Story: Reducing Fraud by 80%",
-    "subtitle": "How a major financial institution transformed fraud prevention",
-    "metric1": "80% Fraud Reduction",
-    "metric2": "95% Detection Accuracy",
-    "metric3": "<1s Response Time",
-    "metric4": "60% Cost Savings",
-    "description": "This institution saved millions while improving customer experience and detection accuracy through our AI-powered fraud prevention platform.",
-    "cta": "Schedule a Demo"
+    "title": "POC Success Story",
+    "subtitle": "How enterprises are evaluating our AI-powered fraud prevention",
+    "metric1": "80%+",
+    "metric2": "95%",
+    "metric3": "<1s",
+    "metric4": "60%",
+    "description": "During POC evaluation, enterprises have seen significant improvements in fraud detection accuracy and operational efficiency.",
+    "cta": "Schedule a POC Discussion"
   },
   "useCases": {
     "title": "Industry-Specific Solutions",
-    "financial": {
-      "title": "Financial Services",
-      "description": "Payment fraud, account takeover, money laundering detection"
-    },
-    "ecommerce": {
-      "title": "E-Commerce",
-      "description": "Transaction fraud, account abuse, chargeback reduction"
-    },
-    "insurance": {
-      "title": "Insurance",
-      "description": "Claims fraud, application fraud, premium fraud detection"
-    },
-    "healthcare": {
-      "title": "Healthcare",
-      "description": "Medical billing fraud, identity verification, prescription fraud"
-    }
-  },
-  "stats": {
-    "accuracy": "95% Accuracy",
-    "reduction": "80% Reduction",
-    "response": "<1s Response",
-    "monitoring": "24/7 Monitoring"
+    "financial": { "title": "Financial Services", "description": "Payment fraud, account takeover, money laundering detection" },
+    "ecommerce": { "title": "E-Commerce", "description": "Transaction fraud, account abuse, chargeback reduction" },
+    "insurance": { "title": "Insurance", "description": "Claims fraud, application fraud, premium fraud detection" },
+    "healthcare": { "title": "Healthcare", "description": "Medical billing fraud, identity verification, prescription fraud" }
   },
   "cta": {
     "title": "Ready to Stop Fraud?",
-    "subtitle": "Join hundreds of companies protecting their business with Olorin.AI",
-    "button": "Schedule a Demo"
+    "subtitle": "Join enterprises evaluating our AI-powered fraud prevention platform",
+    "button": "Schedule a POC Discussion"
+  },
+  "contactPage": {
+    "title": "Schedule a POC Discussion",
+    "subtitle": "Let's discuss how our AI agents can protect your business from fraud",
+    "formTitle": "Tell Us About Your Needs",
+    "infoTitle": "Contact Information",
+    "form": {
+      "name": "Full Name",
+      "email": "Work Email",
+      "company": "Company Name",
+      "phone": "Phone Number",
+      "industry": "Industry",
+      "selectIndustry": "Select your industry",
+      "transactionVolume": "Monthly Transaction Volume",
+      "selectVolume": "Select volume range",
+      "message": "How can we help?",
+      "messagePlaceholder": "Tell us about your fraud prevention challenges..."
+    },
+    "submit": "Submit Request",
+    "sending": "Sending...",
+    "success": "Thank you! We'll be in touch within 24 hours to schedule your POC discussion.",
+    "error": "Something went wrong. Please try again or email us directly.",
+    "scheduleTitle": "Prefer to Schedule a Call?",
+    "scheduleSubtitle": "Book a personalized demo with our fraud prevention experts",
+    "scheduleCta": "Schedule Demo Call"
+  },
+  "demoPage": {
+    "title": "See Our",
+    "titleHighlight": "AI Agents in Action",
+    "subtitle": "Experience how 6 specialized AI agents work together to detect and prevent fraud in real-time",
+    "scheduleCta": "Schedule Live Demo",
+    "stepsTitle": "How It Works",
+    "steps": {
+      "ingest": { "title": "Data Ingestion", "description": "Real-time data collection from your transaction sources" },
+      "analyze": { "title": "Agent Analysis", "description": "6 AI agents analyze data across multiple dimensions" },
+      "detect": { "title": "Anomaly Detection", "description": "Machine learning identifies suspicious patterns" },
+      "score": { "title": "Risk Scoring", "description": "Instant fraud risk scores with recommendations" }
+    },
+    "featuresTitle": "Demo Highlights",
+    "features": {
+      "location": { "title": "Location Analysis", "description": "See geographic anomaly detection in action" },
+      "network": { "title": "Network Mapping", "description": "Visualize suspicious connection patterns" },
+      "behavioral": { "title": "Behavioral Analysis", "description": "Watch user behavior pattern detection" },
+      "auth": { "title": "Authentication", "description": "Experience biometric fraud detection" },
+      "realtime": { "title": "Real-Time Processing", "description": "Sub-second fraud detection demonstration" },
+      "alerts": { "title": "Smart Alerts", "description": "See intelligent alert prioritization" }
+    },
+    "sections": {
+      "transaction": {
+        "title": "Transaction Simulation",
+        "description": "Watch our agents analyze a simulated transaction in real-time",
+        "feature1": "Real-time transaction analysis",
+        "feature2": "Multi-agent collaboration",
+        "feature3": "Risk score generation",
+        "feature4": "Alert triggering workflow"
+      },
+      "agents": {
+        "title": "Agent Workflow",
+        "description": "See how our 6 AI agents collaborate to detect fraud",
+        "feature1": "Location agent analysis",
+        "feature2": "Network agent investigation",
+        "feature3": "Behavioral pattern matching",
+        "feature4": "Cross-domain correlation"
+      },
+      "dashboard": {
+        "title": "Analytics Dashboard",
+        "description": "Explore our comprehensive fraud analytics and reporting",
+        "feature1": "Real-time fraud metrics",
+        "feature2": "Trend analysis charts",
+        "feature3": "Agent performance stats",
+        "feature4": "Custom report generation"
+      }
+    },
+    "platformsTitle": "Available Platforms",
+    "ctaTitle": "Ready for Your Custom Demo?",
+    "ctaSubtitle": "Schedule a personalized demonstration with your data scenarios",
+    "ctaButton": "Schedule Demo"
+  },
+  "pricingPage": {
+    "title": "Flexible",
+    "titleHighlight": "Pricing Plans",
+    "subtitle": "Start with a POC to evaluate our platform, then scale as your needs grow",
+    "poc": {
+      "name": "POC Program",
+      "badge": "Start Here",
+      "price": "Contact Us",
+      "priceNote": "30-day evaluation",
+      "description": "Evaluate our platform with your real data and scenarios",
+      "cta": "Request POC",
+      "features": {
+        "duration": "30-day evaluation period",
+        "agents": "4 AI agents included",
+        "transactions": "Up to 10K transactions",
+        "support": "Dedicated onboarding support",
+        "onboarding": "Technical implementation assistance",
+        "api": "Full API access",
+        "sla": "Enterprise SLA"
+      }
+    },
+    "professional": {
+      "name": "Professional",
+      "price": "Contact for Quote",
+      "priceNote": "Custom pricing",
+      "description": "Full platform access for growing businesses",
+      "cta": "Get Quote",
+      "features": {
+        "agents": "All 6 AI agents",
+        "transactions": "Up to 1M transactions/month",
+        "support": "24/7 priority support",
+        "api": "Full REST & GraphQL API",
+        "dashboard": "Advanced analytics dashboard",
+        "sla": "99.9% uptime SLA",
+        "custom": "Custom rule engine"
+      }
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "price": "Custom",
+      "priceNote": "Volume-based",
+      "description": "Unlimited scale with dedicated infrastructure",
+      "cta": "Contact Sales",
+      "features": {
+        "agents": "Unlimited AI agents",
+        "transactions": "Unlimited transactions",
+        "support": "Dedicated success manager",
+        "api": "Premium API with priority routing",
+        "sla": "99.99% uptime SLA",
+        "custom": "Custom model training",
+        "onprem": "On-premise deployment option"
+      }
+    },
+    "comparisonTitle": "Feature Comparison",
+    "faqTitle": "Frequently Asked Questions",
+    "faq": {
+      "q1": "How does the POC program work?",
+      "a1": "Our 30-day POC lets you evaluate the platform with your real data. We provide dedicated onboarding support to ensure you can fully test our fraud detection capabilities.",
+      "q2": "What happens after the POC?",
+      "a2": "After the POC, you can choose the plan that best fits your transaction volume and feature requirements. We'll help migrate your configuration seamlessly.",
+      "q3": "Can I customize the AI agents?",
+      "a3": "Yes, on Professional and Enterprise plans, you can configure custom rules and thresholds. Enterprise customers can also request custom model training.",
+      "q4": "What's included in the SLA?",
+      "a4": "Our SLA covers uptime guarantees, response time commitments, and support availability. Enterprise SLAs include dedicated support channels and faster response times."
+    },
+    "ctaTitle": "Ready to Get Started?",
+    "ctaSubtitle": "Schedule a call to discuss your requirements and get a custom quote",
+    "ctaButton": "Schedule Consultation"
+  },
+  "agentsPage": {
+    "title": "Meet Our",
+    "titleHighlight": "6 AI Agents",
+    "subtitle": "Specialized AI agents working 24/7 to detect and prevent fraud across all vectors",
+    "ctaDemo": "See Agents in Action",
+    "ctaContact": "Discuss Your Needs",
+    "meetTitle": "Your Fraud Prevention Team",
+    "meetSubtitle": "Each agent specializes in a specific domain, working together for comprehensive protection",
+    "agentVisualization": "Agent Activity Visualization",
+    "location": {
+      "title": "Location Agent",
+      "subtitle": "Geographic Anomaly Detection",
+      "description": "Analyzes geographic patterns in real-time to detect impossible travel, location spoofing, and geographic anomalies that indicate fraudulent activity.",
+      "cap1": "Impossible travel detection",
+      "cap2": "VPN and proxy detection",
+      "cap3": "Geographic risk scoring",
+      "cap4": "Location history analysis"
+    },
+    "network": {
+      "title": "Network Agent",
+      "subtitle": "Connection Pattern Analysis",
+      "description": "Monitors network behavior to identify suspicious connections, bot activity, and coordinated attack patterns across your infrastructure.",
+      "cap1": "Bot and automation detection",
+      "cap2": "Connection pattern analysis",
+      "cap3": "IP reputation scoring",
+      "cap4": "Network graph analysis"
+    },
+    "auth": {
+      "title": "Authentication Agent",
+      "subtitle": "Identity Verification",
+      "description": "Verifies user identity through advanced biometric analysis and authentication patterns to prevent account takeover and identity fraud.",
+      "cap1": "Multi-factor authentication analysis",
+      "cap2": "Credential stuffing detection",
+      "cap3": "Account takeover prevention",
+      "cap4": "Identity verification scoring"
+    },
+    "behavioral": {
+      "title": "Behavioral Agent",
+      "subtitle": "User Pattern Analysis",
+      "description": "Analyzes user behavior patterns including typing, navigation, and interaction to detect anomalies indicating compromised accounts.",
+      "cap1": "Typing biometrics analysis",
+      "cap2": "Navigation pattern detection",
+      "cap3": "Session behavior analysis",
+      "cap4": "User profiling and anomaly detection"
+    },
+    "device": {
+      "title": "Device Agent",
+      "subtitle": "Device Intelligence",
+      "description": "Monitors device fingerprints and characteristics to identify compromised, emulated, or suspicious devices attempting fraudulent transactions.",
+      "cap1": "Device fingerprinting",
+      "cap2": "Emulator detection",
+      "cap3": "Rooted/jailbroken detection",
+      "cap4": "Device reputation scoring"
+    },
+    "velocity": {
+      "title": "Velocity Agent",
+      "subtitle": "Transaction Speed Analysis",
+      "description": "Tracks transaction velocity and patterns to identify rapid-fire fraud attempts, account enumeration, and automated abuse.",
+      "cap1": "Transaction rate limiting",
+      "cap2": "Pattern spike detection",
+      "cap3": "Account enumeration prevention",
+      "cap4": "Velocity-based risk scoring"
+    },
+    "collaborationTitle": "Agent Collaboration",
+    "collaborationDescription": "All 6 agents work together in real-time, sharing insights and combining their specialized knowledge to provide comprehensive fraud protection that no single system could achieve alone.",
+    "seeInAction": "See Agents in Action",
+    "exploreFeatures": "Explore All Features"
+  },
+  "featuresPage": {
+    "title": "Powerful",
+    "titleHighlight": "Fraud Detection Features",
+    "subtitle": "Enterprise-grade capabilities powered by 6 specialized AI agents",
+    "detection": {
+      "title": "Detection Capabilities",
+      "description": "Real-time fraud detection powered by machine learning and AI agents",
+      "realtime": {
+        "title": "Real-Time Detection",
+        "description": "Sub-second fraud detection with immediate response to threats",
+        "h1": "< 100ms response time",
+        "h2": "Streaming data processing",
+        "h3": "Instant decision making"
+      },
+      "ml": {
+        "title": "Machine Learning Models",
+        "description": "Self-learning models that adapt to new fraud patterns",
+        "h1": "Continuous model training",
+        "h2": "Anomaly detection",
+        "h3": "Pattern recognition"
+      },
+      "scoring": {
+        "title": "Risk Scoring",
+        "description": "Granular risk scores with explainable AI decisions",
+        "h1": "0-100 risk scores",
+        "h2": "Explainable decisions",
+        "h3": "Customizable thresholds"
+      }
+    },
+    "alerts": {
+      "title": "Alert & Response",
+      "description": "Intelligent alerting with automated response workflows",
+      "instant": {
+        "title": "Instant Alerts",
+        "description": "Real-time notifications across multiple channels",
+        "h1": "Multi-channel delivery",
+        "h2": "Priority-based routing",
+        "h3": "Custom alert templates"
+      },
+      "rules": {
+        "title": "Rules Engine",
+        "description": "Flexible rule configuration for custom fraud scenarios",
+        "h1": "Visual rule builder",
+        "h2": "Conditional logic",
+        "h3": "A/B testing support"
+      },
+      "escalation": {
+        "title": "Escalation Workflows",
+        "description": "Automated escalation for high-risk detections",
+        "h1": "Tiered escalation",
+        "h2": "Team assignments",
+        "h3": "SLA tracking"
+      }
+    },
+    "integration": {
+      "title": "Integration & Security",
+      "description": "Enterprise-ready integrations with bank-grade security",
+      "api": {
+        "title": "REST & GraphQL APIs",
+        "description": "Flexible APIs for seamless integration",
+        "h1": "Full REST API",
+        "h2": "GraphQL support",
+        "h3": "Webhook callbacks"
+      },
+      "security": {
+        "title": "Enterprise Security",
+        "description": "Bank-grade security and compliance",
+        "h1": "AES-256 encryption",
+        "h2": "SOC 2 Type II ready",
+        "h3": "GDPR compliant"
+      },
+      "global": {
+        "title": "Global Infrastructure",
+        "description": "Distributed infrastructure for low latency worldwide",
+        "h1": "Multi-region deployment",
+        "h2": "99.99% uptime SLA",
+        "h3": "Auto-scaling"
+      }
+    },
+    "techSpecsTitle": "Technical Specifications",
+    "workflowTitle": "Detection Workflow",
+    "workflow": {
+      "step1": { "title": "Data Ingestion", "description": "Real-time data collection" },
+      "step2": { "title": "Agent Processing", "description": "Multi-agent analysis" },
+      "step3": { "title": "Anomaly Detection", "description": "ML-powered detection" },
+      "step4": { "title": "Action & Alert", "description": "Automated response" }
+    },
+    "ctaTitle": "Ready to Explore Our Features?",
+    "ctaSubtitle": "Schedule a demo to see all features in action with your scenarios",
+    "ctaButton": "Schedule Demo"
+  },
+  "useCasesPage": {
+    "title": "Industry",
+    "titleHighlight": "Solutions",
+    "subtitle": "Tailored fraud prevention for your specific industry challenges",
+    "financial": {
+      "title": "Financial Services Fraud Prevention",
+      "industry": "Financial Services",
+      "challenge": "Financial institutions face sophisticated fraud attacks including payment fraud, account takeover, and money laundering schemes that can result in millions in losses.",
+      "solution": "Our 6 AI agents provide real-time detection of payment fraud, account takeover attempts, and suspicious money movement patterns with sub-second response times.",
+      "r1": { "metric": "Fraud Reduction", "value": "80%+" },
+      "r2": { "metric": "Detection Rate", "value": "95%" },
+      "r3": { "metric": "Response Time", "value": "<1s" },
+      "r4": { "metric": "False Positives", "value": "-60%" },
+      "f1": "Payment fraud detection",
+      "f2": "Account takeover prevention",
+      "f3": "Money laundering detection",
+      "f4": "Real-time transaction monitoring"
+    },
+    "ecommerce": {
+      "title": "E-Commerce Fraud Prevention",
+      "industry": "E-Commerce",
+      "challenge": "Online retailers struggle with transaction fraud, promo abuse, account takeover, and high chargeback rates that erode margins and customer trust.",
+      "solution": "Multi-agent fraud detection identifies fraudulent orders, promotional abuse, and account compromise before transactions complete.",
+      "r1": { "metric": "Chargeback Reduction", "value": "70%" },
+      "r2": { "metric": "Fraud Orders Blocked", "value": "95%" },
+      "r3": { "metric": "Checkout Conversion", "value": "+15%" },
+      "r4": { "metric": "Review Time", "value": "-80%" },
+      "f1": "Order fraud detection",
+      "f2": "Promo abuse prevention",
+      "f3": "Account protection",
+      "f4": "Chargeback prevention"
+    },
+    "insurance": {
+      "title": "Insurance Claims Fraud Detection",
+      "industry": "Insurance",
+      "challenge": "Insurance companies lose billions annually to fraudulent claims, staged accidents, application fraud, and premium fraud schemes.",
+      "solution": "AI agents analyze claims patterns, detect staged events, verify applicant information, and identify premium fraud rings.",
+      "r1": { "metric": "Claims Fraud Detection", "value": "85%" },
+      "r2": { "metric": "Investigation Time", "value": "-70%" },
+      "r3": { "metric": "False Claims Denied", "value": "92%" },
+      "r4": { "metric": "Annual Savings", "value": "$2M+" },
+      "f1": "Claims pattern analysis",
+      "f2": "Staged event detection",
+      "f3": "Application fraud prevention",
+      "f4": "Premium fraud detection"
+    },
+    "healthcare": {
+      "title": "Healthcare Fraud Prevention",
+      "industry": "Healthcare",
+      "challenge": "Healthcare organizations face medical billing fraud, identity theft, prescription fraud, and provider fraud that impact both finances and patient care.",
+      "solution": "Specialized agents detect billing anomalies, verify patient identity, flag suspicious prescriptions, and identify provider fraud patterns.",
+      "r1": { "metric": "Billing Fraud Detection", "value": "90%" },
+      "r2": { "metric": "Identity Fraud Prevented", "value": "88%" },
+      "r3": { "metric": "Compliance Improvement", "value": "+40%" },
+      "r4": { "metric": "Audit Time Saved", "value": "60%" },
+      "f1": "Medical billing analysis",
+      "f2": "Patient identity verification",
+      "f3": "Prescription fraud detection",
+      "f4": "Provider fraud monitoring"
+    },
+    "statsTitle": "Platform Impact",
+    "stats": {
+      "fraudLosses": "Annual Fraud Losses We Help Prevent",
+      "aiAgents": "Specialized AI Agents",
+      "responseTime": "Average Response Time",
+      "monitoring": "Continuous Monitoring"
+    },
+    "ctaTitle": "Ready to Protect Your Industry?",
+    "ctaSubtitle": "Let's discuss your specific fraud challenges and how we can help",
+    "ctaButton": "Schedule Consultation"
+  },
+  "comparePage": {
+    "title": "Why Choose",
+    "titleHighlight": "Olorin.AI",
+    "subtitle": "See how our AI-powered platform compares to traditional fraud detection",
+    "tableTitle": "Feature Comparison",
+    "featureColumn": "Feature",
+    "traditionalColumn": "Traditional Solutions",
+    "olorinColumn": "Olorin.AI",
+    "features": {
+      "detection": "Real-Time Detection",
+      "agents": "AI Agent Coverage",
+      "response": "Response Time",
+      "learning": "Learning Capability",
+      "accuracy": "Detection Accuracy",
+      "falsePositives": "False Positive Rate",
+      "scalability": "Scalability",
+      "monitoring": "Monitoring Hours",
+      "crossDomain": "Cross-Domain Analysis",
+      "predictive": "Predictive Prevention"
+    },
+    "advantagesTitle": "Why We're Different",
+    "advantages": {
+      "ai": { "title": "6 Specialized AI Agents", "description": "Unlike single-model solutions, our 6 agents each specialize in a fraud domain for comprehensive coverage" },
+      "speed": { "title": "Sub-Second Response", "description": "Real-time detection in under 100ms compared to hours with traditional rule-based systems" },
+      "accuracy": { "title": "95%+ Accuracy", "description": "Machine learning delivers 95%+ detection accuracy vs 70-80% with traditional approaches" },
+      "scale": { "title": "Unlimited Scalability", "description": "Cloud-native architecture scales automatically with your transaction volume" },
+      "realtime": { "title": "Real-Time Learning", "description": "Models continuously learn and adapt to new fraud patterns as they emerge" },
+      "protection": { "title": "Comprehensive Protection", "description": "Cross-domain analysis catches fraud that siloed solutions miss" }
+    },
+    "switchTitle": "Ready to Upgrade Your Fraud Prevention?",
+    "switchDescription": "Join enterprises already benefiting from AI-powered fraud detection that outperforms traditional solutions.",
+    "switchBenefit1": "Seamless migration from legacy systems",
+    "switchBenefit2": "POC program to prove value before commitment",
+    "switchBenefit3": "Dedicated implementation support",
+    "switchCta": "Schedule POC Discussion",
+    "statLabel": "Average Fraud Reduction"
+  },
+  "roiPage": {
+    "title": "Calculate Your",
+    "titleHighlight": "ROI",
+    "subtitle": "See how much you could save with AI-powered fraud prevention",
+    "calculatorTitle": "ROI Calculator",
+    "inputs": {
+      "transactions": "Monthly Transactions",
+      "fraudRate": "Current Fraud Rate (%)",
+      "avgValue": "Average Transaction Value ($)"
+    },
+    "results": {
+      "annualSavings": "Estimated Annual Savings",
+      "savingsNote": "Based on 80% fraud reduction rate",
+      "monthlySavings": "Monthly Savings",
+      "fraudsPrevented": "Frauds Prevented/Month",
+      "hoursSaved": "Hours Saved/Month",
+      "detectionRate": "Detection Rate"
+    },
+    "assumptions": {
+      "title": "Calculation Assumptions",
+      "a1": "80% fraud detection improvement over current methods",
+      "a2": "60% reduction in manual review time",
+      "a3": "15 minutes average manual review per suspected fraud",
+      "a4": "Additional operational efficiency savings included"
+    },
+    "customAnalysis": "Want a detailed ROI analysis for your specific situation?",
+    "ctaButton": "Get Custom Analysis"
   }
 }

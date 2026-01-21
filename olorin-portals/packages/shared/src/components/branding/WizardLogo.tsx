@@ -1,7 +1,8 @@
 import React from 'react';
+import { PortalDomain, PORTAL_BRANDS } from '../../types/branding.types';
 
 export interface WizardLogoProps {
-  variant?: 'main' | 'fraud' | 'streaming' | 'radio' | 'omen';
+  variant?: PortalDomain;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   showText?: boolean;
@@ -16,9 +17,9 @@ export interface WizardLogoProps {
  * Variants:
  * - main: Olorin.AI (parent portal)
  * - fraud: Olorin.AI Fraud (fraud detection)
- * - streaming: Olorin.AI Streaming (media streaming)
- * - radio: Olorin.AI Radio (radio management)
- * - omen: Olorin.AI Omen (predictive intelligence)
+ * - streaming: Olorin.ai Media Enrichment (media streaming)
+ * - radio: Olorin.ai Media Enrichment (radio management)
+ * - omen: Olorin.AI Omen (speech translation)
  *
  * @example
  * <WizardLogo variant="fraud" size="lg" showText />
@@ -36,20 +37,12 @@ export const WizardLogo: React.FC<WizardLogoProps> = ({
   };
 
   const textSizeClasses = {
-    sm: 'text-lg',
-    md: 'text-2xl',
-    lg: 'text-4xl',
+    sm: 'text-base',
+    md: 'text-xl',
+    lg: 'text-2xl',
   };
 
-  const logoText = {
-    main: 'OLORIN.AI',
-    fraud: 'OLORIN.AI FRAUD',
-    streaming: 'OLORIN.AI STREAMING',
-    radio: 'OLORIN.AI RADIO',
-    omen: 'OLORIN.AI OMEN',
-  };
-
-  // Wizard logo from organized logos directory (transparent purple wizard)
+  const brand = PORTAL_BRANDS[variant];
   const logoSrc = `/logos/wizard/${variant}.png`;
 
   return (
@@ -57,10 +50,9 @@ export const WizardLogo: React.FC<WizardLogoProps> = ({
       {/* Wizard Icon/Logo */}
       <img
         src={logoSrc}
-        alt={`Olorin ${variant} logo`}
+        alt={`${brand.fullName} logo`}
         className={`${sizeClasses[size]} wizard-logo glow-icon`}
         onError={(e) => {
-          // Fallback to text if image not found
           const target = e.target as HTMLImageElement;
           target.style.display = 'none';
         }}
@@ -69,7 +61,7 @@ export const WizardLogo: React.FC<WizardLogoProps> = ({
       {/* Logo Text */}
       {showText && (
         <span className={`${textSizeClasses[size]} wizard-text font-bold tracking-wide`}>
-          {logoText[variant]}
+          {brand.logoText}
         </span>
       )}
     </div>

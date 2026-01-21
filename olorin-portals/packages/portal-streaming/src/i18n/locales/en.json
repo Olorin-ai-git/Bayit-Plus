@@ -18,57 +18,24 @@
   },
   "features": {
     "sectionTitle": "Intelligent Streaming Features",
-    "optimization": {
-      "title": "Content Optimization AI",
-      "description": "Automatically optimize video quality and bitrate for each viewer's connection"
-    },
-    "engagement": {
-      "title": "Viewer Engagement AI",
-      "description": "Analyze viewer behavior and improve engagement with intelligent insights"
-    },
-    "playlists": {
-      "title": "Personalized Playlists",
-      "description": "Generate personalized content recommendations based on viewing patterns"
-    }
+    "optimization": { "title": "Content Optimization AI", "description": "Automatically optimize video quality and bitrate for each viewer's connection" },
+    "engagement": { "title": "Viewer Engagement AI", "description": "Analyze viewer behavior and improve engagement with intelligent insights" },
+    "playlists": { "title": "Personalized Playlists", "description": "Generate personalized content recommendations based on viewing patterns" }
   },
   "workflow": {
     "sectionTitle": "How It Works",
     "sectionSubtitle": "AI-powered streaming optimization in 4 steps",
-    "step1": {
-      "title": "Data Collection",
-      "description": "Gather viewer data and streaming metrics in real-time"
-    },
-    "step2": {
-      "title": "AI Analysis",
-      "description": "Analyze patterns and predict optimal streaming parameters"
-    },
-    "step3": {
-      "title": "Optimization",
-      "description": "Dynamically adjust quality and delivery for each viewer"
-    },
-    "step4": {
-      "title": "Delivery",
-      "description": "Stream optimized content with minimal buffering"
-    }
+    "step1": { "title": "Data Collection", "description": "Gather viewer data and streaming metrics in real-time" },
+    "step2": { "title": "AI Analysis", "description": "Analyze patterns and predict optimal streaming parameters" },
+    "step3": { "title": "Optimization", "description": "Dynamically adjust quality and delivery for each viewer" },
+    "step4": { "title": "Delivery", "description": "Stream optimized content with minimal buffering" }
   },
   "useCases": {
     "title": "Industry Solutions",
-    "liveStreaming": {
-      "title": "Live Streaming Events",
-      "description": "Concerts, sports, conferences with real-time optimization"
-    },
-    "onDemand": {
-      "title": "On-Demand Content",
-      "description": "Movies, TV shows, educational content delivery"
-    },
-    "education": {
-      "title": "Educational Platforms",
-      "description": "E-learning platforms with adaptive streaming"
-    },
-    "enterprise": {
-      "title": "Enterprise Video",
-      "description": "Corporate training and communications"
-    }
+    "liveStreaming": { "title": "Live Streaming Events", "description": "Concerts, sports, conferences with real-time optimization" },
+    "onDemand": { "title": "On-Demand Content", "description": "Movies, TV shows, educational content delivery" },
+    "education": { "title": "Educational Platforms", "description": "E-learning platforms with adaptive streaming" },
+    "enterprise": { "title": "Enterprise Video", "description": "Corporate training and communications" }
   },
   "stats": {
     "reduction": "50% Buffer Time Reduction",
@@ -78,7 +45,230 @@
   },
   "cta": {
     "title": "Ready to Optimize Your Streaming?",
-    "subtitle": "Join leading media companies delivering exceptional viewing experiences with Olorin.AI",
+    "subtitle": "Powered by Olorin.ai Media Enrichment - delivering exceptional viewing experiences",
     "button": "Request a Demo"
+  },
+  "contactPage": {
+    "title": "Partner With Us",
+    "subtitle": "Let's discuss how we can optimize your streaming platform",
+    "formTitle": "Tell Us About Your Platform",
+    "infoTitle": "Contact Information",
+    "form": {
+      "name": "Full Name",
+      "email": "Work Email",
+      "company": "Company Name",
+      "phone": "Phone Number",
+      "platform": "Platform Type",
+      "selectPlatform": "Select your platform type",
+      "viewers": "Monthly Viewers",
+      "selectViewers": "Select viewer range",
+      "message": "How can we help?",
+      "messagePlaceholder": "Tell us about your streaming challenges..."
+    },
+    "submit": "Submit Request",
+    "sending": "Sending...",
+    "success": "Thank you! We'll be in touch within 24 hours.",
+    "error": "Something went wrong. Please try again or email us directly.",
+    "scheduleTitle": "Prefer to Schedule a Call?",
+    "scheduleSubtitle": "Book a personalized demo with our streaming experts",
+    "scheduleCta": "Schedule Demo Call"
+  },
+  "demoPage": {
+    "title": "See Our",
+    "titleHighlight": "Streaming Platform",
+    "subtitle": "Experience AI-powered streaming optimization that delivers exceptional viewing experiences",
+    "scheduleCta": "Schedule Live Demo",
+    "stepsTitle": "How It Works",
+    "steps": {
+      "ingest": { "title": "Content Ingestion", "description": "Upload and process your video content" },
+      "analyze": { "title": "AI Analysis", "description": "Our AI analyzes content and viewer patterns" },
+      "optimize": { "title": "Smart Optimization", "description": "Dynamic quality adaptation for each viewer" },
+      "deliver": { "title": "Global Delivery", "description": "Optimized delivery via our CDN" }
+    },
+    "featuresTitle": "Platform Highlights",
+    "features": {
+      "adaptive": { "title": "Adaptive Bitrate", "description": "Automatic quality adjustment based on bandwidth" },
+      "analytics": { "title": "Real-Time Analytics", "description": "Live viewer metrics and engagement data" },
+      "personalization": { "title": "Personalization", "description": "AI-driven content recommendations" },
+      "cdn": { "title": "Global CDN", "description": "200+ points of presence worldwide" },
+      "quality": { "title": "4K/8K Support", "description": "Ultra-high definition streaming" },
+      "realtime": { "title": "Low Latency", "description": "Sub-3 second live streaming" }
+    },
+    "sections": {
+      "player": { "title": "Video Player Demo", "description": "See our adaptive video player in action with real-time quality adjustments", "f1": "Adaptive bitrate streaming", "f2": "Custom player branding", "f3": "Multi-device support", "f4": "Accessibility features" },
+      "analytics": { "title": "Analytics Dashboard", "description": "Explore our comprehensive analytics and viewer insights", "f1": "Real-time viewer metrics", "f2": "Engagement tracking", "f3": "Quality of experience scores", "f4": "Geographic distribution" },
+      "content": { "title": "Content Management", "description": "Powerful tools for managing your video library", "f1": "Bulk upload and processing", "f2": "Automatic transcoding", "f3": "Metadata management", "f4": "Content scheduling" }
+    },
+    "platformsTitle": "Available On",
+    "ctaTitle": "Ready for Your Custom Demo?",
+    "ctaSubtitle": "Schedule a personalized demonstration tailored to your platform needs",
+    "ctaButton": "Schedule Demo"
+  },
+  "pricingPage": {
+    "title": "Flexible",
+    "titleHighlight": "Pricing Plans",
+    "subtitle": "Choose the plan that fits your streaming needs - from startups to enterprise",
+    "starter": {
+      "name": "Starter",
+      "price": "Contact Us",
+      "priceNote": "For small platforms",
+      "description": "Perfect for startups and small streaming platforms",
+      "cta": "Get Started",
+      "f1": "Up to 1K concurrent viewers",
+      "f2": "100 GB video storage",
+      "f3": "Basic analytics dashboard",
+      "f4": "Adaptive bitrate streaming",
+      "f5": "Custom player branding",
+      "f6": "API access"
+    },
+    "professional": {
+      "name": "Professional",
+      "badge": "Most Popular",
+      "price": "Contact for Quote",
+      "priceNote": "Custom pricing",
+      "description": "For growing platforms with advanced needs",
+      "cta": "Get Quote",
+      "f1": "Up to 100K concurrent viewers",
+      "f2": "1 TB video storage",
+      "f3": "Advanced analytics & insights",
+      "f4": "All streaming features",
+      "f5": "Custom player branding",
+      "f6": "White-label solution"
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "price": "Custom",
+      "priceNote": "Volume-based",
+      "description": "Unlimited scale for large streaming operations",
+      "cta": "Contact Sales",
+      "f1": "Unlimited concurrent viewers",
+      "f2": "Unlimited video storage",
+      "f3": "Full analytics suite",
+      "f4": "All professional features",
+      "f5": "Dedicated infrastructure",
+      "f6": "White-label with custom CDN"
+    },
+    "comparisonTitle": "Feature Comparison",
+    "faqTitle": "Frequently Asked Questions",
+    "faq": {
+      "q1": "How is pricing calculated?",
+      "a1": "Pricing is based on concurrent viewers, storage needs, and features required. Contact us for a custom quote tailored to your platform.",
+      "q2": "Can I upgrade my plan later?",
+      "a2": "Yes, you can upgrade at any time. We'll help migrate your configuration seamlessly to the new plan.",
+      "q3": "What support is included?",
+      "a3": "All plans include email support. Professional and Enterprise plans include priority support with faster response times."
+    },
+    "ctaTitle": "Ready to Get Started?",
+    "ctaSubtitle": "Let's discuss your streaming needs and find the perfect plan",
+    "ctaButton": "Contact Sales"
+  },
+  "featuresPage": {
+    "title": "Powerful",
+    "titleHighlight": "Streaming Features",
+    "subtitle": "Enterprise-grade streaming platform powered by AI",
+    "delivery": {
+      "title": "Content Delivery",
+      "description": "Optimized video delivery with adaptive streaming",
+      "adaptive": { "title": "Adaptive Bitrate", "description": "Automatic quality adjustment based on viewer bandwidth", "h1": "Real-time bandwidth detection", "h2": "Smooth quality transitions", "h3": "Buffer-free viewing" },
+      "cdn": { "title": "Global CDN", "description": "Worldwide content delivery with minimal latency", "h1": "200+ points of presence", "h2": "Smart edge caching", "h3": "Geographic optimization" },
+      "quality": { "title": "Ultra HD Support", "description": "Support for 4K and 8K content delivery", "h1": "HDR support", "h2": "High frame rate streaming", "h3": "Multi-codec support" }
+    },
+    "analytics": {
+      "title": "Analytics & Insights",
+      "description": "Comprehensive viewer analytics and engagement metrics",
+      "realtime": { "title": "Real-Time Metrics", "description": "Live viewer counts and streaming quality data", "h1": "Live viewer dashboard", "h2": "Quality metrics", "h3": "Geographic distribution" },
+      "engagement": { "title": "Engagement Analytics", "description": "Deep insights into viewer behavior and preferences", "h1": "Watch time analysis", "h2": "Engagement patterns", "h3": "Content performance" },
+      "qoe": { "title": "Quality of Experience", "description": "Monitor and optimize viewer experience metrics", "h1": "Buffering rates", "h2": "Start time analysis", "h3": "Quality scores" }
+    },
+    "platform": {
+      "title": "Platform Features",
+      "description": "Complete streaming platform capabilities",
+      "player": { "title": "Custom Player", "description": "Fully customizable video player for your brand", "h1": "Brand customization", "h2": "Multi-device support", "h3": "Accessibility features" },
+      "api": { "title": "Developer API", "description": "Comprehensive APIs for integration", "h1": "RESTful APIs", "h2": "Webhooks support", "h3": "SDK libraries" },
+      "security": { "title": "Content Security", "description": "Enterprise-grade content protection", "h1": "DRM support", "h2": "Geo-blocking", "h3": "Token authentication" }
+    },
+    "techSpecsTitle": "Technical Specifications",
+    "workflowTitle": "Content Workflow",
+    "workflow": {
+      "s1": { "title": "Upload", "description": "Content ingestion" },
+      "s2": { "title": "Process", "description": "Transcoding & optimization" },
+      "s3": { "title": "Distribute", "description": "CDN distribution" },
+      "s4": { "title": "Deliver", "description": "Adaptive playback" }
+    },
+    "ctaTitle": "Ready to Upgrade Your Streaming?",
+    "ctaSubtitle": "See all features in action with a personalized demo",
+    "ctaButton": "Schedule Demo"
+  },
+  "useCasesPage": {
+    "title": "Streaming",
+    "titleHighlight": "Solutions",
+    "subtitle": "Powering streaming platforms across industries",
+    "ott": {
+      "title": "OTT Streaming Platform",
+      "industry": "OTT / SVOD",
+      "challenge": "OTT platforms need to deliver consistent quality across diverse devices and network conditions while managing CDN costs.",
+      "solution": "Our AI-powered platform optimizes bitrate delivery per viewer, reducing buffering by 50% while cutting CDN costs by 40%.",
+      "r1": { "metric": "Buffer Reduction", "value": "50%" },
+      "r2": { "metric": "CDN Cost Savings", "value": "40%" },
+      "r3": { "metric": "Viewer Retention", "value": "+25%" },
+      "r4": { "metric": "QoE Score", "value": "95%" },
+      "f1": "Adaptive bitrate streaming",
+      "f2": "Multi-device optimization",
+      "f3": "Personalized recommendations",
+      "f4": "Real-time analytics",
+      "testimonial": { "quote": "Olorin.ai Media Enrichment's streaming platform transformed our viewer experience. Buffering complaints dropped dramatically.", "author": "Platform Owner", "role": "OTT Service" }
+    },
+    "live": {
+      "title": "Live Event Streaming",
+      "industry": "Live Events",
+      "challenge": "Live events require ultra-low latency and the ability to scale instantly for unpredictable viewer spikes.",
+      "solution": "Sub-3 second latency with auto-scaling infrastructure that handles millions of concurrent viewers seamlessly.",
+      "r1": { "metric": "Latency", "value": "<3s" },
+      "r2": { "metric": "Scale", "value": "10M+" },
+      "r3": { "metric": "Uptime", "value": "99.99%" },
+      "r4": { "metric": "Quality", "value": "4K HDR" },
+      "f1": "Ultra-low latency delivery",
+      "f2": "Auto-scaling infrastructure",
+      "f3": "Real-time engagement tools",
+      "f4": "DVR and replay support"
+    },
+    "education": {
+      "title": "Educational Platform",
+      "industry": "E-Learning",
+      "challenge": "Educational platforms need to ensure accessibility across varying network conditions and devices for effective learning.",
+      "solution": "Adaptive streaming ensures smooth playback on any device, with engagement analytics to improve course completion rates.",
+      "r1": { "metric": "Completion Rate", "value": "+35%" },
+      "r2": { "metric": "Accessibility", "value": "100%" },
+      "r3": { "metric": "Student Satisfaction", "value": "92%" },
+      "r4": { "metric": "Mobile Usage", "value": "+60%" },
+      "f1": "Adaptive quality streaming",
+      "f2": "Progress tracking integration",
+      "f3": "Offline download support",
+      "f4": "Accessibility features"
+    },
+    "enterprise": {
+      "title": "Enterprise Communications",
+      "industry": "Enterprise",
+      "challenge": "Enterprises need secure, reliable video communications for training, all-hands, and corporate events.",
+      "solution": "Secure, scalable video platform with SSO integration, analytics, and global delivery for distributed teams.",
+      "r1": { "metric": "Security", "value": "SOC 2" },
+      "r2": { "metric": "Global Reach", "value": "200+ PoPs" },
+      "r3": { "metric": "Integration", "value": "SSO Ready" },
+      "r4": { "metric": "Analytics", "value": "Real-time" },
+      "f1": "Enterprise SSO integration",
+      "f2": "Role-based access control",
+      "f3": "Audit logging",
+      "f4": "Custom branding"
+    },
+    "statsTitle": "Platform Impact",
+    "stats": {
+      "buffer": "Buffer Reduction",
+      "cdn": "CDN Cost Savings",
+      "engagement": "Engagement Increase",
+      "uptime": "Platform Uptime"
+    },
+    "ctaTitle": "Ready to Transform Your Streaming?",
+    "ctaSubtitle": "Let's discuss how we can optimize your platform",
+    "ctaButton": "Contact Us"
   }
 }

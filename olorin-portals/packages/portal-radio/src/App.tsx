@@ -3,6 +3,11 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Header, Footer, LanguageSelector } from '@olorin/shared';
 import { useTranslation } from 'react-i18next';
 import HomePage from './pages/HomePage';
+import FeaturesPage from './pages/FeaturesPage';
+import SolutionsPage from './pages/SolutionsPage';
+import PricingPage from './pages/PricingPage';
+import DemoPage from './pages/DemoPage';
+import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
@@ -41,7 +46,11 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            {/* Additional routes will be added here */}
+            <Route path="/features" element={<FeaturesPage />} />
+            <Route path="/solutions" element={<SolutionsPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/demo" element={<DemoPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>

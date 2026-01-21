@@ -6,8 +6,11 @@
 // Components
 export * from './components';
 
+// Templates
+export * from './templates';
+
+// Types
+export * from './types';
+
 // Styles (import in your app's main CSS file)
 // import '@olorin/shared/src/styles/index.css';
-
-// Types can be added here when needed
-// export * from './types';

@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GlowingIcon } from '../branding/GlowingIcon';
 import { AlertCircle, Home, ArrowLeft } from 'lucide-react';
+import { PortalDomain } from '../../types/branding.types';
 
 export interface NotFoundPageLink {
   label: string;
@@ -13,7 +14,7 @@ export interface NotFoundPageProps {
    * Accent color for the icon and buttons
    * @default 'main'
    */
-  accentColor?: 'main' | 'fraud' | 'streaming' | 'radio' | 'omen';
+  accentColor?: PortalDomain;
 
   /**
    * Popular page links to display
