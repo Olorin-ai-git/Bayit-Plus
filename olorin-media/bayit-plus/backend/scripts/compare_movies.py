@@ -32,7 +32,10 @@ async def compare_movies(source_dir: str):
     # Initialize database
     mongodb_url = os.environ.get('MONGODB_URL') or settings.MONGODB_URL
     if 'localhost' in mongodb_url:
-        mongodb_url = 'mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/bayit_plus?retryWrites=true&w=majority'
+        raise RuntimeError(
+            "Cannot use localhost for production operations. "
+            "Please set MONGODB_URL environment variable to Atlas connection string"
+        )
 
     client = AsyncIOMotorClient(mongodb_url)
     db = client['bayit_plus']
