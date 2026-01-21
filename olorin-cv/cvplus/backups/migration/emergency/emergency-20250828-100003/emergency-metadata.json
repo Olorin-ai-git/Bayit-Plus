@@ -1,0 +1,11 @@
+{
+  "backupId": "emergency-20250828-100003",
+  "type": "emergency",
+  "reason": "test-emergency",
+  "timestamp": "2025-08-28T14:00:06.3NZ",
+  "gitCommit": "9ed73ccb10188b25f9bd8a7fbe99d58ca660c443",
+  "functionCount":       79,
+  "backupSize": "1.0M",
+  "criticality": "high",
+  "retentionDays": 30
+}

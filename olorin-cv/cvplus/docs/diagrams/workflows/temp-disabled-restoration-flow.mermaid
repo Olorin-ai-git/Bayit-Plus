@@ -1,0 +1,98 @@
+```mermaid
+graph TB
+    subgraph "Phase 1: Analysis & Validation"
+        A1[Service Dependency Mapping]
+        A2[Import Chain Analysis]
+        A3[Feature Completeness Assessment]
+        A4[TypeScript Compilation Baseline]
+        
+        A1 -.-> A2
+        A2 -.-> A3
+        A3 -.-> A4
+    end
+    
+    subgraph "Phase 2: Systematic Restoration"
+        subgraph "Category A: Core Services"
+            B1[role-detection-core.service.ts]
+            B2[enhanced-role-detection.service.ts]
+            B3[role-detection.service.ts]
+            
+            B1 --> B2 --> B3
+        end
+        
+        subgraph "Category B: Support Services"
+            C1[Batch 1: Analyzer, Helpers, Maps]
+            C2[Batch 2: Fuzzy, Matcher, Recommendations]
+            
+            C1 -.-> C2
+        end
+        
+        subgraph "Category C: Profile Services"
+            D1[role-profile.service.ts]
+            D2[role-profile.functions.ts]
+            D3[role-template-integration.service.ts]
+            
+            D1 --> D2 --> D3
+        end
+        
+        subgraph "Category D: Transformation"
+            E1[Compare cv-transformation versions]
+            E2[Merge & Restore 2367-line version]
+            E3[Preserve recent fixes]
+            
+            E1 --> E2 --> E3
+        end
+    end
+    
+    subgraph "Phase 3: Integration & Validation"
+        F1[Import Resolution Validation]
+        F2[Type Compatibility Verification]
+        F3[Compilation Validation]
+        F4[Integration Testing]
+        F5[Firebase Deployment Test]
+        
+        F1 --> F2 --> F3 --> F4 --> F5
+    end
+    
+    subgraph "Quality Gates"
+        Q1{TypeScript Compiles?}
+        Q2{Imports Resolved?}
+        Q3{Functions Deploy?}
+        Q4{Features Work?}
+        
+        Q1 --> Q2 --> Q3 --> Q4
+    end
+    
+    subgraph "Risk Mitigation"
+        R1[Backup Current Services]
+        R2[Incremental Restoration]
+        R3[Rollback Capability]
+        R4[Continuous Validation]
+        
+        R1 -.-> R2 -.-> R3 -.-> R4
+    end
+    
+    A4 --> B1
+    B3 --> C1
+    C2 --> D1
+    D3 --> E1
+    E3 --> F1
+    F5 --> Q1
+    
+    Q1 -->|No| R3
+    Q2 -->|No| R3
+    Q3 -->|No| R3
+    Q4 -->|Yes| SUCCESS[✅ All Services Restored]
+    
+    R1 --> B1
+    
+    classDef phase fill:#e1f5fe
+    classDef category fill:#f3e5f5
+    classDef validation fill:#e8f5e8
+    classDef risk fill:#fff3e0
+    
+    class A1,A2,A3,A4 phase
+    class B1,B2,B3,C1,C2,D1,D2,D3,E1,E2,E3 category
+    class F1,F2,F3,F4,F5,Q1,Q2,Q3,Q4 validation
+    class R1,R2,R3,R4 risk
+```

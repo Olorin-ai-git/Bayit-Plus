@@ -1,0 +1,185 @@
+{
+  "recoverySession": {
+    "id": "recovery-009-level-2-20250916",
+    "startTime": "2025-09-16T07:30:00Z",
+    "branch": "009-level-2-recovery",
+    "currentPhase": 1,
+    "status": "in_progress"
+  },
+  "modules": {
+    "auth": {
+      "moduleId": "auth",
+      "status": "critical",
+      "buildStatus": "success",
+      "testStatus": "failing",
+      "dependencyHealth": "resolved",
+      "lastBuildTime": null,
+      "lastTestRun": null,
+      "errorCount": 0,
+      "warningCount": 0,
+      "healthScore": 60
+    },
+    "i18n": {
+      "moduleId": "i18n",
+      "status": "critical",
+      "buildStatus": "success",
+      "testStatus": "failing",
+      "dependencyHealth": "resolved",
+      "lastBuildTime": null,
+      "lastTestRun": null,
+      "errorCount": 0,
+      "warningCount": 0,
+      "healthScore": 60
+    },
+    "analytics": {
+      "moduleId": "analytics",
+      "status": "critical",
+      "buildStatus": "success",
+      "testStatus": "not_started",
+      "dependencyHealth": "resolved",
+      "lastBuildTime": null,
+      "lastTestRun": null,
+      "errorCount": 0,
+      "warningCount": 0,
+      "healthScore": 65
+    },
+    "cv-processing": {
+      "moduleId": "cv-processing",
+      "status": "critical",
+      "buildStatus": "failed",
+      "testStatus": "not_started",
+      "dependencyHealth": "missing",
+      "lastBuildTime": null,
+      "lastTestRun": null,
+      "errorCount": 50,
+      "warningCount": 0,
+      "healthScore": 20
+    },
+    "multimedia": {
+      "moduleId": "multimedia",
+      "status": "critical",
+      "buildStatus": "failed",
+      "testStatus": "not_started",
+      "dependencyHealth": "missing",
+      "lastBuildTime": null,
+      "lastTestRun": null,
+      "errorCount": 0,
+      "warningCount": 0,
+      "healthScore": 20
+    },
+    "premium": {
+      "moduleId": "premium",
+      "status": "critical",
+      "buildStatus": "failed",
+      "testStatus": "not_started",
+      "dependencyHealth": "missing",
+      "lastBuildTime": null,
+      "lastTestRun": null,
+      "errorCount": 0,
+      "warningCount": 0,
+      "healthScore": 20
+    },
+    "public-profiles": {
+      "moduleId": "public-profiles",
+      "status": "critical",
+      "buildStatus": "failed",
+      "testStatus": "not_started",
+      "dependencyHealth": "missing",
+      "lastBuildTime": null,
+      "lastTestRun": null,
+      "errorCount": 0,
+      "warningCount": 0,
+      "healthScore": 20
+    },
+    "recommendations": {
+      "moduleId": "recommendations",
+      "status": "critical",
+      "buildStatus": "failed",
+      "testStatus": "not_started",
+      "dependencyHealth": "missing",
+      "lastBuildTime": null,
+      "lastTestRun": null,
+      "errorCount": 0,
+      "warningCount": 0,
+      "healthScore": 20
+    },
+    "admin": {
+      "moduleId": "admin",
+      "status": "critical",
+      "buildStatus": "failed",
+      "testStatus": "not_started",
+      "dependencyHealth": "missing",
+      "lastBuildTime": null,
+      "lastTestRun": null,
+      "errorCount": 0,
+      "warningCount": 0,
+      "healthScore": 20
+    },
+    "workflow": {
+      "moduleId": "workflow",
+      "status": "critical",
+      "buildStatus": "failed",
+      "testStatus": "not_configured",
+      "dependencyHealth": "missing",
+      "lastBuildTime": null,
+      "lastTestRun": null,
+      "errorCount": 0,
+      "warningCount": 0,
+      "healthScore": 15
+    },
+    "payments": {
+      "moduleId": "payments",
+      "status": "critical",
+      "buildStatus": "failed",
+      "testStatus": "not_started",
+      "dependencyHealth": "missing",
+      "lastBuildTime": null,
+      "lastTestRun": null,
+      "errorCount": 0,
+      "warningCount": 0,
+      "healthScore": 20
+    }
+  },
+  "phases": [
+    {
+      "phaseId": 1,
+      "name": "Emergency Stabilization",
+      "status": "in_progress",
+      "startTime": "2025-09-16T07:30:00Z",
+      "completionTime": null,
+      "duration": null,
+      "prerequisitePhases": [],
+      "affectedModules": ["auth", "i18n", "cv-processing", "multimedia", "analytics", "premium", "public-profiles", "recommendations", "admin", "workflow", "payments"]
+    },
+    {
+      "phaseId": 2,
+      "name": "Build Infrastructure",
+      "status": "not_started",
+      "startTime": null,
+      "completionTime": null,
+      "duration": null,
+      "prerequisitePhases": [1],
+      "affectedModules": ["cv-processing", "multimedia", "premium", "public-profiles", "recommendations", "admin", "workflow", "payments"]
+    },
+    {
+      "phaseId": 3,
+      "name": "Architecture Compliance",
+      "status": "not_started",
+      "startTime": null,
+      "completionTime": null,
+      "duration": null,
+      "prerequisitePhases": [1, 2],
+      "affectedModules": ["auth", "i18n", "cv-processing", "multimedia", "analytics", "premium", "public-profiles", "recommendations", "admin", "workflow", "payments"]
+    },
+    {
+      "phaseId": 4,
+      "name": "Prevention",
+      "status": "not_started",
+      "startTime": null,
+      "completionTime": null,
+      "duration": null,
+      "prerequisitePhases": [1, 2, 3],
+      "affectedModules": ["auth", "i18n", "cv-processing", "multimedia", "analytics", "premium", "public-profiles", "recommendations", "admin", "workflow", "payments"]
+    }
+  ]
+}

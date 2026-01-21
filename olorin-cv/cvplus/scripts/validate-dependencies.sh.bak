@@ -1,0 +1,184 @@
+#!/bin/bash
+
+# CVPlus Dependency Hierarchy Validation Script
+# Author: Gil Klainert
+# Purpose: Validate that all submodules follow the layered dependency architecture
+
+set -e
+
+echo "🔍 CVPlus Dependency Hierarchy Validation"
+echo "========================================"
+
+# Check if we're in the CVPlus root directory
+if [ ! -f "package.json" ] || ! grep -q "cvplus" package.json; then
+    echo "❌ Error: Please run this script from the CVPlus root directory"
+    exit 1
+fi
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+VALIDATION_FAILED=0
+
+echo "📋 Validating dependency layers..."
+
+# Layer 0: Core (should have no CVPlus dependencies)
+echo -e "\n${YELLOW}Layer 0: Core Module${NC}"
+cd packages/core
+if grep -r "@cvplus/" src/ 2>/dev/null | grep -v "// Example:" | grep -v "// Higher layers import"; then
+    echo -e "${RED}❌ VIOLATION: Core module has CVPlus dependencies (should have none)${NC}"
+    VALIDATION_FAILED=1
+else
+    echo -e "${GREEN}✅ Core module: No CVPlus dependencies (correct)${NC}"
+fi
+cd ../..
+
+# Layer 1: Auth, I18n (should only depend on Core)
+echo -e "\n${YELLOW}Layer 1: Auth Module${NC}"
+cd packages/auth
+INVALID_DEPS=$(grep -r "@cvplus/" src/ 2>/dev/null | grep -v "@cvplus/core" | grep -v "// Example:" | grep -v "// Higher layers import" || true)
+if [ -n "$INVALID_DEPS" ]; then
+    echo -e "${RED}❌ VIOLATION: Auth module has invalid dependencies:${NC}"
+    echo "$INVALID_DEPS"
+    VALIDATION_FAILED=1
+else
+    echo -e "${GREEN}✅ Auth module: Only depends on Core (correct)${NC}"
+fi
+cd ../..
+
+echo -e "\n${YELLOW}Layer 1: I18n Module${NC}"
+cd packages/i18n
+INVALID_DEPS=$(grep -r "@cvplus/" src/ 2>/dev/null | grep -v "@cvplus/core" | grep -v "// Example:" | grep -v "// Higher layers import" || true)
+if [ -n "$INVALID_DEPS" ]; then
+    echo -e "${RED}❌ VIOLATION: I18n module has invalid dependencies:${NC}"
+    echo "$INVALID_DEPS"
+    VALIDATION_FAILED=1
+else
+    echo -e "${GREEN}✅ I18n module: Only depends on Core (correct)${NC}"
+fi
+cd ../..
+
+# Layer 2: CV-Processing, Multimedia, Analytics (should depend on Core, Auth, I18n only)
+echo -e "\n${YELLOW}Layer 2: CV-Processing Module${NC}"
+cd packages/cv-processing
+INVALID_DEPS=$(grep -r "@cvplus/" src/ 2>/dev/null | grep -v "@cvplus/core" | grep -v "@cvplus/auth" | grep -v "@cvplus/i18n" | grep -v "// Example:" | grep -v "// Higher layers import" || true)
+if [ -n "$INVALID_DEPS" ]; then
+    echo -e "${RED}❌ VIOLATION: CV-Processing module has invalid dependencies:${NC}"
+    echo "$INVALID_DEPS"
+    VALIDATION_FAILED=1
+else
+    echo -e "${GREEN}✅ CV-Processing module: Only depends on Layers 0-1 (correct)${NC}"
+fi
+cd ../..
+
+echo -e "\n${YELLOW}Layer 2: Multimedia Module${NC}"
+cd packages/multimedia
+INVALID_DEPS=$(grep -r "@cvplus/" src/ 2>/dev/null | grep -v "@cvplus/core" | grep -v "@cvplus/auth" | grep -v "@cvplus/i18n" | grep -v "// Example:" | grep -v "// Higher layers import" || true)
+if [ -n "$INVALID_DEPS" ]; then
+    echo -e "${RED}❌ VIOLATION: Multimedia module has invalid dependencies:${NC}"
+    echo "$INVALID_DEPS"
+    VALIDATION_FAILED=1
+else
+    echo -e "${GREEN}✅ Multimedia module: Only depends on Layers 0-1 (correct)${NC}"
+fi
+cd ../..
+
+echo -e "\n${YELLOW}Layer 2: Analytics Module${NC}"
+cd packages/analytics
+INVALID_DEPS=$(grep -r "@cvplus/" src/ 2>/dev/null | grep -v "@cvplus/core" | grep -v "@cvplus/auth" | grep -v "@cvplus/i18n" | grep -v "// Example:" | grep -v "// Higher layers import" || true)
+if [ -n "$INVALID_DEPS" ]; then
+    echo -e "${RED}❌ VIOLATION: Analytics module has invalid dependencies:${NC}"
+    echo "$INVALID_DEPS"
+    VALIDATION_FAILED=1
+else
+    echo -e "${GREEN}✅ Analytics module: Only depends on Layers 0-1 (correct)${NC}"
+fi
+cd ../..
+
+# Layer 3: Premium, Recommendations, Public-Profiles (should depend on Layers 0-2)
+LAYER_3_MODULES=("premium" "recommendations" "public-profiles")
+for module in "${LAYER_3_MODULES[@]}"; do
+    echo -e "\n${YELLOW}Layer 3: ${module^} Module${NC}"
+    cd "packages/$module"
+    INVALID_DEPS=$(grep -r "@cvplus/" src/ 2>/dev/null | grep -v "@cvplus/core" | grep -v "@cvplus/auth" | grep -v "@cvplus/i18n" | grep -v "@cvplus/cv-processing" | grep -v "@cvplus/multimedia" | grep -v "@cvplus/analytics" | grep -v "// Example:" | grep -v "// Higher layers import" || true)
+    if [ -n "$INVALID_DEPS" ]; then
+        echo -e "${RED}❌ VIOLATION: ${module^} module has invalid dependencies:${NC}"
+        echo "$INVALID_DEPS"
+        VALIDATION_FAILED=1
+    else
+        echo -e "${GREEN}✅ ${module^} module: Only depends on Layers 0-2 (correct)${NC}"
+    fi
+    cd ../..
+done
+
+# Layer 4: Admin, Workflow, Payments (should depend on Layers 0-3, not each other)
+LAYER_4_MODULES=("admin" "workflow" "payments")
+for module in "${LAYER_4_MODULES[@]}"; do
+    echo -e "\n${YELLOW}Layer 4: ${module^} Module${NC}"
+    cd "packages/$module"
+    
+    # Check for forbidden same-layer dependencies
+    FORBIDDEN_DEPS=""
+    for other_module in "${LAYER_4_MODULES[@]}"; do
+        if [ "$module" != "$other_module" ]; then
+            FOUND=$(grep -r "@cvplus/$other_module" src/ 2>/dev/null | grep -v "// Example:" | grep -v "// Higher layers import" || true)
+            if [ -n "$FOUND" ]; then
+                FORBIDDEN_DEPS="$FORBIDDEN_DEPS\n$FOUND"
+            fi
+        fi
+    done
+    
+    if [ -n "$FORBIDDEN_DEPS" ]; then
+        echo -e "${RED}❌ VIOLATION: ${module^} module has forbidden same-layer dependencies:${NC}"
+        echo -e "$FORBIDDEN_DEPS"
+        VALIDATION_FAILED=1
+    else
+        echo -e "${GREEN}✅ ${module^} module: No same-layer dependencies (correct)${NC}"
+    fi
+    cd ../..
+done
+
+echo -e "\n📊 Build Order Validation"
+echo "=========================="
+
+# Test build order
+echo "Testing Layer 0 build..."
+cd packages/core && npm run build >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✅ Layer 0 (Core) builds successfully${NC}"
+else
+    echo -e "${RED}❌ Layer 0 (Core) build failed${NC}"
+    VALIDATION_FAILED=1
+fi
+cd ../..
+
+echo "Testing Layer 1 builds..."
+for module in "auth" "i18n"; do
+    cd "packages/$module" && npm run build >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✅ Layer 1 ($module) builds successfully${NC}"
+    else
+        echo -e "${RED}❌ Layer 1 ($module) build failed${NC}"
+        VALIDATION_FAILED=1
+    fi
+    cd ../..
+done
+
+echo -e "\n🏁 Validation Summary"
+echo "===================="
+
+if [ $VALIDATION_FAILED -eq 0 ]; then
+    echo -e "${GREEN}🎉 SUCCESS: All dependency hierarchy validations passed!${NC}"
+    echo "✅ All modules follow the layered architecture correctly"
+    echo "✅ No circular dependencies detected"
+    echo "✅ Build order validation successful"
+    exit 0
+else
+    echo -e "${RED}💥 FAILURE: Dependency hierarchy violations detected${NC}"
+    echo "❌ Please review and fix the violations listed above"
+    echo "📖 Refer to docs/architecture/dependency-resolution-plan.md for guidance"
+    exit 1
+fi

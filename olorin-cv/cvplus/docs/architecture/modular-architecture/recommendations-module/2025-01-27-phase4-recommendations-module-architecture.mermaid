@@ -1,0 +1,153 @@
+graph TB
+    subgraph "Frontend Layer"
+        A[RecommendationsContainer] --> B[RecommendationCard]
+        A --> C[LoadingState]
+        A --> D[ErrorBoundary]
+        
+        E[useRecommendations Hook] --> F[useRecommendationCache]
+        E --> G[usePerformanceMonitoring]
+        
+        H[RecommendationsProvider] --> E
+        H --> I[Cache Management]
+        H --> J[Performance Tracking]
+    end
+    
+    subgraph "@cvplus/recommendations Module"
+        subgraph "Services Layer"
+            K[RecommendationsService] --> L[AnalysisService]
+            K --> M[EnhancementService]
+            K --> N[CacheService]
+            K --> O[AI Integration Service]
+        end
+        
+        subgraph "Engines Layer"
+            P[CV Analyzer Engine] --> Q[Improvement Engine]
+            P --> R[Scoring Engine]
+            P --> S[Role Matching Engine]
+        end
+        
+        subgraph "Utils Layer"
+            T[Retry Utils] --> U[Timeout Handling]
+            T --> V[Validation Utils]
+            T --> W[Performance Utils]
+            T --> X[Error Handling]
+        end
+        
+        subgraph "Backend Functions"
+            Y[getRecommendations] --> Z[applyImprovements]
+            Y --> AA[previewImprovement]
+        end
+        
+        subgraph "Middleware"
+            BB[Caching Middleware] --> CC[Retry Middleware]
+            BB --> DD[Monitoring Middleware]
+        end
+    end
+    
+    subgraph "Caching Strategy"
+        subgraph "Tier 1: Memory Cache"
+            EE[In-Memory LRU]
+            EE2[5min TTL]
+            EE3[100 entries max]
+        end
+        
+        subgraph "Tier 2: Redis Cache"
+            FF[Redis Cache]
+            FF2[1hour TTL]
+            FF3[100MB max]
+        end
+        
+        subgraph "Tier 3: Firestore"
+            GG[Persistent Cache]
+            GG2[24hour TTL]
+            GG3[Large capacity]
+        end
+    end
+    
+    subgraph "External Dependencies"
+        HH[Anthropic Claude API]
+        II[Firebase Functions]
+        JJ[Firestore Database]
+        KK[@cvplus/core Types]
+    end
+    
+    subgraph "Performance Monitoring"
+        LL[Response Time Tracking]
+        MM[Cache Hit Rate]
+        NN[Error Rate Monitoring]
+        OO[Timeout Detection]
+        PP[Throughput Metrics]
+    end
+    
+    %% Frontend to Services
+    A --> K
+    E --> K
+    H --> N
+    
+    %% Services to Engines
+    K --> P
+    L --> P
+    M --> Q
+    
+    %% Services to Utils
+    K --> T
+    L --> W
+    M --> V
+    
+    %% Backend Integration
+    K --> Y
+    Y --> BB
+    Z --> CC
+    AA --> DD
+    
+    %% Caching Flow
+    N --> EE
+    EE -->|Cache Miss| FF
+    FF -->|Cache Miss| GG
+    GG -->|Cache Miss| HH
+    
+    %% External Dependencies
+    O --> HH
+    Y --> II
+    N --> JJ
+    K --> KK
+    
+    %% Performance Monitoring
+    K --> LL
+    N --> MM
+    W --> NN
+    T --> OO
+    K --> PP
+    
+    %% Performance Goals
+    subgraph "Performance Targets"
+        QQ[Timeout: 15% → 2%]
+        RR[Cache Hit: 0% → 60%]
+        SS[Response: 3min → 30sec]
+        TT[Errors: 10% → 2%]
+    end
+    
+    LL --> QQ
+    MM --> RR
+    LL --> SS
+    NN --> TT
+    
+    classDef frontend fill:#e1f5fe
+    classDef services fill:#f3e5f5
+    classDef engines fill:#e8f5e8
+    classDef utils fill:#fff3e0
+    classDef backend fill:#fce4ec
+    classDef cache fill:#f1f8e9
+    classDef external fill:#f5f5f5
+    classDef performance fill:#e0f2f1
+    classDef targets fill:#ffebee
+    
+    class A,B,C,D,E,F,G,H,I,J frontend
+    class K,L,M,N,O services
+    class P,Q,R,S engines
+    class T,U,V,W,X utils
+    class Y,Z,AA,BB,CC,DD backend
+    class EE,EE2,EE3,FF,FF2,FF3,GG,GG2,GG3 cache
+    class HH,II,JJ,KK external
+    class LL,MM,NN,OO,PP performance
+    class QQ,RR,SS,TT targets

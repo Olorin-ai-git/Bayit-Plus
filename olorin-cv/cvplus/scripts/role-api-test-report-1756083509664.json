@@ -1,0 +1,1792 @@
+{
+  "timestamp": "2025-08-25T00:58:29.664Z",
+  "summary": {
+    "total": 8,
+    "passed": 7,
+    "failed": 0,
+    "warnings": 1
+  },
+  "assessment": "🎉 EXCELLENT API INTEGRATION",
+  "passRate": 88,
+  "results": [
+    {
+      "test": "Authentication Handling",
+      "status": "warn",
+      "details": {
+        "summary": {
+          "status": 500,
+          "hasAuthError": false,
+          "errorMessage": "INTERNAL"
+        },
+        "errorDetails": {
+          "message": "INTERNAL",
+          "status": "INTERNAL"
+        }
+      },
+      "timestamp": "2025-08-25T00:56:53.742Z"
+    },
+    {
+      "test": "Mock User Creation",
+      "status": "pass",
+      "details": {
+        "summary": {
+          "userId": "tOow8Gstog1KlN6r8A8P4tLYZ9yk",
+          "hasToken": true
+        },
+        "userId": "tOow8Gstog1KlN6r8A8P4tLYZ9yk",
+        "idToken": "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJlbWFpbCI6InRlc3RAcm9sZWludGVncmF0aW9uLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiYXV0aF90aW1lIjoxNzU2MDgzNDEzLCJ1c2VyX2lkIjoidE9vdzhHc3RvZzFLbE42cjhBOFA0dExZWjl5ayIsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsidGVzdEByb2xlaW50ZWdyYXRpb24uY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifSwiaWF0IjoxNzU2MDgzNDEzLCJleHAiOjE3NTYwODcwMTMsImF1ZCI6ImdldG15Y3YtYWkiLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZ2V0bXljdi1haSIsInN1YiI6InRPb3c4R3N0b2cxS2xONnI4QThQNHRMWVo5eWsifQ."
+      },
+      "timestamp": "2025-08-25T00:56:53.748Z"
+    },
+    {
+      "test": "Role Detection API Call",
+      "status": "pass",
+      "details": {
+        "summary": {
+          "status": 200,
+          "hasValidStructure": {
+            "success": true,
+            "data": {
+              "analysis": {
+                "primaryRole": {
+                  "roleId": "4UbkbCXL3JnWX1zTjybo",
+                  "roleName": "DevOps Engineer",
+                  "confidence": 0.78,
+                  "matchingFactors": [
+                    {
+                      "type": "skills",
+                      "score": 0.75,
+                      "weight": 0.35,
+                      "matchedKeywords": [
+                        "docker",
+                        "kubernetes",
+                        "jenkins",
+                        "aws",
+                        "ci/cd",
+                        "git",
+                        "python"
+                      ],
+                      "details": "7 out of 10 required skills directly matched",
+                      "reasoning": {
+                        "contributionExplanation": "Core DevOps technologies are well-represented in candidate's skillset",
+                        "keywordMatches": [
+                          {
+                            "keyword": "docker",
+                            "found": true,
+                            "matchType": "exact",
+                            "relevance": 0.95
+                          },
+                          {
+                            "keyword": "kubernetes",
+                            "found": true,
+                            "matchType": "exact",
+                            "relevance": 0.9
+                          },
+                          {
+                            "keyword": "jenkins",
+                            "found": true,
+                            "matchType": "exact",
+                            "relevance": 0.85
+                          },
+                          {
+                            "keyword": "aws",
+                            "found": true,
+                            "matchType": "exact",
+                            "relevance": 0.9
+                          },
+                          {
+                            "keyword": "terraform",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          },
+                          {
+                            "keyword": "ansible",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          }
+                        ],
+                        "strengthAssessment": "very good",
+                        "improvementSuggestions": [
+                          "Learn Terraform for Infrastructure as Code",
+                          "Gain Ansible experience for configuration management",
+                          "Develop Linux administration skills"
+                        ],
+                        "confidenceFactors": [
+                          "Direct experience with containerization",
+                          "Proven CI/CD implementation",
+                          "Cloud platform expertise"
+                        ]
+                      }
+                    }
+                  ],
+                  "enhancementPotential": 22,
+                  "recommendations": [],
+                  "scoringReasoning": "Strong alignment with DevOps requirements based on demonstrated experience with Docker, Kubernetes, Jenkins, AWS, and CI/CD implementation. The candidate has hands-on experience building scalable microservices architecture and implementing CI/CD pipelines. Their full-stack background provides valuable context for DevOps practices, and their team leadership experience shows ability to collaborate across development and operations. The 8+ years of experience and proven track record with cloud technologies and containerization make them a strong fit for a mid-level DevOps role.",
+                  "fitAnalysis": {
+                    "strengths": [
+                      "Direct experience with Docker, Kubernetes, Jenkins, and AWS from current role",
+                      "Proven CI/CD pipeline implementation at StartupXYZ",
+                      "Strong programming skills in Python for automation scripting",
+                      "Experience architecting scalable microservices serving 1M+ users",
+                      "Git version control expertise",
+                      "Leadership experience managing technical teams"
+                    ],
+                    "gaps": [
+                      "No mentioned experience with Terraform for Infrastructure as Code",
+                      "Ansible configuration management not explicitly listed",
+                      "Linux administration skills not detailed",
+                      "Bash scripting experience not mentioned",
+                      "Monitoring and observability tools experience unclear"
+                    ],
+                    "overallAssessment": "Excellent candidate for DevOps Engineer role with strong foundational skills and practical experience. The candidate has already been working with key DevOps technologies and practices, making the transition natural. With some additional training in IaC tools like Terraform and configuration management, they would excel in this position."
+                  }
+                },
+                "alternativeRoles": [
+                  {
+                    "roleId": "aSlavHSwmFRfd4LN4Tkt",
+                    "roleName": "Business Analyst",
+                    "confidence": 0.58,
+                    "matchingFactors": [
+                      {
+                        "type": "skills",
+                        "score": 0.55,
+                        "weight": 0.3,
+                        "matchedKeywords": [
+                          "sql",
+                          "jira",
+                          "agile",
+                          "stakeholder management",
+                          "problem solving",
+                          "documentation"
+                        ],
+                        "details": "Moderate match with several transferable skills",
+                        "reasoning": {
+                          "contributionExplanation": "Technical background and team leadership provide foundation for business analysis work",
+                          "keywordMatches": [
+                            {
+                              "keyword": "sql",
+                              "found": true,
+                              "matchType": "inferred",
+                              "relevance": 0.8
+                            },
+                            {
+                              "keyword": "agile",
+                              "found": true,
+                              "matchType": "inferred",
+                              "relevance": 0.85
+                            },
+                            {
+                              "keyword": "stakeholder management",
+                              "found": true,
+                              "matchType": "inferred",
+                              "relevance": 0.75
+                            },
+                            {
+                              "keyword": "requirements gathering",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            },
+                            {
+                              "keyword": "process mapping",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            }
+                          ],
+                          "strengthAssessment": "moderate",
+                          "improvementSuggestions": [
+                            "Learn formal requirements gathering techniques",
+                            "Study business process modeling",
+                            "Gain experience with business intelligence tools",
+                            "Develop business case writing skills"
+                          ],
+                          "confidenceFactors": [
+                            "Technical depth for system analysis",
+                            "Team collaboration experience",
+                            "Agile methodology knowledge"
+                          ]
+                        }
+                      }
+                    ],
+                    "enhancementPotential": 42,
+                    "recommendations": [],
+                    "scoringReasoning": "Reasonable alignment based on technical expertise, stakeholder management experience, and agile methodology knowledge. The candidate's experience leading teams and working with multiple stakeholders in building scalable systems demonstrates analytical and communication skills essential for business analysis. Their full-stack development background provides deep understanding of technical feasibility and system capabilities. Experience with CI/CD and microservices indicates familiarity with process optimization and system integration.",
+                    "fitAnalysis": {
+                      "strengths": [
+                        "Proven stakeholder management from leading development teams",
+                        "Agile methodology experience in multiple roles",
+                        "Strong problem-solving skills from 8+ years in software development",
+                        "Technical expertise to understand system capabilities and limitations",
+                        "Experience with JIRA likely (common in software teams)",
+                        "Documentation skills from senior engineering responsibilities"
+                      ],
+                      "gaps": [
+                        "No explicit requirements gathering or business analysis experience",
+                        "Process mapping and business process improvement not demonstrated",
+                        "Business intelligence and reporting tools experience unclear",
+                        "Gap analysis and business case development skills not shown",
+                        "Limited evidence of non-technical stakeholder communication"
+                      ],
+                      "overallAssessment": "Candidate has transferable skills that could work well in a technical business analyst role, particularly in software or IT projects. Their deep technical knowledge would be valuable for requirements feasibility and system analysis. However, would need training in formal business analysis methodologies and non-technical aspects of the role."
+                    }
+                  },
+                  {
+                    "roleId": "1KUC0Iw60Purw13sQFWc",
+                    "roleName": "Data Scientist",
+                    "confidence": 0.52,
+                    "matchingFactors": [
+                      {
+                        "type": "skills",
+                        "score": 0.45,
+                        "weight": 0.4,
+                        "matchedKeywords": [
+                          "python",
+                          "sql",
+                          "data analysis"
+                        ],
+                        "details": "Limited match on data science specific skills",
+                        "reasoning": {
+                          "contributionExplanation": "Strong programming foundation but missing specialized data science tools and techniques",
+                          "keywordMatches": [
+                            {
+                              "keyword": "python",
+                              "found": true,
+                              "matchType": "exact",
+                              "relevance": 0.95
+                            },
+                            {
+                              "keyword": "sql",
+                              "found": true,
+                              "matchType": "inferred",
+                              "relevance": 0.8
+                            },
+                            {
+                              "keyword": "machine learning",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            },
+                            {
+                              "keyword": "statistics",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            },
+                            {
+                              "keyword": "pandas",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            }
+                          ],
+                          "strengthAssessment": "moderate",
+                          "improvementSuggestions": [
+                            "Complete data science bootcamp or certification",
+                            "Learn Pandas, NumPy, and Scikit-learn",
+                            "Study statistics and machine learning fundamentals",
+                            "Build portfolio of data science projects"
+                          ],
+                          "confidenceFactors": [
+                            "Strong Python skills",
+                            "Database experience",
+                            "Technical problem-solving ability"
+                          ]
+                        }
+                      }
+                    ],
+                    "enhancementPotential": 48,
+                    "recommendations": [],
+                    "scoringReasoning": "Moderate alignment based on strong Python programming skills and PostgreSQL database experience. The candidate's software engineering background provides excellent technical foundation for data science work, including ability to productionize models and build data pipelines. Their experience with scalable systems serving 1M+ users suggests familiarity with data at scale. However, no explicit machine learning, statistics, or data science library experience is mentioned, which are core requirements for the role.",
+                    "fitAnalysis": {
+                      "strengths": [
+                        "Expert-level Python programming skills",
+                        "PostgreSQL and database management experience",
+                        "Strong software engineering practices for production ML systems",
+                        "Experience with large-scale systems and data",
+                        "Problem-solving skills from 8+ years in tech",
+                        "Ability to build end-to-end data solutions"
+                      ],
+                      "gaps": [
+                        "No mentioned experience with Pandas, NumPy, or Scikit-learn",
+                        "Statistics and hypothesis testing knowledge not demonstrated",
+                        "Machine learning algorithms and modeling experience unclear",
+                        "Data visualization tools and techniques not listed",
+                        "No evidence of statistical analysis or experimentation"
+                      ],
+                      "overallAssessment": "Candidate has strong technical foundation but would need significant upskilling in data science-specific areas. Their software engineering expertise would be valuable for implementing and deploying ML models, but they lack demonstrated experience in core data science competencies. Best suited as a transition role with proper training and mentorship."
+                    }
+                  },
+                  {
+                    "roleId": "PvLoxQOjMX20gl9pOp0O",
+                    "roleName": "AI Product Expert",
+                    "confidence": 0.45,
+                    "matchingFactors": [
+                      {
+                        "type": "skills",
+                        "score": 0.38,
+                        "weight": 0.35,
+                        "matchedKeywords": [
+                          "python",
+                          "agile",
+                          "technical communication",
+                          "stakeholder management"
+                        ],
+                        "details": "Limited match on AI product specific requirements",
+                        "reasoning": {
+                          "contributionExplanation": "Technical leadership experience provides some foundation but missing core AI and product competencies",
+                          "keywordMatches": [
+                            {
+                              "keyword": "python",
+                              "found": true,
+                              "matchType": "exact",
+                              "relevance": 0.7
+                            },
+                            {
+                              "keyword": "agile",
+                              "found": true,
+                              "matchType": "inferred",
+                              "relevance": 0.75
+                            },
+                            {
+                              "keyword": "ai/ml fundamentals",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            },
+                            {
+                              "keyword": "product management",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            },
+                            {
+                              "keyword": "machine learning",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            }
+                          ],
+                          "strengthAssessment": "limited",
+                          "improvementSuggestions": [
+                            "Complete AI/ML fundamentals course",
+                            "Gain product management certification",
+                            "Work on AI-related projects",
+                            "Study AI ethics and responsible AI practices",
+                            "Develop understanding of ML model lifecycle"
+                          ],
+                          "confidenceFactors": [
+                            "Technical credibility",
+                            "Leadership experience",
+                            "Python proficiency"
+                          ]
+                        }
+                      }
+                    ],
+                    "enhancementPotential": 55,
+                    "recommendations": [],
+                    "scoringReasoning": "Partial alignment based on strong technical background and team leadership experience. The candidate's experience leading development teams and architecting scalable solutions demonstrates product thinking and stakeholder management capabilities. Their Python expertise and full-stack knowledge provide technical credibility for AI product discussions. However, lacks explicit AI/ML experience, product management background, and AI-specific domain knowledge which are crucial for this senior-level role.",
+                    "fitAnalysis": {
+                      "strengths": [
+                        "Python programming expertise for understanding AI implementations",
+                        "Team leadership and stakeholder management from leading 5+ developers",
+                        "Technical communication skills from senior engineering role",
+                        "Agile methodology experience",
+                        "System architecture understanding for AI product design",
+                        "Experience with scalable systems relevant to ML deployment"
+                      ],
+                      "gaps": [
+                        "No demonstrated AI/ML fundamentals or experience",
+                        "Product management experience not evident",
+                        "Missing product strategy and roadmap development skills",
+                        "No experience with AI ethics, model deployment, or ML operations",
+                        "Data analysis focused on business metrics not shown",
+                        "AI-specific domain knowledge (NLP, computer vision) absent"
+                      ],
+                      "overallAssessment": "Candidate has strong technical foundation and leadership skills but lacks critical AI and product management experience. Would require substantial training in AI/ML concepts and product management methodologies. Better suited for a technical product manager role in traditional software products before transitioning to AI-focused positions."
+                    }
+                  }
+                ],
+                "overallConfidence": 0.5825,
+                "enhancementSuggestions": {
+                  "immediate": [],
+                  "strategic": []
+                },
+                "gapAnalysis": {
+                  "missingSkills": [
+                    "No mentioned experience with Terraform for Infrastructure as Code",
+                    "Ansible configuration management not explicitly listed",
+                    "Linux administration skills not detailed",
+                    "Bash scripting experience not mentioned",
+                    "Monitoring and observability tools experience unclear"
+                  ],
+                  "weakAreas": [
+                    "Areas identified for improvement"
+                  ],
+                  "strengthAreas": [
+                    "Direct experience with Docker, Kubernetes, Jenkins, and AWS from current role",
+                    "Proven CI/CD pipeline implementation at StartupXYZ",
+                    "Strong programming skills in Python for automation scripting",
+                    "Experience architecting scalable microservices serving 1M+ users",
+                    "Git version control expertise",
+                    "Leadership experience managing technical teams"
+                  ]
+                },
+                "scoringBreakdown": {
+                  "totalRolesAnalyzed": 4,
+                  "adjustedThreshold": 0.5,
+                  "originalThreshold": 0.5,
+                  "averageConfidence": 0.5825,
+                  "topFactors": [
+                    {
+                      "factor": "DevOps Engineer",
+                      "contribution": 0.78,
+                      "explanation": "Strong alignment with DevOps requirements based on demonstrated experience with Docker, Kubernetes, ..."
+                    },
+                    {
+                      "factor": "Business Analyst",
+                      "contribution": 0.58,
+                      "explanation": "Reasonable alignment based on technical expertise, stakeholder management experience, and agile meth..."
+                    },
+                    {
+                      "factor": "Data Scientist",
+                      "contribution": 0.52,
+                      "explanation": "Moderate alignment based on strong Python programming skills and PostgreSQL database experience. The..."
+                    }
+                  ]
+                },
+                "detectionMetadata": {
+                  "processingTime": 1756083509571,
+                  "algorithmVersion": "enhanced-opus-4.1",
+                  "adjustmentsMade": [
+                    "Dynamic threshold adjustment",
+                    "Multiple role guarantee"
+                  ],
+                  "confidenceDistribution": [
+                    {
+                      "range": "80-100%",
+                      "count": 0
+                    },
+                    {
+                      "range": "60-79%",
+                      "count": 1
+                    },
+                    {
+                      "range": "40-59%",
+                      "count": 3
+                    },
+                    {
+                      "range": "0-39%",
+                      "count": 0
+                    }
+                  ]
+                }
+              },
+              "detectedRole": {
+                "roleId": "4UbkbCXL3JnWX1zTjybo",
+                "roleName": "DevOps Engineer",
+                "confidence": 0.78,
+                "matchingFactors": [
+                  {
+                    "type": "skills",
+                    "score": 0.75,
+                    "weight": 0.35,
+                    "matchedKeywords": [
+                      "docker",
+                      "kubernetes",
+                      "jenkins",
+                      "aws",
+                      "ci/cd",
+                      "git",
+                      "python"
+                    ],
+                    "details": "7 out of 10 required skills directly matched",
+                    "reasoning": {
+                      "contributionExplanation": "Core DevOps technologies are well-represented in candidate's skillset",
+                      "keywordMatches": [
+                        {
+                          "keyword": "docker",
+                          "found": true,
+                          "matchType": "exact",
+                          "relevance": 0.95
+                        },
+                        {
+                          "keyword": "kubernetes",
+                          "found": true,
+                          "matchType": "exact",
+                          "relevance": 0.9
+                        },
+                        {
+                          "keyword": "jenkins",
+                          "found": true,
+                          "matchType": "exact",
+                          "relevance": 0.85
+                        },
+                        {
+                          "keyword": "aws",
+                          "found": true,
+                          "matchType": "exact",
+                          "relevance": 0.9
+                        },
+                        {
+                          "keyword": "terraform",
+                          "found": false,
+                          "matchType": "none",
+                          "relevance": 0
+                        },
+                        {
+                          "keyword": "ansible",
+                          "found": false,
+                          "matchType": "none",
+                          "relevance": 0
+                        }
+                      ],
+                      "strengthAssessment": "very good",
+                      "improvementSuggestions": [
+                        "Learn Terraform for Infrastructure as Code",
+                        "Gain Ansible experience for configuration management",
+                        "Develop Linux administration skills"
+                      ],
+                      "confidenceFactors": [
+                        "Direct experience with containerization",
+                        "Proven CI/CD implementation",
+                        "Cloud platform expertise"
+                      ]
+                    }
+                  }
+                ],
+                "enhancementPotential": 22,
+                "recommendations": [],
+                "scoringReasoning": "Strong alignment with DevOps requirements based on demonstrated experience with Docker, Kubernetes, Jenkins, AWS, and CI/CD implementation. The candidate has hands-on experience building scalable microservices architecture and implementing CI/CD pipelines. Their full-stack background provides valuable context for DevOps practices, and their team leadership experience shows ability to collaborate across development and operations. The 8+ years of experience and proven track record with cloud technologies and containerization make them a strong fit for a mid-level DevOps role.",
+                "fitAnalysis": {
+                  "strengths": [
+                    "Direct experience with Docker, Kubernetes, Jenkins, and AWS from current role",
+                    "Proven CI/CD pipeline implementation at StartupXYZ",
+                    "Strong programming skills in Python for automation scripting",
+                    "Experience architecting scalable microservices serving 1M+ users",
+                    "Git version control expertise",
+                    "Leadership experience managing technical teams"
+                  ],
+                  "gaps": [
+                    "No mentioned experience with Terraform for Infrastructure as Code",
+                    "Ansible configuration management not explicitly listed",
+                    "Linux administration skills not detailed",
+                    "Bash scripting experience not mentioned",
+                    "Monitoring and observability tools experience unclear"
+                  ],
+                  "overallAssessment": "Excellent candidate for DevOps Engineer role with strong foundational skills and practical experience. The candidate has already been working with key DevOps technologies and practices, making the transition natural. With some additional training in IaC tools like Terraform and configuration management, they would excel in this position."
+                }
+              },
+              "alternativeRoles": [
+                {
+                  "roleId": "aSlavHSwmFRfd4LN4Tkt",
+                  "roleName": "Business Analyst",
+                  "confidence": 0.58,
+                  "matchingFactors": [
+                    {
+                      "type": "skills",
+                      "score": 0.55,
+                      "weight": 0.3,
+                      "matchedKeywords": [
+                        "sql",
+                        "jira",
+                        "agile",
+                        "stakeholder management",
+                        "problem solving",
+                        "documentation"
+                      ],
+                      "details": "Moderate match with several transferable skills",
+                      "reasoning": {
+                        "contributionExplanation": "Technical background and team leadership provide foundation for business analysis work",
+                        "keywordMatches": [
+                          {
+                            "keyword": "sql",
+                            "found": true,
+                            "matchType": "inferred",
+                            "relevance": 0.8
+                          },
+                          {
+                            "keyword": "agile",
+                            "found": true,
+                            "matchType": "inferred",
+                            "relevance": 0.85
+                          },
+                          {
+                            "keyword": "stakeholder management",
+                            "found": true,
+                            "matchType": "inferred",
+                            "relevance": 0.75
+                          },
+                          {
+                            "keyword": "requirements gathering",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          },
+                          {
+                            "keyword": "process mapping",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          }
+                        ],
+                        "strengthAssessment": "moderate",
+                        "improvementSuggestions": [
+                          "Learn formal requirements gathering techniques",
+                          "Study business process modeling",
+                          "Gain experience with business intelligence tools",
+                          "Develop business case writing skills"
+                        ],
+                        "confidenceFactors": [
+                          "Technical depth for system analysis",
+                          "Team collaboration experience",
+                          "Agile methodology knowledge"
+                        ]
+                      }
+                    }
+                  ],
+                  "enhancementPotential": 42,
+                  "recommendations": [],
+                  "scoringReasoning": "Reasonable alignment based on technical expertise, stakeholder management experience, and agile methodology knowledge. The candidate's experience leading teams and working with multiple stakeholders in building scalable systems demonstrates analytical and communication skills essential for business analysis. Their full-stack development background provides deep understanding of technical feasibility and system capabilities. Experience with CI/CD and microservices indicates familiarity with process optimization and system integration.",
+                  "fitAnalysis": {
+                    "strengths": [
+                      "Proven stakeholder management from leading development teams",
+                      "Agile methodology experience in multiple roles",
+                      "Strong problem-solving skills from 8+ years in software development",
+                      "Technical expertise to understand system capabilities and limitations",
+                      "Experience with JIRA likely (common in software teams)",
+                      "Documentation skills from senior engineering responsibilities"
+                    ],
+                    "gaps": [
+                      "No explicit requirements gathering or business analysis experience",
+                      "Process mapping and business process improvement not demonstrated",
+                      "Business intelligence and reporting tools experience unclear",
+                      "Gap analysis and business case development skills not shown",
+                      "Limited evidence of non-technical stakeholder communication"
+                    ],
+                    "overallAssessment": "Candidate has transferable skills that could work well in a technical business analyst role, particularly in software or IT projects. Their deep technical knowledge would be valuable for requirements feasibility and system analysis. However, would need training in formal business analysis methodologies and non-technical aspects of the role."
+                  }
+                },
+                {
+                  "roleId": "1KUC0Iw60Purw13sQFWc",
+                  "roleName": "Data Scientist",
+                  "confidence": 0.52,
+                  "matchingFactors": [
+                    {
+                      "type": "skills",
+                      "score": 0.45,
+                      "weight": 0.4,
+                      "matchedKeywords": [
+                        "python",
+                        "sql",
+                        "data analysis"
+                      ],
+                      "details": "Limited match on data science specific skills",
+                      "reasoning": {
+                        "contributionExplanation": "Strong programming foundation but missing specialized data science tools and techniques",
+                        "keywordMatches": [
+                          {
+                            "keyword": "python",
+                            "found": true,
+                            "matchType": "exact",
+                            "relevance": 0.95
+                          },
+                          {
+                            "keyword": "sql",
+                            "found": true,
+                            "matchType": "inferred",
+                            "relevance": 0.8
+                          },
+                          {
+                            "keyword": "machine learning",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          },
+                          {
+                            "keyword": "statistics",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          },
+                          {
+                            "keyword": "pandas",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          }
+                        ],
+                        "strengthAssessment": "moderate",
+                        "improvementSuggestions": [
+                          "Complete data science bootcamp or certification",
+                          "Learn Pandas, NumPy, and Scikit-learn",
+                          "Study statistics and machine learning fundamentals",
+                          "Build portfolio of data science projects"
+                        ],
+                        "confidenceFactors": [
+                          "Strong Python skills",
+                          "Database experience",
+                          "Technical problem-solving ability"
+                        ]
+                      }
+                    }
+                  ],
+                  "enhancementPotential": 48,
+                  "recommendations": [],
+                  "scoringReasoning": "Moderate alignment based on strong Python programming skills and PostgreSQL database experience. The candidate's software engineering background provides excellent technical foundation for data science work, including ability to productionize models and build data pipelines. Their experience with scalable systems serving 1M+ users suggests familiarity with data at scale. However, no explicit machine learning, statistics, or data science library experience is mentioned, which are core requirements for the role.",
+                  "fitAnalysis": {
+                    "strengths": [
+                      "Expert-level Python programming skills",
+                      "PostgreSQL and database management experience",
+                      "Strong software engineering practices for production ML systems",
+                      "Experience with large-scale systems and data",
+                      "Problem-solving skills from 8+ years in tech",
+                      "Ability to build end-to-end data solutions"
+                    ],
+                    "gaps": [
+                      "No mentioned experience with Pandas, NumPy, or Scikit-learn",
+                      "Statistics and hypothesis testing knowledge not demonstrated",
+                      "Machine learning algorithms and modeling experience unclear",
+                      "Data visualization tools and techniques not listed",
+                      "No evidence of statistical analysis or experimentation"
+                    ],
+                    "overallAssessment": "Candidate has strong technical foundation but would need significant upskilling in data science-specific areas. Their software engineering expertise would be valuable for implementing and deploying ML models, but they lack demonstrated experience in core data science competencies. Best suited as a transition role with proper training and mentorship."
+                  }
+                },
+                {
+                  "roleId": "PvLoxQOjMX20gl9pOp0O",
+                  "roleName": "AI Product Expert",
+                  "confidence": 0.45,
+                  "matchingFactors": [
+                    {
+                      "type": "skills",
+                      "score": 0.38,
+                      "weight": 0.35,
+                      "matchedKeywords": [
+                        "python",
+                        "agile",
+                        "technical communication",
+                        "stakeholder management"
+                      ],
+                      "details": "Limited match on AI product specific requirements",
+                      "reasoning": {
+                        "contributionExplanation": "Technical leadership experience provides some foundation but missing core AI and product competencies",
+                        "keywordMatches": [
+                          {
+                            "keyword": "python",
+                            "found": true,
+                            "matchType": "exact",
+                            "relevance": 0.7
+                          },
+                          {
+                            "keyword": "agile",
+                            "found": true,
+                            "matchType": "inferred",
+                            "relevance": 0.75
+                          },
+                          {
+                            "keyword": "ai/ml fundamentals",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          },
+                          {
+                            "keyword": "product management",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          },
+                          {
+                            "keyword": "machine learning",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          }
+                        ],
+                        "strengthAssessment": "limited",
+                        "improvementSuggestions": [
+                          "Complete AI/ML fundamentals course",
+                          "Gain product management certification",
+                          "Work on AI-related projects",
+                          "Study AI ethics and responsible AI practices",
+                          "Develop understanding of ML model lifecycle"
+                        ],
+                        "confidenceFactors": [
+                          "Technical credibility",
+                          "Leadership experience",
+                          "Python proficiency"
+                        ]
+                      }
+                    }
+                  ],
+                  "enhancementPotential": 55,
+                  "recommendations": [],
+                  "scoringReasoning": "Partial alignment based on strong technical background and team leadership experience. The candidate's experience leading development teams and architecting scalable solutions demonstrates product thinking and stakeholder management capabilities. Their Python expertise and full-stack knowledge provide technical credibility for AI product discussions. However, lacks explicit AI/ML experience, product management background, and AI-specific domain knowledge which are crucial for this senior-level role.",
+                  "fitAnalysis": {
+                    "strengths": [
+                      "Python programming expertise for understanding AI implementations",
+                      "Team leadership and stakeholder management from leading 5+ developers",
+                      "Technical communication skills from senior engineering role",
+                      "Agile methodology experience",
+                      "System architecture understanding for AI product design",
+                      "Experience with scalable systems relevant to ML deployment"
+                    ],
+                    "gaps": [
+                      "No demonstrated AI/ML fundamentals or experience",
+                      "Product management experience not evident",
+                      "Missing product strategy and roadmap development skills",
+                      "No experience with AI ethics, model deployment, or ML operations",
+                      "Data analysis focused on business metrics not shown",
+                      "AI-specific domain knowledge (NLP, computer vision) absent"
+                    ],
+                    "overallAssessment": "Candidate has strong technical foundation and leadership skills but lacks critical AI and product management experience. Would require substantial training in AI/ML concepts and product management methodologies. Better suited for a technical product manager role in traditional software products before transitioning to AI-focused positions."
+                  }
+                }
+              ],
+              "metadata": {
+                "model": "claude-opus-4-1-20250805",
+                "totalRoles": 4,
+                "overallConfidence": 58,
+                "primaryRoleConfidence": 78,
+                "enhancedReasoning": true,
+                "scoringBreakdown": {
+                  "primaryRole": "Strong alignment with DevOps requirements based on demonstrated experience with Docker, Kubernetes, Jenkins, AWS, and CI/CD implementation. The candidate has hands-on experience building scalable microservices architecture and implementing CI/CD pipelines. Their full-stack background provides valuable context for DevOps practices, and their team leadership experience shows ability to collaborate across development and operations. The 8+ years of experience and proven track record with cloud technologies and containerization make them a strong fit for a mid-level DevOps role.",
+                  "fitAnalysis": {
+                    "strengths": [
+                      "Direct experience with Docker, Kubernetes, Jenkins, and AWS from current role",
+                      "Proven CI/CD pipeline implementation at StartupXYZ",
+                      "Strong programming skills in Python for automation scripting",
+                      "Experience architecting scalable microservices serving 1M+ users",
+                      "Git version control expertise",
+                      "Leadership experience managing technical teams"
+                    ],
+                    "gaps": [
+                      "No mentioned experience with Terraform for Infrastructure as Code",
+                      "Ansible configuration management not explicitly listed",
+                      "Linux administration skills not detailed",
+                      "Bash scripting experience not mentioned",
+                      "Monitoring and observability tools experience unclear"
+                    ],
+                    "overallAssessment": "Excellent candidate for DevOps Engineer role with strong foundational skills and practical experience. The candidate has already been working with key DevOps technologies and practices, making the transition natural. With some additional training in IaC tools like Terraform and configuration management, they would excel in this position."
+                  }
+                }
+              },
+              "cached": false,
+              "generatedAt": "2025-08-25T00:58:29.571Z"
+            }
+          },
+          "hasResult": true,
+          "hasError": false
+        },
+        "fullResponse": {
+          "result": {
+            "success": true,
+            "data": {
+              "analysis": {
+                "primaryRole": {
+                  "roleId": "4UbkbCXL3JnWX1zTjybo",
+                  "roleName": "DevOps Engineer",
+                  "confidence": 0.78,
+                  "matchingFactors": [
+                    {
+                      "type": "skills",
+                      "score": 0.75,
+                      "weight": 0.35,
+                      "matchedKeywords": [
+                        "docker",
+                        "kubernetes",
+                        "jenkins",
+                        "aws",
+                        "ci/cd",
+                        "git",
+                        "python"
+                      ],
+                      "details": "7 out of 10 required skills directly matched",
+                      "reasoning": {
+                        "contributionExplanation": "Core DevOps technologies are well-represented in candidate's skillset",
+                        "keywordMatches": [
+                          {
+                            "keyword": "docker",
+                            "found": true,
+                            "matchType": "exact",
+                            "relevance": 0.95
+                          },
+                          {
+                            "keyword": "kubernetes",
+                            "found": true,
+                            "matchType": "exact",
+                            "relevance": 0.9
+                          },
+                          {
+                            "keyword": "jenkins",
+                            "found": true,
+                            "matchType": "exact",
+                            "relevance": 0.85
+                          },
+                          {
+                            "keyword": "aws",
+                            "found": true,
+                            "matchType": "exact",
+                            "relevance": 0.9
+                          },
+                          {
+                            "keyword": "terraform",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          },
+                          {
+                            "keyword": "ansible",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          }
+                        ],
+                        "strengthAssessment": "very good",
+                        "improvementSuggestions": [
+                          "Learn Terraform for Infrastructure as Code",
+                          "Gain Ansible experience for configuration management",
+                          "Develop Linux administration skills"
+                        ],
+                        "confidenceFactors": [
+                          "Direct experience with containerization",
+                          "Proven CI/CD implementation",
+                          "Cloud platform expertise"
+                        ]
+                      }
+                    }
+                  ],
+                  "enhancementPotential": 22,
+                  "recommendations": [],
+                  "scoringReasoning": "Strong alignment with DevOps requirements based on demonstrated experience with Docker, Kubernetes, Jenkins, AWS, and CI/CD implementation. The candidate has hands-on experience building scalable microservices architecture and implementing CI/CD pipelines. Their full-stack background provides valuable context for DevOps practices, and their team leadership experience shows ability to collaborate across development and operations. The 8+ years of experience and proven track record with cloud technologies and containerization make them a strong fit for a mid-level DevOps role.",
+                  "fitAnalysis": {
+                    "strengths": [
+                      "Direct experience with Docker, Kubernetes, Jenkins, and AWS from current role",
+                      "Proven CI/CD pipeline implementation at StartupXYZ",
+                      "Strong programming skills in Python for automation scripting",
+                      "Experience architecting scalable microservices serving 1M+ users",
+                      "Git version control expertise",
+                      "Leadership experience managing technical teams"
+                    ],
+                    "gaps": [
+                      "No mentioned experience with Terraform for Infrastructure as Code",
+                      "Ansible configuration management not explicitly listed",
+                      "Linux administration skills not detailed",
+                      "Bash scripting experience not mentioned",
+                      "Monitoring and observability tools experience unclear"
+                    ],
+                    "overallAssessment": "Excellent candidate for DevOps Engineer role with strong foundational skills and practical experience. The candidate has already been working with key DevOps technologies and practices, making the transition natural. With some additional training in IaC tools like Terraform and configuration management, they would excel in this position."
+                  }
+                },
+                "alternativeRoles": [
+                  {
+                    "roleId": "aSlavHSwmFRfd4LN4Tkt",
+                    "roleName": "Business Analyst",
+                    "confidence": 0.58,
+                    "matchingFactors": [
+                      {
+                        "type": "skills",
+                        "score": 0.55,
+                        "weight": 0.3,
+                        "matchedKeywords": [
+                          "sql",
+                          "jira",
+                          "agile",
+                          "stakeholder management",
+                          "problem solving",
+                          "documentation"
+                        ],
+                        "details": "Moderate match with several transferable skills",
+                        "reasoning": {
+                          "contributionExplanation": "Technical background and team leadership provide foundation for business analysis work",
+                          "keywordMatches": [
+                            {
+                              "keyword": "sql",
+                              "found": true,
+                              "matchType": "inferred",
+                              "relevance": 0.8
+                            },
+                            {
+                              "keyword": "agile",
+                              "found": true,
+                              "matchType": "inferred",
+                              "relevance": 0.85
+                            },
+                            {
+                              "keyword": "stakeholder management",
+                              "found": true,
+                              "matchType": "inferred",
+                              "relevance": 0.75
+                            },
+                            {
+                              "keyword": "requirements gathering",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            },
+                            {
+                              "keyword": "process mapping",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            }
+                          ],
+                          "strengthAssessment": "moderate",
+                          "improvementSuggestions": [
+                            "Learn formal requirements gathering techniques",
+                            "Study business process modeling",
+                            "Gain experience with business intelligence tools",
+                            "Develop business case writing skills"
+                          ],
+                          "confidenceFactors": [
+                            "Technical depth for system analysis",
+                            "Team collaboration experience",
+                            "Agile methodology knowledge"
+                          ]
+                        }
+                      }
+                    ],
+                    "enhancementPotential": 42,
+                    "recommendations": [],
+                    "scoringReasoning": "Reasonable alignment based on technical expertise, stakeholder management experience, and agile methodology knowledge. The candidate's experience leading teams and working with multiple stakeholders in building scalable systems demonstrates analytical and communication skills essential for business analysis. Their full-stack development background provides deep understanding of technical feasibility and system capabilities. Experience with CI/CD and microservices indicates familiarity with process optimization and system integration.",
+                    "fitAnalysis": {
+                      "strengths": [
+                        "Proven stakeholder management from leading development teams",
+                        "Agile methodology experience in multiple roles",
+                        "Strong problem-solving skills from 8+ years in software development",
+                        "Technical expertise to understand system capabilities and limitations",
+                        "Experience with JIRA likely (common in software teams)",
+                        "Documentation skills from senior engineering responsibilities"
+                      ],
+                      "gaps": [
+                        "No explicit requirements gathering or business analysis experience",
+                        "Process mapping and business process improvement not demonstrated",
+                        "Business intelligence and reporting tools experience unclear",
+                        "Gap analysis and business case development skills not shown",
+                        "Limited evidence of non-technical stakeholder communication"
+                      ],
+                      "overallAssessment": "Candidate has transferable skills that could work well in a technical business analyst role, particularly in software or IT projects. Their deep technical knowledge would be valuable for requirements feasibility and system analysis. However, would need training in formal business analysis methodologies and non-technical aspects of the role."
+                    }
+                  },
+                  {
+                    "roleId": "1KUC0Iw60Purw13sQFWc",
+                    "roleName": "Data Scientist",
+                    "confidence": 0.52,
+                    "matchingFactors": [
+                      {
+                        "type": "skills",
+                        "score": 0.45,
+                        "weight": 0.4,
+                        "matchedKeywords": [
+                          "python",
+                          "sql",
+                          "data analysis"
+                        ],
+                        "details": "Limited match on data science specific skills",
+                        "reasoning": {
+                          "contributionExplanation": "Strong programming foundation but missing specialized data science tools and techniques",
+                          "keywordMatches": [
+                            {
+                              "keyword": "python",
+                              "found": true,
+                              "matchType": "exact",
+                              "relevance": 0.95
+                            },
+                            {
+                              "keyword": "sql",
+                              "found": true,
+                              "matchType": "inferred",
+                              "relevance": 0.8
+                            },
+                            {
+                              "keyword": "machine learning",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            },
+                            {
+                              "keyword": "statistics",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            },
+                            {
+                              "keyword": "pandas",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            }
+                          ],
+                          "strengthAssessment": "moderate",
+                          "improvementSuggestions": [
+                            "Complete data science bootcamp or certification",
+                            "Learn Pandas, NumPy, and Scikit-learn",
+                            "Study statistics and machine learning fundamentals",
+                            "Build portfolio of data science projects"
+                          ],
+                          "confidenceFactors": [
+                            "Strong Python skills",
+                            "Database experience",
+                            "Technical problem-solving ability"
+                          ]
+                        }
+                      }
+                    ],
+                    "enhancementPotential": 48,
+                    "recommendations": [],
+                    "scoringReasoning": "Moderate alignment based on strong Python programming skills and PostgreSQL database experience. The candidate's software engineering background provides excellent technical foundation for data science work, including ability to productionize models and build data pipelines. Their experience with scalable systems serving 1M+ users suggests familiarity with data at scale. However, no explicit machine learning, statistics, or data science library experience is mentioned, which are core requirements for the role.",
+                    "fitAnalysis": {
+                      "strengths": [
+                        "Expert-level Python programming skills",
+                        "PostgreSQL and database management experience",
+                        "Strong software engineering practices for production ML systems",
+                        "Experience with large-scale systems and data",
+                        "Problem-solving skills from 8+ years in tech",
+                        "Ability to build end-to-end data solutions"
+                      ],
+                      "gaps": [
+                        "No mentioned experience with Pandas, NumPy, or Scikit-learn",
+                        "Statistics and hypothesis testing knowledge not demonstrated",
+                        "Machine learning algorithms and modeling experience unclear",
+                        "Data visualization tools and techniques not listed",
+                        "No evidence of statistical analysis or experimentation"
+                      ],
+                      "overallAssessment": "Candidate has strong technical foundation but would need significant upskilling in data science-specific areas. Their software engineering expertise would be valuable for implementing and deploying ML models, but they lack demonstrated experience in core data science competencies. Best suited as a transition role with proper training and mentorship."
+                    }
+                  },
+                  {
+                    "roleId": "PvLoxQOjMX20gl9pOp0O",
+                    "roleName": "AI Product Expert",
+                    "confidence": 0.45,
+                    "matchingFactors": [
+                      {
+                        "type": "skills",
+                        "score": 0.38,
+                        "weight": 0.35,
+                        "matchedKeywords": [
+                          "python",
+                          "agile",
+                          "technical communication",
+                          "stakeholder management"
+                        ],
+                        "details": "Limited match on AI product specific requirements",
+                        "reasoning": {
+                          "contributionExplanation": "Technical leadership experience provides some foundation but missing core AI and product competencies",
+                          "keywordMatches": [
+                            {
+                              "keyword": "python",
+                              "found": true,
+                              "matchType": "exact",
+                              "relevance": 0.7
+                            },
+                            {
+                              "keyword": "agile",
+                              "found": true,
+                              "matchType": "inferred",
+                              "relevance": 0.75
+                            },
+                            {
+                              "keyword": "ai/ml fundamentals",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            },
+                            {
+                              "keyword": "product management",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            },
+                            {
+                              "keyword": "machine learning",
+                              "found": false,
+                              "matchType": "none",
+                              "relevance": 0
+                            }
+                          ],
+                          "strengthAssessment": "limited",
+                          "improvementSuggestions": [
+                            "Complete AI/ML fundamentals course",
+                            "Gain product management certification",
+                            "Work on AI-related projects",
+                            "Study AI ethics and responsible AI practices",
+                            "Develop understanding of ML model lifecycle"
+                          ],
+                          "confidenceFactors": [
+                            "Technical credibility",
+                            "Leadership experience",
+                            "Python proficiency"
+                          ]
+                        }
+                      }
+                    ],
+                    "enhancementPotential": 55,
+                    "recommendations": [],
+                    "scoringReasoning": "Partial alignment based on strong technical background and team leadership experience. The candidate's experience leading development teams and architecting scalable solutions demonstrates product thinking and stakeholder management capabilities. Their Python expertise and full-stack knowledge provide technical credibility for AI product discussions. However, lacks explicit AI/ML experience, product management background, and AI-specific domain knowledge which are crucial for this senior-level role.",
+                    "fitAnalysis": {
+                      "strengths": [
+                        "Python programming expertise for understanding AI implementations",
+                        "Team leadership and stakeholder management from leading 5+ developers",
+                        "Technical communication skills from senior engineering role",
+                        "Agile methodology experience",
+                        "System architecture understanding for AI product design",
+                        "Experience with scalable systems relevant to ML deployment"
+                      ],
+                      "gaps": [
+                        "No demonstrated AI/ML fundamentals or experience",
+                        "Product management experience not evident",
+                        "Missing product strategy and roadmap development skills",
+                        "No experience with AI ethics, model deployment, or ML operations",
+                        "Data analysis focused on business metrics not shown",
+                        "AI-specific domain knowledge (NLP, computer vision) absent"
+                      ],
+                      "overallAssessment": "Candidate has strong technical foundation and leadership skills but lacks critical AI and product management experience. Would require substantial training in AI/ML concepts and product management methodologies. Better suited for a technical product manager role in traditional software products before transitioning to AI-focused positions."
+                    }
+                  }
+                ],
+                "overallConfidence": 0.5825,
+                "enhancementSuggestions": {
+                  "immediate": [],
+                  "strategic": []
+                },
+                "gapAnalysis": {
+                  "missingSkills": [
+                    "No mentioned experience with Terraform for Infrastructure as Code",
+                    "Ansible configuration management not explicitly listed",
+                    "Linux administration skills not detailed",
+                    "Bash scripting experience not mentioned",
+                    "Monitoring and observability tools experience unclear"
+                  ],
+                  "weakAreas": [
+                    "Areas identified for improvement"
+                  ],
+                  "strengthAreas": [
+                    "Direct experience with Docker, Kubernetes, Jenkins, and AWS from current role",
+                    "Proven CI/CD pipeline implementation at StartupXYZ",
+                    "Strong programming skills in Python for automation scripting",
+                    "Experience architecting scalable microservices serving 1M+ users",
+                    "Git version control expertise",
+                    "Leadership experience managing technical teams"
+                  ]
+                },
+                "scoringBreakdown": {
+                  "totalRolesAnalyzed": 4,
+                  "adjustedThreshold": 0.5,
+                  "originalThreshold": 0.5,
+                  "averageConfidence": 0.5825,
+                  "topFactors": [
+                    {
+                      "factor": "DevOps Engineer",
+                      "contribution": 0.78,
+                      "explanation": "Strong alignment with DevOps requirements based on demonstrated experience with Docker, Kubernetes, ..."
+                    },
+                    {
+                      "factor": "Business Analyst",
+                      "contribution": 0.58,
+                      "explanation": "Reasonable alignment based on technical expertise, stakeholder management experience, and agile meth..."
+                    },
+                    {
+                      "factor": "Data Scientist",
+                      "contribution": 0.52,
+                      "explanation": "Moderate alignment based on strong Python programming skills and PostgreSQL database experience. The..."
+                    }
+                  ]
+                },
+                "detectionMetadata": {
+                  "processingTime": 1756083509571,
+                  "algorithmVersion": "enhanced-opus-4.1",
+                  "adjustmentsMade": [
+                    "Dynamic threshold adjustment",
+                    "Multiple role guarantee"
+                  ],
+                  "confidenceDistribution": [
+                    {
+                      "range": "80-100%",
+                      "count": 0
+                    },
+                    {
+                      "range": "60-79%",
+                      "count": 1
+                    },
+                    {
+                      "range": "40-59%",
+                      "count": 3
+                    },
+                    {
+                      "range": "0-39%",
+                      "count": 0
+                    }
+                  ]
+                }
+              },
+              "detectedRole": {
+                "roleId": "4UbkbCXL3JnWX1zTjybo",
+                "roleName": "DevOps Engineer",
+                "confidence": 0.78,
+                "matchingFactors": [
+                  {
+                    "type": "skills",
+                    "score": 0.75,
+                    "weight": 0.35,
+                    "matchedKeywords": [
+                      "docker",
+                      "kubernetes",
+                      "jenkins",
+                      "aws",
+                      "ci/cd",
+                      "git",
+                      "python"
+                    ],
+                    "details": "7 out of 10 required skills directly matched",
+                    "reasoning": {
+                      "contributionExplanation": "Core DevOps technologies are well-represented in candidate's skillset",
+                      "keywordMatches": [
+                        {
+                          "keyword": "docker",
+                          "found": true,
+                          "matchType": "exact",
+                          "relevance": 0.95
+                        },
+                        {
+                          "keyword": "kubernetes",
+                          "found": true,
+                          "matchType": "exact",
+                          "relevance": 0.9
+                        },
+                        {
+                          "keyword": "jenkins",
+                          "found": true,
+                          "matchType": "exact",
+                          "relevance": 0.85
+                        },
+                        {
+                          "keyword": "aws",
+                          "found": true,
+                          "matchType": "exact",
+                          "relevance": 0.9
+                        },
+                        {
+                          "keyword": "terraform",
+                          "found": false,
+                          "matchType": "none",
+                          "relevance": 0
+                        },
+                        {
+                          "keyword": "ansible",
+                          "found": false,
+                          "matchType": "none",
+                          "relevance": 0
+                        }
+                      ],
+                      "strengthAssessment": "very good",
+                      "improvementSuggestions": [
+                        "Learn Terraform for Infrastructure as Code",
+                        "Gain Ansible experience for configuration management",
+                        "Develop Linux administration skills"
+                      ],
+                      "confidenceFactors": [
+                        "Direct experience with containerization",
+                        "Proven CI/CD implementation",
+                        "Cloud platform expertise"
+                      ]
+                    }
+                  }
+                ],
+                "enhancementPotential": 22,
+                "recommendations": [],
+                "scoringReasoning": "Strong alignment with DevOps requirements based on demonstrated experience with Docker, Kubernetes, Jenkins, AWS, and CI/CD implementation. The candidate has hands-on experience building scalable microservices architecture and implementing CI/CD pipelines. Their full-stack background provides valuable context for DevOps practices, and their team leadership experience shows ability to collaborate across development and operations. The 8+ years of experience and proven track record with cloud technologies and containerization make them a strong fit for a mid-level DevOps role.",
+                "fitAnalysis": {
+                  "strengths": [
+                    "Direct experience with Docker, Kubernetes, Jenkins, and AWS from current role",
+                    "Proven CI/CD pipeline implementation at StartupXYZ",
+                    "Strong programming skills in Python for automation scripting",
+                    "Experience architecting scalable microservices serving 1M+ users",
+                    "Git version control expertise",
+                    "Leadership experience managing technical teams"
+                  ],
+                  "gaps": [
+                    "No mentioned experience with Terraform for Infrastructure as Code",
+                    "Ansible configuration management not explicitly listed",
+                    "Linux administration skills not detailed",
+                    "Bash scripting experience not mentioned",
+                    "Monitoring and observability tools experience unclear"
+                  ],
+                  "overallAssessment": "Excellent candidate for DevOps Engineer role with strong foundational skills and practical experience. The candidate has already been working with key DevOps technologies and practices, making the transition natural. With some additional training in IaC tools like Terraform and configuration management, they would excel in this position."
+                }
+              },
+              "alternativeRoles": [
+                {
+                  "roleId": "aSlavHSwmFRfd4LN4Tkt",
+                  "roleName": "Business Analyst",
+                  "confidence": 0.58,
+                  "matchingFactors": [
+                    {
+                      "type": "skills",
+                      "score": 0.55,
+                      "weight": 0.3,
+                      "matchedKeywords": [
+                        "sql",
+                        "jira",
+                        "agile",
+                        "stakeholder management",
+                        "problem solving",
+                        "documentation"
+                      ],
+                      "details": "Moderate match with several transferable skills",
+                      "reasoning": {
+                        "contributionExplanation": "Technical background and team leadership provide foundation for business analysis work",
+                        "keywordMatches": [
+                          {
+                            "keyword": "sql",
+                            "found": true,
+                            "matchType": "inferred",
+                            "relevance": 0.8
+                          },
+                          {
+                            "keyword": "agile",
+                            "found": true,
+                            "matchType": "inferred",
+                            "relevance": 0.85
+                          },
+                          {
+                            "keyword": "stakeholder management",
+                            "found": true,
+                            "matchType": "inferred",
+                            "relevance": 0.75
+                          },
+                          {
+                            "keyword": "requirements gathering",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          },
+                          {
+                            "keyword": "process mapping",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          }
+                        ],
+                        "strengthAssessment": "moderate",
+                        "improvementSuggestions": [
+                          "Learn formal requirements gathering techniques",
+                          "Study business process modeling",
+                          "Gain experience with business intelligence tools",
+                          "Develop business case writing skills"
+                        ],
+                        "confidenceFactors": [
+                          "Technical depth for system analysis",
+                          "Team collaboration experience",
+                          "Agile methodology knowledge"
+                        ]
+                      }
+                    }
+                  ],
+                  "enhancementPotential": 42,
+                  "recommendations": [],
+                  "scoringReasoning": "Reasonable alignment based on technical expertise, stakeholder management experience, and agile methodology knowledge. The candidate's experience leading teams and working with multiple stakeholders in building scalable systems demonstrates analytical and communication skills essential for business analysis. Their full-stack development background provides deep understanding of technical feasibility and system capabilities. Experience with CI/CD and microservices indicates familiarity with process optimization and system integration.",
+                  "fitAnalysis": {
+                    "strengths": [
+                      "Proven stakeholder management from leading development teams",
+                      "Agile methodology experience in multiple roles",
+                      "Strong problem-solving skills from 8+ years in software development",
+                      "Technical expertise to understand system capabilities and limitations",
+                      "Experience with JIRA likely (common in software teams)",
+                      "Documentation skills from senior engineering responsibilities"
+                    ],
+                    "gaps": [
+                      "No explicit requirements gathering or business analysis experience",
+                      "Process mapping and business process improvement not demonstrated",
+                      "Business intelligence and reporting tools experience unclear",
+                      "Gap analysis and business case development skills not shown",
+                      "Limited evidence of non-technical stakeholder communication"
+                    ],
+                    "overallAssessment": "Candidate has transferable skills that could work well in a technical business analyst role, particularly in software or IT projects. Their deep technical knowledge would be valuable for requirements feasibility and system analysis. However, would need training in formal business analysis methodologies and non-technical aspects of the role."
+                  }
+                },
+                {
+                  "roleId": "1KUC0Iw60Purw13sQFWc",
+                  "roleName": "Data Scientist",
+                  "confidence": 0.52,
+                  "matchingFactors": [
+                    {
+                      "type": "skills",
+                      "score": 0.45,
+                      "weight": 0.4,
+                      "matchedKeywords": [
+                        "python",
+                        "sql",
+                        "data analysis"
+                      ],
+                      "details": "Limited match on data science specific skills",
+                      "reasoning": {
+                        "contributionExplanation": "Strong programming foundation but missing specialized data science tools and techniques",
+                        "keywordMatches": [
+                          {
+                            "keyword": "python",
+                            "found": true,
+                            "matchType": "exact",
+                            "relevance": 0.95
+                          },
+                          {
+                            "keyword": "sql",
+                            "found": true,
+                            "matchType": "inferred",
+                            "relevance": 0.8
+                          },
+                          {
+                            "keyword": "machine learning",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          },
+                          {
+                            "keyword": "statistics",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          },
+                          {
+                            "keyword": "pandas",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          }
+                        ],
+                        "strengthAssessment": "moderate",
+                        "improvementSuggestions": [
+                          "Complete data science bootcamp or certification",
+                          "Learn Pandas, NumPy, and Scikit-learn",
+                          "Study statistics and machine learning fundamentals",
+                          "Build portfolio of data science projects"
+                        ],
+                        "confidenceFactors": [
+                          "Strong Python skills",
+                          "Database experience",
+                          "Technical problem-solving ability"
+                        ]
+                      }
+                    }
+                  ],
+                  "enhancementPotential": 48,
+                  "recommendations": [],
+                  "scoringReasoning": "Moderate alignment based on strong Python programming skills and PostgreSQL database experience. The candidate's software engineering background provides excellent technical foundation for data science work, including ability to productionize models and build data pipelines. Their experience with scalable systems serving 1M+ users suggests familiarity with data at scale. However, no explicit machine learning, statistics, or data science library experience is mentioned, which are core requirements for the role.",
+                  "fitAnalysis": {
+                    "strengths": [
+                      "Expert-level Python programming skills",
+                      "PostgreSQL and database management experience",
+                      "Strong software engineering practices for production ML systems",
+                      "Experience with large-scale systems and data",
+                      "Problem-solving skills from 8+ years in tech",
+                      "Ability to build end-to-end data solutions"
+                    ],
+                    "gaps": [
+                      "No mentioned experience with Pandas, NumPy, or Scikit-learn",
+                      "Statistics and hypothesis testing knowledge not demonstrated",
+                      "Machine learning algorithms and modeling experience unclear",
+                      "Data visualization tools and techniques not listed",
+                      "No evidence of statistical analysis or experimentation"
+                    ],
+                    "overallAssessment": "Candidate has strong technical foundation but would need significant upskilling in data science-specific areas. Their software engineering expertise would be valuable for implementing and deploying ML models, but they lack demonstrated experience in core data science competencies. Best suited as a transition role with proper training and mentorship."
+                  }
+                },
+                {
+                  "roleId": "PvLoxQOjMX20gl9pOp0O",
+                  "roleName": "AI Product Expert",
+                  "confidence": 0.45,
+                  "matchingFactors": [
+                    {
+                      "type": "skills",
+                      "score": 0.38,
+                      "weight": 0.35,
+                      "matchedKeywords": [
+                        "python",
+                        "agile",
+                        "technical communication",
+                        "stakeholder management"
+                      ],
+                      "details": "Limited match on AI product specific requirements",
+                      "reasoning": {
+                        "contributionExplanation": "Technical leadership experience provides some foundation but missing core AI and product competencies",
+                        "keywordMatches": [
+                          {
+                            "keyword": "python",
+                            "found": true,
+                            "matchType": "exact",
+                            "relevance": 0.7
+                          },
+                          {
+                            "keyword": "agile",
+                            "found": true,
+                            "matchType": "inferred",
+                            "relevance": 0.75
+                          },
+                          {
+                            "keyword": "ai/ml fundamentals",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          },
+                          {
+                            "keyword": "product management",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          },
+                          {
+                            "keyword": "machine learning",
+                            "found": false,
+                            "matchType": "none",
+                            "relevance": 0
+                          }
+                        ],
+                        "strengthAssessment": "limited",
+                        "improvementSuggestions": [
+                          "Complete AI/ML fundamentals course",
+                          "Gain product management certification",
+                          "Work on AI-related projects",
+                          "Study AI ethics and responsible AI practices",
+                          "Develop understanding of ML model lifecycle"
+                        ],
+                        "confidenceFactors": [
+                          "Technical credibility",
+                          "Leadership experience",
+                          "Python proficiency"
+                        ]
+                      }
+                    }
+                  ],
+                  "enhancementPotential": 55,
+                  "recommendations": [],
+                  "scoringReasoning": "Partial alignment based on strong technical background and team leadership experience. The candidate's experience leading development teams and architecting scalable solutions demonstrates product thinking and stakeholder management capabilities. Their Python expertise and full-stack knowledge provide technical credibility for AI product discussions. However, lacks explicit AI/ML experience, product management background, and AI-specific domain knowledge which are crucial for this senior-level role.",
+                  "fitAnalysis": {
+                    "strengths": [
+                      "Python programming expertise for understanding AI implementations",
+                      "Team leadership and stakeholder management from leading 5+ developers",
+                      "Technical communication skills from senior engineering role",
+                      "Agile methodology experience",
+                      "System architecture understanding for AI product design",
+                      "Experience with scalable systems relevant to ML deployment"
+                    ],
+                    "gaps": [
+                      "No demonstrated AI/ML fundamentals or experience",
+                      "Product management experience not evident",
+                      "Missing product strategy and roadmap development skills",
+                      "No experience with AI ethics, model deployment, or ML operations",
+                      "Data analysis focused on business metrics not shown",
+                      "AI-specific domain knowledge (NLP, computer vision) absent"
+                    ],
+                    "overallAssessment": "Candidate has strong technical foundation and leadership skills but lacks critical AI and product management experience. Would require substantial training in AI/ML concepts and product management methodologies. Better suited for a technical product manager role in traditional software products before transitioning to AI-focused positions."
+                  }
+                }
+              ],
+              "metadata": {
+                "model": "claude-opus-4-1-20250805",
+                "totalRoles": 4,
+                "overallConfidence": 58,
+                "primaryRoleConfidence": 78,
+                "enhancedReasoning": true,
+                "scoringBreakdown": {
+                  "primaryRole": "Strong alignment with DevOps requirements based on demonstrated experience with Docker, Kubernetes, Jenkins, AWS, and CI/CD implementation. The candidate has hands-on experience building scalable microservices architecture and implementing CI/CD pipelines. Their full-stack background provides valuable context for DevOps practices, and their team leadership experience shows ability to collaborate across development and operations. The 8+ years of experience and proven track record with cloud technologies and containerization make them a strong fit for a mid-level DevOps role.",
+                  "fitAnalysis": {
+                    "strengths": [
+                      "Direct experience with Docker, Kubernetes, Jenkins, and AWS from current role",
+                      "Proven CI/CD pipeline implementation at StartupXYZ",
+                      "Strong programming skills in Python for automation scripting",
+                      "Experience architecting scalable microservices serving 1M+ users",
+                      "Git version control expertise",
+                      "Leadership experience managing technical teams"
+                    ],
+                    "gaps": [
+                      "No mentioned experience with Terraform for Infrastructure as Code",
+                      "Ansible configuration management not explicitly listed",
+                      "Linux administration skills not detailed",
+                      "Bash scripting experience not mentioned",
+                      "Monitoring and observability tools experience unclear"
+                    ],
+                    "overallAssessment": "Excellent candidate for DevOps Engineer role with strong foundational skills and practical experience. The candidate has already been working with key DevOps technologies and practices, making the transition natural. With some additional training in IaC tools like Terraform and configuration management, they would excel in this position."
+                  }
+                }
+              },
+              "cached": false,
+              "generatedAt": "2025-08-25T00:58:29.571Z"
+            }
+          }
+        },
+        "responseKeys": [
+          "result"
+        ]
+      },
+      "timestamp": "2025-08-25T00:58:29.573Z"
+    },
+    {
+      "test": "Role Profiles API Call",
+      "status": "pass",
+      "details": {
+        "summary": {
+          "status": 200,
+          "hasProfiles": true,
+          "profileCount": 20,
+          "hasError": false
+        },
+        "responseKeys": [
+          "result"
+        ]
+      },
+      "timestamp": "2025-08-25T00:58:29.622Z"
+    },
+    {
+      "test": "Role Recommendations API Call",
+      "status": "pass",
+      "details": {
+        "summary": {
+          "status": 500,
+          "hasRecommendations": false,
+          "recommendationCount": 0,
+          "hasError": true
+        },
+        "responseKeys": [
+          "error"
+        ]
+      },
+      "timestamp": "2025-08-25T00:58:29.645Z"
+    },
+    {
+      "test": "Error Handling - Invalid JSON",
+      "status": "pass",
+      "details": {
+        "summary": {
+          "networkError": true,
+          "error": "invalid json response body at http://localhost:5001/getmycv-ai/us-central1/detectRoleProfile reason: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+        }
+      },
+      "timestamp": "2025-08-25T00:58:29.652Z"
+    },
+    {
+      "test": "Error Handling - Missing Data Field",
+      "status": "pass",
+      "details": {
+        "summary": {
+          "status": 400,
+          "hasError": true,
+          "expectedError": true
+        }
+      },
+      "timestamp": "2025-08-25T00:58:29.658Z"
+    },
+    {
+      "test": "Error Handling - Empty Request",
+      "status": "pass",
+      "details": {
+        "summary": {
+          "status": 400,
+          "hasError": true,
+          "expectedError": true
+        }
+      },
+      "timestamp": "2025-08-25T00:58:29.663Z"
+    }
+  ]
+}

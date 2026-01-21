@@ -1,0 +1,85 @@
+graph TB
+    subgraph "Current Vulnerable Architecture"
+        A1[User Request] --> B1[Rate Limit Check]
+        B1 --> C1{Service Available?}
+        C1 -->|No| D1[FAIL OPEN - Allow Access]
+        C1 -->|Yes| E1[Check Limits]
+        E1 --> F1[Grant/Deny Access]
+        D1 --> G1[💥 SECURITY BREACH]
+        style D1 fill:#ff6b6b
+        style G1 fill:#ff4757
+    end
+
+    subgraph "New Secure Architecture"
+        A2[User Request] --> B2[Enhanced Security Gateway]
+        B2 --> C2[Circuit Breaker Check]
+        C2 --> D2{Service Health}
+        
+        D2 -->|Healthy| E2[Rate Limit Service]
+        D2 -->|Degraded| F2[Fail-Closed Mode]
+        D2 -->|Failed| G2[Emergency Deny Mode]
+        
+        E2 --> H2{Within Limits?}
+        H2 -->|Yes| I2[Grant Access + Log]
+        H2 -->|No| J2[Deny Access + Log]
+        
+        F2 --> K2[Graceful Deny + Message]
+        G2 --> L2[Security Deny + Alert]
+        
+        I2 --> M2[Track Usage]
+        J2 --> N2[Security Monitoring]
+        K2 --> N2
+        L2 --> O2[🚨 Critical Alert]
+        
+        style F2 fill:#26de81
+        style G2 fill:#26de81
+        style K2 fill:#26de81
+        style L2 fill:#26de81
+        style O2 fill:#ffa726
+    end
+
+    subgraph "Security Monitoring Layer"
+        P[Security Event Logger]
+        Q[Real-time Alerting]
+        R[Threat Detection]
+        S[Compliance Auditing]
+        
+        N2 --> P
+        P --> Q
+        P --> R
+        P --> S
+    end
+
+    subgraph "Recovery & Resilience"
+        T[Health Monitoring]
+        U[Auto Recovery]
+        V[Load Balancing]
+        W[Fallback Services]
+        
+        C2 --> T
+        T --> U
+        U --> V
+        V --> W
+    end
+
+    subgraph "Security Improvements"
+        X[Fail-Closed by Default]
+        Y[Security Headers]
+        Z[Input Validation]
+        AA[Error Sanitization]
+        
+        B2 --> X
+        B2 --> Y
+        B2 --> Z
+        B2 --> AA
+    end
+
+    classDef secure fill:#26de81,stroke:#20bf6b,stroke-width:2px
+    classDef vulnerable fill:#ff6b6b,stroke:#ff4757,stroke-width:2px
+    classDef monitoring fill:#3742fa,stroke:#2f3542,stroke-width:2px
+    classDef alert fill:#ffa726,stroke:#ff6348,stroke-width:2px
+
+    class E2,F2,G2,K2,L2,X,Y,Z,AA secure
+    class D1,G1 vulnerable
+    class P,Q,R,S,T,U monitoring
+    class O2 alert

@@ -1,0 +1,40 @@
+graph TD
+    A[User Initiates CV Generation] --> B[initiateCVGeneration Called]
+    B --> C[Quick Validation & Job Setup]
+    C --> D[Set Status: 'generating']
+    D --> E[Return Immediately to User]
+    E --> F[User Sees: Generation Started]
+    
+    B --> G[Background: setImmediate]
+    G --> H[generateCVCore Execution]
+    H --> I[Generate Base CV HTML]
+    I --> J[Process Features in Parallel]
+    J --> K[Complete Job Generation]
+    K --> L[Set Status: 'completed']
+    L --> M[User Sees: Generated CV]
+    
+    H --> N[Error Handling]
+    N --> O[Set Status: 'failed']
+    O --> P[User Sees: Error Message]
+    
+    J --> Q[Feature Processing Details]
+    Q --> R[Promise.allSettled for Parallel Processing]
+    R --> S[Individual Feature Execution]
+    S --> T[Mark Feature: completed/failed]
+    T --> U[Continue with Other Features]
+    U --> V[Feature Processing Summary]
+    V --> W[Inject Completed Features into CV]
+    W --> K
+    
+    S --> X[Feature Error]
+    X --> Y[Mark Feature as Failed]
+    Y --> Z[Log Error but Continue]
+    Z --> U
+    
+    style A fill:#e1f5fe
+    style F fill:#c8e6c9
+    style M fill:#4caf50
+    style P fill:#ffcdd2
+    style E fill:#fff3e0
+    style L fill:#4caf50
+    style O fill:#f44336

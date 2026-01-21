@@ -1,0 +1,209 @@
+graph TB
+    %% Premium Features Phase 2A Migration Architecture
+    
+    %% Current State (Root Repository)
+    subgraph "CURRENT STATE - Root Repository"
+        subgraph "Backend Functions (/functions/src/functions/)"
+            F1[checkFeatureAccess.ts]
+            F2[confirmPayment.ts]
+            F3[createCheckoutSession.ts]
+            F4[createPaymentIntent.ts]
+            F5[getUserSubscription.ts]
+            F6[handleStripeWebhook.ts]
+            F7[getUserUsageStats.ts]
+            F8[getUserPolicyViolations.ts]
+        end
+        
+        subgraph "Backend Services (/functions/src/services/)"
+            S1[subscription-management.service.ts]
+            S2[subscription-cache.service.ts]
+            S3[cached-subscription.service.ts]
+            S4[policy-enforcement.service.ts]
+            S5[enhancedPremiumGuard.ts]
+        end
+        
+        subgraph "Frontend Components (/frontend/src/)"
+            C1[components/premium/]
+            C2[components/pricing/]
+            C3[services/premium/]
+            C4[hooks/usePremium.ts]
+            C5[hooks/useSubscription.ts]
+            C6[providers/PremiumProvider.tsx]
+        end
+    end
+    
+    %% Target State (Premium Submodule)
+    subgraph "TARGET STATE - Premium Submodule (packages/premium/)"
+        subgraph "Enhanced Backend Functions"
+            PF1[backend/functions/payments/core/checkFeatureAccess.ts]
+            PF2[backend/functions/payments/stripe/confirmPayment.ts]
+            PF3[backend/functions/payments/stripe/createCheckoutSession.ts]
+            PF4[backend/functions/payments/stripe/createPaymentIntent.ts]
+            PF5[backend/functions/payments/core/getUserSubscription.ts]
+            PF6[backend/functions/payments/stripe/handleStripeWebhook.ts]
+            PF7[backend/functions/policies/getUserUsageStats.ts]
+            PF8[backend/functions/policies/getUserPolicyViolations.ts]
+        end
+        
+        subgraph "Enhanced Backend Services"
+            PS1[services/subscription.service.ts]
+            PS2[services/billing.service.ts]
+            PS3[services/usage.service.ts]
+            PS4[services/feature-access.ts]
+            PS5[middleware/enhancedPremiumGuard.ts]
+        end
+        
+        subgraph "Enhanced Frontend Components"
+            PC1[components/premium/]
+            PC2[components/pricing/]
+            PC3[frontend/services/unified-payment.service.ts]
+            PC4[hooks/useBilling.ts]
+            PC5[hooks/useSubscription.ts]
+            PC6[components/FeatureGate.tsx]
+        end
+        
+        subgraph "Advanced Payment Infrastructure"
+            PAY1[backend/services/payments/payment-orchestrator.ts]
+            PAY2[backend/services/payments/provider-factory.ts]
+            PAY3[backend/services/payments/providers/stripe-provider.ts]
+            PAY4[backend/services/payments/providers/paypal-provider.ts]
+        end
+    end
+    
+    %% Dependencies
+    subgraph "Module Dependencies"
+        CORE["@cvplus/core
+        - Enhanced error handling
+        - Pricing configuration
+        - Constants and utilities"]
+        
+        AUTH["@cvplus/auth
+        - User authentication
+        - Session management
+        - Permission system"]
+    end
+    
+    %% Migration Flow
+    F1 --> PF1
+    F2 --> PF2
+    F3 --> PF3
+    F4 --> PF4
+    F5 --> PF5
+    F6 --> PF6
+    F7 --> PF7
+    F8 --> PF8
+    
+    S1 --> PS1
+    S2 --> PS2
+    S3 --> PS3
+    S4 --> PS4
+    S5 --> PS5
+    
+    C1 --> PC1
+    C2 --> PC2
+    C3 --> PC3
+    C4 --> PC4
+    C5 --> PC5
+    C6 --> PC6
+    
+    %% Integration Points
+    CORE --> PS1
+    CORE --> PS2
+    CORE --> PF1
+    AUTH --> PS1
+    AUTH --> PS4
+    AUTH --> PC4
+    
+    %% Critical Business Flows
+    subgraph "Revenue Critical Flows"
+        STRIPE[Stripe Webhook Processing]
+        CHECKOUT[Checkout Session Creation]
+        PAYMENT[Payment Intent Processing]
+        FEATURES[Premium Feature Access]
+    end
+    
+    PF2 --> STRIPE
+    PF3 --> CHECKOUT
+    PF4 --> PAYMENT
+    PF1 --> FEATURES
+    
+    %% Payment Provider Architecture
+    PAY1 --> PAY2
+    PAY2 --> PAY3
+    PAY2 --> PAY4
+    PAY3 --> PF2
+    PAY3 --> PF3
+    PAY3 --> PF4
+    PAY3 --> PF6
+    
+    %% Import Reference Updates
+    subgraph "Updated Import References"
+        IMP1["functions/src/index.ts → @cvplus/premium"]
+        IMP2["frontend components → @cvplus/premium"]
+        IMP3["service imports → @cvplus/premium"]
+    end
+    
+    %% Zero Revenue Impact Strategy
+    subgraph "Zero Revenue Impact Strategy"
+        MONITOR[Real-time Payment Monitoring]
+        ROLLBACK[Instant Rollback Capability]
+        TESTING[Comprehensive Flow Testing]
+        VALIDATION[Revenue Flow Validation]
+    end
+    
+    STRIPE --> MONITOR
+    CHECKOUT --> MONITOR
+    PAYMENT --> MONITOR
+    FEATURES --> MONITOR
+    
+    %% Security and Compliance
+    subgraph "Security & Compliance"
+        PCI[PCI DSS Compliance]
+        WEBHOOK[Webhook Validation]
+        ACCESS[Access Control]
+        AUDIT[Audit Logging]
+    end
+    
+    PAY3 --> PCI
+    PF6 --> WEBHOOK
+    PS4 --> ACCESS
+    PS1 --> AUDIT
+    
+    %% Performance Optimization
+    subgraph "Performance Optimization"
+        CACHE[Subscription Caching]
+        CIRCUIT[Circuit Breaker Pattern]
+        BATCH[Batch Processing]
+        ASYNC[Async Operations]
+    end
+    
+    PS2 --> CACHE
+    PAY1 --> CIRCUIT
+    PS3 --> BATCH
+    PAY1 --> ASYNC
+    
+    %% Success Metrics
+    subgraph "Success Metrics"
+        ZERO["Zero Payment Failures"]
+        PERF["Performance Maintained"]
+        SEC["Security Preserved"]
+        UX["User Experience Enhanced"]
+    end
+    
+    MONITOR --> ZERO
+    CACHE --> PERF
+    ACCESS --> SEC
+    PC1 --> UX
+    
+    %% Styling
+    classDef current fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef target fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef critical fill:#fff3e0,stroke:#ef6c00,stroke-width:3px
+    classDef integration fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef success fill:#f1f8e9,stroke:#558b2f,stroke-width:2px
+    
+    class F1,F2,F3,F4,F5,F6,F7,F8,S1,S2,S3,S4,S5,C1,C2,C3,C4,C5,C6 current
+    class PF1,PF2,PF3,PF4,PF5,PF6,PF7,PF8,PS1,PS2,PS3,PS4,PS5,PC1,PC2,PC3,PC4,PC5,PC6,PAY1,PAY2,PAY3,PAY4 target
+    class STRIPE,CHECKOUT,PAYMENT,FEATURES,MONITOR,ROLLBACK critical
+    class CORE,AUTH,IMP1,IMP2,IMP3 integration
+    class ZERO,PERF,SEC,UX success

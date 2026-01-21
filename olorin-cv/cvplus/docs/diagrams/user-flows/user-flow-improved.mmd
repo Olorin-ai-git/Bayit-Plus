@@ -1,0 +1,74 @@
+flowchart TD
+    A[HomePage<br/>Upload CV<br/>🎯 Enhanced Onboarding] --> B{Authentication}
+    B -->|Anonymous| C[Create Job<br/>💾 Auto-save Session]
+    B -->|Google Auth| C
+    
+    C --> D[ProcessingPage<br/>Real-time Status<br/>Step 1 of 5<br/>📊 Enhanced Progress]
+    
+    D --> E{Processing Status}
+    E -->|Success| F[CVAnalysisPage<br/>Analysis Results<br/>Step 2 of 5<br/>❓ Contextual Help]
+    E -->|Failed| G[Error Recovery<br/>🔄 Partial Results<br/>📋 Recovery Options]
+    G -->|Resume| D
+    G -->|Restart| A
+    
+    F --> H[CVPreviewPage<br/>Preview & Customize<br/>Step 3 of 5<br/>📱 Mobile Optimized]
+    
+    H --> I{Enhanced User Choice}
+    I -->|Select Template| J[TemplatesPage<br/>Template Selection<br/>Step 3a of 5<br/>🎨 Visual Preview]
+    I -->|Keyword Optimization| K[KeywordOptimization<br/>ATS Optimization<br/>Step 3b of 5]
+    I -->|Quick Generate| L[ResultsPage<br/>Final Results<br/>Step 5 of 5<br/>🚀 Fast Track]
+    I -->|Save & Continue Later| M[Save Session<br/>💾 Resume Link]
+    
+    J --> H
+    K --> H
+    M --> N[Email Resume Link<br/>📧 Session Recovery]
+    N --> O[Resume Session<br/>🔗 Pick up where left off]
+    O --> H
+    
+    H --> P[Enhanced Preview<br/>Step 4 of 5<br/>👁️ Live Preview<br/>⚡ Real-time Updates]
+    P --> L
+    
+    L --> Q{Enhanced User Actions}
+    Q -->|Download| R[Multi-format Download<br/>📄 PDF/DOCX/HTML<br/>📊 Download Analytics]
+    Q -->|Share| S[Enhanced Public Profile<br/>🌐 Social Sharing<br/>🔗 Custom URLs]
+    Q -->|Iterate| T[Smart Iteration<br/>🔄 Preserve Changes<br/>⚡ Quick Edits]
+    Q -->|Analytics| U[Performance Dashboard<br/>📈 ATS Scores<br/>👀 Profile Views]
+    
+    T --> P
+    
+    %% Enhanced Backend Integration
+    D -.->|Enhanced processCV| V[Smart CV Processing<br/>🧠 AI Document Analysis<br/>🔍 Advanced PII Detection]
+    D -.->|Progressive enhancedAnalyzeCV| W[Streaming AI Analysis<br/>⚡ Real-time Results<br/>🎯 ATS Optimization]
+    H -.->|Contextual applyImprovements| X[Intelligent Improvements<br/>🤖 Context-aware AI<br/>📊 A/B Testing]
+    P -.->|Parallel generateMedia| Y[Parallel Media Generation<br/>🎥 Video + 🎙️ Podcast<br/>⚡ Concurrent Processing]
+    L -.->|Enhanced generateCV| Z[Smart CV Generation<br/>📱 Responsive Design<br/>🎨 Dynamic Styling]
+    
+    %% Mobile-First Navigation
+    AA[Mobile Navigation<br/>🍔 Hamburger Menu<br/>👆 Touch Optimized] -.-> A
+    AA -.-> F
+    AA -.-> H
+    AA -.-> L
+    
+    %% Enhanced Error Handling
+    BB[Global Error Handler<br/>🚨 Smart Recovery<br/>📞 Support Integration] -.-> G
+    
+    %% Analytics & Monitoring
+    CC[User Analytics<br/>📊 Behavior Tracking<br/>🎯 Conversion Optimization] -.-> A
+    CC -.-> F
+    CC -.-> H
+    CC -.-> L
+    
+    %% Styling for Improved Flow
+    classDef primaryPage fill:#3b82f6,stroke:#1e40af,stroke-width:3px,color:#ffffff
+    classDef enhancedPage fill:#06b6d4,stroke:#0891b2,stroke-width:3px,color:#ffffff
+    classDef processing fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#ffffff
+    classDef decision fill:#8b5cf6,stroke:#7c3aed,stroke-width:2px,color:#ffffff
+    classDef backend fill:#10b981,stroke:#059669,stroke-width:2px,color:#ffffff
+    classDef enhancement fill:#ec4899,stroke:#db2777,stroke-width:2px,color:#ffffff
+    classDef recovery fill:#84cc16,stroke:#65a30d,stroke-width:2px,color:#ffffff
+    
+    class A,F,H,P,L enhancedPage
+    class C,D,V,W,X,Y,Z processing
+    class B,E,I,Q decision
+    class G,BB recovery
+    class J,K,M,N,O,T,U,AA,CC enhancement

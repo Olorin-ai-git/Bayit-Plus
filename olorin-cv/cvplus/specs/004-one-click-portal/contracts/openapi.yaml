@@ -1,0 +1,223 @@
+openapi: 3.0.3
+
+info:
+  title: One Click Portal API
+  description: |
+    CVPlus One Click Portal API enables premium users to generate fully functional web portals from their CVs with integrated RAG-powered chat functionality.
+
+    ## Features
+    - One-click portal generation from processed CVs
+    - RAG-powered AI chat with CV context
+    - Real-time deployment status tracking
+    - Portal analytics and visitor insights
+    - Premium subscription access control
+
+    ## Authentication
+    All endpoints require Firebase Authentication tokens in the Authorization header:
+    ```
+    Authorization: Bearer <firebase_id_token>
+    ```
+
+    ## Rate Limiting
+    - Portal generation: 10/day for premium users
+    - Chat messages: 100/hour per session
+    - Analytics queries: 1000/day per user
+
+    ## Error Handling
+    All errors follow RFC 7807 format with CVPlus-specific error codes.
+
+  version: 1.0.0
+  contact:
+    name: CVPlus API Support
+    email: support@cvplus.com
+    url: https://cvplus.com/support
+  license:
+    name: Proprietary
+    url: https://cvplus.com/license
+
+servers:
+  - url: https://us-central1-cvplus-dev.cloudfunctions.net
+    description: Development server
+  - url: https://us-central1-cvplus-prod.cloudfunctions.net
+    description: Production server
+
+paths:
+  # Portal Generation Endpoints
+  /api/portal/generate:
+    $ref: './portal-api.yaml#/paths/~1api~1portal~1generate'
+
+  /api/portal/status/{deploymentId}:
+    $ref: './portal-api.yaml#/paths/~1api~1portal~1status~1{deploymentId}'
+
+  /api/portal/regenerate/{portalId}:
+    $ref: './portal-api.yaml#/paths/~1api~1portal~1regenerate~1{portalId}'
+
+  /api/portal/{portalId}:
+    $ref: './portal-api.yaml#/paths/~1api~1portal~1{portalId}'
+
+  /api/portal/{portalId}/settings:
+    $ref: './portal-api.yaml#/paths/~1api~1portal~1{portalId}~1settings'
+
+  /api/portals/user/{userId}:
+    $ref: './portal-api.yaml#/paths/~1api~1portals~1user~1{userId}'
+
+  # Chat Endpoints
+  /api/portal/{portalId}/chat:
+    $ref: './chat-api.yaml#/paths/~1api~1portal~1{portalId}~1chat'
+
+  /api/portal/{portalId}/chat/history:
+    $ref: './chat-api.yaml#/paths/~1api~1portal~1{portalId}~1chat~1history'
+
+  /api/portal/{portalId}/chat/session:
+    $ref: './chat-api.yaml#/paths/~1api~1portal~1{portalId}~1chat~1session'
+
+  /api/portal/{portalId}/chat/session/{sessionId}:
+    $ref: './chat-api.yaml#/paths/~1api~1portal~1{portalId}~1chat~1session~1{sessionId}'
+
+  # Analytics Endpoints
+  /api/portal/{portalId}/analytics:
+    $ref: './analytics-api.yaml#/paths/~1api~1portal~1{portalId}~1analytics'
+
+  /api/portal/{portalId}/visit:
+    $ref: './analytics-api.yaml#/paths/~1api~1portal~1{portalId}~1visit'
+
+  /api/portal/{portalId}/visitors:
+    $ref: './analytics-api.yaml#/paths/~1api~1portal~1{portalId}~1visitors'
+
+# Global Components
+components:
+  schemas:
+    $ref: './schemas.yaml#/components/schemas'
+
+  securitySchemes:
+    FirebaseAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Firebase ID token obtained through Firebase Authentication
+
+  responses:
+    UnauthorizedError:
+      description: Authentication token is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "AUTH_REQUIRED"
+              message: "Authentication token is required"
+              details:
+                timestamp: "2025-09-13T20:30:00Z"
+                path: "/api/portal/generate"
+
+    ForbiddenError:
+      description: User does not have required permissions or subscription
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "PREMIUM_REQUIRED"
+              message: "Premium subscription required for portal generation"
+              details:
+                requiredTier: "premium"
+                currentTier: "free"
+                upgradeUrl: "https://cvplus.com/upgrade"
+
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "RESOURCE_NOT_FOUND"
+              message: "Portal not found"
+              details:
+                resourceType: "portal"
+                resourceId: "portal_abc123"
+
+    ValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "VALIDATION_FAILED"
+              message: "Invalid request parameters"
+              details:
+                field: "portalName"
+                expected: "string between 1-100 characters"
+                received: ""
+
+    RateLimitError:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "RATE_LIMIT_EXCEEDED"
+              message: "Too many requests"
+              details:
+                limit: 10
+                window: "1 hour"
+                retryAfter: 3600
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "INTERNAL_ERROR"
+              message: "An internal error occurred"
+              details:
+                timestamp: "2025-09-13T20:30:00Z"
+                requestId: "req_abc123"
+
+# Global Security
+security:
+  - FirebaseAuth: []
+
+# Global Tags
+tags:
+  - name: Portal Generation
+    description: Portal creation and management endpoints
+    externalDocs:
+      description: Portal Generation Guide
+      url: https://docs.cvplus.com/portal/generation
+
+  - name: RAG Chat
+    description: AI-powered chat with CV context
+    externalDocs:
+      description: Chat Integration Guide
+      url: https://docs.cvplus.com/portal/chat
+
+  - name: Analytics
+    description: Portal analytics and visitor tracking
+    externalDocs:
+      description: Analytics Guide
+      url: https://docs.cvplus.com/portal/analytics
+
+# API Documentation Extensions
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: false
+  samples-enabled: true
+
+x-apimatic:
+  package-name: CVPlusPortalAPI
+  namespace: CVPlus.Portal
+
+externalDocs:
+  description: Complete CVPlus API Documentation
+  url: https://docs.cvplus.com/api

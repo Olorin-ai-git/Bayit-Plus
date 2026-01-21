@@ -1,0 +1,52 @@
+graph TD
+    subgraph "Pattern 1: Service Decomposition"
+        S1[Monolithic Service<br/>1000+ lines] --> S2[MLModelManager<br/><200 lines]
+        S1 --> S3[PipelineOrchestrator<br/><200 lines]
+        S1 --> S4[DataProcessor<br/><200 lines]
+        S1 --> S5[ValidationService<br/><200 lines]
+        S2 --> S6[Composed Service<br/><200 lines]
+        S3 --> S6
+        S4 --> S6
+        S5 --> S6
+    end
+
+    subgraph "Pattern 2: Component Extraction"
+        C1[Monolithic Component<br/>1000+ lines] --> C2[ResultsHeader<br/><200 lines]
+        C1 --> C3[ResultsSummary<br/><200 lines]
+        C1 --> C4[ResultsVisualization<br/><200 lines]
+        C1 --> C5[ResultsActions<br/><200 lines]
+        C2 --> C6[Composed Component<br/><200 lines]
+        C3 --> C6
+        C4 --> C6
+        C5 --> C6
+    end
+
+    subgraph "Pattern 3: Hook Extraction"
+        H1[Component with Logic<br/>500+ lines] --> H2[Business Logic Hook<br/><200 lines]
+        H1 --> H3[Presentation Component<br/><200 lines]
+        H2 --> H3
+    end
+
+    subgraph "Pattern 4: Configuration Extraction"
+        CF1[Mixed Config & Logic<br/>400+ lines] --> CF2[Configuration Module<br/><200 lines]
+        CF1 --> CF3[Service Implementation<br/><200 lines]
+        CF2 --> CF3
+    end
+
+    subgraph "Pattern 5: Utility Extraction"
+        U1[Inline Utilities<br/>600+ lines] --> U2[Format Utils<br/><200 lines]
+        U1 --> U3[Validation Utils<br/><200 lines]
+        U1 --> U4[Transform Utils<br/><200 lines]
+        U1 --> U5[Core Logic<br/><200 lines]
+        U2 --> U5
+        U3 --> U5
+        U4 --> U5
+    end
+
+    classDef monolithic fill:#ff6b6b,stroke:#d63031,color:#fff
+    classDef extracted fill:#00b894,stroke:#00a085,color:#fff
+    classDef composed fill:#a29bfe,stroke:#6c5ce7,color:#fff
+
+    class S1,C1,H1,CF1,U1 monolithic
+    class S2,S3,S4,S5,C2,C3,C4,C5,H2,H3,CF2,CF3,U2,U3,U4,U5 extracted
+    class S6,C6 composed

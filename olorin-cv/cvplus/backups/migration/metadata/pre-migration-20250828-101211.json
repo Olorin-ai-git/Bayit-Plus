@@ -1,0 +1,33 @@
+{
+  "backupId": "pre-migration-20250828-101211",
+  "type": "full",
+  "context": "pre-migration",
+  "timestamp": "2025-08-28T14:12:40.3NZ",
+  "location": "/Users/gklainert/Documents/cvplus/backups/migration/archives/weekly/pre-migration-20250828-101211.tar.gz",
+  "size": " 28M",
+  "compression": {
+    "enabled": true,
+    "level": 6
+  },
+  "encryption": {
+    "enabled": true
+  },
+  "components": {
+    "functions": true,
+    "gitState": true,
+    "firebaseState": true,
+    "environment": true,
+    "database": true
+  },
+  "verification": {
+    "checksum": "a26342f9e6387982ea818d039e3acdec5c38ceef6130e12e8d78d18107aa30e8",
+    "fileCount": 2215,
+    "verified": false,
+    "verifiedAt": "2025-08-28T14:13:00.661Z"
+  },
+  "retention": {
+    "category": "weekly",
+    "expiresAt": ""
+  },
+  "compressed": true
+}

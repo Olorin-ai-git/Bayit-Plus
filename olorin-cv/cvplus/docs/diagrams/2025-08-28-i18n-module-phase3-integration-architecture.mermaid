@@ -1,0 +1,185 @@
+```mermaid
+flowchart TB
+    subgraph "CVPlus Main Application"
+        subgraph "Frontend Layer"
+            subgraph "Customer-Facing Pages"
+                HomePage[HomePage.tsx]
+                AboutPage[AboutPage.tsx]
+                CVFeatures[CVFeaturesPage.tsx]
+                Pricing[PricingPage.tsx]
+                FeatureSelection[FeatureSelectionPage.tsx]
+                CVAnalysis[CVAnalysisPage.tsx]
+                Processing[ProcessingPage.tsx]
+                Results[ResultsPage.tsx]
+                FinalResults[FinalResultsPage.tsx]
+                Templates[TemplatesPage.tsx]
+                Enhanced[EnhancedTemplatesPage.tsx]
+                RoleSelection[RoleSelectionPage.tsx]
+                PaymentSuccess[PaymentSuccessPage.tsx]
+                FairUsePolicy[FairUsePolicyPage.tsx]
+            end
+            
+            subgraph "i18n React Integration"
+                I18nProvider[I18nProvider]
+                useTranslation[useTranslation Hook]
+                LanguageSelector[LanguageSelector Component]
+                TranslatedText[TranslatedText Component]
+                RTLWrapper[RTL Layout Wrapper]
+            end
+        end
+        
+        subgraph "Firebase Functions Layer"
+            subgraph "i18n Functions"
+                translateCV[translateCV.ts]
+                translateDynamic[translateDynamic.ts]
+                getUserLanguage[getUserLanguage.ts]
+                updateTranslations[updateTranslations.ts]
+                getTranslationStatus[getTranslationStatus.ts]
+                translateProfessional[translateProfessional.ts]
+                bulkTranslation[bulkTranslation.ts]
+            end
+        end
+        
+        subgraph "CVPlus Submodules"
+            subgraph "@cvplus/i18n Package"
+                TranslationService[TranslationService]
+                CulturalAdaptation[CulturalAdaptationService]
+                RTLService[RTL Support Service]
+                FormatService[Regional Format Service]
+                ProfessionalTerms[Professional Terminology]
+            end
+            
+            subgraph "@cvplus/auth"
+                AuthLang[User Language Preferences]
+            end
+            
+            subgraph "@cvplus/premium"
+                TranslationAccess[Translation Feature Access]
+            end
+            
+            subgraph "@cvplus/cv-processing"
+                CVProcessingI18n[Multilingual CV Processing]
+            end
+            
+            subgraph "@cvplus/multimedia"
+                MultimediaI18n[Multilingual Media Descriptions]
+            end
+            
+            subgraph "@cvplus/public-profiles"
+                ProfilesI18n[Multilingual Public Profiles]
+            end
+        end
+    end
+    
+    subgraph "Translation Assets"
+        subgraph "Language Files"
+            EN[English - en/common.json<br/>✅ Complete (370+ keys)]
+            ES[Spanish - es/common.json<br/>🔄 Needs 142+ keys]
+            AR[Arabic - ar/common.json<br/>🔄 Needs 42+ keys + RTL]
+            FR[French - fr/common.json<br/>🆕 Needs 320+ keys]
+            DE[German - de/common.json<br/>🆕 Needs 370+ keys]
+            ZH[Chinese - zh/common.json<br/>🆕 Needs 370+ keys]
+            PT[Portuguese - pt/common.json<br/>🆕 Needs 370+ keys]
+            JA[Japanese - ja/common.json<br/>🆕 Needs 370+ keys]
+        end
+        
+        subgraph "Translation Caching"
+            CDNCache[CDN Translation Cache]
+            LocalCache[Browser Local Cache]
+            ServiceWorkerCache[Service Worker Cache]
+        end
+    end
+    
+    subgraph "External Services"
+        TranslationAPIs[Professional Translation APIs]
+        CulturalConsultants[Cultural Adaptation Consultants]
+        NativeSpeakers[Native Speaker Review]
+    end
+    
+    %% Integration Flows
+    HomePage --> useTranslation
+    AboutPage --> useTranslation
+    CVFeatures --> useTranslation
+    Pricing --> useTranslation
+    FeatureSelection --> useTranslation
+    CVAnalysis --> useTranslation
+    Processing --> useTranslation
+    Results --> useTranslation
+    FinalResults --> useTranslation
+    Templates --> useTranslation
+    Enhanced --> useTranslation
+    RoleSelection --> useTranslation
+    PaymentSuccess --> useTranslation
+    FairUsePolicy --> useTranslation
+    
+    useTranslation --> I18nProvider
+    I18nProvider --> TranslationService
+    LanguageSelector --> TranslationService
+    TranslatedText --> TranslationService
+    RTLWrapper --> RTLService
+    
+    %% Firebase Functions Integration
+    translateCV --> TranslationService
+    translateDynamic --> TranslationService
+    getUserLanguage --> AuthLang
+    translateProfessional --> ProfessionalTerms
+    bulkTranslation --> TranslationService
+    
+    %% Module Integrations
+    TranslationService --> AuthLang
+    TranslationService --> TranslationAccess
+    TranslationService --> CVProcessingI18n
+    TranslationService --> MultimediaI18n
+    TranslationService --> ProfilesI18n
+    
+    %% Translation Asset Loading
+    TranslationService --> EN
+    TranslationService --> ES
+    TranslationService --> AR
+    TranslationService --> FR
+    TranslationService --> DE
+    TranslationService --> ZH
+    TranslationService --> PT
+    TranslationService --> JA
+    
+    %% Caching Layer
+    EN --> CDNCache
+    ES --> CDNCache
+    AR --> CDNCache
+    FR --> CDNCache
+    DE --> CDNCache
+    ZH --> CDNCache
+    PT --> CDNCache
+    JA --> CDNCache
+    
+    CDNCache --> LocalCache
+    LocalCache --> ServiceWorkerCache
+    
+    %% External Services
+    TranslationAPIs --> ES
+    TranslationAPIs --> FR
+    TranslationAPIs --> DE
+    TranslationAPIs --> ZH
+    TranslationAPIs --> PT
+    TranslationAPIs --> JA
+    
+    CulturalConsultants --> CulturalAdaptation
+    NativeSpeakers --> ProfessionalTerms
+    
+    %% RTL Integration
+    AR --> RTLService
+    RTLService --> RTLWrapper
+    
+    %% Styling
+    classDef complete fill:#d4edda,stroke:#155724,stroke-width:2px
+    classDef partial fill:#fff3cd,stroke:#856404,stroke-width:2px
+    classDef new fill:#f8d7da,stroke:#721c24,stroke-width:2px
+    classDef service fill:#cce5ff,stroke:#004085,stroke-width:2px
+    classDef external fill:#e7f3ff,stroke:#0066cc,stroke-width:1px
+    
+    class EN complete
+    class ES,AR,FR partial
+    class DE,ZH,PT,JA new
+    class TranslationService,CulturalAdaptation,RTLService,FormatService,ProfessionalTerms service
+    class TranslationAPIs,CulturalConsultants,NativeSpeakers external
+```

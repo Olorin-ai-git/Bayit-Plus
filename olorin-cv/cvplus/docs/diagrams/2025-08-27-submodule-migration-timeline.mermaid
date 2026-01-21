@@ -1,0 +1,55 @@
+gantt
+    title CVPlus Git Submodules & Firebase Migration Timeline
+    dateFormat  YYYY-MM-DD
+    section Phase 1: Foundation
+    Create Module Repos           :crit, p1a, 2025-08-27, 3d
+    Setup Firebase Projects       :crit, p1b, after p1a, 4d
+    Extract Package Code          :p1c, after p1b, 5d
+    Configure Submodules          :p1d, after p1c, 2d
+    
+    section Phase 2: Core Module
+    Core Firebase Setup           :p2a, after p1d, 3d
+    Core CI/CD Pipeline           :p2b, after p2a, 4d
+    Inter-Module Communication    :p2c, after p2b, 5d
+    Core Module Testing           :p2d, after p2c, 2d
+    
+    section Phase 3: Auth Module
+    Auth Firebase Configuration   :p3a, after p2d, 3d
+    Auth Functions Migration      :p3b, after p3a, 4d
+    Cross-Module Auth Setup       :p3c, after p3b, 4d
+    Auth Security Testing         :p3d, after p3c, 3d
+    
+    section Phase 4: Multimedia
+    Multimedia Firebase Setup     :p4a, after p3d, 3d
+    Media Processing Functions    :p4b, after p4a, 5d
+    Storage & CDN Configuration   :p4c, after p4b, 3d
+    Media Pipeline Testing        :p4d, after p4c, 3d
+    
+    section Phase 5: Business Logic
+    Premium Module Migration      :p5a, after p4d, 4d
+    Stripe Integration Setup      :p5b, after p5a, 3d
+    Recommendations AI Migration  :p5c, after p5a, 5d
+    Claude API Integration        :p5d, after p5c, 3d
+    Business Logic Testing        :p5e, after p5b, 3d
+    
+    section Phase 6: Public Profiles
+    Profiles Firebase Setup       :p6a, after p5e, 3d
+    Portal Generation System      :p6b, after p6a, 5d
+    SEO & Analytics Integration   :p6c, after p6b, 4d
+    Public Portal Testing         :p6d, after p6c, 2d
+    
+    section Phase 7: Integration
+    Cross-Module Integration Tests :crit, p7a, after p6d, 7d
+    Performance Optimization      :p7b, after p7a, 5d
+    Security & Compliance Audit   :p7c, after p7b, 4d
+    Production Deployment         :crit, p7d, after p7c, 5d
+    Documentation & Training      :p7e, after p7d, 5d
+    
+    section Milestones
+    Foundation Complete           :milestone, m1, after p1d, 0d
+    Core Module Live              :milestone, m2, after p2d, 0d
+    Auth Module Live              :milestone, m3, after p3d, 0d
+    Multimedia Module Live        :milestone, m4, after p4d, 0d
+    Business Logic Complete       :milestone, m5, after p5e, 0d
+    Public Profiles Live          :milestone, m6, after p6d, 0d
+    Full Migration Complete       :milestone, m7, after p7e, 0d

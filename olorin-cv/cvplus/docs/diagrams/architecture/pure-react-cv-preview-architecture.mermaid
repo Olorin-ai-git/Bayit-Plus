@@ -1,0 +1,151 @@
+graph TB
+    subgraph "CURRENT PROBLEMATIC SYSTEM"
+        A[User Visits /cv/jobId] --> B[Firebase Functions]
+        B --> C[cvGenerator.ts HTML Generation]
+        C --> D[HTML with Placeholder Divs]
+        D --> E[Firebase Hosting Serves HTML]
+        E --> F[React App Loads]
+        F --> G[componentRendererFix.ts]
+        G --> H[Find Placeholder Divs]
+        H --> I[Replace with React Components]
+        I --> J[Hydration Conflicts]
+        J --> K[Infinite Loop Bugs]
+        
+        style K fill:#ffcccc
+        style J fill:#ffcccc  
+        style G fill:#ffcccc
+        style C fill:#ffcccc
+    end
+
+    subgraph "NEW PURE REACT ARCHITECTURE"
+        L[User Visits /cv/jobId] --> M[React Router]
+        M --> N[CVPreviewPageNew]
+        N --> O[useCVData Hook]
+        N --> P[useEnhancedFeatures Hook]
+        O --> Q[React Query]
+        P --> R[React Query]
+        Q --> S[Firebase getCVData API]
+        R --> T[Firebase getEnhancedFeatures API]
+        S --> U[JSON Response]
+        T --> V[JSON Response]
+        U --> W[React Components Render]
+        V --> W
+        W --> X[Clean React DOM]
+        
+        style X fill:#ccffcc
+        style W fill:#ccffcc
+        style N fill:#ccffcc
+        style U fill:#cceeff
+        style V fill:#cceeff
+    end
+
+    subgraph "COMPONENT ARCHITECTURE"
+        Y[CVPreviewPageNew]
+        Y --> Z[CVPersonalInfo]
+        Y --> AA[CVExperience] 
+        Y --> BB[CVSkills]
+        Y --> CC[CVEducation]
+        Y --> DD[EnhancedFeaturesGrid]
+        
+        DD --> EE[DynamicQRCode]
+        DD --> FF[InteractiveTimeline]
+        DD --> GG[SkillsVisualization]
+        DD --> HH[AIPodcastPlayer]
+        DD --> II[VideoIntroduction]
+        DD --> JJ[PortfolioGallery]
+        DD --> KK["... 13+ More Components"]
+        
+        style DD fill:#e6f3ff
+        style Y fill:#ccffcc
+    end
+
+    subgraph "DATA FLOW"
+        LL[API Hooks]
+        LL --> MM["useCVData(jobId)"]
+        LL --> NN["useEnhancedFeatures(jobId)"]
+        MM --> OO[Personal Info]
+        MM --> PP[Experience Data]
+        MM --> QQ[Skills Data] 
+        MM --> RR[Education Data]
+        NN --> SS[QR Code Data]
+        NN --> TT[Timeline Data]
+        NN --> UU[Podcast Data]
+        NN --> VV["15+ Feature Data"]
+        
+        style LL fill:#fff2e6
+    end
+
+    subgraph "LOADING STATES"
+        WW[CVPreviewSkeleton]
+        WW --> XX[Personal Info Skeleton]
+        WW --> YY[Experience Skeleton]
+        WW --> ZZ[Skills Skeleton]
+        WW --> AAA[Features Grid Skeleton]
+        
+        style WW fill:#f0f0f0
+    end
+
+    subgraph "ERROR HANDLING"
+        BBB[ErrorBoundary]
+        BBB --> CCC[Section Error Recovery]
+        BBB --> DDD[Feature Graceful Degradation] 
+        BBB --> EEE[API Retry Logic]
+        BBB --> FFF[User-Friendly Messages]
+        
+        style BBB fill:#ffe6e6
+    end
+
+    subgraph "PERFORMANCE OPTIMIZATIONS"
+        GGG[React.memo]
+        GGG --> HHH[Prevent Unnecessary Rerenders]
+        III[Lazy Loading]
+        III --> JJJ[Below-fold Components]
+        KKK[Progressive Loading]
+        KKK --> LLL[Core Data First]
+        KKK --> MMM[Enhanced Features Second]
+        
+        style GGG fill:#e6ffe6
+        style III fill:#e6ffe6
+        style KKK fill:#e6ffe6
+    end
+
+    subgraph "KEY BENEFITS"
+        NNN["🚀 No More Infinite Loops"]
+        OOO["⚡ Faster Performance"]
+        PPP["🧠 Standard React Workflow"]
+        QQQ["🐛 Easier Debugging"]
+        RRR["📱 Better Mobile Experience"]
+        SSS["🔧 Easier Testing"]
+        
+        style NNN fill:#ccffcc
+        style OOO fill:#ccffcc
+        style PPP fill:#ccffcc
+        style QQQ fill:#ccffcc
+        style RRR fill:#ccffcc
+        style SSS fill:#ccffcc
+    end
+
+    %% Key connections
+    X --> NNN
+    X --> OOO
+    X --> PPP
+    X --> QQQ
+    X --> RRR
+    X --> SSS
+
+    %% Data flow connections
+    OO --> Z
+    PP --> AA
+    QQ --> BB
+    RR --> CC
+    SS --> EE
+    TT --> FF
+    UU --> HH
+
+    %% Loading states
+    N --> WW
+    WW --> Y
+
+    %% Error handling
+    N --> BBB
+    Y --> BBB

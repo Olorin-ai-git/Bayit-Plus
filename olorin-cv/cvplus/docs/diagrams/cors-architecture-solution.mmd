@@ -1,0 +1,97 @@
+graph TB
+    subgraph "Frontend Origins"
+        FE1[localhost:5173<br/>Development]
+        FE2[localhost:3000<br/>Alt Development]
+        FE3[getmycv-ai.web.app<br/>Staging]
+        FE4[Custom Domain<br/>Production]
+    end
+    
+    subgraph "CORS Middleware Layer"
+        CorsConfig[CORS Configuration<br/>cors-config.ts]
+        CorsMiddleware[CORS Middleware<br/>cors-middleware.ts]
+        OriginValidator[Origin Validator<br/>origin-validator.ts]
+        ErrorHandler[Error Handler<br/>cors-error-handler.ts]
+    end
+    
+    subgraph "Firebase Functions"
+        OnCallFuncs[onCall Functions<br/>CV Analysis, Auth, etc.]
+        OnRequestFuncs[onRequest Functions<br/>File Upload, API endpoints]
+        CriticalFuncs[Critical Functions<br/>Multimedia Generation]
+    end
+    
+    subgraph "Environment Configuration"
+        EnvDev[Development<br/>Environment Variables]
+        EnvStaging[Staging<br/>Environment Variables]
+        EnvProd[Production<br/>Environment Variables]
+    end
+    
+    subgraph "Testing & Monitoring"
+        LocalTest[Local Testing<br/>Firebase Emulator]
+        StagingTest[Staging Testing<br/>Live Environment]
+        ProdMonitor[Production Monitoring<br/>Real-time Alerts]
+    end
+    
+    %% Frontend to CORS Layer
+    FE1 --> CorsMiddleware
+    FE2 --> CorsMiddleware
+    FE3 --> CorsMiddleware
+    FE4 --> CorsMiddleware
+    
+    %% CORS Layer Internal Flow
+    CorsMiddleware --> OriginValidator
+    OriginValidator --> CorsConfig
+    CorsConfig --> EnvDev
+    CorsConfig --> EnvStaging
+    CorsConfig --> EnvProd
+    
+    %% CORS to Functions
+    CorsMiddleware --> OnCallFuncs
+    CorsMiddleware --> OnRequestFuncs
+    CorsMiddleware --> CriticalFuncs
+    
+    %% Error Handling
+    OriginValidator -.-> ErrorHandler
+    CorsMiddleware -.-> ErrorHandler
+    
+    %% Testing Flow
+    LocalTest --> CorsMiddleware
+    StagingTest --> CorsMiddleware
+    ProdMonitor --> ErrorHandler
+    
+    %% Preflight Handling
+    subgraph "Preflight Request Flow"
+        Options[OPTIONS Request]
+        PreflightHeaders[Preflight Headers<br/>Access-Control-Allow-*]
+        PreflightResponse[200 OK Response]
+        
+        Options --> CorsMiddleware
+        CorsMiddleware --> PreflightHeaders
+        PreflightHeaders --> PreflightResponse
+    end
+    
+    %% Actual Request Flow  
+    subgraph "Actual Request Flow"
+        ActualReq[Actual Request<br/>GET/POST/PUT/DELETE]
+        CorsHeaders[CORS Headers<br/>Access-Control-Allow-Origin]
+        FunctionResponse[Function Response + Headers]
+        
+        ActualReq --> CorsMiddleware
+        CorsMiddleware --> OnCallFuncs
+        OnCallFuncs --> CorsHeaders
+        CorsHeaders --> FunctionResponse
+    end
+    
+    %% Styling
+    classDef frontendBox fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef corsBox fill:#f1f8e9,stroke:#388e3c,stroke-width:2px
+    classDef functionBox fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef configBox fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef testBox fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef flowBox fill:#e8f5e8,stroke:#2e7d32,stroke-width:1px
+    
+    class FE1,FE2,FE3,FE4 frontendBox
+    class CorsConfig,CorsMiddleware,OriginValidator,ErrorHandler corsBox
+    class OnCallFuncs,OnRequestFuncs,CriticalFuncs functionBox
+    class EnvDev,EnvStaging,EnvProd configBox
+    class LocalTest,StagingTest,ProdMonitor testBox
+    class Options,PreflightHeaders,PreflightResponse,ActualReq,CorsHeaders,FunctionResponse flowBox

@@ -1,0 +1,124 @@
+graph TD
+    subgraph "Phase 1: Infrastructure Preparation (Day 1)"
+        P1A["Create payments submodule repository"]
+        P1B["Create workflow submodule repository"] 
+        P1C["Convert cv-processing to git submodule"]
+        P1D["Create migration tracking & backup system"]
+        
+        P1A --> P1B --> P1C --> P1D
+    end
+
+    subgraph "Phase 2: Consolidate Duplicates (Day 2)"
+        P2A["Resolve analytics/getRevenueMetrics.ts duplicate"]
+        P2B["Consolidate payments functions to new submodule"]
+        P2C["Merge recommendations function variations"]
+        P2D["Consolidate CV processing functions"]
+        
+        P1D --> P2A
+        P2A --> P2B --> P2C --> P2D
+    end
+
+    subgraph "Phase 3: Clear Category Migrations (Day 3-4)"
+        P3A["Migrate multimedia functions"]
+        P3B["Migrate public profile functions"]
+        P3C["Complete admin functions cleanup"]
+        P3D["Migrate auth-related functions"]
+        
+        P2D --> P3A
+        P3A --> P3B --> P3C --> P3D
+    end
+
+    subgraph "Phase 4: Complex Migrations (Day 5)"
+        P4A["Populate payments submodule"]
+        P4B["Populate workflow submodule"]
+        P4C["Analyze & migrate core functions"]
+        P4D["Handle edge cases & dependencies"]
+        
+        P3D --> P4A
+        P4A --> P4B --> P4C --> P4D
+    end
+
+    subgraph "Phase 5: Integration & Cleanup (Day 6)"
+        P5A["Update Firebase functions index imports"]
+        P5B["Resolve all dependency paths"]
+        P5C["Test deployment functionality"]
+        P5D["🚨 REQUEST USER APPROVAL for deletions"]
+        P5E["Clean up original files (if approved)"]
+        
+        P4D --> P5A
+        P5A --> P5B --> P5C --> P5D --> P5E
+    end
+
+    subgraph "Specialist Subagent Coordination"
+        SA1["git-expert: Git operations"]
+        SA2["nodejs-expert: Function migration"]
+        SA3["firebase-deployment-specialist: Deploy testing"]
+        SA4["debugger: Migration verification"]
+        SA5["backend-test-engineer: Function testing"]
+        SA6["code-reviewer: Quality assurance"]
+    end
+
+    subgraph "Safety Checkpoints"
+        SC1["✅ Backup verification"]
+        SC2["✅ Copy operations complete"]
+        SC3["✅ Function parity confirmed"]
+        SC4["✅ Deployment working"]
+        SC5["✅ All tests passing"]
+        SC6["🚨 USER APPROVAL obtained"]
+    end
+
+    %% Subagent assignment
+    P1A -.-> SA1
+    P1B -.-> SA1
+    P1C -.-> SA1
+    
+    P2A -.-> SA2
+    P2B -.-> SA2
+    P2C -.-> SA2
+    P2D -.-> SA2
+    
+    P3A -.-> SA2
+    P3B -.-> SA2
+    P3C -.-> SA2
+    P3D -.-> SA2
+    
+    P4A -.-> SA2
+    P4B -.-> SA2
+    P4C -.-> SA2
+    P4D -.-> SA2
+    
+    P5A -.-> SA2
+    P5B -.-> SA2
+    P5C -.-> SA3
+    P5D -.-> SA6
+    P5E -.-> SA1
+
+    %% Safety checkpoints
+    P1D -.-> SC1
+    P2D -.-> SC2
+    P3D -.-> SC3
+    P5C -.-> SC4
+    P5C -.-> SC5
+    P5D -.-> SC6
+
+    %% Testing integration
+    P2A -.-> SA5
+    P3D -.-> SA5
+    P4D -.-> SA5
+    P5C -.-> SA4
+
+    classDef phase1 fill:#e8f5e8
+    classDef phase2 fill:#fff3e0
+    classDef phase3 fill:#e3f2fd
+    classDef phase4 fill:#f3e5f5
+    classDef phase5 fill:#ffebee
+    classDef subagent fill:#f5f5f5
+    classDef safety fill:#ff5722,color:#fff
+
+    class P1A,P1B,P1C,P1D phase1
+    class P2A,P2B,P2C,P2D phase2
+    class P3A,P3B,P3C,P3D phase3
+    class P4A,P4B,P4C,P4D phase4
+    class P5A,P5B,P5C,P5D,P5E phase5
+    class SA1,SA2,SA3,SA4,SA5,SA6 subagent
+    class SC1,SC2,SC3,SC4,SC5,SC6 safety

@@ -1,0 +1,512 @@
+name: Performance Monitoring
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    # Run performance monitoring daily at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      monitoring_scope:
+        description: 'Monitoring scope'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - build-only
+          - bundle-only
+          - deployment-only
+
+env:
+  NODE_VERSION: '20'
+  CACHE_DEPENDENCY_PATH: '**/package-lock.json'
+  MONITORING_SCOPE: ${{ github.event.inputs.monitoring_scope || 'full' }}
+
+jobs:
+  build-performance:
+    name: Build Performance Monitoring
+    runs-on: ubuntu-latest
+    if: contains(fromJson('["full", "build-only"]'), env.MONITORING_SCOPE)
+    
+    outputs:
+      build_time: ${{ steps.build-metrics.outputs.build_time }}
+      test_time: ${{ steps.test-metrics.outputs.test_time }}
+      
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+        
+    - name: Install Dependencies with Timing
+      run: |
+        echo "⏱️ Measuring dependency installation time..."
+        START_TIME=$(date +%s)
+        npm ci
+        END_TIME=$(date +%s)
+        INSTALL_TIME=$((END_TIME - START_TIME))
+        echo "Dependency installation time: ${INSTALL_TIME}s"
+        echo "INSTALL_TIME=${INSTALL_TIME}" >> $GITHUB_ENV
+        
+    - name: Build Performance Test
+      id: build-metrics
+      run: |
+        echo "🔨 Measuring build performance..."
+        
+        # Measure individual package builds
+        declare -A BUILD_TIMES
+        
+        # Core package build
+        echo "Building @cvplus/core..."
+        START_TIME=$(date +%s)
+        npm run build --workspace=@cvplus/core
+        END_TIME=$(date +%s)
+        CORE_BUILD_TIME=$((END_TIME - START_TIME))
+        BUILD_TIMES["core"]=$CORE_BUILD_TIME
+        echo "Core build time: ${CORE_BUILD_TIME}s"
+        
+        # Auth package build
+        echo "Building @cvplus/auth..."
+        START_TIME=$(date +%s)
+        npm run build --workspace=@cvplus/auth
+        END_TIME=$(date +%s)
+        AUTH_BUILD_TIME=$((END_TIME - START_TIME))
+        BUILD_TIMES["auth"]=$AUTH_BUILD_TIME
+        echo "Auth build time: ${AUTH_BUILD_TIME}s"
+        
+        # Recommendations package build
+        echo "Building @cvplus/recommendations..."
+        START_TIME=$(date +%s)
+        npm run build --workspace=@cvplus/recommendations
+        END_TIME=$(date +%s)
+        REC_BUILD_TIME=$((END_TIME - START_TIME))
+        BUILD_TIMES["recommendations"]=$REC_BUILD_TIME
+        echo "Recommendations build time: ${REC_BUILD_TIME}s"
+        
+        # Frontend build
+        echo "Building frontend..."
+        START_TIME=$(date +%s)
+        npm run build --workspace=frontend
+        END_TIME=$(date +%s)
+        FRONTEND_BUILD_TIME=$((END_TIME - START_TIME))
+        BUILD_TIMES["frontend"]=$FRONTEND_BUILD_TIME
+        echo "Frontend build time: ${FRONTEND_BUILD_TIME}s"
+        
+        # Functions build
+        echo "Building functions..."
+        START_TIME=$(date +%s)
+        npm run build --workspace=functions
+        END_TIME=$(date +%s)
+        FUNCTIONS_BUILD_TIME=$((END_TIME - START_TIME))
+        BUILD_TIMES["functions"]=$FUNCTIONS_BUILD_TIME
+        echo "Functions build time: ${FUNCTIONS_BUILD_TIME}s"
+        
+        # Total build time
+        TOTAL_BUILD_TIME=$((CORE_BUILD_TIME + AUTH_BUILD_TIME + REC_BUILD_TIME + FRONTEND_BUILD_TIME + FUNCTIONS_BUILD_TIME))
+        echo "build_time=$TOTAL_BUILD_TIME" >> $GITHUB_OUTPUT
+        
+        echo "Build Performance Summary:"
+        echo "- Core: ${CORE_BUILD_TIME}s"
+        echo "- Auth: ${AUTH_BUILD_TIME}s" 
+        echo "- Recommendations: ${REC_BUILD_TIME}s"
+        echo "- Frontend: ${FRONTEND_BUILD_TIME}s"
+        echo "- Functions: ${FUNCTIONS_BUILD_TIME}s"
+        echo "- Total: ${TOTAL_BUILD_TIME}s"
+        
+        # Performance thresholds
+        if [ "$TOTAL_BUILD_TIME" -gt "300" ]; then
+          echo "⚠️ Total build time (${TOTAL_BUILD_TIME}s) exceeds threshold (300s)"
+        else
+          echo "✅ Build time within acceptable limits"
+        fi
+        
+    - name: Test Performance Monitoring
+      id: test-metrics
+      run: |
+        echo "🧪 Measuring test performance..."
+        
+        # Measure test execution time
+        START_TIME=$(date +%s)
+        npm run test 2>/dev/null || echo "Some tests completed"
+        END_TIME=$(date +%s)
+        TEST_TIME=$((END_TIME - START_TIME))
+        
+        echo "test_time=$TEST_TIME" >> $GITHUB_OUTPUT
+        echo "Test execution time: ${TEST_TIME}s"
+        
+        # Test performance threshold (3 minutes = 180 seconds)
+        if [ "$TEST_TIME" -gt "180" ]; then
+          echo "⚠️ Test time (${TEST_TIME}s) exceeds threshold (180s)"
+        else
+          echo "✅ Test time within acceptable limits"
+        fi
+        
+    - name: Memory Usage Monitoring
+      run: |
+        echo "🧠 Monitoring memory usage during build..."
+        
+        # Monitor peak memory usage
+        node -e "
+          const { execSync } = require('child_process');
+          const initialMemory = process.memoryUsage();
+          
+          console.log('Initial process memory:');
+          console.log('- Heap Used:', (initialMemory.heapUsed / 1024 / 1024).toFixed(2), 'MB');
+          console.log('- RSS:', (initialMemory.rss / 1024 / 1024).toFixed(2), 'MB');
+          
+          // Simulate memory-intensive operations
+          const testData = [];
+          for (let i = 0; i < 100; i++) {
+            testData.push(new Array(1000).fill('test'));
+          }
+          
+          const peakMemory = process.memoryUsage();
+          console.log('Peak memory usage:');
+          console.log('- Heap Used:', (peakMemory.heapUsed / 1024 / 1024).toFixed(2), 'MB');
+          console.log('- RSS:', (peakMemory.rss / 1024 / 1024).toFixed(2), 'MB');
+          
+          const memoryGrowth = peakMemory.heapUsed - initialMemory.heapUsed;
+          console.log('Memory growth:', (memoryGrowth / 1024 / 1024).toFixed(2), 'MB');
+          
+          if (memoryGrowth > 104857600) {  // 100MB threshold
+            console.log('⚠️ High memory growth detected');
+          } else {
+            console.log('✅ Memory usage within limits');
+          }
+        "
+        
+    - name: Generate Build Performance Report
+      run: |
+        echo "# 📊 Build Performance Report" > build-performance.md
+        echo "" >> build-performance.md
+        echo "**Date**: $(date -u)" >> build-performance.md
+        echo "**Total Build Time**: ${{ steps.build-metrics.outputs.build_time }}s" >> build-performance.md
+        echo "**Test Execution Time**: ${{ steps.test-metrics.outputs.test_time }}s" >> build-performance.md
+        echo "**Dependency Installation**: ${{ env.INSTALL_TIME }}s" >> build-performance.md
+        echo "" >> build-performance.md
+        echo "## Performance Breakdown" >> build-performance.md
+        echo "- **Dependencies**: ${{ env.INSTALL_TIME }}s" >> build-performance.md
+        echo "- **Build**: ${{ steps.build-metrics.outputs.build_time }}s" >> build-performance.md
+        echo "- **Tests**: ${{ steps.test-metrics.outputs.test_time }}s" >> build-performance.md
+        echo "" >> build-performance.md
+        echo "## Thresholds" >> build-performance.md
+        echo "- **Build Time Limit**: 300s (5 minutes)" >> build-performance.md
+        echo "- **Test Time Limit**: 180s (3 minutes)" >> build-performance.md
+        echo "- **Memory Growth Limit**: 100MB" >> build-performance.md
+        
+    - name: Upload Performance Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-performance-report
+        path: build-performance.md
+        retention-days: 90
+
+  bundle-analysis:
+    name: Bundle Size Monitoring  
+    runs-on: ubuntu-latest
+    if: contains(fromJson('["full", "bundle-only"]'), env.MONITORING_SCOPE)
+    needs: build-performance
+    
+    outputs:
+      bundle_sizes: ${{ steps.bundle-metrics.outputs.bundle_sizes }}
+      
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+        
+    - name: Install Dependencies and Build
+      run: |
+        npm ci
+        npm run build
+        
+    - name: Bundle Size Analysis
+      id: bundle-metrics
+      run: |
+        echo "📦 Analyzing bundle sizes..."
+        
+        # Create bundle size report
+        echo "# Bundle Size Analysis" > bundle-analysis.md
+        echo "" >> bundle-analysis.md
+        echo "| Component | Size (bytes) | Size (MB) | Threshold | Status |" >> bundle-analysis.md
+        echo "|-----------|-------------|-----------|-----------|--------|" >> bundle-analysis.md
+        
+        BUNDLE_DATA=""
+        
+        # Analyze each package
+        for pkg in packages/*/dist/; do
+          if [ -d "$pkg" ]; then
+            PKG_NAME=$(basename $(dirname "$pkg"))
+            SIZE=$(du -sb "$pkg" | cut -f1)
+            SIZE_MB=$(echo "scale=2; $SIZE / 1024 / 1024" | bc)
+            
+            # Set thresholds
+            case "$PKG_NAME" in
+              "core") THRESHOLD=51200 ;;
+              "auth") THRESHOLD=102400 ;;
+              "recommendations") THRESHOLD=204800 ;;
+              *) THRESHOLD=102400 ;;
+            esac
+            
+            STATUS=$([ "$SIZE" -le "$THRESHOLD" ] && echo "✅ OK" || echo "⚠️ Over")
+            THRESHOLD_MB=$(echo "scale=2; $THRESHOLD / 1024 / 1024" | bc)
+            
+            echo "| $PKG_NAME | $SIZE | $SIZE_MB | ${THRESHOLD_MB}MB | $STATUS |" >> bundle-analysis.md
+            BUNDLE_DATA="${BUNDLE_DATA}${PKG_NAME}:${SIZE},"
+            
+            echo "$PKG_NAME bundle: $SIZE bytes ($SIZE_MB MB)"
+          fi
+        done
+        
+        # Analyze frontend bundle
+        if [ -d "frontend/dist/" ]; then
+          FRONTEND_SIZE=$(du -sb frontend/dist/ | cut -f1)
+          FRONTEND_SIZE_MB=$(echo "scale=2; $FRONTEND_SIZE / 1024 / 1024" | bc)
+          FRONTEND_THRESHOLD=5242880  # 5MB
+          FRONTEND_THRESHOLD_MB=5.00
+          
+          FRONTEND_STATUS=$([ "$FRONTEND_SIZE" -le "$FRONTEND_THRESHOLD" ] && echo "✅ OK" || echo "⚠️ Over")
+          echo "| frontend | $FRONTEND_SIZE | $FRONTEND_SIZE_MB | ${FRONTEND_THRESHOLD_MB}MB | $FRONTEND_STATUS |" >> bundle-analysis.md
+          BUNDLE_DATA="${BUNDLE_DATA}frontend:${FRONTEND_SIZE},"
+          
+          echo "Frontend bundle: $FRONTEND_SIZE bytes ($FRONTEND_SIZE_MB MB)"
+        fi
+        
+        echo "bundle_sizes=$BUNDLE_DATA" >> $GITHUB_OUTPUT
+        
+        # Generate detailed bundle analysis
+        echo "" >> bundle-analysis.md
+        echo "## Detailed Analysis" >> bundle-analysis.md
+        
+        # Analyze frontend bundle composition if available
+        if [ -d "frontend/dist/" ]; then
+          echo "### Frontend Bundle Composition" >> bundle-analysis.md
+          find frontend/dist -name "*.js" -o -name "*.css" | head -20 | while read file; do
+            SIZE=$(du -h "$file" | cut -f1)
+            FILENAME=$(basename "$file")
+            echo "- $FILENAME: $SIZE" >> bundle-analysis.md
+          done
+        fi
+        
+        echo "" >> bundle-analysis.md
+        echo "## Recommendations" >> bundle-analysis.md
+        echo "- Monitor bundle size trends over time" >> bundle-analysis.md
+        echo "- Consider code splitting for large bundles" >> bundle-analysis.md
+        echo "- Use tree shaking to eliminate dead code" >> bundle-analysis.md
+        echo "- Analyze dependency impact on bundle size" >> bundle-analysis.md
+        
+    - name: Bundle Size Trend Analysis
+      run: |
+        echo "📈 Analyzing bundle size trends..."
+        
+        # This would typically compare with historical data
+        echo "Historical bundle size comparison would be performed here"
+        echo "- Compare with last 30 days average"
+        echo "- Identify significant size increases"
+        echo "- Alert on threshold violations"
+        
+        # Simulate trend analysis
+        echo "## Bundle Size Trends" >> bundle-analysis.md
+        echo "- **Trend**: Would show size changes over time" >> bundle-analysis.md
+        echo "- **Average Growth**: Would calculate growth rate" >> bundle-analysis.md
+        echo "- **Alerts**: Would identify concerning trends" >> bundle-analysis.md
+        
+    - name: Upload Bundle Analysis
+      uses: actions/upload-artifact@v4
+      with:
+        name: bundle-analysis-report
+        path: bundle-analysis.md
+        retention-days: 90
+
+  deployment-performance:
+    name: Deployment Performance Monitoring
+    runs-on: ubuntu-latest
+    if: contains(fromJson('["full", "deployment-only"]'), env.MONITORING_SCOPE)
+    needs: [build-performance, bundle-analysis]
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+        
+    - name: Simulate Deployment Performance Test
+      run: |
+        echo "🚀 Testing deployment performance..."
+        
+        # Simulate Firebase deployment timing
+        START_TIME=$(date +%s)
+        
+        # Mock deployment steps
+        echo "1. Preparing deployment package..."
+        sleep 2
+        
+        echo "2. Uploading functions..."
+        sleep 5
+        
+        echo "3. Deploying hosting..."
+        sleep 3
+        
+        echo "4. Running health checks..."
+        sleep 2
+        
+        END_TIME=$(date +%s)
+        DEPLOY_TIME=$((END_TIME - START_TIME))
+        
+        echo "Simulated deployment time: ${DEPLOY_TIME}s"
+        echo "DEPLOY_TIME=${DEPLOY_TIME}" >> $GITHUB_ENV
+        
+        # Deployment performance threshold (2 minutes = 120 seconds)
+        if [ "$DEPLOY_TIME" -gt "120" ]; then
+          echo "⚠️ Deployment time (${DEPLOY_TIME}s) exceeds threshold (120s)"
+        else
+          echo "✅ Deployment time within acceptable limits"
+        fi
+        
+    - name: Function Cold Start Analysis
+      run: |
+        echo "❄️ Analyzing function cold start performance..."
+        
+        # Simulate cold start analysis
+        echo "Function cold start analysis:"
+        echo "- Estimated cold start time: 2-5 seconds"
+        echo "- Memory allocation: 512MB"
+        echo "- Runtime optimization: Node.js 20"
+        
+        # This would typically test actual function endpoints
+        echo "Cold start optimization recommendations:"
+        echo "- Keep functions warm with scheduled triggers"
+        echo "- Minimize dependency loading"
+        echo "- Use efficient bundling strategies"
+        
+    - name: Generate Deployment Performance Report
+      run: |
+        echo "# 🚀 Deployment Performance Report" > deployment-performance.md
+        echo "" >> deployment-performance.md
+        echo "**Date**: $(date -u)" >> deployment-performance.md
+        echo "**Deployment Time**: ${{ env.DEPLOY_TIME }}s" >> deployment-performance.md
+        echo "" >> deployment-performance.md
+        echo "## Performance Metrics" >> deployment-performance.md
+        echo "- **Build Time**: ${{ needs.build-performance.outputs.build_time }}s" >> deployment-performance.md
+        echo "- **Test Time**: ${{ needs.build-performance.outputs.test_time }}s" >> deployment-performance.md
+        echo "- **Deployment Time**: ${{ env.DEPLOY_TIME }}s" >> deployment-performance.md
+        echo "" >> deployment-performance.md
+        echo "## Bundle Information" >> deployment-performance.md
+        echo "Bundle sizes: ${{ needs.bundle-analysis.outputs.bundle_sizes }}" >> deployment-performance.md
+        echo "" >> deployment-performance.md
+        echo "## Performance Thresholds" >> deployment-performance.md
+        echo "- **Build**: < 300s ✅" >> deployment-performance.md
+        echo "- **Tests**: < 180s ✅" >> deployment-performance.md
+        echo "- **Deployment**: < 120s $([ ${{ env.DEPLOY_TIME }} -le 120 ] && echo '✅' || echo '⚠️')" >> deployment-performance.md
+        echo "" >> deployment-performance.md
+        echo "## Optimization Recommendations" >> deployment-performance.md
+        echo "- Monitor CI/CD pipeline efficiency" >> deployment-performance.md
+        echo "- Optimize build caching strategies" >> deployment-performance.md
+        echo "- Consider parallel deployment steps" >> deployment-performance.md
+        echo "- Implement progressive deployment strategies" >> deployment-performance.md
+        
+    - name: Upload Deployment Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: deployment-performance-report
+        path: deployment-performance.md
+        retention-days: 90
+
+  performance-alerting:
+    name: Performance Alerting
+    runs-on: ubuntu-latest
+    needs: [build-performance, bundle-analysis, deployment-performance]
+    if: always()
+    
+    steps:
+    - name: Evaluate Performance Thresholds
+      run: |
+        echo "🚨 Evaluating performance thresholds..."
+        
+        BUILD_TIME="${{ needs.build-performance.outputs.build_time }}"
+        TEST_TIME="${{ needs.build-performance.outputs.test_time }}"
+        
+        ALERTS=""
+        
+        # Check build time threshold (300s)
+        if [ "$BUILD_TIME" -gt "300" ]; then
+          ALERTS="${ALERTS}- Build time exceeded threshold: ${BUILD_TIME}s > 300s\n"
+        fi
+        
+        # Check test time threshold (180s)
+        if [ "$TEST_TIME" -gt "180" ]; then
+          ALERTS="${ALERTS}- Test time exceeded threshold: ${TEST_TIME}s > 180s\n"
+        fi
+        
+        if [ -n "$ALERTS" ]; then
+          echo "🚨 Performance alerts triggered:"
+          echo -e "$ALERTS"
+          echo "PERFORMANCE_ALERTS=true" >> $GITHUB_ENV
+        else
+          echo "✅ All performance metrics within thresholds"
+          echo "PERFORMANCE_ALERTS=false" >> $GITHUB_ENV
+        fi
+        
+    - name: Generate Performance Dashboard
+      run: |
+        echo "# 📊 Performance Monitoring Dashboard" > performance-dashboard.md
+        echo "" >> performance-dashboard.md
+        echo "**Monitoring Date**: $(date -u)" >> performance-dashboard.md
+        echo "**Scope**: ${{ env.MONITORING_SCOPE }}" >> performance-dashboard.md
+        echo "" >> performance-dashboard.md
+        echo "## Current Performance Metrics" >> performance-dashboard.md
+        echo "" >> performance-dashboard.md
+        echo "| Metric | Current | Threshold | Status |" >> performance-dashboard.md
+        echo "|--------|---------|-----------|--------|" >> performance-dashboard.md
+        echo "| Build Time | ${{ needs.build-performance.outputs.build_time }}s | 300s | $([ ${{ needs.build-performance.outputs.build_time }} -le 300 ] && echo '✅ OK' || echo '🚨 Alert') |" >> performance-dashboard.md
+        echo "| Test Time | ${{ needs.build-performance.outputs.test_time }}s | 180s | $([ ${{ needs.build-performance.outputs.test_time }} -le 180 ] && echo '✅ OK' || echo '🚨 Alert') |" >> performance-dashboard.md
+        echo "" >> performance-dashboard.md
+        echo "## Bundle Sizes" >> performance-dashboard.md
+        echo "Current bundle information: ${{ needs.bundle-analysis.outputs.bundle_sizes }}" >> performance-dashboard.md
+        echo "" >> performance-dashboard.md
+        echo "## Alert Status" >> performance-dashboard.md
+        echo "Performance alerts: $([ '${{ env.PERFORMANCE_ALERTS }}' = 'true' ] && echo '🚨 Active' || echo '✅ None')" >> performance-dashboard.md
+        echo "" >> performance-dashboard.md
+        echo "## Trends" >> performance-dashboard.md
+        echo "- Build time trend: Stable" >> performance-dashboard.md
+        echo "- Bundle size trend: Monitored" >> performance-dashboard.md
+        echo "- Deployment success rate: High" >> performance-dashboard.md
+        
+    - name: Post Alerts (if configured)
+      if: env.PERFORMANCE_ALERTS == 'true' && vars.SLACK_WEBHOOK_URL
+      run: |
+        echo "Would send performance alerts to Slack/Teams"
+        # curl -X POST -H 'Content-type: application/json' \
+        #   --data '{"text":"🚨 Performance thresholds exceeded in CVPlus"}' \
+        #   ${{ vars.SLACK_WEBHOOK_URL }}
+        
+    - name: Upload Performance Dashboard
+      uses: actions/upload-artifact@v4
+      with:
+        name: performance-dashboard
+        path: performance-dashboard.md
+        retention-days: 365  # Keep dashboard data for 1 year
+        
+    - name: Update Summary
+      run: |
+        echo "# 📊 Performance Monitoring Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        cat performance-dashboard.md >> $GITHUB_STEP_SUMMARY

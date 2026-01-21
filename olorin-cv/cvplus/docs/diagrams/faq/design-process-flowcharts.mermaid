@@ -1,0 +1,538 @@
+---
+title: CVPlus FAQ Page - Design Process Flowcharts
+author: Gil Klainert
+date: 2025-08-20
+description: Design system components, responsive design, animations, and accessibility workflows
+---
+
+```mermaid
+%% Design System Component Relationships
+graph TB
+    %% Design System Foundation
+    A[CVPlus Design System] --> B1[Design Tokens]
+    A --> B2[Component Library]
+    A --> B3[Pattern Library]
+    A --> B4[Style Guidelines]
+    
+    %% Design Tokens Structure
+    B1 --> C1[Color Palette]
+    B1 --> C2[Typography Scale]
+    B1 --> C3[Spacing System]
+    B1 --> C4[Border & Shadow Values]
+    B1 --> C5[Animation Timings]
+    
+    %% Color System
+    C1 --> D1[Primary Colors - Cyan/Blue Gradient]
+    C1 --> D2[Semantic Colors - Success/Error/Warning]
+    C1 --> D3[Neutral Colors - Gray Scale]
+    C1 --> D4[Category Colors - FAQ-specific]
+    
+    D1 --> E1[Light Mode Variants]
+    D1 --> E2[Dark Mode Variants]
+    D1 --> E3[High Contrast Mode]
+    D1 --> E4[Accessibility Compliant Ratios]
+    
+    %% Typography Hierarchy
+    C2 --> F1[Display Text - Hero Sections]
+    C2 --> F2[Heading Levels - H1-H6]
+    C2 --> F3[Body Text - Content]
+    C2 --> F4[UI Text - Buttons/Labels]
+    
+    F1 --> G1[Mobile: 36px / Desktop: 60px]
+    F2 --> G2[Responsive Scale 18px-30px]
+    F3 --> G3[Base 16px with Line Height 1.5]
+    F4 --> G4[14px for UI Elements]
+    
+    %% Spacing Scale
+    C3 --> H1[Micro Spacing - 4px-8px]
+    C3 --> H2[Component Spacing - 12px-24px]
+    C3 --> H3[Layout Spacing - 32px-64px]
+    C3 --> H4[Section Spacing - 64px+]
+    
+    %% Component Library Structure
+    B2 --> I1[Atomic Components]
+    B2 --> I2[Molecular Components]
+    B2 --> I3[Organism Components]
+    B2 --> I4[Template Components]
+    
+    %% Atomic Level
+    I1 --> J1[Buttons - Primary/Secondary/Ghost]
+    I1 --> J2[Input Fields - Text/Search]
+    I1 --> J3[Icons - Lucide React Set]
+    I1 --> J4[Tags - Category/Status Labels]
+    I1 --> J5[Loading States - Spinners/Skeletons]
+    
+    %% Molecular Level
+    I2 --> K1[Search Bar with Suggestions]
+    I2 --> K2[Category Card with Icon]
+    I2 --> K3[FAQ Feedback Buttons]
+    I2 --> K4[Navigation Breadcrumbs]
+    I2 --> K5[Action Button Groups]
+    
+    %% Organism Level
+    I3 --> L1[FAQ Accordion Component]
+    I3 --> L2[Category Grid Layout]
+    I3 --> L3[Sidebar Navigation]
+    I3 --> L4[Quick Actions Panel]
+    I3 --> L5[Header with Search]
+    
+    %% Template Level
+    I4 --> M1[FAQ Page Layout]
+    I4 --> M2[Mobile FAQ Layout]
+    I4 --> M3[Category Page Template]
+    I4 --> M4[Search Results Template]
+    
+    %% Pattern Library
+    B3 --> N1[Interaction Patterns]
+    B3 --> N2[Navigation Patterns]
+    B3 --> N3[Content Patterns]
+    B3 --> N4[Form Patterns]
+    
+    N1 --> O1[Hover/Focus States]
+    N1 --> O2[Click/Touch Feedback]
+    N1 --> O3[Loading Transitions]
+    N1 --> O4[Error State Handling]
+    
+    N2 --> P1[Breadcrumb Navigation]
+    N2 --> P2[Category Filtering]
+    N2 --> P3[Search Navigation]
+    N2 --> P4[Mobile Menu Patterns]
+    
+    N3 --> Q1[FAQ Accordion Pattern]
+    N3 --> Q2[Card Grid Layouts]
+    N3 --> Q3[Content Hierarchy]
+    N3 --> Q4[Media Integration]
+    
+    N4 --> R1[Search Input Patterns]
+    N4 --> R2[Feedback Form Patterns]
+    N4 --> R3[Validation Patterns]
+    N4 --> R4[Success/Error Messaging]
+    
+    %% Style Guidelines
+    B4 --> S1[Visual Hierarchy Rules]
+    B4 --> S2[Accessibility Standards]
+    B4 --> S3[Brand Expression]
+    B4 --> S4[Quality Checklist]
+    
+    %% Styling
+    classDef foundation fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef tokens fill:#f3e5f5,stroke:#7b1fa2,color:#000
+    classDef components fill:#e8f5e8,stroke:#2e7d32,color:#000
+    classDef patterns fill:#fff3e0,stroke:#ef6c00,color:#000
+    classDef guidelines fill:#ffebee,stroke:#d32f2f,color:#000
+    
+    class A,B1,B2,B3,B4 foundation
+    class C1,C2,C3,C4,C5,D1,D2,D3,D4,E1,E2,E3,E4,F1,F2,F3,F4,G1,G2,G3,G4,H1,H2,H3,H4 tokens
+    class I1,I2,I3,I4,J1,J2,J3,J4,J5,K1,K2,K3,K4,K5,L1,L2,L3,L4,L5,M1,M2,M3,M4 components
+    class N1,N2,N3,N4,O1,O2,O3,O4,P1,P2,P3,P4,Q1,Q2,Q3,Q4,R1,R2,R3,R4 patterns
+    class S1,S2,S3,S4 guidelines
+```
+
+```mermaid
+%% Responsive Breakpoint Adaptation Workflow
+flowchart TD
+    %% Device Detection and Setup
+    A[User Visits FAQ Page] --> B[Device Detection Script]
+    B --> C{Screen Size Detection}
+    
+    C -->|Mobile: <640px| D1[Mobile Layout Engine]
+    C -->|Tablet: 640px-1024px| D2[Tablet Layout Engine]
+    C -->|Desktop: >1024px| D3[Desktop Layout Engine]
+    
+    %% Mobile Layout Process
+    D1 --> E1[Mobile-First CSS Loading]
+    E1 --> F1[Single Column Grid System]
+    F1 --> G1[Mobile Component Variants]
+    
+    G1 --> H1[Collapsible Header]
+    G1 --> H2[Full-Width Search Bar]
+    G1 --> H3[Stacked Category Cards]
+    G1 --> H4[Simplified Sidebar Overlay]
+    G1 --> H5[Touch-Optimized Accordions]
+    G1 --> H6[Fixed Bottom CTA]
+    
+    %% Mobile Interactions
+    H1 --> I1[Hamburger Menu Animation]
+    H2 --> I2[Virtual Keyboard Handling]
+    H3 --> I3[Swipe Gesture Support]
+    H4 --> I4[Slide-in/Slide-out Animations]
+    H5 --> I5[Touch Expand/Collapse]
+    H6 --> I6[Sticky CTA Positioning]
+    
+    %% Tablet Layout Process
+    D2 --> E2[Tablet CSS Adaptations]
+    E2 --> F2[Two-Column Hybrid Layout]
+    F2 --> G2[Tablet Component Scaling]
+    
+    G2 --> J1[Adaptive Header Height]
+    G2 --> J2[Balanced Search Positioning]
+    G2 --> J3[2x2 Category Grid]
+    G2 --> J4[Collapsible Sidebar]
+    G2 --> J5[Enhanced Touch Targets]
+    G2 --> J6[Contextual CTAs]
+    
+    %% Tablet Interactions
+    J1 --> K1[Portrait/Landscape Adaptation]
+    J2 --> K2[Predictive Search Dropdown]
+    J3 --> K3[Grid Hover States]
+    J4 --> K4[Sidebar Toggle Animation]
+    J5 --> K5[Multi-Touch Support]
+    J6 --> K6[Dynamic CTA Placement]
+    
+    %% Desktop Layout Process
+    D3 --> E3[Full Desktop CSS Framework]
+    E3 --> F3[Three-Column Layout System]
+    F3 --> G3[Desktop-Optimized Components]
+    
+    G3 --> L1[Fixed Navigation Header]
+    G3 --> L2[Enhanced Search with Filters]
+    G3 --> L3[4-Column Category Grid]
+    G3 --> L4[Persistent Sidebar]
+    G3 --> L5[Keyboard Navigation Support]
+    G3 --> L6[Multiple CTA Placements]
+    
+    %% Desktop Interactions
+    L1 --> M1[Dropdown Menus on Hover]
+    L2 --> M2[Advanced Search Features]
+    L3 --> M3[Detailed Hover Previews]
+    L4 --> M4[Rich Content Sidebar]
+    L5 --> M5[Tab/Arrow Key Navigation]
+    L6 --> M6[Strategic CTA Distribution]
+    
+    %% Responsive Content Adaptation
+    I1 --> N[Content Adaptation Engine]
+    I2 --> N
+    I3 --> N
+    K1 --> N
+    K2 --> N
+    K3 --> N
+    M1 --> N
+    M2 --> N
+    M3 --> N
+    
+    N --> O1[Font Size Scaling]
+    N --> O2[Image Optimization]
+    N --> O3[Content Prioritization]
+    N --> O4[Performance Optimization]
+    
+    %% Progressive Enhancement
+    O1 --> P1[Base Functionality First]
+    O2 --> P2[Enhanced Features Addition]
+    O3 --> P3[Advanced Interactions]
+    O4 --> P4[Performance Monitoring]
+    
+    %% Quality Assurance
+    P1 --> Q[Cross-Device Testing]
+    P2 --> Q
+    P3 --> Q
+    P4 --> Q
+    
+    Q --> R1[Visual Regression Testing]
+    Q --> R2[Interaction Testing]
+    Q --> R3[Performance Validation]
+    Q --> R4[Accessibility Compliance]
+    
+    %% Deployment and Monitoring
+    R1 --> S[Production Deployment]
+    R2 --> S
+    R3 --> S
+    R4 --> S
+    
+    S --> T1[Real User Monitoring]
+    S --> T2[Performance Analytics]
+    S --> T3[User Behavior Tracking]
+    
+    %% Continuous Improvement
+    T1 --> U[Responsive Design Optimization]
+    T2 --> U
+    T3 --> U
+    
+    U --> V[Update Design Tokens]
+    V --> A
+    
+    %% Styling
+    classDef device fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef mobile fill:#e8f5e8,stroke:#2e7d32,color:#000
+    classDef tablet fill:#f3e5f5,stroke:#7b1fa2,color:#000
+    classDef desktop fill:#fff3e0,stroke:#ef6c00,color:#000
+    classDef optimization fill:#ffebee,stroke:#d32f2f,color:#000
+    classDef testing fill:#f1f8e9,stroke:#689f38,color:#000
+    
+    class A,B,C,D1,D2,D3 device
+    class E1,F1,G1,H1,H2,H3,H4,H5,H6,I1,I2,I3,I4,I5,I6 mobile
+    class E2,F2,G2,J1,J2,J3,J4,J5,J6,K1,K2,K3,K4,K5,K6 tablet
+    class E3,F3,G3,L1,L2,L3,L4,L5,L6,M1,M2,M3,M4,M5,M6 desktop
+    class N,O1,O2,O3,O4,P1,P2,P3,P4,U,V optimization
+    class Q,R1,R2,R3,R4,S,T1,T2,T3 testing
+```
+
+```mermaid
+%% Animation States and Transitions Workflow
+stateDiagram-v2
+    %% FAQ Page Entry Animations
+    [*] --> PageLoad: User visits FAQ
+    PageLoad --> HeroAnimation: Initialize hero section
+    HeroAnimation --> SearchBarAnimation: Animate search bar
+    SearchBarAnimation --> CategoryGridAnimation: Stagger category cards
+    CategoryGridAnimation --> SidebarAnimation: Slide in sidebar
+    SidebarAnimation --> PageReady: All animations complete
+    
+    %% Search Interaction States
+    PageReady --> SearchFocus: User clicks search
+    SearchFocus --> SearchTyping: User starts typing
+    SearchTyping --> SearchSuggestions: Show suggestions dropdown
+    SearchSuggestions --> SearchResults: Display results
+    SearchResults --> SearchBlur: User clicks away
+    SearchBlur --> PageReady: Return to ready state
+    
+    %% FAQ Accordion States
+    PageReady --> FAQClosed: Default FAQ state
+    FAQClosed --> FAQExpanding: User clicks FAQ
+    FAQExpanding --> FAQOpen: Animation complete
+    FAQOpen --> FAQClosing: User clicks again
+    FAQClosing --> FAQClosed: Animation complete
+    
+    %% FAQ Hover States (Desktop)
+    FAQClosed --> FAQHover: Mouse enters
+    FAQHover --> FAQClosed: Mouse leaves
+    FAQOpen --> FAQOpenHover: Mouse enters open FAQ
+    FAQOpenHover --> FAQOpen: Mouse leaves
+    
+    %% Category Selection States
+    PageReady --> CategoryGrid: Default categories
+    CategoryGrid --> CategoryHover: Mouse over category
+    CategoryHover --> CategoryGrid: Mouse leave
+    CategoryGrid --> CategorySelected: User clicks category
+    CategorySelected --> CategoryFiltered: Apply filter animation
+    CategoryFiltered --> PageReady: Filter complete
+    
+    %% Sidebar States
+    PageReady --> SidebarVisible: Desktop default
+    SidebarVisible --> SidebarHidden: Mobile responsive
+    SidebarHidden --> SidebarSlideIn: Mobile menu button
+    SidebarSlideIn --> SidebarOverlay: Overlay active
+    SidebarOverlay --> SidebarSlideOut: Close button/backdrop
+    SidebarSlideOut --> SidebarHidden: Animation complete
+    
+    %% Feedback Animation States
+    FAQOpen --> FeedbackIdle: Feedback buttons visible
+    FeedbackIdle --> FeedbackThumbsUp: User clicks positive
+    FeedbackThumbsUp --> FeedbackThanks: Show thank you animation
+    FeedbackThanks --> FeedbackComplete: Animation done
+    
+    FeedbackIdle --> FeedbackThumbsDown: User clicks negative
+    FeedbackThumbsDown --> FeedbackForm: Slide down form
+    FeedbackForm --> FeedbackSubmitting: User submits
+    FeedbackSubmitting --> FeedbackSuccess: Show success animation
+    FeedbackSuccess --> FeedbackComplete: Animation done
+    
+    %% Error and Loading States
+    SearchTyping --> SearchError: Search fails
+    SearchError --> SearchTyping: User retries
+    
+    PageLoad --> LoadingError: Page load fails
+    LoadingError --> PageLoad: User refreshes
+    
+    %% CTA Button States
+    PageReady --> CTADefault: CTA buttons visible
+    CTADefault --> CTAHover: Mouse over CTA
+    CTAHover --> CTADefault: Mouse leave
+    CTADefault --> CTAPressed: User clicks CTA
+    CTAPressed --> CTARedirect: Navigate to target
+    
+    %% Mobile Touch States
+    FAQClosed --> FAQTouch: Touch start
+    FAQTouch --> FAQExpanding: Touch end
+    CategoryGrid --> CategoryTouch: Touch category
+    CategoryTouch --> CategorySelected: Touch end
+    
+    %% Return to Ready State
+    FeedbackComplete --> PageReady: Reset to ready
+    CategoryFiltered --> PageReady: Category view ready
+    CTARedirect --> [*]: User leaves page
+    
+    %% State Annotations
+    note right of PageLoad
+        Staggered entrance animations
+        Duration: 1.2s total
+    end note
+    
+    note right of FAQExpanding
+        Smooth height transition
+        Duration: 400ms cubic-bezier
+    end note
+    
+    note right of SearchSuggestions
+        Fade in with scale animation
+        Duration: 200ms ease-out
+    end note
+    
+    note right of SidebarSlideIn
+        Transform translateX animation
+        Duration: 300ms ease-out
+    end note
+    
+    note right of FeedbackSuccess
+        Bounce animation with color change
+        Duration: 600ms ease-out
+    end note
+```
+
+```mermaid
+%% Accessibility Features Implementation Flow
+flowchart TD
+    %% Accessibility Foundation
+    A[Accessibility Implementation] --> B1[WCAG 2.1 AA Compliance]
+    A --> B2[Keyboard Navigation]
+    A --> B3[Screen Reader Support]
+    A --> B4[Color & Contrast]
+    A --> B5[Motion & Animation]
+    
+    %% WCAG Compliance Structure
+    B1 --> C1[Perceivable Requirements]
+    B1 --> C2[Operable Requirements]
+    B1 --> C3[Understandable Requirements]
+    B1 --> C4[Robust Requirements]
+    
+    %% Perceivable Implementation
+    C1 --> D1[Alternative Text for Images]
+    C1 --> D2[Color Contrast Ratios 4.5:1+]
+    C1 --> D3[Scalable Text up to 200%]
+    C1 --> D4[Audio/Video Descriptions]
+    
+    D1 --> E1[Icon Alt Text Implementation]
+    D2 --> E2[High Contrast Mode Support]
+    D3 --> E3[Responsive Font Scaling]
+    D4 --> E4[Media Accessibility Tags]
+    
+    %% Operable Implementation
+    C2 --> F1[Keyboard Navigation Support]
+    C2 --> F2[Focus Management]
+    C2 --> F3[Timing Controls]
+    C2 --> F4[Seizure Prevention]
+    
+    F1 --> G1[Tab Order Implementation]
+    F1 --> G2[Skip Links for Main Content]
+    F1 --> G3[Arrow Key Navigation for Lists]
+    F1 --> G4[Enter/Space Key Activation]
+    
+    F2 --> G5[Visible Focus Indicators]
+    F2 --> G6[Focus Trapping in Modals]
+    F2 --> G7[Focus Restoration After Actions]
+    F2 --> G8[Logical Focus Sequence]
+    
+    %% Understandable Implementation
+    C3 --> H1[Clear Content Structure]
+    C3 --> H2[Predictable Navigation]
+    C3 --> H3[Error Prevention/Correction]
+    C3 --> H4[Help and Documentation]
+    
+    H1 --> I1[Semantic HTML Structure]
+    H1 --> I2[Descriptive Headings Hierarchy]
+    H1 --> I3[Clear Link Descriptions]
+    H1 --> I4[Consistent Terminology]
+    
+    H2 --> I5[Consistent Navigation Patterns]
+    H2 --> I6[Breadcrumb Implementation]
+    H2 --> I7[Predictable UI Interactions]
+    H2 --> I8[Clear Page Titles]
+    
+    %% Robust Implementation
+    C4 --> J1[Valid HTML Markup]
+    C4 --> J2[ARIA Labels and Roles]
+    C4 --> J3[Assistive Technology Support]
+    C4 --> J4[Cross-Platform Compatibility]
+    
+    %% Keyboard Navigation Details
+    B2 --> K1[Tab Navigation Flow]
+    B2 --> K2[Keyboard Shortcuts]
+    B2 --> K3[Modal Navigation]
+    B2 --> K4[Form Navigation]
+    
+    K1 --> L1[Header → Search → Categories → FAQs → Sidebar → Footer]
+    K2 --> L2[Escape: Close Modals/Dropdowns]
+    K2 --> L3[Arrow Keys: Navigate Lists]
+    K2 --> L4[Enter/Space: Activate Elements]
+    
+    %% Screen Reader Support
+    B3 --> M1[ARIA Implementation]
+    B3 --> M2[Semantic Markup]
+    B3 --> M3[Live Regions]
+    B3 --> M4[Descriptive Labels]
+    
+    M1 --> N1[aria-expanded for Accordions]
+    M1 --> N2[aria-label for Interactive Elements]
+    M1 --> N3[role attributes for Complex UI]
+    M1 --> N4[aria-describedby for Help Text]
+    
+    M3 --> N5[Search Results Announcements]
+    M3 --> N6[Error Message Alerts]
+    M3 --> N7[Success Feedback Announcements]
+    M3 --> N8[Dynamic Content Updates]
+    
+    %% Color and Contrast
+    B4 --> O1[Color Scheme Implementation]
+    B4 --> O2[High Contrast Mode]
+    B4 --> O3[Color Independence]
+    B4 --> O4[Visual Indicators]
+    
+    O1 --> P1[AA Compliant Color Ratios]
+    O1 --> P2[Dark Mode Support]
+    O1 --> P3[System Preference Detection]
+    
+    O3 --> P4[Pattern/Texture for Color Coding]
+    O3 --> P5[Icon + Text Combinations]
+    O3 --> P6[Multiple Visual Cues]
+    
+    %% Motion and Animation
+    B5 --> Q1[Reduced Motion Support]
+    B5 --> Q2[Animation Controls]
+    B5 --> Q3[Essential Motion Only]
+    B5 --> Q4[Alternative Static States]
+    
+    Q1 --> R1[prefers-reduced-motion Detection]
+    Q1 --> R2[Disable Non-Essential Animations]
+    Q1 --> R3[Instant State Changes]
+    
+    %% Testing and Validation
+    E1 --> S[Accessibility Testing Pipeline]
+    E2 --> S
+    G1 --> S
+    G5 --> S
+    I1 --> S
+    L1 --> S
+    N1 --> S
+    P1 --> S
+    R1 --> S
+    
+    S --> T1[Automated Testing - axe-core]
+    S --> T2[Manual Testing - Screen Readers]
+    S --> T3[Keyboard-Only Testing]
+    S --> T4[User Testing with Disabilities]
+    
+    %% Continuous Monitoring
+    T1 --> U[Accessibility Monitoring]
+    T2 --> U
+    T3 --> U
+    T4 --> U
+    
+    U --> V1[Regular Accessibility Audits]
+    U --> V2[User Feedback Integration]
+    U --> V3[Compliance Updates]
+    U --> V4[Team Training Programs]
+    
+    %% Styling
+    classDef foundation fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef wcag fill:#f3e5f5,stroke:#7b1fa2,color:#000
+    classDef keyboard fill:#e8f5e8,stroke:#2e7d32,color:#000
+    classDef screenReader fill:#fff3e0,stroke:#ef6c00,color:#000
+    classDef colorContrast fill:#ffebee,stroke:#d32f2f,color:#000
+    classDef testing fill:#f1f8e9,stroke:#689f38,color:#000
+    
+    class A,B1,B2,B3,B4,B5 foundation
+    class C1,C2,C3,C4,D1,D2,D3,D4,E1,E2,E3,E4,F1,F2,F3,F4,H1,H2,H3,H4,I1,I2,I3,I4,I5,I6,I7,I8,J1,J2,J3,J4 wcag
+    class K1,K2,K3,K4,L1,L2,L3,L4 keyboard
+    class M1,M2,M3,M4,N1,N2,N3,N4,N5,N6,N7,N8 screenReader
+    class O1,O2,O3,O4,P1,P2,P3,P4,P5,P6,Q1,Q2,Q3,Q4,R1,R2,R3 colorContrast
+    class S,T1,T2,T3,T4,U,V1,V2,V3,V4 testing
+```

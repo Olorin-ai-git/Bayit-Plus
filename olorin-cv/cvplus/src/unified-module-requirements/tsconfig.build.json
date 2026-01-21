@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "skipLibCheck": true,
+    "noEmitOnError": false
+  },
+  "include": [
+    "src/**/*",
+    "lib/**/*",
+    "models/**/*"
+  ],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "tests/**/*",
+    "node_modules",
+    "dist",
+    "cli/check-architecture.ts",
+    "cli/generate-module.ts",
+    "cli/index.ts"
+  ]
+}

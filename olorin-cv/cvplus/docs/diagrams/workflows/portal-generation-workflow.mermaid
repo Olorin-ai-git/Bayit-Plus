@@ -1,0 +1,59 @@
+sequenceDiagram
+    participant User
+    participant CVGen as CV Generation
+    participant PIService as CV-Portal Integration
+    participant Orchestrator as Portal Orchestrator
+    participant RAG as RAG System
+    participant VectorDB as Vector Database
+    participant HF as HuggingFace
+    participant CVDoc as CV Document
+    participant QR as QR Service
+    participant Status as Status Tracker
+    
+    User->>CVGen: Complete CV Generation
+    CVGen->>PIService: Trigger Portal Generation
+    PIService->>Status: Initialize Status Tracking
+    Status-->>User: Portal Generation Started
+    
+    PIService->>Orchestrator: Start Portal Workflow
+    
+    par Portal Generation Steps
+        Orchestrator->>RAG: Extract CV Data for RAG
+        RAG->>VectorDB: Create Embeddings
+        VectorDB-->>RAG: Embeddings Created
+        RAG-->>Orchestrator: RAG System Ready
+    and
+        Orchestrator->>HF: Prepare HuggingFace Space
+        HF-->>Orchestrator: Space Configuration Ready
+    end
+    
+    Orchestrator->>Status: Update Progress (50%)
+    Status-->>User: Portal Generation In Progress
+    
+    Orchestrator->>HF: Deploy Portal to HuggingFace
+    HF-->>Orchestrator: Portal URL Generated
+    
+    Orchestrator->>Status: Update Progress (75%)
+    Status-->>User: Portal Deployment Complete
+    
+    par CV Integration Steps
+        Orchestrator->>CVDoc: Inject Portal URLs
+        CVDoc-->>Orchestrator: CV Updated
+    and
+        Orchestrator->>QR: Update QR Codes
+        QR-->>Orchestrator: QR Codes Enhanced
+    end
+    
+    Orchestrator->>Status: Portal Generation Complete
+    Status-->>User: Portal Ready
+    Status-->>CVGen: Update CV Status
+    
+    alt Error Scenario
+        HF->>Orchestrator: Deployment Failed
+        Orchestrator->>Status: Mark as Failed
+        Status-->>User: Generation Failed
+        Orchestrator->>CVDoc: Rollback Changes
+        Orchestrator->>QR: Rollback QR Updates
+    end
+    
+    Note over User, Status: Portal is now accessible via CV QR codes and URLs

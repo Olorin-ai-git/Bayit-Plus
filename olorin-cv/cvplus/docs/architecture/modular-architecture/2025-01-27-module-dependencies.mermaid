@@ -1,0 +1,83 @@
+# CVPlus Module Dependencies Graph
+
+```mermaid
+graph LR
+    subgraph "Core Foundation"
+        CORE[Core Module<br/>- Types<br/>- Utils<br/>- Constants<br/>- Validators]
+    end
+    
+    subgraph "Authentication Layer"
+        AUTH[Auth Module<br/>- Login/Logout<br/>- User Management<br/>- Permissions<br/>- Session]
+    end
+    
+    subgraph "Business Logic Modules"
+        CV[CV Processing<br/>- Parser<br/>- Analyzer<br/>- Generator<br/>- Templates]
+        
+        REC[Recommendations<br/>- AI Analysis<br/>- Suggestions<br/>- Placeholders<br/>- Optimization]
+        
+        PREM[Premium Features<br/>- Subscriptions<br/>- Payment<br/>- Feature Gates<br/>- Billing]
+    end
+    
+    subgraph "Feature Modules"
+        MEDIA[Multimedia<br/>- Video Gen<br/>- Podcast<br/>- Gallery<br/>- QR Codes]
+        
+        PROF[Public Profiles<br/>- Portal Gen<br/>- SEO<br/>- Sharing<br/>- Analytics]
+        
+        I18N[Internationalization<br/>- Translations<br/>- Localization<br/>- Date/Time<br/>- Currency]
+    end
+    
+    subgraph "Administrative Modules"
+        ANAL[Analytics<br/>- Tracking<br/>- Reports<br/>- Insights<br/>- Metrics]
+        
+        ADMIN[Admin Panel<br/>- User Mgmt<br/>- Monitoring<br/>- Config<br/>- Support]
+    end
+    
+    %% Core dependencies
+    AUTH --> CORE
+    CV --> CORE
+    REC --> CORE
+    PREM --> CORE
+    MEDIA --> CORE
+    PROF --> CORE
+    I18N --> CORE
+    ANAL --> CORE
+    ADMIN --> CORE
+    
+    %% Auth dependencies
+    CV --> AUTH
+    REC --> AUTH
+    PREM --> AUTH
+    MEDIA --> AUTH
+    PROF --> AUTH
+    ADMIN --> AUTH
+    
+    %% Business logic dependencies
+    REC --> CV
+    MEDIA --> CV
+    PROF --> CV
+    
+    %% Premium dependencies
+    MEDIA --> PREM
+    PROF --> PREM
+    REC --> PREM
+    
+    %% Analytics dependencies
+    PROF --> ANAL
+    MEDIA --> ANAL
+    PREM --> ANAL
+    
+    %% Admin dependencies
+    ADMIN --> ANAL
+    ADMIN --> PREM
+    
+    style CORE fill:#2ecc71,stroke:#27ae60,stroke-width:3px
+    style AUTH fill:#3498db,stroke:#2980b9,stroke-width:2px
+    style CV fill:#9b59b6,stroke:#8e44ad,stroke-width:2px
+    style REC fill:#f39c12,stroke:#e67e22,stroke-width:2px
+    style PREM fill:#e74c3c,stroke:#c0392b,stroke-width:2px
+    style MEDIA fill:#1abc9c,stroke:#16a085,stroke-width:2px
+    style PROF fill:#34495e,stroke:#2c3e50,stroke-width:2px
+    style I18N fill:#f1c40f,stroke:#f39c12,stroke-width:2px
+    style ANAL fill:#9b59b6,stroke:#8e44ad,stroke-width:2px
+    style ADMIN fill:#e67e22,stroke:#d35400,stroke-width:2px
+```

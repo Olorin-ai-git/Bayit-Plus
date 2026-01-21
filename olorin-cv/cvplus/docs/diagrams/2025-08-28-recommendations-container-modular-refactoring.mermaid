@@ -1,0 +1,97 @@
+```mermaid
+graph TB
+    subgraph "CURRENT STATE - 335 Lines"
+        RC[RecommendationsContainer.tsx<br/>335 lines - NON-COMPLIANT]
+        RC --> API[CVServiceCore API Calls]
+        RC --> STATE[Local State Management]
+        RC --> UI[Monolithic UI Rendering]
+    end
+
+    subgraph "MODULAR ARCHITECTURE - All < 200 Lines"
+        subgraph "Core Container < 100 Lines"
+            CONTAINER[RecommendationsContainer.tsx<br/>~90 lines]
+        end
+        
+        subgraph "Custom Hooks"
+            HOOK1[useRecommendationsContainer<br/>~150 lines]
+            HOOK2[useRecommendationSelection<br/>~80 lines]
+        end
+        
+        subgraph "UI Modules"
+            HEADER[RecommendationsHeader<br/>~80 lines]
+            LOADER[RecommendationsLoader<br/>~60 lines]
+            ERROR[RecommendationsError<br/>~70 lines]
+            LIST[RecommendationsList<br/>~150 lines]
+            ACTIONS[RecommendationsActions<br/>~90 lines]
+            CARD[RecommendationCard<br/>~180 lines]
+        end
+        
+        subgraph "Package Integration"
+            PKG_HOOK[useRecommendations<br/>@cvplus/recommendations]
+            PKG_SERVICE[recommendationsService]
+            FALLBACK[CVServiceCore<br/>Legacy Fallback]
+        end
+    end
+
+    subgraph "Data Flow"
+        CONTAINER --> HOOK1
+        CONTAINER --> HOOK2
+        HOOK1 --> PKG_HOOK
+        HOOK1 --> FALLBACK
+        PKG_HOOK --> PKG_SERVICE
+        
+        CONTAINER --> HEADER
+        CONTAINER --> LOADER
+        CONTAINER --> ERROR
+        CONTAINER --> LIST
+        CONTAINER --> ACTIONS
+        
+        LIST --> CARD
+        
+        HOOK2 --> CARD
+        HOOK2 --> ACTIONS
+    end
+
+    subgraph "State Management"
+        CTX[UnifiedAnalysisContext]
+        LOCAL[Local Component State]
+        SELECTION[Selection State]
+        
+        HOOK1 --> CTX
+        HOOK1 --> LOCAL
+        HOOK2 --> SELECTION
+    end
+
+    subgraph "Implementation Phases"
+        PHASE1["Phase 1: Hook Extraction<br/>30 minutes"]
+        PHASE2["Phase 2: UI Components<br/>45 minutes"]
+        PHASE3["Phase 3: Main Content<br/>60 minutes"]
+        PHASE4["Phase 4: Container Refactor<br/>30 minutes"]
+        
+        PHASE1 --> PHASE2
+        PHASE2 --> PHASE3
+        PHASE3 --> PHASE4
+    end
+
+    subgraph "Component Responsibilities"
+        RESP1["HEADER: Status & Titles"]
+        RESP2["LOADER: Loading States"]
+        RESP3["ERROR: Error Display"]
+        RESP4["LIST: Recommendations Rendering"]
+        RESP5["ACTIONS: Navigation & Selection"]
+        RESP6["CARD: Individual Recommendation"]
+        RESP7["HOOKS: Logic & State"]
+    end
+
+    classDef currentState fill:#ffebee,stroke:#e57373,stroke-width:3px
+    classDef modularComponent fill:#e8f5e8,stroke:#66bb6a,stroke-width:2px
+    classDef hookComponent fill:#e3f2fd,stroke:#42a5f5,stroke-width:2px
+    classDef packageComponent fill:#fff3e0,stroke:#ffa726,stroke-width:2px
+    classDef phaseComponent fill:#f3e5f5,stroke:#ab47bc,stroke-width:2px
+    
+    class RC currentState
+    class CONTAINER,HEADER,LOADER,ERROR,LIST,ACTIONS,CARD modularComponent
+    class HOOK1,HOOK2 hookComponent
+    class PKG_HOOK,PKG_SERVICE,FALLBACK packageComponent
+    class PHASE1,PHASE2,PHASE3,PHASE4 phaseComponent
+```

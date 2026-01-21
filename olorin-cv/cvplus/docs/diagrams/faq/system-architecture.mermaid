@@ -1,0 +1,404 @@
+---
+title: CVPlus FAQ Page - System Architecture Diagrams
+author: Gil Klainert
+date: 2025-08-20
+description: Technical architecture diagrams for the FAQ page system components
+---
+
+```mermaid
+%% FAQ Component Architecture and Hierarchy
+graph TB
+    %% Top Level Application
+    App[CVPlus React App] --> Router[React Router]
+    Router --> FAQ[FAQPage Component]
+    
+    %% FAQ Page Structure
+    FAQ --> Header[FAQ Header Section]
+    FAQ --> Main[FAQ Main Content]
+    FAQ --> Footer[FAQ Footer Section]
+    
+    %% Header Components
+    Header --> Hero[FAQ Hero Component]
+    Hero --> Search[FAQSearchBar]
+    Hero --> Stats[FAQ Statistics Display]
+    
+    %% Main Content Components
+    Main --> Categories[FAQCategoryGrid]
+    Main --> Content[FAQ Content Area]
+    Main --> Sidebar[FAQSidebar]
+    
+    %% Category Grid
+    Categories --> CategoryCard[FAQ Category Card]
+    CategoryCard --> CategoryIcon[Category Icon]
+    CategoryCard --> CategoryMeta[Category Metadata]
+    
+    %% Content Area
+    Content --> AccordionList[FAQ Accordion List]
+    Content --> Pagination[FAQ Pagination]
+    AccordionList --> AccordionItem[FAQ Accordion Item]
+    
+    %% Accordion Item Structure
+    AccordionItem --> Question[FAQ Question Header]
+    AccordionItem --> Answer[FAQ Answer Content]
+    AccordionItem --> Actions[FAQ Actions Bar]
+    
+    %% Question Components
+    Question --> QuestionText[Question Text]
+    Question --> QuestionMeta[Question Metadata]
+    Question --> ExpandIcon[Expand/Collapse Icon]
+    
+    %% Answer Components
+    Answer --> AnswerContent[Rich Answer Content]
+    Answer --> AnswerMedia[Media Elements]
+    Answer --> RelatedLinks[Related FAQ Links]
+    
+    %% Actions Components
+    Actions --> Feedback[FAQFeedbackButtons]
+    Actions --> ShareLink[Share Link Button]
+    Actions --> CopyLink[Copy Link Button]
+    
+    %% Feedback System
+    Feedback --> ThumbsUp[Thumbs Up Button]
+    Feedback --> ThumbsDown[Thumbs Down Button]
+    Feedback --> FeedbackForm[Detailed Feedback Form]
+    
+    %% Sidebar Components
+    Sidebar --> QuickActions[FAQQuickActions]
+    Sidebar --> PopularTopics[Popular Topics]
+    Sidebar --> SupportOptions[Support Options]
+    Sidebar --> CategoryNav[Category Navigation]
+    
+    %% Quick Actions
+    QuickActions --> TrialCTA[Try CVPlus CTA]
+    QuickActions --> PricingCTA[View Pricing CTA]
+    QuickActions --> ContactCTA[Contact Support CTA]
+    QuickActions --> FeatureHighlights[Feature Highlights Grid]
+    
+    %% Search Component Details
+    Search --> SearchInput[Search Input Field]
+    Search --> SearchSuggestions[Search Suggestions Dropdown]
+    Search --> SearchHistory[Search History]
+    Search --> PopularQueries[Popular Queries Display]
+    
+    %% Styling
+    classDef appLevel fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef pageLevel fill:#f3e5f5,stroke:#7b1fa2,color:#000
+    classDef componentLevel fill:#e8f5e8,stroke:#2e7d32,color:#000
+    classDef elementLevel fill:#fff3e0,stroke:#ef6c00,color:#000
+    classDef actionLevel fill:#ffebee,stroke:#d32f2f,color:#000
+    
+    class App,Router appLevel
+    class FAQ,Header,Main,Footer pageLevel
+    class Categories,Content,Sidebar,Search,AccordionList componentLevel
+    class CategoryCard,AccordionItem,Question,Answer,Actions elementLevel
+    class Feedback,ThumbsUp,ThumbsDown,TrialCTA actionLevel
+```
+
+```mermaid
+%% Data Flow Architecture
+flowchart TD
+    %% External Data Sources
+    A1[FAQ Database - Firestore] --> B1[FAQ API Service]
+    A2[User Analytics - Firebase Analytics] --> B2[Analytics Service]
+    A3[Search Index - Algolia/Elasticsearch] --> B3[Search Service]
+    A4[User Feedback - Firestore] --> B4[Feedback Service]
+    
+    %% API Layer
+    B1 --> C1[FAQ Data Controller]
+    B2 --> C2[Analytics Controller]
+    B3 --> C3[Search Controller]
+    B4 --> C4[Feedback Controller]
+    
+    %% State Management Layer
+    C1 --> D1[FAQ State Store - Redux/Zustand]
+    C2 --> D2[Analytics State Store]
+    C3 --> D3[Search State Store]
+    C4 --> D4[Feedback State Store]
+    
+    %% Component Data Flow
+    D1 --> E1[FAQ Components]
+    D2 --> E1
+    D3 --> E2[Search Components]
+    D4 --> E3[Feedback Components]
+    
+    %% UI State Flow
+    E1 --> F1[FAQ Display Logic]
+    E2 --> F2[Search Results Logic]
+    E3 --> F3[Feedback UI Logic]
+    
+    %% User Interactions
+    F1 --> G1[User Clicks FAQ]
+    F2 --> G2[User Searches]
+    F3 --> G3[User Provides Feedback]
+    
+    %% Action Processing
+    G1 --> H1[Track FAQ View]
+    G2 --> H2[Process Search Query]
+    G3 --> H3[Submit Feedback]
+    
+    %% Data Updates
+    H1 --> I1[Update Analytics]
+    H2 --> I2[Update Search History]
+    H3 --> I3[Update Feedback Database]
+    
+    %% Feedback Loop
+    I1 --> B2
+    I2 --> B3
+    I3 --> B4
+    
+    %% Cache Layer
+    B1 --> J1[FAQ Content Cache]
+    B3 --> J2[Search Results Cache]
+    J1 --> E1
+    J2 --> E2
+    
+    %% Styling
+    classDef dataSource fill:#e8f5e8,stroke:#2e7d32,color:#000
+    classDef apiLayer fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef stateLayer fill:#f3e5f5,stroke:#7b1fa2,color:#000
+    classDef componentLayer fill:#fff3e0,stroke:#ef6c00,color:#000
+    classDef userLayer fill:#ffebee,stroke:#d32f2f,color:#000
+    classDef cacheLayer fill:#f1f8e9,stroke:#689f38,color:#000
+    
+    class A1,A2,A3,A4 dataSource
+    class B1,B2,B3,B4,C1,C2,C3,C4 apiLayer
+    class D1,D2,D3,D4 stateLayer
+    class E1,E2,E3,F1,F2,F3 componentLayer
+    class G1,G2,G3,H1,H2,H3 userLayer
+    class J1,J2 cacheLayer
+```
+
+```mermaid
+%% Mobile vs Desktop Experience Flow
+flowchart LR
+    %% Device Detection
+    A[User Visits FAQ] --> B{Device Type Detection}
+    
+    %% Mobile Flow
+    B -->|Mobile/Tablet| C[Mobile Experience]
+    C --> D[Mobile Layout Engine]
+    D --> E[Vertical Stack Layout]
+    E --> F[Mobile Components]
+    
+    %% Mobile-Specific Components
+    F --> G1[Mobile Search Bar - Full Width]
+    F --> G2[Category Cards - Single Column]
+    F --> G3[Collapsible Sidebar - Overlay]
+    F --> G4[Touch-Optimized Accordions]
+    F --> G5[Floating Action Button]
+    
+    %% Mobile Interactions
+    G1 --> H1[Touch Search with Virtual Keyboard]
+    G2 --> H2[Swipe Navigation Between Categories]
+    G3 --> H3[Hamburger Menu for Sidebar]
+    G4 --> H4[Touch to Expand/Collapse]
+    G5 --> H5[Quick CTA Access]
+    
+    %% Desktop Flow
+    B -->|Desktop| I[Desktop Experience]
+    I --> J[Desktop Layout Engine]
+    J --> K[Multi-Column Layout]
+    K --> L[Desktop Components]
+    
+    %% Desktop-Specific Components
+    L --> M1[Enhanced Search Bar with Suggestions]
+    L --> M2[Category Grid - 3-4 Columns]
+    L --> M3[Fixed Sidebar - Always Visible]
+    L --> M4[Keyboard-Navigable Accordions]
+    L --> M5[Persistent CTA Buttons]
+    
+    %% Desktop Interactions
+    M1 --> N1[Keyboard Shortcuts Support]
+    M2 --> N2[Hover Effects and Tooltips]
+    M3 --> N3[Mouse-Optimized Navigation]
+    M4 --> N4[Click to Expand with Animations]
+    M5 --> N5[Multiple CTA Placement]
+    
+    %% Shared Features
+    H1 --> O[Shared Search Logic]
+    N1 --> O
+    H2 --> P[Shared Category Filtering]
+    N2 --> P
+    H3 --> Q[Shared FAQ Data]
+    N3 --> Q
+    H4 --> R[Shared Feedback System]
+    N4 --> R
+    H5 --> S[Shared Conversion Tracking]
+    N5 --> S
+    
+    %% Responsive Breakpoints
+    B --> T{Screen Size Check}
+    T -->|<640px| U[Mobile Layout]
+    T -->|640-1024px| V[Tablet Layout]
+    T -->|>1024px| W[Desktop Layout]
+    
+    U --> X[Single Column Design]
+    V --> Y[Two Column Design]
+    W --> Z[Three Column Design]
+    
+    %% Styling
+    classDef mobile fill:#e8f5e8,stroke:#2e7d32,color:#000
+    classDef desktop fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef shared fill:#f3e5f5,stroke:#7b1fa2,color:#000
+    classDef responsive fill:#fff3e0,stroke:#ef6c00,color:#000
+    
+    class C,D,E,F,G1,G2,G3,G4,G5,H1,H2,H3,H4,H5 mobile
+    class I,J,K,L,M1,M2,M3,M4,M5,N1,N2,N3,N4,N5 desktop
+    class O,P,Q,R,S shared
+    class T,U,V,W,X,Y,Z responsive
+```
+
+```mermaid
+%% Integration Points with CVPlus Backend
+sequenceDiagram
+    participant User as User Browser
+    participant FAQ as FAQ Page
+    participant Auth as Firebase Auth
+    participant API as CVPlus API
+    participant DB as Firestore DB
+    participant Search as Search Service
+    participant Analytics as Analytics Service
+    
+    %% Page Load Sequence
+    User->>FAQ: Load FAQ Page
+    FAQ->>Auth: Check Authentication Status
+    Auth-->>FAQ: User Status (Guest/Authenticated)
+    
+    FAQ->>API: Request FAQ Data
+    API->>DB: Query FAQ Collection
+    DB-->>API: FAQ Documents
+    API-->>FAQ: FAQ Response with Metadata
+    
+    %% Search Sequence
+    User->>FAQ: Type Search Query
+    FAQ->>Search: Send Search Request
+    Search->>DB: Query FAQ Index
+    DB-->>Search: Matching FAQs
+    Search-->>FAQ: Search Results
+    FAQ->>Analytics: Track Search Event
+    
+    %% FAQ Interaction Sequence
+    User->>FAQ: Click FAQ Item
+    FAQ->>Analytics: Track FAQ View
+    FAQ->>API: Request Detailed FAQ Content
+    API->>DB: Query FAQ Details
+    DB-->>API: Full FAQ Content
+    API-->>FAQ: FAQ Details Response
+    FAQ->>User: Display FAQ Answer
+    
+    %% Feedback Sequence
+    User->>FAQ: Provide Feedback
+    FAQ->>API: Submit Feedback Data
+    API->>DB: Store Feedback
+    DB-->>API: Feedback Confirmation
+    API-->>FAQ: Success Response
+    FAQ->>Analytics: Track Feedback Event
+    FAQ->>User: Show Thank You Message
+    
+    %% Conversion Tracking Sequence
+    User->>FAQ: Click CTA Button
+    FAQ->>Analytics: Track CTA Click
+    FAQ->>Auth: Check User Status
+    Auth-->>FAQ: Authentication Required
+    FAQ->>User: Redirect to Signup/Login
+    
+    %% Real-time Updates (Optional)
+    DB->>API: FAQ Content Updated
+    API->>FAQ: Push Update Notification
+    FAQ->>User: Refresh FAQ Content
+```
+
+```mermaid
+%% Performance and Optimization Architecture
+graph TB
+    %% Performance Layer
+    A[Performance Optimization Layer] --> B1[Client-Side Optimization]
+    A --> B2[Server-Side Optimization]
+    A --> B3[Network Optimization]
+    
+    %% Client-Side Optimizations
+    B1 --> C1[React Performance]
+    B1 --> C2[Bundle Optimization]
+    B1 --> C3[Rendering Optimization]
+    
+    C1 --> D1[React.memo for FAQ Items]
+    C1 --> D2[useMemo for Search Results]
+    C1 --> D3[useCallback for Event Handlers]
+    C1 --> D4[Lazy Loading Components]
+    
+    C2 --> E1[Code Splitting by Route]
+    C2 --> E2[Dynamic Imports]
+    C2 --> E3[Tree Shaking]
+    C2 --> E4[Bundle Analysis]
+    
+    C3 --> F1[Virtual Scrolling for Long Lists]
+    C3 --> F2[Intersection Observer for Lazy Loading]
+    C3 --> F3[Debounced Search Input]
+    C3 --> F4[Optimized Re-renders]
+    
+    %% Server-Side Optimizations
+    B2 --> G1[Database Optimization]
+    B2 --> G2[API Performance]
+    B2 --> G3[Caching Strategy]
+    
+    G1 --> H1[Indexed FAQ Queries]
+    G1 --> H2[Optimized Firestore Rules]
+    G1 --> H3[Batch Operations]
+    
+    G2 --> I1[Firebase Functions Optimization]
+    G2 --> I2[Connection Pooling]
+    G2 --> I3[Response Compression]
+    
+    G3 --> J1[FAQ Content Cache - Redis]
+    G3 --> J2[Search Results Cache]
+    G3 --> J3[Browser Cache Headers]
+    G3 --> J4[Service Worker Cache]
+    
+    %% Network Optimizations
+    B3 --> K1[Content Delivery]
+    B3 --> K2[Asset Optimization]
+    B3 --> K3[Request Optimization]
+    
+    K1 --> L1[CDN for Static Assets]
+    K1 --> L2[Geographic Load Balancing]
+    K1 --> L3[Edge Caching]
+    
+    K2 --> M1[Image Optimization]
+    K2 --> M2[CSS/JS Minification]
+    K2 --> M3[GZIP Compression]
+    
+    K3 --> N1[HTTP/2 Multiplexing]
+    K3 --> N2[Request Batching]
+    K3 --> N3[Prefetching Critical Resources]
+    
+    %% Monitoring and Metrics
+    A --> O[Performance Monitoring]
+    O --> P1[Core Web Vitals Tracking]
+    O --> P2[User Experience Metrics]
+    O --> P3[Technical Performance Metrics]
+    
+    P1 --> Q1[LCP - Largest Contentful Paint]
+    P1 --> Q2[FID - First Input Delay]
+    P1 --> Q3[CLS - Cumulative Layout Shift]
+    
+    P2 --> R1[Search Response Time]
+    P2 --> R2[FAQ Load Time]
+    P2 --> R3[User Interaction Latency]
+    
+    P3 --> S1[API Response Times]
+    P3 --> S2[Database Query Performance]
+    P3 --> S3[Cache Hit Rates]
+    
+    %% Styling
+    classDef optimization fill:#e8f5e8,stroke:#2e7d32,color:#000
+    classDef client fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef server fill:#f3e5f5,stroke:#7b1fa2,color:#000
+    classDef network fill:#fff3e0,stroke:#ef6c00,color:#000
+    classDef monitoring fill:#ffebee,stroke:#d32f2f,color:#000
+    
+    class A,B1,B2,B3 optimization
+    class C1,C2,C3,D1,D2,D3,D4,E1,E2,E3,E4,F1,F2,F3,F4 client
+    class G1,G2,G3,H1,H2,H3,I1,I2,I3,J1,J2,J3,J4 server
+    class K1,K2,K3,L1,L2,L3,M1,M2,M3,N1,N2,N3 network
+    class O,P1,P2,P3,Q1,Q2,Q3,R1,R2,R3,S1,S2,S3 monitoring
+```

@@ -1,0 +1,282 @@
+graph TB
+    %% CVPlus Submodule Export Structure Architecture
+    %% Author: Gil Klainert
+    %% Date: August 28, 2025
+
+    subgraph "Root CVPlus Repository"
+        RootTSConfig["tsconfig.json<br/>Path Mapping"]
+        RootPackage["package.json<br/>Workspace Config"]
+        
+        subgraph "Frontend Application"
+            FrontendApp["frontend/src/App.tsx"]
+            FrontendComponents["React Components"]
+            FrontendHooks["Custom Hooks"]
+            FrontendTSConfig["frontend/tsconfig.json"]
+        end
+        
+        subgraph "Firebase Functions"
+            FunctionsIndex["functions/src/index.ts"]
+            FunctionsDef["Function Definitions"]
+            FunctionsMiddleware["Middleware"]
+            FunctionsTSConfig["functions/tsconfig.json"]
+        end
+    end
+
+    subgraph "Core Submodule (@cvplus/core)"
+        CoreIndex["src/index.ts"]
+        CoreTypes["types/index.ts"]
+        CoreConstants["constants/index.ts"]
+        CoreUtils["utils/index.ts"]
+        CorePackage["package.json<br/>Entry Points"]
+        CoreBuild["dist/<br/>Built Assets"]
+    end
+
+    subgraph "Auth Submodule (@cvplus/auth)"
+        AuthIndex["src/index.ts"]
+        AuthServices["services/"]
+        AuthComponents["components/"]
+        AuthHooks["hooks/"]
+        AuthTypes["types/"]
+        AuthMiddleware["middleware/"]
+        AuthPackage["package.json"]
+        AuthBuild["dist/"]
+    end
+
+    subgraph "Premium Submodule (@cvplus/premium)"
+        PremiumIndex["src/index.ts"]
+        PremiumServices["services/"]
+        PremiumComponents["components/"]
+        PremiumHooks["hooks/"]
+        PremiumFunctions["backend/functions/"]
+        PremiumPackage["package.json"]
+        PremiumBuild["dist/"]
+    end
+
+    subgraph "Analytics Submodule (@cvplus/analytics)"
+        AnalyticsIndex["src/index.ts"]
+        AnalyticsServices["services/"]
+        AnalyticsFunctions["functions/"]
+        AnalyticsTypes["types/"]
+        AnalyticsPackage["package.json"]
+        AnalyticsBuild["dist/"]
+    end
+
+    subgraph "CV-Processing Submodule (@cvplus/cv-processing)"
+        CVIndex["src/index.ts"]
+        CVServices["backend/services/"]
+        CVComponents["frontend/components/"]
+        CVHooks["frontend/hooks/"]
+        CVFunctions["backend/functions/"]
+        CVPackage["package.json"]
+        CVBuild["dist/"]
+    end
+
+    subgraph "Multimedia Submodule (@cvplus/multimedia)"
+        MultimediaIndex["src/index.ts"]
+        MultimediaProcessors["processors/"]
+        MultimediaServices["services/"]
+        MultimediaStorage["storage/"]
+        MultimediaPackage["package.json"]
+        MultimediaBuild["dist/"]
+    end
+
+    subgraph "Admin Submodule (@cvplus/admin)"
+        AdminIndex["src/index.ts"]
+        AdminServices["backend/services/"]
+        AdminComponents["frontend/components/"]
+        AdminMiddleware["middleware/"]
+        AdminFunctions["backend/functions/"]
+        AdminPackage["package.json"]
+        AdminBuild["dist/"]
+    end
+
+    subgraph "Recommendations Submodule (@cvplus/recommendations)"
+        RecommendationsIndex["src/index.ts"]
+        RecommendationsServices["services/"]
+        RecommendationsFunctions["backend/functions/"]
+        RecommendationsHooks["frontend/hooks/"]
+        RecommendationsPackage["package.json"]
+        RecommendationsBuild["dist/"]
+    end
+
+    subgraph "Public Profiles Submodule (@cvplus/public-profiles)"
+        ProfilesIndex["src/index.ts"]
+        ProfilesServices["services/"]
+        ProfilesTypes["types/"]
+        ProfilesPackage["package.json"]
+        ProfilesBuild["dist/"]
+    end
+
+    subgraph "I18n Submodule (@cvplus/i18n)"
+        I18nIndex["src/index.ts"]
+        I18nProvider["providers/"]
+        I18nComponents["components/"]
+        I18nHooks["hooks/"]
+        I18nLocales["locales/"]
+        I18nPackage["package.json"]
+        I18nBuild["dist/"]
+    end
+
+    %% Export Flow Connections
+    
+    %% Core Module (Foundation)
+    CoreIndex --> CoreTypes
+    CoreIndex --> CoreConstants
+    CoreIndex --> CoreUtils
+    CorePackage --> CoreBuild
+    
+    %% Auth Module Dependencies
+    AuthIndex --> AuthServices
+    AuthIndex --> AuthComponents
+    AuthIndex --> AuthHooks
+    AuthIndex --> AuthTypes
+    AuthIndex --> AuthMiddleware
+    AuthPackage --> AuthBuild
+    CoreBuild -.-> AuthServices
+    
+    %% Premium Module Dependencies
+    PremiumIndex --> PremiumServices
+    PremiumIndex --> PremiumComponents
+    PremiumIndex --> PremiumHooks
+    PremiumIndex --> PremiumFunctions
+    CoreBuild -.-> PremiumServices
+    AuthBuild -.-> PremiumServices
+    
+    %% Analytics Module Dependencies
+    AnalyticsIndex --> AnalyticsServices
+    AnalyticsIndex --> AnalyticsFunctions
+    AnalyticsIndex --> AnalyticsTypes
+    CoreBuild -.-> AnalyticsServices
+    AuthBuild -.-> AnalyticsServices
+    
+    %% CV-Processing Module Dependencies
+    CVIndex --> CVServices
+    CVIndex --> CVComponents
+    CVIndex --> CVHooks
+    CVIndex --> CVFunctions
+    CoreBuild -.-> CVServices
+    AuthBuild -.-> CVServices
+    
+    %% Multimedia Module Dependencies
+    MultimediaIndex --> MultimediaProcessors
+    MultimediaIndex --> MultimediaServices
+    MultimediaIndex --> MultimediaStorage
+    CoreBuild -.-> MultimediaServices
+    
+    %% Admin Module Dependencies
+    AdminIndex --> AdminServices
+    AdminIndex --> AdminComponents
+    AdminIndex --> AdminMiddleware
+    AdminIndex --> AdminFunctions
+    CoreBuild -.-> AdminServices
+    AuthBuild -.-> AdminServices
+    AnalyticsBuild -.-> AdminServices
+    
+    %% Recommendations Module Dependencies
+    RecommendationsIndex --> RecommendationsServices
+    RecommendationsIndex --> RecommendationsFunctions
+    RecommendationsIndex --> RecommendationsHooks
+    CoreBuild -.-> RecommendationsServices
+    AuthBuild -.-> RecommendationsServices
+    CVBuild -.-> RecommendationsServices
+    
+    %% Public Profiles Dependencies
+    ProfilesIndex --> ProfilesServices
+    ProfilesIndex --> ProfilesTypes
+    CoreBuild -.-> ProfilesServices
+    AuthBuild -.-> ProfilesServices
+    
+    %% I18n Module Dependencies
+    I18nIndex --> I18nProvider
+    I18nIndex --> I18nComponents
+    I18nIndex --> I18nHooks
+    I18nIndex --> I18nLocales
+    CoreBuild -.-> I18nProvider
+    
+    %% Frontend Integration
+    FrontendApp --> AuthBuild
+    FrontendApp --> PremiumBuild
+    FrontendApp --> CVBuild
+    FrontendApp --> I18nBuild
+    FrontendComponents --> AuthBuild
+    FrontendComponents --> PremiumBuild
+    FrontendComponents --> CVBuild
+    FrontendHooks --> AuthBuild
+    FrontendHooks --> CVBuild
+    FrontendHooks --> RecommendationsBuild
+    
+    %% Firebase Functions Integration
+    FunctionsIndex --> AuthBuild
+    FunctionsIndex --> PremiumBuild
+    FunctionsIndex --> AnalyticsBuild
+    FunctionsIndex --> CVBuild
+    FunctionsIndex --> AdminBuild
+    FunctionsIndex --> RecommendationsBuild
+    FunctionsDef --> CVBuild
+    FunctionsDef --> PremiumBuild
+    FunctionsDef --> AnalyticsBuild
+    FunctionsMiddleware --> AuthBuild
+    FunctionsMiddleware --> AdminBuild
+    
+    %% TypeScript Configuration Flow
+    RootTSConfig --> FrontendTSConfig
+    RootTSConfig --> FunctionsTSConfig
+    FrontendTSConfig --> FrontendApp
+    FunctionsTSConfig --> FunctionsIndex
+
+    %% Package Export Patterns
+    subgraph "Export Patterns"
+        NamedExports["Named Exports<br/>✅ export { Service }"]
+        NamespaceExports["Namespace Exports<br/>✅ export * from './types'"]
+        SubpathExports["Subpath Exports<br/>✅ '@cvplus/auth/types'"]
+        DefaultExports["Default Exports<br/>❌ Prohibited"]
+    end
+    
+    %% Build Flow
+    subgraph "Build Pipeline"
+        SourceFiles["Source Files<br/>(src/)"]
+        TypeScript["TypeScript<br/>Compilation"]
+        Bundling["Bundle Generation<br/>(tsup/rollup)"]
+        DistFiles["Distribution<br/>(dist/)"]
+        
+        SourceFiles --> TypeScript
+        TypeScript --> Bundling
+        Bundling --> DistFiles
+    end
+    
+    %% CI/CD Integration
+    subgraph "CI/CD Pipeline"
+        BuildOrder["Build Order<br/>1. Core<br/>2. Auth<br/>3. Others"]
+        Testing["Package Testing<br/>Unit + Integration"]
+        Deployment["Firebase Deploy<br/>Functions + Frontend"]
+        
+        BuildOrder --> Testing
+        Testing --> Deployment
+    end
+
+    %% Styling
+    classDef coreModule fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef authModule fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef premiumModule fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef analyticsModule fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef cvModule fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+    classDef multimediaModule fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef adminModule fill:#efebe9,stroke:#3e2723,stroke-width:2px
+    classDef recommendationsModule fill:#e0f2f1,stroke:#004d40,stroke-width:2px
+    classDef profilesModule fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    classDef i18nModule fill:#e8eaf6,stroke:#1a237e,stroke-width:2px
+    classDef rootModule fill:#ffebee,stroke:#b71c1c,stroke-width:2px
+    classDef buildModule fill:#f5f5f5,stroke:#424242,stroke-width:2px
+
+    class CoreIndex,CoreTypes,CoreConstants,CoreUtils,CorePackage,CoreBuild coreModule
+    class AuthIndex,AuthServices,AuthComponents,AuthHooks,AuthTypes,AuthMiddleware,AuthPackage,AuthBuild authModule
+    class PremiumIndex,PremiumServices,PremiumComponents,PremiumHooks,PremiumFunctions,PremiumPackage,PremiumBuild premiumModule
+    class AnalyticsIndex,AnalyticsServices,AnalyticsFunctions,AnalyticsTypes,AnalyticsPackage,AnalyticsBuild analyticsModule
+    class CVIndex,CVServices,CVComponents,CVHooks,CVFunctions,CVPackage,CVBuild cvModule
+    class MultimediaIndex,MultimediaProcessors,MultimediaServices,MultimediaStorage,MultimediaPackage,MultimediaBuild multimediaModule
+    class AdminIndex,AdminServices,AdminComponents,AdminMiddleware,AdminFunctions,AdminPackage,AdminBuild adminModule
+    class RecommendationsIndex,RecommendationsServices,RecommendationsFunctions,RecommendationsHooks,RecommendationsPackage,RecommendationsBuild recommendationsModule
+    class ProfilesIndex,ProfilesServices,ProfilesTypes,ProfilesPackage,ProfilesBuild profilesModule
+    class I18nIndex,I18nProvider,I18nComponents,I18nHooks,I18nLocales,I18nPackage,I18nBuild i18nModule
+    class RootTSConfig,RootPackage,FrontendApp,FrontendComponents,FrontendHooks,FrontendTSConfig,FunctionsIndex,FunctionsDef,FunctionsMiddleware,FunctionsTSConfig rootModule
+    class SourceFiles,TypeScript,Bundling,DistFiles,BuildOrder,Testing,Deployment buildModule

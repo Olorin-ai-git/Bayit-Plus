@@ -1,0 +1,48 @@
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant RC as React ContactForm
+    participant FB as Firebase Client
+    participant CF as Cloud Functions
+    participant FS as Firestore
+    participant ES as Email Service
+    
+    U->>RC: Fill Contact Form
+    U->>RC: Submit Form
+    
+    RC->>RC: Validate Form Data
+    alt Validation Fails
+        RC-->>U: Show Validation Errors
+    else Validation Passes
+        RC->>RC: Show Loading State
+        RC->>FB: Initialize Firebase App
+        FB->>CF: Call submitContactForm()
+        
+        CF->>CF: Validate Input Data
+        CF->>CF: Sanitize & Rate Limit
+        
+        alt Rate Limit Exceeded
+            CF-->>FB: Return Error
+            FB-->>RC: Handle Error
+            RC-->>U: Show Rate Limit Message
+        else Request Valid
+            CF->>FS: Save Contact Submission
+            CF->>FS: Update Analytics
+            
+            par Email Notification
+                CF->>ES: Send Email to CV Owner
+                ES-->>CF: Email Result
+            end
+            
+            CF-->>FB: Return Success
+            FB-->>RC: Handle Success
+            RC->>RC: Reset Form
+            RC->>RC: Show Success Message
+            RC-->>U: Display Success Feedback
+        end
+    end
+    
+    Note over U,ES: Enhanced error handling and user feedback
+    Note over CF,FS: Security validation and analytics tracking
+    Note over RC,FB: Proper Firebase integration with callable functions
+```

@@ -1,0 +1,66 @@
+graph TB
+    subgraph "Current Flow Issues"
+        A1[Step 1: Upload] --> B1[Processing - 5 internal steps]
+        B1 --> C1[Step 2: Analysis]
+        C1 --> D1[Step 3: Preview]
+        D1 --> E1[Step 4: Results]
+        
+        F1[❌ Shows "Step X of 4"]
+        G1[❌ No session persistence]
+        H1[❌ No error recovery]
+        I1[❌ Poor mobile nav]
+        J1[❌ No contextual help]
+    end
+    
+    subgraph "Improved Architecture"
+        A2[Step 1: Upload] --> B2[Step 2: Processing]
+        B2 --> C2[Step 3: Analysis]
+        C2 --> D2[Step 4: Preview]
+        D2 --> E2[Step 5: Results]
+        
+        F2[✅ Accurate "Step X of 5"]
+        G2[✅ Session persistence]
+        H2[✅ Error recovery]
+        I2[✅ Mobile-optimized nav]
+        J2[✅ Contextual help]
+    end
+    
+    subgraph "Core Components"
+        K[StepIndicator Component]
+        L[SessionManager Service]
+        M[ErrorRecovery System]
+        N[MobileNavigation]
+        O[ContextualHelp]
+    end
+    
+    subgraph "Supporting Services"
+        P[useSession Hook]
+        Q[useStepNavigation Hook]
+        R[useErrorRecovery Hook]
+        S[useGestures Hook]
+        T[StepCalculator Service]
+    end
+    
+    A2 -.-> K
+    B2 -.-> L
+    C2 -.-> M
+    D2 -.-> N
+    E2 -.-> O
+    
+    K --> P
+    L --> Q
+    M --> R
+    N --> S
+    O --> T
+    
+    style A1 fill:#ffebee
+    style B1 fill:#ffebee
+    style C1 fill:#ffebee
+    style D1 fill:#ffebee
+    style E1 fill:#ffebee
+    
+    style A2 fill:#e8f5e8
+    style B2 fill:#e8f5e8
+    style C2 fill:#e8f5e8
+    style D2 fill:#e8f5e8
+    style E2 fill:#e8f5e8

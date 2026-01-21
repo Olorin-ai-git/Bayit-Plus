@@ -1,0 +1,110 @@
+# Git Submodule Repository Structure
+
+```mermaid
+graph TB
+    subgraph "GitHub Organization: cvplus-modules"
+        MAIN[cvplus-main<br/>Main Repository]
+        
+        subgraph "Core Modules"
+            CORE_REPO[cvplus-core<br/>v1.x.x]
+            AUTH_REPO[cvplus-auth<br/>v1.x.x]
+        end
+        
+        subgraph "Business Modules"
+            CV_REPO[cvplus-cv-processing<br/>v2.x.x]
+            REC_REPO[cvplus-recommendations<br/>v1.x.x]
+            PREM_REPO[cvplus-premium<br/>v3.x.x]
+        end
+        
+        subgraph "Feature Modules"
+            MEDIA_REPO[cvplus-multimedia<br/>v1.x.x]
+            PROF_REPO[cvplus-public-profiles<br/>v2.x.x]
+            I18N_REPO[cvplus-i18n<br/>v1.x.x]
+        end
+        
+        subgraph "Admin Modules"
+            ANAL_REPO[cvplus-analytics<br/>v1.x.x]
+            ADMIN_REPO[cvplus-admin<br/>v1.x.x]
+        end
+    end
+    
+    MAIN -->|git submodule| CORE_REPO
+    MAIN -->|git submodule| AUTH_REPO
+    MAIN -->|git submodule| CV_REPO
+    MAIN -->|git submodule| REC_REPO
+    MAIN -->|git submodule| PREM_REPO
+    MAIN -->|git submodule| MEDIA_REPO
+    MAIN -->|git submodule| PROF_REPO
+    MAIN -->|git submodule| I18N_REPO
+    MAIN -->|git submodule| ANAL_REPO
+    MAIN -->|git submodule| ADMIN_REPO
+    
+    style MAIN fill:#3498db,stroke:#2980b9,stroke-width:3px
+    style CORE_REPO fill:#2ecc71,stroke:#27ae60,stroke-width:2px
+    style AUTH_REPO fill:#e74c3c,stroke:#c0392b,stroke-width:2px
+```
+
+```mermaid
+flowchart LR
+    subgraph "Development Workflow"
+        DEV[Developer] --> FEAT[Feature Branch]
+        FEAT --> PR[Pull Request]
+        PR --> TEST[Automated Tests]
+        TEST --> REV[Code Review]
+        REV --> MERGE[Merge to Main]
+        MERGE --> TAG[Version Tag]
+        TAG --> REL[Release]
+    end
+    
+    subgraph "Module Versioning"
+        REL --> PATCH[Patch: 1.0.x<br/>Bug fixes]
+        REL --> MINOR[Minor: 1.x.0<br/>New features]
+        REL --> MAJOR[Major: x.0.0<br/>Breaking changes]
+    end
+    
+    subgraph "Deployment Strategy"
+        REL --> STAGE[Staging Deploy]
+        STAGE --> CANARY[Canary Deploy<br/>5% traffic]
+        CANARY --> ROLLING[Rolling Deploy<br/>25% → 50% → 100%]
+        ROLLING --> PROD[Production]
+    end
+    
+    subgraph "Rollback Strategy"
+        PROD --> MON{Monitor}
+        MON -->|Success| STABLE[Stable]
+        MON -->|Issues| ROLL[Rollback]
+        ROLL --> PREV[Previous Version]
+    end
+```
+
+```mermaid
+sequenceDiagram
+    participant D as Developer
+    participant M as Module Repo
+    participant C as CI/CD
+    participant R as Registry
+    participant A as Main App
+    participant P as Production
+    
+    D->>M: Push changes to feature branch
+    M->>C: Trigger CI pipeline
+    C->>C: Run tests, linting, build
+    C->>D: Report status
+    
+    D->>M: Create pull request
+    M->>C: Run PR checks
+    C->>M: ✓ All checks passed
+    
+    D->>M: Merge to main
+    M->>C: Trigger release pipeline
+    C->>R: Publish module v1.2.3
+    C->>M: Create git tag v1.2.3
+    
+    A->>R: Update dependency
+    A->>C: Trigger integration tests
+    C->>A: ✓ Integration successful
+    
+    A->>P: Deploy with new module
+    P->>P: Monitor performance
+    P->>A: ✓ Deployment successful
+```

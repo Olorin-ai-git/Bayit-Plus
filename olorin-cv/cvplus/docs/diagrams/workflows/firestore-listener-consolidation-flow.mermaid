@@ -1,0 +1,75 @@
+graph TB
+    subgraph "Current State (Problem)"
+        A1[JobSubscriptionManager]
+        A2[useProgressTracking]
+        A3[useEnhancedProgressTracking]
+        A4[PreviewService]
+        A5[RecommendationProgressTracker]
+        
+        F1[(Firestore Job Doc)]
+        
+        A1 -->|onSnapshot| F1
+        A2 -->|onSnapshot| F1
+        A3 -->|onSnapshot| F1
+        A4 -->|onSnapshot| F1
+        A5 -->|onSnapshot| F1
+        
+        F1 -.->|ASSERTION ERROR b815| E1[Error State]
+    end
+    
+    subgraph "Solution (Single Listener)"
+        B1[Enhanced JobSubscriptionManager]
+        B2[useProgressTracking Hook]
+        B3[useEnhancedProgressTracking Hook]
+        B4[PreviewService]
+        B5[RecommendationProgressTracker]
+        
+        F2[(Firestore Job Doc)]
+        
+        B1 -->|Single onSnapshot| F2
+        B2 -->|Subscribe via Manager| B1
+        B3 -->|Subscribe via Manager| B1
+        B4 -->|Subscribe via Manager| B1
+        B5 -->|Subscribe via Manager| B1
+        
+        B1 -->|Filtered Callbacks| B2
+        B1 -->|Filtered Callbacks| B3
+        B1 -->|Filtered Callbacks| B4
+        B1 -->|Filtered Callbacks| B5
+    end
+    
+    subgraph "Implementation Flow"
+        C1[Phase 1: Enhance JobSubscriptionManager]
+        C2[Phase 2: Add Callback Types]
+        C3[Phase 3: Refactor Direct Listeners]
+        C4[Phase 4: Add Error Boundaries]
+        C5[Phase 5: Testing & Validation]
+        
+        C1 --> C2
+        C2 --> C3
+        C3 --> C4
+        C4 --> C5
+    end
+    
+    subgraph "Error Recovery System"
+        D1[FirestoreErrorBoundary]
+        D2[Retry Mechanism]
+        D3[Graceful Degradation]
+        D4[Fallback UI]
+        
+        D1 --> D2
+        D2 --> D3
+        D3 --> D4
+    end
+    
+    subgraph "Callback Types"
+        E1[Progress Callbacks]
+        E2[Preview Callbacks]
+        E3[Feature-Specific Callbacks]
+        E4[Status Change Callbacks]
+        
+        B1 --> E1
+        B1 --> E2
+        B1 --> E3
+        B1 --> E4
+    end

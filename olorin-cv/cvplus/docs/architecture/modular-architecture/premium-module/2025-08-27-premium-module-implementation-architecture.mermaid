@@ -1,0 +1,126 @@
+graph TB
+    %% Current State Analysis
+    subgraph Current["🔍 Current State (40% Complete)"]
+        direction TB
+        A1[Premium Module Package 📦<br/>- Basic structure exists<br/>- Module flags disabled<br/>- Types & services defined]
+        A2[Firebase Functions 🔧<br/>- Payment functions ready<br/>- Premium guard middleware<br/>- Subscription management]
+        A3[Frontend Components 🎨<br/>- Premium gates scattered<br/>- Feature flags disabled<br/>- Integration incomplete]
+        A4[Firestore Rules 🛡️<br/>- Subscription collections<br/>- Basic security rules<br/>- User permission structure]
+    end
+
+    %% Phase 1: Critical Infrastructure
+    subgraph Phase1["⚡ Phase 1: Critical Infrastructure (Week 1)"]
+        direction TB
+        P1A[Enable Premium Module<br/>USE_PREMIUM_MODULE: true<br/>Consolidate scattered logic<br/>Firebase integration]
+        P1B[Security Rules Update<br/>Enhanced premium validation<br/>Feature access controls<br/>Subscription state sync]
+        P1C[Stripe Webhook Processing<br/>Real-time subscription updates<br/>Feature activation/deactivation<br/>Usage tracking foundation]
+        P1D[Module Integration Layer<br/>Provider consolidation<br/>Legacy compatibility<br/>Error boundaries]
+    end
+
+    %% Phase 2: Feature Gating & Usage Tracking
+    subgraph Phase2["🚀 Phase 2: Feature Gating (Weeks 2-4)"]
+        direction TB
+        P2A[22+ CV Feature Gates<br/>Per-feature usage tracking<br/>Dynamic enablement<br/>Quota management]
+        P2B[Premium Dashboard<br/>Subscription status<br/>Usage analytics<br/>Feature availability]
+        P2C[Real-time Sync<br/>Firestore listeners<br/>State management<br/>Offline handling]
+        P2D[Testing Infrastructure<br/>Premium flow testing<br/>Feature gate validation<br/>Usage limit verification]
+    end
+
+    %% Phase 3: Analytics & Intelligence
+    subgraph Phase3["📊 Phase 3: Analytics & Intelligence (Months 2-3)"]
+        direction TB
+        P3A[Revenue Analytics<br/>MRR tracking<br/>Conversion metrics<br/>Feature adoption rates]
+        P3B[Churn Prediction<br/>Usage pattern analysis<br/>Engagement scoring<br/>Retention strategies]
+        P3C[Billing Automation<br/>Automated upgrades<br/>Usage-based billing<br/>Prorated adjustments]
+        P3D[Multi-tier Management<br/>Plan comparison<br/>Feature matrices<br/>Upgrade flows]
+    end
+
+    %% Phase 4: Enterprise Features
+    subgraph Phase4["🏢 Phase 4: Enterprise Features (Months 3-4)"]
+        direction TB
+        P4A[Dynamic Pricing<br/>Market-based adjustments<br/>A/B testing<br/>Regional pricing]
+        P4B[Team Management<br/>Organization accounts<br/>User provisioning<br/>Role-based access]
+        P4C[Advanced Analytics<br/>Custom dashboards<br/>API usage tracking<br/>Performance metrics]
+        P4D[Global Payments<br/>Multi-currency support<br/>Tax compliance<br/>Payment method variety]
+    end
+
+    %% Firebase Architecture
+    subgraph Firebase["🔥 Firebase Architecture"]
+        direction LR
+        F1[Functions<br/>127+ Firebase Functions<br/>Premium validation<br/>Usage tracking<br/>Webhook processing]
+        F2[Firestore<br/>User subscriptions<br/>Feature usage<br/>Analytics data<br/>Billing history]
+        F3[Security Rules<br/>Premium access control<br/>Feature-level permissions<br/>Usage quota enforcement]
+        F4[Storage<br/>Premium assets<br/>Analytics exports<br/>Audit logs]
+    end
+
+    %% Integration Points
+    subgraph Integration["🔗 Integration Points"]
+        direction TB
+        I1[Auth Module<br/>User authentication<br/>Permission validation<br/>Session management]
+        I2[Core Module<br/>Shared types<br/>Utilities<br/>Constants]
+        I3[Recommendations<br/>Premium feature gating<br/>Enhanced AI features<br/>Usage-based limits]
+        I4[External Services<br/>Stripe payments<br/>Analytics platforms<br/>Monitoring tools]
+    end
+
+    %% Implementation Flow
+    Current --> Phase1
+    Phase1 --> Phase2
+    Phase2 --> Phase3
+    Phase3 --> Phase4
+    
+    %% Firebase connections
+    Phase1 --> Firebase
+    Phase2 --> Firebase
+    Phase3 --> Firebase
+    Phase4 --> Firebase
+    
+    %% Integration connections
+    Phase1 --> Integration
+    Phase2 --> Integration
+    Phase3 --> Integration
+    Phase4 --> Integration
+
+    %% Risk Mitigation
+    subgraph Risk["⚠️ Risk Mitigation"]
+        direction TB
+        R1[Gradual Rollout<br/>Feature flags<br/>A/B testing<br/>Rollback procedures]
+        R2[Monitoring<br/>Real-time alerts<br/>Performance tracking<br/>Error handling]
+        R3[Compatibility<br/>Legacy support<br/>Migration tools<br/>Fallback systems]
+        R4[Testing<br/>Automated tests<br/>Manual validation<br/>Load testing]
+    end
+
+    Phase1 -.-> Risk
+    Phase2 -.-> Risk
+    Phase3 -.-> Risk
+    Phase4 -.-> Risk
+
+    %% Success Metrics
+    subgraph Success["📈 Success Metrics"]
+        direction TB
+        S1[Technical<br/>100% uptime<br/>Sub-200ms response<br/>Zero data loss]
+        S2[Business<br/>30%+ conversion rate<br/>$50K+ MRR<br/>90%+ retention]
+        S3[User Experience<br/>Seamless upgrades<br/>Intuitive interface<br/>24/7 availability]
+    end
+
+    Phase4 --> Success
+
+    %% Styling
+    classDef currentState fill:#ff9999,stroke:#ff0000,stroke-width:3px
+    classDef phase1 fill:#ffcc99,stroke:#ff6600,stroke-width:2px
+    classDef phase2 fill:#99ccff,stroke:#0066ff,stroke-width:2px
+    classDef phase3 fill:#99ff99,stroke:#00cc00,stroke-width:2px
+    classDef phase4 fill:#cc99ff,stroke:#6600cc,stroke-width:2px
+    classDef firebase fill:#ff6b35,stroke:#ff3300,stroke-width:2px
+    classDef integration fill:#35d073,stroke:#00aa00,stroke-width:2px
+    classDef risk fill:#ffd700,stroke:#ffaa00,stroke-width:2px
+    classDef success fill:#90ee90,stroke:#008000,stroke-width:3px
+
+    class A1,A2,A3,A4 currentState
+    class P1A,P1B,P1C,P1D phase1
+    class P2A,P2B,P2C,P2D phase2
+    class P3A,P3B,P3C,P3D phase3
+    class P4A,P4B,P4C,P4D phase4
+    class F1,F2,F3,F4 firebase
+    class I1,I2,I3,I4 integration
+    class R1,R2,R3,R4 risk
+    class S1,S2,S3 success

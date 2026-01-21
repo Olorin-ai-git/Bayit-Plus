@@ -1,0 +1,151 @@
+graph TB
+    %% CVPlus Submodule Standardization Architecture
+    %% Author: Gil Klainert
+    %% Date: 2025-08-29
+    %% Purpose: Comprehensive .claude standardization across all submodules
+
+    subgraph "CVPlus Root Project"
+        ROOT[".claude/settings.local.json<br/>100+ permissions<br/>Main orchestration"]
+        ROOT_MD["CLAUDE.md<br/>Main project instructions"]
+    end
+
+    subgraph "Submodule Categories"
+        subgraph "Core Infrastructure"
+            CORE[core<br/>core-module-specialist]
+            AUTH[auth<br/>auth-module-specialist]
+            I18N[i18n<br/>i18n-specialist]
+        end
+        
+        subgraph "Processing & Intelligence"
+            CVPROC[cv-processing<br/>cv-processing-specialist]
+            RECOM[recommendations<br/>recommendations-specialist]
+            MULTI[multimedia<br/>multimedia-specialist]
+        end
+        
+        subgraph "Business & Commerce"
+            PREM[premium<br/>premium-specialist]
+            PAY[payments<br/>premium-specialist]
+            ANAL[analytics<br/>analytics-specialist]
+        end
+        
+        subgraph "User Experience"
+            PUB[public-profiles<br/>public-profiles-specialist]
+            ADMIN[admin<br/>admin-specialist]
+            WORK[workflow<br/>workflow-specialist]
+        end
+    end
+
+    subgraph "Standardization Templates"
+        SETTINGS_TMPL["settings.local.json Template<br/>• Build & test permissions<br/>• Git operations<br/>• Subagent access<br/>• TypeScript tools"]
+        CLAUDE_TMPL["CLAUDE.md Template<br/>• Domain expertise<br/>• Specialized subagents<br/>• Integration patterns<br/>• Quality standards"]
+        DOCS_TMPL["docs/ Structure<br/>• plans/ directory<br/>• diagrams/ directory<br/>• Architecture docs"]
+        SCRIPTS_TMPL["scripts/ Structure<br/>• build/ automation<br/>• test/ validation<br/>• deployment/ scripts"]
+    end
+
+    subgraph "Global Subagent Access"
+        CVP_AGENTS["CVPlus Specialists<br/>~/.local/share/claude-007-agents/<br/>.claude/agents/cvplus/"]
+        UNIV_AGENTS["Universal Specialists<br/>code-reviewer<br/>debugger<br/>git-expert"]
+        ENG_AGENTS["Engineering Specialists<br/>backend-test-engineer<br/>frontend-coverage-engineer<br/>test-writer-fixer"]
+    end
+
+    subgraph "Implementation Phases"
+        PHASE1["Phase 1: Infrastructure<br/>• .claude directories<br/>• settings.local.json<br/>• Permission sets"]
+        PHASE2["Phase 2: Documentation<br/>• CLAUDE.md files<br/>• Subagent references<br/>• Integration patterns"]
+        PHASE3["Phase 3: Structure<br/>• docs/ directories<br/>• scripts/ automation<br/>• README updates"]
+        PHASE4["Phase 4: Validation<br/>• Build testing<br/>• Integration testing<br/>• Quality assurance"]
+    end
+
+    subgraph "Validation Criteria"
+        TECH_VAL["Technical Validation<br/>• Independent builds<br/>• Test execution<br/>• Type checking<br/>• Dependencies"]
+        INT_VAL["Integration Validation<br/>• Subagent access<br/>• Cross-module integration<br/>• Main project compatibility<br/>• Firebase functions"]
+        QUAL_VAL["Quality Validation<br/>• 85%+ test coverage<br/>• <200 lines per file<br/>• Security standards<br/>• Performance maintained"]
+    end
+
+    %% Current State
+    CVPROC -.->|Has basic .claude| SETTINGS_TMPL
+    MULTI -.->|Has minimal .claude| SETTINGS_TMPL
+    CORE -.->|Missing .claude| SETTINGS_TMPL
+    AUTH -.->|Missing .claude| SETTINGS_TMPL
+    I18N -.->|Missing .claude| SETTINGS_TMPL
+    PREM -.->|Missing .claude| SETTINGS_TMPL
+    PAY -.->|Missing .claude| SETTINGS_TMPL
+    ANAL -.->|Missing .claude| SETTINGS_TMPL
+    PUB -.->|Missing .claude| SETTINGS_TMPL
+    ADMIN -.->|Missing .claude| SETTINGS_TMPL
+    WORK -.->|Missing .claude| SETTINGS_TMPL
+    RECOM -.->|Missing .claude| SETTINGS_TMPL
+
+    %% Template Application
+    SETTINGS_TMPL --> CORE
+    SETTINGS_TMPL --> AUTH
+    SETTINGS_TMPL --> I18N
+    SETTINGS_TMPL --> PREM
+    SETTINGS_TMPL --> PAY
+    SETTINGS_TMPL --> ANAL
+    SETTINGS_TMPL --> PUB
+    SETTINGS_TMPL --> ADMIN
+    SETTINGS_TMPL --> WORK
+    SETTINGS_TMPL --> RECOM
+
+    CLAUDE_TMPL --> CORE
+    CLAUDE_TMPL --> AUTH
+    CLAUDE_TMPL --> I18N
+    CLAUDE_TMPL --> PREM
+    CLAUDE_TMPL --> PAY
+    CLAUDE_TMPL --> ANAL
+    CLAUDE_TMPL --> PUB
+    CLAUDE_TMPL --> ADMIN
+    CLAUDE_TMPL --> WORK
+    CLAUDE_TMPL --> RECOM
+
+    %% Subagent Access
+    CVP_AGENTS --> CORE
+    CVP_AGENTS --> AUTH
+    CVP_AGENTS --> I18N
+    CVP_AGENTS --> CVPROC
+    CVP_AGENTS --> RECOM
+    CVP_AGENTS --> MULTI
+    CVP_AGENTS --> PREM
+    CVP_AGENTS --> PAY
+    CVP_AGENTS --> ANAL
+    CVP_AGENTS --> PUB
+    CVP_AGENTS --> ADMIN
+    CVP_AGENTS --> WORK
+
+    UNIV_AGENTS --> CORE
+    UNIV_AGENTS --> AUTH
+    UNIV_AGENTS --> I18N
+    UNIV_AGENTS --> CVPROC
+    UNIV_AGENTS --> RECOM
+    UNIV_AGENTS --> MULTI
+    UNIV_AGENTS --> PREM
+    UNIV_AGENTS --> PAY
+    UNIV_AGENTS --> ANAL
+    UNIV_AGENTS --> PUB
+    UNIV_AGENTS --> ADMIN
+    UNIV_AGENTS --> WORK
+
+    %% Implementation Flow
+    PHASE1 --> PHASE2
+    PHASE2 --> PHASE3
+    PHASE3 --> PHASE4
+
+    %% Validation Flow
+    PHASE4 --> TECH_VAL
+    PHASE4 --> INT_VAL
+    PHASE4 --> QUAL_VAL
+
+    %% Styling
+    classDef currentState fill:#ffeb3b,stroke:#f57f17,stroke-width:2px
+    classDef missingConfig fill:#f44336,stroke:#c62828,stroke-width:2px
+    classDef template fill:#2196f3,stroke:#1565c0,stroke-width:2px
+    classDef subagent fill:#4caf50,stroke:#2e7d32,stroke-width:2px
+    classDef phase fill:#ff9800,stroke:#ef6c00,stroke-width:2px
+    classDef validation fill:#9c27b0,stroke:#6a1b9a,stroke-width:2px
+
+    class CVPROC,MULTI currentState
+    class CORE,AUTH,I18N,PREM,PAY,ANAL,PUB,ADMIN,WORK,RECOM missingConfig
+    class SETTINGS_TMPL,CLAUDE_TMPL,DOCS_TMPL,SCRIPTS_TMPL template
+    class CVP_AGENTS,UNIV_AGENTS,ENG_AGENTS subagent
+    class PHASE1,PHASE2,PHASE3,PHASE4 phase
+    class TECH_VAL,INT_VAL,QUAL_VAL validation

@@ -1,0 +1,121 @@
+graph TD
+    %% Phase 4: Final Integration and Validation Architecture
+    %% Author: Gil Klainert
+    %% Date: 2025-08-29
+
+    subgraph "Current State Assessment"
+        A[CVPlus Root Repository] --> B[665 Frontend Files in Root]
+        A --> C[445 Backend Files in Root]
+        A --> D[81 Confirmed Architectural Violations]
+        B --> E["❌ Should be in submodules"]
+        C --> E
+        D --> E
+    end
+
+    subgraph "Existing Submodules (✅ Complete)"
+        F[packages/core/] --> G[Types, Constants, Utils]
+        H[packages/auth/] --> I[Authentication System]
+        J[packages/i18n/] --> K[Internationalization]
+        L[packages/multimedia/] --> M[Media Processing]
+        N[packages/premium/] --> O[Subscription Features]
+        P[packages/public-profiles/] --> Q[Profile Management]
+        R[packages/recommendations/] --> S[AI Recommendations]
+        T[packages/admin/] --> U[Admin Dashboard]
+        V[packages/analytics/] --> W[Analytics Services]
+        X[packages/cv-processing/] --> Y[CV Processing]
+        Z[packages/payments/] --> AA[Payment Processing]
+        AB[packages/workflow/] --> AC[Workflow Management]
+    end
+
+    subgraph "Phase 4A: Complete File Migration"
+        E --> AD{Orchestrator Subagent}
+        AD --> AE[Frontend Component Migration]
+        AD --> AF[Backend Function Migration]
+        AD --> AG[Service Layer Migration]
+        AD --> AH[Middleware Migration]
+        
+        AE --> AI[components/ → appropriate modules]
+        AE --> AJ[services/ → appropriate modules]
+        AE --> AK[hooks/ → appropriate modules]
+        AE --> AL[utils/ → appropriate modules]
+        
+        AF --> AM[functions/ → appropriate modules]
+        AG --> AN[services/ → appropriate modules]
+        AH --> AO[middleware/ → appropriate modules]
+    end
+
+    subgraph "Phase 4B: Import Resolution & Testing"
+        AI --> AP[Update Import Paths]
+        AJ --> AP
+        AK --> AP
+        AL --> AP
+        AM --> AP
+        AN --> AP
+        AO --> AP
+        
+        AP --> AQ[Convert to @cvplus/* imports]
+        AQ --> AR[TypeScript Path Mapping]
+        AR --> AS[Cross-Module Dependency Testing]
+        AS --> AT[Build System Validation]
+    end
+
+    subgraph "Phase 4C: Integration Testing"
+        AT --> AU[CV Generation Workflow Test]
+        AT --> AV[Premium Subscription Test]
+        AT --> AW[Analytics System Test]
+        AT --> AX[Multimedia Generation Test]
+        AT --> AY[Authentication System Test]
+        
+        AU --> AZ[End-to-End Feature Testing]
+        AV --> AZ
+        AW --> AZ
+        AX --> AZ
+        AY --> AZ
+    end
+
+    subgraph "Phase 4D: Final Validation"
+        AZ --> BA[Killdups Architectural Scan]
+        BA --> BB{0 Violations?}
+        BB -->|Yes| BC[✅ Architectural Compliance]
+        BB -->|No| BD[❌ Fix Remaining Violations]
+        BD --> BA
+        
+        BC --> BE[Performance Benchmark]
+        BE --> BF[Production Build Test]
+        BF --> BG[Deployment Readiness Check]
+    end
+
+    subgraph "Success Criteria Validation"
+        BG --> BH[Zero Architectural Violations]
+        BG --> BI[Full Functionality Preserved]
+        BG --> BJ[Performance Maintained]
+        BG --> BK[Build System Working]
+        
+        BH --> BL[✅ Production Ready]
+        BI --> BL
+        BJ --> BL
+        BK --> BL
+    end
+
+    subgraph "Risk Mitigation"
+        AD --> BM[Git Commit Points]
+        AP --> BN[Import Path Validation]
+        AT --> BO[Incremental Build Testing]
+        BE --> BP[Performance Monitoring]
+        
+        BM --> BQ[Rollback Capability]
+        BN --> BQ
+        BO --> BQ
+        BP --> BQ
+    end
+
+    %% Styling
+    classDef critical fill:#ff4444,stroke:#333,stroke-width:3px,color:#fff
+    classDef complete fill:#44ff44,stroke:#333,stroke-width:2px,color:#000
+    classDef inProgress fill:#ffaa44,stroke:#333,stroke-width:2px,color:#000
+    classDef validation fill:#4444ff,stroke:#333,stroke-width:2px,color:#fff
+
+    class A,B,C,D,E critical
+    class F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,AA,AB,AC complete
+    class AD,AE,AF,AG,AH,AI,AJ,AK,AL,AM,AN,AO,AP,AQ,AR inProgress
+    class AS,AT,AU,AV,AW,AX,AY,AZ,BA,BB,BC,BE,BF,BG,BH,BI,BJ,BK,BL validation

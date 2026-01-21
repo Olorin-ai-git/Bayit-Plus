@@ -1,0 +1,122 @@
+graph TB
+    subgraph "CURRENT STATE: DUAL ARCHITECTURE ANTI-PATTERN"
+        subgraph "CORRECT LOCATION: /packages/recommendations/"
+            PkgMain["📦 @cvplus/recommendations<br/>✅ 4 files, modular structure"]
+            PkgServices["🔧 services/<br/>recommendations.service.ts<br/>cache.service.ts<br/>ai-integration.service.ts"]
+            PkgFrontend["⚛️ frontend/hooks/<br/>useRecommendations.ts"]
+            PkgTypes["📝 types/<br/>index.ts"]
+            PkgUtils["🛠️ utils/<br/>retry.ts"]
+        end
+        
+        subgraph "VIOLATION: /functions/src/services/recommendations/"
+            ViolationFiles["❌ 13 SERVICE FILES (2,394 lines)<br/>📄 ActionOrchestrator.ts (237L)<br/>📄 ValidationEngine.ts (251L)<br/>📄 TransformationApplier.ts (228L)<br/>📄 CacheManager.ts (223L)<br/>📄 CircuitBreakerCore.ts (221L)<br/>📄 RecommendationGenerator.ts (212L)<br/>📄 RecommendationOrchestrator.ts (204L)<br/>📄 + 6 more files<br/><br/>🚨 7/13 files exceed 200-line limit"]
+        end
+        
+        subgraph "Firebase Functions (Coupled to Violations)"
+            FB1["🔥 getRecommendations.ts"]
+            FB2["🔥 applyImprovements.ts"]
+            FB3["🔥 previewImprovement.ts"]
+            FB4["🔥 customizePlaceholders.ts"]
+        end
+    end
+    
+    subgraph "TARGET STATE: CONSOLIDATED MODULAR ARCHITECTURE"
+        subgraph "Enhanced Package Structure: /packages/recommendations/"
+            subgraph "🏗️ ENGINES LAYER"
+                EngineAnalysis["📊 engines/analysis/<br/>cv-analyzer.ts<br/>content-processor.ts"]
+                EngineGeneration["⚡ engines/generation/<br/>recommendation-generator.ts<br/>transformation-applier.ts"]
+                EngineOrchestration["🎭 engines/orchestration/<br/>action-orchestrator.ts<br/>recommendation-orchestrator.ts<br/>improvement-orchestrator.ts"]
+                EngineValidation["✅ engines/validation/<br/>validation-engine.ts"]
+            end
+            
+            subgraph "🏛️ INFRASTRUCTURE LAYER"
+                InfraCaching["💾 infrastructure/caching/<br/>cache-manager.ts<br/>cache-key-manager.ts"]
+                InfraResilience["🛡️ infrastructure/resilience/<br/>circuit-breaker.ts<br/>retry-manager.ts<br/>timeout-manager.ts"]
+                InfraMonitoring["📊 infrastructure/monitoring/<br/>metrics.ts<br/>health-check.ts"]
+            end
+            
+            subgraph "🔌 INTEGRATION LAYER"
+                IntegrationFirebase["🔥 integration/firebase/<br/>functions-adapter.ts<br/>firestore-integration.ts<br/>auth-integration.ts"]
+                IntegrationAPI["🌐 integration/api/<br/>rest-adapter.ts<br/>graphql-adapter.ts"]
+            end
+            
+            subgraph "⚛️ ENHANCED FRONTEND"
+                FrontendComponents["🧩 frontend/components/<br/>RecommendationsList.tsx<br/>RecommendationCard.tsx<br/>RecommendationProgress.tsx"]
+                FrontendHooks["🎣 frontend/hooks/<br/>useRecommendations.ts<br/>useRecommendationCache.ts<br/>useRecommendationStatus.ts"]
+            end
+        end
+        
+        subgraph "Firebase Functions (Decoupled)"
+            FBDecoupled["🔥 Firebase Functions<br/>using @cvplus/recommendations<br/>via FirebaseFunctionsAdapter"]
+        end
+    end
+    
+    subgraph "MIGRATION PHASES"
+        Phase1["🔍 PHASE 1: ASSESSMENT<br/>• Dependency mapping<br/>• Breaking change analysis<br/>• Risk assessment<br/>Days 1-2"]
+        
+        Phase2["🏗️ PHASE 2: PREPARATION<br/>• Package enhancement<br/>• 200-line compliance<br/>• Integration layer<br/>Days 3-5"]
+        
+        Phase3["🚚 PHASE 3: MIGRATION<br/>• Shadow implementation<br/>• Parallel operation<br/>• Full migration<br/>Days 6-10"]
+        
+        Phase4["🧪 PHASE 4: TESTING<br/>• Comprehensive testing<br/>• Performance validation<br/>• Quality gates<br/>Days 11-13"]
+        
+        Phase5["🚀 PHASE 5: DEPLOYMENT<br/>• Staged rollout<br/>• Monitoring setup<br/>• Final validation<br/>Days 14-15"]
+    end
+    
+    subgraph "SUCCESS METRICS"
+        Metrics["📈 TARGET ACHIEVEMENTS<br/>✅ Timeout reduction: 15% → 2% (87%)<br/>✅ Cache hit rate: 0% → 60%+<br/>✅ Response time: 3min → 30s (83%)<br/>✅ 200-line compliance: 100%<br/>✅ Test coverage: 90%+<br/>✅ Zero breaking changes"]
+    end
+    
+    %% Current State Relationships
+    PkgMain --> PkgServices
+    PkgMain --> PkgFrontend
+    PkgMain --> PkgTypes
+    PkgMain --> PkgUtils
+    
+    ViolationFiles --> FB1
+    ViolationFiles --> FB2
+    ViolationFiles --> FB3
+    ViolationFiles --> FB4
+    
+    %% Target State Relationships  
+    EngineAnalysis --> InfraCaching
+    EngineGeneration --> InfraResilience
+    EngineOrchestration --> InfraMonitoring
+    EngineValidation --> IntegrationFirebase
+    
+    IntegrationFirebase --> FBDecoupled
+    IntegrationAPI --> FBDecoupled
+    
+    FrontendComponents --> FrontendHooks
+    
+    %% Migration Flow
+    Phase1 --> Phase2
+    Phase2 --> Phase3
+    Phase3 --> Phase4
+    Phase4 --> Phase5
+    Phase5 --> Metrics
+    
+    %% Critical Path
+    ViolationFiles -.->|CONSOLIDATE| EngineAnalysis
+    ViolationFiles -.->|CONSOLIDATE| EngineGeneration  
+    ViolationFiles -.->|CONSOLIDATE| EngineOrchestration
+    ViolationFiles -.->|CONSOLIDATE| EngineValidation
+    ViolationFiles -.->|CONSOLIDATE| InfraCaching
+    ViolationFiles -.->|CONSOLIDATE| InfraResilience
+    
+    FB1 -.->|DECOUPLE| FBDecoupled
+    FB2 -.->|DECOUPLE| FBDecoupled
+    FB3 -.->|DECOUPLE| FBDecoupled
+    FB4 -.->|DECOUPLE| FBDecoupled
+    
+    classDef violation fill:#ffcccc,stroke:#ff0000,stroke-width:2px
+    classDef correct fill:#ccffcc,stroke:#00aa00,stroke-width:2px
+    classDef target fill:#cceeff,stroke:#0066cc,stroke-width:2px
+    classDef phase fill:#ffffcc,stroke:#ccaa00,stroke-width:2px
+    classDef metrics fill:#e6ccff,stroke:#9900cc,stroke-width:2px
+    
+    class ViolationFiles,FB1,FB2,FB3,FB4 violation
+    class PkgMain,PkgServices,PkgFrontend,PkgTypes,PkgUtils correct
+    class EngineAnalysis,EngineGeneration,EngineOrchestration,EngineValidation,InfraCaching,InfraResilience,InfraMonitoring,IntegrationFirebase,IntegrationAPI,FrontendComponents,FrontendHooks,FBDecoupled target
+    class Phase1,Phase2,Phase3,Phase4,Phase5 phase
+    class Metrics metrics

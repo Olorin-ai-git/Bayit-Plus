@@ -1,0 +1,142 @@
+graph TB
+    %% Current State - Root Repository Code
+    subgraph "CURRENT STATE - CRITICAL ISSUES"
+        subgraph "Root Repository (VIOLATIONS)"
+            RF["/functions/src/<br/>50+ Files<br/>🚨 MISPLACED"]
+            RFE["/frontend/src/<br/>50+ Files<br/>🚨 MISPLACED"]
+            CVP["/packages/cv-processing/<br/>🚨 NOT A SUBMODULE"]
+        end
+    end
+
+    %% Target State - Proper Submodules
+    subgraph "TARGET STATE - PROPER MODULAR ARCHITECTURE"
+        subgraph "Git Submodules (packages/)"
+            CVS["📦 cv-processing<br/>🔄 CONVERT TO SUBMODULE<br/>CV Processing Logic"]
+            PREM["📦 premium<br/>✅ Submodule<br/>Subscription & Billing"]
+            ANA["📦 analytics<br/>✅ Submodule<br/>Revenue & ML Analytics"]
+            AUTH["📦 auth<br/>✅ Submodule<br/>Authentication & Security"]
+            REC["📦 recommendations<br/>✅ Submodule<br/>AI Recommendations"]
+            ADM["📦 admin<br/>✅ Submodule<br/>Admin Dashboard"]
+            CORE["📦 core<br/>✅ Submodule<br/>Shared Types & Utils"]
+            MUL["📦 multimedia<br/>✅ Submodule<br/>Media Processing"]
+            I18N["📦 i18n<br/>✅ Submodule<br/>Internationalization"]
+            PUB["📦 public-profiles<br/>✅ Submodule<br/>Public Profiles"]
+        end
+    end
+
+    %% Migration Flow
+    subgraph "MIGRATION PHASES"
+        subgraph "Phase 1: CRITICAL (URGENT)"
+            P1A["🚨 Convert cv-processing<br/>to Git Submodule<br/>HIGH RISK"]
+            P1B["🔄 Premium Functions Migration<br/>17 Files → premium/<br/>HIGH RISK"]
+        end
+        
+        subgraph "Phase 2: HIGH VALUE"
+            P2A["📊 Analytics Migration<br/>12 Files → analytics/<br/>MEDIUM RISK"]
+            P2B["🔐 Auth & Security Migration<br/>8 Files → auth/<br/>MEDIUM RISK"]
+        end
+        
+        subgraph "Phase 3: USER FEATURES"
+            P3A["🎯 Recommendations Complete<br/>15 Files → recommendations/<br/>LOW RISK"]
+            P3B["⚙️ Admin Components<br/>5 Files → admin/<br/>LOW RISK"]
+        end
+        
+        subgraph "Phase 4: CLEANUP"
+            P4A["🔧 External Adapters<br/>3 Files → appropriate modules<br/>LOW RISK"]
+            P4B["⚡ Cache Services Distribution<br/>10 Files → relevant modules<br/>LOW RISK"]
+        end
+    end
+
+    %% Detailed File Mapping
+    subgraph "DETAILED FILE MIGRATION MAPPING"
+        subgraph "Premium Files (17 files)"
+            PF1["/functions/src/functions/premium/<br/>• advancedAnalytics.ts<br/>• dynamicPricing.ts<br/>• enterpriseManagement.ts<br/>• getRealtimeUsageStats.ts<br/>• batchTrackingEvents.ts"]
+            PF2["/functions/src/services/premium/<br/>• pricing/ (3 services)<br/>• analytics/ (2 services)<br/>• enterprise/ (3 services)<br/>• featureRegistry.ts"]
+            PF3["/frontend/src/components/premium/<br/>• PremiumDashboard.tsx<br/>• EnhancedFeatureGate.tsx<br/>• /services/premium/ (4 services)"]
+        end
+        
+        subgraph "Analytics Files (12 files)"
+            AF1["/functions/src/functions/analytics/<br/>• getRevenueMetrics.ts"]
+            AF2["/functions/src/functions/ml/<br/>• predictChurn.ts"]
+            AF3["/functions/src/services/analytics/<br/>• cohort-analysis.service.ts<br/>• revenue-analytics.service.ts"]
+            AF4["/functions/src/services/ml/<br/>• churn-prediction.service.ts"]
+        end
+        
+        subgraph "Auth Files (8 files)"
+            AUF1["/functions/src/middleware/<br/>• authGuard.ts<br/>• enhancedPremiumGuard.ts<br/>• security-headers.ts"]
+            AUF2["/functions/src/services/security/<br/>• rate-limit-guard.service.ts<br/>• security-monitor.service.ts"]
+            AUF3["/frontend/src/modules/<br/>• auth.ts"]
+            AUF4["/frontend/src/hooks/<br/>• useFeatureGate.ts"]
+        end
+    end
+
+    %% Migration Arrows
+    CVP -->|"Convert to Submodule<br/>Git History Preservation"| CVS
+    RF -->|"Business Logic Extraction"| PREM
+    RF -->|"Analytics Functions"| ANA
+    RF -->|"Security Middleware"| AUTH
+    RFE -->|"Premium Components"| PREM
+    RFE -->|"Recommendation UI"| REC
+    RFE -->|"Auth Components"| AUTH
+
+    %% Phase Flow
+    P1A --> P1B
+    P1B --> P2A
+    P2A --> P2B
+    P2B --> P3A
+    P3A --> P3B
+    P3B --> P4A
+    P4A --> P4B
+
+    %% File Mapping Arrows
+    PF1 -->|"Backend Functions"| PREM
+    PF2 -->|"Services Layer"| PREM
+    PF3 -->|"Frontend Components"| PREM
+    AF1 -->|"Revenue Functions"| ANA
+    AF2 -->|"ML Functions"| ANA
+    AF3 -->|"Analytics Services"| ANA
+    AF4 -->|"ML Services"| ANA
+    AUF1 -->|"Middleware"| AUTH
+    AUF2 -->|"Security Services"| AUTH
+    AUF3 -->|"Frontend Auth"| AUTH
+    AUF4 -->|"Auth Hooks"| AUTH
+
+    %% Risk Level Styling
+    classDef critical fill:#ffcccc,stroke:#ff0000,stroke-width:3px
+    classDef high fill:#ffe0cc,stroke:#ff8800,stroke-width:2px
+    classDef medium fill:#ffffcc,stroke:#ffaa00,stroke-width:2px
+    classDef low fill:#e0ffe0,stroke:#00aa00,stroke-width:1px
+    classDef submodule fill:#e6f3ff,stroke:#0066cc,stroke-width:2px
+
+    class RF,RFE,CVP critical
+    class P1A,P1B high
+    class P2A,P2B medium
+    class P3A,P3B,P4A,P4B low
+    class CVS,PREM,ANA,AUTH,REC,ADM,CORE,MUL,I18N,PUB submodule
+
+    %% Timeline Information
+    subgraph "IMPLEMENTATION TIMELINE"
+        T1["Day 1: Phase 1<br/>6-8 hours<br/>CV-Processing + Premium"]
+        T2["Day 2: Phase 2<br/>6-8 hours<br/>Analytics + Auth"]
+        T3["Day 3: Phase 3<br/>4-6 hours<br/>Recommendations + Admin"]
+        T4["Day 4: Phase 4<br/>2-4 hours<br/>Final Cleanup"]
+    end
+
+    T1 --> T2 --> T3 --> T4
+
+    %% Success Criteria
+    subgraph "SUCCESS CRITERIA"
+        SC1["✅ Zero Build Errors"]
+        SC2["✅ 100% Test Coverage"]
+        SC3["✅ Functional Equivalence"]
+        SC4["✅ Clean Git History"]
+        SC5["✅ Architecture Compliance"]
+    end
+
+    %% Dependencies
+    subgraph "REQUIRED SUBAGENTS"
+        GE["🔧 git-expert<br/>Submodule Operations"]
+        TP["📝 typescript-pro<br/>Import Path Updates"]
+        SA["🏗️ system-architect<br/>Architecture Validation"]
+        TCE["🧪 test-coverage-engineers<br/>Validation Testing"]
+    end

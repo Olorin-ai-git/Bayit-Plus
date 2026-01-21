@@ -1,0 +1,97 @@
+graph TB
+    subgraph "Current CVPreview.tsx (1,880 lines)"
+        A[Monolithic Component<br/>All Responsibilities]
+        A1[HTML Generation Logic]
+        A2[Feature Preview Logic]
+        A3[Editing Functionality]
+        A4[State Management]
+        A5[QR Code Handling]
+        A6[Auto-save Logic]
+        A7[Achievement Analysis]
+        A8[UI Controls]
+        
+        A --> A1
+        A --> A2
+        A --> A3
+        A --> A4
+        A --> A5
+        A --> A6
+        A --> A7
+        A --> A8
+    end
+    
+    subgraph "Refactored Architecture"
+        subgraph "Main Component (150 lines)"
+            B[CVPreview.tsx<br/>Orchestrator]
+        end
+        
+        subgraph "UI Components"
+            C1[CVPreviewContent.tsx<br/>180 lines]
+            C2[CVPreviewToolbar.tsx<br/>120 lines]
+            C3[EditableSection.tsx<br/>150 lines]
+            C4[FeaturePreview.tsx<br/>180 lines]
+            C5[QRCodeSection.tsx<br/>100 lines]
+        end
+        
+        subgraph "Custom Hooks"
+            D1[useCVPreview.ts<br/>150 lines]
+            D2[useAutoSave.ts<br/>80 lines]
+            D3[useFeaturePreviews.ts<br/>120 lines]
+            D4[useAchievementAnalysis.ts<br/>90 lines]
+        end
+        
+        subgraph "Utility Functions"
+            E1[cvTemplateGenerator.ts<br/>180 lines]
+            E2[featureRenderer.ts<br/>150 lines]
+            E3[sectionCollapse.ts<br/>60 lines]
+        end
+    end
+    
+    subgraph "Data Flow"
+        F1[Job Data] --> D1
+        F2[Applied Improvements] --> D1
+        D1 --> B
+        B --> C1
+        B --> C2
+        D2 --> B
+        D3 --> C4
+        D4 --> C3
+        E1 --> C1
+        E2 --> C4
+        E3 --> B
+    end
+    
+    subgraph "Responsibility Mapping"
+        A1 --> C1
+        A1 --> E1
+        A2 --> C4
+        A2 --> E2
+        A3 --> C3
+        A4 --> D1
+        A5 --> C5
+        A6 --> D2
+        A7 --> D4
+        A8 --> C2
+    end
+    
+    subgraph "Benefits"
+        G1[Single Responsibility<br/>Each file has one concern]
+        G2[Reusability<br/>Hooks and utils can be shared]
+        G3[Testability<br/>Isolated components are easier to test]
+        G4[Maintainability<br/>Smaller files are easier to understand]
+    end
+    
+    style A fill:#ffcccc
+    style B fill:#ccffcc
+    style C1 fill:#e6f3ff
+    style C2 fill:#e6f3ff
+    style C3 fill:#e6f3ff
+    style C4 fill:#e6f3ff
+    style C5 fill:#e6f3ff
+    style D1 fill:#fff2e6
+    style D2 fill:#fff2e6
+    style D3 fill:#fff2e6
+    style D4 fill:#fff2e6
+    style E1 fill:#f0f8ff
+    style E2 fill:#f0f8ff
+    style E3 fill:#f0f8ff

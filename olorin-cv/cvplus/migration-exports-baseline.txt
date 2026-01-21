@@ -1,0 +1,159 @@
+packages/processing/src/types/cv.ts:export interface CVEnhancement {
+packages/processing/src/types/processing.types.ts:export enum EnhancementType {
+packages/processing/src/types/role-profile.types.ts:export interface ExperienceEnhancementTemplate {
+packages/processing/src/frontend/types/CVProcessingService.types.ts:export interface EnhancementCapabilities {
+packages/processing/src/frontend/components/enhancement/index.ts: * This module exports components for CV enhancement:
+packages/processing/src/frontend/components/index.ts:export * from './enhancement/CVPreviewPanel';
+packages/processing/src/frontend/components/index.ts:export * from './enhancement/ProgressVisualization';
+packages/processing/src/backend/services/enhancement-processing.service.ts:export interface EnhancementResult {
+packages/processing/src/backend/services/enhancement-processing.service.ts:export class EnhancementProcessingService extends BaseService {
+packages/processing/src/backend/services/index.ts:export * from './enhancement-processing.service';
+packages/processing/src/index.ts:export { EnhancementProcessingService } from './services/enhancements/enhancement-processing.service';
+packages/processing/src/services/enhancements/enhancement-processing.service.ts:// export { EnhancementProcessingService } from "@cvplus/cv-processing";
+packages/processing/src/services/enhancements/enhancement-processing.service.ts:export const EnhancementProcessingService = {
+packages/processing/src/services/enhancements/enhancement-processing.service.ts:export interface EnhancementOptions {
+packages/processing/src/services/enhancements/enhancement-processing.service.ts:export interface EnhancementResult {
+frontend/src/services/enhancement/feature-priority.service.ts:export interface FeaturePriority {
+frontend/src/services/enhancement/feature-priority.service.ts:export class FeaturePriorityService {
+frontend/src/services/enhancement/feature-priority.service.ts:export const featurePriorityService = new FeaturePriorityService();
+frontend/src/services/enhancement/html-validator.service.ts:export const htmlValidatorService = new HTMLValidatorService();
+frontend/src/services/enhancement/performance-monitor.service.ts:export class PerformanceMonitorService {
+frontend/src/services/enhancement/performance-monitor.service.ts:export const performanceMonitorService = new PerformanceMonitorService();
+frontend/src/services/enhancement/error-recovery.service.ts:export class ErrorRecoveryService {
+frontend/src/services/enhancement/error-recovery.service.ts:export const errorRecoveryService = new ErrorRecoveryService();
+frontend/src/services/enhancement/preview.service.ts:export interface PreviewState {
+frontend/src/services/enhancement/preview.service.ts:export interface FeaturePreview {
+frontend/src/services/enhancement/preview.service.ts:export interface PreviewOptions {
+frontend/src/services/enhancement/preview.service.ts:export class PreviewService {
+frontend/src/services/enhancement/preview.service.ts:export const previewService = new PreviewService();
+frontend/src/services/enhancement/css-optimizer.service.ts:export const cssOptimizerService = new CSSOptimizerService();
+frontend/src/services/cvServiceEnhanced.ts:export const generateCVPreview = cvServiceEnhanced.generateCVPreview.bind(cvServiceEnhanced);
+frontend/src/services/JobSubscriptionManager.ts:export type PreviewCallback = (job: Job | null, previewData?: any) => void;
+frontend/src/services/error-recovery/ErrorRecoveryManager.ts:export interface ErrorRecoveryOptions {
+frontend/src/services/error-recovery/ErrorRecoveryManager.ts:export class ErrorRecoveryManager {
+frontend/src/services/error-recovery/ErrorRecoveryManager.ts:export default ErrorRecoveryManager;
+frontend/src/services/cv/CVServiceCore.ts:export const previewImprovement = CVServiceCore.previewImprovement;
+packages/enhancements/src/cv-enhancements.module.ts: * Main module export for CV enhancement features
+packages/enhancements/src/cv-enhancements.module.ts:export class CVEnhancementsModule {
+packages/enhancements/src/cv-enhancements.module.ts:export default CVEnhancementsModule;
+packages/enhancements/src/types/networking.types.ts:export interface ProfessionalContact {
+packages/enhancements/src/types/networking.types.ts:export interface NetworkingEvent {
+packages/enhancements/src/types/networking.types.ts:export interface ContactRequest {
+packages/enhancements/src/types/networking.types.ts:export interface ProfessionalRecommendation {
+packages/enhancements/src/types/booking.types.ts:export interface BookingSlot {
+packages/enhancements/src/types/booking.types.ts:export interface Booking {
+packages/enhancements/src/types/booking.types.ts:export interface BookingRequest {
+packages/enhancements/src/types/index.ts:export * from './booking.types';
+packages/enhancements/src/types/index.ts:export * from './calendar.types';
+packages/enhancements/src/types/index.ts:export * from './networking.types';
+packages/enhancements/src/types/index.ts:export interface CVEnhancementConfig {
+packages/enhancements/src/types/index.ts:// Re-export core types for convenience
+packages/enhancements/src/types/index.ts:export type {
+packages/enhancements/src/types/calendar.types.ts:export interface CalendarEvent {
+packages/enhancements/src/types/calendar.types.ts:export interface CalendarIntegration {
+packages/enhancements/src/types/calendar.types.ts:export interface MeetingInvite {
+packages/enhancements/src/types/calendar.types.ts:export interface AvailabilitySlot {
+packages/enhancements/src/types/calendar.types.ts:export interface CalendarSyncResult {
+packages/enhancements/src/frontend/components/index.ts:export { BookingScheduler } from './BookingScheduler';
+packages/enhancements/src/frontend/components/index.ts:export { CalendarSync } from './CalendarSync';
+packages/enhancements/src/frontend/components/index.ts:export { NetworkingDashboard } from './NetworkingDashboard';
+packages/enhancements/src/frontend/components/index.ts:export { ContactManager } from './ContactManager';
+packages/enhancements/src/frontend/components/index.ts:export { MeetingScheduler } from './MeetingScheduler';
+packages/enhancements/src/frontend/components/BookingScheduler.tsx:export interface BookingSchedulerProps {
+packages/enhancements/src/frontend/components/BookingScheduler.tsx:export const BookingScheduler: React.FC<BookingSchedulerProps> = ({ onBook, loading = false }) => {
+packages/enhancements/src/frontend/components/BookingScheduler.tsx:export default BookingScheduler;
+packages/enhancements/src/frontend/hooks/useBooking.ts:export interface UseBookingReturn {
+packages/enhancements/src/frontend/hooks/useBooking.ts:export const useBooking = (): UseBookingReturn => {
+packages/enhancements/src/frontend/hooks/useBooking.ts:export default useBooking;
+packages/enhancements/src/frontend/hooks/index.ts:export { useBooking } from './useBooking';
+packages/enhancements/src/frontend/hooks/index.ts:export { useCalendar } from './useCalendar';
+packages/enhancements/src/frontend/hooks/index.ts:export { useNetworking } from './useNetworking';
+packages/enhancements/src/frontend/hooks/index.ts:export { useContacts } from './useContacts';
+packages/enhancements/src/frontend/hooks/index.ts:export { useMeetingScheduler } from './useMeetingScheduler';
+packages/enhancements/src/constants/index.ts:export const CV_ENHANCEMENTS_CONFIG = {
+packages/enhancements/src/constants/index.ts:export const CALENDAR_PROVIDERS = {
+packages/enhancements/src/constants/index.ts:export const MEETING_TYPES = {
+packages/enhancements/src/constants/index.ts:export const BOOKING_STATUS = {
+packages/enhancements/src/constants/index.ts:export const NETWORKING_EVENT_TYPES = {
+packages/enhancements/src/backend/functions/sendSchedulingEmail.ts:export const sendSchedulingEmail = onCall(async (request) => {
+packages/enhancements/src/backend/functions/bookMeeting.ts:export const bookMeeting = onCall(
+packages/enhancements/src/backend/functions/index.ts:export { bookMeeting } from './bookMeeting';
+packages/enhancements/src/backend/functions/index.ts:export { sendSchedulingEmail } from './sendSchedulingEmail';
+packages/enhancements/src/backend/functions/index.ts:export { generateAvailabilityCalendar } from './generateAvailabilityCalendar';
+packages/enhancements/src/backend/functions/index.ts:export { syncCareerCalendar } from './syncCareerCalendar';
+packages/enhancements/src/backend/services/calendar-integration.service.ts:export class CalendarIntegrationService {
+packages/enhancements/src/backend/services/calendar-integration.service.ts:export const calendarIntegrationService = new CalendarIntegrationService();
+packages/enhancements/src/backend/services/booking.service.ts:export class BookingService {
+packages/enhancements/src/backend/services/booking.service.ts:export default BookingService;
+packages/enhancements/src/backend/services/index.ts:export { BookingService } from './booking.service';
+packages/enhancements/src/backend/services/index.ts:export { CalendarIntegrationService } from './calendar-integration.service';
+packages/enhancements/src/backend/services/index.ts:export { NetworkingService } from './networking.service';
+packages/enhancements/src/backend/services/index.ts:export { ContactManagementService } from './contact-management.service';
+packages/enhancements/src/index.ts:export * from './types';
+packages/enhancements/src/index.ts:export * from './constants';
+packages/enhancements/src/index.ts:// Simple module export
+packages/enhancements/src/index.ts:export class CVEnhancementsModule {
+packages/enhancements/src/index.ts:export default CVEnhancementsModule;
+
+=== CURRENT ENHANCEMENTS MODULE EXPORTS ===
+packages/enhancements/src/cv-enhancements.module.ts: * Main module export for CV enhancement features
+packages/enhancements/src/cv-enhancements.module.ts:export class CVEnhancementsModule {
+packages/enhancements/src/cv-enhancements.module.ts:export default CVEnhancementsModule;
+packages/enhancements/src/types/networking.types.ts:export interface ProfessionalContact {
+packages/enhancements/src/types/networking.types.ts:export interface NetworkingEvent {
+packages/enhancements/src/types/networking.types.ts:export interface ContactRequest {
+packages/enhancements/src/types/networking.types.ts:export interface ProfessionalRecommendation {
+packages/enhancements/src/types/booking.types.ts:export interface BookingSlot {
+packages/enhancements/src/types/booking.types.ts:export interface Booking {
+packages/enhancements/src/types/booking.types.ts:export interface BookingRequest {
+packages/enhancements/src/types/index.ts:export * from './booking.types';
+packages/enhancements/src/types/index.ts:export * from './calendar.types';
+packages/enhancements/src/types/index.ts:export * from './networking.types';
+packages/enhancements/src/types/index.ts:export interface CVEnhancementConfig {
+packages/enhancements/src/types/index.ts:// Re-export core types for convenience
+packages/enhancements/src/types/index.ts:export type {
+packages/enhancements/src/types/calendar.types.ts:export interface CalendarEvent {
+packages/enhancements/src/types/calendar.types.ts:export interface CalendarIntegration {
+packages/enhancements/src/types/calendar.types.ts:export interface MeetingInvite {
+packages/enhancements/src/types/calendar.types.ts:export interface AvailabilitySlot {
+packages/enhancements/src/types/calendar.types.ts:export interface CalendarSyncResult {
+packages/enhancements/src/frontend/components/index.ts:export { BookingScheduler } from './BookingScheduler';
+packages/enhancements/src/frontend/components/index.ts:export { CalendarSync } from './CalendarSync';
+packages/enhancements/src/frontend/components/index.ts:export { NetworkingDashboard } from './NetworkingDashboard';
+packages/enhancements/src/frontend/components/index.ts:export { ContactManager } from './ContactManager';
+packages/enhancements/src/frontend/components/index.ts:export { MeetingScheduler } from './MeetingScheduler';
+packages/enhancements/src/frontend/components/BookingScheduler.tsx:export interface BookingSchedulerProps {
+packages/enhancements/src/frontend/components/BookingScheduler.tsx:export const BookingScheduler: React.FC<BookingSchedulerProps> = ({ onBook, loading = false }) => {
+packages/enhancements/src/frontend/components/BookingScheduler.tsx:export default BookingScheduler;
+packages/enhancements/src/frontend/hooks/useBooking.ts:export interface UseBookingReturn {
+packages/enhancements/src/frontend/hooks/useBooking.ts:export const useBooking = (): UseBookingReturn => {
+packages/enhancements/src/frontend/hooks/useBooking.ts:export default useBooking;
+packages/enhancements/src/frontend/hooks/index.ts:export { useBooking } from './useBooking';
+packages/enhancements/src/frontend/hooks/index.ts:export { useCalendar } from './useCalendar';
+packages/enhancements/src/frontend/hooks/index.ts:export { useNetworking } from './useNetworking';
+packages/enhancements/src/frontend/hooks/index.ts:export { useContacts } from './useContacts';
+packages/enhancements/src/frontend/hooks/index.ts:export { useMeetingScheduler } from './useMeetingScheduler';
+packages/enhancements/src/constants/index.ts:export const CV_ENHANCEMENTS_CONFIG = {
+packages/enhancements/src/constants/index.ts:export const CALENDAR_PROVIDERS = {
+packages/enhancements/src/constants/index.ts:export const MEETING_TYPES = {
+packages/enhancements/src/constants/index.ts:export const BOOKING_STATUS = {
+packages/enhancements/src/constants/index.ts:export const NETWORKING_EVENT_TYPES = {
+packages/enhancements/src/backend/functions/sendSchedulingEmail.ts:export const sendSchedulingEmail = onCall(async (request) => {
+packages/enhancements/src/backend/functions/bookMeeting.ts:export const bookMeeting = onCall(
+packages/enhancements/src/backend/functions/index.ts:export { bookMeeting } from './bookMeeting';
+packages/enhancements/src/backend/functions/index.ts:export { sendSchedulingEmail } from './sendSchedulingEmail';
+packages/enhancements/src/backend/functions/index.ts:export { generateAvailabilityCalendar } from './generateAvailabilityCalendar';
+packages/enhancements/src/backend/functions/index.ts:export { syncCareerCalendar } from './syncCareerCalendar';
+packages/enhancements/src/backend/services/calendar-integration.service.ts:export class CalendarIntegrationService {
+packages/enhancements/src/backend/services/calendar-integration.service.ts:export const calendarIntegrationService = new CalendarIntegrationService();
+packages/enhancements/src/backend/services/booking.service.ts:export class BookingService {
+packages/enhancements/src/backend/services/booking.service.ts:export default BookingService;
+packages/enhancements/src/backend/services/index.ts:export { BookingService } from './booking.service';
+packages/enhancements/src/backend/services/index.ts:export { CalendarIntegrationService } from './calendar-integration.service';
+packages/enhancements/src/backend/services/index.ts:export { NetworkingService } from './networking.service';
+packages/enhancements/src/backend/services/index.ts:export { ContactManagementService } from './contact-management.service';
+packages/enhancements/src/index.ts:export * from './types';
+packages/enhancements/src/index.ts:export * from './constants';
+packages/enhancements/src/index.ts:// Simple module export
+packages/enhancements/src/index.ts:export class CVEnhancementsModule {
+packages/enhancements/src/index.ts:export default CVEnhancementsModule;

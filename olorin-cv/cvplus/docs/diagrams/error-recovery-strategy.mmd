@@ -1,0 +1,62 @@
+flowchart TD
+    A[User Action] --> B{Action Success?}
+    
+    B -->|Yes| C[Update Progress]
+    B -->|No| D[Capture Error Context]
+    
+    D --> E{Error Type?}
+    
+    E -->|Network Error| F[Automatic Retry]
+    E -->|Validation Error| G[Show User Correction]
+    E -->|Service Error| H[Preserve Partial Results]
+    E -->|Unknown Error| I[Fallback Recovery]
+    
+    F --> J{Retry Success?}
+    J -->|Yes| C
+    J -->|No| K[Manual Recovery Options]
+    
+    G --> L{User Corrects?}
+    L -->|Yes| A
+    L -->|No| M[Save Draft & Exit]
+    
+    H --> N[Show Recovery Dialog]
+    N --> O{User Choice?}
+    O -->|Retry| P[Attempt Recovery]
+    O -->|Continue| Q[Skip Failed Step]
+    O -->|Save & Exit| M
+    
+    I --> R[Show Error Details]
+    R --> S{User Action?}
+    S -->|Report Bug| T[Collect Debug Info]
+    S -->|Try Again| A
+    S -->|Save & Exit| M
+    
+    K --> U[Show Available Options]
+    U --> V{User Choice?}
+    V -->|Retry Different Way| W[Alternative Method]
+    V -->|Skip Step| Q
+    V -->|Save & Exit| M
+    
+    P --> X{Recovery Success?}
+    X -->|Yes| C
+    X -->|No| K
+    
+    W --> Y{Alternative Success?}
+    Y -->|Yes| C
+    Y -->|No| K
+    
+    C --> Z[Continue to Next Step]
+    Q --> AA[Mark Step as Skipped]
+    AA --> Z
+    M --> BB[Store Session State]
+    BB --> CC[User Can Resume Later]
+    
+    T --> DD[Send to Error Tracking]
+    DD --> EE[Provide User Reference]
+    EE --> M
+    
+    style A fill:#e1f5fe
+    style C fill:#e8f5e8
+    style D fill:#fff3e0
+    style M fill:#fce4ec
+    style CC fill:#f3e5f5

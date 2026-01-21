@@ -1,0 +1,106 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if in emulator mode
+    function isEmulator() {
+      return request.auth.token.firebase.sign_in_provider == 'custom' || 
+             request.auth.uid.matches('test-user-.*') ||
+             resource.data._developmentSample == true;
+    }
+    
+    // Allow authenticated users to read their own documents
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Enhanced jobs permissions for development
+    match /jobs/{jobId} {
+      allow read: if request.auth != null && 
+        (request.auth.uid == resource.data.userId || 
+         resource.data.isPublic == true ||
+         resource.data._developmentSample == true);  // Allow dev sample access
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+      allow update: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow delete: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+    }
+    
+    // Allow reading public templates
+    match /templates/{templateId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    
+    // Allow authenticated users to manage their generated CVs
+    match /generatedCVs/{cvId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+    }
+    
+    // Role profiles - read-only for authenticated users, write from functions only
+    match /roleProfiles/{roleId} {
+      allow read: if request.auth != null;
+      allow write: if false; // Only functions can write
+    }
+    
+    // User role profile assignments - authenticated users can manage their own
+    match /userRoleProfiles/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Role profile analytics - write only from functions
+    match /roleProfileAnalytics/{document=**} {
+      allow read: if false;
+      allow write: if false;
+    }
+    
+    // Analytics - write only from functions
+    match /analytics/{document=**} {
+      allow read: if false;
+      allow write: if false;
+    }
+    
+    // User subscriptions - users can read their own, functions can write
+    match /userSubscriptions/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false; // Only functions can write
+    }
+    
+    // CV Hash Records - functions only (for duplicate detection)
+    match /cvHashRecords/{hashId} {
+      allow read: if false;
+      allow write: if false; // Only functions can write
+    }
+    
+    // User Policy Records - users can read their own, functions can write
+    match /userPolicyRecords/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false; // Only functions can write
+      
+      // Policy check history - users can read their own
+      match /checkHistory/{checkId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if false;
+      }
+      
+      // Upload history - users can read their own
+      match /uploadHistory/{uploadId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if false;
+      }
+    }
+    
+    // Policy Violations - admin/functions only
+    match /policyViolations/{violationId} {
+      allow read: if false;
+      allow write: if false; // Only functions can write
+    }
+    
+    // User Verified Names - users can read/write their own
+    match /userVerifiedNames/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

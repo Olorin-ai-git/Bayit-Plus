@@ -1,0 +1,591 @@
+openapi: 3.0.3
+info:
+  title: One Click Portal API
+  description: API for generating and managing premium CV portals with AI chat functionality
+  version: 1.0.0
+  contact:
+    name: CVPlus API Team
+    email: api@cvplus.com
+
+servers:
+  - url: https://us-central1-cvplus-prod.cloudfunctions.net
+    description: Production Firebase Functions
+  - url: http://localhost:5001/cvplus-dev/us-central1
+    description: Local development with Firebase Emulators
+
+paths:
+  /portal/generate:
+    post:
+      summary: Generate a new one-click portal
+      description: Creates a new portal for premium users with CV content and AI chat
+      operationId: generatePortal
+      security:
+        - FirebaseAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - theme
+                - features
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                  example: "John Doe - Software Engineer"
+                description:
+                  type: string
+                  maxLength: 500
+                  example: "Professional portfolio and CV showcase"
+                visibility:
+                  type: string
+                  enum: [public, private, unlisted]
+                  default: public
+                customDomain:
+                  type: string
+                  format: hostname
+                  example: "johndoe.cvplus.com"
+                theme:
+                  $ref: '#/components/schemas/PortalTheme'
+                features:
+                  $ref: '#/components/schemas/PortalFeatures'
+                metadata:
+                  $ref: '#/components/schemas/PortalMetadata'
+      responses:
+        '201':
+          description: Portal generation started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  portalId:
+                    type: string
+                    format: uuid
+                    example: "550e8400-e29b-41d4-a716-446655440000"
+                  deploymentStatus:
+                    $ref: '#/components/schemas/DeploymentStatus'
+                  estimatedCompletion:
+                    type: string
+                    format: date-time
+                    example: "2025-09-13T14:45:00Z"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /portal/{portalId}/status:
+    get:
+      summary: Get portal deployment status
+      description: Retrieve current deployment progress and status
+      operationId: getPortalStatus
+      security:
+        - FirebaseAuth: []
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Portal status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeploymentStatus'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /portal/{portalId}/chat/start:
+    post:
+      summary: Start a new chat session
+      description: Initialize RAG-powered AI chat for recruiters
+      operationId: startChatSession
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sessionMetadata:
+                  type: object
+                  properties:
+                    userAgent:
+                      type: string
+                    referrer:
+                      type: string
+                    location:
+                      type: object
+                      properties:
+                        country:
+                          type: string
+                        city:
+                          type: string
+      responses:
+        '201':
+          description: Chat session started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  sessionId:
+                    type: string
+                    format: uuid
+                  sessionToken:
+                    type: string
+                    description: Anonymous token for subsequent chat requests
+                  welcomeMessage:
+                    type: string
+                    example: "Hello! I'm an AI assistant who can answer questions about this candidate's background and experience. What would you like to know?"
+                  suggestedQuestions:
+                    type: array
+                    items:
+                      type: string
+                    example: ["What are their key technical skills?", "Tell me about their work experience"]
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /portal/{portalId}/chat/{sessionId}/message:
+    post:
+      summary: Send a chat message
+      description: Send a message to the AI and get RAG-powered response
+      operationId: sendChatMessage
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+                - sessionToken
+              properties:
+                message:
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+                  example: "What programming languages does this candidate know?"
+                sessionToken:
+                  type: string
+                  description: Anonymous session token from chat start
+                options:
+                  type: object
+                  properties:
+                    enableRAG:
+                      type: boolean
+                      default: true
+                    maxSources:
+                      type: integer
+                      minimum: 1
+                      maximum: 5
+                      default: 3
+                    includeSourceDocuments:
+                      type: boolean
+                      default: true
+      responses:
+        '200':
+          description: Message sent and AI response generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  response:
+                    type: string
+                    example: "Based on the CV, this candidate has extensive experience with JavaScript, Python, and Go..."
+                  confidence:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 1
+                    example: 0.95
+                  processingTime:
+                    type: integer
+                    description: Response time in milliseconds
+                    example: 1250
+                  tokenUsage:
+                    type: object
+                    properties:
+                      prompt:
+                        type: integer
+                      completion:
+                        type: integer
+                      total:
+                        type: integer
+                  sourceDocuments:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RAGSourceDocument'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /portal/{portalId}/analytics:
+    get:
+      summary: Get portal analytics
+      description: Retrieve engagement metrics and visitor statistics
+      operationId: getPortalAnalytics
+      security:
+        - FirebaseAuth: []
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: period
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [day, week, month, year]
+            default: week
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Analytics data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortalAnalyticsResponse'
+
+components:
+  schemas:
+    PortalTheme:
+      type: object
+      required:
+        - primaryColor
+        - layout
+      properties:
+        primaryColor:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          example: "#3B82F6"
+        secondaryColor:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          example: "#6B7280"
+        backgroundColor:
+          type: string
+          example: "#FFFFFF"
+        textColor:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          example: "#1F2937"
+        fontFamily:
+          type: string
+          example: "Inter, sans-serif"
+        layout:
+          type: string
+          enum: [modern, classic, minimal, creative]
+        animations:
+          type: boolean
+          default: true
+        darkMode:
+          type: boolean
+          default: false
+
+    PortalFeatures:
+      type: object
+      properties:
+        aiChat:
+          type: boolean
+          default: true
+        qrCode:
+          type: boolean
+          default: true
+        contactForm:
+          type: boolean
+          default: true
+        calendar:
+          type: boolean
+          default: false
+        portfolio:
+          type: boolean
+          default: true
+        socialLinks:
+          type: boolean
+          default: true
+        testimonials:
+          type: boolean
+          default: false
+        analytics:
+          type: boolean
+          default: true
+
+    PortalMetadata:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 60
+          example: "John Doe - Senior Software Engineer"
+        description:
+          type: string
+          maxLength: 160
+          example: "Experienced software engineer specializing in full-stack development and cloud architecture"
+        keywords:
+          type: array
+          items:
+            type: string
+          example: ["software engineer", "javascript", "python", "full-stack"]
+        ogImage:
+          type: string
+          format: uri
+
+    DeploymentStatus:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        portalId:
+          type: string
+          format: uuid
+        phase:
+          type: string
+          enum: [initializing, validating, preparing, uploading, building, deploying, testing, completed, failed]
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+        currentOperation:
+          type: string
+          example: "Generating vector embeddings for AI chat"
+        startedAt:
+          type: string
+          format: date-time
+        estimatedCompletion:
+          type: string
+          format: date-time
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            phase:
+              type: string
+
+    RAGSourceDocument:
+      type: object
+      properties:
+        id:
+          type: string
+        section:
+          type: string
+          example: "Work Experience"
+        content:
+          type: string
+          example: "Senior Software Engineer at TechCorp (2021-2024): Led development of microservices architecture..."
+        score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          example: 0.87
+        metadata:
+          type: object
+
+    PortalAnalyticsResponse:
+      type: object
+      properties:
+        portalId:
+          type: string
+          format: uuid
+        period:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        metrics:
+          type: object
+          properties:
+            totalViews:
+              type: integer
+            uniqueVisitors:
+              type: integer
+            chatSessions:
+              type: integer
+            avgSessionDuration:
+              type: number
+              format: float
+            topSections:
+              type: array
+              items:
+                type: object
+                properties:
+                  section:
+                    type: string
+                  views:
+                    type: integer
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid input data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "VALIDATION_ERROR"
+                  message:
+                    type: string
+                    example: "Portal name is required and must be 1-100 characters"
+
+    Unauthorized:
+      description: Unauthorized - invalid or missing authentication
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "AUTHENTICATION_ERROR"
+                  message:
+                    type: string
+                    example: "Valid Firebase authentication token required"
+
+    Forbidden:
+      description: Forbidden - premium subscription required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "PREMIUM_REQUIRED"
+                  message:
+                    type: string
+                    example: "One Click Portal requires an active premium subscription"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "RESOURCE_NOT_FOUND"
+                  message:
+                    type: string
+                    example: "Portal with specified ID not found"
+
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "RATE_LIMIT_EXCEEDED"
+                  message:
+                    type: string
+                    example: "Too many requests. Please wait before sending another message."
+              retryAfter:
+                type: integer
+                description: Seconds to wait before retrying
+                example: 60
+
+  securitySchemes:
+    FirebaseAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Firebase authentication token

@@ -1,0 +1,118 @@
+graph TB
+    subgraph "Main Functions Directory"
+        MainIndex["/functions/src/index.ts"]
+        MainFunctions["/functions/src/functions/"]
+        MainPayments["/functions/src/functions/payments/"]
+        MainPremium["/functions/src/functions/premium/"]
+        MainServices["/functions/src/services/premium/"]
+    end
+
+    subgraph "Premium Submodule"
+        PremiumIndex["/packages/premium/src/backend/functions/index.ts"]
+        PremiumFunctions["/packages/premium/src/backend/functions/"]
+        PremiumPayments["/packages/premium/src/backend/functions/payments/"]
+        PremiumServices["/packages/premium/src/backend/services/"]
+    end
+
+    subgraph "Analytics Submodule"
+        AnalyticsIndex["/packages/analytics/src/functions/index.ts"]
+        AnalyticsPremium["/packages/analytics/src/functions/premium/"]
+    end
+
+    subgraph "Duplicate Functions - BEFORE"
+        D1["checkFeatureAccess.ts<br/>📍 Main + Premium"]
+        D2["handleStripeWebhook.ts<br/>📍 Main (229L) + Premium (409L)"]
+        D3["dynamicPricing.ts<br/>📍 Main + Premium"]
+        D4["enterpriseManagement.ts<br/>📍 Main + Premium"]
+        D5["advancedAnalytics.ts<br/>📍 Main + Analytics"]
+        D6["batchTrackingEvents.ts<br/>📍 Main + Analytics"]
+        D7["getRealtimeUsageStats.ts<br/>📍 Main + Analytics"]
+    end
+
+    subgraph "Consolidated Functions - AFTER"
+        C1["✅ checkFeatureAccess.ts<br/>📍 Premium Only"]
+        C2["✅ handleStripeWebhook.ts<br/>📍 Premium Only (Enhanced)"]
+        C3["✅ dynamicPricing.ts<br/>📍 Premium Only"]
+        C4["✅ enterpriseManagement.ts<br/>📍 Premium Only"]
+        C5["✅ advancedAnalytics.ts<br/>📍 Analytics Only"]
+        C6["✅ batchTrackingEvents.ts<br/>📍 Analytics Only"]
+        C7["✅ getRealtimeUsageStats.ts<br/>📍 Analytics Only"]
+    end
+
+    subgraph "Unique Premium Functions"
+        U1["manageSubscription.ts"]
+        U2["predictChurn.ts"]
+        U3["PayPal Integration Functions"]
+        U4["Enhanced Payment Services"]
+    end
+
+    subgraph "Service Dependencies"
+        S1["StripeService"]
+        S2["SubscriptionService"]
+        S3["BillingService"]
+        S4["FeatureService"]
+        S5["Payment Orchestrator"]
+        S6["Provider Factory"]
+    end
+
+    %% Migration Phase 1: Remove Duplicates
+    MainPayments -.->|Remove| D1
+    MainPremium -.->|Remove| D3
+    MainPremium -.->|Remove| D4
+    MainPremium -.->|Remove| D5
+    MainPremium -.->|Remove| D6
+    MainPremium -.->|Remove| D7
+
+    %% Migration Phase 2: Enhanced Function
+    MainPayments -.->|Replace with Premium Version| D2
+
+    %% Final State: Import Structure
+    MainIndex -->|Import| PremiumFunctions
+    MainIndex -->|Import| AnalyticsPremium
+    
+    PremiumFunctions --> C1
+    PremiumFunctions --> C2
+    PremiumFunctions --> C3
+    PremiumFunctions --> C4
+    PremiumFunctions --> U1
+    PremiumFunctions --> U2
+    PremiumFunctions --> U3
+
+    AnalyticsPremium --> C5
+    AnalyticsPremium --> C6
+    AnalyticsPremium --> C7
+
+    %% Service Dependencies
+    PremiumServices --> S1
+    PremiumServices --> S2
+    PremiumServices --> S3
+    PremiumServices --> S4
+    PremiumServices --> S5
+    PremiumServices --> S6
+
+    C2 --> S1
+    C2 --> S2
+    C2 --> S3
+    C2 --> S4
+
+    %% Styling
+    classDef duplicate fill:#ffcccc,stroke:#ff0000,stroke-width:2px
+    classDef consolidated fill:#ccffcc,stroke:#00aa00,stroke-width:2px
+    classDef unique fill:#cceeff,stroke:#0088cc,stroke-width:2px
+    classDef service fill:#fff2cc,stroke:#d6b656,stroke-width:2px
+
+    class D1,D2,D3,D4,D5,D6,D7 duplicate
+    class C1,C2,C3,C4,C5,C6,C7 consolidated
+    class U1,U2,U3,U4 unique
+    class S1,S2,S3,S4,S5,S6 service
+
+    %% Phase Indicators
+    subgraph "Migration Phases"
+        Phase1["🔥 Phase 1: Remove Identical Duplicates<br/>• checkFeatureAccess.ts<br/>• dynamicPricing.ts<br/>• enterpriseManagement.ts<br/>• advancedAnalytics.ts<br/>• batchTrackingEvents.ts<br/>• getRealtimeUsageStats.ts"]
+        Phase2["⚡ Phase 2: Enhanced Function Migration<br/>• handleStripeWebhook.ts<br/>• Service dependencies<br/>• Import path updates"]
+        Phase3["🎯 Phase 3: Import Structure Optimization<br/>• Update main index.ts<br/>• Test all exports<br/>• Validate functionality"]
+    end
+
+    style Phase1 fill:#ffe6e6,stroke:#cc0000
+    style Phase2 fill:#fff2e6,stroke:#cc6600
+    style Phase3 fill:#e6ffe6,stroke:#00cc00

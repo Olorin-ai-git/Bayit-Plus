@@ -1,0 +1,132 @@
+```mermaid
+graph TD
+    %% User Journey Start
+    A[User Uploads CV to CVPlus] --> B[CV Processing & Analysis]
+    B --> C[Enhanced CV Generation]
+    C --> D{Trigger Portal Generation}
+    
+    %% Portal Generation Flow
+    D --> E[Extract CV Data from Firestore]
+    E --> F[Generate Portal Template]
+    F --> G[Build RAG Knowledge Base]
+    G --> H[Create HuggingFace Space]
+    H --> I[Deploy Portal + Chat API]
+    I --> J[Generate Unique URL]
+    J --> K[Update CV with Portal Link]
+    K --> L[Notify User - Portal Ready]
+    
+    %% Detailed Portal Generation Components
+    F --> F1[Customize Theme & Layout]
+    F --> F2[Inject Personal Data]
+    F --> F3[Configure Components]
+    
+    G --> G1[Chunk CV Content]
+    G --> G2[Generate Vector Embeddings]
+    G --> G3[Create Vector Index]
+    G --> G4[Setup Chat Context]
+    
+    H --> H1[Create HF Space via API]
+    H --> H2[Initialize Git Repository]
+    H --> H3[Upload Portal Files]
+    H --> H4[Configure Space Settings]
+    
+    %% RAG Chat System Architecture
+    subgraph "RAG Chat System"
+        Q1[User Question] --> Q2[Query Analysis]
+        Q2 --> Q3[Vector Search]
+        Q3 --> Q4[Context Retrieval]
+        Q4 --> Q5[Claude API Call]
+        Q5 --> Q6[Personalized Response]
+    end
+    
+    %% Portal Components
+    subgraph "Generated Portal"
+        P1[Hero Section]
+        P2[Experience Timeline]
+        P3[Skills Visualization]
+        P4[Portfolio Gallery]
+        P5[Contact Information]
+        P6[RAG Chat Widget]
+        P7[CV Download Link]
+    end
+    
+    %% Data Sources
+    subgraph "Data Sources"
+        DS1[(Firestore CV Data)]
+        DS2[(Vector Database)]
+        DS3[(Template Assets)]
+        DS4[(User Assets)]
+    end
+    
+    %% External Services
+    subgraph "External Services"
+        EX1[HuggingFace Spaces API]
+        EX2[Anthropic Claude API]
+        EX3[HuggingFace Transformers]
+        EX4[Firebase Functions]
+    end
+    
+    %% Integration Points
+    DS1 --> E
+    EX4 --> D
+    EX1 --> H
+    EX2 --> Q5
+    EX3 --> G2
+    
+    %% Portal URL Integration
+    J --> CV1[PDF CV Document]
+    J --> CV2[DOCX CV Document]
+    J --> CV3[Email Notification]
+    J --> CV4[CVPlus Results Page]
+    
+    %% Success Flow
+    L --> M[User Shares Portal]
+    M --> N[Visitors Use Chat]
+    N --> O[Leads Generation]
+    
+    %% Styling
+    classDef processBox fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef dataBox fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef externalBox fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef portalBox fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef ragBox fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O processBox
+    class DS1,DS2,DS3,DS4 dataBox
+    class EX1,EX2,EX3,EX4 externalBox
+    class P1,P2,P3,P4,P5,P6,P7 portalBox
+    class Q1,Q2,Q3,Q4,Q5,Q6 ragBox
+```
+
+## Architecture Flow Description
+
+This diagram illustrates the complete flow for one-click web portal generation with RAG-based personal chat integration in CVPlus:
+
+### Phase 1: CV Processing Integration
+- Seamlessly integrates with existing CVPlus CV generation workflow
+- Triggers portal generation automatically after successful CV enhancement
+- Maintains existing user experience while adding powerful new capabilities
+
+### Phase 2: Portal Generation Pipeline
+- **Template Customization**: Dynamic theme selection and content injection based on CV data
+- **RAG Knowledge Base**: Converts CV content into searchable vector embeddings for personalized chat
+- **HuggingFace Deployment**: Automated space creation and portal deployment
+- **URL Management**: Generates unique, professional URLs with collision handling
+
+### Phase 3: RAG Chat System
+- **Intelligent Query Processing**: Analyzes user questions for intent and context
+- **Vector Search**: Retrieves relevant CV information using semantic similarity
+- **Personalized Responses**: Uses Claude API with retrieved context for accurate, personalized answers
+- **Real-time Interaction**: Provides instant responses about professional background and experience
+
+### Phase 4: Multi-Format Integration
+- **CV Document Integration**: Embeds portal URLs and chat links in generated PDF/DOCX files
+- **User Notification**: Proactive notification when portal is ready with direct access links
+- **Results Page Enhancement**: Portal URL prominently featured in CVPlus results interface
+
+### Key Benefits:
+1. **Zero Additional User Input**: Complete automation from CV upload to deployed portal
+2. **Professional Branding**: Unique URLs and customized themes for each user
+3. **Interactive Engagement**: RAG chat enables visitors to learn about the professional interactively
+4. **Seamless Integration**: Natural extension of existing CVPlus workflow
+5. **Scalable Architecture**: Supports thousands of users with efficient resource utilization

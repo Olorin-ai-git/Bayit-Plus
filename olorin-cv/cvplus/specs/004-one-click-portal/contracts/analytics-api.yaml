@@ -1,0 +1,693 @@
+paths:
+  /api/portal/{portalId}/analytics:
+    get:
+      tags:
+        - Analytics
+      summary: Get portal engagement metrics
+      description: |
+        Retrieves comprehensive analytics for a portal including visitor statistics, engagement metrics, and performance data.
+
+        **Analytics Categories**:
+        - **Traffic**: Views, visitors, referrers, geographic data
+        - **Engagement**: Session duration, bounce rate, interaction depth
+        - **Chat**: Message volume, topic analysis, satisfaction scores
+        - **Performance**: Load times, error rates, conversion metrics
+
+        **Privacy**: All visitor data is anonymized and aggregated
+
+        **Access Control**: Portal owners only
+      operationId: getPortalAnalytics
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Portal identifier
+          example: "portal_abc123def456"
+        - name: timeRange
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["24h", "7d", "30d", "90d", "1y", "all"]
+            default: "30d"
+          description: Time range for analytics data
+          example: "30d"
+        - name: metrics
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum: ["traffic", "engagement", "chat", "performance", "demographics"]
+          style: form
+          explode: false
+          description: Specific metric categories to include
+          example: ["traffic", "engagement", "chat"]
+        - name: granularity
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["hour", "day", "week", "month"]
+            default: "day"
+          description: Data aggregation granularity
+          example: "day"
+      responses:
+        '200':
+          description: Portal analytics data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  portalId:
+                    type: string
+                    example: "portal_abc123def456"
+                  timeRange:
+                    type: object
+                    properties:
+                      start:
+                        type: string
+                        format: date-time
+                        example: "2025-08-14T00:00:00Z"
+                      end:
+                        type: string
+                        format: date-time
+                        example: "2025-09-13T23:59:59Z"
+                      granularity:
+                        type: string
+                        example: "day"
+                  traffic:
+                    type: object
+                    properties:
+                      totalViews:
+                        type: integer
+                        description: Total page views in time range
+                        example: 1247
+                      uniqueVisitors:
+                        type: integer
+                        description: Unique visitors (based on anonymized IDs)
+                        example: 892
+                      returningVisitors:
+                        type: integer
+                        description: Visitors who returned multiple times
+                        example: 156
+                      bounceRate:
+                        type: number
+                        description: Percentage of single-page sessions
+                        example: 0.32
+                      averageSessionDuration:
+                        type: number
+                        description: Average session duration in seconds
+                        example: 247.5
+                      topReferrers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            domain:
+                              type: string
+                              example: "linkedin.com"
+                            visits:
+                              type: integer
+                              example: 234
+                            percentage:
+                              type: number
+                              example: 18.7
+                      geographicData:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            country:
+                              type: string
+                              example: "United States"
+                            countryCode:
+                              type: string
+                              example: "US"
+                            visits:
+                              type: integer
+                              example: 567
+                            percentage:
+                              type: number
+                              example: 45.5
+                      deviceTypes:
+                        type: object
+                        properties:
+                          desktop:
+                            type: integer
+                            example: 734
+                          mobile:
+                            type: integer
+                            example: 398
+                          tablet:
+                            type: integer
+                            example: 115
+                      timeline:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            date:
+                              type: string
+                              format: date
+                              example: "2025-09-13"
+                            views:
+                              type: integer
+                              example: 42
+                            visitors:
+                              type: integer
+                              example: 31
+                  engagement:
+                    type: object
+                    properties:
+                      mostViewedSections:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            section:
+                              type: string
+                              example: "Work Experience"
+                            views:
+                              type: integer
+                              example: 789
+                            avgTimeSpent:
+                              type: number
+                              description: Average time spent in seconds
+                              example: 45.2
+                      interactionEvents:
+                        type: object
+                        properties:
+                          contactFormSubmissions:
+                            type: integer
+                            example: 23
+                          resumeDownloads:
+                            type: integer
+                            example: 67
+                          socialLinkClicks:
+                            type: integer
+                            example: 89
+                          portfolioItemViews:
+                            type: integer
+                            example: 145
+                      conversionMetrics:
+                        type: object
+                        properties:
+                          contactFormRate:
+                            type: number
+                            description: Percentage of visitors who submitted contact form
+                            example: 2.6
+                          resumeDownloadRate:
+                            type: number
+                            description: Percentage of visitors who downloaded resume
+                            example: 7.5
+                  chat:
+                    type: object
+                    properties:
+                      totalSessions:
+                        type: integer
+                        description: Total chat sessions initiated
+                        example: 156
+                      totalMessages:
+                        type: integer
+                        description: Total messages sent by visitors
+                        example: 623
+                      averageMessagesPerSession:
+                        type: number
+                        example: 3.99
+                      averageSessionDuration:
+                        type: number
+                        description: Average chat session duration in seconds
+                        example: 284.7
+                      averageResponseTime:
+                        type: number
+                        description: Average AI response time in milliseconds
+                        example: 2341.2
+                      averageConfidence:
+                        type: number
+                        description: Average AI confidence score
+                        example: 0.87
+                      topQuestions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            question:
+                              type: string
+                              example: "What programming languages do you know?"
+                            frequency:
+                              type: integer
+                              example: 23
+                            category:
+                              type: string
+                              example: "technical skills"
+                      topicAnalysis:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            topic:
+                              type: string
+                              example: "technical skills"
+                            frequency:
+                              type: integer
+                              example: 89
+                            percentage:
+                              type: number
+                              example: 14.3
+                      satisfactionMetrics:
+                        type: object
+                        properties:
+                          averageRating:
+                            type: number
+                            description: Average user satisfaction rating (1-5)
+                            example: 4.2
+                            nullable: true
+                          totalRatings:
+                            type: integer
+                            example: 34
+                  performance:
+                    type: object
+                    properties:
+                      averageLoadTime:
+                        type: number
+                        description: Average page load time in milliseconds
+                        example: 1234.5
+                      errorRate:
+                        type: number
+                        description: Percentage of requests that resulted in errors
+                        example: 0.002
+                      uptimePercentage:
+                        type: number
+                        description: Portal availability percentage
+                        example: 99.97
+                      mobileFriendliness:
+                        type: object
+                        properties:
+                          score:
+                            type: number
+                            description: Mobile friendliness score (0-100)
+                            example: 96
+                          issues:
+                            type: array
+                            items:
+                              type: string
+                            example: []
+              examples:
+                comprehensive_analytics:
+                  summary: Complete analytics data for 30 days
+                  value:
+                    success: true
+                    portalId: "portal_abc123def456"
+                    timeRange:
+                      start: "2025-08-14T00:00:00Z"
+                      end: "2025-09-13T23:59:59Z"
+                      granularity: "day"
+                    traffic:
+                      totalViews: 1247
+                      uniqueVisitors: 892
+                      returningVisitors: 156
+                      bounceRate: 0.32
+                      averageSessionDuration: 247.5
+                      topReferrers:
+                        - domain: "linkedin.com"
+                          visits: 234
+                          percentage: 18.7
+                        - domain: "indeed.com"
+                          visits: 178
+                          percentage: 14.3
+                      geographicData:
+                        - country: "United States"
+                          countryCode: "US"
+                          visits: 567
+                          percentage: 45.5
+                        - country: "Canada"
+                          countryCode: "CA"
+                          visits: 123
+                          percentage: 9.9
+                    engagement:
+                      mostViewedSections:
+                        - section: "Work Experience"
+                          views: 789
+                          avgTimeSpent: 45.2
+                        - section: "Technical Skills"
+                          views: 654
+                          avgTimeSpent: 32.1
+                      interactionEvents:
+                        contactFormSubmissions: 23
+                        resumeDownloads: 67
+                        socialLinkClicks: 89
+                      conversionMetrics:
+                        contactFormRate: 2.6
+                        resumeDownloadRate: 7.5
+                    chat:
+                      totalSessions: 156
+                      totalMessages: 623
+                      averageMessagesPerSession: 3.99
+                      averageResponseTime: 2341.2
+                      averageConfidence: 0.87
+                      topQuestions:
+                        - question: "What programming languages do you know?"
+                          frequency: 23
+                          category: "technical skills"
+        '403':
+          $ref: '../openapi.yaml#/components/responses/ForbiddenError'
+        '404':
+          $ref: '../openapi.yaml#/components/responses/NotFoundError'
+
+  /api/portal/{portalId}/visit:
+    post:
+      tags:
+        - Analytics
+      summary: Track visitor interaction
+      description: |
+        Records a visitor interaction event for analytics tracking.
+
+        **Event Types**:
+        - `page_view`: Portal page viewed
+        - `section_view`: Specific CV section viewed
+        - `chat_started`: AI chat session initiated
+        - `contact_form`: Contact form submitted
+        - `resume_download`: Resume PDF downloaded
+        - `social_click`: Social media link clicked
+        - `portfolio_item`: Portfolio item viewed
+
+        **Privacy**: All tracking is anonymous and GDPR compliant
+
+        **Public Access**: This endpoint is publicly accessible for analytics tracking
+      operationId: trackVisitorInteraction
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Portal identifier
+          example: "portal_abc123def456"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - eventType
+              properties:
+                eventType:
+                  type: string
+                  enum: ["page_view", "section_view", "chat_started", "contact_form", "resume_download", "social_click", "portfolio_item"]
+                  description: Type of interaction event
+                  example: "section_view"
+                eventData:
+                  type: object
+                  description: Event-specific data
+                  properties:
+                    section:
+                      type: string
+                      description: CV section for section_view events
+                      example: "Work Experience"
+                    duration:
+                      type: number
+                      description: Time spent on page/section in seconds
+                      example: 45.2
+                    socialPlatform:
+                      type: string
+                      description: Social platform for social_click events
+                      example: "linkedin"
+                    portfolioItem:
+                      type: string
+                      description: Portfolio item ID for portfolio_item events
+                      example: "project_abc123"
+                visitorContext:
+                  type: object
+                  description: Anonymous visitor context for analytics
+                  properties:
+                    sessionId:
+                      type: string
+                      description: Anonymous session identifier
+                      example: "session_abc123"
+                    referrer:
+                      type: string
+                      description: Page that referred the visitor
+                      example: "https://linkedin.com/in/johnsmith"
+                    userAgent:
+                      type: string
+                      description: Browser user agent string
+                      example: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+                    timezone:
+                      type: string
+                      description: Visitor's timezone
+                      example: "America/New_York"
+                    language:
+                      type: string
+                      description: Browser language preference
+                      example: "en-US"
+                    screenResolution:
+                      type: string
+                      description: Screen resolution
+                      example: "1920x1080"
+            examples:
+              page_view:
+                summary: Track portal page view
+                value:
+                  eventType: "page_view"
+                  eventData:
+                    duration: 45.2
+                  visitorContext:
+                    sessionId: "session_abc123"
+                    referrer: "https://linkedin.com/in/johnsmith"
+                    timezone: "America/New_York"
+              section_interaction:
+                summary: Track section view with engagement
+                value:
+                  eventType: "section_view"
+                  eventData:
+                    section: "Work Experience"
+                    duration: 67.3
+                  visitorContext:
+                    sessionId: "session_abc123"
+              contact_form_submission:
+                summary: Track contact form submission
+                value:
+                  eventType: "contact_form"
+                  eventData:
+                    formType: "inquiry"
+                  visitorContext:
+                    sessionId: "session_abc123"
+      responses:
+        '200':
+          description: Visitor interaction tracked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  eventId:
+                    type: string
+                    description: Unique identifier for the tracked event
+                    example: "event_def456ghi789"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2025-09-13T20:30:00Z"
+        '400':
+          $ref: '../openapi.yaml#/components/responses/ValidationError'
+        '404':
+          $ref: '../openapi.yaml#/components/responses/NotFoundError'
+
+  /api/portal/{portalId}/visitors:
+    get:
+      tags:
+        - Analytics
+      summary: Get visitor analytics data
+      description: |
+        Retrieves detailed visitor analytics including session data, behavior patterns, and engagement metrics.
+
+        **Data Included**:
+        - Session summaries with engagement metrics
+        - Visitor journey and interaction patterns
+        - Geographic and demographic insights
+        - Device and browser analytics
+
+        **Privacy**: All data is anonymized with no personal identifiers
+
+        **Access Control**: Portal owners only
+      operationId: getVisitorAnalytics
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Portal identifier
+          example: "portal_abc123def456"
+        - name: timeRange
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["24h", "7d", "30d", "90d"]
+            default: "7d"
+          description: Time range for visitor data
+          example: "7d"
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          description: Maximum number of visitor sessions to return
+          example: 20
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["timestamp", "duration", "engagement", "interactions"]
+            default: "timestamp"
+          description: Sort order for visitor sessions
+          example: "engagement"
+        - name: includeDetails
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: Include detailed interaction data for each session
+      responses:
+        '200':
+          description: Visitor analytics data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  summary:
+                    type: object
+                    properties:
+                      totalSessions:
+                        type: integer
+                        example: 127
+                      uniqueVisitors:
+                        type: integer
+                        example: 98
+                      averageSessionDuration:
+                        type: number
+                        example: 234.7
+                      totalInteractions:
+                        type: integer
+                        example: 456
+                      topCountries:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            country:
+                              type: string
+                              example: "United States"
+                            sessions:
+                              type: integer
+                              example: 67
+                      topReferrers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            referrer:
+                              type: string
+                              example: "linkedin.com"
+                            sessions:
+                              type: integer
+                              example: 34
+                  visitors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        sessionId:
+                          type: string
+                          example: "session_abc123"
+                        timestamp:
+                          type: string
+                          format: date-time
+                          example: "2025-09-13T20:30:00Z"
+                        duration:
+                          type: number
+                          description: Session duration in seconds
+                          example: 342.5
+                        pageViews:
+                          type: integer
+                          example: 3
+                        interactions:
+                          type: integer
+                          example: 7
+                        engagementScore:
+                          type: number
+                          description: Calculated engagement score (0-100)
+                          example: 78.5
+                        context:
+                          type: object
+                          properties:
+                            country:
+                              type: string
+                              example: "United States"
+                            referrer:
+                              type: string
+                              example: "linkedin.com"
+                            deviceType:
+                              type: string
+                              example: "desktop"
+                            browserFamily:
+                              type: string
+                              example: "chrome"
+                        interactionDetails:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              eventType:
+                                type: string
+                                example: "section_view"
+                              timestamp:
+                                type: string
+                                format: date-time
+                                example: "2025-09-13T20:32:15Z"
+                              data:
+                                type: object
+                                properties:
+                                  section:
+                                    type: string
+                                    example: "Technical Skills"
+                                  duration:
+                                    type: number
+                                    example: 45.2
+                          description: Detailed interactions (only if includeDetails=true)
+                  pagination:
+                    type: object
+                    properties:
+                      hasMore:
+                        type: boolean
+                        example: false
+                      nextCursor:
+                        type: string
+                        nullable: true
+                        example: null
+        '403':
+          $ref: '../openapi.yaml#/components/responses/ForbiddenError'
+        '404':
+          $ref: '../openapi.yaml#/components/responses/NotFoundError'

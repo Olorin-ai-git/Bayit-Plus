@@ -1,0 +1,52 @@
+graph TD
+    A[User Views Pricing Page] --> B{Current State}
+    B -->|Shows $5| C[PricingPage.tsx]
+    B -->|Shows $49| D[StripeCheckoutSDK.tsx]
+    B -->|Charges $49| E[Backend createCheckoutSession]
+    
+    F[SOLUTION: Centralized Pricing] --> G[pricing.ts Config]
+    
+    G --> H[Frontend Components]
+    G --> I[Backend Functions]
+    G --> J[Stripe Integration]
+    
+    H --> H1[PricingPage.tsx]
+    H --> H2[StripeCheckoutSDK.tsx]
+    H --> H3[StripeCheckoutRedirect.tsx]
+    H --> H4[PaymentService.ts]
+    
+    I --> I1[createCheckoutSession.ts]
+    I --> I2[Price Validation Middleware]
+    I --> I3[Backend Pricing Config]
+    
+    J --> J1[Stripe Price IDs]
+    J --> J2[Environment-based Config]
+    J --> J3[Price Validation]
+    
+    K[Implementation Flow] --> L[Phase 1: Config Setup]
+    L --> M[Phase 2: Frontend Updates]
+    M --> N[Phase 3: Backend Updates]
+    N --> O[Phase 4: Testing]
+    O --> P[Phase 5: Deployment]
+    
+    Q[Quality Gates] --> Q1[Unit Tests ≥85% Coverage]
+    Q --> Q2[Integration Tests]
+    Q --> Q3[Manual Testing]
+    Q --> Q4[Price Validation]
+    
+    R[Success Criteria] --> R1[Consistent Pricing Display]
+    R --> R2[Accurate Stripe Charging]
+    R --> R3[No Hardcoded Values]
+    R --> R4[Environment Awareness]
+    
+    S[Risk Mitigation] --> S1[Staging Environment]
+    S --> S2[Price Validation]
+    S --> S3[Audit Logging]
+    S --> S4[Fallback Mechanisms]
+    
+    style A fill:#e1f5fe
+    style F fill:#c8e6c9
+    style G fill:#fff3e0
+    style Q fill:#fce4ec
+    style R fill:#f3e5f5
+    style S fill:#ffebee

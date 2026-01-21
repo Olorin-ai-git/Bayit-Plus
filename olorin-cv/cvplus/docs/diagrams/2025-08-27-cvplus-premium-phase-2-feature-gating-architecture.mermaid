@@ -1,0 +1,113 @@
+graph TB
+    subgraph "User Layer"
+        U[User] --> FE[Frontend App]
+        FE --> PD[Premium Dashboard]
+        FE --> FG[Feature Gates]
+    end
+
+    subgraph "Premium Module Infrastructure"
+        FG --> |Check Access| FGS[FeatureGating Service]
+        FGS --> |Validate| SC[Subscription Cache]
+        FGS --> |Track Usage| UT[Usage Tracker]
+        FGS --> |Log Analytics| PA[Premium Analytics]
+        
+        PD --> |Real-time Sync| RS[Realtime Subscription]
+        RS --> |Firestore Listener| FSL[Firestore Subscription Doc]
+        
+        UT --> |Batch Events| BE[Batch Event Processor]
+        BE --> |Store| FA[Firebase Analytics]
+        BE --> |Aggregate| FS[Firestore Usage Stats]
+    end
+
+    subgraph "Feature Mapping System"
+        FM[Feature Mapper] --> |22+ Features| FR[Feature Registry]
+        FR --> |Premium Tiers| PT[Premium Tiers Config]
+        PT --> |Free Tier| FT["- Basic CV Upload<br/>- Standard Templates<br/>- PDF Export<br/>- Basic Analysis"]
+        PT --> |Premium Tier| PMT["- All AI Features<br/>- Advanced Templates<br/>- Analytics<br/>- Unlimited Usage"]
+        PT --> |Enterprise Tier| ET["- API Access<br/>- White Label<br/>- Custom Branding<br/>- Priority Support"]
+    end
+
+    subgraph "Backend Protection Layer"
+        FE --> |API Calls| BF[Firebase Functions]
+        BF --> |Premium Guard| PG[Premium Middleware]
+        PG --> |Validate Access| FGS
+        PG --> |Track API Usage| UT
+        PG --> |Block/Allow| AR[API Response]
+    end
+
+    subgraph "CV Feature Components"
+        FG --> |Gate Component| FC1[AI Analysis]
+        FG --> |Gate Component| FC2[ATS Optimization]
+        FG --> |Gate Component| FC3[Skills Visualization]
+        FG --> |Gate Component| FC4[Testimonials]
+        FG --> |Gate Component| FC5[QR Codes]
+        FG --> |Gate Component| FC6[Social Media]
+        FG --> |Gate Component| FC7[Podcast Generation]
+        FG --> |Gate Component| FC8[Video Introduction]
+        FG --> |Gate Component| FC9[Interactive Timeline]
+        FG --> |Gate Component| FC10[Calendar Integration]
+        FG --> |Gate Component| FC11[Portfolio Gallery]
+        FG --> |Gate Component| FC12[Language Proficiency]
+        FG --> |Gate Component| FC13[Certification Badges]
+        FG --> |Gate Component| FC14[Personality Insights]
+        FG --> |Gate Component| FC15[Web Portal]
+        FG --> |Gate Component| FC16[AI Chat]
+        FG --> |Gate Component| FC17[Advanced Analytics]
+        FG --> |Gate Component| FC18[Role Detection]
+        FG --> |Gate Component| FC19[External Data]
+        FG --> |Gate Component| FC20[Premium Templates]
+    end
+
+    subgraph "Data Storage"
+        FSL --> |Subscription Data| FDB[(Firestore)]
+        FS --> |Usage Stats| FDB
+        SC --> |Cached Status| RC[(Redis Cache)]
+        FA --> |Analytics Events| FADB[(Firebase Analytics)]
+    end
+
+    subgraph "Premium UX Flow"
+        FC1 --> |Access Denied| UP[Upgrade Prompt]
+        UP --> |Contextual Message| UF[Upgrade Flow]
+        UF --> |Payment Processing| SP[Stripe Payment]
+        SP --> |Success| FSL
+        FSL --> |Real-time Update| FG
+    end
+
+    subgraph "Usage Tracking Flow"
+        UT --> |Feature View| TV[Track View]
+        UT --> |Feature Usage| TU[Track Usage] 
+        UT --> |Feature Blocked| TB[Track Blocked]
+        UT --> |API Call| TA[Track API]
+        
+        TV --> BE
+        TU --> BE
+        TB --> BE
+        TA --> BE
+    end
+
+    subgraph "Analytics Dashboard"
+        PA --> |Usage Metrics| UM[Usage Metrics]
+        PA --> |Feature Analytics| FAN[Feature Analytics]
+        PA --> |Conversion Tracking| CT[Conversion Tracking]
+        PA --> |Limit Warnings| LW[Limit Warnings]
+        
+        UM --> PD
+        FAN --> PD
+        CT --> PD
+        LW --> PD
+    end
+
+    %% Styling
+    classDef userLayer fill:#e1f5fe
+    classDef premiumModule fill:#f3e5f5
+    classDef backend fill:#e8f5e8
+    classDef features fill:#fff3e0
+    classDef storage fill:#fce4ec
+    classDef analytics fill:#f1f8e9
+
+    class U,FE,PD userLayer
+    class FGS,SC,UT,PA,RS,FSL,BE,FA,FS premiumModule
+    class BF,PG,AR backend
+    class FC1,FC2,FC3,FC4,FC5,FC6,FC7,FC8,FC9,FC10,FC11,FC12,FC13,FC14,FC15,FC16,FC17,FC18,FC19,FC20 features
+    class FDB,RC,FADB storage
+    class UM,FAN,CT,LW,TV,TU,TB,TA analytics

@@ -1,0 +1,115 @@
+graph TD
+    %% CVPlus Navigation Architecture Analysis Diagram
+    %% Author: Gil Klainert
+    %% Date: 2025-08-25
+    %% Purpose: Visualize duplicate feature selection screens and navigation flow issues
+
+    %% User Entry Points
+    User[👤 User] --> HomePage[🏠 HomePage]
+    User --> DirectFeatures[📱 Direct /features URL]
+    
+    %% Marketing Feature Path
+    HomePage --> NavMenu[🧭 Navigation Menu]
+    NavMenu --> MarketingFeatures[📄 CVFeaturesPage<br/>/features<br/>MARKETING SHOWCASE]
+    DirectFeatures --> MarketingFeatures
+    Footer[🦶 Footer Links] --> MarketingFeatures
+    
+    %% Workflow Entry Points  
+    HomePage --> Upload[📁 Upload CV]
+    Upload --> Processing[⚙️ Processing]
+    Processing --> Analysis[🔍 CVAnalysisPage<br/>/analysis/:jobId]
+    
+    %% Multiple Navigation Points to Workflow Feature Selection
+    Analysis --> |Magic Transform Button| WorkflowFeatures[⚡ FeatureSelectionPage<br/>/select-features/:jobId<br/>ACTUAL WORKFLOW]
+    Analysis --> |Role Selection Path| RoleSelection[👔 RoleSelectionPage]
+    RoleSelection --> |With Role Context| WorkflowFeatures
+    RoleSelection --> |Skip Role| WorkflowFeatures
+    
+    %% Unified Analysis Container Path
+    Analysis --> UnifiedContainer[🔄 UnifiedAnalysisContainer]
+    UnifiedContainer --> |Role Detection| WorkflowFeatures
+    
+    %% CVAnalysisResults Component Path
+    Analysis --> AnalysisResults[📊 CVAnalysisResults]
+    AnalysisResults --> |Continue Button| WorkflowFeatures
+    
+    %% Workflow Continuation
+    WorkflowFeatures --> Templates[🎨 Template Selection]
+    Templates --> Preview[👁️ Preview & Customize]
+    Preview --> Results[🎯 Final Results]
+    
+    %% CRITICAL ISSUES HIGHLIGHTED
+    classDef problemNode fill:#ff6b6b,stroke:#d63031,color:white
+    classDef duplicateIssue fill:#fdcb6e,stroke:#f39c12,color:black
+    classDef workflowNode fill:#6c5ce7,stroke:#5f3dc4,color:white
+    classDef marketingNode fill:#00b894,stroke:#00a085,color:white
+    
+    %% Apply styles
+    class MarketingFeatures marketingNode
+    class WorkflowFeatures workflowNode
+    class NavMenu,Footer,DirectFeatures duplicateIssue
+    
+    %% Navigation State Management Issues
+    subgraph "🚨 CRITICAL NAVIGATION ISSUES"
+        Issue1[❌ DUPLICATE FEATURE SCREENS<br/>Marketing vs Workflow]
+        Issue2[❌ ROUTE PATH MISMATCH<br/>NavigationManager: /features/:sessionId<br/>Actual Route: /select-features/:jobId]
+        Issue3[❌ INCONSISTENT STEP DEFINITIONS<br/>Multiple step order arrays]
+        Issue4[❌ PARAMETER INCONSISTENCY<br/>sessionId vs jobId confusion]
+    end
+    
+    %% Show problem connections
+    MarketingFeatures -.- Issue1
+    WorkflowFeatures -.- Issue1
+    WorkflowFeatures -.- Issue2
+    
+    subgraph "🔧 CURRENT NAVIGATION SYSTEMS"
+        NavSys1[📍 navigationStateManager.ts<br/>LEGACY]
+        NavSys2[📍 navigation/navigationStateManager.ts<br/>ENHANCED]
+        NavSys3[📍 breadcrumbs.ts<br/>STANDALONE]
+        NavSys4[📍 App.tsx routes<br/>ACTUAL ROUTING]
+    end
+    
+    %% Navigation system conflicts
+    NavSys1 -.- Issue3
+    NavSys2 -.- Issue2
+    NavSys3 -.- Issue4
+    NavSys4 -.- Issue2
+    
+    %% Recommended Solution Flow
+    subgraph "✅ PROPOSED SOLUTION"
+        Solution1[🔄 CONSOLIDATE ROUTES<br/>/features → Marketing only<br/>/customize/:jobId → Workflow]
+        Solution2[🔄 SINGLE NAVIGATION SYSTEM<br/>Remove legacy navigationStateManager]
+        Solution3[🔄 CONSISTENT PARAMETERS<br/>Standardize on jobId everywhere]
+        Solution4[🔄 UNIFIED STEP DEFINITIONS<br/>Single source of truth]
+    end
+    
+    %% Show solution addresses issues
+    Solution1 -.-> Issue1
+    Solution2 -.-> Issue3
+    Solution3 -.-> Issue4
+    Solution4 -.-> Issue2
+    
+    %% Breadcrumb Flow Analysis
+    subgraph "🍞 CURRENT BREADCRUMB FLOW"
+        BC1[Upload CV] --> BC2[Processing] 
+        BC2 --> BC3[Analysis Results]
+        BC3 --> BC4[Feature Selection<br/>/select-features/:jobId]
+        BC4 --> BC5[Preview & Customize]
+        BC5 --> BC6[Results]
+    end
+    
+    %% Separate marketing breadcrumb
+    subgraph "🍞 MARKETING BREADCRUMB"
+        BCM1[Features<br/>STANDALONE]
+    end
+    
+    %% Connect breadcrumbs to actual pages
+    BC4 -.-> WorkflowFeatures
+    BCM1 -.-> MarketingFeatures
+    
+    %% Priority Implementation Matrix
+    subgraph "🎯 IMPLEMENTATION PRIORITY"
+        Priority1[🔴 CRITICAL<br/>Route path inconsistency<br/>Navigation manager path format]
+        Priority2[🟡 HIGH<br/>Duplicate feature screens<br/>Step definition consistency] 
+        Priority3[🟢 MEDIUM<br/>Role context navigation<br/>Parameter standardization]
+    end

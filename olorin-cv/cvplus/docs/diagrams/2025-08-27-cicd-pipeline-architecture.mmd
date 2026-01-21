@@ -1,0 +1,151 @@
+graph TB
+    %% CVPlus CI/CD Pipeline Architecture
+    %% Date: 2025-08-27
+    %% Author: Gil Klainert
+
+    subgraph "Source Control"
+        GH[GitHub Repository]
+        DEV[Development Branch]
+        MAIN[Main Branch]
+        TAG[Release Tags]
+    end
+
+    subgraph "CI/CD Triggers"
+        PR[Pull Request]
+        PUSH[Push to Main]
+        REL[Release Tag]
+        SCHED[Scheduled Jobs]
+    end
+
+    subgraph "Module Pipelines"
+        CORE[Core Module CI/CD]
+        AUTH[Auth Module CI/CD]  
+        REC[Recommendations CI/CD]
+        INT[Integration Tests]
+    end
+
+    subgraph "Application Pipelines"
+        FE[Frontend Pipeline]
+        FUNC[Functions Pipeline]
+        QG[Quality Gates]
+        SEC[Security Scanning]
+    end
+
+    subgraph "Quality Validation"
+        TS[TypeScript Check]
+        LINT[ESLint + Prettier]
+        TEST[Jest/Vitest Tests]
+        COV[Coverage Report]
+        BUNDLE[Bundle Analysis]
+    end
+
+    subgraph "Deployment Stages"
+        DEV_ENV[Development Environment]
+        STAGE[Staging Environment]
+        PROD[Production Environment]
+    end
+
+    subgraph "Firebase Services"
+        HOST[Firebase Hosting]
+        FUNCS[Firebase Functions]
+        STORE[Firestore]
+        AUTH_FB[Firebase Auth]
+    end
+
+    subgraph "Monitoring & Alerts"
+        PERF[Performance Monitor]
+        ALERTS[Alert System]
+        METRICS[Build Metrics]
+        LOGS[Deployment Logs]
+    end
+
+    %% Trigger Flows
+    PR --> CORE
+    PR --> AUTH
+    PR --> REC
+    PR --> INT
+    
+    PUSH --> FE
+    PUSH --> FUNC
+    PUSH --> QG
+    PUSH --> SEC
+
+    REL --> DEV_ENV
+    REL --> STAGE
+    REL --> PROD
+
+    SCHED --> PERF
+    SCHED --> SEC
+
+    %% Module Pipeline Flows
+    CORE --> TS
+    CORE --> LINT
+    CORE --> TEST
+    CORE --> COV
+
+    AUTH --> TS
+    AUTH --> LINT  
+    AUTH --> TEST
+    AUTH --> COV
+
+    REC --> TS
+    REC --> LINT
+    REC --> TEST
+    REC --> COV
+
+    %% Integration Flow
+    INT --> CORE
+    INT --> AUTH
+    INT --> REC
+
+    %% Application Pipeline Flows
+    FE --> TS
+    FE --> LINT
+    FE --> TEST
+    FE --> BUNDLE
+    FE --> HOST
+
+    FUNC --> TS
+    FUNC --> LINT
+    FUNC --> TEST
+    FUNC --> FUNCS
+
+    %% Quality Gate Flows
+    QG --> TS
+    QG --> LINT
+    QG --> TEST
+    QG --> COV
+    QG --> BUNDLE
+
+    %% Security Flow
+    SEC --> LINT
+    SEC --> TEST
+
+    %% Deployment Flows
+    HOST --> DEV_ENV
+    HOST --> STAGE
+    HOST --> PROD
+
+    FUNCS --> DEV_ENV
+    FUNCS --> STAGE  
+    FUNCS --> PROD
+
+    %% Monitoring Flows
+    DEV_ENV --> PERF
+    STAGE --> PERF
+    PROD --> PERF
+
+    PERF --> ALERTS
+    PERF --> METRICS
+    PERF --> LOGS
+
+    %% Style Classes
+    classDef pipeline fill:#e1f5fe
+    classDef quality fill:#f3e5f5
+    classDef deploy fill:#e8f5e8
+    classDef monitor fill:#fff3e0
+
+    class CORE,AUTH,REC,INT,FE,FUNC,QG,SEC pipeline
+    class TS,LINT,TEST,COV,BUNDLE quality
+    class DEV_ENV,STAGE,PROD,HOST,FUNCS deploy
+    class PERF,ALERTS,METRICS,LOGS monitor

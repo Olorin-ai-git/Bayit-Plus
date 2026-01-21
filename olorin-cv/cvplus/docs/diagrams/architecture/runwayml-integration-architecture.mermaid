@@ -1,0 +1,119 @@
+graph TB
+    subgraph "CVPlus Frontend"
+        UI[React UI]
+        VideoReq[Video Request]
+    end
+
+    subgraph "Enhanced Video Generation Service"
+        EVGS[Enhanced Video Service]
+        PSE[Provider Selection Engine]
+        PE[Prompt Engineering]
+    end
+
+    subgraph "Video Providers"
+        HeyGen[HeyGen Provider<br/>Priority: 1<br/>Webhook-based]
+        RunwayML[RunwayML Provider<br/>Priority: 2<br/>Polling-based]
+    end
+
+    subgraph "RunwayML Implementation"
+        RMLProvider[RunwayML Provider Service]
+        PollingMgr[Polling Manager]
+        PromptEnh[Prompt Enhancement Engine]
+        
+        subgraph "API Integration"
+            GenAPI[Generation API<br/>POST /v1/generate]
+            StatusAPI[Status API<br/>GET /v1/status/{id}]
+            HealthAPI[Health API<br/>GET /v1/health]
+        end
+    end
+
+    subgraph "Firebase Infrastructure"
+        Functions[Cloud Functions]
+        Firestore[(Firestore)]
+        CloudTasks[Cloud Tasks]
+        
+        subgraph "Function Endpoints"
+            StatusCheck[runwaymlStatusCheck]
+            BatchCheck[runwaymlBatchStatusCheck]
+            PollingTask[runwaymlPollingTask]
+            CleanupTask[runwaymlCleanupTask]
+            WebhookEndpoint[videoWebhook?provider=runwayml]
+        end
+        
+        subgraph "Data Collections"
+            RunwayJobs[(runwayml_jobs)]
+            VideoJobs[(enhanced_video_jobs)]
+            MainJobs[(jobs)]
+        end
+    end
+
+    subgraph "External Services"
+        RunwayAPI[RunwayML API<br/>Gen-2 Model]
+        Monitoring[Cloud Monitoring]
+        Logging[Cloud Logging]
+    end
+
+    %% Main flow
+    UI --> VideoReq
+    VideoReq --> EVGS
+    EVGS --> PSE
+    PSE --> PE
+
+    %% Provider selection
+    PSE --> HeyGen
+    PSE --> RunwayML
+    RunwayML --> RMLProvider
+
+    %% RunwayML specific flow
+    RMLProvider --> PromptEnh
+    PromptEnh --> GenAPI
+    GenAPI --> RunwayAPI
+    RunwayAPI --> GenAPI
+    
+    %% Polling flow
+    RMLProvider --> PollingMgr
+    PollingMgr --> StatusAPI
+    StatusAPI --> RunwayAPI
+    RunwayAPI --> StatusAPI
+    PollingMgr --> RunwayJobs
+
+    %% Status checking
+    StatusCheck --> RMLProvider
+    BatchCheck --> RMLProvider
+    RMLProvider --> StatusAPI
+
+    %% Cloud Tasks for backup polling
+    PollingTask --> CloudTasks
+    CloudTasks --> StatusAPI
+    CleanupTask --> RunwayJobs
+
+    %% Data flow
+    RMLProvider --> RunwayJobs
+    EVGS --> VideoJobs
+    EVGS --> MainJobs
+
+    %% Webhook support (future)
+    WebhookEndpoint --> RMLProvider
+    RunwayAPI -.-> WebhookEndpoint
+
+    %% Monitoring
+    RMLProvider --> Monitoring
+    RMLProvider --> Logging
+    PollingMgr --> Monitoring
+
+    %% Health checks
+    PSE --> HealthAPI
+    HealthAPI --> RunwayAPI
+
+    %% Styling
+    classDef primary fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef secondary fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef external fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef storage fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef function fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+
+    class EVGS,PSE,PE primary
+    class RMLProvider,PollingMgr,PromptEnh secondary
+    class RunwayAPI,Monitoring,Logging external
+    class Firestore,RunwayJobs,VideoJobs,MainJobs storage
+    class StatusCheck,BatchCheck,PollingTask,CleanupTask,WebhookEndpoint function

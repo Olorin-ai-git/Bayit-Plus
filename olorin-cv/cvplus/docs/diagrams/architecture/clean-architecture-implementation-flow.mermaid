@@ -1,0 +1,142 @@
+graph TB
+    %% Clean Architecture Implementation Flow Diagram
+    %% Author: Gil Klainert
+    %% Date: 2025-08-21
+    
+    subgraph "Current State"
+        CS1[Monolithic Components<br/>2,083 lines cv-transformation.service.ts]
+        CS2[Mixed Concerns<br/>Business logic in UI]
+        CS3[Tight Coupling<br/>Direct Firebase dependencies]
+        CS4[504 Files > 200 lines<br/>Code compliance issues]
+    end
+    
+    subgraph "Target Clean Architecture"
+        subgraph "Domain Layer"
+            D1[Entities<br/>CV, User, Portfolio]
+            D2[Value Objects<br/>CVData, PersonalInfo]
+            D3[Domain Services<br/>Analysis, Validation]
+            D4[Business Rules<br/>Quality Standards]
+        end
+        
+        subgraph "Application Layer"
+            A1[Use Cases<br/>AnalyzeCV, TransformCV]
+            A2[App Services<br/>CV, Content, User]
+            A3[Interfaces<br/>Repository, External Services]
+        end
+        
+        subgraph "Infrastructure Layer"
+            I1[Repositories<br/>Firestore Implementation]
+            I2[External Services<br/>Anthropic, Stripe, ElevenLabs]
+            I3[Database<br/>Firebase Connection]
+            I4[Monitoring<br/>Error Tracking]
+        end
+        
+        subgraph "Presentation Layer"
+            P1[Smart Components<br/>Containers]
+            P2[Dumb Components<br/>Pure UI]
+            P3[Custom Hooks<br/>Business Logic]
+            P4[State Management<br/>Context, Reducers]
+        end
+    end
+    
+    subgraph "Implementation Phases"
+        Phase1[Phase 1: Domain Layer<br/>Week 11-12]
+        Phase2[Phase 2: Application Layer<br/>Week 12-13]
+        Phase3[Phase 3: Infrastructure Layer<br/>Week 14]
+        Phase4[Phase 4: Presentation Layer<br/>Week 15]
+        Phase5[Phase 5: Integration & Testing<br/>Week 16]
+    end
+    
+    %% Implementation Flow
+    CS1 --> Phase1
+    CS2 --> Phase1
+    CS3 --> Phase1
+    CS4 --> Phase1
+    
+    Phase1 --> D1
+    Phase1 --> D2
+    Phase1 --> D3
+    Phase1 --> D4
+    
+    Phase2 --> A1
+    Phase2 --> A2
+    Phase2 --> A3
+    
+    Phase3 --> I1
+    Phase3 --> I2
+    Phase3 --> I3
+    Phase3 --> I4
+    
+    Phase4 --> P1
+    Phase4 --> P2
+    Phase4 --> P3
+    Phase4 --> P4
+    
+    %% Dependencies (Clean Architecture Rules)
+    D1 -.-> A1
+    D2 -.-> A1
+    D3 -.-> A2
+    
+    A1 -.-> I1
+    A2 -.-> I2
+    A3 -.-> I1
+    
+    A1 -.-> P1
+    A2 -.-> P3
+    
+    %% Dependency Injection
+    subgraph "Dependency Injection Container"
+        DI1[Service Registration]
+        DI2[Interface Bindings]
+        DI3[Lifecycle Management]
+    end
+    
+    I1 --> DI1
+    I2 --> DI1
+    A1 --> DI2
+    A2 --> DI2
+    
+    %% Architecture Validation
+    subgraph "Architecture Compliance"
+        AC1[Dependency Rule Validation]
+        AC2[Layer Boundary Check]
+        AC3[File Size Compliance]
+        AC4[Code Quality Metrics]
+    end
+    
+    Phase5 --> AC1
+    Phase5 --> AC2
+    Phase5 --> AC3
+    Phase5 --> AC4
+    
+    %% Success Metrics
+    subgraph "Success Metrics"
+        SM1[< 20% Component Coupling]
+        SM2[> 60% Code Reusability]
+        SM3[25%+ Development Velocity]
+        SM4[100% Files < 200 lines]
+        SM5[> 80% Test Coverage]
+    end
+    
+    AC1 --> SM1
+    AC2 --> SM2
+    AC3 --> SM3
+    AC4 --> SM4
+    Phase5 --> SM5
+    
+    %% Styling
+    classDef currentState fill:#ffebee,stroke:#d32f2f,stroke-width:2px
+    classDef domainLayer fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef applicationLayer fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+    classDef infrastructureLayer fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    classDef presentationLayer fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    classDef phases fill:#fafafa,stroke:#616161,stroke-width:2px
+    classDef metrics fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    
+    class CS1,CS2,CS3,CS4 currentState
+    class D1,D2,D3,D4 domainLayer
+    class A1,A2,A3 applicationLayer
+    class I1,I2,I3,I4 infrastructureLayer
+    class P1,P2,P3,P4 presentationLayer
+    class Phase1,Phase2,Phase3,Phase4,Phase5 phases
+    class SM1,SM2,SM3,SM4,SM5 metrics

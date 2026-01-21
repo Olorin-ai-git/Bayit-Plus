@@ -1,0 +1,158 @@
+graph TB
+    %% Phase 1: Emergency Stabilization
+    subgraph "Phase 1: Emergency Stabilization (1-2 days)"
+        A1[Timeline Service parseDate Enhancement]
+        A2[FirestoreErrorBoundary Implementation]
+        A3[Basic Listener Validation]
+        
+        A1 --> A1a[Add try-catch blocks]
+        A1 --> A1b[Implement fallback strategies]
+        A1 --> A1c[Add error logging]
+        A1 --> A1d[Default to current date]
+        
+        A2 --> A2a[Create React error boundary]
+        A2 --> A2b[Add error recovery mechanisms]
+        A2 --> A2c[Implement fallback UI]
+        A2 --> A2d[Add error reporting]
+        
+        A3 --> A3a[Create listener validator]
+        A3 --> A3b[Add duplicate detection warnings]
+        A3 --> A3c[Emergency cleanup utility]
+    end
+
+    %% Phase 2: Structural Improvements
+    subgraph "Phase 2: Structural Improvements (2-3 days)"
+        B1[JobSubscriptionManager Enhancement]
+        B2[Component Migration]
+        B3[Listener Consolidation Testing]
+        
+        B1 --> B1a[Add callback registration system]
+        B1 --> B1b[Implement data filtering]
+        B1 --> B1c[Add retry mechanisms]
+        B1 --> B1d[Improve cleanup timing]
+        
+        B2 --> B2a[useProgressTracking migration]
+        B2 --> B2b[useEnhancedProgressTracking migration]
+        B2 --> B2c[PreviewService migration]
+        B2 --> B2d[RecommendationProgressTracker migration]
+        
+        B3 --> B3a[Test listener lifecycle]
+        B3 --> B3b[Test cleanup scenarios]
+        B3 --> B3c[Validate single listener constraint]
+        B3 --> B3d[Monitor assertion errors]
+    end
+
+    %% Phase 3: Testing & Validation
+    subgraph "Phase 3: Testing & Validation (1-2 days)"
+        C1[Comprehensive Test Suite]
+        C2[Load & Stress Testing]
+        C3[Production Monitoring Setup]
+        
+        C1 --> C1a[Backend parseDate tests]
+        C1 --> C1b[Frontend error boundary tests]
+        C1 --> C1c[Integration tests]
+        
+        C2 --> C2a[Rapid listener attach/detach simulation]
+        C2 --> C2b[Concurrent operations testing]
+        C2 --> C2c[Error recovery scenarios]
+        
+        C3 --> C3a[Real-time error tracking]
+        C3 --> C3b[Performance monitoring]
+        C3 --> C3c[Success rate tracking]
+    end
+
+    %% Error Flow Analysis
+    subgraph "Current Error States"
+        E1[Firestore Assertion Error ID: b815]
+        E2[Timeline parseDate Crashes]
+        E3[Multiple Duplicate Listeners]
+        E4[Application Instability]
+        
+        E1 --> E4
+        E2 --> E4
+        E3 --> E1
+    end
+
+    %% Resolution Flow
+    subgraph "Resolution Outcomes"
+        R1[Zero Assertion Errors]
+        R2[Robust Date Parsing]
+        R3[Single Listener Per Document]
+        R4[System Stability]
+        
+        R1 --> R4
+        R2 --> R4
+        R3 --> R1
+    end
+
+    %% Subagent Assignments
+    subgraph "Subagent Assignments"
+        SA1[nodejs-expert: Backend fixes]
+        SA2[react-expert: Frontend components]
+        SA3[frontend-service-architect: Service layer]
+        SA4[test-writer-fixer: Testing]
+        SA5[orchestrator: Coordination]
+        SA6[code-reviewer: Final review]
+    end
+
+    %% Risk Mitigation
+    subgraph "Risk Mitigation"
+        RM1[Feature Flags]
+        RM2[Gradual Rollout]
+        RM3[Rollback Plans]
+        RM4[Monitoring & Alerts]
+        
+        RM1 --> RM2
+        RM2 --> RM4
+        RM3 --> RM4
+    end
+
+    %% Flow Dependencies
+    A1 --> B1
+    A2 --> B2
+    A3 --> B3
+    
+    B1 --> C1
+    B2 --> C2
+    B3 --> C3
+    
+    %% Error to Resolution
+    E1 -.->|Fixed by| B1
+    E2 -.->|Fixed by| A1
+    E3 -.->|Fixed by| B2
+    E4 -.->|Prevented by| A2
+
+    %% Subagent to Phase Mapping
+    SA1 -.->|Assigned to| A1
+    SA2 -.->|Assigned to| A2
+    SA3 -.->|Assigned to| B1
+    SA4 -.->|Assigned to| C1
+    SA5 -.->|Orchestrates| A1
+    SA5 -.->|Orchestrates| B1
+    SA5 -.->|Orchestrates| C1
+    SA6 -.->|Reviews| C3
+
+    %% Success Validation
+    C3 --> R1
+    C3 --> R2
+    C3 --> R3
+    C3 --> R4
+
+    %% Risk Mitigation Application
+    RM1 -.->|Protects| B2
+    RM2 -.->|Enables safe| B2
+    RM3 -.->|Backs up| A1
+    RM3 -.->|Backs up| B1
+    RM4 -.->|Monitors| R4
+
+    style A1 fill:#ff6b6b,color:#fff
+    style A2 fill:#ff6b6b,color:#fff
+    style A3 fill:#ff6b6b,color:#fff
+    style B1 fill:#4ecdc4,color:#fff
+    style B2 fill:#4ecdc4,color:#fff
+    style B3 fill:#4ecdc4,color:#fff
+    style C1 fill:#45b7d1,color:#fff
+    style C2 fill:#45b7d1,color:#fff
+    style C3 fill:#45b7d1,color:#fff
+    style E4 fill:#d63384,color:#fff
+    style R4 fill:#198754,color:#fff

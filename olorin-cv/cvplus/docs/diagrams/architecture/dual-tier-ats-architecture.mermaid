@@ -1,0 +1,86 @@
+graph TB
+    subgraph "Client Request"
+        User[User Request]
+    end
+
+    subgraph "Routing Layer"
+        Router[UnifiedATSRouter]
+        TierMgr[TierManager]
+        FeatureGate[FeatureGateService]
+    end
+
+    subgraph "Basic ATS - Free Tier"
+        BasicOrch[ATSOptimizationOrchestrator]
+        BasicScore[ATSScoringService]
+        BasicKeyword[KeywordAnalysisService]
+        BasicRec[RecommendationService]
+    end
+
+    subgraph "Professional ATS - Premium Tier"
+        ProOrch[ProfessionalATSOrchestrator]
+        
+        subgraph "ML Services"
+            MLEngine[MLScoringEngine]
+            Predictor[PredictiveAnalyzer]
+        end
+        
+        subgraph "Enterprise Services"
+            Enterprise[EnterpriseConnector]
+            Industry[IndustryOptimizer]
+        end
+        
+        subgraph "Analytics Services"
+            Outcome[OutcomeTracker]
+            Validation[ValidationEngine]
+        end
+    end
+
+    subgraph "Shared Services"
+        Cache[CacheService]
+        Monitor[PerformanceMonitor]
+        Logger[LoggingService]
+    end
+
+    subgraph "Data Layer"
+        Firestore[(Firestore)]
+        MLModels[(ML Models)]
+        Analytics[(Analytics DB)]
+    end
+
+    User --> Router
+    Router --> TierMgr
+    Router --> FeatureGate
+    
+    TierMgr -->|Free User| BasicOrch
+    TierMgr -->|Premium User| ProOrch
+    
+    BasicOrch --> BasicScore
+    BasicOrch --> BasicKeyword
+    BasicOrch --> BasicRec
+    
+    ProOrch --> MLEngine
+    ProOrch --> Predictor
+    ProOrch --> Enterprise
+    ProOrch --> Industry
+    ProOrch --> Outcome
+    ProOrch --> Validation
+    
+    BasicOrch --> Cache
+    ProOrch --> Cache
+    
+    BasicOrch --> Monitor
+    ProOrch --> Monitor
+    
+    BasicScore --> Firestore
+    MLEngine --> MLModels
+    Outcome --> Analytics
+    
+    style User fill:#e1f5fe
+    style Router fill:#fff9c4
+    style BasicOrch fill:#c8e6c9
+    style ProOrch fill:#ffccbc
+    style MLEngine fill:#ffab91
+    style Enterprise fill:#ffab91
+    style Firestore fill:#e1bee7
+    style MLModels fill:#e1bee7
+    style Analytics fill:#e1bee7

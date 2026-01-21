@@ -1,0 +1,110 @@
+graph TB
+    %% Enhanced QR Code Integration System
+    %% Shows how QR codes are enhanced to support portal functionality
+    
+    subgraph "CV Document"
+        CVTemplate[CV Template]
+        ExistingQR[Existing QR Codes]
+        ContactSection[Contact Section]
+        HeaderSection[Header Section]
+    end
+    
+    subgraph "QR Enhancement Service"
+        QRAnalyzer[QR Code Analyzer]
+        QRGenerator[Portal QR Generator]
+        QRUpdater[QR Code Updater]
+        QRValidator[QR Validator]
+    end
+    
+    subgraph "Portal QR Types"
+        PrimaryQR[Primary Portal QR]
+        ChatQR[Direct Chat QR]
+        ContactQR[Contact Form QR]
+        DownloadQR[CV Download QR]
+        MenuQR[Multi-Purpose Menu QR]
+    end
+    
+    subgraph "QR Code Destinations"
+        PortalURL[Portal Homepage]
+        ChatURL[Direct Chat Interface]
+        ContactURL[Contact Form Page]
+        DownloadURL[PDF Download Link]
+        MenuURL[QR Menu Landing Page]
+    end
+    
+    subgraph "Tracking & Analytics"
+        ScanTracker[QR Scan Tracker]
+        Analytics[QR Analytics]
+        ConversionTracker[Conversion Tracker]
+    end
+    
+    %% CV to QR Enhancement Flow
+    CVTemplate --> QRAnalyzer
+    ExistingQR --> QRAnalyzer
+    QRAnalyzer --> QRUpdater
+    
+    %% QR Generation Flow
+    QRGenerator --> PrimaryQR
+    QRGenerator --> ChatQR
+    QRGenerator --> ContactQR
+    QRGenerator --> DownloadQR
+    QRGenerator --> MenuQR
+    
+    %% QR Code Placement
+    QRUpdater --> ContactSection
+    QRUpdater --> HeaderSection
+    PrimaryQR --> ContactSection
+    ChatQR --> ContactSection
+    MenuQR --> HeaderSection
+    
+    %% URL Mapping
+    PrimaryQR --> PortalURL
+    ChatQR --> ChatURL
+    ContactQR --> ContactURL
+    DownloadQR --> DownloadURL
+    MenuQR --> MenuURL
+    
+    %% Validation and Quality
+    QRValidator --> PrimaryQR
+    QRValidator --> ChatQR
+    QRValidator --> ContactQR
+    QRValidator --> DownloadQR
+    QRValidator --> MenuQR
+    
+    %% Analytics Integration
+    ScanTracker --> Analytics
+    PortalURL --> ScanTracker
+    ChatURL --> ScanTracker
+    ContactURL --> ScanTracker
+    DownloadURL --> ScanTracker
+    MenuURL --> ScanTracker
+    
+    %% Conversion Tracking
+    Analytics --> ConversionTracker
+    
+    %% QR Code Properties
+    subgraph "QR Code Features"
+        ErrorCorrection[Error Correction Level H]
+        CustomLogo[CVPlus Logo Embed]
+        ColorScheme[Brand Color Scheme]
+        ResponsiveSize[Responsive Sizing]
+    end
+    
+    QRGenerator --> ErrorCorrection
+    QRGenerator --> CustomLogo
+    QRGenerator --> ColorScheme
+    QRGenerator --> ResponsiveSize
+    
+    classDef cvDocument fill:#e3f2fd,stroke:#0277bd,stroke-width:2px
+    classDef enhancement fill:#f1f8e9,stroke:#388e3c,stroke-width:2px
+    classDef qrTypes fill:#fff8e1,stroke:#f57c00,stroke-width:2px
+    classDef destinations fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef tracking fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef features fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    
+    class CVTemplate,ExistingQR,ContactSection,HeaderSection cvDocument
+    class QRAnalyzer,QRGenerator,QRUpdater,QRValidator enhancement
+    class PrimaryQR,ChatQR,ContactQR,DownloadQR,MenuQR qrTypes
+    class PortalURL,ChatURL,ContactURL,DownloadURL,MenuURL destinations
+    class ScanTracker,Analytics,ConversionTracker tracking
+    class ErrorCorrection,CustomLogo,ColorScheme,ResponsiveSize features

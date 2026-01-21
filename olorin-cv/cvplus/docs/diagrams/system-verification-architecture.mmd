@@ -1,0 +1,234 @@
+```mermaid
+graph TB
+    %% System Verification Architecture Diagram
+    %% Author: Gil Klainert
+    %% Date: 2025-08-23
+
+    subgraph "CVPlus System Verification Tool"
+        CLI[Shell Script Entry Point<br/>verify-systems.sh]
+        CLI --> ORCH[System Verifier Orchestrator<br/>system-verifier.ts]
+        
+        subgraph "Core Components"
+            ORCH --> DATA[Data Retrieval Layer]
+            ORCH --> EXEC[Test Execution Engine]
+            ORCH --> REPORT[Report Generator]
+        end
+
+        subgraph "Test Modules"
+            EXEC --> CV[CV Processing Module]
+            EXEC --> AI[AI Services Module]
+            EXEC --> TL[Timeline Generation Module]
+            EXEC --> POD[Podcast Generation Module]
+            EXEC --> QR[QR Code Module]
+            EXEC --> AUTH[Authentication Module]
+            EXEC --> DB[Database Operations Module]
+            EXEC --> EMAIL[Email Service Module]
+            EXEC --> PROF[Public Profiles Module]
+            EXEC --> SEC[Security/CORS Module]
+        end
+
+        subgraph "External Systems Under Test"
+            CV --> CVPROC[CV Processing Services]
+            AI --> CLAUDE[Claude API Services]
+            TL --> TIMEGEN[Timeline Generation Service]
+            POD --> PODGEN[Podcast Generation Service]
+            QR --> QRGEN[QR Code Service]
+            AUTH --> FBAUTH[Firebase Auth]
+            DB --> FIRESTORE[Firestore Database]
+            EMAIL --> EMAILSVC[Email Service]
+            PROF --> PUBPROF[Public Profile Service]
+            SEC --> CORSEC[CORS & Security Config]
+        end
+
+        subgraph "Data Sources"
+            DATA --> TESTCV[Gil Klainert's CV Data]
+            DATA --> FALLBACK[Synthetic Test Data]
+            DATA --> CONFIG[Test Configuration]
+        end
+
+        subgraph "Output Formats"
+            REPORT --> CONSOLE[Console Output<br/>Colored Terminal]
+            REPORT --> JSON[JSON Report<br/>Machine Readable]
+            REPORT --> HTML[HTML Report<br/>Charts & Graphs]
+            REPORT --> LOGS[Log Files<br/>Debug Information]
+        end
+    end
+
+    %% Performance Metrics Collection
+    subgraph "Metrics Collection"
+        PERF[Performance Monitor]
+        PERF --> TIMING[Response Times]
+        PERF --> SUCCESS[Success Rates]
+        PERF --> RESOURCE[Resource Usage]
+        PERF --> THROUGHPUT[Throughput Metrics]
+        
+        CV -.-> PERF
+        AI -.-> PERF
+        TL -.-> PERF
+        POD -.-> PERF
+        QR -.-> PERF
+        AUTH -.-> PERF
+        DB -.-> PERF
+        EMAIL -.-> PERF
+        PROF -.-> PERF
+        SEC -.-> PERF
+    end
+
+    %% Error Handling & Recovery
+    subgraph "Error Management"
+        ERROR[Error Handler]
+        ERROR --> ISOLATION[Error Isolation]
+        ERROR --> RECOVERY[Auto Recovery]
+        ERROR --> LOGGING[Error Logging]
+        ERROR --> CONTINUE[Continue on Failure]
+        
+        EXEC -.-> ERROR
+    end
+
+    %% Styling
+    classDef coreComponent fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef testModule fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef externalSystem fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef dataSource fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef output fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef metrics fill:#fff8e1,stroke:#fbc02d,stroke-width:2px
+    classDef error fill:#ffebee,stroke:#d32f2f,stroke-width:2px
+
+    class ORCH,DATA,EXEC,REPORT coreComponent
+    class CV,AI,TL,POD,QR,AUTH,DB,EMAIL,PROF,SEC testModule
+    class CVPROC,CLAUDE,TIMEGEN,PODGEN,QRGEN,FBAUTH,FIRESTORE,EMAILSVC,PUBPROF,CORSEC externalSystem
+    class TESTCV,FALLBACK,CONFIG dataSource
+    class CONSOLE,JSON,HTML,LOGS output
+    class PERF,TIMING,SUCCESS,RESOURCE,THROUGHPUT metrics
+    class ERROR,ISOLATION,RECOVERY,LOGGING,CONTINUE error
+```
+
+## Verification Process Flow
+
+```mermaid
+flowchart TD
+    START([Start Verification]) --> INIT[Initialize System Verifier]
+    INIT --> LOAD[Load Test Configuration]
+    LOAD --> GETCV{Retrieve Gil's CV Data}
+    
+    GETCV -->|Success| TESTDATA[Use Real CV Data]
+    GETCV -->|Failure| FALLBACK[Use Synthetic Test Data]
+    
+    TESTDATA --> PARALLEL[Execute Test Modules in Parallel]
+    FALLBACK --> PARALLEL
+    
+    subgraph "Parallel Test Execution"
+        PARALLEL --> M1[CV Processing Test]
+        PARALLEL --> M2[AI Services Test]
+        PARALLEL --> M3[Timeline Generation Test]
+        PARALLEL --> M4[Podcast Generation Test]
+        PARALLEL --> M5[QR Code Test]
+        PARALLEL --> M6[Authentication Test]
+        PARALLEL --> M7[Database Test]
+        PARALLEL --> M8[Email Service Test]
+        PARALLEL --> M9[Public Profiles Test]
+        PARALLEL --> M10[Security/CORS Test]
+    end
+    
+    M1 --> COLLECT[Collect Test Results]
+    M2 --> COLLECT
+    M3 --> COLLECT
+    M4 --> COLLECT
+    M5 --> COLLECT
+    M6 --> COLLECT
+    M7 --> COLLECT
+    M8 --> COLLECT
+    M9 --> COLLECT
+    M10 --> COLLECT
+    
+    COLLECT --> ANALYZE[Analyze Performance Metrics]
+    ANALYZE --> GENERATE[Generate Health Report]
+    GENERATE --> OUTPUT{Output Format}
+    
+    OUTPUT -->|Console| TERM[Terminal Display]
+    OUTPUT -->|JSON| JSONFILE[JSON Report File]
+    OUTPUT -->|HTML| HTMLFILE[HTML Report File]
+    OUTPUT -->|Logs| LOGFILE[Debug Log Files]
+    
+    TERM --> END([Verification Complete])
+    JSONFILE --> END
+    HTMLFILE --> END
+    LOGFILE --> END
+
+    %% Error Handling
+    M1 -.->|Error| ERRORLOG[Log Error & Continue]
+    M2 -.->|Error| ERRORLOG
+    M3 -.->|Error| ERRORLOG
+    M4 -.->|Error| ERRORLOG
+    M5 -.->|Error| ERRORLOG
+    M6 -.->|Error| ERRORLOG
+    M7 -.->|Error| ERRORLOG
+    M8 -.->|Error| ERRORLOG
+    M9 -.->|Error| ERRORLOG
+    M10 -.->|Error| ERRORLOG
+    
+    ERRORLOG --> COLLECT
+
+    %% Styling
+    classDef startEnd fill:#4caf50,color:#fff,stroke:#2e7d32,stroke-width:3px
+    classDef process fill:#2196f3,color:#fff,stroke:#1565c0,stroke-width:2px
+    classDef decision fill:#ff9800,color:#fff,stroke:#e65100,stroke-width:2px
+    classDef testModule fill:#9c27b0,color:#fff,stroke:#6a1b9a,stroke-width:2px
+    classDef output fill:#e91e63,color:#fff,stroke:#ad1457,stroke-width:2px
+    classDef error fill:#f44336,color:#fff,stroke:#c62828,stroke-width:2px
+
+    class START,END startEnd
+    class INIT,LOAD,TESTDATA,FALLBACK,PARALLEL,COLLECT,ANALYZE,GENERATE process
+    class GETCV,OUTPUT decision
+    class M1,M2,M3,M4,M5,M6,M7,M8,M9,M10 testModule
+    class TERM,JSONFILE,HTMLFILE,LOGFILE output
+    class ERRORLOG error
+```
+
+## Component Dependencies
+
+```mermaid
+graph LR
+    subgraph "Verification Tool Dependencies"
+        SV[System Verifier] --> TM[Test Modules]
+        SV --> RG[Report Generator]
+        SV --> DL[Data Layer]
+        
+        TM --> CVP[CV Processing]
+        TM --> AIS[AI Services]
+        TM --> TLG[Timeline Gen]
+        TM --> POG[Podcast Gen]
+        TM --> QRC[QR Code]
+        TM --> ATH[Auth]
+        TM --> DBX[Database]
+        TM --> EML[Email]
+        TM --> PPF[Public Profiles]
+        TM --> SEC[Security]
+        
+        RG --> PM[Performance Metrics]
+        RG --> ER[Error Reporter]
+        RG --> OF[Output Formatter]
+        
+        DL --> FB[Firebase]
+        DL --> FS[Firestore]
+        DL --> TC[Test Config]
+    end
+
+    %% External Dependencies
+    CVP -.-> CVPARSING[CV Parsing Service]
+    AIS -.-> CLAUDEAPI[Claude API]
+    TLG -.-> TIMELINESERVICE[Timeline Service]
+    POG -.-> PODCASTSERVICE[Podcast Service]
+    QRC -.-> QRSERVICE[QR Code Service]
+    ATH -.-> FBAUTH[Firebase Auth]
+    DBX -.-> FIRESTORE[Firestore DB]
+    EML -.-> EMAILSERVICE[Email Service]
+    PPF -.-> PROFILESERVICE[Profile Service]
+    SEC -.-> CORSCONFIG[CORS Config]
+
+    classDef internal fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef external fill:#fff3e0,stroke:#f57c00,stroke-width:2px,stroke-dasharray: 5 5
+
+    class SV,TM,RG,DL,CVP,AIS,TLG,POG,QRC,ATH,DBX,EML,PPF,SEC,PM,ER,OF,FB,FS,TC internal
+    class CVPARSING,CLAUDEAPI,TIMELINESERVICE,PODCASTSERVICE,QRSERVICE,FBAUTH,FIRESTORE,EMAILSERVICE,PROFILESERVICE,CORSCONFIG external
+```

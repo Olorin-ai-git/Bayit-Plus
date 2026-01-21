@@ -1,0 +1,111 @@
+graph TB
+    subgraph "CVPlus Root Repository"
+        RootFiles["`**ROOT FILES**
+        - firebase.json
+        - firestore.rules
+        - package.json
+        - CLAUDE.md`"]
+        
+        subgraph "❌ MISPLACED CODE"
+            Functions["`**FUNCTIONS/** 
+            ❌ Business Logic
+            - processCV.ts
+            - analyzeCV.ts
+            - premium/*
+            - admin/*
+            - analytics/*
+            - auth middleware`"]
+            
+            Frontend["`**FRONTEND/SRC/**
+            ❌ UI Components  
+            - AuthGuard.tsx
+            - PremiumGate.tsx
+            - AnalyticsDashboard.tsx
+            - Admin components`"]
+        end
+    end
+
+    subgraph "✅ CONFIGURED SUBMODULES"
+        CoreMod["`**packages/core/**
+        ✅ Well-structured
+        - Types & constants
+        - Utility functions
+        - Base services`"]
+        
+        AuthMod["`**packages/auth/**
+        ⚠️ Missing components
+        - Service layer ✅
+        - Frontend components ❌
+        - Middleware ❌`"]
+        
+        PremiumMod["`**packages/premium/**
+        ⚠️ Partial implementation
+        - Basic structure ✅
+        - Core logic ❌
+        - UI components ❌`"]
+        
+        AnalyticsMod["`**packages/analytics/**
+        ⚠️ Missing functions
+        - Service structure ✅
+        - Functions ❌
+        - Dashboard ❌`"]
+        
+        AdminMod["`**packages/admin/**
+        ⚠️ Incomplete
+        - Basic structure ✅
+        - Functions ❌
+        - Full dashboard ❌`"]
+        
+        MultimediaMod["`**packages/multimedia/**
+        ✅ Well-structured
+        - Core services ✅
+        - Processing logic ✅`"]
+        
+        I18nMod["`**packages/i18n/**
+        ✅ Complete
+        - Translation system ✅
+        - Components ✅`"]
+        
+        PublicMod["`**packages/public-profiles/**
+        ✅ Well-structured
+        - Profile services ✅`"]
+        
+        RecommendationsMod["`**packages/recommendations/**
+        ⚠️ Partial
+        - Backend logic ✅
+        - Integration ❌`"]
+    end
+
+    subgraph "❌ CRITICAL ISSUE"
+        CVProcessing["`**packages/cv-processing/**
+        ❌ NOT A SUBMODULE!
+        - Contains substantial code
+        - Not in .gitmodules
+        - Running in main repo context`"]
+    end
+
+    %% Migration arrows
+    Functions -.->|MIGRATE| AuthMod
+    Functions -.->|MIGRATE| PremiumMod
+    Functions -.->|MIGRATE| AnalyticsMod
+    Functions -.->|MIGRATE| AdminMod
+    Functions -.->|MIGRATE| CVProcessing
+    
+    Frontend -.->|MIGRATE| AuthMod
+    Frontend -.->|MIGRATE| PremiumMod
+    Frontend -.->|MIGRATE| AnalyticsMod
+    Frontend -.->|MIGRATE| AdminMod
+    
+    CVProcessing -.->|CONVERT TO| SubmoduleRepo["`**NEW REPOSITORY**
+    cvplus-cv-processing.git
+    Configure in .gitmodules`"]
+
+    classDef critical fill:#ff6b6b,stroke:#d63031,color:#fff
+    classDef warning fill:#fdcb6e,stroke:#e17055,color:#000
+    classDef success fill:#6bcf7e,stroke:#00b894,color:#fff
+    classDef migration stroke:#0984e3,stroke-dasharray: 5 5,stroke-width:3px
+
+    class CVProcessing,Functions,Frontend critical
+    class AuthMod,PremiumMod,AnalyticsMod,AdminMod,RecommendationsMod warning
+    class CoreMod,MultimediaMod,I18nMod,PublicMod success
+    class SubmoduleRepo migration

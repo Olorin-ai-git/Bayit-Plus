@@ -1,0 +1,606 @@
+openapi: 3.0.3
+info:
+  title: Level 2 Recovery API
+  description: API contracts for CVPlus Level 2 module recovery operations
+  version: 1.0.0
+  contact:
+    name: CVPlus Architecture Team
+    email: architecture@cvplus.ai
+
+servers:
+  - url: http://localhost:3000/api/recovery
+    description: Local development server
+  - url: https://cvplus-recovery.firebaseapp.com/api/recovery
+    description: Firebase Functions production server
+
+paths:
+  /modules:
+    get:
+      summary: Get all module recovery states
+      operationId: getAllModuleStates
+      tags:
+        - Modules
+      responses:
+        '200':
+          description: Successfully retrieved module states
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  modules:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ModuleRecoveryState'
+                  summary:
+                    $ref: '#/components/schemas/RecoverySummary'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /modules/{moduleId}:
+    get:
+      summary: Get specific module recovery state
+      operationId: getModuleState
+      tags:
+        - Modules
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [auth, i18n, cv-processing, multimedia, analytics, premium, public-profiles, recommendations, admin, workflow, payments]
+      responses:
+        '200':
+          description: Successfully retrieved module state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleRecoveryState'
+        '404':
+          description: Module not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update module recovery state
+      operationId: updateModuleState
+      tags:
+        - Modules
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModuleStateUpdate'
+      responses:
+        '200':
+          description: Module state updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleRecoveryState'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /modules/{moduleId}/build:
+    post:
+      summary: Trigger module build
+      operationId: buildModule
+      tags:
+        - Build Operations
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                force:
+                  type: boolean
+                  description: Force rebuild even if module is healthy
+                  default: false
+      responses:
+        '202':
+          description: Build initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildOperation'
+        '409':
+          description: Build already in progress
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /modules/{moduleId}/test:
+    post:
+      summary: Trigger module test suite
+      operationId: testModule
+      tags:
+        - Test Operations
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                coverage:
+                  type: boolean
+                  description: Generate coverage report
+                  default: true
+                watch:
+                  type: boolean
+                  description: Run tests in watch mode
+                  default: false
+      responses:
+        '202':
+          description: Tests initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestOperation'
+        '409':
+          description: Tests already running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /phases:
+    get:
+      summary: Get all recovery phases status
+      operationId: getAllPhases
+      tags:
+        - Recovery Phases
+      responses:
+        '200':
+          description: Successfully retrieved phases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecoveryPhase'
+
+  /phases/{phaseId}:
+    get:
+      summary: Get specific recovery phase
+      operationId: getPhase
+      tags:
+        - Recovery Phases
+      parameters:
+        - name: phaseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 4
+      responses:
+        '200':
+          description: Successfully retrieved phase
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecoveryPhase'
+
+    post:
+      summary: Execute recovery phase
+      operationId: executePhase
+      tags:
+        - Recovery Phases
+      parameters:
+        - name: phaseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 4
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                modules:
+                  type: array
+                  items:
+                    type: string
+                  description: Specific modules to include in phase (defaults to all)
+                dryRun:
+                  type: boolean
+                  description: Validate phase without executing
+                  default: false
+      responses:
+        '202':
+          description: Phase execution initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhaseExecution'
+        '400':
+          description: Phase prerequisites not met
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /validation/{gateId}:
+    post:
+      summary: Execute validation gate
+      operationId: executeValidationGate
+      tags:
+        - Validation
+      parameters:
+        - name: gateId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Validation gate executed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+
+components:
+  schemas:
+    ModuleRecoveryState:
+      type: object
+      required:
+        - moduleId
+        - status
+        - buildStatus
+        - testStatus
+        - dependencyHealth
+        - healthScore
+      properties:
+        moduleId:
+          type: string
+          enum: [auth, i18n, cv-processing, multimedia, analytics, premium, public-profiles, recommendations, admin, workflow, payments]
+        status:
+          type: string
+          enum: [healthy, critical, recovering, recovered, failed]
+        buildStatus:
+          type: string
+          enum: [success, failed, building, not_started]
+        testStatus:
+          type: string
+          enum: [passing, failing, running, not_configured, not_started]
+        dependencyHealth:
+          type: string
+          enum: [resolved, missing, conflicted, circular]
+        lastBuildTime:
+          type: string
+          format: date-time
+          nullable: true
+        lastTestRun:
+          type: string
+          format: date-time
+          nullable: true
+        errorCount:
+          type: integer
+          minimum: 0
+        warningCount:
+          type: integer
+          minimum: 0
+        healthScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+
+    RecoveryPhase:
+      type: object
+      required:
+        - phaseId
+        - name
+        - status
+        - prerequisitePhases
+        - affectedModules
+      properties:
+        phaseId:
+          type: integer
+          minimum: 1
+          maximum: 4
+        name:
+          type: string
+          enum: [Emergency Stabilization, Build Infrastructure, Architecture Compliance, Prevention]
+        status:
+          type: string
+          enum: [not_started, in_progress, validating, completed, failed]
+        startTime:
+          type: string
+          format: date-time
+          nullable: true
+        completionTime:
+          type: string
+          format: date-time
+          nullable: true
+        duration:
+          type: integer
+          nullable: true
+          description: Duration in milliseconds
+        prerequisitePhases:
+          type: array
+          items:
+            type: integer
+        affectedModules:
+          type: array
+          items:
+            type: string
+
+    ValidationResult:
+      type: object
+      required:
+        - gateId
+        - status
+        - criteria
+      properties:
+        gateId:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+          enum: [passed, failed]
+        lastRun:
+          type: string
+          format: date-time
+        criteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationCriteria'
+        errorMessage:
+          type: string
+          nullable: true
+
+    ValidationCriteria:
+      type: object
+      required:
+        - criteriaId
+        - description
+        - type
+        - passed
+      properties:
+        criteriaId:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [build_success, test_pass_rate, dependency_resolved, import_valid, circular_dependency_check]
+        expectedValue:
+          oneOf:
+            - type: string
+            - type: number
+            - type: boolean
+        actualValue:
+          oneOf:
+            - type: string
+            - type: number
+            - type: boolean
+        operator:
+          type: string
+          enum: [equals, greater_than, less_than, contains, not_contains]
+        passed:
+          type: boolean
+
+    BuildOperation:
+      type: object
+      required:
+        - operationId
+        - moduleId
+        - status
+        - startTime
+      properties:
+        operationId:
+          type: string
+        moduleId:
+          type: string
+        status:
+          type: string
+          enum: [queued, building, completed, failed]
+        startTime:
+          type: string
+          format: date-time
+        completionTime:
+          type: string
+          format: date-time
+          nullable: true
+        buildMetrics:
+          $ref: '#/components/schemas/BuildMetrics'
+
+    TestOperation:
+      type: object
+      required:
+        - operationId
+        - moduleId
+        - status
+        - startTime
+      properties:
+        operationId:
+          type: string
+        moduleId:
+          type: string
+        status:
+          type: string
+          enum: [queued, running, completed, failed]
+        startTime:
+          type: string
+          format: date-time
+        completionTime:
+          type: string
+          format: date-time
+          nullable: true
+        testMetrics:
+          $ref: '#/components/schemas/TestMetrics'
+
+    BuildMetrics:
+      type: object
+      properties:
+        buildTime:
+          type: integer
+          description: Build time in milliseconds
+        outputSize:
+          type: integer
+          description: Output size in bytes
+        errorCount:
+          type: integer
+          minimum: 0
+        warningCount:
+          type: integer
+          minimum: 0
+        timestamp:
+          type: string
+          format: date-time
+
+    TestMetrics:
+      type: object
+      properties:
+        totalTests:
+          type: integer
+          minimum: 0
+        passedTests:
+          type: integer
+          minimum: 0
+        failedTests:
+          type: integer
+          minimum: 0
+        skippedTests:
+          type: integer
+          minimum: 0
+        coverage:
+          $ref: '#/components/schemas/TestCoverage'
+        executionTime:
+          type: integer
+          description: Test execution time in milliseconds
+        timestamp:
+          type: string
+          format: date-time
+
+    TestCoverage:
+      type: object
+      properties:
+        statements:
+          type: number
+          minimum: 0
+          maximum: 100
+        branches:
+          type: number
+          minimum: 0
+          maximum: 100
+        functions:
+          type: number
+          minimum: 0
+          maximum: 100
+        lines:
+          type: number
+          minimum: 0
+          maximum: 100
+
+    RecoverySummary:
+      type: object
+      properties:
+        totalModules:
+          type: integer
+        healthyModules:
+          type: integer
+        criticalModules:
+          type: integer
+        recoveringModules:
+          type: integer
+        overallHealthScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+
+    ModuleStateUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, critical, recovering, recovered, failed]
+        notes:
+          type: string
+          description: Optional notes about state change
+
+    PhaseExecution:
+      type: object
+      required:
+        - executionId
+        - phaseId
+        - status
+        - startTime
+      properties:
+        executionId:
+          type: string
+        phaseId:
+          type: integer
+        status:
+          type: string
+          enum: [queued, running, validating, completed, failed]
+        startTime:
+          type: string
+          format: date-time
+        estimatedCompletion:
+          type: string
+          format: date-time
+          nullable: true
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []

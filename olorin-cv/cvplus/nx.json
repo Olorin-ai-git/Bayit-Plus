@@ -1,0 +1,253 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "cache": true
+    },
+    "test": {
+      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
+      "cache": true
+    },
+    "lint": {
+      "inputs": ["default", "{workspaceRoot}/.eslintrc.json"],
+      "cache": true
+    },
+    "type-check": {
+      "inputs": ["default", "^production"],
+      "cache": true
+    }
+  },
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "production": [
+      "default",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.spec.json",
+      "!{projectRoot}/jest.config.[jt]s",
+      "!{projectRoot}/src/test-setup.[jt]s",
+      "!{projectRoot}/.eslintrc.json"
+    ],
+    "sharedGlobals": [
+      "{workspaceRoot}/tsconfig.base.json",
+      "{workspaceRoot}/nx.json",
+      "{workspaceRoot}/.gitignore"
+    ]
+  },
+  "projects": {
+    "core": {
+      "root": "packages/core",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nx/js:tsc",
+          "outputs": ["{projectRoot}/dist"],
+          "options": {
+            "outputPath": "packages/core/dist",
+            "main": "packages/core/src/index.ts",
+            "tsConfig": "packages/core/tsconfig.build.json"
+          }
+        }
+      }
+    },
+    "auth": {
+      "root": "packages/auth",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nx/js:tsc",
+          "outputs": ["{projectRoot}/dist"],
+          "options": {
+            "outputPath": "packages/auth/dist",
+            "main": "packages/auth/src/index.ts",
+            "tsConfig": "packages/auth/tsconfig.build.json"
+          },
+          "dependsOn": ["core:build"]
+        }
+      }
+    },
+    "i18n": {
+      "root": "packages/i18n",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nx/js:tsc",
+          "outputs": ["{projectRoot}/dist"],
+          "options": {
+            "outputPath": "packages/i18n/dist",
+            "main": "packages/i18n/src/index.ts",
+            "tsConfig": "packages/i18n/tsconfig.build.json"
+          },
+          "dependsOn": ["core:build"]
+        }
+      }
+    },
+    "cv-processing": {
+      "root": "packages/cv-processing",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nx/js:tsc",
+          "outputs": ["{projectRoot}/dist"],
+          "options": {
+            "outputPath": "packages/cv-processing/dist",
+            "main": "packages/cv-processing/src/index.ts",
+            "tsConfig": "packages/cv-processing/tsconfig.build.json"
+          },
+          "dependsOn": ["core:build", "auth:build", "i18n:build"]
+        }
+      }
+    },
+    "multimedia": {
+      "root": "packages/multimedia",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nx/js:tsc",
+          "outputs": ["{projectRoot}/dist"],
+          "options": {
+            "outputPath": "packages/multimedia/dist",
+            "main": "packages/multimedia/src/index.ts",
+            "tsConfig": "packages/multimedia/tsconfig.build.json"
+          },
+          "dependsOn": ["core:build", "auth:build", "i18n:build"]
+        }
+      }
+    },
+    "analytics": {
+      "root": "packages/analytics",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nx/js:tsc",
+          "outputs": ["{projectRoot}/dist"],
+          "options": {
+            "outputPath": "packages/analytics/dist",
+            "main": "packages/analytics/src/index.ts",
+            "tsConfig": "packages/analytics/tsconfig.build.json"
+          },
+          "dependsOn": ["core:build", "auth:build", "i18n:build"]
+        }
+      }
+    },
+    "premium": {
+      "root": "packages/premium",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nx/js:tsc",
+          "outputs": ["{projectRoot}/dist"],
+          "options": {
+            "outputPath": "packages/premium/dist",
+            "main": "packages/premium/src/index.ts",
+            "tsConfig": "packages/premium/tsconfig.build.json"
+          },
+          "dependsOn": ["core:build", "auth:build", "i18n:build", "cv-processing:build", "multimedia:build", "analytics:build"]
+        }
+      }
+    },
+    "recommendations": {
+      "root": "packages/recommendations",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nx/js:tsc",
+          "outputs": ["{projectRoot}/dist"],
+          "options": {
+            "outputPath": "packages/recommendations/dist",
+            "main": "packages/recommendations/src/index.ts",
+            "tsConfig": "packages/recommendations/tsconfig.build.json"
+          },
+          "dependsOn": ["core:build", "auth:build", "i18n:build", "cv-processing:build", "multimedia:build", "analytics:build"]
+        }
+      }
+    },
+    "public-profiles": {
+      "root": "packages/public-profiles",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nx/js:tsc",
+          "outputs": ["{projectRoot}/dist"],
+          "options": {
+            "outputPath": "packages/public-profiles/dist",
+            "main": "packages/public-profiles/src/index.ts",
+            "tsConfig": "packages/public-profiles/tsconfig.build.json"
+          },
+          "dependsOn": ["core:build", "auth:build", "i18n:build", "cv-processing:build", "multimedia:build", "analytics:build"]
+        }
+      }
+    },
+    "admin": {
+      "root": "packages/admin",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nx/js:tsc",
+          "outputs": ["{projectRoot}/dist"],
+          "options": {
+            "outputPath": "packages/admin/dist",
+            "main": "packages/admin/src/index.ts",
+            "tsConfig": "packages/admin/tsconfig.build.json"
+          },
+          "dependsOn": ["core:build", "auth:build", "i18n:build", "cv-processing:build", "multimedia:build", "analytics:build", "premium:build", "recommendations:build", "public-profiles:build"]
+        }
+      }
+    },
+    "workflow": {
+      "root": "packages/workflow",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nx/js:tsc",
+          "outputs": ["{projectRoot}/dist"],
+          "options": {
+            "outputPath": "packages/workflow/dist",
+            "main": "packages/workflow/src/index.ts",
+            "tsConfig": "packages/workflow/tsconfig.build.json"
+          },
+          "dependsOn": ["core:build", "auth:build", "i18n:build", "cv-processing:build", "multimedia:build", "analytics:build", "premium:build", "recommendations:build", "public-profiles:build"]
+        }
+      }
+    },
+    "payments": {
+      "root": "packages/payments",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nx/js:tsc",
+          "outputs": ["{projectRoot}/dist"],
+          "options": {
+            "outputPath": "packages/payments/dist",
+            "main": "packages/payments/src/index.ts",
+            "tsConfig": "packages/payments/tsconfig.build.json"
+          },
+          "dependsOn": ["core:build", "auth:build", "i18n:build", "cv-processing:build", "multimedia:build", "analytics:build", "premium:build", "recommendations:build", "public-profiles:build"]
+        }
+      }
+    },
+    "frontend": {
+      "root": "frontend",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nx/vite:build",
+          "outputs": ["{projectRoot}/dist"],
+          "dependsOn": ["^build"]
+        }
+      }
+    },
+    "functions": {
+      "root": "functions",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nx/js:tsc",
+          "outputs": ["{projectRoot}/lib"],
+          "dependsOn": ["^build"]
+        }
+      }
+    }
+  }
+}

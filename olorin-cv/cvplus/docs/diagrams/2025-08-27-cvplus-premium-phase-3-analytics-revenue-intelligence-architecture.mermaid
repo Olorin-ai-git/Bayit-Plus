@@ -1,0 +1,142 @@
+graph TB
+    %% CVPlus Premium Phase 3: Analytics and Revenue Intelligence Systems Architecture
+    %% Author: Gil Klainert
+    %% Date: August 27, 2025
+
+    subgraph "Phase 3: Analytics & Revenue Intelligence"
+        subgraph "3.1 Revenue Analytics Platform"
+            RAS[Revenue Analytics Service]
+            FAD[Financial Analytics Dashboard]
+            CA[Cohort Analysis Engine]
+            RG[Revenue Growth Forecasting]
+            
+            RAS --> FAD
+            RAS --> CA
+            RAS --> RG
+        end
+
+        subgraph "3.2 Churn Prediction System"
+            CPS[Churn Prediction Service]
+            MLM[ML Prediction Model]
+            RAS_SVC[Retention Automation Service]
+            ARI[At-Risk Identification]
+            
+            CPS --> MLM
+            CPS --> RAS_SVC
+            CPS --> ARI
+        end
+
+        subgraph "3.3 Advanced Billing Automation"
+            ABS[Advanced Billing Service]
+            DM[Dunning Management]
+            IG[Invoice Generation]
+            PM[Proration Management]
+            
+            ABS --> DM
+            ABS --> IG
+            ABS --> PM
+        end
+
+        subgraph "3.4 Multi-Tier Subscription Management"
+            DPS[Dynamic Pricing Service]
+            ESM[Enterprise Subscription Management]
+            SBB[Seat-Based Billing]
+            CPQ[Custom Pricing Quotes]
+            
+            DPS --> ESM
+            DPS --> SBB
+            DPS --> CPQ
+        end
+
+        subgraph "3.5 Conversion Optimization"
+            ABTS[A/B Testing Service]
+            CTS[Conversion Tracking Service]
+            OD[Optimization Dashboard]
+            RGA[Revenue Growth Analysis]
+            
+            ABTS --> CTS
+            ABTS --> OD
+            CTS --> RGA
+        end
+    end
+
+    subgraph "Data Sources"
+        FS[Firestore]
+        SC[Stripe]
+        GA[Google Analytics]
+        UT[Usage Tracking]
+        UE[User Events]
+    end
+
+    subgraph "External Services"
+        SM[SendGrid/Email]
+        SL[Slack/Notifications]
+        BI[Business Intelligence Tools]
+        ML[ML/AI Services]
+    end
+
+    subgraph "Frontend Dashboards"
+        RAD[Revenue Analytics Dashboard]
+        CAD[Customer Analytics Dashboard]
+        AOD[Admin Optimization Dashboard]
+        USD[User Subscription Dashboard]
+    end
+
+    subgraph "Background Jobs"
+        CPA[Churn Prediction Automation]
+        RCA[Revenue Calculation Automation]
+        DMA[Dunning Management Automation]
+        ABA[A/B Test Analysis Automation]
+    end
+
+    %% Data Flow Connections
+    FS --> RAS
+    SC --> RAS
+    GA --> RAS
+    UT --> CPS
+    UE --> CPS
+    
+    %% Service Interconnections
+    RAS --> CPS
+    CPS --> RAS_SVC
+    RAS_SVC --> SM
+    RAS_SVC --> SL
+    
+    ABS --> SC
+    DPS --> ABS
+    
+    ABTS --> UT
+    CTS --> GA
+    
+    %% Dashboard Connections
+    RAS --> RAD
+    CPS --> CAD
+    ABTS --> AOD
+    ABS --> USD
+    
+    %% Background Job Connections
+    CPS --> CPA
+    RAS --> RCA
+    ABS --> DMA
+    ABTS --> ABA
+    
+    %% ML Service Integration
+    CPS --> ML
+    RGA --> ML
+    
+    %% BI Tool Integration
+    RAS --> BI
+    CTS --> BI
+
+    %% Styling
+    classDef serviceClass fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef dataClass fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef dashboardClass fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef automationClass fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef externalClass fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+
+    class RAS,CPS,ABS,DPS,ABTS,CTS,RAS_SVC,MLM,DM,IG,PM,ESM,SBB,CPQ,CA,RG,ARI serviceClass
+    class FS,SC,GA,UT,UE dataClass
+    class RAD,CAD,AOD,USD,FAD,OD dashboardClass
+    class CPA,RCA,DMA,ABA automationClass
+    class SM,SL,BI,ML externalClass

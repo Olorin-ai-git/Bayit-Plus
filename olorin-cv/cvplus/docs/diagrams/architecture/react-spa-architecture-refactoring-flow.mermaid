@@ -1,0 +1,95 @@
+graph TB
+    subgraph "CURRENT PROBLEMATIC ARCHITECTURE"
+        A[User Request] --> B[Firebase Functions]
+        B --> C[HTML Template Generation]
+        C --> D[Server-Generated HTML with Placeholders]
+        D --> E[Firebase Hosting]
+        E --> F[React App Loads]
+        F --> G[componentRendererFix.ts]
+        G --> H[Find Placeholder Divs]
+        H --> I[Replace with React Components]
+        I --> J[Hydration Bugs & Infinite Loops]
+        
+        style J fill:#ffcccc
+        style C fill:#ffcccc
+        style G fill:#ffcccc
+        style H fill:#ffcccc
+    end
+
+    subgraph "TARGET REACT SPA ARCHITECTURE"
+        K[User Request] --> L[React Router]
+        L --> M[React Page Component]
+        M --> N[Custom Hook: useCVData]
+        N --> O[React Query]
+        O --> P[Firebase Functions API]
+        P --> Q[JSON Data Service]
+        Q --> R[Firestore/Storage]
+        R --> S[Return JSON Data]
+        S --> T[React Components Render]
+        T --> U[Pure React Experience]
+        
+        style U fill:#ccffcc
+        style M fill:#ccffcc
+        style Q fill:#ccffcc
+        style T fill:#ccffcc
+    end
+
+    subgraph "PHASE 1: API TRANSFORMATION"
+        V[Audit HTML Generation] --> W[Create Data Interfaces]
+        W --> X[Refactor Backend Services]
+        X --> Y[Build JSON APIs]
+        Y --> Z[Test API Endpoints]
+        
+        style Y fill:#cceeff
+    end
+
+    subgraph "PHASE 2: REACT COMPONENTS"
+        AA[Create Page Components] --> BB[Enhance Existing Components]
+        BB --> CC[Add React Query Integration]
+        CC --> DD[Implement Loading States]
+        DD --> EE[Add Error Boundaries]
+        
+        style CC fill:#cceeff
+    end
+
+    subgraph "PHASE 3: LEGACY REMOVAL"
+        FF[Delete HTML Generators] --> GG[Remove Component Renderer]
+        GG --> HH[Clean up Templates]
+        HH --> II[Update Routing Config]
+        
+        style GG fill:#ffeecc
+    end
+
+    subgraph "PHASE 4: TESTING & OPTIMIZATION"
+        JJ[Component Integration Tests] --> KK[End-to-End Testing]
+        KK --> LL[Performance Benchmarking]
+        LL --> MM[Production Deployment]
+        
+        style MM fill:#ccffcc
+    end
+
+    %% Flow between phases
+    Z --> AA
+    EE --> FF  
+    II --> JJ
+
+    %% Key improvements
+    subgraph "BENEFITS"
+        NN[No More Infinite Loops]
+        OO[Standard React Workflow]
+        PP[Better Performance]
+        QQ[Easier Debugging]
+        RR[Scalable Architecture]
+        
+        style NN fill:#ccffcc
+        style OO fill:#ccffcc
+        style PP fill:#ccffcc
+        style QQ fill:#ccffcc
+        style RR fill:#ccffcc
+    end
+
+    U --> NN
+    U --> OO
+    U --> PP
+    U --> QQ
+    U --> RR

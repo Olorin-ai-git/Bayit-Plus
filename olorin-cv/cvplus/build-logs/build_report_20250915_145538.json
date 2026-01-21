@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-09-15T14:57:54-07:00",
+  "status": "PARTIAL",
+  "summary": {
+    "total_modules": 15,
+    "successful_count": 15,
+    "failed_count": 0
+  },
+  "successful_modules": ["shell","logging","core","auth","i18n","cv-processing","multimedia","analytics","premium","recommendations","public-profiles","admin","workflow","payments","e2e-flows"],
+  "failed_modules": [""],
+  "logs": {
+    "main_log": "./build-logs/build_session_20250915_145538.log",
+    "log_directory": "./build-logs"
+  }
+}

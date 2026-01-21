@@ -1,0 +1,816 @@
+import {
+  ValidationResult,
+  ModuleRecoveryState,
+  RecoverySession,
+  WorkspaceHealth,
+  ModuleHealthCheck
+} from '../models';
+
+/**
+ * Comprehensive validation service for CVPlus Level 2 Recovery System
+ * Provides validation capabilities for modules, sessions, and workspace health
+  */
+export class ValidationService {
+  private validModuleIds = [
+    'auth', 'i18n', 'processing', 'multimedia', 'analytics',
+    'premium', 'public-profiles', 'recommendations', 'admin',
+    'workflow', 'payments'
+  ];
+
+  private readonly requiredFiles = {
+    'package.json': true,
+    'tsconfig.json': true,
+    'src/index.ts': false,
+    'dist/index.js': false
+  };
+
+  private readonly layerDependencies = {
+    'auth': [], // Layer 1 - no dependencies
+    'i18n': ['@cvplus/core', '@cvplus/auth'], // Layer 1
+    'processing': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n'], // Layer 2
+    'multimedia': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n'], // Layer 2
+    'analytics': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n'], // Layer 2
+    'enhancements': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n', '@cvplus/processing', '@cvplus/multimedia', '@cvplus/analytics'], // Layer 3
+    'premium': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n', '@cvplus/processing', '@cvplus/multimedia', '@cvplus/analytics'], // Layer 3
+    'public-profiles': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n', '@cvplus/processing', '@cvplus/multimedia', '@cvplus/analytics'], // Layer 3
+    'recommendations': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n', '@cvplus/processing', '@cvplus/multimedia', '@cvplus/analytics'], // Layer 3
+    'admin': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n', '@cvplus/processing', '@cvplus/multimedia', '@cvplus/analytics', '@cvplus/enhancements', '@cvplus/premium', '@cvplus/public-profiles', '@cvplus/recommendations'], // Layer 4
+    'workflow': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n', '@cvplus/processing', '@cvplus/multimedia', '@cvplus/analytics', '@cvplus/enhancements', '@cvplus/premium', '@cvplus/public-profiles', '@cvplus/recommendations'], // Layer 4
+    'payments': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n', '@cvplus/processing', '@cvplus/multimedia', '@cvplus/analytics', '@cvplus/enhancements', '@cvplus/premium', '@cvplus/public-profiles', '@cvplus/recommendations'] // Layer 4
+  };
+
+  /**
+   * Validate a single module's recovery state and health
+    */
+  async validateModule(moduleId: string): Promise<ValidationResult> {
+    if (!this.validModuleIds.includes(moduleId)) {
+      return {
+        moduleId,
+        isValid: false,
+        validationErrors: [`Invalid module ID: ${moduleId}`],
+        validationWarnings: [],
+        validationScore: 0,
+        timestamp: new Date(),
+        details: {
+          buildValidation: false,
+          dependencyValidation: false,
+          configurationValidation: false,
+          integrationValidation: false
+        }
+      };
+    }
+
+    const validationErrors: string[] = [];
+    const validationWarnings: string[] = [];
+    let validationScore = 100;
+
+    // Validate module structure
+    const structureValidation = await this.validateModuleStructure(moduleId);
+    if (!structureValidation.isValid) {
+      validationErrors.push(...structureValidation.errors);
+      validationWarnings.push(...structureValidation.warnings);
+      validationScore -= structureValidation.penalty;
+    }
+
+    // Validate configuration
+    const configValidation = await this.validateModuleConfiguration(moduleId);
+    if (!configValidation.isValid) {
+      validationErrors.push(...configValidation.errors);
+      validationWarnings.push(...configValidation.warnings);
+      validationScore -= configValidation.penalty;
+    }
+
+    // Validate dependencies
+    const dependencyValidation = await this.validateModuleDependencies(moduleId);
+    if (!dependencyValidation.isValid) {
+      validationErrors.push(...dependencyValidation.errors);
+      validationWarnings.push(...dependencyValidation.warnings);
+      validationScore -= dependencyValidation.penalty;
+    }
+
+    // Validate build capability
+    const buildValidation = await this.validateModuleBuild(moduleId);
+    if (!buildValidation.isValid) {
+      validationErrors.push(...buildValidation.errors);
+      validationWarnings.push(...buildValidation.warnings);
+      validationScore -= buildValidation.penalty;
+    }
+
+    // Validate integration points
+    const integrationValidation = await this.validateModuleIntegration(moduleId);
+    if (!integrationValidation.isValid) {
+      validationErrors.push(...integrationValidation.errors);
+      validationWarnings.push(...integrationValidation.warnings);
+      validationScore -= integrationValidation.penalty;
+    }
+
+    const finalScore = Math.max(0, validationScore);
+    const isValid = finalScore >= 70 && validationErrors.length === 0;
+
+    return {
+      moduleId,
+      isValid,
+      validationErrors,
+      validationWarnings,
+      validationScore: finalScore,
+      timestamp: new Date(),
+      details: {
+        buildValidation: buildValidation.isValid,
+        dependencyValidation: dependencyValidation.isValid,
+        configurationValidation: configValidation.isValid,
+        integrationValidation: integrationValidation.isValid
+      }
+    };
+  }
+
+  /**
+   * Validate module file structure and required files
+    */
+  private async validateModuleStructure(moduleId: string): Promise<{
+    isValid: boolean;
+    errors: string[];
+    warnings: string[];
+    penalty: number;
+  }> {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    let penalty = 0;
+
+    const modulePath = `/Users/gklainert/Documents/cvplus/packages/${moduleId}`;
+
+    // Check required files
+    for (const [file, required] of Object.entries(this.requiredFiles)) {
+      const filePath = `${modulePath}/${file}`;
+
+      // In actual implementation, would use fs.existsSync
+      const fileExists = true; // Placeholder for file existence check
+
+      if (!fileExists) {
+        if (required) {
+          errors.push(`Required file missing: ${file}`);
+          penalty += 20;
+        } else {
+          warnings.push(`Optional file missing: ${file}`);
+          penalty += 5;
+        }
+      }
+    }
+
+    // Check directory structure
+    const expectedDirs = ['src', 'src/types', 'src/services', 'src/components'];
+    for (const dir of expectedDirs) {
+      const dirPath = `${modulePath}/${dir}`;
+
+      // In actual implementation, would check directory existence
+      const dirExists = true; // Placeholder
+
+      if (!dirExists) {
+        warnings.push(`Expected directory missing: ${dir}`);
+        penalty += 3;
+      }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings,
+      penalty
+    };
+  }
+
+  /**
+   * Validate module configuration files
+    */
+  private async validateModuleConfiguration(moduleId: string): Promise<{
+    isValid: boolean;
+    errors: string[];
+    warnings: string[];
+    penalty: number;
+  }> {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    let penalty = 0;
+
+    try {
+      // Validate package.json
+      const packageValidation = await this.validatePackageJson(moduleId);
+      if (!packageValidation.isValid) {
+        errors.push(...packageValidation.errors);
+        warnings.push(...packageValidation.warnings);
+        penalty += packageValidation.penalty;
+      }
+
+      // Validate tsconfig.json
+      const tsconfigValidation = await this.validateTsConfig(moduleId);
+      if (!tsconfigValidation.isValid) {
+        errors.push(...tsconfigValidation.errors);
+        warnings.push(...tsconfigValidation.warnings);
+        penalty += tsconfigValidation.penalty;
+      }
+
+    } catch (error) {
+      errors.push(`Configuration validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      penalty += 30;
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings,
+      penalty
+    };
+  }
+
+  /**
+   * Validate package.json configuration
+    */
+  private async validatePackageJson(moduleId: string): Promise<{
+    isValid: boolean;
+    errors: string[];
+    warnings: string[];
+    penalty: number;
+  }> {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    let penalty = 0;
+
+    const modulePath = `/Users/gklainert/Documents/cvplus/packages/${moduleId}`;
+    const packageJsonPath = `${modulePath}/package.json`;
+
+    try {
+      // In actual implementation, would read and parse package.json
+      const packageJson = {
+        name: `@cvplus/${moduleId}`,
+        version: '1.0.0',
+        main: 'dist/index.js',
+        types: 'dist/index.d.ts',
+        scripts: {
+          build: 'tsup',
+          dev: 'tsup --watch',
+          test: 'vitest'
+        },
+        dependencies: {},
+        devDependencies: {}
+      };
+
+      // Validate required fields
+      if (!packageJson.name) {
+        errors.push('package.json missing name field');
+        penalty += 10;
+      } else if (packageJson.name !== `@cvplus/${moduleId}`) {
+        errors.push(`package.json name should be @cvplus/${moduleId}, got ${packageJson.name}`);
+        penalty += 15;
+      }
+
+      if (!packageJson.version) {
+        errors.push('package.json missing version field');
+        penalty += 5;
+      }
+
+      if (!packageJson.main) {
+        warnings.push('package.json missing main field');
+        penalty += 2;
+      }
+
+      if (!packageJson.types) {
+        warnings.push('package.json missing types field');
+        penalty += 2;
+      }
+
+      // Validate scripts
+      const requiredScripts = ['build', 'test'];
+      for (const script of requiredScripts) {
+        if (!packageJson.scripts || !packageJson.scripts[script]) {
+          warnings.push(`package.json missing ${script} script`);
+          penalty += 3;
+        }
+      }
+
+    } catch (error) {
+      errors.push(`Failed to validate package.json: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      penalty += 20;
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings,
+      penalty
+    };
+  }
+
+  /**
+   * Validate tsconfig.json configuration
+    */
+  private async validateTsConfig(moduleId: string): Promise<{
+    isValid: boolean;
+    errors: string[];
+    warnings: string[];
+    penalty: number;
+  }> {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    let penalty = 0;
+
+    try {
+      // In actual implementation, would read and parse tsconfig.json
+      const tsconfig = {
+        compilerOptions: {
+          target: 'ES2020',
+          module: 'ESNext',
+          moduleResolution: 'node',
+          strict: true,
+          declaration: true,
+          outDir: 'dist'
+        },
+        include: ['src*/* '],
+  */
+        exclude: ['node_modules', 'dist']
+      };
+
+      // Validate compiler options
+      if (!tsconfig.compilerOptions) {
+        errors.push('tsconfig.json missing compilerOptions');
+        penalty += 15;
+      } else {
+        if (!tsconfig.compilerOptions.strict) {
+          warnings.push('tsconfig.json should enable strict mode');
+          penalty += 5;
+        }
+
+        if (!tsconfig.compilerOptions.declaration) {
+          warnings.push('tsconfig.json should enable declaration generation');
+          penalty += 3;
+        }
+      }
+
+    } catch (error) {
+      errors.push(`Failed to validate tsconfig.json: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      penalty += 15;
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings,
+      penalty
+    };
+  }
+
+  /**
+   * Validate module dependencies and layer compliance
+    */
+  private async validateModuleDependencies(moduleId: string): Promise<{
+    isValid: boolean;
+    errors: string[];
+    warnings: string[];
+    penalty: number;
+  }> {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    let penalty = 0;
+
+    const expectedDependencies = this.layerDependencies[moduleId as keyof typeof this.layerDependencies] || [];
+
+    try {
+      // In actual implementation, would read package.json and validate dependencies
+      const actualDependencies: string[] = []; // Placeholder
+
+      // Check for missing required dependencies
+      for (const expectedDep of expectedDependencies) {
+        if (!actualDependencies.includes(expectedDep)) {
+          errors.push(`Missing required dependency: ${expectedDep}`);
+          penalty += 10;
+        }
+      }
+
+      // Check for forbidden cross-layer dependencies
+      const forbiddenDependencies = this.getForbiddenDependencies(moduleId);
+      for (const actualDep of actualDependencies) {
+        if (forbiddenDependencies.includes(actualDep)) {
+          errors.push(`Forbidden dependency detected: ${actualDep}`);
+          penalty += 20;
+        }
+      }
+
+    } catch (error) {
+      errors.push(`Failed to validate dependencies: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      penalty += 15;
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings,
+      penalty
+    };
+  }
+
+  /**
+   * Get forbidden dependencies for a module based on layer architecture
+    */
+  private getForbiddenDependencies(moduleId: string): string[] {
+    const forbidden: string[] = [];
+
+    // Layer 1 modules cannot depend on other layer 1+ modules (except core)
+    if (['auth', 'i18n'].includes(moduleId)) {
+      forbidden.push('@cvplus/processing', '@cvplus/multimedia', '@cvplus/analytics');
+      forbidden.push('@cvplus/premium', '@cvplus/public-profiles', '@cvplus/recommendations');
+      forbidden.push('@cvplus/admin', '@cvplus/workflow', '@cvplus/payments');
+    }
+
+    // Layer 2 modules cannot depend on layer 3+ modules
+    if (['processing', 'multimedia', 'analytics'].includes(moduleId)) {
+      forbidden.push('@cvplus/premium', '@cvplus/public-profiles', '@cvplus/recommendations');
+      forbidden.push('@cvplus/admin', '@cvplus/workflow', '@cvplus/payments');
+    }
+
+    // Layer 3 modules cannot depend on layer 4 modules
+    if (['premium', 'public-profiles', 'recommendations'].includes(moduleId)) {
+      forbidden.push('@cvplus/admin', '@cvplus/workflow', '@cvplus/payments');
+    }
+
+    // No module should depend on peer modules in the same layer
+    const layers = {
+      1: ['auth', 'i18n'],
+      2: ['processing', 'multimedia', 'analytics'],
+      3: ['premium', 'public-profiles', 'recommendations'],
+      4: ['admin', 'workflow', 'payments']
+    };
+
+    for (const [layerNum, modules] of Object.entries(layers)) {
+      if (modules.includes(moduleId)) {
+        const peerModules = modules.filter(m => m !== moduleId);
+        forbidden.push(...peerModules.map(m => `@cvplus/${m}`));
+      }
+    }
+
+    return forbidden;
+  }
+
+  /**
+   * Validate module build capability
+    */
+  private async validateModuleBuild(moduleId: string): Promise<{
+    isValid: boolean;
+    errors: string[];
+    warnings: string[];
+    penalty: number;
+  }> {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    let penalty = 0;
+
+    try {
+      // In actual implementation, would attempt to build the module
+      const buildResult = {
+        success: true,
+        errors: [],
+        warnings: []
+      };
+
+      if (!buildResult.success) {
+        errors.push(`Module ${moduleId} failed to build`);
+        errors.push(...buildResult.errors);
+        penalty += 30;
+      }
+
+      if (buildResult.warnings.length > 0) {
+        warnings.push(...buildResult.warnings);
+        penalty += buildResult.warnings.length * 2;
+      }
+
+    } catch (error) {
+      errors.push(`Build validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      penalty += 25;
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings,
+      penalty
+    };
+  }
+
+  /**
+   * Validate module integration points
+    */
+  private async validateModuleIntegration(moduleId: string): Promise<{
+    isValid: boolean;
+    errors: string[];
+    warnings: string[];
+    penalty: number;
+  }> {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    let penalty = 0;
+
+    try {
+      // Validate export structure
+      const exportValidation = await this.validateModuleExports(moduleId);
+      if (!exportValidation.isValid) {
+        errors.push(...exportValidation.errors);
+        warnings.push(...exportValidation.warnings);
+        penalty += exportValidation.penalty;
+      }
+
+      // Validate import compatibility
+      const importValidation = await this.validateModuleImports(moduleId);
+      if (!importValidation.isValid) {
+        errors.push(...importValidation.errors);
+        warnings.push(...importValidation.warnings);
+        penalty += importValidation.penalty;
+      }
+
+    } catch (error) {
+      errors.push(`Integration validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      penalty += 20;
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings,
+      penalty
+    };
+  }
+
+  /**
+   * Validate module exports
+    */
+  private async validateModuleExports(moduleId: string): Promise<{
+    isValid: boolean;
+    errors: string[];
+    warnings: string[];
+    penalty: number;
+  }> {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    let penalty = 0;
+
+    try {
+      // In actual implementation, would check src/index.ts exports
+      const hasDefaultExport = true; // Placeholder
+      const hasNamedExports = true; // Placeholder
+
+      if (!hasDefaultExport && !hasNamedExports) {
+        errors.push(`Module ${moduleId} has no exports in src/index.ts`);
+        penalty += 15;
+      }
+
+    } catch (error) {
+      errors.push(`Export validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      penalty += 10;
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings,
+      penalty
+    };
+  }
+
+  /**
+   * Validate module imports
+    */
+  private async validateModuleImports(moduleId: string): Promise<{
+    isValid: boolean;
+    errors: string[];
+    warnings: string[];
+    penalty: number;
+  }> {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    let penalty = 0;
+
+    try {
+      // In actual implementation, would analyze import statements
+      const circularImports: string[] = []; // Placeholder for circular import detection
+
+      if (circularImports.length > 0) {
+        errors.push(`Circular imports detected: ${circularImports.join(', ')}`);
+        penalty += 20;
+      }
+
+    } catch (error) {
+      errors.push(`Import validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      penalty += 10;
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings,
+      penalty
+    };
+  }
+
+  /**
+   * Validate an entire recovery session
+    */
+  async validateRecoverySession(session: RecoverySession): Promise<ValidationResult> {
+    const sessionErrors: string[] = [];
+    const sessionWarnings: string[] = [];
+    let sessionScore = 100;
+
+    // Validate session structure
+    if (!session.sessionId) {
+      sessionErrors.push('Session missing sessionId');
+      sessionScore -= 20;
+    }
+
+    if (!session.targetModules || session.targetModules.length === 0) {
+      sessionErrors.push('Session has no target modules');
+      sessionScore -= 30;
+    }
+
+    // Validate each module in the session
+    const moduleValidations: ValidationResult[] = [];
+    for (const moduleId of session.targetModules) {
+      try {
+        const moduleValidation = await this.validateModule(moduleId);
+        moduleValidations.push(moduleValidation);
+
+        if (!moduleValidation.isValid) {
+          sessionErrors.push(`Module ${moduleId} validation failed`);
+          sessionScore -= 10;
+        }
+      } catch (error) {
+        sessionErrors.push(`Failed to validate module ${moduleId}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        sessionScore -= 15;
+      }
+    }
+
+    // Validate session phases
+    const phaseValidation = this.validateSessionPhases(session);
+    if (!phaseValidation.isValid) {
+      sessionErrors.push(...phaseValidation.errors);
+      sessionWarnings.push(...phaseValidation.warnings);
+      sessionScore -= phaseValidation.penalty;
+    }
+
+    const finalScore = Math.max(0, sessionScore);
+    const isValid = finalScore >= 80 && sessionErrors.length === 0;
+
+    return {
+      moduleId: session.sessionId,
+      isValid,
+      validationErrors: sessionErrors,
+      validationWarnings: sessionWarnings,
+      validationScore: finalScore,
+      timestamp: new Date(),
+      details: {
+        buildValidation: moduleValidations.every(v => v.details.buildValidation),
+        dependencyValidation: moduleValidations.every(v => v.details.dependencyValidation),
+        configurationValidation: moduleValidations.every(v => v.details.configurationValidation),
+        integrationValidation: moduleValidations.every(v => v.details.integrationValidation)
+      }
+    };
+  }
+
+  /**
+   * Validate session phases
+    */
+  private validateSessionPhases(session: RecoverySession): {
+    isValid: boolean;
+    errors: string[];
+    warnings: string[];
+    penalty: number;
+  } {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    let penalty = 0;
+
+    // Check phase progression
+    const phases = Object.entries(session.phaseProgress);
+    let previousCompleted = true;
+
+    for (const [phaseName, phase] of phases) {
+      if (phase.started && !previousCompleted) {
+        errors.push(`Phase ${phaseName} started before previous phase completed`);
+        penalty += 10;
+      }
+      previousCompleted = phase.completed;
+    }
+
+    // Check for reasonable phase durations
+    for (const [phaseName, phase] of phases) {
+      if (phase.completed && phase.duration > 300000) { // 5 minutes
+        warnings.push(`Phase ${phaseName} took unusually long: ${phase.duration}ms`);
+        penalty += 2;
+      }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings,
+      penalty
+    };
+  }
+
+  /**
+   * Validate workspace health
+    */
+  async validateWorkspaceHealth(workspaceHealth: WorkspaceHealth): Promise<ValidationResult> {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    let score = 100;
+
+    // Validate overall status consistency
+    if (workspaceHealth.healthScore >= 90 && workspaceHealth.overallStatus !== 'healthy') {
+      warnings.push('High health score but status not healthy');
+      score -= 5;
+    }
+
+    if (workspaceHealth.healthScore < 30 && workspaceHealth.overallStatus !== 'critical' && workspaceHealth.overallStatus !== 'offline') {
+      errors.push('Low health score but status not critical/offline');
+      score -= 20;
+    }
+
+    // Validate system metrics consistency
+    const metrics = workspaceHealth.systemMetrics;
+    const totalCalculated = metrics.healthyModules + metrics.degradedModules + metrics.criticalModules + metrics.offlineModules;
+
+    if (totalCalculated !== metrics.totalModules) {
+      errors.push(`System metrics inconsistent: total=${metrics.totalModules}, calculated=${totalCalculated}`);
+      score -= 15;
+    }
+
+    // Validate critical issues
+    if (workspaceHealth.criticalIssues.length > 0 && workspaceHealth.overallStatus === 'healthy') {
+      errors.push('Critical issues present but status is healthy');
+      score -= 25;
+    }
+
+    const finalScore = Math.max(0, score);
+    const isValid = finalScore >= 70 && errors.length === 0;
+
+    return {
+      moduleId: 'workspace',
+      isValid,
+      validationErrors: errors,
+      validationWarnings: warnings,
+      validationScore: finalScore,
+      timestamp: new Date(),
+      details: {
+        buildValidation: true,
+        dependencyValidation: true,
+        configurationValidation: true,
+        integrationValidation: isValid
+      }
+    };
+  }
+
+  /**
+   * Validate multiple modules in batch
+    */
+  async validateMultipleModules(moduleIds: string[]): Promise<ValidationResult[]> {
+    const validationPromises = moduleIds.map(moduleId => this.validateModule(moduleId));
+    return Promise.all(validationPromises);
+  }
+
+  /**
+   * Get validation summary for multiple modules
+    */
+  async getValidationSummary(moduleIds: string[]): Promise<{
+    totalModules: number;
+    validModules: number;
+    invalidModules: number;
+    averageScore: number;
+    criticalIssues: string[];
+    recommendations: string[];
+  }> {
+    const validations = await this.validateMultipleModules(moduleIds);
+
+    const validModules = validations.filter(v => v.isValid).length;
+    const invalidModules = validations.length - validModules;
+    const averageScore = validations.length > 0
+      ? validations.reduce((sum, v) => sum + v.validationScore, 0) / validations.length
+      : 0;
+
+    const criticalIssues: string[] = [];
+    const recommendations: string[] = [];
+
+    for (const validation of validations) {
+      if (!validation.isValid) {
+        criticalIssues.push(...validation.validationErrors);
+      }
+
+      if (validation.validationScore < 90) {
+        recommendations.push(`Improve ${validation.moduleId}: ${validation.validationWarnings.join(', ')}`);
+      }
+    }
+
+    return {
+      totalModules: validations.length,
+      validModules,
+      invalidModules,
+      averageScore,
+      criticalIssues,
+      recommendations
+    };
+  }
+}

@@ -1,0 +1,77 @@
+sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant A as Auth Service
+    participant G as Google OAuth
+    participant C as Calendar Service
+    participant DB as Database
+    participant GC as Google Calendar
+
+    %% Initial Authentication with Calendar Scopes
+    U->>F: Sign in with Google
+    F->>A: Initiate OAuth with calendar scopes
+    A->>G: Request authorization
+    Note over G: Scopes: profile, email, calendar, calendar.events
+    G->>U: Consent screen (with calendar permissions)
+    U->>G: Grant permissions
+    G->>A: Authorization code
+    A->>G: Exchange code for tokens
+    G->>A: Access token + Refresh token
+    A->>DB: Store encrypted tokens
+    A->>F: Authentication success
+
+    %% Calendar Permission Validation
+    F->>C: Request calendar access
+    C->>DB: Retrieve user tokens
+    C->>C: Validate token expiry
+    alt Token valid
+        C->>GC: API call with access token
+        GC->>C: Calendar data/success
+    else Token expired
+        C->>G: Refresh token
+        G->>C: New access token
+        C->>DB: Update stored tokens
+        C->>GC: Retry API call
+        GC->>C: Calendar data/success
+    end
+
+    %% Secure Calendar Operations
+    U->>F: Generate CV (triggers calendar events)
+    F->>C: Create career milestone events
+    C->>C: Validate user permissions
+    C->>C: Sanitize event data
+    C->>GC: Create calendar events
+    GC->>C: Event creation confirmation
+    C->>DB: Log calendar operations
+    C->>F: Success response
+
+    %% Permission Revocation Handling
+    Note over U: User revokes calendar permissions in Google
+    U->>F: Access calendar features
+    F->>C: Request calendar access
+    C->>GC: API call
+    GC->>C: 401 Unauthorized
+    C->>DB: Mark permissions as revoked
+    C->>F: Permission denied error
+    F->>U: Re-authorization required
+    U->>F: Re-authorize calendar access
+    F->>A: Request new calendar permissions
+    A->>G: OAuth flow with calendar scopes
+    G->>U: Consent screen
+    U->>G: Grant permissions
+    G->>A: New tokens
+    A->>DB: Update tokens
+    A->>F: Re-authorization success
+
+    %% Security Monitoring
+    loop Every API Call
+        C->>C: Log access patterns
+        C->>C: Validate scope usage
+        C->>C: Check rate limits
+    end
+
+    loop Daily Security Audit
+        DB->>DB: Review token usage
+        DB->>DB: Check for anomalies
+        DB->>DB: Rotate expired tokens
+    end

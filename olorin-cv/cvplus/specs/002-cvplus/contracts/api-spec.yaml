@@ -1,0 +1,981 @@
+openapi: 3.0.3
+info:
+  title: CVPlus API
+  description: AI-Powered CV Transformation Platform API
+  version: 1.0.0
+  contact:
+    name: CVPlus Support
+    email: support@cvplus.ai
+  license:
+    name: Proprietary
+    url: https://cvplus.ai/license
+
+servers:
+  - url: https://api.cvplus.ai/v1
+    description: Production server
+  - url: https://api-staging.cvplus.ai/v1
+    description: Staging server
+
+security:
+  - BearerAuth: []
+
+paths:
+  # CV Processing Endpoints
+  /cv/upload:
+    post:
+      tags:
+        - CV Processing
+      summary: Upload CV file for processing
+      description: Upload a CV file in supported formats (PDF, DOCX, TXT, CSV)
+      operationId: uploadCV
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: CV file to upload (max 10MB)
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/FeatureType'
+                  description: Selected enhancement features
+                customizations:
+                  type: object
+                  description: Feature-specific customization options
+              required:
+                - file
+      responses:
+        '201':
+          description: CV upload successful, processing started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CVJobResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  /cv/url:
+    post:
+      tags:
+        - CV Processing
+      summary: Submit CV URL for processing
+      description: Submit a URL to a CV for processing
+      operationId: submitCVURL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: URL to CV file
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/FeatureType'
+                  description: Selected enhancement features
+                customizations:
+                  type: object
+                  description: Feature-specific customization options
+              required:
+                - url
+      responses:
+        '201':
+          description: URL submitted, processing started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CVJobResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /cv/status/{jobId}:
+    get:
+      tags:
+        - CV Processing
+      summary: Get CV processing status
+      description: Check the status of a CV processing job
+      operationId: getCVStatus
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: CV job identifier
+      responses:
+        '200':
+          description: Processing status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CVJobStatusResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /cv/download/{jobId}:
+    get:
+      tags:
+        - CV Processing
+      summary: Download processed CV
+      description: Download the enhanced CV in specified format
+      operationId: downloadCV
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: CV job identifier
+        - name: format
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [pdf, docx, html]
+            default: pdf
+          description: Download format
+      responses:
+        '200':
+          description: CV file download
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/vnd.openxmlformats-officedocument.wordprocessingml.document:
+              schema:
+                type: string
+                format: binary
+            text/html:
+              schema:
+                type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Multimedia Generation Endpoints
+  /multimedia/podcast:
+    post:
+      tags:
+        - Multimedia
+      summary: Generate career podcast
+      description: Generate an AI-powered podcast summarizing career achievements
+      operationId: generatePodcast
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jobId:
+                  type: string
+                  format: uuid
+                  description: CV job identifier
+                voice:
+                  type: string
+                  enum: [professional_male, professional_female, conversational_male, conversational_female]
+                  default: professional_female
+                duration:
+                  type: integer
+                  minimum: 60
+                  maximum: 900
+                  default: 120
+                  description: Desired duration in seconds
+                style:
+                  type: string
+                  enum: [professional, conversational, enthusiastic]
+                  default: professional
+              required:
+                - jobId
+      responses:
+        '202':
+          description: Podcast generation started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentGenerationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /multimedia/video:
+    post:
+      tags:
+        - Multimedia
+      summary: Generate video introduction
+      description: Generate an AI-powered video introduction with avatar
+      operationId: generateVideo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jobId:
+                  type: string
+                  format: uuid
+                  description: CV job identifier
+                avatarId:
+                  type: string
+                  description: Selected avatar identifier
+                voiceId:
+                  type: string
+                  description: Selected voice identifier
+                script:
+                  type: string
+                  maxLength: 500
+                  description: Custom script (optional, AI-generated if not provided)
+                duration:
+                  type: integer
+                  minimum: 15
+                  maximum: 60
+                  default: 30
+                  description: Desired duration in seconds
+              required:
+                - jobId
+                - avatarId
+      responses:
+        '202':
+          description: Video generation started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentGenerationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Public Profile Endpoints
+  /profile/public:
+    post:
+      tags:
+        - Public Profile
+      summary: Create public profile
+      description: Create a public, shareable version of the enhanced CV
+      operationId: createPublicProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePublicProfileRequest'
+      responses:
+        '201':
+          description: Public profile created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicProfileResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /profile/public/{profileId}:
+    get:
+      tags:
+        - Public Profile
+      summary: View public profile
+      description: View a public CV profile (no authentication required)
+      operationId: getPublicProfile
+      security: []
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Public profile identifier or slug
+        - name: password
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Password for password-protected profiles
+      responses:
+        '200':
+          description: Public profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicProfileView'
+        '401':
+          description: Password required for protected profile
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Public Profile
+      summary: Update public profile
+      description: Update public profile settings and visibility
+      operationId: updatePublicProfile
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Public profile identifier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePublicProfileRequest'
+      responses:
+        '200':
+          description: Public profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicProfileResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /profile/public/{profileId}/contact:
+    post:
+      tags:
+        - Public Profile
+      summary: Submit contact form
+      description: Send a message through the public profile contact form
+      operationId: submitContactForm
+      security: []
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Public profile identifier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                email:
+                  type: string
+                  format: email
+                company:
+                  type: string
+                  maxLength: 100
+                subject:
+                  type: string
+                  minLength: 5
+                  maxLength: 200
+                message:
+                  type: string
+                  minLength: 10
+                  maxLength: 2000
+                phone:
+                  type: string
+                  maxLength: 20
+              required:
+                - name
+                - email
+                - subject
+                - message
+      responses:
+        '201':
+          description: Contact form submitted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Message sent successfully"
+                  submissionId:
+                    type: string
+                    format: uuid
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  # Analytics Endpoints
+  /analytics/{entityType}/{entityId}:
+    get:
+      tags:
+        - Analytics
+      summary: Get analytics data
+      description: Retrieve analytics data for a specific entity
+      operationId: getAnalytics
+      parameters:
+        - name: entityType
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/EntityType'
+        - name: entityId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Entity identifier
+        - name: period
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [hour, day, week, month]
+            default: day
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Analytics data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # Enums
+    FeatureType:
+      type: string
+      enum:
+        - podcast
+        - video
+        - timeline
+        - portfolio
+        - ats_optimization
+        - personality_insights
+        - public_profile
+        - qr_code
+
+    ProcessingStatus:
+      type: string
+      enum:
+        - pending
+        - analyzing
+        - generating
+        - completed
+        - failed
+        - cancelled
+
+    ContentType:
+      type: string
+      enum:
+        - podcast_audio
+        - video_intro
+        - timeline_svg
+        - portfolio_pdf
+        - qr_code_png
+        - enhanced_cv_pdf
+        - enhanced_cv_docx
+        - enhanced_cv_html
+
+    EntityType:
+      type: string
+      enum:
+        - public_profile
+        - cv_job
+        - generated_content
+        - user_profile
+
+    ProfileSection:
+      type: string
+      enum:
+        - personal_info
+        - summary
+        - experience
+        - education
+        - skills
+        - certifications
+        - achievements
+        - projects
+        - podcast
+        - video
+        - timeline
+        - portfolio
+        - contact_form
+
+    # Request Schemas
+    CreatePublicProfileRequest:
+      type: object
+      properties:
+        jobId:
+          type: string
+          format: uuid
+        slug:
+          type: string
+          pattern: '^[a-z0-9-]+$'
+          minLength: 3
+          maxLength: 50
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 300
+        visibleSections:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileSection'
+        passwordProtected:
+          type: boolean
+          default: false
+        password:
+          type: string
+          minLength: 8
+        allowedDomains:
+          type: array
+          items:
+            type: string
+            format: hostname
+        expiresAt:
+          type: string
+          format: date-time
+        customBranding:
+          $ref: '#/components/schemas/CustomBranding'
+        contactOptions:
+          type: array
+          items:
+            type: string
+            enum: [email, phone, linkedin, calendar_booking, contact_form]
+      required:
+        - jobId
+        - slug
+        - title
+        - visibleSections
+
+    UpdatePublicProfileRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 300
+        isActive:
+          type: boolean
+        visibleSections:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileSection'
+        passwordProtected:
+          type: boolean
+        password:
+          type: string
+          minLength: 8
+        allowedDomains:
+          type: array
+          items:
+            type: string
+            format: hostname
+        expiresAt:
+          type: string
+          format: date-time
+        customBranding:
+          $ref: '#/components/schemas/CustomBranding'
+        contactOptions:
+          type: array
+          items:
+            type: string
+            enum: [email, phone, linkedin, calendar_booking, contact_form]
+
+    CustomBranding:
+      type: object
+      properties:
+        logoUrl:
+          type: string
+          format: uri
+        primaryColor:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        secondaryColor:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        fontFamily:
+          type: string
+          enum: [Inter, Roboto, Open Sans, Lato, Montserrat]
+        customCSS:
+          type: string
+          maxLength: 5000
+
+    # Response Schemas
+    CVJobResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/ProcessingStatus'
+        estimatedCompletionTime:
+          type: integer
+          description: Estimated completion time in seconds
+        message:
+          type: string
+      required:
+        - jobId
+        - status
+
+    CVJobStatusResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/ProcessingStatus'
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+        currentStep:
+          type: string
+        estimatedTimeRemaining:
+          type: integer
+          description: Estimated time remaining in seconds
+        errorMessage:
+          type: string
+        completedFeatures:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureType'
+        results:
+          type: object
+          properties:
+            atsScore:
+              type: number
+              minimum: 0
+              maximum: 100
+            processingTimeMs:
+              type: integer
+            generatedContent:
+              type: array
+              items:
+                $ref: '#/components/schemas/GeneratedContentInfo'
+      required:
+        - jobId
+        - status
+        - progress
+
+    ContentGenerationResponse:
+      type: object
+      properties:
+        contentId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, generating, completed, failed]
+        estimatedCompletionTime:
+          type: integer
+          description: Estimated completion time in seconds
+        message:
+          type: string
+      required:
+        - contentId
+        - status
+
+    PublicProfileResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        url:
+          type: string
+          format: uri
+        qrCodeUrl:
+          type: string
+          format: uri
+        isActive:
+          type: boolean
+        viewCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - slug
+        - url
+        - isActive
+
+    PublicProfileView:
+      type: object
+      properties:
+        profile:
+          type: object
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+            customBranding:
+              $ref: '#/components/schemas/CustomBranding'
+            contactOptions:
+              type: array
+              items:
+                type: string
+        cv:
+          type: object
+          description: Filtered CV data based on visible sections
+        generatedContent:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeneratedContentInfo'
+        viewCount:
+          type: integer
+      required:
+        - profile
+        - cv
+
+    GeneratedContentInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        contentType:
+          $ref: '#/components/schemas/ContentType'
+        fileUrl:
+          type: string
+          format: uri
+        previewUrl:
+          type: string
+          format: uri
+        fileName:
+          type: string
+        fileSize:
+          type: integer
+        duration:
+          type: integer
+          description: Duration in seconds for audio/video
+        status:
+          type: string
+          enum: [pending, generating, completed, failed]
+      required:
+        - id
+        - contentType
+        - status
+
+    AnalyticsResponse:
+      type: object
+      properties:
+        entityType:
+          $ref: '#/components/schemas/EntityType'
+        entityId:
+          type: string
+        period:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        metrics:
+          type: object
+          properties:
+            viewCount:
+              type: integer
+            uniqueViewCount:
+              type: integer
+            downloadCount:
+              type: integer
+            shareCount:
+              type: integer
+            contactFormSubmissions:
+              type: integer
+            averageEngagementTime:
+              type: number
+            bounceRate:
+              type: number
+        topCountries:
+          type: array
+          items:
+            type: object
+            properties:
+              country:
+                type: string
+              viewCount:
+                type: integer
+              percentage:
+                type: number
+        topReferrers:
+          type: array
+          items:
+            type: object
+            properties:
+              referrer:
+                type: string
+              viewCount:
+                type: integer
+              percentage:
+                type: number
+      required:
+        - entityType
+        - entityId
+        - period
+        - metrics
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+            requestId:
+              type: string
+              format: uuid
+          required:
+            - code
+            - message
+      required:
+        - error
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid input parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "INVALID_INPUT"
+              message: "The provided input is invalid"
+              requestId: "123e4567-e89b-12d3-a456-426614174000"
+
+    Unauthorized:
+      description: Unauthorized - invalid or missing authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "UNAUTHORIZED"
+              message: "Authentication required"
+              requestId: "123e4567-e89b-12d3-a456-426614174000"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "NOT_FOUND"
+              message: "The requested resource was not found"
+              requestId: "123e4567-e89b-12d3-a456-426614174000"
+
+    PayloadTooLarge:
+      description: File size exceeds limit (10MB)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "PAYLOAD_TOO_LARGE"
+              message: "File size exceeds the 10MB limit"
+              requestId: "123e4567-e89b-12d3-a456-426614174000"
+
+    RateLimitExceeded:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: "RATE_LIMIT_EXCEEDED"
+              message: "Rate limit exceeded. Please try again later."
+              requestId: "123e4567-e89b-12d3-a456-426614174000"
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: Request limit per time window
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: Remaining requests in time window
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+          description: Time when rate limit resets (Unix timestamp)
+
+tags:
+  - name: CV Processing
+    description: CV upload, analysis, and enhancement operations
+  - name: Multimedia
+    description: Podcast, video, and multimedia content generation
+  - name: Public Profile
+    description: Public profile creation and management
+  - name: Analytics
+    description: Usage analytics and engagement tracking

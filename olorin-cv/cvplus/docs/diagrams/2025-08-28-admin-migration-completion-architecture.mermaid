@@ -1,0 +1,175 @@
+```mermaid
+graph TB
+    subgraph "CURRENT STATE"
+        subgraph "Main Repository"
+            FUNC[Functions Directory]
+            FUNC --> SCATTERED[Scattered Admin Checks]
+            SCATTERED --> GCM[getConversionMetrics.ts]
+            SCATTERED --> GEDA[getExternalDataAnalytics.ts] 
+            SCATTERED --> PC[predictChurn.ts]
+            SCATTERED --> GRM[getRevenueMetrics.ts]
+            SCATTERED --> VAD[video-analytics-dashboard.ts]
+            SCATTERED --> PS[predictSuccess.ts]
+        end
+        
+        subgraph "Admin Module (Existing)"
+            ADMIN[packages/admin/]
+            ADMIN --> AFUNC[backend/functions/]
+            ADMIN --> ACOMP[frontend/components/]
+            ADMIN --> AMIDDLE[middleware/]
+            ADMIN --> ASERV[services/]
+            
+            AFUNC --> GUS[getUserStats.ts]
+            AFUNC --> GSH[getSystemHealth.ts]
+            AFUNC --> MU[manageUsers.ts]
+            AFUNC --> GBM[getBusinessMetrics.ts]
+            AFUNC --> GCS[getCacheStats.ts]
+            AFUNC --> IA[initializeAdmin.ts]
+        end
+    end
+    
+    subgraph "TARGET STATE"
+        subgraph "Consolidated Admin Module"
+            NEWADMIN[Enhanced packages/admin/]
+            
+            subgraph "New Services Layer"
+                NEWSERV[services/]
+                NEWSERV --> AAS[AdminAccessService]
+                NEWSERV --> ADS[AdminDashboardService]  
+                NEWSERV --> AAS_METHODS[checkAdminAccess()<br/>requireAdminAccess()<br/>getAdminPermissions()]
+            end
+            
+            subgraph "Enhanced Functions"
+                ENHFUNC[backend/functions/]
+                ENHFUNC --> EXISTING_FUNCS[Existing Functions]
+                ENHFUNC --> UPDATED_EXPORTS[Enhanced Exports]
+            end
+            
+            subgraph "Enterprise Features" 
+                ENT[enterprise/]
+                ENT --> TENANT[tenantManager.ts]
+                ENT --> RBAC[rbac.ts]
+            end
+            
+            subgraph "Analytics Layer"
+                ANALYTICS[analytics/]
+                ANALYTICS --> ADMIN_ANALYTICS[AdminAnalyticsService]
+                ANALYTICS --> MONITORING[SystemMonitoringService]
+                ANALYTICS --> METRICS[BusinessMetricsService]
+            end
+        end
+        
+        subgraph "Updated Main Repository"
+            NEWFUNC[Functions Directory]
+            NEWFUNC --> UPDATED[Updated Functions]
+            UPDATED --> IMPORTS[Uses @cvplus/admin/services]
+            IMPORTS --> NO_DUPLICATE[No Duplicate Admin Logic]
+        end
+    end
+    
+    subgraph "MIGRATION PHASES"
+        PHASE1[Phase 1: Admin Access Consolidation]
+        PHASE2[Phase 2: Enterprise Features Migration]  
+        PHASE3[Phase 3: Analytics Consolidation]
+        PHASE4[Phase 4: Build & Testing Integration]
+        
+        PHASE1 --> PHASE2
+        PHASE2 --> PHASE3  
+        PHASE3 --> PHASE4
+    end
+    
+    subgraph "IMPLEMENTATION STEPS"
+        STEP1[Create AdminAccessService]
+        STEP2[Update Function Imports]
+        STEP3[Migrate Enterprise Features]
+        STEP4[Consolidate Analytics]
+        STEP5[Validate Build Process]
+        STEP6[Integration Testing]
+        
+        STEP1 --> STEP2
+        STEP2 --> STEP3
+        STEP3 --> STEP4
+        STEP4 --> STEP5
+        STEP5 --> STEP6
+    end
+    
+    subgraph "ADMIN MODULE STRUCTURE"
+        STRUCTURE[packages/admin/src/]
+        
+        STRUCTURE --> BACKEND_NEW[backend/]
+        BACKEND_NEW --> FUNCS[functions/]
+        BACKEND_NEW --> SERVICES[services/]
+        
+        STRUCTURE --> FRONTEND[frontend/]
+        FRONTEND --> COMPONENTS[components/]
+        FRONTEND --> PAGES[pages/]
+        FRONTEND --> HOOKS[hooks/]
+        
+        STRUCTURE --> MIDDLEWARE_NEW[middleware/]
+        STRUCTURE --> TYPES[types/]
+        STRUCTURE --> CONSTANTS[constants/]
+        
+        SERVICES --> ADMIN_ACCESS[admin-access.service.ts]
+        SERVICES --> DASHBOARD_SERV[admin-dashboard.service.ts]
+        SERVICES --> USER_MGMT[user-management.service.ts]
+        SERVICES --> SYSTEM_MON[system-monitoring.service.ts]
+    end
+    
+    subgraph "EXPORT HIERARCHY"
+        MAIN_EXPORT[packages/admin/src/index.ts]
+        
+        MAIN_EXPORT --> BACKEND_EXPORT[backend/index.ts]
+        MAIN_EXPORT --> FRONTEND_EXPORT[frontend/index.ts]
+        MAIN_EXPORT --> SERVICES_EXPORT[services/index.ts]
+        MAIN_EXPORT --> MIDDLEWARE_EXPORT[middleware/index.ts]
+        MAIN_EXPORT --> TYPES_EXPORT[types/index.ts]
+        
+        BACKEND_EXPORT --> FUNCTIONS_EXPORT[functions/index.ts]
+        SERVICES_EXPORT --> ALL_SERVICES[All Admin Services]
+    end
+    
+    subgraph "SUCCESS CRITERIA"
+        SUCCESS[✅ Completion Checklist]
+        
+        SUCCESS --> CONSOLIDATION[Admin Access Consolidation]
+        SUCCESS --> BUILD[Build Process]
+        SUCCESS --> INTEGRATION[Function Integration]  
+        SUCCESS --> TESTING[Testing Complete]
+        SUCCESS --> DEPLOYMENT[Deployment Ready]
+        
+        CONSOLIDATION --> NO_SCATTERED[No Scattered Admin Logic]
+        BUILD --> COMPILES[Module Compiles Independently]
+        INTEGRATION --> CONSISTENT[Consistent Permissions]
+        TESTING --> PASSES[All Tests Pass]
+        DEPLOYMENT --> FUNCTIONS_WORK[Admin Functions Deployed]
+    end
+    
+    subgraph "MIGRATION BENEFITS"
+        BENEFITS[Migration Benefits]
+        
+        BENEFITS --> MODULAR[Modular Admin Functionality]
+        BENEFITS --> CONSISTENT_PERMS[Consistent Permission Handling]
+        BENEFITS --> CLEAN_IMPORTS[Clean Import Structure]
+        BENEFITS --> MAINTAINABLE[Maintainable Architecture]
+        BENEFITS --> SCALABLE[Scalable Admin System]
+        
+        MODULAR --> SEPARATION[Clear Separation of Concerns]
+        CONSISTENT_PERMS --> SECURITY[Enhanced Security]
+        CLEAN_IMPORTS --> PERFORMANCE[Better Build Performance]
+        MAINTAINABLE --> DEVELOPMENT[Easier Development]
+        SCALABLE --> FUTURE[Future-Ready Architecture]
+    end
+    
+    %% Styling
+    classDef migrationPhase fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef currentState fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef targetState fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef adminModule fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef successCriteria fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    
+    class PHASE1,PHASE2,PHASE3,PHASE4 migrationPhase
+    class FUNC,SCATTERED,GCM,GEDA,PC,GRM,VAD,PS currentState
+    class NEWADMIN,NEWSERV,AAS,ADS,ENHFUNC targetState
+    class ADMIN,AFUNC,ACOMP,AMIDDLE,ASERV adminModule
+    class SUCCESS,CONSOLIDATION,BUILD,INTEGRATION,TESTING,DEPLOYMENT successCriteria
+```

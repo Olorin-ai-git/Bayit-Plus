@@ -1,0 +1,42 @@
+gantt
+    title CVPlus User Flow Improvements Implementation Timeline
+    dateFormat  YYYY-MM-DD
+    section Phase 1: Step Numbering
+    Step counting fix           :p1-1, 2024-01-01, 2d
+    Mobile step indicator       :p1-2, after p1-1, 1d
+    Breadcrumb consistency      :p1-3, after p1-2, 1d
+    Testing & validation        :p1-4, after p1-3, 1d
+    
+    section Phase 2: Session Persistence
+    SessionManager service      :p2-1, after p1-1, 2d
+    useSession hook            :p2-2, after p2-1, 1d
+    Firebase sync              :p2-3, after p2-2, 2d
+    Recovery dialogs           :p2-4, after p2-3, 1d
+    Integration testing        :p2-5, after p2-4, 1d
+    
+    section Phase 3: Error Recovery
+    Checkpoint system          :p3-1, after p2-2, 2d
+    Error boundaries           :p3-2, after p3-1, 1d
+    Retry mechanisms           :p3-3, after p3-2, 2d
+    Recovery UI                :p3-4, after p3-3, 1d
+    Error handling tests       :p3-5, after p3-4, 1d
+    
+    section Phase 4: Mobile Navigation
+    Touch-friendly controls    :p4-1, after p3-2, 2d
+    Gesture recognition        :p4-2, after p4-1, 2d
+    Responsive indicators      :p4-3, after p4-2, 1d
+    Mobile optimization        :p4-4, after p4-3, 2d
+    Mobile testing            :p4-5, after p4-4, 1d
+    
+    section Phase 5: Contextual Help
+    Help system architecture   :p5-1, after p4-2, 2d
+    Progressive disclosure     :p5-2, after p5-1, 2d
+    Interactive tutorials      :p5-3, after p5-2, 2d
+    Smart suggestions          :p5-4, after p5-3, 2d
+    Help system testing        :p5-5, after p5-4, 1d
+    
+    section Integration & Deployment
+    Cross-phase integration    :int-1, after p3-5, 3d
+    End-to-end testing         :int-2, after int-1, 2d
+    Performance optimization   :int-3, after int-2, 2d
+    Production deployment      :int-4, after int-3, 1d
