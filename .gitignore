@@ -1,0 +1,33 @@
+# Xcode
+.DS_Store
+*.swp
+*.xcuserstate
+*.xcuserdatad
+*.xcworkspace
+!*.xcworkspace/contents.xcworkspacedata
+
+# API Keys - NEVER commit these
+Config.xcconfig
+
+# Build
+/build
+/DerivedData
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build/
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Code Injection
+iOSInjectionProject/
