@@ -1,0 +1,341 @@
+openapi: 3.0.3
+info:
+  title: Investigation Service API
+  description: API contract for the Investigation microservice
+  version: 1.0.0
+
+paths:
+  /investigations:
+    get:
+      summary: List investigations
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, running, completed, failed]
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [manual, structured]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of investigations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  investigations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Investigation'
+                  total:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+
+    post:
+      summary: Create new investigation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInvestigationRequest'
+      responses:
+        '201':
+          description: Investigation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Investigation'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /investigations/{id}:
+    get:
+      summary: Get investigation details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Investigation details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Investigation'
+        '404':
+          description: Investigation not found
+
+    put:
+      summary: Update investigation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInvestigationRequest'
+      responses:
+        '200':
+          description: Investigation updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Investigation'
+
+    delete:
+      summary: Delete investigation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Investigation deleted
+
+  /investigations/{id}/start:
+    post:
+      summary: Start investigation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Investigation started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Investigation'
+
+  /investigations/{id}/stop:
+    post:
+      summary: Stop investigation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Investigation stopped
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Investigation'
+
+components:
+  schemas:
+    Investigation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+        entityType:
+          type: string
+          enum: [user_id, email, phone, device_id]
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        type:
+          type: string
+          enum: [manual, structured]
+        created:
+          type: string
+          format: date-time
+        updated:
+          type: string
+          format: date-time
+        riskScore:
+          type: number
+          minimum: 0
+          maximum: 100
+        findings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Finding'
+        agents:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgentExecution'
+        metadata:
+          $ref: '#/components/schemas/InvestigationMetadata'
+
+    Finding:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        agentId:
+          type: string
+        category:
+          type: string
+          enum: [device, location, network, behavior]
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+        title:
+          type: string
+        description:
+          type: string
+        evidence:
+          type: array
+          items:
+            $ref: '#/components/schemas/Evidence'
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+
+    Evidence:
+      type: object
+      properties:
+        type:
+          type: string
+        value:
+          type: string
+        source:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    AgentExecution:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        agentId:
+          type: string
+        investigationId:
+          type: string
+        status:
+          type: string
+          enum: [queued, running, completed, failed]
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+        logs:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgentLog'
+        results:
+          type: object
+
+    AgentLog:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        level:
+          type: string
+          enum: [info, warning, error, debug]
+        message:
+          type: string
+        data:
+          type: object
+
+    InvestigationMetadata:
+      type: object
+      properties:
+        estimatedDuration:
+          type: integer
+        dataSourcesQueried:
+          type: array
+          items:
+            type: string
+        apiCallsUsed:
+          type: integer
+        tokensUsed:
+          type: integer
+
+    CreateInvestigationRequest:
+      type: object
+      required:
+        - userId
+        - entityType
+        - type
+      properties:
+        userId:
+          type: string
+        entityType:
+          type: string
+          enum: [user_id, email, phone, device_id]
+        type:
+          type: string
+          enum: [manual, structured]
+        agents:
+          type: array
+          items:
+            type: string
+
+    UpdateInvestigationRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        riskScore:
+          type: number
+          minimum: 0
+          maximum: 100
+        findings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Finding'
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object

@@ -1,0 +1,119 @@
+# Prometheus configuration for Olorin Frontend Monitoring
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Frontend services via Traefik metrics
+  - job_name: 'traefik'
+    static_configs:
+      - targets: ['traefik:8080']
+    metrics_path: /metrics
+
+  # Shell service metrics
+  - job_name: 'olorin-shell'
+    static_configs:
+      - targets: ['shell:80']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Investigation service metrics
+  - job_name: 'olorin-investigation'
+    static_configs:
+      - targets: ['investigation:80']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Agent Analytics service metrics
+  - job_name: 'olorin-agent-analytics'
+    static_configs:
+      - targets: ['agent-analytics:80']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # RAG Intelligence service metrics
+  - job_name: 'olorin-rag-intelligence'
+    static_configs:
+      - targets: ['rag-intelligence:80']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Visualization service metrics
+  - job_name: 'olorin-visualization'
+    static_configs:
+      - targets: ['visualization:80']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Reporting service metrics
+  - job_name: 'olorin-reporting'
+    static_configs:
+      - targets: ['reporting:80']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Core UI service metrics
+  - job_name: 'olorin-core-ui'
+    static_configs:
+      - targets: ['core-ui:80']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Design System service metrics
+  - job_name: 'olorin-design-system'
+    static_configs:
+      - targets: ['design-system:80']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Redis metrics
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: /metrics
+
+  # Node.js application metrics (if using prom-client)
+  - job_name: 'frontend-app-metrics'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['shell:3001'] # Custom metrics endpoint
+    metrics_path: /api/metrics
+
+  # Browser User Experience Monitoring (if available)
+  - job_name: 'browser-metrics'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['shell:3001']
+    metrics_path: /api/browser-metrics
+    honor_labels: true
+
+  # Module Federation metrics
+  - job_name: 'module-federation-metrics'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['shell:3001']
+    metrics_path: /api/module-federation-metrics
+    params:
+      format: ['prometheus']

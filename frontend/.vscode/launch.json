@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "chrome debug",
+      "url": "http://localhost:34212",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "start dev server",
+      "postDebugTask": "Terminate All Tasks"
+    }
+  ]
+}

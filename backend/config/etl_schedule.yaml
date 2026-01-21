@@ -1,0 +1,105 @@
+# ETL Pipeline Scheduling Configuration
+# Precision Detection Enhancement - Daily Incremental Updates
+
+# Daily ETL Pipeline Schedule
+etl_pipeline:
+  # Run daily at 2 AM UTC (adjust for your timezone)
+  schedule: "0 2 * * *"
+  script: "scripts/etl_precision_detection.py"
+  description: "Extract mature transactions from Snowflake, load to PostgreSQL, build labels, refresh views"
+  
+  # Configuration
+  config:
+    # Maturity window (days)
+    maturity_window_days: 14
+    
+    # Historical window (months)
+    historical_window_months: 6
+    
+    # Batch size for processing
+    batch_size: 10000
+    
+    # Enable concurrent materialized view refresh
+    concurrent_refresh: true
+
+# Enrichment Pipeline Schedule
+enrichment_pipeline:
+  # Run daily at 3 AM UTC (after ETL completes)
+  schedule: "0 3 * * *"
+  script: "scripts/enrichment/enrichment_pipeline.py"
+  description: "Batch enrich transactions with external data (BIN, IP, email, phone)"
+  
+  # Configuration
+  config:
+    # Minimum age in days for transactions to enrich
+    min_age_days: 14
+    
+    # Maximum transactions per run
+    limit: 10000
+    
+    # Enrichment steps to run
+    steps:
+      - "bin"
+      - "ip"
+      - "email_phone"
+    
+    # Graph enrichment (runs separately when Neo4j data available)
+    graph_enrichment:
+      enabled: false
+      schedule: "0 4 * * *"
+      script: "scripts/enrichment/graph_analytics_export.py"
+
+# Model Training Schedule
+model_training:
+  # Run weekly on Sunday at 1 AM UTC
+  schedule: "0 1 * * 0"
+  script: "scripts/train_precision_model.py"
+  description: "Retrain XGBoost model with latest features and labels"
+  
+  # Configuration
+  config:
+    # Calibration method
+    calibration_method: "isotonic"  # or "sigmoid"
+    
+    # Model threshold
+    model_threshold: 0.5
+    
+    # Model directory
+    model_dir: "models"
+    
+    # Temporal split ratio
+    train_ratio: 0.8
+
+# Materialized View Refresh Schedule
+materialized_views:
+  # Refresh after ETL completes (runs automatically in ETL pipeline)
+  # Can also be run independently if needed
+  schedule: "0 2 * * *"
+  description: "Refresh feature engineering materialized views"
+  
+  # Views to refresh
+  views:
+    - "mv_merchant_day"
+    - "mv_burst_flags"
+    - "mv_peer_stats"
+    - "mv_peer_flags"
+    - "mv_txn_feats_basic"
+    - "mv_txn_graph_feats"
+    - "mv_trailing_merchant"
+    - "mv_features_txn"
+
+# Monitoring and Alerts
+monitoring:
+  # Performance thresholds
+  thresholds:
+    etl_execution_time_minutes: 30
+    enrichment_execution_time_hours: 2
+    model_training_time_hours: 1
+    feature_service_query_ms: 100
+  
+  # Alert on failures
+  alert_on_failure: true
+  
+  # Log retention (days)
+  log_retention_days: 30
+

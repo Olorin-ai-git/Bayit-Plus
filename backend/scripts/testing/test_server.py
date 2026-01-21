@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+"""
+Simplified Test Server for Structured Investigation Testing
+
+This server includes only the essential components needed to test the structured
+investigation system without the complex dependencies that might be missing.
+"""
+
+import logging
+
+import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Create FastAPI app
+app = FastAPI(
+    title="Olorin Structured Investigation Test Server",
+    description="Simplified server for testing structured investigation capabilities",
+    version="1.0.0",
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "https://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {"status": "healthy", "service": "olorin-test-server"}
+
+
+@app.get("/")
+async def root():
+    """Root endpoint"""
+    return {
+        "message": "Olorin Structured Investigation Test Server",
+        "version": "1.0.0",
+        "endpoints": {
+            "health": "/health",
+            "structured_investigations": "/structured",
+            "docs": "/docs",
+        },
+    }
+
+
+# Include our structured investigation router
+try:
+    from app.router.structured_investigation_router import router as structured_router
+
+    app.include_router(structured_router)
+    logger.info("✅ Structured investigation router loaded successfully")
+except Exception as e:
+    logger.warning(f"⚠️ Could not load structured investigation router: {e}")
+
+    # Create a fallback minimal router for testing
+    from fastapi import APIRouter
+
+    fallback_router = APIRouter(prefix="/structured", tags=["structured-investigation"])
+
+    @fallback_router.get("/scenarios")
+    async def list_scenarios_fallback():
+        return {
+            "fraud_scenarios": ["device_spoofing", "impossible_travel"],
+            "legitimate_scenarios": ["normal_behavior"],
+        }
+
+    @fallback_router.post("/start_investigation")
+    async def start_investigation_fallback():
+        return {
+            "investigation_id": "TEST_FALLBACK_001",
+            "status": "started",
+            "message": "Fallback test mode - structured investigation router not fully loaded",
+            "note": "This is a minimal fallback for basic testing",
+        }
+
+    app.include_router(fallback_router)
+    logger.info("✅ Fallback structured investigation endpoints loaded")
+
+if __name__ == "__main__":
+    print("🚀 Starting Olorin Structured Investigation Test Server")
+    print("📡 Server will be available at: http://localhost:8090")
+    print("📋 API documentation at: http://localhost:8090/docs")
+    print("🧪 Test endpoints at: http://localhost:8090/structured/scenarios")
+
+    uvicorn.run(app, host="0.0.0.0", port=8090, log_level="info", reload=False)

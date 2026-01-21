@@ -1,0 +1,229 @@
+---
+genos_registry_schema: "1.0.0"
+agents_experience_id: "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58"
+agents:
+  - name: "demo_chat_agent"
+    description: |
+      This agent is designed to process natural language queries and retrieve relevant information using the LangChain framework.
+      It excels at understanding complex questions and providing accurate, concise answers.
+      This agent uses a combination of vector search and language model reasoning to deliver optimal results.
+    associated_experience_ids: ["d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58"] # (Optional) list of upstream experience_ids calling this agent
+    framework: langgraph
+    tools:
+      - "financial_knowledgebase_retriever"
+      - "tax_knowledgebase_retriever"
+      - "user_attribute_retriever"
+      - "company_attribute_retriever"
+      - "list_customers"
+    prompt_id: ""
+    environments:
+      qal:
+        agent_url: "http://localhost:8090"
+        path: "/v1/agent/invoke"
+      e2e:
+        agent_url: "http://localhost:8090"
+        path: "/v1/agent/invoke"
+      prd:
+        agent_url: "http://localhost:8090"
+        path: "/v1/agent/invoke"
+  - name: "web_agent"
+    description: |
+      Web Domain Analysis Agent for fraud detection investigations.
+      Analyzes web-based intelligence, OSINT data, and online reputation for fraud detection.
+      Uses Composio Search and WebCrawl tools to gather web intelligence about entities.
+      Specializes in detecting threat indicators, reputation issues, and fraud patterns from web sources.
+    associated_experience_ids: []
+    framework: langgraph
+    tools:
+      - "composio_search"
+      - "composio_webcrawl"
+      - "web_search"
+      - "web_scrape"
+      - "snowflake_query_tool"
+      - "database_query"
+      - "vector_search"
+    prompt_id: ""
+    environments:
+      qal:
+        agent_url: "http://localhost:8090"
+        path: "/v1/agent/invoke"
+      e2e:
+        agent_url: "http://localhost:8090"
+        path: "/v1/agent/invoke"
+      prd:
+        agent_url: "http://localhost:8090"
+        path: "/v1/agent/invoke"
+tools:
+  - name: "financial_knowledgebase_retriever"
+    scope: "public"
+    response_type: "sync"
+    tool_category_list:
+      - "knowledge_base"
+      - "api"
+    description: "This tool can read from financial RAG Knowledge Base to answer questions related to financial transactions and accounting"
+    environments:
+      qal:
+        tool_url: "http://localhost:8090"
+      e2e:
+        tool_url: "http://localhost:8090"
+      prd:
+        tool_url: "http://localhost:8090"
+    tags:
+      - "A2D"
+      - "FINANCIAL"
+      - "RAG"
+    auth: "PrivateAuth"
+    protocol: "mcp"
+    input_schema: ""
+    output_schema: ""
+    tool_capabilities:
+      is_rollback_supported: false
+  - name: "tax_knowledgebase_retriever"
+    scope: "public"
+    response_type: "sync"
+    tool_category_list:
+      - "knowledge_base"
+      - "api"
+    description: "This tool can read from tax RAG Knowledge Base to answer questions related to tax preparation and filing"
+    environments:
+      qal:
+        tool_url: "http://localhost:8090"
+      e2e:
+        tool_url: "http://localhost:8090"
+      prd:
+        tool_url: "http://localhost:8090"
+    tags:
+      - "A2D"
+      - "TAX"
+      - "RAG"
+    auth: "PrivateAuth"
+    protocol: "mcp"
+    input_schema: ""
+    output_schema: ""
+    tool_capabilities:
+      is_rollback_supported: true
+  - name: "user_attribute_retriever"
+    scope: "public"
+    response_type: "sync"
+    tool_category_list:
+      - "knowledge_base"
+      - "api"
+    description: "This tool can read from user data to answer questions related to user attributes and profiles"
+    environments:
+      qal:
+        tool_url: "http://localhost:8090"
+      e2e:
+        tool_url: "http://localhost:8090"
+      prd:
+        tool_url: "http://localhost:8090"
+    tags:
+      - "A2D"
+      - "USER_DATA"
+    auth: "PrivateAuth"
+    protocol: "mcp"
+    input_schema: ""
+    output_schema: ""
+    tool_capabilities:
+      is_rollback_supported: true
+  - name: "company_attribute_retriever"
+    scope: "public"
+    response_type: "sync"
+    tool_category_list:
+      - "knowledge_base"
+      - "api"
+    description: "This tool can read from company data to answer questions related to company attributes and business information"
+    environments:
+      qal:
+        tool_url: "http://localhost:8090"
+      e2e:
+        tool_url: "http://localhost:8090"
+      prd:
+        tool_url: "http://localhost:8090"
+    tags:
+      - "A2D"
+      - "COMPANY_DATA"
+      - "BUSINESS_INFO"
+    auth: "PrivateAuth"
+    protocol: "mcp"
+    input_schema: ""
+    output_schema: ""
+    tool_capabilities:
+      is_rollback_supported: true
+  - name: "list_customers"
+    scope: "public"
+    response_type: "sync"
+    tool_category_list:
+      - "api"
+    description: "This tool can read from customer service to answer questions related to customer data and management"
+    environments:
+      qal:
+        tool_url: "http://localhost:8090"
+      e2e:
+        tool_url: "http://localhost:8090"
+      prd:
+        tool_url: "http://localhost:8090"
+    tags:
+      - "A2D"
+      - "CUSTOMERS"
+      - "API"
+    auth: "PrivateAuth"
+    protocol: "mcp"
+    input_schema: ""
+    output_schema: ""
+    tool_capabilities:
+      is_rollback_supported: true
+  - name: "composio_search"
+    scope: "public"
+    response_type: "sync"
+    tool_category_list:
+      - "web"
+      - "intelligence"
+      - "osint"
+    description: "Search the web for information using Composio Search API. Provides OSINT data, online reputation analysis, and threat intelligence. Use to find information about entities (IPs, emails, user IDs, etc.) online for fraud detection."
+    environments:
+      qal:
+        tool_url: "http://localhost:8090"
+      e2e:
+        tool_url: "http://localhost:8090"
+      prd:
+        tool_url: "http://localhost:8090"
+    tags:
+      - "FRAUD_DETECTION"
+      - "WEB_INTELLIGENCE"
+      - "OSINT"
+      - "COMPOSIO"
+      - "SEARCH"
+    auth: "PrivateAuth"
+    protocol: "mcp"
+    input_schema: ""
+    output_schema: ""
+    tool_capabilities:
+      is_rollback_supported: false
+  - name: "composio_webcrawl"
+    scope: "public"
+    response_type: "sync"
+    tool_category_list:
+      - "web"
+      - "intelligence"
+      - "osint"
+    description: "Crawl and extract content from web pages using Composio FireCrawl API. Provides deep web crawling capabilities for fraud investigation. Use to crawl suspicious URLs or websites related to entities being investigated. Supports depth control and link extraction."
+    environments:
+      qal:
+        tool_url: "http://localhost:8090"
+      e2e:
+        tool_url: "http://localhost:8090"
+      prd:
+        tool_url: "http://localhost:8090"
+    tags:
+      - "FRAUD_DETECTION"
+      - "WEB_INTELLIGENCE"
+      - "OSINT"
+      - "COMPOSIO"
+      - "FIRECRAWL"
+      - "CRAWL"
+    auth: "PrivateAuth"
+    protocol: "mcp"
+    input_schema: ""
+    output_schema: ""
+    tool_capabilities:
+      is_rollback_supported: false

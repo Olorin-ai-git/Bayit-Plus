@@ -1,0 +1,266 @@
+{
+  "scenario_name": "authentication_brute_force",
+  "description": "Attacker attempting to gain account access through systematic password guessing with multiple failed login attempts",
+  "investigation_complexity": "high",
+  "expected_fraud_indicators": [
+    "Excessive failed login attempts in short timeframe",
+    "Multiple IP addresses attempting same account",
+    "Sequential password attempts with common patterns",
+    "Automated behavior patterns detected"
+  ],
+  "transaction": {
+    "transaction_id": "TXN_AUTH_001",
+    "amount": 2499.99,
+    "currency": "USD",
+    "timestamp": "2025-09-08T16:45:23Z",
+    "merchant": {
+      "name": "Premium Electronics Hub",
+      "category": "electronics",
+      "location": {
+        "latitude": 34.0522,
+        "longitude": -118.2437,
+        "city": "Los Angeles",
+        "state": "CA",
+        "country": "United States",
+        "postal_code": "90001"
+      }
+    }
+  },
+  "user": {
+    "user_id": "USER_AUTH_001",
+    "account_age_days": 892,
+    "historical_patterns": {
+      "avg_transaction_amount": 245.75,
+      "common_locations": [
+        {
+          "latitude": 40.7589,
+          "longitude": -73.9851,
+          "city": "New York",
+          "state": "NY",
+          "country": "United States",
+          "postal_code": "10018"
+        }
+      ],
+      "typical_spending_categories": ["books", "software", "online_services", "electronics"],
+      "authentication_patterns": {
+        "typical_login_times": ["09:00-11:00", "18:00-20:00"],
+        "usual_devices": ["MacBook Pro", "iPhone"],
+        "mfa_always_enabled": true,
+        "failed_login_history": "minimal"
+      }
+    }
+  },
+  "device": {
+    "device_id": "DEV_AUTH_ATTACK_001",
+    "fingerprint": {
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "screen_resolution": "1366x768",
+      "timezone": "America/Los_Angeles",
+      "language": "en-US",
+      "platform": "Linux x86_64",
+      "browser": "Chrome"
+    },
+    "first_seen": "2025-09-08T14:23:45Z",
+    "is_trusted": false,
+    "fraud_indicators": {
+      "fingerprint_inconsistencies": [
+        "User historically uses macOS, current session shows Linux",
+        "Screen resolution differs from user's typical 2880x1800",
+        "First Linux device associated with account",
+        "Browser fingerprint suggests automated tool usage"
+      ],
+      "device_reputation": {
+        "first_time_device": true,
+        "multiple_user_associations": true,
+        "known_fraud_device": true,
+        "attack_tool_signatures": ["Selenium WebDriver", "Automated browser"]
+      }
+    }
+  },
+  "location": {
+    "latitude": 34.0522,
+    "longitude": -118.2437,
+    "city": "Los Angeles",
+    "state": "CA",
+    "country": "United States",
+    "postal_code": "90001",
+    "fraud_indicators": {
+      "distance_from_last_login": 2445.2,
+      "impossible_travel": {
+        "detected": true,
+        "last_location": {
+          "latitude": 40.7589,
+          "longitude": -73.9851,
+          "city": "New York",
+          "state": "NY"
+        },
+        "last_activity_time": "2025-09-08T13:30:00Z",
+        "travel_time_required_hours": 6.0,
+        "actual_time_elapsed_hours": 1.0
+      },
+      "known_attack_location": {
+        "detected": true,
+        "reputation": "multiple_fraud_reports",
+        "proxy_farm_indicators": true
+      }
+    }
+  },
+  "network": {
+    "ip": "203.0.113.87",
+    "proxy_detected": true,
+    "vpn_detected": false,
+    "tor_detected": false,
+    "country_code": "US",
+    "asn": "AS1234",
+    "isp": "Attack Proxy Service Inc.",
+    "fraud_indicators": {
+      "proxy_usage": {
+        "detected": true,
+        "provider": "Underground Proxy Network",
+        "exit_country": "US",
+        "suspicious_for_user": true,
+        "reason": "User never uses proxy services, clean history for 2+ years"
+      },
+      "ip_reputation": {
+        "malicious": true,
+        "suspicious": true,
+        "bot_activity": true,
+        "abuse_reports": 47,
+        "brute_force_source": true,
+        "credential_stuffing_reports": 23
+      }
+    }
+  },
+  "behavioral_signals": {
+    "velocity_indicators": {
+      "transactions_last_hour": 1,
+      "transactions_last_day": 1,
+      "unique_devices_last_day": 1,
+      "fraud_flags": {
+        "high_velocity": false,
+        "multiple_devices": false,
+        "unusual_pattern": true
+      }
+    },
+    "session_info": {
+      "session_duration": 45,
+      "pages_visited": 2,
+      "time_on_checkout": 8,
+      "fraud_indicators": {
+        "rushed_checkout": true,
+        "minimal_browsing": true,
+        "automated_behavior_suspected": true,
+        "mouse_movement_patterns": "robotic"
+      }
+    },
+    "authentication_anomalies": {
+      "login_attempts": 47,
+      "failed_attempts": 46,
+      "success_rate": 0.021,
+      "password_resets_recent": 0,
+      "2fa_bypassed": true,
+      "security_questions_skipped": true,
+      "attack_patterns": {
+        "brute_force_detected": true,
+        "dictionary_attack": true,
+        "credential_stuffing": false,
+        "timing_patterns": "automated",
+        "attempt_frequency": "2.3_per_second"
+      },
+      "mfa_bypass_indicators": {
+        "sim_swap_suspected": false,
+        "backup_codes_used": false,
+        "social_engineering": false,
+        "technical_bypass": true,
+        "bypass_method": "automated_tool"
+      }
+    }
+  },
+  "investigation_timeline": [
+    {
+      "timestamp": "2025-09-08T14:23:45Z",
+      "event": "First login attempt from new device/IP",
+      "details": "Linux device first seen, proxy IP detected, password attempt #1"
+    },
+    {
+      "timestamp": "2025-09-08T14:24:00Z",
+      "event": "Rapid login attempts begin",
+      "details": "5 attempts in 15 seconds, automated pattern detected"
+    },
+    {
+      "timestamp": "2025-09-08T15:35:22Z",
+      "event": "Brute force attack continues",
+      "details": "35 failed attempts over 70 minutes, dictionary attack pattern"
+    },
+    {
+      "timestamp": "2025-09-08T16:42:15Z",
+      "event": "Login successful after 47 attempts",
+      "details": "MFA bypassed through automated tool, account compromised"
+    },
+    {
+      "timestamp": "2025-09-08T16:43:30Z",
+      "event": "Immediate high-value purchase initiated",
+      "details": "No browsing, direct to expensive electronics"
+    },
+    {
+      "timestamp": "2025-09-08T16:45:23Z",
+      "event": "Transaction completed",
+      "details": "Purchase finalized within 3 minutes of successful login"
+    }
+  ],
+  "expected_agent_findings": {
+    "authentication_agent": {
+      "risk_level": "CRITICAL",
+      "key_findings": [
+        "47 login attempts detected with 98% failure rate",
+        "Brute force attack pattern over 2+ hours",
+        "MFA bypass through automated tool",
+        "Successful login followed by immediate high-value fraud",
+        "Authentication timing patterns indicate automated attack tool"
+      ]
+    },
+    "device_analysis_agent": {
+      "risk_level": "HIGH",
+      "key_findings": [
+        "First-time Linux device inconsistent with user's macOS history",
+        "Browser fingerprint suggests automated tool usage",
+        "Device associated with multiple attack campaigns",
+        "Screen resolution and platform mismatch user patterns"
+      ]
+    },
+    "location_analysis_agent": {
+      "risk_level": "CRITICAL",
+      "key_findings": [
+        "Impossible travel: 2445 miles in 1 hour",
+        "Location associated with known attack infrastructure",
+        "No gradual geographic transitions in user history"
+      ]
+    },
+    "network_analysis_agent": {
+      "risk_level": "CRITICAL",
+      "key_findings": [
+        "IP address flagged for brute force attacks (47 abuse reports)",
+        "Proxy service usage unprecedented for user",
+        "Network associated with credential stuffing campaigns",
+        "ISP is known attack proxy service provider"
+      ]
+    },
+    "logs_analysis_agent": {
+      "risk_level": "HIGH",
+      "key_findings": [
+        "Automated behavior patterns throughout session",
+        "Minimal legitimate user interaction detected",
+        "Session timeline consistent with account takeover"
+      ]
+    }
+  },
+  "investigation_verdict": {
+    "overall_risk_score": 98,
+    "fraud_classification": "CONFIRMED_FRAUD",
+    "primary_fraud_type": "Account Takeover via Brute Force Authentication Attack",
+    "recommended_action": "IMMEDIATE_BLOCK_AND_INVESTIGATE",
+    "confidence_level": 0.99,
+    "attack_classification": "automated_brute_force",
+    "security_impact": "account_compromise"
+  }
+}

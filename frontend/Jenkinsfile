@@ -1,0 +1,18 @@
+#!/usr/bin/env groovy
+
+// https://github.olorin.com/UX-Infra/jenkins-shared-libraries
+@Library(value='ux-infra-libraries', changelog=false) _
+
+// See all available config options here:
+// https://github.olorin.com/UX-Infra/jenkins-shared-libraries/blob/master/docs/UX_PLUGIN_PIPELINE.md
+
+
+uxPluginCLI {
+  assetId = '6347841268104977808'
+  assetAlias = 'olorin.cas.hri.olorinwebplugin'
+  tag = '4'
+  testUIRemote = true
+  testUI = false
+  testUnit = false
+}
+

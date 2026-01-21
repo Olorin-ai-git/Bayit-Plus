@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olorin - Visualization Hub Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Olorin Corporate Colors */
+            --bg-primary: #0B1221;
+            --bg-secondary: #1A2332;
+            --bg-tertiary: #242E3E;
+            --accent-primary: #FF6600;
+            --accent-primary-hover: #E55A00;
+            --accent-secondary: #06B6D4;
+            --accent-secondary-hover: #0891B2;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+            --info: #3B82F6;
+            --text-primary: #F9FAFB;
+            --text-secondary: #D1D5DB;
+            --text-tertiary: #9CA3AF;
+            --text-disabled: #6B7280;
+            --border-primary: #374151;
+            --border-secondary: #4B5563;
+            --border-accent: #FF6600;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .header-info {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 8px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        /* Grid Layouts */
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        /* Risk Gauge */
+        .gauge-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .gauge-svg {
+            width: 200px;
+            height: 120px;
+            margin: 0 auto;
+        }
+
+        .gauge-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin: 12px 0;
+        }
+
+        .gauge-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .gauge-severity {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .severity-critical {
+            background: rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+            border: 1px solid #EF4444;
+        }
+
+        .severity-high {
+            background: rgba(245, 158, 11, 0.2);
+            color: #F59E0B;
+            border: 1px solid #F59E0B;
+        }
+
+        .severity-medium {
+            background: rgba(6, 182, 212, 0.2);
+            color: #06B6D4;
+            border: 1px solid #06B6D4;
+        }
+
+        .severity-low {
+            background: rgba(156, 163, 175, 0.2);
+            color: #9CA3AF;
+            border: 1px solid #9CA3AF;
+        }
+
+        /* Network Graph */
+        .network-container {
+            position: relative;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            height: 400px;
+            overflow: hidden;
+        }
+
+        .network-controls {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .network-btn {
+            padding: 8px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 12px;
+        }
+
+        .network-btn:hover {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        /* Map Container */
+        .map-container {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-marker {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: var(--error);
+            border: 3px solid white;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            cursor: pointer;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Timeline */
+        .timeline {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            border-left: 3px solid var(--border-primary);
+            margin-left: 12px;
+            margin-bottom: 16px;
+            transition: all 0.2s;
+        }
+
+        .timeline-item:hover {
+            background: var(--bg-tertiary);
+            border-left-color: var(--accent-primary);
+        }
+
+        .timeline-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .timeline-icon.error {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--error);
+        }
+
+        .timeline-icon.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .timeline-icon.info {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--info);
+        }
+
+        .timeline-icon.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .timeline-details {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Monitor Charts */
+        .monitor-container {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 20px;
+            height: 200px;
+        }
+
+        .ekg-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .monitor-label {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .stat-card {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent-primary);
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        /* Animations */
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .rotating {
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-secondary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .tabs-container {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+
+            .grid-3, .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Node info panel */
+        .node-info {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header fade-in">
+            <div class="header-title">🎯 Olorin - Investigation Visualization Hub</div>
+            <div class="header-info">
+                <div>Investigation: <strong>INV-2024-001</strong></div>
+                <div>Last Updated: <strong>Now</strong></div>
+                <div class="status-badge">● ACTIVE</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs-container fade-in">
+            <button class="tab active" onclick="showTab('overview')">📊 Overview</button>
+            <button class="tab" onclick="showTab('network')">🌐 Network</button>
+            <button class="tab" onclick="showTab('map')">🗺️ Map</button>
+            <button class="tab" onclick="showTab('timeline')">📅 Timeline</button>
+            <button class="tab" onclick="showTab('monitor')">📡 Monitor</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active fade-in">
+            <div class="card">
+                <h2 class="card-title">Risk Analysis</h2>
+                <div class="grid grid-3">
+                    <!-- Overall Risk -->
+                    <div class="gauge-container">
+                        <svg class="gauge-svg" viewBox="0 0 200 120">
+                            <defs>
+                                <linearGradient id="gaugeGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#EF4444;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#DC2626;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <!-- Background arc -->
+                            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#374151" stroke-width="12" stroke-linecap="round"/>
+                            <!-- Filled arc (85%) -->
+                            <path d="M 20 100 A 80 80 0 0 1 172 68" fill="none" stroke="url(#gaugeGradient1)" stroke-width="12" stroke-linecap="round">
+                                <animate attributeName="stroke-dasharray" from="0 500" to="240 500" dur="1.5s" fill="freeze"/>
+                            </path>
+                            <!-- Needle -->
+                            <line x1="100" y1="100" x2="168" y2="74" stroke="white" stroke-width="3" stroke-linecap="round">
+                                <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="136 100 100" dur="1.5s" fill="freeze"/>
+                            </line>
+                            <circle cx="100" cy="100" r="8" fill="white"/>
+                        </svg>
+                        <div class="gauge-value" style="color: #EF4444;">85</div>
+                        <div class="gauge-label">Overall Risk</div>
+                        <div class="gauge-severity severity-critical">CRITICAL</div>
+                    </div>
+
+                    <!-- Device Risk -->
+                    <div class="gauge-container">
+                        <svg class="gauge-svg" viewBox="0 0 200 120">
+                            <defs>
+                                <linearGradient id="gaugeGradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#D97706;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#374151" stroke-width="12" stroke-linecap="round"/>
+                            <path d="M 20 100 A 80 80 0 0 1 152 52" fill="none" stroke="url(#gaugeGradient2)" stroke-width="12" stroke-linecap="round">
+                                <animate attributeName="stroke-dasharray" from="0 500" to="180 500" dur="1.5s" fill="freeze"/>
+                            </path>
+                            <line x1="100" y1="100" x2="145" y2="60" stroke="white" stroke-width="3" stroke-linecap="round">
+                                <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="102 100 100" dur="1.5s" fill="freeze"/>
+                            </line>
+                            <circle cx="100" cy="100" r="8" fill="white"/>
+                        </svg>
+                        <div class="gauge-value" style="color: #F59E0B;">72</div>
+                        <div class="gauge-label">Device Risk</div>
+                        <div class="gauge-severity severity-high">HIGH</div>
+                    </div>
+
+                    <!-- Location Risk -->
+                    <div class="gauge-container">
+                        <svg class="gauge-svg" viewBox="0 0 200 120">
+                            <defs>
+                                <linearGradient id="gaugeGradient3" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#06B6D4;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#0891B2;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#374151" stroke-width="12" stroke-linecap="round"/>
+                            <path d="M 20 100 A 80 80 0 0 1 115 28" fill="none" stroke="url(#gaugeGradient3)" stroke-width="12" stroke-linecap="round">
+                                <animate attributeName="stroke-dasharray" from="0 500" to="115 500" dur="1.5s" fill="freeze"/>
+                            </path>
+                            <line x1="100" y1="100" x2="110" y2="36" stroke="white" stroke-width="3" stroke-linecap="round">
+                                <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="65 100 100" dur="1.5s" fill="freeze"/>
+                            </line>
+                            <circle cx="100" cy="100" r="8" fill="white"/>
+                        </svg>
+                        <div class="gauge-value" style="color: #06B6D4;">45</div>
+                        <div class="gauge-label">Location Risk</div>
+                        <div class="gauge-severity severity-medium">MEDIUM</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Key Insights</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">15</div>
+                        <div class="stat-label">Suspicious Devices</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">High-Risk Locations</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">127</div>
+                        <div class="stat-label">Network Connections</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">1,234</div>
+                        <div class="stat-label">Log Entries</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button class="btn btn-primary" onclick="showTab('network')">🌐 View Network Diagram</button>
+                <button class="btn btn-secondary" onclick="showTab('map')">🗺️ Explore Geographic Data</button>
+                <button class="btn btn-secondary" onclick="showTab('timeline')">📅 Review Timeline</button>
+                <button class="btn btn-secondary">📊 Export Report</button>
+            </div>
+        </div>
+
+        <!-- Network Tab -->
+        <div id="network" class="tab-content">
+            <div class="card">
+                <h2 class="card-title">Entity Relationship Network</h2>
+                <div class="network-container">
+                    <canvas id="networkCanvas" width="800" height="400"></canvas>
+                    <div class="network-controls">
+                        <button class="network-btn">🔍 Fit</button>
+                        <button class="network-btn">➕ Zoom In</button>
+                        <button class="network-btn">➖ Zoom Out</button>
+                        <button class="network-btn">⚡ Physics: ON</button>
+                    </div>
+                </div>
+                <div class="node-info">
+                    <div class="card-title">Selected Node: DEV-123</div>
+                    <div class="info-row">
+                        <span class="info-label">Type:</span>
+                        <span class="info-value">Mobile Device (iOS)</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Risk Score:</span>
+                        <span class="info-value" style="color: #F59E0B;">72 (HIGH)</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Connections:</span>
+                        <span class="info-value">3 entities</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">First Seen:</span>
+                        <span class="info-value">2024-01-15 14:23:45</span>
+                    </div>
+                </div>
+                <div class="monitor-label">Nodes: 127 | Edges: 245 | Clusters: 3</div>
+            </div>
+        </div>
+
+        <!-- Map Tab -->
+        <div id="map" class="tab-content">
+            <div class="card">
+                <h2 class="card-title">Geographic Distribution</h2>
+                <div class="map-container">
+                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-tertiary);">
+                        <div style="text-align: center;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">🗺️</div>
+                            <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Interactive Map View</div>
+                            <div style="font-size: 14px;">Google Maps integration with risk-coded markers</div>
+                        </div>
+                    </div>
+                    <div class="map-marker" style="top: 30%; left: 25%;"></div>
+                    <div class="map-marker" style="top: 50%; left: 60%; background: var(--warning);"></div>
+                    <div class="map-marker" style="top: 70%; left: 45%; background: var(--info);"></div>
+                </div>
+                <div class="node-info">
+                    <div class="card-title">Location: New York City, NY</div>
+                    <div class="info-row">
+                        <span class="info-label">Coordinates:</span>
+                        <span class="info-value">40.7128°N, 74.0060°W</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Risk Score:</span>
+                        <span class="info-value" style="color: #EF4444;">85 (CRITICAL)</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Associated Devices:</span>
+                        <span class="info-value">15</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Access Attempts:</span>
+                        <span class="info-value">47</span>
+                    </div>
+                </div>
+                <div class="monitor-label">Locations: 8 | High Risk: 3 | Clusters: 2</div>
+            </div>
+        </div>
+
+        <!-- Timeline Tab -->
+        <div id="timeline" class="tab-content">
+            <div class="card">
+                <h2 class="card-title">Event Timeline</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-icon error">🔴</div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">2024-01-15 14:23:45</div>
+                            <div class="timeline-title">LOGIN FAILED</div>
+                            <div class="timeline-details">User: john@example.com, Device: DEV-123</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon warning">⚠️</div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">2024-01-15 14:22:10</div>
+                            <div class="timeline-title">SUSPICIOUS LOCATION</div>
+                            <div class="timeline-details">Location: NYC (40.7128°N, 74.0060°W)</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon info">ℹ️</div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">2024-01-15 14:20:33</div>
+                            <div class="timeline-title">DEVICE FINGERPRINT</div>
+                            <div class="timeline-details">Device: DEV-123, Match Score: 0.87</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon success">✓</div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">2024-01-15 14:18:05</div>
+                            <div class="timeline-title">LOGIN SUCCESS</div>
+                            <div class="timeline-details">User: john@example.com, Location: LA</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon info">ℹ️</div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">2024-01-15 14:15:22</div>
+                            <div class="timeline-title">NETWORK ANALYSIS</div>
+                            <div class="timeline-details">Analyzed 127 connections, found 3 anomalies</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="monitor-label">Events: 1,234 | Filtered: 47 | Showing: 1-20</div>
+            </div>
+        </div>
+
+        <!-- Monitor Tab -->
+        <div id="monitor" class="tab-content">
+            <div class="grid grid-2">
+                <div class="card">
+                    <h2 class="card-title">Agent Heartbeat (EKG)</h2>
+                    <div class="monitor-container">
+                        <canvas id="ekgCanvas" class="ekg-canvas"></canvas>
+                    </div>
+                    <div class="monitor-label">Status: HEALTHY | BPM: 60</div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Transactions Per Second</h2>
+                    <div class="monitor-container">
+                        <canvas id="tpsCanvas" class="ekg-canvas"></canvas>
+                    </div>
+                    <div class="monitor-label">Current: 127 TPS | Peak: 156 TPS</div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Anomaly Radar</h2>
+                    <div class="monitor-container">
+                        <canvas id="radarCanvas" class="ekg-canvas"></canvas>
+                    </div>
+                    <div class="monitor-label">Anomalies: 2 detected</div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">System Performance</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">60</div>
+                            <div class="stat-label">FPS</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">< 50</div>
+                            <div class="stat-label">Latency (ms)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">99.9</div>
+                            <div class="stat-label">Uptime %</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Active Agents</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Reinitialize animations for the active tab
+            if (tabName === 'network') {
+                initNetworkCanvas();
+            } else if (tabName === 'monitor') {
+                initMonitorCanvases();
+            }
+        }
+
+        // Network Canvas
+        function initNetworkCanvas() {
+            const canvas = document.getElementById('networkCanvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.offsetWidth;
+            const height = canvas.height = canvas.offsetHeight;
+
+            // Define nodes
+            const nodes = [
+                { id: 'USER-001', x: width/2, y: 80, color: '#06B6D4', label: 'USER-001' },
+                { id: 'DEV-123', x: width/3, y: 200, color: '#F59E0B', label: 'DEV-123' },
+                { id: 'DEV-456', x: 2*width/3, y: 200, color: '#10B981', label: 'DEV-456' },
+                { id: 'LOC-NYC', x: width/2, y: 320, color: '#EF4444', label: 'LOC-NYC' },
+            ];
+
+            // Draw network
+            function drawNetwork() {
+                ctx.clearRect(0, 0, width, height);
+
+                // Draw edges
+                ctx.strokeStyle = '#4B5563';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(nodes[0].x, nodes[0].y);
+                ctx.lineTo(nodes[1].x, nodes[1].y);
+                ctx.moveTo(nodes[0].x, nodes[0].y);
+                ctx.lineTo(nodes[2].x, nodes[2].y);
+                ctx.moveTo(nodes[1].x, nodes[1].y);
+                ctx.lineTo(nodes[3].x, nodes[3].y);
+                ctx.moveTo(nodes[2].x, nodes[2].y);
+                ctx.lineTo(nodes[3].x, nodes[3].y);
+                ctx.stroke();
+
+                // Draw nodes
+                nodes.forEach(node => {
+                    ctx.fillStyle = node.color;
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, 20, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 10px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(node.label, node.x, node.y - 30);
+                });
+            }
+
+            drawNetwork();
+        }
+
+        // Monitor Canvases
+        function initMonitorCanvases() {
+            initEKG();
+            initTPS();
+            initRadar();
+        }
+
+        function initEKG() {
+            const canvas = document.getElementById('ekgCanvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.offsetWidth;
+            const height = canvas.height = canvas.offsetHeight;
+            let offset = 0;
+
+            function drawEKG() {
+                ctx.fillStyle = '#242E3E';
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.strokeStyle = '#10B981';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+
+                const midY = height / 2;
+                for (let x = 0; x < width; x += 5) {
+                    const cycle = ((x + offset) % 200) / 200;
+                    let y = midY;
+
+                    if (cycle < 0.1) {
+                        y = midY - 30;
+                    } else if (cycle < 0.15) {
+                        y = midY + 40;
+                    } else if (cycle < 0.2) {
+                        y = midY - 50;
+                    } else if (cycle < 0.25) {
+                        y = midY;
+                    }
+
+                    if (x === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+
+                offset += 2;
+                requestAnimationFrame(drawEKG);
+            }
+
+            drawEKG();
+        }
+
+        function initTPS() {
+            const canvas = document.getElementById('tpsCanvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.offsetWidth;
+            const height = canvas.height = canvas.offsetHeight;
+            const values = Array(50).fill(0).map(() => Math.random() * 100 + 50);
+
+            function drawTPS() {
+                ctx.fillStyle = '#242E3E';
+                ctx.fillRect(0, 0, width, height);
+
+                const barWidth = width / values.length;
+                values.forEach((value, i) => {
+                    const barHeight = (value / 200) * height;
+                    ctx.fillStyle = '#06B6D4';
+                    ctx.fillRect(i * barWidth, height - barHeight, barWidth - 2, barHeight);
+                });
+
+                // Shift values and add new
+                values.shift();
+                values.push(Math.random() * 100 + 50);
+
+                setTimeout(() => requestAnimationFrame(drawTPS), 100);
+            }
+
+            drawTPS();
+        }
+
+        function initRadar() {
+            const canvas = document.getElementById('radarCanvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.offsetWidth;
+            const height = canvas.height = canvas.offsetHeight;
+            let angle = 0;
+
+            function drawRadar() {
+                ctx.fillStyle = '#242E3E';
+                ctx.fillRect(0, 0, width, height);
+
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const radius = Math.min(width, height) / 2 - 20;
+
+                // Draw circles
+                ctx.strokeStyle = '#374151';
+                ctx.lineWidth = 1;
+                for (let r = radius/3; r <= radius; r += radius/3) {
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+
+                // Draw sweep line
+                ctx.strokeStyle = '#06B6D4';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                const endX = centerX + Math.cos(angle) * radius;
+                const endY = centerY + Math.sin(angle) * radius;
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+
+                // Draw anomalies
+                ctx.fillStyle = '#EF4444';
+                ctx.beginPath();
+                ctx.arc(centerX + 40, centerY - 30, 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(centerX - 50, centerY + 20, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                angle += 0.05;
+                requestAnimationFrame(drawRadar);
+            }
+
+            drawRadar();
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initNetworkCanvas();
+        });
+    </script>
+</body>
+</html>

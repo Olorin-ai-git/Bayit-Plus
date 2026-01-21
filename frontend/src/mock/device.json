@@ -1,0 +1,139 @@
+{
+  "user_id": "4621097846089147992",
+  "raw_splunk_results": [
+    {
+      "_time": "2025-05-27T10:56:06.965-07:00",
+      "device_id": null,
+      "fuzzy_device_id": null,
+      "smartId": null,
+      "tm_smartid": null,
+      "tm_sessionid": null,
+      "olorin_tid": "cfe50512-1885-4f45-bc74-8d5a556a8d23",
+      "true_ip": null,
+      "true_ip_city": null,
+      "true_ip_country": null,
+      "true_ip_region": null,
+      "true_ip_latitude": null,
+      "true_ip_longitude": null
+    },
+    {
+      "_time": "2025-05-15T07:08:39.584-07:00",
+      "device_id": "6c0998a4c9f0437abbc59706471aaedb",
+      "fuzzy_device_id": "f394742f39214c908476c01623bf4bcd",
+      "smartId": null,
+      "tm_smartid": "f394742f39214c908476c01623bf4bcd",
+      "tm_sessionid": "5b2cd1da38f4403d99c2b6fea53604d9",
+      "olorin_tid": "1-6825f567-6e4aa4180e0bd5f663d02d62",
+      "true_ip": "223.185.128.58",
+      "true_ip_city": "bengaluru",
+      "true_ip_country": null,
+      "true_ip_region": "karnataka",
+      "true_ip_latitude": null,
+      "true_ip_longitude": null
+    },
+    {
+      "_time": "2025-05-15T06:31:40.056-07:00",
+      "device_id": "e9e49d25e6734402a32f797e55d98cd9",
+      "fuzzy_device_id": "e9e49d25e6734402a32f797e55d98cd9",
+      "smartId": null,
+      "tm_smartid": "e9e49d25e6734402a32f797e55d98cd9",
+      "tm_sessionid": "1a977456cfcd4778f2670e3e0cd56efb",
+      "olorin_tid": "1-6825ecbb-090bcf35374826ac3ea66c27",
+      "true_ip": "207.207.181.8",
+      "true_ip_city": "mountain view",
+      "true_ip_country": null,
+      "true_ip_region": "california",
+      "true_ip_latitude": null,
+      "true_ip_longitude": null
+    },
+    {
+      "_time": "2025-05-15T05:24:44.618-07:00",
+      "device_id": "173851f4e3c642c9a8d186545bc8a958",
+      "fuzzy_device_id": "392b4bf1e3ed430090a9f50f1d72563a",
+      "smartId": null,
+      "tm_smartid": "392b4bf1e3ed430090a9f50f1d72563a",
+      "tm_sessionid": "9ab7db13594b4bf27996b4f65a056a9d",
+      "olorin_tid": "1-6825dd0c-2b8ae7857012ae9c472cda9f",
+      "true_ip": "207.207.181.8",
+      "true_ip_city": "mountain view",
+      "true_ip_country": null,
+      "true_ip_region": "california",
+      "true_ip_latitude": null,
+      "true_ip_longitude": null
+    }
+  ],
+  "extracted_device_signals": [
+    {
+      "olorin_tid": "cfe50512-1885-4f45-bc74-8d5a556a8d23",
+      "_time": "2025-05-27T10:56:06.965-07:00",
+      "countries": []
+    },
+    {
+      "fuzzy_device_id": "f394742f39214c908476c01623bf4bcd",
+      "true_ip": "223.185.128.58",
+      "true_ip_city": "bengaluru",
+      "true_ip_region": "karnataka",
+      "tm_smartid": "f394742f39214c908476c01623bf4bcd",
+      "tm_sessionid": "5b2cd1da38f4403d99c2b6fea53604d9",
+      "olorin_tid": "1-6825f567-6e4aa4180e0bd5f663d02d62",
+      "_time": "2025-05-15T07:08:39.584-07:00",
+      "countries": []
+    },
+    {
+      "fuzzy_device_id": "e9e49d25e6734402a32f797e55d98cd9",
+      "true_ip": "207.207.181.8",
+      "true_ip_city": "mountain view",
+      "true_ip_region": "california",
+      "tm_smartid": "e9e49d25e6734402a32f797e55d98cd9",
+      "tm_sessionid": "1a977456cfcd4778f2670e3e0cd56efb",
+      "olorin_tid": "1-6825ecbb-090bcf35374826ac3ea66c27",
+      "_time": "2025-05-15T06:31:40.056-07:00",
+      "countries": []
+    },
+    {
+      "fuzzy_device_id": "392b4bf1e3ed430090a9f50f1d72563a",
+      "true_ip": "207.207.181.8",
+      "true_ip_city": "mountain view",
+      "true_ip_region": "california",
+      "tm_smartid": "392b4bf1e3ed430090a9f50f1d72563a",
+      "tm_sessionid": "9ab7db13594b4bf27996b4f65a056a9d",
+      "olorin_tid": "1-6825dd0c-2b8ae7857012ae9c472cda9f",
+      "_time": "2025-05-15T05:24:44.618-07:00",
+      "countries": []
+    }
+  ],
+  "device_risk_assessment": {
+    "risk_level": 0.85,
+    "risk_factors": [
+      "Multiple devices used from different countries (US and India)",
+      "Short time interval between US and India logins (potential impossible travel)",
+      "Frequent switching among distinct device IDs"
+    ],
+    "anomaly_details": [
+      "Device e9e49d25e6734402a32f797e55d98cd9 in Mountain View, CA and device f394742f39214c908476c01623bf4bcd in Bengaluru, Karnataka within ~1 hour",
+      "Device 392b4bf1e3ed430090a9f50f1d72563a in Mountain View, CA at approximately the same timeframe"
+    ],
+    "confidence": 0.85,
+    "summary": "High-risk scenario due to multiple devices operating from distinct regions (USA and India) within short time intervals, suggesting potential account sharing or VPN/proxy use.",
+    "timestamp": "2025-05-28T12:00:00Z"
+  },
+  "device_signal_risk_assessment": {
+    "risk_level": 0.9,
+    "risk_factors": [
+      "Multiple devices used from different countries (US and India)",
+      "Short time interval between US and India logins (potential impossible travel)",
+      "Frequent switching among distinct device IDs"
+    ],
+    "anomaly_details": [
+      "Device e9e49d25e6734402a32f797e55d98cd9 in Mountain View, CA and device f394742f39214c908476c01623bf4bcd in Bengaluru, Karnataka within ~1 hour",
+      "Device 392b4bf1e3ed430090a9f50f1d72563a in Mountain View, CA at approximately the same timeframe"
+    ],
+    "confidence": 0.9,
+    "summary": "High-risk scenario due to multiple devices operating from distinct regions (USA and India) within short time intervals, suggesting potential account sharing or VPN/proxy use.",
+    "thoughts": "The user's signals indicate concurrent or near-concurrent usage from India and the US across multiple device IDs in a narrow timeframe. This discrepancy is typically not feasible without a VPN or an account compromise situation. Further verification and step-up authentication are strongly recommended.",
+    "timestamp": "2025-05-28T12:00:00Z"
+  },
+  "timestamp": "2025-05-28T11:39:45.050936+00:00",
+  "di_tool_warning": "DITool failed: DITool.run() got an unexpected keyword argument 'olorin_tid'",
+  "llm_thoughts": "The user's signals indicate concurrent or near-concurrent usage from India and the US across multiple device IDs in a narrow timeframe. This discrepancy is typically not feasible without a VPN or an account compromise situation. Further verification and step-up authentication are strongly recommended."
+}

@@ -1,0 +1,28 @@
+{
+  "id": "olorin-webplugin",
+  "hasLayers": true,
+  "manifestVersion": "4",
+  "extensions": {
+    "routes": [
+      {
+        "path": "olorin-webplugin/olorin",
+        "accessLevel": "GUEST",
+        "widget": {
+          "id": "olorin-webplugin/olorin",
+          "appScreen": "shell"
+        }
+      }
+    ]
+  },
+  "widgets": {
+    "olorin-webplugin/olorin": {
+      "1.0.0": {
+        "descriptor": "olorin-webplugin/js/widgets/olorin/widget"
+      }
+    }
+  },
+  "dependencies": {
+    "widgets": ["olorin-webplugin/olorin@1.0.0"]
+  },
+  "extendedProperties": {}
+}

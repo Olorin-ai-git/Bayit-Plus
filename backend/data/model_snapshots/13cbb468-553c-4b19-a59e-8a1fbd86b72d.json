@@ -1,0 +1,13 @@
+{
+  "snapshot_id": "13cbb468-553c-4b19-a59e-8a1fbd86b72d",
+  "model_version": "v0",
+  "created_at": "2025-12-10T21:27:56.667645",
+  "pr_auc": 0.8,
+  "f1_score": 0.75,
+  "threshold": 0.5,
+  "prompt_version": null,
+  "model_path": null,
+  "calibrator_path": null,
+  "config_hash": "19b2d11f4b54",
+  "metadata": {}
+}

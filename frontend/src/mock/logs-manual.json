@@ -1,0 +1,82 @@
+{
+  "behavior_patterns": {
+    "login_times": [
+      "2024-05-31T08:00:00Z",
+      "2024-06-01T09:00:00Z"
+    ],
+    "usual_locations": [
+      "San Francisco",
+      "Oakland"
+    ],
+    "common_devices": [
+      "PC",
+      "Phone"
+    ]
+  },
+  "anomalies": [
+    {
+      "type": "failed_login",
+      "timestamp": "2024-06-01T10:00:00Z",
+      "description": "Multiple failed login attempts detected - manual review required."
+    },
+    {
+      "type": "manual_investigation",
+      "timestamp": "2024-06-01T10:05:00Z",
+      "description": "Manual investigation initiated by fraud analyst."
+    }
+  ],
+  "risk_assessment": {
+    "risk_level": 0.7,
+    "risk_factors": [
+      "Failed login from new device in different region/country",
+      "Manual investigation required to verify user identity"
+    ],
+    "confidence": 0.8,
+    "summary": "Manual analysis required: User had successful login from US followed by failed login from India on new device. Investigator should verify user activity and device ownership.",
+    "timestamp": "2025-05-18T00:49:12.558564+00:00"
+  },
+  "splunk_data": [
+    {
+      "email_address": "user@example.com",
+      "username": "testuser",
+      "offering_ids": "FINANCIAL",
+      "transactions": "login",
+      "originating_ips": "192.168.1.10",
+      "isp": "Comcast",
+      "cities": "San Francisco",
+      "region": "CA",
+      "device_ids": "dev-001",
+      "device_first_seen": "2024-04-01T09:00:00Z",
+      "manual_notes": "Regular user device - verified in previous investigations"
+    },
+    {
+      "email_address": "user@example.com",
+      "username": "testuser",
+      "offering_ids": "FINANCIAL",
+      "transactions": "failed_login",
+      "originating_ips": "203.0.113.5",
+      "isp": "Vodafone India",
+      "cities": "Mumbai",
+      "region": "MH",
+      "device_ids": "dev-002",
+      "device_first_seen": "2024-04-01T09:05:00Z",
+      "manual_notes": "New device from India - requires manual verification"
+    }
+  ],
+  "manual_investigation": {
+    "analyst_notes": "Geographic inconsistency detected - user login from US followed by India access attempt",
+    "verification_steps": [
+      "Contact user to verify India travel",
+      "Check device ownership records",
+      "Review transaction history for anomalies",
+      "Verify user identity through additional authentication"
+    ],
+    "priority_level": "high",
+    "estimated_time": "30-45 minutes",
+    "recommended_actions": [
+      "Temporary account restriction",
+      "User contact for verification",
+      "Device registration review"
+    ]
+  }
+}

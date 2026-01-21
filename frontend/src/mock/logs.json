@@ -1,0 +1,58 @@
+{
+  "behavior_patterns": {
+    "login_times": [
+      "2024-05-31T08:00:00Z",
+      "2024-06-01T09:00:00Z"
+    ],
+    "usual_locations": [
+      "San Francisco",
+      "Oakland"
+    ],
+    "common_devices": [
+      "PC",
+      "Phone"
+    ]
+  },
+  "anomalies": [
+    {
+      "type": "failed_login",
+      "timestamp": "2024-06-01T10:00:00Z",
+      "description": "Multiple failed login attempts detected."
+    }
+  ],
+  "risk_assessment": {
+    "risk_level": 0.7,
+    "risk_factors": [
+      "Failed login from new device in a different region/country"
+    ],
+    "confidence": 0.8,
+    "summary": "User had a successful login from the US followed by a near-immediate failed login from India on a new device, indicating potentially suspicious activity.",
+    "timestamp": "2025-05-18T00:49:12.558564+00:00"
+  },
+  "splunk_data": [
+    {
+      "email_address": "user@example.com",
+      "username": "testuser",
+      "offering_ids": "FINANCIAL",
+      "transactions": "login",
+      "originating_ips": "192.168.1.10",
+      "isp": "Comcast",
+      "cities": "San Francisco",
+      "region": "CA",
+      "device_ids": "dev-001",
+      "device_first_seen": "2024-04-01T09:00:00Z"
+    },
+    {
+      "email_address": "user@example.com",
+      "username": "testuser",
+      "offering_ids": "FINANCIAL",
+      "transactions": "failed_login",
+      "originating_ips": "203.0.113.5",
+      "isp": "Vodafone India",
+      "cities": "Mumbai",
+      "region": "MH",
+      "device_ids": "dev-002",
+      "device_first_seen": "2024-04-01T09:05:00Z"
+    }
+  ]
+}

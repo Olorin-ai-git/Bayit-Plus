@@ -1,0 +1,76 @@
+{
+  "behavior_patterns": {
+    "login_times": [
+      "2024-05-31T08:00:00Z",
+      "2024-06-01T09:00:00Z"
+    ],
+    "usual_locations": [
+      "San Francisco",
+      "Oakland"
+    ],
+    "common_devices": [
+      "PC",
+      "Phone"
+    ]
+  },
+  "anomalies": [
+    {
+      "type": "failed_login",
+      "timestamp": "2024-06-01T10:00:00Z",
+      "description": "AI detected multiple failed login attempts from suspicious IP."
+    },
+    {
+      "type": "structured_alert",
+      "timestamp": "2024-06-01T10:05:00Z",
+      "description": "Structured investigation triggered due to anomalous behavior pattern."
+    }
+  ],
+  "risk_assessment": {
+    "risk_level": 0.8,
+    "risk_factors": [
+      "AI-detected failed login from new device in different region/country",
+      "Structured pattern recognition flagged unusual access sequence"
+    ],
+    "confidence": 0.85,
+    "summary": "Structured AI analysis detected high-risk activity: User had successful login from US followed by immediate failed login from India on new device. AI recommends immediate investigation.",
+    "timestamp": "2025-05-18T00:49:12.558564+00:00"
+  },
+  "splunk_data": [
+    {
+      "email_address": "user@example.com",
+      "username": "testuser",
+      "offering_ids": "FINANCIAL",
+      "transactions": "login",
+      "originating_ips": "192.168.1.10",
+      "isp": "Comcast",
+      "cities": "San Francisco",
+      "region": "CA",
+      "device_ids": "dev-001",
+      "device_first_seen": "2024-04-01T09:00:00Z",
+      "ai_analysis": "Normal baseline behavior established"
+    },
+    {
+      "email_address": "user@example.com",
+      "username": "testuser",
+      "offering_ids": "FINANCIAL",
+      "transactions": "failed_login",
+      "originating_ips": "203.0.113.5",
+      "isp": "Vodafone India",
+      "cities": "Mumbai",
+      "region": "MH",
+      "device_ids": "dev-002",
+      "device_first_seen": "2024-04-01T09:05:00Z",
+      "ai_analysis": "Structured detection: Geographic anomaly detected - impossible travel scenario"
+    }
+  ],
+  "structured_insights": {
+    "pattern_analysis": "AI detected impossible travel scenario between US and India within 5 minutes",
+    "risk_escalation": "Structured system escalated to high priority due to geographic anomaly",
+    "ml_confidence": 0.92,
+    "recommended_actions": [
+      "Immediate account lockdown",
+      "Contact user for verification",
+      "Review recent transaction history"
+    ]
+  }
+}

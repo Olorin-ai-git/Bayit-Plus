@@ -1,0 +1,41 @@
+# =============================================================================
+# Prometheus Configuration for Olorin Backend
+# =============================================================================
+# Used with docker-compose for local monitoring
+# =============================================================================
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers: []
+
+rule_files: []
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Olorin Backend metrics
+  - job_name: 'olorin-backend'
+    static_configs:
+      - targets: ['backend:9090']
+    metrics_path: /metrics
+    scrape_interval: 10s
+
+  # Redis metrics (if using redis_exporter)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  # MongoDB metrics (if using mongodb_exporter)
+  - job_name: 'mongodb'
+    static_configs:
+      - targets: ['mongodb:27017']
+    metrics_path: /metrics
+    scrape_interval: 30s

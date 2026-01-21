@@ -1,0 +1,1 @@
+export { ParallelInvestigationsPage } from './ParallelInvestigationsPage';

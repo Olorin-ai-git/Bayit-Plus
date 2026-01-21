@@ -1,0 +1,232 @@
+{
+  "scenario_name": "normal_behavior",
+  "description": "Legitimate user making typical transaction within established patterns",
+  "investigation_complexity": "low",
+  "expected_fraud_indicators": [],
+  "transaction": {
+    "transaction_id": "TXN_NORMAL_001", 
+    "amount": 89.47,
+    "currency": "USD",
+    "timestamp": "2025-08-29T19:23:11Z",
+    "merchant": {
+      "name": "Whole Foods Market",
+      "category": "grocery",
+      "location": {
+        "latitude": 37.7849,
+        "longitude": -122.4094,
+        "city": "San Francisco",
+        "state": "CA",
+        "country": "United States",
+        "postal_code": "94108"
+      }
+    }
+  },
+  "user": {
+    "user_id": "USER_NORMAL_123",
+    "account_age_days": 1456,
+    "historical_patterns": {
+      "avg_transaction_amount": 95.32,
+      "common_locations": [
+        {
+          "latitude": 37.7849,
+          "longitude": -122.4094,
+          "city": "San Francisco", 
+          "state": "CA",
+          "country": "United States",
+          "postal_code": "94108"
+        },
+        {
+          "latitude": 37.7849,
+          "longitude": -122.4194,
+          "city": "San Francisco",
+          "state": "CA", 
+          "country": "United States",
+          "postal_code": "94102"
+        }
+      ],
+      "typical_spending_categories": ["grocery", "restaurants", "gas", "utilities", "entertainment"],
+      "typical_transaction_times": ["18:00-21:00", "12:00-14:00", "08:00-10:00"],
+      "weekly_patterns": {
+        "grocery_shopping_days": ["Saturday", "Wednesday"],
+        "average_weekly_spend": 245.67
+      }
+    }
+  },
+  "device": {
+    "device_id": "DEV_TRUSTED_NORMAL_789",
+    "fingerprint": {
+      "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
+      "screen_resolution": "390x844",
+      "timezone": "America/Los_Angeles",
+      "language": "en-US",
+      "platform": "iPhone",
+      "browser": "Safari"
+    },
+    "first_seen": "2023-03-15T14:22:00Z",
+    "is_trusted": true,
+    "fraud_indicators": {
+      "fingerprint_inconsistencies": [],
+      "device_reputation": {
+        "first_time_device": false,
+        "multiple_user_associations": false,
+        "known_fraud_device": false,
+        "trust_score": 0.95
+      }
+    }
+  },
+  "location": {
+    "latitude": 37.7849,
+    "longitude": -122.4094,
+    "city": "San Francisco",
+    "state": "CA",
+    "country": "United States",
+    "postal_code": "94108",
+    "fraud_indicators": {
+      "distance_from_last_login": 1.2,
+      "location_consistency": {
+        "within_normal_radius": true,
+        "matches_user_profile": true,
+        "consistent_with_recent_activity": true
+      }
+    }
+  },
+  "network": {
+    "ip": "192.0.2.100",
+    "proxy_detected": false,
+    "vpn_detected": false,
+    "tor_detected": false,
+    "country_code": "US",
+    "asn": "AS7922", 
+    "isp": "Comcast Cable Communications, LLC",
+    "fraud_indicators": {
+      "ip_reputation": {
+        "malicious": false,
+        "suspicious": false,
+        "bot_activity": false,
+        "abuse_reports": 0,
+        "reputation_score": 0.98
+      },
+      "network_consistency": {
+        "matches_user_home_network": true,
+        "consistent_isp": true,
+        "expected_geolocation": true
+      }
+    }
+  },
+  "behavioral_signals": {
+    "velocity_indicators": {
+      "transactions_last_hour": 1,
+      "transactions_last_day": 2,
+      "unique_devices_last_day": 1,
+      "fraud_flags": {
+        "high_velocity": false,
+        "multiple_devices": false,
+        "unusual_pattern": false
+      }
+    },
+    "session_info": {
+      "session_duration": 425,
+      "pages_visited": 12,
+      "time_on_checkout": 78,
+      "fraud_indicators": {
+        "rushed_checkout": false,
+        "minimal_browsing": false,
+        "automated_behavior_suspected": false,
+        "normal_user_behavior": true
+      }
+    },
+    "spending_pattern_analysis": {
+      "amount_vs_historical": {
+        "deviation_percentage": -6.1,
+        "within_normal_range": true
+      },
+      "category_consistency": {
+        "matches_typical_categories": true,
+        "grocery_purchase_on_typical_day": true
+      },
+      "time_pattern": {
+        "within_typical_hours": true,
+        "day_of_week_matches_pattern": true
+      }
+    }
+  },
+  "investigation_timeline": [
+    {
+      "timestamp": "2025-08-29T19:15:00Z",
+      "event": "User login",
+      "details": "Standard login from trusted device"
+    },
+    {
+      "timestamp": "2025-08-29T19:16:30Z",
+      "event": "Browse grocery section", 
+      "details": "Normal browsing behavior, multiple categories viewed"
+    },
+    {
+      "timestamp": "2025-08-29T19:19:45Z",
+      "event": "Add items to cart",
+      "details": "Gradual cart building, multiple item additions"
+    },
+    {
+      "timestamp": "2025-08-29T19:21:30Z",
+      "event": "Review cart",
+      "details": "Spent time reviewing items and prices"
+    },
+    {
+      "timestamp": "2025-08-29T19:22:15Z",
+      "event": "Proceed to checkout",
+      "details": "Normal checkout progression"
+    },
+    {
+      "timestamp": "2025-08-29T19:23:11Z",
+      "event": "Transaction completed",
+      "details": "Successful payment with saved payment method"
+    }
+  ],
+  "expected_agent_findings": {
+    "device_analysis_agent": {
+      "risk_level": "VERY_LOW",
+      "key_findings": [
+        "Trusted device with 100% consistent fingerprint",
+        "Long-established device history (535+ days)",
+        "All device characteristics match user profile"
+      ]
+    },
+    "location_analysis_agent": {
+      "risk_level": "VERY_LOW", 
+      "key_findings": [
+        "Location perfectly matches user's established patterns",
+        "Within normal activity radius (1.2km from home)",
+        "Consistent with user's residential area"
+      ]
+    },
+    "network_analysis_agent": {
+      "risk_level": "VERY_LOW",
+      "key_findings": [
+        "Home network with excellent reputation",
+        "Consistent ISP and IP range",
+        "No anonymization tools detected"
+      ]
+    },
+    "logs_analysis_agent": {
+      "risk_level": "VERY_LOW",
+      "key_findings": [
+        "Normal human browsing behavior",
+        "Appropriate time spent shopping and reviewing",
+        "Transaction patterns match user's weekly routine"
+      ]
+    }
+  },
+  "investigation_verdict": {
+    "overall_risk_score": 2,
+    "fraud_classification": "LEGITIMATE",
+    "primary_classification": "Normal User Behavior",
+    "recommended_action": "APPROVE",
+    "confidence_level": 0.99,
+    "positive_indicators": [
+      "All signals consistent with legitimate user",
+      "Transaction fits established spending patterns",
+      "Device and location fully trusted",
+      "Normal behavioral patterns throughout session"
+    ]
+  }
+}
