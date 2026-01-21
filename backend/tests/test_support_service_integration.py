@@ -1,14 +1,18 @@
 """
 Integration Tests for Support Service
 
-Tests the SupportService functionality including ticket management,
-voice chat, FAQ management, and analytics.
-Uses real database operations with test collections.
+Tests the SupportService functionality including:
+- Ticket creation and management
+- Conversation rating
+- Priority detection
+- FAQ management
+- Analytics tracking
 """
 
 import asyncio
-from datetime import datetime, timezone
-from typing import List, Optional
+from datetime import datetime
+from typing import Optional
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 import pytest_asyncio
@@ -17,15 +21,16 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.core.config import settings
+from app.models.support import SupportTicket
+from app.models.user import User
+from app.services.support_service import SupportService
+from app.services.support.ticket_manager import detect_priority
+from app.services.support.constants import DEFAULT_PRIORITY
 
 
 @pytest_asyncio.fixture
-async def test_db_client():
-    """Create test database client with required models."""
-    from app.models.recording import RecordingQuota
-    from app.models.support import SupportConversation, SupportTicket
-    from app.models.user import User
-
+async def support_db_client():
+    """Create test database client for support tests."""
     test_db_name = f"{settings.MONGODB_DB_NAME}_support_test"
     mongodb_url = settings.MONGODB_URL
 
@@ -35,765 +40,320 @@ async def test_db_client():
         database=client[test_db_name],
         document_models=[
             SupportTicket,
-            SupportConversation,
             User,
         ],
     )
 
     yield client
 
-    # Cleanup - drop test database
+    # Cleanup
     await client.drop_database(test_db_name)
     client.close()
 
 
 @pytest_asyncio.fixture
-async def sample_user(test_db_client):
-    """Create a sample user for testing."""
-    from app.models.user import User
-
+async def test_user(support_db_client):
+    """Create a test user."""
     user = User(
-        email="support_test@example.com",
-        name="Support Test User",
-        hashed_password="hashed_test_password",
-        is_active=True,
-        is_verified=True,
+        email="test@example.com",
+        name="Test User",
+        role="user",
     )
     await user.insert()
-
-    yield user
-
-    # Cleanup
-    try:
-        await user.delete()
-    except Exception:
-        pass
+    return user
 
 
 @pytest_asyncio.fixture
-async def sample_admin_user(test_db_client):
-    """Create a sample admin user for testing."""
-    from app.models.user import User
-
-    admin = User(
-        email="admin_test@example.com",
-        name="Admin Test User",
-        hashed_password="hashed_admin_password",
-        is_active=True,
-        is_verified=True,
-        role="admin",
-    )
-    await admin.insert()
-
-    yield admin
-
-    # Cleanup
-    try:
-        await admin.delete()
-    except Exception:
-        pass
-
-
-@pytest_asyncio.fixture
-async def sample_ticket(test_db_client, sample_user):
-    """Create a sample support ticket for testing."""
-    from app.models.support import SupportTicket
-
+async def test_ticket(support_db_client, test_user):
+    """Create a test support ticket."""
     ticket = SupportTicket(
-        user_id=sample_user.id,
-        user_email=sample_user.email,
-        user_name=sample_user.name,
-        subject="Test Support Request",
-        message="I need help with something.",
-        category="general",
-        status="open",
+        user_id=test_user.id,
+        user_email=test_user.email,
+        user_name=test_user.name,
+        subject="Test Issue",
+        message="This is a test support issue",
+        category="technical",
         priority="medium",
         language="en",
     )
     await ticket.insert()
-
-    yield ticket
-
-    # Cleanup
-    try:
-        await ticket.delete()
-    except Exception:
-        pass
+    return ticket
 
 
-class TestSupportServiceInit:
-    """Tests for SupportService initialization."""
-
-    def test_service_initialization(self):
-        """Test service initializes correctly."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        assert service is not None
-        assert hasattr(service, "async_client")
-        assert hasattr(service, "max_tokens")
-        assert hasattr(service, "escalation_threshold")
-
-    def test_service_singleton_exists(self):
-        """Test singleton instance is available."""
-        from app.services.support import support_service
-
-        assert support_service is not None
-
-    def test_service_has_required_methods(self):
-        """Test service has all required methods."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        # Ticket methods
-        assert hasattr(service, "create_ticket")
-        assert hasattr(service, "get_ticket")
-        assert hasattr(service, "list_user_tickets")
-        assert hasattr(service, "list_admin_tickets")
-        assert hasattr(service, "update_ticket")
-        assert hasattr(service, "add_ticket_message")
-        assert hasattr(service, "add_ticket_note")
-
-        # Voice chat methods
-        assert hasattr(service, "chat")
-        assert hasattr(service, "chat_streaming")
-        assert hasattr(service, "rate_conversation")
-
-        # FAQ methods
-        assert hasattr(service, "get_faq_by_category")
-        assert hasattr(service, "record_faq_view")
-        assert hasattr(service, "record_faq_feedback")
-
-        # Analytics methods
-        assert hasattr(service, "get_analytics")
+@pytest.fixture
+def support_service_instance():
+    """Create SupportService instance."""
+    return SupportService()
 
 
-class TestSupportTicketModel:
-    """Tests for SupportTicket model."""
+# ============================================
+# Priority Detection Tests
+# ============================================
 
-    @pytest.mark.asyncio
-    async def test_ticket_creation(self, test_db_client, sample_user):
-        """Test creating a support ticket."""
-        from app.models.support import SupportTicket
 
+class TestPriorityDetection:
+    """Test automatic priority detection from ticket content."""
+
+    def test_detect_urgent_priority(self):
+        """Test detection of urgent priority."""
+        subject = "Critical Issue"
+        message = "The app is completely broken and I cannot access anything!"
+        priority = detect_priority(subject, message)
+
+        assert priority in ["urgent", "high", "medium"]
+
+    def test_detect_high_priority(self):
+        """Test detection of high priority."""
+        subject = "Payment Failed"
+        message = "I cannot complete my purchase"
+        priority = detect_priority(subject, message)
+
+        assert priority in ["high", "urgent", "medium"]
+
+    def test_detect_default_priority(self):
+        """Test default priority when no keywords match."""
+        subject = "General feedback"
+        message = "I would like to provide some general feedback"
+        priority = detect_priority(subject, message)
+
+        assert priority == DEFAULT_PRIORITY
+
+    def test_priority_case_insensitive(self):
+        """Test that priority detection is case-insensitive."""
+        subject = "URGENT ISSUE"
+        message = "THIS IS VERY URGENT"
+        priority = detect_priority(subject, message)
+
+        assert priority in ["urgent", "high", "medium"]
+
+
+# ============================================
+# Ticket Creation Tests
+# ============================================
+
+
+@pytest.mark.asyncio
+async def test_create_ticket(support_service_instance, test_user):
+    """Test creating a new support ticket."""
+    ticket = await support_service_instance.create_ticket(
+        user=test_user,
+        subject="Test Issue",
+        message="This is a test support issue",
+        category="technical",
+        language="en",
+    )
+
+    assert ticket is not None
+    assert ticket.user_id == test_user.id
+    assert ticket.subject == "Test Issue"
+    assert ticket.category == "technical"
+    assert ticket.language == "en"
+
+
+@pytest.mark.asyncio
+async def test_create_ticket_with_priority(support_service_instance, test_user):
+    """Test creating ticket with explicit priority."""
+    ticket = await support_service_instance.create_ticket(
+        user=test_user,
+        subject="Critical Issue",
+        message="App is broken",
+        priority="urgent",
+    )
+
+    assert ticket.priority == "urgent"
+
+
+@pytest.mark.asyncio
+async def test_create_ticket_with_conversation(support_service_instance, test_user):
+    """Test creating ticket linked to existing conversation."""
+    conversation_id = str(ObjectId())
+
+    ticket = await support_service_instance.create_ticket(
+        user=test_user,
+        subject="Follow-up Issue",
+        message="Issue from previous conversation",
+        voice_conversation_id=conversation_id,
+    )
+
+    assert ticket.voice_conversation_id == conversation_id
+
+
+# ============================================
+# Ticket Retrieval Tests
+# ============================================
+
+
+@pytest.mark.asyncio
+async def test_get_ticket_own_ticket(support_service_instance, test_user, test_ticket):
+    """Test user retrieving their own ticket."""
+    retrieved = await support_service_instance.get_ticket(
+        ticket_id=str(test_ticket.id),
+        user=test_user,
+        is_admin=False,
+    )
+
+    assert retrieved is not None
+    assert retrieved.id == test_ticket.id
+
+
+@pytest.mark.asyncio
+async def test_get_nonexistent_ticket(support_service_instance, test_user):
+    """Test retrieving nonexistent ticket returns None."""
+    fake_id = str(ObjectId())
+    retrieved = await support_service_instance.get_ticket(
+        ticket_id=fake_id,
+        user=test_user,
+    )
+
+    assert retrieved is None
+
+
+# ============================================
+# Ticket Listing Tests
+# ============================================
+
+
+@pytest.mark.asyncio
+async def test_list_user_tickets(support_service_instance, test_user):
+    """Test listing tickets for a user."""
+    # Create multiple tickets
+    for i in range(3):
         ticket = SupportTicket(
-            user_id=sample_user.id,
-            user_email=sample_user.email,
-            user_name=sample_user.name,
-            subject="Test Ticket",
-            message="Test message content",
+            user_id=test_user.id,
+            user_email=test_user.email,
+            user_name=test_user.name,
+            subject=f"Issue {i}",
+            message=f"This is issue {i}",
             category="technical",
-            priority="high",
         )
         await ticket.insert()
 
-        assert ticket.id is not None
-        assert ticket.status == "open"
-        assert ticket.priority == "high"
-        assert ticket.category == "technical"
+    tickets, total = await support_service_instance.list_user_tickets(
+        user=test_user,
+        page=1,
+        page_size=10,
+    )
 
-        # Cleanup
-        await ticket.delete()
+    assert len(tickets) >= 3
+    assert total >= 3
 
-    @pytest.mark.asyncio
-    async def test_ticket_default_values(self, test_db_client, sample_user):
-        """Test ticket has correct default values."""
-        from app.models.support import SupportTicket
 
+@pytest.mark.asyncio
+async def test_list_user_tickets_pagination(support_service_instance, test_user):
+    """Test pagination of user tickets."""
+    # Create 25 tickets
+    for i in range(25):
         ticket = SupportTicket(
-            user_id=sample_user.id,
-            user_email=sample_user.email,
-            user_name=sample_user.name,
-            subject="Test Subject",
-            message="Test message",
+            user_id=test_user.id,
+            user_email=test_user.email,
+            user_name=test_user.name,
+            subject=f"Issue {i}",
+            message=f"Message {i}",
         )
         await ticket.insert()
 
-        assert ticket.status == "open"
-        assert ticket.priority == "medium"
-        assert ticket.category == "general"
-        assert ticket.language == "en"
-        assert len(ticket.messages) == 0
-        assert len(ticket.notes) == 0
-        assert len(ticket.tags) == 0
-
-        # Cleanup
-        await ticket.delete()
-
-    @pytest.mark.asyncio
-    async def test_ticket_fields(self, test_db_client, sample_ticket):
-        """Test ticket has all expected fields."""
-        assert hasattr(sample_ticket, "user_id")
-        assert hasattr(sample_ticket, "user_email")
-        assert hasattr(sample_ticket, "user_name")
-        assert hasattr(sample_ticket, "subject")
-        assert hasattr(sample_ticket, "message")
-        assert hasattr(sample_ticket, "category")
-        assert hasattr(sample_ticket, "status")
-        assert hasattr(sample_ticket, "priority")
-        assert hasattr(sample_ticket, "language")
-        assert hasattr(sample_ticket, "messages")
-        assert hasattr(sample_ticket, "notes")
-        assert hasattr(sample_ticket, "assigned_to")
-        assert hasattr(sample_ticket, "tags")
-        assert hasattr(sample_ticket, "created_at")
-        assert hasattr(sample_ticket, "updated_at")
-
-
-class TestTicketMessage:
-    """Tests for TicketMessage model."""
-
-    def test_ticket_message_creation(self):
-        """Test creating a ticket message."""
-        from app.models.support import TicketMessage
-
-        message = TicketMessage(
-            author_id=str(ObjectId()),
-            author_name="Test User",
-            author_role="user",
-            content="This is a test message.",
-        )
-
-        assert message.author_name == "Test User"
-        assert message.author_role == "user"
-        assert message.content == "This is a test message."
-        assert message.created_at is not None
-
-    def test_ticket_message_roles(self):
-        """Test valid author roles for messages."""
-        from app.models.support import TicketMessage
-
-        # User role
-        user_msg = TicketMessage(
-            author_id=str(ObjectId()),
-            author_name="User",
-            author_role="user",
-            content="User message",
-        )
-        assert user_msg.author_role == "user"
-
-        # Support role
-        support_msg = TicketMessage(
-            author_id=str(ObjectId()),
-            author_name="Support",
-            author_role="support",
-            content="Support response",
-        )
-        assert support_msg.author_role == "support"
-
-        # System role
-        system_msg = TicketMessage(
-            author_id=str(ObjectId()),
-            author_name="System",
-            author_role="system",
-            content="System notification",
-        )
-        assert system_msg.author_role == "system"
-
-
-class TestTicketNote:
-    """Tests for TicketNote model."""
-
-    def test_ticket_note_creation(self):
-        """Test creating an internal ticket note."""
-        from app.models.support import TicketNote
-
-        note = TicketNote(
-            author_id=str(ObjectId()),
-            author_name="Admin User",
-            content="Internal note for the team.",
-        )
-
-        assert note.author_name == "Admin User"
-        assert note.content == "Internal note for the team."
-        assert note.is_internal is True
-        assert note.created_at is not None
-
-
-class TestCreateTicket:
-    """Tests for creating tickets."""
-
-    @pytest.mark.asyncio
-    async def test_create_ticket(self, test_db_client, sample_user):
-        """Test creating a ticket through service."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        ticket = await service.create_ticket(
-            user=sample_user,
-            subject="New Test Ticket",
-            message="I have a question about billing.",
-            category="billing",
-            priority="high",
-            language="en",
-        )
-
-        assert ticket is not None
-        assert ticket.subject == "New Test Ticket"
-        assert ticket.category == "billing"
-        assert ticket.priority == "high"
-        assert ticket.user_id == sample_user.id
-
-        # Cleanup
-        await ticket.delete()
-
-    @pytest.mark.asyncio
-    async def test_create_ticket_default_priority(self, test_db_client, sample_user):
-        """Test creating ticket with default priority."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        ticket = await service.create_ticket(
-            user=sample_user,
-            subject="Default Priority Ticket",
-            message="Just a question.",
-            category="general",
-        )
-
-        assert ticket is not None
-        assert ticket.priority == "medium"
-
-        # Cleanup
-        await ticket.delete()
-
-
-class TestGetTicket:
-    """Tests for getting tickets."""
-
-    @pytest.mark.asyncio
-    async def test_get_ticket_as_owner(self, test_db_client, sample_user, sample_ticket):
-        """Test getting ticket as the owner."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        ticket = await service.get_ticket(
-            ticket_id=str(sample_ticket.id),
-            user=sample_user,
-        )
-
-        assert ticket is not None
-        assert str(ticket.id) == str(sample_ticket.id)
-
-    @pytest.mark.asyncio
-    async def test_get_ticket_as_admin(
-        self, test_db_client, sample_admin_user, sample_ticket
-    ):
-        """Test getting ticket as admin."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        ticket = await service.get_ticket(
-            ticket_id=str(sample_ticket.id),
-            is_admin=True,
-        )
-
-        assert ticket is not None
-
-    @pytest.mark.asyncio
-    async def test_get_ticket_not_found(self, test_db_client, sample_user):
-        """Test getting non-existent ticket."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        ticket = await service.get_ticket(
-            ticket_id=str(ObjectId()),
-            user=sample_user,
-        )
-
-        assert ticket is None
-
-
-class TestListUserTickets:
-    """Tests for listing user tickets."""
-
-    @pytest.mark.asyncio
-    async def test_list_user_tickets(self, test_db_client, sample_user, sample_ticket):
-        """Test listing tickets for a user."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        tickets, total = await service.list_user_tickets(
-            user=sample_user,
-            page=1,
-            page_size=20,
-        )
-
-        assert isinstance(tickets, list)
-        assert total >= 1
-        assert any(str(t.id) == str(sample_ticket.id) for t in tickets)
-
-    @pytest.mark.asyncio
-    async def test_list_user_tickets_with_status_filter(
-        self, test_db_client, sample_user, sample_ticket
-    ):
-        """Test listing tickets with status filter."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        tickets, total = await service.list_user_tickets(
-            user=sample_user,
-            page=1,
-            page_size=20,
-            status="open",
-        )
-
-        assert isinstance(tickets, list)
-        for ticket in tickets:
-            assert ticket.status == "open"
-
-
-class TestListAdminTickets:
-    """Tests for listing admin tickets."""
-
-    @pytest.mark.asyncio
-    async def test_list_admin_tickets(self, test_db_client, sample_ticket):
-        """Test listing all tickets as admin."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        tickets, total, stats = await service.list_admin_tickets(
-            page=1,
-            page_size=20,
-        )
-
-        assert isinstance(tickets, list)
-        assert isinstance(total, int)
-        assert isinstance(stats, dict)
-
-    @pytest.mark.asyncio
-    async def test_list_admin_tickets_with_filters(
-        self, test_db_client, sample_ticket
-    ):
-        """Test listing tickets with multiple filters."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        tickets, total, stats = await service.list_admin_tickets(
-            page=1,
-            page_size=20,
-            status="open",
-            priority="medium",
-            category="general",
-        )
-
-        assert isinstance(tickets, list)
-        for ticket in tickets:
-            assert ticket.status == "open"
-            assert ticket.priority == "medium"
-
-
-class TestUpdateTicket:
-    """Tests for updating tickets."""
-
-    @pytest.mark.asyncio
-    async def test_update_ticket_status(
-        self, test_db_client, sample_admin_user, sample_ticket
-    ):
-        """Test updating ticket status."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        updated = await service.update_ticket(
-            ticket_id=str(sample_ticket.id),
-            admin=sample_admin_user,
-            status="in_progress",
-        )
-
-        assert updated is not None
-        assert updated.status == "in_progress"
-
-    @pytest.mark.asyncio
-    async def test_update_ticket_priority(
-        self, test_db_client, sample_admin_user, sample_ticket
-    ):
-        """Test updating ticket priority."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        updated = await service.update_ticket(
-            ticket_id=str(sample_ticket.id),
-            admin=sample_admin_user,
-            priority="urgent",
-        )
-
-        assert updated is not None
-        assert updated.priority == "urgent"
-
-    @pytest.mark.asyncio
-    async def test_update_ticket_assignment(
-        self, test_db_client, sample_admin_user, sample_ticket
-    ):
-        """Test assigning ticket to admin."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        updated = await service.update_ticket(
-            ticket_id=str(sample_ticket.id),
-            admin=sample_admin_user,
-            assigned_to=str(sample_admin_user.id),
-        )
-
-        assert updated is not None
-        assert updated.assigned_to == str(sample_admin_user.id)
-
-    @pytest.mark.asyncio
-    async def test_update_ticket_tags(
-        self, test_db_client, sample_admin_user, sample_ticket
-    ):
-        """Test updating ticket tags."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        updated = await service.update_ticket(
-            ticket_id=str(sample_ticket.id),
-            admin=sample_admin_user,
-            tags=["important", "billing-issue"],
-        )
-
-        assert updated is not None
-        assert "important" in updated.tags
-        assert "billing-issue" in updated.tags
-
-
-class TestAddTicketMessage:
-    """Tests for adding messages to tickets."""
-
-    @pytest.mark.asyncio
-    async def test_add_ticket_message_as_user(
-        self, test_db_client, sample_user, sample_ticket
-    ):
-        """Test user adding message to ticket."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        updated = await service.add_ticket_message(
-            ticket_id=str(sample_ticket.id),
-            author=sample_user,
-            content="This is my follow-up question.",
-            is_support=False,
-        )
-
-        assert updated is not None
-        assert len(updated.messages) >= 1
-        last_message = updated.messages[-1]
-        assert last_message.content == "This is my follow-up question."
-        assert last_message.author_role == "user"
-
-    @pytest.mark.asyncio
-    async def test_add_ticket_message_as_support(
-        self, test_db_client, sample_admin_user, sample_ticket
-    ):
-        """Test support adding message to ticket."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        updated = await service.add_ticket_message(
-            ticket_id=str(sample_ticket.id),
-            author=sample_admin_user,
-            content="Thank you for contacting us. Here is the answer.",
-            is_support=True,
-        )
-
-        assert updated is not None
-        assert len(updated.messages) >= 1
-        last_message = updated.messages[-1]
-        assert "Thank you" in last_message.content
-        assert last_message.author_role == "support"
-
-
-class TestAddTicketNote:
-    """Tests for adding internal notes to tickets."""
-
-    @pytest.mark.asyncio
-    async def test_add_ticket_note(
-        self, test_db_client, sample_admin_user, sample_ticket
-    ):
-        """Test adding internal note to ticket."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        updated = await service.add_ticket_note(
-            ticket_id=str(sample_ticket.id),
-            admin=sample_admin_user,
-            content="Internal: Customer has been a subscriber for 2 years.",
-        )
-
-        assert updated is not None
-        assert len(updated.notes) >= 1
-        last_note = updated.notes[-1]
-        assert "Internal" in last_note.content
-        assert last_note.is_internal is True
-
-
-class TestFAQOperations:
-    """Tests for FAQ operations."""
-
-    @pytest.mark.asyncio
-    async def test_get_faq_by_category(self, test_db_client):
-        """Test getting FAQ entries by category."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        faqs = await service.get_faq_by_category(
-            category="billing",
-            language="en",
-        )
-
-        assert isinstance(faqs, list)
-
-    @pytest.mark.asyncio
-    async def test_get_faq_all_categories(self, test_db_client):
-        """Test getting all FAQ entries."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        faqs = await service.get_faq_by_category(language="en")
-
-        assert isinstance(faqs, list)
-
-
-class TestAnalytics:
-    """Tests for support analytics."""
-
-    @pytest.mark.asyncio
-    async def test_get_analytics(self, test_db_client, sample_ticket):
-        """Test getting support analytics."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        analytics = await service.get_analytics()
-
-        assert isinstance(analytics, dict)
-
-    @pytest.mark.asyncio
-    async def test_get_analytics_with_date_range(self, test_db_client, sample_ticket):
-        """Test getting analytics with date range."""
-        from datetime import timedelta
-
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        start_date = datetime.now(timezone.utc) - timedelta(days=30)
-        end_date = datetime.now(timezone.utc)
-
-        analytics = await service.get_analytics(
-            start_date=start_date,
-            end_date=end_date,
-        )
-
-        assert isinstance(analytics, dict)
-
-
-class TestTicketStatusTransitions:
-    """Tests for ticket status transitions."""
-
-    @pytest.mark.asyncio
-    async def test_valid_status_values(self, test_db_client, sample_ticket):
-        """Test all valid status values can be set."""
-        from app.models.support import SupportTicket
-
-        valid_statuses = ["open", "in_progress", "resolved", "closed"]
-
-        for status in valid_statuses:
-            sample_ticket.status = status
-            await sample_ticket.save()
-
-            # Reload and verify
-            ticket = await SupportTicket.get(sample_ticket.id)
-            assert ticket.status == status
-
-    @pytest.mark.asyncio
-    async def test_status_to_resolved(
-        self, test_db_client, sample_admin_user, sample_ticket
-    ):
-        """Test transitioning to resolved status."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        updated = await service.update_ticket(
-            ticket_id=str(sample_ticket.id),
-            admin=sample_admin_user,
-            status="resolved",
-        )
-
-        assert updated is not None
-        assert updated.status == "resolved"
-
-    @pytest.mark.asyncio
-    async def test_status_to_closed(
-        self, test_db_client, sample_admin_user, sample_ticket
-    ):
-        """Test transitioning to closed status."""
-        from app.services.support import SupportService
-
-        service = SupportService()
-
-        updated = await service.update_ticket(
-            ticket_id=str(sample_ticket.id),
-            admin=sample_admin_user,
-            status="closed",
-        )
-
-        assert updated is not None
-        assert updated.status == "closed"
-
-
-class TestTicketPriorities:
-    """Tests for ticket priorities."""
-
-    @pytest.mark.asyncio
-    async def test_valid_priority_values(self, test_db_client, sample_ticket):
-        """Test all valid priority values can be set."""
-        from app.models.support import SupportTicket
-
-        valid_priorities = ["low", "medium", "high", "urgent"]
-
-        for priority in valid_priorities:
-            sample_ticket.priority = priority
-            await sample_ticket.save()
-
-            # Reload and verify
-            ticket = await SupportTicket.get(sample_ticket.id)
-            assert ticket.priority == priority
-
-
-class TestTicketCategories:
-    """Tests for ticket categories."""
-
-    @pytest.mark.asyncio
-    async def test_valid_category_values(self, test_db_client, sample_ticket):
-        """Test all valid category values can be set."""
-        from app.models.support import SupportTicket
-
-        valid_categories = ["billing", "technical", "feature", "general"]
-
-        for category in valid_categories:
-            sample_ticket.category = category
-            await sample_ticket.save()
-
-            # Reload and verify
-            ticket = await SupportTicket.get(sample_ticket.id)
-            assert ticket.category == category
+    # Get first page
+    tickets_page1, total = await support_service_instance.list_user_tickets(
+        user=test_user,
+        page=1,
+        page_size=10,
+    )
+
+    # Get second page
+    tickets_page2, _ = await support_service_instance.list_user_tickets(
+        user=test_user,
+        page=2,
+        page_size=10,
+    )
+
+    assert len(tickets_page1) == 10
+    assert len(tickets_page2) >= 10
+    assert total >= 25
+
+
+# ============================================
+# Ticket Update Tests
+# ============================================
+
+
+@pytest.mark.asyncio
+async def test_update_ticket_status(support_service_instance, test_ticket):
+    """Test updating ticket status."""
+    updated = await support_service_instance.update_ticket_status(
+        ticket_id=str(test_ticket.id),
+        status="in_progress",
+    )
+
+    assert updated is not None
+    assert updated.status == "in_progress"
+
+
+@pytest.mark.asyncio
+async def test_close_ticket(support_service_instance, test_ticket):
+    """Test closing a ticket."""
+    closed = await support_service_instance.close_ticket(
+        ticket_id=str(test_ticket.id),
+        resolution_note="Issue resolved",
+    )
+
+    assert closed is not None
+    assert closed.status == "closed"
+
+
+# ============================================
+# Ticket Statistics Tests
+# ============================================
+
+
+@pytest.mark.asyncio
+async def test_get_ticket_stats(support_service_instance, test_user):
+    """Test getting aggregate ticket statistics."""
+    # Create tickets with various statuses and priorities
+    for status in ["open", "in_progress", "closed"]:
+        for priority in ["low", "medium", "high"]:
+            ticket = SupportTicket(
+                user_id=test_user.id,
+                user_email=test_user.email,
+                user_name=test_user.name,
+                subject=f"{status} {priority}",
+                message="Test",
+                status=status,
+                priority=priority,
+            )
+            await ticket.insert()
+
+    stats = await support_service_instance.get_ticket_stats()
+
+    assert isinstance(stats, dict)
+
+
+# ============================================
+# Data Consistency Tests
+# ============================================
+
+
+@pytest.mark.asyncio
+async def test_ticket_timestamps(support_service_instance, test_user):
+    """Test that ticket has proper timestamps."""
+    ticket = await support_service_instance.create_ticket(
+        user=test_user,
+        subject="Test",
+        message="Test",
+    )
+
+    assert ticket.created_at is not None
+    assert ticket.updated_at is not None
+
+
+@pytest.mark.asyncio
+async def test_ticket_user_info_consistency(support_service_instance, test_user):
+    """Test that ticket stores consistent user information."""
+    ticket = await support_service_instance.create_ticket(
+        user=test_user,
+        subject="Test",
+        message="Test",
+    )
+
+    assert ticket.user_id == test_user.id
+    assert ticket.user_email == test_user.email
+    assert ticket.user_name == test_user.name

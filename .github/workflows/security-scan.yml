@@ -28,6 +28,8 @@ on:
   schedule:
     # Run weekly on Mondays at 9am UTC
     - cron: '0 9 * * 1'
+  workflow_dispatch:
+    # Allow manual triggering for testing
 
 # Explicit permissions for security (principle of least privilege)
 permissions:
@@ -220,6 +222,7 @@ jobs:
     name: Audit GCP Secret Manager setup
     runs-on: ubuntu-latest
     # Only run on main branch (requires GCP credentials)
+    # Note: Requires GCP_SA_KEY secret to be configured
     if: github.ref == 'refs/heads/main'
 
     steps:
