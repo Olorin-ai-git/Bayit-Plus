@@ -1,6 +1,12 @@
 # Cloud Build configuration for Olorin Platform Backend
 # Builds and deploys independent Olorin backend to Cloud Run
 
+# Substitutions for Cloud Build variables
+substitutions:
+  _GCP_REGION: us-east1
+  _SERVICE_NAME: olorin-backend
+  _IMAGE_NAME: olorin-backend
+
 steps:
   # Build Docker image
   - name: "gcr.io/cloud-builders/docker"
@@ -36,9 +42,9 @@ steps:
     args:
       - "run"
       - "deploy"
-      - "olorin-backend"
+      - "${_SERVICE_NAME}"
       - "--image=gcr.io/$PROJECT_ID/olorin-backend:$COMMIT_SHA"
-      - "--region=us-east1"
+      - "--region=${_GCP_REGION}"
       - "--platform=managed"
       - "--allow-unauthenticated"
       - "--min-instances=0"
@@ -63,8 +69,8 @@ steps:
         echo "Waiting for service to be ready..."
         sleep 30
 
-        SERVICE_URL=$$(gcloud run services describe olorin-backend \
-          --region=us-east1 \
+        SERVICE_URL=$$(gcloud run services describe ${_SERVICE_NAME} \
+          --region=${_GCP_REGION} \
           --format='value(status.url)')
 
         echo "Service URL: $$SERVICE_URL"
@@ -88,15 +94,15 @@ steps:
 
         # Get previous revision
         PREV_REVISION=$$(gcloud run revisions list \
-          --service=olorin-backend \
-          --region=us-east1 \
+          --service=${_SERVICE_NAME} \
+          --region=${_GCP_REGION} \
           --format='value(name)' \
           --limit=2 | tail -1)
 
         if [ -n "$$PREV_REVISION" ]; then
           echo "Rolling back to: $$PREV_REVISION"
-          gcloud run services update-traffic olorin-backend \
-            --region=us-east1 \
+          gcloud run services update-traffic ${_SERVICE_NAME} \
+            --region=${_GCP_REGION} \
             --to-revisions=$$PREV_REVISION=100
           echo "Rollback complete"
         else
