@@ -129,8 +129,7 @@ cd /Users/olorin/Documents/Bayit-Plus
 
 gcloud builds submit \
   --config=backend-olorin/cloudbuild.yaml \
-  --project="$PROJECT_ID" \
-  --region="$REGION"
+  --project="$PROJECT_ID"
 
 BUILD_ID=$?
 
