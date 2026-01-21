@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   Animated,
@@ -65,47 +64,44 @@ const ChannelCard: React.FC<{
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={1}
-      style={styles.cardTouchable}
+      className="flex-1 m-2 max-w-[25%]"
       hasTVPreferredFocus={index === 0}
     >
       <Animated.View
-        style={[
-          styles.channelCard,
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.channelCardFocused,
-        ]}
+        style={{ transform: [{ scale: scaleAnim }] }}
+        className={`bg-black/20 backdrop-blur-xl rounded-2xl p-5 border ${isFocused ? 'border-purple-500 bg-white/20' : 'border-white/10'} min-h-[180px]`}
       >
         {/* Channel Logo */}
-        <View style={styles.logoContainer}>
+        <View className="h-[60px] justify-center items-center mb-4">
           {channel.logo ? (
             <Image
               source={{ uri: channel.logo }}
-              style={styles.channelLogo}
+              className="w-20 h-[60px]"
               resizeMode="contain"
             />
           ) : (
-            <View style={styles.logoPlaceholder}>
-              <Text style={styles.logoText}>{channel.name[0]}</Text>
+            <View className="w-[60px] h-[60px] rounded-full bg-white/20 justify-center items-center">
+              <Text className="text-2xl font-bold text-purple-500">{channel.name[0]}</Text>
             </View>
           )}
         </View>
 
         {/* Channel Info */}
-        <View style={styles.channelInfo}>
-          <Text style={styles.channelName} numberOfLines={1}>
+        <View className="flex-1">
+          <Text className="text-xl font-bold text-white text-center mb-1" numberOfLines={1}>
             {localizedName}
           </Text>
           {localizedProgram && (
-            <Text style={styles.currentProgram} numberOfLines={1}>
+            <Text className="text-sm text-gray-400 text-center" numberOfLines={1}>
               {localizedProgram}
             </Text>
           )}
         </View>
 
         {/* Live Indicator */}
-        <View style={styles.liveIndicator}>
-          <View style={styles.liveDot} />
-          <Text style={styles.liveText}>{liveLabel}</Text>
+        <View className="flex-row items-center justify-center mt-3">
+          <View className="w-2 h-2 rounded-full bg-red-500 mr-1.5" />
+          <Text className="text-xs text-red-500 font-bold">{liveLabel}</Text>
         </View>
       </Animated.View>
     </TouchableOpacity>
@@ -163,28 +159,28 @@ export const LiveTVScreen: React.FC = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 bg-[#0a0a14] justify-center items-center">
         <ActivityIndicator size="large" color="#a855f7" />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-white text-lg mt-4">{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-[#0a0a14]">
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <View style={[styles.headerIcon, { marginLeft: isRTL ? 20 : 0, marginRight: isRTL ? 0 : 20 }]}>
-          <Text style={styles.headerIconText}>📺</Text>
+      <View className={`flex-row items-center px-12 pt-10 pb-5 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
+        <View className={`w-[60px] h-[60px] rounded-full bg-purple-600/30 justify-center items-center ${isRTL ? 'ml-5' : 'mr-5'}`}>
+          <Text className="text-[28px]">📺</Text>
         </View>
         <View>
-          <Text style={[styles.title, { textAlign }]}>{t('liveTV.title')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>{filteredChannels.length} {t('liveTV.channels')}</Text>
+          <Text className={`text-[42px] font-bold text-white ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>{t('liveTV.title')}</Text>
+          <Text className={`text-lg text-gray-400 mt-1 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>{filteredChannels.length} {t('liveTV.channels')}</Text>
         </View>
       </View>
 
       {/* Category Filter */}
-      <View style={[styles.categories, { flexDirection: isRTL ? 'row' : 'row-reverse', justifyContent: isRTL ? 'flex-start' : 'flex-start' }]}>
+      <View className={`flex-row px-12 mb-6 gap-3 z-10 ${isRTL ? 'flex-row' : 'flex-row-reverse'} justify-start`}>
         {categories.map((cat, index) => (
           <GlassCategoryPill
             key={cat.id}
@@ -201,7 +197,7 @@ export const LiveTVScreen: React.FC = () => {
         data={filteredChannels}
         keyExtractor={(item) => item.id}
         numColumns={4}
-        contentContainerStyle={styles.grid}
+        contentContainerStyle={{ paddingHorizontal: 40, paddingBottom: 40, paddingTop: 16 }}
         renderItem={({ item, index }) => (
           <ChannelCard
             channel={item}
@@ -216,142 +212,5 @@ export const LiveTVScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: 18,
-    marginTop: 16,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 48,
-    paddingTop: 40,
-    paddingBottom: 20,
-  },
-  headerIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 20,
-  },
-  headerIconText: {
-    fontSize: 28,
-  },
-  title: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'right',
-  },
-  subtitle: {
-    fontSize: 18,
-    color: colors.textSecondary,
-    marginTop: 4,
-    textAlign: 'right',
-  },
-  categories: {
-    flexDirection: 'row',
-    paddingHorizontal: 48,
-    marginBottom: 24,
-    gap: 12,
-    zIndex: 10,
-  },
-  grid: {
-    paddingHorizontal: 40,
-    paddingBottom: 40,
-    paddingTop: 16,
-    direction: 'ltr',
-  },
-  cardTouchable: {
-    flex: 1,
-    margin: 8,
-    maxWidth: '25%',
-  },
-  channelCard: {
-    backgroundColor: colors.glass,
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    minHeight: 180,
-  },
-  channelCardFocused: {
-    borderColor: colors.primary,
-    backgroundColor: colors.backgroundLighter,
-    // @ts-ignore - Web CSS property for glow effect
-    boxShadow: `0 0 20px ${colors.primary}`,
-  },
-  logoContainer: {
-    height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  channelLogo: {
-    width: 80,
-    height: 60,
-  },
-  logoPlaceholder: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: colors.backgroundLighter,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.primary,
-  },
-  channelInfo: {
-    flex: 1,
-  },
-  channelName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: 4,
-  },
-  currentProgram: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  liveIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 12,
-  },
-  liveDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.live,
-    marginRight: 6,
-  },
-  liveText: {
-    fontSize: 12,
-    color: colors.live,
-    fontWeight: 'bold',
-  },
-});
 
 export default LiveTVScreen;

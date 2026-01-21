@@ -17,7 +17,7 @@ async def main():
     await connect_to_mongo()
 
     # Check if already exists
-    local_vod_path = "/Users/olorin/Documents/Bayit-Plus/backend/uploads/vod"
+    local_vod_path = "/Users/olorin/Documents/olorin/backend/uploads/vod"
     existing = await MonitoredFolder.find_one(MonitoredFolder.path == local_vod_path)
 
     if existing:

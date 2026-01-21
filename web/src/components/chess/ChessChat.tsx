@@ -3,7 +3,7 @@
  * Allows players to communicate and request chess advice from AI.
  */
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Platform } from 'react-native';
+import { View, Text, ScrollView, Pressable, Platform } from 'react-native';
 import { colors, spacing } from '@bayit/shared/theme';
 import { Send, Mic, MicOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -79,16 +79,16 @@ export default function ChessChat({
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-black/30 backdrop-blur-xl rounded-2xl p-4 shadow-lg">
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('chess.title')}</Text>
+      <View className="flex-row items-center justify-between mb-4 pb-3 border-b border-white/10">
+        <Text className="text-lg font-semibold text-white">{t('chess.title')}</Text>
 
         {/* Voice controls */}
         {voiceEnabled && (
-          <View style={styles.voiceControls}>
+          <View className="flex-row items-center gap-3">
             <Pressable
-              style={[styles.voiceButton, isMuted && styles.voiceButtonMuted]}
+              className={`p-3 rounded-lg ${isMuted ? 'bg-red-500/20' : 'bg-green-500/20'}`}
               onPress={toggleMute}
             >
               {isMuted ? (
@@ -99,7 +99,7 @@ export default function ChessChat({
             </Pressable>
 
             {voiceConnected && participants.length > 0 && (
-              <Text style={styles.participantCount}>
+              <Text className="text-xs text-gray-400">
                 {participants.length} {t('chess.speaking')}
               </Text>
             )}
@@ -110,55 +110,58 @@ export default function ChessChat({
       {/* Messages */}
       <ScrollView
         ref={scrollRef}
-        style={styles.messages}
-        contentContainerStyle={styles.messagesContent}
+        className="flex-1 mb-4"
+        contentContainerStyle={{ paddingBottom: 8 }}
       >
         {messages.map((msg, idx) => (
-          <View key={idx} style={styles.messageContainer}>
-            <View style={styles.messageHeader}>
-              <Text style={styles.messageAuthor}>{msg.user_name}</Text>
-              <Text style={styles.messageTime}>{formatTime(msg.timestamp)}</Text>
+          <View key={idx} className="mb-4 p-3 bg-white/5 rounded-lg">
+            <View className="flex-row items-center justify-between mb-2">
+              <Text className="text-sm font-semibold text-purple-500">{msg.user_name}</Text>
+              <Text className="text-xs text-gray-400">{formatTime(msg.timestamp)}</Text>
             </View>
 
-            <Text style={styles.messageText}>{msg.message}</Text>
+            <Text className="text-sm text-white leading-5">{msg.message}</Text>
 
             {/* Bot response */}
             {msg.bot_response && (
-              <View style={styles.botResponse}>
-                <View style={styles.botHeader}>
-                  <Text style={styles.botIcon}>🤖</Text>
-                  <Text style={styles.botLabel}>{t('chess.bot')}</Text>
+              <View className="mt-3 pl-4 border-l-[3px] border-green-500 py-2">
+                <View className="flex-row items-center gap-2 mb-2">
+                  <Text className="text-base">🤖</Text>
+                  <Text className="text-xs font-semibold text-green-500">{t('chess.bot')}</Text>
                 </View>
-                <Text style={styles.botText}>{msg.bot_response}</Text>
+                <Text className="text-sm text-white italic leading-[18px]">{msg.bot_response}</Text>
               </View>
             )}
           </View>
         ))}
 
         {messages.length === 0 && (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>{t('chess.noMoves')}</Text>
-            <Text style={styles.emptyHint}>{t('chess.botHint')}</Text>
+          <View className="flex-1 items-center justify-center py-12">
+            <Text className="text-sm text-gray-400 mb-3">{t('chess.noMoves')}</Text>
+            <Text className="text-xs text-gray-400 text-center">{t('chess.botHint')}</Text>
           </View>
         )}
       </ScrollView>
 
       {/* Input */}
-      <View style={styles.inputContainer}>
-        <GlassInput
-          value={inputText}
-          onChangeText={setInputText}
-          onKeyPress={handleKeyPress}
-          placeholder={t('chess.chatPlaceholder')}
-          inputStyle={styles.input}
-          multiline
-          maxLength={500}
-          containerStyle={styles.inputWrapper}
-        />
+      <View className="flex-row items-end gap-3 pt-3 border-t border-white/10">
+        <View className="flex-1">
+          <GlassInput
+            value={inputText}
+            onChangeText={setInputText}
+            onKeyPress={handleKeyPress}
+            placeholder={t('chess.chatPlaceholder')}
+            inputStyle={{ fontSize: 14, maxHeight: 100 }}
+            multiline
+            maxLength={500}
+          />
+        </View>
 
         <Pressable
           onPress={handleSend}
-          style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
+          className={`p-3 rounded-lg bg-purple-500/20 justify-center items-center ${
+            !inputText.trim() ? 'opacity-50' : ''
+          }`}
           disabled={!inputText.trim()}
         >
           <Send size={20} color={inputText.trim() ? colors.primary : colors.textSecondary} />
@@ -166,163 +169,9 @@ export default function ChessChat({
       </View>
 
       {/* Hint text */}
-      <Text style={styles.hint}>
+      <Text className="text-[11px] text-gray-400 mt-2 text-center italic">
         {t('chess.botHint')}
       </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'rgba(10, 10, 20, 0.3)',
-    backdropFilter: 'blur(20px)',
-    borderRadius: 16,
-    padding: spacing.md,
-    ...Platform.select({
-      web: {
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-      },
-    }),
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.md,
-    paddingBottom: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  voiceControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  voiceButton: {
-    padding: spacing.sm,
-    borderRadius: 8,
-    backgroundColor: 'rgba(0, 255, 0, 0.2)',
-  },
-  voiceButtonMuted: {
-    backgroundColor: 'rgba(255, 0, 0, 0.2)',
-  },
-  participantCount: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-  messages: {
-    flex: 1,
-    marginBottom: spacing.md,
-  },
-  messagesContent: {
-    paddingBottom: spacing.sm,
-  },
-  messageContainer: {
-    marginBottom: spacing.md,
-    padding: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 8,
-  },
-  messageHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.xs,
-  },
-  messageAuthor: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-  messageTime: {
-    fontSize: 11,
-    color: colors.textSecondary,
-  },
-  messageText: {
-    fontSize: 14,
-    color: colors.text,
-    lineHeight: 20,
-  },
-  botResponse: {
-    marginTop: spacing.sm,
-    paddingLeft: spacing.md,
-    borderLeftWidth: 3,
-    borderLeftColor: colors.success,
-    paddingVertical: spacing.sm,
-  },
-  botHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginBottom: spacing.xs,
-  },
-  botIcon: {
-    fontSize: 16,
-  },
-  botLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.success,
-  },
-  botText: {
-    fontSize: 13,
-    color: colors.text,
-    fontStyle: 'italic',
-    lineHeight: 18,
-  },
-  emptyState: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.xl,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-  },
-  emptyHint: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: spacing.sm,
-    paddingTop: spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  inputWrapper: {
-    flex: 1,
-  },
-  input: {
-    fontSize: 14,
-    maxHeight: 100,
-  },
-  sendButton: {
-    padding: spacing.sm,
-    borderRadius: 8,
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sendButtonDisabled: {
-    opacity: 0.5,
-  },
-  hint: {
-    fontSize: 11,
-    color: colors.textSecondary,
-    marginTop: spacing.xs,
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-});

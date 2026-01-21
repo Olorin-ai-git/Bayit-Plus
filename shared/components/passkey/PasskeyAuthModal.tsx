@@ -9,7 +9,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ActivityIndicator,
   Platform,
 } from 'react-native';
@@ -164,30 +163,30 @@ export const PasskeyAuthModal: React.FC<PasskeyAuthModalProps> = ({
     switch (authState) {
       case 'authenticating':
         return (
-          <View style={styles.stateContainer}>
+          <View className="items-center p-8">
             <ActivityIndicator size="large" color={colors.primary} />
-            <Text style={styles.stateText}>{t('passkey.auth.authenticating')}</Text>
+            <Text className="text-lg text-white mt-4 text-center">{t('passkey.auth.authenticating')}</Text>
           </View>
         );
 
       case 'success':
         return (
-          <View style={styles.stateContainer}>
-            <Text style={styles.successIcon}>✓</Text>
-            <Text style={styles.stateText}>{t('passkey.auth.success')}</Text>
+          <View className="items-center p-8">
+            <Text className="text-5xl text-green-500">✓</Text>
+            <Text className="text-lg text-white mt-4 text-center">{t('passkey.auth.success')}</Text>
           </View>
         );
 
       case 'qr-waiting':
         return (
-          <View style={styles.stateContainer}>
+          <View className="items-center p-8">
             {qrSessionId ? (
               <>
-                <View style={styles.qrPlaceholder}>
-                  <Text style={styles.qrText}>QR</Text>
+                <View className="w-[200px] h-[200px] bg-white rounded-xl items-center justify-center mb-6">
+                  <Text className="text-2xl text-black font-semibold">QR</Text>
                 </View>
-                <Text style={styles.stateText}>{t('passkey.qr.scanWithPhone')}</Text>
-                <Text style={styles.helperText}>{t('passkey.qr.instruction')}</Text>
+                <Text className="text-lg text-white text-center">{t('passkey.qr.scanWithPhone')}</Text>
+                <Text className="text-sm text-white/60 text-center mt-2">{t('passkey.qr.instruction')}</Text>
               </>
             ) : (
               <ActivityIndicator size="large" color={colors.primary} />
@@ -197,12 +196,12 @@ export const PasskeyAuthModal: React.FC<PasskeyAuthModalProps> = ({
 
       case 'error':
         return (
-          <View style={styles.stateContainer}>
-            <Text style={styles.errorIcon}>!</Text>
-            <Text style={styles.errorText}>{error}</Text>
+          <View className="items-center p-8">
+            <Text className="text-5xl w-16 h-16 rounded-full bg-red-500/20 text-red-500 text-center leading-[64px] mb-4">!</Text>
+            <Text className="text-base text-red-500 text-center mb-6">{error}</Text>
             <GlassButton
               onPress={handleAuthenticate}
-              style={styles.retryButton}
+              className="min-w-[150px]"
             >
               {t('common.tryAgain')}
             </GlassButton>
@@ -211,18 +210,18 @@ export const PasskeyAuthModal: React.FC<PasskeyAuthModalProps> = ({
 
       default:
         return (
-          <View style={styles.contentContainer}>
-            <View style={styles.iconContainer}>
-              <Text style={styles.lockIcon}>🔐</Text>
+          <View className="items-center p-6">
+            <View className="w-20 h-20 rounded-full bg-purple-600/20 items-center justify-center mb-6">
+              <Text className="text-[40px]">🔐</Text>
             </View>
-            <Text style={styles.title}>{t('passkey.auth.title')}</Text>
-            <Text style={styles.description}>{t('passkey.auth.description')}</Text>
+            <Text className="text-xl font-semibold text-white mb-2 text-center">{t('passkey.auth.title')}</Text>
+            <Text className="text-base text-white/60 text-center mb-8 leading-[22px]">{t('passkey.auth.description')}</Text>
 
             {!isSupported ? (
-              <View style={styles.unsupportedContainer}>
-                <Text style={styles.unsupportedText}>{t('passkey.unsupported')}</Text>
+              <View className="items-center">
+                <Text className="text-base text-white/60 text-center mb-6">{t('passkey.unsupported')}</Text>
                 {showQROption && (
-                  <GlassButton onPress={handleStartQR} style={styles.qrButton}>
+                  <GlassButton onPress={handleStartQR} className="w-full">
                     {t('passkey.qr.useQR')}
                   </GlassButton>
                 )}
@@ -231,7 +230,7 @@ export const PasskeyAuthModal: React.FC<PasskeyAuthModalProps> = ({
               <>
                 <GlassButton
                   onPress={handleAuthenticate}
-                  style={styles.authButton}
+                  className="w-full mb-4"
                   variant="primary"
                 >
                   {t('passkey.auth.unlock')}
@@ -241,7 +240,7 @@ export const PasskeyAuthModal: React.FC<PasskeyAuthModalProps> = ({
                   <GlassButton
                     onPress={handleStartQR}
                     variant="secondary"
-                    style={styles.qrButton}
+                    className="w-full"
                   >
                     {t('passkey.qr.useQR')}
                   </GlassButton>
@@ -263,108 +262,5 @@ export const PasskeyAuthModal: React.FC<PasskeyAuthModalProps> = ({
     </GlassModal>
   );
 };
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: colors.primary + '20',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.lg,
-  },
-  lockIcon: {
-    fontSize: 40,
-  },
-  title: {
-    fontSize: fontSize.xl,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: spacing.sm,
-    textAlign: 'center',
-  },
-  description: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.xl,
-    lineHeight: 22,
-  },
-  authButton: {
-    width: '100%',
-    marginBottom: spacing.md,
-  },
-  qrButton: {
-    width: '100%',
-  },
-  stateContainer: {
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  stateText: {
-    fontSize: fontSize.lg,
-    color: colors.textPrimary,
-    marginTop: spacing.md,
-    textAlign: 'center',
-  },
-  successIcon: {
-    fontSize: 48,
-    color: colors.success,
-  },
-  errorIcon: {
-    fontSize: 48,
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: colors.error + '20',
-    color: colors.error,
-    textAlign: 'center',
-    lineHeight: 64,
-    marginBottom: spacing.md,
-  },
-  errorText: {
-    fontSize: fontSize.md,
-    color: colors.error,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  retryButton: {
-    minWidth: 150,
-  },
-  qrPlaceholder: {
-    width: 200,
-    height: 200,
-    backgroundColor: colors.white,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.lg,
-  },
-  qrText: {
-    fontSize: 24,
-    color: colors.black,
-    fontWeight: '600',
-  },
-  helperText: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginTop: spacing.sm,
-  },
-  unsupportedContainer: {
-    alignItems: 'center',
-  },
-  unsupportedText: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-});
 
 export default PasskeyAuthModal;

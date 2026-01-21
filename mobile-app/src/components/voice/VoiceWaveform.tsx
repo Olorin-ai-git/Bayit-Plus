@@ -9,7 +9,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -93,8 +93,8 @@ export default function VoiceWaveform({
     return (
       <Animated.View
         key={index}
+        className="rounded-sm"
         style={[
-          styles.bar,
           {
             backgroundColor: color,
             width: BAR_WIDTH,
@@ -106,27 +106,10 @@ export default function VoiceWaveform({
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.waveformContainer}>
+    <View className="items-center justify-center">
+      <View className="flex-row items-center justify-center gap-2 py-5">
         {Array.from({ length: barCount }).map((_, index) => renderBar(index))}
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  waveformContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: BAR_SPACING,
-    paddingVertical: 20,
-  },
-  bar: {
-    borderRadius: 2,
-  },
-});

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
@@ -182,12 +182,12 @@ export default function Layout() {
   const sidebarWidth = isSidebarExpanded ? expandedWidth : collapsedWidth;
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 min-h-screen bg-[#111122] relative flex-row">
       {/* Decorative blur circles - wrapped to contain overflow */}
-      <View style={styles.blurContainer}>
-        <View style={[styles.blurCircle, styles.blurCirclePrimary]} />
-        <View style={[styles.blurCircle, styles.blurCirclePurple]} />
-        <View style={[styles.blurCircle, styles.blurCircleSuccess]} />
+      <View className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <View className="absolute w-96 h-96 -top-48 -right-48 rounded-full opacity-50 blur-[100px]" style={{ backgroundColor: colors.primary }} />
+        <View className="absolute w-72 h-72 top-[33%] -left-36 rounded-full opacity-40 blur-[100px]" style={{ backgroundColor: colors.secondary }} />
+        <View className="absolute w-64 h-64 bottom-[25%] right-[25%] rounded-full opacity-30 blur-[100px]" style={{ backgroundColor: colors.success }} />
       </View>
 
       {/* Sidebar - Always visible on web, toggleable on TV */}
@@ -197,10 +197,13 @@ export default function Layout() {
       />
 
       {/* Main content wrapper with sidebar offset */}
-      <View style={[
-        styles.contentWrapper,
-        isRTL ? { marginRight: sidebarWidth } : { marginLeft: sidebarWidth },
-      ]}>
+      <View
+        className="flex-1 flex-col min-h-screen pt-[env(safe-area-inset-top,0px)]"
+        style={{
+          transition: 'margin-left 0.3s ease-out',
+          ...(isRTL ? { marginRight: sidebarWidth } : { marginLeft: sidebarWidth }),
+        }}
+      >
         <Header />
 
         {/* Breadcrumbs Navigation */}
@@ -219,7 +222,7 @@ export default function Layout() {
           responseText={voiceResponse}
         />
 
-        <View style={styles.main}>
+        <View className="flex-1 relative z-10">
           <Outlet />
         </View>
         {!IS_TV_BUILD && <Footer />}
@@ -250,66 +253,3 @@ export default function Layout() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    minHeight: '100vh' as any,
-    backgroundColor: colors.background,
-    position: 'relative',
-    flexDirection: 'row',
-  },
-  contentWrapper: {
-    flex: 1,
-    flexDirection: 'column',
-    minHeight: '100vh' as any,
-    transition: 'margin-left 0.3s ease-out',
-    // Ensure content isn't clipped at the top edge
-    paddingTop: 'env(safe-area-inset-top, 0px)',
-  } as any,
-  blurContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    overflow: 'hidden',
-    pointerEvents: 'none' as any,
-    zIndex: 0,
-  },
-  blurCircle: {
-    position: 'absolute',
-    borderRadius: 9999,
-    // @ts-ignore - Web CSS property
-    filter: 'blur(100px)',
-  },
-  blurCirclePrimary: {
-    width: 384,
-    height: 384,
-    top: -192,
-    right: -192,
-    backgroundColor: colors.primary,
-    opacity: 0.5,
-  },
-  blurCirclePurple: {
-    width: 288,
-    height: 288,
-    top: '33%' as any,
-    left: -144,
-    backgroundColor: colors.secondary,
-    opacity: 0.4,
-  },
-  blurCircleSuccess: {
-    width: 256,
-    height: 256,
-    bottom: '25%' as any,
-    right: '25%' as any,
-    backgroundColor: colors.success,
-    opacity: 0.3,
-  },
-  main: {
-    flex: 1,
-    position: 'relative',
-    zIndex: 10,
-  },
-});

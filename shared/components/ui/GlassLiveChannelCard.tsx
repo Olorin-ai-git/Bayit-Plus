@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, ViewStyle, Platform } from 'react-native';
+import { View, Text, Pressable, Image, ViewStyle, Platform } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Play, Star } from 'lucide-react';
-import { colors, spacing, borderRadius } from '../theme';
 
 interface GlassLiveChannelCardProps {
   channel: {
@@ -40,10 +39,11 @@ export function GlassLiveChannelCard({
       onPress={onPress}
       onHoverIn={() => setIsHovered(true)}
       onHoverOut={() => setIsHovered(false)}
-      style={[styles.container, style]}
+      className="flex-1"
+      style={style}
     >
       {/* Main Glass Card */}
-      <View style={[styles.card, isHovered && styles.cardHovered]}>
+      <View className="relative aspect-video rounded-lg overflow-hidden bg-black/20">
         {/* Glass Background */}
         <LinearGradient
           colors={[
@@ -53,28 +53,28 @@ export function GlassLiveChannelCard({
           ]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.background}
+          className="absolute inset-0"
         />
 
         {/* Thumbnail/Logo Area */}
-        <View style={styles.thumbnailContainer}>
+        <View className="flex-1 relative justify-center items-center overflow-hidden">
           {/* Dark Background Pattern */}
-          <View style={styles.logoBackground} />
+          <View className="absolute inset-0 bg-black/95" />
 
           {/* Logo Display - contained in rounded area with dark background */}
-          <View style={styles.logoWrapper}>
+          <View className="flex-1 justify-center items-center px-3 py-3 pb-10 w-full z-[2]">
             {(channel.thumbnail || channel.logo) && !imageError ? (
-              <View style={styles.logoInner}>
+              <View className="w-full h-full justify-center items-center rounded-md overflow-hidden bg-black/80">
                 <Image
                   source={{ uri: channel.thumbnail || channel.logo }}
-                  style={styles.logo}
+                  className="w-4/5 h-4/5"
                   resizeMode="contain"
                   onError={() => setImageError(true)}
                 />
               </View>
             ) : (
-              <View style={styles.logoPlaceholder}>
-                <Text style={styles.logoEmoji}>📺</Text>
+              <View className="w-18 h-18 rounded-full bg-purple-600/30 justify-center items-center backdrop-blur-lg">
+                <Text className="text-3xl">📺</Text>
               </View>
             )}
           </View>
@@ -83,19 +83,19 @@ export function GlassLiveChannelCard({
           <LinearGradient
             colors={['transparent', 'rgba(0, 0, 0, 0.5)', 'rgba(0, 0, 0, 0.9)']}
             locations={[0.3, 0.7, 1]}
-            style={styles.gradientOverlay}
+            className="absolute left-0 right-0 bottom-0 h-1/2"
           />
 
           {/* Live Badge with Pulse Animation */}
-          <View style={styles.liveBadgeContainer}>
-            <View style={[styles.liveBadge, isWeb && styles.liveBadgeWeb]}>
+          <View className="absolute top-2 left-2 z-10">
+            <View className="flex-row items-center gap-1.5 px-2.5 py-1 rounded-sm bg-red-500/95 backdrop-blur-lg">
               {/* Use CSS class for web animation, style for native */}
               <View
-                style={styles.livePulse}
+                className="w-1.5 h-1.5 rounded-full bg-white"
                 // @ts-ignore - web-only className for CSS animation
-                className={isWeb ? 'live-pulse-dot' : undefined}
+                {...(isWeb ? { className: 'live-pulse-dot w-1.5 h-1.5 rounded-full bg-white' } : {})}
               />
-              <Text style={styles.liveText}>{liveLabel}</Text>
+              <Text className="text-[10px] font-bold text-white tracking-wider uppercase">{liveLabel}</Text>
             </View>
           </View>
 
@@ -108,257 +108,49 @@ export function GlassLiveChannelCard({
               }}
               onHoverIn={() => setFavoriteHovered(true)}
               onHoverOut={() => setFavoriteHovered(false)}
-              style={[
-                styles.favoriteButton,
-                favoriteHovered && styles.favoriteButtonHovered,
-                isFavorite && styles.favoriteButtonActive,
-              ]}
+              className={`absolute top-2 right-2 w-8 h-8 rounded-full justify-center items-center z-10 backdrop-blur-lg ${
+                favoriteHovered ? 'bg-white/25' : 'bg-black/60'
+              } ${isFavorite ? 'bg-white/15' : ''}`}
             >
               <Star
                 size={16}
-                color={isFavorite ? colors.warning : colors.text}
-                fill={isFavorite ? colors.warning : 'transparent'}
+                color={isFavorite ? '#fbbf24' : '#fff'}
+                fill={isFavorite ? '#fbbf24' : 'transparent'}
               />
             </Pressable>
           )}
 
           {/* Play Overlay on Hover */}
           {isHovered && (
-            <View style={styles.playOverlay}>
-              <View style={styles.playButton}>
+            <View className="absolute inset-0 justify-center items-center bg-black/30">
+              <View className="w-14 h-14 rounded-full justify-center items-center overflow-hidden backdrop-blur-lg">
                 <LinearGradient
                   colors={['rgba(168, 85, 247, 0.95)', 'rgba(147, 51, 234, 0.95)']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  style={styles.playButtonGradient}
+                  className="absolute inset-0"
                 />
-                <Play size={24} color={colors.text} fill={colors.text} style={styles.playIcon} />
+                <Play size={24} color="#fff" fill="#fff" style={{ marginLeft: 2 }} />
               </View>
             </View>
           )}
         </View>
 
         {/* Channel Info Section */}
-        <View style={styles.info}>
-          <Text style={[styles.channelName, isHovered && styles.channelNameHovered]} numberOfLines={1}>
+        <View className="absolute left-0 right-0 bottom-0 px-2 pb-2 pt-3 z-[5]">
+          <Text className={`text-sm font-semibold text-white text-center ${isHovered ? 'text-purple-500' : ''}`} numberOfLines={1}>
             {channel.name}
           </Text>
           {channel.currentShow && (
-            <Text style={styles.currentShow} numberOfLines={1}>
+            <Text className="text-[11px] text-gray-400 mt-0.5 text-center" numberOfLines={1}>
               {channel.currentShow}
             </Text>
           )}
         </View>
 
         {/* Glass Border Effect */}
-        <View style={[styles.borderGlass, isHovered && styles.borderGlassHovered]} />
+        <View className={`absolute inset-0 rounded-lg border pointer-events-none ${isHovered ? 'border-purple-500/30' : 'border-white/[0.08]'}`} />
       </View>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  card: {
-    position: 'relative',
-    aspectRatio: 16 / 9,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    backgroundColor: colors.glass,
-    // @ts-ignore - Web transition
-    transition: 'all 0.2s ease',
-  },
-  cardHovered: {
-    // @ts-ignore - Web transform
-    transform: [{ translateY: -6 }],
-    // @ts-ignore - Web shadow
-    boxShadow: '0 12px 40px rgba(107, 33, 168, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3)',
-  },
-  background: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  thumbnailContainer: {
-    flex: 1,
-    position: 'relative',
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  logoBackground: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(5, 5, 10, 0.95)',
-  },
-  logoWrapper: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    paddingBottom: spacing.xl + spacing.lg, // Extra padding for info section
-    width: '100%',
-    zIndex: 2,
-  },
-  logoInner: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: borderRadius.md,
-    overflow: 'hidden',
-    backgroundColor: 'rgba(15, 15, 20, 0.8)',
-    // @ts-ignore - Web backdrop filter
-    backdropFilter: 'blur(4px)',
-  },
-  logo: {
-    width: '80%',
-    height: '80%',
-  },
-  logoPlaceholder: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    // @ts-ignore - Web backdrop filter
-    backdropFilter: 'blur(8px)',
-  },
-  logoEmoji: {
-    fontSize: 32,
-  },
-  gradientOverlay: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: '50%',
-  },
-  liveBadgeContainer: {
-    position: 'absolute',
-    top: spacing.sm,
-    left: spacing.sm,
-    zIndex: 10,
-  },
-  liveBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: borderRadius.sm,
-    backgroundColor: 'rgba(239, 68, 68, 0.95)',
-    // @ts-ignore - Web backdrop filter
-    backdropFilter: 'blur(8px)',
-  },
-  liveBadgeWeb: {
-    // @ts-ignore - Web animation
-    boxShadow: '0 2px 8px rgba(239, 68, 68, 0.4)',
-  },
-  livePulse: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#fff',
-  },
-  // Note: Web animation handled via CSS className 'live-pulse-dot' in globals.css
-  liveText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#fff',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
-  favoriteButton: {
-    position: 'absolute',
-    top: spacing.sm,
-    right: spacing.sm,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10,
-    // @ts-ignore - Web backdrop filter
-    backdropFilter: 'blur(8px)',
-    // @ts-ignore - Web transition
-    transition: 'all 0.2s ease',
-  },
-  favoriteButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
-    // @ts-ignore - Web transform
-    transform: [{ scale: 1.1 }],
-  },
-  favoriteButtonActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-  },
-  playOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-  },
-  playButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-    // @ts-ignore - Web backdrop filter and shadow
-    backdropFilter: 'blur(8px)',
-    boxShadow: '0 0 24px rgba(168, 85, 247, 0.5)',
-  },
-  playButtonGradient: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  playIcon: {
-    marginLeft: 2,
-  },
-  info: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    paddingHorizontal: spacing.sm,
-    paddingBottom: spacing.sm,
-    paddingTop: spacing.md,
-    zIndex: 5,
-  },
-  channelName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-    textAlign: 'center',
-    // @ts-ignore - Web text shadow
-    textShadow: '0 1px 3px rgba(0, 0, 0, 0.8)',
-    // @ts-ignore - Web transition
-    transition: 'color 0.2s ease',
-  },
-  channelNameHovered: {
-    color: colors.primary,
-  },
-  currentShow: {
-    fontSize: 11,
-    color: colors.textSecondary,
-    marginTop: 2,
-    textAlign: 'center',
-    // @ts-ignore - Web text shadow
-    textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
-  },
-  borderGlass: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    // @ts-ignore
-    pointerEvents: 'none',
-    // @ts-ignore - Web transition
-    transition: 'border-color 0.2s ease',
-  },
-  borderGlassHovered: {
-    borderColor: 'rgba(168, 85, 247, 0.3)',
-  },
-});

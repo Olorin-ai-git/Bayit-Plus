@@ -14,7 +14,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   RefreshControl,
@@ -125,33 +124,33 @@ export const BillingScreenMobile: React.FC = () => {
       onPress={() => handleEditPaymentMethod(method.id)}
       activeOpacity={0.7}
     >
-      <GlassView style={styles.paymentMethodCard}>
-        <View style={[styles.paymentMethodContent, isRTL && styles.contentRTL]}>
-          <View style={styles.cardIconContainer}>
-            <Text style={styles.cardIcon}>
+      <GlassView className="rounded-lg mb-2 p-4">
+        <View className={`flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <View className="w-12 h-12 rounded-full bg-white/10 justify-center items-center">
+            <Text className="text-2xl">
               {method.type.toLowerCase() === 'visa' ? '💳' :
                method.type.toLowerCase() === 'mastercard' ? '💳' : '💳'}
             </Text>
           </View>
-          <View style={styles.cardDetails}>
-            <Text style={[styles.cardType, { textAlign }]}>
+          <View className="flex-1 mx-4">
+            <Text className="text-base font-semibold text-white" style={{ textAlign }}>
               {method.type.toUpperCase()} •••• {method.last4}
             </Text>
-            <Text style={[styles.cardExpiry, { textAlign }]}>
+            <Text className="text-[13px] text-white/60 mt-0.5" style={{ textAlign }}>
               {t('billing.expires')} {method.expiry}
             </Text>
           </View>
-          <View style={styles.cardActions}>
+          <View className="items-end">
             {method.is_default ? (
-              <View style={styles.defaultBadge}>
-                <Text style={styles.defaultBadgeText}>{t('billing.default')}</Text>
+              <View className="bg-purple-600/30 px-2 py-1 rounded">
+                <Text className="text-purple-600 text-xs font-semibold">{t('billing.default')}</Text>
               </View>
             ) : (
               <TouchableOpacity
                 onPress={() => handleSetDefaultPaymentMethod(method.id)}
-                style={styles.setDefaultButton}
+                className="px-2 py-1"
               >
-                <Text style={styles.setDefaultText}>{t('billing.setDefault')}</Text>
+                <Text className="text-white/60 text-xs">{t('billing.setDefault')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -166,23 +165,20 @@ export const BillingScreenMobile: React.FC = () => {
       onPress={() => handleDownloadInvoice(item.id)}
       activeOpacity={0.7}
     >
-      <GlassView style={styles.historyCard}>
-        <View style={[styles.historyContent, isRTL && styles.contentRTL]}>
-          <View style={styles.historyInfo}>
-            <Text style={[styles.historyDate, { textAlign }]}>{item.date}</Text>
-            <Text style={[styles.historyDescription, { textAlign }]} numberOfLines={1}>
+      <GlassView className="rounded-lg mb-2 p-4">
+        <View className={`flex-row items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <View className="flex-1">
+            <Text className="text-sm text-white/60" style={{ textAlign }}>{item.date}</Text>
+            <Text className="text-base font-medium text-white mt-0.5" style={{ textAlign }} numberOfLines={1}>
               {item.description}
             </Text>
           </View>
-          <View style={styles.historyRight}>
-            <Text style={styles.historyAmount}>
+          <View className="items-end gap-1">
+            <Text className="text-base font-semibold text-white">
               {item.currency}{item.amount.toFixed(2)}
             </Text>
-            <View style={[
-              styles.statusBadge,
-              item.status === 'paid' ? styles.statusPaid : styles.statusPending
-            ]}>
-              <Text style={styles.statusText}>
+            <View className={`px-2 py-0.5 rounded ${item.status === 'paid' ? 'bg-green-600/20' : 'bg-yellow-600/20'}`}>
+              <Text className="text-[11px] font-semibold text-white">
                 {item.status === 'paid' ? t('billing.paid') : t('billing.pending')}
               </Text>
             </View>
@@ -195,34 +191,34 @@ export const BillingScreenMobile: React.FC = () => {
   const renderHeader = () => (
     <View>
       {/* Header */}
-      <View style={[styles.header, isRTL && styles.headerRTL]}>
+      <View className={`flex-row items-center py-6 gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.backButton}
+          className="w-11 h-11 justify-center items-center"
         >
-          <Text style={styles.backText}>{isRTL ? '‹' : '›'}</Text>
+          <Text className="text-[32px] font-light text-white">{isRTL ? '‹' : '›'}</Text>
         </TouchableOpacity>
-        <Text style={[styles.title, { textAlign }]}>{t('billing.title')}</Text>
+        <Text className="flex-1 text-[28px] font-bold text-white" style={{ textAlign }}>{t('billing.title')}</Text>
       </View>
 
       {/* Payment Methods Section */}
-      <View style={styles.section}>
-        <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
-          <Text style={[styles.sectionTitle, { textAlign }]}>
+      <View className="mb-6">
+        <View className={`flex-row justify-between items-center mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <Text className="text-lg font-semibold text-white" style={{ textAlign }}>
             {t('billing.paymentMethods')}
           </Text>
           <TouchableOpacity
             onPress={handleAddPaymentMethod}
-            style={styles.addButton}
+            className="px-4 py-2 rounded-lg bg-purple-600/30"
           >
-            <Text style={styles.addButtonText}>+ {t('billing.addCard')}</Text>
+            <Text className="text-purple-600 text-sm font-semibold">+ {t('billing.addCard')}</Text>
           </TouchableOpacity>
         </View>
 
         {paymentMethods.length === 0 ? (
-          <GlassView style={styles.emptyCard}>
-            <Text style={styles.emptyIcon}>💳</Text>
-            <Text style={[styles.emptyText, { textAlign }]}>
+          <GlassView className="p-8 items-center rounded-lg">
+            <Text className="text-5xl mb-4">💳</Text>
+            <Text className="text-base text-white/60 mb-4" style={{ textAlign }}>
               {t('billing.noPaymentMethods')}
             </Text>
             <GlassButton
@@ -238,8 +234,8 @@ export const BillingScreenMobile: React.FC = () => {
       </View>
 
       {/* Billing History Section */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
+      <View className="mb-4">
+        <Text className="text-lg font-semibold text-white mb-2" style={{ textAlign }}>
           {t('billing.history')}
         </Text>
       </View>
@@ -247,26 +243,26 @@ export const BillingScreenMobile: React.FC = () => {
   );
 
   const renderEmptyHistory = () => (
-    <GlassView style={styles.emptyCard}>
-      <Text style={styles.emptyIcon}>📄</Text>
-      <Text style={[styles.emptyText, { textAlign }]}>
+    <GlassView className="p-8 items-center rounded-lg">
+      <Text className="text-5xl mb-4">📄</Text>
+      <Text className="text-base text-white/60" style={{ textAlign }}>
         {t('billing.noHistory')}
       </Text>
     </GlassView>
   );
 
   const renderFooter = () => (
-    <View style={styles.section}>
+    <View className="mb-6">
       {/* Billing Address */}
-      <Text style={[styles.sectionTitle, { textAlign }]}>
+      <Text className="text-lg font-semibold text-white mb-2" style={{ textAlign }}>
         {t('billing.billingAddress')}
       </Text>
-      <GlassView style={styles.addressCard}>
-        <Text style={[styles.addressText, { textAlign }]}>{user?.name}</Text>
-        <Text style={[styles.addressText, { textAlign }]}>
+      <GlassView className="rounded-lg p-6">
+        <Text className="text-sm text-white" style={{ textAlign }}>{user?.name}</Text>
+        <Text className="text-sm text-white" style={{ textAlign }}>
           {t('billing.addressLine1Placeholder')}
         </Text>
-        <Text style={[styles.addressText, { textAlign }]}>
+        <Text className="text-sm text-white" style={{ textAlign }}>
           {t('billing.addressLine2Placeholder')}
         </Text>
         <GlassButton
@@ -274,7 +270,7 @@ export const BillingScreenMobile: React.FC = () => {
           onPress={() => navigation.navigate('EditBillingAddress')}
           variant="secondary"
           size="sm"
-          style={styles.editAddressButton}
+          className="mt-4 self-start"
         />
       </GlassView>
     </View>
@@ -282,15 +278,15 @@ export const BillingScreenMobile: React.FC = () => {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.loadingContainer}>
+      <SafeAreaView className="flex-1 justify-center items-center" style={{ backgroundColor: colors.background }}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-white text-base mt-4">{t('common.loading')}</Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
       <FlatList
         data={billingHistory}
         keyExtractor={(item) => item.id}
@@ -298,7 +294,7 @@ export const BillingScreenMobile: React.FC = () => {
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={renderEmptyHistory}
         ListFooterComponent={renderFooter}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={{ paddingHorizontal: spacing.md, paddingBottom: spacing.xl }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -312,216 +308,5 @@ export const BillingScreenMobile: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: 16,
-    marginTop: spacing.md,
-  },
-  content: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.xl,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.lg,
-    gap: spacing.md,
-  },
-  headerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  backButton: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backText: {
-    fontSize: 32,
-    color: colors.text,
-    fontWeight: '300',
-  },
-  title: {
-    flex: 1,
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  section: {
-    marginBottom: spacing.lg,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  sectionHeaderRTL: {
-    flexDirection: 'row-reverse',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  addButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  addButtonText: {
-    color: colors.primary,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  paymentMethodCard: {
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.sm,
-    padding: spacing.md,
-  },
-  paymentMethodContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  contentRTL: {
-    flexDirection: 'row-reverse',
-  },
-  cardIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cardIcon: {
-    fontSize: 24,
-  },
-  cardDetails: {
-    flex: 1,
-    marginHorizontal: spacing.md,
-  },
-  cardType: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  cardExpiry: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  cardActions: {
-    alignItems: 'flex-end',
-  },
-  defaultBadge: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: borderRadius.sm,
-  },
-  defaultBadgeText: {
-    color: colors.primary,
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  setDefaultButton: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-  },
-  setDefaultText: {
-    color: colors.textSecondary,
-    fontSize: 12,
-  },
-  historyCard: {
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.sm,
-    padding: spacing.md,
-  },
-  historyContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  historyInfo: {
-    flex: 1,
-  },
-  historyDate: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  historyDescription: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: colors.text,
-    marginTop: 2,
-  },
-  historyRight: {
-    alignItems: 'flex-end',
-    gap: spacing.xs,
-  },
-  historyAmount: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  statusBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  statusPaid: {
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-  },
-  statusPending: {
-    backgroundColor: 'rgba(251, 191, 36, 0.2)',
-  },
-  statusText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  emptyCard: {
-    padding: spacing.xl,
-    alignItems: 'center',
-    borderRadius: borderRadius.lg,
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    marginBottom: spacing.md,
-  },
-  addressCard: {
-    borderRadius: borderRadius.lg,
-    padding: spacing.lg,
-  },
-  addressText: {
-    fontSize: 14,
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  editAddressButton: {
-    marginTop: spacing.md,
-    alignSelf: 'flex-start',
-  },
-});
 
 export default BillingScreenMobile;

@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui/GlassView';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
 
 interface Participant {
   user_id: string;
@@ -41,36 +40,30 @@ export const WatchPartyParticipants: React.FC<WatchPartyParticipantsProps> = ({
     return (
       <GlassView
         key={participant.user_id}
-        style={[
-          horizontal ? styles.participantHorizontal : styles.participantVertical,
-          participant.is_speaking && styles.speaking,
-        ]}
+        className={horizontal ? "flex-col items-center py-3 px-4 min-w-[80px]" : "flex-row items-center py-3 px-4 gap-3"}
         intensity="low"
-        borderColor={participant.is_speaking ? colors.success : undefined}
+        borderColor={participant.is_speaking ? '#10b981' : undefined}
       >
         <View
-          style={[
-            styles.avatar,
-            isHost && styles.avatarHost,
-          ]}
+          className={`w-8 h-8 rounded-full items-center justify-center ${isHost ? 'bg-amber-500/20' : 'bg-white/20'}`}
         >
-          <Text style={styles.avatarText}>
+          <Text className="text-sm font-semibold text-white">
             {isHost ? '👑' : participant.user_name.charAt(0).toUpperCase()}
           </Text>
         </View>
 
-        <View style={styles.nameContainer}>
-          <Text style={styles.name} numberOfLines={1}>
+        <View className="flex-1 gap-0.5">
+          <Text className="text-sm font-medium text-white" numberOfLines={1}>
             {participant.user_name}
           </Text>
           {isCurrentUser && (
-            <Text style={styles.youLabel}>({t('watchParty.you')})</Text>
+            <Text className="text-xs text-white/50">({t('watchParty.you')})</Text>
           )}
-          {isHost && <Text style={styles.hostLabel}>{t('watchParty.host')}</Text>}
+          {isHost && <Text className="text-xs text-amber-500">{t('watchParty.host')}</Text>}
         </View>
 
         {participant.is_muted && (
-          <Text style={styles.mutedIcon}>🔇</Text>
+          <Text className="text-sm">🔇</Text>
         )}
       </GlassView>
     );
@@ -78,12 +71,12 @@ export const WatchPartyParticipants: React.FC<WatchPartyParticipantsProps> = ({
 
   if (horizontal) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>
+      <View className="gap-3">
+        <Text className="text-sm font-medium text-white/70 px-1">
           {t('watchParty.participants')} ({participants.length})
         </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View style={styles.horizontalList}>
+          <View className="flex-row gap-3 py-1">
             {sortedParticipants.map(renderParticipant)}
           </View>
         </ScrollView>
@@ -92,88 +85,15 @@ export const WatchPartyParticipants: React.FC<WatchPartyParticipantsProps> = ({
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
+    <View className="gap-3">
+      <Text className="text-sm font-medium text-white/70 px-1">
         {t('watchParty.participants')} ({participants.length})
       </Text>
-      <View style={styles.verticalList}>
+      <View className="gap-1">
         {sortedParticipants.map(renderParticipant)}
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    gap: spacing.sm,
-  },
-  title: {
-    fontSize: fontSize.sm,
-    fontWeight: '500',
-    color: colors.textSecondary,
-    paddingHorizontal: spacing.xs,
-  },
-  horizontalList: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    paddingVertical: spacing.xs,
-  },
-  verticalList: {
-    gap: spacing.xs,
-  },
-  participantHorizontal: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    minWidth: 80,
-  },
-  participantVertical: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    gap: spacing.sm,
-  },
-  speaking: {
-    borderColor: colors.success,
-  },
-  avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.glassBorder,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarHost: {
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
-  },
-  avatarText: {
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  nameContainer: {
-    flex: 1,
-    gap: 2,
-  },
-  name: {
-    fontSize: fontSize.sm,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  youLabel: {
-    fontSize: fontSize.xs,
-    color: colors.textMuted,
-  },
-  hostLabel: {
-    fontSize: fontSize.xs,
-    color: colors.warning,
-  },
-  mutedIcon: {
-    fontSize: fontSize.sm,
-  },
-});
 
 export default WatchPartyParticipants;

@@ -10,7 +10,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Animated,
   Platform,
   I18nManager,
@@ -65,9 +64,9 @@ export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({
   };
 
   return (
-    <View style={styles.container} testID={testID}>
+    <View testID={testID}>
       <TouchableOpacity
-        style={[styles.row, isRTL && styles.rowRTL]}
+        className={`flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}
         onPress={handlePress}
         onFocus={handleFocus}
         onBlur={handleBlur}
@@ -78,95 +77,57 @@ export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({
         {...({ hasTVPreferredFocus } as object)}
       >
         <Animated.View
+          className={`items-center justify-center rounded-sm border-2 ${
+            isRTL ? 'ml-2' : 'mr-2'
+          } ${checked ? 'border-transparent' : ''} ${disabled ? 'opacity-50' : ''}`}
           style={[
-            styles.checkbox,
-            isRTL ? styles.checkboxRTL : styles.checkboxLTR,
-            checked && styles.checkboxChecked,
+            {
+              width: isTV ? 32 : 24,
+              height: isTV ? 32 : 24,
+              borderRadius: borderRadius.sm,
+              borderColor: checked ? colors.primary : colors.glassBorder,
+              backgroundColor: checked ? colors.primary : colors.glassLight,
+            },
             isFocused ? focusStyle : undefined,
-            disabled && styles.checkboxDisabled,
             scaleTransform,
           ]}
         >
-          {checked && <Text style={styles.checkmark}>✓</Text>}
+          {checked && (
+            <Text
+              className="font-bold"
+              style={{
+                fontSize: isTV ? 18 : 14,
+                color: colors.background,
+              }}
+            >
+              ✓
+            </Text>
+          )}
         </Animated.View>
 
         {label && (
           <Text
-            style={[
-              styles.label,
-              isRTL ? styles.labelRTL : styles.labelLTR,
-              disabled && styles.labelDisabled,
-            ]}
+            className={`${isRTL ? 'text-right' : 'text-left'} ${disabled ? '' : ''}`}
+            style={{
+              fontSize: isTV ? 18 : 16,
+              color: disabled ? colors.textMuted : colors.text,
+            }}
           >
             {label}
           </Text>
         )}
       </TouchableOpacity>
 
-      {error && <Text style={[styles.error, isRTL && styles.errorRTL]}>{error}</Text>}
+      {error && (
+        <Text
+          className={`text-xs mt-1 ${isRTL ? 'text-right' : 'text-left'}`}
+          style={{ color: colors.error, marginTop: spacing.xs }}
+        >
+          {error}
+        </Text>
+      )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {},
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  rowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  checkbox: {
-    width: isTV ? 32 : 24,
-    height: isTV ? 32 : 24,
-    borderRadius: borderRadius.sm,
-    borderWidth: 2,
-    borderColor: colors.glassBorder,
-    backgroundColor: colors.glassLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxLTR: {
-    marginRight: spacing.sm,
-  },
-  checkboxRTL: {
-    marginLeft: spacing.sm,
-  },
-  checkboxChecked: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  checkboxDisabled: {
-    opacity: 0.5,
-  },
-  checkmark: {
-    fontSize: isTV ? 18 : 14,
-    fontWeight: 'bold',
-    color: colors.background,
-  },
-  label: {
-    fontSize: isTV ? 18 : 16,
-    color: colors.text,
-  },
-  labelLTR: {
-    textAlign: 'left',
-  },
-  labelRTL: {
-    textAlign: 'right',
-  },
-  labelDisabled: {
-    color: colors.textMuted,
-  },
-  error: {
-    fontSize: 12,
-    color: colors.error,
-    marginTop: spacing.xs,
-    textAlign: 'left',
-  },
-  errorRTL: {
-    textAlign: 'right',
-  },
-});
 
 export default GlassCheckbox;

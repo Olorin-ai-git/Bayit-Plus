@@ -4,12 +4,12 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, Text, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Clock, Flame, Calendar, MapPin } from 'lucide-react';
 import { GlassView, GlassSelect, GlassInput, GlassCheckbox } from '@bayit/shared/ui';
 import { DaySelector } from '../../../../../shared/components/flows';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 import { calculateShabbatTrigger, formatTriggerDisplay } from '../utils/shabbatCalculator';
 import type { FlowTrigger, DayOfWeek, TriggerType } from '../types/flows.types';
 
@@ -91,12 +91,12 @@ export const TriggerConfigPanel: React.FC<TriggerConfigPanelProps> = ({
   };
 
   return (
-    <GlassView style={styles.container} intensity="low">
+    <GlassView className="p-4 rounded-lg w-full" intensity="low">
       {/* Trigger Type Selector */}
-      <View style={styles.section}>
-        <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
+      <View className="mb-6">
+        <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center gap-2 mb-2`}>
           {TRIGGER_TYPE_ICONS[trigger.type]}
-          <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
+          <Text className={`text-sm font-semibold text-[color:var(--text)] ${isRTL ? 'text-right' : ''}`}>
             {t('flows.trigger.type')}
           </Text>
         </View>
@@ -112,10 +112,10 @@ export const TriggerConfigPanel: React.FC<TriggerConfigPanelProps> = ({
       {trigger.type === 'time' && (
         <>
           {/* Time Range */}
-          <View style={styles.section}>
-            <View style={[styles.timeRow, isRTL && styles.timeRowRTL]}>
-              <View style={styles.timeField}>
-                <Text style={[styles.fieldLabel, isRTL && styles.textRTL]}>
+          <View className="mb-6">
+            <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-end gap-4`}>
+              <View className="flex-1">
+                <Text className={`text-xs font-medium text-[color:var(--text-secondary)] mb-1 ${isRTL ? 'text-right' : ''}`}>
                   {t('flows.startTime')}
                 </Text>
                 <GlassInput
@@ -127,11 +127,11 @@ export const TriggerConfigPanel: React.FC<TriggerConfigPanelProps> = ({
                   disabled={disabled}
                 />
               </View>
-              <View style={styles.timeSeparator}>
-                <Text style={styles.separatorText}>-</Text>
+              <View className="pb-4">
+                <Text className="text-lg text-[color:var(--text-muted)]">-</Text>
               </View>
-              <View style={styles.timeField}>
-                <Text style={[styles.fieldLabel, isRTL && styles.textRTL]}>
+              <View className="flex-1">
+                <Text className={`text-xs font-medium text-[color:var(--text-secondary)] mb-1 ${isRTL ? 'text-right' : ''}`}>
                   {t('flows.endTime')}
                 </Text>
                 <GlassInput
@@ -147,7 +147,7 @@ export const TriggerConfigPanel: React.FC<TriggerConfigPanelProps> = ({
           </View>
 
           {/* Day Selector */}
-          <View style={styles.section}>
+          <View className="mb-6">
             <DaySelector
               selectedDays={trigger.days || []}
               onChange={handleDaysChange}
@@ -157,18 +157,18 @@ export const TriggerConfigPanel: React.FC<TriggerConfigPanelProps> = ({
           </View>
 
           {/* Skip Shabbat */}
-          <View style={styles.section}>
-            <View style={[styles.checkboxRow, isRTL && styles.checkboxRowRTL]}>
+          <View className="mb-6">
+            <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center gap-4 py-2`}>
               <GlassCheckbox
                 checked={trigger.skip_shabbat || false}
                 onChange={handleSkipShabbatChange}
                 disabled={disabled}
               />
-              <View style={styles.checkboxContent}>
-                <Text style={[styles.checkboxLabel, isRTL && styles.textRTL]}>
+              <View className="flex-1 flex-shrink min-w-0">
+                <Text className={`text-sm font-medium text-[color:var(--text)] flex-wrap ${isRTL ? 'text-right' : ''}`}>
                   {t('flows.trigger.skipShabbat')}
                 </Text>
-                <Text style={[styles.checkboxDesc, isRTL && styles.textRTL]}>
+                <Text className={`text-xs text-[color:var(--text-muted)] mt-1 leading-[18px] flex-wrap ${isRTL ? 'text-right' : ''}`}>
                   {t('flows.trigger.skipShabbatDesc')}
                 </Text>
               </View>
@@ -181,8 +181,8 @@ export const TriggerConfigPanel: React.FC<TriggerConfigPanelProps> = ({
       {trigger.type === 'shabbat' && (
         <>
           {/* Offset Input */}
-          <View style={styles.section}>
-            <Text style={[styles.fieldLabel, isRTL && styles.textRTL]}>
+          <View className="mb-6">
+            <Text className={`text-xs font-medium text-[color:var(--text-secondary)] mb-1 ${isRTL ? 'text-right' : ''}`}>
               {t('flows.trigger.shabbatOffset')}
             </Text>
             <GlassInput
@@ -192,26 +192,26 @@ export const TriggerConfigPanel: React.FC<TriggerConfigPanelProps> = ({
               keyboardType="numeric"
               disabled={disabled}
             />
-            <Text style={[styles.fieldHint, isRTL && styles.textRTL]}>
+            <Text className={`text-[11px] text-[color:var(--text-muted)] mt-1 ${isRTL ? 'text-right' : ''}`}>
               {t('flows.trigger.shabbatOffsetDesc')}
             </Text>
           </View>
 
           {/* Calculated Time Display */}
           {shabbatDisplay && (
-            <View style={styles.calculatedTime}>
+            <View className="flex flex-row items-center gap-2 p-4 bg-[rgba(16,185,129,0.1)] rounded-lg mb-4">
               <Clock size={14} color={colors.success} />
-              <Text style={styles.calculatedLabel}>
+              <Text className="text-[13px] text-[color:var(--text-secondary)]">
                 {t('flows.trigger.calculatedTime')}:
               </Text>
-              <Text style={styles.calculatedValue}>{shabbatDisplay}</Text>
+              <Text className="text-sm font-semibold text-[color:var(--success)]">{shabbatDisplay}</Text>
             </View>
           )}
 
           {/* Location Note */}
-          <View style={[styles.locationNote, isRTL && styles.locationNoteRTL]}>
+          <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center gap-1`}>
             <MapPin size={14} color={colors.textMuted} />
-            <Text style={[styles.locationText, isRTL && styles.textRTL]}>
+            <Text className={`text-xs text-[color:var(--text-muted)] ${isRTL ? 'text-right' : ''}`}>
               {t('flows.trigger.locationBased')}
             </Text>
           </View>
@@ -220,8 +220,8 @@ export const TriggerConfigPanel: React.FC<TriggerConfigPanelProps> = ({
 
       {/* Holiday-based Configuration */}
       {trigger.type === 'holiday' && (
-        <View style={styles.comingSoon}>
-          <Text style={styles.comingSoonText}>
+        <View className="py-8 items-center">
+          <Text className="text-sm text-[color:var(--text-muted)] italic">
             {t('flows.trigger.comingSoon')}
           </Text>
         </View>
@@ -229,128 +229,5 @@ export const TriggerConfigPanel: React.FC<TriggerConfigPanelProps> = ({
     </GlassView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    width: '100%' as any,
-  },
-  section: {
-    marginBottom: spacing.lg,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  sectionHeaderRTL: {
-    flexDirection: 'row-reverse',
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-  timeRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: spacing.md,
-  },
-  timeRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  timeField: {
-    flex: 1,
-  },
-  timeSeparator: {
-    paddingBottom: spacing.md,
-  },
-  separatorText: {
-    fontSize: 18,
-    color: colors.textMuted,
-  },
-  fieldLabel: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: colors.textSecondary,
-    marginBottom: spacing.xs,
-  },
-  fieldHint: {
-    fontSize: 11,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-  },
-  checkboxRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  checkboxRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  checkboxContent: {
-    flex: 1,
-    flexShrink: 1,
-    minWidth: 0,
-  },
-  checkboxLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-    flexWrap: 'wrap' as any,
-  },
-  checkboxDesc: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginTop: 4,
-    lineHeight: 18,
-    flexWrap: 'wrap' as any,
-  },
-  calculatedTime: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.md,
-  },
-  calculatedLabel: {
-    fontSize: 13,
-    color: colors.textSecondary,
-  },
-  calculatedValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.success,
-  },
-  locationNote: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  locationNoteRTL: {
-    flexDirection: 'row-reverse',
-  },
-  locationText: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  comingSoon: {
-    paddingVertical: spacing.xl,
-    alignItems: 'center',
-  },
-  comingSoonText: {
-    fontSize: 14,
-    color: colors.textMuted,
-    fontStyle: 'italic',
-  },
-});
 
 export default TriggerConfigPanel;

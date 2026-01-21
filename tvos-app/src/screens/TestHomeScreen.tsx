@@ -1,32 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 
 export const TestHomeScreen: React.FC = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Bayit+ tvOS</Text>
-      <Text style={styles.subtext}>Test Screen</Text>
+    <View className="flex-1 justify-center items-center bg-[#0d0d1a]">
+      <Text className="text-purple-500 text-5xl font-bold">Bayit+ tvOS</Text>
+      <Text className="text-white text-2xl mt-4">Test Screen</Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#0d0d1a',
-  },
-  text: {
-    color: '#a855f7',
-    fontSize: 48,
-    fontWeight: 'bold',
-  },
-  subtext: {
-    color: '#ffffff',
-    fontSize: 24,
-    marginTop: 16,
-  },
-});
 
 export default TestHomeScreen;

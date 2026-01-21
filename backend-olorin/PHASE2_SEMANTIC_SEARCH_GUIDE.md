@@ -29,7 +29,7 @@ Confirm Phase 1B verification checklist is 100% complete:
 
 ```bash
 # Run Phase 1B verification again to confirm all checks pass
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 bash backend-olorin/VERIFY.sh
 
 # Should see: "✅ Phase 1B VERIFICATION COMPLETE - All checks passed!"
@@ -69,7 +69,7 @@ PINECONE_API_KEY=$(gcloud secrets versions access latest \
 
 ```bash
 # Verify semantic search service exists
-ls -lah /Users/olorin/Documents/Bayit-Plus/backend/app/services/olorin/search/
+ls -lah /Users/olorin/Documents/olorin/backend/app/services/olorin/search/
 
 # Expected files:
 # - searcher.py (search logic)
@@ -84,10 +84,10 @@ ls -lah /Users/olorin/Documents/Bayit-Plus/backend/app/services/olorin/search/
 
 ```bash
 # Check partner service exists
-ls -lah /Users/olorin/Documents/Bayit-Plus/backend/app/services/olorin/partner_service.py
+ls -lah /Users/olorin/Documents/olorin/backend/app/services/olorin/partner_service.py
 
 # Verify API key management
-grep -n "api_key" /Users/olorin/Documents/Bayit-Plus/backend/app/services/olorin/partner_service.py | head -20
+grep -n "api_key" /Users/olorin/Documents/olorin/backend/app/services/olorin/partner_service.py | head -20
 
 # Expected: Partner API key generation, storage, and validation functions
 ```

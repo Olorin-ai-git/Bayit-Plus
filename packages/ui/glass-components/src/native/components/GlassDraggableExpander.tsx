@@ -10,7 +10,6 @@ import {
   View,
   Text,
   Pressable,
-  StyleSheet,
   Animated,
   PanResponder,
   Easing,
@@ -18,7 +17,7 @@ import {
   ViewStyle,
   StyleProp,
 } from 'react-native';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors, spacing } from '../../theme';
 
 export interface GlassDraggableExpanderProps {
   /** Section title */
@@ -174,43 +173,42 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
   // Default chevron icon
   const renderChevron = () => {
     if (chevronIcon) return chevronIcon;
-    return <Text style={styles.chevronText}>▼</Text>;
+    return <Text className="text-base" style={{ color: colors.primary }}>▼</Text>;
   };
 
   // Default drag handle icon
   const renderDragHandle = () => {
     if (dragHandleIcon) return dragHandleIcon;
-    return <Text style={styles.dragHandleText}>⋮</Text>;
+    return <Text className="text-xl" style={{ color: colors.textMuted }}>⋮</Text>;
   };
 
   return (
-    <View style={[styles.container, style]} testID={testID}>
+    <View className="rounded-lg border overflow-hidden" style={[{ backgroundColor: colors.glass, borderColor: colors.glassBorder }, style]} testID={testID}>
       {/* Header - Entire header is clickable to toggle */}
-      <Pressable style={styles.header} onPress={toggleExpanded}>
-        <View style={styles.headerLeft} pointerEvents="box-none">
+      <Pressable className="flex-row items-center justify-between p-4 border-b" style={{ borderBottomColor: colors.glassBorderLight }} onPress={toggleExpanded}>
+        <View className="flex-row items-center flex-1 gap-2" pointerEvents="box-none">
           {icon && (
-            <View style={styles.icon} pointerEvents="none">
+            <View className="mr-1" pointerEvents="none">
               {icon}
             </View>
           )}
-          <View style={styles.titleContainer} pointerEvents="none">
-            <Text style={styles.title}>{title}</Text>
-            {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+          <View className="flex-1" pointerEvents="none">
+            <Text className="text-lg font-semibold" style={{ color: colors.text }}>{title}</Text>
+            {subtitle && <Text className="text-[13px] mt-0.5" style={{ color: colors.textMuted }}>{subtitle}</Text>}
           </View>
           {badge && (
-            <View style={styles.badgeContainer} pointerEvents="none">
+            <View className="ml-2" pointerEvents="none">
               {badge}
             </View>
           )}
         </View>
-        <View style={styles.headerRight}>
+        <View className="flex-row items-center gap-2 ml-2">
           {/* Header Actions (e.g., buttons) - stops propagation */}
           {headerActions && (
             <Pressable
               onPress={(e) => {
                 e.stopPropagation();
               }}
-              style={styles.headerActionsContainer}
             >
               {headerActions}
             </Pressable>
@@ -221,13 +219,12 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
               onPress={(e) => {
                 e.stopPropagation();
               }}
-              style={styles.rightElementContainer}
             >
               {rightElement}
             </Pressable>
           )}
           {/* Chevron - rotates on expand/collapse */}
-          <Animated.View style={[styles.chevronContainer, { transform: [{ rotate: chevronRotate }] }]}>
+          <Animated.View style={{ transform: [{ rotate: chevronRotate }] }}>
             {renderChevron()}
           </Animated.View>
         </View>
@@ -235,23 +232,21 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
 
       {/* Expandable Content - Always rendered but animated */}
       <Animated.View
-        style={[
-          styles.content,
-          {
-            height: heightAnim,
-            opacity: opacityAnim,
-          },
-        ]}
+        className="overflow-hidden relative"
+        style={{
+          height: heightAnim,
+          opacity: opacityAnim,
+        }}
         pointerEvents={isExpanded ? 'auto' : 'none'}
       >
         <ScrollView
-          style={styles.scrollContainer}
-          contentContainerStyle={styles.scrollContent}
+          className="flex-1"
+          contentContainerStyle={{ padding: spacing.md, flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
         >
           {isEmpty && emptyMessage ? (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyMessage}>{emptyMessage}</Text>
+            <View className="py-6 items-center justify-center">
+              <Text className="text-sm text-center" style={{ color: colors.textMuted }}>{emptyMessage}</Text>
             </View>
           ) : (
             children
@@ -260,7 +255,7 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
 
         {/* Draggable Handle */}
         {draggable && isExpanded && (
-          <View style={styles.dragHandle} {...panResponder.panHandlers}>
+          <View className="absolute bottom-0 left-0 right-0 h-8 justify-center items-center border-t" style={{ backgroundColor: colors.glassLight, borderTopColor: colors.glassBorderLight }} {...panResponder.panHandlers}>
             {renderDragHandle()}
           </View>
         )}
@@ -268,98 +263,5 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    overflow: 'hidden',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorderLight,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: spacing.sm,
-  },
-  icon: {
-    marginRight: spacing.xs,
-  },
-  titleContainer: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: 13,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
-  badgeContainer: {
-    marginLeft: spacing.sm,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginLeft: spacing.sm,
-  },
-  headerActionsContainer: {},
-  rightElementContainer: {},
-  chevronContainer: {},
-  chevronText: {
-    fontSize: 16,
-    color: colors.primary,
-  },
-  content: {
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  scrollContainer: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: spacing.md,
-    flexGrow: 1,
-  },
-  dragHandle: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.glassLight,
-    borderTopWidth: 1,
-    borderTopColor: colors.glassBorderLight,
-  },
-  dragHandleText: {
-    fontSize: 20,
-    color: colors.textMuted,
-  },
-  emptyContainer: {
-    paddingVertical: spacing.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyMessage: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-});
 
 export default GlassDraggableExpander;

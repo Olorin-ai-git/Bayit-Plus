@@ -1,8 +1,7 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { PlayCircle, Star } from 'lucide-react';
 import { GlassView } from '@bayit/shared/ui';
-import { colors, spacing } from '@bayit/shared/theme';
 import { useAuthStore } from '@/stores/authStore';
 import type { RecentActivity } from '../types';
 
@@ -19,16 +18,16 @@ interface InfoRowProps {
 
 function InfoRow({ label, value, isRTL }: InfoRowProps) {
   return (
-    <View style={styles.infoRow}>
+    <View className="flex-row justify-between py-2">
       {isRTL ? (
         <>
-          <Text style={[styles.infoValue, { textAlign: 'left' }]}>{value}</Text>
-          <Text style={[styles.infoLabel, { textAlign: 'right' }]}>{label}</Text>
+          <Text className="text-sm text-white font-medium text-left">{value}</Text>
+          <Text className="text-sm text-white/60 text-right">{label}</Text>
         </>
       ) : (
         <>
-          <Text style={[styles.infoLabel, { textAlign: 'left' }]}>{label}</Text>
-          <Text style={[styles.infoValue, { textAlign: 'right' }]}>{value}</Text>
+          <Text className="text-sm text-white/60 text-left">{label}</Text>
+          <Text className="text-sm text-white font-medium text-right">{value}</Text>
         </>
       )}
     </View>
@@ -53,43 +52,43 @@ export function OverviewTab({ isRTL, recentActivity }: OverviewTabProps) {
   };
 
   return (
-    <View style={styles.sectionGrid}>
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
+    <View className="gap-6">
+      <GlassView className="p-6 gap-4">
+        <Text className={`text-[13px] font-semibold text-white/60 uppercase tracking-wide ${isRTL ? 'text-right' : 'text-left'}`}>
           {t('profile.recentActivity', 'Recent Activity')}
         </Text>
-        <View style={styles.activityList}>
+        <View className="gap-4">
           {recentActivity.length > 0 ? (
             recentActivity.map((activity) => (
-              <View key={activity.id} style={styles.activityItem}>
+              <View key={activity.id} className="flex-row items-center gap-4">
                 {isRTL ? (
                   <>
-                    <View style={styles.activityContent}>
-                      <Text style={[styles.activityTitle, { textAlign: 'right' }]} numberOfLines={1}>
+                    <View className="flex-1">
+                      <Text className="text-sm text-white text-right" numberOfLines={1}>
                         {activity.title}
                       </Text>
-                      <Text style={[styles.activityTime, { textAlign: 'right' }]}>
+                      <Text className="text-xs text-white/60 text-right">
                         {formatTimestamp(activity.timestamp)}
                       </Text>
                     </View>
                     {activity.type === 'watched' ? (
-                      <PlayCircle size={20} color={colors.primary} />
+                      <PlayCircle size={20} color="#6B21A8" />
                     ) : (
-                      <Star size={20} color={colors.warning} />
+                      <Star size={20} color="#F59E0B" />
                     )}
                   </>
                 ) : (
                   <>
                     {activity.type === 'watched' ? (
-                      <PlayCircle size={20} color={colors.primary} />
+                      <PlayCircle size={20} color="#6B21A8" />
                     ) : (
-                      <Star size={20} color={colors.warning} />
+                      <Star size={20} color="#F59E0B" />
                     )}
-                    <View style={styles.activityContent}>
-                      <Text style={[styles.activityTitle, { textAlign: 'left' }]} numberOfLines={1}>
+                    <View className="flex-1">
+                      <Text className="text-sm text-white text-left" numberOfLines={1}>
                         {activity.title}
                       </Text>
-                      <Text style={[styles.activityTime, { textAlign: 'left' }]}>
+                      <Text className="text-xs text-white/60 text-left">
                         {formatTimestamp(activity.timestamp)}
                       </Text>
                     </View>
@@ -98,18 +97,18 @@ export function OverviewTab({ isRTL, recentActivity }: OverviewTabProps) {
               </View>
             ))
           ) : (
-            <Text style={[styles.emptyText, { textAlign: isRTL ? 'right' : 'left' }]}>
+            <Text className={`text-sm text-white/60 italic ${isRTL ? 'text-right' : 'text-left'}`}>
               {t('profile.noRecentActivity', 'No recent activity')}
             </Text>
           )}
         </View>
       </GlassView>
 
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
+      <GlassView className="p-6 gap-4">
+        <Text className={`text-[13px] font-semibold text-white/60 uppercase tracking-wide ${isRTL ? 'text-right' : 'text-left'}`}>
           {t('profile.accountInfo', 'Account Information')}
         </Text>
-        <View style={styles.infoList}>
+        <View className="gap-2">
           <InfoRow label={t('profile.name', 'Name')} value={user?.name || '-'} isRTL={isRTL} />
           <InfoRow label={t('profile.email', 'Email')} value={user?.email || '-'} isRTL={isRTL} />
           <InfoRow label={t('profile.role', 'Role')} value={user?.role || 'user'} isRTL={isRTL} />
@@ -118,63 +117,3 @@ export function OverviewTab({ isRTL, recentActivity }: OverviewTabProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionGrid: {
-    gap: spacing.lg,
-  },
-  section: {
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  activityList: {
-    gap: spacing.md,
-  },
-  activityItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  activityContent: {
-    flex: 1,
-  },
-  activityTitle: {
-    fontSize: 14,
-    color: colors.text,
-  },
-  activityTime: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.textMuted,
-    fontStyle: 'italic',
-  },
-  infoList: {
-    gap: spacing.sm,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.xs,
-  },
-  infoLabel: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: 'left',
-  },
-  infoValue: {
-    fontSize: 14,
-    color: colors.text,
-    fontWeight: '500',
-    textAlign: 'right',
-  },
-});

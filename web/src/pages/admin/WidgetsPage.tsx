@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit, Trash2, X, AlertCircle, Eye, EyeOff, Tv, Globe, Film, Podcast, Radio } from 'lucide-react';
 import { GlassButton, GlassCard } from '@bayit/shared/ui';
@@ -137,9 +137,9 @@ export default function WidgetsPage() {
       key: 'title',
       label: t('admin.widgets.columns.title'),
       render: (title: string, item: Widget) => (
-        <View style={styles.titleCell}>
-          {item.icon && <Text style={styles.icon}>{item.icon}</Text>}
-          <Text style={styles.cellText}>{title}</Text>
+        <View className="flex flex-row items-center gap-2">
+          {item.icon && <Text className="text-lg">{item.icon}</Text>}
+          <Text className="text-sm text-white">{title}</Text>
         </View>
       ),
     },
@@ -162,9 +162,9 @@ export default function WidgetsPage() {
         };
 
         return (
-          <View style={styles.contentTypeCell}>
+          <View className="flex flex-row items-center">
             {config.icon}
-            <Text style={[styles.cellText, { marginLeft: spacing.xs }]}>{config.label}</Text>
+            <Text className="text-sm text-white ml-1">{config.label}</Text>
           </View>
         );
       },
@@ -173,14 +173,14 @@ export default function WidgetsPage() {
       key: 'visible_to_roles',
       label: t('admin.widgets.columns.targetRoles'),
       render: (roles: string[]) => (
-        <Text style={styles.cellText}>{roles?.join(', ') || t('admin.widgets.allRoles')}</Text>
+        <Text className="text-sm text-white">{roles?.join(', ') || t('admin.widgets.allRoles')}</Text>
       ),
     },
     {
       key: 'target_pages',
       label: t('admin.widgets.columns.targetPages'),
       render: (pages: string[]) => (
-        <Text style={styles.cellText}>{pages?.length ? pages.join(', ') : t('admin.widgets.allPages')}</Text>
+        <Text className="text-sm text-white">{pages?.length ? pages.join(', ') : t('admin.widgets.allPages')}</Text>
       ),
     },
     {
@@ -188,13 +188,13 @@ export default function WidgetsPage() {
       label: t('admin.widgets.columns.status'),
       render: (isActive: boolean, item: Widget) => (
         <Pressable onPress={() => handleToggleActive(item)}>
-          <View style={[styles.badge, { backgroundColor: isActive ? '#10b98120' : '#6b728020' }]}>
+          <View className={`flex flex-row items-center px-2 py-1 rounded-full ${isActive ? 'bg-green-500/20' : 'bg-gray-500/20'}`}>
             {isActive ? (
               <Eye size={12} color="#10b981" />
             ) : (
               <EyeOff size={12} color="#6b7280" />
             )}
-            <Text style={[styles.badgeText, { color: isActive ? '#10b981' : '#6b7280', marginLeft: 4 }]}>
+            <Text className={`text-xs font-medium ml-1 ${isActive ? 'text-green-500' : 'text-gray-500'}`}>
               {isActive ? t('admin.widgets.status.active') : t('admin.widgets.status.inactive')}
             </Text>
           </View>
@@ -205,24 +205,24 @@ export default function WidgetsPage() {
       key: 'order',
       label: t('admin.widgets.columns.order'),
       width: 70,
-      render: (order: number) => <Text style={styles.cellText}>{order}</Text>,
+      render: (order: number) => <Text className="text-sm text-white">{order}</Text>,
     },
     {
       key: 'actions',
       label: '',
       width: 100,
       render: (_: any, item: Widget) => (
-        <View style={[styles.actionsCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-2 items-center`}>
           <Pressable
             onPress={() => handleEdit(item)}
-            style={[styles.actionButton, { backgroundColor: '#a855f780' }]}
+            className="p-2 rounded-lg bg-purple-500/50 justify-center items-center"
           >
             <Edit size={14} color="#a855f7" />
           </Pressable>
           <Pressable
             onPress={() => handleDelete(item.id)}
             disabled={deleting === item.id}
-            style={[styles.actionButton, { backgroundColor: '#ef444480', opacity: deleting === item.id ? 0.5 : 1 }]}
+            className={`p-2 rounded-lg bg-red-500/50 justify-center items-center ${deleting === item.id ? 'opacity-50' : ''}`}
           >
             <Trash2 size={14} color="#ef4444" />
           </Pressable>
@@ -232,12 +232,12 @@ export default function WidgetsPage() {
   ];
 
   return (
-    <View style={styles.pageContainer}>
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        <View style={[styles.header, { flexDirection }]}>
+    <View className="flex-1 w-full min-h-full">
+      <ScrollView className="flex-1 w-full" contentContainerStyle={{ padding: spacing.lg, minWidth: '100%' }}>
+        <View className={`flex ${flexDirection} justify-between items-start mb-6`}>
           <View>
-            <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.widgets.title')}</Text>
-            <Text style={[styles.subtitle, { textAlign }]}>
+            <Text className={`text-2xl font-bold text-white ${textAlign}`}>{t('admin.widgets.title')}</Text>
+            <Text className={`text-sm text-gray-400 mt-1 ${textAlign}`}>
               {t('admin.widgets.subtitle')}
             </Text>
           </View>
@@ -250,10 +250,10 @@ export default function WidgetsPage() {
         </View>
 
         {error && (
-          <GlassCard style={[styles.errorContainer, { marginBottom: spacing.lg }]}>
-            <View style={[{ flexDirection: isRTL ? 'row-reverse' : 'row', alignItems: 'center', gap: spacing.md }]}>
+          <GlassCard className="p-4 mb-6">
+            <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center gap-4`}>
               <AlertCircle size={18} color={colors.error} />
-              <Text style={styles.errorText}>{error}</Text>
+              <Text className="flex-1 text-red-500 text-sm">{error}</Text>
               <Pressable onPress={() => setError(null)}>
                 <X size={18} color={colors.error} />
               </Pressable>
@@ -287,60 +287,3 @@ export default function WidgetsPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  pageContainer: {
-    flex: 1,
-    width: '100%' as any,
-    minHeight: '100%' as any,
-  },
-  container: {
-    flex: 1,
-    width: '100%' as any,
-  },
-  contentContainer: {
-    padding: spacing.lg,
-    minWidth: '100%' as any,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.lg,
-  },
-  pageTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
-  subtitle: { fontSize: 14, color: colors.textMuted, marginTop: spacing.xs },
-  errorContainer: { padding: spacing.md },
-  errorText: { flex: 1, color: colors.error, fontSize: 14 },
-  editForm: { backgroundColor: colors.backgroundLighter, padding: spacing.lg, borderRadius: borderRadius.lg, marginBottom: spacing.lg },
-  formTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: spacing.md },
-  sectionLabel: { fontSize: 14, fontWeight: '600', color: colors.text, marginTop: spacing.md, marginBottom: spacing.sm },
-  inputLabel: { fontSize: 12, color: colors.textMuted, marginBottom: spacing.xs },
-  input: { paddingHorizontal: spacing.md, paddingVertical: spacing.md, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.background, color: colors.text, fontSize: 14, marginBottom: spacing.md },
-  smallInput: { paddingHorizontal: spacing.sm, paddingVertical: spacing.sm, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.background, color: colors.text, fontSize: 14, width: 80 },
-  radioGroup: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.md },
-  radioOption: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.background },
-  radioOptionSelected: { borderColor: colors.primary, backgroundColor: `${colors.primary}20` },
-  radioLabel: { color: colors.textMuted, fontSize: 14 },
-  radioLabelSelected: { color: colors.primary, fontWeight: '600' },
-  selectContainer: { marginBottom: spacing.md },
-  select: { width: '100%', padding: spacing.md, borderRadius: borderRadius.md, border: `1px solid ${colors.border}`, backgroundColor: colors.background, color: colors.text, fontSize: 14 },
-  positionRow: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.md },
-  positionField: { flex: 1 },
-  checkboxGroup: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg, marginBottom: spacing.md },
-  checkboxRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  checkbox: { width: 18, height: 18 },
-  checkboxLabel: { color: colors.text, fontSize: 14 },
-  formActions: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.md },
-  cancelBtn: { flex: 1, paddingVertical: spacing.md, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, justifyContent: 'center', alignItems: 'center' },
-  cancelBtnText: { color: colors.text, fontWeight: '600' },
-  saveBtn: { flex: 1, paddingVertical: spacing.md, borderRadius: borderRadius.md, backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center' },
-  saveBtnText: { color: colors.text, fontWeight: '600' },
-  cellText: { fontSize: 14, color: colors.text },
-  titleCell: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  icon: { fontSize: 18 },
-  contentTypeCell: { flexDirection: 'row', alignItems: 'center' },
-  badge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.full, alignSelf: 'flex-start' },
-  badgeText: { fontSize: 12, fontWeight: '500' },
-  actionsCell: { flexDirection: 'row', gap: spacing.sm, alignItems: 'center' },
-  actionButton: { padding: spacing.sm, borderRadius: borderRadius.md, justifyContent: 'center', alignItems: 'center' },
-});

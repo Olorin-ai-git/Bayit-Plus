@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';;
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { campaignsService } from '@/services/adminApi';
@@ -105,14 +105,14 @@ export default function CampaignEditPage() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+      <View className="flex-1">
+        <Text className="text-sm text-gray-400">{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>
@@ -231,30 +231,3 @@ export default function CampaignEditPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  loadingText: { color: colors.text, textAlign: 'center', marginTop: spacing.xl },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.lg },
-  pageTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
-  subtitle: { fontSize: 14, color: colors.textMuted, marginTop: spacing.xs },
-  formCard: { padding: spacing.xl },
-  formGroup: { flex: 1, marginBottom: spacing.md },
-  formRow: { flexDirection: 'row', gap: spacing.md },
-  formLabel: { fontSize: 14, fontWeight: '600', color: colors.text, marginBottom: spacing.xs },
-  input: {
-    backgroundColor: colors.backgroundLighter,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    color: colors.text,
-    fontSize: 14,
-  },
-  codeRow: { flexDirection: 'row', gap: spacing.sm },
-  codeInput: { flex: 1 },
-  typeButtons: { flexDirection: 'row', gap: spacing.sm },
-  typeButton: { minWidth: 50 },
-  actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.lg },
-});

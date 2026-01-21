@@ -2,14 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
   Animated,
   ScrollView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '../../theme';
 import { isTV } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
 import { searchService } from '../../services/api';
@@ -68,14 +66,16 @@ const TrendingChip: React.FC<{
       hasTVPreferredFocus={index === 0 && isTV}
     >
       <Animated.View
-        style={[
-          styles.trendingChip,
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.trendingChipFocused,
-        ]}
+        className={`flex-row items-center bg-purple-500/10 rounded-2xl border-2 gap-1 ${
+          isFocused ? 'border-purple-500 bg-purple-500/20' : 'border-purple-500/30'
+        } ${isTV ? 'px-3 py-2 max-w-[300px]' : 'px-3 py-1 max-w-[200px]'}`}
+        style={{
+          transform: [{ scale: scaleAnim }],
+          ...(isFocused && { boxShadow: '0 0 15px rgba(168, 85, 247, 0.5)' } as any),
+        }}
       >
-        <Text style={styles.trendingRankIcon}>{getRankIcon(item.rank)}</Text>
-        <Text style={styles.trendingText} numberOfLines={1}>
+        <Text className={isTV ? 'text-lg' : 'text-base'}>{getRankIcon(item.rank)}</Text>
+        <Text className={`text-white font-semibold ${isTV ? 'text-base' : 'text-sm'}`} numberOfLines={1}>
           {item.query}
         </Text>
       </Animated.View>
@@ -125,12 +125,12 @@ export const TrendingSearches: React.FC<TrendingSearchesProps> = ({
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
-        <Text style={[styles.title, { textAlign }]}>
+      <View className={isTV ? 'px-8 pb-4' : 'px-4 pb-4'}>
+        <Text className={`text-white font-semibold mb-3 ${isTV ? 'text-xl' : 'text-lg'}`} style={{ textAlign }}>
           {t('search.trending', 'Trending Searches')}
         </Text>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color={colors.primary} />
+        <View className="py-6 items-center">
+          <ActivityIndicator size="small" color="#a855f7" />
         </View>
       </View>
     );
@@ -141,15 +141,15 @@ export const TrendingSearches: React.FC<TrendingSearchesProps> = ({
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.title, { textAlign }]}>
+    <View className={isTV ? 'px-8 pb-4' : 'px-4 pb-4'}>
+      <Text className={`text-white font-semibold mb-3 ${isTV ? 'text-xl' : 'text-lg'}`} style={{ textAlign }}>
         {t('search.trending', 'Trending Searches')}
       </Text>
 
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerClassName="gap-2"
       >
         {trending.map((item, index) => (
           <TrendingChip
@@ -163,51 +163,5 @@ export const TrendingSearches: React.FC<TrendingSearchesProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: isTV ? spacing.xxl : spacing.lg,
-    paddingBottom: spacing.lg,
-  },
-  title: {
-    fontSize: isTV ? 20 : 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  loadingContainer: {
-    paddingVertical: spacing.xl,
-    alignItems: 'center',
-  },
-  scrollContent: {
-    gap: spacing.sm,
-  },
-  trendingChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-    borderRadius: borderRadius.xl,
-    paddingHorizontal: spacing.md,
-    paddingVertical: isTV ? spacing.sm : spacing.xs,
-    borderWidth: 2,
-    borderColor: 'rgba(168, 85, 247, 0.3)',
-    gap: spacing.xs,
-    maxWidth: isTV ? 300 : 200,
-  },
-  trendingChipFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    // @ts-ignore - Web CSS property
-    boxShadow: '0 0 15px rgba(168, 85, 247, 0.5)',
-  },
-  trendingRankIcon: {
-    fontSize: isTV ? 18 : 16,
-  },
-  trendingText: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.text,
-    fontWeight: '600',
-  },
-});
 
 export default TrendingSearches;

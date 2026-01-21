@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
+import { View, Text, Pressable, Platform } from 'react-native';
 import { getLanguageInfo } from '../types/subtitle';
 import { colors, spacing, borderRadius } from '../theme';
 import { GlassCard } from './ui';
@@ -37,37 +37,45 @@ export function SubtitleFlags({
   const flagSize = size === 'medium' ? 16 : 14;
   const fontSize = size === 'medium' ? 16 : 14;
 
+  const positionClass = position === 'bottom-left'
+    ? (isRTL ? 'right-2' : 'left-2')
+    : (isRTL ? 'left-2' : 'right-2');
+
   return (
     <Pressable
       onHoverIn={() => setTooltipVisible(true)}
       onHoverOut={() => setTooltipVisible(false)}
       onPress={() => setTooltipVisible(!tooltipVisible)}
-      style={[
-        styles.container,
-        position === 'bottom-left'
-          ? (isRTL ? styles.bottomRight : styles.bottomLeft)
-          : (isRTL ? styles.bottomLeft : styles.bottomRight)
-      ]}
+      className={`absolute bottom-2 ${positionClass} z-[5]`}
     >
       {/* Flags Row */}
-      <View style={[styles.flagsContainer, { backgroundColor: 'rgba(0, 0, 0, 0.7)' }]}>
-        <View style={styles.flagsRow}>
+      <View
+        className="rounded px-1.5 py-0.5 bg-black/70"
+        style={Platform.OS === 'web' ? { backdropFilter: 'blur(8px)' } as any : {}}
+      >
+        <View className="flex-row items-center gap-1">
           {displayLanguages.map((lang, i) => (
-            <Text key={lang.code} style={[styles.flagEmoji, { fontSize: flagSize, lineHeight: flagSize * 1.2 }]}>
+            <Text
+              key={lang.code}
+              className="text-white"
+              style={{ fontSize: flagSize, lineHeight: flagSize * 1.2 }}
+            >
               {lang.flag}
             </Text>
           ))}
           {remainingCount > 0 && (
-            <Text style={[styles.moreCount, { fontSize: fontSize - 2 }]}>+{remainingCount}</Text>
+            <Text className="text-white/40 font-semibold ml-0.5" style={{ fontSize: fontSize - 2 }}>
+              +{remainingCount}
+            </Text>
           )}
         </View>
       </View>
 
       {/* Tooltip */}
       {showTooltip && tooltipVisible && (
-        <View style={styles.tooltipContainer} pointerEvents="none">
-          <GlassCard style={styles.tooltip}>
-            <Text style={styles.tooltipText}>
+        <View className="absolute bottom-full left-0 mb-1" pointerEvents="none">
+          <GlassCard className="px-2 py-1 min-w-[100px] max-w-[200px]">
+            <Text className="text-xs text-white text-left">
               {languageData.map(lang => lang.nativeName).join(', ')}
             </Text>
           </GlassCard>
@@ -76,54 +84,3 @@ export function SubtitleFlags({
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    bottom: spacing.sm,
-    zIndex: 5,
-  },
-  bottomLeft: {
-    left: spacing.sm,
-  },
-  bottomRight: {
-    right: spacing.sm,
-  },
-  flagsContainer: {
-    borderRadius: 4,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    // @ts-ignore - web-only backdropFilter
-    backdropFilter: Platform.OS === 'web' ? 'blur(8px)' : undefined,
-  },
-  flagsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  flagEmoji: {
-    color: colors.text,
-  },
-  moreCount: {
-    color: colors.textMuted,
-    fontWeight: '600',
-    marginLeft: 2,
-  },
-  tooltipContainer: {
-    position: 'absolute',
-    bottom: '100%',
-    left: 0,
-    marginBottom: 4,
-  },
-  tooltip: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    minWidth: 100,
-    maxWidth: 200,
-  },
-  tooltipText: {
-    fontSize: 12,
-    color: colors.text,
-    textAlign: 'left',
-  },
-});

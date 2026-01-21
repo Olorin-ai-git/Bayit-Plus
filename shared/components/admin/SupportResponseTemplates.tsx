@@ -9,12 +9,10 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-  StyleSheet,
   Modal,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui';
-import { colors, spacing, borderRadius } from '../../theme';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 
@@ -168,15 +166,19 @@ export const SupportResponseTemplates: React.FC<SupportResponseTemplatesProps> =
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <GlassView style={styles.modal}>
+      <View className="flex-1 bg-black/70 justify-center items-center p-4">
+        <GlassView className="w-full rounded-3xl p-4" style={{ maxWidth: isTV ? 600 : 500, maxHeight: '80%' }}>
           {/* Header */}
-          <View style={styles.header}>
-            <Text style={[styles.title, { textAlign }]}>
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="font-bold text-white" style={[{ textAlign }, { fontSize: isTV ? 22 : 18 }]}>
               {t('admin.templates.title', 'Response Templates')}
             </Text>
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Text style={styles.closeButtonText}>✕</Text>
+            <TouchableOpacity
+              className="bg-white/10 justify-center items-center rounded-full"
+              style={{ width: isTV ? 36 : 28, height: isTV ? 36 : 28, borderRadius: isTV ? 18 : 14 }}
+              onPress={onClose}
+            >
+              <Text className="text-white" style={{ fontSize: isTV ? 18 : 14 }}>✕</Text>
             </TouchableOpacity>
           </View>
 
@@ -184,23 +186,22 @@ export const SupportResponseTemplates: React.FC<SupportResponseTemplatesProps> =
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.categoriesScroll}
-            contentContainerStyle={styles.categoriesContent}
+            className="mb-4"
+            contentContainerStyle={{ gap: 8 }}
           >
             {templateCategories.map((category) => (
               <TouchableOpacity
                 key={category.id}
                 onPress={() => setSelectedCategory(category.id)}
-                style={[
-                  styles.categoryTab,
-                  selectedCategory === category.id && styles.categoryTabActive,
-                ]}
+                className={`px-4 py-2 rounded-full ${
+                  selectedCategory === category.id ? 'bg-purple-500/20' : 'bg-white/5'
+                }`}
               >
                 <Text
-                  style={[
-                    styles.categoryTabText,
-                    selectedCategory === category.id && styles.categoryTabTextActive,
-                  ]}
+                  className={`${
+                    selectedCategory === category.id ? 'text-purple-500 font-semibold' : 'text-gray-400'
+                  }`}
+                  style={{ fontSize: isTV ? 14 : 12 }}
                 >
                   {t(category.labelKey, category.id)}
                 </Text>
@@ -210,8 +211,8 @@ export const SupportResponseTemplates: React.FC<SupportResponseTemplatesProps> =
 
           {/* Templates List */}
           <ScrollView
-            style={styles.templatesList}
-            contentContainerStyle={styles.templatesContent}
+            className="flex-1"
+            contentContainerStyle={{ gap: 8 }}
           >
             {currentCategory?.templates.map((template) => (
               <TouchableOpacity
@@ -219,16 +220,16 @@ export const SupportResponseTemplates: React.FC<SupportResponseTemplatesProps> =
                 onPress={() => handleSelectTemplate(template)}
                 onFocus={() => setFocusedTemplate(template.id)}
                 onBlur={() => setFocusedTemplate(null)}
-                style={[
-                  styles.templateItem,
-                  focusedTemplate === template.id && styles.templateItemFocused,
-                ]}
+                className={`bg-white/5 rounded-lg p-4 border-2 ${
+                  focusedTemplate === template.id ? 'border-purple-500 bg-purple-500/10' : 'border-transparent'
+                }`}
               >
-                <Text style={[styles.templateLabel, { textAlign }]}>
+                <Text className="text-white font-semibold mb-1" style={[{ textAlign }, { fontSize: isTV ? 16 : 14 }]}>
                   {t(template.labelKey, template.id)}
                 </Text>
                 <Text
-                  style={[styles.templatePreview, { textAlign }]}
+                  className="text-gray-400"
+                  style={[{ textAlign }, { fontSize: isTV ? 13 : 11, lineHeight: isTV ? 18 : 16 }]}
                   numberOfLines={2}
                 >
                   {template.content[language] || template.content.en}
@@ -238,8 +239,8 @@ export const SupportResponseTemplates: React.FC<SupportResponseTemplatesProps> =
           </ScrollView>
 
           {/* Cancel Button */}
-          <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-            <Text style={styles.cancelButtonText}>
+          <TouchableOpacity className="bg-white/10 p-4 rounded-lg items-center mt-4" onPress={onClose}>
+            <Text className="text-white font-semibold" style={{ fontSize: isTV ? 14 : 12 }}>
               {t('common.cancel', 'Cancel')}
             </Text>
           </TouchableOpacity>
@@ -248,108 +249,5 @@ export const SupportResponseTemplates: React.FC<SupportResponseTemplatesProps> =
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  modal: {
-    width: '100%',
-    maxWidth: isTV ? 600 : 500,
-    maxHeight: '80%',
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  title: {
-    fontSize: isTV ? 22 : 18,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  closeButton: {
-    width: isTV ? 36 : 28,
-    height: isTV ? 36 : 28,
-    borderRadius: isTV ? 18 : 14,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    fontSize: isTV ? 18 : 14,
-    color: colors.text,
-  },
-  categoriesScroll: {
-    marginBottom: spacing.md,
-  },
-  categoriesContent: {
-    gap: spacing.sm,
-  },
-  categoryTab: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.full,
-  },
-  categoryTabActive: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-  },
-  categoryTabText: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-  },
-  categoryTabTextActive: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  templatesList: {
-    flex: 1,
-  },
-  templatesContent: {
-    gap: spacing.sm,
-  },
-  templateItem: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  templateItemFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-  },
-  templateLabel: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  templatePreview: {
-    fontSize: isTV ? 13 : 11,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 18 : 16,
-  },
-  cancelButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    marginTop: spacing.md,
-  },
-  cancelButtonText: {
-    fontSize: isTV ? 14 : 12,
-    fontWeight: '600',
-    color: colors.text,
-  },
-});
 
 export default SupportResponseTemplates;

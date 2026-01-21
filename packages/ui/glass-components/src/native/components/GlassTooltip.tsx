@@ -6,8 +6,8 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
-import { colors, spacing, borderRadius } from '../../theme';
+import { View, Text, Platform } from 'react-native';
+import { colors, spacing } from '../../theme';
 import { GlassView } from './GlassView';
 
 export interface GlassTooltipProps {
@@ -41,38 +41,39 @@ export const GlassTooltip: React.FC<GlassTooltipProps> = ({
     return <>{children}</>;
   }
 
-  const getPositionStyle = () => {
+  const getPositionClassName = () => {
     switch (position) {
       case 'bottom':
-        return styles.positionBottom;
+        return 'top-full left-1/2 -translate-x-[75px] mt-2';
       case 'left':
-        return styles.positionLeft;
+        return 'right-full top-1/2 -translate-y-[20px] mr-2';
       case 'right':
-        return styles.positionRight;
+        return 'left-full top-1/2 -translate-y-[20px] ml-2';
       case 'top':
       default:
-        return styles.positionTop;
+        return 'bottom-full left-1/2 -translate-x-[75px] mb-2';
     }
   };
 
-  const getArrowStyle = () => {
+  const getArrowClassName = () => {
+    const baseClasses = 'absolute w-0 h-0 border-[6px] border-solid border-transparent';
     switch (position) {
       case 'bottom':
-        return styles.arrowBottom;
+        return `${baseClasses} bottom-full left-1/2 -ml-[6px] border-b-white/10`;
       case 'left':
-        return styles.arrowLeft;
+        return `${baseClasses} left-full top-1/2 -mt-[6px] border-l-white/10`;
       case 'right':
-        return styles.arrowRight;
+        return `${baseClasses} right-full top-1/2 -mt-[6px] border-r-white/10`;
       case 'top':
       default:
-        return styles.arrowTop;
+        return `${baseClasses} top-full left-1/2 -ml-[6px] border-t-white/10`;
     }
   };
 
   return (
     <View
       ref={containerRef}
-      style={styles.container}
+      className="relative"
       testID={testID}
       {...{
         onMouseEnter: () => setIsVisible(true),
@@ -82,100 +83,15 @@ export const GlassTooltip: React.FC<GlassTooltipProps> = ({
       {children}
 
       {isVisible && (
-        <View style={[styles.tooltipContainer, getPositionStyle()]}>
-          <GlassView style={styles.tooltip} intensity="high">
-            <Text style={styles.tooltipText}>{content}</Text>
+        <View className={`absolute z-[1000] ${getPositionClassName()}`}>
+          <GlassView className="px-4 py-2 rounded-lg max-w-[200px] min-w-[150px]" intensity="high">
+            <Text className="text-[13px] text-center leading-[18px]" style={{ color: colors.text }}>{content}</Text>
           </GlassView>
-          <View style={[styles.arrow, getArrowStyle()]} />
+          <View className={getArrowClassName()} />
         </View>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-  },
-  tooltipContainer: {
-    position: 'absolute',
-    zIndex: 1000,
-  },
-  positionTop: {
-    bottom: '100%',
-    left: '50%',
-    transform: [{ translateX: -75 }],
-    marginBottom: 8,
-  },
-  positionBottom: {
-    top: '100%',
-    left: '50%',
-    transform: [{ translateX: -75 }],
-    marginTop: 8,
-  },
-  positionLeft: {
-    right: '100%',
-    top: '50%',
-    transform: [{ translateY: -20 }],
-    marginRight: 8,
-  },
-  positionRight: {
-    left: '100%',
-    top: '50%',
-    transform: [{ translateY: -20 }],
-    marginLeft: 8,
-  },
-  tooltip: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.md,
-    maxWidth: 200,
-    minWidth: 150,
-  },
-  tooltipText: {
-    fontSize: 13,
-    color: colors.text,
-    textAlign: 'center',
-    lineHeight: 18,
-  },
-  arrow: {
-    position: 'absolute',
-    width: 0,
-    height: 0,
-    borderStyle: 'solid',
-  },
-  arrowTop: {
-    top: '100%',
-    left: '50%',
-    marginLeft: -6,
-    borderWidth: 6,
-    borderColor: 'transparent',
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  arrowBottom: {
-    bottom: '100%',
-    left: '50%',
-    marginLeft: -6,
-    borderWidth: 6,
-    borderColor: 'transparent',
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  arrowLeft: {
-    left: '100%',
-    top: '50%',
-    marginTop: -6,
-    borderWidth: 6,
-    borderColor: 'transparent',
-    borderLeftColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  arrowRight: {
-    right: '100%',
-    top: '50%',
-    marginTop: -6,
-    borderWidth: 6,
-    borderColor: 'transparent',
-    borderRightColor: 'rgba(255, 255, 255, 0.1)',
-  },
-});
 
 export default GlassTooltip;

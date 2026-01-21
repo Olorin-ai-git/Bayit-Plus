@@ -1,6 +1,5 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { GlassView, GlassButton } from '@bayit/shared/ui';
-import { colors, spacing } from '@bayit/shared/theme';
 
 interface EmptyStateProps {
   icon: React.ReactNode;
@@ -19,45 +18,20 @@ export function EmptyState({
   onButtonPress,
   compact = false,
 }: EmptyStateProps) {
-  const containerStyle = compact ? styles.emptySection : styles.emptyState;
+  const containerClass = compact ? 'p-6 items-center' : 'p-8 items-center gap-4';
 
   return (
-    <GlassView style={containerStyle}>
+    <GlassView className={containerClass}>
       {icon}
-      <Text style={styles.emptyTitle}>{title}</Text>
-      <Text style={styles.emptySubtitle}>{subtitle}</Text>
+      <Text className="text-lg font-semibold text-white">{title}</Text>
+      <Text className="text-sm text-white/60 text-center">{subtitle}</Text>
       {buttonLabel && onButtonPress && (
         <GlassButton
           label={buttonLabel}
           onPress={onButtonPress}
-          style={styles.emptyButton}
+          className="mt-4"
         />
       )}
     </GlassView>
   );
 }
-
-const styles = StyleSheet.create({
-  emptyState: {
-    padding: spacing.xl,
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  emptySection: {
-    padding: spacing.lg,
-    alignItems: 'center',
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-  emptyButton: {
-    marginTop: spacing.md,
-  },
-});

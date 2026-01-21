@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Animated,
   Platform,
   Image,
@@ -104,27 +103,25 @@ export const ChapterItem: React.FC<ChapterItemProps> = ({
       hasTVPreferredFocus={hasTVPreferredFocus}
     >
       <Animated.View
-        style={[
-          styles.container,
-          isActive && styles.containerActive,
-          isFocused && styles.containerFocused,
-          { transform: [{ scale: scaleAnim }] },
-        ]}
+        className={`flex-row items-center rounded-lg p-4 mb-2 border min-h-[80px] ${
+          isActive ? 'bg-purple-500/20 border-purple-500/50' : 'bg-white/5 border-transparent'
+        } ${isFocused ? 'border-purple-500 border-[3px] shadow-purple-500/50' : ''}`}
+        style={{ transform: [{ scale: scaleAnim }] }}
       >
         {/* Category indicator bar */}
-        <View style={[styles.categoryBar, { backgroundColor: categoryColor }]} />
+        <View className="w-1 self-stretch rounded-sm ml-2" style={{ backgroundColor: categoryColor }} />
 
         {/* Thumbnail */}
         {chapter.thumbnail && (
-          <View style={styles.thumbnailContainer}>
+          <View className="relative w-20 h-15 rounded-md overflow-hidden mx-2">
             <Image
               source={{ uri: chapter.thumbnail }}
-              style={styles.thumbnail}
+              className="w-full h-full"
               resizeMode="cover"
             />
-            <View style={styles.thumbnailOverlay}>
-              <View style={[styles.thumbnailBadge, { backgroundColor: categoryColor }]}>
-                <Text style={styles.thumbnailBadgeText}>
+            <View className="absolute bottom-0 left-0 right-0 bg-black/40 px-1 py-0.5">
+              <View className="px-1 py-0.5 rounded-sm self-start" style={{ backgroundColor: categoryColor }}>
+                <Text className="text-[10px] font-semibold text-white tabular-nums">
                   {formatTime(chapter.start_time)}
                 </Text>
               </View>
@@ -132,43 +129,47 @@ export const ChapterItem: React.FC<ChapterItemProps> = ({
           </View>
         )}
 
-        <View style={styles.content}>
+        <View className="flex-1 mx-4 justify-center">
           {/* Title and time row */}
-          <View style={styles.titleRow}>
+          <View className="flex-row justify-between items-start mb-1">
             <Text
-              style={[styles.title, isActive && styles.titleActive]}
+              className={`text-base font-semibold flex-1 text-right leading-5 ${
+                isActive ? 'text-purple-500' : 'text-white'
+              }`}
               numberOfLines={2}
             >
               {chapter.title}
             </Text>
             {!chapter.thumbnail && (
-              <Text style={styles.time}>{formatTime(chapter.start_time)}</Text>
+              <Text className="text-xs text-gray-400 mr-2 tabular-nums">{formatTime(chapter.start_time)}</Text>
             )}
           </View>
 
           {/* Summary (if available) */}
           {chapter.summary && (
-            <Text style={styles.summary} numberOfLines={2}>
+            <Text className="text-[13px] text-gray-300 leading-[18px] mb-1 text-right" numberOfLines={2}>
               {chapter.summary}
             </Text>
           )}
 
           {/* Category badge row */}
-          <View style={styles.badgeRow}>
-            <View style={[styles.categoryBadge, { backgroundColor: `${categoryColor}33` }]}>
-              <Text style={[styles.categoryText, { color: categoryColor }]}>
+          <View className="flex-row items-center justify-end mt-1 gap-2">
+            <View className="px-2 py-0.5 rounded-full" style={{ backgroundColor: `${categoryColor}33` }}>
+              <Text className="text-[11px] font-medium" style={{ color: categoryColor }}>
                 {t(`chapters.categories.${chapter.category}`, chapter.category)}
               </Text>
             </View>
             {isActive && (
-              <Text style={styles.currentText}>{t('chapters.current')}</Text>
+              <Text className="text-[11px] text-purple-500">{t('chapters.current')}</Text>
             )}
           </View>
         </View>
 
         {/* Play indicator */}
-        <View style={[styles.playButton, isActive && styles.playButtonActive]}>
-          <Text style={[styles.playIcon, isActive && styles.playIconActive]}>
+        <View className={`w-9 h-9 rounded-full justify-center items-center ${
+          isActive ? 'bg-purple-500' : 'bg-white/5'
+        }`}>
+          <Text className={`text-sm ${isActive ? 'text-black' : 'text-gray-400'}`}>
             {isActive ? '▶' : '▷'}
           </Text>
         </View>
@@ -176,144 +177,5 @@ export const ChapterItem: React.FC<ChapterItemProps> = ({
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.glassBorderWhite,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-    borderWidth: 1,
-    borderColor: 'transparent',
-    minHeight: 80,
-  },
-  containerActive: {
-    backgroundColor: colors.glassPurpleLight,
-    borderColor: colors.glassBorderFocus,
-  },
-  containerFocused: {
-    borderColor: colors.primary,
-    borderWidth: 3,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  categoryBar: {
-    width: 4,
-    alignSelf: 'stretch',
-    borderRadius: 2,
-    marginLeft: spacing.sm,
-  },
-  thumbnailContainer: {
-    position: 'relative',
-    width: 80,
-    height: 60,
-    borderRadius: borderRadius.md,
-    overflow: 'hidden',
-    marginHorizontal: spacing.sm,
-  },
-  thumbnail: {
-    width: '100%',
-    height: '100%',
-  },
-  thumbnailOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: colors.glassOverlay,
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-  },
-  thumbnailBadge: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-    alignSelf: 'flex-start',
-  },
-  thumbnailBadgeText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: colors.text,
-    fontVariant: ['tabular-nums'],
-  },
-  content: {
-    flex: 1,
-    marginHorizontal: spacing.md,
-    justifyContent: 'center',
-  },
-  titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.xs,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    flex: 1,
-    textAlign: 'right',
-    lineHeight: 20,
-  },
-  titleActive: {
-    color: colors.primary,
-  },
-  time: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginRight: spacing.sm,
-    fontVariant: ['tabular-nums'],
-  },
-  summary: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    lineHeight: 18,
-    marginBottom: spacing.xs,
-    textAlign: 'right',
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginTop: spacing.xs,
-    gap: spacing.sm,
-  },
-  categoryBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-  },
-  categoryText: {
-    fontSize: 11,
-    fontWeight: '500',
-  },
-  currentText: {
-    fontSize: 11,
-    color: colors.primary,
-  },
-  playButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.glassBorderWhite,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playButtonActive: {
-    backgroundColor: colors.primary,
-  },
-  playIcon: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  playIconActive: {
-    color: colors.background,
-  },
-});
 
 export default ChapterItem;

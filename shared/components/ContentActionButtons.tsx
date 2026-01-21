@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Pressable, StyleSheet, Platform } from 'react-native';
+import { View, Pressable, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing } from '../theme';
 
@@ -124,23 +124,28 @@ export function ContentActionButtons({
   const buttonSize = BUTTON_SIZES[size];
 
   return (
-    <View style={[
-      styles.container,
-      vertical ? styles.vertical : styles.horizontal,
-      style,
-    ]}>
+    <View className={`items-center gap-1 ${vertical ? 'flex-col' : 'flex-row'}`} style={style}>
       {showFavorite && favoritesService && (
         <Pressable
           onPress={handleFavoriteToggle}
           onHoverIn={() => setFavoriteHovered(true)}
           onHoverOut={() => setFavoriteHovered(false)}
           disabled={favoriteLoading}
+          className={`bg-black/50 justify-center items-center ${
+            isFavorite ? 'bg-white/15' : ''
+          } ${favoriteHovered ? 'bg-white/20 scale-110' : ''} ${favoriteLoading ? 'opacity-50' : ''}`}
           style={[
-            styles.button,
-            { width: buttonSize, height: buttonSize, borderRadius: buttonSize / 2 },
-            isFavorite && styles.buttonActive,
-            favoriteHovered && styles.buttonHovered,
-            favoriteLoading && styles.buttonLoading,
+            {
+              width: buttonSize,
+              height: buttonSize,
+              borderRadius: buttonSize / 2,
+              ...(Platform.OS === 'web' && {
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                transition: 'all 0.2s ease',
+                cursor: 'pointer',
+              } as any)
+            },
             buttonStyle,
           ]}
           accessibilityLabel={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
@@ -160,12 +165,21 @@ export function ContentActionButtons({
           onHoverIn={() => setWatchlistHovered(true)}
           onHoverOut={() => setWatchlistHovered(false)}
           disabled={watchlistLoading}
+          className={`bg-black/50 justify-center items-center ${
+            inWatchlist ? 'bg-white/15' : ''
+          } ${watchlistHovered ? 'bg-white/20 scale-110' : ''} ${watchlistLoading ? 'opacity-50' : ''}`}
           style={[
-            styles.button,
-            { width: buttonSize, height: buttonSize, borderRadius: buttonSize / 2 },
-            inWatchlist && styles.buttonActive,
-            watchlistHovered && styles.buttonHovered,
-            watchlistLoading && styles.buttonLoading,
+            {
+              width: buttonSize,
+              height: buttonSize,
+              borderRadius: buttonSize / 2,
+              ...(Platform.OS === 'web' && {
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                transition: 'all 0.2s ease',
+                cursor: 'pointer',
+              } as any)
+            },
             buttonStyle,
           ]}
           accessibilityLabel={inWatchlist ? 'Remove from watchlist' : 'Add to watchlist'}
@@ -181,40 +195,5 @@ export function ContentActionButtons({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  horizontal: {
-    flexDirection: 'row',
-  },
-  vertical: {
-    flexDirection: 'column',
-  },
-  button: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    // @ts-ignore - web only
-    ...(Platform.OS === 'web' && {
-      backdropFilter: 'blur(8px)',
-      WebkitBackdropFilter: 'blur(8px)',
-      transition: 'all 0.2s ease',
-      cursor: 'pointer',
-    }),
-  },
-  buttonActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-  },
-  buttonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    transform: [{ scale: 1.1 }],
-  },
-  buttonLoading: {
-    opacity: 0.5,
-  },
-});
 
 export default ContentActionButtons;

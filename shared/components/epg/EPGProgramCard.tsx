@@ -2,21 +2,17 @@ import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Image,
   Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { EPGProgram, Timezone } from '../../services/epgApi';
-import { colors, spacing, borderRadius } from '../../theme';
 import { isTV } from '../../utils/platform';
 
 // Simple time formatting without luxon dependency
 const formatTimeFromISO = (isoString: string, timezone: Timezone): string => {
   const date = new Date(isoString);
-  // For Israel timezone, add 2-3 hours offset (simplified)
-  // In production, use proper timezone library
   const options: Intl.DateTimeFormatOptions = {
     hour: '2-digit',
     minute: '2-digit',
@@ -91,74 +87,95 @@ export const EPGProgramCard: React.FC<EPGProgramCardProps> = ({
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={0.8}
-      style={styles.touchable}
+      className="mb-4"
     >
       <Animated.View
-        style={[
-          styles.container,
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.containerFocused,
-          isNow && styles.containerNow,
-          isPast && styles.containerPast,
-        ]}
+        className={`flex-row bg-black/20 rounded-3xl border-2 overflow-hidden ${
+          isFocused ? 'border-purple-500 bg-purple-900/20' : 'border-white/10'
+        } ${isNow ? 'border-purple-500/40 bg-purple-500/10' : ''} ${isPast ? 'opacity-60' : ''}`}
+        style={{ transform: [{ scale: scaleAnim }] }}
       >
         {/* Thumbnail */}
         {program.thumbnail ? (
           <Image
             source={{ uri: program.thumbnail }}
-            style={styles.thumbnail}
+            className="rounded-l-3xl"
+            style={{ width: isTV ? 180 : 100, height: isTV ? 120 : 80 }}
             resizeMode="cover"
           />
         ) : (
-          <View style={styles.thumbnailPlaceholder}>
-            <Text style={styles.thumbnailIcon}>📺</Text>
+          <View
+            className="bg-black/40 justify-center items-center"
+            style={{ width: isTV ? 180 : 100, height: isTV ? 120 : 80 }}
+          >
+            <Text style={{ fontSize: isTV ? 48 : 32 }}>📺</Text>
           </View>
         )}
 
         {/* Content */}
-        <View style={styles.content}>
+        <View className="flex-1 p-4">
           {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.title} numberOfLines={2}>
+          <View className="flex-row justify-between items-start mb-1">
+            <Text
+              className="flex-1 text-white font-bold mr-2"
+              style={{ fontSize: isTV ? 20 : 16 }}
+              numberOfLines={2}
+            >
               {getLocalizedTitle()}
             </Text>
             {isNow && (
-              <View style={styles.liveBadge}>
-                <Text style={styles.liveBadgeText}>{t('common.live', 'LIVE')}</Text>
+              <View className="bg-red-500 px-2 py-0.5 rounded-full">
+                <Text className="text-white font-bold" style={{ fontSize: isTV ? 12 : 10 }}>
+                  {t('common.live', 'LIVE')}
+                </Text>
               </View>
             )}
           </View>
 
           {/* Channel & Time */}
-          <View style={styles.meta}>
-            <Text style={styles.channelName}>{channelName}</Text>
-            <Text style={styles.separator}>•</Text>
-            <Text style={styles.time}>🕐 {timeLabel}</Text>
+          <View className="flex-row items-center flex-wrap mb-1">
+            <Text className="text-gray-400 font-medium" style={{ fontSize: isTV ? 14 : 12 }}>
+              {channelName}
+            </Text>
+            <Text className="text-white/40 mx-2" style={{ fontSize: isTV ? 14 : 12 }}>•</Text>
+            <Text className="text-gray-400" style={{ fontSize: isTV ? 14 : 12 }}>
+              🕐 {timeLabel}
+            </Text>
             {program.category && (
               <>
-                <Text style={styles.separator}>•</Text>
-                <Text style={styles.category}>{program.category}</Text>
+                <Text className="text-white/40 mx-2" style={{ fontSize: isTV ? 14 : 12 }}>•</Text>
+                <Text className="text-gray-400" style={{ fontSize: isTV ? 14 : 12 }}>
+                  {program.category}
+                </Text>
               </>
             )}
           </View>
 
           {/* Description */}
           {getLocalizedDescription() && (
-            <Text style={styles.description} numberOfLines={2}>
+            <Text
+              className="text-white/60 mb-2"
+              style={{ fontSize: isTV ? 14 : 12 }}
+              numberOfLines={2}
+            >
               {getLocalizedDescription()}
             </Text>
           )}
 
           {/* Genres & Rating */}
-          <View style={styles.tags}>
+          <View className="flex-row flex-wrap gap-1">
             {program.genres?.slice(0, 3).map((genre, index) => (
-              <View key={index} style={styles.genreTag}>
-                <Text style={styles.genreText}>{genre}</Text>
+              <View key={index} className="bg-white/10 px-2 py-0.5 rounded-full">
+                <Text className="text-white/70" style={{ fontSize: isTV ? 12 : 10 }}>
+                  {genre}
+                </Text>
               </View>
             ))}
             {program.rating && (
-              <View style={styles.ratingTag}>
-                <Text style={styles.ratingText}>{program.rating}</Text>
+              <View className="px-2 py-0.5 rounded-full" style={{ backgroundColor: '#eab30820' }}>
+                <Text style={{ fontSize: isTV ? 12 : 10, color: '#fbbf24' }}>
+                  {program.rating}
+                </Text>
               </View>
             )}
           </View>
@@ -167,126 +184,5 @@ export const EPGProgramCard: React.FC<EPGProgramCardProps> = ({
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  touchable: {
-    marginBottom: spacing.md,
-  },
-  container: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    borderRadius: borderRadius.xl,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    overflow: 'hidden',
-  },
-  containerFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(107, 33, 168, 0.2)',
-  },
-  containerNow: {
-    borderColor: 'rgba(168, 85, 247, 0.4)',
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-  },
-  containerPast: {
-    opacity: 0.6,
-  },
-  thumbnail: {
-    width: isTV ? 180 : 100,
-    height: isTV ? 120 : 80,
-  },
-  thumbnailPlaceholder: {
-    width: isTV ? 180 : 100,
-    height: isTV ? 120 : 80,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  thumbnailIcon: {
-    fontSize: isTV ? 48 : 32,
-  },
-  content: {
-    flex: 1,
-    padding: spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.xs,
-  },
-  title: {
-    flex: 1,
-    fontSize: isTV ? 20 : 16,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginRight: spacing.sm,
-  },
-  liveBadge: {
-    backgroundColor: '#ef4444',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-  },
-  liveBadgeText: {
-    color: '#ffffff',
-    fontSize: isTV ? 12 : 10,
-    fontWeight: 'bold',
-  },
-  meta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    marginBottom: spacing.xs,
-  },
-  channelName: {
-    fontSize: isTV ? 14 : 12,
-    fontWeight: '500',
-    color: colors.textSecondary,
-  },
-  separator: {
-    fontSize: isTV ? 14 : 12,
-    color: 'rgba(255, 255, 255, 0.4)',
-    marginHorizontal: spacing.xs,
-  },
-  time: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-  },
-  category: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-  },
-  description: {
-    fontSize: isTV ? 14 : 12,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginBottom: spacing.sm,
-  },
-  tags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.xs,
-  },
-  genreTag: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-  },
-  genreText: {
-    fontSize: isTV ? 12 : 10,
-    color: 'rgba(255, 255, 255, 0.7)',
-  },
-  ratingTag: {
-    backgroundColor: 'rgba(234, 179, 8, 0.2)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-  },
-  ratingText: {
-    fontSize: isTV ? 12 : 10,
-    color: '#fbbf24',
-  },
-});
 
 export default EPGProgramCard;

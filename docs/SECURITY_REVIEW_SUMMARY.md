@@ -97,12 +97,12 @@ These are **defense-in-depth** enhancements, not critical fixes:
 ### Manual Code Review
 
 **Files Analyzed:**
-- `/Users/olorin/Documents/Bayit-Plus/.gitignore` ✅
-- `/Users/olorin/Documents/Bayit-Plus/backend/.env.example` ✅
-- `/Users/olorin/Documents/Bayit-Plus/backend/app/core/config.py` ✅
-- `/Users/olorin/Documents/Bayit-Plus/backend/app/core/config_validation.py` ✅
-- `/Users/olorin/Documents/Bayit-Plus/backend/cloudbuild.yaml` ✅
-- `/Users/olorin/Documents/Bayit-Plus/deployment/scripts/setup_gcp_secrets.sh` ✅
+- `/Users/olorin/Documents/olorin/.gitignore` ✅
+- `/Users/olorin/Documents/olorin/backend/.env.example` ✅
+- `/Users/olorin/Documents/olorin/backend/app/core/config.py` ✅
+- `/Users/olorin/Documents/olorin/backend/app/core/config_validation.py` ✅
+- `/Users/olorin/Documents/olorin/backend/cloudbuild.yaml` ✅
+- `/Users/olorin/Documents/olorin/deployment/scripts/setup_gcp_secrets.sh` ✅
 
 **Result:** No security issues found in any file.
 
@@ -265,7 +265,7 @@ pre-commit install
 
 1. **Install pre-commit hooks locally:**
    ```bash
-   cd /Users/olorin/Documents/Bayit-Plus
+   cd /Users/olorin/Documents/olorin
    brew install pre-commit  # If not already installed
    pre-commit install
    pre-commit run --all-files  # Test installation
@@ -325,7 +325,7 @@ pre-commit install
 
 ```bash
 # Run all security checks
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 
 # 1. Verify no secrets in git
 git log --all --full-history -- '*/.env' | wc -l  # Should be 0 ✅

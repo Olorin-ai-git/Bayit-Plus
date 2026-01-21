@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Image,
   ScrollView,
@@ -10,7 +9,6 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { EPGProgram, Channel, Timezone } from '../../services/epgApi';
-import { colors, spacing, borderRadius } from '../../theme';
 import { isTV } from '../../utils/platform';
 
 // Simple time formatting
@@ -82,25 +80,28 @@ const EPGProgramSlot: React.FC<EPGProgramSlotProps> = ({
       activeOpacity={0.8}
     >
       <Animated.View
-        style={[
-          styles.programSlot,
-          { width, transform: [{ scale: scaleAnim }] },
-          isFocused && styles.programSlotFocused,
-          isNow && styles.programSlotNow,
-          isPast && styles.programSlotPast,
-        ]}
+        className={`p-2 bg-white/5 rounded-md border-2 justify-start ${
+          isFocused ? 'bg-purple-900/30 border-purple-500' : 'border-transparent'
+        } ${isNow ? 'bg-purple-500/20 border-purple-500/50' : ''} ${isPast ? 'opacity-50' : ''}`}
+        style={{
+          width,
+          height: isTV ? 100 : 80,
+          transform: [{ scale: scaleAnim }]
+        }}
       >
-        <View style={styles.programHeader}>
-          <Text style={styles.programTime}>{startTime}</Text>
+        <View className="flex-row items-center mb-1">
+          <Text className="text-gray-400 font-medium" style={{ fontSize: isTV ? 12 : 10 }}>
+            {startTime}
+          </Text>
           {isNow && (
-            <View style={styles.liveDot} />
+            <View className="w-1.5 h-1.5 rounded-full bg-red-500 ml-1" />
           )}
         </View>
-        <Text style={styles.programTitle} numberOfLines={2}>
+        <Text className="text-white font-semibold flex-1" style={{ fontSize: isTV ? 14 : 12 }} numberOfLines={2}>
           {getLocalizedTitle()}
         </Text>
         {program.category && (
-          <Text style={styles.programCategory} numberOfLines={1}>
+          <Text className="text-gray-400" style={{ fontSize: isTV ? 11 : 9 }} numberOfLines={1}>
             {program.category}
           </Text>
         )}
@@ -143,34 +144,40 @@ export const EPGChannelRow: React.FC<EPGChannelRowProps> = ({
   const channelPrograms = programs.filter((p) => p.channel_id === channel.id);
 
   return (
-    <View style={styles.row}>
+    <View className="flex-row border-b border-white/5">
       {/* Channel Info */}
       <TouchableOpacity
         onPress={() => onChannelPress?.(channel)}
         onFocus={() => setIsChannelFocused(true)}
         onBlur={() => setIsChannelFocused(false)}
-        style={[
-          styles.channelInfo,
-          isChannelFocused && styles.channelInfoFocused,
-        ]}
+        className={`flex-row items-center px-4 py-2 bg-black/30 border-r border-white/10 border-2 ${
+          isChannelFocused ? 'bg-purple-900/30 border-purple-500' : 'border-transparent'
+        }`}
+        style={{ width: isTV ? 200 : 140 }}
       >
         {channel.logo ? (
           <Image
             source={{ uri: channel.logo }}
-            style={styles.channelLogo}
+            className="rounded-sm"
+            style={{ width: isTV ? 48 : 36, height: isTV ? 48 : 36 }}
             resizeMode="contain"
           />
         ) : (
-          <View style={styles.channelLogoPlaceholder}>
-            <Text style={styles.channelLogoIcon}>📺</Text>
+          <View
+            className="bg-white/10 rounded-sm justify-center items-center"
+            style={{ width: isTV ? 48 : 36, height: isTV ? 48 : 36 }}
+          >
+            <Text style={{ fontSize: isTV ? 24 : 18 }}>📺</Text>
           </View>
         )}
-        <View style={styles.channelText}>
-          <Text style={styles.channelName} numberOfLines={1}>
+        <View className="flex-1 ml-2">
+          <Text className="text-white font-semibold" style={{ fontSize: isTV ? 16 : 14 }} numberOfLines={1}>
             {getLocalizedChannelName()}
           </Text>
           {channel.requires_subscription === 'premium' && (
-            <Text style={styles.premiumBadge}>⭐ {t('common.premium', 'Premium')}</Text>
+            <Text style={{ fontSize: isTV ? 12 : 10, color: '#fbbf24', marginTop: 2 }}>
+              ⭐ {t('common.premium', 'Premium')}
+            </Text>
           )}
         </View>
       </TouchableOpacity>
@@ -179,21 +186,25 @@ export const EPGChannelRow: React.FC<EPGChannelRowProps> = ({
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={styles.programsScroll}
-        contentContainerStyle={styles.programsContent}
+        className="flex-1"
+        contentContainerStyle={{ flexDirection: 'row', alignItems: 'stretch', paddingHorizontal: 4 }}
       >
         {channelPrograms.length > 0 ? (
           channelPrograms.map((program) => (
-            <EPGProgramSlot
-              key={program.id}
-              program={program}
-              timezone={timezone}
-              onPress={onProgramPress}
-            />
+            <View key={program.id} style={{ marginHorizontal: 4, marginVertical: 4 }}>
+              <EPGProgramSlot
+                program={program}
+                timezone={timezone}
+                onPress={onProgramPress}
+              />
+            </View>
           ))
         ) : (
-          <View style={styles.noPrograms}>
-            <Text style={styles.noProgramsText}>
+          <View
+            className="justify-center items-center"
+            style={{ width: 300, height: isTV ? 100 : 80 }}
+          >
+            <Text className="text-white/40" style={{ fontSize: isTV ? 14 : 12 }}>
               {t('epg.noPrograms', 'No programs scheduled')}
             </Text>
           </View>
@@ -202,127 +213,5 @@ export const EPGChannelRow: React.FC<EPGChannelRowProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  channelInfo: {
-    width: isTV ? 200 : 140,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderRightWidth: 1,
-    borderRightColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  channelInfoFocused: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderColor: colors.primary,
-  },
-  channelLogo: {
-    width: isTV ? 48 : 36,
-    height: isTV ? 48 : 36,
-    borderRadius: borderRadius.sm,
-  },
-  channelLogoPlaceholder: {
-    width: isTV ? 48 : 36,
-    height: isTV ? 48 : 36,
-    borderRadius: borderRadius.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  channelLogoIcon: {
-    fontSize: isTV ? 24 : 18,
-  },
-  channelText: {
-    flex: 1,
-    marginLeft: spacing.sm,
-  },
-  channelName: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  premiumBadge: {
-    fontSize: isTV ? 12 : 10,
-    color: '#fbbf24',
-    marginTop: 2,
-  },
-  programsScroll: {
-    flex: 1,
-  },
-  programsContent: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    paddingHorizontal: spacing.xs,
-  },
-  programSlot: {
-    height: isTV ? 100 : 80,
-    marginHorizontal: spacing.xs,
-    marginVertical: spacing.xs,
-    padding: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.md,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    justifyContent: 'flex-start',
-  },
-  programSlotFocused: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderColor: colors.primary,
-  },
-  programSlotNow: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    borderColor: 'rgba(168, 85, 247, 0.5)',
-  },
-  programSlotPast: {
-    opacity: 0.5,
-  },
-  programHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  programTime: {
-    fontSize: isTV ? 12 : 10,
-    color: colors.textSecondary,
-    fontWeight: '500',
-  },
-  liveDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#ef4444',
-    marginLeft: spacing.xs,
-  },
-  programTitle: {
-    fontSize: isTV ? 14 : 12,
-    fontWeight: '600',
-    color: colors.text,
-    flex: 1,
-  },
-  programCategory: {
-    fontSize: isTV ? 11 : 9,
-    color: colors.textSecondary,
-    marginTop: spacing.xs,
-  },
-  noPrograms: {
-    width: 300,
-    height: isTV ? 100 : 80,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  noProgramsText: {
-    fontSize: isTV ? 14 : 12,
-    color: 'rgba(255, 255, 255, 0.4)',
-  },
-});
 
 export default EPGChannelRow;

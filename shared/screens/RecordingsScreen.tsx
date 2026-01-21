@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   Image,
@@ -107,56 +106,55 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ recording, onPress, onDel
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={0.8}
-      style={styles.cardTouchable}
+      className={`flex-1 m-2 ${isTV ? 'max-w-[25%]' : 'max-w-[50%]'}`}
     >
       <Animated.View
-        style={[
-          styles.card,
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.cardFocused,
-        ]}
+        className={`bg-white/5 rounded-lg overflow-hidden border-2 ${
+          isFocused ? 'border-[#a855f7] bg-[rgba(168,85,247,0.1)]' : 'border-transparent'
+        }`}
+        style={{ transform: [{ scale: scaleAnim }] }}
       >
         {/* Thumbnail */}
         {recording.thumbnail ? (
           <Image
             source={{ uri: recording.thumbnail }}
-            style={styles.thumbnail}
+            className="w-full aspect-video"
             resizeMode="cover"
           />
         ) : (
-          <View style={styles.thumbnailPlaceholder}>
-            <Text style={styles.thumbnailIcon}>📹</Text>
+          <View className={`w-full aspect-video bg-black/40 justify-center items-center`}>
+            <Text className={isTV ? 'text-5xl' : 'text-[32px]'}>📹</Text>
           </View>
         )}
 
         {/* Status Badge */}
-        <View style={[styles.statusBadge, { backgroundColor: badge.color }]}>
-          <Text style={styles.statusIcon}>{badge.icon}</Text>
-          <Text style={styles.statusText}>{badge.label}</Text>
+        <View className="absolute top-2 right-2 flex-row items-center px-2 py-0.5 rounded-full gap-1" style={{ backgroundColor: badge.color }}>
+          <Text className="text-[10px]">{badge.icon}</Text>
+          <Text className="text-[10px] text-white font-semibold">{badge.label}</Text>
         </View>
 
         {/* Content */}
-        <View style={styles.cardContent}>
-          <Text style={[styles.cardTitle, { textAlign }]} numberOfLines={2}>
+        <View className="p-4">
+          <Text className={`${isTV ? 'text-base' : 'text-sm'} font-semibold text-white mb-1`} style={{ textAlign }} numberOfLines={2}>
             {recording.title}
           </Text>
-          <Text style={[styles.cardChannel, { textAlign }]} numberOfLines={1}>
+          <Text className={`${isTV ? 'text-sm' : 'text-xs'} text-gray-400 mb-1`} style={{ textAlign }} numberOfLines={1}>
             {recording.channel_name}
           </Text>
-          <View style={[styles.cardMeta, { flexDirection }]}>
-            <Text style={styles.cardDate}>{formatDate(recording.start_time)}</Text>
-            <Text style={styles.cardDuration}>{formatDuration(recording.duration_seconds)}</Text>
+          <View className="flex-row justify-between mb-1" style={{ flexDirection }}>
+            <Text className={`${isTV ? 'text-xs' : 'text-[10px]'} text-gray-500`}>{formatDate(recording.start_time)}</Text>
+            <Text className={`${isTV ? 'text-xs' : 'text-[10px]'} text-gray-500`}>{formatDuration(recording.duration_seconds)}</Text>
           </View>
           {recording.file_size_mb && (
-            <Text style={styles.cardSize}>{recording.file_size_mb.toFixed(1)} MB</Text>
+            <Text className={`${isTV ? 'text-xs' : 'text-[10px]'} text-gray-500`}>{recording.file_size_mb.toFixed(1)} MB</Text>
           )}
         </View>
 
         {/* Play overlay on focus */}
         {isFocused && recording.status === 'completed' && (
-          <View style={styles.playOverlay}>
-            <View style={styles.playButton}>
-              <Text style={styles.playIcon}>▶</Text>
+          <View className="absolute inset-0 bg-black/40 justify-center items-center">
+            <View className="w-12 h-12 rounded-full bg-[#a855f7] justify-center items-center">
+              <Text className="text-xl text-black ml-1">▶</Text>
             </View>
           </View>
         )}
@@ -235,26 +233,26 @@ export default function RecordingsScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center bg-black">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('recordings.loading', 'Loading recordings...')}</Text>
+        <Text className={`text-white ${isTV ? 'text-lg' : 'text-sm'} mt-4`}>{t('recordings.loading', 'Loading recordings...')}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View className={`flex-1 bg-black ${isTV ? 'p-8' : 'p-4'}`}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
-        <View style={styles.headerLeft}>
-          <View style={styles.headerIcon}>
-            <Text style={styles.headerIconText}>📹</Text>
+      <View className="flex-row items-center justify-between mb-4" style={{ flexDirection }}>
+        <View className="flex-row items-center gap-4">
+          <View className={`${isTV ? 'w-16 h-16 rounded-[32px]' : 'w-12 h-12 rounded-[24px]'} bg-[rgba(168,85,247,0.2)] justify-center items-center`}>
+            <Text className={isTV ? 'text-[32px]' : 'text-2xl'}>📹</Text>
           </View>
           <View>
-            <Text style={[styles.title, { textAlign }]}>
+            <Text className={`${isTV ? 'text-4xl' : 'text-[28px]'} font-bold text-white`} style={{ textAlign }}>
               {t('recordings.title', 'My Recordings')}
             </Text>
-            <Text style={[styles.subtitle, { textAlign }]}>
+            <Text className={`${isTV ? 'text-lg' : 'text-sm'} text-gray-400 mt-0.5`} style={{ textAlign }}>
               {t('recordings.subtitle', 'Your cloud DVR recordings')}
             </Text>
           </View>
@@ -262,25 +260,20 @@ export default function RecordingsScreen() {
       </View>
 
       {/* Filter Tabs */}
-      <View style={styles.filterContainer}>
+      <View className="flex-row gap-2 mb-4">
         {(['all', 'completed', 'scheduled'] as const).map((f) => (
           <TouchableOpacity
             key={f}
             onPress={() => setFilter(f)}
             onFocus={() => setFocusedFilter(f)}
             onBlur={() => setFocusedFilter(null)}
-            style={[
-              styles.filterButton,
-              filter === f && styles.filterButtonActive,
-              focusedFilter === f && styles.filterButtonFocused,
-            ]}
+            className={`px-4 py-2 rounded-full bg-white/5 border-2 ${
+              filter === f ? 'bg-[rgba(168,85,247,0.2)]' : ''
+            } ${focusedFilter === f ? 'border-[#a855f7]' : 'border-transparent'}`}
           >
-            <Text
-              style={[
-                styles.filterText,
-                filter === f && styles.filterTextActive,
-              ]}
-            >
+            <Text className={`${isTV ? 'text-base' : 'text-sm'} ${
+              filter === f ? 'text-[#a855f7] font-semibold' : 'text-gray-400'
+            }`}>
               {t(`recordings.filter.${f}`, f.charAt(0).toUpperCase() + f.slice(1))}
             </Text>
           </TouchableOpacity>
@@ -289,19 +282,19 @@ export default function RecordingsScreen() {
 
       {/* Recordings List */}
       {filteredRecordings.length === 0 ? (
-        <GlassView style={styles.emptyContainer}>
-          <Text style={styles.emptyIcon}>📹</Text>
-          <Text style={styles.emptyTitle}>
+        <GlassView className="flex-1 justify-center items-center p-12 rounded-2xl">
+          <Text className="text-[64px] mb-4">📹</Text>
+          <Text className={`${isTV ? 'text-2xl' : 'text-xl'} font-semibold text-white mb-2`}>
             {t('recordings.empty', 'No recordings yet')}
           </Text>
-          <Text style={styles.emptySubtitle}>
+          <Text className={`${isTV ? 'text-base' : 'text-sm'} text-gray-400 text-center mb-4 max-w-[300px]`}>
             {t('recordings.emptyDescription', 'Record live TV from the EPG to watch later.')}
           </Text>
           <TouchableOpacity
             onPress={() => navigation.navigate('EPG')}
-            style={styles.emptyButton}
+            className="bg-[#a855f7] px-6 py-3 rounded-lg"
           >
-            <Text style={styles.emptyButtonText}>
+            <Text className={`${isTV ? 'text-base' : 'text-sm'} font-semibold text-white`}>
               {t('recordings.goToEPG', 'Go to TV Guide')}
             </Text>
           </TouchableOpacity>
@@ -313,7 +306,7 @@ export default function RecordingsScreen() {
           renderItem={renderItem}
           numColumns={isTV ? 4 : 2}
           key={isTV ? 'tv' : 'mobile'}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={{ paddingBottom: 32 }}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -326,218 +319,3 @@ export default function RecordingsScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    padding: isTV ? spacing.xl : spacing.lg,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-  },
-  loadingText: {
-    fontSize: isTV ? 18 : 14,
-    color: colors.text,
-    marginTop: spacing.lg,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.lg,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  headerIcon: {
-    width: isTV ? 64 : 48,
-    height: isTV ? 64 : 48,
-    borderRadius: isTV ? 32 : 24,
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerIconText: {
-    fontSize: isTV ? 32 : 24,
-  },
-  title: {
-    fontSize: isTV ? 36 : 28,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: isTV ? 18 : 14,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  filterContainer: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  filterButton: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  filterButtonActive: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-  },
-  filterButtonFocused: {
-    borderColor: colors.primary,
-  },
-  filterText: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-  },
-  filterTextActive: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  listContent: {
-    paddingBottom: spacing.xl,
-  },
-  cardTouchable: {
-    flex: 1,
-    margin: spacing.sm,
-    maxWidth: isTV ? '25%' : '50%',
-  },
-  card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  cardFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-  },
-  thumbnail: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-  },
-  thumbnailPlaceholder: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  thumbnailIcon: {
-    fontSize: isTV ? 48 : 32,
-  },
-  statusBadge: {
-    position: 'absolute',
-    top: spacing.sm,
-    right: spacing.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-    gap: 4,
-  },
-  statusIcon: {
-    fontSize: 10,
-  },
-  statusText: {
-    fontSize: 10,
-    color: '#fff',
-    fontWeight: '600',
-  },
-  cardContent: {
-    padding: spacing.md,
-  },
-  cardTitle: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  cardChannel: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-    marginBottom: spacing.xs,
-  },
-  cardMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: spacing.xs,
-  },
-  cardDate: {
-    fontSize: isTV ? 12 : 10,
-    color: colors.textMuted,
-  },
-  cardDuration: {
-    fontSize: isTV ? 12 : 10,
-    color: colors.textMuted,
-  },
-  cardSize: {
-    fontSize: isTV ? 12 : 10,
-    color: colors.textMuted,
-  },
-  playOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playIcon: {
-    fontSize: 20,
-    color: colors.background,
-    marginLeft: 4,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xxl,
-    borderRadius: borderRadius.xl,
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: spacing.lg,
-  },
-  emptyTitle: {
-    fontSize: isTV ? 24 : 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-    maxWidth: 300,
-  },
-  emptyButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-  },
-  emptyButtonText: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-});

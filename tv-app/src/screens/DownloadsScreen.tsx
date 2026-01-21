@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   Animated,
@@ -115,69 +114,66 @@ const DownloadCard: React.FC<{
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={1}
-      style={styles.cardTouchable}
+      className="flex-1 m-2 max-w-[16.66%]"
       // @ts-ignore
       hasTVPreferredFocus={index === 0}
     >
       <Animated.View
-        style={[
-          styles.card,
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.cardFocused,
-        ]}
+        className={`bg-[#2d2540] rounded-lg overflow-hidden border-3 ${isFocused ? 'border-purple-600' : 'border-transparent'}`}
+        style={{ transform: [{ scale: scaleAnim }] }}
       >
         {item.thumbnail ? (
           <Image
             source={{ uri: item.thumbnail }}
-            style={styles.cardImage}
+            className="w-full aspect-video"
             resizeMode="cover"
           />
         ) : (
-          <View style={styles.cardImagePlaceholder}>
-            <Text style={styles.placeholderIcon}>{TYPE_ICONS[item.type] || '⬇️'}</Text>
+          <View className="w-full aspect-video bg-purple-600/10 justify-center items-center">
+            <Text className="text-3xl">{TYPE_ICONS[item.type] || '⬇️'}</Text>
           </View>
         )}
 
         {/* Progress bar for downloading items */}
         {item.status === 'downloading' && item.progress !== undefined && (
-          <View style={styles.progressContainer}>
-            <View style={[styles.progressBar, { width: `${item.progress}%` }]} />
+          <View className="absolute bottom-[52px] left-0 right-0 h-1 bg-black/50">
+            <View className="h-full bg-purple-600" style={{ width: `${item.progress}%` }} />
           </View>
         )}
 
-        <View style={[styles.typeBadge, isRTL ? { left: 8 } : { right: 8 }]}>
-          <Text style={styles.typeBadgeText}>{TYPE_ICONS[item.type]}</Text>
+        <View className="absolute top-2 bg-black/70 rounded-xl px-2 py-1" style={isRTL ? { left: 8 } : { right: 8 }}>
+          <Text className="text-sm">{TYPE_ICONS[item.type]}</Text>
         </View>
 
-        <View style={[styles.sizeBadge, isRTL ? { right: 8 } : { left: 8 }]}>
-          <Text style={styles.sizeBadgeText}>{item.size}</Text>
+        <View className="absolute top-2 bg-purple-500/80 rounded-lg px-1.5 py-0.5" style={isRTL ? { right: 8 } : { left: 8 }}>
+          <Text className="text-[10px] text-black font-bold">{item.size}</Text>
         </View>
 
-        <View style={styles.cardContent}>
-          <Text style={[styles.cardTitle, { textAlign }]} numberOfLines={1}>
+        <View className="p-2">
+          <Text className="text-sm font-semibold text-white" style={{ textAlign }} numberOfLines={1}>
             {getLocalizedText(item, 'title')}
           </Text>
           {item.subtitle && (
-            <Text style={[styles.cardSubtitle, { textAlign }]} numberOfLines={1}>
+            <Text className="text-xs text-white/60 mt-0.5" style={{ textAlign }} numberOfLines={1}>
               {getLocalizedText(item, 'subtitle')}
             </Text>
           )}
           {item.status === 'downloading' && (
-            <View style={[styles.statusRow, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-              <Text style={styles.statusText}>{item.progress}%</Text>
+            <View className="flex-row items-center gap-2 mt-1" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
+              <Text className="text-xs text-purple-600 font-semibold">{item.progress}%</Text>
               <ActivityIndicator size="small" color={colors.primary} />
             </View>
           )}
         </View>
 
         {isFocused && (
-          <View style={styles.overlay}>
-            <View style={styles.overlayButtons}>
-              <View style={styles.playButton}>
-                <Text style={styles.playIcon}>▶</Text>
+          <View className="absolute inset-0 bg-black/40 justify-center items-center">
+            <View className="flex-row gap-4">
+              <View className="w-12 h-12 rounded-full bg-purple-600 justify-center items-center">
+                <Text className="text-xl text-black ml-1">▶</Text>
               </View>
-              <TouchableOpacity onPress={onDelete} style={styles.deleteButton}>
-                <Text style={styles.deleteIcon}>🗑️</Text>
+              <TouchableOpacity onPress={onDelete} className="w-12 h-12 rounded-full bg-red-500/80 justify-center items-center">
+                <Text className="text-lg">🗑️</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -258,35 +254,35 @@ export const DownloadsScreen: React.FC = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 bg-[#1a1525] justify-center items-center">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-white text-lg mt-4">{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-[#1a1525]">
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }]}>
-          <Text style={styles.headerIconText}>⬇️</Text>
+      <View className="flex-row items-center px-12 pt-10 pb-5" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
+        <View className="w-15 h-15 rounded-full bg-purple-600/30 justify-center items-center" style={{ marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }}>
+          <Text className="text-3xl">⬇️</Text>
         </View>
         <View>
-          <Text style={[styles.title, { textAlign }]}>{t('downloads.title')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
+          <Text className="text-[42px] font-bold text-white" style={{ textAlign }}>{t('downloads.title')}</Text>
+          <Text className="text-lg text-white/60 mt-0.5" style={{ textAlign }}>
             {downloads.length} {t('downloads.items')} • {getTotalSize()}
           </Text>
         </View>
       </View>
 
       {/* Storage info */}
-      <View style={[styles.storageInfo, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <Text style={styles.storageLabel}>{t('downloads.storage')}</Text>
-        <View style={styles.storageBarContainer}>
-          <View style={[styles.storageBar, { width: '35%' }]} />
+      <View className="px-12 pb-4 items-center gap-2" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
+        <Text className="text-sm text-white/60">{t('downloads.storage')}</Text>
+        <View className="flex-1 h-2 bg-white/10 rounded overflow-hidden">
+          <View className="h-full bg-purple-600 rounded" style={{ width: '35%' }} />
         </View>
-        <Text style={styles.storageText}>12.5 GB / 32 GB</Text>
+        <Text className="text-sm text-white font-medium">12.5 GB / 32 GB</Text>
       </View>
 
       {/* Content Grid */}
@@ -295,7 +291,7 @@ export const DownloadsScreen: React.FC = () => {
         keyExtractor={(item) => item.id}
         numColumns={isTV ? 6 : 4}
         key={isTV ? 'tv' : 'mobile'}
-        contentContainerStyle={styles.grid}
+        contentContainerStyle={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.xxl, paddingTop: spacing.md }}
         renderItem={({ item, index }) => (
           <DownloadCard
             item={item}
@@ -306,11 +302,11 @@ export const DownloadsScreen: React.FC = () => {
           />
         )}
         ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <GlassView style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>⬇️</Text>
-              <Text style={[styles.emptyTitle, { textAlign }]}>{t('downloads.empty')}</Text>
-              <Text style={[styles.emptySubtitle, { textAlign }]}>{t('downloads.emptyHint')}</Text>
+          <View className="flex-1 justify-center items-center py-15">
+            <GlassView className="p-12 items-center">
+              <Text className="text-6xl mb-4">⬇️</Text>
+              <Text className="text-xl font-semibold text-white mb-2" style={{ textAlign }}>{t('downloads.empty')}</Text>
+              <Text className="text-base text-white/60" style={{ textAlign }}>{t('downloads.emptyHint')}</Text>
             </GlassView>
           </View>
         }
@@ -318,232 +314,5 @@ export const DownloadsScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: 18,
-    marginTop: spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xxl,
-    paddingTop: 40,
-    paddingBottom: spacing.lg,
-  },
-  headerIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: spacing.lg,
-  },
-  headerIconText: {
-    fontSize: 28,
-  },
-  title: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  storageInfo: {
-    paddingHorizontal: spacing.xxl,
-    paddingBottom: spacing.md,
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  storageLabel: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  storageBarContainer: {
-    flex: 1,
-    height: 8,
-    backgroundColor: colors.backgroundLighter,
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  storageBar: {
-    height: '100%',
-    backgroundColor: colors.primary,
-    borderRadius: 4,
-  },
-  storageText: {
-    fontSize: 14,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  grid: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
-    paddingTop: spacing.md,
-  },
-  cardTouchable: {
-    flex: 1,
-    margin: spacing.sm,
-    maxWidth: isTV ? '16.66%' : '25%',
-  },
-  card: {
-    backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-  cardFocused: {
-    borderColor: colors.primary,
-    // @ts-ignore
-    boxShadow: `0 0 20px ${colors.primary}`,
-  },
-  cardImage: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-  },
-  cardImagePlaceholder: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    backgroundColor: colors.backgroundLighter,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 32,
-  },
-  progressContainer: {
-    position: 'absolute',
-    bottom: 52,
-    left: 0,
-    right: 0,
-    height: 4,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  progressBar: {
-    height: '100%',
-    backgroundColor: colors.primary,
-  },
-  typeBadge: {
-    position: 'absolute',
-    top: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  typeBadgeText: {
-    fontSize: 14,
-  },
-  sizeBadge: {
-    position: 'absolute',
-    top: 8,
-    backgroundColor: 'rgba(168, 85, 247, 0.8)',
-    borderRadius: 8,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  sizeBadgeText: {
-    fontSize: 10,
-    color: colors.background,
-    fontWeight: 'bold',
-  },
-  cardContent: {
-    padding: spacing.sm,
-  },
-  cardTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  cardSubtitle: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  statusRow: {
-    marginTop: 4,
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  statusText: {
-    fontSize: 12,
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  overlayButtons: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  playButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playIcon: {
-    fontSize: 20,
-    color: colors.background,
-    marginLeft: 4,
-  },
-  deleteButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 100, 100, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  deleteIcon: {
-    fontSize: 18,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyCard: {
-    padding: spacing.xxl,
-    alignItems: 'center',
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: spacing.md,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-});
 
 export default DownloadsScreen;

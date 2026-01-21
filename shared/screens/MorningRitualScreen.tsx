@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Animated,
   Dimensions,
@@ -151,233 +150,214 @@ export default function MorningRitualScreen() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <View style={styles.loadingContainer}>
+      <View className="flex-1 bg-[#1e1b4b]">
+        <View className="flex-1 justify-center items-center">
           <Animated.Text
-            style={[
-              styles.loadingEmoji,
-              { transform: [{ scale: sunAnim }] },
-            ]}
+            className={`mb-4 ${isTV ? 'text-[80px]' : 'text-[64px]'}`}
+            style={{ transform: [{ scale: sunAnim }] }}
           >
             ☀️
           </Animated.Text>
           <ActivityIndicator color={colors.primary} size="large" />
-          <Text style={styles.loadingText}>{t('ritual.preparingRitual')}</Text>
+          <Text className="text-white/70 text-lg mt-4">{t('ritual.preparingRitual')}</Text>
         </View>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-[#1e1b4b]">
       {/* Gradient Background */}
-      <View style={styles.gradientBg}>
-        <View style={styles.gradientOverlay} />
+      <View className="absolute inset-0">
+        <View className="flex-1 bg-purple-800/50" />
       </View>
 
       {/* AI Brief Overlay */}
       {showBrief && aiBrief && (
         <Animated.View
-          style={[
-            styles.briefOverlay,
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            },
-          ]}
+          className="absolute inset-0 justify-center items-center bg-black/60 px-8"
+          style={{
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+          }}
         >
           <Animated.Text
-            style={[
-              styles.briefEmoji,
-              { transform: [{ scale: sunAnim }] },
-            ]}
+            className={`mb-8 ${isTV ? 'text-[100px]' : 'text-[80px]'}`}
+            style={{ transform: [{ scale: sunAnim }] }}
           >
             ☀️
           </Animated.Text>
 
-          <Text style={styles.briefGreeting}>{aiBrief.greeting}</Text>
-          <Text style={styles.briefIsrael}>{aiBrief.israel_update}</Text>
-          <Text style={styles.briefRecommendation}>{aiBrief.recommendation}</Text>
+          <Text className={`${isTV ? 'text-5xl' : 'text-4xl'} font-bold text-white mb-4 text-center`}>{aiBrief.greeting}</Text>
+          <Text className={`${isTV ? 'text-2xl' : 'text-xl'} text-white/90 mb-2 text-center`}>{aiBrief.israel_update}</Text>
+          <Text className={`${isTV ? 'text-xl' : 'text-lg'} text-white/70 mb-8 text-center`}>{aiBrief.recommendation}</Text>
 
-          <View style={styles.israelContext}>
-            <View style={styles.contextItem}>
-              <Text style={styles.contextIcon}>🇮🇱</Text>
-              <Text style={styles.contextLabel}>{t('ritual.israelTime')}</Text>
-              <Text style={styles.contextValue}>{aiBrief.israel_context?.israel_time}</Text>
+          <View className="flex-row justify-center gap-8 mb-8 flex-wrap">
+            <View className="items-center gap-1">
+              <Text className={isTV ? 'text-[32px]' : 'text-2xl'}>🇮🇱</Text>
+              <Text className="text-sm text-white/50">{t('ritual.israelTime')}</Text>
+              <Text className={`${isTV ? 'text-[22px]' : 'text-lg'} font-semibold text-white`}>{aiBrief.israel_context?.israel_time}</Text>
             </View>
 
-            <View style={styles.contextItem}>
-              <Text style={styles.contextIcon}>📅</Text>
-              <Text style={styles.contextLabel}>{t('ritual.day')}</Text>
-              <Text style={styles.contextValue}>{aiBrief.israel_context?.day_name_he}</Text>
+            <View className="items-center gap-1">
+              <Text className={isTV ? 'text-[32px]' : 'text-2xl'}>📅</Text>
+              <Text className="text-sm text-white/50">{t('ritual.day')}</Text>
+              <Text className={`${isTV ? 'text-[22px]' : 'text-lg'} font-semibold text-white`}>{aiBrief.israel_context?.day_name_he}</Text>
             </View>
 
             {aiBrief.israel_context?.is_shabbat && (
-              <GlassView style={styles.shabbatBadge} intensity="medium">
-                <Text style={styles.contextIcon}>🕯️</Text>
-                <Text style={styles.shabbatText}>{t('clock.shabbatShalom')}</Text>
+              <GlassView className="flex-row items-center gap-2 px-4 py-2 rounded-lg" intensity="medium">
+                <Text className={isTV ? 'text-[32px]' : 'text-2xl'}>🕯️</Text>
+                <Text className="text-lg font-semibold text-yellow-400">{t('clock.shabbatShalom')}</Text>
               </GlassView>
             )}
           </View>
 
           <TouchableOpacity
-            style={[
-              styles.startButton,
-              focusedButton === 'start' && styles.buttonFocused,
-            ]}
+            className={`bg-orange-500 rounded-full ${focusedButton === 'start' ? 'border-[3px] border-purple-500 scale-105' : ''}`}
+            style={{ paddingHorizontal: isTV ? 60 : 48, paddingVertical: isTV ? 20 : 16 }}
             onPress={() => setShowBrief(false)}
             onFocus={() => setFocusedButton('start')}
           >
-            <Text style={styles.startButtonText}>{t('ritual.letsStart')}</Text>
+            <Text className={`${isTV ? 'text-[22px]' : 'text-lg'} font-semibold text-[#1e1b4b]`}>{t('ritual.letsStart')}</Text>
           </TouchableOpacity>
         </Animated.View>
       )}
 
       {/* Main Content */}
       {!showBrief && (
-        <View style={styles.mainContent}>
+        <View className="flex-1">
           {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <Text style={styles.ritualTitle}>{t('ritual.title')}</Text>
-              <Text style={styles.ritualTime}>{ritualData?.local_time}</Text>
+          <View className="flex-row justify-between items-center px-4 py-3 bg-black/40">
+            <View className="flex-row items-center gap-4">
+              <Text className={`${isTV ? 'text-2xl' : 'text-xl'} font-semibold text-white`}>{t('ritual.title')}</Text>
+              <Text className="text-base text-white/70">{ritualData?.local_time}</Text>
             </View>
 
-            <View style={styles.headerRight}>
+            <View className="flex-row gap-4">
               <TouchableOpacity
-                style={[
-                  styles.headerButton,
-                  focusedButton === 'skip' && styles.buttonFocused,
-                ]}
+                className={`px-4 py-2 rounded-full bg-white/15 ${focusedButton === 'skip' ? 'border-[3px] border-purple-500' : ''}`}
                 onPress={handleSkip}
                 onFocus={() => setFocusedButton('skip')}
               >
-                <Text style={styles.headerButtonText}>{t('ritual.skipToday')}</Text>
+                <Text className="text-base text-white">{t('ritual.skipToday')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[
-                  styles.headerButton,
-                  styles.exitButton,
-                  focusedButton === 'exit' && styles.buttonFocused,
-                ]}
+                className={`px-4 py-2 rounded-full bg-white/25 ${focusedButton === 'exit' ? 'border-[3px] border-purple-500' : ''}`}
                 onPress={handleExit}
                 onFocus={() => setFocusedButton('exit')}
               >
-                <Text style={styles.headerButtonText}>{t('ritual.finish')}</Text>
+                <Text className="text-base text-white">{t('ritual.finish')}</Text>
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Player Area */}
-          <View style={styles.playerArea}>
+          <View className="flex-1 justify-center items-center p-4">
             {currentItem?.type === 'live' || currentItem?.type === 'vod' ? (
-              <View style={styles.videoContainer}>
+              <View className="w-[90%] aspect-video rounded-2xl overflow-hidden">
                 {currentItem.stream_url && (
                   <Video
                     source={{ uri: currentItem.stream_url }}
-                    style={styles.video}
+                    className="w-full h-full"
                     resizeMode="cover"
                     paused={!isPlaying}
                     onEnd={handleNextItem}
                   />
                 )}
-                <GlassView style={styles.videoInfo} intensity="medium">
-                  <Text style={styles.videoTitle}>{currentItem.title}</Text>
-                  <Text style={styles.videoCategory}>{currentItem.category}</Text>
+                <GlassView className="absolute bottom-0 left-0 right-0 p-4" intensity="medium">
+                  <Text className={`${isTV ? 'text-[28px]' : 'text-2xl'} font-semibold text-white mb-1`}>{currentItem.title}</Text>
+                  <Text className="text-base text-white/70">{currentItem.category}</Text>
                 </GlassView>
               </View>
             ) : currentItem?.type === 'radio' ? (
-              <GlassView style={styles.radioContainer} intensity="medium">
-                <View style={styles.radioVisual}>
+              <GlassView className="items-center p-8 rounded-2xl" intensity="medium">
+                <View className={`${isTV ? 'w-[250px] h-[250px]' : 'w-[200px] h-[200px]'} mb-4 relative`}>
                   {currentItem.thumbnail && (
                     <Image
                       source={{ uri: currentItem.thumbnail }}
-                      style={styles.radioImage}
+                      className="w-full h-full rounded-full"
                     />
                   )}
-                  <View style={styles.radioWaves}>
-                    <Animated.View style={[styles.wave, { opacity: 0.8 }]} />
-                    <Animated.View style={[styles.wave, { opacity: 0.5 }]} />
-                    <Animated.View style={[styles.wave, { opacity: 0.3 }]} />
+                  <View className="absolute inset-0 justify-center items-center">
+                    <Animated.View className="absolute w-full h-full rounded-full border-2 border-yellow-400" style={{ opacity: 0.8 }} />
+                    <Animated.View className="absolute w-full h-full rounded-full border-2 border-yellow-400" style={{ opacity: 0.5 }} />
+                    <Animated.View className="absolute w-full h-full rounded-full border-2 border-yellow-400" style={{ opacity: 0.3 }} />
                   </View>
                 </View>
-                <Text style={styles.radioTitle}>{currentItem.title}</Text>
+                <Text className={`${isTV ? 'text-[28px]' : 'text-2xl'} font-semibold text-white`}>{currentItem.title}</Text>
               </GlassView>
             ) : (
-              <View style={styles.noContent}>
-                <Text style={styles.noContentText}>{t('ritual.noContentNow')}</Text>
+              <View className="p-8">
+                <Text className="text-lg text-white/70">{t('ritual.noContentNow')}</Text>
               </View>
             )}
           </View>
 
           {/* Playlist Bar */}
-          <GlassView style={styles.playlistBar} intensity="light">
+          <GlassView className="p-3 rounded-t-2xl" intensity="light">
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.playlistScroll}
+              contentContainerClassName="gap-4 pb-2"
             >
               {ritualData?.playlist?.map((item, index) => (
                 <TouchableOpacity
                   key={item.id}
-                  style={[
-                    styles.playlistItem,
-                    index === currentIndex && styles.playlistItemActive,
-                    focusedButton === `item-${index}` && styles.buttonFocused,
-                  ]}
+                  className={`flex-row items-center gap-4 rounded-lg p-2 pr-4 ${isTV ? 'min-w-[250px]' : 'min-w-[200px]'} ${
+                    index === currentIndex ? 'bg-yellow-400/20 border border-yellow-400/50' : 'bg-white/10'
+                  } ${focusedButton === `item-${index}` ? 'border-[3px] border-purple-500' : ''}`}
                   onPress={() => setCurrentIndex(index)}
                   onFocus={() => setFocusedButton(`item-${index}`)}
                 >
                   {item.thumbnail && (
                     <Image
                       source={{ uri: item.thumbnail }}
-                      style={styles.playlistThumb}
+                      className={`${isTV ? 'w-[60px] h-[60px]' : 'w-12 h-12'} rounded-md`}
                     />
                   )}
-                  <View style={styles.playlistInfo}>
-                    <Text style={styles.playlistTitle} numberOfLines={1}>
+                  <View className="flex-1 gap-1">
+                    <Text className="text-base font-medium text-white" numberOfLines={1}>
                       {item.title}
                     </Text>
-                    <Text style={styles.playlistType}>
+                    <Text className="text-sm text-white/70">
                       {item.type === 'live' ? `🔴 ${t('ritual.typeLive')}` :
                        item.type === 'radio' ? `📻 ${t('ritual.typeRadio')}` : `🎬 ${t('ritual.typeVideo')}`}
                     </Text>
                   </View>
                   {index === currentIndex && (
-                    <View style={styles.playingIndicator} />
+                    <View className="w-[10px] h-[10px] rounded-full bg-orange-500" />
                   )}
                 </TouchableOpacity>
               ))}
             </ScrollView>
 
-            <View style={styles.navControls}>
+            <View className="flex-row justify-center items-center gap-4 mt-2">
               <TouchableOpacity
-                style={[
-                  styles.navButton,
-                  focusedButton === 'prev' && styles.buttonFocused,
-                ]}
+                className={`${isTV ? 'w-[50px] h-[50px]' : 'w-10 h-10'} rounded-full bg-white/15 justify-center items-center ${
+                  focusedButton === 'prev' ? 'border-[3px] border-purple-500' : ''
+                }`}
                 onPress={handlePreviousItem}
                 onFocus={() => setFocusedButton('prev')}
                 disabled={currentIndex === 0}
               >
-                <Text style={styles.navButtonText}>←</Text>
+                <Text className={`${isTV ? 'text-2xl' : 'text-lg'} text-white`}>←</Text>
               </TouchableOpacity>
 
-              <Text style={styles.navCounter}>
+              <Text className="text-base text-white/70">
                 {currentIndex + 1} / {ritualData?.playlist?.length || 0}
               </Text>
 
               <TouchableOpacity
-                style={[
-                  styles.navButton,
-                  focusedButton === 'next' && styles.buttonFocused,
-                ]}
+                className={`${isTV ? 'w-[50px] h-[50px]' : 'w-10 h-10'} rounded-full bg-white/15 justify-center items-center ${
+                  focusedButton === 'next' ? 'border-[3px] border-purple-500' : ''
+                }`}
                 onPress={handleNextItem}
                 onFocus={() => setFocusedButton('next')}
                 disabled={currentIndex >= (ritualData?.playlist?.length || 0) - 1}
               >
-                <Text style={styles.navButtonText}>→</Text>
+                <Text className={`${isTV ? 'text-2xl' : 'text-lg'} text-white`}>→</Text>
               </TouchableOpacity>
             </View>
           </GlassView>
@@ -386,300 +366,3 @@ export default function MorningRitualScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#1e1b4b',
-  },
-  gradientBg: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  gradientOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(49, 46, 129, 0.5)',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingEmoji: {
-    fontSize: isTV ? 80 : 64,
-    marginBottom: spacing.lg,
-  },
-  loadingText: {
-    fontSize: fontSize.lg,
-    color: colors.textSecondary,
-    marginTop: spacing.md,
-  },
-  briefOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    padding: spacing.xl,
-  },
-  briefEmoji: {
-    fontSize: isTV ? 100 : 80,
-    marginBottom: spacing.xl,
-  },
-  briefGreeting: {
-    fontSize: isTV ? 48 : 36,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.md,
-    textAlign: 'center',
-  },
-  briefIsrael: {
-    fontSize: isTV ? 24 : 20,
-    color: 'rgba(255, 255, 255, 0.9)',
-    marginBottom: spacing.sm,
-    textAlign: 'center',
-  },
-  briefRecommendation: {
-    fontSize: isTV ? 20 : 18,
-    color: 'rgba(255, 255, 255, 0.7)',
-    marginBottom: spacing.xl,
-    textAlign: 'center',
-  },
-  israelContext: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: spacing.xl,
-    marginBottom: spacing.xl,
-    flexWrap: 'wrap',
-  },
-  contextItem: {
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  contextIcon: {
-    fontSize: isTV ? 32 : 24,
-  },
-  contextLabel: {
-    fontSize: fontSize.sm,
-    color: 'rgba(255, 255, 255, 0.5)',
-  },
-  contextValue: {
-    fontSize: isTV ? 22 : 18,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  shabbatBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.lg,
-  },
-  shabbatText: {
-    fontSize: fontSize.lg,
-    fontWeight: '600',
-    color: '#fbbf24',
-  },
-  startButton: {
-    backgroundColor: '#f59e0b',
-    paddingHorizontal: isTV ? 60 : 48,
-    paddingVertical: isTV ? 20 : 16,
-    borderRadius: borderRadius.full,
-  },
-  startButtonText: {
-    fontSize: isTV ? 22 : 18,
-    fontWeight: '600',
-    color: '#1e1b4b',
-  },
-  buttonFocused: {
-    borderWidth: 3,
-    borderColor: colors.primary,
-    transform: [{ scale: 1.05 }],
-  },
-  mainContent: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  ritualTitle: {
-    fontSize: isTV ? 24 : 20,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  ritualTime: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  headerButton: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-  },
-  exitButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
-  },
-  headerButtonText: {
-    fontSize: fontSize.md,
-    color: colors.text,
-  },
-  playerArea: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  videoContainer: {
-    width: '90%',
-    aspectRatio: 16 / 9,
-    borderRadius: borderRadius.xl,
-    overflow: 'hidden',
-  },
-  video: {
-    width: '100%',
-    height: '100%',
-  },
-  videoInfo: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: spacing.lg,
-  },
-  videoTitle: {
-    fontSize: isTV ? 28 : 24,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  videoCategory: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-  },
-  radioContainer: {
-    alignItems: 'center',
-    padding: spacing.xl,
-    borderRadius: borderRadius.xl,
-  },
-  radioVisual: {
-    width: isTV ? 250 : 200,
-    height: isTV ? 250 : 200,
-    marginBottom: spacing.lg,
-    position: 'relative',
-  },
-  radioImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 125,
-  },
-  radioWaves: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  wave: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    borderRadius: 150,
-    borderWidth: 2,
-    borderColor: '#fbbf24',
-  },
-  radioTitle: {
-    fontSize: isTV ? 28 : 24,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  noContent: {
-    padding: spacing.xl,
-  },
-  noContentText: {
-    fontSize: fontSize.lg,
-    color: colors.textSecondary,
-  },
-  playlistBar: {
-    padding: spacing.md,
-    borderTopLeftRadius: borderRadius.xl,
-    borderTopRightRadius: borderRadius.xl,
-  },
-  playlistScroll: {
-    gap: spacing.md,
-    paddingBottom: spacing.sm,
-  },
-  playlistItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.sm,
-    paddingRight: spacing.md,
-    minWidth: isTV ? 250 : 200,
-  },
-  playlistItemActive: {
-    backgroundColor: 'rgba(251, 191, 36, 0.2)',
-    borderWidth: 1,
-    borderColor: 'rgba(251, 191, 36, 0.5)',
-  },
-  playlistThumb: {
-    width: isTV ? 60 : 48,
-    height: isTV ? 60 : 48,
-    borderRadius: borderRadius.md,
-  },
-  playlistInfo: {
-    flex: 1,
-    gap: spacing.xs,
-  },
-  playlistTitle: {
-    fontSize: fontSize.md,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  playlistType: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-  playingIndicator: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#f59e0b',
-  },
-  navControls: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing.lg,
-    marginTop: spacing.sm,
-  },
-  navButton: {
-    width: isTV ? 50 : 40,
-    height: isTV ? 50 : 40,
-    borderRadius: 25,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  navButtonText: {
-    fontSize: isTV ? 24 : 18,
-    color: colors.text,
-  },
-  navCounter: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-  },
-});

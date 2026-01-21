@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Image, StyleSheet, Animated, Easing } from 'react-native';
+import { View, Text, Image, Animated, Easing } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../hooks/useDirection';
 
@@ -84,52 +84,43 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
   }, []);
 
   return (
-    <View style={[styles.container, isSmall && styles.containerSmall]}>
+    <View className={`items-center justify-center ${isSmall ? 'flex-row gap-2' : ''}`}>
       {/* Animated Logo Image - appears after text */}
       {!hideHouse && (
         <Animated.View
-          style={[
-            styles.logoContainer,
-            isSmall && styles.logoContainerSmall,
-            {
-              opacity: logoOpacity,
-            },
-          ]}
+          className={isSmall ? 'mb-0' : '-mb-2'}
+          style={{ opacity: logoOpacity }}
         >
           <Image
             source={logo}
-            style={[styles.logo, { width: currentSize.logo * logoScale, height: currentSize.logoHeight * logoScale }]}
+            style={{ width: currentSize.logo * logoScale, height: currentSize.logoHeight * logoScale }}
             resizeMode="contain"
           />
         </Animated.View>
       )}
 
       {/* Animated Text - order changes based on language */}
-      <View style={styles.textContainer}>
+      <View className="flex-row items-center justify-center">
         {isHebrew ? (
           <>
             {/* Hebrew: בית+ */}
             <Animated.Text
-              style={[
-                styles.bayitText,
-                {
-                  fontSize: currentSize.text,
-                  opacity: textOpacity,
-                  transform: [{ translateX: bayitTranslateX }],
-                },
-              ]}
+              className="font-bold text-white"
+              style={{
+                fontSize: currentSize.text,
+                opacity: textOpacity,
+                transform: [{ translateX: bayitTranslateX }],
+              }}
             >
               בית
             </Animated.Text>
             <Animated.Text
-              style={[
-                styles.plusText,
-                {
-                  fontSize: currentSize.plus,
-                  opacity: textOpacity,
-                  transform: [{ translateX: plusTranslateX }],
-                },
-              ]}
+              className="font-bold text-purple-500 ml-1"
+              style={{
+                fontSize: currentSize.plus,
+                opacity: textOpacity,
+                transform: [{ translateX: plusTranslateX }],
+              }}
             >
               +
             </Animated.Text>
@@ -138,26 +129,22 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
           <>
             {/* English/Spanish: Bayit+ */}
             <Animated.Text
-              style={[
-                styles.bayitText,
-                {
-                  fontSize: currentSize.text,
-                  opacity: textOpacity,
-                  transform: [{ translateX: bayitTranslateX }],
-                },
-              ]}
+              className="font-bold text-white"
+              style={{
+                fontSize: currentSize.text,
+                opacity: textOpacity,
+                transform: [{ translateX: bayitTranslateX }],
+              }}
             >
               Bayit
             </Animated.Text>
             <Animated.Text
-              style={[
-                styles.plusText,
-                {
-                  fontSize: currentSize.plus,
-                  opacity: textOpacity,
-                  transform: [{ translateX: plusTranslateX }],
-                },
-              ]}
+              className="font-bold text-purple-500 ml-1"
+              style={{
+                fontSize: currentSize.plus,
+                opacity: textOpacity,
+                transform: [{ translateX: plusTranslateX }],
+              }}
             >
               +
             </Animated.Text>
@@ -167,39 +154,5 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  containerSmall: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  logoContainer: {
-    marginBottom: -8,
-  },
-  logoContainerSmall: {
-    marginBottom: 0,
-  },
-  logo: {
-    // Size set dynamically
-  },
-  textContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  bayitText: {
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  plusText: {
-    fontWeight: 'bold',
-    color: '#a855f7',
-    marginLeft: 4,
-  },
-});
 
 export default AnimatedLogo;

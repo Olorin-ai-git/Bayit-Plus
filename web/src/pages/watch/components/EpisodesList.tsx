@@ -3,9 +3,9 @@
  * Displays list of podcast/show episodes with play and delete actions
  */
 
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { Play, Trash2 } from 'lucide-react';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 import { Episode } from '../types';
 
 interface EpisodesListProps {
@@ -28,38 +28,37 @@ export function EpisodesList({
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.sectionTitle}>{sectionTitle}</Text>
+    <View className="mt-6">
+      <Text className="text-lg font-semibold text-white mb-3">{sectionTitle}</Text>
       {episodes.map((episode, i) => (
         <View
           key={episode.id}
-          style={[
-            styles.episodeItem,
-            currentEpisodeId === episode.id && styles.episodeItemActive,
-          ]}
+          className={`flex-row items-center gap-3 p-4 bg-white/10 backdrop-blur-xl rounded-lg mb-3 ${
+            currentEpisodeId === episode.id ? 'bg-green-500/20 border border-green-500' : ''
+          }`}
           // @ts-ignore
           pointerEvents="box-none"
         >
           <Pressable
-            style={styles.playButton}
+            className="w-10 h-10 min-w-[40px] min-h-[40px] justify-center items-center rounded bg-green-500/10 cursor-pointer"
             onPress={() => onPlayEpisode(episode)}
             // @ts-ignore
             pointerEvents="auto"
           >
             <Play size={18} color={colors.primary} fill={colors.primary} />
           </Pressable>
-          <Text style={styles.episodeNumber}>{i + 1}</Text>
+          <Text className="w-6 text-xs text-gray-400 text-center shrink-0">{i + 1}</Text>
           <Pressable
-            style={styles.episodeInfoPress}
+            className="flex-1 cursor-pointer py-1 px-3"
             onPress={() => onPlayEpisode(episode)}
             // @ts-ignore
             pointerEvents="auto"
           >
-            <Text style={styles.episodeTitle}>{episode.title}</Text>
-            <Text style={styles.episodeDuration}>{episode.duration}</Text>
+            <Text className="text-base font-medium text-white">{episode.title}</Text>
+            <Text className="text-sm text-gray-400 mt-0.5">{episode.duration}</Text>
           </Pressable>
           <Pressable
-            style={styles.deleteButton}
+            className="w-10 h-10 min-w-[40px] min-h-[40px] justify-center items-center rounded bg-red-500/10 cursor-pointer"
             onPress={() => onDeleteEpisode(episode.id)}
             // @ts-ignore
             pointerEvents="auto"
@@ -71,78 +70,3 @@ export function EpisodesList({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  episodeItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.sm,
-  },
-  episodeItemActive: {
-    backgroundColor: 'rgba(16, 185, 129, 0.2)',
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  playButton: {
-    width: 40,
-    height: 40,
-    minWidth: 40,
-    minHeight: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: borderRadius.sm,
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-    cursor: 'pointer',
-    // @ts-ignore
-    transition: 'all 0.2s ease',
-  },
-  deleteButton: {
-    width: 40,
-    height: 40,
-    minWidth: 40,
-    minHeight: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: borderRadius.sm,
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    cursor: 'pointer',
-    // @ts-ignore
-    transition: 'all 0.2s ease',
-  },
-  episodeNumber: {
-    width: 24,
-    fontSize: 12,
-    color: colors.textMuted,
-    textAlign: 'center',
-    flexShrink: 0,
-  },
-  episodeInfoPress: {
-    flex: 1,
-    cursor: 'pointer',
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.sm,
-  },
-  episodeTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  episodeDuration: {
-    fontSize: 14,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
-});

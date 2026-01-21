@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Animated,
   Modal,
@@ -83,41 +82,47 @@ const AudioTrackOption: React.FC<{
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={0.7}
-      style={styles.trackTouchable}
+      className="mb-2"
     >
       <Animated.View
+        className="rounded-lg border-2"
         style={[
-          styles.track,
-          { transform: [{ scale: scaleAnim }] },
-          isSelected && styles.trackSelected,
-          isFocused && styles.trackFocused,
+          {
+            transform: [{ scale: scaleAnim }],
+            backgroundColor: isSelected ? colors.glassBorder : colors.glassBorderWhite,
+            borderColor: (isSelected || isFocused) ? colors.primary : 'transparent',
+            padding: isTV ? spacing.lg : spacing.md,
+            ...(isFocused && { boxShadow: `0 0 20px ${colors.glassGlowStrong}` }),
+          }
         ]}
       >
-        <View style={styles.trackContent}>
-          <View style={styles.trackHeader}>
-            <Text style={[styles.trackLanguage, { textAlign }]}>
+        <View className="flex-col">
+          <View className="flex-row justify-between items-center mb-1">
+            <Text className={`flex-1 text-lg font-semibold text-white ${isTV ? 'text-xl' : 'text-lg'}`} style={{ textAlign }}>
               {track.language}
               {isSelected && ' ✓'}
               {track.isDefault && ' (Default)'}
             </Text>
             {track.languageCode && (
-              <Text style={styles.trackCode}>{track.languageCode.toUpperCase()}</Text>
+              <Text className={`font-semibold text-white/70 bg-white/10 px-2 py-1 rounded ${isTV ? 'text-sm' : 'text-xs'}`}>
+                {track.languageCode.toUpperCase()}
+              </Text>
             )}
           </View>
 
           {(track.format || track.channels || track.bitrate) && (
-            <View style={styles.trackDetails}>
-              {track.format && <Text style={styles.trackDetail}>{track.format}</Text>}
+            <View className="flex-row flex-wrap gap-2 mb-1">
+              {track.format && <Text className={`text-white/70 bg-white/10 px-2 py-0.5 rounded ${isTV ? 'text-sm' : 'text-xs'}`}>{track.format}</Text>}
               {track.channels && (
-                <Text style={styles.trackDetail}>{formatChannels(track.channels)}</Text>
+                <Text className={`text-white/70 bg-white/10 px-2 py-0.5 rounded ${isTV ? 'text-sm' : 'text-xs'}`}>{formatChannels(track.channels)}</Text>
               )}
               {track.bitrate && (
-                <Text style={styles.trackDetail}>{formatBitrate(track.bitrate)}</Text>
+                <Text className={`text-white/70 bg-white/10 px-2 py-0.5 rounded ${isTV ? 'text-sm' : 'text-xs'}`}>{formatBitrate(track.bitrate)}</Text>
               )}
             </View>
           )}
 
-          {track.label && <Text style={styles.trackLabel}>{track.label}</Text>}
+          {track.label && <Text className={`text-white/50 italic ${isTV ? 'text-sm' : 'text-xs'}`}>{track.label}</Text>}
         </View>
       </Animated.View>
     </TouchableOpacity>
@@ -147,27 +152,30 @@ export const AudioTrackSelector: React.FC<AudioTrackSelectorProps> = ({
       onRequestClose={onClose}
     >
       <TouchableOpacity
-        style={styles.overlay}
+        className="flex-1 bg-black/80 justify-center items-center"
         activeOpacity={1}
         onPress={onClose}
       >
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Text style={[styles.title, { textAlign }]}>
+        <View
+          className={`${isTV ? 'w-1/2' : 'w-11/12'} max-w-[600px] ${isTV ? 'max-h-[70%]' : 'max-h-[80%]'} bg-white/10 backdrop-blur-xl rounded-2xl border-2 border-white/20`}
+          style={{ padding: isTV ? spacing.xl : spacing.lg }}
+        >
+          <View className={isTV ? 'mb-6' : 'mb-4'}>
+            <Text className={`font-bold text-white mb-1 ${isTV ? 'text-[32px]' : 'text-2xl'}`} style={{ textAlign }}>
               {t('player.audioTrack', 'Audio Track')}
             </Text>
-            <Text style={[styles.subtitle, { textAlign }]}>
+            <Text className={`text-white/70 ${isTV ? 'text-base' : 'text-sm'}`} style={{ textAlign }}>
               {t('player.selectAudioTrack', 'Select your preferred audio track')}
             </Text>
           </View>
 
           <ScrollView
-            style={styles.tracksContainer}
+            className={`flex-1 ${isTV ? 'mb-6' : 'mb-4'}`}
             showsVerticalScrollIndicator={false}
           >
             {audioTracks.length === 0 ? (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyText}>
+              <View className={`items-center justify-center ${isTV ? 'p-8' : 'p-6'}`}>
+                <Text className={`text-white/70 text-center ${isTV ? 'text-lg' : 'text-base'}`}>
                   {t('player.noAudioTracks', 'No audio tracks available')}
                 </Text>
               </View>
@@ -185,11 +193,11 @@ export const AudioTrackSelector: React.FC<AudioTrackSelectorProps> = ({
           </ScrollView>
 
           <TouchableOpacity
-            style={styles.closeButton}
+            className={`bg-white/10 rounded-lg items-center mt-2 ${isTV ? 'p-4' : 'p-3'}`}
             onPress={onClose}
             activeOpacity={0.7}
           >
-            <Text style={styles.closeButtonText}>
+            <Text className={`font-semibold text-white ${isTV ? 'text-lg' : 'text-base'}`}>
               {t('common.close', 'Close')}
             </Text>
           </TouchableOpacity>
@@ -198,128 +206,5 @@ export const AudioTrackSelector: React.FC<AudioTrackSelectorProps> = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: colors.glassOverlayStrong,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  container: {
-    width: isTV ? '50%' : '90%',
-    maxWidth: 600,
-    maxHeight: isTV ? '70%' : '80%',
-    backgroundColor: colors.glassStrong,
-    borderRadius: borderRadius.xl,
-    borderWidth: 2,
-    borderColor: colors.glassBorderStrong,
-    padding: isTV ? spacing.xl : spacing.lg,
-    // @ts-ignore - Web CSS property
-    backdropFilter: 'blur(20px)',
-  },
-  header: {
-    marginBottom: isTV ? spacing.lg : spacing.md,
-  },
-  title: {
-    fontSize: isTV ? 32 : 24,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-  },
-  tracksContainer: {
-    flex: 1,
-    marginBottom: isTV ? spacing.lg : spacing.md,
-  },
-  trackTouchable: {
-    marginBottom: spacing.sm,
-  },
-  track: {
-    backgroundColor: colors.glassBorderWhite,
-    borderRadius: borderRadius.lg,
-    padding: isTV ? spacing.lg : spacing.md,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  trackSelected: {
-    backgroundColor: colors.glassBorder,
-    borderColor: colors.primary,
-  },
-  trackFocused: {
-    borderColor: colors.primary,
-    backgroundColor: colors.glassBorderStrong,
-    // @ts-ignore - Web CSS property
-    boxShadow: `0 0 20px ${colors.glassGlowStrong}`,
-  },
-  trackContent: {
-    flexDirection: 'column',
-  },
-  trackHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  trackLanguage: {
-    fontSize: isTV ? 20 : 18,
-    fontWeight: '600',
-    color: colors.text,
-    flex: 1,
-  },
-  trackCode: {
-    fontSize: isTV ? 14 : 12,
-    fontWeight: '600',
-    color: colors.textSecondary,
-    backgroundColor: colors.glassBorderWhite,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: borderRadius.sm,
-  },
-  trackDetails: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-    marginBottom: spacing.xs,
-  },
-  trackDetail: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-    backgroundColor: colors.glassBorderWhite,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  trackLabel: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textMuted,
-    fontStyle: 'italic',
-  },
-  emptyState: {
-    padding: isTV ? spacing.xl : spacing.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    fontSize: isTV ? 18 : 16,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  closeButton: {
-    backgroundColor: colors.glassBorderWhite,
-    borderRadius: borderRadius.lg,
-    padding: isTV ? spacing.md : spacing.sm,
-    alignItems: 'center',
-    marginTop: spacing.sm,
-  },
-  closeButtonText: {
-    fontSize: isTV ? 18 : 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-});
 
 export default AudioTrackSelector;

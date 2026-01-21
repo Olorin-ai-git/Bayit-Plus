@@ -15,7 +15,6 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   RefreshControl,
   ScrollView,
@@ -158,39 +157,39 @@ export const RadioScreenMobile: React.FC = () => {
     const isPlaying = playingStation === item.id;
 
     return (
-      <View style={styles.stationWrapper}>
+      <View className="flex-1 px-1 py-2">
         <Pressable onPress={() => handleStationPress(item)}>
-          <GlassView style={styles.stationCard}>
+          <GlassView className="p-4 rounded-xl min-h-[240px]">
             {/* Station logo */}
-            <View style={styles.logoContainer}>
+            <View className="relative items-center justify-center mb-4 h-[120px]">
               {item.thumbnailUrl ? (
                 <Image
                   source={{ uri: item.thumbnailUrl }}
-                  style={styles.logo}
+                  className="w-[120px] h-[120px] rounded-full"
                   resizeMode="contain"
                 />
               ) : (
-                <View style={[styles.logo, styles.logoPlaceholder]}>
-                  <Text style={styles.logoText}>📻</Text>
+                <View className="w-[120px] h-[120px] rounded-full bg-white/10 items-center justify-center">
+                  <Text className="text-5xl">📻</Text>
                 </View>
               )}
 
               {/* Live/Playing badge */}
               {isPlaying ? (
-                <View style={styles.playingBadge}>
+                <View className="absolute top-0 right-0">
                   <GlassBadge variant="primary">
-                    <View style={styles.playingContainer}>
-                      <View style={styles.playingIndicator} />
-                      <Text style={styles.playingText}>{t('radio.playing')}</Text>
+                    <View className="flex-row items-center gap-1 px-1.5 py-0.5">
+                      <View className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: colors.primary }} />
+                      <Text className="text-[10px] font-bold text-white">{t('radio.playing')}</Text>
                     </View>
                   </GlassBadge>
                 </View>
               ) : (
-                <View style={styles.liveBadge}>
+                <View className="absolute top-0 right-0">
                   <GlassBadge variant="danger">
-                    <View style={styles.liveContainer}>
-                      <View style={styles.liveIndicator} />
-                      <Text style={styles.liveText}>{t('common.live')}</Text>
+                    <View className="flex-row items-center gap-1 px-1.5 py-0.5">
+                      <View className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: colors.error }} />
+                      <Text className="text-[10px] font-bold text-white">{t('common.live')}</Text>
                     </View>
                   </GlassBadge>
                 </View>
@@ -198,15 +197,15 @@ export const RadioScreenMobile: React.FC = () => {
             </View>
 
             {/* Station info */}
-            <View style={styles.info}>
-              <Text style={styles.name} numberOfLines={1}>
+            <View className="items-center">
+              <Text className="text-white text-center mb-1 text-lg font-semibold" numberOfLines={1}>
                 {localizedName}
               </Text>
               {item.frequency && (
-                <Text style={styles.frequency}>{item.frequency} {t('radio.fmSuffix')}</Text>
+                <Text className="text-purple-500 font-semibold mb-1 text-xs">{item.frequency} {t('radio.fmSuffix')}</Text>
               )}
               {localizedDescription && (
-                <Text style={styles.description} numberOfLines={2}>
+                <Text className="text-gray-400 text-center text-sm" numberOfLines={2}>
                   {localizedDescription}
                 </Text>
               )}
@@ -218,14 +217,14 @@ export const RadioScreenMobile: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1" style={{ backgroundColor: colors.background }}>
       {/* Category filters - horizontal scroll */}
       {categories.length > 0 && (
-        <View style={styles.categoriesSection}>
+        <View className="py-4">
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoriesContent}
+            contentContainerStyle={{ paddingHorizontal: spacing.lg, gap: spacing.sm }}
           >
             <GlassCategoryPill
               category={{ id: 'all', name: t('radio.allStations') }}
@@ -254,8 +253,8 @@ export const RadioScreenMobile: React.FC = () => {
         renderItem={renderStation}
         keyExtractor={(item) => item.id}
         numColumns={numColumns}
-        columnWrapperStyle={styles.row}
-        contentContainerStyle={styles.gridContent}
+        columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: spacing.md }}
+        contentContainerStyle={{ paddingTop: spacing.sm, paddingBottom: spacing.xxl }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -266,8 +265,8 @@ export const RadioScreenMobile: React.FC = () => {
         }
         ListEmptyComponent={
           !isLoading ? (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
+            <View className="flex-1 justify-center items-center py-20">
+              <Text className="text-gray-400 text-center text-base" style={{ writingDirection: 'auto' }}>
                 {selectedCategory
                   ? t('radio.noStationsInCategory')
                   : t('radio.noStations')}
@@ -280,134 +279,3 @@ export const RadioScreenMobile: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  categoriesSection: {
-    paddingVertical: spacing.md,
-  },
-  categoriesContent: {
-    paddingHorizontal: spacing.lg,
-    gap: spacing.sm,
-  },
-  row: {
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-  },
-  gridContent: {
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xxl,
-  },
-  stationWrapper: {
-    flex: 1,
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.sm,
-  },
-  stationCard: {
-    padding: spacing.lg,
-    borderRadius: 12,
-    minHeight: 240,
-  },
-  logoContainer: {
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.lg,
-    height: 120,
-  },
-  logo: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-  },
-  logoPlaceholder: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoText: {
-    fontSize: 48,
-  },
-  liveBadge: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-  },
-  liveContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  liveIndicator: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.error,
-  },
-  liveText: {
-    ...typography.caption,
-    fontSize: 10,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  playingBadge: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-  },
-  playingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  playingIndicator: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.primary,
-  },
-  playingText: {
-    ...typography.caption,
-    fontSize: 10,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  info: {
-    alignItems: 'center',
-  },
-  name: {
-    ...typography.h4,
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
-  },
-  frequency: {
-    ...typography.caption,
-    color: colors.primary,
-    fontWeight: '600',
-    marginBottom: spacing.xs,
-  },
-  description: {
-    ...typography.bodySmall,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: spacing.xxxl,
-  },
-  emptyText: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    writingDirection: 'auto',
-  },
-});

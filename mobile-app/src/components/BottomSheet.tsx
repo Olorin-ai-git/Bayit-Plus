@@ -11,7 +11,7 @@
  */
 
 import React from 'react';
-import { View, Modal, StyleSheet, Pressable, ViewStyle } from 'react-native';
+import { View, Modal, Pressable, ViewStyle } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { GlassView } from '@bayit/shared';
 import { spacing, borderRadius } from '../theme';
@@ -58,7 +58,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
     >
       {/* Backdrop */}
       <Pressable
-        style={styles.backdrop}
+        className="flex-1 bg-black/50"
         onPress={dismissable ? onClose : undefined}
         accessible={false}
       >
@@ -69,17 +69,14 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
       <Animated.View
         entering={SlideInDown.duration(300).springify()}
         exiting={SlideOutDown.duration(250)}
-        style={[
-          styles.sheet,
-          height === 'auto' ? {} : { height },
-          style,
-        ]}
+        className="absolute bottom-0 left-0 right-0 rounded-t-2xl overflow-hidden"
+        style={[height === 'auto' ? {} : { height }, style]}
       >
-        <GlassView intensity="high" style={styles.content}>
+        <GlassView intensity="high" className="px-4 pb-4">
           {/* Drag handle */}
           {showHandle && (
-            <View style={styles.handleContainer}>
-              <View style={styles.handle} />
+            <View className="pt-4 pb-2 items-center">
+              <View className="w-10 h-1 bg-white/30 rounded-sm" />
             </View>
           )}
 
@@ -90,34 +87,3 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  sheet: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    borderTopLeftRadius: borderRadius.xl,
-    borderTopRightRadius: borderRadius.xl,
-    overflow: 'hidden',
-  },
-  content: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
-  },
-  handleContainer: {
-    paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
-    alignItems: 'center',
-  },
-  handle: {
-    width: 40,
-    height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: borderRadius.sm,
-  },
-});

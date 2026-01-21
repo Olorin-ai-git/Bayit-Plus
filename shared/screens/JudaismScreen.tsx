@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   Animated,
@@ -88,55 +87,52 @@ const JudaismCard: React.FC<{
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={1}
-      style={styles.cardTouchable}
+      className={`flex-1 m-2 ${isTV ? 'max-w-[20%]' : 'max-w-[33.33%]'}`}
       // @ts-ignore
       hasTVPreferredFocus={index === 0}
     >
       <Animated.View
-        style={[
-          styles.card,
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.cardFocused,
-        ]}
+        style={{ transform: [{ scale: scaleAnim }] }}
+        className={`bg-white/10 rounded-2xl overflow-hidden border-[3px] ${isFocused ? 'border-purple-500' : 'border-transparent'}`}
       >
         {item.thumbnail ? (
           <Image
             source={{ uri: item.thumbnail }}
-            style={styles.cardImage}
+            className="w-full aspect-video"
             resizeMode="cover"
           />
         ) : (
-          <View style={styles.cardImagePlaceholder}>
-            <Text style={styles.placeholderIcon}>{TYPE_ICONS[item.type] || '✡️'}</Text>
+          <View className="w-full aspect-video bg-white/20 justify-center items-center">
+            <Text className="text-5xl">{TYPE_ICONS[item.type] || '✡️'}</Text>
           </View>
         )}
-        <View style={[styles.typeBadge, isRTL ? { left: 8 } : { right: 8 }]}>
-          <Text style={styles.typeBadgeText}>{TYPE_ICONS[item.type]}</Text>
+        <View className={`absolute top-2 ${isRTL ? 'left-2' : 'right-2'} bg-black/70 rounded-xl px-2 py-1`}>
+          <Text className="text-sm">{TYPE_ICONS[item.type]}</Text>
         </View>
         {item.duration && (
-          <View style={[styles.durationBadge, isRTL ? { right: 8 } : { left: 8 }]}>
-            <Text style={styles.durationText}>{item.duration}</Text>
+          <View className={`absolute top-2 ${isRTL ? 'right-2' : 'left-2'} bg-purple-500 rounded-lg px-1.5 py-0.5`}>
+            <Text className="text-[10px] text-white font-bold">{item.duration}</Text>
           </View>
         )}
-        <View style={styles.cardContent}>
-          <Text style={[styles.cardTitle, { textAlign }]} numberOfLines={2}>
+        <View className="p-2">
+          <Text className={`text-sm font-semibold text-white ${textAlign === 'right' ? 'text-right' : 'text-left'}`} numberOfLines={2}>
             {getLocalizedText(item, 'title')}
           </Text>
           {item.rabbi && (
-            <Text style={[styles.cardRabbi, { textAlign }]} numberOfLines={1}>
+            <Text className={`text-xs text-purple-300 mt-0.5 ${textAlign === 'right' ? 'text-right' : 'text-left'}`} numberOfLines={1}>
               {getLocalizedText(item, 'rabbi')}
             </Text>
           )}
           {item.subtitle && (
-            <Text style={[styles.cardSubtitle, { textAlign }]} numberOfLines={1}>
+            <Text className={`text-[11px] text-gray-400 mt-0.5 ${textAlign === 'right' ? 'text-right' : 'text-left'}`} numberOfLines={1}>
               {getLocalizedText(item, 'subtitle')}
             </Text>
           )}
         </View>
         {isFocused && (
-          <View style={styles.overlay}>
-            <View style={styles.playButton}>
-              <Text style={styles.playIcon}>▶</Text>
+          <View className="absolute inset-0 bg-black/60 justify-center items-center">
+            <View className="w-14 h-14 rounded-full bg-purple-500 justify-center items-center">
+              <Text className="text-2xl text-white ml-1">▶</Text>
             </View>
           </View>
         )}
@@ -211,22 +207,22 @@ export const JudaismScreen: React.FC = () => {
 
   if (isLoading && content.length === 0) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 bg-[#0a0a14] justify-center items-center">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-white text-lg mt-4">{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }]}>
-          <Text style={styles.headerIconText}>✡️</Text>
+    <View className="flex-1 bg-[#0a0a14]">
+      <View className={`flex-row items-center px-12 pt-10 pb-6 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
+        <View className={`w-[60px] h-[60px] rounded-full bg-purple-600/20 justify-center items-center ${isRTL ? 'ml-6' : 'mr-6'}`}>
+          <Text className="text-[28px]">✡️</Text>
         </View>
         <View>
-          <Text style={[styles.title, { textAlign }]}>{t('judaism.title')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
+          <Text className={`text-[42px] font-bold text-white ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>{t('judaism.title')}</Text>
+          <Text className={`text-lg text-gray-400 mt-0.5 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
             {content.length} {t('judaism.items')}
           </Text>
         </View>
@@ -236,7 +232,7 @@ export const JudaismScreen: React.FC = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[styles.categories, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
+          contentContainerStyle={{ paddingHorizontal: 48, marginBottom: 24, gap: 12, flexDirection: isRTL ? 'row' : 'row-reverse' }}
         >
           {(isRTL ? categories : [...categories].reverse()).map((category, index) => (
             <GlassCategoryPill
@@ -256,13 +252,13 @@ export const JudaismScreen: React.FC = () => {
         keyExtractor={(item) => item.id}
         numColumns={isTV ? 5 : 3}
         key={isTV ? 'tv' : 'mobile'}
-        contentContainerStyle={styles.grid}
+        contentContainerStyle={{ paddingHorizontal: spacing.xl, paddingBottom: 48, paddingTop: 16 }}
         ListHeaderComponent={
           <View>
-            <View style={styles.jerusalemSection}>
+            <View className="mb-6 -mx-4">
               <JerusalemRow showTitle={false} />
             </View>
-            <View style={styles.telAvivSection}>
+            <View className="mb-6 -mx-4">
               <TelAvivRow showTitle={false} />
             </View>
           </View>
@@ -276,11 +272,11 @@ export const JudaismScreen: React.FC = () => {
           />
         )}
         ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <GlassView style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>✡️</Text>
-              <Text style={[styles.emptyTitle, { textAlign }]}>{t('judaism.empty')}</Text>
-              <Text style={[styles.emptySubtitle, { textAlign }]}>{t('judaism.emptyHint')}</Text>
+          <View className="flex-1 justify-center items-center py-15">
+            <GlassView className="p-12 items-center">
+              <Text className="text-[64px] mb-4">✡️</Text>
+              <Text className={`text-xl font-semibold text-white mb-2 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>{t('judaism.empty')}</Text>
+              <Text className={`text-base text-gray-400 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>{t('judaism.emptyHint')}</Text>
             </GlassView>
           </View>
         }
@@ -288,184 +284,5 @@ export const JudaismScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: 18,
-    marginTop: spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xxl,
-    paddingTop: 40,
-    paddingBottom: spacing.lg,
-  },
-  headerIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: colors.glassPurple,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: spacing.lg,
-  },
-  headerIconText: {
-    fontSize: 28,
-  },
-  title: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  categories: {
-    paddingHorizontal: 48,
-    marginBottom: 24,
-    gap: 12,
-  },
-  grid: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
-    paddingTop: spacing.md,
-  },
-  cardTouchable: {
-    flex: 1,
-    margin: spacing.sm,
-    maxWidth: isTV ? '20%' : '33.33%',
-  },
-  card: {
-    backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-  cardFocused: {
-    borderColor: colors.primary,
-  },
-  cardImage: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-  },
-  cardImagePlaceholder: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    backgroundColor: colors.backgroundLighter,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 48,
-  },
-  typeBadge: {
-    position: 'absolute',
-    top: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  typeBadgeText: {
-    fontSize: 14,
-  },
-  durationBadge: {
-    position: 'absolute',
-    top: 8,
-    backgroundColor: colors.primary,
-    borderRadius: 8,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  durationText: {
-    fontSize: 10,
-    color: colors.text,
-    fontWeight: 'bold',
-  },
-  cardContent: {
-    padding: spacing.sm,
-  },
-  cardTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  cardRabbi: {
-    fontSize: 12,
-    color: colors.primaryLight,
-    marginTop: 2,
-  },
-  cardSubtitle: {
-    fontSize: 11,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.overlay,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playIcon: {
-    fontSize: 24,
-    color: colors.text,
-    marginLeft: 4,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyCard: {
-    padding: spacing.xxl,
-    alignItems: 'center',
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: spacing.md,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-  jerusalemSection: {
-    marginBottom: spacing.lg,
-    marginHorizontal: -spacing.md,
-  },
-  telAvivSection: {
-    marginBottom: spacing.lg,
-    marginHorizontal: -spacing.md,
-  },
-});
 
 export default JudaismScreen;

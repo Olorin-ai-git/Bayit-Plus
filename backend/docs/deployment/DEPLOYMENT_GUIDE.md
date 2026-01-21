@@ -191,7 +191,7 @@ echo "✓ Data migrated from S3 to GCS"
 If you migrated from S3, update all URLs in MongoDB:
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend
+cd /Users/olorin/Documents/olorin/backend
 
 # Set environment variables for migration script
 export MONGODB_URL="your-mongodb-atlas-url"
@@ -208,7 +208,7 @@ echo "✓ Database URLs updated"
 ## Step 9: Build and Deploy to Cloud Run (Manual First Deployment)
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend
+cd /Users/olorin/Documents/olorin/backend
 
 # Build the container image
 gcloud builds submit --tag gcr.io/$PROJECT_ID/bayit-plus-backend:v1

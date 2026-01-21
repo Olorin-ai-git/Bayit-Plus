@@ -7,7 +7,6 @@
 import React, { useState, useCallback, useRef } from 'react';
 import {
   View,
-  StyleSheet,
   Platform,
   LayoutChangeEvent,
 } from 'react-native';
@@ -157,7 +156,7 @@ export function GlassReorderableList<T>({
   }, [dragState.isDragging, handleDragMove, handleDragEnd]);
 
   return (
-    <View ref={containerRef} style={[styles.container, style]}>
+    <View ref={containerRef} className="gap-2" style={style}>
       {items.map((item, index) => {
         const key = keyExtractor(item);
         const isDragging = dragState.isDragging && dragState.dragIndex === index;
@@ -185,7 +184,8 @@ export function GlassReorderableList<T>({
         return (
           <View
             key={key}
-            style={[styles.itemContainer, itemStyle]}
+            className="relative"
+            style={itemStyle}
             onLayout={(e) => handleItemLayout(key, e)}
             {...webDragProps}
           >
@@ -196,14 +196,5 @@ export function GlassReorderableList<T>({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    gap: spacing.sm,
-  },
-  itemContainer: {
-    position: 'relative',
-  },
-});
 
 export default GlassReorderableList;

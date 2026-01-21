@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
+import { View, Animated } from 'react-native';
 import { ttsService } from '../services/ttsService';
 import { GlassParticleLayer } from './ui/GlassParticleLayer';
 import { colors } from '@bayit/shared/theme';
@@ -192,43 +192,41 @@ export const VisualFeedbackSystem: React.FC<VisualFeedbackSystemProps> = ({
 
   return (
     <Animated.View
-      style={[
-        styles.container,
-        {
-          transform: [{ scale: scaleAnim }],
-          opacity: opacityAnim,
-        },
-      ]}
+      className="absolute top-1/2 left-1/2 -ml-20 -mt-20 w-40 h-40 z-[9999]"
+      style={{
+        transform: [{ scale: scaleAnim }],
+        opacity: opacityAnim,
+      }}
     >
-      <View style={styles.content}>
+      <View className="flex-1 items-center justify-center rounded-2xl bg-[rgba(26,26,46,0.4)] border border-white/[0.03] overflow-hidden" style={{ backdropFilter: 'blur(12px)' } as any}>
         {/* Visual Feedback Layer */}
         {(state === 'loading' || state === 'processing') && (
           <GlassParticleLayer
             isActive={true}
             audioLevel={0.6}
             intensity="medium"
-            style={styles.feedbackLayer}
+            className="absolute top-0 left-0 right-0 bottom-0 rounded-2xl"
           />
         )}
 
         {state === 'success' && (
-          <View style={[styles.feedbackLayer, { backgroundColor: 'rgba(34, 197, 94, 0.1)' }]} />
+          <View className="absolute top-0 left-0 right-0 bottom-0 rounded-2xl bg-green-500/10" />
         )}
 
         {state === 'error' && (
-          <View style={[styles.feedbackLayer, { backgroundColor: 'rgba(239, 68, 68, 0.1)' }]} />
+          <View className="absolute top-0 left-0 right-0 bottom-0 rounded-2xl bg-red-500/10" />
         )}
 
         {state === 'navigation' && (
-          <View style={[styles.feedbackLayer, { backgroundColor: 'rgba(107, 33, 168, 0.2)' }]} />
+          <View className="absolute top-0 left-0 right-0 bottom-0 rounded-2xl bg-purple-600/20" />
         )}
 
         {/* Audio-Visual Indicator */}
-        <View style={styles.indicator}>
-          <View style={[styles.dot, { backgroundColor: content.color }]} />
+        <View className="relative w-15 h-15 items-center justify-center z-10">
+          <View className="w-4 h-4 rounded-full" style={{ backgroundColor: content.color, boxShadow: '0 0 12px rgba(168, 85, 247, 0.5)' }} />
           <Animated.View
+            className="absolute w-8 h-8 rounded-2xl opacity-60"
             style={[
-              styles.pulse,
               { backgroundColor: content.color },
               getAnimationStyle(state),
             ]}
@@ -265,57 +263,5 @@ function getAnimationStyle(state: FeedbackState): any {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginLeft: -80,
-    marginTop: -80,
-    width: 160,
-    height: 160,
-    zIndex: 9999,
-  },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-    backgroundColor: 'rgba(26, 26, 46, 0.4)',
-    backdropFilter: 'blur(12px)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.03)',
-    overflow: 'hidden',
-  },
-  feedbackLayer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: 16,
-  },
-  indicator: {
-    position: 'relative',
-    width: 60,
-    height: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10,
-  },
-  dot: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    boxShadow: '0 0 12px rgba(168, 85, 247, 0.5)',
-  },
-  pulse: {
-    position: 'absolute',
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    opacity: 0.6,
-  },
-});
 
 export default VisualFeedbackSystem;

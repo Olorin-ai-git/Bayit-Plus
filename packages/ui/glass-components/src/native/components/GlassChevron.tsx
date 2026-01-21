@@ -9,13 +9,12 @@ import React, { useEffect, useRef } from 'react';
 import {
   Pressable,
   Animated,
-  StyleSheet,
   ViewStyle,
   StyleProp,
   Platform,
   I18nManager,
 } from 'react-native';
-import { colors, borderRadius } from '../../theme';
+import { colors } from '../../theme';
 import { useTVFocus } from '../../hooks/useTVFocus';
 
 export type ChevronSize = 'sm' | 'md' | 'lg';
@@ -181,12 +180,16 @@ export const GlassChevron: React.FC<GlassChevronProps> = ({
       {...({ hasTVPreferredFocus } as object)}
     >
       <Animated.View
+        className="items-center justify-center rounded-sm border-2"
         style={[
-          styles.container,
           containerSize,
+          {
+            backgroundColor: colors.glassLight,
+            borderColor: colors.glassBorder,
+            opacity: disabled ? 0.5 : 1,
+            transform: [{ scale: scaleAnim }],
+          },
           isFocused ? focusStyle : undefined,
-          disabled && styles.disabled,
-          { transform: [{ scale: scaleAnim }] },
           style,
         ]}
       >
@@ -201,19 +204,5 @@ export const GlassChevron: React.FC<GlassChevronProps> = ({
     </Pressable>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: borderRadius.sm,
-    backgroundColor: colors.glassLight,
-    borderWidth: 2,
-    borderColor: colors.glassBorder,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-});
 
 export default GlassChevron;

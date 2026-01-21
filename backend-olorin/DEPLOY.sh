@@ -130,7 +130,7 @@ echo ""
 echo "📍 STEP 6: Submitting Cloud Build deployment..."
 echo ""
 
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 
 gcloud builds submit \
   --config=backend-olorin/cloudbuild.yaml \

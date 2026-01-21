@@ -3,44 +3,14 @@
  * Skeleton loading state for watch page
  */
 
-import { View, StyleSheet } from 'react-native';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { View } from 'react-native';
 
 export function LoadingState() {
   return (
-    <View style={styles.container}>
-      <View style={styles.skeletonPlayer} />
-      <View style={styles.skeletonTitle} />
-      <View style={styles.skeletonDescription} />
+    <View className="flex-1">
+      <View className="aspect-video bg-white/10 backdrop-blur-xl rounded-2xl mx-4 mb-6" />
+      <View className="h-8 w-64 bg-white/10 backdrop-blur-xl rounded-lg mx-4 mb-4" />
+      <View className="h-4 w-4/5 max-w-[600px] bg-white/10 backdrop-blur-xl rounded-lg mx-4" />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  skeletonPlayer: {
-    aspectRatio: 16 / 9,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.lg,
-    marginHorizontal: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  skeletonTitle: {
-    height: 32,
-    width: 256,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.md,
-    marginHorizontal: spacing.md,
-    marginBottom: spacing.md,
-  },
-  skeletonDescription: {
-    height: 16,
-    width: '80%',
-    maxWidth: 600,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.md,
-    marginHorizontal: spacing.md,
-  },
-});

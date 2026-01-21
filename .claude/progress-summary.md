@@ -9,7 +9,7 @@
 
 ### 1.1 Gap Analysis ✅
 **Status**: Complete
-**Deliverable**: `/Users/olorin/Documents/Bayit-Plus/.claude/gap-analysis.md`
+**Deliverable**: `/Users/olorin/Documents/olorin/.claude/gap-analysis.md`
 
 **Key Findings:**
 - Identified ~25 features missing in shared/tvOS vs web
@@ -30,12 +30,12 @@
 ### 1.2 Testing Infrastructure ✅
 **Status**: Complete
 **Deliverables**:
-- `/Users/olorin/Documents/Bayit-Plus/tvos-app/jest.config.js`
-- `/Users/olorin/Documents/Bayit-Plus/web/jest.config.js`
-- `/Users/olorin/Documents/Bayit-Plus/shared/jest.config.js`
-- `/Users/olorin/Documents/Bayit-Plus/web/babel.config.js`
-- `/Users/olorin/Documents/Bayit-Plus/shared/testing/` (complete testing utilities)
-- `/Users/olorin/Documents/Bayit-Plus/setup-testing.sh` (automated setup script)
+- `/Users/olorin/Documents/olorin/tvos-app/jest.config.js`
+- `/Users/olorin/Documents/olorin/web/jest.config.js`
+- `/Users/olorin/Documents/olorin/shared/jest.config.js`
+- `/Users/olorin/Documents/olorin/web/babel.config.js`
+- `/Users/olorin/Documents/olorin/shared/testing/` (complete testing utilities)
+- `/Users/olorin/Documents/olorin/setup-testing.sh` (automated setup script)
 
 **Testing Utilities Created:**
 1. **renderWithProviders.tsx** - Render helper with all providers

@@ -43,7 +43,7 @@ SENTRY_DSN=https://cf75c674a6980b83e7eed8ee5e227a2a@o4510740497367040.ingest.us.
 
 **Check Performed**:
 ```bash
-File location: /Users/olorin/Documents/Bayit-Plus/mobile-app/.env
+File location: /Users/olorin/Documents/olorin/mobile-app/.env
 File size: 22 lines
 Credentials status: ACTIVE (not revoked)
 Access visibility: World-readable (on developer machine)

@@ -1044,33 +1044,33 @@ Focus next 1-2 days on fixing critical blockers (TypeScript errors, security har
 
 **Key Configuration Files:**
 
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/package.json`
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/tsconfig.json`
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/app.json`
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/.env`
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/ios/BayitPlus/Info.plist`
+- `/Users/olorin/Documents/olorin/mobile-app/package.json`
+- `/Users/olorin/Documents/olorin/mobile-app/tsconfig.json`
+- `/Users/olorin/Documents/olorin/mobile-app/app.json`
+- `/Users/olorin/Documents/olorin/mobile-app/.env`
+- `/Users/olorin/Documents/olorin/mobile-app/ios/BayitPlus/Info.plist`
 
 **Source Code:**
 
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/src/` (91 TypeScript files)
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/src/screens/` (28 screen components)
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/src/components/`
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/src/hooks/`
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/src/services/`
+- `/Users/olorin/Documents/olorin/mobile-app/src/` (91 TypeScript files)
+- `/Users/olorin/Documents/olorin/mobile-app/src/screens/` (28 screen components)
+- `/Users/olorin/Documents/olorin/mobile-app/src/components/`
+- `/Users/olorin/Documents/olorin/mobile-app/src/hooks/`
+- `/Users/olorin/Documents/olorin/mobile-app/src/services/`
 
 **Documentation:**
 
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/README.md`
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/IOS_E2E_TEST_REPORT.md`
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/SECURITY_AUDIT_REPORT.md`
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/CRITICAL_FIXES_APPLIED.md`
+- `/Users/olorin/Documents/olorin/mobile-app/README.md`
+- `/Users/olorin/Documents/olorin/mobile-app/IOS_E2E_TEST_REPORT.md`
+- `/Users/olorin/Documents/olorin/mobile-app/SECURITY_AUDIT_REPORT.md`
+- `/Users/olorin/Documents/olorin/mobile-app/CRITICAL_FIXES_APPLIED.md`
 
 **iOS Native:**
 
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/ios/BayitPlus/`
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/ios/BayitPlus/AppDelegate.swift`
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/ios/BayitPlus/SpeechModule.swift`
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/ios/BayitPlus/TTSModule.swift`
+- `/Users/olorin/Documents/olorin/mobile-app/ios/BayitPlus/`
+- `/Users/olorin/Documents/olorin/mobile-app/ios/BayitPlus/AppDelegate.swift`
+- `/Users/olorin/Documents/olorin/mobile-app/ios/BayitPlus/SpeechModule.swift`
+- `/Users/olorin/Documents/olorin/mobile-app/ios/BayitPlus/TTSModule.swift`
 
 ---
 

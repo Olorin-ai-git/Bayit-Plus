@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react'
 import { GlassInput } from '@bayit/shared/ui'
@@ -107,12 +107,12 @@ export default function RadioStationsPage() {
     {
       key: 'name',
       label: t('admin.content.columns.name', { defaultValue: 'Name' }),
-      render: (name: string) => <Text style={styles.cellText}>{name}</Text>,
+      render: (name: string) => <Text className="text-sm text-white">{name}</Text>,
     },
     {
       key: 'genre',
       label: t('admin.content.columns.genre', { defaultValue: 'Genre' }),
-      render: (genre: string | undefined) => <Text style={styles.cellText}>{genre || '-'}</Text>,
+      render: (genre: string | undefined) => <Text className="text-sm text-white">{genre || '-'}</Text>,
     },
     {
       key: 'stream_url',
@@ -137,7 +137,7 @@ export default function RadioStationsPage() {
     {
       key: 'order',
       label: t('admin.content.columns.order', { defaultValue: 'Order' }),
-      render: (order: number) => <Text style={styles.cellText}>{order}</Text>,
+      render: (order: number) => <Text className="text-sm text-white">{order}</Text>,
     },
     {
       key: 'actions',
@@ -164,7 +164,7 @@ export default function RadioStationsPage() {
   ]
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.radioStations', { defaultValue: 'Radio Stations' })}</Text>
@@ -187,7 +187,7 @@ export default function RadioStationsPage() {
       {error && (
         <View style={[styles.errorContainer, { marginBottom: spacing.lg }]}>
           <AlertCircle size={18} color="#ef4444" />
-          <Text style={styles.errorText}>{error}</Text>
+          <Text className="flex-1 text-red-500 text-sm">{error}</Text>
           <Pressable onPress={() => setError(null)}>
             <X size={18} color="#ef4444" />
           </Pressable>
@@ -276,31 +276,3 @@ export default function RadioStationsPage() {
   )
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.lg },
-  pageTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
-  subtitle: { fontSize: 14, color: colors.textMuted, marginTop: spacing.xs },
-  addButton: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, backgroundColor: colors.primary, borderRadius: borderRadius.md },
-  addButtonText: { color: colors.text, fontWeight: '500', fontSize: 14 },
-  errorContainer: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, backgroundColor: '#ef444420', borderColor: '#ef444440', borderWidth: 1, borderRadius: borderRadius.md },
-  errorText: { flex: 1, color: '#ef4444', fontSize: 14 },
-  editForm: { backgroundColor: colors.backgroundLighter, padding: spacing.lg, borderRadius: borderRadius.lg, marginBottom: spacing.lg },
-  formTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: spacing.md },
-  input: { paddingHorizontal: spacing.md, paddingVertical: spacing.md, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.background, color: colors.text, fontSize: 14, marginBottom: spacing.md },
-  checkboxRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.md },
-  checkbox: { width: 18, height: 18 },
-  checkboxLabel: { color: colors.text, fontSize: 14 },
-  formActions: { flexDirection: 'row', gap: spacing.md },
-  cancelBtn: { flex: 1, paddingVertical: spacing.md, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, justifyContent: 'center', alignItems: 'center' },
-  cancelBtnText: { color: colors.text, fontWeight: '600' },
-  saveBtn: { flex: 1, paddingVertical: spacing.md, borderRadius: borderRadius.md, backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center' },
-  saveBtnText: { color: colors.text, fontWeight: '600' },
-  cellText: { fontSize: 14, color: colors.text },
-  urlText: { fontSize: 12, color: colors.textMuted },
-  badge: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.full, alignSelf: 'flex-start' },
-  badgeText: { fontSize: 12, fontWeight: '500' },
-  actionsCell: { flexDirection: 'row', gap: spacing.sm, alignItems: 'center' },
-  actionButton: { padding: spacing.sm, borderRadius: borderRadius.md, justifyContent: 'center', alignItems: 'center' },
-})

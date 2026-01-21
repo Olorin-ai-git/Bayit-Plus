@@ -11,7 +11,6 @@ import { GlassView } from '../../components';
 import { useAuthStore } from '../../stores/authStore';
 import { subscriptionService } from '../../services/api';
 import { isTV } from '../../utils/platform';
-import { styles } from './ProfileScreen.styles';
 import { TABS, TabId, PaymentMethod, BillingHistoryItem } from './types';
 import { ProfileTab } from './ProfileTab';
 import { BillingTab } from './BillingTab';
@@ -102,48 +101,48 @@ export const ProfileScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-[#0f0a1a]">
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerIcon}>
-          <Text style={styles.headerIconText}>⚙️</Text>
+      <View className="flex-row items-center px-12 pt-10 pb-4">
+        <View className="w-[60px] h-[60px] rounded-full bg-[rgba(138,43,226,0.2)] justify-center items-center ml-4">
+          <Text className="text-[28px]">⚙️</Text>
         </View>
         <View>
-          <Text style={styles.title}>{t('profile.title')}</Text>
-          <Text style={styles.subtitle}>{user?.name}</Text>
+          <Text className="text-[42px] font-bold text-white text-right">{t('profile.title')}</Text>
+          <Text className="text-[18px] text-[rgba(255,255,255,0.6)] mt-0.5 text-right">{user?.name}</Text>
         </View>
       </View>
 
-      <View style={styles.content}>
+      <View className="flex-1 flex-row px-12">
         {/* Sidebar */}
-        <View style={styles.sidebar}>
-          <GlassView style={styles.sidebarCard}>
+        <View className={isTV ? "w-[280px]" : "w-[200px]"} style={{ marginLeft: 24 }}>
+          <GlassView className="p-2">
             {TABS.map((tab, index) => (
               <TouchableOpacity
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id)}
-                style={[styles.tabButton, activeTab === tab.id && styles.tabButtonActive]}
+                className={`flex-row items-center py-3 px-3 rounded-lg mb-1 ${activeTab === tab.id ? 'bg-[rgba(107,33,168,0.3)]' : ''}`}
                 // @ts-ignore
                 hasTVPreferredFocus={index === 0 && isTV}
               >
-                <Text style={styles.tabIcon}>{tab.icon}</Text>
-                <Text style={[styles.tabLabel, activeTab === tab.id && styles.tabLabelActive]}>
+                <Text className="text-[20px] ml-2">{tab.icon}</Text>
+                <Text className={`text-[16px] ${activeTab === tab.id ? 'text-[#6b21a8] font-semibold' : 'text-[rgba(255,255,255,0.6)]'}`}>
                   {t(tab.labelKey)}
                 </Text>
               </TouchableOpacity>
             ))}
 
-            <View style={styles.divider} />
+            <View className="h-[1px] bg-[rgba(255,255,255,0.1)] my-3" />
 
-            <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-              <Text style={styles.tabIcon}>🚪</Text>
-              <Text style={styles.logoutLabel}>{t('account.logout')}</Text>
+            <TouchableOpacity onPress={handleLogout} className="flex-row items-center py-3 px-3 rounded-lg">
+              <Text className="text-[20px] ml-2">🚪</Text>
+              <Text className="text-[16px] text-[#ef4444]">{t('account.logout')}</Text>
             </TouchableOpacity>
           </GlassView>
         </View>
 
         {/* Main Content */}
-        <ScrollView style={styles.mainContent} showsVerticalScrollIndicator={false}>
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {renderContent()}
         </ScrollView>
       </View>

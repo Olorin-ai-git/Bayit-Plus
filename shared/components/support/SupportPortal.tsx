@@ -10,7 +10,6 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-  StyleSheet,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui';
@@ -52,7 +51,7 @@ export const SupportPortal: React.FC = () => {
           return <SupportDocViewer />;
         }
         return (
-          <View style={styles.docsContainer}>
+          <View className="gap-4">
             <SupportSearch />
             <SupportCategories />
           </View>
@@ -63,41 +62,41 @@ export const SupportPortal: React.FC = () => {
 
       case 'contact':
         return (
-          <View style={styles.contactContainer}>
-            <GlassView style={styles.contactCard}>
-              <Text style={styles.contactIcon}>💬</Text>
-              <Text style={[styles.contactTitle, { textAlign }]}>
+          <View className="gap-4">
+            <GlassView className="p-4 rounded-2xl items-center">
+              <Text className={`text-4xl mb-3 ${isTV ? 'text-5xl' : ''}`}>💬</Text>
+              <Text className={`text-white text-lg font-semibold mb-2 ${isTV ? 'text-xl' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
                 {t('support.contact.voiceTitle', 'Voice Support')}
               </Text>
-              <Text style={[styles.contactDescription, { textAlign }]}>
+              <Text className={`text-text-secondary text-sm leading-5 mb-3 ${isTV ? 'text-base leading-6' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
                 {t('support.contact.voiceDescription', 'Click the avatar button or say "Hey Bayit" to start a voice conversation with our AI assistant.')}
               </Text>
             </GlassView>
 
-            <GlassView style={styles.contactCard}>
-              <Text style={styles.contactIcon}>🎫</Text>
-              <Text style={[styles.contactTitle, { textAlign }]}>
+            <GlassView className="p-4 rounded-2xl items-center">
+              <Text className={`text-4xl mb-3 ${isTV ? 'text-5xl' : ''}`}>🎫</Text>
+              <Text className={`text-white text-lg font-semibold mb-2 ${isTV ? 'text-xl' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
                 {t('support.contact.ticketTitle', 'Create Support Ticket')}
               </Text>
-              <Text style={[styles.contactDescription, { textAlign }]}>
+              <Text className={`text-text-secondary text-sm leading-5 mb-3 ${isTV ? 'text-base leading-6' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
                 {t('support.contact.ticketDescription', 'Need human assistance? Create a support ticket and our team will respond within 24 hours.')}
               </Text>
               <TouchableOpacity
-                style={styles.contactButton}
+                className="bg-primary px-6 py-3 rounded-lg"
                 onPress={() => setShowTicketForm(true)}
               >
-                <Text style={styles.contactButtonText}>
+                <Text className={`text-background font-semibold ${isTV ? 'text-base' : 'text-sm'}`}>
                   {t('support.contact.createTicket', 'Create Ticket')}
                 </Text>
               </TouchableOpacity>
             </GlassView>
 
-            <GlassView style={styles.contactCard}>
-              <Text style={styles.contactIcon}>📧</Text>
-              <Text style={[styles.contactTitle, { textAlign }]}>
+            <GlassView className="p-4 rounded-2xl items-center">
+              <Text className={`text-4xl mb-3 ${isTV ? 'text-5xl' : ''}`}>📧</Text>
+              <Text className={`text-white text-lg font-semibold mb-2 ${isTV ? 'text-xl' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
                 {t('support.contact.emailTitle', 'Email Support')}
               </Text>
-              <Text style={[styles.contactDescription, { textAlign }]}>
+              <Text className={`text-text-secondary text-sm leading-5 ${isTV ? 'text-base leading-6' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
                 {t('support.contact.emailDescription', 'Prefer email? Reach us at support@bayit.tv for any questions or concerns.')}
               </Text>
             </GlassView>
@@ -117,17 +116,17 @@ export const SupportPortal: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-background">
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
-        <View style={styles.headerIcon}>
-          <Text style={styles.headerIconText}>🎧</Text>
+      <View className={`flex-row items-center gap-3 ${isTV ? 'p-6' : 'p-4'} pb-3`} style={{ flexDirection }}>
+        <View className={`justify-center items-center bg-primary/20 ${isTV ? 'w-16 h-16 rounded-[32px]' : 'w-12 h-12 rounded-3xl'}`}>
+          <Text className={isTV ? 'text-4xl' : 'text-2xl'}>🎧</Text>
         </View>
         <View>
-          <Text style={[styles.title, { textAlign }]}>
+          <Text className={`text-white font-bold ${isTV ? 'text-4xl' : 'text-3xl'} ${textAlign === 'right' ? 'text-right' : ''}`}>
             {t('support.title', 'Support Center')}
           </Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
+          <Text className={`text-text-secondary mt-0.5 ${isTV ? 'text-lg' : 'text-sm'} ${textAlign === 'right' ? 'text-right' : ''}`}>
             {t('support.subtitle', 'How can we help you today?')}
           </Text>
         </View>
@@ -137,8 +136,8 @@ export const SupportPortal: React.FC = () => {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={styles.tabsScroll}
-        contentContainerStyle={styles.tabsContent}
+        className={`mb-3 ${isTV ? 'px-6' : 'px-4'}`}
+        contentContainerStyle={{ gap: spacing.sm, paddingBottom: spacing.sm }}
       >
         {tabs.map((tab) => (
           <TouchableOpacity
@@ -146,18 +145,17 @@ export const SupportPortal: React.FC = () => {
             onPress={() => setActiveTab(tab.id)}
             onFocus={() => setFocusedTab(tab.id)}
             onBlur={() => setFocusedTab(null)}
-            style={[
-              styles.tabButton,
-              activeTab === tab.id && styles.tabButtonActive,
-              focusedTab === tab.id && styles.tabButtonFocused,
-            ]}
+            className={`flex-row items-center px-4 py-2 bg-white/5 rounded-full gap-2 border-2 ${
+              activeTab === tab.id ? 'bg-primary/20' : ''
+            } ${
+              focusedTab === tab.id ? 'border-primary' : 'border-transparent'
+            }`}
           >
-            <Text style={styles.tabIcon}>{tab.icon}</Text>
+            <Text className={isTV ? 'text-xl' : 'text-base'}>{tab.icon}</Text>
             <Text
-              style={[
-                styles.tabText,
-                activeTab === tab.id && styles.tabTextActive,
-              ]}
+              className={`${isTV ? 'text-base' : 'text-sm'} ${
+                activeTab === tab.id ? 'text-primary font-semibold' : 'text-text-secondary'
+              }`}
             >
               {t(tab.labelKey, tab.id)}
             </Text>
@@ -167,130 +165,17 @@ export const SupportPortal: React.FC = () => {
 
       {/* Tab Content */}
       <ScrollView
-        style={styles.contentScroll}
-        contentContainerStyle={styles.contentContainer}
+        className="flex-1"
+        contentContainerStyle={{
+          padding: isTV ? spacing.xl : spacing.lg,
+          paddingTop: 0,
+          paddingBottom: spacing.xl * 2,
+        }}
       >
         {renderTabContent()}
       </ScrollView>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: isTV ? spacing.xl : spacing.lg,
-    paddingBottom: spacing.md,
-  },
-  headerIcon: {
-    width: isTV ? 64 : 48,
-    height: isTV ? 64 : 48,
-    borderRadius: isTV ? 32 : 24,
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerIconText: {
-    fontSize: isTV ? 32 : 24,
-  },
-  title: {
-    fontSize: isTV ? 36 : 28,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: isTV ? 18 : 14,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  tabsScroll: {
-    paddingHorizontal: isTV ? spacing.xl : spacing.lg,
-    marginBottom: spacing.md,
-  },
-  tabsContent: {
-    gap: spacing.sm,
-    paddingBottom: spacing.sm,
-  },
-  tabButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.full,
-    gap: spacing.sm,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  tabButtonActive: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-  },
-  tabButtonFocused: {
-    borderColor: colors.primary,
-  },
-  tabIcon: {
-    fontSize: isTV ? 20 : 16,
-  },
-  tabText: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-  },
-  tabTextActive: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  contentScroll: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: isTV ? spacing.xl : spacing.lg,
-    paddingTop: 0,
-    paddingBottom: spacing.xl * 2,
-  },
-  docsContainer: {
-    gap: spacing.lg,
-  },
-  contactContainer: {
-    gap: spacing.lg,
-  },
-  contactCard: {
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-    alignItems: 'center',
-  },
-  contactIcon: {
-    fontSize: isTV ? 48 : 36,
-    marginBottom: spacing.md,
-  },
-  contactTitle: {
-    fontSize: isTV ? 20 : 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  contactDescription: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 24 : 20,
-    marginBottom: spacing.md,
-  },
-  contactButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-  },
-  contactButtonText: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.background,
-  },
-});
 
 export default SupportPortal;

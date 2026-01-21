@@ -14,7 +14,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   Switch,
   Pressable,
@@ -202,33 +201,33 @@ export const SettingsScreenMobile: React.FC = () => {
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView className="flex-1 bg-black" contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.xl, paddingBottom: spacing.xxxl * 2 }}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>{t('settings.title')}</Text>
-        <Text style={styles.subtitle}>{t('settings.subtitle')}</Text>
+      <View className="mb-8">
+        <Text className="text-white mb-1" style={typography.h1}>{t('settings.title')}</Text>
+        <Text className="text-white/60" style={typography.body}>{t('settings.subtitle')}</Text>
       </View>
 
       {/* Settings Sections */}
       {settingsSections.map((section, sectionIndex) => (
-        <View key={section.title} style={styles.section}>
-          <Text style={styles.sectionTitle}>{section.title}</Text>
+        <View key={section.title} className="mb-8">
+          <Text className="text-[13px] text-white/60 uppercase font-semibold mb-2 px-1" style={typography.bodySmall}>{section.title}</Text>
 
           {section.items.map((item) => (
             <Pressable
               key={item.id}
               onPress={'onPress' in item && item.onPress ? item.onPress : undefined}
               disabled={!('onPress' in item) && !('onToggle' in item)}
-              style={({ pressed }) => [pressed && styles.itemPressed]}
+              style={({ pressed }) => [pressed && { opacity: 0.7 }]}
             >
-              <GlassView style={styles.item}>
-                <View style={styles.itemLeft}>
-                  <Text style={styles.itemTitle}>{item.title}</Text>
+              <GlassView className="flex-row items-center justify-between py-3 px-6 rounded-xl mb-2" style={{ minHeight: touchTarget.minHeight }}>
+                <View className="flex-1 mr-3">
+                  <Text className="text-white font-medium text-base" style={typography.body}>{item.title}</Text>
                   {item.subtitle && (
-                    <Text style={styles.itemSubtitle}>{item.subtitle}</Text>
+                    <Text className="text-white/60 text-[13px] mt-0.5" style={typography.caption}>{item.subtitle}</Text>
                   )}
                 </View>
-                <View style={styles.itemRight}>
+                <View className="flex-row items-center gap-2">
                   {'showToggle' in item && item.showToggle && 'onToggle' in item && item.onToggle && (
                     <Switch
                       value={'value' in item ? item.value : false}
@@ -238,7 +237,7 @@ export const SettingsScreenMobile: React.FC = () => {
                     />
                   )}
                   {'showChevron' in item && item.showChevron && (
-                    <Text style={styles.chevron}>{isRTL ? '‹' : '›'}</Text>
+                    <Text className="text-2xl text-white/60">{isRTL ? '‹' : '›'}</Text>
                   )}
                 </View>
               </GlassView>
@@ -249,79 +248,5 @@ export const SettingsScreenMobile: React.FC = () => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xxxl * 2,
-  },
-  header: {
-    marginBottom: spacing.xl,
-  },
-  title: {
-    ...typography.h1,
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-  },
-  section: {
-    marginBottom: spacing.xl,
-  },
-  sectionTitle: {
-    ...typography.bodySmall,
-    fontSize: 13,
-    color: colors.textSecondary,
-    textTransform: 'uppercase',
-    fontWeight: '600',
-    marginBottom: spacing.sm,
-    paddingHorizontal: spacing.xs,
-  },
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 12,
-    marginBottom: spacing.sm,
-    minHeight: touchTarget.minHeight,
-  },
-  itemPressed: {
-    opacity: 0.7,
-  },
-  itemLeft: {
-    flex: 1,
-    marginRight: spacing.md,
-  },
-  itemTitle: {
-    ...typography.body,
-    fontSize: 16,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  itemSubtitle: {
-    ...typography.caption,
-    fontSize: 13,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  itemRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  chevron: {
-    fontSize: 24,
-    color: colors.textSecondary,
-  },
-});
 
 export default SettingsScreenMobile;

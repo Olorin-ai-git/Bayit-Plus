@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   Animated,
@@ -60,49 +59,46 @@ const FavoriteCard: React.FC<{
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={1}
-      style={styles.cardTouchable}
+      className="flex-1 m-2 max-w-[25%]"
       // @ts-ignore
       hasTVPreferredFocus={index === 0}
     >
       <Animated.View
-        style={[
-          styles.card,
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.cardFocused,
-        ]}
+        className={`bg-[#1a1525] rounded-lg overflow-hidden border-[3px] ${isFocused ? 'border-purple-500' : 'border-transparent'}`}
+        style={{ transform: [{ scale: scaleAnim }] }}
       >
         {item.thumbnail ? (
           <Image
             source={{ uri: item.thumbnail }}
-            style={styles.cardImage}
+            className="w-full aspect-video"
             resizeMode="cover"
           />
         ) : (
-          <View style={styles.cardImagePlaceholder}>
-            <Text style={styles.placeholderIcon}>{TYPE_ICONS[item.type] || '⭐'}</Text>
+          <View className="w-full aspect-video bg-[#2a2235] justify-center items-center">
+            <Text className="text-[32px]">{TYPE_ICONS[item.type] || '⭐'}</Text>
           </View>
         )}
-        <View style={[styles.typeBadge, isRTL ? { left: 8 } : { right: 8 }]}>
-          <Text style={styles.typeBadgeText}>{TYPE_ICONS[item.type]}</Text>
+        <View className="absolute top-2 bg-black/70 rounded-xl px-2 py-1" style={isRTL ? { left: 8 } : { right: 8 }}>
+          <Text className="text-sm">{TYPE_ICONS[item.type]}</Text>
         </View>
-        <View style={styles.cardContent}>
-          <Text style={[styles.cardTitle, { textAlign }]} numberOfLines={1}>
+        <View className="p-2">
+          <Text className="text-sm font-semibold text-white" style={{ textAlign }} numberOfLines={1}>
             {getLocalizedText(item, 'title')}
           </Text>
           {item.subtitle && (
-            <Text style={[styles.cardSubtitle, { textAlign }]} numberOfLines={1}>
+            <Text className="text-xs text-gray-400 mt-0.5" style={{ textAlign }} numberOfLines={1}>
               {getLocalizedText(item, 'subtitle')}
             </Text>
           )}
         </View>
         {isFocused && (
-          <View style={styles.overlay}>
-            <View style={styles.overlayButtons}>
-              <View style={styles.playButton}>
-                <Text style={styles.playIcon}>▶</Text>
+          <View className="absolute inset-0 bg-black/40 justify-center items-center">
+            <View className="flex-row gap-4">
+              <View className="w-12 h-12 rounded-full bg-purple-500 justify-center items-center">
+                <Text className="text-xl text-[#0a0a1a] ml-1">▶</Text>
               </View>
-              <TouchableOpacity onPress={onRemove} style={styles.removeButton}>
-                <Text style={styles.removeIcon}>✕</Text>
+              <TouchableOpacity onPress={onRemove} className="w-12 h-12 rounded-full bg-white/20 justify-center items-center">
+                <Text className="text-lg text-white">✕</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -165,23 +161,23 @@ export const FavoritesScreen: React.FC = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 bg-[#0a0a1a] justify-center items-center">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-white text-lg mt-4">{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-[#0a0a1a]">
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }]}>
-          <Text style={styles.headerIconText}>⭐</Text>
+      <View className="flex-row items-center px-12 pt-10 pb-5" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
+        <View className="w-[60px] h-[60px] rounded-full bg-yellow-500/20 justify-center items-center" style={{ marginLeft: isRTL ? 20 : 0, marginRight: isRTL ? 0 : 20 }}>
+          <Text className="text-[28px]">⭐</Text>
         </View>
         <View>
-          <Text style={[styles.title, { textAlign }]}>{t('favorites.title')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
+          <Text className="text-[42px] font-bold text-white" style={{ textAlign }}>{t('favorites.title')}</Text>
+          <Text className="text-lg text-gray-400 mt-0.5" style={{ textAlign }}>
             {favorites.length} {t('favorites.items')}
           </Text>
         </View>
@@ -193,7 +189,7 @@ export const FavoritesScreen: React.FC = () => {
         keyExtractor={(item) => item.id}
         numColumns={isTV ? 6 : 4}
         key={isTV ? 'tv' : 'mobile'}
-        contentContainerStyle={styles.grid}
+        contentContainerStyle={{ paddingHorizontal: 32, paddingBottom: 48, paddingTop: 16 }}
         renderItem={({ item, index }) => (
           <FavoriteCard
             item={item}
@@ -204,11 +200,11 @@ export const FavoritesScreen: React.FC = () => {
           />
         )}
         ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <GlassView style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>⭐</Text>
-              <Text style={[styles.emptyTitle, { textAlign }]}>{t('favorites.empty')}</Text>
-              <Text style={[styles.emptySubtitle, { textAlign }]}>{t('favorites.emptyHint')}</Text>
+          <View className="flex-1 justify-center items-center py-[60px]">
+            <GlassView className="p-12 items-center">
+              <Text className="text-[64px] mb-4">⭐</Text>
+              <Text className="text-xl font-semibold text-white mb-2" style={{ textAlign }}>{t('favorites.empty')}</Text>
+              <Text className="text-base text-gray-400" style={{ textAlign }}>{t('favorites.emptyHint')}</Text>
             </GlassView>
           </View>
         }
@@ -216,171 +212,5 @@ export const FavoritesScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: 18,
-    marginTop: spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xxl,
-    paddingTop: 40,
-    paddingBottom: spacing.lg,
-  },
-  headerIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(255, 215, 0, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: spacing.lg,
-  },
-  headerIconText: {
-    fontSize: 28,
-  },
-  title: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  grid: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
-    paddingTop: spacing.md,
-  },
-  cardTouchable: {
-    flex: 1,
-    margin: spacing.sm,
-    maxWidth: isTV ? '16.66%' : '25%',
-  },
-  card: {
-    backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-  cardFocused: {
-    borderColor: colors.primary,
-    // @ts-ignore
-    boxShadow: `0 0 20px ${colors.primary}`,
-  },
-  cardImage: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-  },
-  cardImagePlaceholder: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    backgroundColor: colors.backgroundLighter,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 32,
-  },
-  typeBadge: {
-    position: 'absolute',
-    top: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  typeBadgeText: {
-    fontSize: 14,
-  },
-  cardContent: {
-    padding: spacing.sm,
-  },
-  cardTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  cardSubtitle: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  overlayButtons: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  playButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playIcon: {
-    fontSize: 20,
-    color: colors.background,
-    marginLeft: 4,
-  },
-  removeButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  removeIcon: {
-    fontSize: 18,
-    color: colors.text,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyCard: {
-    padding: spacing.xxl,
-    alignItems: 'center',
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: spacing.md,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-});
 
 export default FavoritesScreen;

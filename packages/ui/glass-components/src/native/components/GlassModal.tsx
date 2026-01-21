@@ -9,7 +9,6 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Modal,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -115,11 +114,19 @@ export const GlassModal: React.FC<GlassModalProps> = ({
     return (
       <TouchableOpacity
         key={index}
+        className={`flex-1 items-center rounded-lg ${
+          isDestructive
+            ? ''
+            : isCancel
+              ? 'bg-white/5 border border-[rgba(255,255,255,0.12)]'
+              : 'bg-white/10 border border-white/20'
+        }`}
         style={[
-          styles.button,
-          isDestructive && styles.buttonDestructive,
-          isCancel && styles.buttonCancel,
-          isPrimary && styles.buttonPrimary,
+          {
+            paddingVertical: spacing.md + 4,
+            paddingHorizontal: spacing.lg,
+          },
+          isDestructive && { backgroundColor: colors.error },
         ]}
         onPress={() => {
           button.onPress?.();
@@ -128,11 +135,12 @@ export const GlassModal: React.FC<GlassModalProps> = ({
         disabled={loading}
       >
         <Text
-          style={[
-            styles.buttonText,
-            isCancel && styles.buttonTextCancel,
-            isPrimary && styles.buttonTextPrimary,
-          ]}
+          className={`text-base tracking-wide ${
+            isCancel ? '' : isPrimary ? 'font-bold' : 'font-semibold'
+          }`}
+          style={{
+            color: isCancel ? colors.textSecondary : colors.text,
+          }}
         >
           {button.text}
         </Text>
@@ -147,29 +155,43 @@ export const GlassModal: React.FC<GlassModalProps> = ({
         <>
           {/* Header with close button for custom content */}
           {title && (
-            <View style={[styles.customHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View
+              className="justify-between items-center"
+              style={{
+                flexDirection: isRTL ? 'row-reverse' : 'row',
+                paddingHorizontal: spacing.xl,
+                paddingTop: spacing.lg,
+                paddingBottom: spacing.md,
+              }}
+            >
               <Text
-                style={[
-                  styles.dialogTitle,
-                  { marginBottom: 0, flex: 1, textAlign: isRTL ? 'right' : 'left' },
-                ]}
+                className="flex-1 font-bold text-center"
+                style={{
+                  fontSize: fontSize.xl,
+                  color: colors.text,
+                  textAlign: isRTL ? 'right' : 'left',
+                  marginBottom: 0,
+                }}
               >
                 {title}
               </Text>
               {onClose && (
                 <TouchableOpacity
-                  style={styles.closeButton}
+                  className="w-9 h-9 rounded-full bg-white/5 justify-center items-center border border-white/10"
+                  style={{ marginLeft: spacing.md }}
                   onPress={onClose}
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
-                  <Text style={styles.closeButtonText}>✕</Text>
+                  <Text className="text-xl leading-6" style={{ color: colors.textSecondary }}>
+                    ✕
+                  </Text>
                 </TouchableOpacity>
               )}
             </View>
           )}
           <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.customContentWrapper}
+            className="max-h-[500px] w-full"
+            contentContainerStyle={{ padding: spacing.xl, width: '100%' }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
@@ -178,7 +200,13 @@ export const GlassModal: React.FC<GlassModalProps> = ({
           {/* Render buttons for custom content modals */}
           {buttons && buttons.length > 0 && (
             <View
-              style={[styles.customButtonContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+              style={{
+                flexDirection: isRTL ? 'row-reverse' : 'row',
+                gap: spacing.md,
+                paddingHorizontal: spacing.xl,
+                paddingBottom: spacing.xl,
+                paddingTop: spacing.md,
+              }}
             >
               {loading ? (
                 <ActivityIndicator size="small" color={modalColor} />
@@ -192,19 +220,55 @@ export const GlassModal: React.FC<GlassModalProps> = ({
     }
 
     return (
-      <View style={styles.contentWrapper}>
-        <View style={[styles.iconContainer, { backgroundColor: modalColor + '20' }]}>
-          <Text style={styles.icon}>{icon}</Text>
+      <View
+        className="items-center"
+        style={{
+          padding: spacing.xl * 1.5,
+          paddingTop: spacing.xl * 2,
+          paddingBottom: spacing.xl,
+        }}
+      >
+        <View
+          className="w-20 h-20 rounded-full justify-center items-center"
+          style={{
+            backgroundColor: modalColor + '20',
+            marginBottom: spacing.lg,
+          }}
+        >
+          <Text className="text-[40px]">{icon}</Text>
         </View>
 
-        {title && <Text style={styles.title}>{title}</Text>}
+        {title && (
+          <Text
+            className="text-center font-bold tracking-tight"
+            style={{
+              fontSize: 28,
+              color: colors.text,
+              marginBottom: spacing.md,
+            }}
+          >
+            {title}
+          </Text>
+        )}
 
-        <Text style={styles.message}>{message}</Text>
+        <Text
+          className="text-base text-center leading-6 max-w-[340px] opacity-90"
+          style={{ color: colors.textSecondary, marginBottom: spacing.xl }}
+        >
+          {message}
+        </Text>
 
         {loading ? (
-          <ActivityIndicator size="small" color={modalColor} style={styles.loader} />
+          <ActivityIndicator size="small" color={modalColor} style={{ marginTop: spacing.md }} />
         ) : (
-          <View style={[styles.buttonContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View
+            className="w-full"
+            style={{
+              flexDirection: isRTL ? 'row-reverse' : 'row',
+              gap: spacing.md,
+              marginTop: spacing.sm,
+            }}
+          >
             {buttons.map(renderButton)}
           </View>
         )}
@@ -217,19 +281,18 @@ export const GlassModal: React.FC<GlassModalProps> = ({
     if (Platform.OS === 'web') {
       return (
         <View
-          style={[
-            styles.container,
-            hasCustomContent && styles.containerWide,
-            styles.glassBorder,
-            {
-              // @ts-expect-error Web-specific CSS properties
-              backdropFilter: 'blur(24px) saturate(180%)',
-              WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-              backgroundColor: 'rgba(20, 20, 35, 0.92)',
-            },
-          ]}
+          className={`w-full overflow-hidden border border-white/8 ${
+            hasCustomContent ? 'max-w-[600px]' : 'max-w-[440px]'
+          }`}
+          style={{
+            borderRadius: borderRadius.xl + 4,
+            // @ts-expect-error Web-specific CSS properties
+            backdropFilter: 'blur(24px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+            backgroundColor: 'rgba(20, 20, 35, 0.92)',
+          }}
         >
-          <View style={[styles.accentBar, { backgroundColor: modalColor }]} />
+          <View className="h-[3px] w-full" style={{ backgroundColor: modalColor }} />
           {renderContent()}
         </View>
       );
@@ -238,9 +301,12 @@ export const GlassModal: React.FC<GlassModalProps> = ({
     return (
       <LinearGradient
         colors={['rgba(30, 30, 50, 0.95)', 'rgba(20, 20, 40, 0.98)']}
-        style={[styles.container, hasCustomContent && styles.containerWide, styles.glassBorder]}
+        className={`w-full overflow-hidden border border-white/8 ${
+          hasCustomContent ? 'max-w-[600px]' : 'max-w-[440px]'
+        }`}
+        style={{ borderRadius: borderRadius.xl + 4 }}
       >
-        <View style={[styles.accentBar, { backgroundColor: modalColor }]} />
+        <View className="h-[3px] w-full" style={{ backgroundColor: modalColor }} />
         {renderContent()}
       </LinearGradient>
     );
@@ -255,166 +321,15 @@ export const GlassModal: React.FC<GlassModalProps> = ({
       testID={testID}
     >
       <TouchableWithoutFeedback onPress={handleBackdropPress}>
-        <View style={styles.overlay}>
+        <View
+          className="flex-1 justify-center items-center bg-black/75"
+          style={{ padding: spacing.lg }}
+        >
           <TouchableWithoutFeedback>{renderGlassContainer()}</TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  container: {
-    width: '100%',
-    maxWidth: 440,
-    borderRadius: borderRadius.xl + 4,
-    overflow: 'hidden',
-    elevation: 24,
-  },
-  containerWide: {
-    maxWidth: 600,
-  },
-  glassBorder: {
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  accentBar: {
-    height: 3,
-    width: '100%',
-  },
-  contentWrapper: {
-    padding: spacing.xl * 1.5,
-    paddingTop: spacing.xl * 2,
-    paddingBottom: spacing.xl,
-    alignItems: 'center',
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-    elevation: 8,
-  },
-  icon: {
-    fontSize: 40,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.md,
-    textAlign: 'center',
-    letterSpacing: -0.5,
-  },
-  dialogTitle: {
-    fontSize: fontSize.xl,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: spacing.lg,
-    textAlign: 'center',
-  },
-  message: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.xl,
-    lineHeight: 24,
-    maxWidth: 340,
-    opacity: 0.9,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    width: '100%',
-    marginTop: spacing.sm,
-  },
-  button: {
-    flex: 1,
-    paddingVertical: spacing.md + 4,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    elevation: 3,
-  },
-  buttonDestructive: {
-    backgroundColor: colors.error,
-  },
-  buttonCancel: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    elevation: 0,
-  },
-  buttonPrimary: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    letterSpacing: 0.3,
-  },
-  buttonTextCancel: {
-    color: colors.textSecondary,
-  },
-  buttonTextPrimary: {
-    color: colors.text,
-    fontWeight: '700',
-  },
-  loader: {
-    marginTop: spacing.md,
-  },
-  scrollView: {
-    maxHeight: 500,
-    width: '100%',
-  },
-  customContentWrapper: {
-    padding: spacing.xl,
-    width: '100%',
-  },
-  customHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-  },
-  customButtonContainer: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xl,
-    paddingTop: spacing.md,
-  },
-  closeButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    marginLeft: spacing.md,
-  },
-  closeButtonText: {
-    fontSize: 20,
-    color: colors.textSecondary,
-    fontWeight: '400',
-    lineHeight: 24,
-  },
-});
 
 export default GlassModal;

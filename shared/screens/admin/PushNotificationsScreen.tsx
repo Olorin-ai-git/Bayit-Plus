@@ -7,7 +7,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Modal,
   TextInput,
@@ -177,44 +176,44 @@ export const PushNotificationsScreen: React.FC = () => {
   };
 
   const columns: Column<PushNotification>[] = [
-    { key: 'title', header: t('admin.push.columns.title', 'Title'), width: 200, render: (n) => <Text style={styles.titleText}>{n.title}</Text> },
-    { key: 'body', header: t('admin.push.columns.body', 'Body'), width: 250, render: (n) => <Text style={styles.bodyText} numberOfLines={2}>{n.body}</Text> },
+    { key: 'title', header: t('admin.push.columns.title', 'Title'), width: 200, render: (n) => <Text className="text-sm font-semibold text-white">{n.title}</Text> },
+    { key: 'body', header: t('admin.push.columns.body', 'Body'), width: 250, render: (n) => <Text className="text-sm text-[#cccccc]" numberOfLines={2}>{n.body}</Text> },
     {
       key: 'status', header: t('admin.push.columns.status', 'Status'), width: 100,
       render: (n) => (
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(n.status) + '20' }]}>
-          <Text style={[styles.statusText, { color: getStatusColor(n.status) }]}>{n.status}</Text>
+        <View className="px-2 py-1 rounded-sm self-start" style={{ backgroundColor: getStatusColor(n.status) + '20' }}>
+          <Text className="text-xs font-semibold capitalize" style={{ color: getStatusColor(n.status) }}>{n.status}</Text>
         </View>
       ),
     },
-    { key: 'sent_count', header: t('admin.push.columns.sent', 'Sent'), width: 80, align: 'center', render: (n) => <Text style={styles.countText}>{n.sent_count || 0}</Text> },
-    { key: 'open_count', header: t('admin.push.columns.opened', 'Opened'), width: 80, align: 'center', render: (n) => <Text style={styles.countText}>{n.open_count || 0}</Text> },
-    { key: 'scheduled_at', header: t('admin.push.columns.scheduled', 'Scheduled'), width: 150, render: (n) => <Text style={styles.dateText}>{formatDate(n.scheduled_at)}</Text> },
+    { key: 'sent_count', header: t('admin.push.columns.sent', 'Sent'), width: 80, align: 'center', render: (n) => <Text className="text-sm text-white">{n.sent_count || 0}</Text> },
+    { key: 'open_count', header: t('admin.push.columns.opened', 'Opened'), width: 80, align: 'center', render: (n) => <Text className="text-sm text-white">{n.open_count || 0}</Text> },
+    { key: 'scheduled_at', header: t('admin.push.columns.scheduled', 'Scheduled'), width: 150, render: (n) => <Text className="text-xs text-[#cccccc]">{formatDate(n.scheduled_at)}</Text> },
   ];
 
   const renderActions = (notification: PushNotification) => (
-    <View style={styles.actionsRow}>
-      <TouchableOpacity style={styles.actionButton} onPress={() => handleEditNotification(notification)}><Text style={styles.actionIcon}>✏️</Text></TouchableOpacity>
+    <View className="flex-row gap-1">
+      <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#1a1a1a] justify-center items-center" onPress={() => handleEditNotification(notification)}><Text className="text-xs">✏️</Text></TouchableOpacity>
       {notification.status === 'draft' && (
         <>
-          <TouchableOpacity style={[styles.actionButton, styles.scheduleButton]} onPress={() => handleSchedule(notification)}><Text style={styles.actionIcon}>📅</Text></TouchableOpacity>
-          <TouchableOpacity style={[styles.actionButton, styles.sendButton]} onPress={() => handleSendNotification(notification)}><Text style={styles.actionIcon}>📤</Text></TouchableOpacity>
+          <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#FFA500]/30 justify-center items-center" onPress={() => handleSchedule(notification)}><Text className="text-xs">📅</Text></TouchableOpacity>
+          <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#4CAF50]/30 justify-center items-center" onPress={() => handleSendNotification(notification)}><Text className="text-xs">📤</Text></TouchableOpacity>
         </>
       )}
-      <TouchableOpacity style={[styles.actionButton, styles.deleteButton]} onPress={() => handleDeleteNotification(notification)}><Text style={styles.actionIcon}>🗑️</Text></TouchableOpacity>
+      <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#FF4444]/30 justify-center items-center" onPress={() => handleDeleteNotification(notification)}><Text className="text-xs">🗑️</Text></TouchableOpacity>
     </View>
   );
 
   return (
     <AdminLayout
       title={t('admin.titles.pushNotifications', 'Push Notifications')}
-      actions={<TouchableOpacity style={styles.createButton} onPress={handleCreateNotification}><Text style={styles.createButtonText}>+ {t('admin.push.create', 'Create Notification')}</Text></TouchableOpacity>}
+      actions={<TouchableOpacity className="px-4 py-2 bg-[#00BFFF] rounded-md" onPress={handleCreateNotification}><Text className="text-sm text-white font-semibold">+ {t('admin.push.create', 'Create Notification')}</Text></TouchableOpacity>}
     >
-      <View style={styles.container}>
-        <View style={styles.statusFilters}>
+      <View className="flex-1 p-4">
+        <View className="flex-row bg-[#1a1a1a] rounded-md p-0.5 mb-4 self-start">
           {['', 'draft', 'scheduled', 'sent'].map((status) => (
-            <TouchableOpacity key={status} style={[styles.statusFilter, filters.status === status && styles.statusFilterActive]} onPress={() => setFilters(prev => ({ ...prev, status, page: 1 }))}>
-              <Text style={[styles.statusFilterText, filters.status === status && styles.statusFilterTextActive]}>{status || t('common.all', 'All')}</Text>
+            <TouchableOpacity key={status} className={`px-4 py-2 rounded-sm ${filters.status === status ? 'bg-[#00BFFF]' : ''}`} onPress={() => setFilters(prev => ({ ...prev, status, page: 1 }))}>
+              <Text className={`text-sm capitalize ${filters.status === status ? 'text-white font-semibold' : 'text-[#cccccc]'}`}>{status || t('common.all', 'All')}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -223,56 +222,56 @@ export const PushNotificationsScreen: React.FC = () => {
 
         {/* Composer Modal */}
         <Modal visible={showComposer} transparent animationType="slide" onRequestClose={() => setShowComposer(false)}>
-          <View style={styles.modalOverlay}>
-            <View style={styles.composerModal}>
+          <View className="flex-1 bg-black/80 justify-center items-center">
+            <View className="w-[95%] max-w-[500px] max-h-[90%] bg-[#1a1a1a] rounded-2xl p-4 border border-white/20">
               <ScrollView showsVerticalScrollIndicator={false}>
-                <Text style={styles.modalTitle}>{selectedNotification ? t('admin.push.editNotification', 'Edit Notification') : t('admin.push.createNotification', 'Create Notification')}</Text>
+                <Text className="text-xl font-bold text-white mb-4">{selectedNotification ? t('admin.push.editNotification', 'Edit Notification') : t('admin.push.createNotification', 'Create Notification')}</Text>
 
                 {/* Preview */}
-                <View style={styles.previewSection}>
-                  <Text style={styles.previewLabel}>{t('admin.push.preview', 'Preview')}</Text>
-                  <View style={styles.previewCard}>
-                    <View style={styles.previewHeader}>
-                      <Text style={styles.previewAppName}>{t('common.appName', 'Bayit+')}</Text>
-                      <Text style={styles.previewTime}>now</Text>
+                <View className="mb-4">
+                  <Text className="text-sm font-semibold text-white mb-2">{t('admin.push.preview', 'Preview')}</Text>
+                  <View className="bg-[#1a1a1a] rounded-md p-4 border border-white/20">
+                    <View className="flex-row justify-between mb-1">
+                      <Text className="text-xs font-semibold text-[#00BFFF]">{t('common.appName', 'Bayit+')}</Text>
+                      <Text className="text-xs text-[#666666]">now</Text>
                     </View>
-                    <Text style={styles.previewTitle}>{formData.title || 'Notification Title'}</Text>
-                    <Text style={styles.previewBody}>{formData.body || 'Notification body text...'}</Text>
+                    <Text className="text-sm font-semibold text-white mb-1">{formData.title || 'Notification Title'}</Text>
+                    <Text className="text-sm text-[#cccccc]">{formData.body || 'Notification body text...'}</Text>
                   </View>
                 </View>
 
-                <View style={styles.formGroup}>
-                  <Text style={styles.formLabel}>{t('admin.push.title', 'Title')}</Text>
-                  <TextInput style={styles.formInput} value={formData.title} onChangeText={(text) => setFormData(prev => ({ ...prev, title: text }))} placeholder={t('admin.push.titlePlaceholder', 'e.g., New content available!')} placeholderTextColor={colors.textMuted} maxLength={50} />
-                  <Text style={styles.charCount}>{formData.title.length}/50</Text>
+                <View className="mb-4">
+                  <Text className="text-sm font-semibold text-white mb-1">{t('admin.push.title', 'Title')}</Text>
+                  <TextInput className="bg-[#1a1a1a] rounded-md border border-white/20 px-4 py-2 text-white text-base" value={formData.title} onChangeText={(text) => setFormData(prev => ({ ...prev, title: text }))} placeholder={t('admin.push.titlePlaceholder', 'e.g., New content available!')} placeholderTextColor={colors.textMuted} maxLength={50} />
+                  <Text className="text-xs text-[#666666] text-right mt-1">{formData.title.length}/50</Text>
                 </View>
 
-                <View style={styles.formGroup}>
-                  <Text style={styles.formLabel}>{t('admin.push.body', 'Body')}</Text>
-                  <TextInput style={[styles.formInput, styles.bodyInput]} value={formData.body} onChangeText={(text) => setFormData(prev => ({ ...prev, body: text }))} placeholder={t('admin.push.bodyPlaceholder', 'e.g., Check out our new releases!')} placeholderTextColor={colors.textMuted} multiline numberOfLines={3} maxLength={178} />
-                  <Text style={styles.charCount}>{formData.body.length}/178</Text>
+                <View className="mb-4">
+                  <Text className="text-sm font-semibold text-white mb-1">{t('admin.push.body', 'Body')}</Text>
+                  <TextInput className="bg-[#1a1a1a] rounded-md border border-white/20 px-4 py-2 text-white text-base min-h-[80px]" style={{ textAlignVertical: 'top' }} value={formData.body} onChangeText={(text) => setFormData(prev => ({ ...prev, body: text }))} placeholder={t('admin.push.bodyPlaceholder', 'e.g., Check out our new releases!')} placeholderTextColor={colors.textMuted} multiline numberOfLines={3} maxLength={178} />
+                  <Text className="text-xs text-[#666666] text-right mt-1">{formData.body.length}/178</Text>
                 </View>
 
-                <View style={styles.formGroup}>
-                  <Text style={styles.formLabel}>{t('admin.push.deepLink', 'Deep Link (optional)')}</Text>
-                  <TextInput style={styles.formInput} value={formData.deep_link} onChangeText={(text) => setFormData(prev => ({ ...prev, deep_link: text }))} placeholder={t('placeholder.deepLink', 'bayitplus://content/123')} placeholderTextColor={colors.textMuted} autoCapitalize="none" />
+                <View className="mb-4">
+                  <Text className="text-sm font-semibold text-white mb-1">{t('admin.push.deepLink', 'Deep Link (optional)')}</Text>
+                  <TextInput className="bg-[#1a1a1a] rounded-md border border-white/20 px-4 py-2 text-white text-base" value={formData.deep_link} onChangeText={(text) => setFormData(prev => ({ ...prev, deep_link: text }))} placeholder={t('placeholder.deepLink', 'bayitplus://content/123')} placeholderTextColor={colors.textMuted} autoCapitalize="none" />
                 </View>
 
-                <View style={styles.formGroup}>
-                  <Text style={styles.formLabel}>{t('admin.push.audience', 'Target Audience')}</Text>
-                  <View style={styles.audienceOptions}>
+                <View className="mb-4">
+                  <Text className="text-sm font-semibold text-white mb-1">{t('admin.push.audience', 'Target Audience')}</Text>
+                  <View className="flex-row flex-wrap gap-1">
                     {['all', 'premium', 'inactive', 'new'].map((audience) => (
-                      <TouchableOpacity key={audience} style={[styles.audienceOption, (formData.audience_filter as any).segment === audience && styles.audienceOptionActive]} onPress={() => setFormData(prev => ({ ...prev, audience_filter: audience === 'all' ? {} : { segment: audience } }))}>
-                        <Text style={[styles.audienceOptionText, (formData.audience_filter as any).segment === audience && styles.audienceOptionTextActive]}>{audience === 'all' ? 'All' : audience}</Text>
+                      <TouchableOpacity key={audience} className={`px-4 py-2 bg-[#1a1a1a] rounded-sm border ${(formData.audience_filter as any).segment === audience ? 'bg-[#00BFFF]/30 border-[#00BFFF]' : 'border-white/20'}`} onPress={() => setFormData(prev => ({ ...prev, audience_filter: audience === 'all' ? {} : { segment: audience } }))}>
+                        <Text className={`text-sm capitalize ${(formData.audience_filter as any).segment === audience ? 'text-[#00BFFF] font-semibold' : 'text-[#cccccc]'}`}>{audience === 'all' ? 'All' : audience}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
                 </View>
 
-                <View style={styles.modalActions}>
-                  <TouchableOpacity style={styles.cancelButton} onPress={() => setShowComposer(false)}><Text style={styles.cancelButtonText}>{t('common.cancel', 'Cancel')}</Text></TouchableOpacity>
-                  <TouchableOpacity style={[styles.saveButton, saving && styles.saveButtonDisabled]} onPress={handleSaveNotification} disabled={saving}>
-                    {saving ? <ActivityIndicator size="small" color={colors.text} /> : <Text style={styles.saveButtonText}>{t('common.save', 'Save')}</Text>}
+                <View className="flex-row justify-end gap-2 mt-4">
+                  <TouchableOpacity className="px-4 py-2 bg-[#1a1a1a] rounded-md" onPress={() => setShowComposer(false)}><Text className="text-sm text-[#cccccc]">{t('common.cancel', 'Cancel')}</Text></TouchableOpacity>
+                  <TouchableOpacity className={`px-4 py-2 bg-[#00BFFF] rounded-md min-w-[80px] items-center ${saving ? 'opacity-60' : ''}`} onPress={handleSaveNotification} disabled={saving}>
+                    {saving ? <ActivityIndicator size="small" color={colors.text} /> : <Text className="text-sm text-white font-semibold">{t('common.save', 'Save')}</Text>}
                   </TouchableOpacity>
                 </View>
               </ScrollView>
@@ -282,16 +281,16 @@ export const PushNotificationsScreen: React.FC = () => {
 
         {/* Schedule Modal */}
         <Modal visible={showScheduleModal} transparent animationType="fade" onRequestClose={() => setShowScheduleModal(false)}>
-          <View style={styles.modalOverlay}>
-            <View style={styles.scheduleModal}>
-              <Text style={styles.modalTitle}>{t('admin.push.scheduleNotification', 'Schedule Notification')}</Text>
-              <View style={styles.formGroup}>
-                <Text style={styles.formLabel}>{t('admin.push.scheduleDate', 'Date & Time')}</Text>
-                <TextInput style={styles.formInput} value={scheduleDate} onChangeText={setScheduleDate} placeholder={t('placeholder.datetime', 'YYYY-MM-DDTHH:mm')} placeholderTextColor={colors.textMuted} />
+          <View className="flex-1 bg-black/80 justify-center items-center">
+            <View className="w-[90%] max-w-[400px] bg-[#1a1a1a] rounded-2xl p-4 border border-white/20">
+              <Text className="text-xl font-bold text-white mb-4">{t('admin.push.scheduleNotification', 'Schedule Notification')}</Text>
+              <View className="mb-4">
+                <Text className="text-sm font-semibold text-white mb-1">{t('admin.push.scheduleDate', 'Date & Time')}</Text>
+                <TextInput className="bg-[#1a1a1a] rounded-md border border-white/20 px-4 py-2 text-white text-base" value={scheduleDate} onChangeText={setScheduleDate} placeholder={t('placeholder.datetime', 'YYYY-MM-DDTHH:mm')} placeholderTextColor={colors.textMuted} />
               </View>
-              <View style={styles.modalActions}>
-                <TouchableOpacity style={styles.cancelButton} onPress={() => setShowScheduleModal(false)}><Text style={styles.cancelButtonText}>{t('common.cancel', 'Cancel')}</Text></TouchableOpacity>
-                <TouchableOpacity style={styles.saveButton} onPress={handleConfirmSchedule}><Text style={styles.saveButtonText}>{t('admin.push.schedule', 'Schedule')}</Text></TouchableOpacity>
+              <View className="flex-row justify-end gap-2">
+                <TouchableOpacity className="px-4 py-2 bg-[#1a1a1a] rounded-md" onPress={() => setShowScheduleModal(false)}><Text className="text-sm text-[#cccccc]">{t('common.cancel', 'Cancel')}</Text></TouchableOpacity>
+                <TouchableOpacity className="px-4 py-2 bg-[#00BFFF] rounded-md" onPress={handleConfirmSchedule}><Text className="text-sm text-white font-semibold">{t('admin.push.schedule', 'Schedule')}</Text></TouchableOpacity>
               </View>
             </View>
           </View>
@@ -300,56 +299,5 @@ export const PushNotificationsScreen: React.FC = () => {
     </AdminLayout>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: spacing.lg },
-  createButton: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, backgroundColor: colors.secondary, borderRadius: borderRadius.md },
-  createButtonText: { fontSize: fontSize.sm, color: colors.text, fontWeight: '600' },
-  statusFilters: { flexDirection: 'row', backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, padding: 2, marginBottom: spacing.lg, alignSelf: 'flex-start' },
-  statusFilter: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.sm },
-  statusFilterActive: { backgroundColor: colors.primary },
-  statusFilterText: { fontSize: fontSize.sm, color: colors.textSecondary, textTransform: 'capitalize' },
-  statusFilterTextActive: { color: colors.text, fontWeight: '600' },
-  titleText: { fontSize: fontSize.sm, fontWeight: '600', color: colors.text },
-  bodyText: { fontSize: fontSize.sm, color: colors.textSecondary },
-  statusBadge: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.sm, alignSelf: 'flex-start' },
-  statusText: { fontSize: fontSize.xs, fontWeight: '600', textTransform: 'capitalize' },
-  countText: { fontSize: fontSize.sm, color: colors.text },
-  dateText: { fontSize: fontSize.xs, color: colors.textSecondary },
-  actionsRow: { flexDirection: 'row', gap: spacing.xs },
-  actionButton: { width: 28, height: 28, borderRadius: borderRadius.sm, backgroundColor: colors.backgroundLighter, justifyContent: 'center', alignItems: 'center' },
-  scheduleButton: { backgroundColor: colors.warning + '30' },
-  sendButton: { backgroundColor: colors.success + '30' },
-  deleteButton: { backgroundColor: colors.error + '30' },
-  actionIcon: { fontSize: 12 },
-  modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'center', alignItems: 'center' },
-  composerModal: { width: '95%', maxWidth: 500, maxHeight: '90%', backgroundColor: colors.backgroundLight, borderRadius: borderRadius.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.glassBorder },
-  scheduleModal: { width: '90%', maxWidth: 400, backgroundColor: colors.backgroundLight, borderRadius: borderRadius.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.glassBorder },
-  modalTitle: { fontSize: fontSize.xl, fontWeight: 'bold', color: colors.text, marginBottom: spacing.lg },
-  previewSection: { marginBottom: spacing.lg },
-  previewLabel: { fontSize: fontSize.sm, fontWeight: '600', color: colors.text, marginBottom: spacing.sm },
-  previewCard: { backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, padding: spacing.md, borderWidth: 1, borderColor: colors.glassBorder },
-  previewHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.xs },
-  previewAppName: { fontSize: fontSize.xs, fontWeight: '600', color: colors.primary },
-  previewTime: { fontSize: fontSize.xs, color: colors.textMuted },
-  previewTitle: { fontSize: fontSize.sm, fontWeight: '600', color: colors.text, marginBottom: spacing.xs },
-  previewBody: { fontSize: fontSize.sm, color: colors.textSecondary },
-  formGroup: { marginBottom: spacing.md },
-  formLabel: { fontSize: fontSize.sm, fontWeight: '600', color: colors.text, marginBottom: spacing.xs },
-  formInput: { backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.glassBorder, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, color: colors.text, fontSize: fontSize.md },
-  bodyInput: { minHeight: 80, textAlignVertical: 'top' },
-  charCount: { fontSize: fontSize.xs, color: colors.textMuted, textAlign: 'right', marginTop: spacing.xs },
-  audienceOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
-  audienceOption: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.sm, borderWidth: 1, borderColor: colors.glassBorder },
-  audienceOptionActive: { backgroundColor: colors.primary + '30', borderColor: colors.primary },
-  audienceOptionText: { fontSize: fontSize.sm, color: colors.textSecondary, textTransform: 'capitalize' },
-  audienceOptionTextActive: { color: colors.primary, fontWeight: '600' },
-  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.lg },
-  cancelButton: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md },
-  cancelButtonText: { fontSize: fontSize.sm, color: colors.textSecondary },
-  saveButton: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.primary, borderRadius: borderRadius.md, minWidth: 80, alignItems: 'center' },
-  saveButtonDisabled: { opacity: 0.6 },
-  saveButtonText: { fontSize: fontSize.sm, color: colors.text, fontWeight: '600' },
-});
 
 export default PushNotificationsScreen;

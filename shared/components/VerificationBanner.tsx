@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
+import { View, Text, Pressable, Platform } from 'react-native';
 import { GlassView } from './ui/GlassView';
 import { GlassButton } from './ui/GlassButton';
 import { VerificationModal } from './VerificationModal';
@@ -81,25 +81,25 @@ export const VerificationBanner: React.FC<VerificationBannerProps> = ({
 
   return (
     <>
-      <GlassView intensity="medium" style={styles.banner}>
-        <View style={styles.content}>
-          <View style={styles.textContainer}>
-            <Text style={styles.message}>{getVerificationMessage()}</Text>
-            <Text style={styles.subtitle}>
+      <GlassView intensity="medium" className="w-full py-4 px-6 border-b border-purple-600/25">
+        <View className="flex-row items-center justify-between gap-4">
+          <View className="flex-1 gap-1">
+            <Text className="text-base font-semibold text-white leading-5">{getVerificationMessage()}</Text>
+            <Text className="text-sm text-white/60 leading-4">
               Verification required to watch VOD content and subscribe
             </Text>
           </View>
 
-          <View style={styles.actions}>
+          <View className="flex-row items-center gap-2">
             <GlassButton
               title="Verify Now"
               onPress={handleVerify}
               variant="primary"
               size="sm"
-              style={styles.verifyButton}
+              className="min-w-[100px]"
             />
-            <Pressable onPress={handleDismiss} style={styles.dismissButton}>
-              <Text style={styles.dismissText}>✕</Text>
+            <Pressable onPress={handleDismiss} className="w-7 h-7 rounded-full bg-black/40 items-center justify-center">
+              <Text className="text-lg text-white/60 font-light">✕</Text>
             </Pressable>
           </View>
         </View>
@@ -113,55 +113,3 @@ export const VerificationBanner: React.FC<VerificationBannerProps> = ({
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  banner: {
-    width: '100%',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.primary + '40', // 25% opacity
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.md,
-  },
-  textContainer: {
-    flex: 1,
-    gap: spacing.xs,
-  },
-  message: {
-    fontSize: fontSize.md,
-    fontWeight: '600',
-    color: colors.text,
-    lineHeight: 20,
-  },
-  subtitle: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    lineHeight: 16,
-  },
-  actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  verifyButton: {
-    minWidth: 100,
-  },
-  dismissButton: {
-    width: 28,
-    height: 28,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.background + '40',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dismissText: {
-    fontSize: fontSize.lg,
-    color: colors.textSecondary,
-    fontWeight: '300',
-  },
-});

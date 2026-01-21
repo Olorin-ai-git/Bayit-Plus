@@ -2,7 +2,7 @@
  * Chess game page - Multiplayer chess with AI assistance and voice chat.
  */
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, useWindowDimensions, ScrollView, Image, Animated } from 'react-native';
+import { View, Text, useWindowDimensions, ScrollView, Image, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { useDirection } from '../hooks/useDirection';
@@ -160,10 +160,10 @@ export default function ChessPage() {
   // Show splash screen on initial load
   if (showSplash) {
     return (
-      <Animated.View style={[styles.splashContainer, { opacity: fadeAnim }]}>
+      <Animated.View className="absolute inset-0 w-full h-full bg-black justify-center items-center z-[9999]" style={{ opacity: fadeAnim }}>
         <Image
           source={{ uri: '/assets/games/chess/splash.png' }}
-          style={styles.splashImage}
+          className="w-full h-full"
           resizeMode="cover"
         />
       </Animated.View>
@@ -173,56 +173,56 @@ export default function ChessPage() {
   // No active game - show lobby
   if (!game) {
     return (
-      <View style={styles.container}>
+      <View className="flex-1 bg-black">
         {/* Header */}
-        <View style={[styles.header, { flexDirection }]}>
-          <View style={styles.headerIcon}>
+        <View className={`items-center gap-4 py-6 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : 'flex-row'}`}>
+          <View className="w-15 h-15 rounded-full bg-purple-500/20 justify-center items-center">
             <Gamepad2 size={32} color={colors.primary} />
           </View>
-          <Text style={[styles.title, { textAlign }]}>
+          <Text className={`text-white text-3xl font-bold ${textAlign === 'right' ? 'text-right' : ''}`}>
             {t('chess.title')}
           </Text>
         </View>
 
         {/* Voice Invite Status */}
         {inviteStatus && (
-          <View style={styles.inviteStatus}>
-            <Text style={styles.inviteStatusText}>{inviteStatus}</Text>
+          <View className="bg-purple-500/30 py-2 px-4 rounded-lg mx-6 mb-4">
+            <Text className="text-white text-sm text-center">{inviteStatus}</Text>
           </View>
         )}
 
         {/* Lobby */}
-        <View style={styles.lobby}>
-          <View style={styles.lobbyCard}>
-            <Text style={[styles.lobbyTitle, { textAlign }]}>
+        <View className="flex-1 justify-center items-center px-6">
+          <View className="w-full max-w-[500px] bg-black/50 backdrop-blur-3xl rounded-2xl p-8 items-center">
+            <Text className={`text-white text-3xl font-bold mb-2 ${textAlign === 'right' ? 'text-right' : ''}`}>
               {t('chess.welcome')}
             </Text>
-            <Text style={[styles.lobbySubtitle, { textAlign }]}>
+            <Text className={`text-gray-400 text-base mb-8 ${textAlign === 'right' ? 'text-right' : ''}`}>
               {t('chess.subtitle')}
             </Text>
 
-            <View style={styles.lobbyButtons}>
+            <View className="w-full gap-4">
               <View
-                style={styles.button}
+                className="bg-purple-600 py-4 px-6 rounded-xl items-center"
                 onStartShouldSetResponder={() => true}
                 onResponderRelease={() => setShowCreateModal(true)}
               >
-                <Text style={styles.buttonText}>{t('chess.createGame')}</Text>
+                <Text className="text-black text-base font-semibold">{t('chess.createGame')}</Text>
               </View>
 
               <View
-                style={[styles.button, styles.secondaryButton]}
+                className="bg-white/10 py-4 px-6 rounded-xl items-center"
                 onStartShouldSetResponder={() => true}
                 onResponderRelease={() => setShowJoinModal(true)}
               >
-                <Text style={[styles.buttonText, styles.secondaryButtonText]}>
+                <Text className="text-white text-base font-semibold">
                   {t('chess.joinGame')}
                 </Text>
               </View>
             </View>
 
             {error && (
-              <Text style={styles.errorText}>{error}</Text>
+              <Text className="text-red-500 text-sm text-center mt-2">{error}</Text>
             )}
           </View>
         </View>
@@ -245,22 +245,19 @@ export default function ChessPage() {
 
   // Active game layout
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.gameContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: spacing.md, paddingBottom: spacing.xl }}>
       {/* Game code display */}
-      <View style={styles.gameCodeBanner}>
-        <Text style={styles.gameCodeLabel}>{t('chess.gameCode')}:</Text>
-        <Text style={styles.gameCode}>{game.game_code}</Text>
+      <View className="flex-row items-center justify-center gap-2 py-4 bg-purple-500/20 rounded-xl my-4">
+        <Text className="text-gray-400 text-sm">{t('chess.gameCode')}:</Text>
+        <Text className="text-purple-600 text-2xl font-bold tracking-wider">{game.game_code}</Text>
         {!isConnected && (
-          <Text style={styles.reconnectingText}>{t('chess.reconnecting')}</Text>
+          <Text className="text-yellow-500 text-xs italic">{t('chess.reconnecting')}</Text>
         )}
       </View>
 
-      <View style={[
-        styles.gameLayout,
-        isMobile ? styles.gameLayoutMobile : styles.gameLayoutDesktop
-      ]}>
+      <View className={`gap-6 ${isMobile ? 'flex-col' : 'flex-row'}`}>
         {/* Left Panel - Board */}
-        <View style={styles.boardPanel}>
+        <View className="flex-[2]">
           {/* Opponent Card */}
           <PlayerCard
             player={isBoardFlipped() ? game.white_player : game.black_player}
@@ -295,8 +292,8 @@ export default function ChessPage() {
 
           {/* Game status */}
           {game.status !== 'active' && game.status !== 'waiting' && (
-            <View style={styles.gameEndBanner}>
-              <Text style={styles.gameEndText}>
+            <View className="mt-4 p-4 bg-purple-500/30 rounded-xl items-center">
+              <Text className="text-white text-lg font-bold">
                 {game.status === 'checkmate' && t('chess.checkmate')}
                 {game.status === 'stalemate' && t('chess.stalemate')}
                 {game.status === 'draw' && t('chess.draw')}
@@ -306,7 +303,7 @@ export default function ChessPage() {
           )}
 
           {error && (
-            <Text style={styles.errorText}>{error}</Text>
+            <Text className="text-red-500 text-sm text-center mt-2">{error}</Text>
           )}
         </View>
 
@@ -329,169 +326,3 @@ export default function ChessPage() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  gameContainer: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.xl,
-  },
-  header: {
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingVertical: spacing.lg,
-  },
-  headerIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  lobby: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-  },
-  lobbyCard: {
-    width: '100%',
-    maxWidth: 500,
-    backgroundColor: 'rgba(10, 10, 20, 0.5)',
-    backdropFilter: 'blur(20px)',
-    borderRadius: 20,
-    padding: spacing.xl,
-    alignItems: 'center',
-  },
-  lobbyTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  lobbySubtitle: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    marginBottom: spacing.xl,
-  },
-  lobbyButtons: {
-    width: '100%',
-    gap: spacing.md,
-  },
-  button: {
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  secondaryButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.dark,
-  },
-  secondaryButtonText: {
-    color: colors.text,
-  },
-  gameCodeBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    paddingVertical: spacing.md,
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    borderRadius: 12,
-    marginVertical: spacing.md,
-  },
-  gameCodeLabel: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  gameCode: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.primary,
-    letterSpacing: 2,
-  },
-  reconnectingText: {
-    fontSize: 12,
-    color: colors.warning,
-    fontStyle: 'italic',
-  },
-  gameLayout: {
-    gap: spacing.lg,
-  },
-  gameLayoutDesktop: {
-    flexDirection: 'row',
-  },
-  gameLayoutMobile: {
-    flexDirection: 'column',
-  },
-  boardPanel: {
-    flex: 2,
-  },
-  sidePanel: {
-    flex: 1,
-    gap: spacing.md,
-  },
-  gameEndBanner: {
-    marginTop: spacing.md,
-    padding: spacing.md,
-    backgroundColor: 'rgba(168, 85, 247, 0.3)',
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  gameEndText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  errorText: {
-    fontSize: 14,
-    color: colors.error,
-    textAlign: 'center',
-    marginTop: spacing.sm,
-  },
-  splashContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 9999,
-  },
-  splashImage: {
-    width: '100%',
-    height: '100%',
-  },
-  inviteStatus: {
-    backgroundColor: 'rgba(168, 85, 247, 0.3)',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: 8,
-    marginHorizontal: spacing.lg,
-    marginBottom: spacing.md,
-  },
-  inviteStatusText: {
-    fontSize: 14,
-    color: colors.text,
-    textAlign: 'center',
-  },
-});

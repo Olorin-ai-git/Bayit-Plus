@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors } from '@bayit/shared/theme'
 import { GlassView } from '@bayit/shared/ui'
 import WatchPartyHeader from './WatchPartyHeader'
 import WatchPartyParticipants from './WatchPartyParticipants'
@@ -79,27 +79,23 @@ export default function WatchPartyPanel({
 
   return (
     <GlassView
-      style={[
-        styles.panel,
-        isOpen ? styles.panelOpen : styles.panelClosed,
-      ]}
+      className={`fixed top-0 left-0 h-screen w-80 z-40 border-l border-white/10 rounded-none transition-transform duration-300 ease-out ${
+        isOpen ? 'translate-x-0' : '-translate-x-80'
+      }`}
       intensity="high"
       noBorder
     >
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('watchParty.title')}</Text>
+      <View className="flex-row items-center justify-between p-4 border-b border-white/10">
+        <Text className="text-lg font-semibold text-white">{t('watchParty.title')}</Text>
         <Pressable
           onPress={onClose}
-          style={({ hovered }) => [
-            styles.closeButton,
-            hovered && styles.closeButtonHovered,
-          ]}
+          className="w-8 h-8 items-center justify-center rounded-md hover:bg-white/10"
         >
           <X size={18} color={colors.textSecondary} />
         </Pressable>
       </View>
 
-      <ScrollView style={styles.content} contentContainerStyle={styles.contentInner}>
+      <ScrollView className="flex-1" contentContainerClassName="p-4 gap-4">
         <WatchPartyHeader
           roomCode={party.room_code}
           isHost={isHost}
@@ -111,7 +107,7 @@ export default function WatchPartyPanel({
 
         {/* Audio Controls */}
         {audioEnabled && (
-          <View style={styles.section}>
+          <View className="pt-4 border-t border-white/10">
             <AudioControls
               isMuted={isMuted}
               isSpeaking={isSpeaking}
@@ -122,7 +118,7 @@ export default function WatchPartyPanel({
           </View>
         )}
 
-        <View style={styles.section}>
+        <View className="pt-4 border-t border-white/10">
           <WatchPartyParticipants
             participants={participants}
             hostId={party.host_id}
@@ -131,7 +127,7 @@ export default function WatchPartyPanel({
         </View>
 
         {party.chat_enabled && (
-          <View style={[styles.section, styles.chatSection]}>
+          <View className="flex-1 pt-4 border-t border-white/10 min-h-0">
             <WatchPartyChat
               messages={messages}
               currentUserId={currentUserId}
@@ -144,65 +140,3 @@ export default function WatchPartyPanel({
     </GlassView>
   )
 }
-
-const styles = StyleSheet.create({
-  panel: {
-    position: 'fixed' as any,
-    top: 0,
-    left: 0,
-    height: '100vh',
-    width: 320,
-    zIndex: 40,
-    borderLeftWidth: 1,
-    borderLeftColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 0,
-    transitionProperty: 'transform',
-    transitionDuration: '300ms',
-    transitionTimingFunction: 'ease-out',
-  } as any,
-  panelOpen: {
-    transform: [{ translateX: 0 }],
-  },
-  panelClosed: {
-    transform: [{ translateX: -320 }],
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  closeButton: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: borderRadius.md,
-  },
-  closeButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  content: {
-    flex: 1,
-  },
-  contentInner: {
-    padding: spacing.md,
-    gap: spacing.md,
-  },
-  section: {
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  chatSection: {
-    flex: 1,
-    minHeight: 0,
-  },
-})

@@ -3,12 +3,11 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Animated,
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, borderRadius, spacing } from '../../theme';
+import { colors } from '../../theme';
 import { isTV } from '../../utils/platform';
 
 export interface Chapter {
@@ -98,44 +97,40 @@ export const ChapterItem: React.FC<ChapterItemProps> = ({
       hasTVPreferredFocus={hasTVPreferredFocus}
     >
       <Animated.View
-        style={[
-          styles.container,
-          isActive && styles.containerActive,
-          isFocused && styles.containerFocused,
-          { transform: [{ scale: scaleAnim }] },
-        ]}
+        className={`flex-row items-center rounded-2xl p-4 mb-2 border ${isActive ? 'bg-[#6b21a8]/30 border-[#a855f7]/60' : 'bg-white/5 border-transparent'} ${isFocused ? 'border-[#6b21a8]' : ''}`}
+        style={{ transform: [{ scale: scaleAnim }] }}
       >
         {/* Category indicator bar */}
-        <View style={[styles.categoryBar, { backgroundColor: categoryColor }]} />
+        <View className="w-1 h-12 rounded ml-2" style={{ backgroundColor: categoryColor }} />
 
-        <View style={styles.content}>
+        <View className="flex-1 mx-4">
           {/* Title and time row */}
-          <View style={styles.titleRow}>
+          <View className="flex-row justify-between items-center">
             <Text
-              style={[styles.title, isActive && styles.titleActive]}
+              className={`text-base font-semibold flex-1 text-right ${isActive ? 'text-[#a855f7]' : 'text-white'}`}
               numberOfLines={1}
             >
               {chapter.title}
             </Text>
-            <Text style={styles.time}>{formatTime(chapter.start_time)}</Text>
+            <Text className="text-xs text-[#9ca3af] mr-2">{formatTime(chapter.start_time)}</Text>
           </View>
 
           {/* Category badge row */}
-          <View style={styles.badgeRow}>
-            <View style={[styles.categoryBadge, { backgroundColor: `${categoryColor}33` }]}>
-              <Text style={[styles.categoryText, { color: categoryColor }]}>
+          <View className="flex-row items-center justify-end mt-1 gap-2">
+            <View className="px-2 py-0.5 rounded-full" style={{ backgroundColor: `${categoryColor}33` }}>
+              <Text className="text-[11px] font-medium" style={{ color: categoryColor }}>
                 {t(`chapters.categories.${chapter.category}`, chapter.category)}
               </Text>
             </View>
             {isActive && (
-              <Text style={styles.currentText}>{t('chapters.current')}</Text>
+              <Text className="text-[11px] text-[#a855f7]">{t('chapters.current')}</Text>
             )}
           </View>
         </View>
 
         {/* Play indicator */}
-        <View style={[styles.playButton, isActive && styles.playButtonActive]}>
-          <Text style={[styles.playIcon, isActive && styles.playIconActive]}>
+        <View className={`w-9 h-9 rounded-full justify-center items-center ${isActive ? 'bg-[#6b21a8]' : 'bg-white/10'}`}>
+          <Text className={`text-sm ${isActive ? 'text-[#0d0d18]' : 'text-[#9ca3af]'}`}>
             {isActive ? '▶' : '▷'}
           </Text>
         </View>
@@ -143,99 +138,5 @@ export const ChapterItem: React.FC<ChapterItemProps> = ({
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  containerActive: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderColor: 'rgba(168, 85, 247, 0.6)',
-  },
-  containerFocused: {
-    borderColor: colors.primary,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  categoryBar: {
-    width: 4,
-    height: 48,
-    borderRadius: 2,
-    marginLeft: spacing.sm,
-  },
-  content: {
-    flex: 1,
-    marginHorizontal: spacing.md,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    flex: 1,
-    textAlign: 'right',
-  },
-  titleActive: {
-    color: colors.primary,
-  },
-  time: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginRight: spacing.sm,
-    fontVariant: ['tabular-nums'],
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginTop: spacing.xs,
-    gap: spacing.sm,
-  },
-  categoryBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-  },
-  categoryText: {
-    fontSize: 11,
-    fontWeight: '500',
-  },
-  currentText: {
-    fontSize: 11,
-    color: colors.primary,
-  },
-  playButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playButtonActive: {
-    backgroundColor: colors.primary,
-  },
-  playIcon: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  playIconActive: {
-    color: colors.background,
-  },
-});
 
 export default ChapterItem;

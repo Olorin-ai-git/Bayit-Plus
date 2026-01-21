@@ -3,10 +3,10 @@
  * Action buttons for adding to list, liking, and sharing content
  */
 
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { Plus, ThumbsUp, Share2 } from 'lucide-react';
 import { GlassButton } from '@bayit/shared/ui';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 
 interface ContentActionsProps {
   addToListLabel: string;
@@ -20,7 +20,7 @@ export function ContentActions({
   shareLabel,
 }: ContentActionsProps) {
   return (
-    <View style={styles.container}>
+    <View className="flex-row flex-wrap gap-3 mb-6">
       <GlassButton
         title={addToListLabel}
         icon={<Plus size={18} color={colors.text} />}
@@ -29,30 +29,10 @@ export function ContentActions({
         title={likeLabel}
         icon={<ThumbsUp size={18} color={colors.text} />}
       />
-      <Pressable style={styles.ghostButton}>
+      <Pressable className="flex-row items-center gap-2 px-4 py-3">
         <Share2 size={18} color={colors.textMuted} />
-        <Text style={styles.ghostButtonText}>{shareLabel}</Text>
+        <Text className="text-sm text-gray-400">{shareLabel}</Text>
       </Pressable>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  ghostButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  ghostButtonText: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-});

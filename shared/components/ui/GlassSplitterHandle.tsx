@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { View, StyleSheet, Platform, Pressable, I18nManager } from 'react-native';
+import { View, Platform, Pressable, I18nManager } from 'react-native';
 import { colors, spacing, borderRadius } from '../theme';
 
 interface GlassSplitterHandleProps {
@@ -54,13 +54,14 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
   if (Platform.OS !== 'web') {
     // Native: simple pressable
     return (
-      <View style={[styles.container, handlePosition, style]}>
-        <Pressable 
+      <View className="absolute z-[9999]" style={[{ top: spacing.xl * 2 }, handlePosition, style]}>
+        <Pressable
           onPress={onToggle}
-          style={styles.button}
+          className="w-11 h-11 rounded-lg bg-transparent border-2 items-center justify-center opacity-60"
+          style={{ borderColor: colors.primary }}
         >
-          <View style={styles.buttonInner}>
-            <View style={styles.arrowText}>
+          <View className="items-center justify-center">
+            <View className="text-purple-500 text-base font-bold" style={{ color: colors.primary }}>
               {/* Use a simple arrow character */}
             </View>
           </View>
@@ -155,33 +156,5 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
     </div>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: spacing.xl * 2,
-    zIndex: 9999,
-  },
-  button: {
-    width: 44,
-    height: 44,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'transparent',
-    borderWidth: 2,
-    borderColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    opacity: 0.6,
-  },
-  buttonInner: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  arrowText: {
-    color: colors.primary,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
 
 export default GlassSplitterHandle;

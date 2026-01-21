@@ -4,7 +4,6 @@ import {
   View,
   Text,
   Image,
-  StyleSheet,
   Animated,
   Pressable,
   Platform,
@@ -120,11 +119,11 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={1}
-      style={styles.touchable}
+      className={`${isMobilePhone ? 'ml-2' : 'ml-5'} overflow-visible`}
     >
       <Animated.View
+        className={`${isMobilePhone ? 'rounded-lg' : 'rounded-xl'} overflow-visible bg-white/5 border border-white/10`}
         style={[
-          styles.card,
           { width, height },
           scaleTransform,
           focusStyle,
@@ -133,19 +132,19 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
         {imageUrl ? (
           <Image
             source={{ uri: imageUrl }}
-            style={styles.image}
+            className={`w-full h-full ${isMobilePhone ? 'rounded-lg' : 'rounded-xl'}`}
             resizeMode="cover"
           />
         ) : (
-          <View style={styles.placeholder}>
-            <Text style={styles.placeholderText}>{title?.[0] || '?'}</Text>
+          <View className={`flex-1 bg-white/10 justify-center items-center ${isMobilePhone ? 'rounded-lg' : 'rounded-xl'}`}>
+            <Text className={`${isMobilePhone ? 'text-2xl' : 'text-5xl'} font-bold text-purple-500`}>{title?.[0] || '?'}</Text>
           </View>
         )}
 
         {/* Action Buttons - Show on focus/hover */}
         {showActionButtons && isFocused && (
           <View
-            style={[styles.actionButtons, isRTL ? styles.actionButtonsLeft : styles.actionButtonsRight]}
+            className={`absolute ${isMobilePhone ? 'top-1' : 'top-2'} flex-row gap-1 z-10 ${isRTL ? (isMobilePhone ? 'left-1' : 'left-2') : (isMobilePhone ? 'right-1' : 'right-2')}`}
             // @ts-ignore - Web only onClick
             onClick={(e: any) => { e.stopPropagation(); e.preventDefault(); }}
           >
@@ -153,10 +152,8 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
               <Pressable
                 onPress={handleFavoriteToggle}
                 disabled={favoriteLoading}
-                style={[
-                  styles.actionButton,
-                  isFavorite && styles.actionButtonActive,
-                ]}
+                className={`${IS_TV_BUILD ? 'w-11 h-11 rounded-[22px]' : isMobilePhone ? 'w-6 h-6 rounded-xl' : 'w-8 h-8 rounded-2xl'} justify-center items-center ${isFavorite ? 'bg-white/15' : 'bg-black/60'}`}
+                style={Platform.OS === 'web' ? { backdropFilter: 'blur(8px)', transition: 'all 0.2s ease' } as any : undefined}
               >
                 <Ionicons
                   name={isFavorite ? 'star' : 'star-outline'}
@@ -169,10 +166,8 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
               <Pressable
                 onPress={handleWatchlistToggle}
                 disabled={watchlistLoading}
-                style={[
-                  styles.actionButton,
-                  inWatchlist && styles.actionButtonActive,
-                ]}
+                className={`${IS_TV_BUILD ? 'w-11 h-11 rounded-[22px]' : isMobilePhone ? 'w-6 h-6 rounded-xl' : 'w-8 h-8 rounded-2xl'} justify-center items-center ${inWatchlist ? 'bg-white/15' : 'bg-black/60'}`}
+                style={Platform.OS === 'web' ? { backdropFilter: 'blur(8px)', transition: 'all 0.2s ease' } as any : undefined}
               >
                 <Ionicons
                   name={inWatchlist ? 'bookmark' : 'bookmark-outline'}
@@ -184,12 +179,12 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
           </View>
         )}
 
-        <View style={styles.overlay}>
-          <Text style={[styles.title, { textAlign }]} numberOfLines={1}>
+        <View className={`absolute bottom-0 left-0 right-0 ${isMobilePhone ? 'p-1.5' : 'p-3'} bg-black/70 ${isMobilePhone ? 'rounded-b-lg' : 'rounded-b-xl'}`}>
+          <Text className={`${IS_TV_BUILD ? 'text-2xl' : isMobilePhone ? 'text-xs' : 'text-lg'} font-bold text-white`} style={{ textAlign }} numberOfLines={1}>
             {title || ''}
           </Text>
           {subtitle && (
-            <Text style={[styles.subtitle, { textAlign }]} numberOfLines={1}>
+            <Text className={`${IS_TV_BUILD ? 'text-lg' : isMobilePhone ? 'text-[10px]' : 'text-sm'} text-white/70 ${isMobilePhone ? 'mt-0.5' : 'mt-0.5'}`} style={{ textAlign }} numberOfLines={1}>
               {subtitle}
             </Text>
           )}
@@ -199,84 +194,5 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  touchable: {
-    marginLeft: isMobilePhone ? 8 : 20,
-    overflow: 'visible' as any,
-  },
-  card: {
-    borderRadius: isMobilePhone ? 8 : 12,
-    overflow: 'visible' as any,
-    backgroundColor: colors.glass,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    borderRadius: isMobilePhone ? 8 : 12,
-  },
-  placeholder: {
-    flex: 1,
-    backgroundColor: colors.backgroundLighter,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: isMobilePhone ? 8 : 12,
-  },
-  placeholderText: {
-    fontSize: isMobilePhone ? 24 : 48,
-    fontWeight: 'bold',
-    color: colors.primary,
-  },
-  overlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: isMobilePhone ? 6 : 12,
-    backgroundColor: colors.overlay,
-    borderBottomLeftRadius: isMobilePhone ? 8 : 12,
-    borderBottomRightRadius: isMobilePhone ? 8 : 12,
-  },
-  title: {
-    fontSize: IS_TV_BUILD ? 24 : (isMobilePhone ? 12 : 18),
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: IS_TV_BUILD ? 18 : (isMobilePhone ? 10 : 14),
-    color: colors.textSecondary,
-    marginTop: isMobilePhone ? 1 : 2,
-  },
-  actionButtons: {
-    position: 'absolute',
-    top: isMobilePhone ? spacing.xs : spacing.sm,
-    flexDirection: 'row',
-    gap: spacing.xs,
-    zIndex: 10,
-  },
-  actionButtonsRight: {
-    right: isMobilePhone ? spacing.xs : spacing.sm,
-  },
-  actionButtonsLeft: {
-    left: isMobilePhone ? spacing.xs : spacing.sm,
-  },
-  actionButton: {
-    width: IS_TV_BUILD ? 44 : (isMobilePhone ? 24 : 32),
-    height: IS_TV_BUILD ? 44 : (isMobilePhone ? 24 : 32),
-    borderRadius: IS_TV_BUILD ? 22 : (isMobilePhone ? 12 : 16),
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    // @ts-ignore - Web transition
-    ...(Platform.OS === 'web' && {
-      backdropFilter: 'blur(8px)',
-      transition: 'all 0.2s ease',
-    }),
-  },
-  actionButtonActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-  },
-});
 
 export default FocusableCard;

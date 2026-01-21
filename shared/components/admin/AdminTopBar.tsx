@@ -7,13 +7,12 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../../hooks/useDirection';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { spacing } from '../../theme';
 
 interface Breadcrumb {
   label: string;
@@ -115,31 +114,33 @@ export const AdminTopBar: React.FC<AdminTopBarProps> = ({
   };
 
   return (
-    <View style={[styles.container, { flexDirection }]}>
-      <View style={styles.leftSection}>
+    <View className="flex justify-between items-center px-4 py-4 bg-backgroundLight border-b border-glassBorder min-h-[70px]" style={{ flexDirection }}>
+      <View className="flex-1">
         {/* Breadcrumbs */}
-        <View style={[styles.breadcrumbsContainer, { flexDirection }]}>
+        <View className="flex items-center mb-1" style={{ flexDirection }}>
           <TouchableOpacity
             onPress={() => navigation.navigate('AdminDashboard')}
-            style={[styles.breadcrumbItem, { flexDirection }]}
+            className="flex items-center"
+            style={{ flexDirection }}
           >
-            <Text style={styles.breadcrumbIcon}>🏠</Text>
+            <Text className="text-sm">🏠</Text>
           </TouchableOpacity>
 
           {breadcrumbs.map((crumb, index) => (
             <React.Fragment key={index}>
-              <Text style={[styles.breadcrumbSeparator, { textAlign }]}>/</Text>
+              <Text className="text-sm text-textMuted mx-1" style={{ textAlign }}>/</Text>
               {crumb.route ? (
                 <TouchableOpacity
                   onPress={() => handleBreadcrumbPress(crumb)}
-                  style={[styles.breadcrumbItem, { flexDirection }]}
+                  className="flex items-center"
+                  style={{ flexDirection }}
                 >
-                  <Text style={[styles.breadcrumbLink, { textAlign }]}>
+                  <Text className="text-sm text-primary" style={{ textAlign }}>
                     {t(crumb.label, crumb.label)}
                   </Text>
                 </TouchableOpacity>
               ) : (
-                <Text style={[styles.breadcrumbCurrent, { textAlign }]}>
+                <Text className="text-sm text-textSecondary" style={{ textAlign }}>
                   {t(crumb.label, crumb.label)}
                 </Text>
               )}
@@ -148,89 +149,24 @@ export const AdminTopBar: React.FC<AdminTopBarProps> = ({
         </View>
 
         {/* Page Title */}
-        <Text style={[styles.title, { textAlign }]}>{title}</Text>
+        <Text className="text-xl font-bold text-text" style={{ textAlign }}>{title}</Text>
       </View>
 
       {/* Actions */}
-      <View style={[styles.rightSection, { flexDirection }]}>
+      <View className="flex items-center gap-2" style={{ flexDirection }}>
         {actions}
 
         {/* Quick Actions */}
-        <TouchableOpacity style={styles.iconButton}>
-          <Text style={styles.iconButtonText}>🔔</Text>
+        <TouchableOpacity className="w-10 h-10 rounded-lg bg-glass justify-center items-center border border-glassBorder">
+          <Text className="text-lg">🔔</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.iconButton}>
-          <Text style={styles.iconButtonText}>❓</Text>
+        <TouchableOpacity className="w-10 h-10 rounded-lg bg-glass justify-center items-center border border-glassBorder">
+          <Text className="text-lg">❓</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    backgroundColor: colors.backgroundLight,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
-    minHeight: 70,
-  },
-  leftSection: {
-    flex: 1,
-  },
-  breadcrumbsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  breadcrumbItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  breadcrumbIcon: {
-    fontSize: 14,
-  },
-  breadcrumbSeparator: {
-    fontSize: fontSize.sm,
-    color: colors.textMuted,
-    marginHorizontal: spacing.xs,
-  },
-  breadcrumbLink: {
-    fontSize: fontSize.sm,
-    color: colors.primary,
-  },
-  breadcrumbCurrent: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-  title: {
-    fontSize: fontSize.xl,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  rightSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.glass,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  iconButtonText: {
-    fontSize: 18,
-  },
-});
 
 export default AdminTopBar;

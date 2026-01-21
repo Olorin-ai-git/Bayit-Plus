@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { XCircle } from 'lucide-react';
 import { GlassBadge } from '@bayit/shared/ui';
@@ -39,15 +39,16 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
   };
 
   return (
-    <View style={styles.section}>
-      <View style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
+    <View className="mb-6 pt-4 border-t" style={{ borderTopColor: colors.glassBorder }}>
+      <View className={`flex-row justify-between items-center mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <Text className="text-lg font-semibold" style={{ textAlign, color: colors.text }}>
           {t('admin.uploads.activeUpload', 'Active Upload')}
         </Text>
         {onCancelJob && (
           <Pressable
             onPress={handleCancel}
-            style={styles.cancelButton}
+            className="flex-row items-center gap-1 py-1 px-2 rounded-sm"
+            style={{ backgroundColor: colors.error + '15' }}
             disabled={cancellingJob}
           >
             {cancellingJob ? (
@@ -55,16 +56,16 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
             ) : (
               <XCircle size={20} color={colors.error} />
             )}
-            <Text style={styles.cancelText}>
+            <Text className="text-sm font-medium" style={{ color: colors.error }}>
               {t('admin.uploads.cancelUpload', 'Cancel')}
             </Text>
           </Pressable>
         )}
       </View>
-      <View style={styles.jobCard}>
-        <View style={[styles.jobHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <View className="rounded-lg p-4 border" style={{ backgroundColor: colors.backgroundLight, borderColor: colors.glassBorder }}>
+        <View className={`flex-row items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
           <StatusIcon status={job.status} job={job} />
-          <Text style={[styles.jobFilename, { textAlign, flex: 1 }]} numberOfLines={1}>
+          <Text className="flex-1 text-base font-semibold" style={{ textAlign, color: colors.text }} numberOfLines={1}>
             {job.filename}
           </Text>
           <GlassBadge
@@ -82,28 +83,28 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
         />
 
         {job.current_stage && (
-          <Text style={[styles.currentStage, { textAlign }]}>
+          <Text className="text-sm italic mt-1 mb-1" style={{ textAlign, color: colors.primary }}>
             {job.current_stage}
           </Text>
         )}
 
-        <View style={styles.progressContainer}>
-          <View style={[styles.progressBar, { width: `${job.progress}%` }]} />
+        <View className="h-2 rounded-sm overflow-hidden mb-2" style={{ backgroundColor: colors.glassBorder }}>
+          <View className="h-full rounded-sm" style={{ width: `${job.progress}%`, backgroundColor: colors.primary }} />
         </View>
 
         <StageError job={job} />
 
-        <View style={[styles.jobDetails, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <Text style={styles.jobDetailText}>
+        <View className={`flex-row justify-between gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <Text className="text-sm" style={{ color: colors.textSecondary }}>
             {formatFileSize(job.bytes_uploaded)} / {formatFileSize(job.file_size)}
           </Text>
           {job.upload_speed && job.upload_speed > 0 && (
-            <Text style={styles.jobDetailText}>
+            <Text className="text-sm" style={{ color: colors.textSecondary }}>
               {formatSpeed(job.upload_speed)}
             </Text>
           )}
           {job.eta_seconds && job.eta_seconds > 0 && (
-            <Text style={styles.jobDetailText}>
+            <Text className="text-sm" style={{ color: colors.textSecondary }}>
               ETA: {formatETA(job.eta_seconds)}
             </Text>
           )}
@@ -112,83 +113,3 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  section: {
-    marginBottom: spacing.lg,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.glassBorder,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  sectionTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  cancelButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.sm,
-    backgroundColor: colors.error + '15',
-  },
-  cancelText: {
-    fontSize: fontSize.sm,
-    color: colors.error,
-    fontWeight: '500',
-  },
-  jobCard: {
-    backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  jobHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  jobFilename: {
-    fontSize: fontSize.md,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  currentStage: {
-    fontSize: fontSize.sm,
-    color: colors.primary,
-    fontStyle: 'italic',
-    marginTop: spacing.xs,
-    marginBottom: spacing.xs,
-  },
-  progressContainer: {
-    height: 8,
-    backgroundColor: colors.glassBorder,
-    borderRadius: borderRadius.sm,
-    overflow: 'hidden',
-    marginBottom: spacing.sm,
-  },
-  progressBar: {
-    height: '100%',
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.sm,
-  },
-  jobDetails: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: spacing.md,
-  },
-  jobDetailText: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-});

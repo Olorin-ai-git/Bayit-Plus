@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, useWindowDimensions, Animated } from 'react-native';
+import { View, Text, Pressable, useWindowDimensions, Animated } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -144,11 +144,8 @@ export default function Footer() {
 
   return (
     <GlassView
-      style={[
-        styles.footer,
-        { height },
-        isDragging && styles.footerDragging,
-      ]}
+      className="mt-auto border-t border-white/[0.08] overflow-hidden"
+      style={{ height, transition: isDragging ? 'none' : 'height 0.3s ease', userSelect: isDragging ? 'none' : 'auto' }}
       intensity="high"
     >
       {/* Splitter Handle */}

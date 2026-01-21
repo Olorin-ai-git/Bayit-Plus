@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator, ScrollView } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, Mail, Lock, User, ChevronDown, Globe, Check } from 'lucide-react';
@@ -95,42 +95,34 @@ export default function RegisterPage() {
   };
 
   return (
-    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-      <View style={styles.container}>
+    <ScrollView className="flex-1" style={{ backgroundColor: colors.background }} contentContainerStyle={{ flexGrow: 1 }}>
+      <View className="flex-1 relative overflow-hidden" style={{ minHeight: '100vh', backgroundColor: colors.background }}>
         {/* Background gradient effects */}
-        <View style={styles.backgroundGradient1} />
-        <View style={styles.backgroundGradient2} />
-        <View style={styles.backgroundGradient3} />
+        <View className="absolute w-[600px] h-[600px] rounded-full opacity-[0.08] -top-[200px] -right-[200px]" style={{ backgroundColor: colors.primary, filter: 'blur(120px)' }} />
+        <View className="absolute w-[400px] h-[400px] rounded-full opacity-[0.06] -bottom-[100px] -left-[100px]" style={{ backgroundColor: '#8b5cf6', filter: 'blur(100px)' }} />
+        <View className="absolute w-[300px] h-[300px] rounded-full opacity-[0.04] top-1/2 left-1/2" style={{ backgroundColor: colors.primary, transform: 'translate(-50%, -50%)', filter: 'blur(80px)' }} />
 
         {/* Language Selector - Top Right */}
-        <View style={[styles.languageSelector, isRTL && styles.languageSelectorRTL]}>
+        <View className={`absolute top-6 z-[100] ${isRTL ? 'left-6' : 'right-6'}`}>
           <Pressable
-            style={styles.languageButton}
+            className="flex-row items-center gap-1 bg-white/5 py-2 px-4 rounded-lg border border-white/10"
             onPress={() => setShowLanguageMenu(!showLanguageMenu)}
           >
             <Globe size={18} color={colors.textSecondary} />
-            <Text style={styles.languageButtonText}>{currentLanguage.flag} {currentLanguageLabel}</Text>
+            <Text className="text-sm" style={{ color: colors.textSecondary }}>{currentLanguage.flag} {currentLanguageLabel}</Text>
             <ChevronDown size={16} color={colors.textSecondary} />
           </Pressable>
 
           {showLanguageMenu && (
-            <View style={styles.languageMenu}>
+            <View className="absolute top-full right-0 mt-1 rounded-lg border border-white/10 overflow-hidden min-w-[160px]" style={{ backgroundColor: 'rgba(20, 20, 30, 0.95)', backdropFilter: 'blur(20px)', boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)' }}>
               {LANGUAGE_CODES.map((lang) => (
                 <Pressable
                   key={lang.code}
-                  style={[
-                    styles.languageOption,
-                    lang.code === i18n.language && styles.languageOptionActive,
-                  ]}
+                  className={`flex-row items-center gap-2 py-2 px-4 ${lang.code === i18n.language ? 'bg-[#6b21a8]/30' : ''}`}
                   onPress={() => handleLanguageChange(lang.code)}
                 >
-                  <Text style={styles.languageOptionFlag}>{lang.flag}</Text>
-                  <Text
-                    style={[
-                      styles.languageOptionText,
-                      lang.code === i18n.language && styles.languageOptionTextActive,
-                    ]}
-                  >
+                  <Text className="text-lg">{lang.flag}</Text>
+                  <Text className={`text-sm ${lang.code === i18n.language ? 'font-semibold' : ''}`} style={{ color: lang.code === i18n.language ? colors.primary : colors.textSecondary }}>
                     {t(`settings.languages.${lang.code}`)}
                   </Text>
                 </Pressable>
@@ -140,30 +132,30 @@ export default function RegisterPage() {
         </View>
 
         {/* Main Content */}
-        <View style={styles.content}>
+        <View className="flex-1 justify-center items-center p-6 py-12">
           {/* Logo */}
           <Link to="/" style={{ textDecoration: 'none' }}>
-            <View style={styles.logoContainer}>
+            <View className="items-center mb-8">
               <AnimatedLogo size="large" />
             </View>
           </Link>
 
           {/* Register Card */}
-          <View style={styles.card}>
-            <Text style={styles.title}>{t('register.title')}</Text>
-            <Text style={styles.subtitle}>
+          <View className="w-full max-w-[420px] bg-white/[0.03] rounded-2xl border border-white/[0.08] p-8" style={{ backdropFilter: 'blur(20px)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)' }}>
+            <Text className="text-[28px] font-bold text-center mb-1" style={{ color: colors.text }}>{t('register.title')}</Text>
+            <Text className="text-[15px] text-center mb-8" style={{ color: colors.textSecondary }}>
               {t('register.subtitle')}
             </Text>
 
             {/* Error Message */}
             {error && (
-              <View style={styles.errorBox}>
-                <Text style={styles.errorText}>{error}</Text>
+              <View className="bg-[#ef4444]/15 border border-[#ef4444]/30 rounded-md p-4 mb-6">
+                <Text className="text-[#ef4444] text-sm text-center">{error}</Text>
               </View>
             )}
 
             {/* Name Input */}
-            <View style={styles.inputGroup}>
+            <View className={IS_TV_BUILD ? "mb-8" : "mb-4"}>
               <GlassInput
                 label={t('register.name')}
                 value={name}
@@ -176,7 +168,7 @@ export default function RegisterPage() {
             </View>
 
             {/* Email Input */}
-            <View style={styles.inputGroup}>
+            <View className={IS_TV_BUILD ? "mb-8" : "mb-4"}>
               <GlassInput
                 label={t('register.email')}
                 value={email}
@@ -190,7 +182,7 @@ export default function RegisterPage() {
             </View>
 
             {/* Password Input */}
-            <View style={styles.inputGroup}>
+            <View className={IS_TV_BUILD ? "mb-8" : "mb-4"}>
               <GlassInput
                 label={t('register.password')}
                 value={password}
@@ -212,7 +204,7 @@ export default function RegisterPage() {
             </View>
 
             {/* Confirm Password Input */}
-            <View style={styles.inputGroup}>
+            <View className={IS_TV_BUILD ? "mb-8" : "mb-4"}>
               <GlassInput
                 label={t('register.confirmPassword')}
                 value={confirmPassword}
@@ -235,30 +227,30 @@ export default function RegisterPage() {
 
             {/* Terms Checkbox */}
             <Pressable
-              style={[styles.termsRow, isRTL && styles.termsRowRTL]}
+              className={`flex-row items-start gap-2 mb-6 mt-2 ${isRTL ? 'flex-row-reverse' : ''}`}
               onPress={() => setAcceptTerms(!acceptTerms)}
             >
-              <View style={[styles.checkbox, acceptTerms && styles.checkboxChecked]}>
+              <View className={`w-[22px] h-[22px] rounded border-2 bg-white/5 items-center justify-center mt-0.5 ${acceptTerms ? '' : ''}`} style={{ borderColor: acceptTerms ? colors.primary : 'rgba(255, 255, 255, 0.3)', backgroundColor: acceptTerms ? colors.primary : 'rgba(255, 255, 255, 0.05)' }}>
                 {acceptTerms && <Check size={14} color="#000" strokeWidth={3} />}
               </View>
-              <Text style={styles.termsText}>
+              <Text className="flex-1 text-[13px] leading-5" style={{ color: colors.textSecondary }}>
                 {t('register.acceptTerms')}{' '}
                 <Link to="/terms" style={{ textDecoration: 'none' }}>
-                  <Text style={styles.termsLink}>{t('register.termsOfService')}</Text>
+                  <Text className="font-medium" style={{ color: colors.primary }}>{t('register.termsOfService')}</Text>
                 </Link>
                 {' '}{t('register.and')}{' '}
                 <Link to="/privacy" style={{ textDecoration: 'none' }}>
-                  <Text style={styles.termsLink}>{t('register.privacyPolicy')}</Text>
+                  <Text className="font-medium" style={{ color: colors.primary }}>{t('register.privacyPolicy')}</Text>
                 </Link>
               </Text>
             </Pressable>
 
             {/* Register Button */}
             <Pressable
+              className={`py-4 rounded-lg items-center justify-center min-h-[52px] ${isLoading ? 'opacity-70' : ''}`}
               style={({ pressed }) => [
-                styles.registerButton,
-                pressed && styles.registerButtonPressed,
-                isLoading && styles.registerButtonDisabled,
+                { backgroundColor: colors.primary, transition: 'all 0.2s ease' },
+                pressed && { opacity: 0.9, transform: 'scale(0.98)' }
               ]}
               onPress={handleSubmit}
               disabled={isLoading}
@@ -266,23 +258,23 @@ export default function RegisterPage() {
               {isLoading ? (
                 <ActivityIndicator color="#000" size="small" />
               ) : (
-                <Text style={styles.registerButtonText}>{t('register.submit')}</Text>
+                <Text className="text-base font-semibold" style={{ color: '#000' }}>{t('register.submit')}</Text>
               )}
             </Pressable>
 
             {/* Divider */}
-            <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>{t('login.or')}</Text>
-              <View style={styles.dividerLine} />
+            <View className="flex-row items-center my-6">
+              <View className="flex-1 h-px bg-white/10" />
+              <Text className="px-4 text-sm" style={{ color: colors.textMuted }}>{t('login.or')}</Text>
+              <View className="flex-1 h-px bg-white/10" />
             </View>
 
             {/* Google Sign Up Button */}
             <Pressable
+              className={`flex-row items-center justify-center gap-2 bg-white/5 border border-white/15 py-4 rounded-lg min-h-[52px] ${isLoading ? 'opacity-70' : ''}`}
               style={({ pressed }) => [
-                styles.googleButton,
-                pressed && styles.googleButtonPressed,
-                isLoading && styles.googleButtonDisabled,
+                { transition: 'all 0.2s ease' },
+                pressed && { backgroundColor: 'rgba(255, 255, 255, 0.1)', transform: 'scale(0.98)' }
               ]}
               onPress={handleGoogleLogin}
               disabled={isLoading}
@@ -305,18 +297,18 @@ export default function RegisterPage() {
                   fill="#EA4335"
                 />
               </svg>
-              <Text style={styles.googleButtonText}>
+              <Text className="text-base font-medium" style={{ color: colors.text }}>
                 {t('register.continueWithGoogle')}
               </Text>
             </Pressable>
 
             {/* Login Link */}
-            <View style={[styles.loginContainer, isRTL && styles.loginContainerRTL]}>
-              <Text style={styles.loginText}>
+            <View className={`flex-row justify-center items-center gap-1 mt-8 pt-6 border-t border-white/[0.08] ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <Text className="text-sm" style={{ color: colors.textSecondary }}>
                 {t('register.haveAccount')}
               </Text>
               <Link to="/login" style={{ textDecoration: 'none' }}>
-                <Text style={styles.loginLink}>{t('register.signIn')}</Text>
+                <Text className="text-sm font-semibold" style={{ color: colors.primary }}>{t('register.signIn')}</Text>
               </Link>
             </View>
           </View>
@@ -325,292 +317,3 @@ export default function RegisterPage() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  container: {
-    flex: 1,
-    minHeight: '100vh' as any,
-    backgroundColor: colors.background,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  backgroundGradient1: {
-    position: 'absolute',
-    width: 600,
-    height: 600,
-    borderRadius: 300,
-    backgroundColor: colors.primary,
-    opacity: 0.08,
-    top: -200,
-    right: -200,
-    // @ts-ignore - web only
-    filter: 'blur(120px)',
-  },
-  backgroundGradient2: {
-    position: 'absolute',
-    width: 400,
-    height: 400,
-    borderRadius: 200,
-    backgroundColor: '#8b5cf6',
-    opacity: 0.06,
-    bottom: -100,
-    left: -100,
-    // @ts-ignore - web only
-    filter: 'blur(100px)',
-  },
-  backgroundGradient3: {
-    position: 'absolute',
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: colors.primary,
-    opacity: 0.04,
-    top: '50%',
-    left: '50%',
-    // @ts-ignore - web only
-    transform: 'translate(-50%, -50%)',
-    filter: 'blur(80px)',
-  },
-  languageSelector: {
-    position: 'absolute',
-    top: spacing.lg,
-    right: spacing.lg,
-    zIndex: 100,
-  },
-  languageSelectorRTL: {
-    right: 'auto',
-    left: spacing.lg,
-  },
-  languageButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  languageButtonText: {
-    color: colors.textSecondary,
-    fontSize: 14,
-  },
-  languageMenu: {
-    position: 'absolute',
-    top: '100%',
-    right: 0,
-    marginTop: spacing.xs,
-    backgroundColor: 'rgba(20, 20, 30, 0.95)',
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    overflow: 'hidden',
-    minWidth: 160,
-    // @ts-ignore - web only
-    backdropFilter: 'blur(20px)',
-    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
-  },
-  languageOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  languageOptionActive: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  languageOptionFlag: {
-    fontSize: 18,
-  },
-  languageOptionText: {
-    color: colors.textSecondary,
-    fontSize: 14,
-  },
-  languageOptionTextActive: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-    paddingVertical: spacing.xl * 2,
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  card: {
-    width: '100%',
-    maxWidth: 420,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: borderRadius.xl,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    padding: spacing.xl,
-    // @ts-ignore - web only
-    backdropFilter: 'blur(20px)',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.xl,
-  },
-  errorBox: {
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  errorText: {
-    color: '#ef4444',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  inputGroup: {
-    marginBottom: IS_TV_BUILD ? spacing.xl : spacing.md,
-  },
-  termsRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
-    marginTop: spacing.sm,
-  },
-  termsRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: borderRadius.sm,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 2,
-  },
-  checkboxChecked: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  termsText: {
-    flex: 1,
-    fontSize: 13,
-    color: colors.textSecondary,
-    lineHeight: 20,
-  },
-  termsLink: {
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  registerButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 52,
-    // @ts-ignore - web only
-    transition: 'all 0.2s ease',
-  },
-  registerButtonPressed: {
-    opacity: 0.9,
-    // @ts-ignore - web only
-    transform: 'scale(0.98)',
-  },
-  registerButtonDisabled: {
-    opacity: 0.7,
-  },
-  registerButtonText: {
-    color: '#000',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: spacing.lg,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  dividerText: {
-    color: colors.textMuted,
-    paddingHorizontal: spacing.md,
-    fontSize: 14,
-  },
-  googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-    minHeight: 52,
-    // @ts-ignore - web only
-    transition: 'all 0.2s ease',
-  },
-  googleButtonPressed: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    // @ts-ignore - web only
-    transform: 'scale(0.98)',
-  },
-  googleButtonDisabled: {
-    opacity: 0.7,
-  },
-  googleButtonText: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  loginContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginTop: spacing.xl,
-    paddingTop: spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  loginContainerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  loginText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  loginLink: {
-    fontSize: 14,
-    color: colors.primary,
-    fontWeight: '600',
-  },
-});

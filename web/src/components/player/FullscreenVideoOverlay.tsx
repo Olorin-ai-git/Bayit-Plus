@@ -5,11 +5,11 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
-import { View, StyleSheet, Pressable, ActivityIndicator, Text } from 'react-native'
+import { View, Pressable, ActivityIndicator, Text } from 'react-native'
 import { X } from 'lucide-react'
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore'
 import { contentService, liveService, chaptersService, historyService } from '@/services/api'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors } from '@bayit/shared/theme'
 import VideoPlayer from './VideoPlayer'
 import logger from '@/utils/logger'
 
@@ -179,28 +179,25 @@ export default function FullscreenVideoOverlay() {
       {/* Close button */}
       <Pressable
         onPress={closePlayer}
-        style={({ hovered }) => [
-          styles.closeButton,
-          hovered && styles.closeButtonHovered,
-        ]}
+        className="absolute top-4 right-4 w-11 h-11 rounded-full bg-black/60 items-center justify-center z-[10001] hover:bg-black/80"
       >
         <X size={24} color={colors.text} />
       </Pressable>
 
       {/* Loading state */}
       {loading && (
-        <View style={styles.loadingContainer}>
+        <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loadingText}>Loading...</Text>
+          <Text className="text-white text-base mt-4">Loading...</Text>
         </View>
       )}
 
       {/* Error state */}
       {error && !loading && (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error}</Text>
-          <Pressable onPress={closePlayer} style={styles.errorButton}>
-            <Text style={styles.errorButtonText}>Close</Text>
+        <View className="flex-1 items-center justify-center px-8">
+          <Text className="text-red-500 text-lg text-center mb-4">{error}</Text>
+          <Pressable onPress={closePlayer} className="px-8 py-4 rounded-lg" style={{ backgroundColor: colors.primary }}>
+            <Text className="text-white text-base font-semibold">Close</Text>
           </Pressable>
         </View>
       )}
@@ -270,54 +267,3 @@ const webStyles: Record<string, React.CSSProperties> = {
     border: 'none',
   },
 }
-
-const styles = StyleSheet.create({
-  closeButton: {
-    position: 'absolute',
-    top: spacing.lg,
-    right: spacing.lg,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10001,
-  },
-  closeButtonHovered: {
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: 16,
-    marginTop: spacing.md,
-  },
-  errorContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xl,
-  },
-  errorText: {
-    color: colors.error,
-    fontSize: 18,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  errorButton: {
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.md,
-  },
-  errorButtonText: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-})

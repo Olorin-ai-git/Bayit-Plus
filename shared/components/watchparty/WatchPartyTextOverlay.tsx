@@ -7,14 +7,11 @@
  */
 import React, { useRef, useEffect, useState } from 'react';
 import {
-  View,
-  StyleSheet,
   Animated,
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
 import WatchPartyTextPanel from './WatchPartyTextPanel';
-import { spacing, borderRadius } from '../../theme';
 import { isTV } from '../../utils/platform';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -128,14 +125,14 @@ export const WatchPartyTextOverlay: React.FC<WatchPartyTextOverlayProps> = ({
 
   return (
     <Animated.View
+      className="absolute top-0 left-0 bottom-0 z-[100] p-4"
       style={[
-        styles.container,
-        { transform: [{ translateX: slideAnim }] },
+        { width: PANEL_WIDTH, transform: [{ translateX: slideAnim }] },
       ]}
     >
       <TouchableOpacity
         activeOpacity={1}
-        style={styles.touchArea}
+        className="flex-1"
         onPressIn={handleInteractionStart}
         onPressOut={handleInteractionEnd}
       >
@@ -155,20 +152,5 @@ export const WatchPartyTextOverlay: React.FC<WatchPartyTextOverlayProps> = ({
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    width: PANEL_WIDTH,
-    zIndex: 100,
-    padding: spacing.md,
-  },
-  touchArea: {
-    flex: 1,
-  },
-});
 
 export default WatchPartyTextOverlay;

@@ -2,7 +2,7 @@
  * Move history component displaying chess moves in Standard Algebraic Notation (SAN).
  */
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { colors, spacing } from '@bayit/shared/theme';
 import { useTranslation } from 'react-i18next';
 
@@ -29,85 +29,24 @@ export default function MoveHistory({ moves }: MoveHistoryProps) {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{t('chess.moveHistory')}</Text>
+    <View className="bg-black/30 backdrop-blur-xl rounded-2xl p-4 mb-4 flex-1 max-h-[300px] shadow-lg">
+      <Text className="text-base font-semibold text-white mb-3 pb-3 border-b border-white/10">
+        {t('chess.moveHistory')}
+      </Text>
 
-      <ScrollView style={styles.movesList} contentContainerStyle={styles.movesListContent}>
+      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 8 }}>
         {movePairs.map((pair, idx) => (
-          <View key={idx} style={styles.moveRow}>
-            <Text style={styles.moveNumber}>{pair.moveNumber}.</Text>
-            <Text style={[styles.move, styles.whiteMove]}>{pair.white?.san || ''}</Text>
-            <Text style={[styles.move, styles.blackMove]}>{pair.black?.san || '...'}</Text>
+          <View key={idx} className="flex-row items-center py-1.5 gap-3">
+            <Text className="text-sm font-semibold text-gray-400 w-[30px]">{pair.moveNumber}.</Text>
+            <Text className="text-sm font-medium text-white tabular-nums flex-1">{pair.white?.san || ''}</Text>
+            <Text className="text-sm font-medium text-gray-400 tabular-nums flex-1">{pair.black?.san || '...'}</Text>
           </View>
         ))}
 
         {moves.length === 0 && (
-          <Text style={styles.emptyText}>{t('chess.noMoves')}</Text>
+          <Text className="text-sm text-gray-400 text-center py-6 italic">{t('chess.noMoves')}</Text>
         )}
       </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'rgba(10, 10, 20, 0.3)',
-    backdropFilter: 'blur(20px)',
-    borderRadius: 16,
-    padding: spacing.md,
-    marginBottom: spacing.md,
-    flex: 1,
-    maxHeight: 300,
-    ...Platform.select({
-      web: {
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-      },
-    }),
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-    paddingBottom: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  movesList: {
-    flex: 1,
-  },
-  movesListContent: {
-    paddingBottom: spacing.sm,
-  },
-  moveRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.xs,
-    gap: spacing.sm,
-  },
-  moveNumber: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.textSecondary,
-    width: 30,
-  },
-  move: {
-    fontSize: 14,
-    fontWeight: '500',
-    fontVariant: ['tabular-nums'],
-    flex: 1,
-  },
-  whiteMove: {
-    color: colors.text,
-  },
-  blackMove: {
-    color: colors.textSecondary,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    paddingVertical: spacing.lg,
-    fontStyle: 'italic',
-  },
-});

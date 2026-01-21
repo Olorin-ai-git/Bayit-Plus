@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Pause, PlayCircle, XCircle } from 'lucide-react';
 import { GlassButton } from '@bayit/shared/ui';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 import { AuditReportDetail } from '@/services/librarianService';
 import { format } from 'date-fns';
 
@@ -38,20 +38,20 @@ export const AuditInfoHeader = ({
   const { t } = useTranslation();
 
   return (
-    <View style={styles.livePanelInfo}>
-      <View style={{ flex: 1 }}>
-        <View style={[styles.statusRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <Text style={styles.livePanelInfoText}>
+    <View className="flex flex-row flex-wrap gap-4 mb-4 pb-4 border-b items-center justify-between" style={{ borderBottomColor: `${colors.text}15` }}>
+      <View className="flex-1">
+        <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center gap-2 mb-1`}>
+          <Text className="text-[13px]" style={{ color: colors.textMuted }}>
             {t('admin.librarian.logs.started')}: {format(new Date(report.audit_date), 'HH:mm:ss')}
           </Text>
           {report.status === 'in_progress' && (
-            <Text style={[styles.livePanelInfoText, { color: colors.warning, marginLeft: spacing.md }]}>
+            <Text className="text-[13px] ml-4" style={{ color: colors.warning }}>
               ● {t('admin.librarian.status.running', 'Running')}
             </Text>
           )}
         </View>
         {report.completed_at && (
-          <Text style={[styles.livePanelInfoText, { color: colors.success }]}>
+          <Text className="text-[13px]" style={{ color: colors.success }}>
             {t('admin.librarian.logs.completed')}: {format(new Date(report.completed_at), 'HH:mm:ss')}
           </Text>
         )}
@@ -62,17 +62,17 @@ export const AuditInfoHeader = ({
 
           return (
             <View>
-              <Text style={[styles.livePanelInfoText, { fontSize: 12, color: isStale ? colors.warning : colors.textMuted, marginTop: spacing.xs }]}>
+              <Text className="text-xs mt-1" style={{ color: isStale ? colors.warning : colors.textMuted }}>
                 {t('admin.librarian.logs.lastLog', 'Last log')}: {format(lastLogTime, 'HH:mm:ss')}
                 {timeSinceLastLog > 5 && ` (${timeSinceLastLog}s ago)`}
               </Text>
               {isStale && (
-                <Text style={[styles.livePanelInfoText, { fontSize: 11, color: colors.warning, marginTop: spacing.xs, fontStyle: 'italic' }]}>
+                <Text className="text-[11px] mt-1 italic" style={{ color: colors.warning }}>
                   ⚠ {t('admin.librarian.logs.staleWarning', 'No new logs for {{seconds}}s - job may be processing or stuck', { seconds: timeSinceLastLog })}
                 </Text>
               )}
               {lastPolledAt && report.status === 'in_progress' && (
-                <Text style={[styles.livePanelInfoText, { fontSize: 10, color: colors.textMuted, marginTop: spacing.xs, opacity: 0.7 }]}>
+                <Text className="text-[10px] mt-1 opacity-70" style={{ color: colors.textMuted }}>
                   {t('admin.librarian.logs.pollingStatus', 'Polling active • Last checked')}: {format(lastPolledAt, 'HH:mm:ss')}
                 </Text>
               )}
@@ -82,7 +82,7 @@ export const AuditInfoHeader = ({
       </View>
 
       {report.status === 'in_progress' && (
-        <View style={[styles.auditControlButtons, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-4 items-center`}>
           <GlassButton
             title={t('common.refresh', 'Refresh')}
             variant="secondary"
@@ -91,7 +91,7 @@ export const AuditInfoHeader = ({
             onPress={onRefresh}
             loading={refreshing}
             disabled={refreshing}
-            style={styles.auditControlButton}
+            className="min-w-[120px] bg-white/5 border border-white/10"
           />
           {!auditPaused ? (
             <GlassButton
@@ -102,7 +102,7 @@ export const AuditInfoHeader = ({
               onPress={onPause}
               loading={pausingAudit}
               disabled={pausingAudit || cancellingAudit}
-              style={styles.auditControlButton}
+              className="min-w-[120px] bg-white/5 border border-white/10"
             />
           ) : (
             <GlassButton
@@ -113,7 +113,7 @@ export const AuditInfoHeader = ({
               onPress={onResume}
               loading={resumingAudit}
               disabled={resumingAudit || cancellingAudit}
-              style={styles.auditControlButton}
+              className="min-w-[120px] bg-white/5 border border-white/10"
             />
           )}
           <GlassButton
@@ -124,7 +124,7 @@ export const AuditInfoHeader = ({
             onPress={onCancel}
             loading={cancellingAudit}
             disabled={pausingAudit || resumingAudit || cancellingAudit}
-            style={styles.auditControlButton}
+            className="min-w-[120px] bg-white/5 border border-white/10"
             textStyle={{ color: colors.error }}
           />
         </View>
@@ -132,38 +132,3 @@ export const AuditInfoHeader = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  livePanelInfo: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.md,
-    marginBottom: spacing.md,
-    paddingBottom: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: `${colors.text}15`,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  livePanelInfoText: {
-    fontSize: 13,
-    color: colors.textMuted,
-  },
-  statusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.xs,
-  },
-  auditControlButtons: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    alignItems: 'center',
-  },
-  auditControlButton: {
-    minWidth: 120,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-});

@@ -344,7 +344,7 @@ const savedQuality = useQualityPreference();
 
 ### Setup Testing Infrastructure
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 ./setup-testing.sh
 ```
 

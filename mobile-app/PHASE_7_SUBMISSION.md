@@ -25,7 +25,7 @@ This guide walks you through:
 #### 1. Clean Build Test
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/mobile-app
+cd /Users/olorin/Documents/olorin/mobile-app
 
 # Clean all build artifacts
 rm -rf ios/build

@@ -8,14 +8,12 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Modal,
   Animated,
   Dimensions,
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '../../theme';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 
@@ -133,28 +131,28 @@ export const HelpOverlay: React.FC<HelpOverlayProps> = ({
       return {
         position: 'absolute' as const,
         bottom: SCREEN_HEIGHT * 0.2,
-        left: spacing.lg,
-        right: spacing.lg,
+        left: 16,
+        right: 16,
       };
     }
 
     const { highlightArea, tooltipPosition = 'bottom' } = currentStepData;
-    const tooltipMargin = spacing.lg;
+    const tooltipMargin = 16;
 
     switch (tooltipPosition) {
       case 'top':
         return {
           position: 'absolute' as const,
           bottom: SCREEN_HEIGHT - highlightArea.y + tooltipMargin,
-          left: spacing.lg,
-          right: spacing.lg,
+          left: 16,
+          right: 16,
         };
       case 'bottom':
         return {
           position: 'absolute' as const,
           top: highlightArea.y + highlightArea.height + tooltipMargin,
-          left: spacing.lg,
-          right: spacing.lg,
+          left: 16,
+          right: 16,
         };
       case 'left':
         return {
@@ -174,8 +172,8 @@ export const HelpOverlay: React.FC<HelpOverlayProps> = ({
         return {
           position: 'absolute' as const,
           bottom: SCREEN_HEIGHT * 0.2,
-          left: spacing.lg,
-          right: spacing.lg,
+          left: 16,
+          right: 16,
         };
     }
   };
@@ -186,64 +184,67 @@ export const HelpOverlay: React.FC<HelpOverlayProps> = ({
 
   return (
     <Modal visible={visible} transparent animationType="none">
-      <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
+      <Animated.View className="flex-1 bg-black/85" style={{ opacity: fadeAnim }}>
         {/* Highlight Cutout */}
         {currentStepData?.highlightArea && (
           <Animated.View
-            style={[
-              styles.highlightCutout,
-              {
-                top: currentStepData.highlightArea.y - 8,
-                left: currentStepData.highlightArea.x - 8,
-                width: currentStepData.highlightArea.width + 16,
-                height: currentStepData.highlightArea.height + 16,
-                transform: [{ scale: pulseAnim }],
-              },
-            ]}
+            className="absolute rounded-lg border-2 border-purple-500 bg-transparent shadow-purple-500/50"
+            style={{
+              top: currentStepData.highlightArea.y - 8,
+              left: currentStepData.highlightArea.x - 8,
+              width: currentStepData.highlightArea.width + 16,
+              height: currentStepData.highlightArea.height + 16,
+              transform: [{ scale: pulseAnim }],
+              shadowColor: '#a855f7',
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.5,
+              shadowRadius: 20,
+            }}
           />
         )}
 
         {/* Tooltip */}
-        <View style={[styles.tooltipContainer, getTooltipStyle()]}>
+        <View className="bg-[rgba(30,30,40,0.98)] rounded-2xl p-6 border border-white/10" style={getTooltipStyle()}>
           {/* Step Indicator */}
-          <View style={styles.stepIndicator}>
+          <View className="flex-row justify-center gap-2 mb-4">
             {steps.map((_, index) => (
               <View
                 key={index}
-                style={[
-                  styles.stepDot,
-                  index === currentStep && styles.stepDotActive,
-                ]}
+                className={`h-2 rounded ${
+                  index === currentStep
+                    ? 'w-6 bg-purple-500'
+                    : 'w-2 bg-white/30'
+                }`}
               />
             ))}
           </View>
 
           {/* Content */}
-          <Text style={[styles.tooltipTitle, { textAlign }]}>
+          <Text className={`text-white font-bold mb-2 ${isTV ? 'text-2xl' : 'text-xl'}`} style={{ textAlign }}>
             {t(currentStepData.titleKey)}
           </Text>
-          <Text style={[styles.tooltipDescription, { textAlign }]}>
+          <Text className={`text-white/70 mb-6 ${isTV ? 'text-base leading-[26px]' : 'text-sm leading-[22px]'}`} style={{ textAlign }}>
             {t(currentStepData.descriptionKey)}
           </Text>
 
           {/* Navigation */}
-          <View style={[styles.navigation, { flexDirection }]}>
+          <View className="items-center gap-3" style={{ flexDirection }}>
             {!isFirstStep && (
               <TouchableOpacity
-                style={styles.navButtonSecondary}
+                className={`px-6 bg-white/10 rounded-lg ${isTV ? 'py-3' : 'py-2'}`}
                 onPress={handlePrevious}
               >
-                <Text style={styles.navButtonSecondaryText}>
+                <Text className={`text-white/70 font-semibold ${isTV ? 'text-base' : 'text-sm'}`}>
                   {t('help.previous', 'Previous')}
                 </Text>
               </TouchableOpacity>
             )}
-            <View style={styles.navSpacer} />
+            <View className="flex-1" />
             <TouchableOpacity
-              style={styles.navButtonPrimary}
+              className={`px-6 bg-purple-500 rounded-lg ${isTV ? 'py-3' : 'py-2'}`}
               onPress={handleNext}
             >
-              <Text style={styles.navButtonPrimaryText}>
+              <Text className={`text-white font-semibold ${isTV ? 'text-base' : 'text-sm'}`}>
                 {isLastStep
                   ? t('help.getStarted', 'Get Started')
                   : t('help.next', 'Next')}
@@ -253,8 +254,8 @@ export const HelpOverlay: React.FC<HelpOverlayProps> = ({
 
           {/* Skip Button */}
           {showSkip && !isLastStep && (
-            <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-              <Text style={styles.skipButtonText}>
+            <TouchableOpacity className="self-center mt-4 p-2" onPress={handleSkip}>
+              <Text className={`text-white/70 underline ${isTV ? 'text-sm' : 'text-xs'}`}>
                 {t('help.skipTutorial', 'Skip tutorial')}
               </Text>
             </TouchableOpacity>
@@ -264,97 +265,5 @@ export const HelpOverlay: React.FC<HelpOverlayProps> = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
-  },
-  highlightCutout: {
-    position: 'absolute',
-    borderRadius: borderRadius.lg,
-    borderWidth: 2,
-    borderColor: colors.primary,
-    backgroundColor: 'transparent',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
-  },
-  tooltipContainer: {
-    backgroundColor: 'rgba(30, 30, 40, 0.98)',
-    borderRadius: borderRadius.xl,
-    padding: spacing.xl,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  stepIndicator: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: spacing.xs,
-    marginBottom: spacing.lg,
-  },
-  stepDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  stepDotActive: {
-    backgroundColor: colors.primary,
-    width: 24,
-  },
-  tooltipTitle: {
-    fontSize: isTV ? 24 : 20,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  tooltipDescription: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 26 : 22,
-    marginBottom: spacing.xl,
-  },
-  navigation: {
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  navSpacer: {
-    flex: 1,
-  },
-  navButtonPrimary: {
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.lg,
-  },
-  navButtonPrimaryText: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  navButtonSecondary: {
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.lg,
-  },
-  navButtonSecondaryText: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.textSecondary,
-  },
-  skipButton: {
-    alignSelf: 'center',
-    marginTop: spacing.lg,
-    padding: spacing.sm,
-  },
-  skipButtonText: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-    textDecorationLine: 'underline',
-  },
-});
 
 export default HelpOverlay;

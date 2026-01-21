@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Animated,
   Modal,
@@ -73,23 +72,25 @@ const QualityOption: React.FC<{
       onBlur={handleBlur}
       disabled={!isAvailable}
       activeOpacity={0.7}
-      style={styles.optionTouchable}
+      className="mb-2"
     >
       <Animated.View
         style={[
-          styles.option,
           { transform: [{ scale: scaleAnim }] },
-          isSelected && styles.optionSelected,
-          isFocused && styles.optionFocused,
-          !isAvailable && styles.optionDisabled,
         ]}
+        className={`
+          ${isTV ? 'p-4' : 'p-3'} rounded-lg border-2
+          ${isSelected ? 'bg-purple-700/20 border-purple-500' : 'bg-white/5 border-transparent'}
+          ${isFocused ? 'border-purple-500 bg-purple-700/30' : ''}
+          ${!isAvailable ? 'opacity-30' : ''}
+        `}
       >
-        <View style={styles.optionContent}>
-          <Text style={[styles.optionLabel, { textAlign }]}>
+        <View className="flex-col">
+          <Text className={`${isTV ? 'text-[22px]' : 'text-lg'} font-semibold text-white mb-1`} style={{ textAlign }}>
             {option.label}
             {isSelected && ' ✓'}
           </Text>
-          <Text style={[styles.optionDescription, { textAlign }]}>
+          <Text className={`${isTV ? 'text-base' : 'text-sm'} text-gray-400`} style={{ textAlign }}>
             {option.description}
           </Text>
         </View>
@@ -128,18 +129,25 @@ export const QualitySelector: React.FC<QualitySelectorProps> = ({
       onRequestClose={onClose}
     >
       <TouchableOpacity
-        style={styles.overlay}
+        className="flex-1 bg-black/80 justify-center items-center"
         activeOpacity={1}
         onPress={onClose}
       >
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Text style={[styles.title, { textAlign }]}>
+        <View
+          className={`bg-[rgba(20,20,20,0.95)] rounded-2xl border-2 border-purple-700/30 backdrop-blur-xl`}
+          style={{
+            width: isTV ? '50%' : '90%',
+            maxWidth: 600,
+            padding: isTV ? spacing.xl : spacing.lg,
+          }}
+        >
+          <View className={`${isTV ? 'mb-4' : 'mb-3'}`}>
+            <Text className={`${isTV ? 'text-[32px]' : 'text-2xl'} font-bold text-white`} style={{ textAlign }}>
               {t('player.selectQuality', 'Video Quality')}
             </Text>
           </View>
 
-          <View style={styles.optionsContainer}>
+          <View className={`${isTV ? 'mb-4' : 'mb-3'}`}>
             {QUALITY_OPTIONS.map((option, index) => (
               <QualityOption
                 key={option.value}
@@ -153,11 +161,12 @@ export const QualitySelector: React.FC<QualitySelectorProps> = ({
           </View>
 
           <TouchableOpacity
-            style={styles.closeButton}
+            className={`bg-white/10 rounded-lg items-center mt-2`}
+            style={{ padding: isTV ? spacing.md : spacing.sm }}
             onPress={onClose}
             activeOpacity={0.7}
           >
-            <Text style={styles.closeButtonText}>
+            <Text className={`${isTV ? 'text-lg' : 'text-base'} font-semibold text-white`}>
               {t('common.close', 'Close')}
             </Text>
           </TouchableOpacity>
@@ -190,84 +199,5 @@ export const useQualityPreference = () => {
 
   return quality;
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  container: {
-    width: isTV ? '50%' : '90%',
-    maxWidth: 600,
-    backgroundColor: 'rgba(20, 20, 20, 0.95)',
-    borderRadius: borderRadius.xl,
-    borderWidth: 2,
-    borderColor: 'rgba(168, 85, 247, 0.3)',
-    padding: isTV ? spacing.xl : spacing.lg,
-    // @ts-ignore - Web CSS property
-    backdropFilter: 'blur(20px)',
-  },
-  header: {
-    marginBottom: isTV ? spacing.lg : spacing.md,
-  },
-  title: {
-    fontSize: isTV ? 32 : 24,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  optionsContainer: {
-    marginBottom: isTV ? spacing.lg : spacing.md,
-  },
-  optionTouchable: {
-    marginBottom: spacing.sm,
-  },
-  option: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    padding: isTV ? spacing.lg : spacing.md,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  optionSelected: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    borderColor: colors.primary,
-  },
-  optionFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.3)',
-    // @ts-ignore - Web CSS property
-    boxShadow: '0 0 20px rgba(168, 85, 247, 0.6)',
-  },
-  optionDisabled: {
-    opacity: 0.3,
-  },
-  optionContent: {
-    flexDirection: 'column',
-  },
-  optionLabel: {
-    fontSize: isTV ? 22 : 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  optionDescription: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-  },
-  closeButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.lg,
-    padding: isTV ? spacing.md : spacing.sm,
-    alignItems: 'center',
-    marginTop: spacing.sm,
-  },
-  closeButtonText: {
-    fontSize: isTV ? 18 : 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-});
 
 export default QualitySelector;

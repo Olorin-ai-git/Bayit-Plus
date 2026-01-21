@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   TextInput,
   ScrollView,
@@ -81,44 +80,42 @@ export const RegisterScreen: React.FC = () => {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      className="flex-1 bg-[#0a0a1a]"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {/* Background Decorations */}
-      <View style={styles.blurCirclePrimary} pointerEvents="none" />
-      <View style={styles.blurCirclePurple} pointerEvents="none" />
+      <View className="absolute w-80 h-80 rounded-full bg-purple-700/30 -top-40 -right-40" pointerEvents="none" />
+      <View className="absolute w-64 h-64 rounded-full bg-purple-600/15 bottom-20 -left-32" pointerEvents="none" />
 
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 48, paddingHorizontal: 20 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Logo */}
-        <View style={styles.logoContainer}>
+        <View className="items-center mb-12">
           <Image
             source={require('@bayit/shared-assets/images/logos/logo.png')}
-            style={styles.logo}
+            className="w-20 h-20"
             resizeMode="contain"
           />
-          <Text style={styles.brandName}>{t('common.appName')}</Text>
+          <Text className="text-[32px] font-bold text-purple-500 mt-2">{t('common.appName')}</Text>
         </View>
 
         {/* Form Card */}
-        <GlassView style={styles.formCard}>
-          <Text style={styles.title}>{t('register.title')}</Text>
+        <GlassView className="w-full max-w-[400px] p-8">
+          <Text className="text-2xl font-bold text-white text-center mb-6">{t('register.title')}</Text>
 
           {/* Name Input */}
-          <View style={styles.inputGroup}>
-            <Text style={[styles.label, { textAlign }]}>{t('register.fullName')}</Text>
+          <View className="mb-4">
+            <Text className="text-sm font-medium text-gray-400 mb-1" style={{ textAlign }}>{t('register.fullName')}</Text>
             <View
-              style={[
-                styles.inputContainer,
-                { flexDirection: isRTL ? 'row-reverse' : 'row' },
-                focusedField === 'name' && styles.inputContainerFocused,
-              ]}
+              className={`items-center bg-[#1a1525] rounded-lg border-2 px-4 ${focusedField === 'name' ? 'border-purple-500' : 'border-white/10'}`}
+              style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
             >
-              <Text style={[styles.inputIcon, isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }]}>👤</Text>
+              <Text className="text-lg" style={isRTL ? { marginLeft: 8 } : { marginRight: 8 }}>👤</Text>
               <TextInput
-                style={[styles.input, { textAlign: isRTL ? 'right' : 'left' }]}
+                className="flex-1 text-base text-white py-4"
+                style={{ textAlign: isRTL ? 'right' : 'left' }}
                 value={formData.name}
                 onChangeText={(text) => setFormData({ ...formData, name: text })}
                 placeholder={t('register.namePlaceholder')}
@@ -131,18 +128,15 @@ export const RegisterScreen: React.FC = () => {
           </View>
 
           {/* Email Input */}
-          <View style={styles.inputGroup}>
-            <Text style={[styles.label, { textAlign }]}>{t('register.email')}</Text>
+          <View className="mb-4">
+            <Text className="text-sm font-medium text-gray-400 mb-1" style={{ textAlign }}>{t('register.email')}</Text>
             <View
-              style={[
-                styles.inputContainer,
-                { flexDirection: isRTL ? 'row-reverse' : 'row' },
-                focusedField === 'email' && styles.inputContainerFocused,
-              ]}
+              className={`items-center bg-[#1a1525] rounded-lg border-2 px-4 ${focusedField === 'email' ? 'border-purple-500' : 'border-white/10'}`}
+              style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
             >
-              <Text style={[styles.inputIcon, isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }]}>✉️</Text>
+              <Text className="text-lg" style={isRTL ? { marginLeft: 8 } : { marginRight: 8 }}>✉️</Text>
               <TextInput
-                style={[styles.input, styles.inputLtr]}
+                className="flex-1 text-base text-white py-4 text-left"
                 value={formData.email}
                 onChangeText={(text) => setFormData({ ...formData, email: text })}
                 placeholder="your@email.com"
@@ -157,23 +151,20 @@ export const RegisterScreen: React.FC = () => {
           </View>
 
           {/* Password Input */}
-          <View style={styles.inputGroup}>
-            <Text style={[styles.label, { textAlign }]}>{t('register.password')}</Text>
+          <View className="mb-4">
+            <Text className="text-sm font-medium text-gray-400 mb-1" style={{ textAlign }}>{t('register.password')}</Text>
             <View
-              style={[
-                styles.inputContainer,
-                { flexDirection: isRTL ? 'row-reverse' : 'row' },
-                focusedField === 'password' && styles.inputContainerFocused,
-              ]}
+              className={`items-center bg-[#1a1525] rounded-lg border-2 px-4 ${focusedField === 'password' ? 'border-purple-500' : 'border-white/10'}`}
+              style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
             >
               <TouchableOpacity
                 onPress={() => setShowPassword(!showPassword)}
-                style={styles.passwordToggle}
+                className="p-1"
               >
-                <Text style={styles.inputIcon}>{showPassword ? '🙈' : '👁️'}</Text>
+                <Text className="text-lg">{showPassword ? '🙈' : '👁️'}</Text>
               </TouchableOpacity>
               <TextInput
-                style={[styles.input, styles.inputLtr]}
+                className="flex-1 text-base text-white py-4 text-left"
                 value={formData.password}
                 onChangeText={(text) => setFormData({ ...formData, password: text })}
                 placeholder={t('register.passwordPlaceholder')}
@@ -187,18 +178,15 @@ export const RegisterScreen: React.FC = () => {
           </View>
 
           {/* Confirm Password Input */}
-          <View style={styles.inputGroup}>
-            <Text style={[styles.label, { textAlign }]}>{t('register.confirmPassword')}</Text>
+          <View className="mb-4">
+            <Text className="text-sm font-medium text-gray-400 mb-1" style={{ textAlign }}>{t('register.confirmPassword')}</Text>
             <View
-              style={[
-                styles.inputContainer,
-                { flexDirection: isRTL ? 'row-reverse' : 'row' },
-                focusedField === 'confirmPassword' && styles.inputContainerFocused,
-              ]}
+              className={`items-center bg-[#1a1525] rounded-lg border-2 px-4 ${focusedField === 'confirmPassword' ? 'border-purple-500' : 'border-white/10'}`}
+              style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
             >
-              <Text style={[styles.inputIcon, isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }]}>🔒</Text>
+              <Text className="text-lg" style={isRTL ? { marginLeft: 8 } : { marginRight: 8 }}>🔒</Text>
               <TextInput
-                style={[styles.input, styles.inputLtr]}
+                className="flex-1 text-base text-white py-4 text-left"
                 value={formData.confirmPassword}
                 onChangeText={(text) => setFormData({ ...formData, confirmPassword: text })}
                 placeholder={t('register.confirmPasswordPlaceholder')}
@@ -213,13 +201,13 @@ export const RegisterScreen: React.FC = () => {
 
           {/* Error Message */}
           {(formError || error) && (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>{formError || error}</Text>
+            <View className="bg-red-500/20 rounded-md p-2 mb-4">
+              <Text className="text-red-500 text-sm text-center">{formError || error}</Text>
             </View>
           )}
 
           {/* Terms */}
-          <Text style={styles.termsText}>
+          <Text className="text-xs text-gray-500 text-center mb-4">
             {t('register.termsText')}
           </Text>
 
@@ -229,14 +217,14 @@ export const RegisterScreen: React.FC = () => {
             onPress={handleSubmit}
             variant="primary"
             disabled={isLoading}
-            style={styles.submitButton}
+            className="mt-2"
           />
 
           {/* Divider */}
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>{t('login.or')}</Text>
-            <View style={styles.dividerLine} />
+          <View className="flex-row items-center my-6">
+            <View className="flex-1 h-px bg-white/10" />
+            <Text className="text-gray-500 px-4 text-sm">{t('login.or')}</Text>
+            <View className="flex-1 h-px bg-white/10" />
           </View>
 
           {/* Google Login */}
@@ -246,15 +234,15 @@ export const RegisterScreen: React.FC = () => {
               onPress={handleGoogleLogin}
               variant="secondary"
               disabled={isLoading}
-              style={styles.googleButton}
+              className="mb-4"
             />
           )}
 
           {/* Login Link */}
-          <View style={[styles.loginLinkContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Text style={styles.loginLinkText}>{t('register.haveAccount')} </Text>
+          <View className="justify-center mt-4" style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
+            <Text className="text-gray-500 text-sm">{t('register.haveAccount')} </Text>
             <TouchableOpacity onPress={navigateToLogin}>
-              <Text style={styles.loginLink}>{t('register.loginLink')}</Text>
+              <Text className="text-purple-500 text-sm font-medium">{t('register.loginLink')}</Text>
             </TouchableOpacity>
           </View>
         </GlassView>
@@ -262,162 +250,12 @@ export const RegisterScreen: React.FC = () => {
 
       {/* Loading Overlay */}
       {isLoading && (
-        <View style={styles.loadingOverlay}>
+        <View className="absolute inset-0 bg-black/50 justify-center items-center">
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       )}
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: spacing.xxl,
-    paddingHorizontal: spacing.lg,
-  },
-  blurCirclePrimary: {
-    position: 'absolute',
-    width: 320,
-    height: 320,
-    borderRadius: 160,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    top: -160,
-    right: -160,
-  },
-  blurCirclePurple: {
-    position: 'absolute',
-    width: 256,
-    height: 256,
-    borderRadius: 128,
-    backgroundColor: 'rgba(138, 43, 226, 0.15)',
-    bottom: 80,
-    left: -128,
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  logo: {
-    width: 80,
-    height: 80,
-  },
-  brandName: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.primary,
-    marginTop: spacing.sm,
-  },
-  formCard: {
-    width: '100%',
-    maxWidth: 400,
-    padding: spacing.xl,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  inputGroup: {
-    marginBottom: spacing.md,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.textSecondary,
-    marginBottom: spacing.xs,
-  },
-  inputContainer: {
-    alignItems: 'center',
-    backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.lg,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: spacing.md,
-  },
-  inputContainerFocused: {
-    borderColor: colors.primary,
-  },
-  inputIcon: {
-    fontSize: 18,
-  },
-  passwordToggle: {
-    padding: spacing.xs,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: colors.text,
-    paddingVertical: spacing.md,
-  },
-  inputLtr: {
-    textAlign: 'left',
-  },
-  errorContainer: {
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-    borderRadius: borderRadius.md,
-    padding: spacing.sm,
-    marginBottom: spacing.md,
-  },
-  errorText: {
-    color: colors.error,
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  termsText: {
-    fontSize: 12,
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginBottom: spacing.md,
-  },
-  submitButton: {
-    marginTop: spacing.sm,
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: spacing.lg,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  dividerText: {
-    color: colors.textMuted,
-    paddingHorizontal: spacing.md,
-    fontSize: 14,
-  },
-  googleButton: {
-    marginBottom: spacing.md,
-  },
-  loginLinkContainer: {
-    justifyContent: 'center',
-    marginTop: spacing.md,
-  },
-  loginLinkText: {
-    color: colors.textMuted,
-    fontSize: 14,
-  },
-  loginLink: {
-    color: colors.primary,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 
 export default RegisterScreen;

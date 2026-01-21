@@ -7,7 +7,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   RefreshControl,
@@ -19,7 +18,7 @@ import { AdminLayout } from '../../components/admin/AdminLayout';
 import { StatCard } from '../../components/admin/StatCard';
 import { marketingService, MarketingMetrics, RecentCampaign, AudienceSegment } from '../../services/adminApi';
 import { useModal } from '../../contexts/ModalContext';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { colors } from '../../theme';
 
 export const MarketingDashboardScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -65,7 +64,7 @@ export const MarketingDashboardScreen: React.FC = () => {
   if (loading) {
     return (
       <AdminLayout title={t('admin.titles.marketingDashboard', 'Marketing Dashboard')}>
-        <View style={styles.loadingContainer}>
+        <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </AdminLayout>
@@ -75,10 +74,10 @@ export const MarketingDashboardScreen: React.FC = () => {
   if (error || !metrics) {
     return (
       <AdminLayout title={t('admin.titles.marketingDashboard', 'Marketing Dashboard')}>
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error || t('admin.marketing.noData', 'No data available')}</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={loadData}>
-            <Text style={styles.retryButtonText}>{t('common.retry', 'Retry')}</Text>
+        <View className="flex-1 justify-center items-center px-8">
+          <Text className="text-base text-red-500 text-center mb-4">{error || t('admin.marketing.noData', 'No data available')}</Text>
+          <TouchableOpacity className="px-4 py-2 bg-purple-500 rounded-lg" onPress={loadData}>
+            <Text className="text-sm text-white font-semibold">{t('common.retry', 'Retry')}</Text>
           </TouchableOpacity>
         </View>
       </AdminLayout>
@@ -88,14 +87,14 @@ export const MarketingDashboardScreen: React.FC = () => {
   return (
     <AdminLayout title={t('admin.titles.marketingDashboard', 'Marketing Dashboard')}>
       <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
+        className="flex-1"
+        contentContainerClassName="p-4"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary} />}
       >
         {/* Overview Stats */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('admin.marketing.overview', 'Overview')}</Text>
-          <View style={styles.statsGrid}>
+        <View className="mb-8">
+          <Text className="text-lg font-bold text-white mb-4">{t('admin.marketing.overview', 'Overview')}</Text>
+          <View className="flex-row flex-wrap gap-4">
             <StatCard title={t('admin.marketing.emailsSent', 'Emails Sent')} value={metrics.emailsSent.toLocaleString()} icon="✉️" color={colors.primary} />
             <StatCard title={t('admin.marketing.emailOpenRate', 'Email Open Rate')} value={`${metrics.emailOpenRate}%`} icon="📬" color={colors.success} trend={{ value: 2.3, isPositive: true }} />
             <StatCard title={t('admin.marketing.pushSent', 'Push Sent')} value={metrics.pushSent.toLocaleString()} icon="🔔" color={colors.secondary} />
@@ -104,52 +103,52 @@ export const MarketingDashboardScreen: React.FC = () => {
         </View>
 
         {/* Quick Actions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('admin.marketing.quickActions', 'Quick Actions')}</Text>
-          <View style={styles.actionsGrid}>
-            <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('EmailCampaigns')}>
-              <Text style={styles.actionIcon}>✉️</Text>
-              <Text style={styles.actionTitle}>{t('admin.marketing.emailCampaigns', 'Email Campaigns')}</Text>
-              <Text style={styles.actionDesc}>{t('admin.marketing.emailCampaignsDesc', 'Create and manage email campaigns')}</Text>
+        <View className="mb-8">
+          <Text className="text-lg font-bold text-white mb-4">{t('admin.marketing.quickActions', 'Quick Actions')}</Text>
+          <View className="flex-row gap-4">
+            <TouchableOpacity className="flex-1 bg-white/10 rounded-2xl border border-white/10 p-4 items-center" onPress={() => navigation.navigate('EmailCampaigns')}>
+              <Text className="text-3xl mb-2">✉️</Text>
+              <Text className="text-sm font-semibold text-white mb-1">{t('admin.marketing.emailCampaigns', 'Email Campaigns')}</Text>
+              <Text className="text-xs text-gray-400 text-center">{t('admin.marketing.emailCampaignsDesc', 'Create and manage email campaigns')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('PushNotifications')}>
-              <Text style={styles.actionIcon}>🔔</Text>
-              <Text style={styles.actionTitle}>{t('admin.marketing.pushNotifications', 'Push Notifications')}</Text>
-              <Text style={styles.actionDesc}>{t('admin.marketing.pushDesc', 'Send push notifications to users')}</Text>
+            <TouchableOpacity className="flex-1 bg-white/10 rounded-2xl border border-white/10 p-4 items-center" onPress={() => navigation.navigate('PushNotifications')}>
+              <Text className="text-3xl mb-2">🔔</Text>
+              <Text className="text-sm font-semibold text-white mb-1">{t('admin.marketing.pushNotifications', 'Push Notifications')}</Text>
+              <Text className="text-xs text-gray-400 text-center">{t('admin.marketing.pushDesc', 'Send push notifications to users')}</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Recent Campaigns */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{t('admin.marketing.recentCampaigns', 'Recent Campaigns')}</Text>
+        <View className="mb-8">
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-lg font-bold text-white">{t('admin.marketing.recentCampaigns', 'Recent Campaigns')}</Text>
             <TouchableOpacity onPress={() => navigation.navigate('EmailCampaigns')}>
-              <Text style={styles.viewAllLink}>{t('admin.marketing.viewAll', 'View All')}</Text>
+              <Text className="text-sm text-purple-500">{t('admin.marketing.viewAll', 'View All')}</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.campaignsList}>
+          <View className="bg-white/10 rounded-2xl border border-white/10 overflow-hidden">
             {recentCampaigns.map((campaign) => (
-              <View key={campaign.id} style={styles.campaignItem}>
-                <View style={styles.campaignIcon}>
-                  <Text style={styles.campaignIconText}>{campaign.type === 'email' ? '✉️' : '🔔'}</Text>
+              <View key={campaign.id} className="flex-row items-center p-4 border-b border-white/10">
+                <View className="w-10 h-10 rounded-full bg-white/5 justify-center items-center mr-3">
+                  <Text className="text-lg">{campaign.type === 'email' ? '✉️' : '🔔'}</Text>
                 </View>
-                <View style={styles.campaignInfo}>
-                  <Text style={styles.campaignName}>{campaign.name}</Text>
-                  <View style={styles.campaignMeta}>
-                    <View style={[styles.campaignStatus, { backgroundColor: getStatusColor(campaign.status) + '20' }]}>
-                      <Text style={[styles.campaignStatusText, { color: getStatusColor(campaign.status) }]}>{campaign.status}</Text>
+                <View className="flex-1">
+                  <Text className="text-sm font-semibold text-white">{campaign.name}</Text>
+                  <View className="flex-row items-center gap-2 mt-1">
+                    <View className="px-2 py-0.5 rounded-sm" style={{ backgroundColor: getStatusColor(campaign.status) + '20' }}>
+                      <Text className="text-xs font-semibold capitalize" style={{ color: getStatusColor(campaign.status) }}>{campaign.status}</Text>
                     </View>
-                    <Text style={styles.campaignType}>{campaign.type}</Text>
+                    <Text className="text-xs text-gray-500 capitalize">{campaign.type}</Text>
                   </View>
                 </View>
-                <View style={styles.campaignStats}>
-                  <Text style={styles.campaignStatLabel}>{t('admin.marketing.sent', 'Sent')}</Text>
-                  <Text style={styles.campaignStatValue}>{campaign.sent.toLocaleString()}</Text>
+                <View className="items-center min-w-[50px]">
+                  <Text className="text-xs text-gray-500">{t('admin.marketing.sent', 'Sent')}</Text>
+                  <Text className="text-sm font-semibold text-white">{campaign.sent.toLocaleString()}</Text>
                 </View>
-                <View style={styles.campaignStats}>
-                  <Text style={styles.campaignStatLabel}>{t('admin.marketing.opened', 'Opened')}</Text>
-                  <Text style={styles.campaignStatValue}>
+                <View className="items-center min-w-[50px] ml-4">
+                  <Text className="text-xs text-gray-500">{t('admin.marketing.opened', 'Opened')}</Text>
+                  <Text className="text-sm font-semibold text-white">
                     {campaign.sent > 0 ? `${((campaign.opened / campaign.sent) * 100).toFixed(1)}%` : '-'}
                   </Text>
                 </View>
@@ -159,41 +158,41 @@ export const MarketingDashboardScreen: React.FC = () => {
         </View>
 
         {/* Audience Segments */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('admin.marketing.audienceSegments', 'Audience Segments')}</Text>
-          <View style={styles.segmentsList}>
+        <View className="mb-8">
+          <Text className="text-lg font-bold text-white mb-4">{t('admin.marketing.audienceSegments', 'Audience Segments')}</Text>
+          <View className="bg-white/10 rounded-2xl border border-white/10 overflow-hidden">
             {segments.map((segment, index) => (
-              <View key={index} style={styles.segmentItem}>
-                <Text style={styles.segmentName}>{segment.name}</Text>
-                <Text style={styles.segmentCount}>{segment.count.toLocaleString()}</Text>
+              <View key={index} className="flex-row justify-between items-center p-4 border-b border-white/10">
+                <Text className="text-sm text-white">{segment.name}</Text>
+                <Text className="text-sm font-semibold text-purple-500">{segment.count.toLocaleString()}</Text>
               </View>
             ))}
           </View>
         </View>
 
         {/* Performance Metrics */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('admin.marketing.performance', 'Performance Metrics')}</Text>
-          <View style={styles.metricsGrid}>
-            <View style={styles.metricCard}>
-              <Text style={styles.metricValue}>{metrics.emailClickRate}%</Text>
-              <Text style={styles.metricLabel}>{t('admin.marketing.clickRate', 'Email Click Rate')}</Text>
-              <View style={styles.metricBar}>
-                <View style={[styles.metricBarFill, { width: `${metrics.emailClickRate * 5}%` }]} />
+        <View className="mb-8">
+          <Text className="text-lg font-bold text-white mb-4">{t('admin.marketing.performance', 'Performance Metrics')}</Text>
+          <View className="flex-row gap-4">
+            <View className="flex-1 bg-white/10 rounded-2xl border border-white/10 p-4">
+              <Text className="text-xl font-bold text-white">{metrics.emailClickRate}%</Text>
+              <Text className="text-xs text-gray-400 mt-1 mb-2">{t('admin.marketing.clickRate', 'Email Click Rate')}</Text>
+              <View className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                <View className="h-full bg-purple-500 rounded-full" style={{ width: `${metrics.emailClickRate * 5}%` }} />
               </View>
             </View>
-            <View style={styles.metricCard}>
-              <Text style={styles.metricValue}>{metrics.conversionRate}%</Text>
-              <Text style={styles.metricLabel}>{t('admin.marketing.conversionRate', 'Conversion Rate')}</Text>
-              <View style={styles.metricBar}>
-                <View style={[styles.metricBarFill, { width: `${metrics.conversionRate * 10}%`, backgroundColor: colors.success }]} />
+            <View className="flex-1 bg-white/10 rounded-2xl border border-white/10 p-4">
+              <Text className="text-xl font-bold text-white">{metrics.conversionRate}%</Text>
+              <Text className="text-xs text-gray-400 mt-1 mb-2">{t('admin.marketing.conversionRate', 'Conversion Rate')}</Text>
+              <View className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                <View className="h-full bg-green-500 rounded-full" style={{ width: `${metrics.conversionRate * 10}%` }} />
               </View>
             </View>
-            <View style={styles.metricCard}>
-              <Text style={styles.metricValue}>{metrics.unsubscribeRate}%</Text>
-              <Text style={styles.metricLabel}>{t('admin.marketing.unsubscribeRate', 'Unsubscribe Rate')}</Text>
-              <View style={styles.metricBar}>
-                <View style={[styles.metricBarFill, { width: `${metrics.unsubscribeRate * 50}%`, backgroundColor: colors.error }]} />
+            <View className="flex-1 bg-white/10 rounded-2xl border border-white/10 p-4">
+              <Text className="text-xl font-bold text-white">{metrics.unsubscribeRate}%</Text>
+              <Text className="text-xs text-gray-400 mt-1 mb-2">{t('admin.marketing.unsubscribeRate', 'Unsubscribe Rate')}</Text>
+              <View className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                <View className="h-full bg-red-500 rounded-full" style={{ width: `${metrics.unsubscribeRate * 50}%` }} />
               </View>
             </View>
           </View>
@@ -212,48 +211,5 @@ const getStatusColor = (status: string): string => {
   };
   return map[status] || colors.textMuted;
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.xl },
-  errorText: { fontSize: fontSize.md, color: colors.error, textAlign: 'center', marginBottom: spacing.md },
-  retryButton: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.primary, borderRadius: borderRadius.md },
-  retryButtonText: { fontSize: fontSize.sm, color: colors.text, fontWeight: '600' },
-  section: { marginBottom: spacing.xl },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
-  sectionTitle: { fontSize: fontSize.lg, fontWeight: 'bold', color: colors.text, marginBottom: spacing.md },
-  viewAllLink: { fontSize: fontSize.sm, color: colors.primary },
-  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
-  actionsGrid: { flexDirection: 'row', gap: spacing.md },
-  actionCard: { flex: 1, backgroundColor: colors.glass, borderRadius: borderRadius.lg, borderWidth: 1, borderColor: colors.glassBorder, padding: spacing.lg, alignItems: 'center' },
-  actionIcon: { fontSize: 32, marginBottom: spacing.sm },
-  actionTitle: { fontSize: fontSize.md, fontWeight: '600', color: colors.text, marginBottom: spacing.xs },
-  actionDesc: { fontSize: fontSize.xs, color: colors.textSecondary, textAlign: 'center' },
-  campaignsList: { backgroundColor: colors.glass, borderRadius: borderRadius.lg, borderWidth: 1, borderColor: colors.glassBorder, overflow: 'hidden' },
-  campaignItem: { flexDirection: 'row', alignItems: 'center', padding: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.glassBorder },
-  campaignIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.backgroundLighter, justifyContent: 'center', alignItems: 'center', marginRight: spacing.sm },
-  campaignIconText: { fontSize: 18 },
-  campaignInfo: { flex: 1 },
-  campaignName: { fontSize: fontSize.sm, fontWeight: '600', color: colors.text },
-  campaignMeta: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: spacing.xs },
-  campaignStatus: { paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: borderRadius.sm },
-  campaignStatusText: { fontSize: fontSize.xs, fontWeight: '600', textTransform: 'capitalize' },
-  campaignType: { fontSize: fontSize.xs, color: colors.textMuted, textTransform: 'capitalize' },
-  campaignStats: { alignItems: 'center', marginLeft: spacing.md, minWidth: 50 },
-  campaignStatLabel: { fontSize: fontSize.xs, color: colors.textMuted },
-  campaignStatValue: { fontSize: fontSize.sm, fontWeight: '600', color: colors.text },
-  segmentsList: { backgroundColor: colors.glass, borderRadius: borderRadius.lg, borderWidth: 1, borderColor: colors.glassBorder, overflow: 'hidden' },
-  segmentItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.glassBorder },
-  segmentName: { fontSize: fontSize.sm, color: colors.text },
-  segmentCount: { fontSize: fontSize.sm, fontWeight: '600', color: colors.primary },
-  metricsGrid: { flexDirection: 'row', gap: spacing.md },
-  metricCard: { flex: 1, backgroundColor: colors.glass, borderRadius: borderRadius.lg, borderWidth: 1, borderColor: colors.glassBorder, padding: spacing.md },
-  metricValue: { fontSize: fontSize.xl, fontWeight: 'bold', color: colors.text },
-  metricLabel: { fontSize: fontSize.xs, color: colors.textSecondary, marginTop: spacing.xs, marginBottom: spacing.sm },
-  metricBar: { height: 6, backgroundColor: colors.backgroundLighter, borderRadius: 3, overflow: 'hidden' },
-  metricBarFill: { height: '100%', backgroundColor: colors.primary, borderRadius: 3 },
-});
 
 export default MarketingDashboardScreen;

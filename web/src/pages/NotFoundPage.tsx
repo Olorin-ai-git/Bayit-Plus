@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { Home, Search, ArrowRight } from 'lucide-react';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing } from '@bayit/shared/theme';
 import { GlassCard, GlassView } from '@bayit/shared/ui';
 
 export default function NotFoundPage() {
@@ -12,60 +12,60 @@ export default function NotFoundPage() {
   const { isRTL, textAlign, flexDirection } = useDirection();
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 min-h-screen justify-center items-center relative px-6 py-16">
       {/* Decorative blur circles */}
-      <View style={[styles.blurCircle, styles.blurCirclePrimary]} />
-      <View style={[styles.blurCircle, styles.blurCirclePurple]} />
-      <View style={[styles.blurCircle, styles.blurCircleCyan]} />
+      <View className="absolute w-[400px] h-[400px] top-[10%] right-[10%] rounded-full bg-purple-600 opacity-15 blur-[120px]" />
+      <View className="absolute w-[300px] h-[300px] bottom-[20%] left-[5%] rounded-full bg-violet-600 opacity-12 blur-[120px]" />
+      <View className="absolute w-[250px] h-[250px] top-[40%] left-[30%] rounded-full bg-purple-500 opacity-[0.08] blur-[120px]" />
 
-      <View style={styles.content}>
+      <View className="items-center z-10 max-w-[480px] w-full">
         {/* Large 404 text */}
-        <Text style={styles.errorCode}>404</Text>
+        <Text className="text-[140px] font-extrabold text-purple-600 mb-6 tracking-[-4px]" style={{ textShadow: `0 0 60px ${colors.primary}40` }}>404</Text>
 
         {/* Glass card with message */}
-        <GlassView style={styles.card} intensity="medium">
-          <View style={styles.iconContainer}>
-            <Text style={styles.iconEmoji}>🏠</Text>
+        <GlassView className="p-12 items-center w-full rounded-2xl">
+          <View className="w-20 h-20 rounded-full bg-purple-600/30 justify-center items-center mb-6">
+            <Text className="text-5xl">🏠</Text>
           </View>
 
-          <Text style={styles.title}>{t('notFound.title')}</Text>
-          <Text style={styles.description}>
+          <Text className="text-3xl font-bold text-white mb-2 text-center">{t('notFound.title')}</Text>
+          <Text className="text-base text-white/70 mb-8 text-center leading-6">
             {t('notFound.description')}
           </Text>
 
-          <View style={styles.buttons}>
+          <View className="flex-row gap-4 w-full">
             <Pressable
-              style={({ pressed }) => [styles.primaryButton, pressed && styles.buttonPressed]}
+              className="flex-1 flex-row items-center justify-center gap-2 bg-purple-600 py-4 px-6 rounded-lg"
               onPress={() => navigate('/')}
             >
               <Home size={20} color={colors.background} />
-              <Text style={styles.primaryButtonText}>{t('notFound.homeButton')}</Text>
+              <Text className="text-base font-semibold text-black">{t('notFound.homeButton')}</Text>
             </Pressable>
 
             <Pressable
-              style={({ pressed }) => [styles.secondaryButton, pressed && styles.buttonPressed]}
+              className="flex-1 flex-row items-center justify-center gap-2 bg-white/10 border border-white/20 py-4 px-6 rounded-lg"
               onPress={() => navigate('/search')}
             >
               <Search size={20} color={colors.text} />
-              <Text style={styles.secondaryButtonText}>{t('notFound.searchButton')}</Text>
+              <Text className="text-base font-semibold text-white">{t('notFound.searchButton')}</Text>
             </Pressable>
           </View>
         </GlassView>
 
         {/* Quick links */}
-        <View style={styles.quickLinks}>
-          <Text style={styles.quickLinksTitle}>{t('notFound.orTry')}</Text>
-          <View style={styles.linksList}>
-            <Pressable style={styles.quickLink} onPress={() => navigate('/live')}>
-              <Text style={styles.quickLinkText}>{t('notFound.liveChannel')}</Text>
+        <View className="mt-12 items-center">
+          <Text className="text-sm text-white/60 mb-4">{t('notFound.orTry')}</Text>
+          <View className="flex-row gap-6 flex-wrap justify-center">
+            <Pressable className="flex-row items-center gap-1 py-2 px-4 rounded-full bg-white/5" onPress={() => navigate('/live')}>
+              <Text className="text-sm text-purple-600 font-medium">{t('notFound.liveChannel')}</Text>
               <ArrowRight size={14} color={colors.primary} />
             </Pressable>
-            <Pressable style={styles.quickLink} onPress={() => navigate('/vod')}>
-              <Text style={styles.quickLinkText}>{t('notFound.vodLabel')}</Text>
+            <Pressable className="flex-row items-center gap-1 py-2 px-4 rounded-full bg-white/5" onPress={() => navigate('/vod')}>
+              <Text className="text-sm text-purple-600 font-medium">{t('notFound.vodLabel')}</Text>
               <ArrowRight size={14} color={colors.primary} />
             </Pressable>
-            <Pressable style={styles.quickLink} onPress={() => navigate('/podcasts')}>
-              <Text style={styles.quickLinkText}>{t('notFound.podcastsLabel')}</Text>
+            <Pressable className="flex-row items-center gap-1 py-2 px-4 rounded-full bg-white/5" onPress={() => navigate('/podcasts')}>
+              <Text className="text-sm text-purple-600 font-medium">{t('notFound.podcastsLabel')}</Text>
               <ArrowRight size={14} color={colors.primary} />
             </Pressable>
           </View>
@@ -74,171 +74,3 @@ export default function NotFoundPage() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    minHeight: 'calc(100vh - 64px)' as any,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xl * 2,
-  },
-  content: {
-    alignItems: 'center',
-    zIndex: 10,
-    maxWidth: 480,
-    width: '100%',
-  },
-  blurCircle: {
-    position: 'absolute',
-    borderRadius: 9999,
-    // @ts-ignore - Web CSS property
-    filter: 'blur(120px)',
-    pointerEvents: 'none',
-  },
-  blurCirclePrimary: {
-    width: 400,
-    height: 400,
-    top: '10%' as any,
-    right: '10%' as any,
-    backgroundColor: colors.primary,
-    opacity: 0.15,
-  },
-  blurCirclePurple: {
-    width: 300,
-    height: 300,
-    bottom: '20%' as any,
-    left: '5%' as any,
-    backgroundColor: colors.secondary,
-    opacity: 0.12,
-  },
-  blurCircleCyan: {
-    width: 250,
-    height: 250,
-    top: '40%' as any,
-    left: '30%' as any,
-    backgroundColor: '#a855f7',
-    opacity: 0.08,
-  },
-  errorCode: {
-    fontSize: 140,
-    fontWeight: '800',
-    color: colors.primary,
-    marginBottom: spacing.lg,
-    letterSpacing: -4,
-    // @ts-ignore
-    textShadow: `0 0 60px ${colors.primary}40`,
-  },
-  card: {
-    padding: spacing.xl * 1.5,
-    alignItems: 'center',
-    width: '100%',
-    borderRadius: borderRadius.xl,
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-  iconEmoji: {
-    fontSize: 40,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.sm,
-    textAlign: 'center',
-  },
-  description: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    marginBottom: spacing.xl,
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-  buttons: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    width: '100%',
-  },
-  primaryButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.lg,
-    // @ts-ignore
-    transition: 'all 0.2s ease',
-  },
-  secondaryButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.lg,
-    // @ts-ignore
-    transition: 'all 0.2s ease',
-  },
-  buttonPressed: {
-    opacity: 0.8,
-    transform: [{ scale: 0.98 }],
-  },
-  primaryButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.background,
-  },
-  secondaryButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  quickLinks: {
-    marginTop: spacing.xl * 1.5,
-    alignItems: 'center',
-  },
-  quickLinksTitle: {
-    fontSize: 14,
-    color: colors.textMuted,
-    marginBottom: spacing.md,
-  },
-  linksList: {
-    flexDirection: 'row',
-    gap: spacing.lg,
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-  quickLink: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    // @ts-ignore
-    transition: 'all 0.2s ease',
-  },
-  quickLinkText: {
-    fontSize: 14,
-    color: colors.primary,
-    fontWeight: '500',
-  },
-});

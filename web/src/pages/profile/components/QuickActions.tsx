@@ -1,9 +1,8 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { MessageSquare, Mic, CreditCard } from 'lucide-react';
 import { GlassView } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import type { TabId } from '../types';
 
 interface QuickActionsProps {
@@ -18,14 +17,14 @@ interface ActionButtonProps {
   onPress: () => void;
 }
 
-function ActionButton({ icon: Icon, iconColor = colors.primary, label, onPress }: ActionButtonProps) {
+function ActionButton({ icon: Icon, iconColor = '#6B21A8', label, onPress }: ActionButtonProps) {
   return (
-    <Pressable onPress={onPress} style={styles.actionButton}>
-      <GlassView style={styles.actionButtonInner}>
-        <View style={[styles.actionIcon, { backgroundColor: `${iconColor}20` }]}>
+    <Pressable onPress={onPress} className="flex-1 min-w-[140px]">
+      <GlassView className="p-4 items-center gap-2">
+        <View className="w-12 h-12 rounded-lg justify-center items-center" style={{ backgroundColor: `${iconColor}20` }}>
           <Icon size={24} color={iconColor} />
         </View>
-        <Text style={styles.actionLabel}>{label}</Text>
+        <Text className="text-[13px] font-medium text-white text-center">{label}</Text>
       </GlassView>
     </Pressable>
   );
@@ -36,10 +35,10 @@ export function QuickActions({ isRTL, onTabChange }: QuickActionsProps) {
   const navigate = useNavigate();
 
   return (
-    <View style={[styles.quickActions, isRTL && styles.quickActionsRTL]}>
+    <View className={`gap-4 mb-6 flex-wrap ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
       <ActionButton
         icon={MessageSquare}
-        iconColor={colors.primary}
+        iconColor="#6B21A8"
         label={t('profile.aiAssistant', 'AI Assistant')}
         onPress={() => onTabChange('ai')}
       />
@@ -51,44 +50,10 @@ export function QuickActions({ isRTL, onTabChange }: QuickActionsProps) {
       />
       <ActionButton
         icon={CreditCard}
-        iconColor={colors.success}
+        iconColor="#22C55E"
         label={t('profile.subscriptionButton', 'Subscription')}
         onPress={() => navigate('/subscribe')}
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  quickActions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-    flexWrap: 'wrap',
-  },
-  quickActionsRTL: {
-    flexDirection: 'row-reverse',
-  },
-  actionButton: {
-    flex: 1,
-    minWidth: 140,
-  },
-  actionButtonInner: {
-    padding: spacing.md,
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  actionIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  actionLabel: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: colors.text,
-    textAlign: 'center',
-  },
-});

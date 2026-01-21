@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, Animated, PanResponder, Easing, ScrollView } from 'react-native';
+import { View, Text, Pressable, Animated, PanResponder, Easing, ScrollView } from 'react-native';
 import { ChevronDown, ChevronUp, GripVertical } from 'lucide-react';
-import { colors, spacing, borderRadius } from '../theme';
 
 interface GlassDraggableExpanderProps {
   title: string;
@@ -131,71 +130,64 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
   });
 
   return (
-    <View style={[styles.container, style]}>
+    <View className="bg-black/20 rounded-lg border border-white/10 overflow-hidden backdrop-blur-xl" style={style}>
       {/* Header - Entire header is clickable to toggle */}
-      <Pressable style={styles.header} onPress={toggleExpanded}>
-        <View style={styles.headerLeft} pointerEvents="box-none">
-          {icon && <View style={styles.icon} pointerEvents="none">{icon}</View>}
-          <View style={styles.titleContainer} pointerEvents="none">
-            <Text style={styles.title}>{title}</Text>
-            {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+      <Pressable className="flex-row items-center justify-between p-3 border-b border-white/[0.08] cursor-pointer" onPress={toggleExpanded}>
+        <View className="flex-row items-center flex-1 gap-2" pointerEvents="box-none">
+          {icon && <View className="mr-1" pointerEvents="none">{icon}</View>}
+          <View className="flex-1" pointerEvents="none">
+            <Text className="text-lg font-semibold text-white">{title}</Text>
+            {subtitle && <Text className="text-sm text-gray-400 mt-0.5">{subtitle}</Text>}
           </View>
-          {badge && <View style={styles.badgeContainer} pointerEvents="none">{badge}</View>}
+          {badge && <View className="ml-2" pointerEvents="none">{badge}</View>}
         </View>
-        <View style={styles.headerRight}>
+        <View className="flex-row items-center gap-2 ml-2">
           {/* Header Actions (e.g., buttons) - stops propagation */}
           {headerActions && (
-            <Pressable 
+            <Pressable
               onPress={(e) => {
                 e.stopPropagation();
               }}
-              style={styles.headerActionsContainer}
             >
               {headerActions}
             </Pressable>
           )}
           {/* Right Element (e.g., mute button) - stops propagation */}
           {rightElement && (
-            <Pressable 
+            <Pressable
               onPress={(e) => {
                 e.stopPropagation();
               }}
-              style={styles.rightElementContainer}
             >
               {rightElement}
             </Pressable>
           )}
           {/* Chevron - rotates on expand/collapse */}
-          <Animated.View 
-            style={[
-              styles.chevronContainer, 
-              { transform: [{ rotate: chevronRotate }] }
-            ]}
+          <Animated.View
+            style={{ transform: [{ rotate: chevronRotate }] }}
           >
-            <ChevronDown size={20} color={colors.primary} />
+            <ChevronDown size={20} color="#a855f7" />
           </Animated.View>
         </View>
       </Pressable>
 
       {/* Expandable Content - Always rendered but animated */}
-      <Animated.View 
-        style={[
-          styles.content, 
-          { 
-            height: heightAnim,
-            opacity: opacityAnim,
-          }
-        ]}
+      <Animated.View
+        className="overflow-hidden relative"
+        style={{
+          height: heightAnim,
+          opacity: opacityAnim,
+        }}
         pointerEvents={isExpanded ? 'auto' : 'none'}
       >
-        <ScrollView 
-          style={styles.scrollContainer}
-          contentContainerStyle={styles.scrollContent}
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ padding: 12, flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
         >
           {isEmpty && emptyMessage ? (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyMessage}>{emptyMessage}</Text>
+            <View className="py-6 items-center justify-center">
+              <Text className="text-sm text-gray-400 text-center">{emptyMessage}</Text>
             </View>
           ) : (
             children
@@ -205,110 +197,15 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
         {/* Draggable Handle */}
         {draggable && isExpanded && (
           <View
-            style={styles.dragHandle}
+            className="absolute bottom-0 left-0 right-0 h-8 justify-center items-center bg-white/5 border-t border-white/[0.08] cursor-ns-resize"
             {...panResponder.panHandlers}
           >
-            <GripVertical size={20} color={colors.textMuted} />
+            <GripVertical size={20} color="#9ca3af" />
           </View>
         )}
       </Animated.View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.glass,  // Purple-tinted glass
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,  // Purple border
-    overflow: 'hidden',
-    backdropFilter: 'blur(20px)',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorderLight,  // Purple border
-    cursor: 'pointer',
-    transition: 'background-color 0.2s ease',
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: spacing.sm,
-  },
-  icon: {
-    marginRight: spacing.xs,
-  },
-  titleContainer: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: 13,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
-  badgeContainer: {
-    marginLeft: spacing.sm,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginLeft: spacing.sm,
-  },
-  headerActionsContainer: {
-    // Stops propagation - clicking this won't toggle
-  },
-  rightElementContainer: {
-    // Stops propagation - clicking this won't toggle
-  },
-  chevronContainer: {
-    // Chevron rotates on expand/collapse
-  },
-  content: {
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  scrollContainer: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: spacing.md,
-    flexGrow: 1,
-  },
-  dragHandle: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.glassLight,  // Purple-tinted glass
-    borderTopWidth: 1,
-    borderTopColor: colors.glassBorderLight,  // Purple border
-    cursor: 'ns-resize',
-  },
-  emptyContainer: {
-    paddingVertical: spacing.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyMessage: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-});
 
 export default GlassDraggableExpander;

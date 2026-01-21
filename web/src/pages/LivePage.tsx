@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
+import { View, Text, ScrollView, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useDirection } from '@/hooks/useDirection';
 import { Radio } from 'lucide-react';
 import { liveService } from '@/services/api';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing } from '@bayit/shared/theme';
 import { GlassView, GlassCard, GlassCategoryPill, GlassLiveChannelCard } from '@bayit/shared/ui';
 import AnimatedCard from '@/components/common/AnimatedCard';
 import logger from '@/utils/logger';
@@ -53,12 +53,12 @@ export default function LivePage() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <View style={styles.skeletonHeader} />
-        <View style={styles.grid}>
+      <View className="flex-1 px-4 py-6 max-w-[1400px] mx-auto w-full">
+        <View className="w-48 h-8 bg-white/5 rounded-lg mb-6" />
+        <View className="flex-row flex-wrap">
           {[...Array(10)].map((_, index) => (
             <View key={`skeleton-${index}`} style={{ width: `${100 / numColumns}%`, padding: spacing.xs }}>
-              <View style={styles.skeletonCard} />
+              <View className="aspect-video bg-white/5 rounded-2xl" />
             </View>
           ))}
         </View>
@@ -67,17 +67,17 @@ export default function LivePage() {
   }
 
   return (
-    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-      <View style={styles.container}>
+    <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
+      <View className="flex-1 px-4 py-6 max-w-[1400px] mx-auto w-full">
         {/* Header */}
-        <View style={[styles.header, { flexDirection, justifyContent }]}>
-          <GlassView style={styles.headerIcon}>
+        <View className={`flex-row items-center gap-2 mb-6 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''} ${justifyContent === 'flex-end' ? 'justify-end' : ''}`}>
+          <GlassView className="w-12 h-12 rounded-full justify-center items-center bg-red-500/20">
             <Radio size={24} color={colors.error} />
           </GlassView>
-          <Text style={[styles.title, { textAlign }]}>{t('live.title')}</Text>
+          <Text className={`text-3xl font-bold text-white flex-1 ${textAlign === 'right' ? 'text-right' : ''}`}>{t('live.title')}</Text>
           {filteredChannels.length > 0 && (
-            <View style={styles.countBadge}>
-              <Text style={styles.countText}>{filteredChannels.length}</Text>
+            <View className="bg-white/10 px-3 py-1 rounded-full border border-white/20">
+              <Text className="text-sm font-semibold text-white/70">{filteredChannels.length}</Text>
             </View>
           )}
         </View>
@@ -86,8 +86,8 @@ export default function LivePage() {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={styles.categoriesScroll}
-        contentContainerStyle={styles.categoriesContent}
+        className="mb-6"
+        contentContainerStyle={{ gap: spacing.sm, paddingBottom: spacing.sm }}
       >
         <GlassCategoryPill
           label={t('live.categories.all')}
@@ -123,7 +123,7 @@ export default function LivePage() {
 
       {/* Channels Grid */}
       {filteredChannels.length > 0 ? (
-        <View style={styles.grid}>
+        <View className="flex-row flex-wrap">
           {filteredChannels.map((channel, index) => (
             <AnimatedCard
               key={channel.id}
@@ -141,11 +141,11 @@ export default function LivePage() {
           ))}
         </View>
       ) : (
-        <View style={styles.emptyState}>
-          <GlassCard style={styles.emptyCard}>
+        <View className="flex-1 justify-center items-center py-16">
+          <GlassCard className="p-12 items-center">
             <Radio size={64} color={colors.textMuted} />
-            <Text style={styles.emptyTitle}>{t('live.noChannels')}</Text>
-            <Text style={styles.emptyDescription}>{t('live.tryLater')}</Text>
+            <Text className="text-xl font-semibold text-white mt-4 mb-2">{t('live.noChannels')}</Text>
+            <Text className="text-base text-white/70">{t('live.tryLater')}</Text>
           </GlassCard>
         </View>
       )}
@@ -153,98 +153,3 @@ export default function LivePage() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.lg,
-    maxWidth: 1400,
-    marginHorizontal: 'auto',
-    width: '100%',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  headerIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.text,
-    flex: 1,
-  },
-  countBadge: {
-    backgroundColor: colors.glass,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  countText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.textSecondary,
-  },
-  categoriesScroll: {
-    marginBottom: spacing.lg,
-  },
-  categoriesContent: {
-    gap: spacing.sm,
-    paddingBottom: spacing.sm,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: spacing.xl * 2,
-  },
-  emptyCard: {
-    padding: spacing.xl * 1.5,
-    alignItems: 'center',
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  emptyDescription: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-  // Skeleton styles
-  skeletonHeader: {
-    width: 192,
-    height: 32,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.lg,
-  },
-  skeletonCard: {
-    aspectRatio: 16 / 9,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.xl,
-  },
-});

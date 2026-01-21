@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Alert,
@@ -153,27 +152,27 @@ export const HomeSectionConfiguration: React.FC = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>{t('common.loading', 'Loading...')}</Text>
+      <View className="flex-1 bg-[#0A0A1A] justify-center items-center">
+        <Text className="text-white text-base">{t('common.loading', 'Loading...')}</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView className="flex-1 bg-[#0A0A1A]" contentContainerClassName={`${isTV ? 'p-6' : 'p-4'} pb-12`}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
+      <View className="items-start gap-4 mb-6" style={{ flexDirection }}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.backButton}
+          className={`${isTV ? 'w-12 h-12' : 'w-10 h-10'} ${isTV ? 'rounded-[24px]' : 'rounded-[20px]'} bg-white/10 justify-center items-center border border-white/20`}
         >
-          <Text style={styles.backButtonText}>{isRTL ? '→' : '←'}</Text>
+          <Text className={`${isTV ? 'text-2xl' : 'text-xl'} text-white font-semibold`}>{isRTL ? '→' : '←'}</Text>
         </TouchableOpacity>
-        <View style={styles.headerContent}>
-          <Text style={[styles.pageTitle, { textAlign }]}>
+        <View className="flex-1">
+          <Text className={`${isTV ? 'text-[32px]' : 'text-2xl'} font-bold text-white`} style={{ textAlign }}>
             {t('settings.homePageSections', 'Home Page Sections')}
           </Text>
-          <Text style={[styles.pageSubtitle, { textAlign }]}>
+          <Text className={`${isTV ? 'text-base' : 'text-sm'} text-white/70 mt-1`} style={{ textAlign }}>
             {t('settings.configureSections', 'Configure which sections appear on your home page')}
           </Text>
         </View>
@@ -181,18 +180,18 @@ export const HomeSectionConfiguration: React.FC = () => {
 
       {/* Saving Indicator */}
       {saving && (
-        <View style={styles.savingIndicator}>
-          <Text style={styles.savingText}>{t('common.saving', 'Saving...')}</Text>
+        <View className="bg-purple-500/20 py-1 px-4 rounded-md mb-4 self-center">
+          <Text className={`text-[#6B21A8] ${isTV ? 'text-sm' : 'text-xs'} font-medium`}>{t('common.saving', 'Saving...')}</Text>
         </View>
       )}
 
       {/* Visible Sections */}
-      <GlassView style={styles.section}>
-        <View style={[styles.sectionHeader, { flexDirection }]}>
-          <Text style={[styles.sectionTitle, { textAlign }]}>
+      <GlassView className="p-4 mb-6 rounded-3xl">
+        <View className="justify-between items-center mb-4" style={{ flexDirection }}>
+          <Text className={`${isTV ? 'text-base' : 'text-sm'} font-semibold text-white uppercase tracking-wider`} style={{ textAlign }}>
             {t('settings.visibleSections', 'Visible Sections')}
           </Text>
-          <Text style={styles.sectionHint}>
+          <Text className={`${isTV ? 'text-xs' : 'text-[10px]'} text-white/40`}>
             {t('settings.dragToReorder', 'Drag to reorder')}
           </Text>
         </View>
@@ -205,8 +204,8 @@ export const HomeSectionConfiguration: React.FC = () => {
             keyExtractor={(item) => item.id}
           />
         ) : (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>
+          <View className="py-6 items-center">
+            <Text className={`text-white/40 ${isTV ? 'text-base' : 'text-sm'} text-center`}>
               {t('settings.noVisibleSections', 'No visible sections. Tap a hidden section to show it.')}
             </Text>
           </View>
@@ -215,29 +214,29 @@ export const HomeSectionConfiguration: React.FC = () => {
 
       {/* Hidden Sections */}
       {hiddenSections.length > 0 && (
-        <GlassView style={styles.section}>
-          <View style={[styles.sectionHeader, { flexDirection }]}>
-            <Text style={[styles.sectionTitle, { textAlign }]}>
+        <GlassView className="p-4 mb-6 rounded-3xl">
+          <View className="justify-between items-center mb-4" style={{ flexDirection }}>
+            <Text className={`${isTV ? 'text-base' : 'text-sm'} font-semibold text-white uppercase tracking-wider`} style={{ textAlign }}>
               {t('settings.hiddenSections', 'Hidden Sections')}
             </Text>
-            <Text style={styles.sectionHint}>
+            <Text className={`${isTV ? 'text-xs' : 'text-[10px]'} text-white/40`}>
               {t('settings.tapToShow', 'Tap to show')}
             </Text>
           </View>
 
-          <View style={styles.hiddenList}>
+          <View className="gap-2">
             {hiddenSections.map(renderHiddenSection)}
           </View>
         </GlassView>
       )}
 
       {/* Reset Button */}
-      <View style={styles.resetContainer}>
+      <View className="items-center mt-6">
         <TouchableOpacity
           onPress={handleReset}
-          style={styles.resetButton}
+          className={`py-4 px-6 bg-white/5 rounded-lg border border-white/20`}
         >
-          <Text style={styles.resetButtonText}>
+          <Text className={`text-white/40 ${isTV ? 'text-base' : 'text-sm'} font-medium`}>
             {t('settings.resetToDefault', 'Reset to Default')}
           </Text>
         </TouchableOpacity>
@@ -245,124 +244,5 @@ export const HomeSectionConfiguration: React.FC = () => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    padding: isTV ? spacing.xl : spacing.lg,
-    paddingBottom: spacing.xl * 2,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: fontSize.md,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.md,
-    marginBottom: spacing.xl,
-  },
-  backButton: {
-    width: isTV ? 48 : 40,
-    height: isTV ? 48 : 40,
-    borderRadius: isTV ? 24 : 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  backButtonText: {
-    fontSize: isTV ? 24 : 20,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  headerContent: {
-    flex: 1,
-  },
-  pageTitle: {
-    fontSize: isTV ? 32 : 24,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  pageSubtitle: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-    marginTop: spacing.xs,
-  },
-  savingIndicator: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.md,
-    alignSelf: 'center',
-  },
-  savingText: {
-    color: colors.primary,
-    fontSize: isTV ? 14 : 12,
-    fontWeight: '500',
-  },
-  section: {
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-    borderRadius: borderRadius.xl,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  sectionTitle: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.text,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  sectionHint: {
-    fontSize: isTV ? 12 : 10,
-    color: colors.textMuted,
-  },
-  emptyState: {
-    paddingVertical: spacing.xl,
-    alignItems: 'center',
-  },
-  emptyStateText: {
-    color: colors.textMuted,
-    fontSize: isTV ? 16 : 14,
-    textAlign: 'center',
-  },
-  hiddenList: {
-    gap: spacing.sm,
-  },
-  resetContainer: {
-    alignItems: 'center',
-    marginTop: spacing.lg,
-  },
-  resetButton: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  resetButtonText: {
-    color: colors.textMuted,
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '500',
-  },
-});
 
 export default HomeSectionConfiguration;

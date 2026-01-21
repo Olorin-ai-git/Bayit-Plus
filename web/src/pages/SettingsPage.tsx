@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing } from '@bayit/shared/theme';
 import { GlassView, GlassToggle } from '@bayit/shared/ui';
 import { useAuthStore } from '@bayit/shared-stores/authStore';
 import { Globe, Bell, Moon, Volume2, Shield, ChevronRight, Languages } from 'lucide-react';
@@ -55,33 +55,33 @@ export default function SettingsPage() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={[styles.pageTitle, { textAlign }]}>{t('nav.settings')}</Text>
+    <ScrollView className="flex-1 bg-black" contentContainerStyle={{ padding: spacing.lg, paddingBottom: spacing.xl * 2 }}>
+      <Text className={`text-3xl font-bold text-white mb-8 ${textAlign === 'right' ? 'text-right' : ''}`}>{t('nav.settings')}</Text>
 
       {/* Language Settings */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>{t('settings.language', 'Language')}</Text>
-        <Pressable style={[styles.settingRow, { flexDirection }]} onPress={handleLanguageChange}>
-          <View style={[styles.settingLeft, { flexDirection }]}>
+      <GlassView className="p-4 mb-4 rounded-lg">
+        <Text className={`text-base font-semibold text-white/60 mb-4 uppercase tracking-wider ${textAlign === 'right' ? 'text-right' : ''}`}>{t('settings.language', 'Language')}</Text>
+        <Pressable className={`flex-row items-center justify-between py-2 border-b border-white/10 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`} onPress={handleLanguageChange}>
+          <View className={`flex-row items-center gap-4 flex-1 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
             <Globe size={20} color={colors.primary} />
-            <Text style={[styles.settingLabel, { textAlign }]}>{t('settings.appLanguage', 'App Language')}</Text>
+            <Text className={`text-base text-white ${textAlign === 'right' ? 'text-right' : ''}`}>{t('settings.appLanguage', 'App Language')}</Text>
           </View>
-          <View style={[styles.settingRight, { flexDirection }]}>
-            <Text style={styles.settingValue}>{currentLanguage}</Text>
+          <View className={`flex-row items-center gap-2 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
+            <Text className="text-sm text-white/60">{currentLanguage}</Text>
             <ChevronRight size={20} color={colors.textMuted} />
           </View>
         </Pressable>
       </GlassView>
 
       {/* Chat Translation Settings */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>{t('settings.chatTranslation', 'Chat Translation')}</Text>
-        <View style={[styles.settingRow, { flexDirection }]}>
-          <View style={[styles.settingLeft, { flexDirection }]}>
+      <GlassView className="p-4 mb-4 rounded-lg">
+        <Text className={`text-base font-semibold text-white/60 mb-4 uppercase tracking-wider ${textAlign === 'right' ? 'text-right' : ''}`}>{t('settings.chatTranslation', 'Chat Translation')}</Text>
+        <View className={`flex-row items-center justify-between py-2 border-b border-white/10 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
+          <View className={`flex-row items-center gap-4 flex-1 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
             <Languages size={20} color={colors.primary} />
-            <View style={styles.settingTextContainer}>
-              <Text style={[styles.settingLabel, { textAlign }]}>{t('settings.autoTranslate', 'Auto-translate messages')}</Text>
-              <Text style={[styles.settingDescription, { textAlign }]}>
+            <View className="flex-1">
+              <Text className={`text-base text-white ${textAlign === 'right' ? 'text-right' : ''}`}>{t('settings.autoTranslate', 'Auto-translate messages')}</Text>
+              <Text className={`text-xs text-white/60 mt-0.5 ${textAlign === 'right' ? 'text-right' : ''}`}>
                 {t('settings.autoTranslateDescription', 'Automatically translate chat messages to your preferred language')}
               </Text>
             </View>
@@ -95,12 +95,12 @@ export default function SettingsPage() {
       </GlassView>
 
       {/* Notification Settings */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>{t('settings.notifications', 'Notifications')}</Text>
-        <View style={[styles.settingRow, { flexDirection }]}>
-          <View style={[styles.settingLeft, { flexDirection }]}>
+      <GlassView className="p-4 mb-4 rounded-lg">
+        <Text className={`text-base font-semibold text-white/60 mb-4 uppercase tracking-wider ${textAlign === 'right' ? 'text-right' : ''}`}>{t('settings.notifications', 'Notifications')}</Text>
+        <View className={`flex-row items-center justify-between py-2 border-b border-white/10 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
+          <View className={`flex-row items-center gap-4 flex-1 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
             <Bell size={20} color={colors.primary} />
-            <Text style={[styles.settingLabel, { textAlign }]}>{t('settings.pushNotifications', 'Push Notifications')}</Text>
+            <Text className={`text-base text-white ${textAlign === 'right' ? 'text-right' : ''}`}>{t('settings.pushNotifications', 'Push Notifications')}</Text>
           </View>
           <GlassToggle
             value={notifications}
@@ -110,12 +110,12 @@ export default function SettingsPage() {
       </GlassView>
 
       {/* Playback Settings */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>{t('settings.playback', 'Playback')}</Text>
-        <View style={[styles.settingRow, { flexDirection }]}>
-          <View style={[styles.settingLeft, { flexDirection }]}>
+      <GlassView className="p-4 mb-4 rounded-lg">
+        <Text className={`text-base font-semibold text-white/60 mb-4 uppercase tracking-wider ${textAlign === 'right' ? 'text-right' : ''}`}>{t('settings.playback', 'Playback')}</Text>
+        <View className={`flex-row items-center justify-between py-2 border-b border-white/10 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
+          <View className={`flex-row items-center gap-4 flex-1 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
             <Volume2 size={20} color={colors.primary} />
-            <Text style={[styles.settingLabel, { textAlign }]}>{t('settings.autoplay', 'Autoplay')}</Text>
+            <Text className={`text-base text-white ${textAlign === 'right' ? 'text-right' : ''}`}>{t('settings.autoplay', 'Autoplay')}</Text>
           </View>
           <GlassToggle
             value={autoplay}
@@ -125,12 +125,12 @@ export default function SettingsPage() {
       </GlassView>
 
       {/* Appearance */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>{t('settings.appearance', 'Appearance')}</Text>
-        <View style={[styles.settingRow, { flexDirection }]}>
-          <View style={[styles.settingLeft, { flexDirection }]}>
+      <GlassView className="p-4 mb-4 rounded-lg">
+        <Text className={`text-base font-semibold text-white/60 mb-4 uppercase tracking-wider ${textAlign === 'right' ? 'text-right' : ''}`}>{t('settings.appearance', 'Appearance')}</Text>
+        <View className={`flex-row items-center justify-between py-2 border-b border-white/10 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
+          <View className={`flex-row items-center gap-4 flex-1 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
             <Moon size={20} color={colors.primary} />
-            <Text style={[styles.settingLabel, { textAlign }]}>{t('settings.darkMode', 'Dark Mode')}</Text>
+            <Text className={`text-base text-white ${textAlign === 'right' ? 'text-right' : ''}`}>{t('settings.darkMode', 'Dark Mode')}</Text>
           </View>
           <GlassToggle
             value={darkMode}
@@ -140,101 +140,28 @@ export default function SettingsPage() {
       </GlassView>
 
       {/* Privacy */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>{t('settings.privacy', 'Privacy')}</Text>
-        <Pressable style={[styles.settingRow, { flexDirection }]}>
-          <View style={[styles.settingLeft, { flexDirection }]}>
+      <GlassView className="p-4 mb-4 rounded-lg">
+        <Text className={`text-base font-semibold text-white/60 mb-4 uppercase tracking-wider ${textAlign === 'right' ? 'text-right' : ''}`}>{t('settings.privacy', 'Privacy')}</Text>
+        <Pressable className={`flex-row items-center justify-between py-2 border-b border-white/10 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
+          <View className={`flex-row items-center gap-4 flex-1 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
             <Shield size={20} color={colors.primary} />
-            <Text style={[styles.settingLabel, { textAlign }]}>{t('settings.privacyPolicy', 'Privacy Policy')}</Text>
+            <Text className={`text-base text-white ${textAlign === 'right' ? 'text-right' : ''}`}>{t('settings.privacyPolicy', 'Privacy Policy')}</Text>
           </View>
           <ChevronRight size={20} color={colors.textMuted} />
         </Pressable>
-        <Pressable style={[styles.settingRow, { flexDirection }]}>
-          <View style={[styles.settingLeft, { flexDirection }]}>
+        <Pressable className={`flex-row items-center justify-between py-2 border-b border-white/10 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
+          <View className={`flex-row items-center gap-4 flex-1 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
             <Shield size={20} color={colors.primary} />
-            <Text style={[styles.settingLabel, { textAlign }]}>{t('settings.termsOfService', 'Terms of Service')}</Text>
+            <Text className={`text-base text-white ${textAlign === 'right' ? 'text-right' : ''}`}>{t('settings.termsOfService', 'Terms of Service')}</Text>
           </View>
           <ChevronRight size={20} color={colors.textMuted} />
         </Pressable>
       </GlassView>
 
       {/* App Info */}
-      <View style={styles.appInfo}>
-        <Text style={styles.appVersion}>{t('common.appVersion', 'Bayit+ v1.0.0')}</Text>
+      <View className="items-center mt-8">
+        <Text className="text-xs text-white/60">{t('common.appVersion', 'Bayit+ v1.0.0')}</Text>
       </View>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    padding: spacing.lg,
-    paddingBottom: spacing.xl * 2,
-  },
-  pageTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: spacing.xl,
-  },
-  section: {
-    padding: spacing.md,
-    marginBottom: spacing.md,
-    borderRadius: borderRadius.lg,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.textMuted,
-    marginBottom: spacing.md,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  settingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
-  },
-  settingLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    flex: 1,
-  },
-  settingRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  settingLabel: {
-    fontSize: 16,
-    color: colors.text,
-  },
-  settingDescription: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
-  settingTextContainer: {
-    flex: 1,
-  },
-  settingValue: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  appInfo: {
-    alignItems: 'center',
-    marginTop: spacing.xl,
-  },
-  appVersion: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-});

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { View, Text, StyleSheet, Pressable, Animated } from 'react-native'
+import { View, Text, Pressable, Animated } from 'react-native'
 import { useNavigate } from 'react-router-dom'
 import { X, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -51,8 +51,8 @@ export default function Chatbot() {
   // Voice response orchestration
   const { handleVoiceResponse } = useVoiceResponseCoordinator({
     onNavigate: (path) => navigate(path),
-    onSearch: (query) => navigate(`/search?q=${encodeURIComponent(query)}`),
-    onPlay: (contentId) => navigate(`/vod/${contentId}`),
+    onSearch: (query) => navigate(\`/search?q=\${encodeURIComponent(query)}\`),
+    onPlay: (contentId) => navigate(\`/vod/\${contentId}\`),
     onProcessingStart: () => {},
     onProcessingEnd: () => {},
   })
@@ -274,7 +274,7 @@ export default function Chatbot() {
   }
 
   const handleRecommendationPress = (id: string) => {
-    navigate(`/vod/${id}`)
+    navigate(\`/vod/\${id}\`)
   }
 
   if (!isAuthenticated && !IS_TV_BUILD) {
@@ -290,13 +290,10 @@ export default function Chatbot() {
       {!isOpen && (
         <Pressable
           onPress={() => setOpen(true)}
-          style={({ hovered }) => [
-            styles.chatButton,
-            hovered && styles.chatButtonHovered,
-          ]}
+          className={\`fixed \${IS_TV_BUILD ? 'bottom-8 left-8 w-20 h-20' : 'bottom-6 left-6 w-14 h-14'} z-50 rounded-full bg-[#8a2be2] shadow-[0_4px_12px_rgba(138,43,226,0.3)] hover:scale-110 hover:shadow-[0_4px_12px_rgba(138,43,226,0.5)]\`}
           accessibilityLabel={t('chatbot.openChat')}
         >
-          <View style={styles.chatButtonInner}>
+          <View className="flex-1 items-center justify-center">
             <Sparkles size={24} color={colors.text} />
           </View>
         </Pressable>
@@ -304,28 +301,23 @@ export default function Chatbot() {
 
       {isOpen && (
         <Animated.View
-          style={[
-            styles.chatWindow,
-            {
-              transform: [{ translateY: slideAnim }],
-              opacity: opacityAnim,
-            },
-          ]}
+          className={\`fixed \${IS_TV_BUILD ? 'bottom-8 left-8 w-[600px] h-[700px] max-h-[80vh]' : 'bottom-6 left-6 w-96 max-w-[calc(100vw-3rem)] h-[500px] max-h-[70vh]'} z-50\`}
+          style={{
+            transform: [{ translateY: slideAnim }],
+            opacity: opacityAnim,
+          }}
         >
-          <GlassView style={styles.chatContainer} intensity="high">
-            <View style={[styles.header, isRTL && styles.headerRTL]}>
-              <View style={[styles.headerLeft, isRTL && styles.headerLeftRTL]}>
-                <View style={styles.headerIcon}>
+          <GlassView className="flex-1 overflow-hidden" intensity="high">
+            <View className={\`flex-row items-center justify-between px-4 \${IS_TV_BUILD ? 'py-3' : 'py-2'} border-b border-white/10 bg-gradient-to-l from-[rgba(107,33,168,0.3)] to-[rgba(138,43,226,0.2)] \${isRTL ? 'flex-row-reverse' : ''}\`}>
+              <View className={\`flex-row items-center gap-2 \${isRTL ? 'flex-row-reverse' : ''}\`}>
+                <View className={\`\${IS_TV_BUILD ? 'w-12 h-12 rounded-3xl' : 'w-8 h-8 rounded-2xl'} bg-[#8a2be2] items-center justify-center\`}>
                   <Sparkles size={16} color={colors.text} />
                 </View>
-                <Text style={styles.headerTitle}>{t('chatbot.title')}</Text>
+                <Text className={\`\${IS_TV_BUILD ? 'text-2xl' : 'text-base'} font-semibold text-white\`}>{t('chatbot.title')}</Text>
               </View>
               <Pressable
                 onPress={() => setOpen(false)}
-                style={({ hovered }) => [
-                  styles.closeButton,
-                  hovered && styles.closeButtonHovered,
-                ]}
+                className="p-2 rounded-lg hover:bg-white/10"
               >
                 <X size={18} color={colors.textSecondary} />
               </Pressable>
@@ -361,85 +353,3 @@ export default function Chatbot() {
     </>
   )
 }
-
-const styles = StyleSheet.create({
-  chatButton: {
-    position: 'fixed' as any,
-    bottom: IS_TV_BUILD ? spacing.xl : spacing.lg,
-    left: IS_TV_BUILD ? spacing.xl : spacing.lg,
-    zIndex: 50,
-    width: IS_TV_BUILD ? 80 : 56,
-    height: IS_TV_BUILD ? 80 : 56,
-    borderRadius: IS_TV_BUILD ? 40 : 28,
-    backgroundColor: colors.secondary,
-    shadowColor: colors.secondary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  chatButtonHovered: {
-    transform: [{ scale: 1.1 }],
-    shadowOpacity: 0.5,
-  },
-  chatButtonInner: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  chatWindow: {
-    position: 'fixed' as any,
-    bottom: IS_TV_BUILD ? spacing.xl : spacing.lg,
-    left: IS_TV_BUILD ? spacing.xl : spacing.lg,
-    zIndex: 50,
-    width: IS_TV_BUILD ? 600 : 384,
-    maxWidth: 'calc(100vw - 3rem)' as any,
-    height: IS_TV_BUILD ? 700 : 500,
-    maxHeight: IS_TV_BUILD ? '80vh' as any : '70vh' as any,
-  },
-  chatContainer: {
-    flex: 1,
-    overflow: 'hidden',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 4,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-    backgroundImage: 'linear-gradient(to left, rgba(107, 33, 168, 0.3), rgba(138, 43, 226, 0.2))' as any,
-  },
-  headerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  headerLeftRTL: {
-    flexDirection: 'row-reverse',
-  },
-  headerIcon: {
-    width: IS_TV_BUILD ? 48 : 32,
-    height: IS_TV_BUILD ? 48 : 32,
-    borderRadius: IS_TV_BUILD ? 24 : 16,
-    backgroundColor: colors.secondary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    fontSize: IS_TV_BUILD ? 24 : 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  closeButton: {
-    padding: spacing.sm,
-    borderRadius: 8,
-  },
-  closeButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-})

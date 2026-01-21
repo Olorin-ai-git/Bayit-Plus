@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
@@ -56,7 +56,7 @@ export default function ProfilePage() {
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg, paddingBottom: spacing.xl * 2, maxWidth: 1200, marginHorizontal: 'auto', width: '100%' }}>
       <HeroSection
         isRTL={isRTL}
         stats={stats}
@@ -66,7 +66,7 @@ export default function ProfilePage() {
 
       <QuickActions isRTL={isRTL} onTabChange={setActiveTab} />
 
-      <View style={styles.tabsContainer}>
+      <View className="mb-4">
         <GlassTabs
           tabs={tabs.map((tab) => ({ id: tab.id, label: tab.label }))}
           activeTab={activeTab}
@@ -74,7 +74,7 @@ export default function ProfilePage() {
         />
       </View>
 
-      <View style={styles.tabContent}>
+      <View className="gap-4">
         {activeTab === 'overview' && <OverviewTab isRTL={isRTL} recentActivity={recentActivity} />}
         {activeTab === 'ai' && <AIVoiceTab isRTL={isRTL} />}
         {activeTab === 'security' && <SecurityTab isRTL={isRTL} />}
@@ -97,22 +97,3 @@ export default function ProfilePage() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: spacing.lg,
-    paddingBottom: spacing.xl * 2,
-    maxWidth: 1200,
-    marginHorizontal: 'auto',
-    width: '100%',
-  },
-  tabsContainer: {
-    marginBottom: spacing.lg,
-  },
-  tabContent: {
-    gap: spacing.lg,
-  },
-});

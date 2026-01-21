@@ -71,7 +71,7 @@ curl https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/content/fea
 
 A new script has been created to upload real movies from the USB drive to Google Cloud Storage and MongoDB Atlas.
 
-**Script Location:** `/Users/olorin/Documents/Bayit-Plus/backend/scripts/upload_real_movies.py`
+**Script Location:** `/Users/olorin/Documents/olorin/backend/scripts/upload_real_movies.py`
 
 ### Features:
 - ✅ Scans movie files from USB drive (362 movies found)

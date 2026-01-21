@@ -9,14 +9,12 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
   Modal,
   Animated,
   Image,
   Linking,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '../../theme';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 import { supportConfig } from '../../config/supportConfig';
@@ -118,71 +116,69 @@ export const HelpModal: React.FC<HelpModalProps> = ({
       animationType="none"
       onRequestClose={handleClose}
     >
-      <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
+      <Animated.View className="flex-1 bg-black/70 justify-center items-center p-4" style={{ opacity: fadeAnim }}>
         <Animated.View
-          style={[
-            styles.modalContainer,
-            {
-              transform: [
-                {
-                  translateY: slideAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [100, 0],
-                  }),
-                },
-              ],
-            },
-          ]}
+          className="w-full max-w-[600px] max-h-[90%] bg-[rgba(25,25,35,0.98)] rounded-2xl border border-white/10 overflow-hidden"
+          style={{
+            transform: [
+              {
+                translateY: slideAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [100, 0],
+                }),
+              },
+            ],
+          }}
         >
           {/* Header */}
-          <View style={styles.header}>
-            <View style={[styles.titleContainer, { flexDirection }]}>
-              {icon && <Text style={styles.icon}>{icon}</Text>}
-              <Text style={[styles.title, { textAlign }]}>{t(titleKey)}</Text>
+          <View className="flex-row items-center justify-between p-4 border-b border-white/10">
+            <View className="flex-1 items-center gap-2" style={{ flexDirection }}>
+              {icon && <Text className={isTV ? 'text-[32px]' : 'text-[28px]'}>{icon}</Text>}
+              <Text className={`text-white font-bold ${isTV ? 'text-2xl' : 'text-xl'}`} style={{ textAlign }}>{t(titleKey)}</Text>
             </View>
             <TouchableOpacity
-              style={styles.closeButton}
+              className="w-9 h-9 items-center justify-center rounded-full bg-white/10"
               onPress={handleClose}
               accessibilityRole="button"
               accessibilityLabel={t('common.close', 'Close')}
             >
-              <Text style={styles.closeButtonText}>✕</Text>
+              <Text className="text-white text-lg">✕</Text>
             </TouchableOpacity>
           </View>
 
           {/* Content */}
           <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
+            className="flex-1"
+            contentContainerClassName="p-4"
             showsVerticalScrollIndicator={false}
           >
             {/* Description */}
-            <Text style={[styles.description, { textAlign }]}>
+            <Text className={`text-white/70 mb-4 ${isTV ? 'text-base leading-[26px]' : 'text-sm leading-[22px]'}`} style={{ textAlign }}>
               {t(descriptionKey)}
             </Text>
 
             {/* Steps */}
             {steps.length > 0 && (
-              <View style={styles.stepsContainer}>
-                <Text style={[styles.sectionTitle, { textAlign }]}>
+              <View className="mb-6">
+                <Text className={`text-white font-semibold mb-3 ${isTV ? 'text-lg' : 'text-base'}`} style={{ textAlign }}>
                   {t('help.howTo', 'How to use')}
                 </Text>
                 {steps.map((step, index) => (
-                  <View key={index} style={[styles.step, { flexDirection }]}>
-                    <View style={styles.stepNumber}>
-                      <Text style={styles.stepNumberText}>{index + 1}</Text>
+                  <View key={index} className="items-start gap-3 mb-4" style={{ flexDirection }}>
+                    <View className={`items-center justify-center bg-purple-500 ${isTV ? 'w-9 h-9 rounded-[18px]' : 'w-7 h-7 rounded-[14px]'}`}>
+                      <Text className={`text-white font-bold ${isTV ? 'text-base' : 'text-sm'}`}>{index + 1}</Text>
                     </View>
-                    <View style={styles.stepContent}>
-                      <Text style={[styles.stepTitle, { textAlign }]}>
+                    <View className="flex-1">
+                      <Text className={`text-white font-semibold mb-1 ${isTV ? 'text-base' : 'text-sm'}`} style={{ textAlign }}>
                         {t(step.titleKey)}
                       </Text>
-                      <Text style={[styles.stepDescription, { textAlign }]}>
+                      <Text className={`text-white/70 ${isTV ? 'text-sm leading-[22px]' : 'text-[13px] leading-5'}`} style={{ textAlign }}>
                         {t(step.descriptionKey)}
                       </Text>
                       {step.imageUrl && (
                         <Image
                           source={{ uri: step.imageUrl }}
-                          style={styles.stepImage}
+                          className="w-full h-[150px] mt-2 rounded-md"
                           resizeMode="contain"
                         />
                       )}
@@ -194,21 +190,22 @@ export const HelpModal: React.FC<HelpModalProps> = ({
 
             {/* Related Articles */}
             {relatedArticles.length > 0 && (
-              <View style={styles.relatedContainer}>
-                <Text style={[styles.sectionTitle, { textAlign }]}>
+              <View className="mb-6">
+                <Text className={`text-white font-semibold mb-3 ${isTV ? 'text-lg' : 'text-base'}`} style={{ textAlign }}>
                   {t('help.relatedArticles', 'Related articles')}
                 </Text>
                 {relatedArticles.map((article, index) => (
                   <TouchableOpacity
                     key={index}
-                    style={[styles.relatedItem, { flexDirection }]}
+                    className="items-center gap-2 p-3 bg-white/5 rounded-md mb-2"
+                    style={{ flexDirection }}
                     onPress={() => handleArticlePress(article.slug)}
                   >
-                    <Text style={styles.relatedIcon}>📄</Text>
-                    <Text style={[styles.relatedTitle, { textAlign }]}>
+                    <Text className={isTV ? 'text-lg' : 'text-base'}>📄</Text>
+                    <Text className={`flex-1 text-white ${isTV ? 'text-sm' : 'text-[13px]'}`} style={{ textAlign }}>
                       {t(article.titleKey)}
                     </Text>
-                    <Text style={styles.relatedArrow}>
+                    <Text className={`text-white/70 ${isTV ? 'text-base' : 'text-sm'}`}>
                       {isRTL ? '←' : '→'}
                     </Text>
                   </TouchableOpacity>
@@ -218,15 +215,15 @@ export const HelpModal: React.FC<HelpModalProps> = ({
 
             {/* Contact Support */}
             {onContactSupport && (
-              <View style={styles.supportContainer}>
-                <Text style={[styles.supportText, { textAlign }]}>
+              <View className="items-center p-4 bg-white/5 rounded-lg">
+                <Text className={`text-white/70 mb-3 ${isTV ? 'text-sm' : 'text-[13px]'}`} style={{ textAlign }}>
                   {t('help.stillNeedHelp', 'Still need help?')}
                 </Text>
                 <TouchableOpacity
-                  style={styles.supportButton}
+                  className={`px-6 bg-purple-500 rounded-lg ${isTV ? 'py-3' : 'py-2'}`}
                   onPress={onContactSupport}
                 >
-                  <Text style={styles.supportButtonText}>
+                  <Text className={`text-white font-semibold ${isTV ? 'text-base' : 'text-sm'}`}>
                     {t('help.contactSupport', 'Contact Support')}
                   </Text>
                 </TouchableOpacity>
@@ -238,162 +235,5 @@ export const HelpModal: React.FC<HelpModalProps> = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  modalContainer: {
-    width: '100%',
-    maxWidth: 600,
-    maxHeight: '90%',
-    backgroundColor: 'rgba(25, 25, 35, 0.98)',
-    borderRadius: borderRadius.xl,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    overflow: 'hidden',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  titleContainer: {
-    flex: 1,
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  icon: {
-    fontSize: isTV ? 32 : 28,
-  },
-  title: {
-    fontSize: isTV ? 24 : 20,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  closeButton: {
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 18,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  closeButtonText: {
-    fontSize: 18,
-    color: colors.text,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: spacing.lg,
-  },
-  description: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 26 : 22,
-    marginBottom: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: isTV ? 18 : 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  stepsContainer: {
-    marginBottom: spacing.xl,
-  },
-  step: {
-    alignItems: 'flex-start',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  stepNumber: {
-    width: isTV ? 36 : 28,
-    height: isTV ? 36 : 28,
-    borderRadius: isTV ? 18 : 14,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  stepNumberText: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  stepContent: {
-    flex: 1,
-  },
-  stepTitle: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  stepDescription: {
-    fontSize: isTV ? 14 : 13,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 22 : 20,
-  },
-  stepImage: {
-    width: '100%',
-    height: 150,
-    marginTop: spacing.sm,
-    borderRadius: borderRadius.md,
-  },
-  relatedContainer: {
-    marginBottom: spacing.xl,
-  },
-  relatedItem: {
-    alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.sm,
-  },
-  relatedIcon: {
-    fontSize: isTV ? 18 : 16,
-  },
-  relatedTitle: {
-    flex: 1,
-    fontSize: isTV ? 14 : 13,
-    color: colors.text,
-  },
-  relatedArrow: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-  },
-  supportContainer: {
-    alignItems: 'center',
-    padding: spacing.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-  },
-  supportText: {
-    fontSize: isTV ? 14 : 13,
-    color: colors.textSecondary,
-    marginBottom: spacing.md,
-  },
-  supportButton: {
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.lg,
-  },
-  supportButtonText: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-});
 
 export default HelpModal;

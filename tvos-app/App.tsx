@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StatusBar, LogBox, View, StyleSheet, Pressable, Text, Alert } from 'react-native';
+import { StatusBar, LogBox, View, Pressable, Text, Animated } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import i18n, { loadSavedLanguage } from '@bayit/shared-i18n';
+import { GlassAlert, GlassAlertRoot } from '@bayit/shared/components/ui';
 import {
   HomeScreen,
   PlayerScreen,
@@ -81,7 +82,7 @@ const FullWidthSoundwave: React.FC<{
   const maxHeight = 28;
 
   return (
-    <View style={soundwaveStyles.container}>
+    <View className="h-9 w-full bg-[rgba(0,12,24,0.95)] flex-row justify-center items-center border-b border-[rgba(107,33,168,0.3)]">
       {Array.from({ length: barCount }).map((_, i) => {
         const phase = (tick * 0.3) + (i / barCount) * Math.PI * 6;
         const wave = Math.sin(phase) * 0.5 + 0.5;
@@ -98,13 +99,11 @@ const FullWidthSoundwave: React.FC<{
         return (
           <View
             key={i}
-            style={[
-              soundwaveStyles.bar,
-              {
-                height: Math.max(baseHeight, Math.min(maxHeight, height)),
-                opacity: isListening ? 0.9 : 0.25,
-              }
-            ]}
+            className="w-[3px] mx-0.5 bg-purple-500 rounded-sm"
+            style={{
+              height: Math.max(baseHeight, Math.min(maxHeight, height)),
+              opacity: isListening ? 0.9 : 0.25,
+            }}
           />
         );
       })}
@@ -112,24 +111,6 @@ const FullWidthSoundwave: React.FC<{
   );
 };
 
-const soundwaveStyles = StyleSheet.create({
-  container: {
-    height: 36,
-    width: '100%',
-    backgroundColor: 'rgba(0, 12, 24, 0.95)',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  bar: {
-    width: 3,
-    marginHorizontal: 2,
-    backgroundColor: '#a855f7',
-    borderRadius: 2,
-  },
-});
 
 export type RootStackParamList = {
   Login: undefined;
@@ -275,7 +256,7 @@ const AppContent: React.FC = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-[#0d0d1a]">
       <StatusBar hidden />
 
       {/* Demo Mode Banner */}
@@ -296,7 +277,7 @@ const AppContent: React.FC = () => {
       />
 
       {/* Main Content Area - Full Width (no sidebar) */}
-      <View style={styles.content}>
+      <View className="flex-1">
         <Stack.Navigator
           screenOptions={{
             headerShown: false,
@@ -334,12 +315,9 @@ const AppContent: React.FC = () => {
       {!chatbotVisible && (
         <Pressable
           onPress={handleChatbotOpen}
-          style={({ focused }) => [
-            styles.chatFab,
-            focused && styles.chatFabFocused,
-          ]}
+          className="absolute bottom-10 right-10 w-[70px] h-[70px] rounded-full bg-[rgba(107,33,168,0.3)] border-2 border-[rgba(168,85,247,0.6)] justify-center items-center shadow-lg shadow-purple-500/30 focus:bg-[rgba(168,85,247,0.4)] focus:border-purple-500 focus:scale-110"
         >
-          <Text style={styles.chatFabIcon}>✨</Text>
+          <Text className="text-[32px]">✨</Text>
         </Pressable>
       )}
 
@@ -460,7 +438,7 @@ const AppContentWithHandlers: React.FC = () => {
         if (resolveResponse.items && resolveResponse.items.length > 0) {
           const firstItem = resolveResponse.items[0];
 
-          Alert.alert(
+          GlassAlert.alert(
             t('chatbot.showMultipleSuccess', { count: resolveResponse.items.length }),
             t('tvos.playingFirstItem', { name: firstItem.name, defaultValue: `Playing: ${firstItem.name}` }),
             [
@@ -477,14 +455,14 @@ const AppContentWithHandlers: React.FC = () => {
             ]
           );
         } else {
-          Alert.alert(
+          GlassAlert.alert(
             t('common.error'),
             t('chatbot.showMultipleNotFound')
           );
         }
       } catch (error) {
         console.error('[tvOS Chatbot] Error resolving content:', error);
-        Alert.alert(
+        GlassAlert.alert(
           t('common.error'),
           t('chatbot.errors.general')
         );
@@ -497,7 +475,7 @@ const AppContentWithHandlers: React.FC = () => {
 
       // On tvOS, navigate to a Games screen (if exists) with chess invite params
       // For now, show an alert since Chess screen may not exist
-      Alert.alert(
+      GlassAlert.alert(
         t('chess.title'),
         t('chess.sendingInvite', { name: payload.friendName }),
         [{ text: t('common.ok') }]
@@ -537,57 +515,24 @@ function App(): React.JSX.Element {
   return (
     <I18nextProvider i18n={i18n}>
       <SafeAreaProvider>
-        {showSplash ? (
-          <SplashScreen onComplete={handleSplashComplete} minimumDuration={3000} />
-        ) : (
-          <ErrorBoundary>
-            <ModalProvider>
-              <ProfileProvider>
-                <NavigationContainer>
-                  <AppContentWithHandlers />
-                </NavigationContainer>
-              </ProfileProvider>
-            </ModalProvider>
-          </ErrorBoundary>
-        )}
+        <GlassAlertRoot>
+          {showSplash ? (
+            <SplashScreen onComplete={handleSplashComplete} minimumDuration={3000} />
+          ) : (
+            <ErrorBoundary>
+              <ModalProvider>
+                <ProfileProvider>
+                  <NavigationContainer>
+                    <AppContentWithHandlers />
+                  </NavigationContainer>
+                </ProfileProvider>
+              </ModalProvider>
+            </ErrorBoundary>
+          )}
+        </GlassAlertRoot>
       </SafeAreaProvider>
     </I18nextProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0d0d1a',
-  },
-  content: {
-    flex: 1,
-  },
-  chatFab: {
-    position: 'absolute',
-    bottom: 40,
-    right: 40,
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderWidth: 2,
-    borderColor: 'rgba(168, 85, 247, 0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#a855f7',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  chatFabFocused: {
-    backgroundColor: 'rgba(168, 85, 247, 0.4)',
-    borderColor: '#a855f7',
-    transform: [{ scale: 1.1 }],
-  },
-  chatFabIcon: {
-    fontSize: 32,
-  },
-});
 
 export default App;

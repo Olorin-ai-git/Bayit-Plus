@@ -45,7 +45,7 @@ brew install gitleaks
 ### 3. Install pre-commit hooks
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 pre-commit install --install-hooks
 ```
 

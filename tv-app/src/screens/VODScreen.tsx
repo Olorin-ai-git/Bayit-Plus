@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   Animated,
@@ -67,27 +66,27 @@ const ContentCard: React.FC<{
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={1}
-      style={styles.cardTouchable}
+      className="flex-1 m-2 max-w-[16.66%]"
       // @ts-ignore
       hasTVPreferredFocus={index === 0}
     >
       <Animated.View
         style={[
-          styles.card,
           { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.cardFocused,
+          isFocused && { boxShadow: `0 0 20px ${colors.primary}` },
         ]}
+        className={`bg-white/10 rounded-xl overflow-hidden border-[3px] ${isFocused ? `border-[${colors.primary}]` : 'border-transparent'}`}
       >
-        <View style={{ position: 'relative' }}>
+        <View className="relative">
           {item.thumbnail ? (
             <Image
               source={{ uri: item.thumbnail }}
-              style={styles.cardImage}
+              className="w-full aspect-video"
               resizeMode="cover"
             />
           ) : (
-            <View style={styles.cardImagePlaceholder}>
-              <Text style={styles.placeholderIcon}>🎬</Text>
+            <View className="w-full aspect-video bg-white/5 justify-center items-center">
+              <Text className="text-[32px]">🎬</Text>
             </View>
           )}
 
@@ -101,20 +100,20 @@ const ContentCard: React.FC<{
             />
           )}
         </View>
-        <View style={styles.cardContent}>
-          <Text style={styles.cardTitle} numberOfLines={1}>
+        <View className="p-3">
+          <Text className="text-sm font-semibold text-white text-right" numberOfLines={1}>
             {item.title}
           </Text>
           {(item.year || item.duration) && (
-            <Text style={styles.cardMeta}>
+            <Text className="text-xs text-gray-400 mt-0.5 text-right">
               {item.year}{item.year && item.duration ? ' • ' : ''}{item.duration}
             </Text>
           )}
         </View>
         {isFocused && (
-          <View style={styles.playOverlay}>
-            <View style={styles.playButton}>
-              <Text style={styles.playIcon}>▶</Text>
+          <View className="absolute inset-0 bg-black/40 justify-center items-center">
+            <View className={`w-12 h-12 rounded-full bg-[${colors.primary}] justify-center items-center`}>
+              <Text className="text-xl text-black ml-1">▶</Text>
             </View>
           </View>
         )}
@@ -183,28 +182,28 @@ export const VODScreen: React.FC = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className={`flex-1 bg-[${colors.background}] justify-center items-center`}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-white text-lg mt-4">{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View className={`flex-1 bg-[${colors.background}]`}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }]}>
-          <Text style={styles.headerIconText}>🎬</Text>
+      <View className={`flex-row items-center px-12 pt-10 pb-5 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
+        <View className={`w-[60px] h-[60px] rounded-full bg-purple-900/30 justify-center items-center ${isRTL ? 'ml-5' : 'mr-5'}`}>
+          <Text className="text-[28px]">🎬</Text>
         </View>
         <View>
-          <Text style={[styles.title, { textAlign }]}>{t('vod.title')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>{content.length} {t('vod.movies')}</Text>
+          <Text className="text-[42px] font-bold text-white" style={{ textAlign }}>{t('vod.title')}</Text>
+          <Text className="text-lg text-gray-400 mt-0.5" style={{ textAlign }}>{content.length} {t('vod.movies')}</Text>
         </View>
       </View>
 
       {/* Category Filter */}
-      <View style={[styles.categories, { flexDirection: isRTL ? 'row' : 'row-reverse', justifyContent: isRTL ? 'flex-start' : 'flex-start' }]}>
+      <View className={`flex-row px-12 mb-6 gap-3 z-10 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
         <GlassCategoryPill
           label={t('vod.categories.all')}
           isActive={selectedCategory === 'all'}
@@ -227,7 +226,7 @@ export const VODScreen: React.FC = () => {
         keyExtractor={(item) => item.id}
         numColumns={isTV ? 6 : 4}
         key={isTV ? 'tv' : 'mobile'}
-        contentContainerStyle={styles.grid}
+        contentContainerStyle={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.xxl, paddingTop: spacing.md, direction: 'ltr' }}
         renderItem={({ item, index }) => (
           <ContentCard
             item={item}
@@ -236,11 +235,11 @@ export const VODScreen: React.FC = () => {
           />
         )}
         ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <GlassView style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>🎬</Text>
-              <Text style={styles.emptyTitle}>{t('empty.noContent')}</Text>
-              <Text style={styles.emptySubtitle}>{t('empty.tryAnotherCategory')}</Text>
+          <View className="flex-1 justify-center items-center py-[60px]">
+            <GlassView className="p-8 items-center">
+              <Text className="text-6xl mb-4">🎬</Text>
+              <Text className="text-xl font-semibold text-white mb-2">{t('empty.noContent')}</Text>
+              <Text className="text-base text-gray-400">{t('empty.tryAnotherCategory')}</Text>
             </GlassView>
           </View>
         }
@@ -248,156 +247,5 @@ export const VODScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: 18,
-    marginTop: spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xxl,
-    paddingTop: 40,
-    paddingBottom: spacing.lg,
-  },
-  headerIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: spacing.lg,
-  },
-  headerIconText: {
-    fontSize: 28,
-  },
-  title: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'right',
-  },
-  subtitle: {
-    fontSize: 18,
-    color: colors.textSecondary,
-    marginTop: 2,
-    textAlign: 'right',
-  },
-  categories: {
-    flexDirection: 'row',
-    paddingHorizontal: 48,
-    marginBottom: 24,
-    gap: 12,
-    zIndex: 10,
-  },
-  grid: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
-    paddingTop: spacing.md,
-    direction: 'ltr',
-  },
-  cardTouchable: {
-    flex: 1,
-    margin: spacing.sm,
-    maxWidth: isTV ? '16.66%' : '25%',
-  },
-  card: {
-    backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-  cardFocused: {
-    borderColor: colors.primary,
-    // @ts-ignore - Web CSS property for glow effect
-    boxShadow: `0 0 20px ${colors.primary}`,
-  },
-  cardImage: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-  },
-  cardImagePlaceholder: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    backgroundColor: colors.backgroundLighter,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 32,
-  },
-  cardContent: {
-    padding: spacing.sm,
-  },
-  cardTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-    textAlign: 'right',
-  },
-  cardMeta: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 2,
-    textAlign: 'right',
-  },
-  playOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playIcon: {
-    fontSize: 20,
-    color: colors.background,
-    marginLeft: 4,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyCard: {
-    padding: spacing.xxl,
-    alignItems: 'center',
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: spacing.md,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-});
 
 export default VODScreen;

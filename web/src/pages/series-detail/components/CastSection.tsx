@@ -3,9 +3,8 @@
  * Displays series cast information
  */
 
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, fontSize } from '@bayit/shared/theme';
 
 interface CastSectionProps {
   cast?: string[];
@@ -20,27 +19,9 @@ export function CastSection({ cast, textAlign }: CastSectionProps) {
   }
 
   return (
-    <View style={styles.castSection}>
-      <Text style={styles.sectionTitle}>{t('content.cast')}</Text>
-      <Text style={[styles.castText, { textAlign }]}>{cast.join(', ')}</Text>
+    <View className="px-12 py-6">
+      <Text className="text-lg font-semibold text-white mb-4">{t('content.cast')}</Text>
+      <Text className="text-base text-white/70 leading-6" style={{ textAlign }}>{cast.join(', ')}</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  castSection: {
-    paddingHorizontal: 48,
-    paddingVertical: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  castText: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    lineHeight: 24,
-  },
-});

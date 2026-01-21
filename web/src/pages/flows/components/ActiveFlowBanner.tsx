@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Play, Sun, Moon, Baby, Flame } from 'lucide-react';
 import LinearGradient from 'react-native-web-linear-gradient';
@@ -46,7 +46,8 @@ function FlowIcon({ flow, size = 72 }: { flow: Flow; size?: number }) {
       colors={config.colors}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={[styles.flowIcon, { width: size, height: size, borderRadius: size / 4 }]}
+      className="justify-center items-center"
+      style={{ width: size, height: size, borderRadius: size / 4 }}
     >
       {config.icon}
     </LinearGradient>
@@ -65,113 +66,41 @@ export function ActiveFlowBanner({
   const localizedDescription = getLocalizedDescription(flow, i18n.language);
 
   return (
-    <GlassCard style={styles.banner}>
-      <View style={styles.dotContainer}>
-        <View style={styles.dot} />
-        <Text style={styles.label}>{t('flows.activeNow')}</Text>
+    <GlassCard className="p-4 mb-6 border border-green-500">
+      <View className="flex-row items-center gap-1 mb-3">
+        <View className="w-2.5 h-2.5 rounded-full bg-green-500" />
+        <Text className="text-xs text-green-500 font-bold uppercase tracking-wider">
+          {t('flows.activeNow')}
+        </Text>
       </View>
 
-      <View style={[styles.content, isRTL && styles.contentRTL]}>
+      <View className={`flex-row items-center gap-4 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
         <FlowIcon flow={flow} size={72} />
-        <View style={styles.info}>
-          <Text style={[styles.name, isRTL && styles.textRTL]}>
+        <View className="flex-1">
+          <Text className={`text-2xl font-bold text-white mb-1 ${isRTL ? 'text-right' : ''}`}>
             {localizedName}
           </Text>
           {localizedDescription && (
-            <Text style={[styles.description, isRTL && styles.textRTL]}>
+            <Text className={`text-base text-gray-400 leading-snug ${isRTL ? 'text-right' : ''}`}>
               {localizedDescription}
             </Text>
           )}
         </View>
       </View>
 
-      <View style={[styles.actions, isRTL && styles.actionsRTL]}>
+      <View className={`flex-row items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
         <GlassButton
           title={t('flows.start')}
           onPress={onStart}
           variant="primary"
           icon={<Play size={18} color="#000" />}
         />
-        <Pressable onPress={onSkip} style={styles.skipLink}>
-          <Text style={styles.skipLinkText}>{t('flows.skipToday')}</Text>
+        <Pressable onPress={onSkip} className="py-2 px-3">
+          <Text className="text-sm text-gray-400">{t('flows.skipToday')}</Text>
         </Pressable>
       </View>
     </GlassCard>
   );
 }
-
-const styles = StyleSheet.create({
-  banner: {
-    padding: spacing.lg,
-    marginBottom: spacing.xl,
-    borderWidth: 1,
-    borderColor: colors.success,
-  },
-  dotContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginBottom: spacing.md,
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: colors.success,
-  },
-  label: {
-    fontSize: 12,
-    color: colors.success,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.lg,
-    marginBottom: spacing.lg,
-  },
-  contentRTL: {
-    flexDirection: 'row-reverse',
-  },
-  flowIcon: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  info: {
-    flex: 1,
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  description: {
-    fontSize: 15,
-    color: colors.textMuted,
-    lineHeight: 22,
-  },
-  actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  actionsRTL: {
-    flexDirection: 'row-reverse',
-  },
-  skipLink: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  skipLinkText: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-});
 
 export default ActiveFlowBanner;

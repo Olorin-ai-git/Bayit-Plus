@@ -1,8 +1,7 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui/GlassView';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
 
 interface ChatMessage {
   id: string;
@@ -33,36 +32,27 @@ const ChatMessage: React.FC<{
 
   if (isSystem) {
     return (
-      <View style={styles.systemMessage}>
-        <Text style={styles.systemText}>{message.content}</Text>
+      <View className="items-center my-1">
+        <Text className="text-xs text-white/50 bg-white/20 py-1 px-3 rounded-full">{message.content}</Text>
       </View>
     );
   }
 
   return (
-    <View
-      style={[
-        styles.messageContainer,
-        isOwnMessage ? styles.ownMessage : styles.otherMessage,
-      ]}
-    >
+    <View className={`mb-1 flex-row ${isOwnMessage ? 'justify-start' : 'justify-end'}`}>
       <GlassView
-        style={[
-          styles.messageBubble,
-          isEmoji && styles.emojiBubble,
-          isOwnMessage && styles.ownBubble,
-        ]}
+        className={`max-w-[80%] py-3 px-4 rounded-lg ${isEmoji ? 'bg-transparent py-1' : ''} ${isOwnMessage ? 'bg-purple-500/30' : ''}`}
         intensity="low"
         noBorder={isEmoji}
       >
         {!isOwnMessage && !isEmoji && (
-          <Text style={styles.senderName}>{message.user_name}</Text>
+          <Text className="text-xs font-medium text-purple-500 mb-0.5">{message.user_name}</Text>
         )}
-        <Text style={[styles.messageText, isEmoji && styles.emojiText]}>
+        <Text className={isEmoji ? "text-[28px] leading-9" : "text-sm text-white leading-5"}>
           {message.content}
         </Text>
         {!isEmoji && (
-          <Text style={styles.timestamp}>{formatTime(message.created_at)}</Text>
+          <Text className="text-[10px] text-white/50 mt-1 self-start">{formatTime(message.created_at)}</Text>
         )}
       </GlassView>
     </View>
@@ -82,15 +72,16 @@ export const WatchPartyChat: React.FC<WatchPartyChatProps> = ({
   }, [messages]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{t('watchParty.chat')}</Text>
+    <View className="gap-3">
+      <Text className="text-sm font-medium text-white/70 px-1">{t('watchParty.chat')}</Text>
       <ScrollView
         ref={scrollViewRef}
-        style={[styles.messageList, { maxHeight }]}
+        className="flex-grow-0"
+        style={{ maxHeight }}
         showsVerticalScrollIndicator={false}
       >
         {messages.length === 0 ? (
-          <Text style={styles.emptyText}>{t('watchParty.typeMessage')}</Text>
+          <Text className="text-center text-white/50 text-sm py-8">{t('watchParty.typeMessage')}</Text>
         ) : (
           messages.map((msg, idx) => (
             <ChatMessage
@@ -104,82 +95,5 @@ export const WatchPartyChat: React.FC<WatchPartyChatProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    gap: spacing.sm,
-  },
-  title: {
-    fontSize: fontSize.sm,
-    fontWeight: '500',
-    color: colors.textSecondary,
-    paddingHorizontal: spacing.xs,
-  },
-  messageList: {
-    flexGrow: 0,
-  },
-  messageContainer: {
-    marginBottom: spacing.xs,
-    flexDirection: 'row',
-  },
-  ownMessage: {
-    justifyContent: 'flex-start',
-  },
-  otherMessage: {
-    justifyContent: 'flex-end',
-  },
-  messageBubble: {
-    maxWidth: '80%',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.lg,
-  },
-  ownBubble: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  emojiBubble: {
-    backgroundColor: 'transparent',
-    paddingVertical: spacing.xs,
-  },
-  senderName: {
-    fontSize: fontSize.xs,
-    fontWeight: '500',
-    color: colors.primary,
-    marginBottom: 2,
-  },
-  messageText: {
-    fontSize: fontSize.sm,
-    color: colors.text,
-    lineHeight: 20,
-  },
-  emojiText: {
-    fontSize: 28,
-    lineHeight: 36,
-  },
-  timestamp: {
-    fontSize: 10,
-    color: colors.textMuted,
-    marginTop: 4,
-    alignSelf: 'flex-start',
-  },
-  systemMessage: {
-    alignItems: 'center',
-    marginVertical: spacing.xs,
-  },
-  systemText: {
-    fontSize: fontSize.xs,
-    color: colors.textMuted,
-    backgroundColor: colors.glassBorder,
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.full,
-  },
-  emptyText: {
-    textAlign: 'center',
-    color: colors.textMuted,
-    fontSize: fontSize.sm,
-    paddingVertical: spacing.xl,
-  },
-});
 
 export default WatchPartyChat;

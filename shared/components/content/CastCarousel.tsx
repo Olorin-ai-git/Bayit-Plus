@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   Image,
   TouchableOpacity,
@@ -58,34 +57,33 @@ const CastCard: React.FC<{
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={1}
-      style={styles.castCardTouchable}
+      className={`${isTV ? 'mr-6' : 'mr-4'}`}
     >
       <Animated.View
-        style={[
-          styles.castCard,
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.castCardFocused,
-        ]}
+        style={{ transform: [{ scale: scaleAnim }] }}
+        className={`items-center ${isTV ? 'w-[180px]' : 'w-[120px]'} rounded-2xl bg-white/5 ${
+          isTV ? 'p-4' : 'p-2'
+        } border-2 ${isFocused ? 'border-primary bg-primary/15' : 'border-transparent'}`}
       >
         {castMember.photo ? (
           <Image
             source={{ uri: castMember.photo }}
-            style={styles.castPhoto}
+            className={`${isTV ? 'w-[140px] h-[140px]' : 'w-[90px] h-[90px]'} rounded-full bg-white/5 mb-2`}
             resizeMode="cover"
           />
         ) : (
-          <View style={styles.castPhotoPlaceholder}>
-            <Text style={styles.castPhotoPlaceholderText}>
+          <View className={`${isTV ? 'w-[140px] h-[140px]' : 'w-[90px] h-[90px]'} rounded-full bg-primary/30 justify-center items-center mb-2`}>
+            <Text className={`${isTV ? 'text-5xl' : 'text-[32px]'} font-semibold text-white`}>
               {castMember.name.charAt(0).toUpperCase()}
             </Text>
           </View>
         )}
-        <View style={styles.castInfo}>
-          <Text style={[styles.castName, { textAlign }]} numberOfLines={1}>
+        <View className="items-center w-full">
+          <Text style={{ textAlign }} className={`${isTV ? 'text-lg' : 'text-sm'} font-semibold text-white mb-0.5`} numberOfLines={1}>
             {castMember.name}
           </Text>
           {castMember.character && (
-            <Text style={[styles.castCharacter, { textAlign }]} numberOfLines={1}>
+            <Text style={{ textAlign }} className={`${isTV ? 'text-sm' : 'text-xs'} text-textSecondary`} numberOfLines={1}>
               {castMember.character}
             </Text>
           )}
@@ -104,15 +102,17 @@ export const CastCarousel: React.FC<CastCarouselProps> = ({ cast, onCastPress })
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.sectionTitle, { textAlign }]}>
+    <View className={`${isTV ? 'my-8' : 'my-6'}`}>
+      <Text style={{ textAlign }} className={`${isTV ? 'text-[28px]' : 'text-xl'} font-semibold text-white ${
+        isTV ? 'mb-6' : 'mb-4'
+      } ${isTV ? 'px-8' : 'px-6'}`}>
         {t('content.castAndCrew', 'Cast & Crew')}
       </Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-        style={styles.scrollView}
+        contentContainerClassName={`${isTV ? 'px-8' : 'px-6'} py-2`}
+        className="overflow-visible"
       >
         {cast.map((castMember, index) => (
           <CastCard
@@ -126,78 +126,5 @@ export const CastCarousel: React.FC<CastCarouselProps> = ({ cast, onCastPress })
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: isTV ? spacing.xl : spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: isTV ? 28 : 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: isTV ? spacing.lg : spacing.md,
-    paddingHorizontal: isTV ? spacing.xl : spacing.lg,
-  },
-  scrollView: {
-    overflow: 'visible',
-  },
-  scrollContent: {
-    paddingHorizontal: isTV ? spacing.xl : spacing.lg,
-    paddingVertical: spacing.sm,
-  },
-  castCardTouchable: {
-    marginRight: isTV ? spacing.lg : spacing.md,
-  },
-  castCard: {
-    alignItems: 'center',
-    width: isTV ? 180 : 120,
-    borderRadius: borderRadius.xl,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    padding: isTV ? spacing.md : spacing.sm,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  castCardFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.15)',
-    // @ts-ignore - Web CSS property
-    boxShadow: '0 0 20px rgba(168, 85, 247, 0.6)',
-  },
-  castPhoto: {
-    width: isTV ? 140 : 90,
-    height: isTV ? 140 : 90,
-    borderRadius: isTV ? 70 : 45,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    marginBottom: spacing.sm,
-  },
-  castPhotoPlaceholder: {
-    width: isTV ? 140 : 90,
-    height: isTV ? 140 : 90,
-    borderRadius: isTV ? 70 : 45,
-    backgroundColor: 'rgba(168, 85, 247, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  castPhotoPlaceholderText: {
-    fontSize: isTV ? 48 : 32,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  castInfo: {
-    alignItems: 'center',
-    width: '100%',
-  },
-  castName: {
-    fontSize: isTV ? 18 : 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 2,
-  },
-  castCharacter: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-  },
-});
 
 export default CastCarousel;

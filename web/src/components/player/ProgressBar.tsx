@@ -3,7 +3,7 @@
  * Displays video progress with seek functionality
  */
 
-import { View, Pressable, StyleSheet } from 'react-native'
+import { View, Pressable } from 'react-native'
 import { colors } from '@bayit/shared/theme'
 import ChapterTimeline from './ChapterTimeline'
 import { Chapter } from './types'
@@ -26,7 +26,7 @@ export default function ProgressBar({
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
 
   return (
-    <Pressable onPress={onSeek as any} style={styles.container}>
+    <Pressable onPress={onSeek as any} className="h-1.5 relative">
       {chapters.length > 0 && onChapterSeek && (
         <ChapterTimeline
           chapters={chapters}
@@ -35,31 +35,19 @@ export default function ProgressBar({
           onSeek={onChapterSeek}
         />
       )}
-      <View style={styles.track}>
-        <View style={[styles.fill, { width: `${progress}%` }]} />
+      <View className="h-1.5 bg-white/20 rounded overflow-hidden">
+        <View
+          className="h-full rounded"
+          style={{
+            width: `${progress}%`,
+            backgroundColor: colors.primary,
+            shadowColor: colors.primary,
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.5,
+            shadowRadius: 4,
+          }}
+        />
       </View>
     </Pressable>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    height: 6,
-    position: 'relative',
-  },
-  track: {
-    height: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  fill: {
-    height: '100%',
-    backgroundColor: colors.primary,
-    borderRadius: 3,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-  },
-})

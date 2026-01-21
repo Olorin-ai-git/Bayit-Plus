@@ -9,7 +9,6 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-  StyleSheet,
   Animated,
   ActivityIndicator,
 } from 'react-native';
@@ -242,9 +241,9 @@ export const SupportFAQ: React.FC = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 items-center justify-center gap-4">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[styles.loadingText, { textAlign }]}>
+        <Text style={{ textAlign }} className={`${isTV ? 'text-base' : 'text-sm'} text-[#9ca3af]`}>
           {t('support.faq.loading', 'Loading FAQ...')}
         </Text>
       </View>
@@ -319,161 +318,6 @@ export const SupportFAQ: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  categoriesScroll: {
-    marginBottom: spacing.lg,
-  },
-  categoriesContent: {
-    gap: spacing.sm,
-    paddingBottom: spacing.sm,
-  },
-  categoryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.full,
-    gap: spacing.sm,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  categoryButtonActive: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-  },
-  categoryButtonFocused: {
-    borderColor: colors.primary,
-  },
-  categoryIcon: {
-    fontSize: isTV ? 20 : 16,
-  },
-  categoryText: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-  },
-  categoryTextActive: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  faqSection: {
-    flex: 1,
-  },
-  sectionTitle: {
-    fontSize: isTV ? 20 : 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  accordionItem: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.sm,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  accordionItemFocused: {
-    borderColor: colors.primary,
-  },
-  accordionItemExpanded: {
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-  },
-  accordionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: spacing.md,
-  },
-  accordionQuestion: {
-    flex: 1,
-    fontSize: isTV ? 18 : 16,
-    fontWeight: '500',
-    color: colors.text,
-    paddingRight: spacing.md,
-  },
-  accordionIcon: {
-    fontSize: isTV ? 24 : 20,
-    color: colors.primary,
-    fontWeight: 'bold',
-  },
-  accordionContent: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.md,
-  },
-  accordionAnswer: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 26 : 22,
-    marginBottom: spacing.md,
-  },
-  feedbackContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    gap: spacing.md,
-    paddingTop: spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  feedbackLabel: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-  },
-  feedbackButtons: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  feedbackButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.md,
-  },
-  feedbackButtonText: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.text,
-  },
-  feedbackThanks: {
-    paddingTop: spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-    alignItems: 'flex-end',
-  },
-  feedbackThanksText: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.success,
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.md,
-  },
-  loadingText: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-  },
-  errorContainer: {
-    padding: spacing.md,
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.md,
-  },
-  errorText: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.error,
-  },
-  emptyContainer: {
-    padding: spacing.xl,
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-  },
-});
+
 
 export default SupportFAQ;

@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, Text, FlatList, StyleSheet } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, FlatList } from 'react-native';
 
 interface SearchBarProps {
   value: string;
@@ -86,7 +86,7 @@ export function SearchBar({
             flex-1 text-white text-base
             ${isRTL ? 'text-right' : 'text-left'}
           `}
-          style={styles.input}
+          style={{ outlineStyle: 'none', outlineWidth: 0 } as any}
         />
 
         {/* Clear Button */}
@@ -148,13 +148,5 @@ export function SearchBar({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  input: {
-    // Use long-form outline properties for React Native Web compatibility
-    outlineStyle: 'none' as any,
-    outlineWidth: 0 as any,
-  },
-});
 
 export default SearchBar;

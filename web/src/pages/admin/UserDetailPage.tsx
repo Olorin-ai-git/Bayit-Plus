@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, Pressable } from 'react-native';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight, Mail, Key, Ban, UserCheck, Edit2, Trash2 } from 'lucide-react';
@@ -197,9 +197,9 @@ export default function UserDetailPage() {
 
   if (loading) {
     return (
-      <GlassView style={styles.loadingContainer}>
+      <GlassView className="flex-1 justify-center items-center gap-2">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-sm text-gray-400">{t('common.loading')}</Text>
       </GlassView>
     );
   }
@@ -208,7 +208,7 @@ export default function UserDetailPage() {
     return (
       <GlassView style={styles.errorContainer}>
         <Text style={styles.errorIcon}>⚠️</Text>
-        <Text style={styles.errorText}>{error || t('admin.users.notFound', { defaultValue: 'User not found' })}</Text>
+        <Text className="flex-1 text-red-500 text-sm">{error || t('admin.users.notFound', { defaultValue: 'User not found' })}</Text>
         <GlassButton title={t('common.back')} onPress={() => navigate('/admin/users')} variant="primary" />
       </GlassView>
     );
@@ -217,8 +217,8 @@ export default function UserDetailPage() {
   const statusStyle = statusColors[user.status] || statusColors.inactive;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <GlassView style={styles.header}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
+      <GlassView className="flex flex-row justify-between items-start mb-6">
         <GlassButton
           title={t('admin.users.backToList', { defaultValue: 'Back to list' })}
           icon={<ArrowRight size={20} color={colors.text} />}
@@ -236,8 +236,8 @@ export default function UserDetailPage() {
               <Text style={styles.avatarText}>{user.name?.charAt(0).toUpperCase() || '?'}</Text>
             </GlassView>
             <GlassView style={styles.profileInfo}>
-              <Text style={styles.userName}>{user.name}</Text>
-              <Text style={styles.userEmail}>{user.email}</Text>
+              <Text className="text-sm font-medium text-white">{user.name}</Text>
+              <Text className="text-xs text-gray-400">{user.email}</Text>
               <GlassView style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}>
                 <Text style={[styles.statusText, { color: statusStyle.text }]}>{t(statusStyle.labelKey)}</Text>
               </GlassView>
@@ -350,7 +350,7 @@ export default function UserDetailPage() {
         dismissable={true}
       >
         <Text style={styles.modalText}>{successMessage}</Text>
-        <GlassView style={styles.modalActions}>
+        <GlassView className="flex flex-row gap-4 mt-6">
           <GlassButton
             title={t('common.ok')}
             onPress={() => setSuccessModalOpen(false)}
@@ -375,7 +375,7 @@ export default function UserDetailPage() {
           containerStyle={styles.modalInput}
           multiline
         />
-        <GlassView style={styles.modalActions}>
+        <GlassView className="flex flex-row gap-4 mt-6">
           <GlassButton
             title={t('common.cancel')}
             onPress={() => setPromptModalOpen(false)}
@@ -437,7 +437,7 @@ export default function UserDetailPage() {
             isRTL={isRTL}
           />
         </GlassView>
-        <GlassView style={styles.modalActions}>
+        <GlassView className="flex flex-row gap-4 mt-6">
           <GlassButton
             title={t('common.cancel')}
             onPress={() => setEditModalOpen(false)}
@@ -454,145 +454,3 @@ export default function UserDetailPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: spacing.sm },
-  loadingText: { fontSize: 14, color: colors.textMuted },
-  errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.lg },
-  errorIcon: { fontSize: 48, marginBottom: spacing.md },
-  errorText: { fontSize: 16, color: colors.error, marginBottom: spacing.md },
-  header: { marginBottom: spacing.lg },
-  backButton: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  backText: { fontSize: 14, color: colors.text },
-  mainContent: { 
-    gap: spacing.lg,
-    // @ts-ignore - web-only responsive styles
-    '@media (min-width: 1024px)': {
-      flexDirection: 'row',
-    },
-  },
-  profileCard: { 
-    padding: spacing.lg,
-    // @ts-ignore - web-only responsive styles
-    '@media (min-width: 1024px)': {
-      maxWidth: 350,
-    },
-  },
-  profileHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-    width: '100%',
-  },
-  profileInfo: {
-    flex: 1,
-  },
-  avatar: { 
-    width: 80, 
-    height: 80, 
-    borderRadius: 40, 
-    backgroundColor: colors.primary, 
-    justifyContent: 'center', 
-    alignItems: 'center',
-  },
-  avatarText: { fontSize: 32, fontWeight: 'bold', color: colors.text },
-  userName: { fontSize: 20, fontWeight: 'bold', color: colors.text, marginBottom: spacing.xs },
-  userEmail: { fontSize: 14, color: colors.textMuted, marginBottom: spacing.sm },
-  statusBadge: { 
-    paddingHorizontal: spacing.md, 
-    paddingVertical: spacing.xs, 
-    borderRadius: borderRadius.full,
-    alignSelf: 'flex-start',
-  },
-  statusText: { fontSize: 12, fontWeight: '600' },
-  banReason: { 
-    fontSize: 12, 
-    color: colors.error, 
-    marginBottom: spacing.md,
-    paddingHorizontal: spacing.md,
-  },
-  actionButtons: { 
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm, 
-    width: '100%',
-  },
-  actionButton: {
-    flex: 1,
-    minWidth: 140,
-  },
-  detailsSection: { flex: 1, gap: spacing.md },
-  infoCard: { padding: spacing.md },
-  sectionTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: spacing.md },
-  infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
-  infoLabel: { fontSize: 14, color: colors.textMuted },
-  infoValue: { fontSize: 14, color: colors.text },
-  activityCard: { padding: spacing.md },
-  activityItem: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
-  activityAction: { fontSize: 14, color: colors.text, textTransform: 'capitalize' },
-  activityDate: { fontSize: 12, color: colors.textMuted },
-  billingCard: { padding: spacing.md },
-  billingItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
-  billingType: { fontSize: 14, color: colors.text },
-  billingDate: { fontSize: 12, color: colors.textMuted },
-  billingAmount: { fontSize: 14, fontWeight: '600', color: colors.success },
-  emptyText: { fontSize: 14, color: colors.textMuted, textAlign: 'center', paddingVertical: spacing.md },
-  modalText: {
-    fontSize: 16,
-    color: colors.text,
-    marginBottom: spacing.xl,
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  modalLabel: {
-    fontSize: 14,
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  modalInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    fontSize: 14,
-    color: colors.text,
-    marginBottom: spacing.lg,
-    minHeight: 80,
-    textAlignVertical: 'top',
-  },
-  modalActions: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: spacing.md,
-    marginTop: spacing.sm,
-  },
-  okButton: {
-    minWidth: 120,
-  },
-  editModalContent: {
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  formRow: {
-    gap: spacing.sm,
-  },
-  formLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  roleButtons: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.xs,
-  },
-  roleButton: {
-    minWidth: 100,
-  },
-  roleButtonText: {
-    fontSize: 12,
-    textTransform: 'capitalize',
-  },
-});

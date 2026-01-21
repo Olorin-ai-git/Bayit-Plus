@@ -38,7 +38,7 @@ All deployment automation, verification scripts, and comprehensive guides are co
 
 **Execute With**:
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 bash backend-olorin/DEPLOY.sh
 ```
 
@@ -68,7 +68,7 @@ bash backend-olorin/DEPLOY.sh
 
 **Execute With**:
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 bash backend-olorin/VERIFY.sh
 ```
 
@@ -109,7 +109,7 @@ bash backend-olorin/VERIFY.sh
 ### Step 1: Execute Phase 1A Deployment (TODAY)
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 bash backend-olorin/DEPLOY.sh
 ```
 
@@ -137,7 +137,7 @@ Allow sufficient time for:
 ### Step 3: Execute Phase 1B Verification (24+ HOURS LATER)
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 bash backend-olorin/VERIFY.sh
 ```
 
@@ -375,7 +375,7 @@ All systems are ready for production deployment. The automation is complete, doc
 
 ### YOUR NEXT ACTION:
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 bash backend-olorin/DEPLOY.sh
 ```
 

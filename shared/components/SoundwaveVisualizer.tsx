@@ -9,7 +9,6 @@
 import React, { useEffect, useRef, useMemo, memo } from 'react';
 import {
   View,
-  StyleSheet,
   Animated,
   Easing,
   ViewStyle,
@@ -166,15 +165,13 @@ const AnimatedBar = memo(({
 
   return (
     <Animated.View
-      style={[
-        styles.bar,
-        {
-          height: heightAnim,
-          backgroundColor,
-          width: BAR_WIDTH,
-          marginHorizontal: BAR_SPACING / 2,
-        },
-      ]}
+      className="rounded-sm"
+      style={{
+        height: heightAnim,
+        backgroundColor,
+        width: BAR_WIDTH,
+        marginHorizontal: BAR_SPACING / 2,
+      }}
     />
   );
 });
@@ -233,13 +230,12 @@ const PrivacyIndicator = memo(({ visible }: { visible: boolean }) => {
 
   return (
     <Animated.View
-      style={[
-        styles.privacyIndicator,
-        {
-          opacity: opacityAnim,
-          transform: [{ scale: scaleAnim }],
-        },
-      ]}
+      className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full z-10"
+      style={{
+        opacity: opacityAnim,
+        transform: [{ scale: scaleAnim }],
+        backgroundColor: SENDING_INDICATOR_COLOR,
+      }}
     />
   );
 });
@@ -270,12 +266,12 @@ export const SoundwaveVisualizer: React.FC<SoundwaveVisualizerProps> = memo(({
   const containerWidth = barCount * (BAR_WIDTH + BAR_SPACING);
 
   return (
-    <View style={[styles.container, { width: containerWidth, height: maxHeight + 8 }, style]}>
+    <View className="relative justify-center items-center px-1" style={[{ width: containerWidth, height: maxHeight + 8 }, style]}>
       {/* Privacy indicator */}
       <PrivacyIndicator visible={isSendingToServer} />
 
       {/* Soundwave bars */}
-      <View style={styles.barsContainer}>
+      <View className="flex-row items-center justify-center h-full">
         {barIndices.map((index) => (
           <AnimatedBar
             key={index}
@@ -294,33 +290,5 @@ export const SoundwaveVisualizer: React.FC<SoundwaveVisualizerProps> = memo(({
 });
 
 SoundwaveVisualizer.displayName = 'SoundwaveVisualizer';
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 4,
-  },
-  barsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-  },
-  bar: {
-    borderRadius: 2,
-  },
-  privacyIndicator: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: SENDING_INDICATOR_COLOR,
-    zIndex: 1,
-  },
-});
 
 export default SoundwaveVisualizer;

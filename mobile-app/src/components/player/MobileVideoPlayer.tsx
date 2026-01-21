@@ -10,7 +10,7 @@
  */
 
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, ActivityIndicator, Pressable } from 'react-native';
 import Video, { VideoRef } from 'react-native-video';
 import { Play, Pause } from 'lucide-react-native';
 
@@ -71,12 +71,12 @@ export default function MobileVideoPlayer({
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View className="w-full h-full bg-black justify-center items-center">
       {/* Video Player */}
       <Video
         ref={videoRef}
         source={{ uri: src }}
-        style={styles.video}
+        className="w-full h-full"
         resizeMode="contain"
         paused={!isPlaying}
         muted={muted}
@@ -91,32 +91,32 @@ export default function MobileVideoPlayer({
 
       {/* Loading Indicator */}
       {loading && (
-        <View style={styles.overlay}>
+        <View className="absolute inset-0 justify-center items-center bg-black/70">
           <ActivityIndicator size="large" color="#fff" />
-          <Text style={styles.loadingText}>Loading...</Text>
+          <Text className="mt-3 text-sm text-white font-medium">Loading...</Text>
         </View>
       )}
 
       {/* Error State */}
       {error && (
-        <View style={styles.overlay}>
-          <Text style={styles.errorText}>{error}</Text>
+        <View className="absolute inset-0 justify-center items-center bg-black/70">
+          <Text className="text-sm text-[#ff4444] font-medium text-center px-5">{error}</Text>
         </View>
       )}
 
       {/* Controls Overlay */}
-      <Pressable style={styles.touchArea} onPress={handleTap}>
+      <Pressable className="absolute inset-0" onPress={handleTap}>
         {showControls && !loading && !error && (
-          <View style={styles.controlsOverlay}>
-            <Pressable style={styles.playPauseButton} onPress={togglePlayPause}>
+          <View className="absolute inset-0 justify-center items-center bg-black/30">
+            <Pressable className="w-16 h-16 rounded-full bg-white/20 justify-center items-center" onPress={togglePlayPause}>
               {isPlaying ? <Pause size={32} color="#fff" /> : <Play size={32} color="#fff" />}
             </Pressable>
 
             {/* Live Indicator */}
             {isLive && (
-              <View style={styles.liveIndicator}>
-                <View style={styles.liveDot} />
-                <Text style={styles.liveText}>LIVE</Text>
+              <View className="absolute top-4 left-4 flex-row items-center bg-red-600/80 px-3 py-1.5 rounded">
+                <View className="w-2 h-2 rounded-full bg-white mr-1.5" />
+                <Text className="text-xs font-bold text-white">LIVE</Text>
               </View>
             )}
           </View>
@@ -125,76 +125,3 @@ export default function MobileVideoPlayer({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  video: {
-    width: '100%',
-    height: '100%',
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 14,
-    color: '#fff',
-    fontWeight: '500',
-  },
-  errorText: {
-    fontSize: 14,
-    color: '#ff4444',
-    fontWeight: '500',
-    textAlign: 'center',
-    paddingHorizontal: 20,
-  },
-  touchArea: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  controlsOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-  },
-  playPauseButton: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  liveIndicator: {
-    position: 'absolute',
-    top: 16,
-    left: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 0, 0, 0.8)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 4,
-  },
-  liveDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#fff',
-    marginRight: 6,
-  },
-  liveText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#fff',
-  },
-});

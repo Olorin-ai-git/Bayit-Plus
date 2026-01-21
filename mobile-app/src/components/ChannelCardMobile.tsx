@@ -11,7 +11,7 @@
  */
 
 import React from 'react';
-import { View, Image, Text, Pressable, StyleSheet, Dimensions } from 'react-native';
+import { View, Image, Text, Pressable, Dimensions } from 'react-native';
 import { GlassView, GlassBadge } from '@bayit/shared';
 import { responsive } from '../utils/responsive';
 import { typography, spacing, borderRadius, colors } from '../theme';
@@ -52,43 +52,45 @@ export const ChannelCardMobile: React.FC<ChannelCardMobileProps> = ({
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.container, { width: cardWidth }]}
+      className="mb-4"
+      style={{ width: cardWidth }}
       android_ripple={{ color: colors.glassLight }}
     >
-      <GlassView style={styles.card}>
+      <GlassView className="rounded-lg overflow-hidden">
         {/* Live thumbnail */}
         {channel.thumbnailUrl ? (
           <Image
             source={{ uri: channel.thumbnailUrl }}
-            style={[styles.thumbnail, { height: cardHeight }]}
+            className="w-full"
+            style={{ height: cardHeight, backgroundColor: colors.backgroundElevated }}
             resizeMode="cover"
           />
         ) : (
-          <View style={[styles.placeholder, { height: cardHeight }]}>
-            <Text style={styles.placeholderIcon}>📺</Text>
+          <View className="w-full justify-center items-center" style={{ height: cardHeight, backgroundColor: colors.backgroundElevated }}>
+            <Text className="text-5xl opacity-30">📺</Text>
           </View>
         )}
 
         {/* Live badge */}
         {channel.isLive !== false && (
-          <View style={styles.liveBadge}>
+          <View className="absolute top-2 right-2">
             <GlassBadge variant="error">
-              <View style={styles.liveContainer}>
-                <View style={styles.liveIndicator} />
-                <Text style={styles.liveText}>LIVE</Text>
+              <View className="flex-row items-center px-1 py-0.5">
+                <View className="w-1.5 h-1.5 rounded-full mr-1" style={{ backgroundColor: colors.error }} />
+                <Text className="text-[10px] text-white font-bold tracking-wide">LIVE</Text>
               </View>
             </GlassBadge>
           </View>
         )}
 
         {/* Channel info */}
-        <View style={styles.info}>
-          <Text style={styles.channelNumber}>{channel.number}</Text>
-          <Text style={styles.channelName} numberOfLines={1}>
+        <View className="p-2">
+          <Text className="text-xs font-bold mb-0.5" style={{ color: colors.primary }}>{channel.number}</Text>
+          <Text className="text-sm font-semibold text-white mb-0.5" numberOfLines={1}>
             {channel.name}
           </Text>
           {channel.currentShow && (
-            <Text style={styles.currentShow} numberOfLines={1}>
+            <Text className="text-xs text-gray-400" numberOfLines={1}>
               {channel.currentShow}
             </Text>
           )}
@@ -97,70 +99,3 @@ export const ChannelCardMobile: React.FC<ChannelCardMobileProps> = ({
     </Pressable>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: spacing.md,
-  },
-  card: {
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-  },
-  thumbnail: {
-    width: '100%',
-    backgroundColor: colors.backgroundElevated,
-  },
-  placeholder: {
-    width: '100%',
-    backgroundColor: colors.backgroundElevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 48,
-    opacity: 0.3,
-  },
-  liveBadge: {
-    position: 'absolute',
-    top: spacing.sm,
-    right: spacing.sm,
-  },
-  liveContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xxs,
-  },
-  liveIndicator: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.error,
-    marginRight: spacing.xs,
-  },
-  liveText: {
-    ...typography.caption,
-    color: colors.text,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  info: {
-    padding: spacing.sm,
-  },
-  channelNumber: {
-    ...typography.caption,
-    color: colors.primary,
-    fontWeight: '700',
-    marginBottom: spacing.xxs,
-  },
-  channelName: {
-    ...typography.bodySmall,
-    color: colors.text,
-    fontWeight: '600',
-    marginBottom: spacing.xxs,
-  },
-  currentShow: {
-    ...typography.caption,
-    color: colors.textSecondary,
-  },
-});

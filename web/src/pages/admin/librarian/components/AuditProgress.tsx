@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 import { BatchProgress } from '../types';
 
 interface AuditProgressProps {
@@ -12,9 +12,9 @@ export const AuditProgress = ({ progress, isRTL }: AuditProgressProps) => {
   const { t } = useTranslation();
 
   return (
-    <View style={styles.progressContainer}>
-      <View style={[styles.progressHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        <Text style={styles.progressLabel}>
+    <View className="p-4 mb-4 bg-purple-500/10 rounded-xl border" style={{ borderColor: colors.glassBorder }}>
+      <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} justify-between items-center mb-1`}>
+        <Text className="text-sm font-semibold" style={{ color: colors.text }}>
           {progress.percentage >= 99 ? (
             t('admin.librarian.progress.finishing', 'Finishing up...')
           ) : (
@@ -24,70 +24,24 @@ export const AuditProgress = ({ progress, isRTL }: AuditProgressProps) => {
             })
           )}
         </Text>
-        <Text style={styles.progressPercentage}>
+        <Text className="text-base font-bold" style={{ color: colors.primary }}>
           {progress.percentage}%
         </Text>
       </View>
-      <Text style={styles.progressSubtext}>
+      <Text className="text-xs mb-2" style={{ color: colors.textMuted }}>
         {t('admin.librarian.progress.items', '{{processed}} of {{total}} items', {
           processed: progress.itemsProcessed,
           total: progress.totalItems
         })}
         {progress.percentage >= 99 && (
-          <Text style={{ color: colors.textMuted, fontStyle: 'italic' }}>
+          <Text className="italic" style={{ color: colors.textMuted }}>
             {' • '}{t('admin.librarian.progress.finalizing', 'Generating report and applying fixes')}
           </Text>
         )}
       </Text>
-      <View style={styles.progressBarContainer}>
-        <View style={[styles.progressBarFill, { width: `${progress.percentage}%` }]} />
+      <View className="h-2 bg-white/20 rounded-lg overflow-hidden border" style={{ borderColor: colors.glassBorder }}>
+        <View className="h-full rounded-lg transition-all duration-300" style={{ width: `${progress.percentage}%`, backgroundColor: colors.primary }} />
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  progressContainer: {
-    padding: spacing.md,
-    marginBottom: spacing.md,
-    backgroundColor: colors.glassPurpleLight,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  progressHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  progressLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  progressPercentage: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.primary,
-  },
-  progressSubtext: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginBottom: spacing.sm,
-  },
-  progressBarContainer: {
-    height: 8,
-    backgroundColor: colors.glassStrong,
-    borderRadius: borderRadius.sm,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  progressBarFill: {
-    height: '100%',
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.sm,
-    transition: 'width 0.3s ease',
-  },
-});

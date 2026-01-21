@@ -67,7 +67,7 @@ Current Cloud Scheduler setup:
 ### **Step 2: Deploy New Jobs**
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
+cd /Users/olorin/Documents/olorin/backend/scripts
 ./update_cloud_schedulers.sh
 ```
 
@@ -81,7 +81,7 @@ This will:
 ### **Step 3: Test Locally (Optional)**
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
+cd /Users/olorin/Documents/olorin/backend/scripts
 ./test_scheduler_strategy.sh
 ```
 
@@ -106,7 +106,7 @@ gcloud run logs read bayit-plus-backend --region=us-east1 --limit=100 | grep -i 
 ### **Step 5: Verify Results**
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend
+cd /Users/olorin/Documents/olorin/backend
 
 # View latest audit report
 poetry run python scripts/view_audit_results.py
@@ -212,7 +212,7 @@ poetry run python scripts/check_library_status.py
 
 ### **Deploy:**
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
+cd /Users/olorin/Documents/olorin/backend/scripts
 ./update_cloud_schedulers.sh
 ```
 
@@ -239,7 +239,7 @@ gcloud scheduler jobs run librarian-daily-maintenance --location=us-east1
 
 ### **View Results:**
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend
+cd /Users/olorin/Documents/olorin/backend
 
 # Latest audit
 poetry run python scripts/view_audit_results.py
@@ -315,7 +315,7 @@ gcloud scheduler jobs resume librarian-daily-maintenance --location=us-east1
 **Ready to deploy?**
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
+cd /Users/olorin/Documents/olorin/backend/scripts
 ./update_cloud_schedulers.sh
 ```
 

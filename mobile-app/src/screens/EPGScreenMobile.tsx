@@ -15,7 +15,6 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
@@ -60,10 +59,11 @@ const ChannelCard: React.FC<ChannelCardProps> = ({
   const { isRTL, textAlign } = useDirection();
 
   return (
-    <View style={styles.channelCard}>
+    <View className="bg-white/5 rounded-lg mb-3 overflow-hidden">
       {/* Channel Header */}
       <TouchableOpacity
-        style={[styles.channelHeader, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
+        className="p-3 border-b border-white/10"
+        style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}
         onPress={() => {
           ReactNativeHapticFeedback.trigger('impactLight');
           onChannelPress(item.channel);
@@ -73,46 +73,46 @@ const ChannelCard: React.FC<ChannelCardProps> = ({
         {item.channel.logo ? (
           <Image
             source={{ uri: item.channel.logo }}
-            style={styles.channelLogo}
+            className="w-12 h-12 rounded-lg"
             resizeMode="contain"
           />
         ) : (
-          <View style={styles.channelLogoPlaceholder}>
-            <Text style={styles.channelLogoText}>{item.channel.number}</Text>
+          <View className="w-12 h-12 rounded-lg bg-white/5 justify-center items-center">
+            <Text className="text-base font-bold text-white">{item.channel.number}</Text>
           </View>
         )}
-        <View style={[styles.channelInfo, { alignItems: isRTL ? 'flex-start' : 'flex-end' }]}>
-          <Text style={[styles.channelName, { textAlign }]}>{item.channel.name}</Text>
-          <Text style={[styles.channelNumber, { textAlign }]}>
+        <View className="flex-1 mx-3" style={{ alignItems: isRTL ? 'flex-start' : 'flex-end' }}>
+          <Text className="text-base font-semibold text-white" style={{ textAlign }}>{item.channel.name}</Text>
+          <Text className="text-xs text-white/60 mt-0.5" style={{ textAlign }}>
             {t('epg.channel', 'Channel')} {item.channel.number}
           </Text>
         </View>
-        <View style={styles.liveIndicator}>
-          <Text style={styles.liveText}>{t('epg.live', 'LIVE')}</Text>
+        <View className="bg-red-600 px-2 py-1 rounded">
+          <Text className="text-[10px] font-bold text-white tracking-wider">{t('epg.live', 'LIVE')}</Text>
         </View>
       </TouchableOpacity>
 
       {/* Current Program */}
       {item.currentProgram && (
         <TouchableOpacity
-          style={styles.currentProgram}
+          className="p-3 bg-purple-600/10"
           onPress={() => {
             ReactNativeHapticFeedback.trigger('impactMedium');
             onProgramPress(item.currentProgram!);
           }}
           activeOpacity={0.7}
         >
-          <View style={styles.nowPlayingBadge}>
-            <Text style={styles.nowPlayingText}>{t('epg.nowPlaying', 'Now')}</Text>
+          <View className="self-start bg-purple-600 px-2 py-0.5 rounded mb-1">
+            <Text className="text-[10px] font-semibold text-white uppercase">{t('epg.nowPlaying', 'Now')}</Text>
           </View>
-          <Text style={[styles.programTitle, { textAlign }]} numberOfLines={1}>
+          <Text className="text-base font-semibold text-white mb-1" style={{ textAlign }} numberOfLines={1}>
             {item.currentProgram.title}
           </Text>
-          <Text style={[styles.programTime, { textAlign }]}>
+          <Text className="text-xs text-purple-600 mb-1" style={{ textAlign }}>
             {formatTime(new Date(item.currentProgram.start_time))} - {formatTime(new Date(item.currentProgram.end_time))}
           </Text>
           {item.currentProgram.description && (
-            <Text style={[styles.programDescription, { textAlign }]} numberOfLines={2}>
+            <Text className="text-[13px] text-white/60 leading-[18px]" style={{ textAlign }} numberOfLines={2}>
               {item.currentProgram.description}
             </Text>
           )}
@@ -121,14 +121,14 @@ const ChannelCard: React.FC<ChannelCardProps> = ({
 
       {/* Upcoming Programs */}
       {item.upcomingPrograms.length > 0 && (
-        <View style={styles.upcomingSection}>
-          <Text style={[styles.upcomingTitle, { textAlign }]}>
+        <View className="p-3 pt-2 border-t border-white/10">
+          <Text className="text-xs font-semibold text-white/60 uppercase mb-2" style={{ textAlign }}>
             {t('epg.upcoming', 'Coming Up')}
           </Text>
           {item.upcomingPrograms.slice(0, 3).map((program) => (
             <TouchableOpacity
               key={program.id}
-              style={styles.upcomingProgram}
+              className="flex-row items-center py-1"
               onPress={() => {
                 if (program.is_past && isPremium) {
                   ReactNativeHapticFeedback.trigger('impactLight');
@@ -137,10 +137,10 @@ const ChannelCard: React.FC<ChannelCardProps> = ({
               }}
               activeOpacity={program.is_past && isPremium ? 0.7 : 1}
             >
-              <Text style={[styles.upcomingTime, { textAlign }]}>
+              <Text className="text-xs text-white/60 w-[50px]" style={{ textAlign }}>
                 {formatTime(new Date(program.start_time))}
               </Text>
-              <Text style={[styles.upcomingProgramTitle, { textAlign, flex: 1 }]} numberOfLines={1}>
+              <Text className="text-sm text-white flex-1" style={{ textAlign }} numberOfLines={1}>
                 {program.title}
               </Text>
             </TouchableOpacity>
@@ -302,48 +302,48 @@ export const EPGScreenMobile: React.FC = () => {
   const renderHeader = () => (
     <View>
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md }]}>
-          <Text style={styles.headerIconText}>📺</Text>
+      <View className="items-center pt-6 pb-3" style={{ flexDirection: isRTL ? 'row' : 'row-reverse', marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md }}>
+        <View className="w-12 h-12 rounded-full bg-purple-600/20 justify-center items-center">
+          <Text className="text-2xl">📺</Text>
         </View>
-        <View style={styles.headerTextContainer}>
-          <Text style={[styles.title, { textAlign }]}>{t('epg.title', 'TV Guide')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
+        <View className="flex-1">
+          <Text className="text-[28px] font-bold text-white" style={{ textAlign }}>{t('epg.title', 'TV Guide')}</Text>
+          <Text className="text-sm text-white/60 mt-0.5" style={{ textAlign }}>
             {t('epg.subtitle', 'Browse the TV schedule')}
           </Text>
         </View>
       </View>
 
       {/* Time Controls */}
-      <View style={styles.timeControls}>
-        <View style={styles.timeNavigation}>
+      <View className="mb-6">
+        <View className="flex-row justify-center items-center gap-3 mb-2">
           <TouchableOpacity
             onPress={() => handleTimeShift(-2)}
-            style={styles.timeButton}
+            className="px-3 py-2 bg-white/5 rounded-lg"
           >
-            <Text style={styles.timeButtonText}>{isRTL ? '→' : '←'} 2h</Text>
+            <Text className="text-sm text-white">{isRTL ? '→' : '←'} 2h</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={handleJumpToNow}
-            style={styles.nowButton}
+            className="px-6 py-2 bg-purple-600 rounded-lg"
           >
-            <Text style={styles.nowButtonText}>{t('epg.now', 'Now')}</Text>
+            <Text className="text-sm font-semibold text-white">{t('epg.now', 'Now')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => handleTimeShift(2)}
-            style={styles.timeButton}
+            className="px-3 py-2 bg-white/5 rounded-lg"
           >
-            <Text style={styles.timeButtonText}>2h {isRTL ? '←' : '→'}</Text>
+            <Text className="text-sm text-white">2h {isRTL ? '←' : '→'}</Text>
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity
           onPress={handleTimezoneToggle}
-          style={styles.timezoneButton}
+          className="self-center px-3 py-1"
         >
-          <Text style={styles.timezoneText}>
+          <Text className="text-xs text-white/60">
             🌍 {timezone === 'israel' ? t('epg.israelTime', 'Israel') : t('epg.localTime', 'Local')}
           </Text>
         </TouchableOpacity>
@@ -353,32 +353,32 @@ export const EPGScreenMobile: React.FC = () => {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.loadingContainer}>
+      <SafeAreaView className="flex-1 justify-center items-center bg-black">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('epg.loading', 'Loading TV guide...')}</Text>
+        <Text className="text-white text-base mt-3">{t('epg.loading', 'Loading TV guide...')}</Text>
       </SafeAreaView>
     );
   }
 
   if (error) {
     return (
-      <SafeAreaView style={styles.errorContainer}>
-        <Text style={styles.errorIcon}>⚠️</Text>
-        <Text style={styles.errorTitle}>{t('epg.errorTitle', 'Error')}</Text>
-        <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity onPress={fetchEPGData} style={styles.retryButton}>
-          <Text style={styles.retryText}>{t('common.retry', 'Retry')}</Text>
+      <SafeAreaView className="flex-1 justify-center items-center bg-black p-6">
+        <Text className="text-5xl mb-3">⚠️</Text>
+        <Text className="text-xl font-semibold text-red-600 mb-2">{t('epg.errorTitle', 'Error')}</Text>
+        <Text className="text-sm text-white/60 text-center mb-6">{error}</Text>
+        <TouchableOpacity onPress={fetchEPGData} className="px-6 py-3 bg-purple-600 rounded-lg">
+          <Text className="text-base font-semibold text-white">{t('common.retry', 'Retry')}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1 bg-black">
       <FlatList
         data={channelsWithPrograms}
         keyExtractor={(item) => item.channel.id}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={{ paddingHorizontal: spacing.md, paddingBottom: spacing.xl }}
         ListHeaderComponent={renderHeader}
         renderItem={({ item }) => (
           <ChannelCard
@@ -401,250 +401,5 @@ export const EPGScreenMobile: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: 16,
-    marginTop: spacing.md,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-    padding: spacing.lg,
-  },
-  errorIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
-  },
-  errorTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.error,
-    marginBottom: spacing.sm,
-  },
-  errorText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  retryButton: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.md,
-  },
-  retryText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  listContent: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.xl,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-  },
-  headerIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(126, 34, 206, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerIconText: {
-    fontSize: 24,
-  },
-  headerTextContainer: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  timeControls: {
-    marginBottom: spacing.lg,
-  },
-  timeNavigation: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  timeButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.md,
-  },
-  timeButtonText: {
-    fontSize: 14,
-    color: colors.text,
-  },
-  nowButton: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.md,
-  },
-  nowButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  timezoneButton: {
-    alignSelf: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  timezoneText: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-  channelCard: {
-    backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.md,
-    overflow: 'hidden',
-  },
-  channelHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  channelLogo: {
-    width: 48,
-    height: 48,
-    borderRadius: 8,
-    backgroundColor: colors.backgroundElevated,
-  },
-  channelLogoPlaceholder: {
-    width: 48,
-    height: 48,
-    borderRadius: 8,
-    backgroundColor: colors.backgroundElevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  channelLogoText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  channelInfo: {
-    flex: 1,
-    marginHorizontal: spacing.md,
-  },
-  channelName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  channelNumber: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  liveIndicator: {
-    backgroundColor: colors.error,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  liveText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: colors.text,
-    letterSpacing: 0.5,
-  },
-  currentProgram: {
-    padding: spacing.md,
-    backgroundColor: 'rgba(126, 34, 206, 0.1)',
-  },
-  nowPlayingBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: 4,
-    marginBottom: spacing.xs,
-  },
-  nowPlayingText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: colors.text,
-    textTransform: 'uppercase',
-  },
-  programTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  programTime: {
-    fontSize: 12,
-    color: colors.primary,
-    marginBottom: spacing.xs,
-  },
-  programDescription: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    lineHeight: 18,
-  },
-  upcomingSection: {
-    padding: spacing.md,
-    paddingTop: spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  upcomingTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.textSecondary,
-    textTransform: 'uppercase',
-    marginBottom: spacing.sm,
-  },
-  upcomingProgram: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.xs,
-  },
-  upcomingTime: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    width: 50,
-  },
-  upcomingProgramTitle: {
-    fontSize: 14,
-    color: colors.text,
-  },
-});
 
 export default EPGScreenMobile;

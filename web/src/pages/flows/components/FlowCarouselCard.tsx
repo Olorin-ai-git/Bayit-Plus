@@ -5,7 +5,7 @@
  */
 
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Clock, Sparkles, Play, List } from 'lucide-react';
 import LinearGradient from 'react-native-web-linear-gradient';
@@ -98,15 +98,14 @@ export function FlowCarouselCard({
       <Animated.View
         style={[
           { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.focusedShadow,
+          isFocused && { boxShadow: '0 12px 32px rgba(168, 85, 247, 0.4)' },
         ]}
       >
         <GlassView
-          style={[
-            styles.card,
-            { width: cardWidth, height: cardHeight, backgroundColor: gradient.bg },
-            isFocused && styles.cardFocused,
-          ]}
+          className={`items-center justify-start border-2 ${
+            isFocused ? 'border-purple-600 border-[3px]' : 'border-transparent'
+          } ${isTV ? 'p-4 rounded-2xl' : 'p-3 rounded-2xl'}`}
+          style={{ width: cardWidth, height: cardHeight, backgroundColor: gradient.bg }}
           intensity="medium"
         >
           {/* Flow Icon */}
@@ -114,14 +113,15 @@ export function FlowCarouselCard({
             colors={gradient.colors}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={[styles.iconContainer, { width: iconSize, height: iconSize, borderRadius: iconSize / 4 }]}
+            className="justify-center items-center mb-4 mt-2"
+            style={{ width: iconSize, height: iconSize, borderRadius: iconSize / 4 }}
           >
             <Play size={iconSize * 0.5} color="#fff" fill="#fff" />
           </LinearGradient>
 
           {/* System Badge */}
           {flow.flow_type === 'system' && (
-            <View style={[styles.systemBadge, isRTL && styles.systemBadgeRTL]}>
+            <View className={`absolute top-2 ${isRTL ? 'left-2' : 'right-2'}`}>
               <GlassBadge variant="primary" size="sm">
                 {t('flows.system')}
               </GlassBadge>
@@ -130,44 +130,45 @@ export function FlowCarouselCard({
 
           {/* Flow Title */}
           <Text
-            style={[styles.title, { fontSize: titleSize }, isRTL && styles.textRTL]}
+            className={`font-bold text-white text-center mb-2 ${isRTL ? 'text-right' : ''}`}
+            style={{ fontSize: titleSize, lineHeight: isTV ? 30 : 24 }}
             numberOfLines={2}
           >
             {localizedName}
           </Text>
 
           {/* Trigger Time */}
-          <View style={[styles.metaRow, isRTL && styles.metaRowRTL]}>
+          <View className={`flex-row items-center gap-1 mb-3 px-2 py-1 bg-white/10 rounded-full ${isRTL ? 'flex-row-reverse' : ''}`}>
             <Clock size={metaSize} color={colors.textMuted} />
-            <Text style={[styles.metaText, { fontSize: metaSize }]}>
+            <Text className="text-gray-400 font-medium" style={{ fontSize: metaSize }}>
               {triggerDisplay}
             </Text>
           </View>
 
           {/* Feature Badges */}
-          <View style={[styles.badges, isRTL && styles.badgesRTL]}>
+          <View className={`flex-row flex-wrap gap-1 justify-center mt-auto pt-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
             {flow.ai_enabled && (
-              <View style={styles.badge}>
+              <View className="flex-row items-center gap-1 px-2 py-1 bg-white/10 rounded-full">
                 <Sparkles size={12} color={colors.warning} />
-                <Text style={styles.badgeText}>AI</Text>
+                <Text className="text-xs font-semibold text-gray-400">AI</Text>
               </View>
             )}
             {flow.ai_brief_enabled && (
-              <View style={styles.badge}>
+              <View className="flex-row items-center gap-1 px-2 py-1 bg-white/10 rounded-full">
                 <Sparkles size={12} color={colors.info} />
-                <Text style={styles.badgeText}>{t('flows.brief')}</Text>
+                <Text className="text-xs font-semibold text-gray-400">{t('flows.brief')}</Text>
               </View>
             )}
             {flow.auto_play && (
-              <View style={styles.badge}>
+              <View className="flex-row items-center gap-1 px-2 py-1 bg-white/10 rounded-full">
                 <Play size={12} color={colors.primary} />
-                <Text style={styles.badgeText}>{t('flows.auto')}</Text>
+                <Text className="text-xs font-semibold text-gray-400">{t('flows.auto')}</Text>
               </View>
             )}
             {flow.items.length > 0 && (
-              <View style={styles.badge}>
+              <View className="flex-row items-center gap-1 px-2 py-1 bg-white/10 rounded-full">
                 <List size={12} color={colors.textMuted} />
-                <Text style={styles.badgeText}>{flow.items.length}</Text>
+                <Text className="text-xs font-semibold text-gray-400">{flow.items.length}</Text>
               </View>
             )}
           </View>
@@ -176,93 +177,5 @@ export function FlowCarouselCard({
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    padding: isTV ? spacing.lg : spacing.md,
-    borderRadius: borderRadius.xl,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    // @ts-ignore - Web transition
-    transition: 'all 0.2s ease',
-  },
-  cardFocused: {
-    borderColor: colors.primary,
-    borderWidth: 3,
-  },
-  focusedShadow: {
-    // @ts-ignore - Web shadow
-    boxShadow: '0 12px 32px rgba(168, 85, 247, 0.4)',
-  },
-  iconContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-    marginTop: spacing.md,
-  },
-  systemBadge: {
-    position: 'absolute',
-    top: spacing.sm,
-    right: spacing.sm,
-  },
-  systemBadgeRTL: {
-    right: 'auto' as any,
-    left: spacing.sm,
-  },
-  title: {
-    fontWeight: '700',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-    lineHeight: isTV ? 30 : 24,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginBottom: spacing.md,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.full,
-  },
-  metaRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  metaText: {
-    color: colors.textMuted,
-    fontWeight: '500',
-  },
-  badges: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.xs,
-    justifyContent: 'center',
-    marginTop: 'auto' as any,
-    paddingTop: spacing.sm,
-  },
-  badgesRTL: {
-    flexDirection: 'row-reverse',
-  },
-  badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.full,
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: colors.textMuted,
-  },
-});
 
 export default FlowCarouselCard;

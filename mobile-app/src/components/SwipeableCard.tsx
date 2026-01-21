@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, Platform } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { GlassView, GlassButton } from '@bayit/shared';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -45,16 +45,12 @@ export const SwipeableCard: React.FC<SwipeableCardProps> = ({
   };
 
   const renderRightActions = () => (
-    <View style={styles.actionsContainer}>
+    <View className="flex-row items-center">
       {onFavorite && (
         <GlassButton
           variant="secondary"
           onPress={() => handleAction(onFavorite)}
-          style={[
-            styles.action,
-            styles.favoriteAction,
-            isFavorited && styles.favoritedAction,
-          ]}
+          className={`w-20 h-full justify-center items-center rounded-none ${isFavorited ? 'bg-[rgba(255,204,0,1)]' : 'bg-[rgba(255,204,0,0.8)]'}`}
         >
           {isFavorited ? '★' : '☆'}
         </GlassButton>
@@ -63,7 +59,7 @@ export const SwipeableCard: React.FC<SwipeableCardProps> = ({
         <GlassButton
           variant="danger"
           onPress={() => handleAction(onDelete)}
-          style={[styles.action, styles.deleteAction]}
+          className="w-20 h-full justify-center items-center rounded-none bg-[rgba(255,59,48,0.8)]"
         >
           🗑️
         </GlassButton>
@@ -77,35 +73,9 @@ export const SwipeableCard: React.FC<SwipeableCardProps> = ({
       friction={2}
       overshootRight={false}
     >
-      <GlassView style={styles.card}>
+      <GlassView className="mb-4">
         {children}
       </GlassView>
     </Swipeable>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    marginBottom: spacing.md,
-  },
-  actionsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  action: {
-    width: 80,
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 0,
-  },
-  favoriteAction: {
-    backgroundColor: 'rgba(255, 204, 0, 0.8)',
-  },
-  favoritedAction: {
-    backgroundColor: 'rgba(255, 204, 0, 1)',
-  },
-  deleteAction: {
-    backgroundColor: 'rgba(255, 59, 48, 0.8)',
-  },
-});

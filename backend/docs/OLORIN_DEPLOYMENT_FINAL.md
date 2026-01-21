@@ -169,7 +169,7 @@ COPY packages /packages
 COPY backend/pyproject.toml backend/poetry.lock* ./
 
 # 5. Fix file paths for Docker context
-RUN sed -i 's|file:///Users/olorin/Documents/Bayit-Plus/packages|file:///packages|g' pyproject.toml
+RUN sed -i 's|file:///Users/olorin/Documents/olorin/packages|file:///packages|g' pyproject.toml
 
 # 6. Regenerate lock file
 RUN poetry lock

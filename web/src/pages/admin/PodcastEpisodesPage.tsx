@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, ChevronLeft } from 'lucide-react'
@@ -125,12 +125,12 @@ export default function PodcastEpisodesPage() {
     {
       key: 'episode_number',
       label: t('admin.content.columns.episodeNumber', { defaultValue: 'Episode #' }),
-      render: (episodeNum: number | undefined) => <Text style={styles.cellText}>{episodeNum || '-'}</Text>,
+      render: (episodeNum: number | undefined) => <Text className="text-sm text-white">{episodeNum || '-'}</Text>,
     },
     {
       key: 'title',
       label: t('admin.content.columns.title', { defaultValue: 'Title' }),
-      render: (title: string) => <Text style={styles.cellText}>{title}</Text>,
+      render: (title: string) => <Text className="text-sm text-white">{title}</Text>,
     },
     {
       key: 'description',
@@ -144,13 +144,13 @@ export default function PodcastEpisodesPage() {
     {
       key: 'duration',
       label: t('admin.content.columns.duration', { defaultValue: 'Duration' }),
-      render: (duration: string | undefined) => <Text style={styles.cellText}>{duration || '-'}</Text>,
+      render: (duration: string | undefined) => <Text className="text-sm text-white">{duration || '-'}</Text>,
     },
     {
       key: 'published_at',
       label: t('admin.content.columns.publishedDate', { defaultValue: 'Published' }),
       render: (date: string | undefined) => (
-        <Text style={styles.cellText}>{date ? new Date(date).toLocaleDateString() : '-'}</Text>
+        <Text className="text-sm text-white">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
       ),
     },
     {
@@ -178,7 +178,7 @@ export default function PodcastEpisodesPage() {
   ]
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
       <Pressable
         onPress={() => navigate('/admin/podcasts')}
         style={[styles.breadcrumb, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
@@ -209,7 +209,7 @@ export default function PodcastEpisodesPage() {
       {error && (
         <View style={[styles.errorContainer, { marginBottom: spacing.lg }]}>
           <AlertCircle size={18} color="#ef4444" />
-          <Text style={styles.errorText}>{error}</Text>
+          <Text className="flex-1 text-red-500 text-sm">{error}</Text>
           <Pressable onPress={() => setError(null)}>
             <X size={18} color="#ef4444" />
           </Pressable>
@@ -297,28 +297,3 @@ export default function PodcastEpisodesPage() {
   )
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  breadcrumb: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.lg },
-  breadcrumbText: { color: colors.primary, fontSize: 14, fontWeight: '500' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.lg },
-  pageTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
-  subtitle: { fontSize: 14, color: colors.textMuted, marginTop: spacing.xs },
-  addButton: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, backgroundColor: colors.primary, borderRadius: borderRadius.md },
-  addButtonText: { color: colors.text, fontWeight: '500', fontSize: 14 },
-  errorContainer: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, backgroundColor: '#ef444420', borderColor: '#ef444440', borderWidth: 1, borderRadius: borderRadius.md },
-  errorText: { flex: 1, color: '#ef4444', fontSize: 14 },
-  editForm: { backgroundColor: colors.backgroundLighter, padding: spacing.lg, borderRadius: borderRadius.lg, marginBottom: spacing.lg },
-  formTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: spacing.md },
-  input: { paddingHorizontal: spacing.md, paddingVertical: spacing.md, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.background, color: colors.text, fontSize: 14, marginBottom: spacing.md },
-  formActions: { flexDirection: 'row', gap: spacing.md },
-  cancelBtn: { flex: 1, paddingVertical: spacing.md, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, justifyContent: 'center', alignItems: 'center' },
-  cancelBtnText: { color: colors.text, fontWeight: '600' },
-  saveBtn: { flex: 1, paddingVertical: spacing.md, borderRadius: borderRadius.md, backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center' },
-  saveBtnText: { color: colors.text, fontWeight: '600' },
-  cellText: { fontSize: 14, color: colors.text },
-  descText: { fontSize: 12, color: colors.textMuted },
-  actionsCell: { flexDirection: 'row', gap: spacing.sm, alignItems: 'center' },
-  actionButton: { padding: spacing.sm, borderRadius: borderRadius.md, justifyContent: 'center', alignItems: 'center' },
-})

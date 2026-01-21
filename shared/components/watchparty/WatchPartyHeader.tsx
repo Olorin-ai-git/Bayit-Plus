@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, Text, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { GlassView } from '../ui/GlassView';
 import { GlassButton } from '../ui/GlassButton';
 import WatchPartySyncIndicator from './WatchPartySyncIndicator';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
 
 interface WatchPartyHeaderProps {
   roomCode: string;
@@ -38,9 +37,9 @@ export const WatchPartyHeader: React.FC<WatchPartyHeaderProps> = ({
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.titleRow}>
-        <Text style={styles.title}>{t('watchParty.title')}</Text>
+    <View className="gap-4">
+      <View className="flex-row items-center justify-between">
+        <Text className="text-lg font-semibold text-white">{t('watchParty.title')}</Text>
         <WatchPartySyncIndicator
           isHost={isHost}
           isSynced={isSynced}
@@ -48,10 +47,15 @@ export const WatchPartyHeader: React.FC<WatchPartyHeaderProps> = ({
         />
       </View>
 
-      <GlassView style={styles.codeContainer} intensity="low">
-        <View style={styles.codeInfo}>
-          <Text style={styles.codeLabel}>{t('watchParty.roomCode')}:</Text>
-          <Text style={styles.codeValue}>{roomCode}</Text>
+      <GlassView className="flex-row items-center justify-between py-3 px-4" intensity="low">
+        <View className="flex-row items-center gap-3">
+          <Text className="text-xs text-white/50">{t('watchParty.roomCode')}:</Text>
+          <Text
+            className="text-base font-bold text-white tracking-wider"
+            style={{ fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace' }}
+          >
+            {roomCode}
+          </Text>
         </View>
         <GlassButton
           title={copied ? t('watchParty.codeCopied') : t('watchParty.copyCode')}
@@ -61,7 +65,7 @@ export const WatchPartyHeader: React.FC<WatchPartyHeaderProps> = ({
         />
       </GlassView>
 
-      <View style={styles.actions}>
+      <View className="flex-row gap-3">
         {isHost ? (
           <GlassButton
             title={t('watchParty.end')}
@@ -83,48 +87,5 @@ export const WatchPartyHeader: React.FC<WatchPartyHeaderProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    gap: spacing.md,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  title: {
-    fontSize: fontSize.lg,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  codeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  codeInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  codeLabel: {
-    fontSize: fontSize.xs,
-    color: colors.textMuted,
-  },
-  codeValue: {
-    fontSize: fontSize.md,
-    fontWeight: '700',
-    color: colors.text,
-    letterSpacing: 2,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-});
 
 export default WatchPartyHeader;

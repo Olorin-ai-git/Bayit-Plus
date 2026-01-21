@@ -114,7 +114,7 @@ curl -H "Authorization: Bearer $TEST_TOKEN" https://api.bayit.tv/api/v1/tts/test
 **Action**:
 ```bash
 # Scan entire git history for exposed credentials
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 
 # Search for old credentials
 git log -p --all -S "sk_63c958e380a6c81f4fc63880ca3b9af3d6f8b5ca05ba92ac" | head -20

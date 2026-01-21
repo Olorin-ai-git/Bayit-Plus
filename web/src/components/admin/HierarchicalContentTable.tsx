@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react'
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, Text, Pressable, ActivityIndicator } from 'react-native'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Star, Eye, Trash2, Film, Tv } from 'lucide-react'
@@ -14,7 +14,6 @@ import { GlassTable, GlassTableColumn, GlassTableCell, GlassCheckbox, GlassChevr
 import { useDirection } from '@/hooks/useDirection'
 import { adminContentService } from '@/services/adminApi'
 import logger from '@/utils/logger'
-import { spacing, borderRadius } from '@bayit/shared/theme'
 
 interface ContentItem {
   id: string

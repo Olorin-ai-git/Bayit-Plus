@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Play, Edit2, Trash2, SkipForward, Clock, Sparkles, List, X, Calendar, Zap } from 'lucide-react';
 import LinearGradient from 'react-native-web-linear-gradient';
@@ -96,7 +96,7 @@ export function FlowDetailsModal({
       title=""
       message=""
     >
-      <View style={styles.container}>
+      <View className="relative max-h-[80vh]">
         {/* Close Button */}
         <GlassButton
           title=""
@@ -104,22 +104,29 @@ export function FlowDetailsModal({
           variant="ghost"
           size="sm"
           onPress={onClose}
-          style={[styles.closeBtn, isRTL && styles.closeBtnRTL]}
+          style={isRTL ? { position: 'absolute', top: 0, left: 0, zIndex: 10 } : { position: 'absolute', top: 0, right: 0, zIndex: 10 }}
         />
 
         {/* Header with Icon */}
-        <View style={styles.header}>
+        <View className="items-center mb-4 pt-4">
           <LinearGradient
             colors={gradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.iconContainer}
+            style={{
+              width: isTV ? 100 : 80,
+              height: isTV ? 100 : 80,
+              borderRadius: isTV ? 25 : 20,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginBottom: spacing.md,
+            }}
           >
             <Play size={isTV ? 48 : 40} color="#fff" fill="#fff" />
           </LinearGradient>
 
           {/* Badges */}
-          <View style={[styles.badges, { flexDirection }]}>
+          <View className={`flex ${flexDirection} gap-2`}>
             <GlassBadge
               variant={isCustomFlow ? 'primary' : 'default'}
               size="sm"
@@ -135,32 +142,32 @@ export function FlowDetailsModal({
         </View>
 
         {/* Title & Description */}
-        <Text style={[styles.title, { textAlign }]}>
+        <Text className={`${isTV ? 'text-[32px]' : 'text-2xl'} font-extrabold text-white mb-2 text-center`} style={{ textAlign }}>
           {localizedName}
         </Text>
         {localizedDescription && (
-          <Text style={[styles.description, { textAlign }]}>
+          <Text className={`${isTV ? 'text-lg' : 'text-[15px]'} text-[${colors.textMuted}] text-center mb-4 ${isTV ? 'leading-7' : 'leading-[22px]'}`} style={{ textAlign }}>
             {localizedDescription}
           </Text>
         )}
 
         {/* Details Section */}
-        <ScrollView style={styles.detailsScroll} showsVerticalScrollIndicator={false}>
-          <GlassView style={styles.detailsCard} intensity="low">
-            <Text style={[styles.sectionTitle, { textAlign }]}>
+        <ScrollView className="max-h-[300px] mb-4" showsVerticalScrollIndicator={false}>
+          <GlassView className="p-4 rounded-lg" intensity="low">
+            <Text className="text-sm font-semibold text-[${colors.textMuted}] uppercase tracking-wider mb-4" style={{ textAlign }}>
               {t('flows.details.title')}
             </Text>
 
             {/* Schedule */}
-            <View style={[styles.detailRow, { flexDirection }]}>
-              <View style={styles.detailIcon}>
+            <View className={`flex ${flexDirection} items-start mb-4 gap-4`}>
+              <View className="w-9 h-9 rounded-lg bg-white/10 justify-center items-center">
                 <Clock size={18} color={colors.primary} />
               </View>
-              <View style={styles.detailContent}>
-                <Text style={[styles.detailLabel, isRTL && styles.textRTL]}>
+              <View className="flex-1">
+                <Text className={`text-xs text-[${colors.textMuted}] mb-1 ${isRTL ? 'text-right' : ''}`}>
                   {t('flows.details.schedule')}
                 </Text>
-                <Text style={[styles.detailValue, isRTL && styles.textRTL]}>
+                <Text className={`text-[15px] text-white font-medium ${isRTL ? 'text-right' : ''}`}>
                   {triggerDisplay}
                 </Text>
               </View>
@@ -168,29 +175,21 @@ export function FlowDetailsModal({
 
             {/* Days */}
             {flow.triggers[0]?.days && flow.triggers[0].days.length > 0 && (
-              <View style={[styles.detailRow, { flexDirection }]}>
-                <View style={styles.detailIcon}>
+              <View className={`flex ${flexDirection} items-start mb-4 gap-4`}>
+                <View className="w-9 h-9 rounded-lg bg-white/10 justify-center items-center">
                   <Calendar size={18} color={colors.info} />
                 </View>
-                <View style={styles.detailContent}>
-                  <Text style={[styles.detailLabel, isRTL && styles.textRTL]}>
+                <View className="flex-1">
+                  <Text className={`text-xs text-[${colors.textMuted}] mb-1 ${isRTL ? 'text-right' : ''}`}>
                     {t('flows.details.days')}
                   </Text>
-                  <View style={[styles.daysContainer, { flexDirection }]}>
+                  <View className={`flex ${flexDirection} gap-1.5 mt-1`}>
                     {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, idx) => (
                       <View
                         key={day}
-                        style={[
-                          styles.dayBadge,
-                          flow.triggers[0]?.days?.includes(idx as any) && styles.dayBadgeActive,
-                        ]}
+                        className={`w-7 h-7 rounded-full ${flow.triggers[0]?.days?.includes(idx as any) ? `bg-[${colors.primary}]` : 'bg-white/10'} justify-center items-center`}
                       >
-                        <Text
-                          style={[
-                            styles.dayText,
-                            flow.triggers[0]?.days?.includes(idx as any) && styles.dayTextActive,
-                          ]}
-                        >
+                        <Text className={`text-[11px] font-semibold ${flow.triggers[0]?.days?.includes(idx as any) ? 'text-black' : `text-[${colors.textMuted}]`}`}>
                           {day.charAt(0)}
                         </Text>
                       </View>
@@ -201,15 +200,15 @@ export function FlowDetailsModal({
             )}
 
             {/* Content */}
-            <View style={[styles.detailRow, { flexDirection }]}>
-              <View style={styles.detailIcon}>
+            <View className={`flex ${flexDirection} items-start mb-4 gap-4`}>
+              <View className="w-9 h-9 rounded-lg bg-white/10 justify-center items-center">
                 <List size={18} color={colors.secondary} />
               </View>
-              <View style={styles.detailContent}>
-                <Text style={[styles.detailLabel, isRTL && styles.textRTL]}>
+              <View className="flex-1">
+                <Text className={`text-xs text-[${colors.textMuted}] mb-1 ${isRTL ? 'text-right' : ''}`}>
                   {t('flows.details.content')}
                 </Text>
-                <Text style={[styles.detailValue, isRTL && styles.textRTL]}>
+                <Text className={`text-[15px] text-white font-medium ${isRTL ? 'text-right' : ''}`}>
                   {flow.items.length > 0
                     ? `${flow.items.length} ${t('flows.items')}`
                     : t('flows.aiGenerated')}
@@ -218,35 +217,35 @@ export function FlowDetailsModal({
             </View>
 
             {/* Features */}
-            <View style={[styles.detailRow, { flexDirection }]}>
-              <View style={styles.detailIcon}>
+            <View className={`flex ${flexDirection} items-start mb-4 gap-4`}>
+              <View className="w-9 h-9 rounded-lg bg-white/10 justify-center items-center">
                 <Zap size={18} color={colors.warning} />
               </View>
-              <View style={styles.detailContent}>
-                <Text style={[styles.detailLabel, isRTL && styles.textRTL]}>
+              <View className="flex-1">
+                <Text className={`text-xs text-[${colors.textMuted}] mb-1 ${isRTL ? 'text-right' : ''}`}>
                   {t('flows.details.features')}
                 </Text>
-                <View style={[styles.featuresContainer, { flexDirection }]}>
+                <View className={`flex ${flexDirection} flex-wrap gap-2 mt-1`}>
                   {flow.ai_enabled && (
-                    <View style={styles.featureBadge}>
+                    <View className="flex flex-row items-center gap-1 px-2 py-1 bg-white/10 rounded-full">
                       <Sparkles size={12} color={colors.warning} />
-                      <Text style={styles.featureText}>AI</Text>
+                      <Text className="text-xs font-semibold text-white">AI</Text>
                     </View>
                   )}
                   {flow.ai_brief_enabled && (
-                    <View style={styles.featureBadge}>
+                    <View className="flex flex-row items-center gap-1 px-2 py-1 bg-white/10 rounded-full">
                       <Sparkles size={12} color={colors.info} />
-                      <Text style={styles.featureText}>{t('flows.aiBrief')}</Text>
+                      <Text className="text-xs font-semibold text-white">{t('flows.aiBrief')}</Text>
                     </View>
                   )}
                   {flow.auto_play && (
-                    <View style={styles.featureBadge}>
+                    <View className="flex flex-row items-center gap-1 px-2 py-1 bg-white/10 rounded-full">
                       <Play size={12} color={colors.primary} />
-                      <Text style={styles.featureText}>{t('flows.autoPlay')}</Text>
+                      <Text className="text-xs font-semibold text-white">{t('flows.autoPlay')}</Text>
                     </View>
                   )}
                   {!flow.ai_enabled && !flow.ai_brief_enabled && !flow.auto_play && (
-                    <Text style={[styles.detailValue, isRTL && styles.textRTL]}>
+                    <Text className={`text-[15px] text-white font-medium ${isRTL ? 'text-right' : ''}`}>
                       {t('flows.noFeatures')}
                     </Text>
                   )}
@@ -257,7 +256,7 @@ export function FlowDetailsModal({
         </ScrollView>
 
         {/* Action Buttons */}
-        <View style={styles.actions}>
+        <View className="gap-4">
           {/* Primary: Start Flow */}
           <GlassButton
             title={t('flows.startFlow')}
@@ -270,7 +269,7 @@ export function FlowDetailsModal({
           />
 
           {/* Secondary Actions Row */}
-          <View style={[styles.secondaryActions, { flexDirection }]}>
+          <View className={`flex ${flexDirection} justify-center gap-2 flex-wrap`}>
             {/* Skip Today */}
             {onSkip && (
               <GlassButton
@@ -279,7 +278,7 @@ export function FlowDetailsModal({
                 variant="ghost"
                 size="sm"
                 onPress={onSkip}
-                style={styles.secondaryBtn}
+                style={{ flex: 1, minWidth: 100 }}
               />
             )}
 
@@ -291,7 +290,7 @@ export function FlowDetailsModal({
                 variant="ghost"
                 size="sm"
                 onPress={onEdit}
-                style={styles.secondaryBtn}
+                style={{ flex: 1, minWidth: 100 }}
               />
             )}
 
@@ -304,7 +303,7 @@ export function FlowDetailsModal({
                 size="sm"
                 onPress={handleDelete}
                 textStyle={{ color: colors.error }}
-                style={styles.secondaryBtn}
+                style={{ flex: 1, minWidth: 100 }}
               />
             )}
           </View>
@@ -312,14 +311,14 @@ export function FlowDetailsModal({
 
         {/* Delete Confirmation */}
         {showDeleteConfirm && (
-          <GlassView style={styles.confirmOverlay} intensity="high">
-            <Text style={styles.confirmTitle}>
+          <GlassView className="absolute inset-0 justify-center items-center p-6 rounded-2xl" intensity="high">
+            <Text className="text-xl font-bold text-white mb-2 text-center">
               {t('flows.deleteConfirmTitle')}
             </Text>
-            <Text style={styles.confirmMessage}>
+            <Text className="text-[15px] text-[${colors.textMuted}] mb-4 text-center">
               {t('flows.deleteConfirmMessage')}
             </Text>
-            <View style={[styles.confirmActions, { flexDirection }]}>
+            <View className={`flex ${flexDirection} gap-4`}>
               <GlassButton
                 title={t('common.cancel')}
                 variant="ghost"
@@ -339,184 +338,5 @@ export function FlowDetailsModal({
     </GlassModal>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-    maxHeight: '80vh',
-  },
-  closeBtn: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    zIndex: 10,
-  },
-  closeBtnRTL: {
-    right: 'auto' as any,
-    left: 0,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-    paddingTop: spacing.md,
-  },
-  iconContainer: {
-    width: isTV ? 100 : 80,
-    height: isTV ? 100 : 80,
-    borderRadius: isTV ? 25 : 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  badges: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  title: {
-    fontSize: isTV ? 32 : 24,
-    fontWeight: '800',
-    color: colors.text,
-    marginBottom: spacing.sm,
-    textAlign: 'center',
-  },
-  description: {
-    fontSize: isTV ? 18 : 15,
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-    lineHeight: isTV ? 28 : 22,
-  },
-  detailsScroll: {
-    maxHeight: 300,
-    marginBottom: spacing.lg,
-  },
-  detailsCard: {
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: spacing.md,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-  detailRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: spacing.md,
-    gap: spacing.md,
-  },
-  detailIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  detailContent: {
-    flex: 1,
-  },
-  detailLabel: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginBottom: 4,
-  },
-  detailValue: {
-    fontSize: 15,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  daysContainer: {
-    flexDirection: 'row',
-    gap: 6,
-    marginTop: 4,
-  },
-  dayBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  dayBadgeActive: {
-    backgroundColor: colors.primary,
-  },
-  dayText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: colors.textMuted,
-  },
-  dayTextActive: {
-    color: '#000',
-  },
-  featuresContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-    marginTop: 4,
-  },
-  featureBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.full,
-  },
-  featureText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  actions: {
-    gap: spacing.md,
-  },
-  secondaryActions: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    flexWrap: 'wrap',
-  },
-  secondaryBtn: {
-    flex: 1,
-    minWidth: 100,
-  },
-  confirmOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-    borderRadius: borderRadius.xl,
-  },
-  confirmTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.sm,
-    textAlign: 'center',
-  },
-  confirmMessage: {
-    fontSize: 15,
-    color: colors.textMuted,
-    marginBottom: spacing.lg,
-    textAlign: 'center',
-  },
-  confirmActions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-});
 
 export default FlowDetailsModal;

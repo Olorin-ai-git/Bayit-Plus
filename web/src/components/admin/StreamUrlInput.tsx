@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, Pressable } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { AlertCircle, CheckCircle, Copy } from 'lucide-react'
 import { GlassView, GlassInput, GlassButton } from '@bayit/shared/ui'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors } from '@bayit/shared/theme'
 import { useDirection } from '@/hooks/useDirection'
 
 interface StreamUrlInputProps {
@@ -108,7 +108,7 @@ export function StreamUrlInput({
   }
 
   return (
-    <View style={styles.container}>
+    <View className="w-full mb-4">
       <GlassInput
         label={label}
         value={url}
@@ -120,37 +120,34 @@ export function StreamUrlInput({
       />
 
       {copied && (
-        <View style={styles.copiedMessage}>
-          <Text style={styles.copiedText}>{t('admin.content.streamUrlInput.copied')}</Text>
+        <View className="mt-1 px-2">
+          <Text className="text-xs" style={{ color: colors.success }}>
+            {t('admin.content.streamUrlInput.copied')}
+          </Text>
         </View>
       )}
 
       {url && (
-        <View style={styles.streamTypeSection}>
-          <Text style={[styles.streamTypeLabel, { textAlign }]}>
+        <View className="mt-4">
+          <Text className="text-xs font-medium mb-2" style={{ textAlign, color: colors.text }}>
             {t('admin.content.streamUrlInput.streamType')}
           </Text>
-          <View style={styles.typeButtons}>
+          <View className="flex-row gap-2">
             {(['hls', 'dash', 'audio'] as const).map((type) => (
               <Pressable
                 key={type}
                 onPress={() => handleTypeChange(type)}
-                style={styles.typeButtonWrapper}
+                className="flex-1"
               >
                 <GlassView
-                  style={[
-                    styles.typeButton,
-                    streamType === type && styles.typeButtonActive,
-                  ]}
+                  className={`flex-row items-center justify-center gap-1 py-2 px-4 rounded-lg ${streamType === type ? 'border-2' : ''}`}
                   intensity={streamType === type ? 'high' : 'low'}
                   borderColor={streamType === type ? colors.primary : undefined}
                 >
-                  <Text style={styles.typeIcon}>{getStreamTypeIcon(type)}</Text>
+                  <Text className="text-base">{getStreamTypeIcon(type)}</Text>
                   <Text
-                    style={[
-                      styles.typeButtonText,
-                      streamType === type && styles.typeButtonTextActive,
-                    ]}
+                    className="text-xs font-medium"
+                    style={{ color: streamType === type ? colors.primary : colors.textMuted }}
                   >
                     {type.toUpperCase()}
                   </Text>
@@ -162,33 +159,33 @@ export function StreamUrlInput({
       )}
 
       {error && (
-        <GlassView style={styles.errorMessage} intensity="low">
+        <GlassView className="flex-row items-center gap-2 p-4 mt-2 rounded-lg border" intensity="low" style={{ backgroundColor: `${colors.error}10`, borderColor: `${colors.error}40` }}>
           <AlertCircle size={16} color={colors.error} />
-          <Text style={styles.errorText}>{error}</Text>
+          <Text className="flex-1 text-xs" style={{ color: colors.error }}>{error}</Text>
         </GlassView>
       )}
 
       {isValid && url && (
-        <GlassView style={styles.successMessage} intensity="low">
+        <GlassView className="flex-row items-center gap-2 p-4 mt-2 rounded-lg border" intensity="low" style={{ backgroundColor: `${colors.success}10`, borderColor: `${colors.success}40` }}>
           <CheckCircle size={16} color={colors.success} />
-          <Text style={styles.successText}>
+          <Text className="flex-1 text-xs" style={{ color: colors.success }}>
             {t('admin.content.streamUrlInput.validUrl', { type: streamType.toUpperCase() })}
           </Text>
         </GlassView>
       )}
 
-      <GlassView style={styles.helpSection} intensity="low">
-        <Text style={[styles.helpTitle, { textAlign }]}>
+      <GlassView className="mt-4 p-4 rounded-lg" intensity="low">
+        <Text className="text-xs mb-1" style={{ textAlign, color: colors.textMuted }}>
           {t('admin.content.streamUrlInput.supportedFormats.title')}
         </Text>
-        <View style={styles.helpList}>
-          <Text style={[styles.helpItem, { textAlign }]}>
+        <View className="gap-1">
+          <Text className="text-xs leading-[18px]" style={{ textAlign, color: colors.textMuted }}>
             • {t('admin.content.streamUrlInput.supportedFormats.hls')}
           </Text>
-          <Text style={[styles.helpItem, { textAlign }]}>
+          <Text className="text-xs leading-[18px]" style={{ textAlign, color: colors.textMuted }}>
             • {t('admin.content.streamUrlInput.supportedFormats.dash')}
           </Text>
-          <Text style={[styles.helpItem, { textAlign }]}>
+          <Text className="text-xs leading-[18px]" style={{ textAlign, color: colors.textMuted }}>
             • {t('admin.content.streamUrlInput.supportedFormats.audio')}
           </Text>
         </View>
@@ -196,107 +193,3 @@ export function StreamUrlInput({
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    marginBottom: spacing.md,
-  },
-  copiedMessage: {
-    marginTop: spacing.xs,
-    paddingHorizontal: spacing.sm,
-  },
-  copiedText: {
-    fontSize: 12,
-    color: colors.success,
-  },
-  streamTypeSection: {
-    marginTop: spacing.md,
-  },
-  streamTypeLabel: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  typeButtons: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  typeButtonWrapper: {
-    flex: 1,
-  },
-  typeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.md,
-  },
-  typeButtonActive: {
-    borderWidth: 2,
-  },
-  typeIcon: {
-    fontSize: 16,
-  },
-  typeButtonText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: colors.textMuted,
-  },
-  typeButtonTextActive: {
-    color: colors.primary,
-  },
-  errorMessage: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
-    marginTop: spacing.sm,
-    borderRadius: borderRadius.md,
-    backgroundColor: `${colors.error}10`,
-    borderWidth: 1,
-    borderColor: `${colors.error}40`,
-  },
-  errorText: {
-    flex: 1,
-    fontSize: 12,
-    color: colors.error,
-  },
-  successMessage: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
-    marginTop: spacing.sm,
-    borderRadius: borderRadius.md,
-    backgroundColor: `${colors.success}10`,
-    borderWidth: 1,
-    borderColor: `${colors.success}40`,
-  },
-  successText: {
-    flex: 1,
-    fontSize: 12,
-    color: colors.success,
-  },
-  helpSection: {
-    marginTop: spacing.md,
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-  },
-  helpTitle: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginBottom: spacing.xs,
-  },
-  helpList: {
-    gap: spacing.xs,
-  },
-  helpItem: {
-    fontSize: 12,
-    color: colors.textMuted,
-    lineHeight: 18,
-  },
-})

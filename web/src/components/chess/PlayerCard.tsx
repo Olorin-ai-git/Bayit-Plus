@@ -2,7 +2,7 @@
  * Player card component showing player info and status.
  */
 import React from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, Text } from 'react-native';
 import { colors, spacing } from '@bayit/shared/theme';
 import { User, Crown } from 'lucide-react';
 
@@ -20,8 +20,8 @@ interface PlayerCardProps {
 export default function PlayerCard({ player, isCurrentTurn, isHost = false }: PlayerCardProps) {
   if (!player) {
     return (
-      <View style={[styles.container, styles.waitingContainer]}>
-        <Text style={styles.waitingText}>Waiting for opponent...</Text>
+      <View className="bg-black/30 backdrop-blur-xl rounded-xl p-4 my-2 border-2 border-transparent items-center justify-center py-6 shadow-md">
+        <Text className="text-gray-400 text-sm italic">Waiting for opponent...</Text>
       </View>
     );
   }
@@ -35,29 +35,31 @@ export default function PlayerCard({ player, isCurrentTurn, isHost = false }: Pl
   };
 
   return (
-    <View style={[
-      styles.container,
-      isCurrentTurn && styles.activeContainer,
-      !player.is_connected && styles.disconnectedContainer
-    ]}>
-      <View style={styles.header}>
-        <View style={styles.playerInfo}>
-          <View style={[styles.avatar, player.color === 'white' ? styles.whiteAvatar : styles.blackAvatar]}>
+    <View className={`bg-black/30 backdrop-blur-xl rounded-xl p-4 my-2 border-2 shadow-md ${
+      isCurrentTurn ? 'border-purple-500 shadow-purple-500/40' : 'border-transparent'
+    } ${!player.is_connected ? 'opacity-60' : ''}`}>
+      <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center gap-3 flex-1">
+          <View className={`w-10 h-10 rounded-full justify-center items-center ${
+            player.color === 'white' ? 'bg-white' : 'bg-black border-2 border-white'
+          }`}>
             <User size={20} color={player.color === 'white' ? colors.dark : colors.text} />
           </View>
 
-          <View style={styles.details}>
-            <View style={styles.nameRow}>
-              <Text style={styles.name}>{player.user_name}</Text>
+          <View className="flex-1">
+            <View className="flex-row items-center gap-2">
+              <Text className="text-white text-base font-semibold">{player.user_name}</Text>
               {isHost && <Crown size={14} color={colors.warning} />}
             </View>
-            <Text style={styles.color}>{player.color.toUpperCase()}</Text>
+            <Text className="text-gray-400 text-xs mt-0.5">{player.color.toUpperCase()}</Text>
           </View>
         </View>
 
         {player.time_remaining_ms !== undefined && (
-          <View style={styles.timer}>
-            <Text style={[styles.timerText, isCurrentTurn && styles.activeTimer]}>
+          <View className="bg-black/30 px-3 py-1.5 rounded-lg">
+            <Text className={`text-base font-semibold tabular-nums ${
+              isCurrentTurn ? 'text-yellow-500' : 'text-white'
+            }`}>
               {formatTime(player.time_remaining_ms)}
             </Text>
           </View>
@@ -65,135 +67,15 @@ export default function PlayerCard({ player, isCurrentTurn, isHost = false }: Pl
       </View>
 
       {!player.is_connected && (
-        <Text style={styles.disconnectedText}>Disconnected</Text>
+        <Text className="text-red-500 text-xs mt-2 italic">Disconnected</Text>
       )}
 
       {isCurrentTurn && (
-        <View style={styles.turnIndicator}>
-          <View style={styles.turnDot} />
-          <Text style={styles.turnText}>Their turn</Text>
+        <View className="flex-row items-center gap-2 mt-3">
+          <View className="w-2 h-2 rounded-full bg-green-500" />
+          <Text className="text-green-500 text-xs font-medium">Their turn</Text>
         </View>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'rgba(10, 10, 20, 0.3)',
-    backdropFilter: 'blur(20px)',
-    borderRadius: 12,
-    padding: spacing.md,
-    marginVertical: spacing.sm,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    ...Platform.select({
-      web: {
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-      },
-    }),
-  },
-  activeContainer: {
-    borderColor: colors.primary,
-    ...Platform.select({
-      web: {
-        boxShadow: '0 0 20px rgba(168, 85, 247, 0.4)',
-      },
-    }),
-  },
-  disconnectedContainer: {
-    opacity: 0.6,
-  },
-  waitingContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.lg,
-  },
-  waitingText: {
-    color: colors.textSecondary,
-    fontSize: 14,
-    fontStyle: 'italic',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  playerInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    flex: 1,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  whiteAvatar: {
-    backgroundColor: colors.text,
-  },
-  blackAvatar: {
-    backgroundColor: colors.dark,
-    borderWidth: 2,
-    borderColor: colors.text,
-  },
-  details: {
-    flex: 1,
-  },
-  nameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  name: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  color: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  timer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: 8,
-  },
-  timerText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    fontVariant: ['tabular-nums'],
-  },
-  activeTimer: {
-    color: colors.warning,
-  },
-  disconnectedText: {
-    fontSize: 12,
-    color: colors.error,
-    marginTop: spacing.xs,
-    fontStyle: 'italic',
-  },
-  turnIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginTop: spacing.sm,
-  },
-  turnDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.success,
-  },
-  turnText: {
-    fontSize: 12,
-    color: colors.success,
-    fontWeight: '500',
-  },
-});

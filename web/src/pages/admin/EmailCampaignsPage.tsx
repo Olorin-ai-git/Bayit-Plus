@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';;
 import { useTranslation } from 'react-i18next';
 import { Plus, Send, Clock, Edit2, Trash2, TestTube } from 'lucide-react';
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web';
@@ -245,7 +245,7 @@ export default function EmailCampaignsPage() {
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.emailCampaigns.title')}</Text>
@@ -287,7 +287,7 @@ export default function EmailCampaignsPage() {
           <View style={styles.formGroup}>
             <GlassInput label={t('admin.emailCampaigns.form.body')} containerStyle={[styles.input, styles.textArea]} value={newCampaign.body} onChangeText={(body) => setNewCampaign((p) => ({ ...p, body }))} multiline numberOfLines={5} />
           </View>
-          <View style={styles.modalActions}>
+          <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('common.cancel')} variant="cancel" onPress={handleCloseCreateModal} />
             <GlassButton title={editingCampaign ? t('common.save', 'Save') : t('admin.emailCampaigns.createButton')} variant="success" onPress={handleCreate} />
           </View>
@@ -299,7 +299,7 @@ export default function EmailCampaignsPage() {
           <View style={styles.formGroup}>
             <GlassInput label={t('admin.emailCampaigns.testModal.emailLabel')} containerStyle={styles.input} value={testEmail} onChangeText={setTestEmail} keyboardType="email-address" />
           </View>
-          <View style={styles.modalActions}>
+          <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowTestModal(false)} />
             <GlassButton title={t('admin.emailCampaigns.testModal.submitButton')} variant="success" onPress={handleSendTest} />
           </View>
@@ -317,7 +317,7 @@ export default function EmailCampaignsPage() {
               {t('admin.emailCampaigns.confirmSend', { name: selectedCampaign.name })}
             </Text>
           )}
-          <View style={styles.modalActions}>
+          <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowSendConfirm(false)} />
             <GlassButton title={t('common.send')} variant="success" onPress={handleSendConfirm} />
           </View>
@@ -335,7 +335,7 @@ export default function EmailCampaignsPage() {
               {t('admin.emailCampaigns.confirmDelete', { name: selectedCampaign.name })}
             </Text>
           )}
-          <View style={styles.modalActions}>
+          <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowDeleteConfirm(false)} />
             <GlassButton title={t('common.delete')} variant="danger" onPress={handleDeleteConfirm} />
           </View>
@@ -349,7 +349,7 @@ export default function EmailCampaignsPage() {
       >
         <View style={styles.modalContent}>
           <Text style={styles.successText}>{t('admin.emailCampaigns.testEmailSent')}</Text>
-          <View style={styles.modalActions}>
+          <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('common.ok')} variant="success" onPress={() => setShowSuccessModal(false)} />
           </View>
         </View>
@@ -361,8 +361,8 @@ export default function EmailCampaignsPage() {
         title={t('common.error')}
       >
         <View style={styles.modalContent}>
-          <Text style={styles.errorText}>{errorMessage}</Text>
-          <View style={styles.modalActions}>
+          <Text className="flex-1 text-red-500 text-sm">{errorMessage}</Text>
+          <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('common.ok')} variant="success" onPress={() => setShowErrorModal(false)} />
           </View>
         </View>
@@ -371,32 +371,3 @@ export default function EmailCampaignsPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.lg },
-  pageTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
-  subtitle: { fontSize: 14, color: colors.textMuted, marginTop: spacing.xs },
-  filtersRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.lg },
-  filterButton: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.md },
-  filterButtonActive: { backgroundColor: colors.primary },
-  filterText: { fontSize: 14, color: colors.textMuted },
-  filterTextActive: { color: colors.text, fontWeight: '500' },
-  campaignName: { fontSize: 14, fontWeight: '500', color: colors.text },
-  campaignSubject: { fontSize: 12, color: colors.textMuted },
-  statText: { fontSize: 14, color: colors.text },
-  dateText: { fontSize: 12, color: colors.textMuted },
-  badge: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.full, alignSelf: 'flex-start' },
-  badgeText: { fontSize: 12, fontWeight: '500' },
-  actionsRow: { flexDirection: 'row', gap: spacing.xs },
-  actionButton: { width: 32, height: 32, borderRadius: borderRadius.sm, backgroundColor: colors.glass, justifyContent: 'center', alignItems: 'center' },
-  modalContent: { gap: spacing.md },
-  formGroup: { gap: spacing.xs },
-  formLabel: { fontSize: 14, fontWeight: '600', color: colors.text },
-  input: { backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.glassBorder, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, color: colors.text, fontSize: 14 },
-  textArea: { minHeight: 100, textAlignVertical: 'top' },
-  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.md },
-  modalMessage: { fontSize: 14, color: colors.text, marginBottom: spacing.md },
-  successText: { fontSize: 14, color: colors.text, marginBottom: spacing.md },
-  errorText: { fontSize: 14, color: colors.text, marginBottom: spacing.md },
-});

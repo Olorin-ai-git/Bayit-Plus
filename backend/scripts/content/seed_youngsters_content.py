@@ -18,7 +18,7 @@ import logging
 import sys
 
 # Add parent directory to path for imports
-sys.path.insert(0, "/Users/olorin/Documents/Bayit-Plus/backend")
+sys.path.insert(0, "/Users/olorin/Documents/olorin/backend")
 
 from app.core.config import settings
 from app.core.database import document_models

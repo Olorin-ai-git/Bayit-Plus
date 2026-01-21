@@ -16,7 +16,6 @@ import {
   ScrollView,
   TouchableOpacity,
   FlatList,
-  StyleSheet,
   Alert,
   SafeAreaView,
 } from 'react-native';
@@ -89,9 +88,9 @@ export const VoiceCommandHistory: React.FC<VoiceCommandHistoryProps> = ({
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading history...</Text>
+      <SafeAreaView className="flex-1 bg-slate-900">
+        <View className="flex-1 justify-center items-center">
+          <Text className="text-sm text-slate-400">Loading history...</Text>
         </View>
       </SafeAreaView>
     );
@@ -99,18 +98,18 @@ export const VoiceCommandHistory: React.FC<VoiceCommandHistoryProps> = ({
 
   if (sortedCommands.length === 0) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
+      <SafeAreaView className="flex-1 bg-slate-900">
+        <View className="flex-row justify-between items-center px-4 py-3 border-b border-slate-800">
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.closeButton}>✕ Close</Text>
+            <Text className="text-sm text-blue-600 font-medium">✕ Close</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>Command History</Text>
-          <View style={styles.placeholder} />
+          <Text className="text-lg font-semibold text-white">Command History</Text>
+          <View className="w-12" />
         </View>
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyEmoji}>🎤</Text>
-          <Text style={styles.emptyTitle}>No Commands Yet</Text>
-          <Text style={styles.emptyText}>
+        <View className="flex-1 justify-center items-center">
+          <Text className="text-5xl mb-3">🎤</Text>
+          <Text className="text-lg font-semibold text-slate-100 mb-2">No Commands Yet</Text>
+          <Text className="text-sm text-slate-400">
             Voice commands will appear here
           </Text>
         </View>
@@ -119,24 +118,26 @@ export const VoiceCommandHistory: React.FC<VoiceCommandHistoryProps> = ({
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <SafeAreaView className="flex-1 bg-slate-900">
+      <View className="flex-row justify-between items-center px-4 py-3 border-b border-slate-800">
         <TouchableOpacity onPress={onClose}>
-          <Text style={styles.closeButton}>✕ Close</Text>
+          <Text className="text-sm text-blue-600 font-medium">✕ Close</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Command History</Text>
-        <Text style={styles.commandCount}>{sortedCommands.length}</Text>
+        <Text className="text-lg font-semibold text-white">Command History</Text>
+        <Text className="text-sm text-slate-400 font-medium">{sortedCommands.length}</Text>
       </View>
 
       <ScrollView
-        style={styles.content}
-        contentContainerStyle={styles.contentContainer}
+        className="flex-1"
+        contentContainerStyle={{ paddingVertical: 12 }}
       >
         {Object.entries(groupedCommands).map(([date, commandList]) => (
           <View key={date}>
-            <View style={styles.dateSection}>
-              <Text style={styles.dateText}>{date}</Text>
-              <View style={styles.dateSeparator} />
+            <View className="px-4 py-3 flex-row items-center gap-3">
+              <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                {date}
+              </Text>
+              <View className="flex-1 h-px bg-slate-700" />
             </View>
 
             {commandList.map((command) => (
@@ -178,53 +179,48 @@ const CommandHistoryItem: React.FC<CommandHistoryItemProps> = ({
 
   return (
     <TouchableOpacity
-      style={[
-        styles.commandItem,
-        isSelected && styles.commandItemSelected,
-      ]}
+      className={`mx-3 my-1.5 bg-slate-800 rounded-lg px-3 py-3 border ${
+        isSelected ? 'bg-slate-700/50 border-blue-600' : 'border-slate-700'
+      }`}
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <View style={styles.commandContent}>
+      <View className="flex-row items-start gap-3">
         {/* Status Badge */}
         <View
-          style={[
-            styles.statusBadge,
-            { backgroundColor: statusColor },
-          ]}
+          className="w-7 h-7 rounded-full justify-center items-center mt-0.5"
+          style={{ backgroundColor: statusColor }}
         >
-          <Text style={styles.statusIcon}>{statusIcon}</Text>
+          <Text className="text-sm font-bold text-white">{statusIcon}</Text>
         </View>
 
         {/* Command Details */}
-        <View style={styles.commandDetails}>
-          <Text style={styles.transcriptionText} numberOfLines={1}>
+        <View className="flex-1">
+          <Text className="text-xs font-semibold text-slate-100 mb-1.5" numberOfLines={1}>
             {command.transcription}
           </Text>
 
-          <View style={styles.commandMetaRow}>
+          <View className="flex-row items-center gap-2 mb-1">
             <View
-              style={[
-                styles.typeTag,
-                { backgroundColor: commandTypeColor },
-              ]}
+              className="px-1.5 py-0.5 rounded"
+              style={{ backgroundColor: commandTypeColor }}
             >
-              <Text style={styles.typeTagText}>
+              <Text className="text-xs font-semibold text-white capitalize">
                 {command.commandType}
               </Text>
             </View>
 
-            <Text style={styles.timeText}>
+            <Text className="text-xs text-slate-400">
               {formatDistanceToNow(command.timestamp, { addSuffix: true })}
             </Text>
 
-            <Text style={styles.executionTimeText}>
+            <Text className="text-xs text-slate-600">
               {command.executionTime}ms
             </Text>
           </View>
 
           {command.responseText && (
-            <Text style={styles.responseText} numberOfLines={1}>
+            <Text className="text-xs text-slate-300 mt-1" numberOfLines={1}>
               {command.responseText}
             </Text>
           )}
@@ -232,11 +228,11 @@ const CommandHistoryItem: React.FC<CommandHistoryItemProps> = ({
 
         {/* Delete Button */}
         <TouchableOpacity
-          style={styles.deleteButton}
+          className="w-7 h-7 justify-center items-center rounded"
           onPress={onDelete}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Text style={styles.deleteButtonText}>×</Text>
+          <Text className="text-xl text-slate-600 font-light">×</Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -297,178 +293,3 @@ const isSameDay = (date1: Date, date2: Date): boolean => {
     date1.getDate() === date2.getDate()
   );
 };
-
-// ============================================
-// Styles
-// ============================================
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0F172A',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#1E293B',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  closeButton: {
-    fontSize: 14,
-    color: '#3B82F6',
-    fontWeight: '500',
-  },
-  commandCount: {
-    fontSize: 14,
-    color: '#94A3B8',
-    fontWeight: '500',
-  },
-  placeholder: {
-    width: 50,
-  },
-  content: {
-    flex: 1,
-  },
-  contentContainer: {
-    paddingVertical: 12,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    fontSize: 14,
-    color: '#94A3B8',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyEmoji: {
-    fontSize: 48,
-    marginBottom: 12,
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#F1F5F9',
-    marginBottom: 8,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: '#94A3B8',
-    textAlign: 'center',
-  },
-  dateSection: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  dateText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#94A3B8',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  dateSeparator: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#334155',
-  },
-  commandItem: {
-    marginHorizontal: 12,
-    marginVertical: 6,
-    backgroundColor: '#1E293B',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: '#334155',
-  },
-  commandItemSelected: {
-    backgroundColor: '#1E3A5F',
-    borderColor: '#3B82F6',
-  },
-  commandContent: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-  },
-  statusBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 2,
-  },
-  statusIcon: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  commandDetails: {
-    flex: 1,
-  },
-  transcriptionText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#F1F5F9',
-    marginBottom: 6,
-  },
-  commandMetaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
-  },
-  typeTag: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 3,
-  },
-  typeTagText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    textTransform: 'capitalize',
-  },
-  timeText: {
-    fontSize: 11,
-    color: '#94A3B8',
-  },
-  executionTimeText: {
-    fontSize: 11,
-    color: '#64748B',
-  },
-  responseText: {
-    fontSize: 12,
-    color: '#CBD5E1',
-    marginTop: 4,
-  },
-  deleteButton: {
-    width: 28,
-    height: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 4,
-  },
-  deleteButtonText: {
-    fontSize: 20,
-    color: '#64748B',
-    fontWeight: '300',
-  },
-});

@@ -3,10 +3,10 @@
  */
 
 import React, { ReactNode, CSSProperties } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator, Platform } from 'react-native';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { GlassView } from './GlassView';
-import { colors, borderRadius, spacing } from '../theme';
+import { colors } from '../theme';
 
 export interface GlassTableColumn<T = any> {
   key: string;
@@ -80,28 +80,23 @@ export function GlassTable<T extends Record<string, any>>({
   };
 
   return (
-    <GlassView style={[styles.container, style]} intensity="medium">
+    <GlassView className="overflow-hidden rounded-lg" style={style} intensity="medium">
       {/* Table */}
-      <View style={styles.tableWrapper}>
+      <View className="min-h-[200px]">
         {/* Header */}
-        <View style={[
-          styles.headerRow,
-          stickyHeader && styles.stickyHeader,
-          { flexDirection: isRTL ? 'row-reverse' : 'row' },
-        ]}>
+        <View
+          className={`bg-white/[0.03] border-b border-white/[0.08] ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}
+          style={stickyHeader ? { position: 'sticky' as any, top: 0, zIndex: 10 } : undefined}
+        >
           {columns.map((column) => (
             <View
               key={column.key}
-              style={[
-                styles.headerCell,
-                column.width ? { width: column.width as any, flex: undefined } : { flex: 1 },
-              ]}
+              className="px-4 py-4"
+              style={column.width ? { width: column.width as any, flex: undefined } : { flex: 1 }}
             >
               <Text
-                style={[
-                  styles.headerText,
-                  { textAlign: getTextAlign(column) },
-                ]}
+                className="text-[13px] font-semibold text-gray-400 uppercase tracking-wide"
+                style={{ textAlign: getTextAlign(column) }}
               >
                 {column.label}
               </Text>
@@ -111,14 +106,14 @@ export function GlassTable<T extends Record<string, any>>({
 
         {/* Body */}
         {loading ? (
-          <View style={styles.loadingContainer}>
+          <View className="flex-row items-center justify-center py-16 gap-2">
             <ActivityIndicator size="small" color={colors.primary} />
-            <Text style={styles.loadingText}>Loading...</Text>
+            <Text className="text-sm text-gray-500">Loading...</Text>
           </View>
         ) : data.length === 0 ? (
-          <View style={styles.emptyContainer}>
+          <View className="py-16 items-center gap-2">
             {emptyIcon}
-            <Text style={styles.emptyText}>{emptyMessage}</Text>
+            <Text className="text-sm text-gray-500">{emptyMessage}</Text>
           </View>
         ) : (
           data.map((row, rowIndex) => {
@@ -126,28 +121,21 @@ export function GlassTable<T extends Record<string, any>>({
             const rowContent = (
             <Pressable
               onPress={onRowPress ? () => onRowPress(row, rowIndex) : undefined}
-              style={[
-                styles.dataRow,
-                rowIndex < data.length - 1 && styles.dataRowBorder,
-              ]}
+              className={`bg-transparent ${rowIndex < data.length - 1 ? 'border-b border-white/5' : ''}`}
             >
-              <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', flex: 1 }}>
+              <View className="flex-1" style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
                 {columns.map((column) => (
                   <View
                     key={column.key}
-                    style={[
-                      styles.dataCell,
-                      column.width ? { width: column.width as any, flex: undefined } : { flex: 1 },
-                    ]}
+                    className="px-4 py-4 justify-center min-h-[56px]"
+                    style={column.width ? { width: column.width as any, flex: undefined } : { flex: 1 }}
                   >
                     {column.render ? (
                       column.render(row[column.key], row, rowIndex)
                     ) : (
                       <Text
-                        style={[
-                          styles.cellText,
-                          { textAlign: getTextAlign(column) },
-                        ]}
+                        className="text-sm text-white leading-5"
+                        style={{ textAlign: getTextAlign(column) }}
                         numberOfLines={1}
                       >
                         {row[column.key]?.toString() || '-'}
@@ -175,16 +163,16 @@ export function GlassTable<T extends Record<string, any>>({
 
       {/* Pagination */}
       {pagination && totalPages > 1 && (
-        <View style={[styles.pagination, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <Text style={styles.paginationInfo}>
+        <View className={`flex-row items-center justify-between px-4 py-4 border-t border-white/5 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <Text className="text-[13px] text-gray-500">
             {(pagination.page - 1) * pagination.pageSize + 1}-
             {Math.min(pagination.page * pagination.pageSize, pagination.total)} / {pagination.total}
           </Text>
-          <View style={[styles.paginationButtons, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View className={`flex-row items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
             <Pressable
               onPress={() => onPageChange?.(pagination.page - 1)}
               disabled={pagination.page <= 1}
-              style={[styles.pageButton, pagination.page <= 1 && styles.pageButtonDisabled]}
+              className={`p-1 rounded bg-white/5 ${pagination.page <= 1 ? 'opacity-50' : ''}`}
             >
               {isRTL ? (
                 <ChevronRight size={18} color={pagination.page <= 1 ? colors.textMuted : colors.text} />
@@ -192,11 +180,11 @@ export function GlassTable<T extends Record<string, any>>({
                 <ChevronLeft size={18} color={pagination.page <= 1 ? colors.textMuted : colors.text} />
               )}
             </Pressable>
-            <Text style={styles.pageText}>{pagination.page} / {totalPages}</Text>
+            <Text className="text-[13px] text-white min-w-[50px] text-center">{pagination.page} / {totalPages}</Text>
             <Pressable
               onPress={() => onPageChange?.(pagination.page + 1)}
               disabled={pagination.page >= totalPages}
-              style={[styles.pageButton, pagination.page >= totalPages && styles.pageButtonDisabled]}
+              className={`p-1 rounded bg-white/5 ${pagination.page >= totalPages ? 'opacity-50' : ''}`}
             >
               {isRTL ? (
                 <ChevronLeft size={18} color={pagination.page >= totalPages ? colors.textMuted : colors.text} />
@@ -214,15 +202,15 @@ export function GlassTable<T extends Record<string, any>>({
 // Consistent cell content components for use with render prop
 export const GlassTableCell = {
   Text: ({ children, muted = false }: { children: ReactNode; muted?: boolean }) => (
-    <Text style={[styles.cellText, muted && styles.cellTextMuted]} numberOfLines={1}>
+    <Text className={`text-sm leading-5 ${muted ? 'text-gray-500' : 'text-white'}`} numberOfLines={1}>
       {children}
     </Text>
   ),
 
   TwoLine: ({ primary, secondary, align = 'right' }: { primary: string; secondary?: string; align?: 'left' | 'right' }) => (
     <View style={{ alignItems: align === 'right' ? 'flex-end' : 'flex-start' }}>
-      <Text style={styles.cellText} numberOfLines={1}>{primary}</Text>
-      {secondary && <Text style={styles.cellTextSecondary} numberOfLines={1}>{secondary}</Text>}
+      <Text className="text-sm text-white leading-5" numberOfLines={1}>{primary}</Text>
+      {secondary && <Text className="text-xs text-gray-500 mt-0.5" numberOfLines={1}>{secondary}</Text>}
     </View>
   ),
 
@@ -235,14 +223,14 @@ export const GlassTableCell = {
     };
     const style = variantStyles[variant];
     return (
-      <View style={[styles.badge, { backgroundColor: style.bg }]}>
-        <Text style={[styles.badgeText, { color: style.text }]}>{children}</Text>
+      <View className="px-2 py-1 rounded-full self-start" style={{ backgroundColor: style.bg }}>
+        <Text className="text-xs font-semibold" style={{ color: style.text }}>{children}</Text>
       </View>
     );
   },
 
   Actions: ({ children, isRTL = false }: { children: ReactNode; isRTL?: boolean }) => (
-    <View style={[styles.actionsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+    <View className={`flex-row items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
       {children}
     </View>
   ),
@@ -263,149 +251,13 @@ export const GlassTableCell = {
       <Pressable
         onPress={onPress}
         disabled={disabled}
-        style={[
-          styles.actionButton,
-          { backgroundColor: `${color}20` },
-          disabled && { opacity: 0.5 },
-        ]}
+        className={`p-2 rounded-lg justify-center items-center ${disabled ? 'opacity-50' : ''}`}
+        style={{ backgroundColor: `${color}20` }}
       >
         {icon}
       </Pressable>
     );
   },
 };
-
-const styles = StyleSheet.create({
-  container: {
-    overflow: 'hidden',
-    borderRadius: borderRadius.lg,
-  },
-  tableWrapper: {
-    minHeight: 200,
-  },
-  headerRow: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  stickyHeader: {
-    position: 'sticky' as any,
-    top: 0,
-    zIndex: 10,
-  },
-  headerCell: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-  },
-  headerText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  dataRow: {
-    backgroundColor: 'transparent',
-  },
-  dataRowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  dataRowPressed: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  dataCell: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    justifyContent: 'center',
-    minHeight: 56,
-  },
-  cellText: {
-    fontSize: 14,
-    color: colors.text,
-    lineHeight: 20,
-  },
-  cellTextMuted: {
-    color: colors.textMuted,
-  },
-  cellTextSecondary: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
-  loadingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.xl * 2,
-    gap: spacing.sm,
-  },
-  loadingText: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  emptyContainer: {
-    paddingVertical: spacing.xl * 2,
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  pagination: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  paginationInfo: {
-    fontSize: 13,
-    color: colors.textMuted,
-  },
-  paginationButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  pageButton: {
-    padding: spacing.xs,
-    borderRadius: borderRadius.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  pageButtonDisabled: {
-    opacity: 0.5,
-  },
-  pageText: {
-    fontSize: 13,
-    color: colors.text,
-    minWidth: 50,
-    textAlign: 'center',
-  },
-  badge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-    alignSelf: 'flex-start',
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  actionsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  actionButton: {
-    padding: spacing.sm,
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 
 export default GlassTable;

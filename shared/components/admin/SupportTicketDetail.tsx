@@ -10,13 +10,12 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
-  StyleSheet,
   Modal,
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors } from '../../theme';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 import { SupportResponseTemplates } from './SupportResponseTemplates';
@@ -52,10 +51,10 @@ interface SupportTicketDetailProps {
 }
 
 const statusOptions = [
-  { id: 'open', labelKey: 'admin.support.status.open', color: colors.warning },
-  { id: 'in_progress', labelKey: 'admin.support.status.inProgress', color: colors.primary },
-  { id: 'resolved', labelKey: 'admin.support.status.resolved', color: colors.success },
-  { id: 'closed', labelKey: 'admin.support.status.closed', color: colors.textSecondary },
+  { id: 'open', labelKey: 'admin.support.status.open', color: '#fbbf24' },
+  { id: 'in_progress', labelKey: 'admin.support.status.inProgress', color: '#a855f7' },
+  { id: 'resolved', labelKey: 'admin.support.status.resolved', color: '#10b981' },
+  { id: 'closed', labelKey: 'admin.support.status.closed', color: '#9ca3af' },
 ];
 
 export const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
@@ -118,125 +117,124 @@ export const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <GlassView style={styles.modal}>
+      <View className="flex-1 bg-black/70 justify-center items-center p-4">
+        <GlassView className="w-full rounded-3xl p-4" style={{ maxWidth: isTV ? 700 : 600, maxHeight: '95%' }}>
           <ScrollView showsVerticalScrollIndicator={false}>
             {/* Header */}
-            <View style={[styles.header, { flexDirection }]}>
-              <View style={styles.headerLeft}>
-                <Text style={styles.ticketId}>
+            <View className="justify-between items-center mb-4" style={{ flexDirection }}>
+              <View className="flex-row items-center gap-2">
+                <Text className="font-bold text-white font-mono" style={{ fontSize: isTV ? 18 : 16 }}>
                   #{ticket.id.slice(-6).toUpperCase()}
                 </Text>
                 <View
-                  style={[
-                    styles.statusBadge,
-                    { backgroundColor: `${currentStatus?.color}20` },
-                  ]}
+                  className="px-2 py-1 rounded-full"
+                  style={{ backgroundColor: `${currentStatus?.color}20` }}
                 >
                   <Text
-                    style={[
-                      styles.statusText,
-                      { color: currentStatus?.color },
-                    ]}
+                    className="font-semibold"
+                    style={{ color: currentStatus?.color, fontSize: isTV ? 12 : 10 }}
                   >
                     {t(currentStatus?.labelKey || '', ticket.status)}
                   </Text>
                 </View>
               </View>
-              <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                <Text style={styles.closeButtonText}>✕</Text>
+              <TouchableOpacity
+                className="bg-white/10 justify-center items-center"
+                style={{ width: isTV ? 40 : 32, height: isTV ? 40 : 32, borderRadius: isTV ? 20 : 16 }}
+                onPress={onClose}
+              >
+                <Text className="text-white" style={{ fontSize: isTV ? 20 : 16 }}>✕</Text>
               </TouchableOpacity>
             </View>
 
             {/* Subject */}
-            <Text style={[styles.subject, { textAlign }]}>{ticket.subject}</Text>
+            <Text className="text-white font-semibold mb-4" style={[{ textAlign }, { fontSize: isTV ? 22 : 18 }]}>
+              {ticket.subject}
+            </Text>
 
             {/* Meta Info */}
-            <View style={styles.metaSection}>
-              <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>
+            <View className="bg-white/5 rounded-lg p-4 mb-4">
+              <View className="flex-row justify-between mb-1">
+                <Text className="text-gray-400" style={{ fontSize: isTV ? 14 : 12 }}>
                   {t('admin.support.detail.user', 'User')}
                 </Text>
-                <Text style={styles.metaValue}>
+                <Text className="text-white font-medium" style={{ fontSize: isTV ? 14 : 12 }}>
                   {ticket.user_email || ticket.user_id}
                 </Text>
               </View>
-              <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>
+              <View className="flex-row justify-between mb-1">
+                <Text className="text-gray-400" style={{ fontSize: isTV ? 14 : 12 }}>
                   {t('admin.support.detail.category', 'Category')}
                 </Text>
-                <Text style={styles.metaValue}>
+                <Text className="text-white font-medium" style={{ fontSize: isTV ? 14 : 12 }}>
                   {t(`admin.support.category.${ticket.category}`, ticket.category)}
                 </Text>
               </View>
-              <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>
+              <View className="flex-row justify-between mb-1">
+                <Text className="text-gray-400" style={{ fontSize: isTV ? 14 : 12 }}>
                   {t('admin.support.detail.priority', 'Priority')}
                 </Text>
-                <Text style={styles.metaValue}>
+                <Text className="text-white font-medium" style={{ fontSize: isTV ? 14 : 12 }}>
                   {t(`admin.support.priority.${ticket.priority}`, ticket.priority)}
                 </Text>
               </View>
-              <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>
+              <View className="flex-row justify-between mb-1">
+                <Text className="text-gray-400" style={{ fontSize: isTV ? 14 : 12 }}>
                   {t('admin.support.detail.created', 'Created')}
                 </Text>
-                <Text style={styles.metaValue}>
+                <Text className="text-white font-medium" style={{ fontSize: isTV ? 14 : 12 }}>
                   {formatDateTime(ticket.created_at)}
                 </Text>
               </View>
-              <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>
+              <View className="flex-row justify-between">
+                <Text className="text-gray-400" style={{ fontSize: isTV ? 14 : 12 }}>
                   {t('admin.support.detail.language', 'Language')}
                 </Text>
-                <Text style={styles.metaValue}>
+                <Text className="text-white font-medium" style={{ fontSize: isTV ? 14 : 12 }}>
                   {ticket.language.toUpperCase()}
                 </Text>
               </View>
             </View>
 
             {/* Message */}
-            <View style={styles.messageSection}>
-              <Text style={styles.sectionTitle}>
+            <View className="mb-4">
+              <Text className="text-white font-semibold mb-2" style={{ fontSize: isTV ? 16 : 14 }}>
                 {t('admin.support.detail.message', 'Customer Message')}
               </Text>
-              <GlassView style={styles.messageBox}>
-                <Text style={[styles.messageText, { textAlign }]}>
+              <GlassView className="p-4 rounded-lg">
+                <Text className="text-gray-400" style={[{ textAlign }, { fontSize: isTV ? 14 : 12, lineHeight: isTV ? 22 : 20 }]}>
                   {ticket.message}
                 </Text>
               </GlassView>
             </View>
 
             {/* Status Actions */}
-            <View style={styles.actionsSection}>
-              <Text style={styles.sectionTitle}>
+            <View className="mb-4">
+              <Text className="text-white font-semibold mb-2" style={{ fontSize: isTV ? 16 : 14 }}>
                 {t('admin.support.detail.updateStatus', 'Update Status')}
               </Text>
-              <View style={styles.statusOptions}>
+              <View className="flex-row flex-wrap gap-2">
                 {statusOptions.map((status) => (
                   <TouchableOpacity
                     key={status.id}
-                    style={[
-                      styles.statusOption,
-                      selectedStatus === status.id && styles.statusOptionActive,
-                      selectedStatus === status.id && {
-                        borderColor: status.color,
-                      },
-                    ]}
+                    className={`flex-row items-center px-4 py-2 rounded-lg border-2 gap-1 ${
+                      selectedStatus === status.id ? 'bg-white/10' : 'bg-white/5'
+                    }`}
+                    style={selectedStatus === status.id ? { borderColor: status.color } : { borderColor: 'transparent' }}
                     onPress={() => handleStatusChange(status.id)}
                     disabled={loading}
                   >
                     <View
-                      style={[
-                        styles.statusDot,
-                        { backgroundColor: status.color },
-                      ]}
+                      className="rounded-full"
+                      style={{
+                        width: isTV ? 10 : 8,
+                        height: isTV ? 10 : 8,
+                        backgroundColor: status.color
+                      }}
                     />
                     <Text
-                      style={[
-                        styles.statusOptionText,
-                        selectedStatus === status.id && { color: status.color },
-                      ]}
+                      className={selectedStatus === status.id ? 'text-white' : 'text-gray-400'}
+                      style={[{ fontSize: isTV ? 14 : 12 }, selectedStatus === status.id && { color: status.color }]}
                     >
                       {t(status.labelKey, status.id)}
                     </Text>
@@ -246,53 +244,56 @@ export const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
             </View>
 
             {/* Notes Section */}
-            <View style={styles.notesSection}>
-              <Text style={styles.sectionTitle}>
+            <View className="mb-4">
+              <Text className="text-white font-semibold mb-2" style={{ fontSize: isTV ? 16 : 14 }}>
                 {t('admin.support.detail.notes', 'Internal Notes')}
               </Text>
 
               {/* Existing Notes */}
               {ticket.notes && ticket.notes.length > 0 ? (
-                <View style={styles.notesList}>
+                <View style={{ gap: 8 }} className="mb-4">
                   {ticket.notes.map((note, index) => (
-                    <View key={index} style={styles.noteItem}>
-                      <View style={styles.noteHeader}>
-                        <Text style={styles.noteAuthor}>{note.author}</Text>
-                        <Text style={styles.noteTime}>
+                    <View key={index} className="bg-white/5 rounded-lg p-4">
+                      <View className="flex-row justify-between mb-1">
+                        <Text className="text-purple-500 font-semibold" style={{ fontSize: isTV ? 12 : 10 }}>
+                          {note.author}
+                        </Text>
+                        <Text className="text-gray-400" style={{ fontSize: isTV ? 10 : 8 }}>
                           {formatDateTime(note.created_at)}
                         </Text>
                       </View>
-                      <Text style={[styles.noteContent, { textAlign }]}>
+                      <Text className="text-white" style={[{ textAlign }, { fontSize: isTV ? 14 : 12, lineHeight: isTV ? 20 : 18 }]}>
                         {note.content}
                       </Text>
                     </View>
                   ))}
                 </View>
               ) : (
-                <Text style={styles.noNotes}>
+                <Text className="text-gray-400 italic mb-4" style={{ fontSize: isTV ? 14 : 12 }}>
                   {t('admin.support.detail.noNotes', 'No notes yet')}
                 </Text>
               )}
 
               {/* Add Note */}
-              <View style={styles.addNoteContainer}>
-                <View style={styles.addNoteHeader}>
-                  <Text style={styles.addNoteLabel}>
+              <View style={{ gap: 8 }}>
+                <View className="flex-row justify-between items-center">
+                  <Text className="text-gray-400" style={{ fontSize: isTV ? 14 : 12 }}>
                     {t('admin.support.detail.addNote', 'Add Note')}
                   </Text>
                   <TouchableOpacity
-                    style={styles.templateButton}
+                    className="px-2 py-1 bg-purple-500/20 rounded-lg"
                     onPress={() => setShowTemplates(true)}
                   >
-                    <Text style={styles.templateButtonText}>
+                    <Text className="text-purple-500 font-medium" style={{ fontSize: isTV ? 12 : 10 }}>
                       {t('admin.support.detail.useTemplate', 'Use Template')}
                     </Text>
                   </TouchableOpacity>
                 </View>
                 <TextInput
+                  className="bg-white/5 rounded-lg p-4 text-white border-2 border-transparent"
                   style={[
-                    styles.noteInput,
-                    isRTL && styles.noteInputRTL,
+                    { fontSize: isTV ? 14 : 12, minHeight: isTV ? 100 : 80 },
+                    isRTL && { textAlign: 'right' }
                   ]}
                   value={newNote}
                   onChangeText={setNewNote}
@@ -303,17 +304,15 @@ export const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
                   textAlignVertical="top"
                 />
                 <TouchableOpacity
-                  style={[
-                    styles.addNoteButton,
-                    (!newNote.trim() || loading) && styles.addNoteButtonDisabled,
-                  ]}
+                  className={`p-4 rounded-lg items-center ${(!newNote.trim() || loading) ? 'opacity-50' : ''}`}
+                  style={{ backgroundColor: '#a855f7' }}
                   onPress={handleAddNote}
                   disabled={!newNote.trim() || loading}
                 >
                   {loading ? (
-                    <ActivityIndicator size="small" color={colors.background} />
+                    <ActivityIndicator size="small" color="#000000" />
                   ) : (
-                    <Text style={styles.addNoteButtonText}>
+                    <Text className="font-semibold" style={{ fontSize: isTV ? 14 : 12, color: '#000000' }}>
                       {t('admin.support.detail.saveNote', 'Save Note')}
                     </Text>
                   )}
@@ -322,22 +321,23 @@ export const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
             </View>
 
             {/* Quick Actions */}
-            <View style={styles.quickActions}>
+            <View className="flex-row gap-4">
               <TouchableOpacity
-                style={styles.quickActionButton}
+                className="flex-1 p-4 rounded-lg items-center"
+                style={{ backgroundColor: '#10b981' }}
                 onPress={() => {
                   handleStatusChange('resolved');
                 }}
               >
-                <Text style={styles.quickActionText}>
+                <Text className="font-semibold" style={{ fontSize: isTV ? 14 : 12, color: '#000000' }}>
                   {t('admin.support.action.resolve', 'Mark Resolved')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.quickActionButton, styles.quickActionButtonSecondary]}
+                className="flex-1 bg-white/10 p-4 rounded-lg items-center"
                 onPress={onClose}
               >
-                <Text style={styles.quickActionTextSecondary}>
+                <Text className="text-white font-semibold" style={{ fontSize: isTV ? 14 : 12 }}>
                   {t('common.close', 'Close')}
                 </Text>
               </TouchableOpacity>
@@ -357,246 +357,5 @@ export const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  modal: {
-    width: '100%',
-    maxWidth: isTV ? 700 : 600,
-    maxHeight: '95%',
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  ticketId: {
-    fontSize: isTV ? 18 : 16,
-    fontWeight: 'bold',
-    color: colors.text,
-    fontFamily: 'monospace',
-  },
-  statusBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-  },
-  statusText: {
-    fontSize: isTV ? 12 : 10,
-    fontWeight: '600',
-  },
-  closeButton: {
-    width: isTV ? 40 : 32,
-    height: isTV ? 40 : 32,
-    borderRadius: isTV ? 20 : 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    fontSize: isTV ? 20 : 16,
-    color: colors.text,
-  },
-  subject: {
-    fontSize: isTV ? 22 : 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  metaSection: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: spacing.xs,
-  },
-  metaLabel: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-  },
-  metaValue: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  messageSection: {
-    marginBottom: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  messageBox: {
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-  },
-  messageText: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 22 : 20,
-  },
-  actionsSection: {
-    marginBottom: spacing.lg,
-  },
-  statusOptions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  statusOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    gap: spacing.xs,
-  },
-  statusOptionActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  statusDot: {
-    width: isTV ? 10 : 8,
-    height: isTV ? 10 : 8,
-    borderRadius: isTV ? 5 : 4,
-  },
-  statusOptionText: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-  },
-  notesSection: {
-    marginBottom: spacing.lg,
-  },
-  notesList: {
-    gap: spacing.sm,
-    marginBottom: spacing.md,
-  },
-  noteItem: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-  },
-  noteHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: spacing.xs,
-  },
-  noteAuthor: {
-    fontSize: isTV ? 12 : 10,
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  noteTime: {
-    fontSize: isTV ? 10 : 8,
-    color: colors.textSecondary,
-  },
-  noteContent: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.text,
-    lineHeight: isTV ? 20 : 18,
-  },
-  noNotes: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-    fontStyle: 'italic',
-    marginBottom: spacing.md,
-  },
-  addNoteContainer: {
-    gap: spacing.sm,
-  },
-  addNoteHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  addNoteLabel: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-  },
-  templateButton: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    borderRadius: borderRadius.lg,
-  },
-  templateButtonText: {
-    fontSize: isTV ? 12 : 10,
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  noteInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    fontSize: isTV ? 14 : 12,
-    color: colors.text,
-    minHeight: isTV ? 100 : 80,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  noteInputRTL: {
-    textAlign: 'right',
-  },
-  addNoteButton: {
-    backgroundColor: colors.primary,
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-  },
-  addNoteButtonDisabled: {
-    opacity: 0.5,
-  },
-  addNoteButtonText: {
-    fontSize: isTV ? 14 : 12,
-    fontWeight: '600',
-    color: colors.background,
-  },
-  quickActions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  quickActionButton: {
-    flex: 1,
-    backgroundColor: colors.success,
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-  },
-  quickActionButtonSecondary: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  quickActionText: {
-    fontSize: isTV ? 14 : 12,
-    fontWeight: '600',
-    color: colors.background,
-  },
-  quickActionTextSecondary: {
-    fontSize: isTV ? 14 : 12,
-    fontWeight: '600',
-    color: colors.text,
-  },
-});
 
 export default SupportTicketDetail;

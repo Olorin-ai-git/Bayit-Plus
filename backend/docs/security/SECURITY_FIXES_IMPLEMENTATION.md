@@ -9,7 +9,7 @@ This document provides **ready-to-apply fixes** for critical authentication secu
 Run this automated script to apply all security fixes:
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend
+cd /Users/olorin/Documents/olorin/backend
 python scripts/apply_security_fixes.py
 ```
 
@@ -443,7 +443,7 @@ assert response.status_code == 400
 ## 📦 Install Required Dependencies
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend
+cd /Users/olorin/Documents/olorin/backend
 poetry add slowapi
 poetry install
 ```
@@ -459,7 +459,7 @@ After applying fixes:
 pkill -f "uvicorn app.main:app"
 
 # Start with new security fixes
-cd /Users/olorin/Documents/Bayit-Plus/backend
+cd /Users/olorin/Documents/olorin/backend
 poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 

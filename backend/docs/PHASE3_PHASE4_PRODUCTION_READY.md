@@ -135,8 +135,8 @@ class _SettingsVoiceConfigAdapter:
 
 **Dependencies**: `backend/pyproject.toml`
 ```toml
-"bayit-voice-pipeline @ file:///Users/olorin/Documents/Bayit-Plus/packages/bayit-voice-pipeline",
-"bayit-translation @ file:///Users/olorin/Documents/Bayit-Plus/packages/bayit-translation"
+"bayit-voice-pipeline @ file:///Users/olorin/Documents/olorin/packages/bayit-voice-pipeline",
+"bayit-translation @ file:///Users/olorin/Documents/olorin/packages/bayit-translation"
 ```
 
 ### 3.4 Issues Resolved (from backend-architect review)
@@ -273,7 +273,7 @@ def is_searchable_content(obj) -> bool: ...
 
 **Backend Dependencies**: Updated `pyproject.toml`
 ```toml
-"olorin-core @ file:///Users/olorin/Documents/Bayit-Plus/packages/olorin-core"
+"olorin-core @ file:///Users/olorin/Documents/olorin/packages/olorin-core"
 ```
 
 **Installation Verified**:

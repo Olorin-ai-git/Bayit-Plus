@@ -7,11 +7,10 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 import { useDirection } from '../../hooks/useDirection';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { colors, spacing } from '../../theme';
 
 export interface StatCardProps {
   title: string;
@@ -40,41 +39,53 @@ export const StatCard: React.FC<StatCardProps> = ({
 
   return (
     <Container
-      style={styles.container}
+      className="bg-white/5 rounded-lg border border-white/10 p-4 min-w-[200px]"
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <View style={[styles.header, { flexDirection }]}>
+      <View className="items-start mb-4" style={{ flexDirection }}>
         {icon && (
-          <View style={[
-            styles.iconContainer,
-            {
-              backgroundColor: color + '20',
-              marginLeft: isRTL ? 0 : spacing.sm,
-              marginRight: isRTL ? spacing.sm : 0,
-            }
-          ]}>
-            <Text style={styles.icon}>{icon}</Text>
+          <View
+            className="justify-center items-center rounded-md"
+            style={[
+              {
+                width: 44,
+                height: 44,
+                backgroundColor: color + '20',
+                marginLeft: isRTL ? 0 : spacing.sm,
+                marginRight: isRTL ? spacing.sm : 0,
+              }
+            ]}
+          >
+            <Text style={{ fontSize: 22 }}>{icon}</Text>
           </View>
         )}
-        <View style={styles.titleContainer}>
-          <Text style={[styles.title, { textAlign }]}>{title}</Text>
-          {subtitle && <Text style={[styles.subtitle, { textAlign }]}>{subtitle}</Text>}
+        <View className="flex-1">
+          <Text className="text-gray-400 mb-1 text-sm" style={{ textAlign }}>
+            {title}
+          </Text>
+          {subtitle && (
+            <Text className="text-gray-500 text-xs" style={{ textAlign }}>
+              {subtitle}
+            </Text>
+          )}
         </View>
       </View>
 
-      <View style={styles.valueContainer}>
-        <Text style={[styles.value, { color }]}>{value}</Text>
+      <View className="flex-row items-center justify-between">
+        <Text className="text-3xl font-bold" style={{ color }}>
+          {value}
+        </Text>
 
         {trend && (
-          <View style={[
-            styles.trendContainer,
-            { backgroundColor: trend.isPositive ? colors.success + '20' : colors.error + '20' }
-          ]}>
-            <Text style={[
-              styles.trendText,
-              { color: trend.isPositive ? colors.success : colors.error }
-            ]}>
+          <View
+            className="px-2 py-1 rounded"
+            style={{ backgroundColor: trend.isPositive ? '#10b98120' : '#ef444420' }}
+          >
+            <Text
+              className="text-xs font-semibold"
+              style={{ color: trend.isPositive ? '#10b981' : '#ef4444' }}
+            >
               {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}%
             </Text>
           </View>
@@ -83,60 +94,5 @@ export const StatCard: React.FC<StatCardProps> = ({
     </Container>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    padding: spacing.lg,
-    minWidth: 200,
-  },
-  header: {
-    alignItems: 'flex-start',
-    marginBottom: spacing.md,
-  },
-  iconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  icon: {
-    fontSize: 22,
-  },
-  titleContainer: {
-    flex: 1,
-  },
-  title: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: fontSize.xs,
-    color: colors.textMuted,
-  },
-  valueContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  value: {
-    fontSize: fontSize.xxl,
-    fontWeight: 'bold',
-  },
-  trendContainer: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-  },
-  trendText: {
-    fontSize: fontSize.xs,
-    fontWeight: '600',
-  },
-});
 
 export default StatCard;

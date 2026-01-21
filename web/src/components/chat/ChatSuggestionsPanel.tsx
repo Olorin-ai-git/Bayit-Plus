@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 
@@ -22,49 +22,24 @@ export function ChatSuggestionsPanel({
   ]
 
   return (
-    <View style={styles.container}>
-      <View style={styles.list}>
+    <View className="px-4 pb-2">
+      <View className="flex-row flex-wrap gap-2">
         {suggestedQuestions.map((question, index) => (
           <Pressable
             key={index}
             onPress={() => onSuggestionPress?.(question)}
-            style={({ hovered }) => [
-              styles.button,
-              hovered && styles.buttonHovered,
-            ]}
+            className={({ hovered }) =>
+              `px-4 py-1 rounded-full bg-white/5 border border-white/10 ${
+                hovered ? 'bg-white/10 border-primary' : ''
+              }`
+            }
           >
-            <Text style={styles.text}>{question}</Text>
+            <Text className={`${IS_TV ? 'text-[18px]' : 'text-[12px]'} text-gray-400`}>
+              {question}
+            </Text>
           </Pressable>
         ))}
       </View>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.sm,
-  },
-  list: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  button: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
-    borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  buttonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderColor: colors.primary,
-  },
-  text: {
-    fontSize: IS_TV ? 18 : 12,
-    color: colors.textSecondary,
-  },
-})

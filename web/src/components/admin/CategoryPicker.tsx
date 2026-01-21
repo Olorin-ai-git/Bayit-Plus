@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { ChevronDown, Plus, Search, AlertCircle } from 'lucide-react'
 import { GlassView, GlassInput, GlassButton, GlassModal } from '@bayit/shared/ui'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors } from '@bayit/shared/theme'
 import { useDirection } from '@/hooks/useDirection'
 import type { Category } from '../../types/content'
 

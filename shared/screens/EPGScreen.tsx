@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
@@ -151,39 +150,38 @@ export const EPGScreen: React.FC = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <View className={`flex-1 bg-[${colors.background}] p-4`}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
-        <View style={styles.headerLeft}>
-          <View style={styles.headerIcon}>
-            <Text style={styles.headerIconText}>📺</Text>
+      <View className="flex-row items-center justify-between mb-4" style={{ flexDirection }}>
+        <View className="flex-row items-center gap-4">
+          <View className={`${isTV ? 'w-16 h-16 rounded-[32px]' : 'w-12 h-12 rounded-3xl'} bg-[#a855f7]/20 justify-center items-center`}>
+            <Text className={`${isTV ? 'text-[32px]' : 'text-2xl'}`}>📺</Text>
           </View>
           <View>
-            <Text style={[styles.title, { textAlign }]}>{t('epg.title', 'TV Guide')}</Text>
-            <Text style={[styles.subtitle, { textAlign }]}>
+            <Text className={`${isTV ? 'text-4xl' : 'text-[28px]'} font-bold text-[${colors.text}]`} style={{ textAlign }}>{t('epg.title', 'TV Guide')}</Text>
+            <Text className={`${isTV ? 'text-lg' : 'text-sm'} text-[${colors.textSecondary}] mt-0.5`} style={{ textAlign }}>
               {t('epg.subtitle', 'Browse the TV schedule')}
             </Text>
           </View>
         </View>
 
         {/* View Toggle */}
-        <View style={styles.viewToggle}>
+        <View className="flex-row bg-black/20 rounded-lg p-1">
           <TouchableOpacity
             onPress={() => setViewMode('grid')}
             onFocus={() => setFocusedViewButton('grid')}
             onBlur={() => setFocusedViewButton(null)}
-            style={[
-              styles.viewButton,
-              viewMode === 'grid' && styles.viewButtonActive,
-              focusedViewButton === 'grid' && styles.viewButtonFocused,
-            ]}
+            className={`flex-row items-center px-4 py-2 rounded-md border-2 ${
+              viewMode === 'grid' ? 'bg-[#a855f7]/20' : ''
+            } ${
+              focusedViewButton === 'grid' ? `border-[${colors.primary}]` : 'border-transparent'
+            }`}
           >
-            <Text style={styles.viewButtonIcon}>▦</Text>
+            <Text className={`${isTV ? 'text-xl' : 'text-base'} text-[${colors.textSecondary}] mr-2`}>▦</Text>
             <Text
-              style={[
-                styles.viewButtonText,
-                viewMode === 'grid' && styles.viewButtonTextActive,
-              ]}
+              className={`${isTV ? 'text-base' : 'text-sm'} ${
+                viewMode === 'grid' ? `text-[${colors.primary}] font-semibold` : `text-[${colors.textSecondary}]`
+              }`}
             >
               {t('epg.gridView', 'Grid')}
             </Text>
@@ -193,18 +191,17 @@ export const EPGScreen: React.FC = () => {
             onPress={() => setViewMode('list')}
             onFocus={() => setFocusedViewButton('list')}
             onBlur={() => setFocusedViewButton(null)}
-            style={[
-              styles.viewButton,
-              viewMode === 'list' && styles.viewButtonActive,
-              focusedViewButton === 'list' && styles.viewButtonFocused,
-            ]}
+            className={`flex-row items-center px-4 py-2 rounded-md border-2 ${
+              viewMode === 'list' ? 'bg-[#a855f7]/20' : ''
+            } ${
+              focusedViewButton === 'list' ? `border-[${colors.primary}]` : 'border-transparent'
+            }`}
           >
-            <Text style={styles.viewButtonIcon}>☰</Text>
+            <Text className={`${isTV ? 'text-xl' : 'text-base'} text-[${colors.textSecondary}] mr-2`}>☰</Text>
             <Text
-              style={[
-                styles.viewButtonText,
-                viewMode === 'list' && styles.viewButtonTextActive,
-              ]}
+              className={`${isTV ? 'text-base' : 'text-sm'} ${
+                viewMode === 'list' ? `text-[${colors.primary}] font-semibold` : `text-[${colors.textSecondary}]`
+              }`}
             >
               {t('epg.listView', 'List')}
             </Text>
@@ -223,13 +220,13 @@ export const EPGScreen: React.FC = () => {
 
       {/* Error State */}
       {error && (
-        <GlassView style={styles.errorContainer}>
-          <Text style={styles.errorIcon}>⚠️</Text>
-          <View style={styles.errorContent}>
-            <Text style={styles.errorTitle}>{t('epg.errorTitle', 'Error')}</Text>
-            <Text style={styles.errorText}>{error}</Text>
-            <TouchableOpacity onPress={fetchEPGData} style={styles.retryButton}>
-              <Text style={styles.retryText}>{t('common.retry', 'Retry')}</Text>
+        <GlassView className="flex-row items-start p-4 rounded-2xl mb-4 border border-red-500/30 bg-red-500/10">
+          <Text className="text-2xl mr-4">⚠️</Text>
+          <View className="flex-1">
+            <Text className={`${isTV ? 'text-lg' : 'text-base'} font-semibold text-red-500 mb-1`}>{t('epg.errorTitle', 'Error')}</Text>
+            <Text className={`${isTV ? 'text-sm' : 'text-xs'} text-red-500/80 mb-4`}>{error}</Text>
+            <TouchableOpacity onPress={fetchEPGData} className="self-start px-4 py-2 bg-red-500/20 rounded-md">
+              <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-medium text-red-500`}>{t('common.retry', 'Retry')}</Text>
             </TouchableOpacity>
           </View>
         </GlassView>
@@ -237,15 +234,15 @@ export const EPGScreen: React.FC = () => {
 
       {/* Loading State */}
       {loading && (
-        <View style={styles.loadingContainer}>
+        <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loadingText}>{t('epg.loading', 'Loading TV guide...')}</Text>
+          <Text className={`${isTV ? 'text-lg' : 'text-sm'} text-[${colors.text}] mt-4`}>{t('epg.loading', 'Loading TV guide...')}</Text>
         </View>
       )}
 
       {/* EPG Content */}
       {!loading && !error && (
-        <View style={styles.content}>
+        <View className="flex-1">
           {viewMode === 'grid' ? (
             <EPGGrid
               channels={channels}
@@ -269,132 +266,5 @@ export const EPGScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    padding: spacing.lg,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.lg,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  headerIcon: {
-    width: isTV ? 64 : 48,
-    height: isTV ? 64 : 48,
-    borderRadius: isTV ? 32 : 24,
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerIconText: {
-    fontSize: isTV ? 32 : 24,
-  },
-  title: {
-    fontSize: isTV ? 36 : 28,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: isTV ? 18 : 14,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  viewToggle: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.xs,
-  },
-  viewButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.md,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  viewButtonActive: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-  },
-  viewButtonFocused: {
-    borderColor: colors.primary,
-  },
-  viewButtonIcon: {
-    fontSize: isTV ? 20 : 16,
-    marginRight: spacing.sm,
-    color: colors.textSecondary,
-  },
-  viewButtonText: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-  },
-  viewButtonTextActive: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-    marginBottom: spacing.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-  },
-  errorIcon: {
-    fontSize: 24,
-    marginRight: spacing.md,
-  },
-  errorContent: {
-    flex: 1,
-  },
-  errorTitle: {
-    fontSize: isTV ? 18 : 16,
-    fontWeight: '600',
-    color: '#ef4444',
-    marginBottom: spacing.xs,
-  },
-  errorText: {
-    fontSize: isTV ? 14 : 12,
-    color: 'rgba(239, 68, 68, 0.8)',
-    marginBottom: spacing.md,
-  },
-  retryButton: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-    borderRadius: borderRadius.md,
-  },
-  retryText: {
-    fontSize: isTV ? 14 : 12,
-    fontWeight: '500',
-    color: '#ef4444',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    fontSize: isTV ? 18 : 14,
-    color: colors.text,
-    marginTop: spacing.lg,
-  },
-  content: {
-    flex: 1,
-  },
-});
 
 export default EPGScreen;

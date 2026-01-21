@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Modal,
@@ -169,7 +168,7 @@ export const PlanManagementScreen: React.FC = () => {
   if (loading) {
     return (
       <AdminLayout title={t('admin.titles.planManagement', 'Plan Management')}>
-        <View style={styles.loadingContainer}>
+        <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </AdminLayout>
@@ -180,55 +179,55 @@ export const PlanManagementScreen: React.FC = () => {
     <AdminLayout
       title={t('admin.titles.planManagement', 'Plan Management')}
       actions={
-        <TouchableOpacity style={styles.addButton} onPress={handleCreatePlan}>
-          <Text style={styles.addButtonText}>+ {t('admin.plans.createPlan', 'Create Plan')}</Text>
+        <TouchableOpacity className="px-4 py-2 bg-[#00BFFF] rounded-md" onPress={handleCreatePlan}>
+          <Text className="text-sm text-white font-semibold">+ {t('admin.plans.createPlan', 'Create Plan')}</Text>
         </TouchableOpacity>
       }
     >
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        <View style={styles.plansGrid}>
+      <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
+        <View className="flex-row flex-wrap gap-4">
           {plans.map((plan) => (
-            <View key={plan.id} style={[styles.planCard, !plan.is_active && styles.planCardInactive]}>
+            <View key={plan.id} className={`w-[280px] bg-white/10 rounded-2xl border border-white/20 p-4 relative ${plan.is_active ? '' : 'opacity-60'}`}>
               {!plan.is_active && (
-                <View style={styles.inactiveBadge}>
-                  <Text style={styles.inactiveBadgeText}>{t('admin.plans.inactive', 'Inactive')}</Text>
+                <View className="absolute top-2 right-2 bg-[#FF4444] px-2 py-0.5 rounded-sm">
+                  <Text className="text-xs text-white font-semibold">{t('admin.plans.inactive', 'Inactive')}</Text>
                 </View>
               )}
 
-              <View style={styles.planHeader}>
-                <Text style={styles.planName}>{plan.name}</Text>
-                <View style={styles.planActions}>
-                  <TouchableOpacity style={styles.planAction} onPress={() => handleEditPlan(plan)}>
-                    <Text style={styles.planActionIcon}>✏️</Text>
+              <View className="flex-row justify-between items-center mb-4">
+                <Text className="text-xl font-bold text-white">{plan.name}</Text>
+                <View className="flex-row gap-1">
+                  <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#1a1a1a] justify-center items-center" onPress={() => handleEditPlan(plan)}>
+                    <Text className="text-sm">✏️</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.planAction} onPress={() => handleDeletePlan(plan)}>
-                    <Text style={styles.planActionIcon}>🗑️</Text>
+                  <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#1a1a1a] justify-center items-center" onPress={() => handleDeletePlan(plan)}>
+                    <Text className="text-sm">🗑️</Text>
                   </TouchableOpacity>
                 </View>
               </View>
 
-              <View style={styles.planPricing}>
-                <Text style={styles.planPrice}>{formatCurrency(plan.price)}</Text>
-                <Text style={styles.planInterval}>/ {plan.interval === 'monthly' ? t('admin.plans.mo') : t('admin.plans.yr')}</Text>
+              <View className="flex-row items-baseline mb-4">
+                <Text className="text-[32px] font-bold text-[#00BFFF]">{formatCurrency(plan.price)}</Text>
+                <Text className="text-sm text-[#999999] ml-1">/ {plan.interval === 'monthly' ? t('admin.plans.mo') : t('admin.plans.yr')}</Text>
               </View>
 
               {plan.trial_days > 0 && (
-                <View style={styles.trialBadge}>
-                  <Text style={styles.trialBadgeText}>{t('admin.plans.freeTrial', { days: plan.trial_days })}</Text>
+                <View className="bg-[#4CAF50]/20 px-2 py-1 rounded-sm self-start mb-4">
+                  <Text className="text-xs text-[#4CAF50] font-semibold">{t('admin.plans.freeTrial', { days: plan.trial_days })}</Text>
                 </View>
               )}
 
-              <View style={styles.planFeatures}>
+              <View className="mb-4">
                 {plan.features.map((feature, index) => (
-                  <View key={index} style={styles.featureRow}>
-                    <Text style={styles.featureCheck}>✓</Text>
-                    <Text style={styles.featureText}>{feature}</Text>
+                  <View key={index} className="flex-row items-center mb-1">
+                    <Text className="text-sm text-[#4CAF50] mr-2">✓</Text>
+                    <Text className="text-sm text-[#cccccc]">{feature}</Text>
                   </View>
                 ))}
               </View>
 
-              <View style={styles.planMeta}>
-                <Text style={styles.planMetaText}>
+              <View className="border-t border-white/20 pt-2">
+                <Text className="text-xs text-[#666666]">
                   {t('admin.plans.created', 'Created')}: {new Date(plan.created_at).toLocaleDateString()}
                 </Text>
               </View>
@@ -236,26 +235,26 @@ export const PlanManagementScreen: React.FC = () => {
           ))}
 
           {/* Add Plan Card */}
-          <TouchableOpacity style={styles.addPlanCard} onPress={handleCreatePlan}>
-            <Text style={styles.addPlanIcon}>+</Text>
-            <Text style={styles.addPlanText}>{t('admin.plans.addNew', 'Add New Plan')}</Text>
+          <TouchableOpacity className="w-[280px] h-[300px] bg-[#1a1a1a] rounded-2xl border-2 border-dashed border-white/20 justify-center items-center" onPress={handleCreatePlan}>
+            <Text className="text-5xl text-[#666666] mb-2">+</Text>
+            <Text className="text-base text-[#cccccc]">{t('admin.plans.addNew', 'Add New Plan')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
 
       {/* Plan Editor Modal */}
       <Modal visible={showPlanModal} transparent animationType="fade" onRequestClose={() => setShowPlanModal(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+        <View className="flex-1 bg-black/80 justify-center items-center">
+          <View className="w-[90%] max-w-[500px] max-h-[80%] bg-[#1a1a1a] rounded-2xl p-4 border border-white/20">
             <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={styles.modalTitle}>
+              <Text className="text-xl font-bold text-white mb-4">
                 {editingPlan ? t('admin.plans.editPlan', 'Edit Plan') : t('admin.plans.createPlan', 'Create Plan')}
               </Text>
 
-              <View style={styles.formGroup}>
-                <Text style={styles.formLabel}>{t('admin.plans.name', 'Plan Name')}</Text>
+              <View className="mb-4">
+                <Text className="text-sm font-semibold text-white mb-1">{t('admin.plans.name', 'Plan Name')}</Text>
                 <TextInput
-                  style={styles.formInput}
+                  className="bg-[#1a1a1a] rounded-md border border-white/20 px-4 py-2 text-white text-base"
                   value={formData.name}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, name: text }))}
                   placeholder={t('admin.plans.namePlaceholder', 'e.g., Premium')}
@@ -263,11 +262,11 @@ export const PlanManagementScreen: React.FC = () => {
                 />
               </View>
 
-              <View style={styles.formRow}>
-                <View style={[styles.formGroup, { flex: 1 }]}>
-                  <Text style={styles.formLabel}>{t('admin.plans.price', 'Price ($)')}</Text>
+              <View className="flex-row gap-4">
+                <View className="flex-1 mb-4">
+                  <Text className="text-sm font-semibold text-white mb-1">{t('admin.plans.price', 'Price ($)')}</Text>
                   <TextInput
-                    style={styles.formInput}
+                    className="bg-[#1a1a1a] rounded-md border border-white/20 px-4 py-2 text-white text-base"
                     value={formData.price}
                     onChangeText={(text) => setFormData(prev => ({ ...prev, price: text }))}
                     keyboardType="numeric"
@@ -275,16 +274,16 @@ export const PlanManagementScreen: React.FC = () => {
                     placeholderTextColor={colors.textMuted}
                   />
                 </View>
-                <View style={[styles.formGroup, { flex: 1 }]}>
-                  <Text style={styles.formLabel}>{t('admin.plans.interval', 'Billing Interval')}</Text>
-                  <View style={styles.intervalSelector}>
+                <View className="flex-1 mb-4">
+                  <Text className="text-sm font-semibold text-white mb-1">{t('admin.plans.interval', 'Billing Interval')}</Text>
+                  <View className="flex-row bg-[#1a1a1a] rounded-md p-0.5">
                     {(['monthly', 'yearly'] as const).map((interval) => (
                       <TouchableOpacity
                         key={interval}
-                        style={[styles.intervalOption, formData.interval === interval && styles.intervalOptionActive]}
+                        className={`flex-1 py-2 items-center rounded-sm ${formData.interval === interval ? 'bg-[#00BFFF]' : ''}`}
                         onPress={() => setFormData(prev => ({ ...prev, interval }))}
                       >
-                        <Text style={[styles.intervalOptionText, formData.interval === interval && styles.intervalOptionTextActive]}>
+                        <Text className={`text-sm ${formData.interval === interval ? 'text-white font-semibold' : 'text-[#cccccc]'}`}>
                           {interval === 'monthly' ? t('admin.plans.monthly') : t('admin.plans.yearly')}
                         </Text>
                       </TouchableOpacity>
@@ -293,10 +292,10 @@ export const PlanManagementScreen: React.FC = () => {
                 </View>
               </View>
 
-              <View style={styles.formGroup}>
-                <Text style={styles.formLabel}>{t('admin.plans.trialDays', 'Trial Days')}</Text>
+              <View className="mb-4">
+                <Text className="text-sm font-semibold text-white mb-1">{t('admin.plans.trialDays', 'Trial Days')}</Text>
                 <TextInput
-                  style={styles.formInput}
+                  className="bg-[#1a1a1a] rounded-md border border-white/20 px-4 py-2 text-white text-base"
                   value={formData.trial_days}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, trial_days: text }))}
                   keyboardType="numeric"
@@ -305,33 +304,33 @@ export const PlanManagementScreen: React.FC = () => {
                 />
               </View>
 
-              <View style={styles.formGroup}>
-                <View style={styles.formLabelRow}>
-                  <Text style={styles.formLabel}>{t('admin.plans.features', 'Features')}</Text>
+              <View className="mb-4">
+                <View className="flex-row justify-between items-center mb-1">
+                  <Text className="text-sm font-semibold text-white">{t('admin.plans.features', 'Features')}</Text>
                   <TouchableOpacity onPress={handleAddFeature}>
-                    <Text style={styles.addFeatureButton}>+ {t('admin.plans.addFeature', 'Add')}</Text>
+                    <Text className="text-sm text-[#00BFFF]">+ {t('admin.plans.addFeature', 'Add')}</Text>
                   </TouchableOpacity>
                 </View>
                 {formData.features.map((feature, index) => (
-                  <View key={index} style={styles.featureInputRow}>
+                  <View key={index} className="flex-row items-center mb-1">
                     <TextInput
-                      style={[styles.formInput, styles.featureInput]}
+                      className="flex-1 bg-[#1a1a1a] rounded-md border border-white/20 px-4 py-2 text-white text-base"
                       value={feature}
                       onChangeText={(text) => handleFeatureChange(index, text)}
                       placeholder={t('admin.plans.featurePlaceholder', 'Enter feature...')}
                       placeholderTextColor={colors.textMuted}
                     />
                     {formData.features.length > 1 && (
-                      <TouchableOpacity style={styles.removeFeatureButton} onPress={() => handleRemoveFeature(index)}>
-                        <Text style={styles.removeFeatureIcon}>✕</Text>
+                      <TouchableOpacity className="w-[30px] h-[30px] ml-1 rounded-sm bg-[#FF4444]/30 justify-center items-center" onPress={() => handleRemoveFeature(index)}>
+                        <Text className="text-sm text-[#FF4444]">✕</Text>
                       </TouchableOpacity>
                     )}
                   </View>
                 ))}
               </View>
 
-              <View style={styles.switchRow}>
-                <Text style={styles.switchLabel}>{t('admin.plans.active', 'Active')}</Text>
+              <View className="flex-row justify-between items-center mb-4 py-2">
+                <Text className="text-sm font-semibold text-white">{t('admin.plans.active', 'Active')}</Text>
                 <Switch
                   value={formData.is_active}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, is_active: value }))}
@@ -340,19 +339,19 @@ export const PlanManagementScreen: React.FC = () => {
                 />
               </View>
 
-              <View style={styles.modalActions}>
-                <TouchableOpacity style={styles.modalCancelButton} onPress={() => setShowPlanModal(false)}>
-                  <Text style={styles.modalCancelText}>{t('common.cancel', 'Cancel')}</Text>
+              <View className="flex-row justify-end gap-2">
+                <TouchableOpacity className="px-4 py-2 bg-[#1a1a1a] rounded-md" onPress={() => setShowPlanModal(false)}>
+                  <Text className="text-sm text-[#cccccc]">{t('common.cancel', 'Cancel')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.modalSaveButton, saving && styles.modalSaveButtonDisabled]}
+                  className={`px-4 py-2 bg-[#00BFFF] rounded-md min-w-[80px] items-center ${saving ? 'opacity-60' : ''}`}
                   onPress={handleSavePlan}
                   disabled={saving}
                 >
                   {saving ? (
                     <ActivityIndicator size="small" color={colors.text} />
                   ) : (
-                    <Text style={styles.modalSaveText}>{t('common.save', 'Save')}</Text>
+                    <Text className="text-sm text-white font-semibold">{t('common.save', 'Save')}</Text>
                   )}
                 </TouchableOpacity>
               </View>
@@ -363,63 +362,5 @@ export const PlanManagementScreen: React.FC = () => {
     </AdminLayout>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  addButton: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, backgroundColor: colors.secondary, borderRadius: borderRadius.md },
-  addButtonText: { fontSize: fontSize.sm, color: colors.text, fontWeight: '600' },
-  plansGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg },
-  planCard: { width: 280, backgroundColor: colors.glass, borderRadius: borderRadius.lg, borderWidth: 1, borderColor: colors.glassBorder, padding: spacing.lg, position: 'relative' },
-  planCardInactive: { opacity: 0.6 },
-  inactiveBadge: { position: 'absolute', top: spacing.sm, right: spacing.sm, backgroundColor: colors.error, paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: borderRadius.sm },
-  inactiveBadgeText: { fontSize: fontSize.xs, color: colors.text, fontWeight: '600' },
-  planHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
-  planName: { fontSize: fontSize.xl, fontWeight: 'bold', color: colors.text },
-  planActions: { flexDirection: 'row', gap: spacing.xs },
-  planAction: { width: 28, height: 28, borderRadius: borderRadius.sm, backgroundColor: colors.backgroundLighter, justifyContent: 'center', alignItems: 'center' },
-  planActionIcon: { fontSize: 14 },
-  planPricing: { flexDirection: 'row', alignItems: 'baseline', marginBottom: spacing.md },
-  planPrice: { fontSize: 32, fontWeight: 'bold', color: colors.primary },
-  planInterval: { fontSize: fontSize.sm, color: colors.textSecondary, marginLeft: spacing.xs },
-  trialBadge: { backgroundColor: colors.success + '20', paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.sm, alignSelf: 'flex-start', marginBottom: spacing.md },
-  trialBadgeText: { fontSize: fontSize.xs, color: colors.success, fontWeight: '600' },
-  planFeatures: { marginBottom: spacing.md },
-  featureRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.xs },
-  featureCheck: { fontSize: 14, color: colors.success, marginRight: spacing.sm },
-  featureText: { fontSize: fontSize.sm, color: colors.textSecondary },
-  planMeta: { borderTopWidth: 1, borderTopColor: colors.glassBorder, paddingTop: spacing.sm },
-  planMetaText: { fontSize: fontSize.xs, color: colors.textMuted },
-  addPlanCard: { width: 280, height: 300, backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.lg, borderWidth: 2, borderColor: colors.glassBorder, borderStyle: 'dashed', justifyContent: 'center', alignItems: 'center' },
-  addPlanIcon: { fontSize: 48, color: colors.textMuted, marginBottom: spacing.sm },
-  addPlanText: { fontSize: fontSize.md, color: colors.textSecondary },
-  modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'center', alignItems: 'center' },
-  modalContent: { width: '90%', maxWidth: 500, maxHeight: '80%', backgroundColor: colors.backgroundLight, borderRadius: borderRadius.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.glassBorder },
-  modalTitle: { fontSize: fontSize.xl, fontWeight: 'bold', color: colors.text, marginBottom: spacing.lg },
-  formGroup: { marginBottom: spacing.md },
-  formRow: { flexDirection: 'row', gap: spacing.md },
-  formLabel: { fontSize: fontSize.sm, fontWeight: '600', color: colors.text, marginBottom: spacing.xs },
-  formLabelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.xs },
-  formInput: { backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.glassBorder, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, color: colors.text, fontSize: fontSize.md },
-  intervalSelector: { flexDirection: 'row', backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, padding: 2 },
-  intervalOption: { flex: 1, paddingVertical: spacing.sm, alignItems: 'center', borderRadius: borderRadius.sm },
-  intervalOptionActive: { backgroundColor: colors.primary },
-  intervalOptionText: { fontSize: fontSize.sm, color: colors.textSecondary },
-  intervalOptionTextActive: { color: colors.text, fontWeight: '600' },
-  addFeatureButton: { fontSize: fontSize.sm, color: colors.primary },
-  featureInputRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.xs },
-  featureInput: { flex: 1 },
-  removeFeatureButton: { width: 30, height: 30, marginLeft: spacing.xs, borderRadius: borderRadius.sm, backgroundColor: colors.error + '30', justifyContent: 'center', alignItems: 'center' },
-  removeFeatureIcon: { fontSize: 14, color: colors.error },
-  switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.lg, paddingVertical: spacing.sm },
-  switchLabel: { fontSize: fontSize.sm, fontWeight: '600', color: colors.text },
-  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm },
-  modalCancelButton: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md },
-  modalCancelText: { fontSize: fontSize.sm, color: colors.textSecondary },
-  modalSaveButton: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.primary, borderRadius: borderRadius.md, minWidth: 80, alignItems: 'center' },
-  modalSaveButtonDisabled: { opacity: 0.6 },
-  modalSaveText: { fontSize: fontSize.sm, color: colors.text, fontWeight: '600' },
-});
 
 export default PlanManagementScreen;

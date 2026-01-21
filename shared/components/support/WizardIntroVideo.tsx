@@ -7,7 +7,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
-  StyleSheet,
   Animated,
   TouchableOpacity,
   Text,
@@ -69,12 +68,17 @@ export const WizardIntroVideo: React.FC<WizardIntroVideoProps> = ({
   }
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      <View style={styles.videoContainer}>
+    <Animated.View className="absolute top-0 left-0 right-0 bottom-0 bg-black z-[10000] justify-center items-center" style={{ opacity: fadeAnim }}>
+      <View className="w-full h-full justify-center items-center bg-black">
         <video
           ref={videoRef}
           src={INTRO_VIDEO_URL}
-          style={styles.webVideo as React.CSSProperties}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            backgroundColor: colors.background,
+          } as React.CSSProperties}
           playsInline
           autoPlay
           onEnded={handleComplete}
@@ -83,54 +87,11 @@ export const WizardIntroVideo: React.FC<WizardIntroVideoProps> = ({
       </View>
 
       {/* Skip button */}
-      <TouchableOpacity style={styles.skipButton} onPress={handleComplete}>
-        <Text style={styles.skipText}>Skip</Text>
+      <TouchableOpacity className="absolute bottom-10 right-10 px-6 py-3 bg-white/20 rounded-lg border border-white/30" onPress={handleComplete}>
+        <Text className="text-white text-base font-semibold">Skip</Text>
       </TouchableOpacity>
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: colors.background,
-    zIndex: 10000,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  videoContainer: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-  },
-  webVideo: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'contain',
-    backgroundColor: colors.background,
-  },
-  skipButton: {
-    position: 'absolute',
-    bottom: 40,
-    right: 40,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  skipText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
 
 export default WizardIntroVideo;

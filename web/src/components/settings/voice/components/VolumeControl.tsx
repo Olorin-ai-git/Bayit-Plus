@@ -3,10 +3,9 @@
  * TTS volume slider with increment/decrement buttons
  */
 
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { Volume2, Plus, Minus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 
 interface VolumeControlProps {
   volume: number;
@@ -18,98 +17,36 @@ export function VolumeControl({ volume, isRTL, onVolumeChange }: VolumeControlPr
   const { t } = useTranslation();
 
   return (
-    <View style={styles.controlSection}>
-      <View style={[styles.controlHeader, isRTL && styles.controlHeaderRTL]}>
-        <Volume2 size={14} color={colors.textMuted} />
-        <Text style={[styles.controlLabel, isRTL && styles.textRTL]}>
+    <View className="pt-2 border-t border-white/5 mt-4">
+      <View className={`flex-row items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <Volume2 size={14} color="#9CA3AF" />
+        <Text className={`flex-1 text-[13px] font-medium text-white ${isRTL ? 'text-right' : ''}`}>
           {t('profile.voice.ttsVolume', 'Voice Volume')}
         </Text>
-        <Text style={styles.controlValue}>
+        <Text className="text-[13px] font-semibold text-purple-500">
           {Math.round(volume * 100)}%
         </Text>
       </View>
-      <View style={[styles.volumeControls, isRTL && styles.volumeControlsRTL]}>
+      <View className={`flex-row items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
         <Pressable
           onPress={() => onVolumeChange(Math.max(0, volume - 0.1))}
-          style={styles.volumeButton}
+          className="w-8 h-8 rounded-lg bg-white/5 justify-center items-center"
         >
-          <Minus size={14} color={colors.text} />
+          <Minus size={14} color="#ffffff" />
         </Pressable>
-        <View style={styles.sliderContainer}>
+        <View className="flex-1 h-1 bg-white/5 rounded-sm overflow-hidden">
           <View
-            style={[
-              styles.slider,
-              { width: `${volume * 100}%` },
-            ]}
+            className="h-full bg-purple-500 rounded-sm"
+            style={{ width: `${volume * 100}%` }}
           />
         </View>
         <Pressable
           onPress={() => onVolumeChange(Math.min(1, volume + 0.1))}
-          style={styles.volumeButton}
+          className="w-8 h-8 rounded-lg bg-white/5 justify-center items-center"
         >
-          <Plus size={14} color={colors.text} />
+          <Plus size={14} color="#ffffff" />
         </Pressable>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  controlSection: {
-    paddingTop: spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.05)',
-    marginTop: spacing.md,
-  },
-  controlHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.md,
-  },
-  controlHeaderRTL: {
-    flexDirection: 'row-reverse',
-  },
-  controlLabel: {
-    flex: 1,
-    fontSize: 13,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  controlValue: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-  volumeControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  volumeControlsRTL: {
-    flexDirection: 'row-reverse',
-  },
-  volumeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: borderRadius.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sliderContainer: {
-    flex: 1,
-    height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  slider: {
-    height: '100%',
-    backgroundColor: colors.primary,
-    borderRadius: 2,
-  },
-});

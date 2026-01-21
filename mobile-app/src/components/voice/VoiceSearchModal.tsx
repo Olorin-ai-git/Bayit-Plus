@@ -18,7 +18,6 @@ import {
   ActivityIndicator,
   ScrollView,
   Animated,
-  StyleSheet,
   SafeAreaView,
 } from 'react-native';
 import { useVoiceFeatures } from '../../hooks/useVoiceFeatures';
@@ -141,27 +140,25 @@ export const VoiceSearchModal: React.FC<VoiceSearchModalProps> = ({
       onRequestClose={handleClose}
       statusBarTranslucent
     >
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
+      <SafeAreaView className="flex-1 bg-slate-900">
+        <View className="flex-row justify-between items-center px-4 py-3 border-b border-slate-800">
           <TouchableOpacity onPress={handleClose}>
-            <Text style={styles.closeButton}>✕</Text>
+            <Text className="text-2xl text-slate-400">✕</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>Voice Search</Text>
-          <View style={styles.placeholder} />
+          <Text className="text-lg font-semibold text-white">Voice Search</Text>
+          <View className="w-6" />
         </View>
 
         <ScrollView
-          style={styles.content}
-          contentContainerStyle={styles.contentContainer}
+          className="flex-1"
+          contentContainerStyle={{ padding: 16, gap: 16 }}
           keyboardShouldPersistTaps="handled"
         >
           {/* Voice State Indicator */}
-          <View style={styles.stateIndicator}>
+          <View className="items-center py-6">
             <View
-              style={[
-                styles.stateCircle,
-                { backgroundColor: getStageColor() }
-              ]}
+              className="w-30 h-30 rounded-full justify-center items-center mb-4"
+              style={{ backgroundColor: getStageColor() }}
             >
               {isProcessing && (
                 <ActivityIndicator color="#FFFFFF" size="large" />
@@ -174,22 +171,22 @@ export const VoiceSearchModal: React.FC<VoiceSearchModalProps> = ({
                 />
               )}
               {!isProcessing && !isListening && (
-                <Text style={styles.stateEmoji}>
+                <Text className="text-5xl">
                   {stage === 'idle' ? '🎤' : '✓'}
                 </Text>
               )}
             </View>
-            <Text style={styles.stateText}>{getStageText()}</Text>
+            <Text className="text-base text-slate-200 text-center">{getStageText()}</Text>
           </View>
 
           {/* Transcription Display */}
           {metrics?.transcription && (
-            <View style={styles.transcriptionBox}>
-              <Text style={styles.transcriptionLabel}>Transcription</Text>
-              <Text style={styles.transcriptionText}>
+            <View className="bg-slate-800 rounded-lg p-3 border-l-4 border-blue-600">
+              <Text className="text-xs text-slate-400 mb-1">Transcription</Text>
+              <Text className="text-sm text-slate-100 mb-2">
                 {metrics.transcription}
               </Text>
-              <Text style={styles.confidenceText}>
+              <Text className="text-xs text-slate-600">
                 Confidence: {(metrics.confidence * 100).toFixed(0)}%
               </Text>
             </View>
@@ -197,20 +194,18 @@ export const VoiceSearchModal: React.FC<VoiceSearchModalProps> = ({
 
           {/* Command Response */}
           {lastCommandResponse && (
-            <View style={[
-              styles.responseBox,
-              {
-                borderLeftColor: lastCommandResponse.success ? '#10B981' : '#EF4444'
-              }
-            ]}>
-              <Text style={styles.responseLabel}>
+            <View
+              className="bg-slate-800 rounded-lg p-3 border-l-4"
+              style={{ borderLeftColor: lastCommandResponse.success ? '#10B981' : '#EF4444' }}
+            >
+              <Text className="text-xs text-slate-400 mb-1">
                 {lastCommandResponse.success ? '✓ Command' : '✗ Error'}
               </Text>
-              <Text style={styles.responseText}>
+              <Text className="text-sm text-slate-100 mb-1">
                 {lastCommandResponse.responseText}
               </Text>
               {lastCommandResponse.commandType && (
-                <Text style={styles.commandTypeText}>
+                <Text className="text-xs text-slate-600">
                   Type: {lastCommandResponse.commandType}
                 </Text>
               )}
@@ -219,8 +214,8 @@ export const VoiceSearchModal: React.FC<VoiceSearchModalProps> = ({
 
           {/* Metrics Display */}
           {metrics && (
-            <View style={styles.metricsBox}>
-              <Text style={styles.metricsTitle}>Performance Metrics</Text>
+            <View className="bg-slate-800 rounded-lg p-3">
+              <Text className="text-sm font-semibold text-slate-100 mb-2">Performance Metrics</Text>
               <MetricRow
                 label="Wake Word"
                 value={`${metrics.wakeWordTime}ms`}
@@ -247,21 +242,21 @@ export const VoiceSearchModal: React.FC<VoiceSearchModalProps> = ({
 
           {/* Voice Suggestions */}
           {suggestions && suggestions.length > 0 && (
-            <View style={styles.suggestionsBox}>
-              <Text style={styles.suggestionsTitle}>
+            <View className="bg-slate-800 rounded-lg p-3 overflow-hidden">
+              <Text className="text-sm font-semibold text-slate-100 mb-2">
                 Suggested Commands
               </Text>
               {suggestions.map((suggestion, index) => (
                 <TouchableOpacity
                   key={index}
-                  style={styles.suggestionItem}
+                  className="flex-row justify-between items-center py-2 px-2 mb-1 bg-slate-900 rounded border border-slate-700"
                   onPress={() => handleCommandExecute(suggestion.suggestion)}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.suggestionText}>
+                  <Text className="text-xs text-slate-200 flex-1">
                     {suggestion.suggestion}
                   </Text>
-                  <Text style={styles.suggestionConfidence}>
+                  <Text className="text-xs text-slate-600">
                     {(suggestion.confidence * 100).toFixed(0)}%
                   </Text>
                 </TouchableOpacity>
@@ -271,42 +266,42 @@ export const VoiceSearchModal: React.FC<VoiceSearchModalProps> = ({
 
           {/* Error Display */}
           {error && (
-            <View style={styles.errorBox}>
-              <Text style={styles.errorTitle}>⚠ Error</Text>
-              <Text style={styles.errorText}>{error.message}</Text>
+            <View className="bg-red-900 rounded-lg p-3 mt-2">
+              <Text className="text-sm font-semibold text-red-300 mb-1">⚠ Error</Text>
+              <Text className="text-xs text-red-200 mb-2">{error.message}</Text>
               <TouchableOpacity
-                style={styles.retryButton}
+                className="py-2 px-3 bg-red-600 rounded items-center"
                 onPress={() => startManualListening()}
               >
-                <Text style={styles.retryButtonText}>Try Again</Text>
+                <Text className="text-xs font-semibold text-white">Try Again</Text>
               </TouchableOpacity>
             </View>
           )}
         </ScrollView>
 
         {/* Action Buttons */}
-        <View style={styles.footer}>
+        <View className="flex-row gap-2 px-4 py-3 border-t border-slate-800">
           {isListening ? (
             <TouchableOpacity
-              style={[styles.button, styles.stopButton]}
+              className="flex-1 py-3 px-4 bg-red-500 rounded-lg items-center"
               onPress={stopListening}
             >
-              <Text style={styles.buttonText}>Stop Listening</Text>
+              <Text className="text-sm font-semibold text-white">Stop Listening</Text>
             </TouchableOpacity>
           ) : (
             <>
               <TouchableOpacity
-                style={[styles.button, styles.closeFooterButton]}
+                className="flex-1 py-3 px-4 bg-slate-600 rounded-lg items-center"
                 onPress={handleClose}
               >
-                <Text style={styles.buttonText}>Close</Text>
+                <Text className="text-sm font-semibold text-white">Close</Text>
               </TouchableOpacity>
               {isIdle && (
                 <TouchableOpacity
-                  style={[styles.button, styles.primaryButton]}
+                  className="flex-1 py-3 px-4 bg-blue-600 rounded-lg items-center"
                   onPress={startManualListening}
                 >
-                  <Text style={styles.buttonText}>Start Listening</Text>
+                  <Text className="text-sm font-semibold text-white">Start Listening</Text>
                 </TouchableOpacity>
               )}
             </>
@@ -353,15 +348,13 @@ const PulsingDot: React.FC<PulsingDotProps> = ({ color, size, intensity }) => {
 
   return (
     <Animated.View
-      style={[
-        {
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          backgroundColor: color,
-          opacity: animation,
-        },
-      ]}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        backgroundColor: color,
+        opacity: animation,
+      }}
     />
   );
 };
@@ -373,237 +366,10 @@ interface MetricRowProps {
 }
 
 const MetricRow: React.FC<MetricRowProps> = ({ label, value, highlight }) => (
-  <View style={[styles.metricRow, highlight && styles.metricRowHighlight]}>
-    <Text style={styles.metricLabel}>{label}</Text>
-    <Text style={[styles.metricValue, highlight && styles.metricValueHighlight]}>
+  <View className={`flex-row justify-between py-1.5 border-b border-slate-700 ${highlight ? 'bg-slate-800 rounded px-2' : ''}`}>
+    <Text className="text-xs text-slate-400">{label}</Text>
+    <Text className={`text-xs ${highlight ? 'text-green-500 font-semibold' : 'text-slate-600'}`}>
       {value}
     </Text>
   </View>
 );
-
-// ============================================
-// Styles
-// ============================================
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0F172A', // Dark background
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#1E293B',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  closeButton: {
-    fontSize: 24,
-    color: '#94A3B8',
-  },
-  placeholder: {
-    width: 24,
-  },
-  content: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 16,
-    gap: 16,
-  },
-  stateIndicator: {
-    alignItems: 'center',
-    paddingVertical: 24,
-  },
-  stateCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  stateEmoji: {
-    fontSize: 48,
-  },
-  stateText: {
-    fontSize: 16,
-    color: '#E2E8F0',
-    textAlign: 'center',
-  },
-  transcriptionBox: {
-    backgroundColor: '#1E293B',
-    borderRadius: 8,
-    padding: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#3B82F6',
-  },
-  transcriptionLabel: {
-    fontSize: 12,
-    color: '#94A3B8',
-    marginBottom: 4,
-  },
-  transcriptionText: {
-    fontSize: 14,
-    color: '#F1F5F9',
-    marginBottom: 8,
-  },
-  confidenceText: {
-    fontSize: 12,
-    color: '#64748B',
-  },
-  responseBox: {
-    backgroundColor: '#1E293B',
-    borderRadius: 8,
-    padding: 12,
-    borderLeftWidth: 4,
-  },
-  responseLabel: {
-    fontSize: 12,
-    color: '#94A3B8',
-    marginBottom: 4,
-  },
-  responseText: {
-    fontSize: 14,
-    color: '#F1F5F9',
-    marginBottom: 4,
-  },
-  commandTypeText: {
-    fontSize: 12,
-    color: '#64748B',
-  },
-  metricsBox: {
-    backgroundColor: '#1E293B',
-    borderRadius: 8,
-    padding: 12,
-  },
-  metricsTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#F1F5F9',
-    marginBottom: 8,
-  },
-  metricRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: '#334155',
-  },
-  metricRowHighlight: {
-    backgroundColor: '#1E293B',
-    borderRadius: 4,
-    paddingHorizontal: 8,
-    borderBottomColor: 'transparent',
-  },
-  metricLabel: {
-    fontSize: 12,
-    color: '#94A3B8',
-  },
-  metricValue: {
-    fontSize: 12,
-    color: '#64748B',
-  },
-  metricValueHighlight: {
-    color: '#10B981',
-    fontWeight: '600',
-  },
-  suggestionsBox: {
-    backgroundColor: '#1E293B',
-    borderRadius: 8,
-    padding: 12,
-    overflow: 'hidden',
-  },
-  suggestionsTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#F1F5F9',
-    marginBottom: 8,
-  },
-  suggestionItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    marginBottom: 4,
-    backgroundColor: '#0F172A',
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#334155',
-  },
-  suggestionText: {
-    fontSize: 12,
-    color: '#E2E8F0',
-    flex: 1,
-  },
-  suggestionConfidence: {
-    fontSize: 11,
-    color: '#64748B',
-  },
-  errorBox: {
-    backgroundColor: '#7F1D1D',
-    borderRadius: 8,
-    padding: 12,
-    marginTop: 8,
-  },
-  errorTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#FCA5A5',
-    marginBottom: 4,
-  },
-  errorText: {
-    fontSize: 12,
-    color: '#FECACA',
-    marginBottom: 8,
-  },
-  retryButton: {
-    backgroundColor: '#DC2626',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 4,
-    alignItems: 'center',
-  },
-  retryButtonText: {
-    fontSize: 12,
-    color: '#FFFFFF',
-    fontWeight: '600',
-  },
-  footer: {
-    flexDirection: 'row',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#1E293B',
-  },
-  button: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  primaryButton: {
-    backgroundColor: '#3B82F6',
-  },
-  stopButton: {
-    backgroundColor: '#EF4444',
-  },
-  closeFooterButton: {
-    backgroundColor: '#475569',
-  },
-  buttonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-});

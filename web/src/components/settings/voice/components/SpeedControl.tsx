@@ -3,7 +3,7 @@
  * TTS speed selector with preset options
  */
 
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { Gauge } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -20,33 +20,33 @@ export function SpeedControl({ speed, isRTL, onSpeedChange }: SpeedControlProps)
   const { t } = useTranslation();
 
   return (
-    <View style={styles.controlSection}>
-      <View style={[styles.controlHeader, isRTL && styles.controlHeaderRTL]}>
+    <View className="pt-2 border-t border-white/5 mt-4">
+      <View className={`flex-row items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
         <Gauge size={14} color={colors.textMuted} />
-        <Text style={[styles.controlLabel, isRTL && styles.textRTL]}>
+        <Text className={`flex-1 text-[13px] font-medium text-white ${isRTL ? 'text-right' : ''}`}>
           {t('profile.voice.ttsSpeed', 'Speaking Speed')}
         </Text>
-        <Text style={styles.controlValue}>
+        <Text className="text-[13px] font-semibold text-purple-500">
           {speed.toFixed(1)}x
         </Text>
       </View>
-      <View style={[styles.speedOptions, isRTL && styles.speedOptionsRTL]}>
+      <View className={`flex-row gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
         {TTS_SPEEDS.map((speedOption) => {
           const isSelected = Math.abs(speed - speedOption) < 0.05;
           return (
             <Pressable
               key={speedOption}
               onPress={() => onSpeedChange(speedOption)}
-              style={[
-                styles.speedOption,
-                isSelected && styles.speedOptionSelected,
-              ]}
+              className={`flex-1 items-center justify-center py-2 rounded ${
+                isSelected
+                  ? 'bg-purple-700/30 border border-purple-400/40'
+                  : 'bg-white/5'
+              }`}
             >
               <Text
-                style={[
-                  styles.speedText,
-                  isSelected && styles.speedTextSelected,
-                ]}
+                className={`text-xs font-medium ${
+                  isSelected ? 'text-purple-500' : 'text-white'
+                }`}
               >
                 {speedOption === 1.0 ? t('common.normal', 'Normal') : `${speedOption}x`}
               </Text>
@@ -57,63 +57,3 @@ export function SpeedControl({ speed, isRTL, onSpeedChange }: SpeedControlProps)
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  controlSection: {
-    paddingTop: spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.05)',
-    marginTop: spacing.md,
-  },
-  controlHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.md,
-  },
-  controlHeaderRTL: {
-    flexDirection: 'row-reverse',
-  },
-  controlLabel: {
-    flex: 1,
-    fontSize: 13,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  controlValue: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-  speedOptions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  speedOptionsRTL: {
-    flexDirection: 'row-reverse',
-  },
-  speedOption: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  speedOptionSelected: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.4)',
-  },
-  speedText: {
-    fontSize: 12,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  speedTextSelected: {
-    color: colors.primary,
-  },
-});

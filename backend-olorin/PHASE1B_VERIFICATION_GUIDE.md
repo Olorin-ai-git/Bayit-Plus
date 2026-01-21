@@ -23,7 +23,7 @@ Phase 1B verifies that both Olorin and Bayit+ backends are operational, stable, 
 Run the automated verification script:
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 bash backend-olorin/VERIFY.sh
 ```
 

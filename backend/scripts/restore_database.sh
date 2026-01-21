@@ -2,7 +2,7 @@
 # MongoDB Database Restore Script for Bayit+
 
 DB_NAME="bayit_plus"
-BACKUP_DIR="/Users/olorin/Documents/Bayit-Plus/backend/backups"
+BACKUP_DIR="/Users/olorin/Documents/olorin/backend/backups"
 
 echo "📦 Bayit+ Database Restore Utility"
 echo "=================================="

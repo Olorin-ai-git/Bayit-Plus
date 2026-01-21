@@ -10,7 +10,6 @@ import {
   View,
   Text,
   TouchableWithoutFeedback,
-  StyleSheet,
   Animated,
   Image,
   Platform,
@@ -206,7 +205,8 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
       return (
         <Image
           source={GESTURE_AVATARS[gestureState]}
-          style={styles.wizardImage}
+          className="w-full h-full"
+          style={{ width: WIZARD_SIZE, height: WIZARD_SIZE }}
           resizeMode="contain"
         />
       );
@@ -240,7 +240,8 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
       return (
         <Image
           source={WIZARD_AVATARS.listening}
-          style={styles.wizardImage}
+          className="w-full h-full"
+          style={{ width: WIZARD_SIZE, height: WIZARD_SIZE }}
           resizeMode="contain"
         />
       );
@@ -250,7 +251,8 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
     return (
       <Image
         source={WIZARD_AVATARS[voiceState]}
-        style={styles.wizardImage}
+        className="w-full h-full"
+        style={{ width: WIZARD_SIZE, height: WIZARD_SIZE }}
         resizeMode="contain"
       />
     );
@@ -259,26 +261,31 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
   if (!visible) return null;
 
   return (
-    <View style={styles.container}>
+    <View className="absolute top-0 left-0 right-0 bottom-0 z-[9999]">
       {/* Backdrop - tap to close */}
       <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.backdrop} />
+        <View className="absolute top-0 left-0 right-0 bottom-0 bg-transparent" />
       </TouchableWithoutFeedback>
 
       {/* Fixed-size Panel */}
       <Animated.View
-        style={[
-          styles.panel,
-          isRTL ? styles.panelRTL : styles.panelLTR,
-          {
-            opacity: opacityAnim,
-            transform: [{ scale: scaleAnim }],
-            width: PANEL_WIDTH,
-          },
-        ]}
+        className={`absolute ${isRTL ? 'left-4' : 'right-4'} bg-[rgba(13,13,26,0.95)] rounded-2xl p-4 items-center border border-primary/30 shadow-primary/30 ${isTV ? 'bottom-24 right-8' : 'bottom-8'}`}
+        style={{
+          opacity: opacityAnim,
+          transform: [{ scale: scaleAnim }],
+          width: PANEL_WIDTH,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 16,
+          elevation: 10,
+          ...(Platform.OS === 'web' ? {
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+          } : {}),
+        }}
       >
         {/* Fixed-size Wizard Container */}
-        <View style={styles.wizardContainer}>
+        <View className="items-center justify-center overflow-hidden" style={{ width: WIZARD_SIZE, height: WIZARD_SIZE }}>
           {/* Voice state effects overlay */}
           <WizardEffects
             voiceState={voiceState}
@@ -286,25 +293,22 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
             audioLevel={audioLevel}
           />
 
-          <View style={styles.wizardImageWrapper}>
+          <View className="items-center justify-center" style={{ width: WIZARD_SIZE, height: WIZARD_SIZE }}>
             {renderWizard()}
           </View>
         </View>
 
         {/* Name Badge */}
-        <View style={styles.nameBadge}>
-          <Text style={styles.nameText}>Olorin</Text>
-          <Text style={styles.roleText}>{t('support.wizard.role', 'Your Guide')}</Text>
+        <View className="items-center mt-2">
+          <Text className={`text-white font-bold ${isTV ? 'text-xl' : 'text-lg'}`}>Olorin</Text>
+          <Text className={`text-primary font-medium ${isTV ? 'text-xs' : 'text-[10px]'}`}>{t('support.wizard.role', 'Your Guide')}</Text>
         </View>
 
         {/* Speech Text Display - Fixed height container */}
-        <View style={[styles.speechBubbleContainer, !hasText && styles.speechBubbleHidden]}>
-          <View style={styles.speechBubble}>
+        <View className={`w-full justify-center ${!hasText ? 'min-h-0 h-0 mt-0 overflow-hidden' : 'mt-3'}`} style={{ minHeight: hasText ? SPEECH_BUBBLE_HEIGHT : 0 }}>
+          <View className="bg-primary/15 rounded-lg p-3 w-full border border-primary/20">
             <Text
-              style={[
-                styles.speechText,
-                isRTL && styles.speechTextRTL,
-              ]}
+              className={`text-white text-center ${isTV ? 'text-sm leading-5' : 'text-xs leading-4'} ${isRTL ? 'text-right' : ''}`}
               numberOfLines={3}
             >
               {displayText || ' '}
@@ -313,8 +317,8 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
         </View>
 
         {/* State Indicator */}
-        <View style={styles.stateIndicator}>
-          <Text style={styles.stateText}>
+        <View className="mt-2 px-3 py-1 bg-primary/10 rounded-sm">
+          <Text className={`text-primary font-semibold uppercase tracking-wider ${isTV ? 'text-[11px]' : 'text-[9px]'}`}>
             {voiceState === 'speaking' && currentIntroText
               ? t('support.wizard.introducing', 'Introducing...')
               : voiceState === 'listening'
@@ -332,15 +336,17 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
         {/* Voice Error Toast */}
         {voiceError && (
           <TouchableWithoutFeedback onPress={clearVoiceError}>
-            <View style={[
-              styles.errorToast,
-              voiceError.type === 'mic' && styles.errorToastMic,
-              voiceError.type === 'connection' && styles.errorToastConnection,
-            ]}>
-              <Text style={styles.errorToastIcon}>
+            <View className={`mt-2 flex-row items-center p-2 rounded-md border w-full ${
+              voiceError.type === 'mic'
+                ? 'bg-[rgba(245,158,11,0.2)] border-[rgba(245,158,11,0.4)]'
+                : voiceError.type === 'connection'
+                ? 'bg-[rgba(59,130,246,0.2)] border-[rgba(59,130,246,0.4)]'
+                : 'bg-[rgba(239,68,68,0.2)] border-[rgba(239,68,68,0.4)]'
+            }`}>
+              <Text className={`${isTV ? 'text-lg' : 'text-sm'} mr-1`}>
                 {voiceError.type === 'mic' ? '🎤' : voiceError.type === 'connection' ? '📡' : '⚠️'}
               </Text>
-              <Text style={styles.errorToastText} numberOfLines={2}>
+              <Text className={`flex-1 text-white ${isTV ? 'text-xs' : 'text-[10px]'}`} numberOfLines={2}>
                 {voiceError.message}
               </Text>
             </View>
@@ -349,174 +355,13 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
 
         {/* Audio Level Indicator (debug) */}
         {voiceState === 'listening' && audioLevel > 0.01 && (
-          <View style={styles.audioLevelDebug}>
-            <View style={[styles.audioLevelBarDebug, { width: `${Math.min(100, audioLevel * 200)}%` }]} />
+          <View className="mt-1 w-full h-1 bg-white/10 rounded-sm overflow-hidden">
+            <View className="h-full bg-primary rounded-sm" style={{ width: `${Math.min(100, audioLevel * 200)}%` }} />
           </View>
         )}
       </Animated.View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 9999,
-  },
-  backdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'transparent',
-  },
-  panel: {
-    position: 'absolute',
-    bottom: isTV ? spacing.xl * 3 : spacing.xl * 2,
-    backgroundColor: 'rgba(13, 13, 26, 0.95)',
-    borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-    alignItems: 'center',
-    ...(Platform.OS === 'web' ? {
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-    } : {}),
-    borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.3)',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 10,
-  },
-  panelLTR: {
-    right: isTV ? spacing.xl * 2 : spacing.lg,
-  },
-  panelRTL: {
-    left: isTV ? spacing.xl * 2 : spacing.lg,
-  },
-  wizardContainer: {
-    width: WIZARD_SIZE,
-    height: WIZARD_SIZE,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  wizardImageWrapper: {
-    width: WIZARD_SIZE,
-    height: WIZARD_SIZE,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  wizardImage: {
-    width: WIZARD_SIZE,
-    height: WIZARD_SIZE,
-  },
-  nameBadge: {
-    alignItems: 'center',
-    marginTop: spacing.sm,
-  },
-  nameText: {
-    fontSize: isTV ? 20 : 18,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  roleText: {
-    fontSize: isTV ? 12 : 10,
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  speechBubbleContainer: {
-    width: '100%',
-    minHeight: SPEECH_BUBBLE_HEIGHT,
-    marginTop: spacing.md,
-    justifyContent: 'center',
-  },
-  speechBubbleHidden: {
-    minHeight: 0,
-    height: 0,
-    marginTop: 0,
-    overflow: 'hidden',
-  },
-  speechBubble: {
-    backgroundColor: 'rgba(168, 85, 247, 0.15)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.2)',
-  },
-  speechText: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.text,
-    textAlign: 'center',
-    lineHeight: isTV ? 20 : 16,
-  },
-  speechTextRTL: {
-    textAlign: 'right',
-  },
-  stateIndicator: {
-    marginTop: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-    borderRadius: borderRadius.sm,
-  },
-  stateText: {
-    fontSize: isTV ? 11 : 9,
-    color: colors.primary,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  // Error toast styles
-  errorToast: {
-    marginTop: spacing.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.sm,
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.4)',
-    width: '100%',
-  },
-  errorToastMic: {
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
-    borderColor: 'rgba(245, 158, 11, 0.4)',
-  },
-  errorToastConnection: {
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
-    borderColor: 'rgba(59, 130, 246, 0.4)',
-  },
-  errorToastIcon: {
-    fontSize: isTV ? 18 : 14,
-    marginRight: spacing.xs,
-  },
-  errorToastText: {
-    flex: 1,
-    fontSize: isTV ? 12 : 10,
-    color: colors.text,
-  },
-  // Audio level debug indicator
-  audioLevelDebug: {
-    marginTop: spacing.xs,
-    width: '100%',
-    height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  audioLevelBarDebug: {
-    height: '100%',
-    backgroundColor: colors.primary,
-    borderRadius: 2,
-  },
-});
 
 export default VoiceChatModal;

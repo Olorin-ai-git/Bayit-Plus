@@ -13,7 +13,7 @@
 
 ```
 Unable to resolve module react-native-webview from
-/Users/olorin/Documents/Bayit-Plus/mobile-app/src/screens/PlayerScreenMobile.tsx
+/Users/olorin/Documents/olorin/mobile-app/src/screens/PlayerScreenMobile.tsx
 
 react-native-webview could not be found within the project or in these directories:
   node_modules
@@ -38,7 +38,7 @@ npm run ios
 
 **Files Modified:**
 
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/package.json` - Added dependency
+- `/Users/olorin/Documents/olorin/mobile-app/package.json` - Added dependency
 
 **Status:** ✅ **FIXED**
 
@@ -50,12 +50,12 @@ npm run ios
 
 ```
 Unable to resolve module @bayit/shared/utils/logger from
-/Users/olorin/Documents/Bayit-Plus/mobile-app/src/utils/logger.ts
+/Users/olorin/Documents/olorin/mobile-app/src/utils/logger.ts
 
 @bayit/shared/utils/logger could not be found within the project or in these directories:
   node_modules
   ../node_modules
-  /Users/olorin/Documents/Bayit-Plus/shared/components/utils/logger
+  /Users/olorin/Documents/olorin/shared/components/utils/logger
 ```
 
 **Root Cause:**
@@ -86,7 +86,7 @@ export {
 
 **Files Modified:**
 
-- `/Users/olorin/Documents/Bayit-Plus/mobile-app/src/utils/logger.ts` - Fixed import path
+- `/Users/olorin/Documents/olorin/mobile-app/src/utils/logger.ts` - Fixed import path
 
 **Status:** ✅ **FIXED**
 
@@ -122,7 +122,7 @@ export {
 
 **Files Modified:**
 
-- `/Users/olorin/Documents/Bayit-Plus/shared/utils/index.ts` - Added missing exports
+- `/Users/olorin/Documents/olorin/shared/utils/index.ts` - Added missing exports
 
 **Status:** ✅ **FIXED**
 

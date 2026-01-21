@@ -14,7 +14,6 @@ import React, { useCallback } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   Modal,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -27,7 +26,6 @@ import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import LinearGradient from "react-native-linear-gradient";
 import { GlassView, GlassButton } from "@bayit/shared";
 import { useDirection } from "@bayit/shared-hooks";
-import { spacing, colors, borderRadius } from "../theme";
 
 // Type assertion for LinearGradient React component
 const LinearGradientComponent = LinearGradient as any as React.FC<any>;
@@ -159,37 +157,34 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
         key={plan.id}
         onPress={() => handleSelectPlan(plan.id)}
         activeOpacity={0.7}
+        className={`bg-white/5 rounded-2xl p-6 border border-white/10 mb-3 ${
+          isRecommended ? "border-purple-600 bg-purple-600/15" : ""
+        } ${!meetsRequirement ? "opacity-50" : ""}`}
       >
-        <View
-          style={[
-            styles.planCard,
-            isRecommended && styles.planCardRecommended,
-            !meetsRequirement && styles.planCardDisabled,
-          ]}
-        >
+        <View className="relative">
           {isRecommended && (
-            <View style={styles.recommendedBadge}>
-              <Text style={styles.recommendedText}>
+            <View className="absolute -top-10 self-center bg-purple-600 px-4 py-1 rounded-lg">
+              <Text className="text-white text-xs font-bold">
                 {t("subscriptionGate.recommended")}
               </Text>
             </View>
           )}
 
-          <Text style={[styles.planName, { textAlign }]}>{plan.name}</Text>
+          <Text className={`text-xl font-bold text-white mt-2 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>{plan.name}</Text>
 
-          <View style={[styles.priceRow, isRTL && styles.priceRowRTL]}>
-            <Text style={styles.planPrice}>{plan.price}</Text>
-            <Text style={styles.planPeriod}>{plan.period}</Text>
+          <View className={`flex-row items-baseline mt-1 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Text className="text-2xl font-bold text-purple-600">{plan.price}</Text>
+            <Text className="text-sm text-gray-400 ml-1">{plan.period}</Text>
           </View>
 
-          <View style={styles.featuresList}>
+          <View className="mb-4">
             {plan.features.map((feature, index) => (
               <View
                 key={index}
-                style={[styles.featureRow, isRTL && styles.featureRowRTL]}
+                className={`flex-row items-center mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}
               >
-                <Text style={styles.featureCheck}>✓</Text>
-                <Text style={[styles.featureText, { textAlign }]}>
+                <Text className="text-sm text-green-500 mr-2">✓</Text>
+                <Text className={`text-xs text-white flex-1 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
                   {t(feature)}
                 </Text>
               </View>
@@ -205,7 +200,7 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
             onPress={() => handleSelectPlan(plan.id)}
             variant={isRecommended ? "primary" : "secondary"}
             disabled={!meetsRequirement}
-            style={styles.selectButton}
+            className="mt-2"
           />
         </View>
       </TouchableOpacity>
@@ -220,48 +215,48 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
       onRequestClose={handleClose}
     >
       <TouchableWithoutFeedback onPress={handleClose}>
-        <View style={styles.overlay}>
+        <View className="flex-1 bg-black/50 justify-end">
           <TouchableWithoutFeedback>
-            <SafeAreaView style={styles.modalContainer}>
+            <SafeAreaView className="flex-1 mt-15">
               <LinearGradientComponent
                 colors={["rgba(107, 33, 168, 0.95)", "rgba(0, 0, 0, 0.98)"]}
-                style={styles.gradient}
+                className="flex-1 rounded-t-3xl overflow-hidden"
               >
                 {/* Close button */}
                 <TouchableOpacity
                   onPress={handleClose}
-                  style={[styles.closeButton, isRTL && styles.closeButtonRTL]}
+                  className={`absolute top-4 ${isRTL ? 'left-4' : 'right-4'} w-10 h-10 rounded-full bg-white/10 justify-center items-center z-10`}
                 >
-                  <Text style={styles.closeText}>✕</Text>
+                  <Text className="text-lg text-white">✕</Text>
                 </TouchableOpacity>
 
                 <ScrollView
-                  contentContainerStyle={styles.content}
+                  contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 64, paddingBottom: 24 }}
                   showsVerticalScrollIndicator={false}
                 >
                   {/* Header */}
-                  <View style={styles.header}>
-                    <Text style={styles.lockIcon}>🔒</Text>
-                    <Text style={[styles.title, { textAlign }]}>
+                  <View className="items-center mb-4">
+                    <Text className="text-5xl mb-3">🔒</Text>
+                    <Text className={`text-2xl font-bold text-white mb-1 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
                       {t("subscriptionGate.title")}
                     </Text>
-                    <Text style={[styles.subtitle, { textAlign }]}>
+                    <Text className={`text-sm text-gray-400 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
                       {t("subscriptionGate.subtitle")}
                     </Text>
                   </View>
 
                   {/* Content info */}
                   {contentTitle && (
-                    <GlassView style={styles.contentInfo}>
-                      <Text style={styles.contentIcon}>
+                    <GlassView className="flex-row items-center p-3 rounded-lg mb-4">
+                      <Text className="text-3xl mr-3">
                         {getContentTypeIcon()}
                       </Text>
-                      <View style={styles.contentDetails}>
-                        <Text style={[styles.contentType, { textAlign }]}>
+                      <View className="flex-1">
+                        <Text className={`text-xs text-gray-400 uppercase ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
                           {getContentTypeText()}
                         </Text>
                         <Text
-                          style={[styles.contentTitle, { textAlign }]}
+                          className={`text-base font-semibold text-white mt-0.5 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}
                           numberOfLines={2}
                         >
                           {contentTitle}
@@ -271,35 +266,35 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                   )}
 
                   {/* Trial offer */}
-                  <GlassView style={styles.trialCard}>
-                    <View style={styles.trialHeader}>
-                      <Text style={styles.trialIcon}>🎁</Text>
-                      <Text style={[styles.trialTitle, { textAlign }]}>
+                  <GlassView className="p-4 rounded-lg mb-4 border border-purple-600">
+                    <View className="flex-row items-center mb-2">
+                      <Text className="text-2xl mr-2">🎁</Text>
+                      <Text className={`text-lg font-semibold text-white ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
                         {t("subscriptionGate.trialTitle")}
                       </Text>
                     </View>
-                    <Text style={[styles.trialDescription, { textAlign }]}>
+                    <Text className={`text-sm text-gray-400 mb-3 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
                       {t("subscriptionGate.trialDescription")}
                     </Text>
                     <GlassButton
                       title={t("subscriptionGate.startTrial")}
                       onPress={handleStartTrial}
                       variant="primary"
-                      style={styles.trialButton}
+                      className="self-stretch"
                     />
                   </GlassView>
 
                   {/* Plans */}
-                  <Text style={[styles.plansTitle, { textAlign }]}>
+                  <Text className={`text-lg font-semibold text-white mb-3 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
                     {t("subscriptionGate.choosePlan")}
                   </Text>
 
-                  <View style={styles.plansContainer}>
+                  <View className="gap-3 mb-4">
                     {SUBSCRIPTION_PLANS.map(renderPlanCard)}
                   </View>
 
                   {/* Footer */}
-                  <Text style={[styles.footerText, { textAlign }]}>
+                  <Text className={`text-xs text-gray-400 text-center ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
                     {t("subscriptionGate.cancelAnytime")}
                   </Text>
                 </ScrollView>
@@ -311,212 +306,5 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "flex-end",
-  },
-  modalContainer: {
-    flex: 1,
-    marginTop: 60,
-  },
-  gradient: {
-    flex: 1,
-    borderTopLeftRadius: borderRadius.xl,
-    borderTopRightRadius: borderRadius.xl,
-    overflow: "hidden",
-  },
-  closeButton: {
-    position: "absolute",
-    top: spacing.lg,
-    right: spacing.lg,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 10,
-  },
-  closeButtonRTL: {
-    right: undefined,
-    left: spacing.lg,
-  },
-  closeText: {
-    fontSize: 18,
-    color: colors.text,
-  },
-  content: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl * 2,
-    paddingBottom: spacing.xl,
-  },
-  header: {
-    alignItems: "center",
-    marginBottom: spacing.lg,
-  },
-  lockIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  contentInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.lg,
-  },
-  contentIcon: {
-    fontSize: 32,
-    marginRight: spacing.md,
-  },
-  contentDetails: {
-    flex: 1,
-  },
-  contentType: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    textTransform: "uppercase",
-  },
-  contentTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.text,
-    marginTop: 2,
-  },
-  trialCard: {
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  trialHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: spacing.sm,
-  },
-  trialIcon: {
-    fontSize: 24,
-    marginRight: spacing.sm,
-  },
-  trialTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: colors.text,
-  },
-  trialDescription: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginBottom: spacing.md,
-  },
-  trialButton: {
-    alignSelf: "stretch",
-  },
-  plansTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  plansContainer: {
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  planCard: {
-    backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.lg,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
-  },
-  planCardRecommended: {
-    borderColor: colors.primary,
-    backgroundColor: "rgba(107, 33, 168, 0.15)",
-  },
-  planCardDisabled: {
-    opacity: 0.5,
-  },
-  recommendedBadge: {
-    position: "absolute",
-    top: -10,
-    alignSelf: "center",
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.md,
-  },
-  recommendedText: {
-    color: colors.text,
-    fontSize: 11,
-    fontWeight: "bold",
-  },
-  planName: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: colors.text,
-    marginTop: spacing.sm,
-  },
-  priceRow: {
-    flexDirection: "row",
-    alignItems: "baseline",
-    marginTop: spacing.xs,
-    marginBottom: spacing.sm,
-  },
-  priceRowRTL: {
-    flexDirection: "row-reverse",
-  },
-  planPrice: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: colors.primary,
-  },
-  planPeriod: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginLeft: spacing.xs,
-  },
-  featuresList: {
-    marginBottom: spacing.md,
-  },
-  featureRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: spacing.xs,
-  },
-  featureRowRTL: {
-    flexDirection: "row-reverse",
-  },
-  featureCheck: {
-    fontSize: 14,
-    color: "#22c55e",
-    marginRight: spacing.sm,
-  },
-  featureText: {
-    fontSize: 13,
-    color: colors.text,
-    flex: 1,
-  },
-  selectButton: {
-    marginTop: spacing.sm,
-  },
-  footerText: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    textAlign: "center",
-  },
-});
 
 export default SubscriptionGateModal;

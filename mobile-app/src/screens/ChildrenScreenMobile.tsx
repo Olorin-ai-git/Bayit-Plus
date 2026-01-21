@@ -14,7 +14,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   RefreshControl,
@@ -86,34 +85,34 @@ const KidsCard: React.FC<KidsCardProps> = ({ item, onPress, getLocalizedText }) 
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.7}
-      style={styles.cardTouchable}
+      className="flex-1 m-1 min-h-[48px]"
     >
-      <View style={styles.card}>
+      <View className="bg-[#2d2540] rounded-lg overflow-hidden">
         {item.thumbnail ? (
           <Image
             source={{ uri: item.thumbnail }}
-            style={styles.cardImage}
+            className="w-full aspect-video"
             resizeMode="cover"
           />
         ) : (
-          <View style={styles.cardImagePlaceholder}>
-            <Text style={styles.placeholderIcon}>{categoryIcon}</Text>
+          <View className="w-full aspect-video bg-[#ffd93d]/10 justify-center items-center">
+            <Text className="text-4xl">{categoryIcon}</Text>
           </View>
         )}
-        <View style={[styles.categoryBadge, isRTL ? { left: 8 } : { right: 8 }]}>
-          <Text style={styles.categoryBadgeText}>{categoryIcon}</Text>
+        <View className={`absolute top-2 bg-black/70 rounded-xl px-2 py-1 ${isRTL ? 'left-2' : 'right-2'}`}>
+          <Text className="text-xs">{categoryIcon}</Text>
         </View>
         {item.age_rating !== undefined && (
-          <View style={[styles.ageBadge, isRTL ? { right: 8 } : { left: 8 }]}>
-            <Text style={styles.ageText}>{item.age_rating}+</Text>
+          <View className={`absolute top-2 bg-[#ffd93d]/90 rounded-lg px-1.5 py-0.5 ${isRTL ? 'right-2' : 'left-2'}`}>
+            <Text className="text-[10px] text-[#1a1525] font-bold">{item.age_rating}+</Text>
           </View>
         )}
-        <View style={styles.cardContent}>
-          <Text style={[styles.cardTitle, { textAlign }]} numberOfLines={2}>
+        <View className="p-2">
+          <Text style={{ textAlign }} className="text-sm font-semibold text-white leading-[18px]" numberOfLines={2}>
             {getLocalizedText(item, 'title')}
           </Text>
           {item.duration && (
-            <Text style={[styles.cardDuration, { textAlign }]}>
+            <Text style={{ textAlign }} className="text-[11px] text-[#ffd93d] mt-1">
               ⏱️ {item.duration}
             </Text>
           )}
@@ -144,13 +143,13 @@ const CategoryPill: React.FC<CategoryPillProps> = ({
   return (
     <TouchableOpacity
       onPress={handlePress}
-      style={[styles.categoryPill, isActive && styles.categoryPillActive]}
+      className={`flex-row items-center px-4 py-2 bg-white/10 rounded-lg gap-1 min-h-[48px] ${isActive ? 'bg-[#ffd93d]/30 border border-[#ffd93d]' : ''}`}
       activeOpacity={0.7}
     >
-      <Text style={styles.categoryEmoji}>
+      <Text className="text-base">
         {CATEGORY_ICONS[category.id] || '🌈'}
       </Text>
-      <Text style={[styles.categoryLabel, isActive && styles.categoryLabelActive]}>
+      <Text className={`text-sm font-medium ${isActive ? 'text-[#ffd93d]' : 'text-white/60'}`}>
         {getLocalizedText(category, 'name')}
       </Text>
     </TouchableOpacity>
@@ -240,13 +239,13 @@ export const ChildrenScreenMobile: React.FC = () => {
   const renderHeader = () => (
     <View>
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md }]}>
-          <Text style={styles.headerIconText}>👶</Text>
+      <View className="flex-row items-center px-4 pt-6 pb-4" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
+        <View className="w-12 h-12 rounded-full bg-[#ffd93d]/20 justify-center items-center" style={{ marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md }}>
+          <Text className="text-2xl">👶</Text>
         </View>
-        <View style={styles.headerTextContainer}>
-          <Text style={[styles.title, { textAlign }]}>{t('children.title', 'ילדים')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
+        <View className="flex-1">
+          <Text style={{ textAlign }} className="text-3xl font-bold text-[#ffd93d]">{t('children.title', 'ילדים')}</Text>
+          <Text style={{ textAlign }} className="text-sm text-[#ffd93d]/70 mt-0.5">
             {content.length} {t('children.items', 'פריטים')}
           </Text>
         </View>
@@ -257,10 +256,8 @@ export const ChildrenScreenMobile: React.FC = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[
-            styles.categoriesContainer,
-            { flexDirection: isRTL ? 'row' : 'row-reverse' },
-          ]}
+          contentContainerStyle={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}
+          className="px-4 pb-4 gap-2"
         >
           {(isRTL ? categories : [...categories].reverse()).map((category) => (
             <CategoryPill
@@ -277,13 +274,13 @@ export const ChildrenScreenMobile: React.FC = () => {
   );
 
   const renderEmptyState = () => (
-    <View style={styles.emptyState}>
-      <View style={styles.emptyCard}>
-        <Text style={styles.emptyIcon}>🌈</Text>
-        <Text style={[styles.emptyTitle, { textAlign }]}>
+    <View className="flex-1 justify-center items-center py-[60px] px-6">
+      <View className="p-6 items-center bg-[#ffd93d]/10 rounded-lg">
+        <Text className="text-5xl mb-4">🌈</Text>
+        <Text style={{ textAlign }} className="text-lg font-semibold text-[#ffd93d] mb-2">
           {t('children.empty', 'אין תוכן זמין')}
         </Text>
-        <Text style={[styles.emptySubtitle, { textAlign }]}>
+        <Text style={{ textAlign }} className="text-sm text-[#ffd93d]/70">
           {t('children.emptyHint', 'נסה קטגוריה אחרת')}
         </Text>
       </View>
@@ -292,21 +289,21 @@ export const ChildrenScreenMobile: React.FC = () => {
 
   if (isLoading && content.length === 0) {
     return (
-      <SafeAreaView style={styles.loadingContainer}>
+      <SafeAreaView className="flex-1 bg-[#1a1525] justify-center items-center">
         <ActivityIndicator size="large" color="#ffd93d" />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-[#ffd93d] text-base mt-4">{t('common.loading')}</Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1 bg-[#1a1525]">
       <FlatList
         data={content}
         keyExtractor={(item) => item.id}
         numColumns={numColumns}
         key={`children-grid-${numColumns}`}
-        contentContainerStyle={styles.grid}
+        contentContainerStyle={{ paddingHorizontal: spacing.sm, paddingBottom: spacing.xl }}
         ListHeaderComponent={renderHeader}
         renderItem={({ item }) => (
           <KidsCard
@@ -329,178 +326,5 @@ export const ChildrenScreenMobile: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#1a1525',
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: '#1a1525',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: '#ffd93d',
-    fontSize: 16,
-    marginTop: spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-  },
-  headerIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 217, 61, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerIconText: {
-    fontSize: 24,
-  },
-  headerTextContainer: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#ffd93d',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: 'rgba(255, 217, 61, 0.7)',
-    marginTop: 2,
-  },
-  categoriesContainer: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.md,
-    gap: spacing.sm,
-  },
-  categoryPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.lg,
-    gap: spacing.xs,
-    minHeight: 48,
-  },
-  categoryPillActive: {
-    backgroundColor: 'rgba(255, 217, 61, 0.3)',
-    borderWidth: 1,
-    borderColor: '#ffd93d',
-  },
-  categoryEmoji: {
-    fontSize: 16,
-  },
-  categoryLabel: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    fontWeight: '500',
-  },
-  categoryLabelActive: {
-    color: '#ffd93d',
-  },
-  grid: {
-    paddingHorizontal: spacing.sm,
-    paddingBottom: spacing.xl,
-  },
-  cardTouchable: {
-    flex: 1,
-    margin: spacing.xs,
-    minHeight: 48,
-  },
-  card: {
-    backgroundColor: '#2d2540',
-    borderRadius: borderRadius.md,
-    overflow: 'hidden',
-  },
-  cardImage: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-  },
-  cardImagePlaceholder: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    backgroundColor: 'rgba(255, 217, 61, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 36,
-  },
-  categoryBadge: {
-    position: 'absolute',
-    top: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  categoryBadgeText: {
-    fontSize: 12,
-  },
-  ageBadge: {
-    position: 'absolute',
-    top: 8,
-    backgroundColor: 'rgba(255, 217, 61, 0.9)',
-    borderRadius: 8,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  ageText: {
-    fontSize: 10,
-    color: '#1a1525',
-    fontWeight: 'bold',
-  },
-  cardContent: {
-    padding: spacing.sm,
-  },
-  cardTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#ffffff',
-    lineHeight: 18,
-  },
-  cardDuration: {
-    fontSize: 11,
-    color: '#ffd93d',
-    marginTop: 4,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-    paddingHorizontal: spacing.lg,
-  },
-  emptyCard: {
-    padding: spacing.xl,
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 217, 61, 0.1)',
-    borderRadius: borderRadius.lg,
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#ffd93d',
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    color: 'rgba(255, 217, 61, 0.7)',
-  },
-});
 
 export default ChildrenScreenMobile;

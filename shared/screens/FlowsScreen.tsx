@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
@@ -221,44 +220,44 @@ const FlowsScreen = () => {
     });
 
     return (
-      <Animated.View style={[styles.activeBanner, { shadowColor: '#a855f7', shadowOpacity: glowAnim }]}>
+      <Animated.View className="mb-8 rounded-2xl overflow-hidden shadow-lg" style={{ shadowColor: '#a855f7', shadowOpacity: glowAnim }}>
         <LinearGradient
           colors={['rgba(107, 33, 168, 0.3)', 'rgba(107, 33, 168, 0.15)']}
-          style={styles.activeBannerGradient}
+          className="flex-row items-center p-6 border border-purple-500/60 rounded-2xl"
         >
           <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-            <LinearGradient colors={iconConfig.colors} style={styles.activeFlowIcon}>
+            <LinearGradient colors={iconConfig.colors} className="w-20 h-20 rounded-xl justify-center items-center">
               <Ionicons name={iconConfig.icon as any} size={40} color="#fff" />
             </LinearGradient>
           </Animated.View>
 
-          <View style={styles.activeBannerContent}>
-            <Text style={styles.activeFlowLabel}>{t('flows.activeNow', 'Active Now')}</Text>
-            <Text style={styles.activeFlowTitle}>{getLocalizedName(activeFlow)}</Text>
+          <View className="flex-1 ml-5">
+            <Text className="text-xs text-purple-500 font-semibold uppercase tracking-wider mb-1">{t('flows.activeNow', 'Active Now')}</Text>
+            <Text className="text-2xl font-bold text-white mb-1">{getLocalizedName(activeFlow)}</Text>
             {activeFlow.description && (
-              <Text style={styles.activeFlowDesc}>{activeFlow.description}</Text>
+              <Text className="text-sm text-gray-400">{activeFlow.description}</Text>
             )}
           </View>
 
-          <View style={styles.activeBannerActions}>
+          <View className="items-end gap-3">
             <TouchableOpacity
-              style={styles.startButton}
+              className="rounded-xl overflow-hidden"
               onPress={() => handleStartFlow(activeFlow)}
             >
               <LinearGradient
                 colors={['#a855f7', '#0099cc']}
-                style={styles.startButtonGradient}
+                className="flex-row items-center px-6 py-3 gap-2"
               >
                 <Ionicons name="play" size={24} color="#fff" />
-                <Text style={styles.startButtonText}>{t('flows.start', 'Start')}</Text>
+                <Text className="text-base font-semibold text-white">{t('flows.start', 'Start')}</Text>
               </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.skipButton}
+              className="py-2 px-4"
               onPress={() => handleSkipToday(activeFlow)}
             >
-              <Text style={styles.skipButtonText}>{t('flows.skipToday', 'Skip Today')}</Text>
+              <Text className="text-sm text-gray-400">{t('flows.skipToday', 'Skip Today')}</Text>
             </TouchableOpacity>
           </View>
         </LinearGradient>
@@ -274,60 +273,60 @@ const FlowsScreen = () => {
     return (
       <TouchableOpacity
         key={flow.id}
-        style={[styles.flowCard, isFocused && styles.flowCardFocused]}
+        className={`rounded-xl overflow-hidden border ${isFocused ? 'border-purple-500' : 'border-white/10'}`}
         onPress={() => handleStartFlow(flow)}
         onFocus={() => setFocusedIndex(index)}
       >
         <LinearGradient
           colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0.02)']}
-          style={styles.flowCardGradient}
+          className="flex-row items-center p-4"
         >
-          <LinearGradient colors={iconConfig.colors} style={styles.flowIcon}>
+          <LinearGradient colors={iconConfig.colors} className="w-14 h-14 rounded-xl justify-center items-center">
             <Ionicons name={iconConfig.icon as any} size={32} color="#fff" />
           </LinearGradient>
 
-          <View style={styles.flowCardContent}>
-            <View style={styles.flowCardHeader}>
-              <Text style={styles.flowCardTitle}>{getLocalizedName(flow)}</Text>
+          <View className="flex-1 ml-4">
+            <View className="flex-row items-center gap-2 mb-1">
+              <Text className="text-lg font-semibold text-white">{getLocalizedName(flow)}</Text>
               {isSystem && (
-                <View style={styles.systemBadge}>
-                  <Text style={styles.systemBadgeText}>{t('flows.system', 'System')}</Text>
+                <View className="bg-purple-600/30 px-2 py-0.5 rounded">
+                  <Text className="text-[10px] text-purple-500 font-semibold uppercase">{t('flows.system', 'System')}</Text>
                 </View>
               )}
             </View>
 
             {flow.description && (
-              <Text style={styles.flowCardDesc} numberOfLines={2}>
+              <Text className="text-sm text-gray-400 mb-2" numberOfLines={2}>
                 {flow.description}
               </Text>
             )}
 
             {flow.triggers.length > 0 && (
-              <View style={styles.triggerInfo}>
+              <View className="flex-row items-center gap-1 mb-2">
                 <Ionicons name="time-outline" size={14} color="#888" />
-                <Text style={styles.triggerText}>
+                <Text className="text-xs text-gray-400">
                   {formatTriggerTime(flow.triggers[0])}
                 </Text>
               </View>
             )}
 
-            <View style={styles.flowFeatures}>
+            <View className="flex-row gap-2">
               {flow.ai_enabled && (
-                <View style={styles.featureBadge}>
+                <View className="flex-row items-center gap-1 bg-purple-600/30 px-2 py-1 rounded">
                   <Ionicons name="sparkles" size={12} color="#a855f7" />
-                  <Text style={styles.featureText}>AI</Text>
+                  <Text className="text-[11px] text-purple-500">AI</Text>
                 </View>
               )}
               {flow.auto_play && (
-                <View style={styles.featureBadge}>
+                <View className="flex-row items-center gap-1 bg-purple-600/30 px-2 py-1 rounded">
                   <Ionicons name="play-circle" size={12} color="#a855f7" />
-                  <Text style={styles.featureText}>{t('flows.autoPlay', 'Auto')}</Text>
+                  <Text className="text-[11px] text-purple-500">{t('flows.autoPlay', 'Auto')}</Text>
                 </View>
               )}
               {flow.items.length > 0 && (
-                <View style={styles.featureBadge}>
+                <View className="flex-row items-center gap-1 bg-purple-600/30 px-2 py-1 rounded">
                   <Ionicons name="list" size={12} color="#a855f7" />
-                  <Text style={styles.featureText}>
+                  <Text className="text-[11px] text-purple-500">
                     {flow.items.length} {t('flows.items', 'items')}
                   </Text>
                 </View>
@@ -335,7 +334,7 @@ const FlowsScreen = () => {
             </View>
           </View>
 
-          <View style={styles.playIconContainer}>
+          <View className="p-2">
             <Ionicons name="chevron-forward" size={24} color="#888" />
           </View>
         </LinearGradient>
@@ -350,35 +349,35 @@ const FlowsScreen = () => {
       animationType="fade"
       onRequestClose={() => setShowCreateModal(false)}
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.createModalContent}>
+      <View className="flex-1 bg-black/80 justify-center items-center">
+        <View className="w-[45%] bg-[#1a1a2e] rounded-3xl p-10 items-center border border-white/10">
           <LinearGradient
             colors={['#a855f7', '#0099cc']}
-            style={styles.createModalIcon}
+            className="w-24 h-24 rounded-3xl justify-center items-center mb-6"
           >
             <Ionicons name="add-circle" size={48} color="#fff" />
           </LinearGradient>
 
-          <Text style={styles.createModalTitle}>
+          <Text className="text-3xl font-bold text-white mb-3 text-center">
             {t('flows.createFlow')}
           </Text>
-          <Text style={styles.createModalDesc}>
+          <Text className="text-base text-gray-400 text-center mb-6 leading-6">
             {t('flows.createFlowDesc')}
           </Text>
 
-          <View style={styles.createModalInfo}>
+          <View className="flex-row items-center gap-4 bg-purple-600/30 p-5 rounded-xl mb-6">
             <Ionicons name="phone-portrait-outline" size={24} color="#a855f7" />
-            <Text style={styles.createModalInfoText}>
+            <Text className="flex-1 text-sm text-purple-500 leading-5">
               {t('flows.tv.useCompanion', `For full customization, use the ${t('common.appName', 'Bayit+')} app on your phone or visit bayit.plus on your computer.`)}
             </Text>
           </View>
 
-          <View style={styles.createModalActions}>
+          <View className="flex-row gap-4">
             <TouchableOpacity
-              style={styles.createModalButton}
+              className="bg-white/10 px-10 py-3.5 rounded-lg"
               onPress={() => setShowCreateModal(false)}
             >
-              <Text style={styles.createModalButtonText}>{t('common.close')}</Text>
+              <Text className="text-base text-white font-semibold">{t('common.close')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -393,13 +392,13 @@ const FlowsScreen = () => {
       animationType="fade"
       onRequestClose={() => setShowFlowModal(false)}
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+      <View className="flex-1 bg-black/80 justify-center items-center">
+        <View style={{ width: SCREEN_WIDTH * 0.5 }} className="bg-[#1a1a2e] rounded-3xl p-8 items-center border border-white/10">
           {selectedFlow && (
             <>
               <LinearGradient
                 colors={getFlowIcon(selectedFlow).colors}
-                style={styles.modalIcon}
+                className="w-24 h-24 rounded-3xl justify-center items-center mb-5"
               >
                 <Ionicons
                   name={getFlowIcon(selectedFlow).icon as any}
@@ -408,14 +407,14 @@ const FlowsScreen = () => {
                 />
               </LinearGradient>
 
-              <Text style={styles.modalTitle}>{getLocalizedName(selectedFlow)}</Text>
+              <Text className="text-3xl font-bold text-white mb-2 text-center">{getLocalizedName(selectedFlow)}</Text>
               {selectedFlow.description && (
-                <Text style={styles.modalDesc}>{selectedFlow.description}</Text>
+                <Text className="text-base text-gray-400 text-center mb-6">{selectedFlow.description}</Text>
               )}
 
-              <View style={styles.modalInfo}>
-                <Text style={styles.modalInfoLabel}>{t('flows.type')}:</Text>
-                <Text style={styles.modalInfoValue}>
+              <View className="flex-row justify-between w-full py-3 border-b border-white/10">
+                <Text className="text-sm text-gray-400">{t('flows.type')}:</Text>
+                <Text className="text-sm text-white font-medium">
                   {selectedFlow.flow_type === 'system'
                     ? t('flows.systemFlow')
                     : t('flows.customFlow')}
@@ -424,16 +423,16 @@ const FlowsScreen = () => {
 
               {selectedFlow.triggers.length > 0 && (
                 <>
-                  <View style={styles.modalInfo}>
-                    <Text style={styles.modalInfoLabel}>{t('flows.schedule')}:</Text>
-                    <Text style={styles.modalInfoValue}>
+                  <View className="flex-row justify-between w-full py-3 border-b border-white/10">
+                    <Text className="text-sm text-gray-400">{t('flows.schedule')}:</Text>
+                    <Text className="text-sm text-white font-medium">
                       {formatTriggerTime(selectedFlow.triggers[0])}
                     </Text>
                   </View>
                   {selectedFlow.triggers[0].type === 'time' && selectedFlow.triggers[0].days && (
-                    <View style={styles.modalInfo}>
-                      <Text style={styles.modalInfoLabel}>{t('flows.days.title')}:</Text>
-                      <Text style={styles.modalInfoValue}>
+                    <View className="flex-row justify-between w-full py-3 border-b border-white/10">
+                      <Text className="text-sm text-gray-400">{t('flows.days.title')}:</Text>
+                      <Text className="text-sm text-white font-medium">
                         {getDaysDisplay(selectedFlow.triggers[0].days)}
                       </Text>
                     </View>
@@ -442,37 +441,37 @@ const FlowsScreen = () => {
               )}
 
               {/* Feature badges */}
-              <View style={styles.modalFeatures}>
+              <View className="flex-row justify-center gap-3 mt-4 mb-2 flex-wrap">
                 {selectedFlow.ai_enabled && (
-                  <View style={[styles.modalFeatureBadge, styles.aiBadge]}>
+                  <View className="flex-row items-center gap-1.5 bg-purple-600/30 px-3 py-1.5 rounded-lg">
                     <Ionicons name="sparkles" size={14} color="#a855f7" />
-                    <Text style={styles.modalFeatureText}>{t('flows.aiEnabled')}</Text>
+                    <Text className="text-[13px] text-purple-500 font-medium">{t('flows.aiEnabled')}</Text>
                   </View>
                 )}
                 {selectedFlow.ai_brief_enabled && (
-                  <View style={[styles.modalFeatureBadge, styles.briefBadge]}>
+                  <View className="flex-row items-center gap-1.5 bg-purple-700/10 px-3 py-1.5 rounded-lg">
                     <Ionicons name="document-text" size={14} color="#8b5cf6" />
-                    <Text style={[styles.modalFeatureText, { color: '#8b5cf6' }]}>
+                    <Text className="text-[13px] text-purple-600 font-medium">
                       {t('flows.aiBrief')}
                     </Text>
                   </View>
                 )}
                 {selectedFlow.auto_play && (
-                  <View style={styles.modalFeatureBadge}>
+                  <View className="flex-row items-center gap-1.5 bg-purple-600/30 px-3 py-1.5 rounded-lg">
                     <Ionicons name="play-circle" size={14} color="#a855f7" />
-                    <Text style={styles.modalFeatureText}>{t('flows.autoPlay')}</Text>
+                    <Text className="text-[13px] text-purple-500 font-medium">{t('flows.autoPlay')}</Text>
                   </View>
                 )}
               </View>
 
               {/* Flow Items */}
-              <View style={styles.modalItemsSection}>
-                <Text style={styles.modalItemsTitle}>
+              <View className="w-full mt-4 border-t border-white/10 pt-4">
+                <Text className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wide">
                   {t('flows.content')} ({selectedFlow.items.length})
                 </Text>
                 {selectedFlow.items.length > 0 ? (
                   <ScrollView
-                    style={styles.modalItemsList}
+                    className="max-h-[200px]"
                     showsVerticalScrollIndicator={false}
                   >
                     {selectedFlow.items.slice(0, 5).map((item, index) => (
@@ -486,24 +485,24 @@ const FlowsScreen = () => {
                       />
                     ))}
                     {selectedFlow.items.length > 5 && (
-                      <Text style={styles.moreItemsText}>
+                      <Text className="text-[13px] text-purple-500 text-center mt-2 font-medium">
                         +{selectedFlow.items.length - 5} {t('flows.flowItems.more')}
                       </Text>
                     )}
                   </ScrollView>
                 ) : (
-                  <View style={styles.aiGeneratedNote}>
+                  <View className="flex-row items-center justify-center gap-2 py-4 bg-orange-500/10 rounded-lg">
                     <Ionicons name="sparkles" size={20} color="#ff9500" />
-                    <Text style={styles.aiGeneratedText}>
+                    <Text className="text-sm text-orange-500 font-medium">
                       {t('flows.aiGenerated')}
                     </Text>
                   </View>
                 )}
               </View>
 
-              <View style={styles.modalActions}>
+              <View className="flex-row gap-4 mt-6">
                 <TouchableOpacity
-                  style={styles.modalStartButton}
+                  className="rounded-lg overflow-hidden"
                   onPress={() => {
                     setShowFlowModal(false);
                     handleStartFlow(selectedFlow);
@@ -511,17 +510,17 @@ const FlowsScreen = () => {
                 >
                   <LinearGradient
                     colors={['#a855f7', '#0099cc']}
-                    style={styles.modalStartGradient}
+                    className="flex-row items-center gap-2 px-6 py-3"
                   >
                     <Ionicons name="play" size={20} color="#fff" />
-                    <Text style={styles.modalStartText}>{t('flows.start')}</Text>
+                    <Text className="text-base font-semibold text-white">{t('flows.start')}</Text>
                   </LinearGradient>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={styles.modalButton}
+                  className="bg-white/10 px-8 py-3 rounded-lg"
                   onPress={() => setShowFlowModal(false)}
                 >
-                  <Text style={styles.modalButtonText}>{t('common.close')}</Text>
+                  <Text className="text-base text-white font-semibold">{t('common.close')}</Text>
                 </TouchableOpacity>
               </View>
             </>
@@ -533,7 +532,7 @@ const FlowsScreen = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center bg-[#0a0a0a]">
         <ActivityIndicator size="large" color="#a855f7" />
       </View>
     );
@@ -543,21 +542,21 @@ const FlowsScreen = () => {
   const customFlows = flows.filter(f => f.flow_type === 'custom');
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-[#0a0a0a]">
       <LinearGradient
         colors={['#0a0a0a', '#1a1a2e', '#0a0a0a']}
-        style={StyleSheet.absoluteFill}
+        className="absolute inset-0"
       />
 
       <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        className="flex-1"
+        contentContainerStyle={{ paddingHorizontal: 40, paddingTop: 40, paddingBottom: 60 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>{t('flows.title', 'Flows')}</Text>
-          <Text style={styles.headerSubtitle}>
+        <View className="mb-8">
+          <Text className="text-4xl font-bold text-white mb-2">{t('flows.title', 'Flows')}</Text>
+          <Text className="text-base text-gray-400">
             {t('flows.subtitle', 'Curated content experiences for every moment')}
           </Text>
         </View>
@@ -566,22 +565,22 @@ const FlowsScreen = () => {
         {renderActiveFlowBanner()}
 
         {/* System Flows */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
+        <View className="mb-8">
+          <Text className="text-xl font-semibold text-white mb-4">
             {t('flows.systemFlows', 'Ready-Made Flows')}
           </Text>
-          <View style={styles.flowsGrid}>
+          <View className="gap-3">
             {systemFlows.map((flow, index) => renderFlowCard(flow, index))}
           </View>
         </View>
 
         {/* Custom Flows */}
         {customFlows.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>
+          <View className="mb-8">
+            <Text className="text-xl font-semibold text-white mb-4">
               {t('flows.customFlows', 'My Flows')}
             </Text>
-            <View style={styles.flowsGrid}>
+            <View className="gap-3">
               {customFlows.map((flow, index) =>
                 renderFlowCard(flow, systemFlows.length + index)
               )}
@@ -591,15 +590,15 @@ const FlowsScreen = () => {
 
         {/* Create Flow Button */}
         <TouchableOpacity
-          style={styles.createButton}
+          className="mt-2.5 rounded-xl overflow-hidden border border-dashed border-purple-500/60"
           onPress={() => setShowCreateModal(true)}
         >
           <LinearGradient
             colors={['rgba(107, 33, 168, 0.3)', 'rgba(107, 33, 168, 0.15)']}
-            style={styles.createButtonGradient}
+            className="flex-row items-center justify-center p-5 gap-3"
           >
             <Ionicons name="add-circle-outline" size={24} color="#a855f7" />
-            <Text style={styles.createButtonText}>
+            <Text className="text-base text-purple-500 font-semibold">
               {t('flows.createCustom')}
             </Text>
           </LinearGradient>
@@ -611,441 +610,5 @@ const FlowsScreen = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0a0a0a',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#0a0a0a',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 40,
-    paddingTop: 40,
-    paddingBottom: 60,
-  },
-  header: {
-    marginBottom: 30,
-  },
-  headerTitle: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 8,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: '#888',
-  },
-  activeBanner: {
-    marginBottom: 30,
-    borderRadius: 16,
-    overflow: 'hidden',
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  activeBannerGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.6)',
-    borderRadius: 16,
-  },
-  activeFlowIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  activeBannerContent: {
-    flex: 1,
-    marginLeft: 20,
-  },
-  activeFlowLabel: {
-    fontSize: 12,
-    color: '#a855f7',
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-  activeFlowTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 4,
-  },
-  activeFlowDesc: {
-    fontSize: 14,
-    color: '#888',
-  },
-  activeBannerActions: {
-    alignItems: 'flex-end',
-    gap: 12,
-  },
-  startButton: {
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  startButtonGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    gap: 8,
-  },
-  startButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  skipButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
-  skipButtonText: {
-    fontSize: 14,
-    color: '#888',
-  },
-  section: {
-    marginBottom: 30,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#fff',
-    marginBottom: 16,
-  },
-  flowsGrid: {
-    gap: 12,
-  },
-  flowCard: {
-    borderRadius: 12,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-  },
-  flowCardFocused: {
-    borderColor: '#a855f7',
-    transform: [{ scale: 1.02 }],
-  },
-  flowCardGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-  },
-  flowIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  flowCardContent: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  flowCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
-  },
-  flowCardTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  systemBadge: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  systemBadgeText: {
-    fontSize: 10,
-    color: '#a855f7',
-    fontWeight: '600',
-    textTransform: 'uppercase',
-  },
-  flowCardDesc: {
-    fontSize: 14,
-    color: '#888',
-    marginBottom: 8,
-  },
-  triggerInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginBottom: 8,
-  },
-  triggerText: {
-    fontSize: 12,
-    color: '#888',
-  },
-  flowFeatures: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  featureBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  featureText: {
-    fontSize: 11,
-    color: '#a855f7',
-  },
-  playIconContainer: {
-    padding: 8,
-  },
-  createButton: {
-    marginTop: 10,
-    borderRadius: 12,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.6)',
-    borderStyle: 'dashed',
-  },
-  createButtonGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    gap: 12,
-  },
-  createButtonText: {
-    fontSize: 16,
-    color: '#a855f7',
-    fontWeight: '600',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    width: SCREEN_WIDTH * 0.5,
-    backgroundColor: '#1a1a2e',
-    borderRadius: 20,
-    padding: 32,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-  },
-  modalIcon: {
-    width: 96,
-    height: 96,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  modalTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  modalDesc: {
-    fontSize: 16,
-    color: '#888',
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  modalInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
-  },
-  modalInfoLabel: {
-    fontSize: 14,
-    color: '#888',
-  },
-  modalInfoValue: {
-    fontSize: 14,
-    color: '#fff',
-    fontWeight: '500',
-  },
-  modalActions: {
-    flexDirection: 'row',
-    gap: 16,
-    marginTop: 24,
-  },
-  modalButton: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    paddingHorizontal: 32,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  modalButtonText: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '600',
-  },
-  modalFeatures: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 12,
-    marginTop: 16,
-    marginBottom: 8,
-    flexWrap: 'wrap',
-  },
-  modalFeatureBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  aiBadge: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  briefBadge: {
-    backgroundColor: 'rgba(139,92,246,0.1)',
-  },
-  modalFeatureText: {
-    fontSize: 13,
-    color: '#a855f7',
-    fontWeight: '500',
-  },
-  modalItemsSection: {
-    width: '100%',
-    marginTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
-    paddingTop: 16,
-  },
-  modalItemsTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#888',
-    marginBottom: 12,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  modalItemsList: {
-    maxHeight: 200,
-  },
-  moreItemsText: {
-    fontSize: 13,
-    color: '#a855f7',
-    textAlign: 'center',
-    marginTop: 8,
-    fontWeight: '500',
-  },
-  aiGeneratedNote: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 16,
-    backgroundColor: 'rgba(255,149,0,0.1)',
-    borderRadius: 8,
-  },
-  aiGeneratedText: {
-    fontSize: 14,
-    color: '#ff9500',
-    fontWeight: '500',
-  },
-  modalStartButton: {
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
-  modalStartGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-  },
-  modalStartText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  createModalContent: {
-    width: SCREEN_WIDTH * 0.45,
-    backgroundColor: '#1a1a2e',
-    borderRadius: 20,
-    padding: 40,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-  },
-  createModalIcon: {
-    width: 96,
-    height: 96,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  createModalTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  createModalDesc: {
-    fontSize: 16,
-    color: '#888',
-    textAlign: 'center',
-    marginBottom: 24,
-    lineHeight: 24,
-  },
-  createModalInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 24,
-  },
-  createModalInfoText: {
-    flex: 1,
-    fontSize: 14,
-    color: '#a855f7',
-    lineHeight: 20,
-  },
-  createModalActions: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  createModalButton: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    paddingHorizontal: 40,
-    paddingVertical: 14,
-    borderRadius: 10,
-  },
-  createModalButtonText: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '600',
-  },
-});
 
 export default FlowsScreen;

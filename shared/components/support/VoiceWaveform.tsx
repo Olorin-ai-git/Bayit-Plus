@@ -6,11 +6,10 @@
 import React, { useEffect, useRef } from 'react';
 import {
   View,
-  StyleSheet,
   Animated,
   Easing,
 } from 'react-native';
-import { colors, spacing } from '../../theme';
+import { colors } from '../../theme';
 import { isTV } from '../../utils/platform';
 import { VoiceState } from '../../stores/supportStore';
 
@@ -74,17 +73,15 @@ const AnimatedBar: React.FC<AnimatedBarProps> = ({
 
   return (
     <Animated.View
-      style={[
-        styles.bar,
-        {
-          height: heightAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [baseHeight * 0.2, baseHeight],
-          }),
-          backgroundColor: isActive ? colors.primary : colors.textSecondary,
-          opacity: isActive ? 1 : 0.5,
-        },
-      ]}
+      className={isTV ? "w-1.5 rounded-sm" : "w-1 rounded"}
+      style={{
+        height: heightAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [baseHeight * 0.2, baseHeight],
+        }),
+        backgroundColor: isActive ? colors.primary : colors.textSecondary,
+        opacity: isActive ? 1 : 0.5,
+      }}
     />
   );
 };
@@ -114,8 +111,8 @@ export const VoiceWaveform: React.FC<VoiceWaveformProps> = ({
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.waveformContainer}>
+    <View className="items-center justify-center p-4">
+      <View className={`flex-row items-center justify-center ${isTV ? 'gap-2 h-20' : 'gap-1 h-15'}`}>
         {bars.map((index) => (
           <AnimatedBar
             key={index}
@@ -182,14 +179,14 @@ const ProcessingIndicator: React.FC = () => {
 
   return (
     <Animated.View
-      style={[
-        styles.processingIndicator,
-        {
-          transform: [{ rotate: spin }, { scale: scaleAnim }],
-        },
-      ]}
+      className={`absolute ${isTV ? 'w-15 h-15' : 'w-10 h-10'} ${isTV ? 'rounded-[30px]' : 'rounded-[20px]'} border-3 justify-center items-center`}
+      style={{
+        borderColor: colors.warning,
+        borderTopColor: 'transparent',
+        transform: [{ rotate: spin }, { scale: scaleAnim }],
+      }}
     >
-      <View style={styles.processingInner} />
+      <View className={`${isTV ? 'w-7.5 h-7.5 rounded-[15px]' : 'w-5 h-5 rounded-[10px]'} opacity-30`} style={{ backgroundColor: colors.warning }} />
     </Animated.View>
   );
 };
@@ -260,71 +257,23 @@ export const CircularWaveform: React.FC<VoiceWaveformProps> = ({
   const color = getColor();
 
   return (
-    <View style={styles.circularContainer}>
+    <View className="items-center justify-center relative">
       {ringAnims.map((anim, index) => (
         <Animated.View
           key={index}
-          style={[
-            styles.ring,
-            {
-              width: baseSize + (index * 20),
-              height: baseSize + (index * 20),
-              borderRadius: (baseSize + (index * 20)) / 2,
-              borderColor: color,
-              opacity: isActive ? 0.6 - (index * 0.15) : 0.2,
-              transform: [{ scale: anim }],
-            },
-          ]}
+          className="absolute border-2"
+          style={{
+            width: baseSize + (index * 20),
+            height: baseSize + (index * 20),
+            borderRadius: (baseSize + (index * 20)) / 2,
+            borderColor: color,
+            opacity: isActive ? 0.6 - (index * 0.15) : 0.2,
+            transform: [{ scale: anim }],
+          }}
         />
       ))}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.md,
-  },
-  waveformContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: isTV ? spacing.sm : spacing.xs,
-    height: isTV ? 80 : 60,
-  },
-  bar: {
-    width: isTV ? 6 : 4,
-    borderRadius: isTV ? 3 : 2,
-  },
-  processingIndicator: {
-    position: 'absolute',
-    width: isTV ? 60 : 40,
-    height: isTV ? 60 : 40,
-    borderRadius: isTV ? 30 : 20,
-    borderWidth: 3,
-    borderColor: colors.warning,
-    borderTopColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  processingInner: {
-    width: isTV ? 30 : 20,
-    height: isTV ? 30 : 20,
-    borderRadius: isTV ? 15 : 10,
-    backgroundColor: colors.warning,
-    opacity: 0.3,
-  },
-  circularContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  ring: {
-    position: 'absolute',
-    borderWidth: 2,
-  },
-});
 
 export default VoiceWaveform;

@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, ViewStyle, StyleProp } from 'react-native';
+import { View, Text, ViewStyle, StyleProp } from 'react-native';
 import { colors, spacing, borderRadius } from '../theme';
 
 type QualityTier = '4k' | '1080p' | '720p' | '480p' | 'unknown';
@@ -45,25 +45,16 @@ export const ContentBadges: React.FC<ContentBadgesProps> = ({
   const tier = (qualityTier?.toLowerCase() as QualityTier) || 'unknown';
   const qualityStyle = qualityColors[tier] || qualityColors.unknown;
 
-  const badgeSize = compact ? 'compact' : 'default';
-  const fontSize = compact ? 9 : 11;
-
   return (
-    <View style={[styles.container, style]}>
+    <View style={style} className="flex-row items-center gap-1 flex-wrap">
       {hasQuality && (
         <View
-          style={[
-            styles.qualityBadge,
-            styles[`qualityBadge_${badgeSize}`],
-            { backgroundColor: qualityStyle.bg },
-          ]}
+          style={{ backgroundColor: qualityStyle.bg }}
+          className={`rounded border border-white/10 ${compact ? 'px-1 py-0.5' : 'px-2 py-[3px]'}`}
         >
           <Text
-            style={[
-              styles.qualityText,
-              styles[`qualityText_${badgeSize}`],
-              { color: qualityStyle.text },
-            ]}
+            style={{ color: qualityStyle.text }}
+            className={`${compact ? 'text-[9px]' : 'text-[11px]'} font-bold tracking-wide`}
           >
             {tier === '4k' ? '4K' : tier.toUpperCase()}
           </Text>
@@ -71,18 +62,11 @@ export const ContentBadges: React.FC<ContentBadgesProps> = ({
       )}
 
       {hasSubtitles && (
-        <View
-          style={[
-            styles.subtitleBadge,
-            styles[`subtitleBadge_${badgeSize}`],
-          ]}
-        >
-          <Text style={[styles.subtitleIcon, { fontSize: compact ? 8 : 10 }]}>CC</Text>
+        <View className={`flex-row items-center bg-white/10 rounded ${compact ? 'px-1 py-0.5 gap-0.5' : 'px-2 py-[3px] gap-1'}`}>
+          <Text style={{ fontSize: compact ? 8 : 10 }} className="text-textSecondary font-bold opacity-80">CC</Text>
           <Text
-            style={[
-              styles.subtitleText,
-              { fontSize },
-            ]}
+            style={{ fontSize: compact ? 9 : 11 }}
+            className="text-textSecondary font-medium tracking-[0.3px]"
           >
             {subtitleLanguages
               .slice(0, compact ? 2 : 3)
@@ -94,63 +78,5 @@ export const ContentBadges: React.FC<ContentBadgesProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    flexWrap: 'wrap',
-  },
-  qualityBadge: {
-    borderRadius: borderRadius.sm,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  qualityBadge_default: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
-  },
-  qualityBadge_compact: {
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-  },
-  qualityText: {
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  qualityText_default: {
-    fontSize: 11,
-  },
-  qualityText_compact: {
-    fontSize: 9,
-  },
-  subtitleBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.sm,
-  },
-  subtitleBadge_default: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
-    gap: 4,
-  },
-  subtitleBadge_compact: {
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-    gap: 2,
-  },
-  subtitleIcon: {
-    color: colors.textSecondary,
-    fontWeight: '700',
-    opacity: 0.8,
-  },
-  subtitleText: {
-    color: colors.textSecondary,
-    fontWeight: '500',
-    letterSpacing: 0.3,
-  },
-});
 
 export default ContentBadges;

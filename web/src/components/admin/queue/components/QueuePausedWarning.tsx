@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Pause, Play } from 'lucide-react';
 import { GlassButton } from '@bayit/shared/ui';
@@ -24,14 +24,14 @@ export const QueuePausedWarning: React.FC<QueuePausedWarningProps> = ({
   const { t } = useTranslation();
 
   return (
-    <View style={styles.pausedWarning}>
-      <View style={[styles.pausedContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+    <View className="rounded-lg p-4 mb-6 border" style={{ backgroundColor: colors.error + '15', borderColor: colors.error + '40' }}>
+      <View className={`flex-row items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
         <Pause size={20} color={colors.error} />
-        <View style={{ flex: 1 }}>
-          <Text style={styles.pausedTitle}>
+        <View className="flex-1">
+          <Text className="text-base font-semibold mb-1" style={{ color: colors.error }}>
             {t('admin.uploads.queuePaused', 'Queue Paused')}
           </Text>
-          <Text style={styles.pausedReason}>{pauseReason}</Text>
+          <Text className="text-sm" style={{ color: colors.textSecondary }}>{pauseReason}</Text>
         </View>
         {onResumeQueue && (
           <GlassButton
@@ -39,40 +39,10 @@ export const QueuePausedWarning: React.FC<QueuePausedWarningProps> = ({
             variant="secondary"
             icon={<Play size={16} color={colors.success} />}
             onPress={onResumeQueue}
-            style={styles.resumeButton}
+            style={{ paddingHorizontal: spacing.md, paddingVertical: spacing.sm }}
           />
         )}
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  pausedWarning: {
-    backgroundColor: colors.error + '15',
-    borderWidth: 1,
-    borderColor: colors.error + '40',
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  pausedContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  pausedTitle: {
-    fontSize: fontSize.md,
-    fontWeight: '600',
-    color: colors.error,
-    marginBottom: spacing.xs,
-  },
-  pausedReason: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-  resumeButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-});

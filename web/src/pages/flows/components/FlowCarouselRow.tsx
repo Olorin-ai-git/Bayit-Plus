@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
@@ -74,22 +74,22 @@ export function FlowCarouselRow({
   };
 
   return (
-    <View style={styles.container}>
+    <View className={isTV ? 'mb-16' : 'mb-6'}>
       {/* Row Header */}
-      <View style={[styles.header, { flexDirection }]}>
-        <View style={[styles.titleContainer, { flexDirection }]}>
-          <Text style={styles.emoji}>{config.emoji}</Text>
-          <Text style={[styles.title, isRTL && styles.titleRTL]}>
+      <View className={`flex-row justify-between items-center mb-3 ${isTV ? 'px-16' : 'px-6'} ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <View className={`flex-row items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <Text style={{ fontSize: isTV ? 36 : 28 }}>{config.emoji}</Text>
+          <Text className={`font-bold text-white ${isTV ? 'text-4xl' : 'text-2xl'} ${isRTL ? 'text-right' : ''}`}>
             {t(config.key)}
           </Text>
         </View>
 
         {onSeeAll && flows.length > 0 && (
           <Pressable
-            style={[styles.seeAllBtn, { flexDirection }]}
+            className={`flex-row items-center gap-1 py-2 px-3 rounded-lg bg-white/5 border border-white/10 ${isRTL ? 'flex-row-reverse' : ''}`}
             onPress={onSeeAll}
           >
-            <Text style={styles.seeAllText}>
+            <Text className={`font-semibold text-purple-500 ${isTV ? 'text-lg' : 'text-sm'}`}>
               {t('flows.carousel.seeAll')}
             </Text>
             {isRTL ? (
@@ -103,8 +103,8 @@ export function FlowCarouselRow({
 
       {/* Empty State */}
       {flows.length === 0 && !hideIfEmpty && (
-        <View style={styles.emptyContainer}>
-          <Text style={[styles.emptyText, isRTL && styles.textRTL]}>
+        <View className={`py-16 items-center bg-white/5 border border-white/10 border-dashed rounded-lg ${isTV ? 'mx-16' : 'mx-6'}`}>
+          <Text className={`text-sm text-gray-400 text-center ${isRTL ? 'text-right' : ''}`}>
             {t('flows.carousel.noFlows')}
           </Text>
         </View>
@@ -116,14 +116,16 @@ export function FlowCarouselRow({
           ref={scrollRef}
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[
-            styles.carouselContent,
-            { flexDirection: isRTL ? 'row-reverse' : 'row' },
-          ]}
-          style={styles.carousel}
+          contentContainerStyle={{
+            flexDirection: isRTL ? 'row-reverse' : 'row',
+            paddingHorizontal: isTV ? spacing.xl * 2 : spacing.lg,
+            gap: isTV ? spacing.lg : spacing.md,
+            paddingVertical: spacing.md,
+          }}
           decelerationRate="fast"
           snapToInterval={cardWidth + cardGap}
           snapToAlignment="start"
+          className="overflow-visible"
         >
           {flows.map((flow, index) => (
             <FlowCarouselCard
@@ -142,80 +144,5 @@ export function FlowCarouselRow({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: isTV ? spacing.xl * 2 : spacing.xl,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: isTV ? spacing.lg : spacing.md,
-    paddingHorizontal: isTV ? spacing.xl * 2 : spacing.lg,
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  emoji: {
-    fontSize: isTV ? 36 : 28,
-  },
-  title: {
-    fontSize: isTV ? 36 : 24,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  titleRTL: {
-    textAlign: 'right',
-  },
-  seeAllBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    // @ts-ignore - Web transition
-    transition: 'all 0.2s ease',
-  },
-  seeAllText: {
-    fontSize: isTV ? 18 : 14,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-  emptyContainer: {
-    paddingVertical: spacing.xl * 2,
-    paddingHorizontal: spacing.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-    borderRadius: borderRadius.lg,
-    marginHorizontal: isTV ? spacing.xl * 2 : spacing.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
-    borderStyle: 'dashed',
-  },
-  emptyText: {
-    fontSize: isTV ? 18 : 14,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-  carousel: {
-    overflow: 'visible' as any,
-  },
-  carouselContent: {
-    paddingHorizontal: isTV ? spacing.xl * 2 : spacing.lg,
-    gap: isTV ? spacing.lg : spacing.md,
-    paddingVertical: spacing.md,
-  },
-});
 
 export default FlowCarouselRow;

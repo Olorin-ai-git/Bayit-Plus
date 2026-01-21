@@ -28,7 +28,7 @@
 
 ### Quick Start
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 bash backend-olorin/DEPLOY.sh
 ```
 
@@ -79,7 +79,7 @@ bash backend-olorin/DEPLOY.sh
 
 ### Quick Start
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 bash backend-olorin/VERIFY.sh
 ```
 

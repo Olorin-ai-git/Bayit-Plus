@@ -1,9 +1,8 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Clock, LogOut } from 'lucide-react';
 import { GlassView } from '@bayit/shared/ui';
-import { colors, spacing } from '@bayit/shared/theme';
 import { useAuthStore } from '@/stores/authStore';
 
 interface SecurityTabProps {
@@ -21,42 +20,42 @@ export function SecurityTab({ isRTL }: SecurityTabProps) {
   };
 
   return (
-    <View style={styles.sectionGrid}>
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
+    <View className="gap-6">
+      <GlassView className="p-6 gap-4">
+        <Text className={`text-[13px] font-semibold text-white/60 uppercase tracking-wide ${isRTL ? 'text-right' : 'text-left'}`}>
           {t('profile.accountSecurity', 'Account Security')}
         </Text>
-        <View style={styles.securityInfo}>
-          <View style={styles.securityInfoRow}>
+        <View className="gap-4">
+          <View className="flex-row items-center gap-4">
             {isRTL ? (
               <>
-                <Text style={[styles.securityInfoText, { textAlign: 'right' }]}>
+                <Text className="flex-1 text-sm text-white/60 text-right">
                   {t('profile.securityNote', 'Your account is secured with encrypted authentication')}
                 </Text>
-                <Shield size={20} color={colors.success} />
+                <Shield size={20} color="#22C55E" />
               </>
             ) : (
               <>
-                <Shield size={20} color={colors.success} />
-                <Text style={[styles.securityInfoText, { textAlign: 'left' }]}>
+                <Shield size={20} color="#22C55E" />
+                <Text className="flex-1 text-sm text-white/60 text-left">
                   {t('profile.securityNote', 'Your account is secured with encrypted authentication')}
                 </Text>
               </>
             )}
           </View>
           {user?.last_login && (
-            <View style={styles.securityInfoRow}>
+            <View className="flex-row items-center gap-4">
               {isRTL ? (
                 <>
-                  <Text style={[styles.securityInfoText, { textAlign: 'right' }]}>
+                  <Text className="flex-1 text-sm text-white/60 text-right">
                     {t('profile.lastLogin', 'Last login')}: {new Date(user.last_login).toLocaleString()}
                   </Text>
-                  <Clock size={20} color={colors.textMuted} />
+                  <Clock size={20} color="rgba(255,255,255,0.6)" />
                 </>
               ) : (
                 <>
-                  <Clock size={20} color={colors.textMuted} />
-                  <Text style={[styles.securityInfoText, { textAlign: 'left' }]}>
+                  <Clock size={20} color="rgba(255,255,255,0.6)" />
+                  <Text className="flex-1 text-sm text-white/60 text-left">
                     {t('profile.lastLogin', 'Last login')}: {new Date(user.last_login).toLocaleString()}
                   </Text>
                 </>
@@ -66,20 +65,20 @@ export function SecurityTab({ isRTL }: SecurityTabProps) {
         </View>
       </GlassView>
 
-      <GlassView style={[styles.section, styles.dangerSection]}>
-        <Text style={[styles.sectionTitle, { color: colors.error, textAlign: isRTL ? 'right' : 'left' }]}>
+      <GlassView className="p-6 gap-4 border border-[#EF4444]/30">
+        <Text className={`text-[13px] font-semibold text-[#EF4444] uppercase tracking-wide ${isRTL ? 'text-right' : 'text-left'}`}>
           {t('profile.dangerZone', 'Danger Zone')}
         </Text>
-        <Pressable onPress={handleLogout} style={styles.logoutButton}>
+        <Pressable onPress={handleLogout} className="flex-row items-center gap-2 py-4">
           {isRTL ? (
             <>
-              <Text style={[styles.logoutText, { textAlign: 'right' }]}>{t('account.logout', 'Sign Out')}</Text>
-              <LogOut size={20} color={colors.error} />
+              <Text className="text-[15px] font-medium text-[#EF4444] text-right">{t('account.logout', 'Sign Out')}</Text>
+              <LogOut size={20} color="#EF4444" />
             </>
           ) : (
             <>
-              <LogOut size={20} color={colors.error} />
-              <Text style={[styles.logoutText, { textAlign: 'left' }]}>{t('account.logout', 'Sign Out')}</Text>
+              <LogOut size={20} color="#EF4444" />
+              <Text className="text-[15px] font-medium text-[#EF4444] text-left">{t('account.logout', 'Sign Out')}</Text>
             </>
           )}
         </Pressable>
@@ -87,48 +86,3 @@ export function SecurityTab({ isRTL }: SecurityTabProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionGrid: {
-    gap: spacing.lg,
-  },
-  section: {
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  securityInfo: {
-    gap: spacing.md,
-  },
-  securityInfoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  securityInfoText: {
-    flex: 1,
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  dangerSection: {
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingVertical: spacing.md,
-  },
-  logoutText: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: colors.error,
-  },
-});

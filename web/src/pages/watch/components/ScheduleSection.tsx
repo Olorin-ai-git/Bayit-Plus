@@ -3,9 +3,9 @@
  * Displays EPG schedule for live channels
  */
 
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { GlassCard } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 import { ScheduleItem } from '../types';
 
 interface ScheduleSectionProps {
@@ -24,70 +24,24 @@ export function ScheduleSection({
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.sectionTitle}>{sectionTitle}</Text>
+    <View className="w-80">
+      <Text className="text-lg font-semibold text-white mb-3">{sectionTitle}</Text>
       {schedule.map((show, i) => (
         <GlassCard
           key={i}
-          style={[styles.scheduleItem, show.isNow && styles.scheduleItemNow]}
+          className={`p-3 mb-3 ${show.isNow ? 'border border-green-500' : ''}`}
         >
-          <View style={styles.scheduleHeader}>
-            <Text style={styles.scheduleTime}>{show.time}</Text>
+          <View className="flex-row items-center justify-between mb-2">
+            <Text className="text-sm text-gray-400">{show.time}</Text>
             {show.isNow && (
-              <View style={styles.nowBadge}>
-                <Text style={styles.nowBadgeText}>{nowLabel}</Text>
+              <View className="bg-red-500 px-2 py-0.5 rounded">
+                <Text className="text-[10px] font-bold text-white">{nowLabel}</Text>
               </View>
             )}
           </View>
-          <Text style={styles.scheduleTitle}>{show.title}</Text>
+          <Text className="text-sm font-medium text-white">{show.title}</Text>
         </GlassCard>
       ))}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: 320,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  scheduleItem: {
-    padding: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  scheduleItemNow: {
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  scheduleHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.xs,
-  },
-  scheduleTime: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  nowBadge: {
-    backgroundColor: colors.error,
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  nowBadgeText: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  scheduleTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-  },
-});

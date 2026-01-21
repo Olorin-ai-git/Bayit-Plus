@@ -52,11 +52,11 @@ dependencies = [
     "sentry-sdk[fastapi] (>=1.40.0,<2.0.0)",
     "webauthn (>=2.2.0,<3.0.0)",
     "pinecone-client (>=3.0.0,<4.0.0)",
-    "bayit-voice-pipeline @ file:///Users/olorin/Documents/Bayit-Plus/packages/bayit-voice-pipeline",
-    "bayit-translation @ file:///Users/olorin/Documents/Bayit-Plus/packages/bayit-translation",
-    "olorin-core @ file:///Users/olorin/Documents/Bayit-Plus/packages/olorin-core",
-    "olorin-shared @ file:///Users/olorin/Documents/Bayit-Plus/packages/olorin-shared",
-    "olorin-i18n @ file:///Users/olorin/Documents/Bayit-Plus/packages/python/olorin-i18n"
+    "bayit-voice-pipeline @ file:///../packages/bayit-voice-pipeline",
+    "bayit-translation @ file:///../packages/bayit-translation",
+    "olorin-core @ file:///../packages/olorin-core",
+    "olorin-shared @ file:///../packages/olorin-shared",
+    "olorin-i18n @ file:///../packages/python/olorin-i18n"
 ]
 
 

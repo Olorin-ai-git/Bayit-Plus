@@ -7,7 +7,6 @@ import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -125,22 +124,22 @@ export const VoiceStatusIndicator: React.FC<VoiceStatusIndicatorProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-row items-center p-3 md:p-4 bg-black/30 rounded-2xl gap-3 md:gap-4">
       {/* Status Icon with Pulse */}
       <Animated.View
-        style={[
-          styles.iconContainer,
-          { backgroundColor: `${config.color}20` },
-          { transform: [{ scale: pulseAnim }] },
-        ]}
+        className={`${isTV ? 'w-12 h-12 rounded-[24px]' : 'w-10 h-10 rounded-[20px]'} justify-center items-center`}
+        style={{
+          backgroundColor: `${config.color}20`,
+          transform: [{ scale: pulseAnim }],
+        }}
       >
-        <Text style={styles.icon}>{config.icon}</Text>
+        <Text className={`${isTV ? 'text-2xl' : 'text-xl'}`}>{config.icon}</Text>
       </Animated.View>
 
       {/* Status Text */}
-      <View style={styles.textContainer}>
-        <View style={styles.statusRow}>
-          <Text style={[styles.statusText, { color: config.color, textAlign }]}>
+      <View className="flex-1">
+        <View className="flex-row items-center">
+          <Text className={`${isTV ? 'text-lg' : 'text-base'} font-semibold`} style={{ color: config.color, textAlign }}>
             {getStatusText()}
           </Text>
           {renderProcessingDots()}
@@ -149,7 +148,8 @@ export const VoiceStatusIndicator: React.FC<VoiceStatusIndicatorProps> = ({
         {/* Transcript Preview */}
         {transcript && state === 'listening' && (
           <Text
-            style={[styles.transcript, { textAlign }]}
+            className={`${isTV ? 'text-sm' : 'text-xs'} text-gray-400 mt-1 italic`}
+            style={{ textAlign }}
             numberOfLines={2}
           >
             {transcript}
@@ -159,75 +159,21 @@ export const VoiceStatusIndicator: React.FC<VoiceStatusIndicatorProps> = ({
 
       {/* Recording Indicator */}
       {state === 'listening' && (
-        <View style={styles.recordingIndicator}>
+        <View className="pr-2">
           <Animated.View
-            style={[
-              styles.recordingDot,
-              {
-                transform: [{ scale: pulseAnim }],
-                opacity: pulseAnim.interpolate({
-                  inputRange: [1, 1.2],
-                  outputRange: [0.5, 1],
-                }),
-              },
-            ]}
+            className={`${isTV ? 'w-3 h-3 rounded-[6px]' : 'w-2.5 h-2.5 rounded-[5px]'} bg-red-500`}
+            style={{
+              transform: [{ scale: pulseAnim }],
+              opacity: pulseAnim.interpolate({
+                inputRange: [1, 1.2],
+                outputRange: [0.5, 1],
+              }),
+            }}
           />
         </View>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.md,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderRadius: borderRadius.xl,
-    gap: spacing.md,
-  },
-  iconContainer: {
-    width: isTV ? 48 : 40,
-    height: isTV ? 48 : 40,
-    borderRadius: isTV ? 24 : 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  icon: {
-    fontSize: isTV ? 24 : 20,
-  },
-  textContainer: {
-    flex: 1,
-  },
-  statusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  statusText: {
-    fontSize: isTV ? 18 : 16,
-    fontWeight: '600',
-  },
-  dots: {
-    fontSize: isTV ? 18 : 16,
-    fontWeight: '600',
-    color: colors.warning,
-  },
-  transcript: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-    marginTop: spacing.xs,
-    fontStyle: 'italic',
-  },
-  recordingIndicator: {
-    paddingRight: spacing.sm,
-  },
-  recordingDot: {
-    width: isTV ? 12 : 10,
-    height: isTV ? 12 : 10,
-    borderRadius: isTV ? 6 : 5,
-    backgroundColor: colors.error,
-  },
-});
 
 export default VoiceStatusIndicator;

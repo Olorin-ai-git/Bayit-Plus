@@ -9,13 +9,12 @@ import React, { useState } from 'react';
 import {
   Pressable,
   Text,
-  StyleSheet,
   Platform,
   ViewStyle,
   StyleProp,
   View,
 } from 'react-native';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors, spacing } from '../../theme';
 
 // Detect TV platform
 const isTV = Platform.isTV || Platform.OS === 'android';
@@ -119,17 +118,20 @@ export const GlassCategoryPill: React.FC<GlassCategoryPillProps> = ({
       onHoverOut={() => setIsHovered(false)}
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
+      className="flex-row items-center justify-center rounded-3xl border"
       style={[
-        styles.pill,
         {
           paddingHorizontal: currentSize.paddingHorizontal,
           paddingVertical: currentSize.paddingVertical,
+          borderColor: isFocused ? colors.primary : colors.glassBorder,
+          borderWidth: isFocused ? 3 : 1,
+          backgroundColor: isActive ? colors.primary : isHovered && !isActive ? 'rgba(107, 33, 168, 0.3)' : colors.glass,
+          opacity: disabled ? 0.5 : 1,
         },
-        isActive && styles.pillActive,
-        isHovered && !isActive && styles.pillHovered,
-        isFocused && styles.pillFocused,
-        disabled && styles.pillDisabled,
-        Platform.OS === 'web' && styles.webTransition,
+        Platform.OS === 'web' && {
+          // @ts-expect-error - Web-specific CSS
+          transition: 'all 0.2s ease',
+        },
         style,
       ]}
       testID={testID}
@@ -144,13 +146,12 @@ export const GlassCategoryPill: React.FC<GlassCategoryPillProps> = ({
 
       {/* Label */}
       <Text
-        style={[
-          styles.label,
-          { fontSize: currentSize.fontSize },
-          isActive && styles.labelActive,
-          (isHovered || isFocused) && !isActive && styles.labelHighlight,
-          disabled && styles.labelDisabled,
-        ]}
+        className="text-center"
+        style={{
+          fontSize: currentSize.fontSize,
+          fontWeight: isActive ? '600' : '500',
+          color: isActive ? colors.background : (isHovered || isFocused) && !isActive ? colors.primary : disabled ? colors.textMuted : colors.textSecondary,
+        }}
         numberOfLines={1}
       >
         {label}
@@ -158,51 +159,5 @@ export const GlassCategoryPill: React.FC<GlassCategoryPillProps> = ({
     </Pressable>
   );
 };
-
-const styles = StyleSheet.create({
-  pill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: borderRadius.xl,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    backgroundColor: colors.glass,
-  },
-  pillActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  pillHovered: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderColor: 'rgba(168, 85, 247, 0.5)',
-  },
-  pillFocused: {
-    borderColor: colors.primary,
-    borderWidth: 3,
-  },
-  pillDisabled: {
-    opacity: 0.5,
-  },
-  webTransition: {
-    // @ts-expect-error - Web-specific CSS
-    transition: 'all 0.2s ease',
-  },
-  label: {
-    fontWeight: '500',
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  labelActive: {
-    color: colors.background,
-    fontWeight: '600',
-  },
-  labelHighlight: {
-    color: colors.primary,
-  },
-  labelDisabled: {
-    color: colors.textMuted,
-  },
-});
 
 export default GlassCategoryPill;

@@ -155,7 +155,7 @@
 ### **Step 1: Update Cloud Scheduler Jobs**
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
+cd /Users/olorin/Documents/olorin/backend/scripts
 ./update_cloud_schedulers.sh
 ```
 
@@ -194,7 +194,7 @@ curl -H "Authorization: Bearer $TOKEN" \
   https://bayit-plus-backend-znfki37vbq-ue.a.run.app/api/v1/admin/librarian/status
 
 # View latest audit report
-cd /Users/olorin/Documents/Bayit-Plus/backend
+cd /Users/olorin/Documents/olorin/backend
 poetry run python scripts/view_audit_results.py
 
 # Check library health
@@ -368,7 +368,7 @@ If the AI agent hits the budget limit before completing the audit:
 
 Edit `scripts/update_cloud_schedulers.sh` and re-run:
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
+cd /Users/olorin/Documents/olorin/backend/scripts
 ./update_cloud_schedulers.sh
 ```
 
@@ -391,6 +391,6 @@ cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
 **Deploy now to start the improved audit strategy!** 🚀
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
+cd /Users/olorin/Documents/olorin/backend/scripts
 ./update_cloud_schedulers.sh
 ```

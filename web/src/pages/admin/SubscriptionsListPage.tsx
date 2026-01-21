@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit, Trash2, Users } from 'lucide-react';
 import { GlassButton, GlassModal, GlassCheckbox, GlassInput } from '@bayit/shared/ui';
@@ -218,8 +218,8 @@ export default function SubscriptionsListPage() {
   const getStatusBadge = (status: string) => {
     const style = statusColors[status] || statusColors.active;
     return (
-      <View style={[styles.badge, { backgroundColor: style.bg }]}>
-        <Text style={[styles.badgeText, { color: style.text }]}>{t(style.labelKey)}</Text>
+      <View className="px-2 py-1 rounded-full" style={{ backgroundColor: style.bg }}>
+        <Text className="text-xs font-medium" style={{ color: style.text }}>{t(style.labelKey)}</Text>
       </View>
     );
   };
@@ -227,8 +227,8 @@ export default function SubscriptionsListPage() {
   const getPlanBadge = (plan: string) => {
     const style = planColors[plan] || { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280' };
     return (
-      <View style={[styles.badge, { backgroundColor: style.bg }]}>
-        <Text style={[styles.badgeText, { color: style.text }]}>{plan}</Text>
+      <View className="px-2 py-1 rounded-full" style={{ backgroundColor: style.bg }}>
+        <Text className="text-xs font-medium" style={{ color: style.text }}>{plan}</Text>
       </View>
     );
   };
@@ -258,8 +258,8 @@ export default function SubscriptionsListPage() {
       label: t('admin.subscriptions.columns.user'),
       render: (user: User) => (
         <View>
-          <Text style={styles.userName}>{user?.name}</Text>
-          <Text style={styles.userEmail}>{user?.email}</Text>
+          <Text className="text-sm font-medium text-white">{user?.name}</Text>
+          <Text className="text-xs text-gray-400">{user?.email}</Text>
         </View>
       ),
     },
@@ -272,7 +272,7 @@ export default function SubscriptionsListPage() {
       key: 'amount',
       label: t('admin.subscriptions.columns.price'),
       render: (amount: number) => (
-        <Text style={styles.amountText}>${amount}{t('admin.subscriptions.perMonth')}</Text>
+        <Text className="text-sm font-medium text-white">${amount}{t('admin.subscriptions.perMonth')}</Text>
       ),
     },
     {
@@ -287,12 +287,12 @@ export default function SubscriptionsListPage() {
             'es': 'es-ES'
           };
           return (
-            <Text style={styles.dateText}>
+            <Text className="text-sm text-gray-400">
               {new Date(date).toLocaleDateString(localeMap[locale] || 'en-US')}
             </Text>
           );
         } catch {
-          return <Text style={styles.dateText}>{t('common.invalidDate')}</Text>;
+          return <Text className="text-sm text-gray-400">{t('common.invalidDate')}</Text>;
         }
       },
     },
@@ -304,14 +304,14 @@ export default function SubscriptionsListPage() {
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
       {/* Header */}
-      <View style={styles.header}>
+      <View className="mb-6 flex flex-row justify-between items-start">
         <View>
-          <Text style={styles.pageTitle}>{t('admin.titles.subscriptions')}</Text>
-          <Text style={styles.subtitle}>{t('admin.subscriptions.subtitle')}</Text>
+          <Text className="text-2xl font-bold text-white">{t('admin.titles.subscriptions')}</Text>
+          <Text className="text-sm text-gray-400 mt-1">{t('admin.subscriptions.subtitle')}</Text>
         </View>
-        <View style={styles.actions}>
+        <View className="flex flex-row gap-2">
           <GlassButton
             title={t('common.add')}
             onPress={handleAdd}
@@ -335,21 +335,21 @@ export default function SubscriptionsListPage() {
         </View>
       </View>
 
-      <View style={[styles.selectionBar, !someSelected && styles.selectionBarHidden]}>
+      <View className={`flex flex-row items-center gap-2 p-4 bg-purple-700/20 rounded-lg mb-4 min-h-[48px] ${!someSelected ? 'bg-transparent opacity-0' : ''}`}>
         {someSelected ? (
           <>
             <Users size={16} color={colors.primary} />
-            <Text style={styles.selectionText}>
+            <Text className="text-purple-500 text-sm font-medium">
               {selectedIds.size} {t('admin.subscriptions.selected')}
             </Text>
           </>
         ) : (
-          <Text style={styles.selectionPlaceholder}> </Text>
+          <Text className="text-sm opacity-0"> </Text>
         )}
       </View>
 
       {/* Plan Stats */}
-      <View style={styles.statsGrid}>
+      <View className="flex flex-row gap-4 mb-6">
         {plans.map((plan) => (
           <StatCard
             key={plan.id}
@@ -381,38 +381,38 @@ export default function SubscriptionsListPage() {
         onClose={() => setEditModalOpen(false)}
         dismissable={true}
       >
-        <Text style={styles.modalLabel}>
+        <Text className="text-sm text-white mt-4 mb-1">
           {t('admin.subscriptions.editPlan.user')}: {selectedSubscription?.user.name}
         </Text>
-        <Text style={styles.modalLabel}>
+        <Text className="text-sm text-white mt-4 mb-1">
           {t('admin.subscriptions.editPlan.currentPlan')}: {selectedSubscription?.plan}
         </Text>
 
-        <Text style={styles.modalLabel}>{t('admin.subscriptions.editPlan.newPlan')}:</Text>
-        <View style={styles.planSelector}>
+        <Text className="text-sm text-white mt-4 mb-1">{t('admin.subscriptions.editPlan.newPlan')}:</Text>
+        <View className="gap-2 mt-2">
           {plans.map((plan) => (
             <GlassButton
               key={plan.id}
               title={`${plan.name_he || plan.name} - $${plan.price}/mo`}
               onPress={() => setSelectedPlan(plan.slug)}
               variant={selectedPlan === plan.slug ? 'primary' : 'ghost'}
-              style={styles.planOption}
+              className="w-full"
             />
           ))}
         </View>
 
-        <View style={styles.modalActions}>
+        <View className="flex flex-row gap-4 mt-6">
           <GlassButton
             title={t('common.cancel')}
             onPress={() => setEditModalOpen(false)}
             variant="cancel"
-            style={styles.modalButton}
+            className="flex-1"
           />
           <GlassButton
             title={t('common.save')}
             onPress={handleSaveEdit}
             variant="success"
-            style={styles.modalButton}
+            className="flex-1"
           />
         </View>
       </GlassModal>
@@ -431,7 +431,7 @@ export default function SubscriptionsListPage() {
           placeholder={t('admin.subscriptions.addSubscription.emailPlaceholder')}
           autoCapitalize="none"
           keyboardType="email-address"
-          containerStyle={styles.inputContainer}
+          containerStyle="mb-4"
         />
 
         <GlassInput
@@ -440,34 +440,34 @@ export default function SubscriptionsListPage() {
           onChangeText={(text) => setDurationDays(Number(text) || 30)}
           placeholder="30"
           keyboardType="numeric"
-          containerStyle={styles.inputContainer}
+          containerStyle="mb-4"
         />
 
-        <Text style={styles.modalLabel}>{t('admin.subscriptions.addSubscription.selectPlan')}:</Text>
-        <View style={styles.planSelector}>
+        <Text className="text-sm text-white mt-4 mb-1">{t('admin.subscriptions.addSubscription.selectPlan')}:</Text>
+        <View className="gap-2 mt-2">
           {plans.map((plan) => (
             <GlassButton
               key={plan.id}
               title={`${plan.name_he || plan.name} - $${plan.price}/mo`}
               onPress={() => setSelectedPlan(plan.slug)}
               variant={selectedPlan === plan.slug ? 'primary' : 'ghost'}
-              style={styles.planOption}
+              className="w-full"
             />
           ))}
         </View>
 
-        <View style={styles.modalActions}>
+        <View className="flex flex-row gap-4 mt-6">
           <GlassButton
             title={t('common.cancel')}
             onPress={() => setAddModalOpen(false)}
             variant="cancel"
-            style={styles.modalButton}
+            className="flex-1"
           />
           <GlassButton
             title={t('common.save')}
             onPress={handleSaveAdd}
             variant="success"
-            style={styles.modalButton}
+            className="flex-1"
           />
         </View>
       </GlassModal>
@@ -479,13 +479,13 @@ export default function SubscriptionsListPage() {
         onClose={() => setErrorModalOpen(false)}
         dismissable={true}
       >
-        <Text style={styles.modalLabel}>{errorMessage}</Text>
-        <View style={styles.modalActions}>
+        <Text className="text-sm text-white mt-4 mb-1">{errorMessage}</Text>
+        <View className="flex flex-row gap-4 mt-6">
           <GlassButton
             title={t('common.ok')}
             onPress={() => setErrorModalOpen(false)}
             variant="success"
-            style={styles.modalButton}
+            className="flex-1"
           />
         </View>
       </GlassModal>
@@ -497,21 +497,21 @@ export default function SubscriptionsListPage() {
         onClose={() => setDeleteConfirmOpen(false)}
         dismissable={true}
       >
-        <Text style={styles.modalLabel}>
+        <Text className="text-sm text-white mt-4 mb-1">
           {t('admin.subscriptions.confirmDeleteMultiple', { count: selectedIds.size })}
         </Text>
-        <View style={styles.modalActions}>
+        <View className="flex flex-row gap-4 mt-6">
           <GlassButton
             title={t('common.cancel')}
             onPress={() => setDeleteConfirmOpen(false)}
             variant="cancel"
-            style={styles.modalButton}
+            className="flex-1"
           />
           <GlassButton
             title={t('common.delete')}
             onPress={handleDeleteConfirm}
             variant="danger"
-            style={styles.modalButton}
+            className="flex-1"
           />
         </View>
       </GlassModal>
@@ -519,111 +519,3 @@ export default function SubscriptionsListPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: spacing.lg,
-  },
-  header: {
-    marginBottom: spacing.lg,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  pageTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  selectionBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
-    backgroundColor: 'rgba(107, 33, 168, 0.2)',
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.md,
-    minHeight: 48,
-  },
-  selectionBarHidden: {
-    backgroundColor: 'transparent',
-    opacity: 0,
-  },
-  selectionText: {
-    color: colors.primary,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  selectionPlaceholder: {
-    fontSize: 14,
-    opacity: 0,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  userName: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  userEmail: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  amountText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  dateText: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  badge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-    alignSelf: 'flex-start',
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  modalLabel: {
-    fontSize: 14,
-    color: colors.text,
-    marginTop: spacing.md,
-    marginBottom: spacing.xs,
-  },
-  planSelector: {
-    gap: spacing.sm,
-    marginTop: spacing.sm,
-  },
-  planOption: {
-    width: '100%',
-  },
-  modalActions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginTop: spacing.lg,
-  },
-  modalButton: {
-    flex: 1,
-  },
-  inputContainer: {
-    marginBottom: spacing.md,
-  },
-});

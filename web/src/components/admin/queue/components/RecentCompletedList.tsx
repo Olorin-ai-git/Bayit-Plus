@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { GlassBadge } from '@bayit/shared/ui';
@@ -35,13 +35,14 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
   if (recentCompleted.length === 0) return null;
 
   return (
-    <View style={styles.section}>
-      <View style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+    <View className="mb-6 pt-4 border-t" style={{ borderTopColor: colors.glassBorder }}>
+      <View className={`flex-row justify-between items-center mb-4 gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
         <Pressable
-          style={[styles.sectionHeaderTitle, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+          className={`flex-1 flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}
+          style={{ cursor: 'pointer' }}
           onPress={() => setShowCompleted(!showCompleted)}
         >
-          <Text style={[styles.sectionTitle, { textAlign, flex: 1 }]}>
+          <Text className="flex-1 text-lg font-semibold" style={{ textAlign, color: colors.text }}>
             {t('admin.uploads.recentCompleted', 'Recently Completed')} ({recentCompleted.length})
           </Text>
           {showCompleted ? (
@@ -52,7 +53,8 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
         </Pressable>
         {onClearCompleted && showCompleted && (
           <Pressable
-            style={styles.clearCompletedButton}
+            className="w-7 h-7 rounded-sm items-center justify-center border"
+            style={{ backgroundColor: colors.error + '15', borderColor: colors.error + '30' }}
             onPress={onClearCompleted}
             disabled={clearingCompleted}
           >
@@ -67,7 +69,7 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
 
       {showCompleted && (
         <ScrollView
-          style={styles.jobList}
+          className="max-h-[600px]"
           nestedScrollEnabled
           showsVerticalScrollIndicator={false}
         >
@@ -80,10 +82,10 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
                 : 'danger';
 
             return (
-              <View key={job.job_id} style={styles.completedJobCard}>
-                <View style={[styles.jobHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <View key={job.job_id} className="rounded-sm p-4 mb-2 border" style={{ backgroundColor: colors.backgroundLight, borderColor: colors.glassBorder }}>
+                <View className={`flex-row items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <StatusIcon status={job.status} job={job} />
-                  <Text style={[styles.jobFilename, { flex: 1, textAlign }]} numberOfLines={1}>
+                  <Text className="flex-1 text-base font-semibold" style={{ textAlign, color: colors.text }} numberOfLines={1}>
                     {job.filename}
                   </Text>
                   <GlassBadge
@@ -93,16 +95,15 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
                 </View>
                 {job.error_message && (
                   <Text
-                    style={[
-                      isJobDuplicate ? styles.infoText : styles.errorText
-                    ]}
+                    className="text-sm mt-1 mb-1"
+                    style={{ color: isJobDuplicate ? (colors.info || colors.primary) : colors.error }}
                     numberOfLines={2}
                   >
                     {job.error_message}
                   </Text>
                 )}
                 {job.completed_at && (
-                  <Text style={[styles.jobTime, { textAlign }]}>
+                  <Text className="text-xs mt-1" style={{ textAlign, color: colors.textMuted }}>
                     {format(new Date(job.completed_at), 'MMM d, HH:mm:ss')}
                   </Text>
                 )}
@@ -114,79 +115,3 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  section: {
-    marginBottom: spacing.lg,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.glassBorder,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-    gap: spacing.sm,
-  },
-  sectionHeaderTitle: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    cursor: 'pointer',
-  },
-  clearCompletedButton: {
-    width: 28,
-    height: 28,
-    borderRadius: borderRadius.sm,
-    backgroundColor: colors.error + '15',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.error + '30',
-  },
-  sectionTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  completedJobCard: {
-    backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.sm,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  jobHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  jobFilename: {
-    fontSize: fontSize.md,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  errorText: {
-    fontSize: fontSize.sm,
-    color: colors.error,
-    marginTop: spacing.xs,
-    marginBottom: spacing.xs,
-  },
-  infoText: {
-    fontSize: fontSize.sm,
-    color: colors.info || colors.primary,
-    marginTop: spacing.xs,
-    marginBottom: spacing.xs,
-  },
-  jobTime: {
-    fontSize: fontSize.xs,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-  },
-  jobList: {
-    maxHeight: 600,
-  },
-});

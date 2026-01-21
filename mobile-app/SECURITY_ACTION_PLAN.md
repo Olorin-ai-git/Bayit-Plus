@@ -118,7 +118,7 @@ curl -X GET https://api.elevenlabs.io/v1/user \
 
 ```bash
 # Check if .env file is in git history
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 git log --all --full-history -- "mobile-app/.env" | head -20
 
 # Check if credentials appear anywhere in git

@@ -12,7 +12,6 @@
 import React, { useCallback } from 'react';
 import {
   View,
-  StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -81,7 +80,7 @@ export const ChapterMarkers: React.FC<ChapterMarkersProps> = ({
   );
 
   return (
-    <View style={[styles.container, { width: progressBarWidth }]}>
+    <View className="absolute top-0 left-0 h-1" style={{ width: progressBarWidth }}>
       {chapters.map((chapter, index) => {
         const position = (chapter.start_time / duration) * progressBarWidth;
         const isActive = index === activeChapterIndex;
@@ -93,19 +92,14 @@ export const ChapterMarkers: React.FC<ChapterMarkersProps> = ({
         return (
           <TouchableOpacity
             key={`${chapter.start_time}-${index}`}
-            style={[
-              styles.markerTouchArea,
-              { left: position - 12 }, // Center the touch area on the marker
-            ]}
+            className="absolute w-6 h-6 justify-center items-center -top-2.5"
+            style={{ left: position - 12 }}
             onPress={() => handleMarkerPress(chapter)}
             hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
           >
             <View
-              style={[
-                styles.marker,
-                { backgroundColor: categoryColor },
-                isActive && styles.markerActive,
-              ]}
+              className={`rounded-sm opacity-80 ${isActive ? 'w-1 h-4 opacity-100' : 'w-0.5 h-3'}`}
+              style={{ backgroundColor: categoryColor }}
             />
           </TouchableOpacity>
         );
@@ -113,33 +107,5 @@ export const ChapterMarkers: React.FC<ChapterMarkersProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    height: 4,
-  },
-  markerTouchArea: {
-    position: 'absolute',
-    width: 24,
-    height: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    top: -10,
-  },
-  marker: {
-    width: 3,
-    height: 12,
-    borderRadius: 1.5,
-    opacity: 0.8,
-  },
-  markerActive: {
-    width: 4,
-    height: 16,
-    opacity: 1,
-  },
-});
 
 export default ChapterMarkers;

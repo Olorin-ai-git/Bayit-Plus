@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Modal,
@@ -40,22 +39,19 @@ const SettingRow: React.FC<SettingRowProps> = ({
 
   const content = (
     <View
-      style={[
-        styles.settingRow,
-        { flexDirection },
-        isFocused && styles.settingRowFocused,
-      ]}
+      className={`flex-row items-center justify-between ${isTV ? 'py-4' : 'py-3'} border-b border-white/5 rounded-xl px-3 border-2 ${isFocused ? 'bg-purple-500/20 border-purple-500' : 'border-transparent'}`}
+      style={{ flexDirection }}
     >
-      <View style={[styles.settingLeft, { flexDirection }]}>
-        <Text style={styles.settingIcon}>{icon}</Text>
-        <Text style={[styles.settingLabel, { textAlign }]}>{label}</Text>
+      <View className={`flex-row items-center gap-4 flex-1`} style={{ flexDirection }}>
+        <Text className={isTV ? 'text-2xl' : 'text-xl'}>{icon}</Text>
+        <Text className={`${isTV ? 'text-lg' : 'text-base'} text-white`} style={{ textAlign }}>{label}</Text>
       </View>
       {children ? (
         children
       ) : (
-        <View style={[styles.settingRight, { flexDirection }]}>
-          {value && <Text style={styles.settingValue}>{value}</Text>}
-          <Text style={styles.chevron}>{isRTL ? '◀' : '▶'}</Text>
+        <View className="flex-row items-center gap-2" style={{ flexDirection }}>
+          {value && <Text className={`${isTV ? 'text-base' : 'text-sm'} text-white/40`}>{value}</Text>}
+          <Text className={`${isTV ? 'text-base' : 'text-sm'} text-white/40`}>{isRTL ? '◀' : '▶'}</Text>
         </View>
       )}
     </View>
@@ -428,23 +424,23 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView className="flex-1 bg-black" contentContainerClassName={`${isTV ? 'p-8' : 'p-4'} pb-16`}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
-        <View style={styles.headerIcon}>
-          <Text style={styles.headerIconText}>⚙️</Text>
+      <View className={`gap-4 mb-8`} style={{ flexDirection }}>
+        <View className={`${isTV ? 'w-16 h-16 rounded-full' : 'w-12 h-12 rounded-3xl'} bg-purple-500/20 justify-center items-center`}>
+          <Text className={isTV ? 'text-4xl' : 'text-2xl'}>⚙️</Text>
         </View>
         <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('nav.settings', 'Settings')}</Text>
-          <Text style={[styles.pageSubtitle, { textAlign }]}>
+          <Text className={`${isTV ? 'text-4xl' : 'text-3xl'} font-bold text-white`} style={{ textAlign }}>{t('nav.settings', 'Settings')}</Text>
+          <Text className={`${isTV ? 'text-lg' : 'text-sm'} text-white/60 mt-0.5`} style={{ textAlign }}>
             {t('settings.subtitle', 'Customize your experience')}
           </Text>
         </View>
       </View>
 
       {/* Language Settings */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
+      <GlassView className="p-4 mb-4 rounded-3xl">
+        <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-white/40 mb-4 uppercase tracking-wider`} style={{ textAlign }}>
           {t('settings.language', 'Language')}
         </Text>
         <SettingRow
@@ -456,8 +452,8 @@ export default function SettingsScreen() {
       </GlassView>
 
       {/* Voice Settings */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
+      <GlassView className="p-4 mb-4 rounded-3xl">
+        <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-white/40 mb-4 uppercase tracking-wider`} style={{ textAlign }}>
           {t('settings.voice', 'Voice Control')}
         </Text>
         <SettingRow icon="🎤" label={t('settings.wakeWord', 'Wake Word Activation')}>
@@ -476,8 +472,8 @@ export default function SettingsScreen() {
       </GlassView>
 
       {/* Playback Settings */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
+      <GlassView className="p-4 mb-4 rounded-3xl">
+        <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-white/40 mb-4 uppercase tracking-wider`} style={{ textAlign }}>
           {t('settings.playback', 'Playback')}
         </Text>
         <SettingRow icon="▶️" label={t('settings.autoplay', 'Autoplay Next Episode')}>
@@ -499,8 +495,8 @@ export default function SettingsScreen() {
       </GlassView>
 
       {/* Display Settings */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
+      <GlassView className="p-4 mb-4 rounded-3xl">
+        <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-white/40 mb-4 uppercase tracking-wider`} style={{ textAlign }}>
           {t('settings.display', 'Display')}
         </Text>
         <SettingRow
@@ -511,8 +507,8 @@ export default function SettingsScreen() {
       </GlassView>
 
       {/* Video & Audio Settings */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
+      <GlassView className="p-4 mb-4 rounded-3xl">
+        <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-white/40 mb-4 uppercase tracking-wider`} style={{ textAlign }}>
           {t('settings.videoAudio', 'Video & Audio')}
         </Text>
         <SettingRow
@@ -546,8 +542,8 @@ export default function SettingsScreen() {
       </GlassView>
 
       {/* Parental Controls */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
+      <GlassView className="p-4 mb-4 rounded-3xl">
+        <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-white/40 mb-4 uppercase tracking-wider`} style={{ textAlign }}>
           {t('settings.parentalControls', 'Parental Controls')}
         </Text>
         <SettingRow
@@ -579,8 +575,8 @@ export default function SettingsScreen() {
       </GlassView>
 
       {/* Download Settings */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
+      <GlassView className="p-4 mb-4 rounded-3xl">
+        <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-white/40 mb-4 uppercase tracking-wider`} style={{ textAlign }}>
           {t('settings.downloads', 'Downloads')}
         </Text>
         <SettingRow
@@ -614,8 +610,8 @@ export default function SettingsScreen() {
       </GlassView>
 
       {/* Accessibility Settings */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
+      <GlassView className="p-4 mb-4 rounded-3xl">
+        <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-white/40 mb-4 uppercase tracking-wider`} style={{ textAlign }}>
           {t('settings.accessibility', 'Accessibility')}
         </Text>
         <SettingRow
@@ -665,8 +661,8 @@ export default function SettingsScreen() {
       </GlassView>
 
       {/* Notification Settings */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
+      <GlassView className="p-4 mb-4 rounded-3xl">
+        <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-white/40 mb-4 uppercase tracking-wider`} style={{ textAlign }}>
           {t('settings.notifications', 'Notifications')}
         </Text>
         <SettingRow icon="🔔" label={t('settings.pushNotifications', 'Push Notifications')}>
@@ -681,8 +677,8 @@ export default function SettingsScreen() {
 
       {/* Account */}
       {user && (
-        <GlassView style={styles.section}>
-          <Text style={[styles.sectionTitle, { textAlign }]}>
+        <GlassView className="p-4 mb-4 rounded-3xl">
+          <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-white/40 mb-4 uppercase tracking-wider`} style={{ textAlign }}>
             {t('settings.account', 'Account')}
           </Text>
           <SettingRow
@@ -706,8 +702,8 @@ export default function SettingsScreen() {
       )}
 
       {/* Privacy & Legal */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
+      <GlassView className="p-4 mb-4 rounded-3xl">
+        <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-white/40 mb-4 uppercase tracking-wider`} style={{ textAlign }}>
           {t('settings.privacy', 'Privacy & Legal')}
         </Text>
         <SettingRow
@@ -723,8 +719,8 @@ export default function SettingsScreen() {
       </GlassView>
 
       {/* Help */}
-      <GlassView style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
+      <GlassView className="p-4 mb-4 rounded-3xl">
+        <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-white/40 mb-4 uppercase tracking-wider`} style={{ textAlign }}>
           {t('settings.support', 'Support')}
         </Text>
         <SettingRow
@@ -740,9 +736,9 @@ export default function SettingsScreen() {
       </GlassView>
 
       {/* App Info */}
-      <View style={styles.appInfo}>
-        <Text style={styles.appVersion}>{t('common.appVersion', 'Bayit+ v1.0.0')}</Text>
-        <Text style={styles.copyright}>© 2026 Bayit+</Text>
+      <View className="items-center mt-8 pt-6">
+        <Text className={`${isTV ? 'text-sm' : 'text-xs'} text-white/40`}>{t('common.appVersion', 'Bayit+ v1.0.0')}</Text>
+        <Text className={`${isTV ? 'text-xs' : 'text-[10px]'} text-white/40 mt-1`}>© 2026 Bayit+</Text>
       </View>
 
       {/* PIN Entry Modal */}
@@ -755,23 +751,24 @@ export default function SettingsScreen() {
           setShowPINModal(false);
         }}
       >
-        <View style={styles.modalOverlay}>
-          <GlassView style={styles.pinModal}>
-            <Text style={[styles.pinModalTitle, { textAlign: 'center' }]}>
+        <View className="flex-1 bg-black/80 justify-center items-center p-8">
+          <GlassView className={`${isTV ? 'w-[500px]' : 'w-full'} max-w-[400px] p-8 rounded-3xl border-2 border-purple-500/30`}>
+            <Text className={`${isTV ? 'text-2xl' : 'text-xl'} font-bold text-white mb-2 text-center`}>
               {pinModalMode === 'setup'
                 ? t('settings.setupPIN', 'Set Up Parental Control PIN')
                 : pinModalMode === 'change'
                 ? t('settings.enterNewPIN', 'Enter New PIN')
                 : t('settings.enterPIN', 'Enter PIN')}
             </Text>
-            <Text style={[styles.pinModalDescription, { textAlign: 'center' }]}>
+            <Text className={`${isTV ? 'text-base' : 'text-sm'} text-white/60 mb-8 text-center`}>
               {pinModalMode === 'setup' || pinModalMode === 'change'
                 ? t('settings.pinDescription', 'Enter a 4-digit PIN to protect parental controls')
                 : t('settings.verifyPIN', 'Enter your PIN to continue')}
             </Text>
 
             <TextInput
-              style={styles.pinInput}
+              className={`bg-white/5 border-2 border-purple-500/30 rounded-2xl px-4 py-4 ${isTV ? 'text-4xl' : 'text-2xl'} text-white text-center font-bold mb-8`}
+              style={{ letterSpacing: isTV ? 20 : 16 }}
               value={pinInput}
               onChangeText={(text) => setPinInput(text.replace(/[^0-9]/g, '').slice(0, 4))}
               keyboardType="number-pad"
@@ -782,28 +779,24 @@ export default function SettingsScreen() {
               autoFocus
             />
 
-            <View style={styles.pinModalButtons}>
+            <View className="flex-row gap-4">
               <TouchableOpacity
-                style={[styles.pinModalButton, styles.pinModalButtonCancel]}
+                className="flex-1 py-4 rounded-2xl items-center border-2 bg-white/5 border-white/20"
                 onPress={() => {
                   setPinInput('');
                   setShowPINModal(false);
                 }}
               >
-                <Text style={styles.pinModalButtonText}>
+                <Text className={`${isTV ? 'text-lg' : 'text-base'} font-semibold text-white`}>
                   {t('common.cancel', 'Cancel')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[
-                  styles.pinModalButton,
-                  styles.pinModalButtonConfirm,
-                  pinInput.length !== 4 && styles.pinModalButtonDisabled,
-                ]}
+                className={`flex-1 py-4 rounded-2xl items-center border-2 ${pinInput.length !== 4 ? 'opacity-50 border-purple-500/20' : 'border-purple-500'} bg-purple-500/20`}
                 onPress={handlePINSubmit}
                 disabled={pinInput.length !== 4}
               >
-                <Text style={styles.pinModalButtonText}>
+                <Text className={`${isTV ? 'text-lg' : 'text-base'} font-semibold text-white`}>
                   {t('common.confirm', 'Confirm')}
                 </Text>
               </TouchableOpacity>
@@ -815,177 +808,3 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    padding: isTV ? spacing.xl : spacing.lg,
-    paddingBottom: spacing.xl * 2,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginBottom: spacing.xl,
-  },
-  headerIcon: {
-    width: isTV ? 64 : 48,
-    height: isTV ? 64 : 48,
-    borderRadius: isTV ? 32 : 24,
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerIconText: {
-    fontSize: isTV ? 32 : 24,
-  },
-  pageTitle: {
-    fontSize: isTV ? 36 : 28,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  pageSubtitle: {
-    fontSize: isTV ? 18 : 14,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  section: {
-    padding: spacing.md,
-    marginBottom: spacing.md,
-    borderRadius: borderRadius.xl,
-  },
-  sectionTitle: {
-    fontSize: isTV ? 14 : 12,
-    fontWeight: '600',
-    color: colors.textMuted,
-    marginBottom: spacing.md,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  settingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: isTV ? spacing.md : spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.md,
-    paddingHorizontal: spacing.sm,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  settingRowFocused: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    borderColor: colors.primary,
-  },
-  settingLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    flex: 1,
-  },
-  settingRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  settingIcon: {
-    fontSize: isTV ? 24 : 20,
-  },
-  settingLabel: {
-    fontSize: isTV ? 18 : 16,
-    color: colors.text,
-  },
-  settingValue: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textMuted,
-  },
-  chevron: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textMuted,
-  },
-  appInfo: {
-    alignItems: 'center',
-    marginTop: spacing.xl,
-    paddingTop: spacing.lg,
-  },
-  appVersion: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textMuted,
-  },
-  copyright: {
-    fontSize: isTV ? 12 : 10,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  pinModal: {
-    width: isTV ? 500 : '100%',
-    maxWidth: 400,
-    padding: spacing.xl,
-    borderRadius: borderRadius.xl,
-    borderWidth: 2,
-    borderColor: 'rgba(168, 85, 247, 0.3)',
-  },
-  pinModalTitle: {
-    fontSize: isTV ? 24 : 20,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  pinModalDescription: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-    marginBottom: spacing.xl,
-  },
-  pinInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 2,
-    borderColor: 'rgba(168, 85, 247, 0.3)',
-    borderRadius: borderRadius.lg,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    fontSize: isTV ? 32 : 24,
-    color: colors.text,
-    textAlign: 'center',
-    letterSpacing: isTV ? 20 : 16,
-    fontWeight: 'bold',
-    marginBottom: spacing.xl,
-  },
-  pinModalButtons: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  pinModalButton: {
-    flex: 1,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    borderWidth: 2,
-  },
-  pinModalButtonCancel: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  pinModalButtonConfirm: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    borderColor: colors.primary,
-  },
-  pinModalButtonDisabled: {
-    opacity: 0.5,
-    borderColor: 'rgba(168, 85, 247, 0.2)',
-  },
-  pinModalButtonText: {
-    fontSize: isTV ? 18 : 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-});

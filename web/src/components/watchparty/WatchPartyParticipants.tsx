@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Crown, Mic, MicOff, User } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors } from '@bayit/shared/theme'
 
 interface Participant {
   user_id: string
@@ -28,11 +28,11 @@ export default function WatchPartyParticipants({ participants, hostId, currentUs
   })
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
+    <View className="gap-3">
+      <Text className="text-sm font-medium text-gray-400 px-2">
         {t('watchParty.participants')} ({participants.length})
       </Text>
-      <View style={styles.list}>
+      <View className="gap-2">
         {sortedParticipants.map((participant) => {
           const isHost = participant.user_id === hostId
           const isCurrentUser = participant.user_id === currentUserId
@@ -40,12 +40,13 @@ export default function WatchPartyParticipants({ participants, hostId, currentUs
           return (
             <View
               key={participant.user_id}
-              style={[
-                styles.participant,
-                participant.is_speaking && styles.participantSpeaking,
-              ]}
+              className={`flex-row items-center gap-4 p-3 rounded-lg bg-white/5 border ${
+                participant.is_speaking ? 'border-emerald-500/50 bg-emerald-500/10' : 'border-transparent'
+              }`}
             >
-              <View style={[styles.avatar, isHost && styles.avatarHost]}>
+              <View className={`w-8 h-8 rounded-full items-center justify-center ${
+                isHost ? 'bg-amber-500/20' : 'bg-white/10'
+              }`}>
                 {isHost ? (
                   <Crown size={16} color="#FBBF24" />
                 ) : (
@@ -53,25 +54,25 @@ export default function WatchPartyParticipants({ participants, hostId, currentUs
                 )}
               </View>
 
-              <View style={styles.info}>
-                <View style={styles.nameRow}>
-                  <Text style={styles.name} numberOfLines={1}>
+              <View className="flex-1 min-w-0">
+                <View className="flex-row items-center gap-3">
+                  <Text className="text-sm font-medium text-white" numberOfLines={1}>
                     {participant.user_name}
                   </Text>
                   {isCurrentUser && (
-                    <Text style={styles.youLabel}>
+                    <Text className="text-xs text-gray-400">
                       ({t('watchParty.you')})
                     </Text>
                   )}
                 </View>
                 {isHost && (
-                  <Text style={styles.hostLabel}>
+                  <Text className="text-xs text-amber-400">
                     {t('watchParty.host')}
                   </Text>
                 )}
               </View>
 
-              <View style={styles.micContainer}>
+              <View className="w-6 items-center">
                 {participant.is_muted ? (
                   <MicOff size={16} color="#F87171" />
                 ) : (
@@ -88,69 +89,3 @@ export default function WatchPartyParticipants({ participants, hostId, currentUs
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    gap: spacing.sm,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.textMuted,
-    paddingHorizontal: spacing.xs,
-  },
-  list: {
-    gap: spacing.xs,
-  },
-  participant: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.sm + 2,
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  participantSpeaking: {
-    borderColor: 'rgba(16, 185, 129, 0.5)',
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-  },
-  avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  avatarHost: {
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
-  },
-  info: {
-    flex: 1,
-    minWidth: 0,
-  },
-  nameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  name: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  youLabel: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  hostLabel: {
-    fontSize: 12,
-    color: '#FBBF24',
-  },
-  micContainer: {
-    width: 24,
-    alignItems: 'center',
-  },
-})

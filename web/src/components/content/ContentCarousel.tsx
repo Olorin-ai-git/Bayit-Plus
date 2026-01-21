@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -60,14 +60,14 @@ export default function ContentCarousel({
   const SeeAllChevron = isRTL ? ChevronLeft : ChevronRight;
 
   return (
-    <View style={[styles.container, style]}>
+    <View className="max-w-[1400px] mx-auto px-4 w-full" style={style}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
-        <Text style={[styles.title, { textAlign }]}>{title}</Text>
+      <View className="flex-row items-center justify-between mb-4" style={{ flexDirection }}>
+        <Text className="text-xl font-bold text-white" style={{ textAlign }}>{title}</Text>
         {seeAllLink && (
           <Link to={seeAllLink} style={{ textDecoration: 'none' }}>
-            <View style={[styles.seeAllButton, { flexDirection }]}>
-              <Text style={styles.seeAllText}>{t('common.seeAll', 'See All')}</Text>
+            <View className="flex-row items-center gap-2" style={{ flexDirection }}>
+              <Text className="text-sm" style={{ color: colors.primary }}>{t('common.seeAll', 'See All')}</Text>
               <SeeAllChevron size={16} color={colors.primary} />
             </View>
           </Link>
@@ -75,21 +75,21 @@ export default function ContentCarousel({
       </View>
 
       {/* Carousel Container */}
-      <View style={styles.carouselContainer}>
+      <View className="relative">
         {/* Scroll Buttons */}
         <Pressable
           onPress={() => scroll('right')}
-          style={[styles.scrollButton, isRTL ? styles.scrollButtonLeft : styles.scrollButtonRight]}
+          className={`absolute top-1/2 z-10 -translate-y-12 opacity-0 hover:opacity-100 ${isRTL ? 'left-0' : 'right-0'}`}
         >
-          <GlassView style={styles.scrollButtonInner}>
+          <GlassView className="w-12 h-24 rounded-lg justify-center items-center">
             {isRTL ? <ChevronLeft size={28} color={colors.text} /> : <ChevronRight size={28} color={colors.text} />}
           </GlassView>
         </Pressable>
         <Pressable
           onPress={() => scroll('left')}
-          style={[styles.scrollButton, isRTL ? styles.scrollButtonRight : styles.scrollButtonLeft]}
+          className={`absolute top-1/2 z-10 -translate-y-12 opacity-0 hover:opacity-100 ${isRTL ? 'right-0' : 'left-0'}`}
         >
-          <GlassView style={styles.scrollButtonInner}>
+          <GlassView className="w-12 h-24 rounded-lg justify-center items-center">
             {isRTL ? <ChevronRight size={28} color={colors.text} /> : <ChevronLeft size={28} color={colors.text} />}
           </GlassView>
         </Pressable>
@@ -99,7 +99,12 @@ export default function ContentCarousel({
           ref={scrollRef}
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[styles.scrollContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+          contentContainerStyle={{
+            gap: spacing.md,
+            paddingBottom: spacing.md,
+            paddingHorizontal: spacing.md,
+            flexDirection: isRTL ? 'row-reverse' : 'row',
+          }}
         >
           {items.map((item, index) => (
             <AnimatedCard
@@ -107,7 +112,7 @@ export default function ContentCarousel({
               index={index}
               variant="carousel"
               isRTL={isRTL}
-              style={styles.cardWrapper}
+              className="w-[220px] flex-shrink-0"
             >
               <ContentCard content={item} />
             </AnimatedCard>
@@ -117,69 +122,3 @@ export default function ContentCarousel({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    maxWidth: 1400,
-    marginHorizontal: 'auto',
-    paddingHorizontal: spacing.md,
-    width: '100%',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.md,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  seeAllButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  seeAllText: {
-    fontSize: 14,
-    color: colors.primary,
-  },
-  carouselContainer: {
-    position: 'relative',
-  },
-  scrollButton: {
-    position: 'absolute',
-    top: '50%',
-    zIndex: 10,
-    // @ts-ignore
-    transform: [{ translateY: -48 }],
-    opacity: 0,
-    // @ts-ignore - Web hover support
-    ':hover': {
-      opacity: 1,
-    },
-  },
-  scrollButtonRight: {
-    right: 0,
-  },
-  scrollButtonLeft: {
-    left: 0,
-  },
-  scrollButtonInner: {
-    width: 48,
-    height: 96,
-    borderRadius: borderRadius.lg,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  scrollContent: {
-    gap: spacing.md,
-    paddingBottom: spacing.md,
-    paddingHorizontal: spacing.md,
-  },
-  cardWrapper: {
-    width: 220,
-    flexShrink: 0,
-  },
-});

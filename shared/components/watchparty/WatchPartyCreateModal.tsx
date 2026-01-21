@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Modal,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -11,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui/GlassView';
 import { GlassButton } from '../ui/GlassButton';
 import { GlassToggle } from '../ui/GlassToggle';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
 
 interface WatchPartyCreateModalProps {
   visible: boolean;
@@ -46,33 +44,33 @@ export const WatchPartyCreateModal: React.FC<WatchPartyCreateModalProps> = ({
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay}>
+        <View className="flex-1 bg-black/80 justify-center items-center p-6">
           <TouchableWithoutFeedback>
-            <GlassView style={styles.modal} intensity="high">
-              <View style={styles.header}>
-                <Text style={styles.title}>{t('watchParty.createTitle')}</Text>
+            <GlassView className="w-full max-w-[400px] p-8 gap-6" intensity="high">
+              <View className="items-center">
+                <Text className="text-2xl font-semibold text-white">{t('watchParty.createTitle')}</Text>
               </View>
 
               {contentTitle && (
-                <GlassView style={styles.contentInfo} intensity="low">
-                  <Text style={styles.contentIcon}>🎬</Text>
-                  <View style={styles.contentText}>
-                    <Text style={styles.contentLabel}>{t('watchParty.title')}</Text>
-                    <Text style={styles.contentTitle} numberOfLines={1}>
+                <GlassView className="flex-row items-center p-4 gap-4" intensity="low">
+                  <Text className="text-2xl">🎬</Text>
+                  <View className="flex-1">
+                    <Text className="text-xs text-white/50">{t('watchParty.title')}</Text>
+                    <Text className="text-sm font-medium text-white" numberOfLines={1}>
                       {contentTitle}
                     </Text>
                   </View>
                 </GlassView>
               )}
 
-              <View style={styles.options}>
+              <View className="gap-3">
                 <TouchableOpacity
-                  style={styles.optionRow}
+                  className="flex-row items-center justify-between bg-white/20 p-4 rounded-lg"
                   onPress={() => setChatEnabled(!chatEnabled)}
                 >
-                  <View style={styles.optionInfo}>
-                    <Text style={styles.optionIcon}>💬</Text>
-                    <Text style={styles.optionText}>
+                  <View className="flex-row items-center gap-3">
+                    <Text className="text-xl">💬</Text>
+                    <Text className="text-sm font-medium text-white">
                       {t('watchParty.options.chatEnabled')}
                     </Text>
                   </View>
@@ -83,12 +81,12 @@ export const WatchPartyCreateModal: React.FC<WatchPartyCreateModalProps> = ({
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={styles.optionRow}
+                  className="flex-row items-center justify-between bg-white/20 p-4 rounded-lg"
                   onPress={() => setSyncPlayback(!syncPlayback)}
                 >
-                  <View style={styles.optionInfo}>
-                    <Text style={styles.optionIcon}>🔄</Text>
-                    <Text style={styles.optionText}>
+                  <View className="flex-row items-center gap-3">
+                    <Text className="text-xl">🔄</Text>
+                    <Text className="text-sm font-medium text-white">
                       {t('watchParty.options.syncPlayback')}
                     </Text>
                   </View>
@@ -99,7 +97,7 @@ export const WatchPartyCreateModal: React.FC<WatchPartyCreateModalProps> = ({
                 </TouchableOpacity>
               </View>
 
-              <View style={styles.actions}>
+              <View className="flex-row gap-3 justify-end">
                 <GlassButton
                   title={t('common.cancel')}
                   onPress={onClose}
@@ -122,79 +120,5 @@ export const WatchPartyCreateModal: React.FC<WatchPartyCreateModalProps> = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: colors.overlayDark,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  modal: {
-    width: '100%',
-    maxWidth: 400,
-    padding: spacing.xl,
-    gap: spacing.lg,
-  },
-  header: {
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: fontSize.xl,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  contentInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.md,
-    gap: spacing.md,
-  },
-  contentIcon: {
-    fontSize: 24,
-  },
-  contentText: {
-    flex: 1,
-  },
-  contentLabel: {
-    fontSize: fontSize.xs,
-    color: colors.textMuted,
-  },
-  contentTitle: {
-    fontSize: fontSize.sm,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  options: {
-    gap: spacing.sm,
-  },
-  optionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.glassBorder,
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-  },
-  optionInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  optionIcon: {
-    fontSize: 20,
-  },
-  optionText: {
-    fontSize: fontSize.sm,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    justifyContent: 'flex-end',
-  },
-});
 
 export default WatchPartyCreateModal;

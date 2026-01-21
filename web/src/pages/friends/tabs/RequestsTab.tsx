@@ -1,7 +1,6 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
-import { colors, spacing } from '@bayit/shared/theme';
 import { EmptyState } from '../components/EmptyState';
 import { IncomingRequestCard } from '../components/IncomingRequestCard';
 import { FriendCard } from '../components/FriendCard';
@@ -28,8 +27,8 @@ export function RequestsTab({
   const { t } = useTranslation();
 
   return (
-    <View style={styles.listContainer}>
-      <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
+    <View className="gap-4">
+      <Text className={`text-[13px] font-semibold text-white/60 uppercase tracking-wide mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
         {t('friends.incomingRequests', 'Incoming Requests')}
       </Text>
       {incomingRequests.length === 0 ? (
@@ -52,7 +51,7 @@ export function RequestsTab({
         ))
       )}
 
-      <Text style={[styles.sectionTitle, isRTL && styles.textRTL, styles.sectionTitleSpaced]}>
+      <Text className={`text-[13px] font-semibold text-white/60 uppercase tracking-wide mb-2 mt-6 ${isRTL ? 'text-right' : 'text-left'}`}>
         {t('friends.outgoingRequests', 'Outgoing Requests')}
       </Text>
       {outgoingRequests.length === 0 ? (
@@ -75,7 +74,7 @@ export function RequestsTab({
             onAction={() => onCancelRequest(request.id)}
             actionLabel={t('friends.cancel', 'Cancel')}
             actionIcon={X}
-            actionColor={colors.textMuted}
+            actionColor="rgba(255,255,255,0.6)"
             isRTL={isRTL}
           />
         ))
@@ -83,23 +82,3 @@ export function RequestsTab({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  listContainer: {
-    gap: spacing.md,
-  },
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: spacing.sm,
-  },
-  sectionTitleSpaced: {
-    marginTop: spacing.lg,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-});

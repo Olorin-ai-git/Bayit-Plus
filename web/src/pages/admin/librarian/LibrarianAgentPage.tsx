@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Activity, DollarSign, Clock, Play, Bot, FileText, Eye, Minus, Plus, MessageSquare, Settings } from 'lucide-react';
 import { GlassButton, GlassToggle, GlassStatCard, GlassBadge, GlassModal, GlassTextarea } from '@bayit/shared/ui';
 import { GlassLog, GlassTable, GlassDraggableExpander } from '@bayit/shared/ui/web';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
 import {
   getAuditReportDetails,
@@ -337,9 +337,9 @@ const LibrarianAgentPage = () => {
   // Loading state
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center p-8">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('admin.librarian.loading')}</Text>
+        <Text className="mt-4 text-base" style={{ color: colors.textMuted }}>{t('admin.librarian.loading')}</Text>
       </View>
     );
   }
@@ -347,14 +347,14 @@ const LibrarianAgentPage = () => {
   // Error state
   if (configError) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorTitle}>{t('admin.librarian.errors.configError')}</Text>
-        <Text style={styles.errorText}>{configError}</Text>
+      <View className="flex-1 justify-center items-center p-8">
+        <Text className="text-2xl font-semibold mb-4 text-center" style={{ color: colors.error }}>{t('admin.librarian.errors.configError')}</Text>
+        <Text className="text-base text-center" style={{ color: colors.text }}>{configError}</Text>
         <GlassButton
           title={t('admin.librarian.modal.retry')}
           variant="primary"
           onPress={loadData}
-          style={{ marginTop: spacing.lg }}
+          className="mt-6"
         />
       </View>
     );
@@ -362,9 +362,9 @@ const LibrarianAgentPage = () => {
 
   if (!config) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center p-8">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('admin.librarian.loadingConfig')}</Text>
+        <Text className="mt-4 text-base" style={{ color: colors.textMuted }}>{t('admin.librarian.loadingConfig')}</Text>
       </View>
     );
   }
@@ -372,11 +372,11 @@ const LibrarianAgentPage = () => {
   const isAuditRunning = reports.some(r => r.status === 'in_progress');
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView className="flex-1 p-6" showsVerticalScrollIndicator={false}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
-        <View style={styles.titleContainer}>
-          <Text style={[styles.title, { textAlign }]}>
+      <View className={`flex ${flexDirection} justify-between items-center mb-6`}>
+        <View className="flex-1">
+          <Text className="text-[28px] font-bold" style={{ textAlign, color: colors.text }}>
             {t('admin.librarian.title')}
           </Text>
         </View>
@@ -389,13 +389,13 @@ const LibrarianAgentPage = () => {
       </View>
 
       {/* Status Bar - 3 stat cards inline */}
-      <View style={[styles.statsRow, { flexDirection }]}>
+      <View className={`flex ${flexDirection} gap-4 mb-6`}>
         <GlassStatCard
           icon={<Activity size={20} color={isAuditRunning ? colors.warning : colors.success} />}
           label={t('admin.librarian.reports.columns.status', 'Status')}
           value={getStatusValue()}
           compact
-          style={styles.statCard}
+          className="flex-1"
         />
         <GlassStatCard
           icon={<DollarSign size={20} color={colors.primary} />}
@@ -403,14 +403,14 @@ const LibrarianAgentPage = () => {
           value={`$${budgetUsed.toFixed(2)}`}
           subtitle={t('admin.librarian.quickActions.monthlyBudgetLimit', '/ ${{limit}} monthly', { limit: (config.audit_limits.max_budget_usd * 30).toFixed(0) })}
           compact
-          style={styles.statCard}
+          className="flex-1"
         />
         <GlassStatCard
           icon={<Clock size={20} color={colors.textMuted} />}
           label={t('admin.librarian.logs.lastLog', 'Last Run')}
           value={getLastRunValue()}
           compact
-          style={styles.statCard}
+          className="flex-1"
         />
       </View>
 
@@ -423,12 +423,12 @@ const LibrarianAgentPage = () => {
         draggable={false}
         minHeight={320}
         maxHeight={500}
-        style={styles.section}
+        className="mb-6 bg-black/20 rounded-2xl border p-6" style={{ borderColor: colors.glassBorder }}
       >
         {/* Toggles Grid - 2 columns */}
         {/* NOTE: These are ADDITIVE capabilities - multiple can be enabled together */}
-        <View style={styles.toggleGrid}>
-          <View style={styles.toggleItem}>
+        <View className="flex flex-row flex-wrap gap-x-8 gap-y-2 mb-6">
+          <View className="w-[calc(50%-16px)] min-w-[220px]">
             <GlassToggle
               value={last24HoursOnly}
               onValueChange={setLast24HoursOnly}
@@ -437,7 +437,7 @@ const LibrarianAgentPage = () => {
               isRTL={isRTL}
             />
           </View>
-          <View style={styles.toggleItem}>
+          <View className="w-[calc(50%-16px)] min-w-[220px]">
             <GlassToggle
               value={cybTitlesOnly}
               onValueChange={setCybTitlesOnly}
@@ -446,7 +446,7 @@ const LibrarianAgentPage = () => {
               isRTL={isRTL}
             />
           </View>
-          <View style={styles.toggleItem}>
+          <View className="w-[calc(50%-16px)] min-w-[220px]">
             <GlassToggle
               value={tmdbPostersOnly}
               onValueChange={setTmdbPostersOnly}
@@ -455,7 +455,7 @@ const LibrarianAgentPage = () => {
               isRTL={isRTL}
             />
           </View>
-          <View style={styles.toggleItem}>
+          <View className="w-[calc(50%-16px)] min-w-[220px]">
             <GlassToggle
               value={openSubtitlesEnabled}
               onValueChange={setOpenSubtitlesEnabled}
@@ -464,7 +464,7 @@ const LibrarianAgentPage = () => {
               isRTL={isRTL}
             />
           </View>
-          <View style={styles.toggleItem}>
+          <View className="w-[calc(50%-16px)] min-w-[220px]">
             <GlassToggle
               value={classifyOnly}
               onValueChange={setClassifyOnly}
@@ -473,7 +473,7 @@ const LibrarianAgentPage = () => {
               isRTL={isRTL}
             />
           </View>
-          <View style={styles.toggleItem}>
+          <View className="w-[calc(50%-16px)] min-w-[220px]">
             <GlassToggle
               value={purgeDuplicates}
               onValueChange={setPurgeDuplicates}
@@ -482,7 +482,7 @@ const LibrarianAgentPage = () => {
               isRTL={isRTL}
             />
           </View>
-          <View style={styles.toggleItem}>
+          <View className="w-[calc(50%-16px)] min-w-[220px]">
             <GlassToggle
               value={dryRun}
               onValueChange={setDryRun}
@@ -494,7 +494,7 @@ const LibrarianAgentPage = () => {
         </View>
 
         {/* Action Buttons Row */}
-        <View style={[styles.actionsRow, { flexDirection }]}>
+        <View className={`flex ${flexDirection} items-center gap-4 pt-6 border-t flex-wrap`} style={{ borderTopColor: colors.glassBorder }}>
           <GlassButton
             title={t('admin.librarian.quickActions.dailyAudit', 'Daily Audit')}
             variant="primary"
@@ -513,19 +513,21 @@ const LibrarianAgentPage = () => {
           />
 
           {/* Budget Control */}
-          <View style={[styles.budgetControl, { flexDirection, marginLeft: isRTL ? 0 : 'auto', marginRight: isRTL ? 'auto' : 0 }]}>
-            <Text style={[styles.budgetLabel, { textAlign }]}>
+          <View className={`flex ${flexDirection} items-center gap-2`} style={{ marginLeft: isRTL ? 0 : 'auto', marginRight: isRTL ? 'auto' : 0 }}>
+            <Text className="text-sm font-medium" style={{ textAlign, color: colors.text }}>
               {t('admin.librarian.quickActions.budgetPerAudit', 'Budget:')} ${budgetLimit.toFixed(2)}
             </Text>
-            <View style={[styles.budgetButtons, { flexDirection }]}>
+            <View className={`flex ${flexDirection} gap-1`}>
               <Pressable
-                style={styles.budgetButton}
+                className="w-7 h-7 rounded-lg bg-white/10 border justify-center items-center"
+                style={{ borderColor: colors.glassBorder }}
                 onPress={handleBudgetDecrease}
               >
                 <Minus size={14} color={colors.text} />
               </Pressable>
               <Pressable
-                style={styles.budgetButton}
+                className="w-7 h-7 rounded-lg bg-white/10 border justify-center items-center"
+                style={{ borderColor: colors.glassBorder }}
                 onPress={handleBudgetIncrease}
               >
                 <Plus size={14} color={colors.text} />
@@ -536,14 +538,14 @@ const LibrarianAgentPage = () => {
 
         {/* Running notice with controls */}
         {isAuditRunning && !triggering && (
-          <View style={styles.runningNoticeContainer}>
-            <View style={[styles.runningNotice, { flexDirection }]}>
+          <View className="mt-4 bg-yellow-500/20 rounded-xl border p-4 gap-4" style={{ borderColor: colors.warning + '40' }}>
+            <View className={`flex ${flexDirection} items-center gap-2`}>
               <ActivityIndicator size="small" color={colors.warning} />
-              <Text style={[styles.runningNoticeText, { textAlign, flex: 1 }]}>
+              <Text className="text-[13px] flex-1" style={{ textAlign, color: colors.warning }}>
                 {t('admin.librarian.quickActions.auditRunningNotice', 'An audit is currently running')}
               </Text>
             </View>
-            <View style={[styles.runningControls, { flexDirection }]}>
+            <View className={`flex ${flexDirection} gap-2 flex-wrap`}>
               {auditPaused ? (
                 <GlassButton
                   title={t('admin.librarian.audit.resume', 'Resume')}
@@ -578,13 +580,13 @@ const LibrarianAgentPage = () => {
       </GlassDraggableExpander>
 
       {/* Live Audit Log */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.librarian.logs.liveAuditLog', 'Live Audit Log')}</Text>
+      <View className="mb-6 bg-black/20 rounded-2xl border p-6" style={{ borderColor: colors.glassBorder }}>
+        <Text className="text-lg font-semibold mb-4" style={{ textAlign, color: colors.text }}>{t('admin.librarian.logs.liveAuditLog', 'Live Audit Log')}</Text>
 
         {connectingToLiveLog ? (
-          <View style={styles.connectingState}>
+          <View className="items-center justify-center p-8 min-h-[200px] gap-4">
             <ActivityIndicator size="large" color={colors.primary} />
-            <Text style={[styles.connectingText, { textAlign }]}>
+            <Text className="text-base text-center" style={{ textAlign, color: colors.textMuted }}>
               {t('admin.librarian.logs.connecting', 'Connecting...')}
             </Text>
           </View>
@@ -592,11 +594,11 @@ const LibrarianAgentPage = () => {
           <View>
             {/* Progress bar if running */}
             {livePanelReport.status === 'in_progress' && batchProgress && (
-              <View style={styles.progressContainer}>
-                <View style={[styles.progressBar, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                  <View style={[styles.progressFill, { width: `${batchProgress.percentage}%` }]} />
+              <View className="mb-4">
+                <View className={`h-2 bg-white/10 rounded-full overflow-hidden mb-1 flex ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+                  <View className="h-full rounded-full" style={{ width: `${batchProgress.percentage}%`, backgroundColor: colors.primary }} />
                 </View>
-                <Text style={[styles.progressText, { textAlign }]}>
+                <Text className="text-xs text-center" style={{ textAlign, color: colors.textMuted }}>
                   {batchProgress.percentage}% - {batchProgress.itemsProcessed}/{batchProgress.totalItems} {t('admin.librarian.logs.items', 'items')}
                 </Text>
               </View>
@@ -627,7 +629,7 @@ const LibrarianAgentPage = () => {
 
             {/* Audit controls if running */}
             {livePanelReport.status === 'in_progress' && (
-              <View style={[styles.auditControlsRow, { flexDirection, justifyContent: isRTL ? 'flex-start' : 'flex-end' }]}>
+              <View className={`flex ${flexDirection} gap-4 mt-4`} style={{ justifyContent: isRTL ? 'flex-start' : 'flex-end' }}>
                 <GlassButton
                   title={t('admin.librarian.audit.interject', 'Interject')}
                   variant="secondary"
@@ -667,8 +669,8 @@ const LibrarianAgentPage = () => {
             )}
           </View>
         ) : (
-          <View style={styles.emptyLogState}>
-            <Text style={[styles.emptyLogText, { textAlign }]}>
+          <View className="items-center justify-center p-8 min-h-[150px] bg-white/10 rounded-xl">
+            <Text className="text-sm text-center" style={{ textAlign, color: colors.textMuted }}>
               {t('admin.librarian.logs.triggerAuditToSee', 'No active audit. Trigger an audit to see live logs.')}
             </Text>
           </View>
@@ -696,12 +698,12 @@ const LibrarianAgentPage = () => {
             />
           ) : undefined
         }
-        style={styles.section}
+        className="mb-6 bg-black/20 rounded-2xl border p-6" style={{ borderColor: colors.glassBorder }}
       >
         {reports.length === 0 ? (
-          <View style={styles.emptyReportsState}>
+          <View className="items-center justify-center p-8 gap-2">
             <FileText size={32} color={colors.textMuted} />
-            <Text style={[styles.emptyReportsText, { textAlign }]}>
+            <Text className="text-sm text-center" style={{ textAlign, color: colors.textMuted }}>
               {t('admin.librarian.reports.emptyMessage', 'No audit reports yet')}
             </Text>
           </View>
@@ -712,7 +714,7 @@ const LibrarianAgentPage = () => {
                 key: 'audit_date',
                 label: t('admin.librarian.reports.columns.date', 'Date'),
                 render: (value) => (
-                  <Text style={styles.cellText}>
+                  <Text className="text-sm" style={{ color: colors.text }}>
                     {format(new Date(value), 'MMM d, yyyy HH:mm')}
                   </Text>
                 ),
@@ -721,7 +723,7 @@ const LibrarianAgentPage = () => {
                 key: 'audit_type',
                 label: t('admin.librarian.reports.columns.type', 'Type'),
                 render: (value) => (
-                  <Text style={styles.cellText}>
+                  <Text className="text-sm" style={{ color: colors.text }}>
                     {t(`admin.librarian.auditTypes.${value}`, value)}
                   </Text>
                 ),
@@ -870,8 +872,8 @@ const LibrarianAgentPage = () => {
         ]}
         dismissable
       >
-        <View style={styles.interjectModalContent}>
-          <Text style={[styles.interjectHint, { textAlign }]}>
+        <View className="px-4 pb-4 gap-4">
+          <Text className="text-[13px] leading-[18px]" style={{ textAlign, color: colors.textMuted }}>
             {t('admin.librarian.audit.interjectHint', 'This message will be injected into the AI agent conversation at the next iteration. Use it to provide additional context, redirect focus, or give specific instructions.')}
           </Text>
           <GlassTextarea
@@ -887,218 +889,5 @@ const LibrarianAgentPage = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: spacing.lg,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  loadingText: {
-    marginTop: spacing.md,
-    fontSize: 16,
-    color: colors.textMuted,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  errorTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: colors.error,
-    marginBottom: spacing.md,
-    textAlign: 'center',
-  },
-  errorText: {
-    fontSize: 16,
-    color: colors.text,
-    textAlign: 'center',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-  titleContainer: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  statCard: {
-    flex: 1,
-  },
-  section: {
-    marginBottom: spacing.lg,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    padding: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  toggleGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    columnGap: spacing.xl,
-    rowGap: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  toggleItem: {
-    width: 'calc(50% - 16px)',
-    minWidth: 220,
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingTop: spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: colors.glassBorder,
-    flexWrap: 'wrap',
-  },
-  budgetControl: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  budgetLabel: {
-    fontSize: 14,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  budgetButtons: {
-    flexDirection: 'row',
-    gap: spacing.xs,
-  },
-  budgetButton: {
-    width: 28,
-    height: 28,
-    borderRadius: borderRadius.sm,
-    backgroundColor: colors.glassLight,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  runningNoticeContainer: {
-    marginTop: spacing.md,
-    backgroundColor: colors.warning + '20',
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.warning + '40',
-    padding: spacing.md,
-    gap: spacing.md,
-  },
-  runningNotice: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  runningNoticeText: {
-    fontSize: 13,
-    color: colors.warning,
-  },
-  runningControls: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    flexWrap: 'wrap',
-  },
-  connectingState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xl,
-    minHeight: 200,
-    gap: spacing.md,
-  },
-  connectingText: {
-    fontSize: 16,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-  progressContainer: {
-    marginBottom: spacing.md,
-  },
-  progressBar: {
-    height: 8,
-    backgroundColor: colors.glassLight,
-    borderRadius: borderRadius.full,
-    overflow: 'hidden',
-    marginBottom: spacing.xs,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.full,
-  },
-  progressText: {
-    fontSize: 12,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-  auditControlsRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginTop: spacing.md,
-  },
-  emptyLogState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xl,
-    minHeight: 150,
-    backgroundColor: colors.glassLight,
-    borderRadius: borderRadius.md,
-  },
-  emptyLogText: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-  emptyReportsState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xl,
-    gap: spacing.sm,
-  },
-  emptyReportsText: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-  cellText: {
-    fontSize: 14,
-    color: colors.text,
-  },
-  interjectModalContent: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.md,
-    gap: spacing.md,
-  },
-  interjectHint: {
-    fontSize: 13,
-    color: colors.textMuted,
-    lineHeight: 18,
-  },
-});
 
 export default LibrarianAgentPage;

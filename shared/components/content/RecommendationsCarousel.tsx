@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   Image,
   TouchableOpacity,
@@ -62,44 +61,43 @@ const RecommendationCard: React.FC<{
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={1}
-      style={styles.cardTouchable}
+      className={`${isTV ? 'mr-6' : 'mr-4'}`}
     >
       <Animated.View
-        style={[
-          styles.card,
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.cardFocused,
-        ]}
+        style={{ transform: [{ scale: scaleAnim }] }}
+        className={`${isTV ? 'w-[280px]' : 'w-[180px]'} rounded-lg bg-white/5 overflow-hidden border-2 ${
+          isFocused ? 'border-primary bg-primary/15' : 'border-transparent'
+        }`}
       >
-        <View style={styles.cardThumbnail}>
+        <View className="aspect-video relative bg-white/5 overflow-hidden">
           {item.thumbnail ? (
             <Image
               source={{ uri: item.thumbnail }}
-              style={styles.cardImage}
+              className="w-full h-full"
               resizeMode="cover"
             />
           ) : (
-            <View style={styles.cardImagePlaceholder}>
-              <Text style={styles.placeholderIcon}>🎬</Text>
+            <View className="flex-1 justify-center items-center bg-white/5">
+              <Text className={`${isTV ? 'text-5xl' : 'text-[32px]'}`}>🎬</Text>
             </View>
           )}
           {item.imdb_rating && (
-            <View style={styles.ratingBadge}>
-              <Text style={styles.ratingText}>⭐ {item.imdb_rating.toFixed(1)}</Text>
+            <View className="absolute top-2 right-2 bg-black/80 px-2 py-0.5 rounded">
+              <Text className={`${isTV ? 'text-sm' : 'text-xs'} text-white font-semibold`}>⭐ {item.imdb_rating.toFixed(1)}</Text>
             </View>
           )}
           {item.type && (
-            <View style={styles.typeBadge}>
-              <Text style={styles.typeText}>{item.type.toUpperCase()}</Text>
+            <View className="absolute top-2 left-2 bg-primary px-2 py-0.5 rounded">
+              <Text className={`${isTV ? 'text-xs' : 'text-[10px]'} text-white font-semibold`}>{item.type.toUpperCase()}</Text>
             </View>
           )}
         </View>
-        <View style={styles.cardInfo}>
-          <Text style={[styles.cardTitle, { textAlign }]} numberOfLines={2}>
+        <View className={`${isTV ? 'p-4' : 'p-2'}`}>
+          <Text style={{ textAlign }} className={`${isTV ? 'text-lg leading-6' : 'text-sm leading-[18px]'} font-semibold text-white mb-1`} numberOfLines={2}>
             {item.title}
           </Text>
           {(item.year || item.rating) && (
-            <Text style={[styles.cardMeta, { textAlign }]} numberOfLines={1}>
+            <Text style={{ textAlign }} className={`${isTV ? 'text-sm' : 'text-xs'} text-textMuted`} numberOfLines={1}>
               {item.year}{item.year && item.rating && ' • '}{item.rating}
             </Text>
           )}
@@ -124,13 +122,15 @@ export const RecommendationsCarousel: React.FC<RecommendationsCarouselProps> = (
   const displayTitle = title || t('content.youMayAlsoLike', 'You May Also Like');
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.sectionTitle, { textAlign }]}>{displayTitle}</Text>
+    <View className={`${isTV ? 'my-8' : 'my-6'}`}>
+      <Text style={{ textAlign }} className={`${isTV ? 'text-[28px]' : 'text-xl'} font-semibold text-white ${
+        isTV ? 'mb-6' : 'mb-4'
+      } ${isTV ? 'px-8' : 'px-6'}`}>{displayTitle}</Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-        style={styles.scrollView}
+        contentContainerClassName={`${isTV ? 'px-8' : 'px-6'} py-2`}
+        className="overflow-visible"
       >
         {recommendations.map((item, index) => (
           <RecommendationCard
@@ -144,103 +144,5 @@ export const RecommendationsCarousel: React.FC<RecommendationsCarouselProps> = (
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: isTV ? spacing.xl : spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: isTV ? 28 : 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: isTV ? spacing.lg : spacing.md,
-    paddingHorizontal: isTV ? spacing.xl : spacing.lg,
-  },
-  scrollView: {
-    overflow: 'visible',
-  },
-  scrollContent: {
-    paddingHorizontal: isTV ? spacing.xl : spacing.lg,
-    paddingVertical: spacing.sm,
-  },
-  cardTouchable: {
-    marginRight: isTV ? spacing.lg : spacing.md,
-  },
-  card: {
-    width: isTV ? 280 : 180,
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  cardFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.15)',
-    // @ts-ignore - Web CSS property
-    boxShadow: '0 0 20px rgba(168, 85, 247, 0.6)',
-  },
-  cardThumbnail: {
-    aspectRatio: 16 / 9,
-    position: 'relative',
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-    overflow: 'hidden',
-  },
-  cardImage: {
-    width: '100%',
-    height: '100%',
-  },
-  cardImagePlaceholder: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-  },
-  placeholderIcon: {
-    fontSize: isTV ? 48 : 32,
-  },
-  ratingBadge: {
-    position: 'absolute',
-    top: spacing.sm,
-    right: spacing.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  ratingText: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  typeBadge: {
-    position: 'absolute',
-    top: spacing.sm,
-    left: spacing.sm,
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  typeText: {
-    fontSize: isTV ? 12 : 10,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  cardInfo: {
-    padding: isTV ? spacing.md : spacing.sm,
-  },
-  cardTitle: {
-    fontSize: isTV ? 18 : 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-    lineHeight: isTV ? 24 : 18,
-  },
-  cardMeta: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textMuted,
-  },
-});
 
 export default RecommendationsCarousel;

@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet, Pressable, Animated } from 'react-native'
+import { View, Text, Pressable, Animated } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Mic, MicOff, Loader2 } from 'lucide-react'
 import { useRef, useEffect } from 'react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors } from '@bayit/shared/theme'
 
 interface AudioControlsProps {
   isMuted?: boolean
@@ -69,23 +69,19 @@ export default function AudioControls({
     outputRange: ['0deg', '360deg'],
   })
 
-  const getButtonStyle = () => {
-    if (isConnecting) return styles.buttonConnecting
-    if (isMuted) return styles.buttonMuted
-    if (isSpeaking) return styles.buttonSpeaking
-    return styles.buttonActive
+  const getButtonClass = () => {
+    if (isConnecting) return 'bg-white/5 opacity-50'
+    if (isMuted) return 'bg-white/5'
+    if (isSpeaking) return 'bg-green-500/20'
+    return 'bg-purple-700/30'
   }
 
   return (
-    <View style={[styles.container, style]}>
+    <View className="flex-row items-center gap-3" style={style}>
       <Pressable
         onPress={onToggleMute}
         disabled={isConnecting}
-        style={({ hovered }) => [
-          styles.button,
-          getButtonStyle(),
-          hovered && !isConnecting && styles.buttonHovered,
-        ]}
+        className={`relative p-3 rounded-md ${getButtonClass()} ${!isConnecting ? 'hover:bg-white/10' : ''}`}
       >
         {isConnecting ? (
           <Animated.View style={{ transform: [{ rotate: spin }] }}>
@@ -100,73 +96,25 @@ export default function AudioControls({
         {/* Speaking indicator pulse */}
         {isSpeaking && !isMuted && (
           <Animated.View
-            style={[
-              styles.pulse,
-              { opacity: pulseAnim },
-            ]}
+            className="absolute top-0 left-0 right-0 bottom-0 rounded-md bg-green-500/30"
+            style={{ opacity: pulseAnim }}
           />
         )}
       </Pressable>
 
       {/* Connection status */}
       {isConnecting && (
-        <Text style={styles.statusText}>
+        <Text className="text-xs text-gray-400">
           {t('watchParty.audio.connecting')}
         </Text>
       )}
 
       {/* Speaking indicator text */}
       {!isMuted && isSpeaking && (
-        <Text style={styles.speakingText}>
+        <Text className="text-xs text-emerald-400">
           {t('watchParty.audio.speaking')}
         </Text>
       )}
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  button: {
-    position: 'relative',
-    padding: spacing.sm,
-    borderRadius: borderRadius.md,
-  },
-  buttonConnecting: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    opacity: 0.5,
-  },
-  buttonMuted: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  buttonActive: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  buttonSpeaking: {
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-  },
-  buttonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  pulse: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(34, 197, 94, 0.3)',
-  },
-  statusText: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  speakingText: {
-    fontSize: 12,
-    color: '#34D399',
-  },
-})

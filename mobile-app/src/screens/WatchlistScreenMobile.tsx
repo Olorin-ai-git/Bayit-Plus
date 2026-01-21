@@ -16,7 +16,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   RefreshControl,
   ScrollView,
@@ -140,53 +139,56 @@ export const WatchlistScreenMobile: React.FC = () => {
     const typeIcon = item.type === 'movie' ? '🎬' : '📺';
 
     return (
-      <View style={styles.cardWrapper}>
+      <View className="flex-1 px-1 py-2">
         <Pressable onPress={() => handleItemPress(item)}>
-          <GlassView style={styles.card}>
+          <GlassView className="rounded-xl overflow-hidden">
             {/* Thumbnail */}
             {item.thumbnail ? (
               <Image
                 source={{ uri: item.thumbnail }}
-                style={styles.thumbnail}
+                className="w-full aspect-video bg-white/5"
                 resizeMode="cover"
               />
             ) : (
-              <View style={[styles.thumbnail, styles.thumbnailPlaceholder]}>
-                <Text style={styles.placeholderIcon}>{typeIcon}</Text>
+              <View className="w-full aspect-video bg-white/5 items-center justify-center">
+                <Text className="text-5xl">{typeIcon}</Text>
               </View>
             )}
 
             {/* Progress bar for continue watching */}
             {item.progress !== undefined && item.progress > 0 && (
-              <View style={styles.progressContainer}>
-                <View style={[styles.progressBar, { width: `${item.progress}%` }]} />
+              <View className="absolute bottom-[52px] left-0 right-0 h-1 bg-black/50">
+                <View className="h-full" style={{ width: `${item.progress}%`, backgroundColor: colors.primary }} />
               </View>
             )}
 
             {/* Type badge */}
-            <View style={[styles.typeBadge, isRTL ? { left: 8 } : { right: 8 }]}>
-              <Text style={styles.typeBadgeText}>{typeIcon}</Text>
+            <View className="absolute top-2 rounded-xl px-2 py-1 bg-black/70" style={isRTL ? { left: 8 } : { right: 8 }}>
+              <Text className="text-sm">{typeIcon}</Text>
             </View>
 
             {/* Remove button */}
             <Pressable
-              style={[styles.removeButton, isRTL ? { right: 8 } : { left: 8 }]}
+              className="absolute top-2 w-7 h-7 rounded-full bg-red-500/90 justify-center items-center"
+              style={isRTL ? { right: 8 } : { left: 8 }}
               onPress={() => handleRemoveFromWatchlist(item)}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Text style={styles.removeIcon}>✕</Text>
+              <Text className="text-sm font-bold" style={{ color: colors.text }}>✕</Text>
             </Pressable>
 
             {/* Card info */}
-            <View style={styles.cardInfo}>
+            <View className="p-4">
               <Text
-                style={[styles.cardTitle, { textAlign: isRTL ? 'right' : 'left' }]}
+                className="text-white text-lg font-semibold mb-1"
+                style={{ textAlign: isRTL ? 'right' : 'left', ...typography.h4 }}
                 numberOfLines={2}
               >
                 {localizedTitle}
               </Text>
               <Text
-                style={[styles.cardMeta, { textAlign: isRTL ? 'right' : 'left' }]}
+                className="text-gray-400 text-xs"
+                style={{ textAlign: isRTL ? 'right' : 'left', ...typography.caption }}
               >
                 {item.year}
                 {item.year && item.duration ? ' • ' : ''}
@@ -194,7 +196,8 @@ export const WatchlistScreenMobile: React.FC = () => {
               </Text>
               {item.progress !== undefined && item.progress > 0 && (
                 <Text
-                  style={[styles.progressText, { textAlign: isRTL ? 'right' : 'left' }]}
+                  className="text-xs font-semibold mt-1"
+                  style={{ textAlign: isRTL ? 'right' : 'left', color: colors.primary, ...typography.caption }}
                 >
                   {item.progress}% {t('watchlist.watched')}
                 </Text>
@@ -208,41 +211,39 @@ export const WatchlistScreenMobile: React.FC = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center" style={{ backgroundColor: colors.background }}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="mt-4" style={{ ...typography.body, color: colors.text }}>{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1" style={{ backgroundColor: colors.background }}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
+      <View className="items-center px-6 pt-6 pb-4" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
         <View
-          style={[
-            styles.headerIcon,
-            { marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md },
-          ]}
+          className="w-12 h-12 rounded-full bg-purple-500/20 justify-center items-center"
+          style={{ marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md }}
         >
-          <Text style={styles.headerIconText}>📋</Text>
+          <Text className="text-2xl">📋</Text>
         </View>
-        <View style={styles.headerContent}>
-          <Text style={[styles.title, { textAlign: isRTL ? 'right' : 'left' }]}>
+        <View className="flex-1">
+          <Text className="text-white font-bold" style={{ textAlign: isRTL ? 'right' : 'left', ...typography.h2 }}>
             {t('watchlist.title')}
           </Text>
-          <Text style={[styles.subtitle, { textAlign: isRTL ? 'right' : 'left' }]}>
+          <Text className="text-gray-400 text-xs mt-0.5" style={{ textAlign: isRTL ? 'right' : 'left', ...typography.caption }}>
             {watchlist.length} {t('watchlist.items')}
           </Text>
         </View>
       </View>
 
       {/* Filter tabs */}
-      <View style={styles.filterSection}>
+      <View className="py-2">
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.filterContent}
+          contentContainerStyle={{ paddingHorizontal: spacing.lg, gap: spacing.sm }}
         >
           {filterOptions.map((option) => (
             <GlassCategoryPill
@@ -262,8 +263,8 @@ export const WatchlistScreenMobile: React.FC = () => {
         renderItem={renderWatchlistItem}
         keyExtractor={(item) => item.id}
         numColumns={numColumns}
-        columnWrapperStyle={styles.row}
-        contentContainerStyle={styles.gridContent}
+        columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: spacing.md }}
+        contentContainerStyle={{ paddingTop: spacing.sm, paddingBottom: spacing.xxl }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -273,13 +274,13 @@ export const WatchlistScreenMobile: React.FC = () => {
           />
         }
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <GlassView style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>📋</Text>
-              <Text style={[styles.emptyTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
+          <View className="flex-1 justify-center items-center py-20 px-6">
+            <GlassView className="p-8 items-center w-full">
+              <Text className="text-6xl mb-4">📋</Text>
+              <Text className="text-white font-semibold text-xl mb-2" style={{ textAlign: isRTL ? 'right' : 'left', ...typography.h3 }}>
                 {t('watchlist.empty')}
               </Text>
-              <Text style={[styles.emptySubtitle, { textAlign: isRTL ? 'right' : 'left' }]}>
+              <Text className="text-gray-400 text-center" style={{ textAlign: isRTL ? 'right' : 'left', ...typography.body }}>
                 {t('watchlist.emptyHint')}
               </Text>
             </GlassView>
@@ -289,170 +290,5 @@ export const WatchlistScreenMobile: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    ...typography.body,
-    color: colors.text,
-    marginTop: spacing.md,
-  },
-  header: {
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-  },
-  headerIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(138, 43, 226, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerIconText: {
-    fontSize: 24,
-  },
-  headerContent: {
-    flex: 1,
-  },
-  title: {
-    ...typography.h2,
-    color: colors.text,
-  },
-  subtitle: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  filterSection: {
-    paddingVertical: spacing.sm,
-  },
-  filterContent: {
-    paddingHorizontal: spacing.lg,
-    gap: spacing.sm,
-  },
-  row: {
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-  },
-  gridContent: {
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xxl,
-  },
-  cardWrapper: {
-    flex: 1,
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.sm,
-  },
-  card: {
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  thumbnail: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  thumbnailPlaceholder: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 48,
-  },
-  progressContainer: {
-    position: 'absolute',
-    bottom: 52, // Above card info
-    left: 0,
-    right: 0,
-    height: 4,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  progressBar: {
-    height: '100%',
-    backgroundColor: colors.primary,
-  },
-  typeBadge: {
-    position: 'absolute',
-    top: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  typeBadgeText: {
-    fontSize: 14,
-  },
-  removeButton: {
-    position: 'absolute',
-    top: 8,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: 'rgba(239, 68, 68, 0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  removeIcon: {
-    fontSize: 14,
-    color: colors.text,
-    fontWeight: '700',
-  },
-  cardInfo: {
-    padding: spacing.md,
-  },
-  cardTitle: {
-    ...typography.h4,
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  cardMeta: {
-    ...typography.caption,
-    color: colors.textSecondary,
-  },
-  progressText: {
-    ...typography.caption,
-    color: colors.primary,
-    marginTop: spacing.xs,
-    fontWeight: '600',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: spacing.xxxl,
-    paddingHorizontal: spacing.lg,
-  },
-  emptyCard: {
-    padding: spacing.xxl,
-    alignItems: 'center',
-    width: '100%',
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: spacing.md,
-  },
-  emptyTitle: {
-    ...typography.h3,
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-});
 
 export default WatchlistScreenMobile;

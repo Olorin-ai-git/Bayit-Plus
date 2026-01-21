@@ -19,7 +19,7 @@ Deploy your Bayit+ backend to Google Cloud Run in minutes using the automated de
 ## Quick Deploy
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend
+cd /Users/olorin/Documents/olorin/backend
 
 # Run the deployment script
 ./deploy.sh

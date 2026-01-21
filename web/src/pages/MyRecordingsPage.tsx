@@ -4,12 +4,12 @@
  */
 
 import { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Pressable } from 'react-native'
+import { View, Text, FlatList, ActivityIndicator, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Circle, Trash2, Calendar, HardDrive } from 'lucide-react'
 import { useDirection } from '@/hooks/useDirection'
 import { recordingApi, Recording } from '@/services/recordingApi'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors } from '@bayit/shared/theme'
 import { GlassView } from '@bayit/shared/ui'
 import { RecordingCard } from '@/components/recordings/RecordingCard'
 
@@ -89,17 +89,17 @@ export default function MyRecordingsPage() {
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-[#0d0d1a]">
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
-        <View style={styles.headerIcon}>
+      <View className="p-6 gap-4 items-center" style={{ flexDirection }}>
+        <View className="w-14 h-14 rounded-full bg-purple-500/20 items-center justify-center">
           <Circle size={28} color={colors.primary} />
         </View>
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.pageTitle, { textAlign }]}>
+        <View className="flex-1">
+          <Text className="text-[28px] font-bold text-white mb-1" style={{ textAlign }}>
             {t('recordings.title')}
           </Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
+          <Text className="text-sm text-gray-400" style={{ textAlign }}>
             {t('recordings.subtitle')}
           </Text>
         </View>
@@ -107,39 +107,37 @@ export default function MyRecordingsPage() {
 
       {/* Storage Quota */}
       {quota && (
-        <GlassView style={styles.quotaCard}>
-          <View style={[styles.quotaHeader, { flexDirection }]}>
+        <GlassView className="mx-6 mb-4 p-4 rounded-lg">
+          <View className="gap-2 items-center mb-4" style={{ flexDirection }}>
             <HardDrive size={20} color={colors.primary} />
-            <Text style={styles.quotaTitle}>{t('recordings.storageUsed')}</Text>
+            <Text className="text-base font-semibold text-white">{t('recordings.storageUsed')}</Text>
           </View>
 
-          <View style={[styles.quotaStats, { flexDirection }]}>
-            <Text style={styles.quotaText}>
+          <View className="justify-between items-center mb-2" style={{ flexDirection }}>
+            <Text className="text-lg font-semibold text-white">
               {quota.used_storage_formatted} / {quota.total_storage_formatted}
             </Text>
-            <Text style={[styles.quotaPercentage, { color: quota.storage_usage_percentage > 90 ? colors.error : colors.text }]}>
+            <Text className="text-base font-medium" style={{ color: quota.storage_usage_percentage > 90 ? colors.error : colors.text }}>
               {quota.storage_usage_percentage.toFixed(1)}%
             </Text>
           </View>
 
           {/* Progress Bar */}
-          <View style={styles.progressBar}>
+          <View className="h-2 bg-gray-600/20 rounded overflow-hidden mb-4">
             <View
-              style={[
-                styles.progressFill,
-                {
-                  width: `${Math.min(quota.storage_usage_percentage, 100)}%`,
-                  backgroundColor: quota.storage_usage_percentage > 90 ? colors.error : colors.primary
-                }
-              ]}
+              className="h-full rounded"
+              style={{
+                width: `${Math.min(quota.storage_usage_percentage, 100)}%`,
+                backgroundColor: quota.storage_usage_percentage > 90 ? colors.error : colors.primary
+              }}
             />
           </View>
 
-          <View style={[styles.quotaFooter, { flexDirection }]}>
-            <Text style={styles.quotaDetail}>
+          <View className="justify-between" style={{ flexDirection }}>
+            <Text className="text-xs text-gray-400">
               {t('recordings.totalRecordings')}: {quota.total_recordings}
             </Text>
-            <Text style={styles.quotaDetail}>
+            <Text className="text-xs text-gray-400">
               {t('recordings.maxDuration')}: {quota.max_recording_duration_formatted}
             </Text>
           </View>
@@ -148,15 +146,15 @@ export default function MyRecordingsPage() {
 
       {/* Recordings List */}
       {loading ? (
-        <View style={styles.loadingContainer}>
+        <View className="flex-1 items-center justify-center gap-4">
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loadingText}>{t('common.loading')}</Text>
+          <Text className="text-base text-gray-400">{t('common.loading')}</Text>
         </View>
       ) : recordings.length === 0 ? (
-        <View style={styles.emptyContainer}>
+        <View className="flex-1 items-center justify-center p-6 gap-4">
           <Circle size={64} color={colors.textSecondary} strokeWidth={1.5} />
-          <Text style={styles.emptyTitle}>{t('recordings.noRecordings')}</Text>
-          <Text style={styles.emptyText}>{t('recordings.noRecordingsHint')}</Text>
+          <Text className="text-xl font-semibold text-white">{t('recordings.noRecordings')}</Text>
+          <Text className="text-sm text-gray-400 text-center max-w-[400px]">{t('recordings.noRecordingsHint')}</Text>
         </View>
       ) : (
         <FlatList
@@ -171,171 +169,36 @@ export default function MyRecordingsPage() {
               formatDate={formatDate}
             />
           )}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={{ padding: 16 }}
           numColumns={2}
-          columnWrapperStyle={styles.row}
+          columnWrapperStyle={{ gap: 16 }}
         />
       )}
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <View style={[styles.pagination, { flexDirection }]}>
+        <View className="p-4 gap-4 items-center justify-center" style={{ flexDirection }}>
           <Pressable
             onPress={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
-            style={[styles.pageButton, page === 1 && styles.pageButtonDisabled]}
+            className={`px-4 py-2 bg-purple-500/20 rounded-lg ${page === 1 ? 'opacity-30' : ''}`}
           >
-            <Text style={styles.pageButtonText}>{t('common.previous')}</Text>
+            <Text className="text-purple-500 font-semibold">{t('common.previous')}</Text>
           </Pressable>
 
-          <Text style={styles.pageInfo}>
+          <Text className="text-sm text-gray-400">
             {t('common.page')} {page} / {totalPages}
           </Text>
 
           <Pressable
             onPress={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            style={[styles.pageButton, page === totalPages && styles.pageButtonDisabled]}
+            className={`px-4 py-2 bg-purple-500/20 rounded-lg ${page === totalPages ? 'opacity-30' : ''}`}
           >
-            <Text style={styles.pageButtonText}>{t('common.next')}</Text>
+            <Text className="text-purple-500 font-semibold">{t('common.next')}</Text>
           </Pressable>
         </View>
       )}
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    padding: spacing.xl,
-    gap: spacing.md,
-    alignItems: 'center',
-  },
-  headerIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: `${colors.primary}20`,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pageTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  quotaCard: {
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.lg,
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-  },
-  quotaHeader: {
-    gap: spacing.sm,
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  quotaTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  quotaStats: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  quotaText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  quotaPercentage: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  progressBar: {
-    height: 8,
-    backgroundColor: `${colors.textSecondary}20`,
-    borderRadius: 4,
-    overflow: 'hidden',
-    marginBottom: spacing.md,
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: 4,
-  },
-  quotaFooter: {
-    justifyContent: 'space-between',
-  },
-  quotaDetail: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.md,
-  },
-  loadingText: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-  emptyContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xl,
-    gap: spacing.md,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    maxWidth: 400,
-  },
-  listContent: {
-    padding: spacing.lg,
-  },
-  row: {
-    gap: spacing.lg,
-  },
-  pagination: {
-    padding: spacing.lg,
-    gap: spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pageButton: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    backgroundColor: `${colors.primary}20`,
-    borderRadius: borderRadius.md,
-  },
-  pageButtonDisabled: {
-    opacity: 0.3,
-  },
-  pageButtonText: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  pageInfo: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-})

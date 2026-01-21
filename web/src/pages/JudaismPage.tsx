@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions } from 'react-native';
 import { Link } from 'react-router-dom';
 import { Play, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -99,33 +99,39 @@ function JudaismCard({ item }: { item: JudaismItem }) {
         onHoverOut={() => setIsHovered(false)}
         style={{ width: '100%' }}
       >
-        <GlassCard style={[
-          judaismCardStyles.card,
-          isHovered && judaismCardStyles.cardHovered,
-        ]}>
+        <GlassCard className={`w-full p-0 overflow-hidden ${isHovered ? '-translate-y-1' : ''}`}
+          style={isHovered ? {
+            // @ts-ignore - web-specific property
+            boxShadow: `0 8px 32px rgba(107, 33, 168, 0.3)`,
+          } : undefined}>
           {/* Thumbnail Container - portrait aspect ratio like carousel cards */}
-          <View style={judaismCardStyles.thumbnailContainer}>
+          <View className="relative aspect-[2/3] overflow-hidden rounded-t-lg bg-black">
             {thumbnailUrl ? (
               <Image
                 source={{ uri: thumbnailUrl }}
-                style={judaismCardStyles.thumbnail}
+                className="w-full h-full"
                 resizeMode="cover"
                 onError={handleImageError}
               />
             ) : (
-              <View style={judaismCardStyles.thumbnailPlaceholder}>
+              <View className="w-full h-full bg-glass justify-center items-center">
                 <Text style={{ fontSize: 48 }}>{categoryIcon}</Text>
               </View>
             )}
 
             {/* Play Overlay - matches carousel style */}
             {isHovered && (
-              <View style={judaismCardStyles.playOverlay}>
+              <View className="absolute inset-0 justify-center items-center">
                 <LinearGradient
                   colors={['transparent', 'rgba(10, 10, 20, 0.8)']}
-                  style={StyleSheet.absoluteFill}
+                  className="absolute inset-0"
                 />
-                <View style={judaismCardStyles.playButton}>
+                <View className="w-14 h-14 rounded-full bg-white/15 backdrop-blur-lg justify-center items-center"
+                  style={{
+                    // @ts-ignore - web-specific property
+                    backdropFilter: 'blur(8px)',
+                    boxShadow: `0 0 20px ${colors.primary}`,
+                  }}>
                   <Play size={24} color={colors.text} fill={colors.text} />
                 </View>
               </View>
@@ -133,43 +139,38 @@ function JudaismCard({ item }: { item: JudaismItem }) {
 
             {/* Duration Badge - dark glass style like carousel cards */}
             {item.duration && (
-              <View style={[
-                judaismCardStyles.durationBadge,
-                isRTL ? { left: 'auto', right: spacing.sm } : {},
-              ]}>
-                <Text style={judaismCardStyles.durationText}>{item.duration}</Text>
+              <View className={`absolute bottom-2 ${isRTL ? 'right-2' : 'left-2'} bg-black/70 px-2 py-0.5 rounded`}>
+                <Text className="text-xs text-white font-medium">{item.duration}</Text>
               </View>
             )}
 
             {/* Category Badge - top corner */}
-            <View style={[
-              judaismCardStyles.categoryBadge,
-              isRTL ? { left: 'auto', right: spacing.sm } : {},
-            ]}>
+            <View className={`absolute top-2 ${isRTL ? 'right-2' : 'left-2'} bg-black/60 backdrop-blur-lg px-2 py-1 rounded-full`}
+              style={{
+                // @ts-ignore - web-specific property
+                backdropFilter: 'blur(8px)',
+              }}>
               <Text style={{ fontSize: 14 }}>{categoryIcon}</Text>
             </View>
           </View>
 
           {/* Content Info */}
-          <View style={judaismCardStyles.info}>
+          <View className="p-3">
             <Text
-              style={[
-                judaismCardStyles.title,
-                isHovered && judaismCardStyles.titleHovered,
-                { textAlign },
-              ]}
+              className={`text-sm font-medium text-white mb-1 ${isHovered ? 'text-primary' : ''}`}
+              style={{ textAlign }}
               numberOfLines={2}
             >
               {getLocalizedText('title')}
             </Text>
             {item.rabbi && (
-              <View style={judaismCardStyles.rabbiRow}>
+              <View className="flex-row items-center gap-1 mt-0.5">
                 <User size={14} color={colors.primary} />
-                <Text style={judaismCardStyles.rabbiText}>{getLocalizedText('rabbi')}</Text>
+                <Text className="text-xs text-gray-400">{getLocalizedText('rabbi')}</Text>
               </View>
             )}
             {item.description && (
-              <Text style={judaismCardStyles.description} numberOfLines={2}>
+              <Text className="text-xs text-gray-500 mt-1" numberOfLines={2}>
                 {getLocalizedText('description')}
               </Text>
             )}
@@ -179,107 +180,6 @@ function JudaismCard({ item }: { item: JudaismItem }) {
     </Link>
   );
 }
-
-const judaismCardStyles = StyleSheet.create({
-  card: {
-    width: '100%',
-    padding: 0,
-    overflow: 'hidden',
-  },
-  cardHovered: {
-    transform: [{ translateY: -4 }],
-    // @ts-ignore - web-specific property
-    boxShadow: `0 8px 32px rgba(107, 33, 168, 0.3)`,
-  },
-  thumbnailContainer: {
-    aspectRatio: 2 / 3, // Portrait aspect ratio like carousel cards
-    position: 'relative',
-    borderTopLeftRadius: borderRadius.lg,
-    borderTopRightRadius: borderRadius.lg,
-    overflow: 'hidden',
-    backgroundColor: colors.background,
-  },
-  thumbnail: {
-    width: '100%',
-    height: '100%',
-  },
-  thumbnailPlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: colors.glass,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    // @ts-ignore - web-specific property
-    backdropFilter: 'blur(8px)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    // @ts-ignore - web-specific property
-    boxShadow: `0 0 20px ${colors.primary}`,
-  },
-  durationBadge: {
-    position: 'absolute',
-    bottom: spacing.sm,
-    left: spacing.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  durationText: {
-    fontSize: 11,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  categoryBadge: {
-    position: 'absolute',
-    top: spacing.sm,
-    left: spacing.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    // @ts-ignore - web-specific property
-    backdropFilter: 'blur(8px)',
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 4,
-    borderRadius: borderRadius.full,
-  },
-  info: {
-    padding: spacing.sm,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  titleHovered: {
-    color: colors.primary,
-  },
-  rabbiRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginTop: 2,
-  },
-  rabbiText: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  description: {
-    fontSize: 11,
-    color: colors.textSecondary,
-    marginTop: spacing.xs,
-  },
-});
 
 export default function JudaismPage() {
   const { t, i18n } = useTranslation();

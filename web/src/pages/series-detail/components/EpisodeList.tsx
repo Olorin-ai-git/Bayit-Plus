@@ -3,9 +3,8 @@
  * Displays list of episodes for selected season
  */
 
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, fontSize } from '@bayit/shared/theme';
 import { EpisodeCard } from './EpisodeCard';
 import type { Episode } from '../types/series.types';
 
@@ -31,17 +30,17 @@ export function EpisodeList({
   const { t } = useTranslation();
 
   return (
-    <View style={styles.episodesSection}>
+    <View className="px-12 py-6">
       {episodes.length > 0 && (
-        <Text style={styles.sectionTitle}>
+        <Text className="text-lg font-semibold text-white mb-4">
           {t('content.season')} {selectedSeason} • {episodes.length} {t('content.episodes')}
         </Text>
       )}
 
       {episodesLoading ? (
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-white/70 text-base">{t('common.loading')}</Text>
       ) : episodes.length > 0 ? (
-        <View style={styles.episodesList}>
+        <View className="gap-4">
           {episodes.map((episode) => (
             <EpisodeCard
               key={episode.id}
@@ -54,39 +53,10 @@ export function EpisodeList({
           ))}
         </View>
       ) : (
-        <View style={styles.noEpisodes}>
-          <Text style={styles.noEpisodesText}>{t('content.noEpisodes')}</Text>
+        <View className="p-8 items-center justify-center">
+          <Text className="text-base text-white/70">{t('content.noEpisodes')}</Text>
         </View>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  episodesSection: {
-    paddingHorizontal: 48,
-    paddingVertical: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  episodesList: {
-    gap: spacing.md,
-  },
-  loadingText: {
-    color: colors.textSecondary,
-    fontSize: fontSize.md,
-  },
-  noEpisodes: {
-    padding: spacing.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  noEpisodesText: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-  },
-});

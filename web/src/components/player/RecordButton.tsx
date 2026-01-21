@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react'
-import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { Text, Pressable } from 'react-native'
 import { Circle, Square } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { recordingApi, RecordingSession } from '../../services/recordingApi'
@@ -162,47 +162,23 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
   return (
     <Pressable
       onPress={handlePress}
-      style={[
-        styles.button,
-        isRecording ? styles.buttonRecording : styles.buttonIdle
-      ]}
+      className={`flex-row items-center gap-2 px-4 py-2 rounded-full backdrop-blur-[40px] ${
+        isRecording ? 'bg-red-500/90' : 'bg-white/10'
+      }`}
     >
       {isRecording ? (
         <>
           <Square size={16} color="white" fill="white" />
-          <Text style={styles.buttonText}>
+          <Text className="text-white text-sm font-medium">
             {formatDuration(duration)}
           </Text>
         </>
       ) : (
         <>
           <Circle size={16} color="white" />
-          <Text style={styles.buttonText}>{t('recordings.record')}</Text>
+          <Text className="text-white text-sm font-medium">{t('recordings.record')}</Text>
         </>
       )}
     </Pressable>
   )
 }
-
-const styles = StyleSheet.create({
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 9999,
-    backdropFilter: 'blur(40px)',
-  },
-  buttonIdle: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  buttonRecording: {
-    backgroundColor: 'rgba(239, 68, 68, 0.9)', // red-500
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '500',
-  }
-})

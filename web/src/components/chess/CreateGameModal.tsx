@@ -2,7 +2,7 @@
  * Modal for creating a new chess game.
  */
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { colors, spacing } from '@bayit/shared/theme';
 import { useTranslation } from 'react-i18next';
 import { GlassModal } from '@bayit/shared/ui';
@@ -49,25 +49,33 @@ export default function CreateGameModal({ visible, onClose, onCreate }: CreateGa
   return (
     <GlassModal visible={visible} title={t('chess.createGame')} onClose={onClose} dismissable={true}>
       {/* Game Mode Selection */}
-      <View style={styles.section}>
-        <Text style={styles.label}>{t('chess.gameMode')}</Text>
-        <View style={styles.modeOptions}>
+      <View className="mb-6">
+        <Text className="text-sm font-semibold text-white mb-3">{t('chess.gameMode')}</Text>
+        <View className="flex-row gap-4">
           <Pressable
-            style={[styles.modeButton, gameMode === 'pvp' && styles.modeButtonSelected]}
+            className={`flex-1 flex-row items-center justify-center gap-3 p-4 rounded-lg bg-white/5 border-2 ${
+              gameMode === 'pvp' ? 'border-purple-500 bg-purple-500/10' : 'border-transparent'
+            }`}
             onPress={() => setGameMode('pvp')}
           >
             <Users size={20} color={gameMode === 'pvp' ? colors.primary : colors.textSecondary} />
-            <Text style={[styles.modeText, gameMode === 'pvp' && styles.modeTextSelected]}>
+            <Text className={`text-sm ${
+              gameMode === 'pvp' ? 'text-purple-500 font-semibold' : 'text-gray-400'
+            }`}>
               {t('chess.playVsFriend')}
             </Text>
           </Pressable>
 
           <Pressable
-            style={[styles.modeButton, gameMode === 'bot' && styles.modeButtonSelected]}
+            className={`flex-1 flex-row items-center justify-center gap-3 p-4 rounded-lg bg-white/5 border-2 ${
+              gameMode === 'bot' ? 'border-purple-500 bg-purple-500/10' : 'border-transparent'
+            }`}
             onPress={() => setGameMode('bot')}
           >
             <Bot size={20} color={gameMode === 'bot' ? colors.primary : colors.textSecondary} />
-            <Text style={[styles.modeText, gameMode === 'bot' && styles.modeTextSelected]}>
+            <Text className={`text-sm ${
+              gameMode === 'bot' ? 'text-purple-500 font-semibold' : 'text-gray-400'
+            }`}>
               {t('chess.playVsBot')}
             </Text>
           </Pressable>
@@ -76,32 +84,44 @@ export default function CreateGameModal({ visible, onClose, onCreate }: CreateGa
 
       {/* Bot Difficulty Selection (only shown for bot mode) */}
       {gameMode === 'bot' && (
-        <View style={styles.section}>
-          <Text style={styles.label}>{t('chess.difficulty')}</Text>
-          <View style={styles.difficultyOptions}>
+        <View className="mb-6">
+          <Text className="text-sm font-semibold text-white mb-3">{t('chess.difficulty')}</Text>
+          <View className="flex-row gap-2">
             <Pressable
-              style={[styles.difficultyButton, botDifficulty === 'easy' && styles.difficultyButtonSelected]}
+              className={`flex-1 py-3 px-4 rounded-md bg-white/5 border-2 items-center ${
+                botDifficulty === 'easy' ? 'border-purple-500 bg-purple-500/10' : 'border-transparent'
+              }`}
               onPress={() => setBotDifficulty('easy')}
             >
-              <Text style={[styles.difficultyText, botDifficulty === 'easy' && styles.difficultyTextSelected]}>
+              <Text className={`text-sm ${
+                botDifficulty === 'easy' ? 'text-purple-500 font-semibold' : 'text-gray-400'
+              }`}>
                 {t('chess.easy')}
               </Text>
             </Pressable>
 
             <Pressable
-              style={[styles.difficultyButton, botDifficulty === 'medium' && styles.difficultyButtonSelected]}
+              className={`flex-1 py-3 px-4 rounded-md bg-white/5 border-2 items-center ${
+                botDifficulty === 'medium' ? 'border-purple-500 bg-purple-500/10' : 'border-transparent'
+              }`}
               onPress={() => setBotDifficulty('medium')}
             >
-              <Text style={[styles.difficultyText, botDifficulty === 'medium' && styles.difficultyTextSelected]}>
+              <Text className={`text-sm ${
+                botDifficulty === 'medium' ? 'text-purple-500 font-semibold' : 'text-gray-400'
+              }`}>
                 {t('chess.medium')}
               </Text>
             </Pressable>
 
             <Pressable
-              style={[styles.difficultyButton, botDifficulty === 'hard' && styles.difficultyButtonSelected]}
+              className={`flex-1 py-3 px-4 rounded-md bg-white/5 border-2 items-center ${
+                botDifficulty === 'hard' ? 'border-purple-500 bg-purple-500/10' : 'border-transparent'
+              }`}
               onPress={() => setBotDifficulty('hard')}
             >
-              <Text style={[styles.difficultyText, botDifficulty === 'hard' && styles.difficultyTextSelected]}>
+              <Text className={`text-sm ${
+                botDifficulty === 'hard' ? 'text-purple-500 font-semibold' : 'text-gray-400'
+              }`}>
                 {t('chess.hard')}
               </Text>
             </Pressable>
@@ -110,39 +130,45 @@ export default function CreateGameModal({ visible, onClose, onCreate }: CreateGa
       )}
 
       {/* Color selection */}
-      <View style={styles.section}>
-        <Text style={styles.label}>{t('chess.chooseColor')}</Text>
-        <View style={styles.colorOptions}>
+      <View className="mb-6">
+        <Text className="text-sm font-semibold text-white mb-3">{t('chess.chooseColor')}</Text>
+        <View className="flex-row gap-4">
           <Pressable
-            style={[styles.colorButton, selectedColor === 'white' && styles.colorButtonSelected]}
+            className={`flex-1 flex-row items-center gap-3 p-4 rounded-lg bg-white/5 border-2 ${
+              selectedColor === 'white' ? 'border-purple-500 bg-purple-500/10' : 'border-transparent'
+            }`}
             onPress={() => setSelectedColor('white')}
           >
-            <View style={[styles.colorCircle, styles.whiteCircle]} />
-            <Text style={styles.colorText}>{t('chess.white')}</Text>
+            <View className="w-6 h-6 rounded-full bg-white" />
+            <Text className="text-sm text-white">{t('chess.white')}</Text>
           </Pressable>
 
           <Pressable
-            style={[styles.colorButton, selectedColor === 'black' && styles.colorButtonSelected]}
+            className={`flex-1 flex-row items-center gap-3 p-4 rounded-lg bg-white/5 border-2 ${
+              selectedColor === 'black' ? 'border-purple-500 bg-purple-500/10' : 'border-transparent'
+            }`}
             onPress={() => setSelectedColor('black')}
           >
-            <View style={[styles.colorCircle, styles.blackCircle]} />
-            <Text style={styles.colorText}>{t('chess.black')}</Text>
+            <View className="w-6 h-6 rounded-full bg-black border-2 border-white" />
+            <Text className="text-sm text-white">{t('chess.black')}</Text>
           </Pressable>
         </View>
       </View>
 
       {/* Actions */}
-      <View style={styles.actions}>
-        <Pressable style={[styles.button, styles.cancelButton]} onPress={onClose}>
-          <Text style={styles.cancelText}>{t('common.cancel')}</Text>
+      <View className="flex-row gap-3">
+        <Pressable className="flex-1 py-4 rounded-lg bg-white/10 items-center" onPress={onClose}>
+          <Text className="text-sm font-semibold text-white">{t('common.cancel')}</Text>
         </Pressable>
 
         <Pressable
-          style={[styles.button, styles.createButton, creating && styles.buttonDisabled]}
+          className={`flex-1 py-4 rounded-lg bg-purple-500 items-center ${
+            creating ? 'opacity-50' : ''
+          }`}
           onPress={handleCreate}
           disabled={creating}
         >
-          <Text style={styles.createText}>
+          <Text className="text-sm font-semibold text-black">
             {creating ? t('common.creating') : t('chess.create')}
           </Text>
         </Pressable>
@@ -150,134 +176,3 @@ export default function CreateGameModal({ visible, onClose, onCreate }: CreateGa
     </GlassModal>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    marginBottom: spacing.lg,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  modeOptions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  modeButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
-    borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  modeButtonSelected: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-  },
-  modeText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  modeTextSelected: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  difficultyOptions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  difficultyButton: {
-    flex: 1,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 2,
-    borderColor: 'transparent',
-    alignItems: 'center',
-  },
-  difficultyButtonSelected: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-  },
-  difficultyText: {
-    fontSize: 13,
-    color: colors.textSecondary,
-  },
-  difficultyTextSelected: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  colorOptions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  colorButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
-    borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  colorButtonSelected: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-  },
-  colorCircle: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-  },
-  whiteCircle: {
-    backgroundColor: colors.text,
-  },
-  blackCircle: {
-    backgroundColor: colors.dark,
-    borderWidth: 2,
-    borderColor: colors.text,
-  },
-  colorText: {
-    fontSize: 14,
-    color: colors.text,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  button: {
-    flex: 1,
-    paddingVertical: spacing.md,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  cancelButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  createButton: {
-    backgroundColor: colors.primary,
-  },
-  cancelText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  createText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.dark,
-  },
-});

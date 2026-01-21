@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { View, StyleSheet, Platform, ViewStyle, StyleProp } from 'react-native';
+import { View, Platform, ViewStyle, StyleProp } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { colors, borderRadius } from '../../theme';
 
@@ -77,12 +77,10 @@ export const GlassView: React.FC<GlassViewProps> = ({
       <View
         testID={testID}
         // Web-specific className
-        {...({ className: glassClassName } as object)}
+        {...({ className: `rounded-lg overflow-hidden ${glassClassName} ${!noBorder ? 'border' : ''}` } as object)}
         style={[
-          styles.glass,
           intensityStyles[normalizedIntensity],
-          !noBorder && styles.border,
-          borderColor && { borderColor },
+          !noBorder && { borderWidth: 1, borderColor: borderColor || colors.glassBorder },
           {
             // @ts-expect-error - Web-specific CSS properties
             backdropFilter: `blur(${blurAmount[normalizedIntensity]}px)`,
@@ -107,34 +105,15 @@ export const GlassView: React.FC<GlassViewProps> = ({
           : ['rgba(10, 10, 10, 0.7)', 'rgba(15, 10, 20, 0.8)'];
 
   const gradientStyle: ViewStyle[] = [
-    styles.glass,
-    ...(noBorder ? [] : [styles.border]),
-    ...(borderColor ? [{ borderColor }] : []),
+    ...(noBorder ? [] : [{ borderWidth: 1, borderColor: borderColor || colors.glassBorder }]),
     ...(style ? [style as ViewStyle] : []),
   ];
 
   return (
-    <LinearGradient colors={gradientColors} style={gradientStyle} testID={testID}>
-      <View style={styles.innerGlow}>{children}</View>
+    <LinearGradient colors={gradientColors} className="rounded-lg overflow-hidden" style={gradientStyle} testID={testID}>
+      <View className={`flex-1 rounded-[${borderRadius.lg - 1}px] border`} style={{ borderColor: colors.glassBorderLight }}>{children}</View>
     </LinearGradient>
   );
 };
-
-const styles = StyleSheet.create({
-  glass: {
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-  },
-  border: {
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  innerGlow: {
-    flex: 1,
-    borderRadius: borderRadius.lg - 1,
-    borderWidth: 1,
-    borderColor: colors.glassBorderLight,
-  },
-});
 
 export default GlassView;

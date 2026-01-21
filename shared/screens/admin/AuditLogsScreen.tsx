@@ -7,7 +7,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Modal,
   TextInput,
@@ -92,17 +91,17 @@ export const AuditLogsScreen: React.FC = () => {
       header: t('admin.logs.columns.timestamp', 'Timestamp'),
       width: 180,
       sortable: true,
-      render: (log) => <Text style={styles.dateText}>{formatDateTime(log.created_at)}</Text>,
+      render: (log) => <Text className="text-xs text-gray-400">{formatDateTime(log.created_at)}</Text>,
     },
     {
       key: 'action',
       header: t('admin.logs.columns.action', 'Action'),
       width: 180,
       render: (log) => (
-        <View style={styles.actionCell}>
-          <Text style={styles.actionIcon}>{getActivityIcon(log.action)}</Text>
-          <View style={[styles.actionBadge, { backgroundColor: getActionColor(log.action) + '20' }]}>
-            <Text style={[styles.actionText, { color: getActionColor(log.action) }]}>
+        <View className="flex-row items-center">
+          <Text className="text-base mr-1">{getActivityIcon(log.action)}</Text>
+          <View style={{ backgroundColor: getActionColor(log.action) + '20' }} className="px-2 py-0.5 rounded-sm">
+            <Text style={{ color: getActionColor(log.action) }} className="text-xs font-semibold capitalize">
               {log.action.replace(/\./g, ' ').replace(/_/g, ' ')}
             </Text>
           </View>
@@ -113,14 +112,14 @@ export const AuditLogsScreen: React.FC = () => {
       key: 'user_id',
       header: t('admin.logs.columns.user', 'User'),
       width: 140,
-      render: (log) => <Text style={styles.userText}>{log.user_id.slice(0, 12)}...</Text>,
+      render: (log) => <Text className="text-xs text-white font-mono">{log.user_id.slice(0, 12)}...</Text>,
     },
     {
       key: 'resource_type',
       header: t('admin.logs.columns.resource', 'Resource'),
       width: 120,
       render: (log) => (
-        <Text style={styles.resourceText}>{log.resource_type || '-'}</Text>
+        <Text className="text-sm text-gray-400 capitalize">{log.resource_type || '-'}</Text>
       ),
     },
     {
@@ -128,31 +127,31 @@ export const AuditLogsScreen: React.FC = () => {
       header: t('admin.logs.columns.resourceId', 'Resource ID'),
       width: 120,
       render: (log) => (
-        <Text style={styles.resourceIdText}>{log.resource_id?.slice(0, 10) || '-'}</Text>
+        <Text className="text-xs text-gray-500 font-mono">{log.resource_id?.slice(0, 10) || '-'}</Text>
       ),
     },
     {
       key: 'ip_address',
       header: t('admin.logs.columns.ip', 'IP Address'),
       width: 120,
-      render: (log) => <Text style={styles.ipText}>{log.ip_address || '-'}</Text>,
+      render: (log) => <Text className="text-xs text-gray-500 font-mono">{log.ip_address || '-'}</Text>,
     },
   ];
 
   const renderActions = (log: AuditLog) => (
-    <TouchableOpacity style={styles.viewButton} onPress={() => handleViewDetails(log)}>
-      <Text style={styles.viewButtonText}>👁️</Text>
+    <TouchableOpacity className="w-[30px] h-[30px] rounded-lg bg-white/5 justify-center items-center" onPress={() => handleViewDetails(log)}>
+      <Text className="text-sm">👁️</Text>
     </TouchableOpacity>
   );
 
   const headerActions = (
-    <View style={styles.headerActions}>
-      <TouchableOpacity style={styles.filterButton} onPress={() => setShowFilters(true)}>
-        <Text style={styles.filterButtonIcon}>🔍</Text>
-        <Text style={styles.filterButtonText}>{t('admin.logs.filters', 'Filters')}</Text>
+    <View className="flex-row gap-2">
+      <TouchableOpacity className="flex-row items-center px-4 py-2 bg-black/20 backdrop-blur-xl rounded-lg border border-white/10" onPress={() => setShowFilters(true)}>
+        <Text className="text-base mr-1">🔍</Text>
+        <Text className="text-sm text-white">{t('admin.logs.filters', 'Filters')}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.exportButton} onPress={handleExport}>
-        <Text style={styles.exportButtonText}>📥 {t('admin.logs.export', 'Export')}</Text>
+      <TouchableOpacity className="px-4 py-2 bg-purple-600 rounded-lg" onPress={handleExport}>
+        <Text className="text-sm text-white font-semibold">📥 {t('admin.logs.export', 'Export')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -162,28 +161,28 @@ export const AuditLogsScreen: React.FC = () => {
 
   return (
     <AdminLayout title={t('admin.titles.auditLogs', 'Audit Logs')} actions={headerActions}>
-      <View style={styles.container}>
+      <View className="flex-1 p-4">
         {/* Active Filters */}
         {(filters.action || filters.resource_type || filters.user_id || filters.date_from) && (
-          <View style={styles.activeFilters}>
+          <View className="flex-row flex-wrap gap-1 mb-4">
             {filters.action && (
-              <TouchableOpacity style={styles.filterChip} onPress={() => setFilters(prev => ({ ...prev, action: '' }))}>
-                <Text style={styles.filterChipText}>{t('admin.common.filterAction')}: {filters.action} ✕</Text>
+              <TouchableOpacity className="px-2 py-1 bg-purple-500/30 rounded-sm" onPress={() => setFilters(prev => ({ ...prev, action: '' }))}>
+                <Text className="text-xs text-purple-400">{t('admin.common.filterAction')}: {filters.action} ✕</Text>
               </TouchableOpacity>
             )}
             {filters.resource_type && (
-              <TouchableOpacity style={styles.filterChip} onPress={() => setFilters(prev => ({ ...prev, resource_type: '' }))}>
-                <Text style={styles.filterChipText}>{t('admin.common.filterResource')}: {filters.resource_type} ✕</Text>
+              <TouchableOpacity className="px-2 py-1 bg-purple-500/30 rounded-sm" onPress={() => setFilters(prev => ({ ...prev, resource_type: '' }))}>
+                <Text className="text-xs text-purple-400">{t('admin.common.filterResource')}: {filters.resource_type} ✕</Text>
               </TouchableOpacity>
             )}
             {filters.user_id && (
-              <TouchableOpacity style={styles.filterChip} onPress={() => setFilters(prev => ({ ...prev, user_id: '' }))}>
-                <Text style={styles.filterChipText}>{t('admin.common.filterUser')}: {filters.user_id.slice(0, 8)}... ✕</Text>
+              <TouchableOpacity className="px-2 py-1 bg-purple-500/30 rounded-sm" onPress={() => setFilters(prev => ({ ...prev, user_id: '' }))}>
+                <Text className="text-xs text-purple-400">{t('admin.common.filterUser')}: {filters.user_id.slice(0, 8)}... ✕</Text>
               </TouchableOpacity>
             )}
             {filters.date_from && (
-              <TouchableOpacity style={styles.filterChip} onPress={() => setFilters(prev => ({ ...prev, date_from: '', date_to: '' }))}>
-                <Text style={styles.filterChipText}>{t('admin.common.filterDateRange')} ✕</Text>
+              <TouchableOpacity className="px-2 py-1 bg-purple-500/30 rounded-sm" onPress={() => setFilters(prev => ({ ...prev, date_from: '', date_to: '' }))}>
+                <Text className="text-xs text-purple-400">{t('admin.common.filterDateRange')} ✕</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -315,56 +314,5 @@ export const AuditLogsScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: spacing.lg },
-  headerActions: { flexDirection: 'row', gap: spacing.sm },
-  filterButton: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.md, paddingVertical: spacing.sm, backgroundColor: colors.glass, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.glassBorder },
-  filterButtonIcon: { fontSize: 16, marginRight: spacing.xs },
-  filterButtonText: { fontSize: fontSize.sm, color: colors.text },
-  exportButton: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, backgroundColor: colors.secondary, borderRadius: borderRadius.md },
-  exportButtonText: { fontSize: fontSize.sm, color: colors.text, fontWeight: '600' },
-  activeFilters: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginBottom: spacing.md },
-  filterChip: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, backgroundColor: colors.primary + '30', borderRadius: borderRadius.sm },
-  filterChipText: { fontSize: fontSize.xs, color: colors.primary },
-  dateText: { fontSize: fontSize.xs, color: colors.textSecondary },
-  actionCell: { flexDirection: 'row', alignItems: 'center' },
-  actionIcon: { fontSize: 16, marginRight: spacing.xs },
-  actionBadge: { paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: borderRadius.sm },
-  actionText: { fontSize: fontSize.xs, fontWeight: '600', textTransform: 'capitalize' },
-  userText: { fontSize: fontSize.xs, color: colors.text, fontFamily: 'monospace' },
-  resourceText: { fontSize: fontSize.sm, color: colors.textSecondary, textTransform: 'capitalize' },
-  resourceIdText: { fontSize: fontSize.xs, color: colors.textMuted, fontFamily: 'monospace' },
-  ipText: { fontSize: fontSize.xs, color: colors.textMuted, fontFamily: 'monospace' },
-  viewButton: { width: 30, height: 30, borderRadius: borderRadius.sm, backgroundColor: colors.backgroundLighter, justifyContent: 'center', alignItems: 'center' },
-  viewButtonText: { fontSize: 14 },
-  modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'center', alignItems: 'center' },
-  modalContent: { width: '90%', maxWidth: 550, backgroundColor: colors.backgroundLight, borderRadius: borderRadius.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.glassBorder },
-  detailsModal: { width: '90%', maxWidth: 500, backgroundColor: colors.backgroundLight, borderRadius: borderRadius.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.glassBorder, maxHeight: '80%' },
-  modalTitle: { fontSize: fontSize.xl, fontWeight: 'bold', color: colors.text, marginBottom: spacing.lg },
-  filterSection: { marginBottom: spacing.md },
-  filterLabel: { fontSize: fontSize.sm, fontWeight: '600', color: colors.text, marginBottom: spacing.xs },
-  filterOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
-  filterOption: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.sm, borderWidth: 1, borderColor: colors.glassBorder },
-  filterOptionActive: { backgroundColor: colors.primary + '30', borderColor: colors.primary },
-  filterOptionText: { fontSize: fontSize.xs, color: colors.textSecondary },
-  filterOptionTextActive: { color: colors.primary, fontWeight: '600' },
-  filterInput: { backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.glassBorder, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, color: colors.text, fontSize: fontSize.sm },
-  dateInputs: { flexDirection: 'row', gap: spacing.sm },
-  dateInput: { flex: 1, backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.glassBorder, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, color: colors.text, fontSize: fontSize.sm },
-  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.lg },
-  clearButton: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md },
-  clearButtonText: { fontSize: fontSize.sm, color: colors.textSecondary },
-  applyButton: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.primary, borderRadius: borderRadius.md },
-  applyButtonText: { fontSize: fontSize.sm, color: colors.text, fontWeight: '600' },
-  detailsList: { marginBottom: spacing.lg },
-  detailRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.glassBorder },
-  detailLabel: { fontSize: fontSize.sm, color: colors.textSecondary },
-  detailValue: { fontSize: fontSize.sm, color: colors.text, maxWidth: '60%', textAlign: 'right' },
-  detailsSection: { marginTop: spacing.md },
-  jsonBox: { backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, padding: spacing.sm, marginTop: spacing.xs },
-  jsonText: { fontSize: fontSize.xs, color: colors.textSecondary, fontFamily: 'monospace' },
-  closeButton: { paddingVertical: spacing.md, backgroundColor: colors.glass, borderRadius: borderRadius.md, alignItems: 'center', borderWidth: 1, borderColor: colors.glassBorder },
-  closeButtonText: { fontSize: fontSize.sm, color: colors.text },
-});
 
 export default AuditLogsScreen;

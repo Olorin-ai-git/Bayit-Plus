@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
-  StyleSheet,
   Animated,
   TouchableOpacity,
   Dimensions,
@@ -127,18 +126,18 @@ export const WatchPartyOverlay: React.FC<WatchPartyOverlayProps> = ({
 
   return (
     <Animated.View
+      className="absolute top-0 left-0 bottom-0 z-[100]"
       style={[
-        styles.container,
-        { transform: [{ translateX: slideAnim }] },
+        { width: PANEL_WIDTH, transform: [{ translateX: slideAnim }] },
       ]}
     >
       <TouchableOpacity
         activeOpacity={1}
-        style={styles.touchArea}
+        className="flex-1"
         onPressIn={handleInteractionStart}
         onPressOut={handleInteractionEnd}
       >
-        <GlassView style={styles.panel} intensity="high">
+        <GlassView className="flex-1 p-6 gap-4 rounded-tr-2xl rounded-br-2xl rounded-tl-none rounded-bl-none" intensity="high">
           <WatchPartyHeader
             roomCode={party.room_code}
             isHost={isHost}
@@ -148,7 +147,7 @@ export const WatchPartyOverlay: React.FC<WatchPartyOverlayProps> = ({
             onEnd={onEnd}
           />
 
-          <View style={styles.divider} />
+          <View className="h-px bg-white/20 my-1" />
 
           <WatchPartyParticipants
             participants={participants}
@@ -159,8 +158,8 @@ export const WatchPartyOverlay: React.FC<WatchPartyOverlayProps> = ({
 
           {party.chat_enabled && (
             <>
-              <View style={styles.divider} />
-              <View style={styles.chatSection}>
+              <View className="h-px bg-white/20 my-1" />
+              <View className="flex-1 gap-4">
                 <WatchPartyChat
                   messages={messages}
                   currentUserId={currentUserId}
@@ -178,37 +177,5 @@ export const WatchPartyOverlay: React.FC<WatchPartyOverlayProps> = ({
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    width: PANEL_WIDTH,
-    zIndex: 100,
-  },
-  touchArea: {
-    flex: 1,
-  },
-  panel: {
-    flex: 1,
-    padding: spacing.lg,
-    gap: spacing.md,
-    borderTopRightRadius: borderRadius.xl,
-    borderBottomRightRadius: borderRadius.xl,
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 0,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.glassBorder,
-    marginVertical: spacing.xs,
-  },
-  chatSection: {
-    flex: 1,
-    gap: spacing.md,
-  },
-});
 
 export default WatchPartyOverlay;

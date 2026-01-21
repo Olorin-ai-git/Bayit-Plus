@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Animated,
   ScrollView,
@@ -11,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui/GlassView';
 import { GlassInput } from '../ui/GlassInput';
 import { GlassButton } from '../ui/GlassButton';
-import { colors, spacing, borderRadius, fontSize, shadows } from '../../theme';
 import { isTV } from '../../utils/platform';
 
 const QUICK_EMOJIS = ['👍', '❤️', '😂', '😮', '👏', '🔥'];
@@ -67,10 +65,10 @@ export const WatchPartyChatInput: React.FC<WatchPartyChatInputProps> = ({
 
   if (isTV) {
     return (
-      <View style={styles.tvContainer}>
-        <Text style={styles.quickReactLabel}>{t('watchParty.sendMessage')}</Text>
+      <View className="gap-3">
+        <Text className="text-sm text-white/70 px-1">{t('watchParty.sendMessage')}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View style={styles.emojiRow}>
+          <View className="flex-row gap-4 py-3">
             {QUICK_EMOJIS.map((emoji, index) => (
               <TouchableOpacity
                 key={emoji}
@@ -80,18 +78,15 @@ export const WatchPartyChatInput: React.FC<WatchPartyChatInputProps> = ({
                 disabled={disabled}
               >
                 <Animated.View
-                  style={[
-                    styles.emojiButton,
-                    focusedEmoji === index && shadows.glow(colors.primary),
-                    { transform: [{ scale: scaleAnims[index] }] },
-                  ]}
+                  className={`rounded-lg ${focusedEmoji === index ? 'shadow-lg shadow-purple-500/50' : ''}`}
+                  style={{ transform: [{ scale: scaleAnims[index] }] }}
                 >
                   <GlassView
-                    style={styles.emojiInner}
+                    className="p-4 items-center justify-center"
                     intensity="medium"
-                    borderColor={focusedEmoji === index ? colors.primary : undefined}
+                    borderColor={focusedEmoji === index ? '#9333ea' : undefined}
                   >
-                    <Text style={styles.emoji}>{emoji}</Text>
+                    <Text className="text-2xl">{emoji}</Text>
                   </GlassView>
                 </Animated.View>
               </TouchableOpacity>
@@ -103,32 +98,32 @@ export const WatchPartyChatInput: React.FC<WatchPartyChatInputProps> = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View className="gap-3">
       {showEmojis && (
-        <GlassView style={styles.emojiPicker} intensity="high">
-          <View style={styles.emojiGrid}>
+        <GlassView className="absolute bottom-full left-0 mb-3 p-3 z-10" intensity="high">
+          <View className="flex-row gap-1">
             {QUICK_EMOJIS.map((emoji) => (
               <TouchableOpacity
                 key={emoji}
                 onPress={() => handleEmojiPress(emoji)}
-                style={styles.emojiPickerButton}
+                className="p-3 rounded"
               >
-                <Text style={styles.emoji}>{emoji}</Text>
+                <Text className="text-2xl">{emoji}</Text>
               </TouchableOpacity>
             ))}
           </View>
         </GlassView>
       )}
 
-      <View style={styles.inputRow}>
+      <View className="flex-row items-center gap-3">
         <TouchableOpacity
           onPress={() => setShowEmojis(!showEmojis)}
-          style={[styles.emojiToggle, showEmojis && styles.emojiToggleActive]}
+          className={`p-3 rounded-lg ${showEmojis ? 'bg-purple-500/30' : 'bg-white/20'}`}
         >
-          <Text style={styles.emojiToggleIcon}>😊</Text>
+          <Text className="text-xl">😊</Text>
         </TouchableOpacity>
 
-        <View style={styles.inputWrapper}>
+        <View className="flex-1">
           <GlassInput
             value={message}
             onChangeText={setMessage}
@@ -150,70 +145,5 @@ export const WatchPartyChatInput: React.FC<WatchPartyChatInputProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    gap: spacing.sm,
-  },
-  tvContainer: {
-    gap: spacing.sm,
-  },
-  quickReactLabel: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    paddingHorizontal: spacing.xs,
-  },
-  emojiRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  emojiButton: {
-    borderRadius: borderRadius.md,
-  },
-  emojiInner: {
-    padding: spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emoji: {
-    fontSize: 24,
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  emojiToggle: {
-    padding: spacing.sm,
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.glassBorder,
-  },
-  emojiToggleActive: {
-    backgroundColor: colors.primary + '30',
-  },
-  emojiToggleIcon: {
-    fontSize: 20,
-  },
-  inputWrapper: {
-    flex: 1,
-  },
-  emojiPicker: {
-    position: 'absolute',
-    bottom: '100%',
-    left: 0,
-    marginBottom: spacing.sm,
-    padding: spacing.sm,
-    zIndex: 10,
-  },
-  emojiGrid: {
-    flexDirection: 'row',
-    gap: spacing.xs,
-  },
-  emojiPickerButton: {
-    padding: spacing.sm,
-    borderRadius: borderRadius.sm,
-  },
-});
 
 export default WatchPartyChatInput;

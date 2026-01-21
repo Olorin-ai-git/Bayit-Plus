@@ -110,7 +110,7 @@ You have two deployment strategies available, based on the existing Israeli-Radi
 ## Quick Start with Existing Infrastructure
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend
+cd /Users/olorin/Documents/olorin/backend
 
 # Review configuration
 cat .gcp-config
@@ -159,7 +159,7 @@ Start with existing infrastructure now, migrate later if needed:
    gcloud projects create bayit-plus-prod
 
    # Run fresh deployment
-   cd /Users/olorin/Documents/Bayit-Plus/backend
+   cd /Users/olorin/Documents/olorin/backend
    ./deploy.sh
 
    # Migrate data
@@ -192,7 +192,7 @@ For most cases, **shared project with separate resources is secure and recommend
 ### Recommended Approach:
 ```bash
 # 1. Review the configuration
-cat /Users/olorin/Documents/Bayit-Plus/backend/.gcp-config
+cat /Users/olorin/Documents/olorin/backend/.gcp-config
 
 # 2. Deploy using existing infrastructure
 ./deploy-with-existing-infra.sh
