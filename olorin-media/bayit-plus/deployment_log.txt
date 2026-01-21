@@ -1,0 +1,1427 @@
+
+[0;35m╔══════════════════════════════════════════════════════════════╗[0m
+[0;35m║[0m [0;34mBayit+ Full Stack Deployment[0m
+[0;35m╚══════════════════════════════════════════════════════════════╝[0m
+
+[0;36m╔══════════════════════════════════════════════════════════════╗[0m
+[0;36m║[0m  Deploying Bayit+ to all platforms
+[0;36m╚══════════════════════════════════════════════════════════════╝[0m
+
+[0;36mDeployment Configuration:[0m
+  Repository Root: /Users/olorin/Documents/olorin/olorin-media/bayit-plus
+
+  Web Platform:
+    Firebase Project: bayit-plus
+    GCP Project: bayit-plus
+    GCP Region: us-east1
+
+  Deployments Enabled:
+    Backend (Cloud Run): Yes
+    Frontend (Firebase): Yes
+    iOS Mobile App:      Yes
+    tvOS App:            No
+
+
+[0;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;36m  Checking Prerequisites[0m
+[0;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+
+[0;32m✓ gcloud CLI found[0m
+[0;32m✓ Firebase CLI found[0m
+[0;32m✓ npm found[0m
+[0;32m✓ Xcode command line tools found[0m
+
+[0;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;36m  Building and Verifying Web Frontend[0m
+[0;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+
+[0;36mℹ Installing dependencies...[0m
+[0;31m✗ Failed to install dependencies[0m
+[0;31m✗ Web frontend build verification failed - aborting frontend deployment[0m
+[0;36mℹ Skipping Firebase frontend deployment[0m
+
+[0;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[0;36m  Verifying Backend Build[0m
+[0;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+
+[0;36mℹ Checking Poetry lock file...[0m
+[1;33m⚠ Poetry lock file may need updating, continuing...[0m
+[0;32m✓ Poetry check complete[0m
+[0;36mℹ Installing dependencies...[0m
+Using python3.13 (3.13.11)
+Creating virtualenv bayit-plus-backend-6aUZR_Td-py3.13 in /Users/olorin/Library/Caches/pypoetry/virtualenvs
+Installing dependencies from lock file
+
+pyproject.toml changed significantly since poetry.lock was last generated. Run `poetry lock` to fix the lock file.
+[0;32m✓ Dependencies installed[0m
+[0;36mℹ Verifying Python syntax...[0m
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+Path /../packages/bayit-voice-pipeline for bayit-voice-pipeline does not exist
+Path /../packages/bayit-translation for bayit-translation does not exist
+Path /../packages/olorin-core for olorin-core does not exist
+Path /../packages/olorin-shared for olorin-shared does not exist
+Path /../packages/python/olorin-i18n for olorin-i18n does not exist
+The currently activated Python version 3.14.2 is not supported by the project (>=3.11,<3.14).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.11)
+[0;32m✓ Python syntax verification passed[0m
+[0;36mℹ Verifying application imports...[0m

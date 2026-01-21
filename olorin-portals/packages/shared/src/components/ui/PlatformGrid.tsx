@@ -6,6 +6,7 @@
 import React from 'react';
 import { SiApple, SiAndroid, SiSamsung, SiLg } from 'react-icons/si';
 import { FaTv, FaChrome } from 'react-icons/fa';
+import { IconType } from 'react-icons';
 import { glassTokens } from '../../styles/glass-tokens';
 
 export type PlatformType = 'ios' | 'android' | 'tvos' | 'web' | 'webos' | 'tizen';
@@ -17,7 +18,13 @@ export interface PlatformGridProps {
   className?: string;
 }
 
-const platformConfig = {
+interface PlatformConfig {
+  icon: IconType;
+  label: string;
+  description: string;
+}
+
+const platformConfig: Record<PlatformType, PlatformConfig> = {
   ios: {
     icon: SiApple,
     label: 'iOS',
@@ -83,7 +90,7 @@ export const PlatformGrid: React.FC<PlatformGridProps> = ({
     <div className={`grid ${columnClasses[columns]} gap-6 ${className}`}>
       {platforms.map((platform) => {
         const config = platformConfig[platform];
-        const Icon = config.icon;
+        const IconComponent = config.icon;
 
         return (
           <div
@@ -100,10 +107,10 @@ export const PlatformGrid: React.FC<PlatformGridProps> = ({
             role="button"
             aria-label={`${config.label} - ${config.description}`}
           >
-            <Icon
-              className={`${sizeClasses[size]} mx-auto mb-3 ${glassTokens.text.primary}`}
-              aria-hidden="true"
-            />
+            {React.createElement(IconComponent as React.ComponentType<{ className?: string; 'aria-hidden'?: string }>, {
+              className: `${sizeClasses[size]} mx-auto mb-3 ${glassTokens.text.primary}`,
+              'aria-hidden': 'true',
+            })}
             <h3 className={`${glassTokens.text.primary} font-semibold mb-1`}>
               {config.label}
             </h3>
