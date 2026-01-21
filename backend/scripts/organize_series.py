@@ -15,6 +15,7 @@ Usage:
 """
 
 import asyncio
+import os
 import re
 import sys
 from collections import defaultdict
@@ -441,7 +442,9 @@ class SeriesOrganizer:
 async def main():
     """Main entry point."""
     # Connect to MongoDB
-    url = "mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/bayit_plus?retryWrites=true&w=majority"
+    url = os.getenv("MONGODB_URI")
+    if not url:
+        raise RuntimeError("MONGODB_URI environment variable not set")
     client = AsyncIOMotorClient(url)
     db = client["bayit_plus"]
 
