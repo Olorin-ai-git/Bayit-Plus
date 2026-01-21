@@ -184,6 +184,19 @@ logger.info("Request timing middleware enabled")
 app.add_middleware(CorrelationIdMiddleware)
 logger.info("Correlation ID middleware enabled")
 
+# Rate limiting middleware - protects against abuse
+from app.core.rate_limiter import limiter, RATE_LIMITING_ENABLED
+
+if RATE_LIMITING_ENABLED:
+    app.state.limiter = limiter
+    app.add_exception_handler(
+        exc_class_or_status_code=429,
+        handler=lambda request, exc: {"detail": "Rate limit exceeded", "status": 429},
+    )
+    logger.info("Global rate limiting middleware enabled (slowapi)")
+else:
+    logger.warning("Rate limiting disabled - slowapi not installed")
+
 # CORS middleware - added LAST = outermost (wraps all responses including errors)
 # This ensures CORS headers are added even to error responses
 cors_origins = settings.parsed_cors_origins
