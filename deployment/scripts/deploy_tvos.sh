@@ -128,19 +128,28 @@ main() {
     fi
     print_success "npm found"
 
-    # Check for App Store Connect credentials (only if uploading)
-    if [[ "$SKIP_UPLOAD" != "true" ]]; then
-        if [[ -z "$APP_STORE_CONNECT_API_KEY_ID" ]] || [[ -z "$APP_STORE_CONNECT_ISSUER_ID" ]] || [[ -z "$APP_STORE_CONNECT_API_KEY_PATH" ]]; then
-            print_warning "App Store Connect API credentials not set. Upload will be skipped."
-            print_info "Set APP_STORE_CONNECT_API_KEY_ID, APP_STORE_CONNECT_ISSUER_ID, and APP_STORE_CONNECT_API_KEY_PATH"
-            SKIP_UPLOAD=true
+    # Check for App Store Connect credentials (required for cloud-managed signing)
+    CLOUD_SIGNING_AVAILABLE=false
+    if [[ -n "$APP_STORE_CONNECT_API_KEY_ID" ]] && [[ -n "$APP_STORE_CONNECT_ISSUER_ID" ]] && [[ -n "$APP_STORE_CONNECT_API_KEY_PATH" ]]; then
+        if [[ -f "$APP_STORE_CONNECT_API_KEY_PATH" ]]; then
+            print_success "App Store Connect credentials configured (cloud-managed signing available)"
+            CLOUD_SIGNING_AVAILABLE=true
         else
-            if [[ ! -f "$APP_STORE_CONNECT_API_KEY_PATH" ]]; then
-                print_error "API key file not found: $APP_STORE_CONNECT_API_KEY_PATH"
-                exit 1
-            fi
-            print_success "App Store Connect credentials configured"
+            print_warning "API key file not found: $APP_STORE_CONNECT_API_KEY_PATH"
         fi
+    else
+        print_warning "App Store Connect API credentials not set."
+        print_info "For cloud-managed signing (no device required), set:"
+        print_info "  APP_STORE_CONNECT_API_KEY_ID"
+        print_info "  APP_STORE_CONNECT_ISSUER_ID"
+        print_info "  APP_STORE_CONNECT_API_KEY_PATH"
+        print_info "Without these, automatic signing requires registered Apple TV devices."
+    fi
+
+    # Skip upload if no credentials
+    if [[ "$SKIP_UPLOAD" != "true" ]] && [[ "$CLOUD_SIGNING_AVAILABLE" != "true" ]]; then
+        print_warning "Upload will be skipped (no API credentials)."
+        SKIP_UPLOAD=true
     fi
 
     # Display configuration
@@ -164,6 +173,10 @@ main() {
         npm install --legacy-peer-deps
         print_success "npm dependencies installed"
 
+        print_info "Running React Native codegen..."
+        npx react-native codegen
+        print_success "Codegen completed"
+
         print_info "Installing CocoaPods dependencies..."
         cd "$TVOS_DIR"
         pod install
@@ -181,15 +194,27 @@ main() {
         mkdir -p build
 
         print_info "Building archive..."
-        xcodebuild archive \
-            -workspace "$TVOS_WORKSPACE" \
-            -scheme "$TVOS_SCHEME" \
-            -configuration "$BUILD_CONFIGURATION" \
-            -archivePath "$ARCHIVE_PATH" \
-            -destination "generic/platform=tvOS" \
+
+        # Build with API key authentication if available (enables cloud-managed signing)
+        ARCHIVE_CMD="xcodebuild archive \
+            -workspace \"$TVOS_WORKSPACE\" \
+            -scheme \"$TVOS_SCHEME\" \
+            -configuration \"$BUILD_CONFIGURATION\" \
+            -archivePath \"$ARCHIVE_PATH\" \
+            -destination \"generic/platform=tvOS\" \
             -allowProvisioningUpdates \
-            CODE_SIGN_STYLE=Automatic \
-            | tee build/archive.log
+            CODE_SIGN_STYLE=Automatic"
+
+        # Add API key authentication for cloud-managed signing
+        if [[ -n "$APP_STORE_CONNECT_API_KEY_PATH" ]] && [[ -f "$APP_STORE_CONNECT_API_KEY_PATH" ]]; then
+            print_info "Using App Store Connect API key for cloud-managed signing..."
+            ARCHIVE_CMD="$ARCHIVE_CMD \
+                -authenticationKeyPath \"$APP_STORE_CONNECT_API_KEY_PATH\" \
+                -authenticationKeyID \"$APP_STORE_CONNECT_API_KEY_ID\" \
+                -authenticationKeyIssuerID \"$APP_STORE_CONNECT_ISSUER_ID\""
+        fi
+
+        eval "$ARCHIVE_CMD" | tee build/archive.log
 
         if [[ ! -d "$ARCHIVE_PATH" ]]; then
             print_error "Archive failed - archive not found at $ARCHIVE_PATH"
