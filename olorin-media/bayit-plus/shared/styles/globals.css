@@ -1,0 +1,730 @@
+/* Bayit+ Shared Styles
+ * Core glassmorphic variables and base styles for all platforms
+ */
+
+/* Import Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Tailwind layers */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark Purple/Black Glassmorphic Theme Variables */
+:root {
+  /* Primary Colors - Dark Purple */
+  --primary: #7e22ce;
+  --primary-light: #9333ea;
+  --primary-dark: #6b21a8;
+  --secondary: #86198f;
+  
+  /* Backgrounds - Pure Black */
+  --background: #000000;
+  --background-light: #0a0a0a;
+  --background-lighter: #171717;
+  --background-elevated: #262626;
+  
+  /* Glass Backgrounds - Dark Purple-tinted Black */
+  --glass-bg: rgba(10, 10, 10, 0.7);
+  --glass-bg-light: rgba(10, 10, 10, 0.5);
+  --glass-bg-medium: rgba(10, 10, 10, 0.6);
+  --glass-bg-strong: rgba(10, 10, 10, 0.85);
+  --glass-bg-purple: rgba(59, 7, 100, 0.5);
+  --glass-bg-purple-light: rgba(88, 28, 135, 0.35);
+  
+  /* Glass Borders - Dark Purple */
+  --glass-border: rgba(126, 34, 206, 0.25);
+  --glass-border-light: rgba(126, 34, 206, 0.15);
+  --glass-border-strong: rgba(126, 34, 206, 0.45);
+  --glass-border-focus: rgba(126, 34, 206, 0.7);
+  --glass-border-white: rgba(255, 255, 255, 0.1);
+  
+  /* Glass Effects - Dark Purple */
+  --glass-glow: rgba(126, 34, 206, 0.35);
+  --glass-glow-strong: rgba(126, 34, 206, 0.6);
+  --glass-highlight: rgba(107, 33, 168, 0.2);
+  
+  /* Text Colors */
+  --text: #ffffff;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+}
+
+/* Direction is controlled by JavaScript via document.documentElement.dir */
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  @apply text-white;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #000000 100%);
+  min-height: 100vh;
+  /* Safe area insets for notched devices and browser chrome */
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(51, 65, 85, 0.8);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(71, 85, 105, 1);
+}
+
+/* Focus Styles - Purple Glow */
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--glass-border-focus), 0 0 20px var(--glass-glow);
+}
+
+/* Overlay Backdrop */
+.overlay-backdrop {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Video Player */
+.video-player {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: black;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.video-player video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Skeleton Loading Animation */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton {
+  animation: shimmer 1.5s infinite;
+  background: linear-gradient(90deg, var(--glass-bg) 25%, var(--glass-bg-light) 50%, var(--glass-bg) 75%);
+  background-size: 200% 100%;
+  border-radius: 8px;
+}
+
+/* Live Badge */
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 9999px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+}
+
+.live-badge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Blinking Cursor Animation */
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+/* Custom Range Slider */
+input[type="range"] {
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  margin-top: -4px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  transition: transform 150ms;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  border: 0;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Hebrew Text Utilities */
+.hebrew-nums {
+  font-feature-settings: "lnum" 1;
+}
+
+/* ==================== */
+/* GLASS EFFECTS        */
+/* ==================== */
+
+/* Base Glass Classes */
+.glass,
+[data-glass="true"] {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
+.glass-subtle {
+  background: transparent;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
+.glass-strong {
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+}
+
+/* Glass Card */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Glass Button */
+.glass-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.glass-btn:hover {
+  background: var(--glass-bg-strong);
+  transform: translateY(-2px);
+}
+
+.glass-btn-primary {
+  background: var(--primary);
+  border-color: var(--glass-border-strong);
+}
+
+.glass-btn-primary:hover {
+  background: var(--primary-light);
+  box-shadow: 0 0 20px var(--glass-glow);
+}
+
+/* Glass Input */
+.glass-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--glass-border-focus);
+  box-shadow: 0 0 0 3px var(--glass-glow);
+}
+
+.glass-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Glass Badge */
+.glass-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.glass-badge-primary {
+  background: var(--glass-bg-purple-light);
+  border-color: var(--glass-border-strong);
+  color: var(--primary-light);
+}
+
+/* Glass Tabs */
+.glass-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
+.glass-tab {
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.glass-tab:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.glass-tab.active,
+.glass-tab-active {
+  background: var(--glass-bg);
+  color: white;
+}
+
+/* Category Pills */
+.category-pill {
+  padding: 8px 16px;
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 9999px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-pill:hover {
+  color: white;
+  background: var(--glass-bg);
+}
+
+.category-pill.active {
+  background: var(--primary);
+  border-color: var(--glass-border-strong);
+  color: white;
+  box-shadow: 0 0 15px var(--glass-glow);
+}
+
+/* ==================== */
+/* STAGGERED ANIMATIONS */
+/* ==================== */
+
+/* Card fade + slide up animation */
+@keyframes cardFadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animated-card {
+  animation: cardFadeSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Stagger delay classes for grid cards (up to 50 items) */
+.animated-card-delay-0 { animation-delay: 0ms; }
+.animated-card-delay-1 { animation-delay: 40ms; }
+.animated-card-delay-2 { animation-delay: 80ms; }
+.animated-card-delay-3 { animation-delay: 120ms; }
+.animated-card-delay-4 { animation-delay: 160ms; }
+.animated-card-delay-5 { animation-delay: 200ms; }
+.animated-card-delay-6 { animation-delay: 240ms; }
+.animated-card-delay-7 { animation-delay: 280ms; }
+.animated-card-delay-8 { animation-delay: 320ms; }
+.animated-card-delay-9 { animation-delay: 360ms; }
+.animated-card-delay-10 { animation-delay: 400ms; }
+.animated-card-delay-11 { animation-delay: 440ms; }
+.animated-card-delay-12 { animation-delay: 480ms; }
+.animated-card-delay-13 { animation-delay: 520ms; }
+.animated-card-delay-14 { animation-delay: 560ms; }
+.animated-card-delay-15 { animation-delay: 600ms; }
+.animated-card-delay-16 { animation-delay: 640ms; }
+.animated-card-delay-17 { animation-delay: 680ms; }
+.animated-card-delay-18 { animation-delay: 720ms; }
+.animated-card-delay-19 { animation-delay: 760ms; }
+.animated-card-delay-20 { animation-delay: 800ms; }
+.animated-card-delay-21 { animation-delay: 840ms; }
+.animated-card-delay-22 { animation-delay: 880ms; }
+.animated-card-delay-23 { animation-delay: 920ms; }
+.animated-card-delay-24 { animation-delay: 960ms; }
+.animated-card-delay-25 { animation-delay: 1000ms; }
+.animated-card-delay-26 { animation-delay: 1040ms; }
+.animated-card-delay-27 { animation-delay: 1080ms; }
+.animated-card-delay-28 { animation-delay: 1120ms; }
+.animated-card-delay-29 { animation-delay: 1160ms; }
+.animated-card-delay-30 { animation-delay: 1200ms; }
+.animated-card-delay-31 { animation-delay: 1240ms; }
+.animated-card-delay-32 { animation-delay: 1280ms; }
+.animated-card-delay-33 { animation-delay: 1320ms; }
+.animated-card-delay-34 { animation-delay: 1360ms; }
+.animated-card-delay-35 { animation-delay: 1400ms; }
+.animated-card-delay-36 { animation-delay: 1440ms; }
+.animated-card-delay-37 { animation-delay: 1480ms; }
+.animated-card-delay-38 { animation-delay: 1520ms; }
+.animated-card-delay-39 { animation-delay: 1560ms; }
+.animated-card-delay-40 { animation-delay: 1600ms; }
+.animated-card-delay-41 { animation-delay: 1640ms; }
+.animated-card-delay-42 { animation-delay: 1680ms; }
+.animated-card-delay-43 { animation-delay: 1720ms; }
+.animated-card-delay-44 { animation-delay: 1760ms; }
+.animated-card-delay-45 { animation-delay: 1800ms; }
+.animated-card-delay-46 { animation-delay: 1840ms; }
+.animated-card-delay-47 { animation-delay: 1880ms; }
+.animated-card-delay-48 { animation-delay: 1920ms; }
+.animated-card-delay-49 { animation-delay: 1960ms; }
+
+/* Table row animation - slide from side */
+@keyframes rowFadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes rowFadeSlideInRTL {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animated-row {
+  animation: rowFadeSlideIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.animated-row-rtl {
+  animation: rowFadeSlideInRTL 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Stagger delay classes for table rows */
+.animated-row-delay-0 { animation-delay: 0ms; }
+.animated-row-delay-1 { animation-delay: 30ms; }
+.animated-row-delay-2 { animation-delay: 60ms; }
+.animated-row-delay-3 { animation-delay: 90ms; }
+.animated-row-delay-4 { animation-delay: 120ms; }
+.animated-row-delay-5 { animation-delay: 150ms; }
+.animated-row-delay-6 { animation-delay: 180ms; }
+.animated-row-delay-7 { animation-delay: 210ms; }
+.animated-row-delay-8 { animation-delay: 240ms; }
+.animated-row-delay-9 { animation-delay: 270ms; }
+.animated-row-delay-10 { animation-delay: 300ms; }
+.animated-row-delay-11 { animation-delay: 330ms; }
+.animated-row-delay-12 { animation-delay: 360ms; }
+.animated-row-delay-13 { animation-delay: 390ms; }
+.animated-row-delay-14 { animation-delay: 420ms; }
+.animated-row-delay-15 { animation-delay: 450ms; }
+.animated-row-delay-16 { animation-delay: 480ms; }
+.animated-row-delay-17 { animation-delay: 510ms; }
+.animated-row-delay-18 { animation-delay: 540ms; }
+.animated-row-delay-19 { animation-delay: 570ms; }
+
+/* Carousel card animation - slide from side */
+@keyframes carouselCardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes carouselCardSlideInRTL {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animated-carousel-card {
+  animation: carouselCardSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.animated-carousel-card-rtl {
+  animation: carouselCardSlideInRTL 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Stagger delay classes for carousel cards */
+.animated-carousel-delay-0 { animation-delay: 0ms; }
+.animated-carousel-delay-1 { animation-delay: 50ms; }
+.animated-carousel-delay-2 { animation-delay: 100ms; }
+.animated-carousel-delay-3 { animation-delay: 150ms; }
+.animated-carousel-delay-4 { animation-delay: 200ms; }
+.animated-carousel-delay-5 { animation-delay: 250ms; }
+.animated-carousel-delay-6 { animation-delay: 300ms; }
+.animated-carousel-delay-7 { animation-delay: 350ms; }
+.animated-carousel-delay-8 { animation-delay: 400ms; }
+.animated-carousel-delay-9 { animation-delay: 450ms; }
+.animated-carousel-delay-10 { animation-delay: 500ms; }
+.animated-carousel-delay-11 { animation-delay: 550ms; }
+.animated-carousel-delay-12 { animation-delay: 600ms; }
+.animated-carousel-delay-13 { animation-delay: 650ms; }
+.animated-carousel-delay-14 { animation-delay: 700ms; }
+.animated-carousel-delay-15 { animation-delay: 750ms; }
+
+/* ==================== */
+/* Chess Check Glow Animations */
+/* ==================== */
+
+/* King in check - red pulsing glow */
+@keyframes checkGlowKing {
+  0%, 100% {
+    filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.6))
+            drop-shadow(0 0 30px rgba(239, 68, 68, 0.4))
+            drop-shadow(0 0 45px rgba(239, 68, 68, 0.2));
+  }
+  50% {
+    filter: drop-shadow(0 0 25px rgba(239, 68, 68, 1))
+            drop-shadow(0 0 50px rgba(239, 68, 68, 0.8))
+            drop-shadow(0 0 75px rgba(239, 68, 68, 0.5));
+  }
+}
+
+/* Attacking piece - amber pulsing glow */
+@keyframes checkGlowAttacker {
+  0%, 100% {
+    filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.6))
+            drop-shadow(0 0 30px rgba(251, 191, 36, 0.4))
+            drop-shadow(0 0 45px rgba(251, 191, 36, 0.2));
+  }
+  50% {
+    filter: drop-shadow(0 0 25px rgba(251, 191, 36, 1))
+            drop-shadow(0 0 50px rgba(251, 191, 36, 0.8))
+            drop-shadow(0 0 75px rgba(251, 191, 36, 0.5));
+  }
+}
+
+.chess-check-glow-king {
+  animation: checkGlowKing 1.2s ease-in-out infinite;
+}
+
+.chess-check-glow-attacker {
+  animation: checkGlowAttacker 1.2s ease-in-out infinite;
+}
+
+/* Illegal move shake animation */
+@keyframes illegal-move-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-3px);
+  }
+  40% {
+    transform: translateX(3px);
+  }
+  60% {
+    transform: translateX(-2px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+/* Spin animation for loading spinners */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* ==================== */
+/* LIVE CHANNEL CARDS   */
+/* ==================== */
+
+/* Live Badge Pulse Animation (Enhanced) */
+@keyframes livePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0);
+  }
+}
+
+.live-pulse-dot {
+  animation: livePulse 1.5s ease-in-out infinite;
+}
+
+/* Live Channel Card Hover Effects */
+.live-channel-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border-white);
+  transition: all 0.2s ease;
+}
+
+.live-channel-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(107, 33, 168, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.live-channel-card:hover .channel-name {
+  color: var(--primary-light);
+}
+
+/* Live Channel Card Thumbnail Gradient */
+.live-channel-gradient {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.5) 40%, transparent 100%);
+}
+
+/* Live Play Button */
+.live-play-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.95), rgba(147, 51, 234, 0.95));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.live-play-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 32px rgba(168, 85, 247, 0.7);
+}

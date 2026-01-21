@@ -1,0 +1,295 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      staging_verification:
+        description: "Confirm staging has been tested"
+        required: true
+        type: boolean
+        default: false
+      rollback_revision:
+        description: "Revision to rollback to (leave empty for new deploy)"
+        required: false
+        type: string
+
+env:
+  PROJECT_ID: ${{ vars.GCP_PROJECT_ID || 'bayit-plus' }}
+  REGION: ${{ vars.GCP_REGION || 'us-east1' }}
+  SERVICE_NAME: ${{ vars.PRODUCTION_SERVICE_NAME || 'bayit-plus-backend' }}
+  ARTIFACT_REGISTRY: ${{ vars.GCP_REGION || 'us-east1' }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID || 'bayit-plus' }}/bayit-plus
+  IMAGE_NAME: backend
+
+jobs:
+  validate-inputs:
+    name: Validate deployment inputs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check staging verification
+        if: github.event.inputs.rollback_revision == '' && github.event.inputs.staging_verification != 'true'
+        run: |
+          echo "ERROR: You must confirm staging has been tested before deploying to production"
+          exit 1
+
+      - name: Validate rollback revision format
+        if: github.event.inputs.rollback_revision != ''
+        run: |
+          REVISION="${{ github.event.inputs.rollback_revision }}"
+          if [[ ! $REVISION =~ ^${{ env.SERVICE_NAME }}-[0-9]{5}-[a-z0-9]+$ ]]; then
+            echo "WARNING: Revision format may be invalid. Expected format: ${{ env.SERVICE_NAME }}-00001-abc"
+          fi
+          echo "Rolling back to revision: $REVISION"
+
+  rollback:
+    name: Rollback to previous revision
+    runs-on: ubuntu-latest
+    needs: [validate-inputs]
+    if: github.event.inputs.rollback_revision != ''
+    environment: production
+
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Rollback to specified revision
+        run: |
+          echo "Rolling back to revision: ${{ github.event.inputs.rollback_revision }}"
+          gcloud run services update-traffic ${{ env.SERVICE_NAME }} \
+            --region ${{ env.REGION }} \
+            --to-revisions=${{ github.event.inputs.rollback_revision }}=100
+
+      - name: Verify rollback health
+        run: |
+          SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_NAME }} \
+            --region ${{ env.REGION }} \
+            --format 'value(status.url)')
+
+          echo "Verifying rollback at: $SERVICE_URL"
+          sleep 15
+
+          if curl -sf "$SERVICE_URL/health"; then
+            echo "Rollback verified successfully!"
+          else
+            echo "WARNING: Health check failed after rollback"
+            exit 1
+          fi
+
+  build:
+    name: Build production image
+    runs-on: ubuntu-latest
+    needs: [validate-inputs]
+    if: github.event.inputs.rollback_revision == ''
+
+    outputs:
+      image_tag: ${{ steps.meta.outputs.version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.ARTIFACT_REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=prod-
+            type=raw,value=production
+            type=raw,value=prod-${{ github.run_number }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.ARTIFACT_REGISTRY }}/${{ env.IMAGE_NAME }}:production
+          cache-to: type=inline
+
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.event.inputs.rollback_revision == ''
+    environment: production
+
+    outputs:
+      service_url: ${{ steps.service.outputs.url }}
+      previous_revision: ${{ steps.revisions.outputs.previous }}
+      current_revision: ${{ steps.revisions.outputs.current }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Get current revision before deploy
+        id: revisions
+        run: |
+          CURRENT=$(gcloud run revisions list \
+            --service ${{ env.SERVICE_NAME }} \
+            --region ${{ env.REGION }} \
+            --format 'value(name)' \
+            --limit 1)
+          echo "previous=$CURRENT" >> $GITHUB_OUTPUT
+          echo "Current revision before deploy: $CURRENT"
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.SERVICE_NAME }} \
+            --image ${{ env.ARTIFACT_REGISTRY }}/${{ env.IMAGE_NAME }}:prod-${{ github.run_number }} \
+            --region ${{ env.REGION }} \
+            --platform managed \
+            --allow-unauthenticated \
+            --memory 2Gi \
+            --cpu 2 \
+            --timeout 300 \
+            --max-instances 10 \
+            --min-instances 1 \
+            --concurrency 80 \
+            --port 8080 \
+            --cpu-boost \
+            --set-env-vars "API_V1_PREFIX=/api/v1,STORAGE_TYPE=gcs,DEBUG=false,GCP_PROJECT_ID=bayit-plus,SENTRY_ENVIRONMENT=production,LOG_LEVEL=INFO,SENTRY_TRACES_SAMPLE_RATE=0.2" \
+            --set-secrets "SECRET_KEY=bayit-secret-key:latest,MONGODB_URL=mongodb-url:latest,MONGODB_DB_NAME=mongodb-db-name:latest,STRIPE_SECRET_KEY=stripe-secret-key:latest,STRIPE_WEBHOOK_SECRET=stripe-webhook-secret:latest,ANTHROPIC_API_KEY=anthropic-api-key:latest,ELEVENLABS_API_KEY=elevenlabs-api-key:latest,OPENAI_API_KEY=bayit-openai-api-key:latest,SENTRY_DSN=sentry-dsn:latest"
+
+      - name: Get service URL and new revision
+        id: service
+        run: |
+          SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_NAME }} \
+            --region ${{ env.REGION }} \
+            --format 'value(status.url)')
+          echo "url=$SERVICE_URL" >> $GITHUB_OUTPUT
+
+          NEW_REVISION=$(gcloud run revisions list \
+            --service ${{ env.SERVICE_NAME }} \
+            --region ${{ env.REGION }} \
+            --format 'value(name)' \
+            --limit 1)
+          echo "current=$NEW_REVISION" >> $GITHUB_OUTPUT
+          echo "New revision: $NEW_REVISION"
+
+  health-check:
+    name: Verify deployment health
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    if: github.event.inputs.rollback_revision == ''
+
+    steps:
+      - name: Run comprehensive health checks
+        env:
+          SERVICE_URL: ${{ needs.deploy.outputs.service_url }}
+        run: |
+          echo "Running health checks against $SERVICE_URL"
+          sleep 30
+
+          # Basic health check
+          echo "Testing /health..."
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$SERVICE_URL/health")
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "Basic health check passed!"
+              break
+            fi
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "Attempt $RETRY_COUNT: got $HTTP_CODE, retrying..."
+            sleep 10
+          done
+
+          if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+            echo "Health check failed after $MAX_RETRIES attempts"
+            exit 1
+          fi
+
+          # Test readiness endpoint if available
+          echo "Testing /health/ready..."
+          curl -sf "$SERVICE_URL/health/ready" || echo "Readiness endpoint not available (may be expected)"
+
+          echo "All health checks passed!"
+
+  auto-rollback:
+    name: Auto-rollback on failure
+    runs-on: ubuntu-latest
+    needs: [deploy, health-check]
+    if: failure() && needs.deploy.outputs.previous_revision != '' && github.event.inputs.rollback_revision == ''
+
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Rollback to previous revision
+        run: |
+          echo "Auto-rolling back to: ${{ needs.deploy.outputs.previous_revision }}"
+          gcloud run services update-traffic ${{ env.SERVICE_NAME }} \
+            --region ${{ env.REGION }} \
+            --to-revisions=${{ needs.deploy.outputs.previous_revision }}=100
+          echo "Rollback completed!"
+
+      - name: Verify rollback
+        run: |
+          SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_NAME }} \
+            --region ${{ env.REGION }} \
+            --format 'value(status.url)')
+          sleep 15
+          curl -sf "$SERVICE_URL/health" && echo "Rollback verified!"
+
+  notify:
+    name: Notify deployment status
+    runs-on: ubuntu-latest
+    needs: [deploy, health-check]
+    if: always()
+
+    steps:
+      - name: Deployment summary
+        run: |
+          echo "# Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Service | ${{ env.SERVICE_NAME }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Region | ${{ env.REGION }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deploy Status | ${{ needs.deploy.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Health Check | ${{ needs.health-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| URL | ${{ needs.deploy.outputs.service_url }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Previous Revision | ${{ needs.deploy.outputs.previous_revision }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Current Revision | ${{ needs.deploy.outputs.current_revision }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Triggered By | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Check overall status
+        if: needs.deploy.result == 'failure' || needs.health-check.result == 'failure'
+        run: |
+          echo "Production deployment had issues!"
+          echo "Check the auto-rollback job status"
+          exit 1

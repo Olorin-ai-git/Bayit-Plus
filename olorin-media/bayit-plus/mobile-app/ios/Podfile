@@ -1,0 +1,54 @@
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
+
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
+
+linkage = ENV['USE_FRAMEWORKS']
+if linkage != nil
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
+end
+
+target 'BayitPlus' do
+  config = use_native_modules!
+
+  # Disable problematic packages for simulator build
+  post_install_setup_env = ENV['XCODE_SIMULATOR_BUILD'] == '1'
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    :production => !post_install_setup_env
+  )
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
+    )
+
+    # Disable Sentry profiler to fix C++ compilation errors on arm64 simulator
+    installer.pods_project.targets.each do |target|
+      if target.name == 'Sentry'
+        target.build_configurations.each do |config|
+          # Disable Sentry profiler feature
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited)'
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] += ' SENTRY_DISABLE_PROFILER_FEATURE=1 SENTRY_PROFILER_ENABLED=0'
+
+          # Disable problematic C++ optimization
+          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'gnu++17'
+          config.build_settings['CLANG_CXX_LIBRARY'] = 'libc++'
+          config.build_settings['GCC_OPTIMIZATION_LEVEL'] = '0'
+        end
+      end
+    end
+  end
+end

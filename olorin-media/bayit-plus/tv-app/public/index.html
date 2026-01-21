@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d0d1a">
+  <meta name="description" content="Bayit+ - Your home for Israeli content in the USA">
+  <title>Bayit+ | בית+</title>
+
+  <!-- Hebrew Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- CJK fonts (Chinese, Japanese) -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Indic script fonts (Hindi, Tamil, Bengali) -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body, #root {
+      width: 100%;
+      height: 100%;
+      background-color: #0d0d1a;
+      font-family: 'Heebo', 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans Devanagari', 'Noto Sans Tamil', 'Noto Sans Bengali', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+    }
+    #root {
+      display: flex;
+      flex-direction: column;
+    }
+    /* Loading screen */
+    .loading {
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+    .logo-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .logo-image {
+      width: 180px;
+      height: 90px;
+      object-fit: contain;
+      margin-bottom: -12px;
+    }
+    .logo-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-bayit {
+      font-size: 64px;
+      font-weight: bold;
+      color: #ffffff;
+    }
+    .logo-plus {
+      font-size: 56px;
+      font-weight: bold;
+      color: #a855f7;
+      margin-left: 4px;
+    }
+    .loading-text {
+      color: #a855f7;
+      font-size: 20px;
+      margin-top: 16px;
+    }
+    /* Powered by section */
+    .powered-by {
+      position: fixed;
+      bottom: 3%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .powered-by-text {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+    .powered-by-link {
+      font-size: 14px;
+      color: #A855F7;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    .powered-by-link:hover {
+      color: #C084FC;
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div class="loading">
+      <div class="logo-container">
+        <img src="/logo.png" alt="Bayit+" class="logo-image" />
+        <div class="logo-text">
+          <span class="logo-bayit">בית</span>
+          <span class="logo-plus">+</span>
+        </div>
+      </div>
+      <div class="loading-text">טוען...</div>
+    </div>
+    <div class="powered-by">
+      <span class="powered-by-text" id="powered-by-text">Powered by</span>
+      <a href="https://marketing.radio.olorin.ai" target="_blank" class="powered-by-link">Olorin.ai LLC</a>
+    </div>
+  </div>
+  <script>
+    // Localized translations
+    var translations = {
+      en: { poweredBy: 'Powered by' },
+      he: { poweredBy: 'מופעל על ידי' },
+      es: { poweredBy: 'Desarrollado por' },
+      zh: { poweredBy: '技术支持' },
+      fr: { poweredBy: 'Propulsé par' },
+      it: { poweredBy: 'Powered by' },
+      hi: { poweredBy: 'द्वारा संचालित' },
+      ta: { poweredBy: 'மூலம் இயக்கப்படுகிறது' },
+      bn: { poweredBy: 'দ্বারা চালিত' },
+      ja: { poweredBy: '提供元' }
+    };
+    
+    // Get saved language from localStorage
+    function getSavedLanguage() {
+      try {
+        var saved = localStorage.getItem('i18nextLng');
+        if (saved) {
+          var lang = saved.split('-')[0]; // Handle locales like 'en-US'
+          if (translations[lang]) return lang;
+        }
+      } catch (e) {}
+      return 'en'; // Default to English
+    }
+    
+    // Set localized text immediately
+    var currentLang = getSavedLanguage();
+    var poweredByElement = document.getElementById('powered-by-text');
+    if (poweredByElement && translations[currentLang]) {
+      poweredByElement.textContent = translations[currentLang].poweredBy;
+    }
+  </script>
+</body>
+</html>

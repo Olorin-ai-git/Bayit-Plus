@@ -1,0 +1,96 @@
+%% AI Librarian Content Audit Process
+%% Flowchart showing automated content classification and quality control
+
+flowchart TD
+    Start([New Content Uploaded]) --> Trigger[Trigger Audit Event<br/>POST /admin/content/audit]
+
+    Trigger --> QueueJob[Add to Audit Queue<br/>Background Task]
+
+    QueueJob --> FetchContent[Fetch Content Metadata<br/>Title, Description, Duration]
+
+    FetchContent --> CheckExists{Content<br/>Already Audited?}
+
+    CheckExists -->|Yes| CheckStale{Audit<br/>Outdated?}
+    CheckStale -->|No| SkipAudit[Skip Audit<br/>Use Cached Results]
+    SkipAudit --> End([Audit Complete])
+    CheckStale -->|Yes| CheckExists
+
+    CheckExists -->|No| StreamCheck[Validate Stream URL<br/>Check Accessibility]
+
+    StreamCheck --> StreamValid{Stream<br/>Accessible?}
+
+    StreamValid -->|No| FlagStream[Flag Stream Error<br/>Notify Admin]
+    FlagStream --> SetPending[Set Status: Pending Fix]
+    SetPending --> End
+
+    StreamValid -->|Yes| ExtractSample[Extract Video Sample<br/>First 5 Minutes]
+
+    ExtractSample --> AIAnalysis[Send to AI/LLM<br/>Content Analysis]
+
+    AIAnalysis --> ClassifySection{Classify<br/>Section}
+
+    ClassifySection --> SectionResult[Section:<br/>Kids/Youngsters/<br/>Judaism/General]
+
+    SectionResult --> ClassifySubcategory{Classify<br/>Subcategory}
+
+    ClassifySubcategory --> SubcategoryResult[Subcategory:<br/>Movies/Series/<br/>Education/etc]
+
+    SubcategoryResult --> ClassifyGenre{Classify<br/>Genre}
+
+    ClassifyGenre --> GenreResult[Genre:<br/>Adventure/Drama/<br/>Documentary/etc]
+
+    GenreResult --> ClassifyAudience{Classify<br/>Audience}
+
+    ClassifyAudience --> AudienceResult[Audience:<br/>Toddlers/Kids/<br/>Family/Teen/Adult]
+
+    AudienceResult --> ClassifyMaturity{Classify<br/>Maturity Rating}
+
+    ClassifyMaturity --> MaturityResult[Maturity:<br/>G/PG/PG-13/<br/>R/NR]
+
+    MaturityResult --> QualityCheck[Quality Control<br/>Check for Issues]
+
+    QualityCheck --> CheckQuality{Quality<br/>Issues Found?}
+
+    CheckQuality -->|Yes| FlagIssues[Flag Issues:<br/>- Inappropriate Content<br/>- Misleading Metadata<br/>- Poor Quality]
+    FlagIssues --> RequireReview[Require Manual Review]
+    RequireReview --> NotifyAdmin[Notify Admin<br/>Send Alert]
+
+    CheckQuality -->|No| ValidateTaxonomy[Validate Taxonomy<br/>All 5 Axes Complete]
+
+    ValidateTaxonomy --> TaxonomyComplete{All Axes<br/>Classified?}
+
+    TaxonomyComplete -->|No| PartialClassification[Set Status:<br/>Partially Classified]
+    PartialClassification --> NotifyAdmin
+
+    TaxonomyComplete -->|Yes| ConfidenceCheck{AI Confidence<br/>>80%?}
+
+    ConfidenceCheck -->|No| LowConfidence[Mark: Low Confidence<br/>Suggest Manual Review]
+    LowConfidence --> SaveResults
+
+    ConfidenceCheck -->|Yes| AutoApprove[Auto-Approve<br/>High Confidence]
+
+    AutoApprove --> SaveResults[Save Classification<br/>Update MongoDB]
+
+    SaveResults --> UpdateSearch[Update Search Index<br/>Apply Taxonomy]
+
+    UpdateSearch --> LogAudit[Log Audit Results<br/>Analytics + Monitoring]
+
+    LogAudit --> StatusApproved{Status}
+
+    StatusApproved -->|Approved| SetLive[Set Status: Live<br/>Content Visible]
+    StatusApproved -->|Flagged| SetReview[Set Status: Review Required]
+    StatusApproved -->|Partial| SetDraft[Set Status: Draft]
+
+    SetLive --> End
+    SetReview --> NotifyAdmin
+    NotifyAdmin --> End
+    SetDraft --> End
+
+    style Start fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    style End fill:#50C878,stroke:#2E7D4E,color:#fff
+    style AIAnalysis fill:#9B59B6,stroke:#6C3483,color:#fff
+    style FlagStream fill:#E74C3C,stroke:#A93226,color:#fff
+    style FlagIssues fill:#E74C3C,stroke:#A93226,color:#fff
+    style SetLive fill:#50C878,stroke:#2E7D4E,color:#fff
+    style SetReview fill:#F39C12,stroke:#B8730A,color:#fff
+    style QualityCheck fill:#3498DB,stroke:#2471A3,color:#fff

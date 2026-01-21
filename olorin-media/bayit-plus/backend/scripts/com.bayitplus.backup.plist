@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Job Label (unique identifier) -->
+    <key>Label</key>
+    <string>com.bayitplus.backup</string>
+
+    <!-- Program to run -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/olorin/Documents/Bayit-Plus/backend/scripts/backup_database.sh</string>
+    </array>
+
+    <!-- Schedule: Run daily at 3 AM -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>3</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <!-- Standard output and error logs -->
+    <key>StandardOutPath</key>
+    <string>/Users/olorin/Documents/Bayit-Plus/backend/backups/backup_stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/olorin/Documents/Bayit-Plus/backend/backups/backup_stderr.log</string>
+
+    <!-- Run even when user is not logged in -->
+    <key>RunAtLoad</key>
+    <false/>
+
+    <!-- Keep the job loaded -->
+    <key>KeepAlive</key>
+    <false/>
+</dict>
+</plist>

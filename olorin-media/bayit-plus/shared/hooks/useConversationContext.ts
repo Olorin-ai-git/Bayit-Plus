@@ -1,0 +1,174 @@
+/**
+ * Conversation Context Hook
+ * Tracks conversation state and context for smarter voice command interpretation
+ *
+ * Maintains:
+ * - Current page/route
+ * - Visible content on screen
+ * - Previously mentioned content
+ * - Command history
+ * - Last search query
+ */
+
+import { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { voiceCommandProcessor } from '../services/voiceCommandProcessor';
+
+export interface ConversationContextData {
+  currentRoute: string;
+  visibleContentIds: string[];
+  lastMentionedContentIds: string[];
+  commandHistory: string[];
+  lastSearchQuery: string;
+}
+
+interface UseConversationContextOptions {
+  maxHistoryLength?: number;
+}
+
+export function useConversationContext(
+  options: UseConversationContextOptions = {}
+) {
+  const { maxHistoryLength = 10 } = options;
+  const location = useLocation();
+  const [visibleContentIds, setVisibleContentIds] = useState<string[]>([]);
+  const [lastMentionedContentIds, setLastMentionedContentIds] = useState<string[]>([]);
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const [lastSearchQuery, setLastSearchQuery] = useState('');
+
+  // Update processor context whenever local state changes
+  useEffect(() => {
+    voiceCommandProcessor.updateContext({
+      currentRoute: location.pathname,
+      visibleContentIds,
+      lastMentionedContentIds,
+      previousCommands: [], // History of processed commands would go here
+      lastSearchQuery,
+    });
+  }, [location.pathname, visibleContentIds, lastMentionedContentIds, lastSearchQuery]);
+
+  /**
+   * Register visible content on screen
+   * Call this when a list of content items becomes visible
+   */
+  const registerVisibleContent = (ids: string[]) => {
+    setVisibleContentIds(ids);
+  };
+
+  /**
+   * Track content that was mentioned in conversation
+   * Helps interpret "play that one" or "show more like this"
+   */
+  const mentionContent = (ids: string | string[]) => {
+    const idArray = Array.isArray(ids) ? ids : [ids];
+    setLastMentionedContentIds((prev) => {
+      // Keep last 5 mentioned items
+      const updated = [...idArray, ...prev].slice(0, 5);
+      return updated;
+    });
+  };
+
+  /**
+   * Add command to history
+   * Useful for detecting repeated commands or user intent shifts
+   */
+  const recordCommand = (transcript: string) => {
+    setCommandHistory((prev) => {
+      const updated = [transcript, ...prev].slice(0, maxHistoryLength);
+      return updated;
+    });
+  };
+
+  /**
+   * Update last search query
+   * Helps with "find more like this" or "refine search" commands
+   */
+  const recordSearchQuery = (query: string) => {
+    setLastSearchQuery(query);
+  };
+
+  /**
+   * Get the first visible content ID
+   * Useful for commands like "play this" when user is looking at a specific item
+   */
+  const getFirstVisibleContentId = (): string | null => {
+    return visibleContentIds.length > 0 ? visibleContentIds[0] : null;
+  };
+
+  /**
+   * Get the last mentioned content ID
+   * For "play it again" type commands
+   */
+  const getLastMentionedContentId = (): string | null => {
+    return lastMentionedContentIds.length > 0 ? lastMentionedContentIds[0] : null;
+  };
+
+  /**
+   * Check if this command was recently issued
+   * Used to detect repeated commands
+   */
+  const wasRecentlyCommandedWith = (keyword: string, withinLastN: number = 3): boolean => {
+    return commandHistory
+      .slice(0, withinLastN)
+      .some((cmd) => cmd.toLowerCase().includes(keyword.toLowerCase()));
+  };
+
+  /**
+   * Get context for ambiguous commands
+   * Returns the best guess about what user is referring to
+   */
+  const resolveContextualReference = (): { contentId?: string; context: string } => {
+    // Priority: last mentioned > first visible > last search
+    const contentId = getLastMentionedContentId() || getFirstVisibleContentId();
+
+    if (contentId) {
+      return {
+        contentId,
+        context: 'visible_content',
+      };
+    }
+
+    if (lastSearchQuery) {
+      return {
+        context: 'search_results',
+      };
+    }
+
+    return {
+      context: 'none',
+    };
+  };
+
+  /**
+   * Clear all conversation context
+   * Call when starting a new conversation or user navigates away
+   */
+  const clear = () => {
+    setVisibleContentIds([]);
+    setLastMentionedContentIds([]);
+    setCommandHistory([]);
+    setLastSearchQuery('');
+  };
+
+  return {
+    // State
+    currentRoute: location.pathname,
+    visibleContentIds,
+    lastMentionedContentIds,
+    commandHistory,
+    lastSearchQuery,
+
+    // Actions
+    registerVisibleContent,
+    mentionContent,
+    recordCommand,
+    recordSearchQuery,
+    getFirstVisibleContentId,
+    getLastMentionedContentId,
+    wasRecentlyCommandedWith,
+    resolveContextualReference,
+    clear,
+  };
+}
+
+export default useConversationContext;

@@ -1,0 +1,45 @@
+[project]
+name = "olorin-services"
+version = "1.0.0"
+description = "Olorin.ai core services - resilience, rate limiting, metering"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+authors = [
+    { name = "Olorin.ai Platform Team" }
+]
+dependencies = [
+    "pydantic>=2.12.0",
+]
+
+[tool.poetry.dependencies]
+olorin-models = { path = "../olorin-models", develop = true }
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "mypy>=1.7.0",
+    "ruff>=0.1.0",
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [{include = "olorin_services"}]
+include = ["olorin_services/py.typed"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_ignores = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]

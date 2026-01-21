@@ -1,0 +1,43 @@
+/* Bayit+ TV App - Global Styles (NativeWind) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Glass component utilities */
+@layer components {
+  .glass-card {
+    @apply bg-dark-800/70 backdrop-blur-lg border border-white/10 rounded-xl;
+  }
+
+  .glass-card-light {
+    @apply bg-dark-800/50 backdrop-blur-md border border-white/5 rounded-xl;
+  }
+
+  .glass-card-strong {
+    @apply bg-dark-800/85 backdrop-blur-xl border border-white/10 rounded-xl;
+  }
+
+  .glass-button {
+    @apply bg-dark-800/70 backdrop-blur-md border border-white/10 rounded-lg px-4 py-2;
+  }
+
+  .glass-input {
+    @apply bg-dark-800/50 backdrop-blur-md border border-white/10 rounded-lg px-4 py-3;
+  }
+}
+
+/* TV-specific focus styles */
+@layer utilities {
+  .tv-focus {
+    @apply outline-none ring-4 ring-primary-500/50;
+  }
+
+  .tv-focus-visible:focus-visible {
+    @apply outline-none ring-4 ring-primary-500/50;
+  }
+}
+
+/* RTL support */
+[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}

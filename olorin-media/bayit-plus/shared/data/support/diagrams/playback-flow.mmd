@@ -1,0 +1,62 @@
+%% Content Playback Flow
+%% Flowchart showing video playback process with error handling
+
+flowchart TD
+    Start([User Selects Content]) --> CheckAuth{User<br/>Authenticated?}
+
+    CheckAuth -->|No| Login[Redirect to Login]
+    Login --> Start
+
+    CheckAuth -->|Yes| CheckSub{Has Active<br/>Subscription?}
+
+    CheckSub -->|No| Paywall[Show Paywall]
+    Paywall --> Subscribe{User<br/>Subscribes?}
+    Subscribe -->|No| End([Exit])
+    Subscribe -->|Yes| CheckSub
+
+    CheckSub -->|Yes| CheckContent{Content<br/>Available?}
+
+    CheckContent -->|No| Error404[Show 404 Error]
+    Error404 --> End
+
+    CheckContent -->|Yes| GetURL[Request Stream URL<br/>POST /content/playback]
+
+    GetURL --> ValidateURL{URL<br/>Valid?}
+
+    ValidateURL -->|No| ErrorURL[Show Stream Error]
+    ErrorURL --> Retry{Retry?}
+    Retry -->|Yes| GetURL
+    Retry -->|No| End
+
+    ValidateURL -->|Yes| InitPlayer[Initialize Video Player<br/>HLS/DASH]
+
+    InitPlayer --> LoadManifest[Load Manifest]
+
+    LoadManifest --> AdaptiveStream[Adaptive Bitrate Streaming<br/>Monitor Bandwidth]
+
+    AdaptiveStream --> Playing{Playback<br/>Status}
+
+    Playing -->|Buffering| ShowBuffer[Show Buffer Indicator]
+    ShowBuffer --> AdaptiveStream
+
+    Playing -->|Error| HandleError[Handle Error<br/>Log Analytics]
+    HandleError --> RetryStream{Retry<br/>Playback?}
+    RetryStream -->|Yes| GetURL
+    RetryStream -->|No| End
+
+    Playing -->|Playing| TrackProgress[Track Watch Progress]
+    TrackProgress --> UpdateDB[Update MongoDB<br/>Continue Watching]
+
+    UpdateDB --> Complete{Content<br/>Finished?}
+    Complete -->|No| Playing
+    Complete -->|Yes| EndPlayback[Mark as Watched]
+    EndPlayback --> Recommendations[Show Recommendations]
+    Recommendations --> End
+
+    style Start fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    style End fill:#95A5A6,stroke:#5D6D7E,color:#fff
+    style Error404 fill:#E74C3C,stroke:#A93226,color:#fff
+    style ErrorURL fill:#E74C3C,stroke:#A93226,color:#fff
+    style Paywall fill:#F39C12,stroke:#B8730A,color:#fff
+    style Playing fill:#50C878,stroke:#2E7D4E,color:#fff
+    style AdaptiveStream fill:#9B59B6,stroke:#6C3483,color:#fff

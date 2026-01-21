@@ -1,0 +1,11 @@
+{
+  "name": "@bayit/shared-stores",
+  "version": "1.0.0",
+  "description": "Shared Zustand stores for Bayit+ apps",
+  "main": "index.ts",
+  "types": "index.ts",
+  "peerDependencies": {
+    "zustand": ">=4",
+    "react": ">=18"
+  }
+}

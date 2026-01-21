@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  # MongoDB (local development only)
+  mongodb:
+    image: mongo:7
+    container_name: bayit-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: bayit_plus
+    restart: unless-stopped
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bayit-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017
+      - MONGODB_DB_NAME=bayit_plus
+      - DEBUG=true
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SPEECH_TO_TEXT_PROVIDER=${SPEECH_TO_TEXT_PROVIDER:-whisper}
+      - STRIPE_API_KEY=${STRIPE_API_KEY}
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      # Librarian Agent Configuration
+      - LIBRARIAN_DAILY_AUDIT_CRON=${LIBRARIAN_DAILY_AUDIT_CRON}
+      - LIBRARIAN_DAILY_AUDIT_TIME=${LIBRARIAN_DAILY_AUDIT_TIME}
+      - LIBRARIAN_DAILY_AUDIT_MODE=${LIBRARIAN_DAILY_AUDIT_MODE}
+      - LIBRARIAN_DAILY_AUDIT_COST=${LIBRARIAN_DAILY_AUDIT_COST}
+      - LIBRARIAN_DAILY_AUDIT_STATUS=${LIBRARIAN_DAILY_AUDIT_STATUS}
+      - LIBRARIAN_DAILY_AUDIT_DESCRIPTION=${LIBRARIAN_DAILY_AUDIT_DESCRIPTION}
+      - LIBRARIAN_WEEKLY_AUDIT_CRON=${LIBRARIAN_WEEKLY_AUDIT_CRON}
+      - LIBRARIAN_WEEKLY_AUDIT_TIME=${LIBRARIAN_WEEKLY_AUDIT_TIME}
+      - LIBRARIAN_WEEKLY_AUDIT_MODE=${LIBRARIAN_WEEKLY_AUDIT_MODE}
+      - LIBRARIAN_WEEKLY_AUDIT_COST=${LIBRARIAN_WEEKLY_AUDIT_COST}
+      - LIBRARIAN_WEEKLY_AUDIT_STATUS=${LIBRARIAN_WEEKLY_AUDIT_STATUS}
+      - LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION=${LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION}
+      - LIBRARIAN_MAX_ITERATIONS=${LIBRARIAN_MAX_ITERATIONS}
+      - LIBRARIAN_DEFAULT_BUDGET_USD=${LIBRARIAN_DEFAULT_BUDGET_USD}
+      - LIBRARIAN_MIN_BUDGET_USD=${LIBRARIAN_MIN_BUDGET_USD}
+      - LIBRARIAN_MAX_BUDGET_USD=${LIBRARIAN_MAX_BUDGET_USD}
+      - LIBRARIAN_BUDGET_STEP_USD=${LIBRARIAN_BUDGET_STEP_USD}
+      - LIBRARIAN_REPORTS_LIMIT=${LIBRARIAN_REPORTS_LIMIT}
+      - LIBRARIAN_ACTIONS_LIMIT=${LIBRARIAN_ACTIONS_LIMIT}
+      - LIBRARIAN_ACTIVITY_PAGE_SIZE=${LIBRARIAN_ACTIVITY_PAGE_SIZE}
+      - LIBRARIAN_ID_TRUNCATE_LENGTH=${LIBRARIAN_ID_TRUNCATE_LENGTH}
+      - LIBRARIAN_MODAL_MAX_HEIGHT=${LIBRARIAN_MODAL_MAX_HEIGHT}
+      # Judaism Section Configuration
+      - JEWISH_NEWS_CACHE_TTL_MINUTES=${JEWISH_NEWS_CACHE_TTL_MINUTES:-15}
+      - JEWISH_NEWS_SYNC_INTERVAL_MINUTES=${JEWISH_NEWS_SYNC_INTERVAL_MINUTES:-30}
+      - JEWISH_NEWS_REQUEST_TIMEOUT_SECONDS=${JEWISH_NEWS_REQUEST_TIMEOUT_SECONDS:-10.0}
+      - HEBCAL_API_BASE_URL=${HEBCAL_API_BASE_URL:-https://www.hebcal.com}
+      - SEFARIA_API_BASE_URL=${SEFARIA_API_BASE_URL:-https://www.sefaria.org/api}
+      - JEWISH_CALENDAR_CACHE_TTL_HOURS=${JEWISH_CALENDAR_CACHE_TTL_HOURS:-6}
+      - COMMUNITY_SEARCH_RADIUS_MILES=${COMMUNITY_SEARCH_RADIUS_MILES:-25}
+      - COMMUNITY_DEFAULT_REGION=${COMMUNITY_DEFAULT_REGION:-nyc}
+      - US_JEWISH_REGIONS=${US_JEWISH_REGIONS:-nyc,la,chicago,miami,boston,philadelphia,atlanta,dallas,denver,seattle}
+      - COMMUNITY_SCRAPE_INTERVAL_HOURS=${COMMUNITY_SCRAPE_INTERVAL_HOURS:-168}
+      - YUTORAH_RSS_URL=${YUTORAH_RSS_URL:-https://www.yutorah.org/rss/}
+      - CHABAD_MULTIMEDIA_RSS_URL=${CHABAD_MULTIMEDIA_RSS_URL:-https://www.chabad.org/multimedia/rss.xml}
+      - TORAHANYTIME_RSS_URL=${TORAHANYTIME_RSS_URL:-https://www.torahanytime.com/feed}
+      # Picovoice Wake Word Detection
+      - PICOVOICE_ACCESS_KEY=${PICOVOICE_ACCESS_KEY}
+      # Content Enrichment APIs
+      - TMDB_API_KEY=${TMDB_API_KEY}
+      - TMDB_API_TOKEN=${TMDB_API_TOKEN}
+      - OPENSUBTITLES_API_KEY=${OPENSUBTITLES_API_KEY}
+      - OPENSUBTITLES_USERNAME=${OPENSUBTITLES_USERNAME}
+      - OPENSUBTITLES_PASSWORD=${OPENSUBTITLES_PASSWORD}
+      # AI Services
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      # GCS Upload Configuration
+      - GCS_UPLOAD_TIMEOUT_SECONDS=${GCS_UPLOAD_TIMEOUT_SECONDS:-600}
+      - GCS_UPLOAD_CHUNK_SIZE_MB=${GCS_UPLOAD_CHUNK_SIZE_MB:-8}
+      - GCS_UPLOAD_MAX_RETRIES=${GCS_UPLOAD_MAX_RETRIES:-5}
+      - GCS_UPLOAD_RETRY_INITIAL_DELAY_SECONDS=${GCS_UPLOAD_RETRY_INITIAL_DELAY_SECONDS:-1.0}
+      - GCS_UPLOAD_RETRY_MAX_DELAY_SECONDS=${GCS_UPLOAD_RETRY_MAX_DELAY_SECONDS:-60.0}
+      # Apple Push Notifications (APNs)
+      - APPLE_KEY_ID=${APPLE_KEY_ID}
+      - APPLE_TEAM_ID=${APPLE_TEAM_ID}
+      - APPLE_KEY_PATH=${APPLE_KEY_PATH}
+      - APPLE_BUNDLE_ID_IOS=${APPLE_BUNDLE_ID_IOS:-com.bayitplus.ios}
+      - APPLE_BUNDLE_ID_TVOS=${APPLE_BUNDLE_ID_TVOS:-com.bayitplus.tvos}
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongodb
+    volumes:
+      - ./backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+
+  # Frontend (development)
+  frontend:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    container_name: bayit-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000/api/v1
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:

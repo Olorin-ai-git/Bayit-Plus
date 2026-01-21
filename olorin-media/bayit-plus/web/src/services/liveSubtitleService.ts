@@ -1,0 +1,265 @@
+/**
+ * Live Subtitle Service
+ * Captures audio from video element and streams to WebSocket for real-time translation
+ */
+
+// API configuration
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
+
+export interface LiveSubtitleCue {
+  text: string
+  original_text: string
+  timestamp: number
+  source_lang: string
+  target_lang: string
+  confidence: number
+}
+
+type SubtitleCallback = (cue: LiveSubtitleCue) => void
+type ErrorCallback = (error: string) => void
+
+class LiveSubtitleService {
+  private ws: WebSocket | null = null
+  private audioContext: AudioContext | null = null
+  private mediaStreamSource: MediaStreamAudioSourceNode | null = null
+  private processor: ScriptProcessorNode | null = null
+  private isConnected: boolean = false
+
+  /**
+   * Connect to live subtitle WebSocket and start audio capture.
+   */
+  async connect(
+    channelId: string,
+    targetLang: string,
+    videoElement: HTMLVideoElement,
+    onSubtitle: SubtitleCallback,
+    onError: ErrorCallback
+  ): Promise<void> {
+    try {
+      const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
+      const token = authData?.state?.token
+      if (!token) throw new Error('Not authenticated')
+
+      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+      const wsHost = API_BASE_URL.replace(/^https?:\/\//, '')
+      const wsUrl = `${wsProtocol}//${wsHost}/ws/live/${channelId}/subtitles?token=${token}&target_lang=${targetLang}`
+
+      this.ws = new WebSocket(wsUrl)
+
+      this.ws.onopen = async () => {
+        console.log('✅ [LiveSubtitle] WebSocket connected')
+        this.isConnected = true
+        await this.startAudioCapture(videoElement)
+      }
+
+      this.ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data)
+          console.log('📨 [LiveSubtitle] Message received:', msg.type)
+          if (msg.type === 'connected') {
+            console.log(`🌍 [LiveSubtitle] Connected - Source: ${msg.source_lang}, Target: ${msg.target_lang}`)
+          } else if (msg.type === 'subtitle') {
+            console.log('📝 [LiveSubtitle] Subtitle received:', msg.data.text)
+            onSubtitle(msg.data)
+          } else if (msg.type === 'error') {
+            console.error('❌ [LiveSubtitle] Server error:', msg.message)
+            onError(msg.message)
+          }
+        } catch (error) {
+          console.error('❌ [LiveSubtitle] WebSocket parse error:', error)
+        }
+      }
+
+      this.ws.onerror = (error) => {
+        console.error('❌ [LiveSubtitle] WebSocket error:', error)
+        onError('Connection error')
+        this.isConnected = false
+      }
+
+      this.ws.onclose = () => {
+        this.isConnected = false
+        this.stopAudioCapture()
+      }
+    } catch (error) {
+      onError(error instanceof Error ? error.message : 'Connection failed')
+    }
+  }
+
+  /**
+   * Capture audio DIRECTLY from video element (not microphone).
+   * Uses captureStream() to get the video's internal audio track.
+   */
+  private async startAudioCapture(videoElement: HTMLVideoElement): Promise<void> {
+    try {
+      // Use 16kHz sample rate for ElevenLabs Scribe
+      this.audioContext = new AudioContext({ sampleRate: 16000 })
+      console.log('🎤 [LiveSubtitle] AudioContext created with sampleRate: 16000Hz')
+
+      // IMPORTANT: captureStream() gets audio DIRECTLY from video element
+      // This does NOT use the microphone - it captures the video's audio track
+      const captureMethod = (videoElement as any).captureStream || (videoElement as any).mozCaptureStream
+      if (!captureMethod) {
+        throw new Error('captureStream() not supported - cannot capture video audio directly')
+      }
+
+      const stream = captureMethod.call(videoElement)
+      if (!stream) {
+        throw new Error('captureStream() returned null - video may have CORS restrictions')
+      }
+
+      // Verify we have audio tracks from the video
+      const audioTracks = stream.getAudioTracks()
+      console.log(`📹 [LiveSubtitle] Video stream captured with ${audioTracks.length} audio track(s)`)
+
+      if (audioTracks.length === 0) {
+        console.error('❌ [LiveSubtitle] No audio tracks in video stream!')
+        console.error('   This usually means:')
+        console.error('   1. The video has no audio, OR')
+        console.error('   2. CORS is blocking audio capture (cross-origin video)')
+        console.error('   3. The video element is muted')
+        throw new Error('No audio tracks available from video element')
+      }
+
+      // Log audio track details for debugging
+      audioTracks.forEach((track, i) => {
+        console.log(`   Track ${i}: ${track.label || 'unnamed'}, enabled=${track.enabled}, muted=${track.muted}`)
+      })
+
+      this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream)
+
+      // Use smaller buffer (2048) for lower latency (~128ms vs ~256ms)
+      // 2048 samples at 16kHz = 128ms per chunk
+      this.processor = this.audioContext.createScriptProcessor(2048, 1, 1)
+      console.log('🔧 [LiveSubtitle] Audio processor created (buffer size: 2048, ~128ms latency)')
+
+      let chunkCount = 0
+      let silentChunks = 0
+
+      this.processor.onaudioprocess = (e) => {
+        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+          if (chunkCount % 100 === 0) {
+            console.warn('⚠️ [LiveSubtitle] WebSocket not ready, skipping audio chunk')
+          }
+          return
+        }
+
+        const inputData = e.inputBuffer.getChannelData(0)
+
+        // Check if audio is silent (all zeros = likely CORS blocked or muted)
+        let maxAmplitude = 0
+        for (let i = 0; i < inputData.length; i++) {
+          maxAmplitude = Math.max(maxAmplitude, Math.abs(inputData[i]))
+        }
+
+        if (maxAmplitude < 0.001) {
+          silentChunks++
+          // Warn if we're getting only silence
+          if (silentChunks === 100) {
+            console.warn('⚠️ [LiveSubtitle] 100 consecutive silent chunks detected!')
+            console.warn('   Audio may be blocked by CORS or video is muted')
+          }
+        } else {
+          silentChunks = 0
+        }
+
+        // Convert float32 to int16 PCM
+        const int16Data = new Int16Array(inputData.length)
+        for (let i = 0; i < inputData.length; i++) {
+          const s = Math.max(-1, Math.min(1, inputData[i]))
+          int16Data[i] = s < 0 ? s * 0x8000 : s * 0x7fff
+        }
+
+        this.ws.send(int16Data.buffer)
+        chunkCount++
+
+        // Log every 100 chunks with audio level info
+        if (chunkCount % 100 === 0) {
+          const dbLevel = maxAmplitude > 0 ? 20 * Math.log10(maxAmplitude) : -100
+          console.log(`📦 [LiveSubtitle] Sent ${chunkCount} chunks, level: ${dbLevel.toFixed(1)}dB`)
+        }
+      }
+
+      this.mediaStreamSource.connect(this.processor)
+      this.processor.connect(this.audioContext.destination)
+      console.log('✅ [LiveSubtitle] Audio capture started - capturing DIRECTLY from video (not microphone)')
+    } catch (error) {
+      console.error('❌ [LiveSubtitle] Audio capture error:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Stop audio capture and close connection.
+   */
+  disconnect(): void {
+    this.stopAudioCapture()
+
+    if (this.ws) {
+      this.ws.close()
+      this.ws = null
+    }
+
+    this.isConnected = false
+  }
+
+  /**
+   * Stop audio processing.
+   */
+  private stopAudioCapture(): void {
+    if (this.processor) {
+      this.processor.disconnect()
+      this.processor = null
+    }
+
+    if (this.mediaStreamSource) {
+      this.mediaStreamSource.disconnect()
+      this.mediaStreamSource = null
+    }
+
+    if (this.audioContext) {
+      this.audioContext.close()
+      this.audioContext = null
+    }
+  }
+
+  /**
+   * Check if service is currently connected.
+   */
+  isServiceConnected(): boolean {
+    return this.isConnected && this.ws !== null && this.ws.readyState === WebSocket.OPEN
+  }
+
+  /**
+   * Check if live subtitles are available for a channel.
+   */
+  static async checkAvailability(channelId: string): Promise<{
+    available: boolean
+    source_language?: string
+    supported_target_languages?: string[]
+    error?: string
+  }> {
+    try {
+      const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
+      const token = authData?.state?.token
+      const response = await fetch(
+        `${API_BASE_URL}/live/${channelId}/subtitles/status`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to check availability')
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Error checking subtitle availability:', error)
+      return { available: false, error: 'Check failed' }
+    }
+  }
+}
+
+export default new LiveSubtitleService()

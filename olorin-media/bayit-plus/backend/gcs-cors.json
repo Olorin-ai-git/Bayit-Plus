@@ -1,0 +1,15 @@
+[
+  {
+    "origin": ["*"],
+    "method": ["GET", "HEAD", "OPTIONS"],
+    "responseHeader": [
+      "Content-Type",
+      "Content-Length",
+      "Content-Disposition",
+      "Cache-Control",
+      "Access-Control-Allow-Origin",
+      "Cross-Origin-Resource-Policy"
+    ],
+    "maxAgeSeconds": 3600
+  }
+]
