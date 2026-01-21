@@ -69,7 +69,7 @@ Update your .env to use Atlas:
 
 ```bash
 # Use Atlas instead of local
-MONGODB_URI=mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+MONGODB_URI=mongodb+srv://admin_db_user:***@cluster0.ydrvaft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 MONGODB_DATABASE=olorin
 ENABLE_MONGODB=true
 ```
@@ -77,7 +77,7 @@ ENABLE_MONGODB=true
 Or export environment variable:
 
 ```bash
-export MONGODB_URI="mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+export MONGODB_URI="mongodb+srv://admin_db_user:***@cluster0.ydrvaft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 ```
 
 ### For Production
@@ -90,7 +90,7 @@ Use Google Cloud Secret Manager (already configured):
 #
 # For Olorin production, create new secrets:
 gcloud secrets create olorin-mongodb-url \
-  --data-file=- <<< "mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+  --data-file=- <<< "mongodb+srv://admin_db_user:***@cluster0.ydrvaft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 gcloud secrets create olorin-mongodb-database \
   --data-file=- <<< "olorin"
@@ -103,7 +103,7 @@ gcloud secrets create olorin-mongodb-database \
 Run this command to test Atlas connectivity:
 
 ```bash
-export MONGODB_URI="mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+export MONGODB_URI="mongodb+srv://admin_db_user:***@cluster0.ydrvaft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 export MONGODB_DATABASE="olorin"
 
 poetry run python scripts/test_mongodb_repos.py
@@ -179,7 +179,7 @@ Update your application to use Atlas:
 # Already configured to read from environment variables
 
 # Just update .env:
-MONGODB_URI=mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+MONGODB_URI=mongodb+srv://admin_db_user:***@cluster0.ydrvaft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 MONGODB_DATABASE=olorin
 ```
 
