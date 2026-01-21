@@ -1,9 +1,0 @@
-/**
- * Processing Components Index
- * Export all video processing components
-  */
-
-export { VideoIntroduction } from './VideoIntroduction';
-export { VideoPlayer } from './VideoPlayer';
-export { VideoGenerationPanel } from './VideoGenerationPanel';
-export * from './types';

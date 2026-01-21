@@ -1,2 +1,0 @@
-
-export { MediaService } from './MediaService';
