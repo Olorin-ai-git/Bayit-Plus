@@ -2,7 +2,6 @@ import React from 'react';
 import {
   TouchableOpacity,
   Animated,
-  StyleSheet,
   View,
   Text,
   Image,
@@ -11,7 +10,6 @@ import {
   StyleProp,
 } from 'react-native';
 import { GlassView } from './GlassView';
-import { colors, borderRadius, spacing } from '../theme';
 import { useTVFocus } from '../hooks/useTVFocus';
 
 interface GlassCardProps {
