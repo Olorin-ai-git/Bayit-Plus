@@ -1,4 +1,5 @@
 import json
+import os
 from functools import lru_cache
 
 from pydantic import Field, field_validator
@@ -50,8 +51,21 @@ class Settings(BaseSettings):
     @field_validator("MONGODB_URL")
     @classmethod
     def validate_mongodb_url(cls, v: str) -> str:
-        """Validate MongoDB URL is not a placeholder."""
-        if not v or v == "mongodb://localhost:27017":
+        """Validate MongoDB URL is not a placeholder.
+
+        Allows localhost in CI/test environments (when DEBUG=true, CI=true, or ENVIRONMENT=test).
+        """
+        if not v:
+            raise ValueError(
+                "MONGODB_URL must be configured. Set it to your MongoDB Atlas or server URL."
+            )
+        # Allow localhost in CI/test environments
+        is_test_env = (
+            os.getenv("DEBUG", "").lower() == "true"
+            or os.getenv("CI", "").lower() == "true"
+            or os.getenv("ENVIRONMENT", "").lower() in ("test", "testing", "ci")
+        )
+        if v == "mongodb://localhost:27017" and not is_test_env:
             raise ValueError(
                 "MONGODB_URL must be configured. Set it to your MongoDB Atlas or server URL."
             )

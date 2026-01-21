@@ -1,3 +1,26 @@
+# =============================================================================
+# PR Validation Workflow
+# =============================================================================
+#
+# Validates all pull requests and pushes to develop branch.
+#
+# Jobs:
+#   - detect-changes: Identifies which components changed (backend/web/mobile/etc)
+#   - backend-checks: Python quality gates (black, isort, mypy, pytest)
+#   - web-checks: TypeScript/React validation for web app
+#   - partner-portal-checks: Partner portal build validation
+#   - mobile-app-checks: React Native mobile app checks
+#   - container-security-scan: Trivy vulnerability scanning
+#   - pr-summary: Aggregates results and reports status
+#
+# Required secrets:
+#   - TURBO_TOKEN: Turborepo remote cache token (optional)
+#
+# Required variables:
+#   - TURBO_TEAM: Turborepo team name (optional)
+#
+# =============================================================================
+
 name: PR Validation
 
 on:
@@ -5,6 +28,12 @@ on:
     branches: [main, develop]
   push:
     branches: [develop]
+
+# Explicit permissions for security (principle of least privilege)
+permissions:
+  contents: read
+  pull-requests: read
+  security-events: write
 
 concurrency:
   group: pr-${{ github.event.pull_request.number || github.ref }}
@@ -14,6 +43,9 @@ env:
   PYTHON_VERSION: "3.11"
   NODE_VERSION: "20"
   POETRY_VERSION: "1.8.0"
+  # Turborepo remote cache configuration (requires TURBO_TOKEN secret)
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
 jobs:
   detect-changes:
@@ -226,7 +258,7 @@ jobs:
         run: docker build -t bayit-backend:scan .
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8  # v0.33.1
         with:
           image-ref: "bayit-backend:scan"
           format: "sarif"
@@ -243,7 +275,7 @@ jobs:
 
       - name: Run Trivy in table format (for PR comment)
         if: always()
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8  # v0.33.1
         with:
           image-ref: "bayit-backend:scan"
           format: "table"

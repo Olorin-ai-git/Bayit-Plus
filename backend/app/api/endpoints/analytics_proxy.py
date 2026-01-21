@@ -87,12 +87,8 @@ async def track_analytics_event(
             }
         )
 
-        # TODO: Send to actual analytics service (Mixpanel, Segment, etc.)
-        # This is where backend credentials would be used
-        # analytics_service.track(
-        #     event_name=event.event_name,
-        #     properties=enriched_properties
-        # )
+        # Events are tracked via Cloud Logging structured logs above
+        # Cloud Logging integrates with BigQuery for analytics queries
 
         return AnalyticsResponse(
             success=True,
