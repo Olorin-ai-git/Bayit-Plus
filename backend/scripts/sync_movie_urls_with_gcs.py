@@ -5,6 +5,7 @@ Fixes 404 errors by updating database URLs to match GCS.
 """
 
 import asyncio
+import os
 import re
 import subprocess
 from difflib import SequenceMatcher
@@ -12,7 +13,9 @@ from difflib import SequenceMatcher
 from motor.motor_asyncio import AsyncIOMotorClient
 
 # MongoDB connection
-MONGODB_URL = "mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/bayit_plus?retryWrites=true&w=majority"
+MONGODB_URL = os.getenv("MONGODB_URI")
+if not MONGODB_URL:
+    raise RuntimeError("MONGODB_URI environment variable not set")
 GCS_BUCKET = "bayit-plus-media-new"
 
 

@@ -2,12 +2,15 @@
 """Check featured/highlighted content."""
 
 import asyncio
+import os
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
 
 async def check_featured():
-    atlas_url = "mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/bayit_plus?retryWrites=true&w=majority&appName=Cluster0"
+    atlas_url = os.getenv("MONGODB_URI")
+    if not atlas_url:
+        raise RuntimeError("MONGODB_URI environment variable not set")
 
     client = AsyncIOMotorClient(atlas_url)
     db = client["bayit_plus"]
