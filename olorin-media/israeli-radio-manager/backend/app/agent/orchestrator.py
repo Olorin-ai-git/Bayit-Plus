@@ -1,0 +1,728 @@
+"""Main AI Orchestrator Agent for radio automation."""
+
+import logging
+import re
+from datetime import datetime, timedelta
+from typing import Optional, Dict, Any, List
+
+from motor.motor_asyncio import AsyncIOMotorDatabase
+from anthropic import Anthropic
+
+from app.config import settings
+
+
+def detect_language(text: str) -> str:
+    """
+    Detect if text is primarily Hebrew or English.
+    Returns 'he' for Hebrew, 'en' for English.
+    """
+    # Count Hebrew characters (Unicode range for Hebrew)
+    hebrew_pattern = re.compile(r'[\u0590-\u05FF]')
+    hebrew_chars = len(hebrew_pattern.findall(text))
+
+    # Count English letters
+    english_pattern = re.compile(r'[a-zA-Z]')
+    english_chars = len(english_pattern.findall(text))
+
+    # If more Hebrew characters, it's Hebrew
+    if hebrew_chars > english_chars:
+        return 'he'
+    return 'en'
+
+
+from app.models.agent import (
+    AgentConfig, AgentMode, ActionType, PendingAction, ActionStatus
+)
+from app.models.content import ContentType
+from app.agent.prompts import SYSTEM_PROMPT, get_decision_prompt, get_classification_prompt
+from app.agent.decisions import DecisionEngine
+from app.agent.confirmation import ConfirmationManager
+from app.agent.tasks import TaskExecutor, ParsedTask, TaskType
+from app.services.audio_player import AudioPlayerService
+
+logger = logging.getLogger(__name__)
+
+
+class OrchestratorAgent:
+    """
+    AI Orchestrator Agent that manages radio station operations.
+
+    Operates in two modes:
+    - Full Automation: Makes all decisions autonomously
+    - Prompt Mode: Requires user confirmation for certain actions
+
+    Capabilities:
+    - Select next track based on schedule and history
+    - Classify incoming content (song/show/commercial, genre)
+    - Handle email attachments
+    - Manage commercial breaks
+    - Respond to natural language commands via chat
+    """
+
+    def __init__(
+        self,
+        db: AsyncIOMotorDatabase,
+        anthropic_api_key: Optional[str] = None,
+        audio_player: Optional[AudioPlayerService] = None,
+        content_sync=None,
+        calendar_service=None
+    ):
+        self.db = db
+        self._default_api_key = anthropic_api_key or settings.anthropic_api_key
+        self._client: Optional[Anthropic] = None
+        self._current_api_key: Optional[str] = None
+        self._current_model: Optional[str] = None
+        self._config: Optional[AgentConfig] = None
+        self._decision_engine = DecisionEngine(db)
+        self._confirmation_manager = ConfirmationManager(db)
+        self._audio_player = audio_player
+        self._content_sync = content_sync
+        self._calendar_service = calendar_service
+        self._task_executor = TaskExecutor(
+            db,
+            audio_player=audio_player,
+            content_sync=content_sync,
+            calendar_service=calendar_service
+        )
+
+        # Conversation history for chat
+        self._chat_history: List[Dict[str, str]] = []
+
+    async def get_llm_config(self) -> tuple[str, str]:
+        """Get the current LLM API key and model from database or defaults."""
+        llm_config = await self.db.llm_config.find_one({"_id": "default"})
+
+        # Determine API key (custom from DB takes precedence over env)
+        api_key = self._default_api_key
+        if llm_config and llm_config.get("api_key"):
+            api_key = llm_config["api_key"]
+
+        # Determine model (custom from DB takes precedence over env)
+        model = settings.anthropic_model
+        if llm_config and llm_config.get("model"):
+            model = llm_config["model"]
+
+        return api_key, model
+
+    async def get_client(self) -> Anthropic:
+        """Get or create the Anthropic client with current config."""
+        api_key, model = await self.get_llm_config()
+
+        # Recreate client if API key changed
+        if self._client is None or self._current_api_key != api_key:
+            self._client = Anthropic(api_key=api_key)
+            self._current_api_key = api_key
+
+        self._current_model = model
+        return self._client
+
+    async def get_model(self) -> str:
+        """Get the current model to use."""
+        _, model = await self.get_llm_config()
+        return model
+
+    async def get_config(self) -> AgentConfig:
+        """Load or get cached agent configuration."""
+        if self._config is None:
+            config_doc = await self.db.agent_config.find_one({"_id": "default"})
+            if config_doc:
+                self._config = AgentConfig(**config_doc)
+            else:
+                self._config = AgentConfig()
+        return self._config
+
+    async def refresh_config(self):
+        """Force reload of configuration."""
+        self._config = None
+        await self.get_config()
+
+    @property
+    async def mode(self) -> AgentMode:
+        """Get current operating mode."""
+        config = await self.get_config()
+        return config.mode
+
+    async def requires_confirmation(self, action_type: ActionType) -> bool:
+        """Check if an action type requires user confirmation."""
+        config = await self.get_config()
+
+        # In full automation mode, nothing requires confirmation
+        if config.mode == AgentMode.FULL_AUTOMATION:
+            return False
+
+        # In prompt mode, check the configured actions
+        return action_type in config.confirmation_required_actions
+
+    async def decide_next_track(self) -> Dict[str, Any]:
+        """
+        Decide what track to play next.
+
+        Uses AI to analyze:
+        - Current time and schedule rules
+        - Recent play history
+        - Genre preferences for the hour
+        - Commercial break timing
+
+        Returns:
+            Decision dict with track info and reasoning
+        """
+        config = await self.get_config()
+
+        # Gather context
+        context = await self._gather_playback_context()
+
+        # Get AI decision
+        prompt = get_decision_prompt("next_track", context)
+        response = await self._call_claude(prompt)
+
+        decision = {
+            "action_type": ActionType.SELECT_NEXT_TRACK,
+            "suggestion": response,
+            "context": context,
+            "reasoning": response.get("reasoning", ""),
+            "timestamp": datetime.utcnow()
+        }
+
+        # Check if confirmation needed
+        if await self.requires_confirmation(ActionType.SELECT_NEXT_TRACK):
+            pending = await self._create_pending_action(decision)
+            decision["pending_action_id"] = pending["_id"]
+            decision["status"] = "pending_confirmation"
+        else:
+            decision["status"] = "approved"
+
+        # Log decision
+        await self._log_decision(decision)
+        return decision
+
+    async def classify_content(
+        self,
+        filename: str,
+        metadata: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Classify new audio content using AI.
+
+        Args:
+            filename: Name of the audio file
+            metadata: Extracted audio metadata (ID3 tags, etc.)
+
+        Returns:
+            Classification with type, genre, and confidence
+        """
+        config = await self.get_config()
+
+        # Build classification prompt
+        prompt = get_classification_prompt(filename, metadata)
+        response = await self._call_claude(prompt)
+
+        classification = {
+            "action_type": ActionType.CATEGORIZE_CONTENT,
+            "filename": filename,
+            "suggested_type": response.get("type"),
+            "suggested_genre": response.get("genre"),
+            "confidence": response.get("confidence", 0.0),
+            "reasoning": response.get("reasoning", ""),
+            "timestamp": datetime.utcnow()
+        }
+
+        # Check confidence threshold
+        if classification["confidence"] < config.automation_rules.auto_categorize_threshold:
+            # Low confidence - always ask for confirmation
+            classification["requires_confirmation"] = True
+        elif await self.requires_confirmation(ActionType.CATEGORIZE_CONTENT):
+            classification["requires_confirmation"] = True
+        else:
+            classification["requires_confirmation"] = False
+
+        if classification["requires_confirmation"]:
+            pending = await self._create_pending_action(classification)
+            classification["pending_action_id"] = str(pending["_id"])
+            classification["status"] = "pending_confirmation"
+        else:
+            classification["status"] = "approved"
+
+        await self._log_decision(classification)
+        return classification
+
+    async def chat(self, user_message: str) -> Dict[str, Any]:
+        """
+        Handle natural language chat with the user.
+
+        Allows operators to:
+        - Ask questions about the schedule
+        - Request specific songs/shows
+        - Get status updates
+        - Give instructions to the agent
+        - Execute tasks like "play song X at Y time"
+
+        Args:
+            user_message: User's message in natural language
+
+        Returns:
+            Dict with 'response' text and optional 'play_track' for browser playback
+        """
+        # Add to history
+        self._chat_history.append({
+            "role": "user",
+            "content": user_message
+        })
+
+        # Keep history manageable
+        if len(self._chat_history) > 20:
+            self._chat_history = self._chat_history[-20:]
+
+        # Get current context for the agent
+        context = await self._gather_chat_context()
+
+        # Build messages for Claude
+        messages = [
+            {"role": "user", "content": f"הקשר נוכחי / Current context:\n{context}"},
+            *self._chat_history
+        ]
+
+        # Call Claude with dynamic config
+        client = await self.get_client()
+        model = await self.get_model()
+        response = client.messages.create(
+            model=model,
+            max_tokens=1024,
+            system=SYSTEM_PROMPT,
+            messages=messages
+        )
+
+        assistant_message = response.content[0].text
+
+        # Check if response contains a task to execute
+        task_result = await self._try_execute_task(assistant_message, user_message)
+        play_track = None
+
+        # Detect user's language
+        user_lang = detect_language(user_message)
+
+        if task_result:
+            # Task was parsed - check if it succeeded or failed
+            if task_result.get("success"):
+                # Task succeeded
+                if user_lang == 'en' and task_result.get("message_en"):
+                    final_response = task_result.get("message_en")
+                else:
+                    final_response = task_result.get("message", assistant_message)
+
+                # Execute any actions
+                action = task_result.get("action")
+                if action:
+                    await self._execute_action(action, task_result)
+
+                # Check if there's content to play in browser
+                content = task_result.get("content")
+                if content:
+                    # Convert ObjectId to string for JSON serialization
+                    play_track = {
+                        "_id": str(content.get("_id")),
+                        "title": content.get("title"),
+                        "artist": content.get("artist"),
+                        "type": content.get("type"),
+                        "duration_seconds": content.get("duration_seconds", 0)
+                    }
+            else:
+                # Task was parsed but FAILED - show clear error message
+                if user_lang == 'en':
+                    error_msg = task_result.get("message_en", task_result.get("message", "Action failed"))
+                    final_response = f"⚠️ Could not complete the action: {error_msg}"
+                else:
+                    error_msg = task_result.get("message", task_result.get("message_en", "הפעולה נכשלה"))
+                    final_response = f"⚠️ לא הצלחתי לבצע את הפעולה: {error_msg}"
+        else:
+            # No task was parsed from the response
+            # Check if the user was expecting an action (action-like keywords)
+            action_keywords_he = ['תנגן', 'נגן', 'הפעל', 'עצור', 'דלג', 'תזמן', 'הוסף', 'מחק', 'עדכן', 'חפש', 'שנה']
+            action_keywords_en = ['play', 'start', 'stop', 'skip', 'schedule', 'add', 'delete', 'update', 'search', 'change', 'set']
+
+            user_msg_lower = user_message.lower()
+            expects_action = any(kw in user_message for kw in action_keywords_he) or \
+                           any(kw in user_msg_lower for kw in action_keywords_en)
+
+            if expects_action:
+                # User expected an action but LLM couldn't produce one
+                if user_lang == 'en':
+                    final_response = f"⚠️ I understood your request but couldn't execute it. The action could not be translated into a command.\n\nLLM response: {assistant_message}"
+                else:
+                    final_response = f"⚠️ הבנתי את הבקשה אך לא הצלחתי לבצע אותה. הפעולה לא תורגמה לפקודה.\n\nתשובת המערכת: {assistant_message}"
+            else:
+                # Regular conversation, no action expected
+                final_response = assistant_message
+
+        # Add response to history
+        self._chat_history.append({
+            "role": "assistant",
+            "content": final_response
+        })
+
+        # Log the interaction
+        await self.db.chat_logs.insert_one({
+            "user_message": user_message,
+            "assistant_message": final_response,
+            "task_executed": task_result is not None,
+            "task_result": task_result,
+            "timestamp": datetime.utcnow()
+        })
+
+        return {
+            "response": final_response,
+            "play_track": play_track
+        }
+
+    async def _try_execute_task(self, ai_response: str, original_message: str) -> Optional[Dict[str, Any]]:
+        """
+        Try to parse and execute a task from the AI response.
+
+        Returns:
+            Task result if a task was found and executed, None otherwise
+        """
+        import json
+
+        # Try to find JSON in the response
+        try:
+            # Look for JSON block
+            start = ai_response.find('{')
+            end = ai_response.rfind('}') + 1
+
+            if start >= 0 and end > start:
+                json_str = ai_response[start:end]
+                logger.info(f"Found JSON in AI response: {json_str[:200]}...")
+                task_data = json.loads(json_str)
+
+                # Check if this is a task
+                if "task_type" in task_data:
+                    task_type_str = task_data.get("task_type", "unknown")
+                    logger.info(f"Parsed task type: {task_type_str}, params: {task_data.get('parameters', {})}")
+                    try:
+                        task_type = TaskType(task_type_str)
+                    except ValueError:
+                        logger.warning(f"Unknown task type: {task_type_str}")
+                        task_type = TaskType.UNKNOWN
+
+                    # Parse time if present
+                    parameters = task_data.get("parameters", {})
+                    time_str = parameters.get("time")
+                    scheduled_time = None
+                    if time_str:
+                        scheduled_time = self._parse_time(time_str)
+
+                    # Create and execute task
+                    task = ParsedTask(
+                        task_type=task_type,
+                        parameters=parameters,
+                        original_text=original_message,
+                        confidence=task_data.get("confidence", 0.8)
+                    )
+                    task.scheduled_time = scheduled_time
+
+                    result = await self._task_executor.execute_task(task)
+
+                    # Only use Claude's response_message if the task succeeded
+                    # If task failed, keep the error message from the task executor
+                    if result.get("success") and "response_message" in task_data:
+                        result["message"] = task_data["response_message"]
+
+                    return result
+                else:
+                    logger.info("JSON found but no task_type field")
+            else:
+                logger.info("No JSON found in AI response")
+
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            logger.info(f"Failed to parse task from response: {e}")
+
+        return None
+
+    def _parse_time(self, time_str: str) -> Optional[datetime]:
+        """Parse a time string into a datetime object."""
+        import re
+
+        now = datetime.now()
+
+        # Try HH:MM format
+        match = re.match(r"(\d{1,2}):(\d{2})", time_str)
+        if match:
+            hour, minute = int(match.group(1)), int(match.group(2))
+            result = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+            # If time is in the past, schedule for tomorrow
+            if result < now:
+                result += timedelta(days=1)
+            return result
+
+        # Try relative time patterns
+        relative_patterns = [
+            (r"בעוד (\d+) דקות?", lambda m: now + timedelta(minutes=int(m.group(1)))),
+            (r"בעוד (\d+) שעות?", lambda m: now + timedelta(hours=int(m.group(1)))),
+            (r"in (\d+) minutes?", lambda m: now + timedelta(minutes=int(m.group(1)))),
+            (r"in (\d+) hours?", lambda m: now + timedelta(hours=int(m.group(1)))),
+        ]
+
+        for pattern, handler in relative_patterns:
+            match = re.search(pattern, time_str, re.IGNORECASE)
+            if match:
+                return handler(match)
+
+        return None
+
+    async def _execute_action(self, action: str, task_result: Dict[str, Any]):
+        """Execute a playback action from a task result."""
+        # Log the action
+        await self.db.action_log.insert_one({
+            "action": action,
+            "task_result": task_result,
+            "executed_at": datetime.utcnow()
+        })
+        logger.info(f"Executing action: {action}")
+
+        # Execute the action on the audio player
+        if self._audio_player:
+            try:
+                if action == "skip":
+                    await self._audio_player.skip()
+                    logger.info("Audio player: Skipped to next track")
+                elif action == "pause":
+                    await self._audio_player.pause()
+                    logger.info("Audio player: Paused playback")
+                elif action == "resume":
+                    await self._audio_player.resume()
+                    logger.info("Audio player: Resumed playback")
+                elif action == "volume":
+                    level = task_result.get("level", 80)
+                    self._audio_player.set_volume(level)
+                    logger.info(f"Audio player: Volume set to {level}")
+                elif action == "stop":
+                    await self._audio_player.stop()
+                    logger.info("Audio player: Stopped playback")
+                else:
+                    logger.warning(f"Unknown audio action: {action}")
+            except Exception as e:
+                logger.error(f"Error executing audio action {action}: {e}")
+        else:
+            logger.warning("No audio player available - action not executed")
+
+    async def execute_action(self, action: Dict[str, Any]) -> Dict[str, Any]:
+        """Execute an approved action."""
+        action_type = action.get("action_type")
+
+        if action_type == ActionType.SELECT_NEXT_TRACK:
+            return await self._decision_engine.execute_track_selection(action)
+        elif action_type == ActionType.CATEGORIZE_CONTENT:
+            return await self._decision_engine.execute_categorization(action)
+        elif action_type == ActionType.INSERT_COMMERCIAL:
+            return await self._decision_engine.execute_commercial_insert(action)
+        else:
+            logger.warning(f"Unknown action type: {action_type}")
+            return {"error": f"Unknown action type: {action_type}"}
+
+    async def _gather_playback_context(self) -> Dict[str, Any]:
+        """Gather context for playback decisions."""
+        now = datetime.utcnow()
+
+        # Get recent plays
+        recent = await self.db.playback_logs.find(
+            {"started_at": {"$gte": now - timedelta(hours=4)}}
+        ).to_list(50)
+
+        # Get current schedule slot
+        current_slot = await self.db.schedules.find_one({
+            "enabled": True,
+            "start_time": {"$lte": now.strftime("%H:%M")},
+            "end_time": {"$gt": now.strftime("%H:%M")}
+        })
+
+        # Get content stats
+        song_count = await self.db.content.count_documents({"type": "song", "active": True})
+        show_count = await self.db.content.count_documents({"type": "show", "active": True})
+        commercial_count = await self.db.content.count_documents({"type": "commercial", "active": True})
+
+        return {
+            "current_time": now.isoformat(),
+            "current_hour": now.hour,
+            "day_of_week": now.weekday(),
+            "recent_plays": [str(r.get("content_id")) for r in recent],
+            "current_schedule_slot": current_slot,
+            "content_counts": {
+                "songs": song_count,
+                "shows": show_count,
+                "commercials": commercial_count
+            }
+        }
+
+    async def _gather_chat_context(self) -> str:
+        """Gather context for chat responses."""
+        now = datetime.utcnow()
+
+        # Get current playback status from audio player
+        playback_state = "unknown"
+        current_track_info = ""
+        if self._audio_player:
+            status = self._audio_player.get_status()
+            playback_state = status.get("state", "unknown")
+            if status.get("current_track"):
+                track = status["current_track"]
+                current_track_info = f"\nCurrent track: {track.get('title', 'Unknown')} by {track.get('artist', 'Unknown')}"
+
+        # Get pending actions
+        pending = await self.db.pending_actions.count_documents({"status": "pending"})
+
+        # Get all content metadata from library
+        library_metadata = await self._get_library_metadata()
+
+        context = f"""
+Current time: {now.strftime("%H:%M")} ({now.strftime("%A")})
+Playback status: {playback_state}{current_track_info}
+Pending confirmations: {pending}
+Agent mode: {(await self.get_config()).mode.value}
+
+=== LIBRARY CONTENT ===
+{library_metadata}
+"""
+        return context
+
+    async def _get_library_metadata(self) -> str:
+        """Retrieve and format metadata for all content in the library."""
+        # Get all active content grouped by type
+        songs = []
+        shows = []
+        commercials = []
+
+        cursor = self.db.content.find({"active": True})
+        async for item in cursor:
+            content_info = {
+                "id": str(item.get("_id")),
+                "title": item.get("title", "Unknown"),
+                "title_he": item.get("title_he"),
+                "artist": item.get("artist"),
+                "genre": item.get("genre"),
+                "duration_seconds": item.get("duration_seconds", 0),
+                "play_count": item.get("play_count", 0),
+            }
+            # Include nested metadata if available
+            metadata = item.get("metadata", {})
+            if metadata.get("album"):
+                content_info["album"] = metadata["album"]
+            if metadata.get("year"):
+                content_info["year"] = metadata["year"]
+            if metadata.get("language"):
+                content_info["language"] = metadata["language"]
+            if metadata.get("tags"):
+                content_info["tags"] = metadata["tags"]
+
+            content_type = item.get("type", "song")
+            if content_type == "song":
+                songs.append(content_info)
+            elif content_type == "show":
+                shows.append(content_info)
+            elif content_type == "commercial":
+                commercials.append(content_info)
+
+        # Format output
+        lines = []
+
+        if songs:
+            lines.append(f"Songs ({len(songs)} items):")
+            for song in songs:
+                song_line = f"  - {song['title']}"
+                if song.get('artist'):
+                    song_line += f" by {song['artist']}"
+                if song.get('genre'):
+                    song_line += f" [{song['genre']}]"
+                if song.get('duration_seconds'):
+                    mins = song['duration_seconds'] // 60
+                    secs = song['duration_seconds'] % 60
+                    song_line += f" ({mins}:{secs:02d})"
+                lines.append(song_line)
+
+        if shows:
+            lines.append(f"\nShows ({len(shows)} items):")
+            for show in shows:
+                show_line = f"  - {show['title']}"
+                if show.get('duration_seconds'):
+                    mins = show['duration_seconds'] // 60
+                    secs = show['duration_seconds'] % 60
+                    show_line += f" ({mins}:{secs:02d})"
+                lines.append(show_line)
+
+        if commercials:
+            lines.append(f"\nCommercials ({len(commercials)} items):")
+            for commercial in commercials:
+                commercial_line = f"  - {commercial['title']}"
+                if commercial.get('duration_seconds'):
+                    mins = commercial['duration_seconds'] // 60
+                    secs = commercial['duration_seconds'] % 60
+                    commercial_line += f" ({mins}:{secs:02d})"
+                lines.append(commercial_line)
+
+        if not lines:
+            return "No content in library."
+
+        return "\n".join(lines)
+
+    async def _call_claude(self, prompt: str) -> Dict[str, Any]:
+        """Call Claude API and parse response."""
+        import json
+
+        client = await self.get_client()
+        model = await self.get_model()
+        response = client.messages.create(
+            model=model,
+            max_tokens=1024,
+            system=SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        content = response.content[0].text
+
+        # Try to parse as JSON
+        try:
+            # Find JSON in response
+            start = content.find('{')
+            end = content.rfind('}') + 1
+            if start >= 0 and end > start:
+                return json.loads(content[start:end])
+        except json.JSONDecodeError:
+            pass
+
+        return {"raw_response": content}
+
+    async def _create_pending_action(self, decision: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a pending action for user confirmation."""
+        config = await self.get_config()
+        action_type = decision.get("action_type")
+
+        # Determine timeout
+        timeout_key = action_type.value if isinstance(action_type, ActionType) else str(action_type)
+        timeout_seconds = config.timeouts.get(timeout_key, config.timeouts.get("default", 300))
+
+        pending = {
+            "action_type": action_type.value if isinstance(action_type, ActionType) else str(action_type),
+            "description": decision.get("reasoning", "Action requires confirmation"),
+            "description_he": decision.get("reasoning_he", "פעולה דורשת אישור"),
+            "ai_reasoning": decision.get("reasoning", ""),
+            "suggested_action": decision,
+            "alternatives": [],
+            "context": decision.get("context", {}),
+            "created_at": datetime.utcnow(),
+            "expires_at": datetime.utcnow() + timedelta(seconds=timeout_seconds),
+            "status": ActionStatus.PENDING.value
+        }
+
+        result = await self.db.pending_actions.insert_one(pending)
+        pending["_id"] = str(result.inserted_id)
+
+        return pending
+
+    async def _log_decision(self, decision: Dict[str, Any]):
+        """Log a decision to the database."""
+        log_entry = {
+            "action_type": decision.get("action_type").value if isinstance(decision.get("action_type"), ActionType) else str(decision.get("action_type")),
+            "decision": decision,
+            "reasoning": decision.get("reasoning", ""),
+            "mode": (await self.get_config()).mode.value,
+            "created_at": datetime.utcnow()
+        }
+        await self.db.agent_decisions.insert_one(log_entry)
