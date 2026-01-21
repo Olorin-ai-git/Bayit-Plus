@@ -29,3 +29,10 @@ export type {
   AnalyticsEvent,
   AnalyticsResponse,
 } from './backendProxyService';
+
+// Secure Storage Service - OAuth tokens and sensitive credentials
+export { secureStorageService } from './secureStorageService';
+export type { OAuthCredentials } from './secureStorageService';
+
+// Offline Cache Service - persistent content caching
+export { offlineCacheService } from './offlineCacheService';

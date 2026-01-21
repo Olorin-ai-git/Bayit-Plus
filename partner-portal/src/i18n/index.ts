@@ -1,12 +1,12 @@
 /**
  * B2B Partner Portal i18n Configuration (Unified)
  *
- * Uses the unified @olorin/i18n package for B2B Partner Portal.
+ * Uses the unified @olorin/shared-i18n package for B2B Partner Portal.
  * Supports 10 languages with fallback to B2B-specific overrides.
  */
 
-import i18n, { languages } from '@olorin/i18n';
-import { initWebI18n as initWebI18nCore, saveLanguageWeb, setupWebDirectionListener } from '@olorin/i18n/web';
+import i18n, { languages } from '@olorin/shared-i18n';
+import { initWebI18n as initWebI18nCore, saveLanguageWeb, setupWebDirectionListener } from '@olorin/shared-i18n/web';
 import { getB2BConfig } from '../config/env';
 
 // Re-export language list for compatibility
