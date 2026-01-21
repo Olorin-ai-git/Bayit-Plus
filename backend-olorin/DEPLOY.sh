@@ -41,6 +41,7 @@ REQUIRED_SECRETS=(
   "bayit-elevenlabs-api-key"
   "olorin-pinecone-api-key"
   "olorin-partner-api-key-salt"
+  "olorin-secret-key"
 )
 
 MISSING_SECRETS=()
@@ -60,10 +61,14 @@ if [ ${#MISSING_SECRETS[@]} -gt 0 ]; then
     echo "   - $secret"
   done
   echo ""
-  echo "Create them in GCP Secret Manager before continuing."
+  echo "Create them in GCP Secret Manager:"
+  echo "  gcloud secrets create SECRET_NAME --data-file=- <<< 'YOUR_VALUE'"
+  echo ""
+  echo "For olorin-secret-key, generate a secure value:"
+  echo "  python -c \"import secrets; print(secrets.token_urlsafe(32))\" | gcloud secrets create olorin-secret-key --data-file=-"
   exit 1
 fi
-echo "✓ All 7 required secrets verified"
+echo "✓ All 8 required secrets verified"
 echo ""
 
 # Step 3: Validate Cloud Build Configuration
