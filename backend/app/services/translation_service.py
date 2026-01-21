@@ -51,3 +51,7 @@ class TranslationService(_ExtractedService):
             stacklevel=2,
         )
         super().__init__(config=_SettingsTranslationConfigAdapter())
+
+
+# Singleton instance for backward compatibility with modules that import translation_service
+translation_service = TranslationService()

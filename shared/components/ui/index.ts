@@ -17,6 +17,7 @@ export { TVSwitch } from './TVSwitch';
 
 // UI components
 export { GlassModal } from './GlassModal';
+export { GlassAlert, GlassAlertProvider, GlassAlertRoot, useGlassAlert } from './GlassAlert';
 export { GlassBadge } from './GlassBadge';
 export { GlassTabs } from './GlassTabs';
 export { GlassCategoryPill } from './GlassCategoryPill';
@@ -39,6 +40,7 @@ export { GlassSectionItem } from './GlassSectionItem';
 
 // Types
 export type { GlassModalProps, ModalType, ModalButton } from './GlassModal';
+export type { AlertButton, AlertOptions } from './GlassAlert';
 export type { AnalogClockProps } from './AnalogClock';
 export type { GlassAvatarProps } from './GlassAvatar';
 export type { GlassToggleProps } from './GlassToggle';

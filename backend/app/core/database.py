@@ -229,6 +229,7 @@ async def connect_to_mongo():
     await init_beanie(
         database=db.client[settings.MONGODB_DB_NAME],
         document_models=document_models,
+        allow_index_dropping=True,
     )
     print(f"Connected to MongoDB: {settings.MONGODB_DB_NAME}")
 

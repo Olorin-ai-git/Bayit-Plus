@@ -122,6 +122,16 @@ export const queryKeys = {
   analytics: {
     all: ['analytics'] as const,
   },
+
+  // Voice features
+  voice: {
+    all: ['voice'] as const,
+    command: (transcription: string) =>
+      [...queryKeys.voice.all, 'command', transcription] as const,
+    suggestions: (partial: string, language: string) =>
+      [...queryKeys.voice.all, 'suggestions', partial, language] as const,
+    health: () => [...queryKeys.voice.all, 'health'] as const,
+  },
 };
 
 /**
