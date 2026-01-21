@@ -3,10 +3,9 @@
  * Wake word detection settings and testing
  */
 
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
 import { VoiceSettingRow } from './VoiceSettingRow';
 import { SensitivitySelector } from './SensitivitySelector';
@@ -38,10 +37,10 @@ export function WakeWordSection({
   const { t } = useTranslation();
 
   return (
-    <GlassView style={styles.section}>
-      <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
-        <Zap size={16} color={colors.warning} />
-        <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>
+    <GlassView className="p-6 gap-4">
+      <View className={`flex-row items-center gap-2 mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <Zap size={16} color="#F59E0B" />
+        <Text className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-0">
           {t('profile.voice.wakeWord', '"Hi Bayit" Wake Word')}
         </Text>
       </View>
@@ -71,27 +70,3 @@ export function WakeWordSection({
     </GlassView>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.xs,
-  },
-  sectionHeaderRTL: {
-    flexDirection: 'row-reverse',
-  },
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: spacing.xs,
-  },
-});

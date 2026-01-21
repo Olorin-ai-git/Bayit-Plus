@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
+import { View, Text, Pressable, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 import { GlassButton } from '@bayit/shared/ui';
 import { GlassDraggableExpander } from '@bayit/shared/ui/web';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 import logger from '@/utils/logger';
 
 interface VoiceLibrarianControlProps {
@@ -158,10 +158,10 @@ export const VoiceLibrarianControl: React.FC<VoiceLibrarianControlProps> = ({
       draggable={true}
       minHeight={200}
       maxHeight={600}
-      style={styles.container}
+      className="mb-6"
       rightElement={
         onToggleMute ? (
-          <Pressable onPress={onToggleMute} style={styles.muteButton}>
+          <Pressable onPress={onToggleMute} className="p-1">
             {isMuted ? (
               <VolumeX size={20} color={colors.textMuted} />
             ) : (
@@ -172,7 +172,7 @@ export const VoiceLibrarianControl: React.FC<VoiceLibrarianControlProps> = ({
       }
     >
 
-      <View style={styles.controlsRow}>
+      <View className="flex-row justify-center mb-4">
         <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
           <GlassButton
             title={isRecording ? t('admin.librarian.voice.listening') : t('admin.librarian.voice.pressToSpeak')}
@@ -180,136 +180,60 @@ export const VoiceLibrarianControl: React.FC<VoiceLibrarianControlProps> = ({
             variant={isRecording ? 'destructive' : 'primary'}
             onPress={isRecording ? stopRecording : startRecording}
             disabled={isProcessing}
-            style={styles.recordButton}
+            className="min-w-[200px]"
           />
         </Animated.View>
       </View>
 
       {transcript && (
-        <View style={styles.transcriptContainer}>
-          <Text style={styles.transcriptLabel}>{t('admin.librarian.voice.transcript')}:</Text>
-          <Text style={styles.transcriptText}>{transcript}</Text>
+        <View className="bg-white/5 rounded-lg p-4 mb-4">
+          <Text className="text-xs font-semibold uppercase mb-1" style={{ color: colors.textMuted }}>
+            {t('admin.librarian.voice.transcript')}:
+          </Text>
+          <Text className="text-sm leading-5" style={{ color: colors.text }}>{transcript}</Text>
         </View>
       )}
 
       {error && (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error}</Text>
+        <View className="bg-red-500/10 rounded-lg p-4 mb-4 border" style={{ borderColor: 'rgba(239, 68, 68, 0.3)' }}>
+          <Text className="text-[13px]" style={{ color: colors.error }}>{error}</Text>
         </View>
       )}
 
       {isProcessing && (
-        <View style={styles.processingContainer}>
-          <Text style={styles.processingText}>{t('admin.librarian.voice.processing')}</Text>
+        <View className="bg-purple-700/20 rounded-lg p-2 mb-4 items-center">
+          <Text className="text-[13px] font-medium" style={{ color: colors.primary }}>
+            {t('admin.librarian.voice.processing')}
+          </Text>
         </View>
       )}
 
       {isSpeaking && (
-        <View style={styles.speakingContainer}>
+        <View className="flex-row items-center gap-1 bg-green-500/10 rounded-lg p-2 mb-4 justify-center">
           <Volume2 size={16} color={colors.primary} />
-          <Text style={styles.speakingText}>{t('admin.librarian.voice.speaking')}</Text>
+          <Text className="text-[13px] font-medium" style={{ color: colors.success }}>
+            {t('admin.librarian.voice.speaking')}
+          </Text>
         </View>
       )}
 
-      <View style={styles.examplesContainer}>
-        <Text style={styles.examplesTitle}>{t('admin.librarian.voice.examples')}:</Text>
-        <Text style={styles.exampleText}>• "{t('admin.librarian.voice.example1')}"</Text>
-        <Text style={styles.exampleText}>• "{t('admin.librarian.voice.example2')}"</Text>
-        <Text style={styles.exampleText}>• "{t('admin.librarian.voice.example3')}"</Text>
-        <Text style={styles.exampleText}>• "{t('admin.librarian.voice.example4')}"</Text>
+      <View className="bg-white/[0.03] rounded-lg p-4 mt-2">
+        <Text className="text-[13px] font-semibold mb-2" style={{ color: colors.text }}>
+          {t('admin.librarian.voice.examples')}:
+        </Text>
+        <Text className="text-xs mb-1 pl-1" style={{ color: colors.textMuted }}>
+          • "{t('admin.librarian.voice.example1')}"
+        </Text>
+        <Text className="text-xs mb-1 pl-1" style={{ color: colors.textMuted }}>
+          • "{t('admin.librarian.voice.example2')}"
+        </Text>
+        <Text className="text-xs mb-1 pl-1" style={{ color: colors.textMuted }}>
+          • "{t('admin.librarian.voice.example3')}"
+        </Text>
+        <Text className="text-xs pl-1" style={{ color: colors.textMuted }}>
+          • "{t('admin.librarian.voice.example4')}"
+        </Text>
       </View>
     </GlassDraggableExpander>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: spacing.lg,
-  },
-  muteButton: {
-    padding: spacing.xs,
-  },
-  controlsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: spacing.md,
-  },
-  recordButton: {
-    minWidth: 200,
-  },
-  transcriptContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    marginBottom: spacing.md,
-  },
-  transcriptLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.textMuted,
-    marginBottom: spacing.xs,
-    textTransform: 'uppercase',
-  },
-  transcriptText: {
-    fontSize: 14,
-    color: colors.text,
-    lineHeight: 20,
-  },
-  errorContainer: {
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    marginBottom: spacing.md,
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
-  },
-  errorText: {
-    fontSize: 13,
-    color: colors.error,
-  },
-  processingContainer: {
-    backgroundColor: 'rgba(107, 33, 168, 0.2)',
-    borderRadius: borderRadius.md,
-    padding: spacing.sm,
-    marginBottom: spacing.md,
-    alignItems: 'center',
-  },
-  processingText: {
-    fontSize: 13,
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  speakingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-    borderRadius: borderRadius.md,
-    padding: spacing.sm,
-    marginBottom: spacing.md,
-    justifyContent: 'center',
-  },
-  speakingText: {
-    fontSize: 13,
-    color: colors.success,
-    fontWeight: '500',
-  },
-  examplesContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    marginTop: spacing.sm,
-  },
-  examplesTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  exampleText: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginBottom: spacing.xs,
-    paddingLeft: spacing.xs,
-  },
-});

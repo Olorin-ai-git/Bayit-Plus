@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated, Easing, Platform } from 'react-native';
+import { View, Animated, Easing, Platform } from 'react-native';
 import Svg, {
   G,
   Path,
@@ -206,7 +206,7 @@ export const BayitMascot: React.FC<BayitMascotProps> = ({
   });
 
   return (
-    <View style={[styles.container, { width: size, height: size }, style]}>
+    <View className="items-center justify-center" style={[{ width: size, height: size }, style]}>
       <Animated.View style={{ transform: [{ translateY }] }}>
         <Svg width={size} height={size} viewBox="0 0 200 200">
           <Defs>
@@ -462,11 +462,5 @@ export const BayitMascot: React.FC<BayitMascotProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
 export default BayitMascot;

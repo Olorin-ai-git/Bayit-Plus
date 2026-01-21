@@ -3,8 +3,7 @@
  * Displays live subtitle cues with automatic expiration
  */
 
-import { View, Text, StyleSheet } from 'react-native'
-import { colors, spacing } from '@bayit/shared/theme'
+import { View, Text } from 'react-native'
 import { LiveSubtitleCue } from '@/services/liveSubtitleService'
 
 interface LiveSubtitleOverlayProps {
@@ -15,43 +14,21 @@ export default function LiveSubtitleOverlay({ cues }: LiveSubtitleOverlayProps) 
   if (cues.length === 0) return null
 
   return (
-    <View style={styles.overlay}>
+    <View className="absolute bottom-24 left-4 right-4 items-center z-[100]">
       {cues.map((cue, idx) => (
-        <View key={`${cue.timestamp}-${idx}`} style={styles.cue}>
-          <Text style={styles.text}>{cue.text}</Text>
+        <View key={`${cue.timestamp}-${idx}`} className="bg-black/85 px-4 py-2 rounded-lg my-1 max-w-[90%] border border-white/10">
+          <Text
+            className="text-white text-2xl font-bold text-center leading-8"
+            style={{
+              textShadowColor: 'rgba(0, 0, 0, 1)',
+              textShadowOffset: { width: 2, height: 2 },
+              textShadowRadius: 4,
+            }}
+          >
+            {cue.text}
+          </Text>
         </View>
       ))}
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  overlay: {
-    position: 'absolute',
-    bottom: spacing.xxl * 2,
-    left: spacing.lg,
-    right: spacing.lg,
-    alignItems: 'center',
-    zIndex: 100,
-  },
-  cue: {
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: 8,
-    marginVertical: spacing.xs,
-    maxWidth: '90%',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  text: {
-    color: '#FFFFFF',
-    fontSize: 24,
-    fontWeight: '700',
-    textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 1)',
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 4,
-    lineHeight: 32,
-  },
-})

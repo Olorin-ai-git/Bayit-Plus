@@ -1,7 +1,6 @@
-import { Pressable, View, Text, StyleSheet } from 'react-native';
+import { Pressable, View, Text } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { GlassCard, GlassAvatar } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import type { UserCardProps } from '../types';
 
 interface FriendCardProps extends UserCardProps {
@@ -18,7 +17,7 @@ export function FriendCard({
   onAction,
   actionLabel,
   actionIcon: ActionIcon,
-  actionColor = colors.primary,
+  actionColor = '#6B21A8',
   secondaryAction,
   secondaryLabel,
   secondaryIcon: SecondaryIcon,
@@ -32,42 +31,42 @@ export function FriendCard({
   };
 
   return (
-    <GlassCard style={styles.userCard}>
+    <GlassCard className="p-4">
       <Pressable
         onPress={viewProfile}
-        style={[styles.userCardContent, isRTL && styles.userCardContentRTL]}
+        className={`items-center gap-4 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}
       >
         <GlassAvatar uri={avatar} name={name} size="medium" />
 
-        <View style={styles.userInfo}>
-          <Text style={[styles.userName, isRTL && styles.textRTL]}>{name}</Text>
+        <View className="flex-1">
+          <Text className={`text-base font-semibold text-white mb-0.5 ${isRTL ? 'text-right' : ''}`}>{name}</Text>
           {subtitle && (
-            <Text style={[styles.userSubtitle, isRTL && styles.textRTL]}>
+            <Text className={`text-[13px] text-white/60 mb-1 ${isRTL ? 'text-right' : ''}`}>
               {subtitle}
             </Text>
           )}
           {(friendCount !== undefined || gamesPlayed !== undefined) && (
-            <View style={[styles.userStats, isRTL && styles.userStatsRTL]}>
+            <View className={`gap-4 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
               {friendCount !== undefined && (
-                <Text style={styles.userStat}>{friendCount} friends</Text>
+                <Text className="text-xs text-white/60">{friendCount} friends</Text>
               )}
               {gamesPlayed !== undefined && (
-                <Text style={styles.userStat}>{gamesPlayed} games</Text>
+                <Text className="text-xs text-white/60">{gamesPlayed} games</Text>
               )}
             </View>
           )}
         </View>
 
-        <View style={[styles.cardActions, isRTL && styles.cardActionsRTL]}>
+        <View className={`items-center gap-2 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
           {secondaryAction && SecondaryIcon && (
             <Pressable
               onPress={(e) => {
                 e.stopPropagation();
                 secondaryAction();
               }}
-              style={styles.iconButton}
+              className="w-9 h-9 rounded-lg bg-white/5 justify-center items-center"
             >
-              <SecondaryIcon size={20} color={colors.textMuted} />
+              <SecondaryIcon size={20} color="rgba(255,255,255,0.6)" />
             </Pressable>
           )}
           {onAction && ActionIcon && (
@@ -76,11 +75,12 @@ export function FriendCard({
                 e.stopPropagation();
                 onAction();
               }}
-              style={[styles.actionButton, { backgroundColor: `${actionColor}20` }]}
+              className="flex-row items-center gap-2 px-4 py-2 rounded-lg"
+              style={{ backgroundColor: `${actionColor}20` }}
             >
               <ActionIcon size={18} color={actionColor} />
               {actionLabel && (
-                <Text style={[styles.actionButtonText, { color: actionColor }]}>
+                <Text className="text-[13px] font-semibold" style={{ color: actionColor }}>
                   {actionLabel}
                 </Text>
               )}
@@ -91,73 +91,3 @@ export function FriendCard({
     </GlassCard>
   );
 }
-
-const styles = StyleSheet.create({
-  userCard: {
-    padding: spacing.md,
-  },
-  userCardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  userCardContentRTL: {
-    flexDirection: 'row-reverse',
-  },
-  userInfo: {
-    flex: 1,
-  },
-  userName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 2,
-  },
-  userSubtitle: {
-    fontSize: 13,
-    color: colors.textMuted,
-    marginBottom: 4,
-  },
-  userStats: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  userStatsRTL: {
-    flexDirection: 'row-reverse',
-  },
-  userStat: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  cardActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  cardActionsRTL: {
-    flexDirection: 'row-reverse',
-  },
-  iconButton: {
-    width: 36,
-    height: 36,
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.glassBorderWhite,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.md,
-  },
-  actionButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-});

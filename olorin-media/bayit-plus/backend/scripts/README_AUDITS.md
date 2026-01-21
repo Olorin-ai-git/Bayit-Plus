@@ -14,7 +14,7 @@ Your library likely has **hundreds of items**, so one audit isn't enough!
 ### **Phase 1: Metadata & Posters (Day 1)**
 Run a comprehensive audit focused on metadata and posters:
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
+cd /Users/olorin/Documents/olorin/backend/scripts
 ./run_comprehensive_audit.sh
 
 # Or with custom limits:
@@ -173,7 +173,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 ### **View Audit Logs**
 ```bash
 # Real-time monitoring
-tail -f /Users/olorin/Documents/Bayit-Plus/backend/.cursor/debug.log
+tail -f /Users/olorin/Documents/olorin/backend/.cursor/debug.log
 
 # Filter for important events
 grep -E "(SUCCESS|ERROR|TOOL)" backend/.cursor/debug.log | tail -100
@@ -217,7 +217,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 ### **"Server is not running"**
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend
+cd /Users/olorin/Documents/olorin/backend
 poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 

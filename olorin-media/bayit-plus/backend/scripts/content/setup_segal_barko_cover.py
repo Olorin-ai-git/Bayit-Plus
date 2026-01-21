@@ -13,7 +13,7 @@ from pymongo import MongoClient
 def setup_podcast_cover(source_image_path: str):
     """Copy podcast cover image and update database"""
 
-    dest_dir = Path("/Users/olorin/Documents/Bayit-Plus/backend/uploads/podcasts")
+    dest_dir = Path("/Users/olorin/Documents/olorin/backend/uploads/podcasts")
     dest_file = dest_dir / "segal-barko-cover.jpg"
 
     # Create destination if it doesn't exist
@@ -66,5 +66,5 @@ if __name__ == "__main__":
         print("Usage: python setup_segal_barko_cover.py <path-to-image>")
         print("\nOr save the image directly to:")
         print(
-            "   /Users/olorin/Documents/Bayit-Plus/backend/uploads/podcasts/segal-barko-cover.jpg"
+            "   /Users/olorin/Documents/olorin/backend/uploads/podcasts/segal-barko-cover.jpg"
         )

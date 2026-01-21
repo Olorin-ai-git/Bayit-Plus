@@ -4,13 +4,12 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { GlassModal } from '../ui/GlassModal';
 import { GlassInput } from '../ui/GlassInput';
 import { GlassSelect } from '../ui/GlassSelect';
 import { GlassToggle } from '../ui/GlassToggle';
 import { GlassButton } from '../ui/GlassButton';
-import { colors, spacing, fontSize } from '../../theme';
 import { MonitoredFolder, MonitoredFolderCreate, MonitoredFolderUpdate } from '../../services/uploadService';
 
 interface MonitoredFolderManagerProps {
@@ -144,184 +143,137 @@ export const MonitoredFolderManager: React.FC<MonitoredFolderManagerProps> = ({
       onClose={onClose}
       title={isEditMode ? 'Edit Monitored Folder' : 'Add Monitored Folder'}
     >
-      <ScrollView style={styles.content}>
-        <View style={styles.section}>
-          <Text style={styles.label}>Folder Path *</Text>
+      <ScrollView className="max-h-[600px]">
+        <View className="mb-4">
+          <Text className="text-base font-semibold text-text mb-2">Folder Path *</Text>
           <GlassInput
             value={path}
             onChangeText={setPath}
             placeholder="/path/to/folder"
             editable={!isEditMode}
-            style={styles.input}
+            className="mb-1"
           />
-          <Text style={styles.hint}>
+          <Text className="text-sm text-textSecondary mt-1">
             Absolute path to the folder to monitor
           </Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Friendly Name</Text>
+        <View className="mb-4">
+          <Text className="text-base font-semibold text-text mb-2">Friendly Name</Text>
           <GlassInput
             value={name}
             onChangeText={setName}
             placeholder="My Movies Folder"
-            style={styles.input}
+            className="mb-1"
           />
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Content Type *</Text>
+        <View className="mb-4">
+          <Text className="text-base font-semibold text-text mb-2">Content Type *</Text>
           <GlassSelect
             value={contentType}
             onValueChange={setContentType}
             options={contentTypeOptions}
             disabled={isEditMode}
-            style={styles.input}
+            className="mb-1"
           />
         </View>
 
         {isEditMode && (
-          <View style={styles.section}>
-            <View style={styles.toggleRow}>
-              <Text style={styles.label}>Enabled</Text>
+          <View className="mb-4">
+            <View className="flex flex-row justify-between items-center">
+              <Text className="text-base font-semibold text-text mb-2">Enabled</Text>
               <GlassToggle value={enabled} onValueChange={setEnabled} />
             </View>
-            <Text style={styles.hint}>
+            <Text className="text-sm text-textSecondary mt-1">
               Enable or disable monitoring for this folder
             </Text>
           </View>
         )}
 
-        <View style={styles.section}>
-          <View style={styles.toggleRow}>
-            <Text style={styles.label}>Auto Upload</Text>
+        <View className="mb-4">
+          <View className="flex flex-row justify-between items-center">
+            <Text className="text-base font-semibold text-text mb-2">Auto Upload</Text>
             <GlassToggle value={autoUpload} onValueChange={setAutoUpload} />
           </View>
-          <Text style={styles.hint}>
+          <Text className="text-sm text-textSecondary mt-1">
             Automatically upload new files when found
           </Text>
         </View>
 
-        <View style={styles.section}>
-          <View style={styles.toggleRow}>
-            <Text style={styles.label}>Recursive Scan</Text>
+        <View className="mb-4">
+          <View className="flex flex-row justify-between items-center">
+            <Text className="text-base font-semibold text-text mb-2">Recursive Scan</Text>
             <GlassToggle value={recursive} onValueChange={setRecursive} />
           </View>
-          <Text style={styles.hint}>
+          <Text className="text-sm text-textSecondary mt-1">
             Scan subdirectories for files
           </Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>File Patterns</Text>
+        <View className="mb-4">
+          <Text className="text-base font-semibold text-text mb-2">File Patterns</Text>
           <GlassInput
             value={filePatterns}
             onChangeText={setFilePatterns}
             placeholder="*.mp4, *.mkv, *.avi"
-            style={styles.input}
+            className="mb-1"
           />
-          <Text style={styles.hint}>
+          <Text className="text-sm text-textSecondary mt-1">
             Comma-separated glob patterns (leave empty for defaults)
           </Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Exclude Patterns</Text>
+        <View className="mb-4">
+          <Text className="text-base font-semibold text-text mb-2">Exclude Patterns</Text>
           <GlassInput
             value={excludePatterns}
             onChangeText={setExcludePatterns}
             placeholder="*.tmp, *.part"
-            style={styles.input}
+            className="mb-1"
           />
-          <Text style={styles.hint}>
+          <Text className="text-sm text-textSecondary mt-1">
             Comma-separated patterns to exclude
           </Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Scan Interval (seconds)</Text>
+        <View className="mb-4">
+          <Text className="text-base font-semibold text-text mb-2">Scan Interval (seconds)</Text>
           <GlassInput
             value={scanInterval}
             onChangeText={setScanInterval}
             placeholder="3600"
             keyboardType="numeric"
-            style={styles.input}
+            className="mb-1"
           />
-          <Text style={styles.hint}>
+          <Text className="text-sm text-textSecondary mt-1">
             Time between automatic scans (minimum 60 seconds)
           </Text>
         </View>
 
         {error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
+          <View className="bg-error/20 p-4 rounded-lg mb-4">
+            <Text className="text-sm text-error">{error}</Text>
           </View>
         )}
 
-        <View style={styles.buttonRow}>
+        <View className="flex flex-row justify-end gap-4 mt-4">
           <GlassButton
             title="Cancel"
             onPress={onClose}
             variant="secondary"
-            style={styles.button}
+            className="min-w-[120px]"
           />
           <GlassButton
             title={isEditMode ? 'Update' : 'Add'}
             onPress={handleSave}
             loading={loading}
-            style={styles.button}
+            className="min-w-[120px]"
           />
         </View>
       </ScrollView>
     </GlassModal>
   );
 };
-
-const styles = StyleSheet.create({
-  content: {
-    maxHeight: 600,
-  },
-  section: {
-    marginBottom: spacing.lg,
-  },
-  label: {
-    fontSize: fontSize.md,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  input: {
-    marginBottom: spacing.xs,
-  },
-  hint: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    marginTop: spacing.xs,
-  },
-  toggleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  errorContainer: {
-    backgroundColor: colors.error + '20',
-    padding: spacing.md,
-    borderRadius: 8,
-    marginBottom: spacing.lg,
-  },
-  errorText: {
-    fontSize: fontSize.sm,
-    color: colors.error,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: spacing.md,
-    marginTop: spacing.lg,
-  },
-  button: {
-    minWidth: 120,
-  },
-});
 
 export default MonitoredFolderManager;

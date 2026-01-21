@@ -19,7 +19,7 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 
 # Add parent directory to path for imports
-sys.path.insert(0, "/Users/olorin/Documents/Bayit-Plus/backend")
+sys.path.insert(0, "/Users/olorin/Documents/olorin/backend")
 
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient

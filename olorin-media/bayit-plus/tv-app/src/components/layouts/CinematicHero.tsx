@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Animated,
   Dimensions,
   Image,
@@ -151,30 +150,28 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
 
   if (!items.length) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.emptyText}>אין תוכן להצגה</Text>
+      <View className="relative" style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT * 0.7 }}>
+        <Text className="text-gray-400 text-lg text-center" style={{ marginTop: SCREEN_HEIGHT * 0.3 }}>אין תוכן להצגה</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View className="relative" style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT * 0.7 }}>
       {/* Background Image with Parallax */}
       <Animated.View
-        style={[
-          styles.backdropContainer,
-          {
-            transform: [
-              { translateX: parallaxAnim },
-              { scale: 1.1 },
-            ],
-          },
-        ]}
+        className="absolute inset-0"
+        style={{
+          transform: [
+            { translateX: parallaxAnim },
+            { scale: 1.1 },
+          ],
+        }}
       >
         {showTrailer && currentItem?.trailer_url ? (
           <Video
             source={{ uri: currentItem.trailer_url }}
-            style={styles.backdrop}
+            className="w-full h-full"
             resizeMode="cover"
             repeat
             muted={false}
@@ -182,7 +179,7 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
         ) : (
           <Image
             source={{ uri: currentItem?.backdrop || currentItem?.thumbnail }}
-            style={styles.backdrop}
+            className="w-full h-full"
             resizeMode="cover"
           />
         )}
@@ -191,19 +188,22 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
       {/* Gradient Overlays */}
       <LinearGradient
         colors={['transparent', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.9)']}
-        style={styles.gradientBottom}
+        className="absolute left-0 right-0 bottom-0"
+        style={{ height: '70%' }}
       />
       <LinearGradient
         colors={['rgba(0,0,0,0.7)', 'transparent']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
-        style={styles.gradientLeft}
+        className="absolute left-0 top-0 bottom-0"
+        style={{ width: '50%' }}
       />
 
       {/* Content */}
       <Animated.View
+        className="absolute"
         style={[
-          styles.content,
+          { left: isTV ? 80 : 48, bottom: isTV ? 80 : 48, maxWidth: isTV ? 700 : 500 },
           {
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }],
@@ -212,26 +212,26 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
       >
         {/* Category Badge */}
         {currentItem?.category && (
-          <GlassView style={styles.categoryBadge} intensity="light">
-            <Text style={styles.categoryText}>{currentItem.category}</Text>
+          <GlassView className="self-start px-4 py-1 rounded-full mb-4" intensity="light">
+            <Text className="text-sm text-white font-medium">{currentItem.category}</Text>
           </GlassView>
         )}
 
         {/* Title */}
-        <Text style={styles.title}>{currentItem?.title}</Text>
+        <Text className="font-bold text-white mb-2" style={{ fontSize: isTV ? 56 : 42, textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 10 }}>{currentItem?.title}</Text>
 
         {/* Metadata */}
-        <View style={styles.metadata}>
+        <View className="flex-row items-center gap-4 mb-4">
           {currentItem?.year && (
-            <Text style={styles.metaItem}>{currentItem.year}</Text>
+            <Text className="text-base text-gray-400">{currentItem.year}</Text>
           )}
           {currentItem?.rating && (
-            <View style={styles.ratingBadge}>
-              <Text style={styles.ratingText}>{currentItem.rating}</Text>
+            <View className="bg-white/20 px-2 py-0.5 rounded-sm">
+              <Text className="text-sm text-white font-semibold">{currentItem.rating}</Text>
             </View>
           )}
           {currentItem?.duration && (
-            <Text style={styles.metaItem}>
+            <Text className="text-base text-gray-400">
               {Math.floor(currentItem.duration / 60)} דקות
             </Text>
           )}
@@ -239,48 +239,42 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
 
         {/* Description */}
         {currentItem?.description && (
-          <Text style={styles.description} numberOfLines={3}>
+          <Text className="text-white/80 mb-6" style={{ fontSize: isTV ? 20 : 16, lineHeight: isTV ? 30 : 24 }} numberOfLines={3}>
             {currentItem.description}
           </Text>
         )}
 
         {/* Action Buttons */}
-        <View style={styles.actions}>
+        <View className="flex-row gap-4">
           <TouchableOpacity
-            style={[
-              styles.primaryButton,
-              focusedButton === 'play' && styles.buttonFocused,
-            ]}
+            className={`flex-row items-center gap-2 bg-purple-500 rounded-lg ${focusedButton === 'play' ? 'border-[3px] border-white scale-105' : ''}`}
+            style={{ paddingHorizontal: isTV ? 32 : 24, paddingVertical: isTV ? 16 : 12 }}
             onPress={handlePlay}
             onFocus={() => setFocusedButton('play')}
           >
-            <Text style={styles.playIcon}>▶</Text>
-            <Text style={styles.primaryButtonText}>צפה עכשיו</Text>
+            <Text className="text-white" style={{ fontSize: isTV ? 20 : 16 }}>▶</Text>
+            <Text className="font-semibold text-white" style={{ fontSize: isTV ? 20 : 16 }}>צפה עכשיו</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[
-              styles.secondaryButton,
-              focusedButton === 'more' && styles.buttonFocused,
-            ]}
+            className={`flex-row items-center gap-2 bg-white/20 rounded-lg ${focusedButton === 'more' ? 'border-[3px] border-white scale-105' : ''}`}
+            style={{ paddingHorizontal: isTV ? 24 : 20, paddingVertical: isTV ? 16 : 12 }}
             onPress={handleMoreInfo}
             onFocus={() => setFocusedButton('more')}
           >
-            <Text style={styles.infoIcon}>ℹ</Text>
-            <Text style={styles.secondaryButtonText}>מידע נוסף</Text>
+            <Text className="text-white" style={{ fontSize: isTV ? 18 : 14 }}>ℹ</Text>
+            <Text className="font-medium text-white" style={{ fontSize: isTV ? 18 : 14 }}>מידע נוסף</Text>
           </TouchableOpacity>
 
           {currentItem?.trailer_url && (
             <TouchableOpacity
-              style={[
-                styles.secondaryButton,
-                focusedButton === 'trailer' && styles.buttonFocused,
-              ]}
+              className={`flex-row items-center gap-2 bg-white/20 rounded-lg ${focusedButton === 'trailer' ? 'border-[3px] border-white scale-105' : ''}`}
+              style={{ paddingHorizontal: isTV ? 24 : 20, paddingVertical: isTV ? 16 : 12 }}
               onPress={toggleTrailer}
               onFocus={() => setFocusedButton('trailer')}
             >
-              <Text style={styles.trailerIcon}>🎬</Text>
-              <Text style={styles.secondaryButtonText}>
+              <Text style={{ fontSize: isTV ? 18 : 14 }}>🎬</Text>
+              <Text className="font-medium text-white" style={{ fontSize: isTV ? 18 : 14 }}>
                 {showTrailer ? 'סגור טריילר' : 'צפה בטריילר'}
               </Text>
             </TouchableOpacity>
@@ -289,15 +283,12 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
       </Animated.View>
 
       {/* Navigation Indicators */}
-      <View style={styles.indicators}>
+      <View className="absolute flex-row gap-2" style={{ bottom: isTV ? 30 : 20, right: isTV ? 80 : 48 }}>
         {items.map((_, index) => (
           <TouchableOpacity
             key={index}
-            style={[
-              styles.indicator,
-              index === currentIndex && styles.indicatorActive,
-              focusedButton === `indicator-${index}` && styles.indicatorFocused,
-            ]}
+            className={`h-1 rounded-sm ${index === currentIndex ? 'bg-purple-500' : focusedButton === `indicator-${index}` ? 'bg-white' : 'bg-white/30'}`}
+            style={{ width: isTV ? 40 : 30 }}
             onPress={() => goToItem(index)}
             onFocus={() => setFocusedButton(`indicator-${index}`)}
           />
@@ -305,238 +296,34 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
       </View>
 
       {/* Navigation Arrows (visible on focus) */}
-      <View style={styles.navArrows}>
+      <View className="absolute left-0 right-0 flex-row justify-between px-4" style={{ top: '50%' }}>
         <TouchableOpacity
-          style={[
-            styles.navArrow,
-            styles.navArrowLeft,
-            focusedButton === 'prev' && styles.navArrowFocused,
-          ]}
+          className={`rounded-full bg-black/50 justify-center items-center ${focusedButton === 'prev' ? 'opacity-100 bg-white/30 border-2 border-white' : 'opacity-50'}`}
+          style={{ width: isTV ? 60 : 48, height: isTV ? 60 : 48 }}
           onPress={goToPrevious}
           onFocus={() => setFocusedButton('prev')}
         >
-          <Text style={styles.navArrowText}>‹</Text>
+          <Text className="text-white font-light" style={{ fontSize: isTV ? 36 : 28 }}>‹</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[
-            styles.navArrow,
-            styles.navArrowRight,
-            focusedButton === 'next' && styles.navArrowFocused,
-          ]}
+          className={`rounded-full bg-black/50 justify-center items-center ${focusedButton === 'next' ? 'opacity-100 bg-white/30 border-2 border-white' : 'opacity-50'}`}
+          style={{ width: isTV ? 60 : 48, height: isTV ? 60 : 48 }}
           onPress={goToNext}
           onFocus={() => setFocusedButton('next')}
         >
-          <Text style={styles.navArrowText}>›</Text>
+          <Text className="text-white font-light" style={{ fontSize: isTV ? 36 : 28 }}>›</Text>
         </TouchableOpacity>
       </View>
 
       {/* Item Counter */}
-      <View style={styles.counter}>
-        <Text style={styles.counterText}>
+      <View className="absolute" style={{ top: isTV ? 30 : 20, right: isTV ? 80 : 48 }}>
+        <Text className="text-sm text-white/50">
           {currentIndex + 1} / {items.length}
         </Text>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT * 0.7,
-    position: 'relative',
-  },
-  emptyText: {
-    color: colors.textSecondary,
-    fontSize: fontSize.lg,
-    textAlign: 'center',
-    marginTop: SCREEN_HEIGHT * 0.3,
-  },
-  backdropContainer: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  backdrop: {
-    width: '100%',
-    height: '100%',
-  },
-  gradientBottom: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: '70%',
-  },
-  gradientLeft: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: '50%',
-  },
-  content: {
-    position: 'absolute',
-    left: isTV ? 80 : 48,
-    bottom: isTV ? 80 : 48,
-    maxWidth: isTV ? 700 : 500,
-  },
-  categoryBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-    marginBottom: spacing.md,
-  },
-  categoryText: {
-    fontSize: fontSize.sm,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  title: {
-    fontSize: isTV ? 56 : 42,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.sm,
-    textShadowColor: 'rgba(0,0,0,0.5)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 10,
-  },
-  metadata: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginBottom: spacing.md,
-  },
-  metaItem: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-  },
-  ratingBadge: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  ratingText: {
-    fontSize: fontSize.sm,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  description: {
-    fontSize: isTV ? 20 : 16,
-    color: 'rgba(255,255,255,0.8)',
-    lineHeight: isTV ? 30 : 24,
-    marginBottom: spacing.lg,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  primaryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: colors.primary,
-    paddingHorizontal: isTV ? 32 : 24,
-    paddingVertical: isTV ? 16 : 12,
-    borderRadius: borderRadius.lg,
-  },
-  playIcon: {
-    fontSize: isTV ? 20 : 16,
-    color: colors.text,
-  },
-  primaryButtonText: {
-    fontSize: isTV ? 20 : 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  secondaryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: isTV ? 24 : 20,
-    paddingVertical: isTV ? 16 : 12,
-    borderRadius: borderRadius.lg,
-    // @ts-ignore - Web CSS property for blur effect
-    backdropFilter: 'blur(10px)',
-  },
-  infoIcon: {
-    fontSize: isTV ? 18 : 14,
-    color: colors.text,
-  },
-  trailerIcon: {
-    fontSize: isTV ? 18 : 14,
-  },
-  secondaryButtonText: {
-    fontSize: isTV ? 18 : 14,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  buttonFocused: {
-    borderWidth: 3,
-    borderColor: '#fff',
-    transform: [{ scale: 1.05 }],
-  },
-  indicators: {
-    position: 'absolute',
-    bottom: isTV ? 30 : 20,
-    right: isTV ? 80 : 48,
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  indicator: {
-    width: isTV ? 40 : 30,
-    height: 4,
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    borderRadius: 2,
-  },
-  indicatorActive: {
-    backgroundColor: colors.primary,
-  },
-  indicatorFocused: {
-    backgroundColor: '#fff',
-  },
-  navArrows: {
-    position: 'absolute',
-    top: '50%',
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-  },
-  navArrow: {
-    width: isTV ? 60 : 48,
-    height: isTV ? 60 : 48,
-    borderRadius: 30,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    opacity: 0.5,
-  },
-  navArrowFocused: {
-    opacity: 1,
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    borderWidth: 2,
-    borderColor: '#fff',
-  },
-  navArrowLeft: {},
-  navArrowRight: {},
-  navArrowText: {
-    fontSize: isTV ? 36 : 28,
-    color: '#fff',
-    fontWeight: '300',
-  },
-  counter: {
-    position: 'absolute',
-    top: isTV ? 30 : 20,
-    right: isTV ? 80 : 48,
-  },
-  counterText: {
-    fontSize: fontSize.sm,
-    color: 'rgba(255,255,255,0.5)',
-  },
-});
 
 export default CinematicHero;

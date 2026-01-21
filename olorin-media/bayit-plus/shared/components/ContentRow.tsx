@@ -3,7 +3,6 @@ import {
   View,
   Text,
   ScrollView,
-  StyleSheet,
   Platform,
 } from 'react-native';
 import { FocusableCard } from './FocusableCard';
@@ -39,15 +38,33 @@ export const ContentRow: React.FC<ContentRowProps> = ({
 
   // Mobile-friendly margins
   const sideMargin = isMobilePhone ? 12 : 48;
+  const marginBottom = IS_TV_BUILD ? 60 : (isMobilePhone ? 16 : 40);
+  const titleFontSize = IS_TV_BUILD ? 36 : (isMobilePhone ? 18 : 28);
+  const titleMarginBottom = IS_TV_BUILD ? 24 : (isMobilePhone ? 8 : 16);
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.title, { textAlign, marginRight: isRTL ? sideMargin : 0, marginLeft: isRTL ? 0 : sideMargin }]}>{title}</Text>
-      <View style={[styles.scrollContainer, { paddingRight: isRTL ? sideMargin : 0, paddingLeft: isRTL ? 0 : sideMargin }]}>
+    <View className={`${marginBottom === 60 ? 'mb-[60px]' : marginBottom === 40 ? 'mb-10' : 'mb-4'}`}>
+      <Text
+        className="font-bold text-white"
+        style={{
+          fontSize: titleFontSize,
+          marginBottom: titleMarginBottom,
+          textAlign,
+          marginRight: isRTL ? sideMargin : 0,
+          marginLeft: isRTL ? 0 : sideMargin
+        }}
+      >
+        {title}
+      </Text>
+      <View style={{ paddingRight: isRTL ? sideMargin : 0, paddingLeft: isRTL ? 0 : sideMargin }}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[styles.scrollContent, { flexDirection: isRTL ? 'row-reverse' : 'row', paddingLeft: isRTL ? sideMargin : 0, paddingRight: isRTL ? 0 : sideMargin }]}
+          contentContainerStyle={{
+            flexDirection: isRTL ? 'row-reverse' : 'row',
+            paddingLeft: isRTL ? sideMargin : (isMobilePhone ? 8 : 0),
+            paddingRight: isRTL ? (isMobilePhone ? 8 : 0) : sideMargin
+          }}
         >
           {items.map((item) => (
             <FocusableCard
@@ -63,22 +80,5 @@ export const ContentRow: React.FC<ContentRowProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: IS_TV_BUILD ? 60 : (isMobilePhone ? 16 : 40),
-  },
-  title: {
-    fontSize: IS_TV_BUILD ? 36 : (isMobilePhone ? 18 : 28),
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: IS_TV_BUILD ? 24 : (isMobilePhone ? 8 : 16),
-  },
-  scrollContainer: {
-  },
-  scrollContent: {
-    paddingHorizontal: isMobilePhone ? 8 : 0,
-  },
-});
 
 export default ContentRow;

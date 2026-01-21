@@ -16,7 +16,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Switch,
-  StyleSheet,
   SafeAreaView,
   Alert,
 } from 'react-native';
@@ -69,7 +68,6 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
           text: 'Delete',
           style: 'destructive',
           onPress: () => {
-            // TODO: Call service to clear history
             Alert.alert('Success', 'Command history cleared');
           },
         },
@@ -96,18 +94,18 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
   }, [onSettingsChange]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <SafeAreaView className="flex-1 bg-slate-900">
+      <View className="flex-row justify-between items-center px-4 py-3 border-b border-slate-800">
         <TouchableOpacity onPress={onClose}>
-          <Text style={styles.closeButton}>✕ Close</Text>
+          <Text className="text-sm text-blue-600 font-medium">✕ Close</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Voice Settings</Text>
-        <View style={styles.placeholder} />
+        <Text className="text-lg font-semibold text-white">Voice Settings</Text>
+        <View className="w-12" />
       </View>
 
       <ScrollView
-        style={styles.content}
-        contentContainerStyle={styles.contentContainer}
+        className="flex-1"
+        contentContainerStyle={{ padding: 16, gap: 16 }}
         keyboardShouldPersistTaps="handled"
       >
         {/* Voice Features Toggle */}
@@ -125,30 +123,31 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
         {/* Language Selection */}
         <Section title="Language">
           <TouchableOpacity
-            style={styles.languageBox}
+            className="py-3 border-b border-slate-700"
             activeOpacity={0.7}
           >
-            <View style={styles.languageItem}>
-              <Text style={styles.languageLabel}>Voice Language</Text>
-              <Text style={styles.languageValue}>{getLanguageName(settings.language)}</Text>
+            <View className="flex-row justify-between items-center">
+              <Text className="text-sm font-medium text-slate-100">Voice Language</Text>
+              <Text className="text-sm text-slate-400">{getLanguageName(settings.language)}</Text>
             </View>
           </TouchableOpacity>
-          <View style={styles.languageOptions}>
+          <View className="flex-row gap-2 mt-3">
             {['en', 'he', 'es'].map((lang) => (
               <TouchableOpacity
                 key={lang}
-                style={[
-                  styles.languageOption,
-                  settings.language === lang && styles.languageOptionActive,
-                ]}
+                className={`flex-1 py-2 px-3 rounded bg-slate-900 border ${
+                  settings.language === lang
+                    ? 'bg-blue-600 border-blue-600'
+                    : 'border-slate-700'
+                } items-center`}
                 onPress={() => handleSettingChange('language', lang)}
               >
                 <Text
-                  style={[
-                    styles.languageOptionText,
-                    settings.language === lang &&
-                      styles.languageOptionTextActive,
-                  ]}
+                  className={`text-xs font-medium ${
+                    settings.language === lang
+                      ? 'text-white'
+                      : 'text-slate-200'
+                  }`}
                 >
                   {getLanguageName(lang)}
                 </Text>
@@ -167,7 +166,7 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
             label="Sensitivity"
             description="Higher = more responsive, may trigger more false positives"
           />
-          <Text style={styles.helperText}>
+          <Text className="text-xs text-slate-600 mt-2 italic">
             Current sensitivity: {(settings.wakeSensitivity * 100).toFixed(0)}%
           </Text>
         </Section>
@@ -194,34 +193,32 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
               handleSettingChange('recordCommandHistory', value)
             }
           />
-          <Text style={styles.helperText}>
+          <Text className="text-xs text-slate-600 mt-2 italic">
             History helps improve voice recognition accuracy
           </Text>
         </Section>
 
         {/* Permissions */}
         <Section title="Permissions">
-          <View style={styles.permissionBox}>
-            <View style={styles.permissionItem}>
+          <View className="py-3">
+            <View className="flex-row justify-between items-center">
               <View>
-                <Text style={styles.permissionLabel}>Microphone</Text>
-                <Text style={styles.permissionStatus}>
+                <Text className="text-sm font-medium text-slate-100 mb-0.5">Microphone</Text>
+                <Text className="text-xs text-slate-400 mt-0.5">
                   {settings.microphonePermission ? '✓ Granted' : '✗ Denied'}
                 </Text>
               </View>
               <View
-                style={[
-                  styles.permissionIndicator,
-                  {
-                    backgroundColor: settings.microphonePermission
-                      ? '#10B981'
-                      : '#EF4444',
-                  },
-                ]}
+                className="w-3 h-3 rounded-full"
+                style={{
+                  backgroundColor: settings.microphonePermission
+                    ? '#10B981'
+                    : '#EF4444',
+                }}
               />
             </View>
           </View>
-          <Text style={styles.helperText}>
+          <Text className="text-xs text-slate-600 mt-2 italic">
             Microphone access is required for voice commands
           </Text>
         </Section>
@@ -234,20 +231,20 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
         {/* Danger Zone */}
         <Section title="Advanced">
           <TouchableOpacity
-            style={styles.dangerButton}
+            className="py-3 px-3 bg-red-900 rounded items-center mt-2 border border-red-800"
             onPress={handleClearHistory}
           >
-            <Text style={styles.dangerButtonText}>Clear Command History</Text>
+            <Text className="text-xs font-semibold text-red-300">Clear Command History</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.dangerButton}
+            className="py-3 px-3 bg-red-900 rounded items-center mt-2 border border-red-800"
             onPress={handleResetSettings}
           >
-            <Text style={styles.dangerButtonText}>Reset to Defaults</Text>
+            <Text className="text-xs font-semibold text-red-300">Reset to Defaults</Text>
           </TouchableOpacity>
         </Section>
 
-        <View style={styles.footer} />
+        <View className="h-5" />
       </ScrollView>
     </SafeAreaView>
   );
@@ -263,9 +260,13 @@ interface SectionProps {
 }
 
 const Section: React.FC<SectionProps> = ({ title, children }) => (
-  <View style={styles.section}>
-    <Text style={styles.sectionTitle}>{title}</Text>
-    <View style={styles.sectionContent}>{children}</View>
+  <View className="mb-2">
+    <Text className="text-sm font-semibold text-slate-100 mb-3 uppercase tracking-wide">
+      {title}
+    </Text>
+    <View className="bg-slate-800 rounded-lg p-3 overflow-hidden">
+      {children}
+    </View>
   </View>
 );
 
@@ -282,11 +283,11 @@ const SettingRow: React.FC<SettingRowProps> = ({
   value,
   onValueChange,
 }) => (
-  <View style={styles.settingRow}>
-    <View style={styles.settingLabel}>
-      <Text style={styles.labelText}>{label}</Text>
+  <View className="flex-row justify-between items-center py-3 border-b border-slate-700">
+    <View className="flex-1 mr-3">
+      <Text className="text-sm font-medium text-slate-100 mb-0.5">{label}</Text>
       {description && (
-        <Text style={styles.descriptionText}>{description}</Text>
+        <Text className="text-xs text-slate-400 mt-0.5">{description}</Text>
       )}
     </View>
     <Switch
@@ -311,30 +312,28 @@ const SensitivitySlider: React.FC<SensitivitySliderProps> = ({
   label,
   description,
 }) => (
-  <View style={styles.sliderContainer}>
-    <View style={styles.sliderHeader}>
-      <Text style={styles.labelText}>{label}</Text>
+  <View className="py-3 border-b border-slate-700">
+    <View className="mb-3">
+      <Text className="text-sm font-medium text-slate-100 mb-0.5">{label}</Text>
       {description && (
-        <Text style={styles.descriptionText}>{description}</Text>
+        <Text className="text-xs text-slate-400 mt-0.5">{description}</Text>
       )}
     </View>
-    <View style={styles.sliderTrack}>
+    <View className="h-1.5 bg-slate-700 rounded-full overflow-hidden mb-2">
       <View
-        style={[
-          styles.sliderFill,
-          { width: `${value * 100}%` },
-        ]}
+        className="h-full bg-blue-600"
+        style={{ width: `${value * 100}%` }}
       />
     </View>
-    <View style={styles.sliderLabels}>
-      <Text style={styles.sliderLabelEnd}>Low</Text>
-      <Text style={styles.sliderLabelEnd}>High</Text>
+    <View className="flex-row justify-between">
+      <Text className="text-xs text-slate-600">Low</Text>
+      <Text className="text-xs text-slate-600">High</Text>
     </View>
   </View>
 );
 
 const VoiceCommandInfo: React.FC = () => (
-  <View style={styles.commandsInfo}>
+  <View className="gap-2">
     <CommandExample
       command="Play [movie/series name]"
       example="'Play Fauda'"
@@ -356,9 +355,9 @@ interface CommandExampleProps {
 }
 
 const CommandExample: React.FC<CommandExampleProps> = ({ command, example }) => (
-  <View style={styles.commandExample}>
-    <Text style={styles.commandText}>{command}</Text>
-    <Text style={styles.exampleText}>e.g., {example}</Text>
+  <View className="py-2 border-b border-slate-700">
+    <Text className="text-xs font-semibold text-slate-100 mb-0.5">{command}</Text>
+    <Text className="text-xs text-slate-400 italic">e.g., {example}</Text>
   </View>
 );
 
@@ -374,223 +373,3 @@ const getLanguageName = (code: string): string => {
   };
   return names[code] || code;
 };
-
-// ============================================
-// Styles
-// ============================================
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0F172A',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#1E293B',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  closeButton: {
-    fontSize: 14,
-    color: '#3B82F6',
-    fontWeight: '500',
-  },
-  placeholder: {
-    width: 50,
-  },
-  content: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 16,
-    gap: 16,
-  },
-  section: {
-    marginBottom: 8,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#F1F5F9',
-    marginBottom: 12,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  sectionContent: {
-    backgroundColor: '#1E293B',
-    borderRadius: 8,
-    padding: 12,
-    overflow: 'hidden',
-  },
-  settingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#334155',
-  },
-  settingLabel: {
-    flex: 1,
-    marginRight: 12,
-  },
-  labelText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#F1F5F9',
-    marginBottom: 2,
-  },
-  descriptionText: {
-    fontSize: 12,
-    color: '#94A3B8',
-    marginTop: 2,
-  },
-  helperText: {
-    fontSize: 12,
-    color: '#64748B',
-    marginTop: 8,
-    fontStyle: 'italic',
-  },
-  languageBox: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#334155',
-  },
-  languageItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  languageLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#F1F5F9',
-  },
-  languageValue: {
-    fontSize: 14,
-    color: '#94A3B8',
-  },
-  languageOptions: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 12,
-  },
-  languageOption: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 4,
-    backgroundColor: '#0F172A',
-    borderWidth: 1,
-    borderColor: '#334155',
-    alignItems: 'center',
-  },
-  languageOptionActive: {
-    backgroundColor: '#3B82F6',
-    borderColor: '#3B82F6',
-  },
-  languageOptionText: {
-    fontSize: 12,
-    color: '#E2E8F0',
-    fontWeight: '500',
-  },
-  languageOptionTextActive: {
-    color: '#FFFFFF',
-  },
-  sliderContainer: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#334155',
-  },
-  sliderHeader: {
-    marginBottom: 12,
-  },
-  sliderTrack: {
-    height: 6,
-    backgroundColor: '#334155',
-    borderRadius: 3,
-    overflow: 'hidden',
-    marginBottom: 8,
-  },
-  sliderFill: {
-    height: '100%',
-    backgroundColor: '#3B82F6',
-  },
-  sliderLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  sliderLabelEnd: {
-    fontSize: 11,
-    color: '#64748B',
-  },
-  permissionBox: {
-    paddingVertical: 12,
-  },
-  permissionItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  permissionLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#F1F5F9',
-    marginBottom: 2,
-  },
-  permissionStatus: {
-    fontSize: 12,
-    color: '#94A3B8',
-    marginTop: 2,
-  },
-  permissionIndicator: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-  commandsInfo: {
-    gap: 8,
-  },
-  commandExample: {
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#334155',
-  },
-  commandText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#F1F5F9',
-    marginBottom: 2,
-  },
-  exampleText: {
-    fontSize: 11,
-    color: '#94A3B8',
-    fontStyle: 'italic',
-  },
-  dangerButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    backgroundColor: '#7F1D1D',
-    borderRadius: 4,
-    alignItems: 'center',
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: '#991B1B',
-  },
-  dangerButtonText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#FCA5A5',
-  },
-  footer: {
-    height: 20,
-  },
-});

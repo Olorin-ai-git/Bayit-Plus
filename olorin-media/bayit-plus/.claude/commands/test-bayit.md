@@ -82,7 +82,7 @@ poetry run pytest \
 ```
 ================================ test session starts =================================
 platform darwin -- Python 3.13.0, pytest-7.4.3, pluggy-1.3.0
-rootdir: /Users/olorin/Documents/Bayit-Plus/backend
+rootdir: /Users/olorin/Documents/olorin/backend
 plugins: asyncio-0.21.1, cov-4.1.0
 collected 156 items
 

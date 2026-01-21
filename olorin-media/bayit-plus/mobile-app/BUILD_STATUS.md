@@ -280,7 +280,7 @@ INFO  Dev server ready.
 
 When attempting `npm run ios`:
 ```
-error: '/Users/olorin/Documents/Bayit-Plus/mobile-app/ios/BayitPlusTemp.xcodeproj' does not exist.
+error: '/Users/olorin/Documents/olorin/mobile-app/ios/BayitPlusTemp.xcodeproj' does not exist.
 ```
 
 ---
@@ -416,7 +416,7 @@ Despite the missing iOS native project, you've successfully:
 
 ```bash
 # Quick commands to get iOS project
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 npx @react-native-community/cli@latest init BayitPlusTemp --skip-install
 mv BayitPlusTemp/ios mobile-app/ios
 rm -rf BayitPlusTemp

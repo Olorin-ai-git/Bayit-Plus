@@ -6,8 +6,8 @@
  */
 
 import React from 'react';
-import { View, Text, Image, StyleSheet, Pressable, ViewStyle, StyleProp } from 'react-native';
-import { colors, spacing, borderRadius } from '../../theme';
+import { View, Text, Image, Pressable, ViewStyle, StyleProp } from 'react-native';
+import { colors } from '../../theme';
 
 export interface GlassAvatarProps {
   /** Avatar image URI */
@@ -73,16 +73,14 @@ export const GlassAvatar: React.FC<GlassAvatarProps> = ({
       return (
         <Image
           source={{ uri }}
-          style={[
-            styles.image,
-            { width: avatarSize, height: avatarSize, borderRadius: avatarSize / 2 },
-          ]}
+          className="object-cover"
+          style={{ width: avatarSize, height: avatarSize, borderRadius: avatarSize / 2 }}
         />
       );
     }
 
     if (initial) {
-      return <Text style={[styles.initial, { fontSize }]}>{initial}</Text>;
+      return <Text className="font-bold" style={{ fontSize, color: colors.primary }}>{initial}</Text>;
     }
 
     // Use fallback icon or show placeholder text
@@ -90,37 +88,35 @@ export const GlassAvatar: React.FC<GlassAvatarProps> = ({
       return fallbackIcon;
     }
 
-    return <Text style={[styles.initial, { fontSize: fontSize * 0.8 }]}>?</Text>;
+    return <Text className="font-bold" style={{ fontSize: fontSize * 0.8, color: colors.primary }}>?</Text>;
   };
 
   return (
-    <View style={[styles.container, style]} testID={testID}>
+    <View className="relative" style={style} testID={testID}>
       <View
-        style={[
-          styles.avatar,
-          {
-            width: avatarSize,
-            height: avatarSize,
-            borderRadius: avatarSize / 2,
-          },
-          uri && styles.avatarWithImage,
-        ]}
+        className="justify-center items-center border-2 overflow-hidden"
+        style={{
+          width: avatarSize,
+          height: avatarSize,
+          borderRadius: avatarSize / 2,
+          borderColor: uri ? colors.glassBorderWhite : colors.glassBorder,
+          backgroundColor: uri ? 'transparent' : colors.glassPurpleLight,
+        }}
       >
         {renderContent()}
 
         {/* Online Status Indicator */}
         {showOnlineStatus && (
           <View
-            style={[
-              styles.statusIndicator,
-              isOnline ? styles.statusOnline : styles.statusOffline,
-              {
-                width: avatarSize * 0.25,
-                height: avatarSize * 0.25,
-                borderRadius: avatarSize * 0.125,
-                borderWidth: avatarSize * 0.04,
-              },
-            ]}
+            className="absolute bottom-0.5 right-0.5"
+            style={{
+              width: avatarSize * 0.25,
+              height: avatarSize * 0.25,
+              borderRadius: avatarSize * 0.125,
+              borderWidth: avatarSize * 0.04,
+              borderColor: colors.background,
+              backgroundColor: isOnline ? '#22c55e' : colors.textMuted,
+            }}
           />
         )}
       </View>
@@ -129,72 +125,22 @@ export const GlassAvatar: React.FC<GlassAvatarProps> = ({
       {showEditButton && (
         <Pressable
           onPress={onEditPress}
-          style={[
-            styles.editButton,
-            {
-              width: avatarSize * 0.35,
-              height: avatarSize * 0.35,
-              borderRadius: avatarSize * 0.175,
-              right: 0,
-              bottom: 0,
-            },
-          ]}
+          className="absolute justify-center items-center border-2"
+          style={{
+            width: avatarSize * 0.35,
+            height: avatarSize * 0.35,
+            borderRadius: avatarSize * 0.175,
+            right: 0,
+            bottom: 0,
+            backgroundColor: colors.primary,
+            borderColor: colors.background,
+          }}
         >
-          {editIcon || <Text style={styles.editButtonText}>+</Text>}
+          {editIcon || <Text className="text-sm font-bold" style={{ color: colors.text }}>+</Text>}
         </Pressable>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-  },
-  avatar: {
-    backgroundColor: colors.glassPurpleLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: colors.glassBorder,
-    overflow: 'hidden',
-  },
-  avatarWithImage: {
-    borderColor: colors.glassBorderWhite,
-    backgroundColor: 'transparent',
-  },
-  image: {
-    resizeMode: 'cover',
-  },
-  initial: {
-    fontWeight: '700',
-    color: colors.primary,
-  },
-  statusIndicator: {
-    position: 'absolute',
-    bottom: 2,
-    right: 2,
-    borderColor: colors.background,
-  },
-  statusOnline: {
-    backgroundColor: '#22c55e',
-  },
-  statusOffline: {
-    backgroundColor: colors.textMuted,
-  },
-  editButton: {
-    position: 'absolute',
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: colors.background,
-  },
-  editButtonText: {
-    color: colors.text,
-    fontWeight: '700',
-    fontSize: 14,
-  },
-});
 
 export default GlassAvatar;

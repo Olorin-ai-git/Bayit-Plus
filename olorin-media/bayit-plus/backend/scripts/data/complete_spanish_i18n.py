@@ -125,7 +125,7 @@ def main():
     print("=" * 80)
 
     # Paths
-    shared_i18n = Path("/Users/olorin/Documents/Bayit-Plus/shared/i18n/locales")
+    shared_i18n = Path("/Users/olorin/Documents/olorin/shared/i18n/locales")
     en_path = shared_i18n / "en.json"
     es_path = shared_i18n / "es.json"
 

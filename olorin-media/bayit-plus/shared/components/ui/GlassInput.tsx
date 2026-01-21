@@ -3,7 +3,6 @@ import {
   TextInput,
   View,
   Text,
-  StyleSheet,
   Animated,
   ViewStyle,
   TextStyle,
@@ -50,16 +49,11 @@ export const GlassInput: React.FC<GlassInputProps> = ({
   });
 
   return (
-    <View style={[styles.container, containerStyle]}>
-      {label && <Text style={[styles.label, isRTL && styles.labelRTL]}>{label}</Text>}
+    <View className="mb-4 w-full" style={containerStyle}>
+      {label && <Text className={`text-sm font-medium text-white/70 mb-1 ${isRTL ? 'text-right' : ''}`}>{label}</Text>}
       <Animated.View style={scaleTransform}>
         <GlassView
-          style={[
-            styles.inputContainer,
-            isRTL && styles.inputContainerRTL,
-            !error && focusStyle,
-            error && styles.inputContainerError,
-          ]}
+          className={`flex-row items-center min-h-[50px] px-4 gap-2 w-full ${isRTL ? 'flex-row-reverse' : ''}`}
           intensity="medium"
           borderColor={
             error
@@ -68,16 +62,13 @@ export const GlassInput: React.FC<GlassInputProps> = ({
               ? colors.primary
               : undefined
           }
+          style={[!error && focusStyle, error && { borderColor: colors.error }]}
         >
-          {icon && <View style={styles.icon}>{icon}</View>}
+          {icon && <View>{icon}</View>}
           <TextInput
             {...props}
-            style={[
-              styles.input,
-              icon ? styles.inputWithIcon : undefined,
-              isRTL && styles.inputRTL,
-              inputStyle,
-            ]}
+            className={`flex-1 text-base text-white py-2 ${isRTL ? 'text-right' : ''}`}
+            style={inputStyle}
             placeholderTextColor={colors.textMuted}
             onFocus={(e) => {
               handleFocus();
@@ -91,67 +82,16 @@ export const GlassInput: React.FC<GlassInputProps> = ({
             hasTVPreferredFocus={hasTVPreferredFocus}
           />
           {rightIcon && (
-            <Pressable onPress={onRightIconPress} style={styles.rightIcon}>
+            <Pressable onPress={onRightIconPress} className="p-1">
               {rightIcon}
             </Pressable>
           )}
         </GlassView>
       </Animated.View>
-      {error && <Text style={[styles.error, isRTL && styles.errorRTL]}>{error}</Text>}
+      {error && <Text className={`text-xs text-red-500 mt-1 ${isRTL ? 'text-right' : ''}`}>{error}</Text>}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: spacing.md,
-    width: '100%' as any,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.textSecondary,
-    marginBottom: spacing.xs,
-  },
-  labelRTL: {
-    textAlign: 'right',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    minHeight: 50,
-    paddingHorizontal: spacing.md,
-    gap: spacing.sm,
-    width: '100%' as any,
-  },
-  inputContainerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  inputContainerError: {
-    borderColor: colors.error,
-  },
-  icon: {},
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: colors.text,
-    paddingVertical: spacing.sm,
-  },
-  inputRTL: {
-    textAlign: 'right',
-  },
-  inputWithIcon: {},
-  rightIcon: {
-    padding: spacing.xs,
-  },
-  error: {
-    fontSize: 12,
-    color: colors.error,
-    marginTop: spacing.xs,
-  },
-  errorRTL: {
-    textAlign: 'right',
-  },
-});
 
 export default GlassInput;

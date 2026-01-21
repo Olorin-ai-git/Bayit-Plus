@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../hooks/useDirection';
 import { isDemo } from '../config/appConfig';
-import { colors, fontSize } from '../theme';
 
 /**
  * DemoBanner Component
@@ -19,38 +18,12 @@ export const DemoBanner: React.FC = () => {
   }
 
   return (
-    <View style={[styles.container, { flexDirection }]}>
-      <Text style={styles.icon}>🎭</Text>
-      <Text style={[styles.text, { textAlign }]}>{t('demo.banner')}</Text>
-      <Text style={[styles.subtext, { textAlign }]}>{t('demo.bannerSubtext')}</Text>
+    <View className="flex-row items-center justify-center bg-orange-500/90 py-1.5 px-4 gap-2 z-[1000]" style={{ flexDirection }}>
+      <Text className="text-sm">🎭</Text>
+      <Text className="text-xs font-bold text-black tracking-wider" style={{ textAlign }}>{t('demo.banner')}</Text>
+      <Text className="text-xs text-gray-800" style={{ textAlign }}>{t('demo.bannerSubtext')}</Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255, 165, 0, 0.9)',
-    paddingVertical: 6,
-    paddingHorizontal: 16,
-    gap: 8,
-    zIndex: 1000,
-  },
-  icon: {
-    fontSize: 14,
-  },
-  text: {
-    fontSize: fontSize.xs,
-    fontWeight: 'bold',
-    color: '#000000',
-    letterSpacing: 1,
-  },
-  subtext: {
-    fontSize: fontSize.xs,
-    color: '#333333',
-  },
-});
 
 export default DemoBanner;

@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./olorin-front
+        working-directory: ./olorin-fraud/frontend
     steps:
       - uses: actions/checkout@v4
 
@@ -85,7 +85,7 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: ./olorin-front/package-lock.json
+          cache-dependency-path: ./olorin-fraud/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -113,7 +113,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./olorin-server
+        working-directory: ./olorin-fraud/backend
     steps:
       - uses: actions/checkout@v4
 
@@ -155,7 +155,7 @@ jobs:
       - name: Check file size compliance
         run: |
           echo "Checking for files over 200 lines..."
-          OVERSIZED_FILES=$(find olorin-front/src olorin-server/app -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.py" \) ! -path "*/node_modules/*" ! -path "*/.tox/*" ! -path "*/__pycache__/*" -exec wc -l {} \; | awk '$1 > 200' || true)
+          OVERSIZED_FILES=$(find olorin-fraud/frontend/src olorin-fraud/backend/app -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.py" \) ! -path "*/node_modules/*" ! -path "*/.tox/*" ! -path "*/__pycache__/*" -exec wc -l {} \; | awk '$1 > 200' || true)
 
           if [ -n "$OVERSIZED_FILES" ]; then
             echo "⚠️ WARNING: Files over 200 lines detected!"

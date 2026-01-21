@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, ScrollView } from 'react-native';
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, AlertCircle, Save, CheckCircle } from 'lucide-react'
@@ -99,7 +99,7 @@ export default function ContentEditorPage() {
 
   if (isLoading && error) {
     return (
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
         <GlassButton
           title={t('admin.actions.back', { defaultValue: 'Back to Content' })}
           onPress={() => navigate('/admin/content')}
@@ -108,7 +108,7 @@ export default function ContentEditorPage() {
         />
         <View style={[styles.errorContainer, styles.errorBox]}>
           <AlertCircle size={20} color="#ef4444" />
-          <Text style={styles.errorText}>{error}</Text>
+          <Text className="flex-1 text-red-500 text-sm">{error}</Text>
         </View>
       </ScrollView>
     )
@@ -116,14 +116,14 @@ export default function ContentEditorPage() {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>{t('admin.actions.loading', { defaultValue: 'Loading...' })}</Text>
+      <View className="flex-1 justify-center items-center gap-2">
+        <Text className="text-sm text-gray-400">{t('admin.actions.loading', { defaultValue: 'Loading...' })}</Text>
       </View>
     )
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
       {/* Header */}
       <View style={[styles.header, { flexDirection }]}>
         <GlassButton
@@ -151,7 +151,7 @@ export default function ContentEditorPage() {
       {error && !isLoading && (
         <View style={[styles.errorContainer, styles.errorBox]}>
           <AlertCircle size={20} color="#ef4444" />
-          <Text style={styles.errorText}>{error}</Text>
+          <Text className="flex-1 text-red-500 text-sm">{error}</Text>
         </View>
       )}
 
@@ -442,126 +442,3 @@ export default function ContentEditorPage() {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: spacing.lg,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  backButton: {
-    marginTop: spacing.xs,
-  },
-  pageTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: 200,
-  },
-  loadingText: {
-    color: colors.textMuted,
-    fontSize: 14,
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  errorBox: {
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    backgroundColor: '#ef444420',
-    borderWidth: 1,
-    borderColor: '#ef444440',
-    alignItems: 'center',
-  },
-  errorText: {
-    flex: 1,
-    color: '#ef4444',
-    fontSize: 14,
-  },
-  successContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(34, 197, 94, 0.3)',
-  },
-  successText: {
-    flex: 1,
-    color: colors.success,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  formContainer: {
-    gap: spacing.lg,
-  },
-  section: {
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  formGroup: {
-    marginBottom: spacing.md,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  required: {
-    color: '#ef4444',
-  },
-  input: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.background,
-    color: colors.text,
-    fontSize: 14,
-  },
-  textarea: {
-    minHeight: 100,
-    textAlignVertical: 'top',
-    paddingTop: spacing.md,
-  },
-  typeButtons: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  typeButton: {
-    flex: 1,
-  },
-  formActions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginTop: spacing.lg,
-  },
-})

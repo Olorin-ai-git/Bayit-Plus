@@ -1,0 +1,30 @@
+Modal styles needed for AuditLogsScreen.tsx:
+
+modalOverlay → flex-1 bg-black/50 justify-center items-center
+modalContent → w-[90%] max-w-[500px] bg-gray-900/95 rounded-lg p-4 border border-white/10
+modalTitle → text-xl font-bold text-white mb-4
+filterSection → mb-4
+filterLabel → text-sm font-semibold text-white mb-2
+filterOptions → flex-row flex-wrap gap-1
+filterOption → px-3 py-2 bg-gray-800 rounded-sm border border-white/10
+filterOptionActive → bg-purple-600/30 border-purple-500
+filterOptionText → text-sm text-gray-400 capitalize
+filterOptionTextActive → text-purple-400 font-semibold
+filterInput → bg-gray-800 rounded-md border border-white/10 px-3 py-2 text-white text-sm
+dateInputs → flex-row gap-2
+dateInput → flex-1 bg-gray-800 rounded-md border border-white/10 px-3 py-2 text-white text-sm
+modalActions → flex-row justify-end gap-2
+clearButton → px-4 py-2 bg-gray-800 rounded-md
+clearButtonText → text-sm text-gray-400
+applyButton → px-4 py-2 bg-purple-600 rounded-md
+applyButtonText → text-sm text-white font-semibold
+detailsModal → w-[90%] max-w-[450px] bg-gray-900/95 rounded-lg p-4 border border-white/10
+detailsList → mb-4
+detailRow → flex-row justify-between items-center py-2 border-b border-white/10
+detailLabel → text-sm text-gray-400
+detailValue → text-sm text-white
+detailsSection → mt-2
+jsonBox → bg-gray-950 rounded-md p-3 mt-2
+jsonText → text-xs text-gray-300 font-mono
+closeButton → px-4 py-2 bg-black/20 rounded-md border border-white/10
+closeButtonText → text-sm text-white

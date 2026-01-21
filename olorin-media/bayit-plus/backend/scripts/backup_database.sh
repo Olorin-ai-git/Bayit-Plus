@@ -4,7 +4,7 @@
 
 # Configuration
 DB_NAME="bayit_plus"
-BACKUP_DIR="/Users/olorin/Documents/Bayit-Plus/backend/backups"
+BACKUP_DIR="/Users/olorin/Documents/olorin/backend/backups"
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_PATH="$BACKUP_DIR/$DATE"
 LOG_FILE="$BACKUP_DIR/backup.log"

@@ -25,8 +25,8 @@ on:
 
 env:
   NODE_VERSION: '18'
-  CACHE_DEPENDENCY_PATH: 'olorin-front/package-lock.json'
-  BUILD_PATH: 'olorin-front/build'
+  CACHE_DEPENDENCY_PATH: 'olorin-fraud/frontend/package-lock.json'
+  BUILD_PATH: 'olorin-fraud/frontend/build'
   DEPLOYMENT_ENV: ${{ github.event.inputs.environment || 'production' }}
 
 jobs:
@@ -52,34 +52,34 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          cd olorin-front
+          cd olorin-fraud/frontend
           npm ci --prefer-offline --no-audit
 
       - name: Run Linting
         run: |
-          cd olorin-front
+          cd olorin-fraud/frontend
           npm run lint
 
       - name: Check Code Formatting
         run: |
-          cd olorin-front
+          cd olorin-fraud/frontend
           npm run format:check
 
       - name: Run Unit Tests
         run: |
-          cd olorin-front
+          cd olorin-fraud/frontend
           npm run test:ci
 
       - name: Upload Test Coverage
         uses: codecov/codecov-action@v3
         with:
-          file: ./olorin-front/coverage/lcov.info
+          file: ./olorin-fraud/frontend/coverage/lcov.info
           fail_ci_if_error: false
 
       - name: Validate Environment Configuration
         id: validation
         run: |
-          cd olorin-front
+          cd olorin-fraud/frontend
           node deployment/build-config.js validate
           echo "should-deploy=true" >> $GITHUB_OUTPUT
 
@@ -104,12 +104,12 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          cd olorin-front
+          cd olorin-fraud/frontend
           npm ci --prefer-offline --no-audit
 
       - name: Initialize Build Configuration
         run: |
-          cd olorin-front
+          cd olorin-fraud/frontend
           node deployment/build-config.js init
         env:
           REACT_APP_ENV: ${{ env.DEPLOYMENT_ENV }}
@@ -121,7 +121,7 @@ jobs:
 
       - name: Build Application
         run: |
-          cd olorin-front
+          cd olorin-fraud/frontend
           if [ "${{ env.DEPLOYMENT_ENV }}" = "staging" ]; then
             npm run build:staging
           else
@@ -136,7 +136,7 @@ jobs:
       - name: Finalize Build
         id: build-info
         run: |
-          cd olorin-front
+          cd olorin-fraud/frontend
           node deployment/build-config.js finalize
           BUILD_VERSION=$(jq -r '.buildVersion' build/build-metadata.json)
           echo "build-version=$BUILD_VERSION" >> $GITHUB_OUTPUT
@@ -171,7 +171,7 @@ jobs:
 
       - name: Start Local Server
         run: |
-          cd olorin-front
+          cd olorin-fraud/frontend
           npm install -g serve
           serve -s build -l 3000 &
           sleep 5
@@ -179,7 +179,7 @@ jobs:
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@v10
         with:
-          configPath: './olorin-front/.lighthouserc.json'
+          configPath: './olorin-fraud/frontend/.lighthouserc.json'
           temporaryPublicStorage: true
           uploadArtifacts: true
         env:
@@ -187,7 +187,7 @@ jobs:
 
       - name: Security Audit
         run: |
-          cd olorin-front
+          cd olorin-fraud/frontend
           echo "🔍 Running comprehensive security audit..."
           
           # Run npm audit with strict level for production

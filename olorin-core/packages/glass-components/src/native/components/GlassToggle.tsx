@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { colors, spacing } from '../../theme';
 
 export interface GlassToggleProps {
@@ -58,30 +58,32 @@ export const GlassToggle: React.FC<GlassToggleProps> = ({
     <Pressable
       onPress={handlePress}
       disabled={disabled}
+      className="justify-center border"
       style={[
-        styles.toggle,
         {
           width: dimensions.width,
           height: dimensions.height,
           borderRadius: dimensions.height / 2,
-          justifyContent: 'center',
           alignItems: value ? 'flex-end' : 'flex-start',
+          backgroundColor: value ? colors.primary : 'rgba(255, 255, 255, 0.1)',
+          borderColor: value ? colors.primary : 'rgba(255, 255, 255, 0.1)',
+          padding: 2,
+          opacity: disabled ? 0.5 : 1,
         },
-        value && styles.toggleActive,
-        disabled && styles.toggleDisabled,
       ]}
       accessibilityRole="switch"
       accessibilityState={{ checked: value, disabled }}
     >
       <View
+        className="shadow-md"
         style={[
-          styles.knob,
           {
             width: dimensions.knob,
             height: dimensions.knob,
             borderRadius: dimensions.knob / 2,
+            backgroundColor: value ? colors.text : 'rgba(255, 255, 255, 0.9)',
+            elevation: 2,
           },
-          value && styles.knobActive,
         ]}
       />
     </Pressable>
@@ -99,16 +101,27 @@ export const GlassToggle: React.FC<GlassToggleProps> = ({
     <Pressable
       onPress={handlePress}
       disabled={disabled}
-      style={[styles.container, isRTL && styles.containerRTL, disabled && styles.containerDisabled]}
+      className={`flex-row items-center justify-between py-2 gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}
+      style={{ opacity: disabled ? 0.5 : 1 }}
       testID={testID}
     >
-      <View style={styles.labelContainer}>
-        <Text style={[styles.label, isRTL && styles.textRTL, disabled && styles.textDisabled]}>
+      <View className="flex-1">
+        <Text
+          className="text-[15px] font-medium"
+          style={[
+            { color: disabled ? colors.textMuted : colors.text },
+            isRTL && { textAlign: 'right' },
+          ]}
+        >
           {label}
         </Text>
         {description && (
           <Text
-            style={[styles.description, isRTL && styles.textRTL, disabled && styles.textDisabled]}
+            className="text-[13px] mt-0.5 leading-[18px]"
+            style={[
+              { color: colors.textMuted },
+              isRTL && { textAlign: 'right' },
+            ]}
           >
             {description}
           </Text>
@@ -118,62 +131,5 @@ export const GlassToggle: React.FC<GlassToggleProps> = ({
     </Pressable>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
-    gap: spacing.md,
-  },
-  containerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  containerDisabled: {
-    opacity: 0.5,
-  },
-  labelContainer: {
-    flex: 1,
-  },
-  label: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  description: {
-    fontSize: 13,
-    color: colors.textMuted,
-    marginTop: 2,
-    lineHeight: 18,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-  textDisabled: {
-    color: colors.textMuted,
-  },
-  toggle: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    padding: 2,
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  toggleActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  toggleDisabled: {
-    opacity: 0.5,
-  },
-  knob: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    elevation: 2,
-  },
-  knobActive: {
-    backgroundColor: colors.text,
-  },
-});
 
 export default GlassToggle;

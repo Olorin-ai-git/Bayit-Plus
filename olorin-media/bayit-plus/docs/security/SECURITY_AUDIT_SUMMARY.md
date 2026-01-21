@@ -59,7 +59,7 @@ I've created 3 comprehensive documents:
 - Code examples showing vulnerabilities
 - Compliance status (OWASP, GDPR, PCI-DSS)
 - Testing recommendations
-- 📍 Location: `/Users/olorin/Documents/Bayit-Plus/SECURITY_AUDIT_AUTH.md`
+- 📍 Location: `/Users/olorin/Documents/olorin/SECURITY_AUDIT_AUTH.md`
 
 ### 2. **SECURITY_FIXES_IMPLEMENTATION.md** (Fix Guide)
 - Ready-to-apply code fixes
@@ -67,7 +67,7 @@ I've created 3 comprehensive documents:
 - Testing procedures
 - Dependency updates
 - Verification checklist
-- 📍 Location: `/Users/olorin/Documents/Bayit-Plus/backend/SECURITY_FIXES_IMPLEMENTATION.md`
+- 📍 Location: `/Users/olorin/Documents/olorin/backend/SECURITY_FIXES_IMPLEMENTATION.md`
 
 ### 3. **SECURITY_AUDIT_SUMMARY.md** (This Document)
 - High-level overview
@@ -131,7 +131,7 @@ These can be applied immediately:
 ### Option 1: Manual Application (Recommended)
 ```bash
 # Read the implementation guide
-open /Users/olorin/Documents/Bayit-Plus/backend/SECURITY_FIXES_IMPLEMENTATION.md
+open /Users/olorin/Documents/olorin/backend/SECURITY_FIXES_IMPLEMENTATION.md
 
 # Apply fixes one by one
 # Test after each fix
@@ -140,7 +140,7 @@ open /Users/olorin/Documents/Bayit-Plus/backend/SECURITY_FIXES_IMPLEMENTATION.md
 ### Option 2: Review & Customize
 ```bash
 # Review full audit
-open /Users/olorin/Documents/Bayit-Plus/SECURITY_AUDIT_AUTH.md
+open /Users/olorin/Documents/olorin/SECURITY_AUDIT_AUTH.md
 
 # Customize fixes for your needs
 # Prioritize based on your risk tolerance

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { UserPlus, Edit, Ban, Key, Trash2, X } from 'lucide-react';
@@ -245,7 +245,7 @@ export default function UsersListPage() {
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
       {/* Header */}
       <View style={[styles.header, { flexDirection }]}>
         <View>
@@ -297,7 +297,7 @@ export default function UsersListPage() {
         <Text style={styles.modalText}>
           {t('admin.users.confirmDeleteMessage', 'Are you sure you want to delete {{name}}? This action cannot be undone.', { name: deleteModal.user?.name })}
         </Text>
-        <View style={styles.modalActions}>
+        <View className="flex flex-row gap-4 mt-6">
           <GlassButton
             title={t('common.cancel', 'Cancel')}
             variant="cancel"
@@ -334,7 +334,7 @@ export default function UsersListPage() {
             {t('admin.users.confirmUnban')}
           </Text>
         )}
-        <View style={styles.modalActions}>
+        <View className="flex flex-row gap-4 mt-6">
           <GlassButton
             title={t('common.cancel', 'Cancel')}
             variant="cancel"
@@ -361,7 +361,7 @@ export default function UsersListPage() {
         dismissable={true}
       >
         <Text style={styles.modalText}>{confirmMessage}</Text>
-        <View style={styles.modalActions}>
+        <View className="flex flex-row gap-4 mt-6">
           <GlassButton
             title={t('common.cancel')}
             onPress={() => setConfirmModalOpen(false)}
@@ -388,7 +388,7 @@ export default function UsersListPage() {
         dismissable={true}
       >
         <Text style={styles.modalText}>{successMessage}</Text>
-        <View style={styles.modalActions}>
+        <View className="flex flex-row gap-4 mt-6">
           <GlassButton
             title={t('common.ok')}
             onPress={() => setSuccessModalOpen(false)}
@@ -400,128 +400,3 @@ export default function UsersListPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: spacing.lg,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.lg,
-  },
-  pageTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-  },
-  filtersRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  filterButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.md,
-  },
-  filterButtonActive: {
-    backgroundColor: colors.primary,
-  },
-  filterText: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  filterTextActive: {
-    color: colors.text,
-    fontWeight: '500',
-  },
-  userCell: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.primary,
-  },
-  userName: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  userEmail: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  cellText: {
-    fontSize: 14,
-    color: colors.text,
-  },
-  dateText: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  badge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-    alignSelf: 'flex-start',
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  actionsCell: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  actionButton: {
-    padding: spacing.xs,
-    borderRadius: borderRadius.sm,
-  },
-  modalText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginBottom: spacing.lg,
-    lineHeight: 20,
-  },
-  modalLabel: {
-    fontSize: 14,
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  modalInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    fontSize: 14,
-    color: colors.text,
-    marginBottom: spacing.lg,
-    minHeight: 80,
-    textAlignVertical: 'top',
-  },
-  modalActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: spacing.sm,
-  },
-});

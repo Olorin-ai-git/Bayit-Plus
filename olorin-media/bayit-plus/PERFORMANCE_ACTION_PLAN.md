@@ -41,10 +41,10 @@ Result                = Build fails (packages not found)
 ```toml
 # backend/pyproject.toml (lines 55-58)
 dependencies = [
-    "bayit-voice-pipeline @ file:///Users/olorin/Documents/Bayit-Plus/packages/bayit-voice-pipeline",
-    "bayit-translation @ file:///Users/olorin/Documents/Bayit-Plus/packages/bayit-translation",
-    "olorin-core @ file:///Users/olorin/Documents/Bayit-Plus/packages/olorin-core",
-    "olorin-shared @ file:///Users/olorin/Documents/Bayit-Plus/packages/olorin-shared"
+    "bayit-voice-pipeline @ file:///Users/olorin/Documents/olorin/packages/bayit-voice-pipeline",
+    "bayit-translation @ file:///Users/olorin/Documents/olorin/packages/bayit-translation",
+    "olorin-core @ file:///Users/olorin/Documents/olorin/packages/olorin-core",
+    "olorin-shared @ file:///Users/olorin/Documents/olorin/packages/olorin-shared"
 ]
 ```
 
@@ -96,7 +96,7 @@ dependencies = [
 
 **Command**:
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 # Edit .github/workflows/deploy-staging.yml
 # Line 103: Change "context: ./backend" to "context: ."
 # Add line 104: "file: ./backend/Dockerfile"
@@ -248,10 +248,10 @@ CMD exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT} --workers 2 --log-le
 # Lines 55-58 - BEFORE:
 dependencies = [
     # ... other dependencies ...
-    "bayit-voice-pipeline @ file:///Users/olorin/Documents/Bayit-Plus/packages/bayit-voice-pipeline",
-    "bayit-translation @ file:///Users/olorin/Documents/Bayit-Plus/packages/bayit-translation",
-    "olorin-core @ file:///Users/olorin/Documents/Bayit-Plus/packages/olorin-core",
-    "olorin-shared @ file:///Users/olorin/Documents/Bayit-Plus/packages/olorin-shared"
+    "bayit-voice-pipeline @ file:///Users/olorin/Documents/olorin/packages/bayit-voice-pipeline",
+    "bayit-translation @ file:///Users/olorin/Documents/olorin/packages/bayit-translation",
+    "olorin-core @ file:///Users/olorin/Documents/olorin/packages/olorin-core",
+    "olorin-shared @ file:///Users/olorin/Documents/olorin/packages/olorin-shared"
 ]
 
 # Lines 55-58 - AFTER:
@@ -269,7 +269,7 @@ dependencies = [
 #### 5. Update poetry.lock (1 minute)
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend
+cd /Users/olorin/Documents/olorin/backend
 poetry lock --no-update
 ```
 
@@ -283,7 +283,7 @@ poetry lock --no-update
 
 ```bash
 # 1. Build from monorepo root
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 docker build -t bayit-backend-test -f backend/Dockerfile .
 
 # Expected output:
@@ -332,7 +332,7 @@ docker rmi bayit-backend-test
 ### Commit and Deploy (2 minutes)
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 
 # 1. Add all changes
 git add .github/workflows/deploy-staging.yml
@@ -434,7 +434,7 @@ poetry publish -r google-ar
 
 ```bash
 # 1. Revert commit
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 git revert HEAD
 git push origin develop
 

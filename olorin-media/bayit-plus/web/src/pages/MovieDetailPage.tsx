@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Dimensions } from 'react-native';
+import { View, Text, ScrollView, Image, Dimensions } from 'react-native';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Play, Plus, Check, Share2, Star } from 'lucide-react';
@@ -243,16 +243,16 @@ export default function MovieDetailPage() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+      <View className="flex-1 justify-center items-center bg-[#0A0A0F]">
+        <Text className="text-[#94A3B8] text-base">{t('common.loading')}</Text>
       </View>
     );
   }
 
   if (!movie) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{t('content.notFound')}</Text>
+      <View className="flex-1 justify-center items-center bg-[#0A0A0F]">
+        <Text className="text-[#94A3B8] text-lg">{t('content.notFound')}</Text>
       </View>
     );
   }
@@ -260,36 +260,34 @@ export default function MovieDetailPage() {
   const backdropUrl = movie.backdrop || movie.thumbnail;
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView className="flex-1 bg-[#0A0A0F]">
       {/* Hero Section */}
-      <View style={styles.heroContainer}>
+      <View className="relative" style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT * 0.7 }}>
         {/* Background Poster */}
-        <View style={[
-          styles.backdropContainer,
-          {
+        <View
+          className="absolute inset-0"
+          style={{
             opacity: isPreviewPlaying ? 0 : 1,
             // @ts-ignore - Web CSS transition
             transition: 'opacity 0.5s ease-in-out',
-          }
-        ]}>
+          }}
+        >
           <Image
             source={{ uri: backdropUrl }}
-            style={styles.backdrop}
+            className="w-full h-full"
             resizeMode="cover"
           />
         </View>
 
         {/* Video Preview - always render for ref availability */}
         <View
-          style={[
-            styles.videoContainer,
-            {
-              opacity: isPreviewPlaying ? 1 : 0,
-              // @ts-ignore - Web CSS transition
-              transition: 'opacity 0.5s ease-in-out',
-              zIndex: isPreviewPlaying ? 5 : 1,
-            }
-          ]}
+          className="absolute inset-0"
+          style={{
+            opacity: isPreviewPlaying ? 1 : 0,
+            // @ts-ignore - Web CSS transition
+            transition: 'opacity 0.5s ease-in-out',
+            zIndex: isPreviewPlaying ? 5 : 1,
+          }}
           pointerEvents="none"
         >
           <video
@@ -308,54 +306,56 @@ export default function MovieDetailPage() {
         {/* Gradients */}
         <LinearGradient
           colors={['transparent', 'rgba(0,0,0,0.4)', 'rgba(0,0,0,0.95)']}
-          style={styles.gradientBottom}
+          className="absolute left-0 right-0 bottom-0"
+          style={{ height: '75%' }}
           pointerEvents="none"
         />
         <LinearGradient
           colors={['rgba(0,0,0,0.6)', 'transparent']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          style={styles.gradientLeft}
+          className="absolute left-0 top-0 bottom-0"
+          style={{ width: '60%' }}
           pointerEvents="none"
         />
 
         {/* Content */}
-        <View style={styles.heroContent}>
+        <View className="absolute left-12 right-12 bottom-12 max-w-[650px]">
           {/* Category Badge */}
           {movie.category && (
-            <GlassView style={styles.categoryBadge} intensity="light">
-              <Text style={styles.categoryText}>{movie.category}</Text>
+            <GlassView className="self-start px-4 py-1 rounded-full mb-4">
+              <Text className="text-sm text-white font-medium">{movie.category}</Text>
             </GlassView>
           )}
 
           {/* Title */}
-          <Text style={styles.title}>{movie.title}</Text>
+          <Text className="text-[42px] font-bold text-white mb-2">{movie.title}</Text>
 
           {/* Metadata Row */}
-          <View style={[styles.metadata, { flexDirection }]}>
-            {movie.year && <Text style={styles.metaItem}>{movie.year}</Text>}
+          <View className="flex-row items-center flex-wrap gap-4 mb-4" style={{ flexDirection }}>
+            {movie.year && <Text className="text-base text-[#94A3B8]">{movie.year}</Text>}
             {movie.rating && (
               <GlassBadge variant="default" size="sm">{movie.rating}</GlassBadge>
             )}
-            {movie.duration && <Text style={styles.metaItem}>{movie.duration}</Text>}
-            {movie.genre && <Text style={styles.metaItem}>{movie.genre}</Text>}
+            {movie.duration && <Text className="text-base text-[#94A3B8]">{movie.duration}</Text>}
+            {movie.genre && <Text className="text-base text-[#94A3B8]">{movie.genre}</Text>}
           </View>
 
           {/* IMDB Rating */}
           {movie.imdb_rating && (
-            <View style={styles.imdbContainer}>
-              <View style={styles.imdbLogo}>
-                <Text style={styles.imdbLogoText}>IMDb</Text>
+            <View className="flex-row items-center gap-2 mb-4 bg-black/40 px-4 py-2 rounded-lg self-start">
+              <View className="bg-[#F5C518] px-2 py-0.5 rounded">
+                <Text className="text-sm font-black text-black" style={{ letterSpacing: -0.5 }}>IMDb</Text>
               </View>
-              <View style={styles.imdbRatingContainer}>
+              <View className="flex-row items-center gap-1">
                 <Star size={18} color="#F5C518" fill="#F5C518" />
-                <Text style={styles.imdbRating}>
+                <Text className="text-xl font-bold text-[#F5C518]">
                   {movie.imdb_rating.toFixed(1)}
                 </Text>
-                <Text style={styles.imdbScale}>/10</Text>
+                <Text className="text-base text-[#94A3B8]">/10</Text>
               </View>
               {movie.imdb_votes && (
-                <Text style={styles.imdbVotes}>
+                <Text className="text-sm text-[#94A3B8]">
                   ({formatVotes(movie.imdb_votes)} {t('content.votes')})
                 </Text>
               )}
@@ -364,13 +364,13 @@ export default function MovieDetailPage() {
 
           {/* Available Subtitles */}
           {availableSubtitles.length > 0 && (
-            <View style={styles.subtitlesRow}>
-              <Text style={styles.subtitlesLabel}>{t('subtitles.available', 'Subtitles')}:</Text>
-              <View style={styles.subtitleFlags}>
+            <View className="flex-row items-center gap-2 mb-4 bg-black/40 px-4 py-2 rounded-lg self-start">
+              <Text className="text-sm text-[#94A3B8] font-medium">{t('subtitles.available', 'Subtitles')}:</Text>
+              <View className="flex-row items-center gap-1">
                 {availableSubtitles.map((track) => {
                   const langInfo = getLanguageInfo(track.language);
                   return (
-                    <Text key={track.id} style={styles.subtitleFlag}>
+                    <Text key={track.id} className="text-xl">
                       {langInfo?.flag || '🌐'}
                     </Text>
                   );
@@ -381,13 +381,13 @@ export default function MovieDetailPage() {
 
           {/* Description */}
           {movie.description && (
-            <Text style={[styles.description, { textAlign }]} numberOfLines={4}>
+            <Text className="text-base text-white/85 leading-6 mb-6" style={{ textAlign }} numberOfLines={4}>
               {movie.description}
             </Text>
           )}
 
           {/* Action Buttons */}
-          <View style={[styles.actions, { flexDirection }]}>
+          <View className="flex-row flex-wrap gap-4 mb-6" style={{ flexDirection }}>
             <GlassButton
               onPress={handlePlay}
               variant="primary"
@@ -435,49 +435,49 @@ export default function MovieDetailPage() {
 
           {/* Preview indicator */}
           {isPreviewPlaying && (
-            <View style={styles.previewIndicator}>
-              <View style={styles.previewDot} />
-              <Text style={styles.previewText}>{t('content.trailerPlaying')}</Text>
+            <View className="flex-row items-center gap-2 bg-black/60 px-4 py-2 rounded-full self-start">
+              <View className="w-2 h-2 rounded-full bg-[#ff4444]" />
+              <Text className="text-sm text-white font-medium">{t('content.trailerPlaying')}</Text>
             </View>
           )}
         </View>
       </View>
 
       {/* Movie Facts Section */}
-      <View style={styles.factsSection}>
-        <Text style={styles.sectionTitle}>{t('content.details')}</Text>
+      <View className="px-12 py-6">
+        <Text className="text-lg font-semibold text-white mb-4">{t('content.details')}</Text>
 
-        <GlassCard style={styles.factsCard}>
+        <GlassCard className="p-6">
           {movie.director && (
-            <View style={styles.factRow}>
-              <Text style={styles.factLabel}>{t('content.director')}</Text>
-              <Text style={styles.factValue}>{movie.director}</Text>
+            <View className="flex-row mb-2">
+              <Text className="w-[100px] text-base text-[#94A3B8]">{t('content.director')}</Text>
+              <Text className="flex-1 text-base text-white font-medium">{movie.director}</Text>
             </View>
           )}
           {movie.cast && movie.cast.length > 0 && (
-            <View style={styles.factRow}>
-              <Text style={styles.factLabel}>{t('content.starring')}</Text>
-              <Text style={styles.factValue} numberOfLines={2}>
+            <View className="flex-row mb-2">
+              <Text className="w-[100px] text-base text-[#94A3B8]">{t('content.starring')}</Text>
+              <Text className="flex-1 text-base text-white font-medium" numberOfLines={2}>
                 {movie.cast.slice(0, 5).join(', ')}
               </Text>
             </View>
           )}
           {movie.genre && (
-            <View style={styles.factRow}>
-              <Text style={styles.factLabel}>{t('content.genre')}</Text>
-              <Text style={styles.factValue}>{movie.genre}</Text>
+            <View className="flex-row mb-2">
+              <Text className="w-[100px] text-base text-[#94A3B8]">{t('content.genre')}</Text>
+              <Text className="flex-1 text-base text-white font-medium">{movie.genre}</Text>
             </View>
           )}
           {movie.duration && (
-            <View style={styles.factRow}>
-              <Text style={styles.factLabel}>{t('content.runtime')}</Text>
-              <Text style={styles.factValue}>{movie.duration}</Text>
+            <View className="flex-row mb-2">
+              <Text className="w-[100px] text-base text-[#94A3B8]">{t('content.runtime')}</Text>
+              <Text className="flex-1 text-base text-white font-medium">{movie.duration}</Text>
             </View>
           )}
           {movie.year && (
-            <View style={styles.factRow}>
-              <Text style={styles.factLabel}>{t('content.released')}</Text>
-              <Text style={styles.factValue}>{movie.year}</Text>
+            <View className="flex-row mb-2">
+              <Text className="w-[100px] text-base text-[#94A3B8]">{t('content.released')}</Text>
+              <Text className="flex-1 text-base text-white font-medium">{movie.year}</Text>
             </View>
           )}
         </GlassCard>
@@ -485,9 +485,9 @@ export default function MovieDetailPage() {
 
       {/* Synopsis Section */}
       {movie.description && (
-        <View style={styles.synopsisSection}>
-          <Text style={styles.sectionTitle}>{t('content.synopsis')}</Text>
-          <Text style={[styles.synopsisText, { textAlign }]}>
+        <View className="px-12 py-6">
+          <Text className="text-lg font-semibold text-white mb-4">{t('content.synopsis')}</Text>
+          <Text className="text-base text-[#94A3B8] leading-[26px]" style={{ textAlign }}>
             {movie.description}
           </Text>
         </View>
@@ -503,235 +503,3 @@ export default function MovieDetailPage() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-  },
-  loadingText: {
-    color: colors.textSecondary,
-    fontSize: fontSize.md,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-  },
-  errorText: {
-    color: colors.textSecondary,
-    fontSize: fontSize.lg,
-  },
-  heroContainer: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT * 0.7,
-    position: 'relative',
-  },
-  backdropContainer: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  backdrop: {
-    width: '100%',
-    height: '100%',
-  },
-  videoContainer: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  video: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-  gradientBottom: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: '75%',
-  },
-  gradientLeft: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: '60%',
-  },
-  heroContent: {
-    position: 'absolute',
-    left: 48,
-    right: 48,
-    bottom: 48,
-    maxWidth: 650,
-  },
-  categoryBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-    marginBottom: spacing.md,
-  },
-  categoryText: {
-    fontSize: fontSize.sm,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  title: {
-    fontSize: 42,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  metadata: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: spacing.md,
-    marginBottom: spacing.md,
-  },
-  metaItem: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-  },
-  imdbContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.md,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.lg,
-    alignSelf: 'flex-start',
-  },
-  subtitlesRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.md,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.lg,
-    alignSelf: 'flex-start',
-  },
-  subtitlesLabel: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    fontWeight: '500',
-  },
-  subtitleFlags: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  subtitleFlag: {
-    fontSize: 20,
-  },
-  imdbLogo: {
-    backgroundColor: '#F5C518',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  imdbLogoText: {
-    fontSize: fontSize.sm,
-    fontWeight: '900',
-    color: '#000',
-    letterSpacing: -0.5,
-  },
-  imdbRatingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  imdbRating: {
-    fontSize: fontSize.xl,
-    fontWeight: '700',
-    color: '#F5C518',
-  },
-  imdbScale: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-  },
-  imdbVotes: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-  description: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.85)',
-    lineHeight: 24,
-    marginBottom: spacing.lg,
-  },
-  actions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  previewIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-    alignSelf: 'flex-start',
-  },
-  previewDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#ff4444',
-  },
-  previewText: {
-    fontSize: fontSize.sm,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  factsSection: {
-    paddingHorizontal: 48,
-    paddingVertical: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  factsCard: {
-    padding: spacing.lg,
-  },
-  factRow: {
-    flexDirection: 'row',
-    marginBottom: spacing.sm,
-  },
-  factLabel: {
-    width: 100,
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-  },
-  factValue: {
-    flex: 1,
-    fontSize: fontSize.md,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  synopsisSection: {
-    paddingHorizontal: 48,
-    paddingVertical: spacing.lg,
-  },
-  synopsisText: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    lineHeight: 26,
-  },
-});

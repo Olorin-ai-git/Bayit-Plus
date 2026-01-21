@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, Pressable } from 'react-native';;
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Mail, Bell, Users, TrendingUp } from 'lucide-react';
@@ -80,7 +80,7 @@ export default function MarketingDashboardPage() {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorIcon}>⚠️</Text>
-        <Text style={styles.errorText}>{error}</Text>
+        <Text className="flex-1 text-red-500 text-sm">{error}</Text>
         <GlassButton title={t('common.retry')} onPress={loadData} variant="primary" />
       </View>
     );
@@ -88,9 +88,9 @@ export default function MarketingDashboardPage() {
 
   if (loading || !metrics) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center gap-2">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-sm text-gray-400">{t('common.loading')}</Text>
       </View>
     );
   }
@@ -105,7 +105,7 @@ export default function MarketingDashboardPage() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.marketing')}</Text>
@@ -198,39 +198,3 @@ export default function MarketingDashboardPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: spacing.sm },
-  loadingText: { fontSize: 14, color: colors.textMuted },
-  errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.lg },
-  errorIcon: { fontSize: 48, marginBottom: spacing.md },
-  errorText: { fontSize: 16, color: colors.error, marginBottom: spacing.md },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.lg },
-  pageTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
-  subtitle: { fontSize: 14, color: colors.textMuted, marginTop: spacing.xs },
-  section: { marginBottom: spacing.lg },
-  sectionTitle: { fontSize: 18, fontWeight: '600', color: colors.text, marginBottom: spacing.md },
-  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
-  bottomSection: { flexDirection: 'row', gap: spacing.lg, marginBottom: spacing.lg },
-  campaignsSection: { flex: 2 },
-  campaignsList: { padding: 0 },
-  campaignItem: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, borderBottomWidth: 1, borderBottomColor: 'rgba(255, 255, 255, 0.05)' },
-  campaignIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.backgroundLighter, justifyContent: 'center', alignItems: 'center' },
-  campaignInfo: { flex: 1 },
-  campaignName: { fontSize: 14, fontWeight: '500', color: colors.text },
-  campaignStats: { fontSize: 12, color: colors.textMuted },
-  campaignStatus: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.full },
-  campaignStatusText: { fontSize: 12, fontWeight: '500' },
-  segmentsSection: { flex: 1 },
-  segmentsList: { padding: 0 },
-  segmentItem: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, borderBottomWidth: 1, borderBottomColor: 'rgba(255, 255, 255, 0.05)' },
-  segmentIcon: { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.backgroundLighter, justifyContent: 'center', alignItems: 'center' },
-  segmentInfo: { flex: 1 },
-  segmentName: { fontSize: 14, color: colors.text },
-  segmentCount: { fontSize: 14, fontWeight: '600', color: colors.primary },
-  quickLinksSection: { marginTop: spacing.md },
-  quickLinks: { flexDirection: 'row', gap: spacing.md },
-  quickLinkCard: { padding: spacing.lg, alignItems: 'center', gap: spacing.sm },
-  quickLinkText: { fontSize: 14, fontWeight: '500', color: colors.text },
-});

@@ -47,7 +47,7 @@ When this command is invoked, execute the following steps:
 
 ```bash
 # For web audit - check if Playwright is installed
-cd /Users/olorin/Documents/Bayit-Plus/web
+cd /Users/olorin/Documents/olorin/web
 if ! npm list @playwright/test >/dev/null 2>&1; then
   echo "Installing Playwright..."
   npm install -D @playwright/test
@@ -61,7 +61,7 @@ fi
 # Check if dev server is running
 if ! curl -s http://localhost:3000 >/dev/null 2>&1; then
   echo "Starting dev server..."
-  cd /Users/olorin/Documents/Bayit-Plus/web
+  cd /Users/olorin/Documents/olorin/web
   npm start &
   sleep 10
 fi
@@ -70,7 +70,7 @@ fi
 ### Step 3: Run Web Audit
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/web
+cd /Users/olorin/Documents/olorin/web
 
 # Run Playwright localization tests
 npx playwright test tests/localization-audit.spec.ts --reporter=list
@@ -85,7 +85,7 @@ npx playwright test tests/localization-audit.spec.ts --reporter=list
 ### Step 4: Run tvOS Audit (if requested)
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 ./scripts/tvos-localization-audit.sh
 ```
 

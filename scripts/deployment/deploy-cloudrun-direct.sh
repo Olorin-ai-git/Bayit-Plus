@@ -14,12 +14,13 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Configuration
-SERVICE_NAME="olorin-backend"
-REGION="us-east1"
-PORT="8090"
-PROJECT_ID="olorin-ai"
-SOURCE_DIR="./olorin-server"
+# Configuration from environment variables (required for CI/CD)
+# These can be overridden via command-line arguments
+SERVICE_NAME="${OLORIN_SERVICE_NAME:-olorin-backend}"
+REGION="${OLORIN_REGION:-${GCP_REGION:-}}"
+PORT="${OLORIN_PORT:-8090}"
+PROJECT_ID="${OLORIN_PROJECT_ID:-${GCP_PROJECT:-}}"
+SOURCE_DIR="${OLORIN_SOURCE_DIR:-./olorin-fraud/backend}"
 
 # Function to print colored output
 print_status() {
@@ -105,6 +106,17 @@ EOF
             ;;
     esac
 done
+
+# Validate required configuration
+if [[ -z "$PROJECT_ID" ]]; then
+    print_error "PROJECT_ID is required. Set OLORIN_PROJECT_ID or GCP_PROJECT environment variable, or use --project flag"
+    exit 1
+fi
+
+if [[ -z "$REGION" ]]; then
+    print_error "REGION is required. Set OLORIN_REGION or GCP_REGION environment variable, or use --region flag"
+    exit 1
+fi
 
 print_header "OLORIN BACKEND - DIRECT CLOUD RUN DEPLOYMENT"
 

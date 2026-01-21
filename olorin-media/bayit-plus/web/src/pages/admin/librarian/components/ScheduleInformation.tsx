@@ -1,8 +1,8 @@
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Calendar } from 'lucide-react';
 import { GlassDraggableExpander } from '@bayit/shared/ui/web';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 import LibrarianScheduleCard from '@/components/admin/LibrarianScheduleCard';
 import { LibrarianConfig } from '@/services/librarianService';
 
@@ -21,7 +21,7 @@ export const ScheduleInformation = ({ config, onUpdate }: ScheduleInformationPro
       icon={<Calendar size={18} color={colors.primary} />}
       defaultExpanded={false}
     >
-      <View style={styles.schedulesColumn}>
+      <View className="gap-4">
         <LibrarianScheduleCard
           title={t('admin.librarian.schedules.dailyTitle')}
           cron={config.daily_schedule.cron}
@@ -48,9 +48,3 @@ export const ScheduleInformation = ({ config, onUpdate }: ScheduleInformationPro
     </GlassDraggableExpander>
   );
 };
-
-const styles = StyleSheet.create({
-  schedulesColumn: {
-    gap: spacing.md,
-  },
-});

@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Animated,
   ScrollView,
 } from 'react-native';
@@ -187,51 +186,46 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
       {/* Backdrop overlay when expanded */}
       {isExpanded && (
         <TouchableOpacity
-          style={styles.backdrop}
+          className="absolute inset-0 bg-black/50 z-[99]"
           activeOpacity={1}
           onPress={onToggle}
         />
       )}
       <Animated.View style={[
-        styles.container,
         { width: widthAnim },
         isRTL ? { right: 0 } : { left: 0 },
-      ]}>
-        <GlassView intensity="low" style={[
-          styles.sidebar,
+      ]} className="h-full absolute top-0 bottom-0 z-[100]">
+        <GlassView intensity="low" style={
           isRTL
             ? { borderLeftWidth: 1, borderLeftColor: colors.glassBorder }
-            : { borderRightWidth: 1, borderRightColor: colors.glassBorder },
-        ]}>
+            : { borderRightWidth: 1, borderRightColor: colors.glassBorder }
+        } className="flex-1 pt-4 pb-3">
         {/* Toggle Button */}
         <TouchableOpacity
           onPress={onToggle}
-          style={styles.toggleButton}
+          className="items-center py-2 mb-3"
           onFocus={() => setFocusedItem('toggle')}
           onBlur={() => setFocusedItem(null)}
         >
-          <View style={[
-            styles.toggleIconContainer,
-            focusedItem === 'toggle' && styles.toggleIconContainerFocused,
-          ]}>
-            <Text style={styles.toggleIcon}>{getToggleIcon()}</Text>
+          <View className={`w-10 h-10 rounded-full bg-white/5 justify-center items-center border ${
+            focusedItem === 'toggle' ? 'border-primary border-[3px] bg-primary/30' : 'border-transparent'
+          }`}>
+            <Text className="text-base text-white">{getToggleIcon()}</Text>
           </View>
         </TouchableOpacity>
 
         <ScrollView
-          style={styles.menuContainer}
+          className="flex-1"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.menuContent}
+          contentContainerStyle={{ paddingHorizontal: spacing.sm }}
         >
           {menuSections.map((section, sectionIndex) => (
-            <View key={sectionIndex} style={styles.section}>
+            <View key={sectionIndex} className="mb-1">
               {/* Section Title (only when expanded and has title) */}
               {isExpanded && section.titleKey && (
                 <Animated.Text
-                  style={[
-                    styles.sectionTitle,
-                    { opacity: opacityAnim, textAlign },
-                  ]}
+                  style={{ opacity: opacityAnim, textAlign }}
+                  className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2"
                 >
                   {t(section.titleKey)}
                 </Animated.Text>
@@ -244,45 +238,45 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                   onPress={() => handleItemPress(item)}
                   onFocus={() => setFocusedItem(item.id)}
                   onBlur={() => setFocusedItem(null)}
-                  style={[
-                    styles.menuItem,
-                    isActive(item) && styles.menuItemActive,
-                    focusedItem === item.id && styles.menuItemFocused,
-                  ]}
+                  className={`flex-row items-center py-2 px-2 rounded-lg mb-1 relative ${
+                    isActive(item) ? 'bg-primary/30' : ''
+                  } ${focusedItem === item.id ? 'bg-primary/30 border-[3px] border-primary' : ''}`}
                 >
-                  <View style={styles.iconContainer}>
-                    <Text style={[
-                      styles.menuIcon,
-                      isActive(item) && styles.menuIconActive,
-                    ]}>
+                  <View className={`${IS_TV_BUILD ? 'w-12 h-12' : 'w-9 h-9'} justify-center items-center`}>
+                    <Text className={`${IS_TV_BUILD ? 'text-2xl' : 'text-lg'}`}>
                       {item.icon}
                     </Text>
                   </View>
                   {isExpanded && (
                     <Animated.Text
-                      style={[
-                        styles.menuLabel,
-                        { textAlign, marginStart: spacing.sm },
-                        isActive(item) && styles.menuLabelActive,
-                        { opacity: opacityAnim },
-                      ]}
+                      style={{
+                        textAlign,
+                        marginStart: spacing.sm,
+                        opacity: opacityAnim
+                      }}
+                      className={`${IS_TV_BUILD ? 'text-base' : 'text-sm'} text-white flex-1 ${
+                        isActive(item) ? 'text-primary font-bold' : ''
+                      }`}
                       numberOfLines={1}
                     >
                       {t(item.labelKey)}
                     </Animated.Text>
                   )}
                   {isActive(item) && (
-                    <View style={[
-                      styles.activeIndicator,
-                      isRTL ? { right: 0 } : { left: 0 },
-                    ]} />
+                    <View
+                      className="absolute top-1/2 w-1 h-6 bg-primary rounded -mt-3"
+                      style={isRTL ? { right: 0 } : { left: 0 }}
+                    />
                   )}
                 </TouchableOpacity>
               ))}
 
               {/* Section Divider (only when expanded) */}
               {isExpanded && sectionIndex < menuSections.length - 1 && (
-                <View style={styles.divider} />
+                <View
+                  className="h-px my-3 mx-3"
+                  style={{ backgroundColor: colors.glassBorder }}
+                />
               )}
             </View>
           ))}
@@ -290,8 +284,14 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
 
         {/* App Version (when expanded) */}
         {isExpanded && (
-          <Animated.View style={[styles.versionContainer, { opacity: opacityAnim }]}>
-            <Text style={[styles.versionText, { textAlign }]}>{t('common.appVersion', 'Bayit+ v1.0.0')}</Text>
+          <Animated.View
+            style={{ opacity: opacityAnim }}
+            className="px-4 py-2 border-t"
+            style={{ borderTopColor: colors.glassBorder }}
+          >
+            <Text style={{ textAlign }} className="text-xs text-gray-400">
+              {t('common.appVersion', 'Bayit+ v1.0.0')}
+            </Text>
           </Animated.View>
         )}
       </GlassView>
@@ -299,135 +299,5 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  backdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 99,
-  },
-  container: {
-    height: '100%',
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    zIndex: 100,
-  },
-  sidebar: {
-    flex: 1,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-  },
-  toggleButton: {
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    marginBottom: spacing.md,
-  },
-  toggleIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  toggleIconContainerFocused: {
-    borderColor: colors.primary,
-    borderWidth: 3,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  toggleIcon: {
-    fontSize: 16,
-    color: colors.text,
-  },
-  menuContainer: {
-    flex: 1,
-  },
-  menuContent: {
-    paddingHorizontal: spacing.sm,
-  },
-  section: {
-    marginBottom: spacing.xs,
-  },
-  sectionTitle: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: colors.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    marginTop: spacing.sm,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.xs,
-    position: 'relative',
-  },
-  menuItemActive: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  menuItemFocused: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderWidth: 3,
-    borderColor: colors.primary,
-  },
-  iconContainer: {
-    width: IS_TV_BUILD ? 48 : 36,
-    height: IS_TV_BUILD ? 48 : 36,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  menuIcon: {
-    fontSize: IS_TV_BUILD ? 24 : 18,
-  },
-  menuIconActive: {
-    // Active state for icon
-  },
-  menuLabel: {
-    fontSize: IS_TV_BUILD ? 16 : 14,
-    color: colors.text,
-    flex: 1,
-  },
-  menuLabelActive: {
-    color: colors.primary,
-    fontWeight: 'bold',
-  },
-  activeIndicator: {
-    position: 'absolute',
-    top: '50%',
-    marginTop: -12,
-    width: 4,
-    height: 24,
-    backgroundColor: colors.primary,
-    borderRadius: 2,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.glassBorder,
-    marginVertical: spacing.md,
-    marginHorizontal: spacing.md,
-  },
-  versionContainer: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: colors.glassBorder,
-  },
-  versionText: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-});
 
 export default GlassSidebar;

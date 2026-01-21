@@ -12,7 +12,7 @@
  */
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, StyleSheet, AppState, AppStateStatus } from 'react-native';
+import { View, AppState, AppStateStatus } from 'react-native';
 import { usePiPWidgetStore } from '../../stores/pipWidgetStore';
 import { useAuthStore } from '@bayit/shared-stores';
 import { api } from '@bayit/shared-services';
@@ -224,7 +224,7 @@ export default function PiPWidgetManager({ currentPage = 'home' }: PiPWidgetMana
   });
 
   return (
-    <View style={styles.container} pointerEvents="box-none">
+    <View className="absolute inset-0 z-[1000]" pointerEvents="box-none">
       {visibleWidgets.map((widget) => (
         <PiPWidgetContainer
           key={widget.id}
@@ -235,10 +235,3 @@ export default function PiPWidgetManager({ currentPage = 'home' }: PiPWidgetMana
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 1000, // Above all other content
-  },
-});

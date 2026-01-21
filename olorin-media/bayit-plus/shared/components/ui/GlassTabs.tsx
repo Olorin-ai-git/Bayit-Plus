@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-  StyleSheet,
   Animated,
   Platform,
 } from 'react-native';
@@ -40,10 +39,10 @@ export const GlassTabs: React.FC<GlassTabsProps> = ({
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.container}
+      className="flex-row"
     >
       {variant === 'default' && (
-        <GlassView style={styles.glassContainer} intensity="medium" noBorder>
+        <GlassView className="flex-row p-1" intensity="medium" noBorder>
           {tabs.map((tab, index) => (
             <TabButton
               key={tab.id}
@@ -58,7 +57,7 @@ export const GlassTabs: React.FC<GlassTabsProps> = ({
       )}
 
       {variant === 'pills' && (
-        <View style={styles.pillsContainer}>
+        <View className="flex-row gap-2">
           {tabs.map((tab, index) => (
             <TabButton
               key={tab.id}
@@ -73,7 +72,7 @@ export const GlassTabs: React.FC<GlassTabsProps> = ({
       )}
 
       {variant === 'underline' && (
-        <View style={styles.underlineContainer}>
+        <View className="flex-row border-b" style={{ borderBottomColor: colors.glassBorder }}>
           {tabs.map((tab, index) => (
             <TabButton
               key={tab.id}
@@ -109,47 +108,48 @@ const TabButton: React.FC<TabButtonProps> = ({
     styleType: 'button',
   });
 
-  const getButtonStyles = () => {
+  const getButtonClass = () => {
+    switch (variant) {
+      case 'pills':
+        return `flex-row items-center px-6 py-2 rounded-full border ${isActive ? '' : ''}`;
+      case 'underline':
+        return 'flex-row items-center px-4 py-4 relative';
+      default:
+        return `flex-row items-center px-4 py-2 rounded-lg ${isActive ? '' : ''}`;
+    }
+  };
+
+  const getButtonStyle = () => {
     switch (variant) {
       case 'pills':
         return [
-          styles.pillTab,
-          isActive && styles.pillTabActive,
+          {
+            backgroundColor: isActive ? colors.primary : colors.glass,
+            borderColor: isActive ? colors.primary : colors.glassBorder,
+          },
           focusStyle,
         ];
       case 'underline':
-        return [
-          styles.underlineTab,
-          isActive && styles.underlineTabActive,
-          focusStyle,
-        ];
+        return focusStyle;
       default:
         return [
-          styles.tab,
-          isActive && styles.tabActive,
+          { backgroundColor: isActive ? colors.glassPurpleLight : 'transparent' },
           focusStyle,
         ];
     }
   };
 
-  const getTextStyles = () => {
-    switch (variant) {
-      case 'pills':
-        return [
-          styles.tabText,
-          isActive ? styles.pillTabTextActive : styles.tabTextInactive,
-        ];
-      case 'underline':
-        return [
-          styles.tabText,
-          isActive ? styles.tabTextActive : styles.tabTextInactive,
-        ];
-      default:
-        return [
-          styles.tabText,
-          isActive && styles.tabTextActive,
-        ];
+  const getTextColor = () => {
+    if (variant === 'pills') {
+      return isActive ? '#000000' : colors.textSecondary;
     }
+    return isActive ? colors.primary : colors.textSecondary;
+  };
+
+  const getTextWeight = () => {
+    if (variant === 'pills' && isActive) return '700';
+    if (isActive) return '600';
+    return '500';
   };
 
   return (
@@ -162,110 +162,22 @@ const TabButton: React.FC<TabButtonProps> = ({
       // @ts-ignore - TV focus
       hasTVPreferredFocus={isFirst && isActive}
     >
-      <Animated.View style={[getButtonStyles(), scaleTransform]}>
-        {tab.icon && <View style={styles.icon}>{tab.icon}</View>}
-        <Text style={getTextStyles()}>{tab.label}</Text>
+      <Animated.View className={getButtonClass()} style={[getButtonStyle(), scaleTransform]}>
+        {tab.icon && <View className="ml-2">{tab.icon}</View>}
+        <Text className="text-sm" style={{ color: getTextColor(), fontWeight: getTextWeight() }}>
+          {tab.label}
+        </Text>
         {tab.badge !== undefined && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{tab.badge}</Text>
+          <View className="px-2 py-0.5 rounded-full mr-2" style={{ backgroundColor: colors.glassPurpleLight }}>
+            <Text className="text-[10px] font-semibold" style={{ color: colors.primary }}>{tab.badge}</Text>
           </View>
         )}
         {variant === 'underline' && isActive && (
-          <View style={styles.underlineIndicator} />
+          <View className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: colors.primary }} />
         )}
       </Animated.View>
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-  },
-  glassContainer: {
-    flexDirection: 'row',
-    padding: spacing.xs,
-  },
-  pillsContainer: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  underlineContainer: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
-  },
-  tab: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.md,
-  },
-  tabActive: {
-    backgroundColor: colors.glassPurpleLight,
-  },
-  pillTab: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.glass,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  pillTabActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  underlineTab: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    position: 'relative',
-  },
-  underlineTabActive: {},
-  underlineIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 2,
-    backgroundColor: colors.primary,
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  tabTextActive: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  pillTabTextActive: {
-    color: '#000000',
-    fontWeight: '700',
-  },
-  tabTextInactive: {
-    color: colors.textSecondary,
-  },
-  icon: {
-    marginLeft: spacing.sm,
-  },
-  badge: {
-    backgroundColor: colors.glassPurpleLight,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-    marginRight: spacing.sm,
-  },
-  badgeText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-});
 
 export default GlassTabs;

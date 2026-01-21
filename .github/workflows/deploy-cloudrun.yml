@@ -6,7 +6,7 @@ on:
       - main
       - develop
     paths:
-      - 'olorin-server/**'
+      - 'olorin-fraud/backend/**'
       - '.github/workflows/deploy-cloudrun.yml'
 
   pull_request:
@@ -14,7 +14,7 @@ on:
       - main
       - develop
     paths:
-      - 'olorin-server/**'
+      - 'olorin-fraud/backend/**'
 
   workflow_dispatch:
     inputs:
@@ -80,7 +80,7 @@ jobs:
     if: github.event.inputs.force_deploy != 'true'
     defaults:
       run:
-        working-directory: olorin-server
+        working-directory: olorin-fraud/backend
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -122,7 +122,7 @@ jobs:
       - name: Upload Coverage Report
         uses: codecov/codecov-action@v4
         with:
-          files: ./olorin-server/coverage.xml
+          files: ./olorin-fraud/backend/coverage.xml
           flags: backend
           name: olorin-backend
         continue-on-error: true
@@ -162,10 +162,10 @@ jobs:
           docker build \
             -t "$IMAGE_TAG" \
             -t "$IMAGE_LATEST" \
-            -f olorin-server/Dockerfile.cloudrun \
+            -f olorin-fraud/backend/Dockerfile.cloudrun \
             --build-arg APP_ENV=${{ needs.setup.outputs.environment }} \
             --cache-from "$IMAGE_LATEST" \
-            olorin-server/
+            olorin-fraud/backend/
 
           echo "image-tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
 

@@ -151,7 +151,7 @@ jobs:
           echo "🚀 Deploying backend services..."
           
           # This would integrate with the existing deployment scripts
-          # ./scripts/deploy-cloudrun-direct.sh --environment=${{ env.DEPLOYMENT_ENVIRONMENT }}
+          # ./scripts/deployment/deploy-cloudrun-direct.sh --environment=${{ env.DEPLOYMENT_ENVIRONMENT }}
           
           # For now, simulate successful deployment
           echo "✅ Backend deployment completed"
@@ -195,7 +195,7 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: 'olorin-front/package-lock.json'
+          cache-dependency-path: 'olorin-fraud/frontend/package-lock.json'
 
       - name: Download Deployment Plan
         uses: actions/download-artifact@v4
@@ -204,12 +204,12 @@ jobs:
 
       - name: Install Frontend Dependencies
         run: |
-          cd olorin-front
+          cd olorin-fraud/frontend
           npm ci --prefer-offline --no-audit
 
       - name: Build Frontend
         run: |
-          cd olorin-front
+          cd olorin-fraud/frontend
           echo "🏗️ Building frontend for ${{ env.DEPLOYMENT_ENVIRONMENT }}"
           
           if [ "${{ env.DEPLOYMENT_ENVIRONMENT }}" = "staging" ]; then

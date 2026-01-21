@@ -6,11 +6,12 @@
 
 set -e  # Exit on any error
 
-# Configuration
-PROJECT_ID="olorin-ai"
-LOCATION="us-central1"
-SERVICE_NAME="olorin-backend"
-CODEBASE="olorin-backend"
+# Configuration from environment variables (required for CI/CD)
+# These can be overridden via command-line arguments
+PROJECT_ID="${OLORIN_PROJECT_ID:-${GCP_PROJECT:-}}"
+LOCATION="${OLORIN_REGION:-${GCP_REGION:-}}"
+SERVICE_NAME="${OLORIN_SERVICE_NAME:-olorin-backend}"
+CODEBASE="${OLORIN_CODEBASE:-olorin-backend}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -95,6 +96,17 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+# Validate required configuration
+if [[ -z "$PROJECT_ID" ]]; then
+    log_error "PROJECT_ID is required. Set OLORIN_PROJECT_ID or GCP_PROJECT environment variable, or use -p flag"
+    exit 1
+fi
+
+if [[ -z "$LOCATION" ]]; then
+    log_error "LOCATION is required. Set OLORIN_REGION or GCP_REGION environment variable, or use -l flag"
+    exit 1
+fi
 
 # Display configuration
 echo "🚀 Olorin Backend Firebase App Hosting Deployment"

@@ -17,7 +17,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 
 interface Particle {
   id: number;
@@ -106,23 +106,25 @@ export const GlassParticleLayer = React.forwardRef<View, GlassParticleLayerProps
       canvas.height = rect.height;
     }, []);
 
+    const intensityClass = {
+      low: "bg-[rgba(26,26,46,0.2)] backdrop-blur-[8px]",
+      medium: "bg-[rgba(26,26,46,0.4)] backdrop-blur-[12px]",
+      high: "bg-[rgba(26,26,46,0.6)] backdrop-blur-[20px]",
+    }[intensity];
+
+    const borderClass = !noBorder ? "border border-[rgba(255,255,255,0.1)]" : "border border-[rgba(255,255,255,0.03)]";
+
     return (
       <View
         ref={ref}
-        style={[
-          styles.container,
-          intensity === 'low' && styles.intensityLow,
-          intensity === 'medium' && styles.intensityMedium,
-          intensity === 'high' && styles.intensityHigh,
-          !noBorder && styles.withBorder,
-          style,
-        ]}
+        className={`relative overflow-hidden rounded-2xl bg-[rgba(26,26,46,0.4)] backdrop-blur-[12px] ${intensityClass} ${borderClass}`}
+        style={style}
       >
         {/* Glass background */}
-        <View style={styles.glassBackground} />
+        <View className="absolute inset-0 bg-[rgba(26,26,46,0.2)] pointer-events-none" />
 
         {/* Particle canvas */}
-        <canvas ref={canvasRef} style={styles.canvas} />
+        <canvas ref={canvasRef} className="w-full h-full block" />
       </View>
     );
   }
@@ -267,46 +269,5 @@ function drawConnections(ctx: CanvasRenderingContext2D, particles: Particle[]): 
     });
   });
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-    overflow: 'hidden',
-    borderRadius: 16,
-    backgroundColor: 'rgba(26, 26, 46, 0.4)',
-    backdropFilter: 'blur(12px)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.03)',
-  },
-  glassBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(26, 26, 46, 0.2)',
-    pointerEvents: 'none',
-  },
-  canvas: {
-    width: '100%',
-    height: '100%',
-    display: 'block',
-  },
-  intensityLow: {
-    backgroundColor: 'rgba(26, 26, 46, 0.2)',
-    backdropFilter: 'blur(8px)',
-  },
-  intensityMedium: {
-    backgroundColor: 'rgba(26, 26, 46, 0.4)',
-    backdropFilter: 'blur(12px)',
-  },
-  intensityHigh: {
-    backgroundColor: 'rgba(26, 26, 46, 0.6)',
-    backdropFilter: 'blur(20px)',
-  },
-  withBorder: {
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-});
 
 export default GlassParticleLayer;

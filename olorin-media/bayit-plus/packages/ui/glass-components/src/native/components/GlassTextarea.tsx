@@ -10,13 +10,12 @@ import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   Animated,
   TextInputProps,
   I18nManager,
 } from 'react-native';
 import { GlassView } from './GlassView';
-import { colors, borderRadius, spacing } from '../../theme';
+import { colors } from '../../theme';
 import { useTVFocus } from '../../hooks/useTVFocus';
 
 export interface GlassTextareaProps extends Omit<TextInputProps, 'style'> {
@@ -55,21 +54,19 @@ export const GlassTextarea: React.FC<GlassTextareaProps> = ({
   });
 
   return (
-    <View style={styles.container} testID={testID}>
-      {label && <Text style={[styles.label, isRTL && styles.labelRTL]}>{label}</Text>}
+    <View className="w-full" testID={testID}>
+      {label && <Text className={`text-sm font-medium mb-2 ${isRTL ? 'text-right' : 'text-left'}`} style={{ color: colors.textSecondary }}>{label}</Text>}
 
       <Animated.View style={scaleTransform}>
         <GlassView
-          style={[
-            styles.inputContainer,
-            !error && isFocused ? focusStyle : undefined,
-            error && styles.inputError,
-          ]}
+          className={`overflow-hidden ${error ? 'border-error' : ''}`}
           intensity="medium"
           borderColor={error ? colors.error : isFocused ? colors.glassBorderFocus : undefined}
+          style={!error && isFocused ? focusStyle : undefined}
         >
           <TextInput
-            style={[styles.input, { minHeight }, isRTL && styles.inputRTL]}
+            className={`text-base px-4 py-4 ${isRTL ? 'text-right' : 'text-left'}`}
+            style={{ color: colors.text, minHeight }}
             placeholderTextColor={colors.textMuted}
             onFocus={handleFocus}
             onBlur={handleBlur}
@@ -81,60 +78,10 @@ export const GlassTextarea: React.FC<GlassTextareaProps> = ({
         </GlassView>
       </Animated.View>
 
-      {error && <Text style={[styles.error, isRTL && styles.errorRTL]}>{error}</Text>}
-      {hint && !error && <Text style={[styles.hint, isRTL && styles.hintRTL]}>{hint}</Text>}
+      {error && <Text className={`text-xs mt-1 ${isRTL ? 'text-right' : 'text-left'}`} style={{ color: colors.error }}>{error}</Text>}
+      {hint && !error && <Text className={`text-xs mt-1 ${isRTL ? 'text-right' : 'text-left'}`} style={{ color: colors.textMuted }}>{hint}</Text>}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-    textAlign: 'left',
-  },
-  labelRTL: {
-    textAlign: 'right',
-  },
-  inputContainer: {
-    overflow: 'hidden',
-  },
-  inputError: {
-    borderColor: colors.error,
-  },
-  input: {
-    fontSize: 16,
-    color: colors.text,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    textAlign: 'left',
-  },
-  inputRTL: {
-    textAlign: 'right',
-  },
-  error: {
-    fontSize: 12,
-    color: colors.error,
-    marginTop: spacing.xs,
-    textAlign: 'left',
-  },
-  errorRTL: {
-    textAlign: 'right',
-  },
-  hint: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-    textAlign: 'left',
-  },
-  hintRTL: {
-    textAlign: 'right',
-  },
-});
 
 export default GlassTextarea;

@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
@@ -71,44 +70,42 @@ export const ChaptersOverlay: React.FC<ChaptersOverlayProps> = ({
 
   return (
     <Animated.View
-      style={[
-        styles.container,
-        { transform: [{ translateX: slideAnim }] },
-      ]}
+      className="absolute top-0 right-0 bottom-0 w-80 z-50"
+      style={{ transform: [{ translateX: slideAnim }] }}
     >
-      <GlassView style={styles.panel} intensity="strong">
+      <GlassView className="flex-1 rounded-l-2xl overflow-hidden" intensity="strong">
         {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <Text style={styles.headerIcon}>📑</Text>
-            <Text style={styles.headerTitle}>{t('chapters.title')}</Text>
-            <Text style={styles.headerCount}>({chapters.length})</Text>
+        <View className="flex-row items-center justify-between px-6 py-4 border-b border-white/10">
+          <View className="flex-row items-center gap-2">
+            <Text className="text-lg">📑</Text>
+            <Text className="text-lg font-semibold text-white">{t('chapters.title')}</Text>
+            <Text className="text-sm text-gray-400">({chapters.length})</Text>
           </View>
           <TouchableOpacity
-            style={styles.closeButton}
+            className="w-8 h-8 rounded-full bg-white/10 justify-center items-center"
             onPress={onClose}
             accessibilityLabel={t('common.close')}
           >
-            <Text style={styles.closeIcon}>✕</Text>
+            <Text className="text-base text-gray-300">✕</Text>
           </TouchableOpacity>
         </View>
 
         {/* Chapters List */}
         <ScrollView
           ref={scrollViewRef}
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+          className="flex-1"
+          contentContainerStyle={{ padding: spacing.md }}
           showsVerticalScrollIndicator={false}
         >
           {isLoading ? (
-            <View style={styles.emptyState}>
+            <View className="flex-1 justify-center items-center py-24">
               <ActivityIndicator size="large" color={colors.primary} />
-              <Text style={styles.emptyText}>{t('chapters.generating')}</Text>
+              <Text className="text-sm text-gray-400 text-center">{t('chapters.generating')}</Text>
             </View>
           ) : chapters.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>📑</Text>
-              <Text style={styles.emptyText}>{t('chapters.noChapters')}</Text>
+            <View className="flex-1 justify-center items-center py-24">
+              <Text className="text-5xl opacity-50 mb-4">📑</Text>
+              <Text className="text-sm text-gray-400 text-center">{t('chapters.noChapters')}</Text>
             </View>
           ) : (
             chapters.map((chapter, index) => (
@@ -126,84 +123,5 @@ export const ChaptersOverlay: React.FC<ChaptersOverlayProps> = ({
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    width: 320,
-    zIndex: 50,
-  },
-  panel: {
-    flex: 1,
-    borderTopLeftRadius: borderRadius.xl,
-    borderBottomLeftRadius: borderRadius.xl,
-    borderTopRightRadius: 0,
-    borderBottomRightRadius: 0,
-    overflow: 'hidden',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  headerIcon: {
-    fontSize: 18,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  headerCount: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeIcon: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: spacing.md,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: spacing.xxl,
-  },
-  emptyIcon: {
-    fontSize: 48,
-    opacity: 0.5,
-    marginBottom: spacing.md,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-});
 
 export default ChaptersOverlay;

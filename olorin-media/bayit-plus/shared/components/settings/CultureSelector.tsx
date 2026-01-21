@@ -10,7 +10,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Animated,
   Modal,
   ScrollView,
@@ -106,24 +105,21 @@ export const CultureSelector: React.FC<CultureSelectorProps> = ({
   // For inline variant, render a horizontal list
   if (variant === 'inline') {
     return (
-      <View style={styles.inlineContainer}>
+      <View className="my-4">
         {showLabel && (
-          <Text style={[styles.inlineLabel, { textAlign: isRTL ? 'right' : 'left' }]}>
+          <Text className={`${isTV ? 'text-lg' : 'text-base'} font-semibold text-white mb-4 px-4`} style={{ textAlign: isRTL ? 'right' : 'left' }}>
             {t('cultures.selectCulture')}
           </Text>
         )}
         {isLoading ? (
-          <View style={styles.loadingContainer}>
+          <View className="h-[100px] justify-center items-center">
             <ActivityIndicator color={colors.primary} />
           </View>
         ) : (
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={[
-              styles.inlineScrollContent,
-              { flexDirection: isRTL ? 'row-reverse' : 'row' },
-            ]}
+            contentContainerClassName={`px-4 gap-4 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}
           >
             {cultures.map((culture, index) => (
               <CultureCard
@@ -146,22 +142,22 @@ export const CultureSelector: React.FC<CultureSelectorProps> = ({
 
   // Modal variant - button that opens a modal
   return (
-    <View style={styles.container}>
+    <View className="relative">
       <TouchableOpacity
         onPress={() => setIsOpen(true)}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        style={[styles.button, isFocused && styles.buttonFocused]}
+        className={`flex-row items-center p-4 rounded-lg bg-white/5 border ${isFocused ? 'border-[#6B21A8] bg-[#6B21A8]/30' : 'border-transparent'} gap-2`}
         accessibilityLabel={t('cultures.changeCulture')}
         accessibilityRole="button"
       >
-        <Text style={styles.buttonFlag}>{currentDisplay.flag}</Text>
+        <Text className={isTV ? 'text-[28px]' : 'text-2xl'}>{currentDisplay.flag}</Text>
         {showLabel && (
-          <Text style={[styles.buttonText, { textAlign: isRTL ? 'right' : 'left' }]}>
+          <Text className={`flex-1 ${isTV ? 'text-base' : 'text-sm'} text-white`} style={{ textAlign: isRTL ? 'right' : 'left' }}>
             {currentDisplay.name}
           </Text>
         )}
-        <Text style={styles.chevron}>{isRTL ? '◂' : '▸'}</Text>
+        <Text className="text-xs text-white/60">{isRTL ? '◂' : '▸'}</Text>
       </TouchableOpacity>
 
       <Modal
@@ -171,29 +167,29 @@ export const CultureSelector: React.FC<CultureSelectorProps> = ({
         onRequestClose={() => setIsOpen(false)}
       >
         <TouchableOpacity
-          style={styles.modalBackdrop}
+          className="flex-1 bg-black/70 justify-center items-center"
           activeOpacity={1}
           onPress={backdropActive ? () => setIsOpen(false) : undefined}
         >
           <View
-            style={styles.modalContent}
+            className={isTV ? 'w-[600px]' : 'w-[340px] max-w-[90%]'}
             onStartShouldSetResponder={() => true}
             onTouchEnd={(e) => e.stopPropagation()}
           >
-            <GlassView intensity="high" style={styles.modalDropdown}>
-              <Text style={styles.modalTitle}>
+            <GlassView intensity="high" className="p-6 rounded-3xl">
+              <Text className={`${isTV ? 'text-xl' : 'text-lg'} font-bold text-white text-center mb-1`}>
                 {t('cultures.selectCulture')}
               </Text>
-              <Text style={styles.modalSubtitle}>
+              <Text className={`${isTV ? 'text-sm' : 'text-xs'} text-white/70 text-center mb-6`}>
                 {t('cultures.selectCultureDescription')}
               </Text>
 
               {isLoading ? (
-                <View style={styles.loadingContainer}>
+                <View className="h-[100px] justify-center items-center">
                   <ActivityIndicator color={colors.primary} size="large" />
                 </View>
               ) : (
-                <View style={[styles.culturesGrid, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <View className={`flex-wrap justify-center gap-4 mb-6 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
                   {cultures.map((culture, index) => (
                     <CultureCard
                       key={culture.culture_id}
@@ -211,10 +207,10 @@ export const CultureSelector: React.FC<CultureSelectorProps> = ({
               )}
 
               <TouchableOpacity
-                style={styles.closeButton}
+                className="p-4 items-center rounded-md bg-white/10"
                 onPress={() => setIsOpen(false)}
               >
-                <Text style={styles.closeButtonText}>{t('common.close')}</Text>
+                <Text className={`${isTV ? 'text-base' : 'text-sm'} text-white/70`}>{t('common.close')}</Text>
               </TouchableOpacity>
             </GlassView>
           </View>
@@ -272,181 +268,39 @@ const CultureCard: React.FC<CultureCardProps> = ({
     >
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <GlassView
-          style={[
-            styles.cultureCard,
-            isSelected && styles.cultureCardSelected,
-            isFocused && styles.cultureCardFocused,
-          ]}
+          className={`${isTV ? 'w-[140px]' : 'w-[100px]'} p-4 rounded-lg items-center border-2 ${
+            isSelected ? 'border-[#6B21A8] bg-[#6B21A8]/30' : 'border-transparent'
+          } ${
+            isFocused ? 'border-purple-400 bg-[#6B21A8]/40 shadow-purple-400' : ''
+          } bg-[#1E1E32]/60`}
           intensity="medium"
+          style={isFocused ? {
+            shadowColor: '#a855f7',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.4,
+            shadowRadius: 12,
+            elevation: 8,
+          } : undefined}
         >
           {isSelected && (
-            <View style={styles.checkmarkContainer}>
-              <Text style={styles.checkmark}>✓</Text>
+            <View className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[#6B21A8] justify-center items-center">
+              <Text className="text-xs text-white font-bold">✓</Text>
             </View>
           )}
-          <Text style={styles.cultureFlag}>{culture.flag_emoji || '🌍'}</Text>
-          <Text style={[styles.cultureName, isSelected && styles.cultureNameSelected]} numberOfLines={1}>
+          <Text className={`${isTV ? 'text-[40px]' : 'text-[32px]'} mb-1`}>{culture.flag_emoji || '🌍'}</Text>
+          <Text className={`${isTV ? 'text-sm' : 'text-xs'} ${isSelected ? 'text-[#6B21A8] font-semibold' : 'text-white'} text-center`} numberOfLines={1}>
             {localizedName}
           </Text>
           {culture.has_shabbat_mode && (
-            <Text style={styles.featureBadge}>🕯️</Text>
+            <Text className="text-xs mt-1">🕯️</Text>
           )}
           {culture.has_lunar_calendar && (
-            <Text style={styles.featureBadge}>🌙</Text>
+            <Text className="text-xs mt-1">🌙</Text>
           )}
         </GlassView>
       </Animated.View>
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'transparent',
-    gap: spacing.sm,
-  },
-  buttonFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  buttonFlag: {
-    fontSize: isTV ? 28 : 24,
-  },
-  buttonText: {
-    flex: 1,
-    fontSize: isTV ? fontSize.md : fontSize.sm,
-    color: colors.text,
-  },
-  chevron: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    width: isTV ? 600 : 340,
-    maxWidth: '90%',
-  },
-  modalDropdown: {
-    padding: spacing.xl,
-    borderRadius: borderRadius.xl,
-  },
-  modalTitle: {
-    fontSize: isTV ? fontSize.xl : fontSize.lg,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
-  },
-  modalSubtitle: {
-    fontSize: isTV ? fontSize.sm : fontSize.xs,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  loadingContainer: {
-    height: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  culturesGrid: {
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  cultureCard: {
-    width: isTV ? 140 : 100,
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
-    backgroundColor: 'rgba(30, 30, 50, 0.6)',
-  },
-  cultureCardSelected: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  cultureCardFocused: {
-    borderColor: '#a855f7',
-    backgroundColor: 'rgba(107, 33, 168, 0.4)',
-    shadowColor: '#a855f7',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  checkmarkContainer: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkmark: {
-    fontSize: 12,
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  cultureFlag: {
-    fontSize: isTV ? 40 : 32,
-    marginBottom: spacing.xs,
-  },
-  cultureName: {
-    fontSize: isTV ? fontSize.sm : fontSize.xs,
-    color: colors.text,
-    textAlign: 'center',
-  },
-  cultureNameSelected: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  featureBadge: {
-    fontSize: 12,
-    marginTop: spacing.xs,
-  },
-  closeButton: {
-    padding: spacing.md,
-    alignItems: 'center',
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  closeButtonText: {
-    fontSize: isTV ? fontSize.md : fontSize.sm,
-    color: colors.textSecondary,
-  },
-  inlineContainer: {
-    marginVertical: spacing.md,
-  },
-  inlineLabel: {
-    fontSize: isTV ? fontSize.lg : fontSize.md,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-    paddingHorizontal: spacing.md,
-  },
-  inlineScrollContent: {
-    paddingHorizontal: spacing.md,
-    gap: spacing.md,
-  },
-});
 
 export default CultureSelector;

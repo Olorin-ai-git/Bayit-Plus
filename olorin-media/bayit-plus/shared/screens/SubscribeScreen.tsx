@@ -7,7 +7,6 @@ import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   Pressable,
   ActivityIndicator,
@@ -218,62 +217,57 @@ function PlanCard({ plan, isSelected, isFocused, onSelect, onFocus, billingPerio
     <Pressable
       onPress={onSelect}
       onFocus={onFocus}
-      style={[
-        styles.planWrapper,
-        plan.popular && styles.planWrapperPopular,
-      ]}
+      className={`flex-1 min-w-[300px] max-w-[360px] ${plan.popular ? '-mt-5 mb-5' : ''}`}
     >
       <GlassCard
-        style={[
-          styles.planCard,
-          isSelected && styles.planCardSelected,
-          isFocused && styles.planCardFocused,
-        ]}
+        className={`p-4 relative border-[3px] ${
+          isSelected ? 'border-[#a855f7]' : 'border-transparent'
+        } ${isFocused ? 'border-white scale-[1.03]' : ''}`}
       >
         {/* Popular Badge */}
         {plan.popular && (
-          <View style={styles.popularBadge}>
-            <Text style={styles.popularBadgeIcon}>✨</Text>
-            <Text style={styles.popularBadgeText}>{t('subscribe.popular', 'הכי פופולרי')}</Text>
+          <View className="absolute -top-3.5 right-4 flex-row items-center gap-1 bg-[#a855f7] px-4 py-1 rounded-full">
+            <Text className="text-sm">✨</Text>
+            <Text className="text-xs font-semibold text-white">{t('subscribe.popular', 'הכי פופולרי')}</Text>
           </View>
         )}
 
         {/* Plan Header */}
-        <View style={styles.planHeader}>
-          <Text style={styles.planName}>{getName()}</Text>
-          <View style={styles.priceRow}>
-            <Text style={styles.price}>{plan.price}</Text>
-            <Text style={styles.period}>{getPeriod()}</Text>
+        <View className="items-center mb-4">
+          <Text className="text-[22px] font-bold text-white mb-2">{getName()}</Text>
+          <View className="flex-row items-baseline gap-1">
+            <Text className="text-[40px] font-bold text-[#a855f7]">{plan.price}</Text>
+            <Text className="text-base text-gray-400">{getPeriod()}</Text>
           </View>
           {billingPeriod === 'yearly' && (
-            <Text style={styles.yearlyPrice}>${yearlyPrice} {t('subscribe.perYear', 'לשנה')}</Text>
+            <Text className="text-sm text-[#22c55e] mt-1">${yearlyPrice} {t('subscribe.perYear', 'לשנה')}</Text>
           )}
         </View>
 
         {/* Features */}
-        <View style={styles.featuresList}>
+        <View className="mb-4">
           {getFeatures().map((feature, i) => (
-            <View key={i} style={styles.featureItem}>
-              <View style={styles.featureIcon}>
-                <Text style={styles.checkIcon}>✓</Text>
+            <View key={i} className="flex-row items-center gap-2 mb-2">
+              <View className="w-[22px] h-[22px] rounded-full bg-[rgba(34,197,94,0.2)] justify-center items-center">
+                <Text className="text-xs text-[#22c55e] font-bold">✓</Text>
               </View>
-              <Text style={styles.featureText}>{feature}</Text>
+              <Text className="text-sm text-white flex-1 text-right">{feature}</Text>
             </View>
           ))}
           {getNotIncluded().map((feature, i) => (
-            <View key={i} style={styles.featureItem}>
-              <View style={styles.notIncludedIcon}>
-                <Text style={styles.minusIcon}>—</Text>
+            <View key={i} className="flex-row items-center gap-2 mb-2">
+              <View className="w-[22px] h-[22px] justify-center items-center">
+                <Text className="text-sm text-gray-400">—</Text>
               </View>
-              <Text style={styles.notIncludedText}>{feature}</Text>
+              <Text className="text-sm text-gray-400 line-through flex-1 text-right">{feature}</Text>
             </View>
           ))}
         </View>
 
         {/* Selection Indicator */}
         {isSelected && (
-          <View style={styles.selectedIndicator}>
-            <Text style={styles.selectedText}>{t('subscribe.selected', 'נבחר')}</Text>
+          <View className="absolute top-4 left-4 bg-[#a855f7] px-2 py-1 rounded">
+            <Text className="text-xs text-white font-semibold">{t('subscribe.selected', 'נבחר')}</Text>
           </View>
         )}
       </GlassCard>
@@ -317,29 +311,27 @@ export function SubscribeScreen() {
   }, [isAuthenticated, selectedPlan, navigation]);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1 bg-black" contentContainerStyle={{ paddingHorizontal: 48, paddingVertical: 48, alignItems: 'center' }}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>{t('subscribe.title', 'בחר את המסלול שלך')}</Text>
-        <Text style={styles.subtitle}>
+      <View className="items-center mb-12">
+        <Text className="text-[40px] font-bold text-white text-center mb-4">{t('subscribe.title', 'בחר את המסלול שלך')}</Text>
+        <Text className="text-lg text-gray-400 text-center max-w-[600px]">
           {t('subscribe.subtitle', '7 ימי ניסיון חינם לכל מסלול. בטל בכל עת.')}
         </Text>
       </View>
 
       {/* Billing Toggle */}
-      <View style={styles.billingToggle}>
-        <GlassView intensity="low" style={styles.tabsContainer}>
+      <View className="items-center mb-12">
+        <GlassView intensity="low" className="flex-row p-1 rounded-full">
           <Pressable
             onPress={() => setBillingPeriod('monthly')}
             onFocus={() => setFocusedItem('monthly')}
             onBlur={() => setFocusedItem(null)}
-            style={[
-              styles.tab,
-              billingPeriod === 'monthly' && styles.tabActive,
-              focusedItem === 'monthly' && styles.tabFocused,
-            ]}
+            className={`flex-row items-center px-6 py-3 rounded-full gap-2 border-2 ${
+              billingPeriod === 'monthly' ? 'bg-[#a855f7]' : ''
+            } ${focusedItem === 'monthly' ? 'border-white' : 'border-transparent'}`}
           >
-            <Text style={[styles.tabText, billingPeriod === 'monthly' && styles.tabTextActive]}>
+            <Text className={`text-base ${billingPeriod === 'monthly' ? 'text-white font-semibold' : 'text-gray-400'}`}>
               {t('subscribe.monthly', 'חודשי')}
             </Text>
           </Pressable>
@@ -347,24 +339,22 @@ export function SubscribeScreen() {
             onPress={() => setBillingPeriod('yearly')}
             onFocus={() => setFocusedItem('yearly')}
             onBlur={() => setFocusedItem(null)}
-            style={[
-              styles.tab,
-              billingPeriod === 'yearly' && styles.tabActive,
-              focusedItem === 'yearly' && styles.tabFocused,
-            ]}
+            className={`flex-row items-center px-6 py-3 rounded-full gap-2 border-2 ${
+              billingPeriod === 'yearly' ? 'bg-[#a855f7]' : ''
+            } ${focusedItem === 'yearly' ? 'border-white' : 'border-transparent'}`}
           >
-            <Text style={[styles.tabText, billingPeriod === 'yearly' && styles.tabTextActive]}>
+            <Text className={`text-base ${billingPeriod === 'yearly' ? 'text-white font-semibold' : 'text-gray-400'}`}>
               {t('subscribe.yearly', 'שנתי')}
             </Text>
-            <View style={styles.saveBadge}>
-              <Text style={styles.saveBadgeText}>{t('subscribe.save2Months', 'חסכו 2 חודשים')}</Text>
+            <View className="bg-[rgba(34,197,94,0.2)] px-2 py-1 rounded">
+              <Text className="text-[11px] text-[#22c55e] font-semibold">{t('subscribe.save2Months', 'חסכו 2 חודשים')}</Text>
             </View>
           </Pressable>
         </GlassView>
       </View>
 
       {/* Plans Grid */}
-      <View style={styles.plansGrid}>
+      <View className="flex-row flex-wrap justify-center gap-4 mb-12 max-w-[1200px]">
         {plans.map((plan) => (
           <PlanCard
             key={plan.id}
@@ -380,39 +370,37 @@ export function SubscribeScreen() {
       </View>
 
       {/* CTA Section */}
-      <View style={styles.ctaSection}>
+      <View className="items-center mb-12">
         <Pressable
           onPress={handleSubscribe}
           disabled={loading}
           onFocus={() => setFocusedItem('cta')}
           onBlur={() => setFocusedItem(null)}
-          style={[
-            styles.ctaButton,
-            focusedItem === 'cta' && styles.ctaButtonFocused,
-            loading && styles.ctaButtonDisabled,
-          ]}
+          className={`bg-[#a855f7] px-24 py-4 rounded-full border-[3px] min-w-[300px] items-center ${
+            focusedItem === 'cta' ? 'border-white scale-105' : 'border-transparent'
+          } ${loading ? 'opacity-70' : ''}`}
         >
           {loading ? (
             <ActivityIndicator size="small" color={colors.text} />
           ) : (
-            <Text style={styles.ctaButtonText}>
+            <Text className="text-lg font-bold text-white">
               {t('subscribe.startTrial', 'התחל ניסיון חינם')}
             </Text>
           )}
         </Pressable>
-        <Text style={styles.ctaNote}>
+        <Text className="text-sm text-gray-400 mt-4 text-center">
           {t('subscribe.noCharge', 'לא יחויב כרטיס האשראי במהלך תקופת הניסיון')}
         </Text>
       </View>
 
       {/* TV-specific: QR Code for mobile signup */}
-      <View style={styles.qrSection}>
-        <GlassCard style={styles.qrCard}>
-          <Text style={styles.qrTitle}>{t('subscribe.scanQR', 'או הירשם מהנייד')}</Text>
-          <View style={styles.qrPlaceholder}>
-            <Text style={styles.qrIcon}>📱</Text>
+      <View className="items-center">
+        <GlassCard className="p-6 items-center min-w-[300px]">
+          <Text className="text-base text-gray-300 mb-4">{t('subscribe.scanQR', 'או הירשם מהנייד')}</Text>
+          <View className="w-[150px] h-[150px] bg-white/10 rounded-lg justify-center items-center mb-4 border-2 border-white/20 border-dashed">
+            <Text className="text-5xl">📱</Text>
           </View>
-          <Text style={styles.qrText}>
+          <Text className="text-sm text-gray-400 text-center">
             {t('subscribe.scanToSignup', 'סרוק את הקוד כדי להירשם מהטלפון')}
           </Text>
         </GlassCard>
@@ -420,279 +408,3 @@ export function SubscribeScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  contentContainer: {
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.xl,
-    alignItems: 'center',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  title: {
-    fontSize: 40,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.md,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: colors.textMuted,
-    textAlign: 'center',
-    maxWidth: 600,
-  },
-  billingToggle: {
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    padding: spacing.xs,
-    borderRadius: borderRadius.full,
-  },
-  tab: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.full,
-    gap: spacing.sm,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  tabActive: {
-    backgroundColor: colors.primary,
-  },
-  tabFocused: {
-    borderColor: colors.text,
-  },
-  tabText: {
-    fontSize: 16,
-    color: colors.textMuted,
-  },
-  tabTextActive: {
-    color: colors.text,
-    fontWeight: '600',
-  },
-  saveBadge: {
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: borderRadius.sm,
-  },
-  saveBadgeText: {
-    fontSize: 11,
-    color: colors.success,
-    fontWeight: '600',
-  },
-  plansGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: spacing.lg,
-    marginBottom: spacing.xl,
-    maxWidth: 1200,
-  },
-  planWrapper: {
-    flex: 1,
-    minWidth: 300,
-    maxWidth: 360,
-  },
-  planWrapperPopular: {
-    marginTop: -20,
-    marginBottom: 20,
-  },
-  planCard: {
-    padding: spacing.lg,
-    position: 'relative',
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-  planCardSelected: {
-    borderColor: colors.primary,
-  },
-  planCardFocused: {
-    borderColor: colors.text,
-    transform: [{ scale: 1.03 }],
-  },
-  popularBadge: {
-    position: 'absolute',
-    top: -14,
-    right: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    backgroundColor: colors.secondary,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-  },
-  popularBadgeIcon: {
-    fontSize: 14,
-  },
-  popularBadgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  planHeader: {
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-  planName: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  priceRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: spacing.xs,
-  },
-  price: {
-    fontSize: 40,
-    fontWeight: 'bold',
-    color: colors.primary,
-  },
-  period: {
-    fontSize: 16,
-    color: colors.textMuted,
-  },
-  yearlyPrice: {
-    fontSize: 14,
-    color: colors.success,
-    marginTop: spacing.xs,
-  },
-  featuresList: {
-    marginBottom: spacing.md,
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  featureIcon: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkIcon: {
-    fontSize: 12,
-    color: colors.success,
-    fontWeight: 'bold',
-  },
-  notIncludedIcon: {
-    width: 22,
-    height: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  minusIcon: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  featureText: {
-    fontSize: 14,
-    color: colors.text,
-    flex: 1,
-    textAlign: 'right',
-  },
-  notIncludedText: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textDecorationLine: 'line-through',
-    flex: 1,
-    textAlign: 'right',
-  },
-  selectedIndicator: {
-    position: 'absolute',
-    top: spacing.md,
-    left: spacing.md,
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-  },
-  selectedText: {
-    fontSize: 12,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  ctaSection: {
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  ctaButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.xl * 2,
-    paddingVertical: spacing.lg,
-    borderRadius: borderRadius.full,
-    borderWidth: 3,
-    borderColor: 'transparent',
-    minWidth: 300,
-    alignItems: 'center',
-  },
-  ctaButtonFocused: {
-    borderColor: colors.text,
-    transform: [{ scale: 1.05 }],
-  },
-  ctaButtonDisabled: {
-    opacity: 0.7,
-  },
-  ctaButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  ctaNote: {
-    fontSize: 14,
-    color: colors.textMuted,
-    marginTop: spacing.md,
-    textAlign: 'center',
-  },
-  qrSection: {
-    alignItems: 'center',
-  },
-  qrCard: {
-    padding: spacing.xl,
-    alignItems: 'center',
-    minWidth: 300,
-  },
-  qrTitle: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    marginBottom: spacing.md,
-  },
-  qrPlaceholder: {
-    width: 150,
-    height: 150,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    borderStyle: 'dashed',
-  },
-  qrIcon: {
-    fontSize: 48,
-  },
-  qrText: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-});

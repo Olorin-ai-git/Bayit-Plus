@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text } from 'react-native'
 import { Circle } from 'lucide-react'
 
 interface RecordingStatusIndicatorProps {
@@ -30,37 +30,11 @@ export const RecordingStatusIndicator: React.FC<RecordingStatusIndicatorProps> =
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.pulse}>
+    <View className="absolute top-4 right-4 flex-row items-center gap-2 bg-red-500/90 backdrop-blur-[40px] px-3 py-2 rounded-full z-[100]">
+      <View>
         <Circle size={8} color="white" fill="white" />
       </View>
-      <Text style={styles.text}>REC {formatDuration(duration)}</Text>
+      <Text className="text-white text-xs font-bold tracking-wide">REC {formatDuration(duration)}</Text>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: 'rgba(239, 68, 68, 0.9)', // red-500
-    backdropFilter: 'blur(40px)',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 9999,
-    zIndex: 100,
-  },
-  pulse: {
-    // Animation would be added via Animated API or CSS animation
-  },
-  text: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  }
-})

@@ -24,14 +24,18 @@ class VoiceConfig(Protocol):
 class SimpleVoiceConfig:
     """Simple implementation of VoiceConfig for testing or direct usage."""
 
-    def __init__(self, api_key: str, default_voice_id: str = "21m00Tcm4TlvDq8ikWAM"):
+    def __init__(self, api_key: str, default_voice_id: str):
         """
         Initialize voice configuration.
 
         Args:
-            api_key: ElevenLabs API key
-            default_voice_id: Default voice ID (Rachel - multilingual)
+            api_key: ElevenLabs API key (required)
+            default_voice_id: Default voice ID (required, e.g., ElevenLabs Rachel voice)
         """
+        if not api_key:
+            raise ValueError("elevenlabs_api_key is required")
+        if not default_voice_id:
+            raise ValueError("elevenlabs_default_voice_id is required")
         self._api_key = api_key
         self._default_voice_id = default_voice_id
 

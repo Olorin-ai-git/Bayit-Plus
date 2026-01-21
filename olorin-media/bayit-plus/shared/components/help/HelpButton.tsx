@@ -8,13 +8,11 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Animated,
   PanResponder,
   Dimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '../../theme';
 import { isTV } from '../../utils/platform';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -127,40 +125,43 @@ export const HelpButton: React.FC<HelpButtonProps> = ({
 
   return (
     <Animated.View
-      style={[
-        styles.container,
-        {
-          transform: [
-            { translateX: positionAnim.x },
-            { translateY: positionAnim.y },
-          ],
-        },
-      ]}
+      className="absolute z-[1000]"
+      style={{
+        transform: [
+          { translateX: positionAnim.x },
+          { translateY: positionAnim.y },
+        ],
+      }}
       {...(draggable ? panResponder.panHandlers : {})}
     >
       {/* Expanded Menu */}
       {expandable && (
         <Animated.View
-          style={[
-            styles.menuContainer,
-            {
-              opacity: expandAnim,
-              transform: [
-                {
-                  translateY: expandAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [20, 0],
-                  }),
-                },
-                {
-                  scale: expandAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0.8, 1],
-                  }),
-                },
-              ],
-            },
-          ]}
+          className={`absolute right-0 w-[180px] bg-[rgba(30,30,40,0.98)] rounded-lg p-2 border border-white/10 shadow-lg ${
+            isTV ? 'bottom-20' : 'bottom-16'
+          }`}
+          style={{
+            opacity: expandAnim,
+            transform: [
+              {
+                translateY: expandAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [20, 0],
+                }),
+              },
+              {
+                scale: expandAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0.8, 1],
+                }),
+              },
+            ],
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+            elevation: 8,
+          }}
           pointerEvents={expanded ? 'auto' : 'none'}
         >
           {menuItems.map((item, index) => (
@@ -179,13 +180,13 @@ export const HelpButton: React.FC<HelpButtonProps> = ({
               }}
             >
               <TouchableOpacity
-                style={styles.menuItem}
+                className="flex-row items-center gap-2 p-3 rounded-md"
                 onPress={() => handleAction(item.action)}
                 accessibilityRole="button"
                 accessibilityLabel={t(item.labelKey)}
               >
-                <Text style={styles.menuIcon}>{item.icon}</Text>
-                <Text style={styles.menuLabel}>{t(item.labelKey)}</Text>
+                <Text className={isTV ? 'text-xl' : 'text-lg'}>{item.icon}</Text>
+                <Text className={`text-white font-medium ${isTV ? 'text-sm' : 'text-[13px]'}`}>{t(item.labelKey)}</Text>
               </TouchableOpacity>
             </Animated.View>
           ))}
@@ -195,15 +196,24 @@ export const HelpButton: React.FC<HelpButtonProps> = ({
       {/* Main Button */}
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <TouchableOpacity
-          style={styles.mainButton}
+          className={`items-center justify-center bg-purple-500 shadow-lg ${
+            isTV ? 'w-[72px] h-[72px] rounded-[36px]' : 'w-14 h-14 rounded-[28px]'
+          }`}
+          style={{
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+            elevation: 8,
+          }}
           onPress={toggleExpanded}
           accessibilityRole="button"
           accessibilityLabel={t('help.openHelp', 'Open help menu')}
         >
-          <Text style={styles.mainButtonIcon}>{expanded ? '✕' : '?'}</Text>
+          <Text className={`text-white font-bold ${isTV ? 'text-[32px]' : 'text-2xl'}`}>{expanded ? '✕' : '?'}</Text>
           {badgeCount && badgeCount > 0 && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>
+            <View className="absolute -top-1 -right-1 min-w-[20px] h-5 rounded-full bg-red-500 items-center justify-center px-1.5">
+              <Text className="text-white text-xs font-bold">
                 {badgeCount > 9 ? '9+' : badgeCount}
               </Text>
             </View>
@@ -213,78 +223,5 @@ export const HelpButton: React.FC<HelpButtonProps> = ({
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    zIndex: 1000,
-  },
-  mainButton: {
-    width: isTV ? 72 : 56,
-    height: isTV ? 72 : 56,
-    borderRadius: isTV ? 36 : 28,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  mainButtonIcon: {
-    fontSize: isTV ? 32 : 24,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  badge: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    minWidth: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: colors.error,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 6,
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  menuContainer: {
-    position: 'absolute',
-    bottom: isTV ? 80 : 64,
-    right: 0,
-    width: 180,
-    backgroundColor: 'rgba(30, 30, 40, 0.98)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.sm,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-  },
-  menuIcon: {
-    fontSize: isTV ? 20 : 18,
-  },
-  menuLabel: {
-    fontSize: isTV ? 14 : 13,
-    color: colors.text,
-    fontWeight: '500',
-  },
-});
 
 export default HelpButton;

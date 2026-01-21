@@ -4,13 +4,13 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { GlassModal } from './ui/GlassModal';
 import { GlassButton } from './ui/GlassButton';
 import { GlassInput } from './ui/GlassInput';
 import { verificationService } from '../services/api';
 import { useAuthStore } from '../stores/authStore';
-import { colors, spacing, fontSize } from '../theme';
+import { colors } from '../theme';
 
 interface VerificationModalProps {
   visible: boolean;
@@ -86,10 +86,10 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
   const renderStepContent = () => {
     if (step === 'email') {
       return (
-        <View style={styles.stepContent}>
-          <Text style={styles.stepTitle}>📧 Verify Your Email</Text>
-          <Text style={styles.stepDescription}>
-            Check your inbox at <Text style={styles.highlight}>{user?.email}</Text>
+        <View className="items-center gap-4">
+          <Text className="text-lg font-bold text-white text-center">📧 Verify Your Email</Text>
+          <Text className="text-base text-white/70 text-center leading-[22px]">
+            Check your inbox at <Text className="text-purple-500 font-semibold">{user?.email}</Text>
             {'\n\n'}Click the verification link we sent you.
           </Text>
           <GlassButton onPress={handleSendEmail} loading={loading}>
@@ -104,9 +104,9 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
 
     if (step === 'phone') {
       return (
-        <View style={styles.stepContent}>
-          <Text style={styles.stepTitle}>📱 Verify Your Phone</Text>
-          <Text style={styles.stepDescription}>
+        <View className="items-center gap-4">
+          <Text className="text-lg font-bold text-white text-center">📱 Verify Your Phone</Text>
+          <Text className="text-base text-white/70 text-center leading-[22px]">
             Enter your phone number to receive a verification code
           </Text>
           <GlassInput
@@ -124,10 +124,10 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
 
     if (step === 'phone-code') {
       return (
-        <View style={styles.stepContent}>
-          <Text style={styles.stepTitle}>🔑 Enter Code</Text>
-          <Text style={styles.stepDescription}>
-            Enter the 6-digit code sent to{'\n'}<Text style={styles.highlight}>{phoneNumber}</Text>
+        <View className="items-center gap-4">
+          <Text className="text-lg font-bold text-white text-center">🔑 Enter Code</Text>
+          <Text className="text-base text-white/70 text-center leading-[22px]">
+            Enter the 6-digit code sent to{'\n'}<Text className="text-purple-500 font-semibold">{phoneNumber}</Text>
           </Text>
           <GlassInput
             placeholder="123456"
@@ -148,10 +148,10 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
 
     if (step === 'success') {
       return (
-        <View style={styles.stepContent}>
-          <Text style={styles.successIcon}>✅</Text>
-          <Text style={styles.stepTitle}>Verified!</Text>
-          <Text style={styles.stepDescription}>
+        <View className="items-center gap-4">
+          <Text className="text-5xl mb-2">✅</Text>
+          <Text className="text-lg font-bold text-white text-center">Verified!</Text>
+          <Text className="text-base text-white/70 text-center leading-[22px]">
             Your account is now verified.{'\n'}Redirecting...
           </Text>
         </View>
@@ -170,40 +170,7 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
       dismissable={step !== 'success'}
     >
       {renderStepContent()}
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+      {error ? <Text className="text-red-500 text-sm text-center mt-4">{error}</Text> : null}
     </GlassModal>
   );
 };
-
-const styles = StyleSheet.create({
-  stepContent: {
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  stepTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'center',
-  },
-  stepDescription: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  highlight: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  successIcon: {
-    fontSize: 48,
-    marginBottom: spacing.sm,
-  },
-  error: {
-    color: colors.error,
-    fontSize: fontSize.sm,
-    textAlign: 'center',
-    marginTop: spacing.sm,
-  },
-});

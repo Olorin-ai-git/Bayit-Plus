@@ -3,13 +3,14 @@
  * Hero section with backdrop, video preview, and main actions
  */
 
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, Dimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Play, Plus, Check } from 'lucide-react';
 import LinearGradient from 'react-native-linear-gradient';
 import { GlassView, GlassButton, GlassBadge, GlassTooltip } from '@bayit/shared/ui';
 import type { SeriesData, Episode } from '../types/series.types';
-import { styles } from './SeriesHero.styles';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface SeriesHeroProps {
   series: SeriesData;
@@ -46,28 +47,24 @@ export function SeriesHero({
   const backdropUrl = selectedEpisode?.thumbnail || series.backdrop || series.thumbnail;
 
   return (
-    <View style={styles.heroContainer}>
+    <View className="relative" style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT * 0.65 }}>
       <View
-        style={[
-          styles.backdropContainer,
-          {
-            opacity: isPreviewPlaying ? 0 : 1,
-            transition: 'opacity 0.5s ease-in-out',
-          } as any,
-        ]}
+        className="absolute inset-0"
+        style={{
+          opacity: isPreviewPlaying ? 0 : 1,
+          transition: 'opacity 0.5s ease-in-out',
+        } as any}
       >
-        <Image source={{ uri: backdropUrl }} style={styles.backdrop} resizeMode="cover" />
+        <Image source={{ uri: backdropUrl }} className="w-full h-full" resizeMode="cover" />
       </View>
 
       <View
-        style={[
-          styles.videoContainer,
-          {
-            opacity: isPreviewPlaying ? 1 : 0,
-            transition: 'opacity 0.5s ease-in-out',
-            zIndex: isPreviewPlaying ? 5 : 1,
-          } as any,
-        ]}
+        className="absolute inset-0"
+        style={{
+          opacity: isPreviewPlaying ? 1 : 0,
+          transition: 'opacity 0.5s ease-in-out',
+          zIndex: isPreviewPlaying ? 5 : 1,
+        } as any}
       >
         <video
           ref={videoRef}
@@ -84,50 +81,50 @@ export function SeriesHero({
 
       <LinearGradient
         colors={['transparent', 'rgba(0,0,0,0.4)', 'rgba(0,0,0,0.95)']}
-        style={styles.gradientBottom}
+        className="absolute left-0 right-0 bottom-0 h-[75%]"
       />
       <LinearGradient
         colors={['rgba(0,0,0,0.6)', 'transparent']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
-        style={styles.gradientLeft}
+        className="absolute left-0 top-0 bottom-0 w-[60%]"
       />
 
-      <View style={styles.heroContent}>
+      <View className="absolute left-12 right-12 bottom-10 max-w-[600px]">
         {series.category && (
-          <GlassView style={styles.categoryBadge} intensity="light">
-            <Text style={styles.categoryText}>{series.category}</Text>
+          <GlassView className="self-start px-4 py-2 rounded-full mb-4" intensity="light">
+            <Text className="text-sm text-white font-medium">{series.category}</Text>
           </GlassView>
         )}
 
-        <Text style={styles.title}>{series.title}</Text>
+        <Text className="text-4xl font-bold text-white mb-2">{series.title}</Text>
 
-        <View style={[styles.metadata, { flexDirection }]}>
-          {series.year && <Text style={styles.metaItem}>{series.year}</Text>}
+        <View className={`items-center flex-wrap gap-4 mb-4 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : 'flex-row'}`}>
+          {series.year && <Text className="text-base text-white/70">{series.year}</Text>}
           {series.rating && (
             <GlassBadge variant="default" size="sm">
               {series.rating}
             </GlassBadge>
           )}
           {(series.total_seasons > 0 || (series.seasons && series.seasons.length > 0)) && (
-            <Text style={styles.metaItem}>
+            <Text className="text-base text-white/70">
               {series.total_seasons || series.seasons?.length || 1} {t('content.seasons')}
             </Text>
           )}
           {(series.total_episodes > 0 || episodes.length > 0) && (
-            <Text style={styles.metaItem}>
+            <Text className="text-base text-white/70">
               {series.total_episodes || episodes.length} {t('content.episodes')}
             </Text>
           )}
         </View>
 
         {series.description && (
-          <Text style={[styles.description, { textAlign }]} numberOfLines={3}>
+          <Text className="text-[15px] text-white/85 leading-[22px] mb-6" style={{ textAlign }} numberOfLines={3}>
             {series.description}
           </Text>
         )}
 
-        <View style={[styles.actions, { flexDirection }]}>
+        <View className={`flex-wrap gap-4 mb-6 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : 'flex-row'}`}>
           <GlassTooltip
             content={t('content.noEpisodesAvailable', 'No episodes available to play')}
             disabled={episodes.length > 0}
@@ -173,9 +170,9 @@ export function SeriesHero({
         </View>
 
         {isPreviewPlaying && (
-          <View style={styles.previewIndicator}>
-            <View style={styles.previewDot} />
-            <Text style={styles.previewText}>{t('content.previewPlaying')}</Text>
+          <View className="flex-row items-center gap-2 bg-black/60 px-4 py-2 rounded-full self-start">
+            <View className="w-2 h-2 rounded-full bg-[#ff4444]" />
+            <Text className="text-sm text-white font-medium">{t('content.previewPlaying')}</Text>
           </View>
         )}
       </View>

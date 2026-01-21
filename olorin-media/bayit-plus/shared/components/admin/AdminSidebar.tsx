@@ -7,7 +7,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
@@ -17,7 +16,7 @@ import { useDirection } from '../../hooks/useDirection';
 import { rtlSpacing, rtlMargin } from '../../utils/rtlHelpers';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useAuthStore } from '../../stores/authStore';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { spacing } from '../../theme';
 
 interface NavItem {
   key: string;
@@ -181,12 +180,8 @@ export const AdminSidebar: React.FC = () => {
     return (
       <View key={item.key}>
         <TouchableOpacity
-          style={[
-            styles.navItem,
-            isChild && styles.navItemChild,
-            isActive && styles.navItemActive,
-            { flexDirection },
-          ]}
+          className={`flex items-center py-2 px-4 mx-2 my-0.5 rounded ${isChild ? 'pl-6' : ''} ${isActive ? 'bg-secondary/[0.19]' : ''}`}
+          style={{ flexDirection }}
           onPress={() => {
             if (hasChildren) {
               toggleExpand(item.key);
@@ -195,19 +190,19 @@ export const AdminSidebar: React.FC = () => {
             }
           }}
         >
-          <Text style={styles.navIcon}>{item.icon}</Text>
-          <Text style={[styles.navLabel, isActive && styles.navLabelActive, { textAlign }]}>
+          <Text className="text-lg mr-2 w-6 text-center">{item.icon}</Text>
+          <Text className={`flex-1 text-sm ${isActive ? 'text-text font-semibold' : 'text-textSecondary'}`} style={{ textAlign }}>
             {t(item.labelKey, item.key)}
           </Text>
           {hasChildren && (
-            <Text style={styles.expandIcon}>
+            <Text className="text-[10px] text-textMuted">
               {isExpanded ? (isRTL ? '◀' : '▶') : (isRTL ? '▶' : '◀')}
             </Text>
           )}
         </TouchableOpacity>
 
         {hasChildren && isExpanded && (
-          <View style={[styles.childrenContainer, rtlMargin(isRTL, { left: spacing.sm })]}>
+          <View style={[rtlMargin(isRTL, { left: spacing.sm })]}>
             {item.children!.map(child => renderNavItem(child, true))}
           </View>
         )}
@@ -216,142 +211,47 @@ export const AdminSidebar: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="w-[260px] bg-backgroundLight border-r border-glassBorder h-full">
       {/* Header - Brand & User Info Combined */}
-      <View style={styles.headerContainer}>
+      <View className="p-4 pb-4 border-b border-glassBorder gap-4">
         {/* Brand Title */}
-        <View style={styles.brandTitleContainer}>
-          <Text style={[styles.brandTitle, { textAlign }]}>
+        <View className="pb-2 border-b border-glassBorderLight">
+          <Text className="text-xl font-bold text-primary mb-1" style={{ textAlign }}>
             {t('admin.brand.title', 'Bayit+ Admin')}
           </Text>
-          <Text style={[styles.brandSubtitle, { textAlign }]}>
+          <Text className="text-sm text-textMuted" style={{ textAlign }}>
             {t('admin.brand.subtitle', 'System Management')}
           </Text>
         </View>
       </View>
 
       {/* Navigation */}
-      <ScrollView style={styles.navContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 py-2" showsVerticalScrollIndicator={false}>
         {NAV_ITEMS.map(item => renderNavItem(item))}
       </ScrollView>
 
       {/* Footer Actions */}
-      <View style={styles.footerContainer}>
+      <View className="p-4 border-t border-glassBorder">
         <TouchableOpacity
-          style={[styles.footerButton, { flexDirection }]}
+          className="flex items-center py-2 px-4 rounded mb-1"
+          style={{ flexDirection }}
           onPress={() => navigation.navigate('Home')}
         >
-          <Text style={styles.footerIcon}>🏠</Text>
-          <Text style={[styles.footerText, { textAlign }]}>{t('admin.nav.backToApp', 'Back to App')}</Text>
+          <Text className="text-base mr-2">🏠</Text>
+          <Text className="text-sm text-textSecondary" style={{ textAlign }}>{t('admin.nav.backToApp', 'Back to App')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.footerButton, styles.logoutButton, { flexDirection }]}
+          className="flex items-center py-2 px-4 rounded mb-1 bg-error/20"
+          style={{ flexDirection }}
           onPress={logout}
         >
-          <Text style={styles.footerIcon}>🚪</Text>
-          <Text style={[styles.footerText, { textAlign }]}>{t('admin.nav.logout', 'Logout')}</Text>
+          <Text className="text-base mr-2">🚪</Text>
+          <Text className="text-sm text-textSecondary" style={{ textAlign }}>{t('admin.nav.logout', 'Logout')}</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: 260,
-    backgroundColor: colors.backgroundLight,
-    borderRightWidth: 1,
-    borderRightColor: colors.glassBorder,
-    height: '100%',
-  },
-  headerContainer: {
-    padding: spacing.lg,
-    paddingBottom: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
-    gap: spacing.md,
-  },
-  brandTitleContainer: {
-    paddingBottom: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorderLight,
-  },
-  brandTitle: {
-    fontSize: fontSize.xl,
-    fontWeight: 'bold',
-    color: colors.primary,
-    marginBottom: spacing.xs,
-  },
-  brandSubtitle: {
-    fontSize: fontSize.sm,
-    color: colors.textMuted,
-  },
-  navContainer: {
-    flex: 1,
-    paddingVertical: spacing.sm,
-  },
-  navItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    marginHorizontal: spacing.sm,
-    marginVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  navItemChild: {
-    paddingLeft: spacing.xl,
-  },
-  navItemActive: {
-    backgroundColor: colors.secondary + '30',
-  },
-  navIcon: {
-    fontSize: 18,
-    marginRight: spacing.sm,
-    width: 24,
-    textAlign: 'center',
-  },
-  navLabel: {
-    flex: 1,
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-  navLabelActive: {
-    color: colors.text,
-    fontWeight: '600',
-  },
-  expandIcon: {
-    fontSize: 10,
-    color: colors.textMuted,
-  },
-  childrenContainer: {
-    marginLeft: spacing.sm,
-  },
-  footerContainer: {
-    padding: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.glassBorder,
-  },
-  footerButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.sm,
-    marginBottom: spacing.xs,
-  },
-  logoutButton: {
-    backgroundColor: colors.error + '20',
-  },
-  footerIcon: {
-    fontSize: 16,
-    marginRight: spacing.sm,
-  },
-  footerText: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-});
 
 export default AdminSidebar;

@@ -5,7 +5,7 @@
 Run the automated deployment script:
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 bash backend-olorin/DEPLOY.sh
 ```
 
@@ -55,7 +55,7 @@ If any secrets are missing, create them in GCP Secret Manager before continuing.
 ### Step 3: Submit Cloud Build
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 
 gcloud builds submit \
   --config=backend-olorin/cloudbuild.yaml \

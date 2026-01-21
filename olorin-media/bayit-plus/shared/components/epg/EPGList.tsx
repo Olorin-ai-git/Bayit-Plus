@@ -2,14 +2,12 @@ import React, { useMemo } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { EPGProgram, Channel, Timezone } from '../../services/epgApi';
 import { EPGProgramCard } from './EPGProgramCard';
 import { GlassView } from '../ui';
-import { colors, spacing, borderRadius } from '../../theme';
 import { isTV } from '../../utils/platform';
 
 interface EPGListProps {
@@ -52,12 +50,14 @@ export const EPGList: React.FC<EPGListProps> = ({
   // Show empty state if no programs
   if (sortedPrograms.length === 0) {
     return (
-      <GlassView style={styles.emptyContainer}>
-        <View style={styles.emptyIcon}>
-          <Text style={styles.emptyIconText}>📺</Text>
+      <GlassView className="p-8 items-center justify-center rounded-3xl">
+        <View className="w-20 h-20 rounded-full bg-purple-500/10 justify-center items-center mb-4">
+          <Text style={{ fontSize: 40 }}>📺</Text>
         </View>
-        <Text style={styles.emptyTitle}>{t('epg.noPrograms', 'No Programs Found')}</Text>
-        <Text style={styles.emptySubtitle}>
+        <Text className="text-white font-semibold mb-2" style={{ fontSize: isTV ? 24 : 20 }}>
+          {t('epg.noPrograms', 'No Programs Found')}
+        </Text>
+        <Text className="text-gray-400 text-center max-w-[400px]" style={{ fontSize: isTV ? 16 : 14 }}>
           {t('epg.noProgramsDescription', 'No programs are available for the selected time range.')}
         </Text>
       </GlassView>
@@ -83,46 +83,10 @@ export const EPGList: React.FC<EPGListProps> = ({
       data={sortedPrograms}
       keyExtractor={(item) => item.id}
       renderItem={renderItem}
-      contentContainerStyle={styles.listContent}
+      contentContainerStyle={{ padding: 16 }}
       showsVerticalScrollIndicator={false}
     />
   );
 };
-
-const styles = StyleSheet.create({
-  listContent: {
-    padding: spacing.md,
-  },
-  emptyContainer: {
-    padding: spacing.xxl,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: borderRadius.xl,
-  },
-  emptyIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-  emptyIconText: {
-    fontSize: 40,
-  },
-  emptyTitle: {
-    fontSize: isTV ? 24 : 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    maxWidth: 400,
-  },
-});
 
 export default EPGList;

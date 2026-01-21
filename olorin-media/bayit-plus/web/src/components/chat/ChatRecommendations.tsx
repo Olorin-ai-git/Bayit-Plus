@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, Image } from 'react-native'
+import { View, Text, Pressable, Image } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { GlassCard } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
@@ -22,24 +22,24 @@ export function ChatRecommendations({
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.title, isRTL && styles.textRTL]}>
+    <View className="w-full">
+      <Text className={`text-[14px] text-gray-400 mb-2 ${isRTL ? 'text-right' : ''}`}>
         {t('chatbot.recommendations')}
       </Text>
-      <View style={styles.grid}>
+      <View className="flex-row flex-wrap gap-2">
         {recommendations.map((item) => (
           <Pressable
             key={item.id}
             onPress={() => onRecommendationPress?.(item.id)}
-            style={styles.card}
+            className="w-[48%]"
           >
-            <GlassCard style={styles.cardInner}>
+            <GlassCard className="p-2">
               <Image
                 source={{ uri: item.thumbnail }}
-                style={styles.image}
+                className="w-full aspect-video rounded-md mb-1"
                 resizeMode="cover"
               />
-              <Text style={styles.cardTitle} numberOfLines={1}>
+              <Text className="text-[14px] text-white" numberOfLines={1}>
                 {item.title}
               </Text>
             </GlassCard>
@@ -49,38 +49,3 @@ export function ChatRecommendations({
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
-  title: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  card: {
-    width: '48%',
-  },
-  cardInner: {
-    padding: spacing.sm,
-  },
-  image: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.xs,
-  },
-  cardTitle: {
-    fontSize: 14,
-    color: colors.text,
-  },
-})

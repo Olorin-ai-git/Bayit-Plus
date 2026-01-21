@@ -89,47 +89,47 @@ jobs:
       - name: Validate project structure
         run: |
           echo "::group::Project Structure Validation"
-          
-          # Check multi-service project structure
-          if [[ ! -d "olorin-server" ]]; then
-            echo "::error::Backend directory 'olorin-server' not found"
+
+          # Check multi-service project structure (post-consolidation paths)
+          if [[ ! -d "olorin-fraud/backend" ]]; then
+            echo "::error::Backend directory 'olorin-fraud/backend' not found"
             exit 1
           fi
-          
-          if [[ ! -d "olorin-front" ]]; then
-            echo "::error::Frontend directory 'olorin-front' not found"
+
+          if [[ ! -d "olorin-fraud/frontend" ]]; then
+            echo "::error::Frontend directory 'olorin-fraud/frontend' not found"
             exit 1
           fi
-          
+
           # Check Firebase configuration
           if [[ ! -f "firebase.json" ]]; then
             echo "::error::Firebase configuration 'firebase.json' not found"
             exit 1
           fi
-          
+
           # Check deployment script
-          if [[ ! -f "deploy-cloudrun-direct.sh" ]]; then
-            echo "::error::Deployment script 'deploy-cloudrun-direct.sh' not found"
+          if [[ ! -f "scripts/deployment/deploy-cloudrun-direct.sh" ]]; then
+            echo "::error::Deployment script 'scripts/deployment/deploy-cloudrun-direct.sh' not found"
             exit 1
           fi
-          
+
           # Check backend structure
-          if [[ ! -f "olorin-server/pyproject.toml" ]]; then
+          if [[ ! -f "olorin-fraud/backend/pyproject.toml" ]]; then
             echo "::error::Backend pyproject.toml not found"
             exit 1
           fi
-          
-          if [[ ! -f "olorin-server/Dockerfile" ]]; then
+
+          if [[ ! -f "olorin-fraud/backend/Dockerfile" ]]; then
             echo "::error::Backend Dockerfile not found"
             exit 1
           fi
-          
+
           # Check frontend structure
-          if [[ ! -f "olorin-front/package.json" ]]; then
+          if [[ ! -f "olorin-fraud/frontend/package.json" ]]; then
             echo "::error::Frontend package.json not found"
             exit 1
           fi
-          
+
           echo "✅ All project structure validations passed"
           echo "::endgroup::"
 
@@ -171,7 +171,7 @@ jobs:
           gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Validate backend dependencies
-        working-directory: olorin-server
+        working-directory: olorin-fraud/backend
         run: |
           echo "::group::Backend Dependency Validation"
           
@@ -201,7 +201,7 @@ jobs:
           echo "::group::Backend Cloud Run Deployment"
           
           # Make deployment script executable
-          chmod +x deploy-cloudrun-direct.sh
+          chmod +x scripts/deployment/deploy-cloudrun-direct.sh
           
           # Set deployment parameters
           DEPLOY_ARGS=""
@@ -210,7 +210,7 @@ jobs:
           fi
           
           # Execute deployment using proven script
-          ./deploy-cloudrun-direct.sh $DEPLOY_ARGS \
+          ./scripts/deployment/deploy-cloudrun-direct.sh $DEPLOY_ARGS \
             --project "${{ env.PROJECT_ID }}" \
             --region "${{ env.REGION }}" \
             --verbose
@@ -277,17 +277,17 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: 'olorin-front/package-lock.json'
+          cache-dependency-path: 'olorin-fraud/frontend/package-lock.json'
 
       - name: Install frontend dependencies
-        working-directory: olorin-front
+        working-directory: olorin-fraud/frontend
         run: |
           echo "::group::Frontend Dependency Installation"
           npm ci
           echo "::endgroup::"
 
       - name: Build frontend application
-        working-directory: olorin-front
+        working-directory: olorin-fraud/frontend
         env:
           CI: true
           GENERATE_SOURCEMAP: false
@@ -321,7 +321,7 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_OLORIN_AI }}
           channelId: live
           projectId: ${{ env.PROJECT_ID }}
-          entrypoint: './olorin-front'
+          entrypoint: './olorin-fraud/frontend'
 
       - name: Verify frontend deployment
         run: |

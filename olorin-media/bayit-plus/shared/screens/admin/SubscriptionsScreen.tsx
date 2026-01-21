@@ -7,7 +7,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Modal,
   TextInput,
@@ -21,7 +20,7 @@ import { DataTable, Column } from '../../components/admin/DataTable';
 import { StatCard } from '../../components/admin/StatCard';
 import { subscriptionsService, SubscriptionsFilter } from '../../services/adminApi';
 import { Subscription, User } from '../../types/rbac';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+
 import { formatDate, formatCurrency } from '../../utils/formatters';
 import { getStatusColor, getPlanColor } from '../../utils/adminConstants';
 
@@ -175,8 +174,8 @@ export const SubscriptionsScreen: React.FC = () => {
       width: 180,
       render: (sub) => (
         <View>
-          <Text style={styles.userName}>{sub.user.name}</Text>
-          <Text style={styles.userEmail}>{sub.user.email}</Text>
+          <Text className="text-sm font-semibold text-white">{sub.user.name}</Text>
+          <Text className="text-xs text-gray-400">{sub.user.email}</Text>
         </View>
       ),
     },
@@ -184,15 +183,15 @@ export const SubscriptionsScreen: React.FC = () => {
       key: 'plan',
       header: t('admin.subscriptions.columns.plan', 'Plan'),
       width: 120,
-      render: (sub) => <Text style={styles.planText}>{sub.plan}</Text>,
+      render: (sub) => <Text className="text-sm text-white capitalize font-semibold">{sub.plan}</Text>,
     },
     {
       key: 'status',
       header: t('admin.subscriptions.columns.status', 'Status'),
       width: 100,
       render: (sub) => (
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(sub.status) + '20' }]}>
-          <Text style={[styles.statusText, { color: getStatusColor(sub.status) }]}>{sub.status}</Text>
+        <View className="px-2 py-0.5 rounded self-start" style={{ backgroundColor: getStatusColor(sub.status) + '20' }}>
+          <Text className="text-xs font-semibold capitalize" style={{ color: getStatusColor(sub.status) }}>{sub.status}</Text>
         </View>
       ),
     },
@@ -201,75 +200,75 @@ export const SubscriptionsScreen: React.FC = () => {
       header: t('admin.subscriptions.columns.price', 'Price'),
       width: 80,
       align: 'right',
-      render: (sub) => <Text style={styles.priceText}>{formatCurrency(sub.price || 0)}</Text>,
+      render: (sub) => <Text className="text-sm font-semibold text-green-500">{formatCurrency(sub.price || 0)}</Text>,
     },
     {
       key: 'start_date',
       header: t('admin.subscriptions.columns.started', 'Started'),
       width: 100,
-      render: (sub) => <Text style={styles.dateText}>{formatDate(sub.start_date)}</Text>,
+      render: (sub) => <Text className="text-xs text-gray-400">{formatDate(sub.start_date)}</Text>,
     },
     {
       key: 'end_date',
       header: t('admin.subscriptions.columns.renews', 'Renews'),
       width: 100,
-      render: (sub) => <Text style={styles.dateText}>{sub.end_date ? formatDate(sub.end_date) : '-'}</Text>,
+      render: (sub) => <Text className="text-xs text-gray-400">{sub.end_date ? formatDate(sub.end_date) : '-'}</Text>,
     },
   ];
 
   const renderActions = (sub: SubscriptionWithUser) => (
-    <View style={styles.actionsRow}>
-      <TouchableOpacity style={styles.actionButton} onPress={() => handleExtend(sub)}>
-        <Text style={styles.actionIcon}>📅</Text>
+    <View className="flex-row gap-1">
+      <TouchableOpacity className="w-7 h-7 rounded bg-white/10 justify-center items-center" onPress={() => handleExtend(sub)}>
+        <Text className="text-xs">📅</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.actionButton} onPress={() => handleApplyDiscount(sub)}>
-        <Text style={styles.actionIcon}>🏷️</Text>
+      <TouchableOpacity className="w-7 h-7 rounded bg-white/10 justify-center items-center" onPress={() => handleApplyDiscount(sub)}>
+        <Text className="text-xs">🏷️</Text>
       </TouchableOpacity>
       {sub.status === 'active' ? (
-        <TouchableOpacity style={[styles.actionButton, styles.pauseButton]} onPress={() => handlePause(sub)}>
-          <Text style={styles.actionIcon}>⏸️</Text>
+        <TouchableOpacity className="w-7 h-7 rounded justify-center items-center bg-yellow-500/30" onPress={() => handlePause(sub)}>
+          <Text className="text-xs">⏸️</Text>
         </TouchableOpacity>
       ) : sub.status === 'paused' ? (
-        <TouchableOpacity style={[styles.actionButton, styles.resumeButton]} onPress={() => handleResume(sub)}>
-          <Text style={styles.actionIcon}>▶️</Text>
+        <TouchableOpacity className="w-7 h-7 rounded justify-center items-center bg-green-500/30" onPress={() => handleResume(sub)}>
+          <Text className="text-xs">▶️</Text>
         </TouchableOpacity>
       ) : null}
       {sub.status !== 'cancelled' && (
-        <TouchableOpacity style={[styles.actionButton, styles.cancelButton]} onPress={() => handleCancel(sub)}>
-          <Text style={styles.actionIcon}>❌</Text>
+        <TouchableOpacity className="w-7 h-7 rounded justify-center items-center bg-red-500/30" onPress={() => handleCancel(sub)}>
+          <Text className="text-xs">❌</Text>
         </TouchableOpacity>
       )}
     </View>
   );
 
   const headerActions = (
-    <View style={styles.headerActions}>
-      <TouchableOpacity style={styles.plansButton} onPress={() => navigation.navigate('PlanManagement')}>
-        <Text style={styles.plansButtonText}>⚙️ {t('admin.subscriptions.managePlans', 'Manage Plans')}</Text>
+    <View className="flex-row gap-2">
+      <TouchableOpacity className="px-3 py-2 rounded-lg bg-purple-600" onPress={() => navigation.navigate('PlanManagement')}>
+        <Text className="text-sm text-white">⚙️ {t('admin.subscriptions.managePlans', 'Manage Plans')}</Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
     <AdminLayout title={t('admin.titles.subscriptions', 'Subscriptions')} actions={headerActions}>
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      <ScrollView className="flex-1" contentContainerClassName="p-4">
         {/* Analytics Cards */}
-        <View style={styles.statsRow}>
-          <StatCard title={t('admin.subscriptions.active', 'Active')} value={subscriptions.filter(s => s.status === 'active').length.toString()} icon="✅" color={colors.success} />
-          <StatCard title={t('admin.subscriptions.churnRate', 'Churn Rate')} value={`${churnAnalytics?.churn_rate || 0}%`} icon="📉" color={churnAnalytics?.churn_rate < 5 ? colors.success : colors.error} />
-          <StatCard title={t('admin.subscriptions.atRisk', 'At Risk')} value={(churnAnalytics?.at_risk_users || 0).toString()} icon="⚠️" color={colors.warning} />
-          <StatCard title={t('admin.subscriptions.retention', 'Retention')} value={`${churnAnalytics?.retention_rate || 0}%`} icon="📈" color={colors.primary} />
+        <View className="flex-row flex-wrap gap-3 mb-4">
+          <StatCard title={t('admin.subscriptions.active', 'Active')} value={subscriptions.filter(s => s.status === 'active').length.toString()} icon="✅" color="#10b981" />
+          <StatCard title={t('admin.subscriptions.churnRate', 'Churn Rate')} value={`${churnAnalytics?.churn_rate || 0}%`} icon="📉" color={churnAnalytics?.churn_rate < 5 ? "#10b981" : "#ef4444"} />
+          <StatCard title={t('admin.subscriptions.atRisk', 'At Risk')} value={(churnAnalytics?.at_risk_users || 0).toString()} icon="⚠️" color="#f59e0b" />
+          <StatCard title={t('admin.subscriptions.retention', 'Retention')} value={`${churnAnalytics?.retention_rate || 0}%`} icon="📈" color="#a855f7" />
         </View>
 
         {/* Plan Filter */}
-        <View style={styles.planFilters}>
+        <View className="flex-row rounded-lg p-0.5 mb-4 self-start bg-gray-800">
           {['', 'free', 'basic', 'premium', 'enterprise'].map((plan) => (
             <TouchableOpacity
               key={plan}
-              style={[styles.planFilter, filters.plan === plan && styles.planFilterActive]}
+              className={`px-3 py-2 rounded ${filters.plan === plan ? 'bg-purple-500' : ''}`}
               onPress={() => setFilters(prev => ({ ...prev, plan, page: 1 }))}
             >
-              <Text style={[styles.planFilterText, filters.plan === plan && styles.planFilterTextActive]}>
+              <Text className={`text-sm capitalize ${filters.plan === plan ? 'text-white font-semibold' : 'text-gray-400'}`}>
                 {plan || t('common.all', 'All')}
               </Text>
             </TouchableOpacity>
@@ -291,27 +290,27 @@ export const SubscriptionsScreen: React.FC = () => {
 
         {/* Extend Modal */}
         <Modal visible={showExtendModal} transparent animationType="fade" onRequestClose={() => setShowExtendModal(false)}>
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>{t('admin.subscriptions.extendSubscription', 'Extend Subscription')}</Text>
-              <Text style={styles.modalInfo}>{selectedSub?.user.name} - {selectedSub?.plan}</Text>
-              <View style={styles.formGroup}>
-                <Text style={styles.formLabel}>{t('admin.subscriptions.days', 'Days to extend')}</Text>
-                <TextInput style={styles.formInput} value={extendDays} onChangeText={setExtendDays} keyboardType="numeric" placeholderTextColor={colors.textMuted} />
+          <View className="flex-1 justify-center items-center bg-black/50">
+            <View className="w-11/12 max-w-md rounded-2xl p-4 border bg-gray-900/95 border-white/10">
+              <Text className="text-xl font-bold text-white mb-2">{t('admin.subscriptions.extendSubscription', 'Extend Subscription')}</Text>
+              <Text className="text-sm text-gray-400 mb-4">{selectedSub?.user.name} - {selectedSub?.plan}</Text>
+              <View className="mb-3">
+                <Text className="text-sm font-semibold text-white mb-1">{t('admin.subscriptions.days', 'Days to extend')}</Text>
+                <TextInput className="rounded-lg border border-white/10 bg-gray-800 px-3 py-2 text-white text-base" value={extendDays} onChangeText={setExtendDays} keyboardType="numeric" placeholderTextColor="#9ca3af" />
               </View>
-              <View style={styles.quickOptions}>
+              <View className="flex-row gap-1 mb-4">
                 {[7, 14, 30, 60, 90].map((days) => (
-                  <TouchableOpacity key={days} style={[styles.quickOption, extendDays === days.toString() && styles.quickOptionActive]} onPress={() => setExtendDays(days.toString())}>
-                    <Text style={[styles.quickOptionText, extendDays === days.toString() && styles.quickOptionTextActive]}>{days}d</Text>
+                  <TouchableOpacity key={days} className={`px-3 py-2 rounded border ${extendDays === days.toString() ? 'bg-purple-500/30 border-purple-500' : 'bg-gray-800 border-white/10'}`} onPress={() => setExtendDays(days.toString())}>
+                    <Text className={`text-sm ${extendDays === days.toString() ? 'text-purple-500 font-semibold' : 'text-gray-400'}`}>{days}d</Text>
                   </TouchableOpacity>
                 ))}
               </View>
-              <View style={styles.modalActions}>
-                <TouchableOpacity style={styles.modalCancelButton} onPress={() => setShowExtendModal(false)}>
-                  <Text style={styles.modalCancelText}>{t('common.cancel', 'Cancel')}</Text>
+              <View className="flex-row justify-end gap-2">
+                <TouchableOpacity className="px-4 py-2 rounded-lg bg-gray-800" onPress={() => setShowExtendModal(false)}>
+                  <Text className="text-sm text-gray-400">{t('common.cancel', 'Cancel')}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.modalConfirmButton} onPress={handleConfirmExtend}>
-                  <Text style={styles.modalConfirmText}>{t('admin.subscriptions.extend', 'Extend')}</Text>
+                <TouchableOpacity className="px-4 py-2 rounded-lg bg-purple-500" onPress={handleConfirmExtend}>
+                  <Text className="text-sm text-white font-semibold">{t('admin.subscriptions.extend', 'Extend')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -320,24 +319,24 @@ export const SubscriptionsScreen: React.FC = () => {
 
         {/* Discount Modal */}
         <Modal visible={showDiscountModal} transparent animationType="fade" onRequestClose={() => setShowDiscountModal(false)}>
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>{t('admin.subscriptions.applyDiscount', 'Apply Discount')}</Text>
-              <Text style={styles.modalInfo}>{selectedSub?.user.name} - {selectedSub?.plan}</Text>
-              <View style={styles.formGroup}>
-                <Text style={styles.formLabel}>{t('admin.subscriptions.discountPercent', 'Discount (%)')}</Text>
-                <TextInput style={styles.formInput} value={discountPercent} onChangeText={setDiscountPercent} keyboardType="numeric" placeholderTextColor={colors.textMuted} />
+          <View className="flex-1 justify-center items-center bg-black/50">
+            <View className="w-11/12 max-w-md rounded-2xl p-4 border bg-gray-900/95 border-white/10">
+              <Text className="text-xl font-bold text-white mb-2">{t('admin.subscriptions.applyDiscount', 'Apply Discount')}</Text>
+              <Text className="text-sm text-gray-400 mb-4">{selectedSub?.user.name} - {selectedSub?.plan}</Text>
+              <View className="mb-3">
+                <Text className="text-sm font-semibold text-white mb-1">{t('admin.subscriptions.discountPercent', 'Discount (%)')}</Text>
+                <TextInput className="rounded-lg border border-white/10 bg-gray-800 px-3 py-2 text-white text-base" value={discountPercent} onChangeText={setDiscountPercent} keyboardType="numeric" placeholderTextColor="#9ca3af" />
               </View>
-              <View style={styles.formGroup}>
-                <Text style={styles.formLabel}>{t('admin.subscriptions.discountMonths', 'Number of months')}</Text>
-                <TextInput style={styles.formInput} value={discountMonths} onChangeText={setDiscountMonths} keyboardType="numeric" placeholderTextColor={colors.textMuted} />
+              <View className="mb-3">
+                <Text className="text-sm font-semibold text-white mb-1">{t('admin.subscriptions.discountMonths', 'Number of months')}</Text>
+                <TextInput className="rounded-lg border border-white/10 bg-gray-800 px-3 py-2 text-white text-base" value={discountMonths} onChangeText={setDiscountMonths} keyboardType="numeric" placeholderTextColor="#9ca3af" />
               </View>
-              <View style={styles.modalActions}>
-                <TouchableOpacity style={styles.modalCancelButton} onPress={() => setShowDiscountModal(false)}>
-                  <Text style={styles.modalCancelText}>{t('common.cancel', 'Cancel')}</Text>
+              <View className="flex-row justify-end gap-2">
+                <TouchableOpacity className="px-4 py-2 rounded-lg bg-gray-800" onPress={() => setShowDiscountModal(false)}>
+                  <Text className="text-sm text-gray-400">{t('common.cancel', 'Cancel')}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.modalConfirmButton} onPress={handleConfirmDiscount}>
-                  <Text style={styles.modalConfirmText}>{t('admin.subscriptions.apply', 'Apply')}</Text>
+                <TouchableOpacity className="px-4 py-2 rounded-lg bg-purple-500" onPress={handleConfirmDiscount}>
+                  <Text className="text-sm text-white font-semibold">{t('admin.subscriptions.apply', 'Apply')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -347,49 +346,5 @@ export const SubscriptionsScreen: React.FC = () => {
     </AdminLayout>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  headerActions: { flexDirection: 'row', gap: spacing.sm },
-  plansButton: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, backgroundColor: colors.secondary, borderRadius: borderRadius.md },
-  plansButtonText: { fontSize: fontSize.sm, color: colors.text, fontWeight: '600' },
-  statsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.lg },
-  planFilters: { flexDirection: 'row', backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, padding: 2, marginBottom: spacing.lg, alignSelf: 'flex-start' },
-  planFilter: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.sm },
-  planFilterActive: { backgroundColor: colors.primary },
-  planFilterText: { fontSize: fontSize.sm, color: colors.textSecondary, textTransform: 'capitalize' },
-  planFilterTextActive: { color: colors.text, fontWeight: '600' },
-  userName: { fontSize: fontSize.sm, fontWeight: '600', color: colors.text },
-  userEmail: { fontSize: fontSize.xs, color: colors.textSecondary },
-  planText: { fontSize: fontSize.sm, color: colors.text, textTransform: 'capitalize', fontWeight: '600' },
-  statusBadge: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.sm, alignSelf: 'flex-start' },
-  statusText: { fontSize: fontSize.xs, fontWeight: '600', textTransform: 'capitalize' },
-  priceText: { fontSize: fontSize.sm, fontWeight: '600', color: colors.success },
-  dateText: { fontSize: fontSize.xs, color: colors.textSecondary },
-  actionsRow: { flexDirection: 'row', gap: spacing.xs },
-  actionButton: { width: 28, height: 28, borderRadius: borderRadius.sm, backgroundColor: colors.backgroundLighter, justifyContent: 'center', alignItems: 'center' },
-  pauseButton: { backgroundColor: colors.warning + '30' },
-  resumeButton: { backgroundColor: colors.success + '30' },
-  cancelButton: { backgroundColor: colors.error + '30' },
-  actionIcon: { fontSize: 12 },
-  modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'center', alignItems: 'center' },
-  modalContent: { width: '90%', maxWidth: 400, backgroundColor: colors.backgroundLight, borderRadius: borderRadius.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.glassBorder },
-  modalTitle: { fontSize: fontSize.xl, fontWeight: 'bold', color: colors.text, marginBottom: spacing.sm },
-  modalInfo: { fontSize: fontSize.sm, color: colors.textSecondary, marginBottom: spacing.lg },
-  formGroup: { marginBottom: spacing.md },
-  formLabel: { fontSize: fontSize.sm, fontWeight: '600', color: colors.text, marginBottom: spacing.xs },
-  formInput: { backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.glassBorder, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, color: colors.text, fontSize: fontSize.md },
-  quickOptions: { flexDirection: 'row', gap: spacing.xs, marginBottom: spacing.lg },
-  quickOption: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.sm, borderWidth: 1, borderColor: colors.glassBorder },
-  quickOptionActive: { backgroundColor: colors.primary + '30', borderColor: colors.primary },
-  quickOptionText: { fontSize: fontSize.sm, color: colors.textSecondary },
-  quickOptionTextActive: { color: colors.primary, fontWeight: '600' },
-  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm },
-  modalCancelButton: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md },
-  modalCancelText: { fontSize: fontSize.sm, color: colors.textSecondary },
-  modalConfirmButton: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.primary, borderRadius: borderRadius.md },
-  modalConfirmText: { fontSize: fontSize.sm, color: colors.text, fontWeight: '600' },
-});
 
 export default SubscriptionsScreen;

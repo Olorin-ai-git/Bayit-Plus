@@ -17,7 +17,6 @@ import { colors, spacing } from '../../theme';
 import { isTV } from '../../utils/platform';
 import { useDirection } from '@bayit/shared/hooks';
 import { judaismService } from '../../services/api';
-import { styles } from './JudaismScreen.styles';
 import {
   JudaismItem,
   Category,
@@ -138,14 +137,14 @@ export const JudaismScreen: React.FC = () => {
           keyExtractor={(item) => item.id}
           numColumns={isTV ? 3 : 1}
           key="news"
-          contentContainerStyle={styles.newsList}
+          contentContainerStyle={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.xxl }}
           renderItem={({ item, index }) => (
             <NewsItemCard item={item} index={index} onPress={() => handleNewsPress(item)} />
           )}
           ListEmptyComponent={
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>📰</Text>
-              <Text style={styles.emptyTitle}>{t('judaism.news.empty', 'No news available')}</Text>
+            <View className="flex-1 justify-center items-center py-[60px]">
+              <Text className="text-[64px] mb-3">📰</Text>
+              <Text className="text-[20px] font-semibold text-white">{t('judaism.news.empty', 'No news available')}</Text>
             </View>
           }
         />
@@ -154,7 +153,7 @@ export const JudaismScreen: React.FC = () => {
 
     if (selectedCategory === 'calendar' && calendarData) {
       return (
-        <ScrollView contentContainerStyle={styles.calendarContainer}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: spacing.xxl, paddingBottom: spacing.xxl }}>
           <CalendarWidget data={calendarData} />
         </ScrollView>
       );
@@ -162,10 +161,10 @@ export const JudaismScreen: React.FC = () => {
 
     if (selectedCategory === 'community') {
       return (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyIcon}>🏛️</Text>
-          <Text style={styles.emptyTitle}>{t('judaism.community.title', 'Community Directory')}</Text>
-          <Text style={styles.emptySubtitle}>{t('judaism.community.comingSoon', 'Coming soon to TV')}</Text>
+        <View className="flex-1 justify-center items-center py-[60px]">
+          <Text className="text-[64px] mb-3">🏛️</Text>
+          <Text className="text-[20px] font-semibold text-white">{t('judaism.community.title', 'Community Directory')}</Text>
+          <Text className="text-[16px] text-[rgba(255,255,255,0.6)]">{t('judaism.community.comingSoon', 'Coming soon to TV')}</Text>
         </View>
       );
     }
@@ -177,23 +176,23 @@ export const JudaismScreen: React.FC = () => {
 
   if (isLoading && content.length === 0 && news.length === 0 && !calendarData) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 bg-[#0f0a1a] justify-center items-center">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading', 'Loading...')}</Text>
+        <Text className="text-white text-[18px] mt-3">{t('common.loading', 'Loading...')}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-[#0f0a1a]">
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }]}>
-          <Text style={styles.headerIconText}>✡️</Text>
+      <View className="flex-row items-center px-12 pt-10 pb-4" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
+        <View className="w-[60px] h-[60px] rounded-full bg-[rgba(107,33,168,0.2)] justify-center items-center" style={{ marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }}>
+          <Text className="text-[28px]">✡️</Text>
         </View>
         <View>
-          <Text style={[styles.title, { textAlign }]}>{t('judaism.title', 'Judaism')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
+          <Text className="text-[42px] font-bold text-white" style={{ textAlign }}>{t('judaism.title', 'Judaism')}</Text>
+          <Text className="text-[18px] text-[rgba(255,255,255,0.6)] mt-0.5" style={{ textAlign }}>
             {content.length > 0
               ? `${content.length} ${t('judaism.items', 'items')}`
               : t('judaism.dashboard', 'Your Jewish Dashboard')}
@@ -207,12 +206,12 @@ export const JudaismScreen: React.FC = () => {
       )}
 
       {/* Jerusalem Connection */}
-      <View style={styles.jerusalemSection}>
+      <View className="mb-4">
         <JerusalemRow showTitle={false} />
       </View>
 
       {/* Tel Aviv Connection */}
-      <View style={styles.jerusalemSection}>
+      <View className="mb-4">
         <TelAvivRow showTitle={false} />
       </View>
 
@@ -221,7 +220,7 @@ export const JudaismScreen: React.FC = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[styles.categories, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
+          contentContainerStyle={{ paddingHorizontal: 48, marginBottom: 24, gap: 12, flexDirection: isRTL ? 'row' : 'row-reverse' }}
         >
           {(isRTL ? categories : [...categories].reverse()).map((category, index) => (
             <GlassCategoryPill
@@ -245,7 +244,7 @@ export const JudaismScreen: React.FC = () => {
           keyExtractor={(item) => item.id}
           numColumns={isTV ? 5 : 3}
           key={isTV ? 'tv' : 'mobile'}
-          contentContainerStyle={styles.grid}
+          contentContainerStyle={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.xxl, paddingTop: spacing.md }}
           renderItem={({ item, index }) => (
             <JudaismCard
               item={item}
@@ -255,13 +254,13 @@ export const JudaismScreen: React.FC = () => {
             />
           )}
           ListEmptyComponent={
-            <View style={styles.emptyState}>
-              <GlassView style={styles.emptyCard}>
-                <Text style={styles.emptyIcon}>✡️</Text>
-                <Text style={[styles.emptyTitle, { textAlign }]}>
+            <View className="flex-1 justify-center items-center py-[60px]">
+              <GlassView className="p-12 items-center">
+                <Text className="text-[64px] mb-3">✡️</Text>
+                <Text className="text-[20px] font-semibold text-white mb-2" style={{ textAlign }}>
                   {t('judaism.empty', 'No content available')}
                 </Text>
-                <Text style={[styles.emptySubtitle, { textAlign }]}>
+                <Text className="text-[16px] text-[rgba(255,255,255,0.6)]" style={{ textAlign }}>
                   {t('judaism.emptyHint', 'Check back later for Torah content')}
                 </Text>
               </GlassView>

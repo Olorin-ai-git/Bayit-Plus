@@ -3,9 +3,8 @@
  * Displays season selection pills
  */
 
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, fontSize } from '@bayit/shared/theme';
 import { GlassButton } from '@bayit/shared/ui';
 import type { Season } from '../types/series.types';
 
@@ -29,10 +28,10 @@ export function SeasonSelector({
   }
 
   return (
-    <View style={styles.seasonSelector}>
-      <Text style={styles.sectionTitle}>{t('content.selectSeason')}</Text>
+    <View className="px-12 py-6">
+      <Text className="text-lg font-semibold text-white mb-4">{t('content.selectSeason')}</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <View style={[styles.seasonPills, { flexDirection }]}>
+        <View className={`gap-4 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : 'flex-row'}`}>
           {seasons.map((season) => (
             <GlassButton
               key={season.season_number}
@@ -47,20 +46,3 @@ export function SeasonSelector({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  seasonSelector: {
-    paddingHorizontal: 48,
-    paddingVertical: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  seasonPills: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-});

@@ -14,7 +14,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
   TextInput,
   ScrollView,
@@ -68,42 +67,36 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
 
   return (
     <TouchableOpacity
-      style={[
-        styles.profileCard,
-        isSelected && styles.profileCardSelected,
-        isManageMode && styles.profileCardManage,
-      ]}
+      className={`items-center w-[100px] ${isSelected ? 'opacity-70' : ''} ${isManageMode ? 'opacity-90' : ''}`}
       onPress={handlePress}
       activeOpacity={0.7}
     >
       <View
-        style={[
-          styles.avatar,
-          { backgroundColor: profile.avatar_color || AVATAR_COLORS[0] },
-        ]}
+        className="w-20 h-20 rounded-xl justify-center items-center mb-2 border-[3px] border-transparent"
+        style={{ backgroundColor: profile.avatar_color || AVATAR_COLORS[0] }}
       >
         {profile.avatar ? (
-          <Text style={styles.avatarEmoji}>{profile.avatar}</Text>
+          <Text className="text-[40px]">{profile.avatar}</Text>
         ) : (
-          <Text style={styles.avatarInitials}>{getInitials(profile.name)}</Text>
+          <Text className="text-[28px] font-bold text-white" style={{ textShadowColor: 'rgba(0, 0, 0, 0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }}>{getInitials(profile.name)}</Text>
         )}
         {profile.is_kids_profile && (
-          <View style={styles.kidsIndicator}>
-            <Text style={styles.kidsIcon}>👶</Text>
+          <View className="absolute -bottom-[5px] -right-[5px] bg-[#ffd93d] rounded-xl p-1">
+            <Text className="text-[12px]">👶</Text>
           </View>
         )}
         {profile.has_pin && (
-          <View style={styles.pinIndicator}>
-            <Text style={styles.pinIcon}>🔒</Text>
+          <View className="absolute -top-[5px] -right-[5px] bg-black/60 rounded-[10px] p-1">
+            <Text className="text-[10px]">🔒</Text>
           </View>
         )}
       </View>
-      <Text style={styles.profileName} numberOfLines={1}>
+      <Text className="text-[14px] text-gray-400 text-center max-w-[100px]" numberOfLines={1}>
         {profile.name}
       </Text>
       {isManageMode && (
-        <View style={styles.editOverlay}>
-          <Text style={styles.editIcon}>✏️</Text>
+        <View className="absolute top-0 left-[10px] w-20 h-20 rounded-xl bg-black/50 justify-center items-center">
+          <Text className="text-2xl">✏️</Text>
         </View>
       )}
     </TouchableOpacity>
@@ -157,13 +150,14 @@ const PinModal: React.FC<PinModalProps> = ({
       animationType="fade"
       onRequestClose={onCancel}
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.pinModal}>
-          <Text style={styles.pinTitle}>{t('profiles.enterPin', 'Enter PIN')}</Text>
+      <View className="flex-1 bg-black/80 justify-center items-center p-4">
+        <View className="w-full max-w-[320px] p-4 rounded-2xl items-center" style={{ backgroundColor: colors.backgroundLight }}>
+          <Text className="text-xl font-semibold text-white mb-4">{t('profiles.enterPin', 'Enter PIN')}</Text>
 
           <TextInput
             ref={inputRef}
-            style={[styles.pinInput, { textAlign: isRTL ? 'right' : 'center' }]}
+            className="w-full h-14 bg-white/10 rounded-lg px-4 text-2xl text-white tracking-[8px] mb-4"
+            style={{ textAlign: isRTL ? 'right' : 'center' }}
             value={pin}
             onChangeText={setPin}
             keyboardType="number-pad"
@@ -174,40 +168,41 @@ const PinModal: React.FC<PinModalProps> = ({
             onSubmitEditing={handleSubmit}
           />
 
-          {error && <Text style={styles.pinError}>{error}</Text>}
+          {error && <Text className="text-sm text-red-500 mb-4 text-center">{error}</Text>}
 
-          <View style={styles.pinButtons}>
+          <View className="flex-row gap-2 w-full">
             <TouchableOpacity
-              style={styles.pinCancelButton}
+              className="flex-1 h-12 justify-center items-center rounded-lg bg-white/10"
               onPress={() => {
                 ReactNativeHapticFeedback.trigger('impactLight');
                 onCancel();
               }}
             >
-              <Text style={styles.pinCancelText}>{t('common.cancel', 'Cancel')}</Text>
+              <Text className="text-base text-gray-400">{t('common.cancel', 'Cancel')}</Text>
             </TouchableOpacity>
 
             {hasBiometric && (
               <TouchableOpacity
-                style={styles.biometricButton}
+                className="w-12 h-12 justify-center items-center rounded-lg bg-purple-600/20"
                 onPress={() => {
                   ReactNativeHapticFeedback.trigger('impactLight');
                   onBiometric();
                 }}
               >
-                <Text style={styles.biometricIcon}>👆</Text>
+                <Text className="text-2xl">👆</Text>
               </TouchableOpacity>
             )}
 
             <TouchableOpacity
-              style={[styles.pinSubmitButton, pin.length < 4 && styles.pinSubmitDisabled]}
+              className={`flex-1 h-12 justify-center items-center rounded-lg ${pin.length < 4 ? 'opacity-50' : ''}`}
+              style={{ backgroundColor: colors.primary }}
               onPress={handleSubmit}
               disabled={pin.length < 4 || isLoading}
             >
               {isLoading ? (
                 <ActivityIndicator size="small" color={colors.text} />
               ) : (
-                <Text style={styles.pinSubmitText}>{t('common.confirm', 'Confirm')}</Text>
+                <Text className="text-base font-semibold text-white">{t('common.confirm', 'Confirm')}</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -335,30 +330,30 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
 
   if (isLoading && profiles.length === 0) {
     return (
-      <SafeAreaView style={styles.loadingContainer}>
+      <SafeAreaView className="flex-1 justify-center items-center" style={{ backgroundColor: colors.background }}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading', 'Loading...')}</Text>
+        <Text className="mt-4 text-base text-gray-400">{t('common.loading', 'Loading...')}</Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={{ flexGrow: 1, alignItems: 'center', paddingVertical: spacing.xl, paddingHorizontal: spacing.md }}
         showsVerticalScrollIndicator={false}
       >
         {/* Logo */}
-        <View style={styles.logoContainer}>
+        <View className="mb-8">
           <Image
             source={require('../../../shared/assets/images/logos/logo.png')}
-            style={styles.logo}
+            className="w-[120px] h-11"
             resizeMode="contain"
           />
         </View>
 
         {/* Title */}
-        <Text style={styles.title}>
+        <Text className="text-2xl font-semibold text-white mb-8 text-center">
           {isManageMode
             ? t('profiles.manageProfiles', 'Manage Profiles')
             : t('profiles.whoIsWatching', "Who's Watching?")}
@@ -366,10 +361,8 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
 
         {/* Profiles Grid */}
         <View
-          style={[
-            styles.profilesContainer,
-            { flexDirection: isRTL ? 'row-reverse' : 'row' },
-          ]}
+          className="flex-wrap justify-center items-start max-w-[400px] gap-4"
+          style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
         >
           {profiles.map(profile => (
             <ProfileCard
@@ -384,14 +377,14 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
           {/* Add Profile Button */}
           {canAddProfile && (
             <TouchableOpacity
-              style={styles.addProfileCard}
+              className="items-center w-[100px]"
               onPress={handleAddProfile}
               activeOpacity={0.7}
             >
-              <View style={styles.addAvatar}>
-                <Text style={styles.addIcon}>+</Text>
+              <View className="w-20 h-20 rounded-xl justify-center items-center mb-2 bg-white/10 border-2 border-white/20 border-dashed">
+                <Text className="text-[32px] text-gray-400 font-light">+</Text>
               </View>
-              <Text style={styles.addProfileText}>
+              <Text className="text-[14px] text-gray-400">
                 {t('profiles.addProfile', 'Add Profile')}
               </Text>
             </TouchableOpacity>
@@ -400,20 +393,20 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
 
         {/* Manage Profiles Button */}
         <TouchableOpacity
-          style={styles.manageButton}
+          className="mt-8 px-4 py-2 rounded min-h-[48px] justify-center border border-gray-400"
           onPress={() => {
             ReactNativeHapticFeedback.trigger('impactLight');
             setIsManageMode(!isManageMode);
           }}
         >
-          <Text style={styles.manageButtonText}>
+          <Text className="text-[14px] text-gray-400">
             {isManageMode
               ? t('common.done', 'Done')
               : t('profiles.manageProfiles', 'Manage Profiles')}
           </Text>
         </TouchableOpacity>
 
-        {error && <Text style={styles.errorText}>{error}</Text>}
+        {error && <Text className="mt-4 text-[14px] text-red-500 text-center">{error}</Text>}
       </ScrollView>
 
       {/* PIN Modal */}
@@ -433,251 +426,5 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-  },
-  loadingText: {
-    marginTop: spacing.md,
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    alignItems: 'center',
-    paddingVertical: spacing.xl,
-    paddingHorizontal: spacing.md,
-  },
-  logoContainer: {
-    marginBottom: spacing.xl,
-  },
-  logo: {
-    width: 120,
-    height: 44,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xl,
-    textAlign: 'center',
-  },
-  profilesContainer: {
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    maxWidth: 400,
-    gap: spacing.lg,
-  },
-  profileCard: {
-    alignItems: 'center',
-    width: 100,
-  },
-  profileCardSelected: {
-    opacity: 0.7,
-  },
-  profileCardManage: {
-    opacity: 0.9,
-  },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-  avatarEmoji: {
-    fontSize: 40,
-  },
-  avatarInitials: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
-  kidsIndicator: {
-    position: 'absolute',
-    bottom: -5,
-    right: -5,
-    backgroundColor: '#ffd93d',
-    borderRadius: 12,
-    padding: 4,
-  },
-  kidsIcon: {
-    fontSize: 12,
-  },
-  pinIndicator: {
-    position: 'absolute',
-    top: -5,
-    right: -5,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderRadius: 10,
-    padding: 4,
-  },
-  pinIcon: {
-    fontSize: 10,
-  },
-  profileName: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    maxWidth: 100,
-  },
-  editOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 10,
-    width: 80,
-    height: 80,
-    borderRadius: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  editIcon: {
-    fontSize: 24,
-  },
-  addProfileCard: {
-    alignItems: 'center',
-    width: 100,
-  },
-  addAvatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    borderStyle: 'dashed',
-  },
-  addIcon: {
-    fontSize: 32,
-    color: colors.textSecondary,
-    fontWeight: '300',
-  },
-  addProfileText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  manageButton: {
-    marginTop: spacing.xl,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: colors.textSecondary,
-    minHeight: 48,
-    justifyContent: 'center',
-  },
-  manageButtonText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  errorText: {
-    marginTop: spacing.lg,
-    fontSize: 14,
-    color: colors.error,
-    textAlign: 'center',
-  },
-  // PIN Modal Styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  pinModal: {
-    width: '100%',
-    maxWidth: 320,
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-    alignItems: 'center',
-    backgroundColor: colors.backgroundLight,
-  },
-  pinTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.lg,
-  },
-  pinInput: {
-    width: '100%',
-    height: 56,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.md,
-    paddingHorizontal: spacing.md,
-    fontSize: 24,
-    color: colors.text,
-    letterSpacing: 8,
-    marginBottom: spacing.md,
-  },
-  pinError: {
-    fontSize: 14,
-    color: colors.error,
-    marginBottom: spacing.md,
-    textAlign: 'center',
-  },
-  pinButtons: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    width: '100%',
-  },
-  pinCancelButton: {
-    flex: 1,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  pinCancelText: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-  biometricButton: {
-    width: 48,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(126, 34, 206, 0.2)',
-  },
-  biometricIcon: {
-    fontSize: 24,
-  },
-  pinSubmitButton: {
-    flex: 1,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.primary,
-  },
-  pinSubmitDisabled: {
-    opacity: 0.5,
-  },
-  pinSubmitText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-});
 
 export default ProfileSelectionScreenMobile;

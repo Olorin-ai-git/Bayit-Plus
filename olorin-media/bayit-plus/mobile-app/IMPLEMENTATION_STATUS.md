@@ -525,7 +525,7 @@ To test TTS directly in the simulator:
 
 ### Start Metro Bundler
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/mobile-app
+cd /Users/olorin/Documents/olorin/mobile-app
 npm start
 ```
 
@@ -542,7 +542,7 @@ npm run ios
 
 ### Start Backend (Optional)
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend
+cd /Users/olorin/Documents/olorin/backend
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 

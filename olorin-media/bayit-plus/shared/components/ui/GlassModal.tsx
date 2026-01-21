@@ -7,7 +7,6 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Modal,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -93,12 +92,11 @@ export const GlassModal: React.FC<GlassModalProps> = ({
     return (
       <TouchableOpacity
         key={index}
-        style={[
-          styles.button,
-          isDestructive && styles.buttonDestructive,
-          isCancel && styles.buttonCancel,
-          isPrimary && styles.buttonPrimary,
-        ]}
+        className={`flex-1 py-4 px-6 rounded-lg items-center shadow ${
+          isDestructive ? 'bg-red-500' :
+          isCancel ? 'bg-white/5 border border-white/10' :
+          'bg-white/10 border border-white/20'
+        }`}
         onPress={() => {
           button.onPress?.();
           onClose?.();
@@ -106,11 +104,10 @@ export const GlassModal: React.FC<GlassModalProps> = ({
         disabled={loading}
       >
         <Text
-          style={[
-            styles.buttonText,
-            isCancel && styles.buttonTextCancel,
-            isPrimary && styles.buttonTextPrimary,
-          ]}
+          className={`text-base font-semibold ${
+            isCancel ? 'text-white/70' : 'text-white font-bold'
+          }`}
+          style={{ letterSpacing: 0.3 }}
         >
           {button.text}
         </Text>
@@ -125,22 +122,22 @@ export const GlassModal: React.FC<GlassModalProps> = ({
         <>
           {/* Header with close button for custom content */}
           {title && (
-            <View style={[styles.customHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <Text style={[styles.dialogTitle, { marginBottom: 0, flex: 1, textAlign: isRTL ? 'right' : 'left' }]}>{title}</Text>
+            <View className={`flex-row justify-between items-center px-6 pt-4 pb-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <Text className={`text-2xl font-bold text-white flex-1 ${isRTL ? 'text-right' : ''}`} style={{ marginBottom: 0 }}>{title}</Text>
               {onClose && (
                 <TouchableOpacity
-                  style={styles.closeButton}
+                  className="w-9 h-9 rounded-full bg-white/5 justify-center items-center border border-white/10 ml-4"
                   onPress={onClose}
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
-                  <Text style={styles.closeButtonText}>✕</Text>
+                  <Text className="text-xl text-white/70 font-normal leading-6">✕</Text>
                 </TouchableOpacity>
               )}
             </View>
           )}
           <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.customContentWrapper}
+            className="max-h-[80vh] w-full"
+            contentContainerStyle={{ padding: 24, width: '100%' }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
@@ -148,7 +145,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({
           </ScrollView>
           {/* Render buttons for custom content modals */}
           {buttons && buttons.length > 0 && (
-            <View style={[styles.customButtonContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View className={`flex-row gap-4 px-6 pb-6 pt-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
               {loading ? (
                 <ActivityIndicator size="small" color={modalColor} />
               ) : (
@@ -161,19 +158,19 @@ export const GlassModal: React.FC<GlassModalProps> = ({
     }
 
     return (
-      <View style={styles.contentWrapper}>
-        <View style={[styles.iconContainer, { backgroundColor: modalColor + '20' }]}>
-          <Text style={styles.icon}>{icon}</Text>
+      <View className="p-9 pt-12 pb-6 items-center">
+        <View className={`w-20 h-20 rounded-full justify-center items-center mb-4 shadow-lg`} style={{ backgroundColor: modalColor + '20' }}>
+          <Text className="text-[40px]">{icon}</Text>
         </View>
 
-        {title && <Text style={styles.title}>{title}</Text>}
+        {title && <Text className="text-[28px] font-bold text-white mb-3 text-center" style={{ letterSpacing: -0.5 }}>{title}</Text>}
 
-        <Text style={styles.message}>{message}</Text>
+        <Text className="text-base text-white/70 text-center mb-6 leading-6 max-w-[340px] opacity-90">{message}</Text>
 
         {loading ? (
-          <ActivityIndicator size="small" color={modalColor} style={styles.loader} />
+          <ActivityIndicator size="small" color={modalColor} className="mt-3" />
         ) : (
-          <View style={[styles.buttonContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View className={`flex-row gap-4 w-full mt-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
             {buttons.map(renderButton)}
           </View>
         )}
@@ -186,19 +183,16 @@ export const GlassModal: React.FC<GlassModalProps> = ({
     if (Platform.OS === 'web') {
       return (
         <View
-          style={[
-            styles.container,
-            hasCustomContent && styles.containerWide,
-            styles.glassBorder,
-            {
-              // @ts-ignore - Web-specific CSS properties
-              backdropFilter: 'blur(24px) saturate(180%)',
-              WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-              backgroundColor: 'rgba(20, 20, 35, 0.92)',
-            },
-          ]}
+          className={`w-full ${hasCustomContent ? 'max-w-[600px]' : 'max-w-[440px]'} rounded-2xl overflow-hidden border border-white/8 shadow-2xl`}
+          style={{
+            // @ts-ignore - Web-specific CSS properties
+            backdropFilter: 'blur(24px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+            backgroundColor: 'rgba(20, 20, 35, 0.92)',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.1) inset',
+          }}
         >
-          <View style={[styles.accentBar, { backgroundColor: modalColor }]} />
+          <View className="h-[3px] w-full" style={{ backgroundColor: modalColor, boxShadow: Platform.OS === 'web' ? '0 2px 8px currentColor' : undefined }} />
           {renderContent()}
         </View>
       );
@@ -207,9 +201,9 @@ export const GlassModal: React.FC<GlassModalProps> = ({
     return (
       <LinearGradient
         colors={['rgba(30, 30, 50, 0.95)', 'rgba(20, 20, 40, 0.98)']}
-        style={[styles.container, hasCustomContent && styles.containerWide, styles.glassBorder]}
+        className={`w-full ${hasCustomContent ? 'max-w-[600px]' : 'max-w-[440px]'} rounded-2xl overflow-hidden border border-white/8 shadow-2xl`}
       >
-        <View style={[styles.accentBar, { backgroundColor: modalColor }]} />
+        <View className="h-[3px] w-full" style={{ backgroundColor: modalColor }} />
         {renderContent()}
       </LinearGradient>
     );
@@ -223,7 +217,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({
       onRequestClose={handleBackdropPress}
     >
       <TouchableWithoutFeedback onPress={handleBackdropPress}>
-        <View style={styles.overlay}>
+        <View className="flex-1 bg-black/75 justify-center items-center p-6">
           <TouchableWithoutFeedback>
             {renderGlassContainer()}
           </TouchableWithoutFeedback>
@@ -233,171 +227,5 @@ export const GlassModal: React.FC<GlassModalProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  container: {
-    width: '100%',
-    maxWidth: 440,
-    borderRadius: borderRadius.xl + 4,
-    overflow: 'hidden',
-    // @ts-ignore - Web-specific CSS
-    boxShadow: Platform.OS === 'web' ? '0 20px 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.1) inset' : undefined,
-    elevation: 24,
-  },
-  containerWide: {
-    maxWidth: 600,
-  },
-  glassBorder: {
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  accentBar: {
-    height: 3,
-    width: '100%',
-    // @ts-ignore - Web-specific CSS
-    boxShadow: Platform.OS === 'web' ? '0 2px 8px currentColor' : undefined,
-  },
-  contentWrapper: {
-    padding: spacing.xl * 1.5,
-    paddingTop: spacing.xl * 2,
-    paddingBottom: spacing.xl,
-    alignItems: 'center',
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-    // @ts-ignore - Web-specific CSS
-    boxShadow: Platform.OS === 'web' ? '0 8px 32px rgba(0, 0, 0, 0.3)' : undefined,
-    elevation: 8,
-  },
-  icon: {
-    fontSize: 40,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.md,
-    textAlign: 'center',
-    letterSpacing: -0.5,
-  },
-  dialogTitle: {
-    fontSize: fontSize.xl,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: spacing.lg,
-    textAlign: 'center',
-  },
-  message: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.xl,
-    lineHeight: 24,
-    maxWidth: 340,
-    opacity: 0.9,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    width: '100%',
-    marginTop: spacing.sm,
-  },
-  button: {
-    flex: 1,
-    paddingVertical: spacing.md + 4,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    // @ts-ignore - Web-specific CSS
-    boxShadow: Platform.OS === 'web' ? '0 4px 12px rgba(0, 0, 0, 0.15)' : undefined,
-    elevation: 3,
-  },
-  buttonDestructive: {
-    backgroundColor: colors.error,
-  },
-  buttonCancel: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    // @ts-ignore
-    boxShadow: Platform.OS === 'web' ? 'none' : undefined,
-    elevation: 0,
-  },
-  buttonPrimary: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    // @ts-ignore - Web-specific CSS
-    backdropFilter: Platform.OS === 'web' ? 'blur(8px)' : undefined,
-    WebkitBackdropFilter: Platform.OS === 'web' ? 'blur(8px)' : undefined,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    letterSpacing: 0.3,
-  },
-  buttonTextCancel: {
-    color: colors.textSecondary,
-  },
-  buttonTextPrimary: {
-    color: colors.text,
-    fontWeight: '700',
-  },
-  loader: {
-    marginTop: spacing.md,
-  },
-  scrollView: {
-    maxHeight: '80vh',
-    width: '100%',
-  },
-  customContentWrapper: {
-    padding: spacing.xl,
-    width: '100%',
-  },
-  customHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-  },
-  customButtonContainer: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xl,
-    paddingTop: spacing.md,
-  },
-  closeButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    marginLeft: spacing.md,
-  },
-  closeButtonText: {
-    fontSize: 20,
-    color: colors.textSecondary,
-    fontWeight: '400',
-    lineHeight: 24,
-  },
-});
 
 export default GlassModal;

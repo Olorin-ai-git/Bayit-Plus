@@ -5,7 +5,7 @@
  */
 
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
+import { View, Text, Pressable, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Play, SkipForward, RefreshCw, Pause } from 'lucide-react';
 import LinearGradient from 'react-native-web-linear-gradient';
@@ -89,62 +89,72 @@ export function FlowHero({
   const buttonSize = isTV ? 'lg' : 'md';
 
   return (
-    <Animated.View style={[styles.container, { height: heroHeight as any, opacity: fadeAnim }]}>
+    <Animated.View
+      className={`relative overflow-hidden rounded-2xl ${isTV ? 'mx-16 mb-16' : 'mx-6 mb-6'}`}
+      style={{ height: heroHeight as any, opacity: fadeAnim }}
+    >
       {/* Background Gradient */}
       <LinearGradient
         colors={gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.backdrop}
+        className="absolute inset-0"
       />
 
       {/* Dark Overlay */}
       <LinearGradient
         colors={['transparent', 'rgba(0, 0, 0, 0.5)', 'rgba(0, 0, 0, 0.9)']}
-        style={styles.overlay}
+        className="absolute inset-0"
       />
 
       {/* Content */}
-      <View style={[styles.content, isRTL && styles.contentRTL]}>
+      <View className={`relative flex-1 justify-end ${isTV ? 'p-16' : 'p-6'} ${isRTL ? 'items-end' : ''}`}>
         {/* Active Badge */}
-        <View style={[styles.badgeContainer, { flexDirection }]}>
+        <View className={`flex-row mb-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
           <GlassBadge variant="success" size="default">
-            <View style={styles.activeDot} />
-            <Text style={styles.badgeText}>
+            <View className="w-2 h-2 rounded-full bg-green-500 mr-1" />
+            <Text className="text-sm font-semibold text-white">
               {isRunning ? t('flows.hero.playing') : t('flows.hero.activeNow')}
             </Text>
           </GlassBadge>
         </View>
 
         {/* Title */}
-        <Text style={[styles.title, { fontSize: titleSize, textAlign }]}>
+        <Text
+          className="font-extrabold text-white mb-2"
+          style={{ fontSize: titleSize, textAlign, lineHeight: isTV ? 68 : 44, letterSpacing: -1 }}
+        >
           {localizedName}
         </Text>
 
         {/* Description */}
         {localizedDescription && (
-          <Text style={[styles.description, { fontSize: subtitleSize, textAlign }]} numberOfLines={2}>
+          <Text
+            className="text-white/80 mb-3"
+            style={{ fontSize: subtitleSize, textAlign, lineHeight: isTV ? 36 : 28, maxWidth: isTV ? '70%' : '100%' }}
+            numberOfLines={2}
+          >
             {localizedDescription}
           </Text>
         )}
 
         {/* Meta Info */}
-        <View style={[styles.meta, { flexDirection }]}>
-          <Text style={[styles.metaText, { fontSize: metaSize }]}>
+        <View className={`flex-row items-center mb-4 gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <Text className="text-white/90 font-medium" style={{ fontSize: metaSize }}>
             {triggerDisplay}
           </Text>
           {flow.auto_play && (
             <>
-              <Text style={[styles.metaDivider, { fontSize: metaSize }]}>•</Text>
-              <Text style={[styles.metaText, { fontSize: metaSize }]}>
+              <Text className="text-white/50" style={{ fontSize: metaSize }}>•</Text>
+              <Text className="text-white/90 font-medium" style={{ fontSize: metaSize }}>
                 {t('flows.autoPlay')}
               </Text>
             </>
           )}
           {flow.ai_enabled && (
             <>
-              <Text style={[styles.metaDivider, { fontSize: metaSize }]}>•</Text>
-              <Text style={[styles.metaText, { fontSize: metaSize }]}>
+              <Text className="text-white/50" style={{ fontSize: metaSize }}>•</Text>
+              <Text className="text-white/90 font-medium" style={{ fontSize: metaSize }}>
                 AI {t('common.enabled')}
               </Text>
             </>
@@ -153,7 +163,7 @@ export function FlowHero({
 
         {/* Progress Bar */}
         {progress && (
-          <View style={styles.progressContainer}>
+          <View className="mb-4" style={{ maxWidth: isTV ? 600 : '100%' }}>
             <GlassProgressBar
               progress={progressPercent}
               current={progress.currentIndex}
@@ -168,7 +178,7 @@ export function FlowHero({
         )}
 
         {/* Action Buttons */}
-        <View style={[styles.actions, { flexDirection }]}>
+        <View className={`flex-row gap-3 flex-wrap ${isRTL ? 'flex-row-reverse' : ''}`}>
           {/* Primary Action: Continue or Play/Pause */}
           <GlassButton
             title={isRunning && progress?.isPlaying ? t('flows.hero.pause') : t('flows.hero.continueFlow')}
@@ -179,7 +189,7 @@ export function FlowHero({
             size={buttonSize as any}
             onPress={isRunning && progress?.isPlaying ? onPause : onContinue}
             hasTVPreferredFocus
-            style={styles.primaryBtn}
+            style={{ minWidth: isTV ? 200 : 140 }}
           />
 
           {/* Skip Today */}
@@ -207,106 +217,11 @@ export function FlowHero({
       </View>
 
       {/* Play Icon Overlay (decorative) */}
-      <View style={styles.decorativeIcon}>
+      <View className="absolute opacity-50" style={{ top: isTV ? 80 : 40, right: isTV ? 80 : 40, transform: 'rotate(-15deg)' }}>
         <Play size={isTV ? 120 : 80} color="rgba(255, 255, 255, 0.1)" fill="rgba(255, 255, 255, 0.1)" />
       </View>
     </Animated.View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-    marginHorizontal: isTV ? spacing.xl * 2 : spacing.lg,
-    marginBottom: isTV ? spacing.xl * 2 : spacing.xl,
-    borderRadius: borderRadius.xl,
-    overflow: 'hidden',
-  },
-  backdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  content: {
-    position: 'relative',
-    flex: 1,
-    padding: isTV ? spacing.xl * 2 : spacing.xl,
-    justifyContent: 'flex-end',
-  },
-  contentRTL: {
-    alignItems: 'flex-end',
-  },
-  badgeContainer: {
-    flexDirection: 'row',
-    marginBottom: spacing.md,
-  },
-  activeDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.success,
-    marginRight: spacing.xs,
-  },
-  badgeText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  title: {
-    fontWeight: '800',
-    color: colors.text,
-    marginBottom: spacing.sm,
-    lineHeight: isTV ? 68 : 44,
-    letterSpacing: -1,
-  },
-  description: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginBottom: spacing.md,
-    lineHeight: isTV ? 36 : 28,
-    maxWidth: isTV ? '70%' : '100%',
-  },
-  meta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-    gap: spacing.sm,
-  },
-  metaText: {
-    color: 'rgba(255, 255, 255, 0.9)',
-    fontWeight: '500',
-  },
-  metaDivider: {
-    color: 'rgba(255, 255, 255, 0.5)',
-  },
-  progressContainer: {
-    marginBottom: spacing.lg,
-    maxWidth: isTV ? 600 : '100%',
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    flexWrap: 'wrap',
-  },
-  primaryBtn: {
-    minWidth: isTV ? 200 : 140,
-  },
-  decorativeIcon: {
-    position: 'absolute',
-    top: isTV ? 80 : 40,
-    right: isTV ? 80 : 40,
-    opacity: 0.5,
-    // @ts-ignore - Web transform
-    transform: 'rotate(-15deg)',
-  },
-});
 
 export default FlowHero;

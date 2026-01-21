@@ -3,7 +3,6 @@ import {
   Image,
   View,
   ActivityIndicator,
-  StyleSheet,
   ImageProps,
   ImageURISource,
   Platform,
@@ -155,15 +154,15 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   // Don't render anything if not visible (lazy loading)
   if (!isVisible) {
-    return <View ref={viewRef} style={[style, styles.placeholder, { backgroundColor: placeholderColor }]} />;
+    return <View ref={viewRef} className="justify-center items-center" style={[style, { backgroundColor: placeholderColor }]} />;
   }
 
   // Show error placeholder
   if (hasError) {
     return (
-      <View style={[style, styles.placeholder, { backgroundColor: placeholderColor }]}>
-        <View style={styles.errorContainer}>
-          <View style={styles.errorIcon} />
+      <View className="justify-center items-center" style={[style, { backgroundColor: placeholderColor }]}>
+        <View className="justify-center items-center">
+          <View className="w-6 h-6 rounded-full opacity-30" style={{ backgroundColor: colors.error }} />
         </View>
       </View>
     );
@@ -173,7 +172,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
     <View ref={viewRef} style={style}>
       {/* Loading placeholder */}
       {!isLoaded && (
-        <View style={[StyleSheet.absoluteFill, styles.placeholder, { backgroundColor: placeholderColor }]}>
+        <View className="absolute inset-0 justify-center items-center" style={{ backgroundColor: placeholderColor }}>
           {showLoadingIndicator && (
             <ActivityIndicator size="small" color={colors.primary} />
           )}
@@ -197,23 +196,5 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  placeholder: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: colors.error,
-    opacity: 0.3,
-  },
-});
 
 export default OptimizedImage;

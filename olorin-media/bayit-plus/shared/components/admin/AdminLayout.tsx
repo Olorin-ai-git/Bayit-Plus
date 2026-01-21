@@ -4,11 +4,10 @@
  */
 
 import React, { ReactNode } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, Platform } from 'react-native';
 import { useDirection } from '../../hooks/useDirection';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminTopBar } from './AdminTopBar';
-import { colors } from '../../theme';
 
 interface Breadcrumb {
   label: string;
@@ -37,14 +36,14 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const { flexDirection } = useDirection();
 
   return (
-    <View style={[styles.container, { flexDirection }]}>
+    <View className="flex-1 bg-background" style={{ flexDirection }}>
       {/* Sidebar - hidden on TV or when explicitly disabled */}
       {!hideSidebar && !isTV && (
         <AdminSidebar />
       )}
 
       {/* Main Content Area */}
-      <View style={styles.mainContent}>
+      <View className="flex-1 flex-col">
         {/* Top Bar */}
         {!hideTopBar && (
           <AdminTopBar
@@ -55,28 +54,12 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         )}
 
         {/* Page Content */}
-        <View style={styles.content}>
+        <View className="flex-1 bg-background">
           {children}
         </View>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: colors.background,
-  },
-  mainContent: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  content: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-});
 
 export default AdminLayout;

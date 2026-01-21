@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
-import { View, Text, StyleSheet, Pressable, Animated } from 'react-native'
+import { View, Text, Pressable, Animated } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Users, Plus, UserPlus, ChevronDown } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors } from '@bayit/shared/theme'
 import { GlassView } from '@bayit/shared/ui'
 
 interface WatchPartyButtonProps {
@@ -51,152 +51,55 @@ export default function WatchPartyButton({
     return (
       <Pressable
         onPress={onPanelToggle}
-        style={({ hovered }) => [
-          styles.activeButton,
-          hovered && styles.activeButtonHovered,
-        ]}
+        className="flex-row items-center gap-3 px-3 py-3 rounded-lg border border-emerald-400/30 bg-emerald-400/10 hover:bg-emerald-400/20"
       >
         <Users size={18} color="#34D399" />
-        <Text style={styles.activeText}>{t('watchParty.active')}</Text>
-        <View style={styles.pulseContainer}>
-          <View style={styles.pulseDot} />
-          <View style={styles.pulseRing} />
+        <Text className="text-sm font-medium text-emerald-400">{t('watchParty.active')}</Text>
+        <View className="relative w-2 h-2">
+          <View className="absolute w-2 h-2 rounded-full bg-emerald-600" />
+          <View className="absolute w-2 h-2 rounded-full bg-emerald-400 opacity-75" />
         </View>
       </Pressable>
     )
   }
 
   return (
-    <View style={styles.container} ref={dropdownRef}>
+    <View className="relative" ref={dropdownRef}>
       <Pressable
         onPress={() => setIsOpen(!isOpen)}
-        style={({ hovered }) => [
-          styles.button,
-          hovered && styles.buttonHovered,
-        ]}
+        className="flex-row items-center gap-3 px-3 py-3 rounded-lg hover:bg-white/10"
       >
         <Users size={18} color={colors.text} />
-        <Text style={styles.buttonText}>{t('watchParty.title')}</Text>
+        <Text className="text-sm font-medium text-white">{t('watchParty.title')}</Text>
         <Animated.View style={{ transform: [{ rotate }] }}>
           <ChevronDown size={14} color={colors.textSecondary} />
         </Animated.View>
       </Pressable>
 
       {isOpen && (
-        <GlassView style={styles.dropdown} intensity="high">
+        <GlassView className="absolute left-0 bottom-full mb-3 w-48 py-2 z-50" intensity="high">
           <Pressable
             onPress={() => {
               setIsOpen(false)
               onCreateClick()
             }}
-            style={({ hovered }) => [
-              styles.dropdownItem,
-              hovered && styles.dropdownItemHovered,
-            ]}
+            className="flex-row items-center gap-3 px-4 py-3 text-right hover:bg-white/10"
           >
             <Plus size={18} color={colors.primary} />
-            <Text style={styles.dropdownText}>{t('watchParty.create')}</Text>
+            <Text className="text-sm text-white">{t('watchParty.create')}</Text>
           </Pressable>
           <Pressable
             onPress={() => {
               setIsOpen(false)
               onJoinClick()
             }}
-            style={({ hovered }) => [
-              styles.dropdownItem,
-              hovered && styles.dropdownItemHovered,
-            ]}
+            className="flex-row items-center gap-3 px-4 py-3 text-right hover:bg-white/10"
           >
             <UserPlus size={18} color="#3B82F6" />
-            <Text style={styles.dropdownText}>{t('watchParty.join')}</Text>
+            <Text className="text-sm text-white">{t('watchParty.join')}</Text>
           </Pressable>
         </GlassView>
       )}
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.lg,
-  },
-  buttonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  buttonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  activeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(52, 211, 153, 0.3)',
-    backgroundColor: 'rgba(52, 211, 153, 0.1)',
-  },
-  activeButtonHovered: {
-    backgroundColor: 'rgba(52, 211, 153, 0.2)',
-  },
-  activeText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#34D399',
-  },
-  pulseContainer: {
-    position: 'relative',
-    width: 8,
-    height: 8,
-  },
-  pulseDot: {
-    position: 'absolute',
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#10B981',
-  },
-  pulseRing: {
-    position: 'absolute',
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#34D399',
-    opacity: 0.75,
-  },
-  dropdown: {
-    position: 'absolute',
-    left: 0,
-    bottom: '100%',
-    marginBottom: spacing.sm,
-    width: 192,
-    paddingVertical: spacing.xs,
-    zIndex: 50,
-  },
-  dropdownItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
-    textAlign: 'right',
-  },
-  dropdownItemHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  dropdownText: {
-    fontSize: 14,
-    color: colors.text,
-  },
-})

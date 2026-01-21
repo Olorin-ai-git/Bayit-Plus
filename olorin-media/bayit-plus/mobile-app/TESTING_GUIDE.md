@@ -29,7 +29,7 @@ Comprehensive testing guide for all iOS features implemented in Phases 1-4.
 
 1. **Clone repository**
    ```bash
-   cd /Users/olorin/Documents/Bayit-Plus/mobile-app
+   cd /Users/olorin/Documents/olorin/mobile-app
    ```
 
 2. **Install dependencies**

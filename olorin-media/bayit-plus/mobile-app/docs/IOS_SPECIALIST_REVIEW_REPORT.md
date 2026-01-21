@@ -446,7 +446,7 @@ SentrySDK.start { options in
 
 1. **Physical Device Build**:
    ```bash
-   cd /Users/olorin/Documents/Bayit-Plus/mobile-app
+   cd /Users/olorin/Documents/olorin/mobile-app
 
    # Connect iPhone via USB
    # Trust device if prompted

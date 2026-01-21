@@ -9,7 +9,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   Switch,
   ActivityIndicator,
@@ -121,33 +120,32 @@ export const ProfileFormScreen: React.FC = () => {
 
   return (
     <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
+      className="flex-1 bg-[#0d0d1a]"
+      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 40 }}
     >
-      <GlassView intensity="medium" style={styles.formContainer}>
-        <Text style={[styles.title, { textAlign }]}>
+      <GlassView intensity="medium" className="p-10 max-w-[600px] self-center w-full">
+        <Text className="text-[32px] font-bold text-white mb-10" style={{ textAlign }}>
           {isEditMode
             ? t('profiles.editProfile', 'Edit Profile')
             : t('profiles.createProfile', 'Create Profile')}
         </Text>
 
         {error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
+          <View className="bg-red-500/20 p-4 rounded-lg mb-6 border border-red-500">
+            <Text className="text-red-500 text-sm text-center">{error}</Text>
           </View>
         )}
 
         {/* Name Input */}
-        <View style={styles.section}>
-          <Text style={[styles.label, { textAlign }]}>
+        <View className="mb-6">
+          <Text className="text-base text-purple-500 mb-2 font-semibold" style={{ textAlign }}>
             {t('profiles.name', 'Profile Name')}
           </Text>
           <TextInput
-            style={[
-              styles.input,
-              focusedItem === 'name' && styles.inputFocused,
-              { textAlign },
-            ]}
+            className={`bg-white/10 rounded-lg p-4 text-lg text-white border-2 ${
+              focusedItem === 'name' ? 'border-purple-500 bg-[rgba(107,33,168,0.3)]' : 'border-white/20'
+            }`}
+            style={{ textAlign }}
             value={name}
             onChangeText={setName}
             placeholder={t('profiles.namePlaceholder', 'Enter profile name')}
@@ -159,44 +157,44 @@ export const ProfileFormScreen: React.FC = () => {
         </View>
 
         {/* Avatar Emoji Selection */}
-        <View style={styles.section}>
-          <Text style={[styles.label, { textAlign }]}>
+        <View className="mb-6">
+          <Text className="text-base text-purple-500 mb-2 font-semibold" style={{ textAlign }}>
             {t('profiles.avatar', 'Avatar')}
           </Text>
-          <View style={[styles.avatarGrid, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View className="flex-wrap gap-2" style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
             {AVATAR_EMOJIS.map((emoji) => (
               <TouchableOpacity
                 key={emoji}
-                style={[
-                  styles.avatarOption,
-                  selectedEmoji === emoji && styles.avatarOptionSelected,
-                  focusedItem === `emoji-${emoji}` && styles.avatarOptionFocused,
-                ]}
+                className={`w-[60px] h-[60px] rounded-full bg-white/10 justify-center items-center border-[3px] ${
+                  selectedEmoji === emoji ? 'border-purple-500 bg-[rgba(107,33,168,0.3)]' : 'border-transparent'
+                } ${
+                  focusedItem === `emoji-${emoji}` ? 'border-white scale-110' : ''
+                }`}
                 onPress={() => setSelectedEmoji(emoji)}
                 onFocus={() => setFocusedItem(`emoji-${emoji}`)}
                 onBlur={() => setFocusedItem(null)}
               >
-                <Text style={styles.avatarEmoji}>{emoji}</Text>
+                <Text className="text-[32px]">{emoji}</Text>
               </TouchableOpacity>
             ))}
           </View>
         </View>
 
         {/* Color Selection */}
-        <View style={styles.section}>
-          <Text style={[styles.label, { textAlign }]}>
+        <View className="mb-6">
+          <Text className="text-base text-purple-500 mb-2 font-semibold" style={{ textAlign }}>
             {t('profiles.color', 'Color')}
           </Text>
-          <View style={[styles.colorGrid, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View className="flex-wrap gap-2" style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
             {AVATAR_COLORS.map((color) => (
               <TouchableOpacity
                 key={color}
-                style={[
-                  styles.colorOption,
-                  { backgroundColor: color },
-                  selectedColor === color && styles.colorOptionSelected,
-                  focusedItem === `color-${color}` && styles.colorOptionFocused,
-                ]}
+                className={`w-[50px] h-[50px] rounded-full border-[3px] ${
+                  selectedColor === color ? 'border-white' : 'border-transparent'
+                } ${
+                  focusedItem === `color-${color}` ? 'scale-115 border-white' : ''
+                }`}
+                style={{ backgroundColor: color }}
                 onPress={() => setSelectedColor(color)}
                 onFocus={() => setFocusedItem(`color-${color}`)}
                 onBlur={() => setFocusedItem(null)}
@@ -206,9 +204,9 @@ export const ProfileFormScreen: React.FC = () => {
         </View>
 
         {/* Kids Profile Toggle */}
-        <View style={styles.section}>
-          <View style={[styles.toggleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Text style={[styles.label, { textAlign }]}>
+        <View className="mb-6">
+          <View className="justify-between items-center" style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
+            <Text className="text-base text-purple-500 mb-2 font-semibold" style={{ textAlign }}>
               {t('profiles.kidsProfile', 'Kids Profile')}
             </Text>
             <Switch
@@ -218,34 +216,35 @@ export const ProfileFormScreen: React.FC = () => {
               thumbColor="#fff"
             />
           </View>
-          <Text style={[styles.hint, { textAlign }]}>
+          <Text className="text-xs text-gray-400 mt-1" style={{ textAlign }}>
             {t('profiles.kidsProfileHint', 'Restricts content to age-appropriate material')}
           </Text>
         </View>
 
         {/* Age Limit (only for kids profiles) */}
         {isKidsProfile && (
-          <View style={styles.section}>
-            <Text style={[styles.label, { textAlign }]}>
+          <View className="mb-6">
+            <Text className="text-base text-purple-500 mb-2 font-semibold" style={{ textAlign }}>
               {t('profiles.ageLimit', 'Age Limit')}
             </Text>
-            <View style={[styles.ageLimitGrid, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View className="gap-2" style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
               {KIDS_AGE_LIMITS.map((option) => (
                 <TouchableOpacity
                   key={option.value}
-                  style={[
-                    styles.ageLimitOption,
-                    kidsAgeLimit === option.value && styles.ageLimitOptionSelected,
-                    focusedItem === `age-${option.value}` && styles.ageLimitOptionFocused,
-                  ]}
+                  className={`flex-1 py-4 px-6 rounded-lg border-2 items-center ${
+                    kidsAgeLimit === option.value
+                      ? 'bg-purple-500 border-purple-500'
+                      : 'bg-white/10 border-transparent'
+                  } ${
+                    focusedItem === `age-${option.value}` ? 'border-white scale-105' : ''
+                  }`}
                   onPress={() => setKidsAgeLimit(option.value)}
                   onFocus={() => setFocusedItem(`age-${option.value}`)}
                   onBlur={() => setFocusedItem(null)}
                 >
-                  <Text style={[
-                    styles.ageLimitText,
-                    kidsAgeLimit === option.value && styles.ageLimitTextSelected,
-                  ]}>
+                  <Text className={`text-base font-semibold ${
+                    kidsAgeLimit === option.value ? 'text-[#0d0d1a]' : 'text-white'
+                  }`}>
                     {option.label}
                   </Text>
                 </TouchableOpacity>
@@ -255,9 +254,9 @@ export const ProfileFormScreen: React.FC = () => {
         )}
 
         {/* PIN Protection (only for new profiles or if changing) */}
-        <View style={styles.section}>
-          <View style={[styles.toggleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Text style={[styles.label, { textAlign }]}>
+        <View className="mb-6">
+          <View className="justify-between items-center" style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
+            <Text className="text-base text-purple-500 mb-2 font-semibold" style={{ textAlign }}>
               {t('profiles.pinProtection', 'PIN Protection')}
             </Text>
             <Switch
@@ -267,18 +266,16 @@ export const ProfileFormScreen: React.FC = () => {
               thumbColor="#fff"
             />
           </View>
-          <Text style={[styles.hint, { textAlign }]}>
+          <Text className="text-xs text-gray-400 mt-1" style={{ textAlign }}>
             {t('profiles.pinHint', 'Require a 4-digit PIN to access this profile')}
           </Text>
 
           {hasPin && !isEditMode && (
-            <View style={styles.pinInputs}>
+            <View className="mt-4 gap-2">
               <TextInput
-                style={[
-                  styles.input,
-                  styles.pinInput,
-                  focusedItem === 'pin' && styles.inputFocused,
-                ]}
+                className={`bg-white/10 rounded-lg p-4 text-lg text-white border-2 text-center tracking-[8px] text-2xl ${
+                  focusedItem === 'pin' ? 'border-purple-500 bg-[rgba(107,33,168,0.3)]' : 'border-white/20'
+                }`}
                 value={pin}
                 onChangeText={(text) => setPin(text.replace(/[^0-9]/g, ''))}
                 placeholder={t('profiles.enterPin', 'Enter 4-digit PIN')}
@@ -290,11 +287,9 @@ export const ProfileFormScreen: React.FC = () => {
                 onBlur={() => setFocusedItem(null)}
               />
               <TextInput
-                style={[
-                  styles.input,
-                  styles.pinInput,
-                  focusedItem === 'confirmPin' && styles.inputFocused,
-                ]}
+                className={`bg-white/10 rounded-lg p-4 text-lg text-white border-2 text-center tracking-[8px] text-2xl ${
+                  focusedItem === 'confirmPin' ? 'border-purple-500 bg-[rgba(107,33,168,0.3)]' : 'border-white/20'
+                }`}
                 value={confirmPin}
                 onChangeText={(text) => setConfirmPin(text.replace(/[^0-9]/g, ''))}
                 placeholder={t('profiles.confirmPin', 'Confirm PIN')}
@@ -310,30 +305,25 @@ export const ProfileFormScreen: React.FC = () => {
         </View>
 
         {/* Action Buttons */}
-        <View style={[styles.buttonRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        <View className="gap-4 mt-10" style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
           <TouchableOpacity
-            style={[
-              styles.button,
-              styles.cancelButton,
-              focusedItem === 'cancel' && styles.buttonFocused,
-            ]}
+            className={`flex-1 py-6 rounded-full items-center justify-center border-[3px] bg-white/10 ${
+              focusedItem === 'cancel' ? 'border-white scale-[1.03]' : 'border-transparent'
+            }`}
             onPress={() => navigation.goBack()}
             onFocus={() => setFocusedItem('cancel')}
             onBlur={() => setFocusedItem(null)}
             disabled={saving}
           >
-            <Text style={styles.cancelButtonText}>
+            <Text className="text-lg text-white font-semibold">
               {t('common.cancel', 'Cancel')}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[
-              styles.button,
-              styles.saveButton,
-              focusedItem === 'save' && styles.buttonFocused,
-              saving && styles.buttonDisabled,
-            ]}
+            className={`flex-1 py-6 rounded-full items-center justify-center border-[3px] bg-purple-500 ${
+              focusedItem === 'save' ? 'border-white scale-[1.03]' : 'border-transparent'
+            } ${saving ? 'opacity-50' : ''}`}
             onPress={handleSave}
             onFocus={() => setFocusedItem('save')}
             onBlur={() => setFocusedItem(null)}
@@ -342,7 +332,7 @@ export const ProfileFormScreen: React.FC = () => {
             {saving ? (
               <ActivityIndicator color="#fff" size="small" />
             ) : (
-              <Text style={styles.saveButtonText}>
+              <Text className="text-lg text-[#0d0d1a] font-bold">
                 {t('common.save', 'Save')}
               </Text>
             )}
@@ -352,190 +342,5 @@ export const ProfileFormScreen: React.FC = () => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  contentContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: spacing.xl,
-  },
-  formContainer: {
-    padding: spacing.xl,
-    maxWidth: 600,
-    alignSelf: 'center',
-    width: '100%',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: spacing.xl,
-  },
-  errorContainer: {
-    backgroundColor: 'rgba(255, 107, 107, 0.2)',
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.lg,
-    borderWidth: 1,
-    borderColor: '#ff6b6b',
-  },
-  errorText: {
-    color: '#ff6b6b',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  section: {
-    marginBottom: spacing.lg,
-  },
-  label: {
-    fontSize: 16,
-    color: colors.primary,
-    marginBottom: spacing.sm,
-    fontWeight: '600',
-  },
-  hint: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-  },
-  input: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    fontSize: 18,
-    color: colors.text,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  inputFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  avatarGrid: {
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  avatarOption: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-  avatarOptionSelected: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  avatarOptionFocused: {
-    borderColor: colors.text,
-    transform: [{ scale: 1.1 }],
-  },
-  avatarEmoji: {
-    fontSize: 32,
-  },
-  colorGrid: {
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  colorOption: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-  colorOptionSelected: {
-    borderColor: colors.text,
-  },
-  colorOptionFocused: {
-    transform: [{ scale: 1.15 }],
-    borderColor: colors.text,
-  },
-  toggleRow: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  ageLimitGrid: {
-    gap: spacing.sm,
-  },
-  ageLimitOption: {
-    flex: 1,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.md,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    alignItems: 'center',
-  },
-  ageLimitOptionSelected: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  ageLimitOptionFocused: {
-    borderColor: colors.text,
-    transform: [{ scale: 1.05 }],
-  },
-  ageLimitText: {
-    fontSize: 16,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  ageLimitTextSelected: {
-    color: colors.background,
-  },
-  pinInputs: {
-    marginTop: spacing.md,
-    gap: spacing.sm,
-  },
-  pinInput: {
-    textAlign: 'center',
-    letterSpacing: 8,
-    fontSize: 24,
-  },
-  buttonRow: {
-    gap: spacing.md,
-    marginTop: spacing.xl,
-  },
-  button: {
-    flex: 1,
-    paddingVertical: spacing.lg,
-    borderRadius: borderRadius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-  buttonFocused: {
-    borderColor: colors.text,
-    transform: [{ scale: 1.03 }],
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  cancelButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  cancelButtonText: {
-    fontSize: 18,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  saveButton: {
-    backgroundColor: colors.primary,
-  },
-  saveButtonText: {
-    fontSize: 18,
-    color: colors.background,
-    fontWeight: 'bold',
-  },
-});
 
 export default ProfileFormScreen;

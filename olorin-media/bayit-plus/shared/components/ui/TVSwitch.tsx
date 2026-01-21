@@ -6,7 +6,6 @@ import React, { useState } from 'react';
 import {
   View,
   Pressable,
-  StyleSheet,
   Animated,
   Platform,
 } from 'react-native';
@@ -67,84 +66,32 @@ export const TVSwitch: React.FC<TVSwitchProps> = ({
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
       disabled={disabled}
-      style={({ focused }) => [
-        styles.container,
-        focused && styles.containerFocused,
-        isFocused && styles.containerFocused,
-        disabled && styles.containerDisabled,
-      ]}
+      className={`p-1 rounded-full border-2 ${isFocused || disabled ? '' : 'border-transparent'} ${isFocused ? 'border-purple-500 bg-purple-500/10' : ''} ${disabled ? 'opacity-50' : ''}`}
       accessibilityRole="switch"
       accessibilityState={{ checked: value, disabled }}
     >
       <Animated.View
-        style={[
-          styles.track,
-          Platform.isTV && styles.trackTV,
-          { backgroundColor: trackBackgroundColor },
-          isFocused && styles.trackFocused,
-        ]}
+        className={`${Platform.isTV ? 'w-[52px] h-7 rounded-[14px]' : 'w-11 h-6 rounded-xl'} justify-center`}
+        style={{
+          backgroundColor: trackBackgroundColor,
+          ...(isFocused ? { shadowColor: colors.primary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 8 } : {})
+        }}
       >
         <Animated.View
-          style={[
-            styles.thumb,
-            Platform.isTV && styles.thumbTV,
-            {
-              backgroundColor: thumbColor,
-              transform: [{ translateX: thumbTranslateX }],
-            },
-          ]}
+          className={`${Platform.isTV ? 'w-6 h-6 rounded-xl' : 'w-5 h-5 rounded-full'} shadow-md`}
+          style={{
+            backgroundColor: thumbColor,
+            transform: [{ translateX: thumbTranslateX }],
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 2,
+            elevation: 2,
+          }}
         />
       </Animated.View>
     </Pressable>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 4,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  containerFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-  },
-  containerDisabled: {
-    opacity: 0.5,
-  },
-  track: {
-    width: 44,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: 'center',
-  },
-  trackTV: {
-    width: 52,
-    height: 28,
-    borderRadius: 14,
-  },
-  trackFocused: {
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-  },
-  thumb: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  thumbTV: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-  },
-});
 
 export default TVSwitch;

@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui/GlassView';
-import { colors, spacing, borderRadius, fontSize, shadows } from '../../theme';
 import { isTV } from '../../utils/platform';
 
 interface WatchPartyButtonProps {
@@ -65,19 +64,17 @@ export const WatchPartyButton: React.FC<WatchPartyButtonProps> = ({
         hasTVPreferredFocus={hasTVPreferredFocus}
       >
         <Animated.View
-          style={[
-            { transform: [{ scale: scaleAnim }] },
-            isFocused && shadows.glow(colors.success),
-          ]}
+          className={isFocused ? "shadow-lg shadow-green-500/50" : ""}
+          style={{ transform: [{ scale: scaleAnim }] }}
         >
           <GlassView
-            style={styles.activeButton}
+            className="flex-row items-center py-3 px-4 gap-3 bg-green-500/10"
             intensity="medium"
-            borderColor={colors.success}
+            borderColor="#10b981"
           >
-            <Text style={styles.activeIcon}>👥</Text>
-            <Text style={styles.activeText}>{t('watchParty.active')}</Text>
-            <View style={styles.activeDot} />
+            <Text className="text-base">👥</Text>
+            <Text className="text-sm font-medium text-green-500">{t('watchParty.active')}</Text>
+            <View className="w-2 h-2 rounded-full bg-green-500" />
           </GlassView>
         </Animated.View>
       </TouchableOpacity>
@@ -85,7 +82,7 @@ export const WatchPartyButton: React.FC<WatchPartyButtonProps> = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View className="relative">
       <TouchableOpacity
         onPress={handlePress}
         onFocus={handleFocus}
@@ -94,115 +91,46 @@ export const WatchPartyButton: React.FC<WatchPartyButtonProps> = ({
         hasTVPreferredFocus={hasTVPreferredFocus}
       >
         <Animated.View
-          style={[
-            { transform: [{ scale: scaleAnim }] },
-            isFocused && shadows.glow(colors.primary),
-          ]}
+          className={isFocused ? "shadow-lg shadow-purple-500/50" : ""}
+          style={{ transform: [{ scale: scaleAnim }] }}
         >
           <GlassView
-            style={styles.button}
+            className="flex-row items-center py-3 px-4 gap-3"
             intensity="medium"
-            borderColor={isFocused ? colors.primary : undefined}
+            borderColor={isFocused ? '#9333ea' : undefined}
           >
-            <Text style={styles.icon}>👥</Text>
-            <Text style={styles.text}>{t('watchParty.title')}</Text>
+            <Text className="text-base">👥</Text>
+            <Text className="text-sm font-medium text-white">{t('watchParty.title')}</Text>
           </GlassView>
         </Animated.View>
       </TouchableOpacity>
 
       {menuVisible && (
-        <GlassView style={styles.menu} intensity="high">
+        <GlassView className="absolute bottom-full left-0 mb-3 min-w-[160px] p-1 z-[100]" intensity="high">
           <TouchableOpacity
-            style={styles.menuItem}
+            className="flex-row items-center py-3 px-4 gap-3 rounded"
             onPress={() => {
               setMenuVisible(false);
               onCreatePress();
             }}
           >
-            <Text style={styles.menuIcon}>➕</Text>
-            <Text style={styles.menuText}>{t('watchParty.create')}</Text>
+            <Text className="text-base">➕</Text>
+            <Text className="text-sm text-white">{t('watchParty.create')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.menuItem}
+            className="flex-row items-center py-3 px-4 gap-3 rounded"
             onPress={() => {
               setMenuVisible(false);
               onJoinPress();
             }}
           >
-            <Text style={styles.menuIcon}>🔗</Text>
-            <Text style={styles.menuText}>{t('watchParty.join')}</Text>
+            <Text className="text-base">🔗</Text>
+            <Text className="text-sm text-white">{t('watchParty.join')}</Text>
           </TouchableOpacity>
         </GlassView>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    gap: spacing.sm,
-  },
-  activeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    gap: spacing.sm,
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-  },
-  icon: {
-    fontSize: fontSize.md,
-  },
-  activeIcon: {
-    fontSize: fontSize.md,
-  },
-  text: {
-    fontSize: fontSize.sm,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  activeText: {
-    fontSize: fontSize.sm,
-    fontWeight: '500',
-    color: colors.success,
-  },
-  activeDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.success,
-  },
-  menu: {
-    position: 'absolute',
-    bottom: '100%',
-    left: 0,
-    marginBottom: spacing.sm,
-    minWidth: 160,
-    padding: spacing.xs,
-    zIndex: 100,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    gap: spacing.sm,
-    borderRadius: borderRadius.sm,
-  },
-  menuIcon: {
-    fontSize: fontSize.md,
-  },
-  menuText: {
-    fontSize: fontSize.sm,
-    color: colors.text,
-  },
-});
 
 export default WatchPartyButton;

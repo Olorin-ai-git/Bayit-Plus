@@ -46,7 +46,7 @@
 
 **Command:**
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
+cd /Users/olorin/Documents/olorin/backend/scripts
 ./run_daily_subtitle_audit.sh
 ```
 
@@ -107,7 +107,7 @@ curl -H "Authorization: Bearer $TOKEN" \
   http://localhost:8000/api/v1/admin/librarian/subtitle-quota
 
 # 2. Run daily subtitle audit
-cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
+cd /Users/olorin/Documents/olorin/backend/scripts
 ./run_daily_subtitle_audit.sh
 
 # 3. View results
@@ -119,7 +119,7 @@ poetry run python scripts/check_library_status.py
 
 ## 📊 Scripts Created
 
-All scripts are in `/Users/olorin/Documents/Bayit-Plus/backend/scripts/`:
+All scripts are in `/Users/olorin/Documents/olorin/backend/scripts/`:
 
 1. **check_library_status.py** - Shows current health metrics
 2. **trigger_audit.py** - Triggers AI agent audit directly
@@ -165,7 +165,7 @@ All scripts are in `/Users/olorin/Documents/Bayit-Plus/backend/scripts/`:
 ## 📞 Support
 
 If issues arise:
-1. Check logs: `tail -f /Users/olorin/Documents/Bayit-Plus/backend/.cursor/debug.log`
+1. Check logs: `tail -f /Users/olorin/Documents/olorin/backend/.cursor/debug.log`
 2. View audit status: `poetry run python scripts/view_audit_results.py`
 3. Check library health: `poetry run python scripts/check_library_status.py`
 4. Review this document: `backend/AUDIT_PLAN_EXECUTED.md`

@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Image,
   FlatList,
@@ -53,8 +52,8 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
 
   if (episodes.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>{t('content.noEpisodes')}</Text>
+      <View className="p-8 items-center">
+        <Text className="text-base text-textSecondary">{t('content.noEpisodes')}</Text>
       </View>
     );
   }
@@ -71,8 +70,8 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>
+    <View className="flex-1 py-4">
+      <Text className="text-lg font-semibold text-white mb-4 px-2">
         {seasonNumber
           ? `${t('content.season')} ${seasonNumber} • ${episodes.length} ${t('content.episodes')}`
           : `${episodes.length} ${t('content.episodes')}`}
@@ -82,8 +81,8 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
         renderItem={renderEpisode}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContent}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        contentContainerClassName="px-2 pb-8"
+        ItemSeparatorComponent={() => <View className="h-4" />}
       />
     </View>
   );
@@ -152,11 +151,9 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
   return (
     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
       <TouchableOpacity
-        style={[
-          styles.card,
-          isSelected && styles.cardSelected,
-          isFocused && styles.cardFocused,
-        ]}
+        className={`flex-row bg-white/5 rounded-lg overflow-hidden border ${
+          isSelected ? 'bg-white/10 border-primary' : 'border-transparent'
+        } ${isFocused ? 'border-2 border-white bg-white/15' : ''}`}
         onPress={handlePress}
         onFocus={handleFocus}
         onBlur={handleBlur}
@@ -165,53 +162,54 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
         hasTVPreferredFocus={hasTVPreferredFocus}
       >
         {/* Thumbnail */}
-        <View style={[styles.thumbnailContainer, { width: thumbnailWidth, height: thumbnailHeight }]}>
+        <View style={{ width: thumbnailWidth, height: thumbnailHeight }} className="relative bg-black/30">
           {episode.thumbnail ? (
             <Image
               source={{ uri: episode.thumbnail }}
-              style={styles.thumbnail}
+              className="w-full h-full"
               resizeMode="cover"
             />
           ) : (
-            <View style={styles.thumbnailPlaceholder}>
-              <Text style={styles.thumbnailPlaceholderText}>🎬</Text>
+            <View className="w-full h-full justify-center items-center bg-black/30">
+              <Text className="text-[32px] opacity-50">🎬</Text>
             </View>
           )}
 
           {/* Play icon overlay */}
-          <View style={styles.playOverlay}>
-            <View style={styles.playButton}>
-              <Text style={styles.playIcon}>▶</Text>
+          <View className="absolute inset-0 justify-center items-center bg-black/30 opacity-80">
+            <View className={`${isTV ? 'w-12 h-12' : 'w-9 h-9'} rounded-full bg-white/90 justify-center items-center`}>
+              <Text className={`${isTV ? 'text-base' : 'text-xs'} text-black ml-0.5`}>▶</Text>
             </View>
           </View>
 
           {/* Duration badge */}
           {episode.duration && (
-            <View style={styles.durationBadge}>
-              <Text style={styles.durationText}>{episode.duration}</Text>
+            <View className="absolute bottom-1 right-1 bg-black/80 px-1 py-0.5 rounded">
+              <Text className="text-xs text-white font-medium">{episode.duration}</Text>
             </View>
           )}
 
           {/* Progress bar */}
           {showProgress && episode.progress !== undefined && episode.progress > 0 && (
-            <View style={styles.progressContainer}>
+            <View className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/30">
               <View
-                style={[styles.progressBar, { width: `${episode.progress}%` }]}
+                style={{ width: `${episode.progress}%` }}
+                className="h-full bg-primary"
               />
             </View>
           )}
         </View>
 
         {/* Content */}
-        <View style={styles.cardContent}>
-          <Text style={styles.episodeNumber}>
+        <View className={`flex-1 ${isTV ? 'p-4' : 'p-2'} justify-center`}>
+          <Text className="text-xs text-textSecondary mb-0.5 uppercase tracking-wider">
             {t('content.episode')} {episode.episodeNumber}
           </Text>
-          <Text style={styles.episodeTitle} numberOfLines={2}>
+          <Text className={`${isTV ? 'text-lg' : 'text-base'} font-semibold text-white mb-2`} numberOfLines={2}>
             {episode.title}
           </Text>
           {episode.description && (
-            <Text style={styles.episodeDescription} numberOfLines={2}>
+            <Text className={`${isTV ? 'text-sm leading-5' : 'text-xs leading-4'} text-textSecondary`} numberOfLines={2}>
               {episode.description}
             </Text>
           )}
@@ -219,157 +217,13 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
 
         {/* Selected indicator */}
         {isSelected && (
-          <View style={styles.selectedIndicator}>
-            <Text style={styles.selectedIcon}>▶</Text>
+          <View className={`${isTV ? 'w-12' : 'w-10'} justify-center items-center bg-primary`}>
+            <Text className={`${isTV ? 'text-lg' : 'text-sm'} text-white`}>▶</Text>
           </View>
         )}
       </TouchableOpacity>
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingVertical: spacing.md,
-  },
-  header: {
-    fontSize: fontSize.lg,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-    paddingHorizontal: spacing.sm,
-  },
-  listContent: {
-    paddingHorizontal: spacing.sm,
-    paddingBottom: spacing.xl,
-  },
-  separator: {
-    height: spacing.md,
-  },
-  emptyContainer: {
-    padding: spacing.xl,
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-  },
-  card: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  cardSelected: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderColor: colors.primary,
-  },
-  cardFocused: {
-    borderWidth: 2,
-    borderColor: '#fff',
-    backgroundColor: 'rgba(255,255,255,0.15)',
-  },
-  thumbnailContainer: {
-    position: 'relative',
-    backgroundColor: 'rgba(0,0,0,0.3)',
-  },
-  thumbnail: {
-    width: '100%',
-    height: '100%',
-  },
-  thumbnailPlaceholder: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.3)',
-  },
-  thumbnailPlaceholderText: {
-    fontSize: 32,
-    opacity: 0.5,
-  },
-  playOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    opacity: 0.8,
-  },
-  playButton: {
-    width: isTV ? 48 : 36,
-    height: isTV ? 48 : 36,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playIcon: {
-    fontSize: isTV ? 16 : 12,
-    color: '#000',
-    marginLeft: 2,
-  },
-  durationBadge: {
-    position: 'absolute',
-    bottom: spacing.xs,
-    right: spacing.xs,
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  durationText: {
-    fontSize: fontSize.xs,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  progressContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 3,
-    backgroundColor: 'rgba(255,255,255,0.3)',
-  },
-  progressBar: {
-    height: '100%',
-    backgroundColor: colors.primary,
-  },
-  cardContent: {
-    flex: 1,
-    padding: isTV ? spacing.md : spacing.sm,
-    justifyContent: 'center',
-  },
-  episodeNumber: {
-    fontSize: fontSize.xs,
-    color: colors.textSecondary,
-    marginBottom: 2,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  episodeTitle: {
-    fontSize: isTV ? fontSize.lg : fontSize.md,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  episodeDescription: {
-    fontSize: isTV ? fontSize.sm : fontSize.xs,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 20 : 16,
-  },
-  selectedIndicator: {
-    width: isTV ? 48 : 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-  },
-  selectedIcon: {
-    fontSize: isTV ? 18 : 14,
-    color: colors.text,
-  },
-});
 
 export default EpisodeList;

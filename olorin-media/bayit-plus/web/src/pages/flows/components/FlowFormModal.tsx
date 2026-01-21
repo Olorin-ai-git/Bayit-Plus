@@ -8,7 +8,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Pressable,
   ScrollView,
   Modal,
@@ -186,41 +185,41 @@ export function FlowFormModal({
   return (
     <>
       <Modal visible={visible} transparent animationType="fade">
-        <View style={styles.overlay}>
+        <View className="flex-1 bg-black/85 justify-center items-center p-4 z-[1000]">
           {/* Backdrop */}
-          <Pressable style={styles.backdrop} onPress={onClose} />
+          <Pressable className="absolute inset-0" onPress={onClose} />
 
           {/* Modal Container */}
-          <GlassView style={styles.modal} intensity="high">
+          <GlassView className={`w-full ${IS_TV_BUILD ? 'max-w-[800px] max-h-[85%]' : 'max-w-[560px] max-h-[90%]'} rounded-2xl overflow-hidden flex flex-col`} intensity="high">
             {/* Close Button */}
             <Pressable
-              style={[styles.closeButton, isRTL && styles.closeButtonRTL]}
+              className={`absolute top-4 ${isRTL ? 'left-4' : 'right-4'} p-2 z-10 rounded-full bg-white/10`}
               onPress={onClose}
             >
               <X size={24} color={colors.textMuted} />
             </Pressable>
 
             {/* Header */}
-            <View style={styles.header}>
-              <Text style={[styles.title, isRTL && styles.textRTL]}>
+            <View className="px-6 pt-6 pb-4 border-b border-white/8 flex-shrink-0">
+              <Text className={`${IS_TV_BUILD ? 'text-[28px]' : 'text-[22px]'} font-bold text-white mb-1 ${isRTL ? 'text-right' : ''}`}>
                 {isEditing ? t('flows.editFlow') : t('flows.createFlow')}
               </Text>
-              <Text style={[styles.subtitle, isRTL && styles.textRTL]}>
+              <Text className={`${IS_TV_BUILD ? 'text-lg' : 'text-sm'} text-[${colors.textMuted}] ${isRTL ? 'text-right' : ''}`}>
                 {isEditing ? t('flows.editFlowDesc') : t('flows.createFlowDesc')}
               </Text>
             </View>
 
             {/* Scrollable Content */}
             <ScrollView
-              style={styles.scroll}
-              contentContainerStyle={styles.scrollContent}
+              className="flex-1 min-h-0 w-full"
+              contentContainerStyle={{ padding: spacing.lg, paddingBottom: spacing.xl, width: '100%' }}
               showsVerticalScrollIndicator={false}
             >
               {/* Errors */}
               {errors.length > 0 && (
-                <GlassView style={styles.errorBox} intensity="low">
+                <GlassView className="p-4 mb-4 rounded-lg border border-[${colors.error}] bg-[rgba(255,59,48,0.1)]" intensity="low">
                   {errors.map((error, index) => (
-                    <Text key={index} style={[styles.errorText, isRTL && styles.textRTL]}>
+                    <Text key={index} className={`text-sm text-[${colors.error}] leading-5 ${isRTL ? 'text-right' : ''}`}>
                       {error}
                     </Text>
                   ))}
@@ -228,10 +227,10 @@ export function FlowFormModal({
               )}
 
               {/* Basic Info Section */}
-              <View style={styles.section}>
-                <View style={[styles.sectionHeaderRow, isRTL && styles.rowRTL]}>
+              <View className="mb-6 w-full">
+                <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center gap-2 mb-4`}>
                   <Settings size={18} color={colors.primary} />
-                  <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
+                  <Text className={`text-[15px] font-semibold text-white ${isRTL ? 'text-right' : ''}`}>
                     {t('flows.basicInfo')}
                   </Text>
                 </View>
@@ -242,7 +241,7 @@ export function FlowFormModal({
                   value={formState[getNameField()] as string}
                   onChangeText={(value) => updateField(getNameField(), value)}
                   placeholder={t('flows.flowNamePlaceholder')}
-                  containerStyle={styles.inputContainer}
+                  containerStyle={{ marginBottom: spacing.sm }}
                 />
 
                 {/* Description Input */}
@@ -253,15 +252,15 @@ export function FlowFormModal({
                   placeholder={t('flows.descriptionPlaceholder')}
                   multiline
                   numberOfLines={3}
-                  containerStyle={styles.inputContainer}
+                  containerStyle={{ marginBottom: spacing.sm }}
                 />
               </View>
 
               {/* Trigger Section */}
-              <View style={styles.section}>
-                <View style={[styles.sectionHeaderRow, isRTL && styles.rowRTL]}>
+              <View className="mb-6 w-full">
+                <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center gap-2 mb-4`}>
                   <Clock size={18} color={colors.secondary} />
-                  <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
+                  <Text className={`text-[15px] font-semibold text-white ${isRTL ? 'text-right' : ''}`}>
                     {t('flows.trigger.type')}
                   </Text>
                 </View>
@@ -273,7 +272,7 @@ export function FlowFormModal({
               </View>
 
               {/* Content Section */}
-              <View style={styles.section}>
+              <View className="mb-6 w-full">
                 <FlowItemList
                   items={formState.items}
                   onItemsChange={handleItemsChange}
@@ -286,42 +285,31 @@ export function FlowFormModal({
               </View>
 
               {/* Options Section */}
-              <View style={styles.section}>
-                <View style={[styles.sectionHeaderRow, isRTL && styles.rowRTL]}>
+              <View className="mb-6 w-full">
+                <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center gap-2 mb-4`}>
                   <Sparkles size={18} color={colors.warning} />
-                  <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
+                  <Text className={`text-[15px] font-semibold text-white ${isRTL ? 'text-right' : ''}`}>
                     {t('flows.options')}
                   </Text>
                 </View>
 
-                <GlassView style={styles.optionsCard} intensity="low">
+                <GlassView className="rounded-lg overflow-hidden" intensity="low">
                   {/* Auto Play Option */}
                   <Pressable
-                    style={[styles.optionRow, isRTL && styles.optionRowRTL]}
+                    className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center p-4 gap-4`}
                     onPress={() => updateField('auto_play', !formState.auto_play)}
                   >
-                    <View
-                      style={[
-                        styles.optionIconBox,
-                        formState.auto_play && styles.optionIconBoxActive,
-                      ]}
-                    >
+                    <View className={`w-9 h-9 rounded-lg ${formState.auto_play ? `bg-[${colors.primary}]/20` : 'bg-white/5'} justify-center items-center`}>
                       <Play
                         size={18}
                         color={formState.auto_play ? colors.primary : colors.textMuted}
                       />
                     </View>
-                    <View style={[styles.optionTextContainer, isRTL && styles.optionTextContainerRTL]}>
-                      <Text
-                        style={[
-                          styles.optionLabel,
-                          formState.auto_play && styles.optionLabelActive,
-                          isRTL && styles.textRTL,
-                        ]}
-                      >
+                    <View className={`flex-1 ${isRTL ? 'items-end' : ''}`}>
+                      <Text className={`text-sm font-semibold ${formState.auto_play ? 'text-white' : `text-[${colors.textMuted}]`} mb-0.5 ${isRTL ? 'text-right' : ''}`}>
                         {t('flows.autoPlay')}
                       </Text>
-                      <Text style={[styles.optionDesc, isRTL && styles.textRTL]}>
+                      <Text className={`text-xs text-[${colors.textMuted}] leading-4 ${isRTL ? 'text-right' : ''}`}>
                         {t('flows.autoPlayDesc')}
                       </Text>
                     </View>
@@ -331,35 +319,24 @@ export function FlowFormModal({
                     />
                   </Pressable>
 
-                  <View style={styles.optionDivider} />
+                  <View className="h-[1px] bg-white/6 mx-4" />
 
                   {/* AI Enabled Option */}
                   <Pressable
-                    style={[styles.optionRow, isRTL && styles.optionRowRTL]}
+                    className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center p-4 gap-4`}
                     onPress={() => updateField('ai_enabled', !formState.ai_enabled)}
                   >
-                    <View
-                      style={[
-                        styles.optionIconBox,
-                        formState.ai_enabled && styles.optionIconBoxWarning,
-                      ]}
-                    >
+                    <View className={`w-9 h-9 rounded-lg ${formState.ai_enabled ? `bg-[${colors.warning}]/20` : 'bg-white/5'} justify-center items-center`}>
                       <Sparkles
                         size={18}
                         color={formState.ai_enabled ? colors.warning : colors.textMuted}
                       />
                     </View>
-                    <View style={[styles.optionTextContainer, isRTL && styles.optionTextContainerRTL]}>
-                      <Text
-                        style={[
-                          styles.optionLabel,
-                          formState.ai_enabled && styles.optionLabelActive,
-                          isRTL && styles.textRTL,
-                        ]}
-                      >
+                    <View className={`flex-1 ${isRTL ? 'items-end' : ''}`}>
+                      <Text className={`text-sm font-semibold ${formState.ai_enabled ? 'text-white' : `text-[${colors.textMuted}]`} mb-0.5 ${isRTL ? 'text-right' : ''}`}>
                         {t('flows.aiEnabled')}
                       </Text>
-                      <Text style={[styles.optionDesc, isRTL && styles.textRTL]}>
+                      <Text className={`text-xs text-[${colors.textMuted}] leading-4 ${isRTL ? 'text-right' : ''}`}>
                         {t('flows.aiEnabledDesc')}
                       </Text>
                     </View>
@@ -369,35 +346,24 @@ export function FlowFormModal({
                     />
                   </Pressable>
 
-                  <View style={styles.optionDivider} />
+                  <View className="h-[1px] bg-white/6 mx-4" />
 
                   {/* AI Brief Option */}
                   <Pressable
-                    style={[styles.optionRow, isRTL && styles.optionRowRTL]}
+                    className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center p-4 gap-4`}
                     onPress={() => updateField('ai_brief_enabled', !formState.ai_brief_enabled)}
                   >
-                    <View
-                      style={[
-                        styles.optionIconBox,
-                        formState.ai_brief_enabled && styles.optionIconBoxInfo,
-                      ]}
-                    >
+                    <View className={`w-9 h-9 rounded-lg ${formState.ai_brief_enabled ? `bg-[${colors.info}]/20` : 'bg-white/5'} justify-center items-center`}>
                       <FileText
                         size={18}
                         color={formState.ai_brief_enabled ? colors.info : colors.textMuted}
                       />
                     </View>
-                    <View style={[styles.optionTextContainer, isRTL && styles.optionTextContainerRTL]}>
-                      <Text
-                        style={[
-                          styles.optionLabel,
-                          formState.ai_brief_enabled && styles.optionLabelActive,
-                          isRTL && styles.textRTL,
-                        ]}
-                      >
+                    <View className={`flex-1 ${isRTL ? 'items-end' : ''}`}>
+                      <Text className={`text-sm font-semibold ${formState.ai_brief_enabled ? 'text-white' : `text-[${colors.textMuted}]`} mb-0.5 ${isRTL ? 'text-right' : ''}`}>
                         {t('flows.aiBrief')}
                       </Text>
-                      <Text style={[styles.optionDesc, isRTL && styles.textRTL]}>
+                      <Text className={`text-xs text-[${colors.textMuted}] leading-4 ${isRTL ? 'text-right' : ''}`}>
                         {t('flows.aiBriefDesc')}
                       </Text>
                     </View>
@@ -411,16 +377,16 @@ export function FlowFormModal({
             </ScrollView>
 
             {/* Footer Actions */}
-            <View style={styles.footer}>
-              <View style={[styles.footerButtons, isRTL && styles.footerButtonsRTL]}>
+            <View className="border-t border-white/8 bg-black/20 flex-shrink-0">
+              <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} p-4 gap-4`}>
                 <GlassButton
                   title={t('common.cancel')}
                   onPress={onClose}
                   variant="ghost"
-                  style={styles.footerButton}
+                  style={{ flex: 1 }}
                 />
                 <View
-                  style={styles.saveButtonWrapper}
+                  className="relative flex-1"
                   // @ts-ignore - Web hover events
                   onMouseEnter={() => !isFormValid && setShowTooltip(true)}
                   onMouseLeave={() => setShowTooltip(false)}
@@ -431,15 +397,15 @@ export function FlowFormModal({
                     variant="primary"
                     loading={saving}
                     disabled={saving || !isFormValid}
-                    style={styles.footerButton}
+                    style={{ flex: 1 }}
                   />
                   {/* Validation Tooltip */}
                   {showTooltip && !isFormValid && (
-                    <View style={[styles.tooltip, isRTL && styles.tooltipRTL]}>
-                      <View style={styles.tooltipArrow} />
-                      <View style={styles.tooltipContent}>
+                    <View className={`absolute bottom-full left-0 right-0 mb-2 z-[100] ${isRTL ? '' : ''}`}>
+                      <View className="absolute bottom-[-6px] left-1/2 -ml-1.5 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent border-t-[rgba(239,68,68,0.95)]" />
+                      <View className="bg-[rgba(239,68,68,0.95)] rounded-lg p-2 px-4">
                         {validationErrors.map((error, index) => (
-                          <Text key={index} style={[styles.tooltipText, isRTL && styles.textRTL]}>
+                          <Text key={index} className={`text-xs text-white leading-[18px] ${isRTL ? 'text-right' : ''}`}>
                             • {error}
                           </Text>
                         ))}
@@ -463,220 +429,5 @@ export function FlowFormModal({
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-    // @ts-ignore - Web z-index
-    zIndex: 1000,
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  modal: {
-    width: '100%',
-    maxWidth: IS_TV_BUILD ? 800 : 560,
-    maxHeight: IS_TV_BUILD ? '85%' : '90%',
-    borderRadius: borderRadius.xl,
-    overflow: 'hidden',
-    // Explicit flex layout for proper child rendering
-    display: 'flex' as any,
-    flexDirection: 'column' as any,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: spacing.md,
-    right: spacing.md,
-    padding: spacing.sm,
-    zIndex: 10,
-    borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  closeButtonRTL: {
-    right: 'auto' as any,
-    left: spacing.md,
-  },
-  header: {
-    padding: spacing.xl,
-    paddingBottom: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
-    flexShrink: 0,
-  },
-  title: {
-    fontSize: IS_TV_BUILD ? 28 : 22,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: IS_TV_BUILD ? 18 : 14,
-    color: colors.textMuted,
-  },
-  scroll: {
-    flex: 1,
-    minHeight: 0, // Required for scrolling in flex container
-    width: '100%' as any,
-  },
-  scrollContent: {
-    padding: spacing.lg,
-    paddingBottom: spacing.xl,
-    width: '100%' as any,
-  },
-  errorBox: {
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.error,
-    backgroundColor: 'rgba(255, 59, 48, 0.1)',
-  },
-  errorText: {
-    fontSize: 14,
-    color: colors.error,
-    lineHeight: 20,
-  },
-  section: {
-    marginBottom: spacing.xl,
-    width: '100%' as any,
-  },
-  sectionHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.md,
-  },
-  rowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  sectionTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  inputContainer: {
-    marginBottom: spacing.sm,
-  },
-  optionsCard: {
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-  },
-  optionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.md,
-    gap: spacing.md,
-  },
-  optionRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  optionIconBox: {
-    width: 36,
-    height: 36,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  optionIconBoxActive: {
-    backgroundColor: `${colors.primary}20`,
-  },
-  optionIconBoxWarning: {
-    backgroundColor: `${colors.warning}20`,
-  },
-  optionIconBoxInfo: {
-    backgroundColor: `${colors.info}20`,
-  },
-  optionTextContainer: {
-    flex: 1,
-  },
-  optionTextContainerRTL: {
-    alignItems: 'flex-end',
-  },
-  optionLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.textMuted,
-    marginBottom: 2,
-  },
-  optionLabelActive: {
-    color: colors.text,
-  },
-  optionDesc: {
-    fontSize: 12,
-    color: colors.textMuted,
-    lineHeight: 16,
-  },
-  optionDivider: {
-    height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
-    marginHorizontal: spacing.md,
-  },
-  footer: {
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.08)',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    flexShrink: 0,
-  },
-  footerButtons: {
-    flexDirection: 'row',
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  footerButtonsRTL: {
-    flexDirection: 'row-reverse',
-  },
-  footerButton: {
-    flex: 1,
-  },
-  saveButtonWrapper: {
-    position: 'relative',
-    flex: 1,
-  },
-  tooltip: {
-    position: 'absolute',
-    bottom: '100%',
-    left: 0,
-    right: 0,
-    marginBottom: spacing.sm,
-    // @ts-ignore - Web z-index
-    zIndex: 100,
-  },
-  tooltipRTL: {
-    // Same positioning for RTL
-  },
-  tooltipArrow: {
-    position: 'absolute',
-    bottom: -6,
-    left: '50%',
-    marginLeft: -6,
-    width: 0,
-    height: 0,
-    borderLeftWidth: 6,
-    borderRightWidth: 6,
-    borderTopWidth: 6,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderTopColor: 'rgba(239, 68, 68, 0.95)',
-  },
-  tooltipContent: {
-    backgroundColor: 'rgba(239, 68, 68, 0.95)',
-    borderRadius: borderRadius.md,
-    padding: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  tooltipText: {
-    fontSize: 12,
-    color: '#fff',
-    lineHeight: 18,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-});
 
 export default FlowFormModal;

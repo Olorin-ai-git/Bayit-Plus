@@ -14,7 +14,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
@@ -199,7 +198,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.loadingContainer}>
+      <SafeAreaView className="flex-1 justify-center items-center bg-black">
         <ActivityIndicator size="large" color={colors.primary} />
       </SafeAreaView>
     );
@@ -207,12 +206,12 @@ export const MovieDetailScreenMobile: React.FC = () => {
 
   if (!movie) {
     return (
-      <SafeAreaView style={styles.errorContainer}>
-        <Text style={styles.errorText}>
+      <SafeAreaView className="flex-1 justify-center items-center bg-black p-6">
+        <Text className="text-lg text-white/60 mb-6">
           {t("content.notFound", "Content not found")}
         </Text>
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Text style={styles.backButtonText}>
+        <TouchableOpacity onPress={handleBack} className="px-6 py-3 bg-purple-600 rounded-lg">
+          <Text className="text-white font-semibold">
             {t("common.goBack", "Go Back")}
           </Text>
         </TouchableOpacity>
@@ -221,74 +220,74 @@ export const MovieDetailScreenMobile: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-black">
       <StatusBar barStyle="light-content" />
 
       <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        className="flex-1"
+        contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Hero Section */}
-        <View style={styles.heroContainer}>
+        <View className="relative" style={{ height: HERO_HEIGHT }}>
           <Image
             source={{ uri: movie.backdrop || movie.thumbnail }}
-            style={styles.heroImage}
+            className="absolute"
+            style={{ width: SCREEN_WIDTH, height: HERO_HEIGHT }}
             resizeMode="cover"
           />
           <LinearGradientComponent
             colors={["transparent", "rgba(0,0,0,0.7)", colors.background]}
             locations={[0.3, 0.7, 1]}
-            style={styles.heroGradient}
+            className="absolute left-0 right-0 bottom-0"
+            style={{ height: HERO_HEIGHT }}
           />
 
           {/* Header Actions */}
-          <SafeAreaView style={styles.headerActions}>
-            <TouchableOpacity onPress={handleBack} style={styles.headerButton}>
-              <Text style={styles.headerButtonIcon}>←</Text>
+          <SafeAreaView className="absolute top-0 left-0 right-0 flex-row justify-between items-center px-3 pt-2">
+            <TouchableOpacity onPress={handleBack} className="w-11 h-11 rounded-full bg-black/50 justify-center items-center">
+              <Text className="text-xl text-white">←</Text>
             </TouchableOpacity>
-            <View style={styles.headerRightActions}>
+            <View className="flex-row gap-2">
               <TouchableOpacity
                 onPress={handleShare}
-                style={styles.headerButton}
+                className="w-11 h-11 rounded-full bg-black/50 justify-center items-center"
               >
-                <Text style={styles.headerButtonIcon}>⤴</Text>
+                <Text className="text-xl text-white">⤴</Text>
               </TouchableOpacity>
             </View>
           </SafeAreaView>
 
           {/* Hero Content */}
-          <View style={styles.heroContent}>
-            <Text style={[styles.movieTitle, { textAlign }]}>
+          <View className="absolute bottom-0 left-0 right-0 px-3 pb-3">
+            <Text className="text-[28px] font-bold text-white mb-2" style={{ textAlign }}>
               {getLocalizedText(movie, "title")}
             </Text>
 
             {/* Metadata */}
             <View
-              style={[
-                styles.metadataRow,
-                { flexDirection: isRTL ? "row-reverse" : "row" },
-              ]}
+              className="flex-row items-center flex-wrap mb-2"
+              style={{ flexDirection: isRTL ? "row-reverse" : "row" }}
             >
               {movie.year && (
-                <Text style={styles.metadataText}>{movie.year}</Text>
+                <Text className="text-sm text-white/60">{movie.year}</Text>
               )}
               {movie.rating && (
                 <>
-                  <Text style={styles.metadataDot}>•</Text>
-                  <Text style={styles.metadataText}>{movie.rating}</Text>
+                  <Text className="text-sm text-white/60 mx-1">•</Text>
+                  <Text className="text-sm text-white/60">{movie.rating}</Text>
                 </>
               )}
               {movie.duration && (
                 <>
-                  <Text style={styles.metadataDot}>•</Text>
-                  <Text style={styles.metadataText}>{movie.duration}</Text>
+                  <Text className="text-sm text-white/60 mx-1">•</Text>
+                  <Text className="text-sm text-white/60">{movie.duration}</Text>
                 </>
               )}
               {movie.genre && (
                 <>
-                  <Text style={styles.metadataDot}>•</Text>
-                  <Text style={styles.metadataText}>{movie.genre}</Text>
+                  <Text className="text-sm text-white/60 mx-1">•</Text>
+                  <Text className="text-sm text-white/60">{movie.genre}</Text>
                 </>
               )}
             </View>
@@ -296,19 +295,17 @@ export const MovieDetailScreenMobile: React.FC = () => {
             {/* IMDb Rating */}
             {movie.imdb_rating && (
               <View
-                style={[
-                  styles.imdbRow,
-                  { flexDirection: isRTL ? "row-reverse" : "row" },
-                ]}
+                className="flex-row items-center"
+                style={{ flexDirection: isRTL ? "row-reverse" : "row" }}
               >
-                <View style={styles.imdbBadge}>
-                  <Text style={styles.imdbLabel}>IMDb</Text>
-                  <Text style={styles.imdbRating}>
+                <View className="flex-row items-center bg-[#f5c518] px-2 py-1 rounded gap-1">
+                  <Text className="text-xs font-bold text-black">IMDb</Text>
+                  <Text className="text-sm font-bold text-black">
                     {movie.imdb_rating.toFixed(1)}
                   </Text>
                 </View>
                 {movie.imdb_votes && (
-                  <Text style={styles.imdbVotes}>
+                  <Text className="text-xs text-white/60 ml-2">
                     ({formatVotes(movie.imdb_votes)} votes)
                   </Text>
                 )}
@@ -318,42 +315,40 @@ export const MovieDetailScreenMobile: React.FC = () => {
         </View>
 
         {/* Content Section */}
-        <View style={styles.content}>
+        <View className="px-3 pt-6">
           {/* Quick Actions */}
           <View
-            style={[
-              styles.quickActions,
-              { flexDirection: isRTL ? "row-reverse" : "row" },
-            ]}
+            className="flex-row justify-center gap-8 pb-6 border-b border-white/10"
+            style={{ flexDirection: isRTL ? "row-reverse" : "row" }}
           >
             <TouchableOpacity
               onPress={handleToggleWatchlist}
-              style={styles.quickActionButton}
+              className="items-center min-w-[60px]"
             >
-              <Text style={styles.quickActionIcon}>
+              <Text className="text-2xl mb-1">
                 {isInWatchlist ? "✓" : "+"}
               </Text>
-              <Text style={styles.quickActionLabel}>
+              <Text className="text-xs text-white/60">
                 {t("content.myList", "My List")}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleToggleFavorites}
-              style={styles.quickActionButton}
+              className="items-center min-w-[60px]"
             >
-              <Text style={styles.quickActionIcon}>
+              <Text className="text-2xl mb-1">
                 {isInFavorites ? "❤️" : "🤍"}
               </Text>
-              <Text style={styles.quickActionLabel}>
+              <Text className="text-xs text-white/60">
                 {t("content.favorite", "Favorite")}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleShare}
-              style={styles.quickActionButton}
+              className="items-center min-w-[60px]"
             >
-              <Text style={styles.quickActionIcon}>⤴</Text>
-              <Text style={styles.quickActionLabel}>
+              <Text className="text-2xl mb-1">⤴</Text>
+              <Text className="text-xs text-white/60">
                 {t("content.share", "Share")}
               </Text>
             </TouchableOpacity>
@@ -361,11 +356,11 @@ export const MovieDetailScreenMobile: React.FC = () => {
 
           {/* Synopsis */}
           {movie.description && (
-            <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { textAlign }]}>
+            <View className="mt-6">
+              <Text className="text-lg font-semibold text-white mb-2" style={{ textAlign }}>
                 {t("content.synopsis", "Synopsis")}
               </Text>
-              <Text style={[styles.synopsisText, { textAlign }]}>
+              <Text className="text-sm text-white/60 leading-[22px]" style={{ textAlign }}>
                 {getLocalizedText(movie, "description")}
               </Text>
             </View>
@@ -373,11 +368,11 @@ export const MovieDetailScreenMobile: React.FC = () => {
 
           {/* Director */}
           {movie.director && (
-            <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { textAlign }]}>
+            <View className="mt-6">
+              <Text className="text-lg font-semibold text-white mb-2" style={{ textAlign }}>
                 {t("content.director", "Director")}
               </Text>
-              <Text style={[styles.directorName, { textAlign }]}>
+              <Text className="text-base text-white" style={{ textAlign }}>
                 {movie.director}
               </Text>
             </View>
@@ -385,26 +380,23 @@ export const MovieDetailScreenMobile: React.FC = () => {
 
           {/* Cast */}
           {castMembers.length > 0 && (
-            <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { textAlign }]}>
+            <View className="mt-6">
+              <Text className="text-lg font-semibold text-white mb-2" style={{ textAlign }}>
                 {t("content.cast", "Cast")}
               </Text>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={[
-                  styles.castContainer,
-                  { flexDirection: isRTL ? "row-reverse" : "row" },
-                ]}
+                contentContainerStyle={{ gap: spacing.md, paddingVertical: spacing.xs, flexDirection: isRTL ? "row-reverse" : "row" }}
               >
                 {castMembers.map((member) => (
-                  <View key={member.id} style={styles.castCard}>
-                    <View style={styles.castAvatar}>
-                      <Text style={styles.castInitial}>
+                  <View key={member.id} className="items-center w-[70px]">
+                    <View className="w-14 h-14 rounded-full bg-white/5 justify-center items-center mb-1">
+                      <Text className="text-[22px] font-semibold text-purple-600">
                         {member.name.charAt(0).toUpperCase()}
                       </Text>
                     </View>
-                    <Text style={styles.castName} numberOfLines={1}>
+                    <Text className="text-xs text-white/60 text-center" numberOfLines={1}>
                       {member.name}
                     </Text>
                   </View>
@@ -415,31 +407,28 @@ export const MovieDetailScreenMobile: React.FC = () => {
 
           {/* Recommendations */}
           {recommendations.length > 0 && (
-            <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { textAlign }]}>
+            <View className="mt-6">
+              <Text className="text-lg font-semibold text-white mb-2" style={{ textAlign }}>
                 {t("content.moreLikeThis", "More Like This")}
               </Text>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={[
-                  styles.recommendationsContainer,
-                  { flexDirection: isRTL ? "row-reverse" : "row" },
-                ]}
+                contentContainerStyle={{ gap: spacing.md, paddingVertical: spacing.xs, flexDirection: isRTL ? "row-reverse" : "row" }}
               >
                 {recommendations.map((item) => (
                   <TouchableOpacity
                     key={item.id}
-                    style={styles.recommendationCard}
+                    className="w-[120px]"
                     onPress={() => handleRecommendationPress(item)}
                     activeOpacity={0.7}
                   >
                     <Image
                       source={{ uri: item.thumbnail }}
-                      style={styles.recommendationImage}
+                      className="w-[120px] h-[68px] rounded-lg mb-1 bg-white/5"
                       resizeMode="cover"
                     />
-                    <Text style={styles.recommendationTitle} numberOfLines={2}>
+                    <Text className="text-xs text-white/60 leading-4" numberOfLines={2}>
                       {getLocalizedText(item, "title")}
                     </Text>
                   </TouchableOpacity>
@@ -449,25 +438,25 @@ export const MovieDetailScreenMobile: React.FC = () => {
           )}
 
           {/* Bottom spacing for fixed button */}
-          <View style={styles.bottomSpacer} />
+          <View className="h-[100px]" />
         </View>
       </ScrollView>
 
       {/* Fixed Watch Button */}
-      <SafeAreaView style={styles.fixedButtonContainer}>
+      <SafeAreaView className="absolute bottom-0 left-0 right-0 bg-black px-3 pt-2 pb-3 border-t border-white/10">
         <TouchableOpacity
           onPress={handlePlay}
-          style={styles.watchButton}
+          className="rounded-2xl overflow-hidden"
           activeOpacity={0.8}
         >
           <LinearGradientComponent
             colors={[colors.primary, colors.primaryDark]}
-            style={styles.watchButtonGradient}
+            className="flex-row items-center justify-center py-3 gap-2"
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
           >
-            <Text style={styles.watchButtonIcon}>▶</Text>
-            <Text style={styles.watchButtonText}>
+            <Text className="text-lg text-white">▶</Text>
+            <Text className="text-base font-semibold text-white">
               {t("content.watchNow", "Watch Now")}
             </Text>
           </LinearGradientComponent>
@@ -476,269 +465,5 @@ export const MovieDetailScreenMobile: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.background,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.background,
-    padding: spacing.lg,
-  },
-  errorText: {
-    fontSize: 18,
-    color: colors.textSecondary,
-    marginBottom: spacing.lg,
-  },
-  backButton: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.md,
-  },
-  backButtonText: {
-    color: colors.text,
-    fontWeight: "600",
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  heroContainer: {
-    height: HERO_HEIGHT,
-    position: "relative",
-  },
-  heroImage: {
-    width: SCREEN_WIDTH,
-    height: HERO_HEIGHT,
-    position: "absolute",
-  },
-  heroGradient: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: HERO_HEIGHT,
-  },
-  headerActions: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.sm,
-  },
-  headerButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  headerButtonIcon: {
-    fontSize: 20,
-    color: colors.text,
-  },
-  headerRightActions: {
-    flexDirection: "row",
-    gap: spacing.sm,
-  },
-  heroContent: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.md,
-  },
-  movieTitle: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  metadataRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
-    marginBottom: spacing.sm,
-  },
-  metadataText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  metadataDot: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginHorizontal: spacing.xs,
-  },
-  imdbRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  imdbBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#f5c518",
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: 4,
-    gap: 4,
-  },
-  imdbLabel: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: "#000000",
-  },
-  imdbRating: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#000000",
-  },
-  imdbVotes: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginLeft: spacing.sm,
-  },
-  content: {
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.lg,
-  },
-  quickActions: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: spacing.xl,
-    paddingBottom: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.1)",
-  },
-  quickActionButton: {
-    alignItems: "center",
-    minWidth: 60,
-  },
-  quickActionIcon: {
-    fontSize: 24,
-    marginBottom: 4,
-  },
-  quickActionLabel: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-  section: {
-    marginTop: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  synopsisText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    lineHeight: 22,
-  },
-  directorName: {
-    fontSize: 16,
-    color: colors.text,
-  },
-  castContainer: {
-    gap: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  castCard: {
-    alignItems: "center",
-    width: 70,
-  },
-  castAvatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.backgroundLight,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: spacing.xs,
-  },
-  castInitial: {
-    fontSize: 22,
-    fontWeight: "600",
-    color: colors.primary,
-  },
-  castName: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    textAlign: "center",
-  },
-  recommendationsContainer: {
-    gap: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  recommendationCard: {
-    width: 120,
-  },
-  recommendationImage: {
-    width: 120,
-    height: 68,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.xs,
-    backgroundColor: colors.backgroundLight,
-  },
-  recommendationTitle: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    lineHeight: 16,
-  },
-  bottomSpacer: {
-    height: 100,
-  },
-  fixedButtonContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: colors.background,
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.1)",
-  },
-  watchButton: {
-    borderRadius: borderRadius.lg,
-    overflow: "hidden",
-  },
-  watchButtonGradient: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: spacing.md,
-    gap: spacing.sm,
-  },
-  watchButtonIcon: {
-    fontSize: 18,
-    color: colors.text,
-  },
-  watchButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.text,
-  },
-});
 
 export default MovieDetailScreenMobile;

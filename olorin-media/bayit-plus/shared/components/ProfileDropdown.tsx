@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Animated,
   Platform,
   Image,
@@ -116,16 +115,16 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View className="relative justify-center items-center z-[9999]">
       <TouchableOpacity
         ref={buttonRef as any}
         onPress={handleOpenDropdown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        style={[styles.button, isFocused && styles.buttonFocused]}
+        className={`w-10 h-10 justify-center items-center rounded-lg bg-white/5 border ${isFocused ? 'border-purple-500 bg-purple-600/30' : 'border-transparent'} overflow-hidden`}
       >
         {user?.avatar ? (
-          <Image source={{ uri: user.avatar }} style={styles.buttonAvatar} />
+          <Image source={{ uri: user.avatar }} className="w-9 h-9 rounded" />
         ) : (
           <Ionicons name="person" size={20} color={colors.text} />
         )}
@@ -135,42 +134,40 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
         <>
           {/* Backdrop */}
           <TouchableOpacity
-            style={styles.backdrop}
+            className="fixed top-0 left-0 right-0 bottom-0 bg-transparent z-[9998]"
             activeOpacity={1}
             onPress={() => setIsOpen(false)}
           />
           {/* Dropdown */}
           <Animated.View
-            style={[
-              styles.dropdownContainer,
-              {
-                opacity: fadeAnim,
-                top: dropdownPosition.top,
-                left: dropdownPosition.left,
-                right: dropdownPosition.right,
-              },
-            ]}
+            className="fixed w-[280px] z-[10000]"
+            style={{
+              opacity: fadeAnim,
+              top: dropdownPosition.top,
+              left: dropdownPosition.left,
+              right: dropdownPosition.right,
+            }}
           >
-            <GlassView intensity="high" style={styles.dropdown}>
+            <GlassView intensity="high" className="p-4 rounded-lg">
               {/* User Info Section */}
-              <View style={styles.userSection}>
+              <View className="flex-row items-center gap-2 pb-4">
                 {user?.avatar ? (
-                  <Image source={{ uri: user.avatar }} style={styles.dropdownAvatar} />
+                  <Image source={{ uri: user.avatar }} className="w-12 h-12 rounded-full" />
                 ) : (
-                  <View style={[styles.avatar, { backgroundColor: getBadgeColor() }]}>
-                    <Text style={styles.avatarText}>{getInitials()}</Text>
+                  <View className="w-12 h-12 rounded-full justify-center items-center" style={{ backgroundColor: getBadgeColor() }}>
+                    <Text className="text-lg font-bold text-white">{getInitials()}</Text>
                   </View>
                 )}
-                <View style={styles.userInfo}>
-                  <Text style={styles.userName} numberOfLines={1}>
+                <View className="flex-1 gap-0.5">
+                  <Text className="text-base font-semibold text-white" numberOfLines={1}>
                     {user?.name || t('profile.guest', 'Guest')}
                   </Text>
-                  <Text style={styles.userEmail} numberOfLines={1}>
+                  <Text className="text-xs text-white/60" numberOfLines={1}>
                     {user?.email}
                   </Text>
                   {user?.subscription?.plan && (
-                    <View style={[styles.subscriptionBadge, { backgroundColor: `${getBadgeColor()}20` }]}>
-                      <Text style={[styles.subscriptionText, { color: getBadgeColor() }]}>
+                    <View className="self-start px-2 py-0.5 rounded mt-1" style={{ backgroundColor: `${getBadgeColor()}20` }}>
+                      <Text className="text-[10px] font-semibold uppercase" style={{ color: getBadgeColor() }}>
                         {user.subscription.plan}
                       </Text>
                     </View>
@@ -178,51 +175,51 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
                 </View>
               </View>
 
-              <View style={styles.divider} />
+              <View className="h-px bg-white/10 my-2" />
 
               {/* Quick Actions */}
               <TouchableOpacity
-                style={styles.menuItem}
+                className="flex-row items-center gap-2 py-2 px-2 rounded-lg"
                 onPress={() => handleNavigate('/profile')}
               >
                 <Ionicons name="person" size={18} color={colors.textSecondary} />
-                <Text style={styles.menuItemText}>
+                <Text className="flex-1 text-sm text-white">
                   {t('profile.dropdown.myProfile', 'My Profile')}
                 </Text>
                 <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.menuItem}
+                className="flex-row items-center gap-2 py-2 px-2 rounded-lg"
                 onPress={() => handleNavigate('/favorites')}
               >
                 <Ionicons name="star" size={18} color={colors.warning} />
-                <Text style={styles.menuItemText}>
+                <Text className="flex-1 text-sm text-white">
                   {t('profile.dropdown.favorites', 'Favorites')}
                 </Text>
                 <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.menuItem}
+                className="flex-row items-center gap-2 py-2 px-2 rounded-lg"
                 onPress={() => handleNavigate('/downloads')}
               >
                 <Ionicons name="download" size={18} color={colors.primary} />
-                <Text style={styles.menuItemText}>
+                <Text className="flex-1 text-sm text-white">
                   {t('profile.dropdown.downloads', 'Downloads')}
                 </Text>
                 <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
               </TouchableOpacity>
 
-              <View style={styles.divider} />
+              <View className="h-px bg-white/10 my-2" />
 
               {/* Logout */}
               <TouchableOpacity
-                style={styles.logoutItem}
+                className="flex-row items-center gap-2 py-2 px-2 rounded-lg"
                 onPress={handleLogout}
               >
                 <Ionicons name="log-out" size={18} color={colors.error} />
-                <Text style={styles.logoutText}>
+                <Text className="text-sm text-red-500">
                   {t('profile.dropdown.signOut', 'Sign Out')}
                 </Text>
               </TouchableOpacity>
@@ -234,130 +231,5 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 9999,
-  },
-  button: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'transparent',
-    overflow: 'hidden',
-  },
-  buttonFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  buttonAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: borderRadius.sm,
-  },
-  backdrop: {
-    position: 'fixed' as any,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'transparent',
-    zIndex: 9998,
-  },
-  dropdownContainer: {
-    position: 'fixed' as any,
-    width: 280,
-    zIndex: 10000,
-  },
-  dropdown: {
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-  },
-  userSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingBottom: spacing.md,
-  },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  dropdownAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-  },
-  avatarText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  userInfo: {
-    flex: 1,
-    gap: 2,
-  },
-  userName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  userEmail: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  subscriptionBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-    marginTop: 4,
-  },
-  subscriptionText: {
-    fontSize: 10,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    marginVertical: spacing.sm,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.md,
-  },
-  menuItemText: {
-    flex: 1,
-    fontSize: 14,
-    color: colors.text,
-  },
-  logoutItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.md,
-  },
-  logoutText: {
-    fontSize: 14,
-    color: colors.error,
-  },
-});
 
 export default ProfileDropdown;

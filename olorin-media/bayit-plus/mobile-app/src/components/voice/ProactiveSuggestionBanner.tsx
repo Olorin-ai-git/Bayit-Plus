@@ -10,7 +10,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
+import { View, Text, Pressable, Animated } from 'react-native';
 import { X, Check, Sparkles } from 'lucide-react-native';
 import type { ProactiveSuggestion } from '../../hooks/useProactiveVoice';
 
@@ -71,34 +71,38 @@ export default function ProactiveSuggestionBanner({
 
   return (
     <Animated.View
-      style={[
-        styles.container,
-        {
-          transform: [{ translateY: slideAnim }],
-          opacity: opacityAnim,
-        },
-      ]}
+      className="absolute top-[100px] left-5 right-5 z-[9990]"
+      style={{
+        transform: [{ translateY: slideAnim }],
+        opacity: opacityAnim,
+      }}
     >
-      <View style={[styles.banner, { borderLeftColor: priorityColor }]}>
+      <View
+        className="flex-row items-center bg-[rgba(20,20,40,0.98)] rounded-[20px] border-[1.5px] border-purple-500/60 border-l-[5px] py-4 px-4 shadow-lg shadow-purple-500/40"
+        style={{ borderLeftColor: priorityColor }}
+      >
         {/* Icon */}
-        <View style={[styles.iconContainer, { backgroundColor: priorityColor + '20' }]}>
+        <View
+          className="w-12 h-12 rounded-full justify-center items-center mr-3.5"
+          style={{ backgroundColor: priorityColor + '20' }}
+        >
           <Sparkles size={20} color={priorityColor} />
         </View>
 
         {/* Content */}
-        <View style={styles.content}>
-          <Text style={styles.message}>{suggestion.message}</Text>
+        <View className="flex-1 justify-center">
+          <Text className="text-[15px] font-bold text-white leading-[22px] mb-1.5">{suggestion.message}</Text>
 
           {/* Type label */}
-          <Text style={styles.typeLabel}>{suggestion.type.replace('-', ' ')}</Text>
+          <Text className="text-xs font-medium text-purple-500/90 uppercase tracking-wide">{suggestion.type.replace('-', ' ')}</Text>
         </View>
 
         {/* Actions */}
-        <View style={styles.actions}>
+        <View className="flex-row gap-2.5 ml-2">
           {/* Execute button */}
           {suggestion.action && (
             <Pressable
-              style={[styles.actionButton, styles.executeButton]}
+              className="w-10 h-10 rounded-full justify-center items-center border border-purple-500 bg-purple-500"
               onPress={() => onExecute(suggestion)}
             >
               <Check size={18} color="#fff" />
@@ -106,7 +110,7 @@ export default function ProactiveSuggestionBanner({
           )}
 
           {/* Dismiss button */}
-          <Pressable style={[styles.actionButton, styles.dismissButton]} onPress={onDismiss}>
+          <Pressable className="w-10 h-10 rounded-full justify-center items-center border border-white/20 bg-white/15" onPress={onDismiss}>
             <X size={18} color="rgba(255, 255, 255, 0.7)" />
           </Pressable>
         </View>
@@ -114,77 +118,3 @@ export default function ProactiveSuggestionBanner({
     </Animated.View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 100, // Below status bar and header
-    left: 20,
-    right: 20,
-    zIndex: 9990, // Below voice button
-  },
-  banner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(20, 20, 40, 0.98)',
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: 'rgba(168, 85, 247, 0.6)',
-    borderLeftWidth: 5,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    shadowColor: '#a855f7',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 12,
-    // Note: backdropFilter is web-only, RN uses opacity for similar effect
-  },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 14,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  message: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#fff',
-    lineHeight: 22,
-    marginBottom: 6,
-  },
-  typeLabel: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: 'rgba(168, 85, 247, 0.9)',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 10,
-    marginLeft: 8,
-  },
-  actionButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  executeButton: {
-    backgroundColor: '#a855f7',
-    borderColor: '#a855f7',
-  },
-  dismissButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-  },
-});

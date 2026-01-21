@@ -2,7 +2,7 @@
  * Modal for joining an existing chess game by code.
  */
 import React, { useState } from 'react';
-import { View, StyleSheet, Pressable, Text } from 'react-native';
+import { View, Pressable, Text } from 'react-native';
 import { colors, spacing } from '@bayit/shared/theme';
 import { useTranslation } from 'react-i18next';
 import { GlassInput, GlassModal } from '@bayit/shared/ui';
@@ -57,13 +57,13 @@ export default function JoinGameModal({ visible, onClose, onJoin }: JoinGameModa
   return (
     <GlassModal visible={visible} title={t('chess.joinGame')} onClose={handleClose} dismissable={true}>
       {/* Game code input */}
-      <View style={styles.section}>
-        <Text style={styles.label}>{t('chess.enterGameCode')}</Text>
+      <View className="mb-6">
+        <Text className="text-sm font-semibold text-white mb-3">{t('chess.enterGameCode')}</Text>
         <GlassInput
           value={gameCode}
           onChangeText={handleCodeChange}
           placeholder="ABC123"
-          inputStyle={styles.input}
+          inputStyle={{ fontSize: 24, fontWeight: '700', textAlign: 'center', letterSpacing: 4 }}
           maxLength={6}
           autoCapitalize="characters"
           autoCorrect={false}
@@ -73,21 +73,19 @@ export default function JoinGameModal({ visible, onClose, onJoin }: JoinGameModa
       </View>
 
       {/* Actions */}
-      <View style={styles.actions}>
-        <Pressable style={[styles.button, styles.cancelButton]} onPress={handleClose}>
-          <Text style={styles.cancelText}>{t('common.cancel')}</Text>
+      <View className="flex-row gap-3">
+        <Pressable className="flex-1 py-4 rounded-lg bg-white/10 items-center" onPress={handleClose}>
+          <Text className="text-sm font-semibold text-white">{t('common.cancel')}</Text>
         </Pressable>
 
         <Pressable
-          style={[
-            styles.button,
-            styles.joinButton,
-            (joining || gameCode.length !== 6) && styles.buttonDisabled
-          ]}
+          className={`flex-1 py-4 rounded-lg bg-purple-500 items-center ${
+            (joining || gameCode.length !== 6) ? 'opacity-50' : ''
+          }`}
           onPress={handleJoin}
           disabled={joining || gameCode.length !== 6}
         >
-          <Text style={styles.joinText}>
+          <Text className="text-sm font-semibold text-black">
             {joining ? t('common.joining') : t('chess.join')}
           </Text>
         </Pressable>
@@ -95,50 +93,3 @@ export default function JoinGameModal({ visible, onClose, onJoin }: JoinGameModa
     </GlassModal>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    marginBottom: spacing.lg,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  input: {
-    fontSize: 24,
-    fontWeight: '700',
-    textAlign: 'center',
-    letterSpacing: 4,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  button: {
-    flex: 1,
-    paddingVertical: spacing.md,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  cancelButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  joinButton: {
-    backgroundColor: colors.primary,
-  },
-  cancelText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  joinText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.dark,
-  },
-});

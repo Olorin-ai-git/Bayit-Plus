@@ -1,8 +1,7 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Users } from 'lucide-react';
 import { Trash2 } from 'lucide-react';
-import { colors, spacing } from '@bayit/shared/theme';
 import { EmptyState } from '../components/EmptyState';
 import { FriendCard } from '../components/FriendCard';
 import { formatTimestamp } from '../utils';
@@ -27,17 +26,17 @@ export function FriendsTab({
 
   if (loading && friends.length === 0) {
     return (
-      <View style={styles.listContainer}>
-        <Text style={styles.emptyText}>{t('common.loading', 'Loading...')}</Text>
+      <View className="gap-4">
+        <Text className="text-sm text-white/60 text-center">{t('common.loading', 'Loading...')}</Text>
       </View>
     );
   }
 
   if (friends.length === 0) {
     return (
-      <View style={styles.listContainer}>
+      <View className="gap-4">
         <EmptyState
-          icon={<Users size={48} color={colors.textMuted} />}
+          icon={<Users size={48} color="rgba(255,255,255,0.6)" />}
           title={t('friends.noFriends', 'No friends yet')}
           subtitle={t('friends.noFriendsDesc', 'Search for players and send friend requests')}
           buttonLabel={t('friends.findPlayers', 'Find Players')}
@@ -48,7 +47,7 @@ export function FriendsTab({
   }
 
   return (
-    <View style={styles.listContainer}>
+    <View className="gap-4">
       {friends.map((friend) => (
         <FriendCard
           key={friend.user_id}
@@ -67,21 +66,10 @@ export function FriendsTab({
           onAction={() => onRemoveFriend(friend.user_id)}
           actionLabel={t('friends.remove', 'Remove')}
           actionIcon={Trash2}
-          actionColor={colors.error}
+          actionColor="#EF4444"
           isRTL={isRTL}
         />
       ))}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  listContainer: {
-    gap: spacing.md,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-});

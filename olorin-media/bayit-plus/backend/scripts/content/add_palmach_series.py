@@ -11,7 +11,7 @@ from app.models.content import Content,
 from app.models.content_taxonomy import ContentSection
 from app.core.config import settings
 
-UPLOADS_DIR = Path("/Users/olorin/Documents/Bayit-Plus/backend/uploads/vod")
+UPLOADS_DIR = Path("/Users/olorin/Documents/olorin/backend/uploads/vod")
 
 
 async def add_palmach_series():

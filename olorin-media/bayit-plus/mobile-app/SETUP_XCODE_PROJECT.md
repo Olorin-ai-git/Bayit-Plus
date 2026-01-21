@@ -9,7 +9,7 @@ Since we have all the code but not the Xcode project structure, we need to initi
 ### Step 1: Install Dependencies
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/mobile-app
+cd /Users/olorin/Documents/olorin/mobile-app
 
 # Install Node dependencies
 npm install
@@ -50,7 +50,7 @@ Since we already have all the Swift files and configuration, let's create the Xc
 - **Storage**: None (or select if needed)
 
 5. Click **Next**
-6. **Save location**: `/Users/olorin/Documents/Bayit-Plus/mobile-app/ios/`
+6. **Save location**: `/Users/olorin/Documents/olorin/mobile-app/ios/`
 7. **Create Git repository**: Unchecked (already have one)
 8. Click **Create**
 
@@ -105,7 +105,7 @@ end
 Then install pods:
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/mobile-app/ios
+cd /Users/olorin/Documents/olorin/mobile-app/ios
 pod install
 ```
 
@@ -157,7 +157,7 @@ I'll create the Xcode project structure for you:
 ```bash
 #!/bin/bash
 
-cd /Users/olorin/Documents/Bayit-Plus/mobile-app
+cd /Users/olorin/Documents/olorin/mobile-app
 
 # Install dependencies
 echo "Installing dependencies..."

@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useCallback, useContext } from 'rea
 import {
   View,
   Text,
-  StyleSheet,
   Modal,
   TouchableOpacity,
   TextInput,
@@ -303,25 +302,25 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <GlassView intensity="high" style={styles.container}>
+      <View className="flex-1 bg-black/70 justify-center items-center p-8">
+        <GlassView intensity="high" className="w-full max-w-[600px] h-4/5 max-h-[700px] rounded-3xl overflow-hidden">
           {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <View style={styles.avatarContainer}>
-                <Text style={styles.avatarIcon}>✨</Text>
+          <View className="flex-row items-center justify-between px-6 py-4 border-b border-white/10 bg-purple-700/20">
+            <View className="flex-row items-center gap-4">
+              <View className="w-11 h-11 rounded-[22px] bg-purple-600 justify-center items-center">
+                <Text className="text-[22px]">✨</Text>
               </View>
               <View>
-                <Text style={styles.headerTitle}>{t('chat.title', 'עוזר בית+')}</Text>
-                <Text style={styles.headerSubtitle}>{t('chat.subtitle', 'מופעל בינה מלאכותית')}</Text>
+                <Text className="text-lg font-bold text-white">{t('chat.title', 'עוזר בית+')}</Text>
+                <Text className="text-xs text-white/60">{t('chat.subtitle', 'מופעל בינה מלאכותית')}</Text>
               </View>
             </View>
-            <View style={styles.headerButtons}>
-              <TouchableOpacity onPress={clearChat} style={styles.clearButton}>
-                <Text style={styles.clearButtonText}>🗑️</Text>
+            <View className="flex-row gap-2">
+              <TouchableOpacity onPress={clearChat} className="w-10 h-10 rounded-full bg-white/10 justify-center items-center">
+                <Text className="text-lg">🗑️</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                <Text style={styles.closeButtonText}>✕</Text>
+              <TouchableOpacity onPress={onClose} className="w-10 h-10 rounded-full bg-white/10 justify-center items-center">
+                <Text className="text-xl text-white">✕</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -329,43 +328,37 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
           {/* Messages */}
           <ScrollView
             ref={scrollViewRef}
-            style={styles.messagesContainer}
-            contentContainerStyle={styles.messagesContent}
+            className="flex-1"
+            contentContainerStyle={{ padding: spacing.lg, gap: spacing.md }}
           >
             {messages.map((message, index) => (
               <View
                 key={index}
-                style={[
-                  styles.messageRow,
-                  message.role === 'user' ? styles.messageRowUser : styles.messageRowAssistant,
-                ]}
+                className={`mb-2 ${message.role === 'user' ? 'items-start' : 'items-end'}`}
               >
                 {message.type === 'recommendations' ? (
-                  <View style={styles.recommendationsContainer}>
-                    <Text style={styles.recommendationsTitle}>
+                  <View className="w-full">
+                    <Text className="text-sm text-white/60 mb-4 text-right">
                       {t('chat.recommendations', 'הנה כמה המלצות:')}
                     </Text>
-                    <View style={styles.recommendationsGrid}>
+                    <View className="flex-row flex-wrap gap-2">
                       {(message.content as any[]).slice(0, 4).map((item: any) => (
                         <Pressable
                           key={item.id}
                           onPress={() => handleRecommendationPress(item)}
-                          style={({ focused }) => [
-                            styles.recommendationCard,
-                            focused && styles.recommendationCardFocused,
-                          ]}
+                          className={({ focused }) => `w-[48%] bg-white/5 rounded-lg overflow-hidden border-2 ${focused ? 'border-purple-600 border-[3px] scale-[1.02]' : 'border-transparent'}`}
                         >
                           {item.thumbnail ? (
                             <Image
                               source={{ uri: item.thumbnail }}
-                              style={styles.recommendationImage}
+                              className="w-full aspect-video"
                             />
                           ) : (
-                            <View style={styles.recommendationImagePlaceholder}>
-                              <Text style={styles.placeholderIcon}>🎬</Text>
+                            <View className="w-full aspect-video bg-white/10 justify-center items-center">
+                              <Text className="text-2xl">🎬</Text>
                             </View>
                           )}
-                          <Text style={styles.recommendationTitle} numberOfLines={2}>
+                          <Text className="text-xs text-white p-2 text-right" numberOfLines={2}>
                             {item.title}
                           </Text>
                         </Pressable>
@@ -374,21 +367,21 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
                   </View>
                 ) : (
                   <GlassCard
-                    style={[
-                      styles.messageBubble,
-                      message.role === 'user' ? styles.userBubble : styles.assistantBubble,
-                      message.isError && styles.errorBubble,
-                    ]}
+                    className={`max-w-[80%] p-4 rounded-2xl ${
+                      message.role === 'user'
+                        ? 'bg-purple-700/30 rounded-tl'
+                        : 'bg-white/10 rounded-tr'
+                    } ${message.isError ? 'bg-red-500/20 border border-red-500' : ''}`}
                   >
-                    <Text style={styles.messageText}>{message.content as string}</Text>
+                    <Text className="text-base text-white leading-6 text-right">{message.content as string}</Text>
                   </GlassCard>
                 )}
               </View>
             ))}
 
             {isLoading && (
-              <View style={[styles.messageRow, styles.messageRowAssistant]}>
-                <GlassCard style={[styles.messageBubble, styles.assistantBubble]}>
+              <View className="mb-2 items-end">
+                <GlassCard className="max-w-[80%] p-4 rounded-2xl bg-white/10 rounded-tr">
                   <ActivityIndicator size="small" color={colors.primary} />
                 </GlassCard>
               </View>
@@ -397,14 +390,14 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
 
           {/* Suggestions (show only at start) */}
           {messages.length <= 1 && (
-            <View style={styles.suggestionsContainer}>
+            <View className="flex-row flex-wrap gap-2 p-4 border-t border-white/5">
               {suggestedQuestions.map((question, index) => (
                 <TouchableOpacity
                   key={index}
                   onPress={() => handleSuggestion(question)}
-                  style={styles.suggestionButton}
+                  className="px-4 py-2 bg-purple-700/20 rounded-full border border-purple-700/30"
                 >
-                  <Text style={styles.suggestionText}>{question}</Text>
+                  <Text className="text-[13px] text-purple-400">{question}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -412,39 +405,37 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
 
           {/* Recording Status */}
           {(isRecording || isTranscribing) && (
-            <View style={styles.recordingStatus}>
+            <View className="p-4 items-center bg-red-500/10">
               {isRecording && (
-                <Animated.View style={[styles.recordingIndicator, { transform: [{ scale: pulseAnim }] }]}>
-                  <View style={styles.recordingDot} />
-                  <Text style={styles.recordingText}>{t('voice.listening', 'מאזין...')}</Text>
+                <Animated.View className="flex-row items-center gap-2" style={{ transform: [{ scale: pulseAnim }] }}>
+                  <View className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                  <Text className="text-sm text-red-500 font-semibold">{t('voice.listening', 'מאזין...')}</Text>
                 </Animated.View>
               )}
               {transcript && (
-                <Text style={styles.transcriptPreview}>"{transcript}"</Text>
+                <Text className="text-sm text-purple-600 italic mt-2">"{transcript}"</Text>
               )}
               {isTranscribing && (
-                <View style={styles.transcribingIndicator}>
+                <View className="flex-row items-center gap-2">
                   <ActivityIndicator size="small" color={colors.primary} />
-                  <Text style={styles.transcribingText}>{t('voice.processing', 'מתמלל...')}</Text>
+                  <Text className="text-sm text-purple-600">{t('voice.processing', 'מתמלל...')}</Text>
                 </View>
               )}
             </View>
           )}
 
           {/* Input Area */}
-          <View style={styles.inputContainer}>
+          <View className="flex-row items-center p-4 gap-2 border-t border-white/10">
             {/* Voice Button - Primary for TV */}
             <Pressable
               onPress={toggleRecording}
               disabled={isLoading || isTranscribing}
-              style={({ focused }) => [
-                styles.voiceButton,
-                focused && styles.voiceButtonFocused,
-                isRecording && styles.voiceButtonRecording,
-              ]}
+              className={({ focused }) => `w-14 h-14 rounded-full bg-purple-600 justify-center items-center border-[3px] ${
+                focused ? 'border-purple-600 scale-110' : 'border-transparent'
+              } ${isRecording ? 'bg-red-500' : ''}`}
             >
               <Animated.View style={{ transform: [{ scale: isRecording ? pulseAnim : 1 }] }}>
-                <Text style={styles.voiceButtonIcon}>{isRecording ? '⏹️' : '🎤'}</Text>
+                <Text className="text-2xl">{isRecording ? '⏹️' : '🎤'}</Text>
               </Animated.View>
             </Pressable>
 
@@ -455,20 +446,18 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
               onSubmitEditing={handleSubmit}
               placeholder={t('chat.placeholder', 'או הקלד כאן...')}
               placeholderTextColor={colors.textMuted}
-              style={styles.textInput}
+              className="flex-1 h-12 bg-white/10 rounded-full px-6 text-base text-white text-right"
               editable={!isLoading && !isRecording && !isTranscribing}
             />
 
             <Pressable
               onPress={handleSubmit}
               disabled={!input.trim() || isLoading || isRecording || isTranscribing}
-              style={({ focused }) => [
-                styles.sendButton,
-                focused && styles.sendButtonFocused,
-                (!input.trim() || isLoading) && styles.sendButtonDisabled,
-              ]}
+              className={({ focused }) => `w-12 h-12 rounded-full bg-purple-600 justify-center items-center border-2 ${
+                focused ? 'border-purple-600 border-[3px] scale-110' : 'border-transparent'
+              } ${(!input.trim() || isLoading) ? 'opacity-50' : ''}`}
             >
-              <Text style={styles.sendButtonIcon}>➤</Text>
+              <Text className="text-lg text-white" style={{ transform: [{ scaleX: -1 }] }}>➤</Text>
             </Pressable>
           </View>
         </GlassView>
@@ -476,289 +465,5 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  container: {
-    width: '100%',
-    maxWidth: 600,
-    height: '80%',
-    maxHeight: 700,
-    borderRadius: borderRadius.xl,
-    overflow: 'hidden',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-    backgroundColor: 'rgba(138, 43, 226, 0.2)',
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  avatarContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.secondary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarIcon: {
-    fontSize: 22,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  headerSubtitle: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-  headerButtons: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  clearButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  clearButtonText: {
-    fontSize: 18,
-  },
-  closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    fontSize: 20,
-    color: colors.text,
-  },
-  messagesContainer: {
-    flex: 1,
-  },
-  messagesContent: {
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  messageRow: {
-    marginBottom: spacing.sm,
-  },
-  messageRowUser: {
-    alignItems: 'flex-start',
-  },
-  messageRowAssistant: {
-    alignItems: 'flex-end',
-  },
-  messageBubble: {
-    maxWidth: '80%',
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-  },
-  userBubble: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderTopLeftRadius: 4,
-  },
-  assistantBubble: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderTopRightRadius: 4,
-  },
-  errorBubble: {
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-    borderColor: colors.error,
-    borderWidth: 1,
-  },
-  messageText: {
-    fontSize: 16,
-    color: colors.text,
-    lineHeight: 24,
-    textAlign: 'right',
-  },
-  recommendationsContainer: {
-    width: '100%',
-  },
-  recommendationsTitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginBottom: spacing.md,
-    textAlign: 'right',
-  },
-  recommendationsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  recommendationCard: {
-    width: '48%',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.md,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  recommendationCardFocused: {
-    borderColor: colors.primary,
-    borderWidth: 3,
-    transform: [{ scale: 1.02 }],
-  },
-  recommendationImage: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-  },
-  recommendationImagePlaceholder: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    backgroundColor: colors.backgroundLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 24,
-  },
-  recommendationTitle: {
-    fontSize: 12,
-    color: colors.text,
-    padding: spacing.sm,
-    textAlign: 'right',
-  },
-  suggestionsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-    padding: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  suggestionButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(138, 43, 226, 0.2)',
-    borderRadius: borderRadius.full,
-    borderWidth: 1,
-    borderColor: 'rgba(138, 43, 226, 0.3)',
-  },
-  suggestionText: {
-    fontSize: 13,
-    color: colors.secondary,
-  },
-  recordingStatus: {
-    padding: spacing.md,
-    alignItems: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-  },
-  recordingIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  recordingDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: colors.error,
-  },
-  recordingText: {
-    fontSize: 14,
-    color: colors.error,
-    fontWeight: '600',
-  },
-  transcriptPreview: {
-    fontSize: 14,
-    color: colors.primary,
-    fontStyle: 'italic',
-    marginTop: spacing.sm,
-  },
-  transcribingIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  transcribingText: {
-    fontSize: 14,
-    color: colors.primary,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.md,
-    gap: spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  voiceButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.secondary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-  voiceButtonFocused: {
-    borderColor: colors.primary,
-    transform: [{ scale: 1.1 }],
-  },
-  voiceButtonRecording: {
-    backgroundColor: colors.error,
-  },
-  voiceButtonIcon: {
-    fontSize: 24,
-  },
-  textInput: {
-    flex: 1,
-    height: 48,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.full,
-    paddingHorizontal: spacing.lg,
-    fontSize: 16,
-    color: colors.text,
-    textAlign: 'right',
-  },
-  sendButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  sendButtonFocused: {
-    borderColor: colors.primary,
-    borderWidth: 3,
-    transform: [{ scale: 1.1 }],
-  },
-  sendButtonDisabled: {
-    opacity: 0.5,
-  },
-  sendButtonIcon: {
-    fontSize: 18,
-    color: colors.text,
-    transform: [{ scaleX: -1 }], // Mirror for RTL
-  },
-});
 
 export default Chatbot;

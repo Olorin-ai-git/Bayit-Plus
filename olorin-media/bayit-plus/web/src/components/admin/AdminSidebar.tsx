@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, ScrollView } from 'react-native'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -195,28 +195,29 @@ export default function AdminSidebar({
         <View key={item.key}>
           <Pressable
             onPress={() => toggleExpand(item.key)}
-            style={({ hovered }: any) => [
-              styles.navButton,
-              isRTL && styles.navButtonRTL,
-              hovered && styles.navButtonHovered,
-            ]}
+            className={isRTL ? 'flex-row-reverse' : 'flex-row'}
           >
-            {Icon && <Icon size={18} color={colors.textSecondary} />}
-            <Text style={[styles.navText, isRTL && styles.navTextRTL]}>{t(item.labelKey, item.key)}</Text>
-            <View 
-              style={[
-                styles.chevron, 
-                isRTL && styles.chevronRTL,
-                isExpanded && styles.chevronExpanded,
-                // @ts-ignore - Web CSS
-                { transition: 'transform 0.3s ease' }
-              ]}
-            >
-              <ChevronRight size={16} color={colors.textSecondary} />
-            </View>
+            {({ hovered }: any) => (
+              <View
+                className={`flex-row items-center gap-2 px-4 py-3 rounded-lg ${
+                  isRTL ? 'flex-row-reverse' : ''
+                } ${hovered ? 'bg-white/5' : ''}`}
+              >
+                {Icon && <Icon size={18} color={colors.textSecondary} />}
+                <Text className={`flex-1 text-sm ${isRTL ? 'text-right' : ''}`} style={{ color: colors.textSecondary }}>
+                  {t(item.labelKey, item.key)}
+                </Text>
+                <View
+                  className={isRTL ? 'rotate-180' : ''}
+                  style={{ transform: [{ rotate: isExpanded ? '90deg' : '0deg' }], transition: 'transform 0.3s ease' } as any}
+                >
+                  <ChevronRight size={16} color={colors.textSecondary} />
+                </View>
+              </View>
+            )}
           </Pressable>
           {isExpanded && (
-            <View style={[styles.childrenContainer, isRTL && styles.childrenContainerRTL]}>
+            <View className={`gap-1 mt-1 ${isRTL ? 'mr-8' : 'ml-8'}`}>
               {item.children!.map((child) => renderNavItem(child, true))}
             </View>
           )}
@@ -233,14 +234,17 @@ export default function AdminSidebar({
         onClick={handleNavClick}
       >
         {({ isActive }) => (
-          <View style={[
-            styles.navButton,
-            isRTL && styles.navButtonRTL,
-            isActive && styles.navButtonActive,
-            isChild && styles.navButtonChild,
-          ]}>
+          <View
+            className={`flex-row items-center gap-2 px-4 py-3 rounded-lg ${
+              isRTL ? 'flex-row-reverse' : ''
+            } ${isChild ? (isRTL ? 'pr-12' : 'pl-12') : ''}`}
+            style={{ backgroundColor: isActive ? colors.glassPurple : 'transparent' }}
+          >
             {Icon && <Icon size={18} color={isActive ? colors.primary : colors.textSecondary} />}
-            <Text style={[styles.navText, isRTL && styles.navTextRTL, isActive && styles.navTextActive]}>
+            <Text
+              className={`flex-1 text-sm ${isRTL ? 'text-right' : ''}`}
+              style={{ color: isActive ? colors.primary : colors.textSecondary }}
+            >
               {t(item.labelKey, item.key)}
             </Text>
           </View>
@@ -255,20 +259,24 @@ export default function AdminSidebar({
 
   return (
     <GlassView
-      style={[
-        styles.container,
-        { width },
-        isRTL && styles.containerRTL,
-        isMobile && styles.containerMobile,
-        isDragging && styles.containerDragging,
-      ]}
+      className={`fixed top-0 bottom-0 border-r-0 z-100 ${
+        isRTL ? 'right-0 border-l border-l-white/10' : 'left-0 border-r border-r-white/10'
+      } ${isMobile ? 'max-w-[320px]' : ''} ${isDragging ? 'select-none' : ''}`}
+      style={{
+        width: isMobile ? '85%' : width,
+        borderRadius: 0,
+        transition: isDragging ? 'none' : 'width 0.3s ease',
+      } as any}
       intensity="high"
       noBorder
     >
       {/* Drag Handle */}
       {!isMobile && onDragStart && (
         <View
-          style={[styles.dragHandle, isRTL && styles.dragHandleRTL]}
+          className={`absolute top-0 bottom-0 w-3 justify-center items-center z-102 bg-transparent ${
+            isRTL ? 'left-0' : 'right-0'
+          }`}
+          style={{ cursor: 'ew-resize' } as any}
           // @ts-ignore - Web mouse events
           onMouseDown={onDragStart}
         >
@@ -277,52 +285,56 @@ export default function AdminSidebar({
       )}
 
       {/* Language Selector */}
-      <View style={styles.languageSection}>
+      <View className="p-4 border-b border-b-white/5">
         <Pressable
           onPress={() => setShowLanguageMenu(!showLanguageMenu)}
-          style={({ hovered }: any) => [
-            styles.languageButton,
-            isRTL && styles.languageButtonRTL,
-            hovered && styles.languageButtonHovered,
-          ]}
+          className={isRTL ? 'flex-row-reverse' : 'flex-row'}
         >
-          <Languages size={18} color={colors.textSecondary} />
-          <Text style={styles.languageFlag}>{currentLanguage.flag}</Text>
-          <Text style={[styles.languageText, isRTL && styles.textRTL]}>
-            {currentLanguage.label}
-          </Text>
-          <View 
-            style={[
-              styles.chevron, 
-              isRTL && styles.chevronRTL,
-              showLanguageMenu && styles.chevronExpanded,
-              // @ts-ignore - Web CSS
-              { transition: 'transform 0.3s ease' }
-            ]}
-          >
-            <ChevronRight size={16} color={colors.textSecondary} />
-          </View>
+          {({ hovered }: any) => (
+            <View
+              className={`flex-row items-center gap-2 px-4 py-2 rounded-lg ${
+                isRTL ? 'flex-row-reverse' : ''
+              }`}
+              style={{ backgroundColor: hovered ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)' }}
+            >
+              <Languages size={18} color={colors.textSecondary} />
+              <Text className="text-lg">{currentLanguage.flag}</Text>
+              <Text className={`flex-1 text-sm font-medium ${isRTL ? 'text-right' : ''}`} style={{ color: colors.text }}>
+                {currentLanguage.label}
+              </Text>
+              <View
+                className={isRTL ? 'rotate-180' : ''}
+                style={{ transform: [{ rotate: showLanguageMenu ? '90deg' : '0deg' }], transition: 'transform 0.3s ease' } as any}
+              >
+                <ChevronRight size={16} color={colors.textSecondary} />
+              </View>
+            </View>
+          )}
         </Pressable>
 
         {showLanguageMenu && (
-          <View style={[styles.languageMenu, isRTL && styles.languageMenuRTL]}>
+          <View className={`mt-2 rounded-lg overflow-hidden border border-white/10 ${isRTL ? '' : ''}`} style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
             {LANGUAGE_OPTIONS.map((lang) => (
               <Pressable
                 key={lang.code}
                 onPress={() => handleLanguageChange(lang.code)}
-                style={({ hovered }: any) => [
-                  styles.languageOption,
-                  isRTL && styles.languageOptionRTL,
-                  lang.code === i18n.language && styles.languageOptionActive,
-                  hovered && styles.languageOptionHovered,
-                ]}
+                className={`border-b border-b-white/5 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}
               >
-                <Text style={styles.languageOptionFlag}>{lang.flag}</Text>
-                <Text style={[styles.languageOptionText, isRTL && styles.textRTL]}>
-                  {lang.label}
-                </Text>
-                {lang.code === i18n.language && (
-                  <Check size={16} color={colors.primary} />
+                {({ hovered }: any) => (
+                  <View
+                    className={`flex-row items-center gap-2 px-4 py-3 ${isRTL ? 'flex-row-reverse' : ''}`}
+                    style={{
+                      backgroundColor: lang.code === i18n.language ? colors.glassPurpleLight : (hovered ? 'rgba(255, 255, 255, 0.05)' : 'transparent')
+                    }}
+                  >
+                    <Text className="text-lg">{lang.flag}</Text>
+                    <Text className={`flex-1 text-sm ${isRTL ? 'text-right' : ''}`} style={{ color: colors.text }}>
+                      {lang.label}
+                    </Text>
+                    {lang.code === i18n.language && (
+                      <Check size={16} color={colors.primary} />
+                    )}
+                  </View>
                 )}
               </Pressable>
             ))}
@@ -331,241 +343,44 @@ export default function AdminSidebar({
       </View>
 
       {/* Navigation */}
-      <ScrollView style={styles.nav} contentContainerStyle={styles.navContent}>
+      <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.sm, gap: spacing.xs }}>
         {NAV_ITEMS.map((item) => renderNavItem(item))}
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
+      <View className="p-2 border-t border-t-white/5 gap-1">
         <Link to="/" style={{ textDecoration: 'none' }} onClick={handleNavClick}>
-          <Pressable style={({ hovered }: any) => [
-            styles.footerButton,
-            isRTL && styles.footerButtonRTL,
-            hovered && styles.footerButtonHovered,
-          ]}>
-            <Home size={18} color={colors.textSecondary} />
-            <Text style={[styles.footerText, isRTL && styles.textRTL]}>
-              {t('admin.backToApp', 'Back to App')}
-            </Text>
+          <Pressable className={isRTL ? 'flex-row-reverse' : 'flex-row'}>
+            {({ hovered }: any) => (
+              <View
+                className={`flex-row items-center gap-2 px-4 py-3 rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}
+                style={{ backgroundColor: hovered ? 'rgba(255, 255, 255, 0.05)' : 'transparent' }}
+              >
+                <Home size={18} color={colors.textSecondary} />
+                <Text className={`text-sm ${isRTL ? 'text-right' : ''}`} style={{ color: colors.textSecondary }}>
+                  {t('admin.backToApp', 'Back to App')}
+                </Text>
+              </View>
+            )}
           </Pressable>
         </Link>
         <Pressable
           onPress={handleLogout}
-          style={({ hovered }: any) => [
-            styles.footerButton,
-            isRTL && styles.footerButtonRTL,
-            styles.logoutButton,
-            hovered && styles.logoutButtonHovered,
-          ]}
+          className={isRTL ? 'flex-row-reverse' : 'flex-row'}
         >
-          <LogOut size={18} color={colors.error} />
-          <Text style={[styles.logoutText, isRTL && styles.textRTL]}>
-            {t('account.logout', 'Logout')}
-          </Text>
+          {({ hovered }: any) => (
+            <View
+              className={`flex-row items-center gap-2 px-4 py-3 rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}
+              style={{ backgroundColor: hovered ? 'rgba(239, 68, 68, 0.1)' : 'transparent' }}
+            >
+              <LogOut size={18} color={colors.error} />
+              <Text className={`text-sm ${isRTL ? 'text-right' : ''}`} style={{ color: colors.error }}>
+                {t('account.logout', 'Logout')}
+              </Text>
+            </View>
+          )}
         </Pressable>
       </View>
     </GlassView>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'fixed' as any,
-    top: 0,
-    left: 0,
-    bottom: 0,
-    borderRightWidth: 1,
-    borderRightColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 0,
-    zIndex: 100,
-    transition: 'width 0.3s ease' as any,
-  },
-  containerRTL: {
-    left: 'auto' as any,
-    right: 0,
-    borderRightWidth: 0,
-    borderLeftWidth: 1,
-    borderLeftColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  containerMobile: {
-    width: '85%',
-    maxWidth: 320,
-  },
-  containerDragging: {
-    transition: 'none' as any,
-    userSelect: 'none' as any,
-  },
-  dragHandle: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    right: 0,
-    width: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    cursor: 'ew-resize' as any,
-    zIndex: 102,
-    backgroundColor: 'transparent',
-  },
-  dragHandleRTL: {
-    right: 'auto' as any,
-    left: 0,
-  },
-  languageSection: {
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  languageButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-  },
-  languageButtonRTL: {
-    flexDirection: 'row-reverse',
-  },
-  languageButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  languageFlag: {
-    fontSize: 18,
-  },
-  languageText: {
-    flex: 1,
-    fontSize: 14,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  languageMenu: {
-    marginTop: spacing.sm,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    overflow: 'hidden',
-  },
-  languageMenuRTL: {
-    // RTL specific styles if needed
-  },
-  languageOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  languageOptionRTL: {
-    flexDirection: 'row-reverse',
-  },
-  languageOptionHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  languageOptionActive: {
-    backgroundColor: colors.glassPurpleLight,  // Purple-tinted glass for active state
-  },
-  languageOptionFlag: {
-    fontSize: 18,
-  },
-  languageOptionText: {
-    flex: 1,
-    fontSize: 14,
-    color: colors.text,
-  },
-  nav: {
-    flex: 1,
-  },
-  navContent: {
-    padding: spacing.sm,
-    gap: spacing.xs,
-  },
-  navButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
-    borderRadius: borderRadius.md,
-  },
-  navButtonRTL: {
-    flexDirection: 'row-reverse',
-  },
-  navButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  navButtonActive: {
-    backgroundColor: colors.glassPurple,  // Purple-tinted glass for active nav
-  },
-  navButtonChild: {
-    paddingRight: spacing.xl,
-  },
-  navText: {
-    flex: 1,
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  navTextRTL: {
-    textAlign: 'right',
-  },
-  navTextActive: {
-    color: colors.primary,
-  },
-  chevron: {
-    transform: [{ rotate: '0deg' }],
-  },
-  chevronRTL: {
-    transform: [{ rotate: '180deg' }],
-  },
-  chevronExpanded: {
-    transform: [{ rotate: '90deg' }],
-  },
-  childrenContainer: {
-    marginLeft: spacing.lg,
-    marginTop: spacing.xs,
-    gap: spacing.xs,
-  },
-  childrenContainerRTL: {
-    marginLeft: 0,
-    marginRight: spacing.lg,
-  },
-  footer: {
-    padding: spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.05)',
-    gap: spacing.xs,
-  },
-  footerButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
-    borderRadius: borderRadius.md,
-  },
-  footerButtonRTL: {
-    flexDirection: 'row-reverse',
-  },
-  footerButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  footerText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  logoutButton: {},
-  logoutButtonHovered: {
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-  },
-  logoutText: {
-    fontSize: 14,
-    color: colors.error,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-})

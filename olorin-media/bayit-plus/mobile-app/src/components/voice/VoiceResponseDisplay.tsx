@@ -13,7 +13,6 @@ import {
   View,
   Text,
   Animated,
-  StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 import { VoiceCommandResponse } from '../../services/backendProxyService';
@@ -74,36 +73,35 @@ export const VoiceResponseDisplay: React.FC<VoiceResponseDisplayProps> = ({
 
   return (
     <Animated.View
-      style={[
-        styles.container,
-        {
-          opacity: fadeAnimation,
-        },
-      ]}
+      className="bg-slate-800 rounded-lg mx-4 my-2 border border-slate-700 overflow-hidden"
+      style={{
+        opacity: fadeAnimation,
+      }}
     >
-      <View style={styles.content}>
+      <View className="p-3">
         {/* Status and Command Type */}
-        <View style={styles.header}>
-          <View style={[styles.statusBadge, { backgroundColor: statusColor }]}>
-            <Text style={styles.statusIcon}>{statusIcon}</Text>
+        <View className="flex-row items-start gap-3 mb-3">
+          <View
+            className="w-7 h-7 rounded-full justify-center items-center mt-0.5"
+            style={{ backgroundColor: statusColor }}
+          >
+            <Text className="text-base font-bold text-white">{statusIcon}</Text>
           </View>
-          <View style={styles.headerText}>
-            <Text style={styles.title}>
+          <View className="flex-1">
+            <Text className="text-sm font-semibold text-slate-100 mb-1">
               {response.success ? 'Command Recognized' : 'Command Failed'}
             </Text>
-            <View style={styles.commandTypeRow}>
+            <View className="flex-row items-center gap-2">
               <View
-                style={[
-                  styles.commandTypeBadge,
-                  { backgroundColor: commandTypeColor },
-                ]}
+                className="px-2 py-0.5 rounded"
+                style={{ backgroundColor: commandTypeColor }}
               >
-                <Text style={styles.commandTypeText}>
+                <Text className="text-xs font-semibold text-white capitalize">
                   {response.commandType}
                 </Text>
               </View>
               {response.confidence && (
-                <Text style={styles.confidenceText}>
+                <Text className="text-xs text-slate-400">
                   {(response.confidence * 100).toFixed(0)}% confident
                 </Text>
               )}
@@ -111,34 +109,34 @@ export const VoiceResponseDisplay: React.FC<VoiceResponseDisplayProps> = ({
           </View>
           <TouchableOpacity
             onPress={handleDismiss}
-            style={styles.closeButton}
+            className="p-1"
           >
-            <Text style={styles.closeIcon}>✕</Text>
+            <Text className="text-lg text-slate-600">✕</Text>
           </TouchableOpacity>
         </View>
 
         {/* Response Text */}
-        <Text style={styles.responseText}>
+        <Text className="text-xs text-slate-200 leading-tight mb-3">
           {response.responseText}
         </Text>
 
         {/* Action Details */}
         {response.action && (
-          <View style={styles.actionBox}>
-            <Text style={styles.actionLabel}>Action:</Text>
-            <Text style={styles.actionText}>{response.action}</Text>
+          <View className="bg-slate-900 rounded p-2 mb-2 border-l-4 border-blue-600">
+            <Text className="text-xs text-slate-400 mb-1">Action:</Text>
+            <Text className="text-xs text-slate-100">{response.action}</Text>
           </View>
         )}
 
         {/* Action Data */}
         {response.actionData && (
-          <View style={styles.dataBox}>
-            <Text style={styles.dataLabel}>Details:</Text>
-            <View style={styles.dataContent}>
+          <View className="bg-slate-900 rounded p-2 border-l-4 border-purple-600">
+            <Text className="text-xs text-slate-400 mb-1.5">Details:</Text>
+            <View className="gap-1">
               {Object.entries(response.actionData).map(([key, value]) => (
-                <View key={key} style={styles.dataItem}>
-                  <Text style={styles.dataKey}>{key}:</Text>
-                  <Text style={styles.dataValue}>
+                <View key={key} className="flex-row justify-between items-center">
+                  <Text className="text-xs text-slate-600 font-medium">{key}:</Text>
+                  <Text className="text-xs text-slate-300">
                     {typeof value === 'string' ? value : JSON.stringify(value)}
                   </Text>
                 </View>
@@ -165,129 +163,3 @@ const getCommandTypeColor = (commandType: string): string => {
   };
   return colors[commandType] || '#6B7280';
 };
-
-// ============================================
-// Styles
-// ============================================
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#1E293B',
-    borderRadius: 8,
-    marginHorizontal: 16,
-    marginVertical: 8,
-    borderWidth: 1,
-    borderColor: '#334155',
-    overflow: 'hidden',
-  },
-  content: {
-    padding: 12,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-    marginBottom: 12,
-  },
-  statusBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 2,
-  },
-  statusIcon: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  headerText: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#F1F5F9',
-    marginBottom: 4,
-  },
-  commandTypeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  commandTypeBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  commandTypeText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    textTransform: 'capitalize',
-  },
-  confidenceText: {
-    fontSize: 11,
-    color: '#94A3B8',
-  },
-  closeButton: {
-    padding: 4,
-  },
-  closeIcon: {
-    fontSize: 18,
-    color: '#64748B',
-  },
-  responseText: {
-    fontSize: 13,
-    color: '#E2E8F0',
-    lineHeight: 18,
-    marginBottom: 12,
-  },
-  actionBox: {
-    backgroundColor: '#0F172A',
-    borderRadius: 4,
-    padding: 8,
-    marginBottom: 8,
-    borderLeftWidth: 3,
-    borderLeftColor: '#3B82F6',
-  },
-  actionLabel: {
-    fontSize: 11,
-    color: '#94A3B8',
-    marginBottom: 4,
-  },
-  actionText: {
-    fontSize: 12,
-    color: '#F1F5F9',
-  },
-  dataBox: {
-    backgroundColor: '#0F172A',
-    borderRadius: 4,
-    padding: 8,
-    borderLeftWidth: 3,
-    borderLeftColor: '#8B5CF6',
-  },
-  dataLabel: {
-    fontSize: 11,
-    color: '#94A3B8',
-    marginBottom: 6,
-  },
-  dataContent: {
-    gap: 4,
-  },
-  dataItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  dataKey: {
-    fontSize: 11,
-    color: '#64748B',
-    fontWeight: '500',
-  },
-  dataValue: {
-    fontSize: 11,
-    color: '#CBD5E1',
-  },
-});

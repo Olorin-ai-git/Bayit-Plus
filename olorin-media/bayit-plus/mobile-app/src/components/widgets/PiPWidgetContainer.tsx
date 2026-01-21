@@ -12,7 +12,7 @@
  */
 
 import React, { useCallback, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Dimensions, Platform, Linking } from 'react-native';
+import { View, Text, Pressable, Dimensions, Platform, Linking } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -238,16 +238,16 @@ export default function PiPWidgetContainer({ widgetId, streamUrl }: PiPWidgetCon
 
   // Render loading state
   const renderLoading = () => (
-    <View style={styles.loadingContainer}>
-      <View style={styles.spinner} />
-      <Text style={styles.loadingText}>Loading...</Text>
+    <View className="flex-1 justify-center items-center bg-black/80">
+      <View className="w-6 h-6 rounded-full border-2 border-white/30 border-t-white" />
+      <Text className="mt-3 text-xs text-white/60">Loading...</Text>
     </View>
   );
 
   // Render error state
   const renderError = (errorMessage: string) => (
-    <View style={styles.errorContainer}>
-      <Text style={styles.errorText}>{errorMessage}</Text>
+    <View className="flex-1 justify-center items-center bg-black/80">
+      <Text className="text-xs text-white/60">{errorMessage}</Text>
     </View>
   );
 
@@ -266,7 +266,7 @@ export default function PiPWidgetContainer({ widgetId, streamUrl }: PiPWidgetCon
           return renderError('Stream unavailable');
         }
         return (
-          <View style={styles.playerWrapper}>
+          <View className="w-full h-full justify-center items-center">
             <MobileVideoPlayer
               src={streamUrl}
               title={widget.title}
@@ -281,7 +281,7 @@ export default function PiPWidgetContainer({ widgetId, streamUrl }: PiPWidgetCon
           return renderError('Content unavailable');
         }
         return (
-          <View style={styles.playerWrapper}>
+          <View className="w-full h-full justify-center items-center">
             <MobileVideoPlayer
               src={streamUrl}
               title={widget.title}
@@ -296,7 +296,7 @@ export default function PiPWidgetContainer({ widgetId, streamUrl }: PiPWidgetCon
           return renderError('Podcast unavailable');
         }
         return (
-          <View style={styles.playerWrapper}>
+          <View className="w-full h-full justify-center items-center">
             <MobileAudioPlayer
               src={streamUrl}
               title={widget.title}
@@ -312,7 +312,7 @@ export default function PiPWidgetContainer({ widgetId, streamUrl }: PiPWidgetCon
           return renderError('Station unavailable');
         }
         return (
-          <View style={styles.playerWrapper}>
+          <View className="w-full h-full justify-center items-center">
             <MobileAudioPlayer
               src={streamUrl}
               title={widget.title}
@@ -328,14 +328,14 @@ export default function PiPWidgetContainer({ widgetId, streamUrl }: PiPWidgetCon
           return renderError('iFrame URL not configured');
         }
         return (
-          <View style={styles.playerWrapper}>
-            <View style={styles.iframeContainer}>
-              <Text style={styles.iframeText}>External content</Text>
+          <View className="w-full h-full justify-center items-center">
+            <View className="flex-1 justify-center items-center p-4">
+              <Text className="text-xs text-white/60 mb-3">External content</Text>
               <Pressable
-                style={styles.iframeButton}
+                className="px-4 py-2 bg-white/10 rounded-lg border border-white/20"
                 onPress={() => Linking.openURL(widget.content.iframe_url!)}
               >
-                <Text style={styles.iframeButtonText}>Open in browser</Text>
+                <Text className="text-xs text-white font-medium">Open in browser</Text>
               </Pressable>
             </View>
           </View>
@@ -354,25 +354,36 @@ export default function PiPWidgetContainer({ widgetId, streamUrl }: PiPWidgetCon
   return (
     <GestureDetector gesture={composedGesture}>
       <Animated.View
+        className="rounded-xl overflow-hidden"
         style={[
-          styles.container,
           {
             zIndex: position.z_index,
             position: 'absolute',
             top: 0,
             left: 0,
+            ...Platform.select({
+              ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.4,
+                shadowRadius: 16,
+              },
+              android: {
+                elevation: 8,
+              },
+            }),
           },
           animatedStyle,
         ]}
       >
-        <View style={styles.glassContainer}>
+        <View className="w-full h-full bg-[rgba(20,20,35,0.85)] border border-white/10 rounded-xl overflow-hidden">
           {/* Header Bar */}
-          <View style={styles.headerBar}>
+          <View className="flex-row items-center justify-between px-3 py-2 bg-black/70 border-b border-white/10 min-h-[44px]">
             {/* Controls */}
-            <View style={styles.controlsContainer}>
+            <View className="flex-row items-center gap-2">
               {/* Minimize/Expand Button */}
               <Pressable
-                style={styles.controlButton}
+                className="w-8 h-8 rounded-full bg-white/10 justify-center items-center"
                 onPress={state === 'minimized' ? expand : minimize}
               >
                 {state === 'minimized' ? (
@@ -383,27 +394,27 @@ export default function PiPWidgetContainer({ widgetId, streamUrl }: PiPWidgetCon
               </Pressable>
 
               {/* Refresh Button */}
-              <Pressable style={styles.controlButton} onPress={handleRefresh}>
+              <Pressable className="w-8 h-8 rounded-full bg-white/10 justify-center items-center" onPress={handleRefresh}>
                 <RefreshCw size={14} color="#fff" />
               </Pressable>
 
               {/* Mute Button */}
-              <Pressable style={styles.controlButton} onPress={toggleMute}>
+              <Pressable className="w-8 h-8 rounded-full bg-white/10 justify-center items-center" onPress={toggleMute}>
                 {isMuted ? <VolumeX size={14} color="#fff" /> : <Volume2 size={14} color="#fff" />}
               </Pressable>
 
               {/* Close Button */}
               {widget.is_closable && (
-                <Pressable style={styles.controlButton} onPress={close}>
+                <Pressable className="w-8 h-8 rounded-full bg-white/10 justify-center items-center" onPress={close}>
                   <X size={14} color="#fff" />
                 </Pressable>
               )}
             </View>
 
             {/* Title */}
-            <View style={styles.titleContainer}>
-              {widget.icon && <Text style={styles.icon}>{widget.icon}</Text>}
-              <Text style={styles.title} numberOfLines={1}>
+            <View className="flex-row items-center gap-1.5 flex-1 ml-3">
+              {widget.icon && <Text className="text-sm">{widget.icon}</Text>}
+              <Text className="text-xs font-semibold text-white" numberOfLines={1}>
                 {widget.title}
               </Text>
             </View>
@@ -412,13 +423,11 @@ export default function PiPWidgetContainer({ widgetId, streamUrl }: PiPWidgetCon
           {/* Content - hidden when minimized */}
           {state !== 'minimized' && (
             <View
-              style={[
-                styles.contentWrapper,
-                // Transparent background for audio content
-                (widget.content.content_type === 'podcast' ||
-                  widget.content.content_type === 'radio') &&
-                  styles.contentWrapperTransparent,
-              ]}
+              className={`w-full flex-1 ${
+                widget.content.content_type === 'podcast' || widget.content.content_type === 'radio'
+                  ? 'bg-transparent'
+                  : 'bg-black'
+              }`}
             >
               {renderContent()}
             </View>
@@ -428,136 +437,3 @@ export default function PiPWidgetContainer({ widgetId, streamUrl }: PiPWidgetCon
     </GestureDetector>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 12,
-    overflow: 'hidden',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.4,
-        shadowRadius: 16,
-      },
-      android: {
-        elevation: 8,
-      },
-    }),
-  },
-  glassContainer: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(20, 20, 35, 0.85)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  headerBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-    minHeight: 44, // iOS touch target
-  },
-  controlsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  controlButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    flex: 1,
-    marginLeft: 12,
-  },
-  icon: {
-    fontSize: 14,
-  },
-  title: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  contentWrapper: {
-    width: '100%',
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  contentWrapperTransparent: {
-    backgroundColor: 'transparent',
-  },
-  playerWrapper: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-  },
-  spinner: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    borderTopColor: '#fff',
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-  },
-  errorText: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
-  },
-  iframeContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  iframeText: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginBottom: 12,
-  },
-  iframeButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  iframeButtonText: {
-    fontSize: 12,
-    color: '#fff',
-    fontWeight: '500',
-  },
-});

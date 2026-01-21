@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react'
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native'
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { ChatRecommendations } from './ChatRecommendations'
 import type { Message } from './types'
@@ -29,16 +29,13 @@ export function ChatMessageList({
   return (
     <ScrollView
       ref={messagesEndRef}
-      style={styles.container}
-      contentContainerStyle={styles.content}
+      className="flex-1"
+      contentContainerStyle={{ padding: spacing.md, gap: spacing.md }}
     >
       {messages.map((message, index) => (
         <View
           key={index}
-          style={[
-            styles.messageRow,
-            message.role === 'user' ? styles.messageRowUser : styles.messageRowAssistant,
-          ]}
+          className={\`mb-2 \${message.role === 'user' ? 'items-start' : 'items-end'}\`}
         >
           {message.type === 'recommendations' ? (
             <ChatRecommendations
@@ -48,18 +45,18 @@ export function ChatMessageList({
             />
           ) : (
             <View
-              style={[
-                styles.messageBubble,
-                message.role === 'user' && styles.messageBubbleUser,
-                message.role === 'assistant' && !message.isError && styles.messageBubbleAssistant,
-                message.isError && styles.messageBubbleError,
-              ]}
+              className={\`max-w-[80%] \${IS_TV ? 'px-6 py-4' : 'px-4 py-2'} rounded-lg \${
+                message.role === 'user'
+                  ? 'bg-[#8a2be2] rounded-tr-sm'
+                  : message.isError
+                  ? 'bg-[rgba(239,68,68,0.2)] rounded-tl-sm'
+                  : 'bg-white/10 rounded-tl-sm'
+              }\`}
             >
               <Text
-                style={[
-                  styles.messageText,
-                  message.isError && styles.messageTextError,
-                ]}
+                className={\`\${IS_TV ? 'text-[22px] leading-8' : 'text-sm leading-5'} \${
+                  message.isError ? 'text-[#ef4444]' : 'text-white'
+                }\`}
               >
                 {typeof message.content === 'string' ? message.content : ''}
               </Text>
@@ -69,8 +66,8 @@ export function ChatMessageList({
       ))}
 
       {isLoading && (
-        <View style={[styles.messageRow, styles.messageRowAssistant]}>
-          <View style={styles.loadingBubble}>
+        <View className="mb-2 items-end">
+          <View className="bg-white/10 px-4 py-2 rounded-lg rounded-tl-sm">
             <ActivityIndicator size="small" color={colors.primary} />
           </View>
         </View>
@@ -78,55 +75,3 @@ export function ChatMessageList({
     </ScrollView>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    padding: spacing.md,
-    gap: spacing.md,
-  },
-  messageRow: {
-    marginBottom: spacing.sm,
-  },
-  messageRowUser: {
-    alignItems: 'flex-start',
-  },
-  messageRowAssistant: {
-    alignItems: 'flex-end',
-  },
-  messageBubble: {
-    maxWidth: '80%',
-    paddingHorizontal: IS_TV ? spacing.lg : spacing.md,
-    paddingVertical: IS_TV ? spacing.md : spacing.sm + 2,
-    borderRadius: borderRadius.lg,
-  },
-  messageBubbleUser: {
-    backgroundColor: colors.primary,
-    borderTopRightRadius: borderRadius.sm,
-  },
-  messageBubbleAssistant: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderTopLeftRadius: borderRadius.sm,
-  },
-  messageBubbleError: {
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-    borderTopLeftRadius: borderRadius.sm,
-  },
-  messageText: {
-    fontSize: IS_TV ? 22 : 14,
-    color: colors.text,
-    lineHeight: IS_TV ? 32 : 20,
-  },
-  messageTextError: {
-    color: colors.error,
-  },
-  loadingBubble: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
-    borderRadius: borderRadius.lg,
-    borderTopLeftRadius: borderRadius.sm,
-  },
-})

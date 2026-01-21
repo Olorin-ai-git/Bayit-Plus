@@ -9,7 +9,6 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-  StyleSheet,
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -79,11 +78,11 @@ export const SupportDocViewer: React.FC = () => {
     const flushList = () => {
       if (listItems.length > 0) {
         elements.push(
-          <View key={`list-${elements.length}`} style={styles.list}>
+          <View key={`list-${elements.length}`} className="mb-3 md:mb-4">
             {listItems.map((item, idx) => (
-              <View key={idx} style={styles.listItem}>
-                <Text style={styles.listBullet}>•</Text>
-                <Text style={[styles.listText, { textAlign }]}>{item}</Text>
+              <View key={idx} className="flex-row items-start mb-1">
+                <Text className={`${isTV ? 'text-base' : 'text-sm'} text-purple-500 mr-2 mt-0.5`}>•</Text>
+                <Text className={`flex-1 ${isTV ? 'text-base' : 'text-sm'} text-gray-400 ${isTV ? 'leading-6' : 'leading-5'}`} style={{ textAlign }}>{item}</Text>
               </View>
             ))}
           </View>
@@ -106,7 +105,7 @@ export const SupportDocViewer: React.FC = () => {
       if (trimmedLine.startsWith('# ')) {
         if (isInList) flushList();
         elements.push(
-          <Text key={index} style={[styles.heading1, { textAlign }]}>
+          <Text key={index} className={`${isTV ? 'text-3xl' : 'text-2xl'} font-bold text-white mt-4 md:mt-6 mb-3 md:mb-4`} style={{ textAlign }}>
             {trimmedLine.substring(2)}
           </Text>
         );
@@ -116,7 +115,7 @@ export const SupportDocViewer: React.FC = () => {
       if (trimmedLine.startsWith('## ')) {
         if (isInList) flushList();
         elements.push(
-          <Text key={index} style={[styles.heading2, { textAlign }]}>
+          <Text key={index} className={`${isTV ? 'text-2xl' : 'text-lg'} font-semibold text-white mt-4 md:mt-6 mb-2`} style={{ textAlign }}>
             {trimmedLine.substring(3)}
           </Text>
         );
@@ -126,7 +125,7 @@ export const SupportDocViewer: React.FC = () => {
       if (trimmedLine.startsWith('### ')) {
         if (isInList) flushList();
         elements.push(
-          <Text key={index} style={[styles.heading3, { textAlign }]}>
+          <Text key={index} className={`${isTV ? 'text-lg' : 'text-base'} font-semibold text-white mt-3 md:mt-4 mb-2`} style={{ textAlign }}>
             {trimmedLine.substring(4)}
           </Text>
         );
@@ -158,7 +157,7 @@ export const SupportDocViewer: React.FC = () => {
         .replace(/\[(.+?)\]\(.+?\)/g, '$1');
 
       elements.push(
-        <Text key={index} style={[styles.paragraph, { textAlign }]}>
+        <Text key={index} className={`${isTV ? 'text-base' : 'text-sm'} text-gray-400 ${isTV ? 'leading-7' : 'leading-6'} mb-3 md:mb-4`} style={{ textAlign }}>
           {text}
         </Text>
       );
@@ -172,9 +171,9 @@ export const SupportDocViewer: React.FC = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 items-center justify-center gap-3 md:gap-4">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[styles.loadingText, { textAlign }]}>
+        <Text className={`${isTV ? 'text-base' : 'text-sm'} text-gray-400`} style={{ textAlign }}>
           {t('support.docs.loading', 'Loading document...')}
         </Text>
       </View>
@@ -183,11 +182,11 @@ export const SupportDocViewer: React.FC = () => {
 
   if (error) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorIcon}>⚠️</Text>
-        <Text style={[styles.errorText, { textAlign }]}>{error}</Text>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Text style={styles.backButtonText}>
+      <View className="flex-1 items-center justify-center gap-3 md:gap-4">
+        <Text className={`${isTV ? 'text-5xl' : 'text-4xl'}`}>⚠️</Text>
+        <Text className={`${isTV ? 'text-base' : 'text-sm'} text-red-500`} style={{ textAlign }}>{error}</Text>
+        <TouchableOpacity className="bg-purple-500 px-4 md:px-6 py-2 md:py-3 rounded-lg mt-3 md:mt-4" onPress={handleBack}>
+          <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-black`}>
             {t('common.back', 'Back')}
           </Text>
         </TouchableOpacity>
@@ -196,23 +195,23 @@ export const SupportDocViewer: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1">
       {/* Back button */}
-      <TouchableOpacity style={styles.backLink} onPress={handleBack}>
-        <Text style={styles.backLinkIcon}>{isRTL ? '→' : '←'}</Text>
-        <Text style={styles.backLinkText}>
+      <TouchableOpacity className="flex-row items-center gap-1 mb-3 md:mb-4" onPress={handleBack}>
+        <Text className={`${isTV ? 'text-lg' : 'text-base'} text-purple-500`}>{isRTL ? '→' : '←'}</Text>
+        <Text className={`${isTV ? 'text-base' : 'text-sm'} text-purple-500 font-medium`}>
           {t('support.docs.backToList', 'Back to documentation')}
         </Text>
       </TouchableOpacity>
 
       {/* Document title */}
-      <Text style={[styles.docTitle, { textAlign }]}>{title}</Text>
+      <Text className={`${isTV ? 'text-3xl' : 'text-2xl'} font-bold text-white mb-4 md:mb-6`} style={{ textAlign }}>{title}</Text>
 
       {/* Document content */}
-      <GlassView style={styles.contentContainer}>
+      <GlassView className="flex-1 p-4 md:p-6 rounded-2xl">
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.contentScroll}
+          contentContainerClassName="pb-16 md:pb-24"
         >
           {renderMarkdown(content)}
         </ScrollView>
@@ -220,122 +219,5 @@ export const SupportDocViewer: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  backLink: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginBottom: spacing.md,
-  },
-  backLinkIcon: {
-    fontSize: isTV ? 18 : 16,
-    color: colors.primary,
-  },
-  backLinkText: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  docTitle: {
-    fontSize: isTV ? 28 : 24,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: spacing.lg,
-  },
-  contentContainer: {
-    flex: 1,
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-  },
-  contentScroll: {
-    paddingBottom: spacing.xl,
-  },
-  heading1: {
-    fontSize: isTV ? 26 : 22,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginTop: spacing.lg,
-    marginBottom: spacing.md,
-  },
-  heading2: {
-    fontSize: isTV ? 22 : 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-  },
-  heading3: {
-    fontSize: isTV ? 18 : 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  paragraph: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 26 : 22,
-    marginBottom: spacing.md,
-  },
-  list: {
-    marginBottom: spacing.md,
-  },
-  listItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: spacing.xs,
-  },
-  listBullet: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.primary,
-    marginRight: spacing.sm,
-    marginTop: 2,
-  },
-  listText: {
-    flex: 1,
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 24 : 20,
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.md,
-  },
-  loadingText: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-  },
-  errorContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.md,
-  },
-  errorIcon: {
-    fontSize: isTV ? 48 : 36,
-  },
-  errorText: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.error,
-  },
-  backButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.lg,
-    marginTop: spacing.md,
-  },
-  backButtonText: {
-    fontSize: isTV ? 14 : 12,
-    fontWeight: '600',
-    color: colors.background,
-  },
-});
 
 export default SupportDocViewer;

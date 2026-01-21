@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { Link } from 'react-router-dom';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 import { GlassCard } from '@bayit/shared/ui';
 
 interface Trend {
@@ -38,25 +38,25 @@ export default function StatCard({
   const colorStyle = colorMap[color];
 
   const content = (
-    <GlassCard style={[styles.card, to && styles.cardClickable]}>
-      <View style={styles.header}>
+    <GlassCard className="p-4 h-full">
+      <View className="flex-row items-start gap-2 mb-2">
         {icon && (
-          <View style={[styles.iconContainer, { backgroundColor: colorStyle.bg }]}>
-            <Text style={styles.icon}>{icon}</Text>
+          <View className="w-11 h-11 rounded-lg justify-center items-center" style={{ backgroundColor: colorStyle.bg }}>
+            <Text className="text-xl">{icon}</Text>
           </View>
         )}
-        <View style={styles.titleContainer}>
-          <Text style={styles.title} numberOfLines={1}>{title}</Text>
-          {subtitle && <Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text>}
+        <View className="flex-1">
+          <Text className="text-sm" numberOfLines={1} style={{ color: colors.textMuted }}>{title}</Text>
+          {subtitle && <Text className="text-xs opacity-70" numberOfLines={1} style={{ color: colors.textMuted }}>{subtitle}</Text>}
         </View>
       </View>
 
-      <View style={styles.footer}>
-        <Text style={[styles.value, { color: colorStyle.text }]}>{value}</Text>
+      <View className="flex-row items-center justify-between">
+        <Text className="text-2xl font-bold" style={{ color: colorStyle.text }}>{value}</Text>
 
         {trend && (
-          <View style={[styles.trendBadge, trend.isPositive ? styles.trendPositive : styles.trendNegative]}>
-            <Text style={[styles.trendText, trend.isPositive ? styles.trendTextPositive : styles.trendTextNegative]}>
+          <View className={`px-2 py-1 rounded ${trend.isPositive ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
+            <Text className="text-xs font-semibold" style={{ color: trend.isPositive ? '#22C55E' : '#EF4444' }}>
               {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}%
             </Text>
           </View>
@@ -67,7 +67,7 @@ export default function StatCard({
 
   if (to) {
     return (
-      <View style={styles.wrapper}>
+      <View className="flex-[1_1_23%] min-w-[200px] max-w-[300px]">
         <Link to={to} style={{ textDecoration: 'none', flex: 1 }}>
           {content}
         </Link>
@@ -75,80 +75,5 @@ export default function StatCard({
     );
   }
 
-  return <View style={styles.wrapper}>{content}</View>;
+  return <View className="flex-[1_1_23%] min-w-[200px] max-w-[300px]">{content}</View>;
 }
-
-const styles = StyleSheet.create({
-  wrapper: {
-    flexBasis: '23%',
-    flexGrow: 1,
-    flexShrink: 0,
-    minWidth: 200,
-    maxWidth: 300,
-  },
-  card: {
-    padding: spacing.md,
-    height: '100%',
-  },
-  cardClickable: {
-    // Hover styles handled by web CSS
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  iconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  icon: {
-    fontSize: 20,
-  },
-  titleContainer: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  subtitle: {
-    fontSize: 12,
-    color: colors.textMuted,
-    opacity: 0.7,
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  value: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  trendBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-  },
-  trendPositive: {
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-  },
-  trendNegative: {
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-  },
-  trendText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  trendTextPositive: {
-    color: '#22C55E',
-  },
-  trendTextNegative: {
-    color: '#EF4444',
-  },
-});

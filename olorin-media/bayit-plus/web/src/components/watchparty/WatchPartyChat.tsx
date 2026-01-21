@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
-import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors } from '@bayit/shared/theme'
 import WatchPartyChatInput from './WatchPartyChatInput'
 
 interface Message {
@@ -31,32 +31,29 @@ function ChatMessage({ message, isOwnMessage }: { message: Message; isOwnMessage
 
   if (isSystem) {
     return (
-      <View style={styles.systemMessage}>
-        <Text style={styles.systemText}>{message.content}</Text>
+      <View className="items-center py-2">
+        <Text className="text-xs text-gray-400 bg-white/5 px-4 py-2 rounded-full">{message.content}</Text>
       </View>
     )
   }
 
+  const bubbleClass = isEmoji
+    ? 'bg-transparent px-0 py-0'
+    : isOwnMessage
+      ? 'bg-purple-700/30'
+      : 'bg-white/10'
+
   return (
-    <View style={[styles.messageRow, isOwnMessage && styles.messageRowOwn]}>
-      <View
-        style={[
-          styles.messageBubble,
-          isEmoji
-            ? styles.emojiBubble
-            : isOwnMessage
-              ? styles.ownBubble
-              : styles.otherBubble,
-        ]}
-      >
+    <View className={`flex-row ${isOwnMessage ? 'flex-row-reverse' : ''}`}>
+      <View className={`max-w-[80%] rounded-2xl px-4 py-3 ${bubbleClass}`}>
         {!isOwnMessage && !isEmoji && (
-          <Text style={styles.senderName}>{message.user_name}</Text>
+          <Text className="text-xs font-medium text-purple-400 mb-0.5">{message.user_name}</Text>
         )}
-        <Text style={[styles.messageText, isEmoji && styles.emojiText]}>
+        <Text className={`${isEmoji ? 'text-3xl' : 'text-sm text-white'}`}>
           {message.content}
         </Text>
         {!isEmoji && (
-          <Text style={[styles.timestamp, isOwnMessage && styles.timestampOwn]}>
+          <Text className={`text-[10px] mt-2 opacity-0 ${isOwnMessage ? 'text-purple-400/60' : 'text-gray-400'}`}>
             {formatTime(message.created_at)}
           </Text>
         )}
@@ -79,17 +76,17 @@ export default function WatchPartyChat({
   }, [messages])
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{t('watchParty.chat')}</Text>
+    <View className="flex-1">
+      <Text className="text-sm font-medium text-gray-400 px-2 mb-3">{t('watchParty.chat')}</Text>
 
       <ScrollView
         ref={scrollViewRef}
-        style={styles.messagesList}
-        contentContainerStyle={styles.messagesContent}
+        className="flex-1 min-h-0"
+        contentContainerClassName="gap-3 px-2"
       >
         {messages.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>{t('watchParty.typeMessage')}</Text>
+          <View className="items-center py-16">
+            <Text className="text-sm text-gray-400">{t('watchParty.typeMessage')}</Text>
           </View>
         ) : (
           messages.map((msg, idx) => (
@@ -102,7 +99,7 @@ export default function WatchPartyChat({
         )}
       </ScrollView>
 
-      <View style={styles.inputContainer}>
+      <View className="pt-4 mt-3 border-t border-white/10">
         <WatchPartyChatInput
           onSend={onSendMessage}
           disabled={!chatEnabled}
@@ -111,95 +108,3 @@ export default function WatchPartyChat({
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.textMuted,
-    paddingHorizontal: spacing.xs,
-    marginBottom: spacing.sm,
-  },
-  messagesList: {
-    flex: 1,
-    minHeight: 0,
-  },
-  messagesContent: {
-    gap: spacing.sm,
-    paddingHorizontal: spacing.xs,
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: spacing.xl * 2,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  messageRow: {
-    flexDirection: 'row',
-  },
-  messageRowOwn: {
-    flexDirection: 'row-reverse',
-  },
-  messageBubble: {
-    maxWidth: '80%',
-    borderRadius: borderRadius.xl,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  emojiBubble: {
-    backgroundColor: 'transparent',
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-  },
-  ownBubble: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  otherBubble: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  senderName: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: colors.primary,
-    marginBottom: 2,
-  },
-  messageText: {
-    fontSize: 14,
-    color: colors.text,
-  },
-  emojiText: {
-    fontSize: 28,
-  },
-  timestamp: {
-    fontSize: 10,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-    opacity: 0,
-  },
-  timestampOwn: {
-    color: 'rgba(168, 85, 247, 0.6)',
-  },
-  systemMessage: {
-    alignItems: 'center',
-    paddingVertical: spacing.xs,
-  },
-  systemText: {
-    fontSize: 12,
-    color: colors.textMuted,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-  },
-  inputContainer: {
-    paddingTop: spacing.md,
-    marginTop: spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-})

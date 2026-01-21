@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ViewStyle, StyleProp } from 'react-native';
+import { View, Text, ViewStyle, StyleProp } from 'react-native';
 import { colors, borderRadius, spacing } from '../theme';
 
 type BadgeVariant = 'default' | 'primary' | 'success' | 'danger' | 'warning' | 'purple';
@@ -54,8 +54,8 @@ export const GlassBadge: React.FC<GlassBadgeProps> = ({
 
   return (
     <View
+      className="flex-row items-center rounded-full border border-white/20"
       style={[
-        styles.badge,
         {
           backgroundColor: currentVariant.bg,
           paddingHorizontal: currentSize.paddingH,
@@ -66,45 +66,19 @@ export const GlassBadge: React.FC<GlassBadgeProps> = ({
     >
       {dot && (
         <View
-          style={[
-            styles.dot,
-            { backgroundColor: dotColors[computedDotColor] },
-          ]}
+          className="w-1.5 h-1.5 rounded-full ml-1"
+          style={{ backgroundColor: dotColors[computedDotColor] }}
         />
       )}
-      {icon && <View style={styles.icon}>{icon}</View>}
+      {icon && <View className="ml-1">{icon}</View>}
       <Text
-        style={[
-          styles.text,
-          { color: currentVariant.text, fontSize: currentSize.fontSize },
-        ]}
+        className="font-semibold"
+        style={{ color: currentVariant.text, fontSize: currentSize.fontSize }}
       >
         {children}
       </Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: borderRadius.full,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    marginLeft: spacing.xs,
-  },
-  icon: {
-    marginLeft: spacing.xs,
-  },
-  text: {
-    fontWeight: '600',
-  },
-});
 
 export default GlassBadge;

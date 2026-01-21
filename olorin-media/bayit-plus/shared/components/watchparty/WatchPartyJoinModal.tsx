@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Modal,
   TouchableWithoutFeedback,
 } from 'react-native';
@@ -10,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui/GlassView';
 import { GlassButton } from '../ui/GlassButton';
 import { GlassInput } from '../ui/GlassInput';
-import { colors, spacing, fontSize } from '../../theme';
 
 interface WatchPartyJoinModalProps {
   visible: boolean;
@@ -64,15 +62,15 @@ export const WatchPartyJoinModal: React.FC<WatchPartyJoinModalProps> = ({
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
       <TouchableWithoutFeedback onPress={handleClose}>
-        <View style={styles.overlay}>
+        <View className="flex-1 bg-black/80 justify-center items-center p-6">
           <TouchableWithoutFeedback>
-            <GlassView style={styles.modal} intensity="high">
-              <View style={styles.header}>
-                <View style={styles.iconContainer}>
-                  <Text style={styles.icon}>🔗</Text>
+            <GlassView className="w-full max-w-[400px] p-8 gap-6" intensity="high">
+              <View className="items-center gap-3">
+                <View className="w-16 h-16 rounded-full bg-purple-500/20 items-center justify-center mb-3">
+                  <Text className="text-[32px]">🔗</Text>
                 </View>
-                <Text style={styles.title}>{t('watchParty.joinTitle')}</Text>
-                <Text style={styles.subtitle}>{t('watchParty.enterCode')}</Text>
+                <Text className="text-2xl font-semibold text-white">{t('watchParty.joinTitle')}</Text>
+                <Text className="text-sm text-white/70">{t('watchParty.enterCode')}</Text>
               </View>
 
               <GlassInput
@@ -83,11 +81,11 @@ export const WatchPartyJoinModal: React.FC<WatchPartyJoinModalProps> = ({
                 autoCapitalize="characters"
                 autoCorrect={false}
                 maxLength={8}
-                inputStyle={styles.codeInput}
+                inputStyle={{ textAlign: 'center', fontSize: 32, letterSpacing: 4, fontWeight: '700' }}
                 hasTVPreferredFocus
               />
 
-              <View style={styles.actions}>
+              <View className="flex-row gap-3 justify-end">
                 <GlassButton
                   title={t('common.cancel')}
                   onPress={handleClose}
@@ -110,57 +108,5 @@ export const WatchPartyJoinModal: React.FC<WatchPartyJoinModalProps> = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: colors.overlayDark,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  modal: {
-    width: '100%',
-    maxWidth: 400,
-    padding: spacing.xl,
-    gap: spacing.lg,
-  },
-  header: {
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  iconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: colors.primary + '20',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.sm,
-  },
-  icon: {
-    fontSize: 32,
-  },
-  title: {
-    fontSize: fontSize.xl,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-  codeInput: {
-    textAlign: 'center',
-    fontSize: fontSize.xxl,
-    letterSpacing: 4,
-    fontWeight: '700',
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    justifyContent: 'flex-end',
-  },
-});
 
 export default WatchPartyJoinModal;

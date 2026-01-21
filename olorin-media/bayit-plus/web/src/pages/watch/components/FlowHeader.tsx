@@ -3,9 +3,9 @@
  * Displays flow information and navigation controls
  */
 
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { ListMusic, SkipBack, SkipForward, X } from 'lucide-react';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 
 interface FlowHeaderProps {
   flowName: string;
@@ -33,107 +33,37 @@ export function FlowHeader({
   onExit,
 }: FlowHeaderProps) {
   return (
-    <View style={[styles.container, isRTL && styles.containerRTL]}>
-      <View style={[styles.left, isRTL && styles.leftRTL]}>
-        <Pressable onPress={onTogglePlaylist} style={styles.iconButton}>
+    <View className={`flex-row justify-between items-center px-4 py-3 mb-3 max-w-[1400px] mx-auto w-full bg-white/10 backdrop-blur-xl rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}>
+      <View className={`flex-row items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <Pressable onPress={onTogglePlaylist} className="w-10 h-10 justify-center items-center bg-green-500/10 rounded-lg">
           <ListMusic size={20} color={colors.primary} />
         </Pressable>
         <View>
-          <Text style={styles.name}>{flowName}</Text>
-          <Text style={styles.progress}>
+          <Text className="text-base font-semibold text-white">{flowName}</Text>
+          <Text className="text-xs text-gray-400">
             {playlistIndex + 1} / {playlistLength}
           </Text>
         </View>
       </View>
-      <View style={[styles.controls, isRTL && styles.controlsRTL]}>
+      <View className={`flex-row items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
         <Pressable
           onPress={onPlayPrev}
-          style={[styles.navButton, !hasPrevItem && styles.navButtonDisabled]}
+          className={`w-9 h-9 justify-center items-center bg-white/10 backdrop-blur-xl rounded-lg ${!hasPrevItem ? 'opacity-50' : ''}`}
           disabled={!hasPrevItem}
         >
           <SkipBack size={20} color={hasPrevItem ? colors.text : colors.textMuted} />
         </Pressable>
         <Pressable
           onPress={onPlayNext}
-          style={[styles.navButton, !hasNextItem && styles.navButtonDisabled]}
+          className={`w-9 h-9 justify-center items-center bg-white/10 backdrop-blur-xl rounded-lg ${!hasNextItem ? 'opacity-50' : ''}`}
           disabled={!hasNextItem}
         >
           <SkipForward size={20} color={hasNextItem ? colors.text : colors.textMuted} />
         </Pressable>
-        <Pressable onPress={onExit} style={styles.exitButton}>
+        <Pressable onPress={onExit} className="w-9 h-9 justify-center items-center ml-3">
           <X size={18} color={colors.textMuted} />
         </Pressable>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    marginBottom: spacing.sm,
-    maxWidth: 1400,
-    marginHorizontal: 'auto',
-    width: '100%',
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.md,
-  },
-  containerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  left: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  leftRTL: {
-    flexDirection: 'row-reverse',
-  },
-  iconButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-    borderRadius: borderRadius.md,
-  },
-  name: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  progress: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  controls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  controlsRTL: {
-    flexDirection: 'row-reverse',
-  },
-  navButton: {
-    width: 36,
-    height: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.md,
-  },
-  navButtonDisabled: {
-    opacity: 0.5,
-  },
-  exitButton: {
-    width: 36,
-    height: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: spacing.sm,
-  },
-});

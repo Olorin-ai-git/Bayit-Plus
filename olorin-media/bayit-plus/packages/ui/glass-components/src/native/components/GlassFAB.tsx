@@ -9,7 +9,6 @@ import React, { useRef, useState } from 'react';
 import {
   TouchableOpacity,
   Animated,
-  StyleSheet,
   Text,
   View,
   ViewStyle,
@@ -169,23 +168,24 @@ export const GlassFAB: React.FC<GlassFABProps> = ({
   };
 
   const content = (
-    <View style={[styles.content, isRTL && styles.contentRTL]}>
+    <View
+      className={`${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center justify-center`}
+      style={{ gap: spacing.sm }}
+    >
       <View
+        className="justify-center items-center"
         style={{
           width: currentSize.iconSize,
           height: currentSize.iconSize,
-          justifyContent: 'center',
-          alignItems: 'center',
         }}
       >
         {icon}
       </View>
       {label && (
         <Text
+          className={`font-bold tracking-wide ${isRTL ? 'text-right' : ''}`}
           style={[
-            styles.label,
             { color: currentVariant.text, fontSize: currentSize.fontSize },
-            isRTL && styles.labelRTL,
             labelStyle,
           ]}
         >
@@ -199,12 +199,14 @@ export const GlassFAB: React.FC<GlassFABProps> = ({
     if (variant === 'gradient') {
       return (
         <View
+          className={`flex-row items-center justify-center overflow-hidden bg-[rgba(15,15,25,0.4)] border ${
+            isFocused || isHovered
+              ? 'border-2 bg-[rgba(15,15,25,0.6)]'
+              : 'border-white/15'
+          } ${disabled ? 'opacity-50' : ''}`}
           style={[
-            styles.fab,
             fabStyle,
-            styles.glassFab,
-            (isFocused || isHovered) && styles.fabFocused,
-            disabled && styles.fabDisabled,
+            (isFocused || isHovered) && { borderColor: colors.primary },
             style,
           ]}
         >
@@ -212,20 +214,24 @@ export const GlassFAB: React.FC<GlassFABProps> = ({
             colors={['rgba(107, 33, 168, 0.3)', 'rgba(0, 153, 204, 0.25)']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.gradientOverlay}
+            className="absolute inset-0 opacity-80"
           />
-          <View style={styles.contentWrapper}>{content}</View>
+          <View className="flex-row items-center justify-center z-[1]">{content}</View>
         </View>
       );
     }
 
     return (
       <View
+        className={`flex-row items-center justify-center overflow-hidden ${
+          isFocused || isHovered ? 'border-2' : ''
+        } ${disabled ? 'opacity-50' : ''}`}
         style={[
-          styles.fab,
           fabStyle,
-          (isFocused || isHovered) && styles.fabFocused,
-          disabled && styles.fabDisabled,
+          (isFocused || isHovered) && {
+            borderColor: colors.primary,
+            backgroundColor: 'rgba(15, 15, 25, 0.6)',
+          },
           style,
         ]}
       >
@@ -252,60 +258,11 @@ export const GlassFAB: React.FC<GlassFABProps> = ({
           }
         : {})}
     >
-      <Animated.View style={[{ transform: [{ scale: scaleAnim }] }, styles.shadowContainer]}>
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         {renderButton()}
       </Animated.View>
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  shadowContainer: {},
-  fab: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  glassFab: {
-    backgroundColor: 'rgba(15, 15, 25, 0.4)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-  },
-  gradientOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    opacity: 0.8,
-  },
-  contentWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1,
-  },
-  fabFocused: {
-    borderWidth: 2,
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(15, 15, 25, 0.6)',
-  },
-  fabDisabled: {
-    opacity: 0.5,
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-  },
-  contentRTL: {
-    flexDirection: 'row-reverse',
-  },
-  label: {
-    fontWeight: '700',
-    letterSpacing: 0.3,
-  },
-  labelRTL: {
-    textAlign: 'right',
-  },
-});
 
 export default GlassFAB;

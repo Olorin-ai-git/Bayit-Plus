@@ -3,13 +3,11 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Animated,
   Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../hooks/useDirection';
-import { colors } from '../theme';
 
 interface MenuItem {
   id: string;
@@ -36,35 +34,30 @@ export const SideMenu: React.FC<SideMenuProps> = ({
   const isHebrew = i18n.language === 'he';
 
   return (
-    <View style={[styles.container, isExpanded && styles.containerExpanded]}>
+    <View className={`bg-black/20 py-6 items-center border-r border-white/10 ${isExpanded ? 'w-60 items-start px-5' : 'w-20'}`}>
       {/* Logo */}
-      <View style={styles.logoContainer}>
-        <Text style={styles.logo}>{t('common.appName', 'Bayit+')}</Text>
+      <View className="mb-10 items-center w-full">
+        <Text className="text-3xl font-bold text-purple-600">{t('common.appName', 'Bayit+')}</Text>
       </View>
 
       {/* Menu Items */}
-      <View style={styles.menuItems}>
+      <View className="flex-1 w-full">
         {items.map((item) => (
           <TouchableOpacity
             key={item.id}
             onPress={() => onItemSelect(item.id)}
             onFocus={() => setFocusedItem(item.id)}
             onBlur={() => setFocusedItem(null)}
-            style={[
-              styles.menuItem,
-              { flexDirection },
-              activeItem === item.id && styles.menuItemActive,
-              focusedItem === item.id && styles.menuItemFocused,
-            ]}
+            className={`items-center py-4 px-4 rounded-xl mb-2 border ${
+              activeItem === item.id ? 'bg-purple-600/30 border-white/10' : 'border-transparent'
+            } ${focusedItem === item.id ? 'bg-purple-600/30 border-[3px] border-purple-600' : ''}`}
+            style={{ flexDirection }}
           >
-            <Text style={styles.menuIcon}>{item.icon}</Text>
+            <Text className="text-2xl">{item.icon}</Text>
             {isExpanded && (
               <Text
-                style={[
-                  styles.menuLabel,
-                  { textAlign, marginLeft: isRTL ? 0 : 16, marginRight: isRTL ? 16 : 0 },
-                  activeItem === item.id && styles.menuLabelActive,
-                ]}
+                className={`text-lg ${activeItem === item.id ? 'text-purple-600 font-bold' : 'text-gray-400'}`}
+                style={{ textAlign, marginLeft: isRTL ? 0 : 16, marginRight: isRTL ? 16 : 0 }}
               >
                 {item.label}
               </Text>
@@ -75,64 +68,5 @@ export const SideMenu: React.FC<SideMenuProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: 80,
-    backgroundColor: colors.glass,
-    paddingVertical: 24,
-    alignItems: 'center',
-    borderRightWidth: 1,
-    borderRightColor: colors.glassBorder,
-  },
-  containerExpanded: {
-    width: 240,
-    alignItems: 'flex-start',
-    paddingHorizontal: 20,
-  },
-  logoContainer: {
-    marginBottom: 40,
-    alignItems: 'center',
-    width: '100%',
-  },
-  logo: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.primary,
-  },
-  menuItems: {
-    flex: 1,
-    width: '100%',
-  },
-  menuItem: {
-    alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  menuItemActive: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderColor: colors.glassBorder,
-  },
-  menuItemFocused: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderWidth: 3,
-    borderColor: colors.primary,
-  },
-  menuIcon: {
-    fontSize: 24,
-  },
-  menuLabel: {
-    fontSize: 18,
-    color: colors.textSecondary,
-  },
-  menuLabelActive: {
-    color: colors.primary,
-    fontWeight: 'bold',
-  },
-});
 
 export default SideMenu;

@@ -627,5 +627,43 @@ If ANY task fails these criteria, it is **REJECTED** and must be fixed. Tasks ar
 
 **Everything delivered is COMPLETE, TESTED, PRODUCTION-READY, and IMMEDIATELY USABLE.**
 
+---
+
+## QUALITY GATES & MULTI-AGENT REVIEW
+
+This project follows the **Global CLAUDE.md Quality Gates & Multi-Agent Signoff** requirements. See `/Users/olorin/.claude/CLAUDE.md` for complete details.
+
+### Critical Requirements Summary
+
+**Plan Review (MANDATORY BEFORE USER APPROVAL):**
+- ALL 13 reviewing agents MUST review and approve implementation plans BEFORE presenting to user
+- Plans cannot be shown to user until all agents sign off
+- See global CLAUDE.md for full Plan Review Workflow
+
+**Required Reviewer Panel (13 agents):**
+1. System Architect (`system-architect`)
+2. Code Reviewer (`architect-reviewer`)
+3. UI/UX Designer (`ui-ux-designer`) - **Required for all UI plans**
+4. UX/Localization (`ux-designer`)
+5. iOS Developer (`ios-developer`)
+6. tvOS Expert (`ios-developer`)
+7. Web Expert (`frontend-developer`)
+8. Mobile Expert (`mobile-app-builder`)
+9. Database Expert (`database-architect`)
+10. MongoDB/Atlas (`prisma-expert`)
+11. Security Expert (`security-specialist`)
+12. CI/CD Expert (`platform-deployment-specialist`)
+13. Voice Technician (`voice-technician`)
+
+**Two-Stage Review Process:**
+
+1. **Plan Stage**: All 13 agents review plan → Generate Plan Signoff Report → Present to user
+2. **Implementation Stage**: All 13 agents review completed code → Generate Implementation Signoff Report → Task complete
+
+**Both stages require 100% approval from all 13 agents. No exceptions.**
+
+---
+
 ## Recent Changes
 - 026-realtime-flow-dashboard: Added real-time daily/monthly flow progression panels on Running Investigations and a read-only investigation-state flow progression API endpoint.
+- **2026-01-21**: Added mandatory multi-agent plan review requirements (13 agents total including UI/UX Designer)

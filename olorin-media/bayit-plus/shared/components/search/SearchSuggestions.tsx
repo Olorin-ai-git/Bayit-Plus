@@ -2,13 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
   Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '../../theme';
 import { isTV } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
 import { searchService } from '../../services/api';
@@ -62,7 +60,7 @@ const SuggestionItem: React.FC<{
     const index = lowerText.indexOf(lowerQuery);
 
     if (index === -1) {
-      return <Text style={styles.suggestionText}>{text}</Text>;
+      return <Text className={`text-white flex-1 ${isTV ? 'text-lg' : 'text-base'}`}>{text}</Text>;
     }
 
     const before = text.substring(0, index);
@@ -70,9 +68,9 @@ const SuggestionItem: React.FC<{
     const after = text.substring(index + query.length);
 
     return (
-      <Text style={styles.suggestionText}>
+      <Text className={`text-white flex-1 ${isTV ? 'text-lg' : 'text-base'}`}>
         {before}
-        <Text style={styles.suggestionHighlight}>{match}</Text>
+        <Text className="text-purple-500 font-semibold">{match}</Text>
         {after}
       </Text>
     );
@@ -88,13 +86,12 @@ const SuggestionItem: React.FC<{
       hasTVPreferredFocus={index === 0 && isTV}
     >
       <Animated.View
-        style={[
-          styles.suggestionItem,
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.suggestionItemFocused,
-        ]}
+        className={`flex-row items-center gap-2 border-b border-white/5 ${
+          isFocused ? 'bg-purple-500/15' : ''
+        } ${isTV ? 'px-4 py-3' : 'px-4 py-2'}`}
+        style={{ transform: [{ scale: scaleAnim }] }}
       >
-        <Text style={styles.suggestionIcon}>🔍</Text>
+        <Text className={`opacity-50 ${isTV ? 'text-lg' : 'text-base'}`}>🔍</Text>
         {renderHighlightedText()}
       </Animated.View>
     </TouchableOpacity>
@@ -166,10 +163,12 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View className={`absolute top-full left-0 right-0 bg-[rgba(20,20,20,0.98)] rounded-lg mt-1 border-2 border-purple-500/30 z-[1000] ${
+      isTV ? 'max-h-[400px]' : 'max-h-[300px]'
+    }`} style={{ backdropFilter: 'blur(20px)' } as any}>
       {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color={colors.primary} />
+        <View className="py-4 items-center">
+          <ActivityIndicator size="small" color="#a855f7" />
         </View>
       ) : (
         suggestions.map((suggestion, index) => (
@@ -232,52 +231,5 @@ export const useSearchSuggestions = (query: string, debounceMs: number = 300) =>
 
   return { suggestions, isLoading };
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(20, 20, 20, 0.98)',
-    borderRadius: borderRadius.lg,
-    marginTop: spacing.xs,
-    borderWidth: 2,
-    borderColor: 'rgba(168, 85, 247, 0.3)',
-    maxHeight: isTV ? 400 : 300,
-    zIndex: 1000,
-    // @ts-ignore - Web CSS property
-    backdropFilter: 'blur(20px)',
-  },
-  loadingContainer: {
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
-  },
-  suggestionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: isTV ? spacing.md : spacing.sm,
-    gap: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  suggestionItemFocused: {
-    backgroundColor: 'rgba(168, 85, 247, 0.15)',
-  },
-  suggestionIcon: {
-    fontSize: isTV ? 18 : 16,
-    opacity: 0.5,
-  },
-  suggestionText: {
-    fontSize: isTV ? 18 : 16,
-    color: colors.text,
-    flex: 1,
-  },
-  suggestionHighlight: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-});
 
 export default SearchSuggestions;

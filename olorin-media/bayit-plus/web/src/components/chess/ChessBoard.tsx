@@ -5,7 +5,7 @@
  * Fully localized with RTL/LTR support.
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, useWindowDimensions, Platform, Image, Animated } from 'react-native';
+import { View, Text, Pressable, useWindowDimensions, Platform, Image, Animated } from 'react-native';
 import { Chess } from 'chess.js';
 import { colors, spacing } from '@bayit/shared/theme';
 import { useTranslation } from 'react-i18next';
@@ -346,32 +346,25 @@ export default function ChessBoard({
     // Calculate square size based on playable area (94% of board)
     const squareSize = playableSize / 8;
 
-    // Calculate glow for squares involved in check
-    const squareGlowStyle = (isKingInCheck || isAttackingPiece) ? {
-      backgroundColor: isKingInCheck
-        ? 'rgba(239, 68, 68, 0.3)'  // Red glow for king's square
-        : 'rgba(251, 191, 36, 0.3)', // Amber glow for attacker's square
-      ...Platform.select({
-        web: {
-          boxShadow: isKingInCheck
-            ? '0 0 30px rgba(239, 68, 68, 0.8), inset 0 0 20px rgba(239, 68, 68, 0.6)'
-            : '0 0 30px rgba(251, 191, 36, 0.8), inset 0 0 20px rgba(251, 191, 36, 0.6)',
-        },
-      }),
-    } : {};
-
     return (
       <Pressable
         key={square}
-        style={[
-          styles.square,
-          { width: squareSize, height: squareSize },
-          isLight ? styles.lightSquare : styles.darkSquare,
-          isSelected && styles.selectedSquare,
-          isLastMoveSquare && styles.lastMoveSquare,
-          isIllegalMoveTarget && styles.illegalMoveSquare,
-          squareGlowStyle,
-        ]}
+        className={`justify-end items-center relative overflow-visible ${
+          isLight
+            ? 'bg-purple-500/8 backdrop-blur-sm border-[0.5px] border-purple-500/15'
+            : 'bg-black/60 backdrop-blur-sm border-[0.5px] border-indigo-600/20'
+        } ${
+          isSelected ? 'bg-purple-500/50 backdrop-blur-md border-2 border-purple-500/80 shadow-purple-glow' : ''
+        } ${
+          isLastMoveSquare ? 'bg-green-500/25 backdrop-blur-sm border-[1.5px] border-green-500/50 shadow-green-glow' : ''
+        } ${
+          isIllegalMoveTarget ? 'bg-red-500/35 backdrop-blur-md border-[3px] border-red-500/90 shadow-red-glow animate-shake' : ''
+        } ${
+          isKingInCheck ? 'bg-red-500/30 shadow-check-king' : ''
+        } ${
+          isAttackingPiece ? 'bg-amber-500/30 shadow-check-attacker' : ''
+        }`}
+        style={{ width: squareSize, height: squareSize }}
         onPress={() => handleSquarePress(square)}
       >
         {/* 3D Glass Chess Piece - Allow overflow to show full detail */}
@@ -402,29 +395,21 @@ export default function ChessBoard({
           // All pieces anchor from bottom of square
           const bottomOffset = squareSize * 0.05; // Small lift from bottom edge
 
-          // Check glow animation styles (applied directly to image for web)
-          const checkGlowStyle = (isKingInCheck || isAttackingPiece) ? Platform.select({
-            web: {
-              animation: isKingInCheck
-                ? 'checkGlowKing 1.2s ease-in-out infinite'
-                : 'checkGlowAttacker 1.2s ease-in-out infinite',
-            },
-            default: {},
-          }) : {};
-
           return (
-            <View style={styles.glowContainer}>
+            <View className={`z-[15] ${
+              isKingInCheck || isAttackingPiece ? 'animate-check-glow' : ''
+            }`}>
               <Image
                 source={{ uri: pieceImage }}
-                style={[
-                  styles.piece,
-                  {
-                    width: pieceWidth,
-                    height: pieceHeight,
-                    marginBottom: bottomOffset, // Small lift from square bottom
-                  },
-                  checkGlowStyle,
-                ]}
+                className="z-10 select-none cursor-pointer"
+                style={{
+                  width: pieceWidth,
+                  height: pieceHeight,
+                  marginBottom: bottomOffset,
+                  filter: Platform.OS === 'web'
+                    ? 'drop-shadow(0 10px 25px rgba(0, 0, 0, 0.8)) drop-shadow(0 5px 15px rgba(168, 85, 247, 0.4)) drop-shadow(0 2px 8px rgba(79, 70, 229, 0.5))'
+                    : undefined
+                }}
                 resizeMode="contain"
               />
             </View>
@@ -433,11 +418,15 @@ export default function ChessBoard({
 
         {/* Legal move indicator - only show if hints enabled */}
         {showHints && isLegalMove && (
-          <View style={[
-            styles.legalMoveIndicator,
-            { width: squareSize * 0.3, height: squareSize * 0.3, borderRadius: squareSize * 0.15 },
-            piece ? styles.captureMoveIndicator : null
-          ]} />
+          <View className={`absolute ${
+            piece
+              ? 'bg-red-500/40 backdrop-blur-sm border-[3px] border-red-500/90 shadow-capture-indicator'
+              : 'bg-green-500/35 backdrop-blur-sm border-2 border-green-500/70 shadow-legal-move-indicator'
+          }`} style={{
+            width: squareSize * 0.3,
+            height: squareSize * 0.3,
+            borderRadius: squareSize * 0.15
+          }} />
         )}
       </Pressable>
     );
@@ -453,7 +442,7 @@ export default function ChessBoard({
         cols.push(renderSquare(row, actualCol, playableSize));
       }
       rows.push(
-        <View key={row} style={styles.row}>
+        <View key={row} className="flex-row">
           {cols}
         </View>
       );
@@ -514,28 +503,26 @@ export default function ChessBoard({
 
     return (
       <Animated.View
-        style={[
-          styles.animatingPieceContainer,
-          {
-            left: animatedLeft,
-            top: animatedTop,
-            width: squareSize,
-            height: squareSize,
-          },
-        ]}
+        className="absolute z-[100] justify-end items-center"
+        style={{
+          left: animatedLeft,
+          top: animatedTop,
+          width: squareSize,
+          height: squareSize,
+        }}
         pointerEvents="none"
       >
         <Image
           source={{ uri: pieceImage }}
-          style={[
-            styles.piece,
-            styles.animatingPiece,
-            {
-              width: pieceWidth,
-              height: pieceHeight,
-              marginBottom: bottomOffset, // Match static piece positioning
-            }
-          ]}
+          className="z-[100]"
+          style={{
+            width: pieceWidth,
+            height: pieceHeight,
+            marginBottom: bottomOffset,
+            filter: Platform.OS === 'web'
+              ? 'drop-shadow(0 15px 35px rgba(0, 0, 0, 0.9)) drop-shadow(0 8px 25px rgba(168, 85, 247, 0.6)) drop-shadow(0 4px 15px rgba(79, 70, 229, 0.7))'
+              : undefined
+          }}
           resizeMode="contain"
         />
       </Animated.View>
@@ -546,147 +533,14 @@ export default function ChessBoard({
   const boardSize = Math.min(width * 0.95, 800);
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.board, { width: boardSize, height: boardSize }]}>
+    <View className="items-center justify-center p-4">
+      <View
+        className="rounded-[20px] border border-purple-500/30 bg-black/40 backdrop-blur-[30px] shadow-chess-board"
+        style={{ width: boardSize, height: boardSize }}
+      >
         {renderBoard(boardSize)}
         {renderAnimatingPiece(boardSize)}
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.md,
-  },
-  board: {
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.3)',
-    backgroundColor: 'rgba(10, 10, 20, 0.4)',
-    backdropFilter: 'blur(30px)',
-    ...Platform.select({
-      web: {
-        boxShadow: '0 25px 70px rgba(168, 85, 247, 0.25), 0 15px 40px rgba(79, 70, 229, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-      },
-    }),
-  },
-  row: {
-    flexDirection: 'row',
-  },
-  square: {
-    justifyContent: 'flex-end', // Align pieces from bottom
-    alignItems: 'center',
-    position: 'relative',
-    overflow: 'visible', // Allow pieces to overflow
-  },
-  lightSquare: {
-    backgroundColor: 'rgba(168, 85, 247, 0.08)', // Light glassmorphic purple
-    backdropFilter: 'blur(10px)',
-    borderWidth: 0.5,
-    borderColor: 'rgba(168, 85, 247, 0.15)',
-    ...Platform.select({
-      web: {
-        boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.03)',
-      },
-    }),
-  },
-  darkSquare: {
-    backgroundColor: 'rgba(10, 10, 20, 0.6)', // Dark glassmorphic black
-    backdropFilter: 'blur(10px)',
-    borderWidth: 0.5,
-    borderColor: 'rgba(79, 70, 229, 0.2)',
-    ...Platform.select({
-      web: {
-        boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.3)',
-      },
-    }),
-  },
-  selectedSquare: {
-    backgroundColor: 'rgba(168, 85, 247, 0.5)',
-    backdropFilter: 'blur(15px)',
-    borderColor: 'rgba(168, 85, 247, 0.8)',
-    borderWidth: 2,
-    ...Platform.select({
-      web: {
-        boxShadow: 'inset 0 0 25px rgba(168, 85, 247, 0.6), 0 0 25px rgba(168, 85, 247, 0.5), 0 0 50px rgba(168, 85, 247, 0.3)',
-      },
-    }),
-  },
-  lastMoveSquare: {
-    backgroundColor: 'rgba(34, 197, 94, 0.25)',
-    backdropFilter: 'blur(12px)',
-    borderColor: 'rgba(34, 197, 94, 0.5)',
-    borderWidth: 1.5,
-    ...Platform.select({
-      web: {
-        boxShadow: 'inset 0 0 20px rgba(34, 197, 94, 0.4), 0 0 15px rgba(34, 197, 94, 0.3)',
-      },
-    }),
-  },
-  illegalMoveSquare: {
-    backgroundColor: 'rgba(239, 68, 68, 0.35)',
-    backdropFilter: 'blur(15px)',
-    borderColor: 'rgba(239, 68, 68, 0.9)',
-    borderWidth: 3,
-    ...Platform.select({
-      web: {
-        boxShadow: 'inset 0 0 25px rgba(239, 68, 68, 0.6), 0 0 30px rgba(239, 68, 68, 0.7), 0 0 60px rgba(239, 68, 68, 0.4)',
-        animation: 'illegal-move-shake 0.3s ease-in-out',
-      },
-    }),
-  },
-  piece: {
-    zIndex: 10, // Ensure pieces render above squares
-    ...Platform.select({
-      web: {
-        userSelect: 'none',
-        cursor: 'pointer',
-        filter: 'drop-shadow(0 10px 25px rgba(0, 0, 0, 0.8)) drop-shadow(0 5px 15px rgba(168, 85, 247, 0.4)) drop-shadow(0 2px 8px rgba(79, 70, 229, 0.5))',
-      },
-    }),
-  },
-  glowContainer: {
-    zIndex: 15, // Above regular pieces
-    // Filter is applied dynamically for check glow animation
-  },
-  animatingPieceContainer: {
-    position: 'absolute',
-    zIndex: 100, // Above everything
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  animatingPiece: {
-    zIndex: 100,
-    ...Platform.select({
-      web: {
-        filter: 'drop-shadow(0 15px 35px rgba(0, 0, 0, 0.9)) drop-shadow(0 8px 25px rgba(168, 85, 247, 0.6)) drop-shadow(0 4px 15px rgba(79, 70, 229, 0.7))',
-      },
-    }),
-  },
-  legalMoveIndicator: {
-    position: 'absolute',
-    backgroundColor: 'rgba(34, 197, 94, 0.35)',
-    backdropFilter: 'blur(10px)',
-    borderWidth: 2,
-    borderColor: 'rgba(34, 197, 94, 0.7)',
-    ...Platform.select({
-      web: {
-        boxShadow: '0 0 20px rgba(34, 197, 94, 0.5), inset 0 0 10px rgba(34, 197, 94, 0.3)',
-      },
-    }),
-  },
-  captureMoveIndicator: {
-    backgroundColor: 'rgba(239, 68, 68, 0.4)',
-    backdropFilter: 'blur(10px)',
-    borderWidth: 3,
-    borderColor: 'rgba(239, 68, 68, 0.9)',
-    ...Platform.select({
-      web: {
-        boxShadow: '0 0 25px rgba(239, 68, 68, 0.7), inset 0 0 15px rgba(239, 68, 68, 0.4)',
-      },
-    }),
-  },
-});

@@ -1,6 +1,6 @@
 import './global.css';
 import React, { useState, useEffect } from 'react';
-import { StatusBar, LogBox, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { StatusBar, LogBox, View, Text, TouchableOpacity } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -128,7 +128,7 @@ const TVTabBar: React.FC<any> = ({ state, descriptors, navigation }) => {
   };
 
   return (
-    <View style={[tabStyles.container, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
+    <View className={`flex-row border-t border-[#1a1a2e] py-2 px-12 bg-[#0a0a14] ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
       {state.routes.map((route: any, index: number) => {
         const isFocused = state.index === index;
         const label = tabLabels[route.name] || route.name;
@@ -159,19 +159,11 @@ const TVTabBar: React.FC<any> = ({ state, descriptors, navigation }) => {
           <TouchableOpacity
             key={route.key}
             onPress={onPress}
-            style={[
-              tabStyles.tab,
-              isFocused && tabStyles.tabFocused,
-            ]}
+            className={`flex-1 items-center py-3 rounded-xl ${isFocused ? 'bg-purple-800/30' : ''}`}
             activeOpacity={0.7}
           >
-            <Text style={tabStyles.icon}>{icon}</Text>
-            <Text
-              style={[
-                tabStyles.label,
-                isFocused && tabStyles.labelFocused,
-              ]}
-            >
+            <Text className="text-[28px] mb-1">{icon}</Text>
+            <Text className={`text-base ${isFocused ? 'text-purple-500 font-bold' : 'text-[#666666]'}`}>
               {label}
             </Text>
           </TouchableOpacity>
@@ -224,38 +216,6 @@ function MainTabs() {
   );
 }
 
-const tabStyles = StyleSheet.create({
-  container: {
-    flexDirection: 'row', // Dynamic direction applied in component
-    backgroundColor: '#0a0a14',
-    borderTopWidth: 1,
-    borderTopColor: '#1a1a2e',
-    paddingVertical: 8,
-    paddingHorizontal: 48,
-  },
-  tab: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 12,
-  },
-  tabFocused: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  icon: {
-    fontSize: 28,
-    marginBottom: 4,
-  },
-  label: {
-    fontSize: 16,
-    color: '#666666',
-  },
-  labelFocused: {
-    color: '#a855f7',
-    fontWeight: 'bold',
-  },
-});
-
 // Layout constants
 const TOP_BAR_HEIGHT = 64;
 const SIDEBAR_COLLAPSED_WIDTH = 80;
@@ -284,7 +244,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <View style={appStyles.container}>
+    <View className="flex-1 bg-[#0d0d1a]">
       <StatusBar hidden />
 
       {/* Demo Mode Banner */}
@@ -294,7 +254,7 @@ const AppContent: React.FC = () => {
       <GlassTopBar onMenuPress={() => setSidebarExpanded(!sidebarExpanded)} sidebarExpanded={sidebarExpanded} />
 
       {/* Main Content Area */}
-      <View style={appStyles.mainArea}>
+      <View className="flex-1 flex-row">
         {/* Glass Sidebar - toggleable on all platforms */}
         <GlassSidebar
           isExpanded={sidebarExpanded}
@@ -302,7 +262,7 @@ const AppContent: React.FC = () => {
         />
 
         {/* Content - with padding for sidebar based on direction */}
-        <View style={[appStyles.content, isRTL ? { paddingRight: sidebarWidth } : { paddingLeft: sidebarWidth }]}>
+        <View className="flex-1" style={isRTL ? { paddingRight: sidebarWidth } : { paddingLeft: sidebarWidth }}>
           <Stack.Navigator
             screenOptions={{
               headerShown: false,
@@ -459,20 +419,6 @@ function App(): React.JSX.Element {
     </I18nextProvider>
   );
 }
-
-const appStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0d0d1a',
-  },
-  mainArea: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  content: {
-    flex: 1,
-  },
-});
 
 // Wrap with Sentry's error boundary for crash reporting
 export default withSentryErrorBoundary(App);

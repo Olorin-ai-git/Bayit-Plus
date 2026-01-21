@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';;
 import { useTranslation } from 'react-i18next';
 import { Download, Filter } from 'lucide-react';
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web';
@@ -119,7 +119,7 @@ export default function AuditLogsPage() {
       label: t('admin.auditLogs.columns.user'),
       render: (_: any, log: AuditLog) => (
         <View>
-          <Text style={styles.userName}>{log.user_name}</Text>
+          <Text className="text-sm font-medium text-white">{log.user_name}</Text>
           <Text style={styles.userId}>{log.user_id.slice(0, 8)}...</Text>
         </View>
       ),
@@ -142,7 +142,7 @@ export default function AuditLogsPage() {
   const actionFilters = ['', 'user', 'subscription', 'payment', 'settings', 'campaign', 'content'];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.auditLogs')}</Text>
@@ -180,7 +180,7 @@ export default function AuditLogsPage() {
               ))}
             </View>
           </View>
-          <View style={styles.modalActions}>
+          <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('admin.auditLogs.clear')} variant="secondary" onPress={() => setFilters({ action: '', user_id: '' })} />
             <GlassButton title={t('admin.auditLogs.apply')} variant="primary" onPress={() => setShowFilterModal(false)} />
           </View>
@@ -190,34 +190,3 @@ export default function AuditLogsPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.lg },
-  headerActions: { flexDirection: 'row', gap: spacing.sm },
-  pageTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
-  subtitle: { fontSize: 14, color: colors.textMuted, marginTop: spacing.xs },
-  filtersRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginBottom: spacing.lg },
-  filterButton: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.md },
-  filterButtonActive: { backgroundColor: colors.primary },
-  filterText: { fontSize: 14, color: colors.textMuted, textTransform: 'capitalize' },
-  filterTextActive: { color: colors.text, fontWeight: '500' },
-  badge: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.sm, alignSelf: 'flex-start' },
-  badgeIcon: { fontSize: 14 },
-  badgeText: { fontSize: 12, fontWeight: '500', textTransform: 'capitalize' },
-  userName: { fontSize: 14, fontWeight: '500', color: colors.text },
-  userId: { fontSize: 11, color: colors.textMuted, fontFamily: 'monospace' },
-  resourceText: { fontSize: 13, color: colors.textSecondary, textTransform: 'capitalize' },
-  ipText: { fontSize: 12, color: colors.textMuted, fontFamily: 'monospace' },
-  detailsText: { fontSize: 12, color: colors.textMuted },
-  dateText: { fontSize: 12, color: colors.textMuted },
-  modalContent: { gap: spacing.md },
-  formGroup: { gap: spacing.sm },
-  formLabel: { fontSize: 14, fontWeight: '600', color: colors.text },
-  filterOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  filterOption: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.md, backgroundColor: colors.backgroundLighter },
-  filterOptionActive: { backgroundColor: colors.primary },
-  filterOptionText: { fontSize: 14, color: colors.textMuted, textTransform: 'capitalize' },
-  filterOptionTextActive: { color: colors.text },
-  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.md },
-});

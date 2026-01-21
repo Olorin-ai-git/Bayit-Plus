@@ -9,7 +9,6 @@ import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Pressable,
   useWindowDimensions,
 } from 'react-native';
@@ -134,10 +133,9 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
       onPress={() => onNavigate('Home')}
       onFocus={() => setFocusedNav('logo')}
       onBlur={() => setFocusedNav(null)}
-      style={({ focused }) => [
-        styles.logoContainer,
-        focused && styles.logoFocused,
-      ]}
+      className={`p-2 rounded-lg border-2 ${
+        focusedNav === 'logo' ? 'border-purple-500 bg-[rgba(168,85,247,0.3)] scale-105' : 'border-transparent'
+      }`}
     >
       <AnimatedLogo size="small" />
     </Pressable>
@@ -145,7 +143,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
 
   // Navigation component
   const NavSection = (
-    <View style={styles.nav}>
+    <View className="flex-row items-center gap-2">
       {navLinkKeys.map((link) => {
         const isActive = isNavActive(link.route);
         const isFocused = focusedNav === link.route;
@@ -155,16 +153,15 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
             onPress={() => onNavigate(link.route)}
             onFocus={() => setFocusedNav(link.route)}
             onBlur={() => setFocusedNav(null)}
-            style={[
-              styles.navLink,
-              isActive && styles.navLinkActive,
-              isFocused && styles.navLinkFocused,
-            ]}
+            className={`px-4 py-2.5 rounded-lg border-2 ${
+              isActive ? 'bg-purple-500' : 'bg-white/5'
+            } ${
+              isFocused ? 'border-purple-500 bg-[rgba(168,85,247,0.3)] scale-105' : 'border-transparent'
+            }`}
           >
-            <Text style={[
-              styles.navLinkText,
-              isActive && styles.navLinkTextActive,
-            ]}>
+            <Text className={`text-xl font-medium ${
+              isActive ? 'text-white font-semibold' : 'text-gray-400'
+            }`}>
               {t(link.key)}
             </Text>
           </Pressable>
@@ -175,18 +172,17 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
 
   // Actions component
   const ActionsSection = (
-    <View style={styles.actions}>
+    <View className="flex-row items-center gap-4">
       {/* Recordings Button */}
       <Pressable
         onPress={() => onNavigate('Recordings')}
         onFocus={() => setFocusedAction('recordings')}
         onBlur={() => setFocusedAction(null)}
-        style={({ focused }) => [
-          styles.iconButton,
-          focused && styles.iconButtonFocused,
-        ]}
+        className={`w-[60px] h-[60px] rounded-lg bg-white/5 justify-center items-center border-2 ${
+          focusedAction === 'recordings' ? 'border-purple-500 bg-[rgba(168,85,247,0.3)] scale-105' : 'border-transparent'
+        }`}
       >
-        <Text style={styles.iconText}>📹</Text>
+        <Text className="text-[32px]">📹</Text>
       </Pressable>
 
       {/* Settings Button */}
@@ -194,12 +190,11 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
         onPress={() => onNavigate('Settings')}
         onFocus={() => setFocusedAction('settings')}
         onBlur={() => setFocusedAction(null)}
-        style={({ focused }) => [
-          styles.iconButton,
-          focused && styles.iconButtonFocused,
-        ]}
+        className={`w-[60px] h-[60px] rounded-lg bg-white/5 justify-center items-center border-2 ${
+          focusedAction === 'settings' ? 'border-purple-500 bg-[rgba(168,85,247,0.3)] scale-105' : 'border-transparent'
+        }`}
       >
-        <Text style={styles.iconText}>⚙️</Text>
+        <Text className="text-[32px]">⚙️</Text>
       </Pressable>
 
       {/* Profile/Login */}
@@ -214,12 +209,11 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
           onPress={() => onNavigate('Login')}
           onFocus={() => setFocusedAction('login')}
           onBlur={() => setFocusedAction(null)}
-          style={({ focused }) => [
-            styles.loginButton,
-            focused && styles.loginButtonFocused,
-          ]}
+          className={`px-6 py-4 rounded-lg bg-purple-500 border-2 ${
+            focusedAction === 'login' ? 'border-white' : 'border-transparent'
+          }`}
         >
-          <Text style={styles.loginButtonText}>{t('account.login', 'Login')}</Text>
+          <Text className="text-xl font-medium text-white">{t('account.login', 'Login')}</Text>
         </Pressable>
       )}
 
@@ -231,17 +225,16 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
         onPress={() => onNavigate('Search')}
         onFocus={() => setFocusedAction('search')}
         onBlur={() => setFocusedAction(null)}
-        style={({ focused }) => [
-          styles.iconButton,
-          focused && styles.iconButtonFocused,
-        ]}
+        className={`w-[60px] h-[60px] rounded-lg bg-white/5 justify-center items-center border-2 ${
+          focusedAction === 'search' ? 'border-purple-500 bg-[rgba(168,85,247,0.3)] scale-105' : 'border-transparent'
+        }`}
       >
-        <Text style={styles.iconText}>🔍</Text>
+        <Text className="text-[32px]">🔍</Text>
       </Pressable>
 
       {/* Soundwave Visualizer - for TV wake word listening mode */}
       {showSoundwave && (
-        <View style={styles.soundwaveContainer}>
+        <View className="h-[60px] min-w-[120px] justify-center items-center px-2 bg-[rgba(168,85,247,0.3)] rounded-lg border-2 border-purple-500">
           <SoundwaveVisualizer
             audioLevel={audioLevel || 0}
             isListening={isListening || wakeWordActive}
@@ -257,22 +250,20 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
         onPress={onChatbotOpen}
         onFocus={() => setFocusedAction('voice')}
         onBlur={() => setFocusedAction(null)}
-        style={({ focused }) => [
-          styles.iconButton,
-          styles.voiceButton,
-          focused && styles.iconButtonFocused,
-        ]}
+        className={`w-[60px] h-[60px] rounded-lg bg-[rgba(168,85,247,0.3)] border-2 border-purple-500 justify-center items-center ${
+          focusedAction === 'voice' ? 'border-purple-500 bg-[rgba(168,85,247,0.3)] scale-105' : ''
+        }`}
       >
-        <Text style={styles.iconText}>🎙️</Text>
+        <Text className="text-[32px]">🎙️</Text>
       </Pressable>
     </View>
   );
 
   return (
-    <View style={styles.headerWrapper}>
+    <View className="h-[100px] w-full border-b border-[rgba(168,85,247,0.2)] bg-black/80">
       <LinearGradient
         colors={['rgba(0, 0, 0, 0.95)', 'rgba(0, 0, 0, 0.98)']}
-        style={styles.headerGradient}
+        className="flex-1 flex-row items-center justify-between px-12 w-full"
       >
         {LogoSection}
         {NavSection}
@@ -281,120 +272,5 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
     </View>
   );
 };
-
-// Styles matching web Header.tsx for TV (larger sizes for 10-foot UI)
-const styles = StyleSheet.create({
-  headerWrapper: {
-    height: 100,
-    width: '100%',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-  },
-  headerGradient: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 48,
-    width: '100%',
-  },
-  logoContainer: {
-    padding: spacing.sm,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  logoFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.3)',
-    transform: [{ scale: 1.05 }],
-  },
-  nav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  navLink: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  navLinkActive: {
-    backgroundColor: colors.primary,
-  },
-  navLinkFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.3)',
-    transform: [{ scale: 1.05 }],
-  },
-  navLinkText: {
-    fontSize: 20,
-    fontWeight: '500',
-    color: colors.textMuted,
-  },
-  navLinkTextActive: {
-    color: colors.text,
-    fontWeight: '600',
-  },
-  actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  iconButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  iconButtonFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.3)',
-    transform: [{ scale: 1.05 }],
-  },
-  iconText: {
-    fontSize: 32,
-  },
-  voiceButton: {
-    backgroundColor: 'rgba(168, 85, 247, 0.3)',
-    borderColor: colors.primary,
-    borderWidth: 2,
-  },
-  loginButton: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderRadius: 8,
-    backgroundColor: colors.primary,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  loginButtonFocused: {
-    borderColor: colors.text,
-  },
-  loginButtonText: {
-    fontSize: 20,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  soundwaveContainer: {
-    height: 60,
-    minWidth: 120,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.sm,
-    backgroundColor: 'rgba(168, 85, 247, 0.3)',
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: colors.primary,
-  },
-});
 
 export default TVHeader;

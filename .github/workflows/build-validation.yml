@@ -76,11 +76,11 @@ jobs:
         with:
           filters: |
             backend:
-              - 'olorin-server/**'
-              - 'deploy-cloudrun-direct.sh'
+              - 'olorin-fraud/backend/**'
+              - 'scripts/deployment/deploy-cloudrun-direct.sh'
               - 'apphosting.yaml'
             frontend:
-              - 'olorin-front/**'
+              - 'olorin-fraud/frontend/**'
               - 'firebase.json'
 
       - name: Configure build parameters
@@ -128,13 +128,13 @@ jobs:
         with:
           path: |
             ~/.cache/pypoetry
-            olorin-server/.venv
-          key: poetry-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('olorin-server/poetry.lock') }}
+            olorin-fraud/backend/.venv
+          key: poetry-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('olorin-fraud/backend/poetry.lock') }}
           restore-keys: |
             poetry-${{ runner.os }}-${{ matrix.python-version }}-
 
       - name: Install backend dependencies
-        working-directory: olorin-server
+        working-directory: olorin-fraud/backend
         run: |
           echo "::group::Backend Dependency Installation"
           
@@ -165,7 +165,7 @@ jobs:
           echo "::endgroup::"
 
       - name: Run backend linting
-        working-directory: olorin-server
+        working-directory: olorin-fraud/backend
         run: |
           echo "::group::Backend Code Linting"
           
@@ -188,7 +188,7 @@ jobs:
           echo "::endgroup::"
 
       - name: Run backend tests
-        working-directory: olorin-server
+        working-directory: olorin-fraud/backend
         run: |
           echo "::group::Backend Test Execution"
           
@@ -212,12 +212,12 @@ jobs:
         with:
           name: backend-coverage-report
           path: |
-            olorin-server/coverage.xml
-            olorin-server/htmlcov/
+            olorin-fraud/backend/coverage.xml
+            olorin-fraud/backend/htmlcov/
           retention-days: 7
 
       - name: Dependency vulnerability scan
-        working-directory: olorin-server
+        working-directory: olorin-fraud/backend
         run: |
           echo "::group::Backend Security Scanning"
           
@@ -265,7 +265,7 @@ jobs:
           gcloud auth configure-docker ${{ env.REGISTRY }}
 
       - name: Build and cache Docker image
-        working-directory: olorin-server
+        working-directory: olorin-fraud/backend
         run: |
           echo "::group::Docker Image Build"
           
@@ -313,7 +313,7 @@ jobs:
           echo "::endgroup::"
 
       - name: Scan Docker image for vulnerabilities
-        working-directory: olorin-server
+        working-directory: olorin-fraud/backend
         run: |
           echo "::group::Docker Security Scanning"
           
@@ -352,10 +352,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          cache-dependency-path: 'olorin-front/package-lock.json'
+          cache-dependency-path: 'olorin-fraud/frontend/package-lock.json'
 
       - name: Install frontend dependencies
-        working-directory: olorin-front
+        working-directory: olorin-fraud/frontend
         run: |
           echo "::group::Frontend Dependency Installation"
           
@@ -374,7 +374,7 @@ jobs:
           echo "::endgroup::"
 
       - name: Run frontend linting
-        working-directory: olorin-front
+        working-directory: olorin-fraud/frontend
         run: |
           echo "::group::Frontend Code Linting"
           
@@ -396,7 +396,7 @@ jobs:
           echo "::endgroup::"
 
       - name: Run frontend tests
-        working-directory: olorin-front
+        working-directory: olorin-fraud/frontend
         run: |
           echo "::group::Frontend Test Execution"
           
@@ -407,7 +407,7 @@ jobs:
           echo "::endgroup::"
 
       - name: Build frontend application
-        working-directory: olorin-front
+        working-directory: olorin-fraud/frontend
         run: |
           echo "::group::Frontend Build Process"
           
@@ -438,7 +438,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: frontend-build-${{ matrix.node-version }}
-          path: olorin-front/build
+          path: olorin-fraud/frontend/build
           retention-days: 7
 
       - name: Upload frontend test coverage
@@ -446,7 +446,7 @@ jobs:
         if: always()
         with:
           name: frontend-coverage-report-${{ matrix.node-version }}
-          path: olorin-front/coverage
+          path: olorin-fraud/frontend/coverage
           retention-days: 7
 
   # Build validation summary

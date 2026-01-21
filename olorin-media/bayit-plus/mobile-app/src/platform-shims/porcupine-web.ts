@@ -1,10 +1,11 @@
 /**
- * Picovoice Porcupine Web Stub
- * Stubs out web-only wake word detection for React Native mobile
- * Mobile uses native wake word detection instead
+ * Picovoice Porcupine Platform Shim for React Native
+ *
+ * Provides compatibility layer for web-only @picovoice/porcupine-web imports.
+ * Mobile platforms use @picovoice/porcupine-react-native for wake word detection.
+ * This shim provides API type compatibility for shared code.
  */
 
-// PorcupineWorker stub
 export const PorcupineWorker = {
   create: async () => ({
     start: async () => {},
@@ -15,7 +16,6 @@ export const PorcupineWorker = {
   }),
 };
 
-// BuiltInKeyword enum stub
 export enum BuiltInKeyword {
   Alexa = 'Alexa',
   Americano = 'Americano',
@@ -34,7 +34,6 @@ export enum BuiltInKeyword {
   Terminator = 'Terminator',
 }
 
-// WebVoiceProcessor stub
 export const WebVoiceProcessor = {
   init: async () => {},
   start: async () => {},

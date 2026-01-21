@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Pressable } from 'react-native'
+import { View, Text, FlatList, ActivityIndicator, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Search, Trash2, Play, HardDrive, Users, Video } from 'lucide-react'
 import { useDirection } from '@/hooks/useDirection'
@@ -156,7 +156,7 @@ export default function RecordingsManagementPage() {
   }
 
   const renderHeader = () => (
-    <View style={styles.header}>
+    <View className="flex flex-row justify-between items-start mb-6">
       <Text style={[styles.pageTitle, { textAlign }]}>
         {t('admin.recordings.title')}
       </Text>
@@ -241,13 +241,13 @@ export default function RecordingsManagementPage() {
   )
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1">
       {renderHeader()}
 
       {loading ? (
-        <View style={styles.loadingContainer}>
+        <View className="flex-1 justify-center items-center gap-2">
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loadingText}>{t('common.loading')}</Text>
+          <Text className="text-sm text-gray-400">{t('common.loading')}</Text>
         </View>
       ) : recordings.length === 0 ? (
         <View style={styles.emptyContainer}>
@@ -294,145 +294,3 @@ export default function RecordingsManagementPage() {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    padding: spacing.xl,
-    gap: spacing.lg,
-  },
-  pageTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  statsContainer: {
-    gap: spacing.md,
-    flexWrap: 'wrap',
-  },
-  statCard: {
-    flex: 1,
-    minWidth: 200,
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-  searchContainer: {
-    marginBottom: 0,
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.md,
-  },
-  loadingText: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-  emptyContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xl,
-    gap: spacing.md,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    maxWidth: 400,
-  },
-  listContent: {
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  recordingCard: {
-    borderRadius: borderRadius.lg,
-    padding: spacing.lg,
-  },
-  cardContent: {
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  cardInfo: {
-    flex: 1,
-    gap: spacing.xs,
-  },
-  recordingTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  recordingMeta: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-  subtitleBadge: {
-    backgroundColor: `${colors.primary}30`,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: borderRadius.sm,
-    alignSelf: 'flex-start',
-    marginTop: spacing.xs,
-  },
-  subtitleText: {
-    color: colors.primary,
-    fontSize: 10,
-    fontWeight: '600',
-  },
-  cardActions: {
-    gap: spacing.sm,
-  },
-  actionButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: `${colors.primary}20`,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  deleteButton: {
-    backgroundColor: `${colors.error}20`,
-  },
-  pagination: {
-    padding: spacing.lg,
-    gap: spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pageButton: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    backgroundColor: `${colors.primary}20`,
-    borderRadius: borderRadius.md,
-  },
-  pageButtonDisabled: {
-    opacity: 0.3,
-  },
-  pageButtonText: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  pageInfo: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-})

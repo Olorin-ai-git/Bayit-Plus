@@ -11,7 +11,6 @@ import {
   Text,
   Animated,
   TouchableOpacity,
-  StyleSheet,
 } from 'react-native';
 import { useVoiceState } from '../../hooks/useVoiceFeatures';
 import { VoiceStage } from '../../services/voiceManager';
@@ -92,19 +91,17 @@ export const VoiceStatusIndicator: React.FC<VoiceStatusIndicatorProps> = ({
     return (
       <TouchableOpacity
         onPress={onPress}
-        style={styles.compactContainer}
+        className="flex-row items-center gap-1.5 px-2 py-1"
         activeOpacity={0.7}
       >
         <View
-          style={[
-            styles.compactDot,
-            {
-              backgroundColor: getStageColor(),
-            },
-          ]}
+          className="w-2 h-2 rounded-full"
+          style={{
+            backgroundColor: getStageColor(),
+          }}
         />
         {showLabel && (
-          <Text style={styles.compactLabel}>{getStageLabel()}</Text>
+          <Text className="text-xs text-slate-400">{getStageLabel()}</Text>
         )}
       </TouchableOpacity>
     );
@@ -113,55 +110,19 @@ export const VoiceStatusIndicator: React.FC<VoiceStatusIndicatorProps> = ({
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={styles.container}
+      className="flex-row items-center gap-2"
       activeOpacity={0.7}
     >
       <Animated.View
-        style={[
-          styles.indicator,
-          {
-            backgroundColor: getStageColor(),
-            opacity: isListening ? pulseAnimation : 1,
-          },
-        ]}
+        className="w-3 h-3 rounded-full"
+        style={{
+          backgroundColor: getStageColor(),
+          opacity: isListening ? pulseAnimation : 1,
+        }}
       />
       {showLabel && (
-        <Text style={styles.label}>{getStageLabel()}</Text>
+        <Text className="text-xs text-slate-200 font-medium">{getStageLabel()}</Text>
       )}
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  indicator: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-  label: {
-    fontSize: 12,
-    color: '#E2E8F0',
-    fontWeight: '500',
-  },
-  compactContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  compactDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  compactLabel: {
-    fontSize: 11,
-    color: '#94A3B8',
-  },
-});

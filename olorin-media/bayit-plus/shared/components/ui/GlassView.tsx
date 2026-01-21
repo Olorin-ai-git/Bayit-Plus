@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Platform, ViewStyle, StyleProp } from 'react-native';
+import { View, Platform, ViewStyle, StyleProp } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { colors, borderRadius } from '../theme';
 
@@ -50,11 +50,10 @@ export const GlassView: React.FC<GlassViewProps> = ({
     return (
       <View
         // @ts-ignore - Web-specific className
-        className={glassClassName}
+        className={`${glassClassName} rounded-2xl overflow-hidden ${!noBorder ? 'border' : ''}`}
         style={[
-          styles.glass,
           intensityStyles[normalizedIntensity],
-          !noBorder && styles.border,
+          !noBorder && { borderWidth: 1, borderColor: borderColor || colors.glassBorder },
           borderColor && { borderColor },
           {
             // @ts-ignore - Web-specific CSS properties
@@ -80,37 +79,20 @@ export const GlassView: React.FC<GlassViewProps> = ({
     : normalizedIntensity === 'subtle'
     ? ['rgba(10, 10, 10, 0.1)', 'rgba(15, 10, 20, 0.15)']  // Very subtle with minimal tint
     : ['rgba(10, 10, 10, 0.7)', 'rgba(15, 10, 20, 0.8)'];  // Medium with purple tint
-  
+
   return (
     <LinearGradient
       colors={gradientColors}
+      className={`rounded-2xl overflow-hidden ${!noBorder ? 'border' : ''}`}
       style={[
-        styles.glass,
-        !noBorder && styles.border,
+        !noBorder && { borderWidth: 1, borderColor: borderColor || colors.glassBorder },
         borderColor && { borderColor },
         style,
       ]}
     >
-      <View style={styles.innerGlow}>{children}</View>
+      <View className="flex-1 rounded-2xl border" style={{ borderColor: colors.glassBorderLight }}>{children}</View>
     </LinearGradient>
   );
 };
-
-const styles = StyleSheet.create({
-  glass: {
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-  },
-  border: {
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  innerGlow: {
-    flex: 1,
-    borderRadius: borderRadius.lg - 1,
-    borderWidth: 1,
-    borderColor: colors.glassBorderLight,  // Subtle purple inner glow
-  },
-});
 
 export default GlassView;

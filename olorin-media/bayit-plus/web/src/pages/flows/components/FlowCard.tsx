@@ -4,11 +4,11 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Clock, Sparkles, Play, List, Edit2 } from 'lucide-react';
 import LinearGradient from 'react-native-web-linear-gradient';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 import { GlassView, GlassButton } from '@bayit/shared/ui';
 import type { Flow, FlowTrigger } from '../types/flows.types';
 import { getLocalizedName, getLocalizedDescription, formatTriggerTime } from '../utils/flowHelpers';
@@ -55,7 +55,8 @@ function FlowIcon({ flow, size = 56 }: { flow: Flow; size?: number }) {
       colors={config.colors}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={[styles.flowIcon, { width: size, height: size, borderRadius: size / 4 }]}
+      className="justify-center items-center"
+      style={{ width: size, height: size, borderRadius: size / 4 }}
     >
       <Play size={iconSize} color="#fff" />
     </LinearGradient>
@@ -81,84 +82,87 @@ export function FlowCard({
     ? formatTriggerTime(flow.triggers[0], t)
     : t('flows.manual');
 
+  const cardWidth = IS_TV_BUILD ? 'calc(50% - 24px)' : 'calc(50% - 12px)';
+  const cardMinWidth = IS_TV_BUILD ? 420 : 300;
+  const cardPadding = IS_TV_BUILD ? 32 : 24;
+  const borderWidth = IS_TV_BUILD ? 2 : 1;
+
   return (
     <Pressable
       onPress={onSelect}
-      style={[
-        styles.flowCard,
-        isTablet && styles.flowCardTablet,
-        { backgroundColor: config.bgColor },
-        isSelected && styles.flowCardSelected,
-      ]}
+      className={`rounded-2xl transition-all duration-200 ${isTablet ? 'w-full' : ''} ${
+        isSelected ? 'border-[color:var(--primary)] scale-[1.02]' : 'border-white/10'
+      }`}
+      style={{ backgroundColor: config.bgColor, width: cardWidth, minWidth: cardMinWidth, padding: cardPadding, borderWidth }}
     >
-      <View style={[styles.cardHeader, isRTL && styles.cardHeaderRTL]}>
+      <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} justify-between items-start mb-4`}>
         <FlowIcon flow={flow} size={56} />
         {flow.flow_type === 'system' && (
-          <GlassView style={styles.systemBadge} intensity="low">
-            <Text style={styles.systemBadgeText}>{t('flows.system')}</Text>
+          <GlassView className="px-2 py-1 rounded-sm" intensity="low">
+            <Text className="text-[10px] text-[color:var(--primary)] font-semibold uppercase">{t('flows.system')}</Text>
           </GlassView>
         )}
         {!isPremium && (
-          <GlassView style={[styles.systemBadge, styles.premiumBadge]} intensity="low">
-            <Text style={styles.premiumBadgeText}>⭐ {t('common.premium', 'Premium')}</Text>
+          <GlassView className="px-2 py-1 rounded-sm bg-[rgba(255,204,0,0.2)]" intensity="low">
+            <Text className="text-[10px] text-[color:var(--warning)] font-semibold">⭐ {t('common.premium', 'Premium')}</Text>
           </GlassView>
         )}
       </View>
 
-      <Text style={[styles.flowName, isRTL && styles.textRTL]}>
+      <Text className={`${IS_TV_BUILD ? 'text-[28px]' : 'text-[22px]'} font-bold text-[color:var(--text)] ${IS_TV_BUILD ? 'mb-4' : 'mb-2'} w-full ${isRTL ? 'text-right' : ''}`}>
         {localizedName}
       </Text>
 
       {localizedDescription && (
-        <Text style={[styles.flowDesc, isRTL && styles.textRTL]} numberOfLines={2}>
+        <Text className={`${IS_TV_BUILD ? 'text-lg leading-7' : 'text-sm leading-[22px]'} text-[color:var(--text-muted)] mb-4 w-full ${isRTL ? 'text-right' : ''}`} numberOfLines={2}>
           {localizedDescription}
         </Text>
       )}
 
-      <View style={[styles.flowMeta, isRTL && styles.flowMetaRTL]}>
+      <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center gap-1 mb-2 w-full`}>
         <Clock size={14} color={colors.textMuted} />
-        <Text style={styles.flowMetaText}>{triggerDisplay}</Text>
+        <Text className="text-[13px] text-[color:var(--text-muted)] flex-1">{triggerDisplay}</Text>
       </View>
 
-      <View style={[styles.flowFeatures, isRTL && styles.flowFeaturesRTL]}>
+      <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-2 flex-wrap`}>
         {flow.ai_enabled && (
-          <View style={styles.featureTag}>
+          <View className="flex flex-row items-center gap-1 px-2 py-1.5 rounded-full bg-white/10">
             <Sparkles size={12} color={colors.warning} />
-            <Text style={styles.featureTagText}>AI</Text>
+            <Text className="text-xs text-[color:var(--text-muted)] font-medium">AI</Text>
           </View>
         )}
         {flow.ai_brief_enabled && (
-          <View style={styles.featureTag}>
+          <View className="flex flex-row items-center gap-1 px-2 py-1.5 rounded-full bg-white/10">
             <Sparkles size={12} color={colors.info} />
-            <Text style={styles.featureTagText}>{t('flows.aiBrief')}</Text>
+            <Text className="text-xs text-[color:var(--text-muted)] font-medium">{t('flows.aiBrief')}</Text>
           </View>
         )}
         {flow.auto_play && (
-          <View style={styles.featureTag}>
+          <View className="flex flex-row items-center gap-1 px-2 py-1.5 rounded-full bg-white/10">
             <Play size={12} color={colors.primary} />
-            <Text style={styles.featureTagText}>{t('flows.autoPlay')}</Text>
+            <Text className="text-xs text-[color:var(--text-muted)] font-medium">{t('flows.autoPlay')}</Text>
           </View>
         )}
         {flow.items.length > 0 && (
-          <View style={styles.featureTag}>
+          <View className="flex flex-row items-center gap-1 px-2 py-1.5 rounded-full bg-white/10">
             <List size={12} color={colors.textMuted} />
-            <Text style={styles.featureTagText}>{flow.items.length}</Text>
+            <Text className="text-xs text-[color:var(--text-muted)] font-medium">{flow.items.length}</Text>
           </View>
         )}
       </View>
 
       {/* Quick Actions on Selected */}
       {isSelected && (
-        <View style={[styles.flowActions, isRTL && styles.flowActionsRTL]}>
+        <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-2 mt-4 pt-4 border-t border-white/10`}>
           <GlassButton
             title={t('flows.start')}
             onPress={onStart}
             variant="primary"
             size="sm"
-            style={styles.flowActionBtn}
+            className="flex-1"
           />
           {flow.flow_type === 'custom' && onEdit && (
-            <Pressable onPress={onEdit} style={styles.flowEditBtn}>
+            <Pressable onPress={onEdit} className="w-11 h-11 rounded-lg bg-white/10 justify-center items-center">
               <Edit2 size={16} color={colors.text} />
             </Pressable>
           )}
@@ -167,135 +171,5 @@ export function FlowCard({
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  flowCard: {
-    width: IS_TV_BUILD ? 'calc(50% - 24px)' as any : 'calc(50% - 12px)' as any,
-    minWidth: IS_TV_BUILD ? 420 : 300,
-    padding: IS_TV_BUILD ? spacing.xl + 8 : spacing.xl,
-    borderRadius: borderRadius.xl,
-    borderWidth: IS_TV_BUILD ? 2 : 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    // @ts-ignore
-    transition: 'all 0.2s ease',
-  },
-  flowCardTablet: {
-    width: '100%',
-    minWidth: 'auto' as any,
-  },
-  flowCardSelected: {
-    borderColor: colors.primary,
-    // @ts-ignore
-    transform: 'scale(1.02)',
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.md,
-  },
-  cardHeaderRTL: {
-    flexDirection: 'row-reverse',
-  },
-  flowIcon: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  systemBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: borderRadius.sm,
-  },
-  systemBadgeText: {
-    fontSize: 10,
-    color: colors.primary,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-  },
-  premiumBadge: {
-    backgroundColor: 'rgba(255, 204, 0, 0.2)',
-  },
-  premiumBadgeText: {
-    fontSize: 10,
-    color: colors.warning,
-    fontWeight: '600',
-  },
-  flowName: {
-    fontSize: IS_TV_BUILD ? 28 : 22,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: IS_TV_BUILD ? spacing.md : spacing.sm,
-    width: '100%',
-  },
-  flowDesc: {
-    fontSize: IS_TV_BUILD ? 18 : 14,
-    color: colors.textMuted,
-    lineHeight: IS_TV_BUILD ? 28 : 22,
-    marginBottom: spacing.md,
-    width: '100%',
-  },
-  flowMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginBottom: spacing.sm,
-    width: '100%',
-  },
-  flowMetaRTL: {
-    flexDirection: 'row-reverse',
-  },
-  flowMetaText: {
-    fontSize: 13,
-    color: colors.textMuted,
-    flex: 1,
-  },
-  flowFeatures: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    flexWrap: 'wrap',
-  },
-  flowFeaturesRTL: {
-    flexDirection: 'row-reverse',
-  },
-  featureTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 6,
-    borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  featureTagText: {
-    fontSize: 12,
-    color: colors.textMuted,
-    fontWeight: '500',
-  },
-  flowActions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginTop: spacing.md,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  flowActionsRTL: {
-    flexDirection: 'row-reverse',
-  },
-  flowActionBtn: {
-    flex: 1,
-  },
-  flowEditBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-});
 
 export default FlowCard;

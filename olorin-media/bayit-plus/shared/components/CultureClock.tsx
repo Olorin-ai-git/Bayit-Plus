@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, fontSize } from '../theme';
 import { useCultureStore, CultureTime } from '../contexts/CultureContext';
@@ -172,44 +172,44 @@ export const CultureClock: React.FC<CultureClockProps> = ({
 
   if (!time) {
     return (
-      <View style={[styles.container, style]}>
-        <Text style={[styles.timeText, { fontSize: sizes.time }]}>--:--</Text>
+      <View className="items-center" style={style}>
+        <Text className="font-bold text-white" style={{ fontSize: sizes.time }}>--:--</Text>
       </View>
     );
   }
 
   return (
-    <View style={[styles.container, style]}>
+    <View className="items-center" style={style}>
       {/* Timezone label */}
       {showTimezoneLabel && (
-        <View style={[styles.labelContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <Text style={[styles.flagEmoji, { fontSize: sizes.label }]}>
+        <View className={`items-center mb-1 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+          <Text className={`${isRTL ? 'ml-1' : 'mr-1'}`} style={{ fontSize: sizes.label }}>
             {getCultureFlag()}
           </Text>
-          <Text style={[styles.labelText, { fontSize: sizes.label }]}>
+          <Text className="text-white/40" style={{ fontSize: sizes.label }}>
             {t('cultureClock.timeIn', { location: getCultureLabel() })}
           </Text>
         </View>
       )}
 
       {/* Time */}
-      <Text style={[styles.timeText, { fontSize: sizes.time }]}>
+      <Text className="font-bold text-white" style={{ fontSize: sizes.time, fontVariant: ['tabular-nums'] }}>
         {time.display_time}
       </Text>
 
       {/* Date and day of week */}
       {(showDate || showDayOfWeek) && (
-        <View style={[styles.dateContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        <View className={`items-center mt-1 gap-1 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
           {showDayOfWeek && (
-            <Text style={[styles.dateText, { fontSize: sizes.date }]}>
+            <Text className="text-white/60" style={{ fontSize: sizes.date }}>
               {time.day_of_week}
             </Text>
           )}
           {showDate && showDayOfWeek && (
-            <Text style={[styles.dateSeparator, { fontSize: sizes.date }]}>•</Text>
+            <Text className="text-white/40" style={{ fontSize: sizes.date }}>•</Text>
           )}
           {showDate && (
-            <Text style={[styles.dateText, { fontSize: sizes.date }]}>
+            <Text className="text-white/60" style={{ fontSize: sizes.date }}>
               {time.display_date}
             </Text>
           )}
@@ -218,7 +218,7 @@ export const CultureClock: React.FC<CultureClockProps> = ({
 
       {/* Weekend indicator */}
       {time.is_weekend && (
-        <Text style={[styles.weekendBadge, { fontSize: sizes.date }]}>
+        <Text className="mt-1 px-2 py-0.5 bg-yellow-400/20 text-yellow-400 rounded overflow-hidden font-semibold" style={{ fontSize: sizes.date }}>
           {effectiveCultureId === 'israeli'
             ? t('cultureClock.shabbat')
             : t('cultureClock.weekend')}
@@ -227,47 +227,5 @@ export const CultureClock: React.FC<CultureClockProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-  },
-  labelContainer: {
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  flagEmoji: {
-    marginRight: spacing.xs,
-  },
-  labelText: {
-    color: colors.textMuted,
-  },
-  timeText: {
-    fontWeight: 'bold',
-    color: colors.text,
-    fontVariant: ['tabular-nums'],
-  },
-  dateContainer: {
-    alignItems: 'center',
-    marginTop: spacing.xs,
-    gap: spacing.xs,
-  },
-  dateText: {
-    color: colors.textSecondary,
-  },
-  dateSeparator: {
-    color: colors.textMuted,
-  },
-  weekendBadge: {
-    marginTop: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs / 2,
-    backgroundColor: 'rgba(255, 215, 0, 0.2)',
-    color: '#FFD700',
-    borderRadius: 4,
-    overflow: 'hidden',
-    fontWeight: '600',
-  },
-});
 
 export default CultureClock;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Image, ActivityIndicator, useWindowDimensions } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { Link } from 'react-router-dom';
 import { Download, Play, Trash2, HardDrive } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -52,62 +52,62 @@ function DownloadCard({ item, onDelete, pausedText }: { item: DownloadItem; onDe
         onHoverIn={() => setIsHovered(true)}
         onHoverOut={() => setIsHovered(false)}
       >
-        <GlassCard style={[styles.card, isHovered && styles.cardHovered]}>
-          <View style={styles.thumbnailContainer}>
+        <GlassCard className={`p-0 m-1 overflow-hidden relative ${isHovered ? 'scale-105' : ''}`}>
+          <View className="aspect-video relative">
             {item.thumbnail ? (
-              <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} resizeMode="cover" />
+              <Image source={{ uri: item.thumbnail }} className="w-full h-full" resizeMode="cover" />
             ) : (
-              <View style={styles.thumbnailPlaceholder}>
-                <Text style={styles.placeholderIcon}>{TYPE_ICONS[item.type] || '⬇️'}</Text>
+              <View className="w-full h-full bg-white/5 justify-center items-center">
+                <Text className="text-3xl">{TYPE_ICONS[item.type] || '⬇️'}</Text>
               </View>
             )}
 
             {/* Progress Bar */}
             {isDownloading && item.progress !== undefined && (
-              <View style={styles.progressBar}>
-                <View style={[styles.progressFill, { width: `${item.progress}%` }]} />
+              <View className="absolute bottom-0 left-0 right-0 h-1 bg-white/5">
+                <View className="h-full bg-purple-600" style={{ width: `${item.progress}%` }} />
               </View>
             )}
 
             {/* Type Badge */}
-            <View style={styles.typeBadge}>
-              <Text style={styles.typeIcon}>{TYPE_ICONS[item.type]}</Text>
+            <View className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded-lg">
+              <Text className="text-sm">{TYPE_ICONS[item.type]}</Text>
             </View>
 
             {/* Size Badge */}
             {item.size && (
-              <View style={styles.sizeBadge}>
-                <Text style={styles.sizeText}>{item.size}</Text>
+              <View className="absolute top-2 left-2 bg-purple-500/90 px-2 py-1 rounded-lg">
+                <Text className="text-black text-xs font-bold">{item.size}</Text>
               </View>
             )}
 
             {/* Status Overlay */}
             {(isDownloading || isPaused) && (
-              <View style={styles.statusOverlay}>
+              <View className="absolute inset-0 bg-black/40 justify-center items-center">
                 {isDownloading && (
                   <>
                     <ActivityIndicator size="large" color={colors.primary} />
-                    <Text style={styles.progressText}>{item.progress}%</Text>
+                    <Text className="text-white text-sm font-semibold mt-2">{item.progress}%</Text>
                   </>
                 )}
-                {isPaused && <Text style={styles.pausedText}>{pausedText}</Text>}
+                {isPaused && <Text className="text-yellow-500 text-sm font-semibold">{pausedText}</Text>}
               </View>
             )}
 
             {/* Hover Overlay */}
             {item.status === 'completed' && isHovered && (
-              <View style={styles.hoverOverlay}>
-                <View style={styles.playButton}>
+              <View className="absolute inset-0 bg-black/50 justify-center items-center">
+                <View className="w-12 h-12 rounded-full bg-purple-600 justify-center items-center">
                   <Play size={24} color={colors.background} fill={colors.background} />
                 </View>
               </View>
             )}
           </View>
 
-          <View style={styles.info}>
-            <Text style={styles.title} numberOfLines={1}>{getLocalizedText('title')}</Text>
+          <View className="p-2">
+            <Text className="text-white text-base font-semibold" numberOfLines={1}>{getLocalizedText('title')}</Text>
             {item.subtitle && (
-              <Text style={styles.subtitle} numberOfLines={1}>{getLocalizedText('subtitle')}</Text>
+              <Text className="text-gray-400 text-sm mt-1" numberOfLines={1}>{getLocalizedText('subtitle')}</Text>
             )}
           </View>
 
@@ -118,7 +118,7 @@ function DownloadCard({ item, onDelete, pausedText }: { item: DownloadItem; onDe
                 e.stopPropagation();
                 onDelete(item.id);
               }}
-              style={styles.deleteButton}
+              className="absolute top-10 left-2 w-8 h-8 rounded-full bg-red-500/80 justify-center items-center"
             >
               <Trash2 size={14} color={colors.text} />
             </Pressable>
@@ -189,31 +189,31 @@ export default function DownloadsPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 px-4 py-6 max-w-[1400px] mx-auto w-full">
       {/* Header */}
-      <View style={[styles.header, { flexDirection, justifyContent }]}>
-        <View style={styles.headerIcon}>
+      <View className={`flex-row items-center gap-2 mb-4 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
+        <View className="w-14 h-14 rounded-full bg-purple-700/30 justify-center items-center">
           <Download size={28} color={colors.primary} />
         </View>
         <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('downloads.title')}</Text>
-          <Text style={[styles.itemCount, { textAlign }]}>{downloads.length} {t('downloads.items')}</Text>
+          <Text className={`text-white text-3xl font-bold ${textAlign === 'right' ? 'text-right' : ''}`}>{t('downloads.title')}</Text>
+          <Text className={`text-gray-400 text-sm ${textAlign === 'right' ? 'text-right' : ''}`}>{downloads.length} {t('downloads.items')}</Text>
         </View>
       </View>
 
       {/* Storage Bar */}
-      <GlassCard style={styles.storageCard}>
-        <View style={styles.storageRow}>
+      <GlassCard className="p-4 mb-6">
+        <View className="flex-row items-center gap-4">
           <HardDrive size={24} color={colors.textMuted} />
-          <View style={styles.storageInfo}>
-            <View style={styles.storageHeader}>
-              <Text style={styles.storageLabel}>{t('downloads.storage')}</Text>
-              <Text style={styles.storageValue}>
+          <View className="flex-1">
+            <View className="flex-row justify-between mb-2">
+              <Text className="text-gray-400 text-sm">{t('downloads.storage')}</Text>
+              <Text className="text-white text-sm">
                 {formatSize(storageInfo.used)} / {storageInfo.total} GB
               </Text>
             </View>
-            <View style={styles.storageBarContainer}>
-              <View style={[styles.storageBarFill, { width: `${(storageInfo.used / storageInfo.total) * 100}%` }]} />
+            <View className="h-2 bg-white/5 rounded-full overflow-hidden">
+              <View className="h-full bg-purple-600 rounded-full" style={{ width: `${(storageInfo.used / storageInfo.total) * 100}%` }} />
             </View>
           </View>
         </View>
@@ -221,9 +221,9 @@ export default function DownloadsPage() {
 
       {/* Loading State */}
       {loading ? (
-        <View style={styles.grid}>
+        <View className="flex-row flex-wrap gap-4">
           {[...Array(12)].map((_, i) => (
-            <View key={i} style={styles.skeletonCard} />
+            <View key={i} className="flex-1 min-w-[150px] max-w-[16.66%] aspect-video bg-white/10 rounded-2xl m-1" />
           ))}
         </View>
       ) : downloads.length > 0 ? (
@@ -232,8 +232,8 @@ export default function DownloadsPage() {
           keyExtractor={(item) => item.id}
           numColumns={numColumns}
           key={numColumns}
-          contentContainerStyle={styles.gridContent}
-          columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
+          contentContainerStyle={{ gap: spacing.md }}
+          columnWrapperStyle={numColumns > 1 ? { gap: spacing.md } : undefined}
           renderItem={({ item }) => (
             <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
               <DownloadCard item={item} onDelete={handleDelete} pausedText={pausedText} />
@@ -241,245 +241,14 @@ export default function DownloadsPage() {
           )}
         />
       ) : (
-        <View style={styles.emptyState}>
-          <GlassCard style={styles.emptyCard}>
+        <View className="flex-1 justify-center items-center py-16">
+          <GlassCard className="p-12 items-center">
             <Download size={64} color="rgba(168, 85, 247, 0.5)" />
-            <Text style={styles.emptyTitle}>{t('downloads.empty')}</Text>
-            <Text style={styles.emptyDescription}>{t('downloads.emptyHint')}</Text>
+            <Text className="text-white text-xl font-semibold mt-4 mb-2">{t('downloads.empty')}</Text>
+            <Text className="text-gray-400 text-base">{t('downloads.emptyHint')}</Text>
           </GlassCard>
         </View>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.lg,
-    maxWidth: 1400,
-    marginHorizontal: 'auto',
-    width: '100%',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.md,
-  },
-  headerIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  pageTitle: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  itemCount: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  storageCard: {
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  storageRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  storageInfo: {
-    flex: 1,
-  },
-  storageHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: spacing.sm,
-  },
-  storageLabel: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  storageValue: {
-    fontSize: 14,
-    color: colors.text,
-  },
-  storageBarContainer: {
-    height: 8,
-    backgroundColor: colors.backgroundLighter,
-    borderRadius: borderRadius.full,
-    overflow: 'hidden',
-  },
-  storageBarFill: {
-    height: '100%',
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.full,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.md,
-  },
-  gridContent: {
-    gap: spacing.md,
-  },
-  row: {
-    gap: spacing.md,
-  },
-  card: {
-    padding: 0,
-    margin: spacing.xs,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  cardHovered: {
-    transform: [{ scale: 1.02 }],
-  },
-  thumbnailContainer: {
-    aspectRatio: 16 / 9,
-    position: 'relative',
-  },
-  thumbnail: {
-    width: '100%',
-    height: '100%',
-  },
-  thumbnailPlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: colors.backgroundLighter,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 32,
-  },
-  progressBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 4,
-    backgroundColor: colors.backgroundLighter,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: colors.primary,
-  },
-  typeBadge: {
-    position: 'absolute',
-    top: spacing.sm,
-    right: spacing.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.md,
-  },
-  typeIcon: {
-    fontSize: 14,
-  },
-  sizeBadge: {
-    position: 'absolute',
-    top: spacing.sm,
-    left: spacing.sm,
-    backgroundColor: 'rgba(168, 85, 247, 0.9)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.md,
-  },
-  sizeText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: colors.background,
-  },
-  statusOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  progressText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginTop: spacing.sm,
-  },
-  pausedText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.warning,
-  },
-  hoverOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  info: {
-    padding: spacing.sm,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-  },
-  deleteButton: {
-    position: 'absolute',
-    top: 40,
-    left: spacing.sm,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(239, 68, 68, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: spacing.xl * 2,
-  },
-  emptyCard: {
-    padding: spacing.xl * 1.5,
-    alignItems: 'center',
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  emptyDescription: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-  skeletonCard: {
-    flex: 1,
-    minWidth: 150,
-    maxWidth: '16.66%',
-    aspectRatio: 16 / 9,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.lg,
-    margin: spacing.xs,
-  },
-});

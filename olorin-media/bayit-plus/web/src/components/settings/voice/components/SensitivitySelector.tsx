@@ -3,7 +3,7 @@
  * Sensitivity level selection for wake word detection
  */
 
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { SensitivityOption } from '../types';
@@ -24,31 +24,30 @@ export function SensitivitySelector({
   const { t } = useTranslation();
 
   return (
-    <View style={styles.sensitivitySection}>
-      <Text style={[styles.sensitivityLabel, isRTL && styles.textRTL]}>
+    <View className="pt-2 border-t border-white/5 mt-2">
+      <Text className={`text-sm font-medium text-white mb-1 ${isRTL ? 'text-right' : ''}`}>
         {t('profile.voice.wakeWordSensitivity', 'Wake Word Sensitivity')}
       </Text>
-      <Text style={[styles.sensitivityDesc, isRTL && styles.textRTL]}>
+      <Text className={`text-[13px] text-white/60 mb-4 ${isRTL ? 'text-right' : ''}`}>
         {t('profile.voice.wakeWordSensitivityDesc', 'Higher sensitivity detects the wake word more easily but may cause false triggers')}
       </Text>
-      <View style={[styles.sensitivityOptions, isRTL && styles.sensitivityOptionsRTL]}>
+      <View className={`flex-row gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
         {options.map((sensitivity) => {
           const isSelected = Math.abs(selectedSensitivity - sensitivity.value) < 0.1;
           return (
             <Pressable
               key={sensitivity.value}
               onPress={() => onSensitivityChange(sensitivity.value)}
-              style={({ hovered }: any) => [
-                styles.sensitivityOption,
-                isSelected && styles.sensitivityOptionSelected,
-                hovered && styles.sensitivityOptionHovered,
-              ]}
+              className={`flex-1 items-center justify-center py-4 rounded-lg ${
+                isSelected
+                  ? 'bg-purple-700/30 border border-purple-400/40'
+                  : 'bg-white/5 hover:bg-white/8'
+              }`}
             >
               <Text
-                style={[
-                  styles.sensitivityText,
-                  isSelected && styles.sensitivityTextSelected,
-                ]}
+                className={`text-[13px] ${
+                  isSelected ? 'text-purple-500 font-medium' : 'text-white'
+                }`}
               >
                 {t(`profile.voice.${sensitivity.labelKey}`, sensitivity.labelKey)}
               </Text>
@@ -59,57 +58,3 @@ export function SensitivitySelector({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  sensitivitySection: {
-    paddingTop: spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.05)',
-    marginTop: spacing.sm,
-  },
-  sensitivityLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  sensitivityDesc: {
-    fontSize: 13,
-    color: colors.textMuted,
-    marginBottom: spacing.md,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-  sensitivityOptions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  sensitivityOptionsRTL: {
-    flexDirection: 'row-reverse',
-  },
-  sensitivityOption: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  sensitivityOptionSelected: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.4)',
-  },
-  sensitivityOptionHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  sensitivityText: {
-    fontSize: 13,
-    color: colors.text,
-  },
-  sensitivityTextSelected: {
-    color: colors.primary,
-    fontWeight: '500',
-  },
-});

@@ -7,9 +7,7 @@
 import React from 'react';
 import {
   View,
-  StyleSheet,
 } from 'react-native';
-import { colors } from '../theme';
 import { SupportPortal } from '../components/support';
 import { VoiceAvatarFAB } from '../components/support/VoiceAvatarFAB';
 import { VoiceChatModal } from '../components/support/VoiceChatModal';
@@ -44,7 +42,7 @@ export default function SupportScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-[#0a0a0f]">
       {/* Main Support Portal */}
       <SupportPortal />
 
@@ -67,10 +65,3 @@ export default function SupportScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-});

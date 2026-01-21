@@ -10,7 +10,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  StyleSheet,
   Modal,
   ActivityIndicator,
 } from 'react-native';
@@ -117,37 +116,33 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <GlassView style={styles.modal}>
+      <View className="flex-1 bg-black/70 justify-center items-center p-4 md:p-6">
+        <GlassView className={`w-full ${isTV ? 'max-w-[600px]' : 'max-w-[500px]'} max-h-[90%] p-4 md:p-6 rounded-2xl`}>
           <ScrollView showsVerticalScrollIndicator={false}>
             {/* Header */}
-            <View style={styles.header}>
-              <Text style={[styles.title, { textAlign }]}>
+            <View className="flex-row justify-between items-center mb-4 md:mb-6">
+              <Text className={`${isTV ? 'text-2xl' : 'text-xl'} font-bold text-white flex-1`} style={{ textAlign }}>
                 {t('support.ticket.title', 'Create Support Ticket')}
               </Text>
-              <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                <Text style={styles.closeButtonText}>✕</Text>
+              <TouchableOpacity className={`${isTV ? 'w-10 h-10' : 'w-8 h-8'} ${isTV ? 'rounded-[20px]' : 'rounded-2xl'} bg-white/10 justify-center items-center`} onPress={onClose}>
+                <Text className={`${isTV ? 'text-xl' : 'text-base'} text-white`}>✕</Text>
               </TouchableOpacity>
             </View>
 
             {/* Error Message */}
             {error && (
-              <View style={styles.errorContainer}>
-                <Text style={[styles.errorText, { textAlign }]}>{error}</Text>
+              <View className="bg-red-500/10 p-3 md:p-4 rounded-lg mb-3 md:mb-4">
+                <Text className={`${isTV ? 'text-sm' : 'text-xs'} text-red-500`} style={{ textAlign }}>{error}</Text>
               </View>
             )}
 
             {/* Subject Input */}
-            <View style={styles.fieldContainer}>
-              <Text style={[styles.label, { textAlign }]}>
+            <View className="mb-4 md:mb-6">
+              <Text className={`${isTV ? 'text-base' : 'text-sm'} font-semibold text-white mb-2`} style={{ textAlign }}>
                 {t('support.ticket.subject', 'Subject')} *
               </Text>
               <TextInput
-                style={[
-                  styles.input,
-                  isRTL && styles.inputRTL,
-                  focusedField === 'subject' && styles.inputFocused,
-                ]}
+                className={`bg-white/5 rounded-lg p-3 md:p-4 ${isTV ? 'text-base' : 'text-sm'} text-white border-2 ${focusedField === 'subject' ? 'border-purple-500' : 'border-transparent'} ${isRTL ? 'text-right' : ''}`}
                 value={subject}
                 onChangeText={setSubject}
                 placeholder={t('support.ticket.subjectPlaceholder', 'Brief description of your issue')}
@@ -159,26 +154,20 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
             </View>
 
             {/* Category Selection */}
-            <View style={styles.fieldContainer}>
-              <Text style={[styles.label, { textAlign }]}>
+            <View className="mb-4 md:mb-6">
+              <Text className={`${isTV ? 'text-base' : 'text-sm'} font-semibold text-white mb-2`} style={{ textAlign }}>
                 {t('support.ticket.categoryLabel', 'Category')}
               </Text>
-              <View style={styles.optionsRow}>
+              <View className="flex-row flex-wrap gap-2">
                 {categories.map((cat) => (
                   <TouchableOpacity
                     key={cat.id}
-                    style={[
-                      styles.optionButton,
-                      category === cat.id && styles.optionButtonActive,
-                    ]}
+                    className={`flex-row items-center px-3 md:px-4 py-2 ${category === cat.id ? 'bg-purple-500/20 border-purple-500' : 'bg-white/5'} rounded-lg gap-1 border-2 ${category === cat.id ? 'border-purple-500' : 'border-transparent'}`}
                     onPress={() => setCategory(cat.id)}
                   >
-                    <Text style={styles.optionIcon}>{cat.icon}</Text>
+                    <Text className={`${isTV ? 'text-base' : 'text-sm'}`}>{cat.icon}</Text>
                     <Text
-                      style={[
-                        styles.optionText,
-                        category === cat.id && styles.optionTextActive,
-                      ]}
+                      className={`${isTV ? 'text-sm' : 'text-xs'} ${category === cat.id ? 'text-purple-500 font-semibold' : 'text-gray-400'}`}
                     >
                       {t(cat.labelKey, cat.id)}
                     </Text>
@@ -188,32 +177,24 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
             </View>
 
             {/* Priority Selection */}
-            <View style={styles.fieldContainer}>
-              <Text style={[styles.label, { textAlign }]}>
+            <View className="mb-4 md:mb-6">
+              <Text className={`${isTV ? 'text-base' : 'text-sm'} font-semibold text-white mb-2`} style={{ textAlign }}>
                 {t('support.ticket.priorityLabel', 'Priority')}
               </Text>
-              <View style={styles.optionsRow}>
+              <View className="flex-row flex-wrap gap-2">
                 {priorities.map((pri) => (
                   <TouchableOpacity
                     key={pri.id}
-                    style={[
-                      styles.priorityButton,
-                      priority === pri.id && styles.priorityButtonActive,
-                      priority === pri.id && { borderColor: pri.color },
-                    ]}
+                    className={`flex-row items-center px-3 md:px-4 py-2 ${priority === pri.id ? 'bg-white/10' : 'bg-white/5'} rounded-lg gap-2 border-2`}
+                    style={{ borderColor: priority === pri.id ? pri.color : 'transparent' }}
                     onPress={() => setPriority(pri.id)}
                   >
                     <View
-                      style={[
-                        styles.priorityDot,
-                        { backgroundColor: pri.color },
-                      ]}
+                      className={`${isTV ? 'w-2.5 h-2.5 rounded-[5px]' : 'w-2 h-2 rounded-[4px]'}`}
+                      style={{ backgroundColor: pri.color }}
                     />
                     <Text
-                      style={[
-                        styles.optionText,
-                        priority === pri.id && styles.optionTextActive,
-                      ]}
+                      className={`${isTV ? 'text-sm' : 'text-xs'} ${priority === pri.id ? 'text-purple-500 font-semibold' : 'text-gray-400'}`}
                     >
                       {t(pri.labelKey, pri.id)}
                     </Text>
@@ -223,16 +204,12 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
             </View>
 
             {/* Message Input */}
-            <View style={styles.fieldContainer}>
-              <Text style={[styles.label, { textAlign }]}>
+            <View className="mb-4 md:mb-6">
+              <Text className={`${isTV ? 'text-base' : 'text-sm'} font-semibold text-white mb-2`} style={{ textAlign }}>
                 {t('support.ticket.message', 'Message')} *
               </Text>
               <TextInput
-                style={[
-                  styles.textArea,
-                  isRTL && styles.inputRTL,
-                  focusedField === 'message' && styles.inputFocused,
-                ]}
+                className={`bg-white/5 rounded-lg p-3 md:p-4 ${isTV ? 'text-base' : 'text-sm'} text-white border-2 ${focusedField === 'message' ? 'border-purple-500' : 'border-transparent'} ${isTV ? 'min-h-[150px]' : 'min-h-[120px]'} ${isRTL ? 'text-right' : ''}`}
                 value={message}
                 onChangeText={setMessage}
                 placeholder={t('support.ticket.messagePlaceholder', 'Describe your issue in detail...')}
@@ -244,34 +221,31 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
                 textAlignVertical="top"
                 maxLength={2000}
               />
-              <Text style={styles.charCount}>
+              <Text className={`${isTV ? 'text-xs' : 'text-[10px]'} text-gray-400 text-right mt-1`}>
                 {message.length}/2000
               </Text>
             </View>
 
             {/* Actions */}
-            <View style={styles.actions}>
+            <View className="flex-row gap-3 md:gap-4 mt-3 md:mt-4">
               <TouchableOpacity
-                style={styles.cancelButton}
+                className="flex-1 p-3 md:p-4 rounded-lg bg-white/10 items-center"
                 onPress={onClose}
                 disabled={loading}
               >
-                <Text style={styles.cancelButtonText}>
+                <Text className={`${isTV ? 'text-base' : 'text-sm'} font-semibold text-white`}>
                   {t('common.cancel', 'Cancel')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[
-                  styles.submitButton,
-                  loading && styles.submitButtonDisabled,
-                ]}
+                className={`flex-[2] p-3 md:p-4 rounded-lg bg-purple-500 items-center justify-center ${loading ? 'opacity-60' : ''}`}
                 onPress={handleSubmit}
                 disabled={loading}
               >
                 {loading ? (
                   <ActivityIndicator size="small" color={colors.background} />
                 ) : (
-                  <Text style={styles.submitButtonText}>
+                  <Text className={`${isTV ? 'text-base' : 'text-sm'} font-semibold text-black`}>
                     {t('support.ticket.submit', 'Submit Ticket')}
                   </Text>
                 )}
@@ -283,179 +257,5 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  modal: {
-    width: '100%',
-    maxWidth: isTV ? 600 : 500,
-    maxHeight: '90%',
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-  title: {
-    fontSize: isTV ? 24 : 20,
-    fontWeight: 'bold',
-    color: colors.text,
-    flex: 1,
-  },
-  closeButton: {
-    width: isTV ? 40 : 32,
-    height: isTV ? 40 : 32,
-    borderRadius: isTV ? 20 : 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    fontSize: isTV ? 20 : 16,
-    color: colors.text,
-  },
-  errorContainer: {
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.md,
-  },
-  errorText: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.error,
-  },
-  fieldContainer: {
-    marginBottom: spacing.lg,
-  },
-  label: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  input: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    fontSize: isTV ? 16 : 14,
-    color: colors.text,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  inputRTL: {
-    textAlign: 'right',
-  },
-  inputFocused: {
-    borderColor: colors.primary,
-  },
-  textArea: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    fontSize: isTV ? 16 : 14,
-    color: colors.text,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    minHeight: isTV ? 150 : 120,
-  },
-  charCount: {
-    fontSize: isTV ? 12 : 10,
-    color: colors.textSecondary,
-    textAlign: 'right',
-    marginTop: spacing.xs,
-  },
-  optionsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  optionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    gap: spacing.xs,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  optionButtonActive: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    borderColor: colors.primary,
-  },
-  optionIcon: {
-    fontSize: isTV ? 16 : 14,
-  },
-  optionText: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-  },
-  optionTextActive: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  priorityButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    gap: spacing.sm,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  priorityButtonActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  priorityDot: {
-    width: isTV ? 10 : 8,
-    height: isTV ? 10 : 8,
-    borderRadius: isTV ? 5 : 4,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginTop: spacing.md,
-  },
-  cancelButton: {
-    flex: 1,
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  submitButton: {
-    flex: 2,
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  submitButtonDisabled: {
-    opacity: 0.6,
-  },
-  submitButtonText: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.background,
-  },
-});
 
 export default SupportTicketForm;

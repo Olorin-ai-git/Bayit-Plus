@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';;
 import { useTranslation } from 'react-i18next';
 import { Check, X } from 'lucide-react';
 import { GlassInput } from '@bayit/shared/ui';
@@ -146,8 +146,8 @@ export default function RefundsPage() {
       label: t('admin.refunds.columns.user'),
       render: (_: any, refund: Refund) => (
         <View>
-          <Text style={styles.userName}>{refund.user?.name || 'N/A'}</Text>
-          <Text style={styles.userEmail}>{refund.user?.email || ''}</Text>
+          <Text className="text-sm font-medium text-white">{refund.user?.name || 'N/A'}</Text>
+          <Text className="text-xs text-gray-400">{refund.user?.email || ''}</Text>
         </View>
       ),
     },
@@ -204,11 +204,11 @@ export default function RefundsPage() {
   const totalApproved = refunds.filter(r => r.status === 'approved').reduce((sum, r) => sum + r.amount, 0);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
+      <View className="flex flex-row justify-between items-start mb-6">
         <View>
-          <Text style={styles.pageTitle}>{t('admin.refunds.title')}</Text>
-          <Text style={styles.subtitle}>{t('admin.refunds.subtitle')}</Text>
+          <Text className="text-2xl font-bold text-white">{t('admin.refunds.title')}</Text>
+          <Text className="text-sm text-gray-400 mt-1">{t('admin.refunds.subtitle')}</Text>
         </View>
       </View>
 
@@ -264,7 +264,7 @@ export default function RefundsPage() {
               {t('admin.refunds.approveModal.message')} {formatCurrency(selectedRefund.amount)}?
             </Text>
           )}
-          <View style={styles.modalActions}>
+          <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowApproveConfirm(false)} />
             <GlassButton title={t('common.confirm')} variant="success" onPress={handleConfirmApprove} />
           </View>
@@ -277,8 +277,8 @@ export default function RefundsPage() {
         title={t('common.error')}
       >
         <View style={styles.modalContent}>
-          <Text style={styles.errorText}>{errorMessage}</Text>
-          <View style={styles.modalActions}>
+          <Text className="flex-1 text-red-500 text-sm">{errorMessage}</Text>
+          <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('common.ok')} variant="success" onPress={() => setShowErrorModal(false)} />
           </View>
         </View>
@@ -306,7 +306,7 @@ export default function RefundsPage() {
               numberOfLines={3}
             />
           </View>
-          <View style={styles.modalActions}>
+          <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowRejectModal(false)} />
             <GlassButton title={t('admin.refunds.rejectModal.submitButton')} variant="danger" onPress={handleConfirmReject} />
           </View>
@@ -316,35 +316,3 @@ export default function RefundsPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.lg },
-  pageTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
-  subtitle: { fontSize: 14, color: colors.textMuted, marginTop: spacing.xs },
-  summaryCards: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.lg },
-  filtersRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.lg },
-  filterButton: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.md },
-  filterButtonActive: { backgroundColor: colors.primary },
-  filterText: { fontSize: 14, color: colors.textMuted, textTransform: 'capitalize' },
-  filterTextActive: { color: colors.text, fontWeight: '500' },
-  idText: { fontSize: 12, color: colors.textMuted, fontFamily: 'monospace' },
-  userName: { fontSize: 14, fontWeight: '500', color: colors.text },
-  userEmail: { fontSize: 12, color: colors.textMuted },
-  amountText: { fontSize: 14, fontWeight: '600', color: colors.error },
-  reasonText: { fontSize: 13, color: colors.textSecondary },
-  dateText: { fontSize: 12, color: colors.textMuted },
-  badge: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.full, alignSelf: 'flex-start' },
-  badgeText: { fontSize: 12, fontWeight: '500', textTransform: 'capitalize' },
-  actionsRow: { flexDirection: 'row', gap: spacing.xs },
-  actionButton: { width: 32, height: 32, borderRadius: borderRadius.sm, justifyContent: 'center', alignItems: 'center' },
-  approveButton: { backgroundColor: 'rgba(34, 197, 94, 0.2)' },
-  rejectButton: { backgroundColor: 'rgba(239, 68, 68, 0.2)' },
-  modalContent: { gap: spacing.md },
-  refundInfo: { fontSize: 14, color: colors.textSecondary },
-  errorText: { fontSize: 14, color: colors.text, marginBottom: spacing.md },
-  formGroup: { gap: spacing.xs },
-  formLabel: { fontSize: 14, fontWeight: '600', color: colors.text },
-  textArea: { backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.glassBorder, padding: spacing.md, color: colors.text, fontSize: 14, minHeight: 80, textAlignVertical: 'top' },
-  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.md },
-});

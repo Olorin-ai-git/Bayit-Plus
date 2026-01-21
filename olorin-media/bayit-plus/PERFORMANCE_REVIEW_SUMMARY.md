@@ -61,10 +61,10 @@ TOTAL:              -$180/month + 90 min/day developer time saved
 **Problem**:
 ```toml
 # pyproject.toml lines 55-58
-"bayit-voice-pipeline @ file:///Users/olorin/Documents/Bayit-Plus/packages/bayit-voice-pipeline"
-"bayit-translation @ file:///Users/olorin/Documents/Bayit-Plus/packages/bayit-translation"
-"olorin-core @ file:///Users/olorin/Documents/Bayit-Plus/packages/olorin-core"
-"olorin-shared @ file:///Users/olorin/Documents/Bayit-Plus/packages/olorin-shared"
+"bayit-voice-pipeline @ file:///Users/olorin/Documents/olorin/packages/bayit-voice-pipeline"
+"bayit-translation @ file:///Users/olorin/Documents/olorin/packages/bayit-translation"
+"olorin-core @ file:///Users/olorin/Documents/olorin/packages/olorin-core"
+"olorin-shared @ file:///Users/olorin/Documents/olorin/packages/olorin-shared"
 ```
 
 **Why it fails**: Docker build context is `./backend` only, but packages are in `../packages/`
@@ -96,7 +96,7 @@ COPY backend/pyproject.toml backend/poetry.lock ./
 **Step 3**: Update `backend/pyproject.toml` dependencies:
 ```toml
 # BEFORE:
-"bayit-voice-pipeline @ file:///Users/olorin/Documents/Bayit-Plus/packages/bayit-voice-pipeline",
+"bayit-voice-pipeline @ file:///Users/olorin/Documents/olorin/packages/bayit-voice-pipeline",
 
 # AFTER:
 "bayit-voice-pipeline @ file:///../packages/bayit-voice-pipeline",
@@ -106,7 +106,7 @@ COPY backend/pyproject.toml backend/poetry.lock ./
 
 **Step 5**: Test the build:
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 docker build -t bayit-backend-test -f backend/Dockerfile .
 docker run bayit-backend-test python -c "import bayit_voice_pipeline"
 ```
@@ -166,7 +166,7 @@ docker run bayit-backend-test python -c "import bayit_voice_pipeline"
 
 ```bash
 # 1. Update workflows
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 
 # Edit .github/workflows/deploy-staging.yml (line 103)
 # Change: context: ./backend

@@ -194,7 +194,7 @@ def main():
     # Check if we're in the right directory
     if not Path("app/models/user.py").exists():
         print("❌ Error: Please run this script from the backend directory:")
-        print("   cd /Users/olorin/Documents/Bayit-Plus/backend")
+        print("   cd /Users/olorin/Documents/olorin/backend")
         print("   python scripts/apply_security_fixes.py")
         return
 

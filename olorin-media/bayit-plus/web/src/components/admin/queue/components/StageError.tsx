@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { AlertCircle } from 'lucide-react';
 import { colors, spacing } from '@bayit/shared/theme';
 import { QueueJob } from '../types';
@@ -21,43 +21,16 @@ export const StageError: React.FC<StageErrorProps> = ({ job }) => {
   if (failedStages.length === 0 || !job.error_message) return null;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View className="bg-red-500/10 border-l-[3px] border-red-500 rounded-lg p-3 mt-3">
+      <View className="flex-row items-center mb-2">
         <AlertCircle size={14} color={colors.error} />
-        <Text style={styles.headerText}>
+        <Text className="text-xs font-semibold text-red-500 ml-2">
           Failed at: {failedStages.join(', ')}
         </Text>
       </View>
-      <Text style={styles.errorDetail}>
+      <Text className="text-[11px] text-gray-500 leading-4">
         {job.error_message}
       </Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    borderLeftWidth: 3,
-    borderLeftColor: colors.error,
-    borderRadius: 8,
-    padding: spacing.sm,
-    marginTop: spacing.sm,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  headerText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.error,
-    marginLeft: spacing.xs,
-  },
-  errorDetail: {
-    fontSize: 11,
-    color: colors.textMuted,
-    lineHeight: 16,
-  },
-});

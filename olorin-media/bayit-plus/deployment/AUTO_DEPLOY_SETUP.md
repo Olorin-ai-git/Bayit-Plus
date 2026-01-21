@@ -95,7 +95,7 @@ gcloud builds triggers create github \
 After setup, make a test commit:
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 
 # Make a small change
 echo "# Auto-deploy configured $(date)" >> deployment/AUTO_DEPLOY_SETUP.md

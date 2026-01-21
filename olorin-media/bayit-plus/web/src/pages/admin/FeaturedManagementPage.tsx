@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, Pressable, ScrollView, StyleSheet, Image } from 'react-native'
+import { View, Text, Pressable, ScrollView, Image } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Star, X, AlertCircle, RefreshCw, GripVertical, Film, Tv, Save } from 'lucide-react'
 import { adminContentService, Content } from '@bayit/shared/services/adminApi'
@@ -197,7 +197,7 @@ export default function FeaturedManagementPage() {
   )
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView className="flex-1">
       <View style={styles.content}>
         {/* Header */}
         <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -269,7 +269,7 @@ export default function FeaturedManagementPage() {
         {error && (
           <View style={styles.errorContainer}>
             <AlertCircle size={18} color="#ef4444" />
-            <Text style={styles.errorText}>{error}</Text>
+            <Text className="flex-1 text-red-500 text-sm">{error}</Text>
             <Pressable onPress={() => setError(null)}>
               <X size={18} color="#ef4444" />
             </Pressable>
@@ -278,8 +278,8 @@ export default function FeaturedManagementPage() {
 
         {/* Content List */}
         {isLoading ? (
-          <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>{t('common.loading', 'Loading...')}</Text>
+          <View className="flex-1 justify-center items-center gap-2">
+            <Text className="text-sm text-gray-400">{t('common.loading', 'Loading...')}</Text>
           </View>
         ) : filteredItems.length === 0 ? (
           <View style={styles.emptyContainer}>
@@ -305,215 +305,3 @@ export default function FeaturedManagementPage() {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    padding: spacing.lg,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    marginBottom: spacing.lg,
-    gap: spacing.lg,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  pageTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginTop: 4,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  iconButton: {
-    minWidth: 44,
-  },
-  saveButton: {
-    minWidth: 100,
-  },
-  warningBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.3)',
-    borderRadius: borderRadius.lg,
-  },
-  warningText: {
-    color: colors.warning,
-    fontSize: 14,
-  },
-  filtersContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  filterWrapper: {
-    minWidth: 150,
-  },
-  countBadge: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.full,
-  },
-  countText: {
-    color: colors.textSecondary,
-    fontSize: 13,
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.4)',
-    borderRadius: borderRadius.lg,
-  },
-  errorText: {
-    flex: 1,
-    color: '#ef4444',
-    fontSize: 14,
-  },
-  loadingContainer: {
-    padding: spacing.xl,
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.textSecondary,
-    fontSize: 14,
-  },
-  emptyContainer: {
-    padding: spacing.xl * 2,
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  emptyTitle: {
-    color: colors.text,
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  emptyHint: {
-    color: colors.textSecondary,
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  list: {
-    gap: spacing.sm,
-  },
-  itemCard: {
-    padding: spacing.md,
-  },
-  itemCardDragging: {
-    opacity: 0.9,
-    transform: [{ scale: 1.02 }],
-  },
-  itemContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  dragHandle: {
-    padding: spacing.sm,
-    cursor: 'grab',
-  },
-  orderBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  orderText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  thumbnailContainer: {
-    width: 80,
-    height: 45,
-    borderRadius: borderRadius.md,
-    overflow: 'hidden',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  thumbnail: {
-    width: '100%',
-    height: '100%',
-  },
-  thumbnailPlaceholder: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  itemInfo: {
-    flex: 1,
-    gap: spacing.xs,
-  },
-  itemTitle: {
-    color: colors.text,
-    fontSize: 15,
-    fontWeight: '500',
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  typeBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  movieBadge: {
-    backgroundColor: 'rgba(139, 92, 246, 0.3)',
-  },
-  seriesBadge: {
-    backgroundColor: 'rgba(59, 130, 246, 0.3)',
-  },
-  typeText: {
-    color: colors.text,
-    fontSize: 11,
-    fontWeight: '500',
-  },
-  categoryText: {
-    color: colors.textSecondary,
-    fontSize: 12,
-  },
-  yearText: {
-    color: colors.textMuted,
-    fontSize: 12,
-  },
-  removeButton: {
-    padding: spacing.sm,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-  },
-  removeButtonHovered: {
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-  },
-})

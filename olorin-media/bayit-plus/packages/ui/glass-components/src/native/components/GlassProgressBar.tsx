@@ -9,7 +9,6 @@ import React, { useRef, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Animated,
   ViewStyle,
   TextStyle,
@@ -141,33 +140,30 @@ export const GlassProgressBar: React.FC<GlassProgressBarProps> = ({
   // Render segments mode
   if (showSegments && total) {
     return (
-      <View style={[styles.container, style]} testID={testID}>
-        <View style={[styles.segmentsContainer, isRTL && styles.segmentsRTL]}>
+      <View className="w-full" style={style} testID={testID}>
+        <View className={`${isRTL ? 'flex-row-reverse' : 'flex-row'} w-full`}>
           {Array.from({ length: total }, (_, index) => (
             <View
               key={index}
-              style={[
-                styles.segment,
-                {
-                  height: currentSize.height,
-                  marginHorizontal: currentSize.segmentGap / 2,
-                  backgroundColor:
-                    index < (current || 0) ? currentVariant.start : colors.glassBorderWhite,
-                },
-                index < (current || 0) && styles.segmentActive,
-              ]}
+              className="flex-1 rounded-full"
+              style={{
+                height: currentSize.height,
+                marginHorizontal: currentSize.segmentGap / 2,
+                backgroundColor:
+                  index < (current || 0) ? currentVariant.start : colors.glassBorderWhite,
+              }}
             />
           ))}
         </View>
         {showLabel && (
           <Text
+            className={`font-medium ${isRTL ? 'text-right' : 'text-center'}`}
             style={[
-              styles.label,
               {
                 fontSize: currentSize.labelFontSize,
                 marginTop: currentSize.labelMargin,
+                color: colors.textSecondary,
               },
-              isRTL && styles.labelRTL,
               labelStyle,
             ]}
           >
@@ -180,42 +176,38 @@ export const GlassProgressBar: React.FC<GlassProgressBarProps> = ({
 
   // Render continuous progress bar
   return (
-    <View style={[styles.container, style]} testID={testID}>
+    <View className="w-full" style={style} testID={testID}>
       <View
-        style={[
-          styles.track,
-          {
-            height: currentSize.height,
-            borderRadius: currentSize.height / 2,
-          },
-        ]}
+        className="w-full overflow-hidden"
+        style={{
+          height: currentSize.height,
+          borderRadius: currentSize.height / 2,
+          backgroundColor: colors.glassBorderWhite,
+        }}
       >
         <Animated.View
-          style={[
-            styles.fill,
-            {
-              height: currentSize.height,
-              borderRadius: currentSize.height / 2,
-              width: progressAnim.interpolate({
-                inputRange: [0, 100],
-                outputRange: ['0%', '100%'],
-                extrapolate: 'clamp',
-              }),
-              backgroundColor: currentVariant.start,
-            },
-            isRTL && styles.fillRTL,
-          ]}
+          className={`absolute top-0 ${isRTL ? 'right-0' : 'left-0'}`}
+          style={{
+            height: currentSize.height,
+            borderRadius: currentSize.height / 2,
+            width: progressAnim.interpolate({
+              inputRange: [0, 100],
+              outputRange: ['0%', '100%'],
+              extrapolate: 'clamp',
+            }),
+            backgroundColor: currentVariant.start,
+          }}
         />
       </View>
       {showLabel && (
         <Text
+          className={`font-medium ${isRTL ? 'text-right' : 'text-center'}`}
           style={[
-            styles.label,
             {
               fontSize: currentSize.labelFontSize,
               marginTop: currentSize.labelMargin,
+              color: colors.textSecondary,
             },
-            isRTL && styles.labelRTL,
             labelStyle,
           ]}
         >
@@ -225,45 +217,5 @@ export const GlassProgressBar: React.FC<GlassProgressBarProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
-  track: {
-    width: '100%',
-    backgroundColor: colors.glassBorderWhite,
-    overflow: 'hidden',
-  },
-  fill: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-  },
-  fillRTL: {
-    left: undefined,
-    right: 0,
-  },
-  label: {
-    color: colors.textSecondary,
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-  labelRTL: {
-    textAlign: 'right',
-  },
-  segmentsContainer: {
-    flexDirection: 'row',
-    width: '100%',
-  },
-  segmentsRTL: {
-    flexDirection: 'row-reverse',
-  },
-  segment: {
-    flex: 1,
-    borderRadius: borderRadius.full,
-  },
-  segmentActive: {},
-});
 
 export default GlassProgressBar;

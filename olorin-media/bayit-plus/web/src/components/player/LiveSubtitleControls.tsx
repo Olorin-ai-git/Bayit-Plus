@@ -8,9 +8,8 @@ import { View, Text, Pressable, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Globe } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
-import { GlassView } from '@bayit/shared/ui'
 import liveSubtitleService, { LiveSubtitleCue } from '@/services/liveSubtitleService'
-import { styles, AVAILABLE_LANGUAGES } from './LiveSubtitleControls.styles'
+import { AVAILABLE_LANGUAGES } from './LiveSubtitleControls.styles'
 
 interface LiveSubtitleControlsProps {
   channelId: string
@@ -128,30 +127,30 @@ export default function LiveSubtitleControls({
 
 
   return (
-    <View style={styles.container}>
+    <View className="flex-row items-center gap-2 relative">
       {/* Main Toggle Button */}
       <Pressable
         onPress={handleToggle}
-        style={({ pressed, hovered }) => [
-          styles.button,
-          enabled && styles.buttonActive, // Active state takes priority
-          !enabled && hovered && styles.buttonHovered, // Only show hover when not enabled
-          !enabled && pressed && styles.buttonPressed, // Only show pressed when not enabled
-          !isPremium && styles.buttonPremium,
-        ]}
+        className={`flex-row items-center gap-1 px-4 py-2 rounded-lg bg-black/30 border ${
+          enabled
+            ? 'bg-white/15 border-purple-500'
+            : !isPremium
+            ? 'border-yellow-500'
+            : 'border-white/10 hover:bg-white/5 active:opacity-70'
+        }`}
       >
         <Globe size={20} color={enabled ? colors.primary : colors.textSecondary} />
-        <Text style={[styles.buttonText, enabled && styles.buttonTextActive]}>
+        <Text className={`text-sm font-medium ${enabled ? 'text-white' : 'text-gray-400'}`}>
           {isPremium ? t('subtitles.liveTranslate') : '⭐ Premium'}
         </Text>
         {status === 'connecting' && <ActivityIndicator size="small" color={colors.primary} />}
-        {enabled && status === 'connected' && <View style={styles.connectedDot} />}
+        {enabled && status === 'connected' && <View className="w-2 h-2 rounded-full" style={{ backgroundColor: colors.success }} />}
       </Pressable>
 
       {/* Error Message */}
       {error && (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error}</Text>
+        <View className="absolute bottom-[60px] right-0 bg-red-600/90 px-4 py-2 rounded-lg max-w-[250px]">
+          <Text className="text-white text-xs font-medium">{error}</Text>
         </View>
       )}
     </View>

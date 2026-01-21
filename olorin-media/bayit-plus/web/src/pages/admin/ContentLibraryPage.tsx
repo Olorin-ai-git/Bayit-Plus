@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Search, X, AlertCircle, RefreshCw, Trash2, Star, StarOff } from 'lucide-react'
 import HierarchicalContentTable from '@/components/admin/HierarchicalContentTable'
@@ -191,7 +191,7 @@ export default function ContentLibraryPage() {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView className="flex-1">
       <View style={styles.content}>
         {/* Header */}
         <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -253,7 +253,7 @@ export default function ContentLibraryPage() {
         {error && (
           <View style={styles.errorContainer}>
             <AlertCircle size={18} color="#ef4444" />
-            <Text style={styles.errorText}>{error}</Text>
+            <Text className="flex-1 text-red-500 text-sm">{error}</Text>
             <Pressable onPress={() => setError(null)}>
               <X size={18} color="#ef4444" />
             </Pressable>
@@ -327,111 +327,3 @@ export default function ContentLibraryPage() {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    padding: spacing.lg,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.lg,
-    gap: spacing.lg,
-  },
-  pageTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginTop: 4,
-  },
-  refreshButton: {
-    minWidth: 44,
-    alignSelf: 'flex-start',
-  },
-  filtersContainer: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  searchWrapper: {
-    flex: 1,
-    maxWidth: 400,
-  },
-  filterWrapper: {
-    minWidth: 180,
-  },
-  checkboxWrapper: {
-    alignSelf: 'center',
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.4)',
-    borderRadius: 16,
-    // @ts-ignore - Web CSS
-    backdropFilter: 'blur(24px)',
-    WebkitBackdropFilter: 'blur(24px)',
-  } as any,
-  errorText: {
-    flex: 1,
-    color: '#ef4444',
-    fontSize: 14,
-  },
-  batchActionBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-    backgroundColor: 'rgba(59, 130, 246, 0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.3)',
-    borderRadius: borderRadius.xl,
-    // @ts-ignore - Web CSS
-    backdropFilter: 'blur(24px)',
-    WebkitBackdropFilter: 'blur(24px)',
-  },
-  batchActionInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  batchSelectedText: {
-    color: '#93c5fd',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  clearSelectionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.md,
-  },
-  clearSelectionText: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 12,
-  },
-  batchActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  batchButton: {
-    minWidth: 100,
-  },
-})

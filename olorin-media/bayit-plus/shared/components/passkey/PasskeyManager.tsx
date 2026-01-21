@@ -11,7 +11,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ActivityIndicator,
   Platform,
 } from 'react-native';
@@ -136,13 +135,13 @@ export const PasskeyManager: React.FC<PasskeyManagerProps> = ({
 
   if (!isSupported) {
     return (
-      <GlassView style={styles.container}>
+      <GlassView className="p-6">
         {showTitle && (
-          <Text style={styles.title}>{t('passkey.manager.title')}</Text>
+          <Text className="text-xl font-semibold text-white">{t('passkey.manager.title')}</Text>
         )}
-        <View style={styles.unsupportedContainer}>
-          <Text style={styles.unsupportedIcon}>🔐</Text>
-          <Text style={styles.unsupportedText}>
+        <View className="items-center p-8">
+          <Text className="text-5xl mb-4 opacity-50">🔐</Text>
+          <Text className="text-base text-white/60 text-center">
             {t('passkey.unsupported')}
           </Text>
         </View>
@@ -151,46 +150,46 @@ export const PasskeyManager: React.FC<PasskeyManagerProps> = ({
   }
 
   return (
-    <GlassView style={styles.container}>
+    <GlassView className="p-6">
       {showTitle && (
-        <View style={styles.header}>
-          <Text style={styles.title}>{t('passkey.manager.title')}</Text>
-          <Text style={styles.subtitle}>{t('passkey.manager.subtitle')}</Text>
+        <View className="mb-6">
+          <Text className="text-xl font-semibold text-white mb-1">{t('passkey.manager.title')}</Text>
+          <Text className="text-sm text-white/60">{t('passkey.manager.subtitle')}</Text>
         </View>
       )}
 
       {error && (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error}</Text>
+        <View className="bg-red-500/20 p-4 rounded-lg mb-4">
+          <Text className="text-red-500 text-sm">{error}</Text>
         </View>
       )}
 
       {isLoading ? (
-        <View style={styles.loadingContainer}>
+        <View className="p-8 items-center">
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : (
         <>
           {/* Registered passkeys list */}
-          <View style={styles.passkeyList}>
+          <View className="mb-6">
             {passkeys.length === 0 ? (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyIcon}>🔑</Text>
-                <Text style={styles.emptyText}>
+              <View className="items-center p-8">
+                <Text className="text-5xl mb-4">🔑</Text>
+                <Text className="text-base text-white/60 text-center">
                   {t('passkey.noPasskeys')}
                 </Text>
               </View>
             ) : (
               passkeys.map((passkey) => (
-                <View key={passkey.id} style={[styles.passkeyItem, { flexDirection }]}>
-                  <View style={[styles.passkeyInfo, rtlSpacing(isRTL, spacing.md)]}>
-                    <Text style={styles.passkeyName}>
+                <View key={passkey.id} className={`flex-row items-center justify-between bg-white/5 p-4 rounded-lg mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <View className={`flex-1 ${isRTL ? 'ml-4' : 'mr-4'}`}>
+                    <Text className="text-base font-medium text-white mb-1">
                       {passkey.device_name || t('passkey.unknownDevice')}
                     </Text>
-                    <Text style={styles.passkeyDate}>
+                    <Text className="text-xs text-white/60">
                       {t('passkey.created')}: {formatDate(passkey.created_at)}
                     </Text>
-                    <Text style={styles.passkeyDate}>
+                    <Text className="text-xs text-white/60">
                       {t('passkey.lastUsed')}: {formatDate(passkey.last_used_at)}
                     </Text>
                   </View>
@@ -211,7 +210,7 @@ export const PasskeyManager: React.FC<PasskeyManagerProps> = ({
             onPress={handleRegisterPasskey}
             loading={isRegistering}
             disabled={isRegistering}
-            style={styles.registerButton}
+            className="mt-4"
           >
             {t('passkey.addPasskey')}
           </GlassButton>
@@ -224,11 +223,11 @@ export const PasskeyManager: React.FC<PasskeyManagerProps> = ({
         onClose={() => setDeleteConfirmId(null)}
         title={t('passkey.deleteConfirmTitle')}
       >
-        <View style={styles.modalContent}>
-          <Text style={styles.modalText}>
+        <View className="p-4">
+          <Text className="text-base text-white mb-6 text-center">
             {t('passkey.deleteConfirmText')}
           </Text>
-          <View style={[styles.modalButtons, { flexDirection }]}>
+          <View className={`flex-row justify-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
             <GlassButton
               variant="secondary"
               onPress={() => setDeleteConfirmId(null)}
@@ -249,108 +248,5 @@ export const PasskeyManager: React.FC<PasskeyManagerProps> = ({
     </GlassView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: spacing.lg,
-  },
-  header: {
-    marginBottom: spacing.lg,
-  },
-  title: {
-    fontSize: fontSize.xl,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-  errorContainer: {
-    backgroundColor: colors.error + '20',
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.md,
-  },
-  errorText: {
-    color: colors.error,
-    fontSize: fontSize.sm,
-  },
-  loadingContainer: {
-    padding: spacing.xl,
-    alignItems: 'center',
-  },
-  passkeyList: {
-    marginBottom: spacing.lg,
-  },
-  passkeyItem: {
-    // flexDirection set dynamically for RTL support
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.glass,
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.sm,
-  },
-  passkeyInfo: {
-    flex: 1,
-    // margin set dynamically via rtlSpacing for RTL support
-  },
-  passkeyName: {
-    fontSize: fontSize.md,
-    fontWeight: '500',
-    color: colors.textPrimary,
-    marginBottom: spacing.xs,
-  },
-  passkeyDate: {
-    fontSize: fontSize.xs,
-    color: colors.textSecondary,
-  },
-  emptyState: {
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
-  },
-  emptyText: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  registerButton: {
-    marginTop: spacing.md,
-  },
-  unsupportedContainer: {
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  unsupportedIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
-    opacity: 0.5,
-  },
-  unsupportedText: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  modalContent: {
-    padding: spacing.md,
-  },
-  modalText: {
-    fontSize: fontSize.md,
-    color: colors.textPrimary,
-    marginBottom: spacing.lg,
-    textAlign: 'center',
-  },
-  modalButtons: {
-    // flexDirection set dynamically for RTL support
-    justifyContent: 'center',
-    gap: spacing.md,
-  },
-});
 
 export default PasskeyManager;

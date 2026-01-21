@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { UserPlus } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors } from '@bayit/shared/theme'
 import { GlassModal, GlassInput } from '@bayit/shared/ui'
 
 interface WatchPartyJoinModalProps {
@@ -59,22 +59,22 @@ export default function WatchPartyJoinModal({ isOpen, onClose, onJoin }: WatchPa
       onClose={handleClose}
       dismissable={true}
     >
-      <View style={styles.iconContainer}>
-        <View style={styles.icon}>
+      <View className="items-center">
+        <View className="w-16 h-16 rounded-2xl bg-purple-700/30 items-center justify-center">
           <UserPlus size={32} color={colors.primary} />
         </View>
       </View>
 
-      <Text style={styles.description}>
+      <Text className="text-sm text-gray-400 text-center">
         {t('watchParty.enterCode')}
       </Text>
 
-      <View style={styles.inputContainer}>
+      <View className="gap-3">
         <GlassInput
           value={roomCode}
           onChangeText={handleCodeChange}
           placeholder={t('placeholder.roomCode', 'ABCD1234')}
-          inputStyle={[styles.input, error && styles.inputError]}
+          inputClassName={`bg-white/5 border ${error ? 'border-red-500' : 'border-white/10'} rounded-lg px-6 py-4 text-2xl font-mono text-white text-center tracking-[0.375rem] outline-none`}
           autoFocus
           autoCapitalize="characters"
           maxLength={8}
@@ -82,114 +82,27 @@ export default function WatchPartyJoinModal({ isOpen, onClose, onJoin }: WatchPa
         />
       </View>
 
-      <View style={styles.actions}>
+      <View className="flex-row gap-4">
         <Pressable
           onPress={handleClose}
-          style={({ hovered }) => [
-            styles.button,
-            styles.ghostButton,
-            hovered && styles.ghostButtonHovered,
-          ]}
+          className="flex-1 py-3 rounded-md bg-white/5 border border-white/10 items-center justify-center hover:bg-white/10"
         >
-          <Text style={styles.ghostButtonText}>{t('common.cancel')}</Text>
+          <Text className="text-sm font-medium text-gray-300">{t('common.cancel')}</Text>
         </Pressable>
         <Pressable
           onPress={handleSubmit}
           disabled={loading || roomCode.length < 4}
-          style={({ hovered }) => [
-            styles.button,
-            styles.primaryButton,
-            hovered && !loading && roomCode.length >= 4 && styles.primaryButtonHovered,
-            (loading || roomCode.length < 4) && styles.buttonDisabled,
-          ]}
+          className={`flex-1 py-3 rounded-md bg-purple-600 items-center justify-center ${
+            (loading || roomCode.length < 4) ? 'opacity-50' : 'hover:shadow-[0_0_12px_rgba(168,85,247,0.5)]'
+          }`}
         >
           {loading ? (
             <ActivityIndicator size="small" color={colors.background} />
           ) : (
-            <Text style={styles.primaryButtonText}>{t('watchParty.join')}</Text>
+            <Text className="text-sm font-semibold text-black">{t('watchParty.join')}</Text>
           )}
         </Pressable>
       </View>
     </GlassModal>
   )
 }
-
-const styles = StyleSheet.create({
-  iconContainer: {
-    alignItems: 'center',
-  },
-  icon: {
-    width: 64,
-    height: 64,
-    borderRadius: borderRadius.xl,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  description: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-  inputContainer: {
-    gap: spacing.sm,
-  },
-  input: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    borderRadius: borderRadius.lg,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    fontSize: 24,
-    fontFamily: 'monospace',
-    color: colors.text,
-    textAlign: 'center',
-    letterSpacing: 6,
-    outlineStyle: 'none',
-  } as any,
-  inputError: {
-    borderColor: colors.error,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  button: {
-    flex: 1,
-    paddingVertical: spacing.sm + 2,
-    borderRadius: borderRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  ghostButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  ghostButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  ghostButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.textSecondary,
-  },
-  primaryButton: {
-    backgroundColor: colors.primary,
-  },
-  primaryButtonHovered: {
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-  },
-  primaryButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.background,
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-})
