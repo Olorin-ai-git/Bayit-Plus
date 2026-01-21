@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { GlassButton } from './GlassButton';
+import { glassTokens } from '../../styles/glass-tokens';
 
 export interface HeroSectionProps {
   title: string;
@@ -14,7 +15,12 @@ export interface HeroSectionProps {
     onClick: () => void;
   };
   icon?: React.ReactNode;
-  backgroundPattern?: 'circuit' | 'particles' | 'gradient' | 'none';
+  backgroundPattern?: 'circuit' | 'particles' | 'gradient' | 'none' | 'video';
+  backgroundVideo?: {
+    src: string;
+    posterSrc: string;
+    captionsSrc?: string;
+  };
   children?: React.ReactNode;
 }
 
