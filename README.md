@@ -9,7 +9,7 @@ Olorin is built as a comprehensive monorepo with multiple specialized platforms:
 ```
 olorin/
 ├── olorin-core/            # Shared packages (@olorin/*)
-├── olorin-fraud/           # Fraud Detection Platform
+├── olorin-fraud/           # Fraud Detection Platform (git subtree)
 │   ├── backend/            # Python FastAPI + AI/ML agents
 │   └── frontend/           # React TypeScript microservices
 ├── olorin-media/           # Media Platforms (git subtrees)
@@ -71,6 +71,7 @@ npm run subtree:push
 ./scripts/sync-subtrees.sh pull bayit-plus
 ./scripts/sync-subtrees.sh pull israeli-radio-manager
 ./scripts/sync-subtrees.sh pull cvplus
+./scripts/sync-subtrees.sh pull fraud-detection
 ./scripts/sync-subtrees.sh pull omen
 ```
 
