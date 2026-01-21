@@ -268,9 +268,7 @@ EOF
 
     print_info "Reading secrets from backend/.env file..."
 
-    # Get repository root and .env path
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+    # Use existing REPO_ROOT (defined at script start)
     ENV_FILE="$REPO_ROOT/backend/.env"
     
     print_info "Looking for .env at: $ENV_FILE"
@@ -335,6 +333,7 @@ EOF
     create_or_update_secret "bayit-twilio-phone-number" "TWILIO_PHONE_NUMBER"
     create_or_update_secret "opensubtitles-api-key" "OPENSUBTITLES_API_KEY"
     create_or_update_secret "picovoice-access-key" "PICOVOICE_ACCESS_KEY"
+    create_or_update_secret "bayit-sentry-dsn" "SENTRY_DSN"
 
     # Google redirect URI
     GOOGLE_REDIRECT_URI="${GOOGLE_REDIRECT_URI:-https://bayit.tv/auth/google/callback}"
@@ -449,7 +448,7 @@ EOF
                   bayit-google-client-id bayit-google-client-secret bayit-google-redirect-uri \
                   bayit-elevenlabs-api-key bayit-gcs-bucket-name bayit-cors-origins bayit-gcp-project-id \
                   bayit-twilio-account-sid bayit-twilio-auth-token bayit-twilio-phone-number \
-                  opensubtitles-api-key picovoice-access-key \
+                  opensubtitles-api-key picovoice-access-key bayit-sentry-dsn \
                   bayit-librarian-daily-audit-cron bayit-librarian-daily-audit-time bayit-librarian-daily-audit-mode \
                   bayit-librarian-daily-audit-cost bayit-librarian-daily-audit-status bayit-librarian-daily-audit-description \
                   bayit-librarian-weekly-audit-cron bayit-librarian-weekly-audit-time bayit-librarian-weekly-audit-mode \
