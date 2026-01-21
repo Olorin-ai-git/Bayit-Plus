@@ -22,6 +22,7 @@ NC='\033[0m' # No Color
 SUBTREES=(
     "bayit-plus:olorin-media/bayit-plus:bayit-plus-upstream:main"
     "israeli-radio-manager:olorin-media/israeli-radio-manager:radio-upstream:main"
+    "cvplus:olorin-cv/cvplus:cv-upstream:main"
     "omen:olorin-omen/ios-app:omen-upstream:main"
 )
 
@@ -126,12 +127,14 @@ show_usage() {
     echo "Optional subtree targets:"
     echo "  bayit-plus             Bayit+ streaming platform"
     echo "  israeli-radio-manager  Israeli Radio Manager"
+    echo "  cvplus                 CV Plus platform"
     echo "  omen                   Omen iOS app"
     echo ""
     echo "Examples:"
     echo "  $0 pull                    # Pull all subtrees"
     echo "  $0 push                    # Push all subtrees"
     echo "  $0 pull bayit-plus         # Pull only Bayit+"
+    echo "  $0 pull cvplus             # Pull only CV Plus"
     echo "  $0 push israeli-radio-manager  # Push only Israeli Radio Manager"
 }
 
