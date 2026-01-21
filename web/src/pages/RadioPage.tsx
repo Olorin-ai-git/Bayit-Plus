@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
@@ -33,40 +33,40 @@ function StationCard({ station }: { station: Station }) {
         onHoverIn={() => setIsHovered(true)}
         onHoverOut={() => setIsHovered(false)}
       >
-        <GlassCard style={[styles.stationCard, isHovered && styles.stationCardHovered]}>
-          <View style={styles.imageContainer}>
+        <GlassCard className={`p-4 m-1 ${isHovered ? '-translate-y-1' : ''}`} style={isHovered ? { boxShadow: '0 8px 32px rgba(107, 33, 168, 0.3)' } : undefined}>
+          <View className="aspect-square mb-4 rounded-lg overflow-hidden relative">
             {station.logo ? (
               <Image
                 source={{ uri: station.logo }}
-                style={styles.stationImage}
+                className="w-full h-full rounded-lg"
                 resizeMode="contain"
               />
             ) : (
-              <View style={styles.imagePlaceholder}>
+              <View className="w-full h-full bg-white/5 justify-center items-center rounded-lg">
                 <Radio size={32} color={colors.secondary} />
               </View>
             )}
             {isHovered && (
-              <View style={styles.playOverlay}>
-                <View style={styles.playButton}>
+              <View className="absolute inset-0 bg-black/50 justify-center items-center rounded-lg">
+                <View className="w-14 h-14 rounded-full justify-center items-center" style={{ backgroundColor: colors.secondary, boxShadow: `0 0 20px ${colors.secondary}` }}>
                   <Play size={28} color={colors.text} fill={colors.text} />
                 </View>
               </View>
             )}
           </View>
-          <Text style={[styles.stationName, isHovered && styles.stationNameHovered]} numberOfLines={1}>
+          <Text className={`text-lg font-semibold text-white mb-1 ${isHovered ? '' : ''}`} style={isHovered ? { color: colors.primary } : undefined} numberOfLines={1}>
             {station.name}
           </Text>
           {station.currentShow && (
-            <View style={styles.currentShowRow}>
+            <View className="flex-row items-center gap-1 mb-2">
               <Volume2 size={14} color={colors.textSecondary} />
-              <Text style={styles.currentShow} numberOfLines={1}>
+              <Text className="text-sm flex-1" style={{ color: colors.textSecondary }} numberOfLines={1}>
                 {station.currentShow}
               </Text>
             </View>
           )}
           {station.genre && (
-            <GlassBadge size="sm" style={styles.genreBadge}>
+            <GlassBadge size="sm" className="mt-2">
               {station.genre}
             </GlassBadge>
           )}
@@ -78,9 +78,9 @@ function StationCard({ station }: { station: Station }) {
 
 function SkeletonCard() {
   return (
-    <View style={styles.skeletonCard}>
-      <View style={styles.skeletonImage} />
-      <View style={styles.skeletonText} />
+    <View className="flex-1 m-1 min-w-[150px] max-w-[25%]">
+      <View className="aspect-square rounded-lg mb-2" style={{ backgroundColor: colors.glass }} />
+      <View className="h-5 rounded w-4/5" style={{ backgroundColor: colors.glass }} />
     </View>
   );
 }
@@ -122,9 +122,9 @@ export default function RadioPage() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <View style={styles.skeletonHeader} />
-        <View style={styles.grid}>
+      <View className="flex-1 px-4 py-6 max-w-screen-xl mx-auto w-full">
+        <View className="w-48 h-8 rounded-md mb-6" style={{ backgroundColor: colors.glass }} />
+        <View className="flex-row flex-wrap gap-4">
           {[...Array(8)].map((_, i) => (
             <SkeletonCard key={i} />
           ))}
@@ -134,21 +134,21 @@ export default function RadioPage() {
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 px-4 py-6 max-w-screen-xl mx-auto w-full">
       {/* Header */}
-      <View style={[styles.header, { flexDirection, justifyContent }]}>
-        <GlassView style={styles.headerIcon}>
+      <View className="flex-row items-center gap-2 mb-6" style={{ flexDirection, justifyContent }}>
+        <GlassView className="w-12 h-12 rounded-full justify-center items-center">
           <Radio size={24} color={colors.secondary} />
         </GlassView>
-        <Text style={[styles.title, { textAlign }]}>{t('radio.title')}</Text>
+        <Text className="text-4xl font-bold" style={{ color: colors.text, textAlign }}>{t('radio.title')}</Text>
       </View>
 
       {/* Category Filter */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={styles.categoriesScroll}
-        contentContainerStyle={styles.categoriesContent}
+        className="mb-6"
+        contentContainerStyle={{ gap: spacing.sm, paddingBottom: spacing.sm }}
       >
         <GlassCategoryPill
           label={t('radio.categories.all')}
@@ -196,19 +196,19 @@ export default function RadioPage() {
         keyExtractor={(item) => item.id}
         numColumns={numColumns}
         key={numColumns}
-        contentContainerStyle={styles.gridContent}
-        columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
+        contentContainerStyle={{ gap: spacing.md }}
+        columnWrapperStyle={numColumns > 1 ? { gap: spacing.md } : undefined}
         renderItem={({ item }) => (
           <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
             <StationCard station={item} />
           </View>
         )}
         ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <GlassCard style={styles.emptyCard}>
+          <View className="flex-1 justify-center items-center py-24">
+            <GlassCard className="p-12 items-center">
               <Radio size={64} color={colors.textMuted} />
-              <Text style={styles.emptyTitle}>{t('radio.noStations')}</Text>
-              <Text style={styles.emptyDescription}>{t('radio.tryLater')}</Text>
+              <Text className="text-xl font-semibold mt-4 mb-2" style={{ color: colors.text }}>{t('radio.noStations')}</Text>
+              <Text className="text-base" style={{ color: colors.textSecondary }}>{t('radio.tryLater')}</Text>
             </GlassCard>
           </View>
         }
@@ -216,166 +216,3 @@ export default function RadioPage() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.lg,
-    maxWidth: 1280,
-    marginHorizontal: 'auto',
-    width: '100%',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  headerIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  categoriesScroll: {
-    marginBottom: spacing.lg,
-  },
-  categoriesContent: {
-    gap: spacing.sm,
-    paddingBottom: spacing.sm,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.md,
-  },
-  gridContent: {
-    gap: spacing.md,
-  },
-  row: {
-    gap: spacing.md,
-  },
-  stationCard: {
-    padding: spacing.md,
-    margin: spacing.xs,
-  },
-  stationCardHovered: {
-    transform: [{ translateY: -4 }],
-    // @ts-ignore
-    boxShadow: `0 8px 32px rgba(107, 33, 168, 0.3)`,
-  },
-  imageContainer: {
-    aspectRatio: 1,
-    marginBottom: spacing.md,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  stationImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: borderRadius.lg,
-  },
-  imagePlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: colors.glass,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: borderRadius.lg,
-  },
-  playOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: borderRadius.lg,
-  },
-  playButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.secondary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    // @ts-ignore
-    boxShadow: `0 0 20px ${colors.secondary}`,
-  },
-  stationName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  stationNameHovered: {
-    color: colors.primary,
-  },
-  currentShowRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginBottom: spacing.sm,
-  },
-  currentShow: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    flex: 1,
-  },
-  genreBadge: {
-    marginTop: spacing.sm,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: spacing.xl * 2,
-  },
-  emptyCard: {
-    padding: spacing.xl * 1.5,
-    alignItems: 'center',
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  emptyDescription: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-  // Skeleton styles
-  skeletonHeader: {
-    width: 192,
-    height: 32,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.lg,
-  },
-  skeletonCard: {
-    flex: 1,
-    margin: spacing.xs,
-    minWidth: 150,
-    maxWidth: '25%',
-  },
-  skeletonImage: {
-    aspectRatio: 1,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.sm,
-  },
-  skeletonText: {
-    height: 20,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.sm,
-    width: '80%',
-  },
-});

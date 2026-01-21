@@ -8,7 +8,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated, Platform } from 'react-native';
+import { View, Animated, Platform } from 'react-native';
 import { VoiceState } from '../../stores/supportStore';
 import { colors } from '../../theme';
 import { isTV } from '../../utils/platform';
@@ -52,15 +52,19 @@ const GlowPulse: React.FC<{ size: number; intensity?: number }> = ({
 
   return (
     <Animated.View
-      style={[
-        styles.glowBase,
-        {
-          width: size + 40,
-          height: size + 40,
-          borderRadius: (size + 40) / 2,
-          opacity: Animated.multiply(pulseAnim, intensity),
-        },
-      ]}
+      className="absolute"
+      style={{
+        width: size + 40,
+        height: size + 40,
+        borderRadius: (size + 40) / 2,
+        backgroundColor: colors.primary,
+        opacity: Animated.multiply(pulseAnim, intensity),
+        ...(Platform.OS === 'web'
+          ? {
+              filter: 'blur(20px)',
+            }
+          : {}),
+      }}
     />
   );
 };
@@ -122,22 +126,21 @@ const RippleRings: React.FC<{ size: number }> = ({ size }) => {
     return (
       <Animated.View
         key={key}
-        style={[
-          styles.rippleRing,
-          {
-            width: size,
-            height: size,
-            borderRadius: size / 2,
-            transform: [{ scale }],
-            opacity,
-          },
-        ]}
+        className="absolute border-2 bg-transparent"
+        style={{
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          borderColor: colors.primary,
+          transform: [{ scale }],
+          opacity,
+        }}
       />
     );
   };
 
   return (
-    <View style={[styles.rippleContainer, { width: size * 2, height: size * 2 }]}>
+    <View className="absolute justify-center items-center" style={{ width: size * 2, height: size * 2 }}>
       {renderRing(ring1Anim, 1)}
       {renderRing(ring2Anim, 2)}
       {renderRing(ring3Anim, 3)}
@@ -169,18 +172,22 @@ const ShimmerGradient: React.FC<{ size: number }> = ({ size }) => {
   });
 
   return (
-    <View style={[styles.shimmerContainer, { width: size, height: size }]}>
+    <View className="absolute overflow-hidden rounded-full" style={{ width: size, height: size }}>
       <Animated.View
-        style={[
-          styles.shimmerHighlight,
-          {
-            height: size * 1.5,
-            transform: [
-              { translateX },
-              { rotate: '25deg' },
-            ],
-          },
-        ]}
+        className="absolute w-[30px]"
+        style={{
+          height: size * 1.5,
+          backgroundColor: 'rgba(255, 255, 255, 0.15)',
+          transform: [
+            { translateX },
+            { rotate: '25deg' },
+          ],
+          ...(Platform.OS === 'web'
+            ? {
+                filter: 'blur(10px)',
+              }
+            : {}),
+        }}
       />
     </View>
   );
@@ -216,19 +223,17 @@ const AudioLevelIndicator: React.FC<{ level: number; size: number }> = ({
   });
 
   return (
-    <View style={[styles.audioLevelContainer, { width: containerWidth }]}>
+    <View className="h-1 bg-white/10 rounded-sm overflow-hidden" style={{ width: containerWidth }}>
       <Animated.View
-        style={[
-          styles.audioLevelBar,
-          {
-            width: containerWidth,
-            backgroundColor: level > 0.5 ? colors.primary : colors.textSecondary,
-            transform: [
-              { translateX },
-              { scaleX: animatedLevel },
-            ],
-          },
-        ]}
+        className="h-full rounded-sm"
+        style={{
+          width: containerWidth,
+          backgroundColor: level > 0.5 ? colors.primary : colors.textSecondary,
+          transform: [
+            { translateX },
+            { scaleX: animatedLevel },
+          ],
+        }}
       />
     </View>
   );
@@ -259,14 +264,12 @@ export const WizardEffects: React.FC<WizardEffectsProps> = ({
 
   return (
     <Animated.View
-      style={[
-        styles.effectsContainer,
-        {
-          width: size + 60,
-          height: size + 60,
-          transform: [{ scale: scaleAnim }],
-        },
-      ]}
+      className="absolute items-center justify-center pointer-events-none"
+      style={{
+        width: size + 60,
+        height: size + 60,
+        transform: [{ scale: scaleAnim }],
+      }}
     >
       {/* Speaking: Glow pulse synced with spritesheet */}
       {voiceState === 'speaking' && (
@@ -282,93 +285,29 @@ export const WizardEffects: React.FC<WizardEffectsProps> = ({
       {/* TV focus: Stronger glow overlay */}
       {isTVFocused && voiceState === 'idle' && (
         <View
-          style={[
-            styles.tvFocusGlow,
-            {
-              width: size + 20,
-              height: size + 20,
-              borderRadius: (size + 20) / 2,
-            },
-          ]}
+          className="absolute"
+          style={{
+            width: size + 20,
+            height: size + 20,
+            borderRadius: (size + 20) / 2,
+            backgroundColor: 'rgba(168, 85, 247, 0.3)',
+            ...(Platform.OS === 'web'
+              ? {
+                  filter: 'blur(15px)',
+                }
+              : {}),
+          }}
         />
       )}
 
       {/* Audio level indicator (shown during listening) */}
       {voiceState === 'listening' && audioLevel > 0.01 && (
-        <View style={styles.audioIndicatorWrapper}>
+        <View className="absolute -bottom-5 items-center">
           <AudioLevelIndicator level={audioLevel} size={size} />
         </View>
       )}
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  effectsContainer: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-    pointerEvents: 'none',
-  },
-  glowBase: {
-    position: 'absolute',
-    backgroundColor: colors.primary,
-    ...(Platform.OS === 'web'
-      ? {
-          filter: 'blur(20px)',
-        }
-      : {}),
-  },
-  rippleContainer: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  rippleRing: {
-    position: 'absolute',
-    borderWidth: 2,
-    borderColor: colors.primary,
-    backgroundColor: 'transparent',
-  },
-  shimmerContainer: {
-    position: 'absolute',
-    overflow: 'hidden',
-    borderRadius: 999,
-  },
-  shimmerHighlight: {
-    position: 'absolute',
-    width: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    ...(Platform.OS === 'web'
-      ? {
-          filter: 'blur(10px)',
-        }
-      : {}),
-  },
-  tvFocusGlow: {
-    position: 'absolute',
-    backgroundColor: 'rgba(168, 85, 247, 0.3)',
-    ...(Platform.OS === 'web'
-      ? {
-          filter: 'blur(15px)',
-        }
-      : {}),
-  },
-  audioIndicatorWrapper: {
-    position: 'absolute',
-    bottom: -20,
-    alignItems: 'center',
-  },
-  audioLevelContainer: {
-    height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  audioLevelBar: {
-    height: '100%',
-    borderRadius: 2,
-  },
-});
 
 export default WizardEffects;

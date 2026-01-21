@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';;
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, CreditCard, TrendingUp, AlertCircle, DollarSign } from 'lucide-react';
@@ -73,7 +73,7 @@ export default function BillingOverviewPage() {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorIcon}>⚠️</Text>
-        <Text style={styles.errorText}>{error}</Text>
+        <Text className="flex-1 text-red-500 text-sm">{error}</Text>
         <GlassButton
           title={t('common.retry')}
           onPress={loadData}
@@ -85,15 +85,15 @@ export default function BillingOverviewPage() {
 
   if (loading || !overview) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center gap-2">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-sm text-gray-400">{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.billing')}</Text>
@@ -231,23 +231,3 @@ export default function BillingOverviewPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: spacing.sm },
-  loadingText: { fontSize: 14, color: colors.textMuted },
-  errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.lg },
-  errorIcon: { fontSize: 48, marginBottom: spacing.md },
-  errorText: { fontSize: 16, color: colors.error, marginBottom: spacing.md },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.lg },
-  headerActions: { flexDirection: 'row', gap: spacing.sm },
-  pageTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
-  subtitle: { fontSize: 14, color: colors.textMuted, marginTop: spacing.xs },
-  section: { marginBottom: spacing.lg },
-  sectionTitle: { fontSize: 18, fontWeight: '600', color: colors.text, marginBottom: spacing.md },
-  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
-  quickLinksSection: { marginTop: spacing.md },
-  quickLinks: { flexDirection: 'row', gap: spacing.md },
-  quickLinkCard: { padding: spacing.lg, alignItems: 'center', gap: spacing.sm },
-  quickLinkText: { fontSize: 14, fontWeight: '500', color: colors.text },
-});

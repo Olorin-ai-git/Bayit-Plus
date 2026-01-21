@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../hooks/useDirection';
 import { GlassView } from './ui/GlassView';
-import { colors, spacing, fontSize, borderRadius } from '../theme';
+import { colors, spacing, fontSize } from '../theme';
 import { zmanService } from '../services/api';
 
 interface TimeData {
@@ -76,108 +76,118 @@ const AnalogClock: React.FC<AnalogClockProps> = ({
     const isMainHour = i % 3 === 0;
     const markerLength = isMainHour ? 8 : 4;
     const outerRadius = clockRadius - 4;
-    const innerRadius = outerRadius - markerLength;
 
     hourMarkers.push(
       <View
         key={i}
-        style={[
-          styles.hourMarker,
-          {
-            width: isMainHour ? 3 : 2,
-            height: markerLength,
-            backgroundColor: isMainHour ? colors.text : 'rgba(255, 255, 255, 0.3)',
-            position: 'absolute',
-            left: clockRadius + Math.cos(angle) * (outerRadius - markerLength / 2) - (isMainHour ? 1.5 : 1),
-            top: clockRadius + Math.sin(angle) * (outerRadius - markerLength / 2) - markerLength / 2,
-            transform: [{ rotate: `${i * 30}deg` }],
-          },
-        ]}
+        className="rounded-sm"
+        style={{
+          width: isMainHour ? 3 : 2,
+          height: markerLength,
+          backgroundColor: isMainHour ? colors.text : 'rgba(255, 255, 255, 0.3)',
+          position: 'absolute',
+          left: clockRadius + Math.cos(angle) * (outerRadius - markerLength / 2) - (isMainHour ? 1.5 : 1),
+          top: clockRadius + Math.sin(angle) * (outerRadius - markerLength / 2) - markerLength / 2,
+          transform: [{ rotate: `${i * 30}deg` }],
+        }}
       />
     );
   }
 
   return (
-    <View style={styles.analogClockContainer}>
+    <View className="items-center">
       {/* Clock Face */}
       <View
-        style={[
-          styles.clockFace,
-          {
-            width: size,
-            height: size,
-            borderRadius: size / 2,
-            borderColor: accentColor,
-          },
-        ]}
+        className="relative justify-center items-center"
+        style={{
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          borderWidth: 3,
+          borderColor: accentColor,
+        }}
       >
         {/* Hour markers */}
         {hourMarkers}
 
         {/* Hour Hand */}
         <View
-          style={[
-            styles.clockHand,
-            styles.hourHand,
-            {
-              width: 4,
-              height: hourHandLength,
-              backgroundColor: colors.text,
-              left: clockRadius - 2,
-              top: clockRadius - hourHandLength,
-              transformOrigin: 'center bottom',
-              transform: [{ rotate: `${hourRotation}deg` }],
-            },
-          ]}
+          className="absolute rounded-sm"
+          style={{
+            width: 4,
+            height: hourHandLength,
+            backgroundColor: colors.text,
+            left: clockRadius - 2,
+            top: clockRadius - hourHandLength,
+            transformOrigin: 'center bottom',
+            transform: [{ rotate: `${hourRotation}deg` }],
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.3,
+            shadowRadius: 1,
+          }}
         />
 
         {/* Minute Hand */}
         <View
-          style={[
-            styles.clockHand,
-            styles.minuteHand,
-            {
-              width: 2,
-              height: minuteHandLength,
-              backgroundColor: accentColor,
-              left: clockRadius - 1,
-              top: clockRadius - minuteHandLength,
-              transformOrigin: 'center bottom',
-              transform: [{ rotate: `${minuteRotation}deg` }],
-            },
-          ]}
+          className="absolute rounded-sm"
+          style={{
+            width: 2,
+            height: minuteHandLength,
+            backgroundColor: accentColor,
+            left: clockRadius - 1,
+            top: clockRadius - minuteHandLength,
+            transformOrigin: 'center bottom',
+            transform: [{ rotate: `${minuteRotation}deg` }],
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.2,
+            shadowRadius: 1,
+          }}
         />
 
         {/* Center Dot */}
         <View
-          style={[
-            styles.centerDot,
-            {
-              width: centerDotSize,
-              height: centerDotSize,
-              borderRadius: centerDotSize / 2,
-              backgroundColor: accentColor,
-              left: clockRadius - centerDotSize / 2,
-              top: clockRadius - centerDotSize / 2,
-            },
-          ]}
+          className="absolute"
+          style={{
+            width: centerDotSize,
+            height: centerDotSize,
+            borderRadius: centerDotSize / 2,
+            backgroundColor: accentColor,
+            left: clockRadius - centerDotSize / 2,
+            top: clockRadius - centerDotSize / 2,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.3,
+            shadowRadius: 2,
+          }}
         />
 
         {/* Shabbat indicator */}
         {isShabbat && (
-          <View style={styles.shabbatIndicator}>
-            <Text style={styles.shabbatStar}>✡</Text>
+          <View
+            className="absolute"
+            style={{
+              top: '60%',
+              left: '50%',
+              transform: [{ translateX: -8 }, { translateY: -8 }],
+            }}
+          >
+            <Text className="text-base" style={{ color: colors.warning }}>✡</Text>
           </View>
         )}
       </View>
 
       {/* Label */}
-      <View style={styles.clockLabelContainer}>
-        <View style={[styles.clockLabelRow, { flexDirection: 'row' }]}>
-          <Text style={styles.clockFlag}>{flag}</Text>
-          <Text style={[styles.clockLabel, { color: accentColor, textAlign }]}>{label}</Text>
+      <View className="mt-3 items-center">
+        <View className="flex-row items-center gap-1">
+          <Text className="text-lg">{flag}</Text>
+          <Text className="text-base font-semibold" style={{ color: accentColor, textAlign }}>{label}</Text>
         </View>
-        {sublabel && <Text style={[styles.clockSublabel, { textAlign }]}>{sublabel}</Text>}
+        {sublabel && (
+          <Text className="text-xs mt-0.5" style={{ color: colors.textMuted, textAlign }}>{sublabel}</Text>
+        )}
       </View>
     </View>
   );
@@ -275,7 +285,7 @@ export const DualClock: React.FC<DualClockProps> = ({
 
   if (loading) {
     return (
-      <GlassView style={styles.container} intensity="light">
+      <GlassView className="p-6 rounded-lg" intensity="light">
         <ActivityIndicator color={colors.primary} />
       </GlassView>
     );
@@ -291,17 +301,17 @@ export const DualClock: React.FC<DualClockProps> = ({
 
   if (compact) {
     return (
-      <View style={[styles.compactContainer, { flexDirection }]}>
-        <Text style={styles.flagEmoji}>🇮🇱</Text>
-        <Text style={[styles.compactTime, { textAlign }]}>{israel.time}</Text>
-        {shabbat.is_shabbat && <Text style={styles.starEmoji}>✡</Text>}
+      <View className="flex-row items-center gap-2" style={{ flexDirection }}>
+        <Text className="text-xs">🇮🇱</Text>
+        <Text className="font-mono text-sm opacity-80" style={{ color: colors.text, textAlign }}>{israel.time}</Text>
+        {shabbat.is_shabbat && <Text className="text-base" style={{ color: colors.warning }}>✡</Text>}
       </View>
     );
   }
 
   return (
-    <GlassView style={styles.container} intensity="medium">
-      <View style={[styles.clocksRow, { flexDirection }]}>
+    <GlassView className="p-6 rounded-lg" intensity="medium">
+      <View className="flex-row items-center justify-center gap-10" style={{ flexDirection }}>
         {/* Israel Clock */}
         <AnalogClock
           hours={israelParsed.hours}
@@ -315,8 +325,8 @@ export const DualClock: React.FC<DualClockProps> = ({
         />
 
         {/* Divider */}
-        <View style={styles.divider}>
-          <View style={styles.dividerLine} />
+        <View className="h-40 justify-center px-3">
+          <View className="w-px h-24 bg-white/15" />
         </View>
 
         {/* Local Clock */}
@@ -332,42 +342,42 @@ export const DualClock: React.FC<DualClockProps> = ({
       </View>
 
       {/* Digital time display */}
-      <View style={[styles.digitalTimeRow, { flexDirection }]}>
-        <Text style={styles.digitalTime}>{israel.time}</Text>
-        <Text style={styles.digitalTimeSeparator}>|</Text>
-        <Text style={[styles.digitalTime, styles.digitalTimeLocal]}>{local.time}</Text>
+      <View className="flex-row justify-center items-center mt-3 gap-3" style={{ flexDirection }}>
+        <Text className="font-mono text-lg font-semibold" style={{ color: colors.text }}>{israel.time}</Text>
+        <Text className="text-lg text-white/20">|</Text>
+        <Text className="font-mono text-lg font-semibold opacity-70" style={{ color: colors.text }}>{local.time}</Text>
       </View>
 
       {/* Shabbat Status */}
       {showShabbatStatus && (shabbat.is_shabbat || shabbat.is_erev_shabbat) && (
-        <View style={styles.shabbatSection}>
+        <View className="mt-3 pt-3 border-t border-white/10">
           {shabbat.is_shabbat ? (
-            <View style={[styles.shabbatRow, { flexDirection }]}>
-              <View style={[styles.shabbatLabel, { flexDirection }]}>
-                <Text style={styles.starEmoji}>✡</Text>
-                <Text style={[styles.shabbatText, { textAlign }]}>{t('clock.shabbatShalom')}</Text>
+            <View className="flex-row items-center justify-between" style={{ flexDirection }}>
+              <View className="flex-row items-center gap-2" style={{ flexDirection }}>
+                <Text className="text-base" style={{ color: colors.warning }}>✡</Text>
+                <Text className="text-base font-semibold" style={{ color: colors.warning, textAlign }}>{t('clock.shabbatShalom')}</Text>
               </View>
               {shabbat.countdown && (
-                <View style={[styles.countdownContainer, { flexDirection }]}>
-                  <Text style={[styles.countdownLabel, { textAlign }]}>{shabbat.countdown_label}: </Text>
-                  <Text style={[styles.countdownTime, { textAlign }]}>{shabbat.countdown}</Text>
+                <View className="flex-row items-center" style={{ flexDirection }}>
+                  <Text className="text-xs" style={{ color: colors.textSecondary, textAlign }}>{shabbat.countdown_label}: </Text>
+                  <Text className="text-xs font-mono" style={{ color: colors.textSecondary, textAlign }}>{shabbat.countdown}</Text>
                 </View>
               )}
             </View>
           ) : shabbat.is_erev_shabbat ? (
-            <View style={[styles.shabbatRow, { flexDirection }]}>
-              <View style={[styles.shabbatLabel, { flexDirection }]}>
-                <Text style={styles.candleEmoji}>🕯️</Text>
-                <Text style={[styles.erevShabbatText, { textAlign }]}>{t('clock.erevShabbat')}</Text>
+            <View className="flex-row items-center justify-between" style={{ flexDirection }}>
+              <View className="flex-row items-center gap-2" style={{ flexDirection }}>
+                <Text className="text-base">🕯️</Text>
+                <Text className="text-base font-semibold" style={{ color: colors.secondary, textAlign }}>{t('clock.erevShabbat')}</Text>
               </View>
-              <View style={[styles.countdownContainer, { flexDirection }]}>
+              <View className="flex-row items-center" style={{ flexDirection }}>
                 {shabbat.candle_lighting && (
-                  <Text style={[styles.candleLighting, { textAlign }]}>
+                  <Text className="text-xs" style={{ color: colors.textSecondary, textAlign }}>
                     {t('clock.candleLighting')}: {shabbat.candle_lighting}
                   </Text>
                 )}
                 {shabbat.countdown && (
-                  <Text style={[styles.countdownTime, { textAlign }]}> ({shabbat.countdown})</Text>
+                  <Text className="text-xs font-mono" style={{ color: colors.textSecondary, textAlign }}> ({shabbat.countdown})</Text>
                 )}
               </View>
             </View>
@@ -375,7 +385,7 @@ export const DualClock: React.FC<DualClockProps> = ({
 
           {/* Parasha */}
           {shabbat.parasha_hebrew && (
-            <Text style={[styles.parasha, { textAlign }]}>{t('clock.parasha')} {shabbat.parasha_hebrew}</Text>
+            <Text className="mt-2 text-xs text-center" style={{ color: colors.textMuted, textAlign }}>{t('clock.parasha')} {shabbat.parasha_hebrew}</Text>
           )}
         </View>
       )}
@@ -408,214 +418,12 @@ export const MiniClock: React.FC = () => {
   }, []);
 
   return (
-    <View style={[styles.miniContainer, { flexDirection }]}>
-      <Text style={styles.miniFlag}>🇮🇱</Text>
-      <Text style={[styles.miniTime, { textAlign }]}>{time || '--:--'}</Text>
-      {isShabbat && <Text style={styles.miniStar}>✡</Text>}
+    <View className="flex-row items-center gap-2" style={{ flexDirection }}>
+      <Text className="text-xs">🇮🇱</Text>
+      <Text className="font-mono text-sm opacity-80" style={{ color: colors.text, textAlign }}>{time || '--:--'}</Text>
+      {isShabbat && <Text className="text-xs" style={{ color: colors.warning }}>✡</Text>}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-  },
-  compactContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  compactTime: {
-    fontFamily: 'monospace',
-    fontSize: fontSize.sm,
-    color: colors.text,
-    opacity: 0.8,
-  },
-  clocksRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xxl,
-  },
-  divider: {
-    height: 160,
-    justifyContent: 'center',
-    paddingHorizontal: spacing.md,
-  },
-  dividerLine: {
-    width: 1,
-    height: 100,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-  },
-  // Analog Clock styles
-  analogClockContainer: {
-    alignItems: 'center',
-  },
-  clockFace: {
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderWidth: 3,
-    position: 'relative',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  hourMarker: {
-    borderRadius: 1,
-  },
-  clockHand: {
-    position: 'absolute',
-    borderRadius: 2,
-  },
-  hourHand: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 1,
-  },
-  minuteHand: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-  },
-  centerDot: {
-    position: 'absolute',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-  },
-  shabbatIndicator: {
-    position: 'absolute',
-    top: '60%',
-    left: '50%',
-    transform: [{ translateX: -8 }, { translateY: -8 }],
-  },
-  shabbatStar: {
-    fontSize: 16,
-    color: colors.warning,
-  },
-  clockLabelContainer: {
-    marginTop: spacing.md,
-    alignItems: 'center',
-  },
-  clockLabelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  clockFlag: {
-    fontSize: 18,
-  },
-  clockLabel: {
-    fontSize: fontSize.md,
-    fontWeight: '600',
-  },
-  clockSublabel: {
-    fontSize: fontSize.xs,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
-  // Digital time row
-  digitalTimeRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: spacing.md,
-    gap: spacing.md,
-  },
-  digitalTime: {
-    fontFamily: 'monospace',
-    fontSize: fontSize.lg,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  digitalTimeLocal: {
-    opacity: 0.7,
-  },
-  digitalTimeSeparator: {
-    fontSize: fontSize.lg,
-    color: 'rgba(255, 255, 255, 0.2)',
-  },
-  // Shabbat styles
-  flagEmoji: {
-    fontSize: 12,
-  },
-  shabbatSection: {
-    marginTop: spacing.md,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  shabbatRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  shabbatLabel: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  starEmoji: {
-    fontSize: 16,
-    color: colors.warning,
-  },
-  candleEmoji: {
-    fontSize: 16,
-  },
-  shabbatText: {
-    fontSize: fontSize.md,
-    fontWeight: '600',
-    color: colors.warning,
-  },
-  erevShabbatText: {
-    fontSize: fontSize.md,
-    fontWeight: '600',
-    color: colors.secondary,
-  },
-  countdownContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  countdownLabel: {
-    fontSize: fontSize.xs,
-    color: colors.textSecondary,
-  },
-  countdownTime: {
-    fontSize: fontSize.xs,
-    fontFamily: 'monospace',
-    color: colors.textSecondary,
-  },
-  candleLighting: {
-    fontSize: fontSize.xs,
-    color: colors.textSecondary,
-  },
-  parasha: {
-    marginTop: spacing.sm,
-    fontSize: fontSize.xs,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-  // Mini Clock styles
-  miniContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  miniFlag: {
-    fontSize: 12,
-  },
-  miniTime: {
-    fontFamily: 'monospace',
-    fontSize: fontSize.sm,
-    color: colors.text,
-    opacity: 0.8,
-  },
-  miniStar: {
-    fontSize: 12,
-    color: colors.warning,
-  },
-});
 
 export default DualClock;

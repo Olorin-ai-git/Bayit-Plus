@@ -1,6 +1,5 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { Toggle } from './Toggle';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 
 interface SettingRowProps {
   icon: any;
@@ -15,7 +14,7 @@ interface SettingRowProps {
 
 export function SettingRow({
   icon: Icon,
-  iconColor = colors.primary,
+  iconColor = '#6B21A8',
   label,
   description,
   value,
@@ -27,32 +26,32 @@ export function SettingRow({
     <Pressable
       onPress={onToggle}
       disabled={disabled || !onToggle}
-      style={[styles.settingRow, disabled && styles.settingRowDisabled]}
+      className={`flex-row items-center gap-4 py-2 ${disabled ? 'opacity-50' : ''}`}
     >
       {isRTL ? (
         <>
           {value !== undefined && onToggle && (
             <Toggle value={value} onToggle={onToggle} disabled={disabled} isRTL={isRTL} />
           )}
-          <View style={styles.settingContent}>
-            <Text style={[styles.settingLabel, { textAlign: 'right' }]}>{label}</Text>
+          <View className="flex-1">
+            <Text className="text-[15px] font-medium text-white text-right">{label}</Text>
             {description && (
-              <Text style={[styles.settingDesc, { textAlign: 'right' }]}>{description}</Text>
+              <Text className="text-xs text-white/60 mt-0.5 text-right">{description}</Text>
             )}
           </View>
-          <View style={[styles.settingIcon, { backgroundColor: `${iconColor}15` }]}>
+          <View className="w-10 h-10 rounded-lg justify-center items-center" style={{ backgroundColor: `${iconColor}15` }}>
             <Icon size={20} color={iconColor} />
           </View>
         </>
       ) : (
         <>
-          <View style={[styles.settingIcon, { backgroundColor: `${iconColor}15` }]}>
+          <View className="w-10 h-10 rounded-lg justify-center items-center" style={{ backgroundColor: `${iconColor}15` }}>
             <Icon size={20} color={iconColor} />
           </View>
-          <View style={styles.settingContent}>
-            <Text style={[styles.settingLabel, { textAlign: 'left' }]}>{label}</Text>
+          <View className="flex-1">
+            <Text className="text-[15px] font-medium text-white text-left">{label}</Text>
             {description && (
-              <Text style={[styles.settingDesc, { textAlign: 'left' }]}>{description}</Text>
+              <Text className="text-xs text-white/60 mt-0.5 text-left">{description}</Text>
             )}
           </View>
           {value !== undefined && onToggle && (
@@ -63,36 +62,3 @@ export function SettingRow({
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  settingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  settingRowDisabled: {
-    opacity: 0.5,
-  },
-  settingIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  settingContent: {
-    flex: 1,
-  },
-  settingLabel: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  settingDesc: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
-});

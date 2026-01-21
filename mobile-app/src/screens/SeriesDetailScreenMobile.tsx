@@ -13,7 +13,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
@@ -116,28 +115,30 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
         ReactNativeHapticFeedback.trigger("impactLight");
         onPress();
       }}
-      style={[styles.episodeCard, isSelected && styles.episodeCardSelected]}
+      className={`rounded-lg overflow-hidden bg-white/5 ${isSelected ? 'border-2 border-purple-600' : ''}`}
+      style={{ width: EPISODE_CARD_WIDTH, marginRight: spacing.md }}
       activeOpacity={0.8}
     >
       <Image
         source={{ uri: episode.thumbnail }}
-        style={styles.episodeImage}
+        className="bg-white/5"
+        style={{ width: EPISODE_CARD_WIDTH, height: 157 }}
         resizeMode="cover"
       />
-      <View style={styles.episodeOverlay}>
-        <View style={styles.episodeNumberBadge}>
-          <Text style={styles.episodeNumber}>{episode.episode_number}</Text>
+      <View className="absolute top-0 left-0 right-0 justify-between items-start p-2" style={{ height: 157 }}>
+        <View className="bg-black/70 px-2 py-1 rounded">
+          <Text className="text-xs font-semibold text-white">{episode.episode_number}</Text>
         </View>
-        <TouchableOpacity style={styles.episodePlayButton} onPress={onPress}>
-          <Text style={styles.episodePlayIcon}>▶</Text>
+        <TouchableOpacity className="absolute top-1/2 left-1/2 -mt-5 -ml-5 w-10 h-10 rounded-full bg-purple-600/90 justify-center items-center" onPress={onPress}>
+          <Text className="text-base text-white ml-0.5">▶</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.episodeInfo}>
-        <Text style={[styles.episodeTitle, { textAlign }]} numberOfLines={1}>
+      <View className="p-2">
+        <Text className="text-sm font-medium text-white mb-1" style={{ textAlign }} numberOfLines={1}>
           {getLocalizedText(episode, "title")}
         </Text>
         {episode.duration && (
-          <Text style={[styles.episodeDuration, { textAlign }]}>
+          <Text className="text-xs text-white/60" style={{ textAlign }}>
             {episode.duration}
           </Text>
         )}
@@ -310,7 +311,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.loadingContainer}>
+      <SafeAreaView className="flex-1 justify-center items-center bg-black">
         <ActivityIndicator size="large" color={colors.primary} />
       </SafeAreaView>
     );
@@ -318,12 +319,12 @@ export const SeriesDetailScreenMobile: React.FC = () => {
 
   if (!series) {
     return (
-      <SafeAreaView style={styles.errorContainer}>
-        <Text style={styles.errorText}>
+      <SafeAreaView className="flex-1 justify-center items-center bg-black p-6">
+        <Text className="text-lg text-white/60 mb-6">
           {t("content.notFound", "Content not found")}
         </Text>
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Text style={styles.backButtonText}>
+        <TouchableOpacity onPress={handleBack} className="px-6 py-3 bg-purple-600 rounded-lg">
+          <Text className="text-white font-semibold">
             {t("common.goBack", "Go Back")}
           </Text>
         </TouchableOpacity>
@@ -332,7 +333,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-black">
       <StatusBar barStyle="light-content" />
 
       <ScrollView
@@ -647,401 +648,5 @@ export const SeriesDetailScreenMobile: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.background,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.background,
-    padding: spacing.lg,
-  },
-  errorText: {
-    fontSize: 18,
-    color: colors.textSecondary,
-    marginBottom: spacing.lg,
-  },
-  backButton: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.md,
-  },
-  backButtonText: {
-    color: colors.text,
-    fontWeight: "600",
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  heroContainer: {
-    height: HERO_HEIGHT,
-    position: "relative",
-  },
-  heroImage: {
-    width: SCREEN_WIDTH,
-    height: HERO_HEIGHT,
-    position: "absolute",
-  },
-  heroGradient: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: HERO_HEIGHT,
-  },
-  headerActions: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.sm,
-  },
-  headerButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  headerButtonIcon: {
-    fontSize: 20,
-    color: colors.text,
-  },
-  headerRightActions: {
-    flexDirection: "row",
-    gap: spacing.sm,
-  },
-  heroContent: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.md,
-  },
-  seriesTitle: {
-    fontSize: 26,
-    fontWeight: "bold",
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  metadataRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
-  },
-  metadataText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  metadataDot: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginHorizontal: spacing.xs,
-  },
-  content: {
-    paddingTop: spacing.md,
-  },
-  seasonSelector: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.backgroundLight,
-    marginHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.lg,
-  },
-  seasonSelectorLabel: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.text,
-    marginRight: spacing.sm,
-  },
-  seasonSelectorArrow: {
-    fontSize: 12,
-    color: colors.primary,
-  },
-  episodesSection: {
-    marginBottom: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: colors.text,
-    marginBottom: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  episodesList: {
-    paddingHorizontal: spacing.md,
-    gap: spacing.md,
-  },
-  episodeCard: {
-    width: EPISODE_CARD_WIDTH,
-    marginRight: spacing.md,
-    borderRadius: borderRadius.md,
-    overflow: "hidden",
-    backgroundColor: colors.backgroundLight,
-  },
-  episodeCardSelected: {
-    borderWidth: 2,
-    borderColor: colors.primary,
-  },
-  episodeImage: {
-    width: EPISODE_CARD_WIDTH,
-    height: 157,
-    backgroundColor: colors.backgroundElevated,
-  },
-  episodeOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 157,
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    padding: spacing.sm,
-  },
-  episodeNumberBadge: {
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  episodeNumber: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: colors.text,
-  },
-  episodePlayButton: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    marginTop: -20,
-    marginLeft: -20,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "rgba(126, 34, 206, 0.9)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  episodePlayIcon: {
-    fontSize: 16,
-    color: colors.text,
-    marginLeft: 2,
-  },
-  episodeInfo: {
-    padding: spacing.sm,
-  },
-  episodeTitle: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: colors.text,
-    marginBottom: 4,
-  },
-  episodeDuration: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-  quickActions: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: spacing.xl,
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.1)",
-  },
-  quickActionButton: {
-    alignItems: "center",
-    minWidth: 60,
-  },
-  quickActionIcon: {
-    fontSize: 24,
-    marginBottom: 4,
-  },
-  quickActionLabel: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-  section: {
-    marginTop: spacing.lg,
-  },
-  synopsisText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    lineHeight: 22,
-    paddingHorizontal: spacing.md,
-  },
-  castContainer: {
-    gap: spacing.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  castCard: {
-    alignItems: "center",
-    width: 70,
-  },
-  castAvatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.backgroundLight,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: spacing.xs,
-  },
-  castInitial: {
-    fontSize: 22,
-    fontWeight: "600",
-    color: colors.primary,
-  },
-  castName: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    textAlign: "center",
-  },
-  recommendationsContainer: {
-    gap: spacing.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  recommendationCard: {
-    width: 120,
-  },
-  recommendationImage: {
-    width: 120,
-    height: 68,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.xs,
-    backgroundColor: colors.backgroundLight,
-  },
-  recommendationTitle: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    lineHeight: 16,
-  },
-  bottomSpacer: {
-    height: 100,
-  },
-  fixedButtonContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: colors.background,
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.1)",
-  },
-  watchButton: {
-    borderRadius: borderRadius.lg,
-    overflow: "hidden",
-  },
-  watchButtonGradient: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: spacing.md,
-    gap: spacing.sm,
-  },
-  watchButtonIcon: {
-    fontSize: 18,
-    color: colors.text,
-  },
-  watchButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.text,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-    justifyContent: "flex-end",
-  },
-  seasonPickerContainer: {
-    backgroundColor: colors.backgroundLight,
-    borderTopLeftRadius: borderRadius.xl,
-    borderTopRightRadius: borderRadius.xl,
-    maxHeight: SCREEN_HEIGHT * 0.5,
-  },
-  seasonPickerHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.1)",
-  },
-  seasonPickerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: colors.text,
-  },
-  seasonPickerClose: {
-    fontSize: 20,
-    color: colors.textSecondary,
-    padding: spacing.sm,
-  },
-  seasonList: {
-    padding: spacing.md,
-  },
-  seasonItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.sm,
-    backgroundColor: colors.backgroundElevated,
-  },
-  seasonItemSelected: {
-    backgroundColor: "rgba(126, 34, 206, 0.2)",
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  seasonItemText: {
-    flex: 1,
-    fontSize: 16,
-    color: colors.text,
-    fontWeight: "500",
-  },
-  seasonItemTextSelected: {
-    color: colors.primary,
-  },
-  seasonItemEpisodes: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginRight: spacing.md,
-  },
-  seasonItemCheck: {
-    fontSize: 16,
-    color: colors.primary,
-    fontWeight: "600",
-  },
-});
 
 export default SeriesDetailScreenMobile;

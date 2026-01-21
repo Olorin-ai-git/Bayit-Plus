@@ -7,14 +7,14 @@ Automatic daily backups for the Bayit+ MongoDB database to prevent data loss.
 Install automatic daily backups (runs at 3 AM every day):
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
+cd /Users/olorin/Documents/olorin/backend/scripts
 ./setup_backup_schedule.sh
 ```
 
 ## 📁 What Gets Backed Up
 
 - **Database**: `bayit_plus`
-- **Location**: `/Users/olorin/Documents/Bayit-Plus/backend/backups/`
+- **Location**: `/Users/olorin/Documents/olorin/backend/backups/`
 - **Format**: Compressed tar.gz files
 - **Retention**: 30 days (automatic rotation)
 
@@ -50,14 +50,14 @@ cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
 ### Run a Backup Manually
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
+cd /Users/olorin/Documents/olorin/backend/scripts
 ./backup_database.sh
 ```
 
 ### Restore from Backup
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
+cd /Users/olorin/Documents/olorin/backend/scripts
 ./restore_database.sh
 ```
 
@@ -74,10 +74,10 @@ The restore script will:
 launchctl list | grep bayitplus
 
 # View backup log
-tail -f /Users/olorin/Documents/Bayit-Plus/backend/backups/backup.log
+tail -f /Users/olorin/Documents/olorin/backend/backups/backup.log
 
 # List all backups
-ls -lh /Users/olorin/Documents/Bayit-Plus/backend/backups/*.tar.gz
+ls -lh /Users/olorin/Documents/olorin/backend/backups/*.tar.gz
 ```
 
 ### Disable Automatic Backups
@@ -123,19 +123,19 @@ launchctl load ~/Library/LaunchAgents/com.bayitplus.backup.plist
 
 View the backup log:
 ```bash
-cat /Users/olorin/Documents/Bayit-Plus/backend/backups/backup.log
+cat /Users/olorin/Documents/olorin/backend/backups/backup.log
 ```
 
 View error log:
 ```bash
-cat /Users/olorin/Documents/Bayit-Plus/backend/backups/backup_stderr.log
+cat /Users/olorin/Documents/olorin/backend/backups/backup_stderr.log
 ```
 
 ### Disk Space Issues
 
 Check backup directory size:
 ```bash
-du -sh /Users/olorin/Documents/Bayit-Plus/backend/backups
+du -sh /Users/olorin/Documents/olorin/backend/backups
 ```
 
 Reduce retention period by editing `backup_database.sh`:
@@ -181,7 +181,7 @@ If you need to restore immediately:
 
 ```bash
 # Quick restore from latest backup
-cd /Users/olorin/Documents/Bayit-Plus/backend/backups
+cd /Users/olorin/Documents/olorin/backend/backups
 latest=$(ls -t *.tar.gz | head -1)
 temp_dir=$(mktemp -d)
 tar -xzf "$latest" -C "$temp_dir"
@@ -195,11 +195,11 @@ For extra safety, consider syncing backups to cloud storage:
 
 ```bash
 # Example: Sync to iCloud Drive
-cp /Users/olorin/Documents/Bayit-Plus/backend/backups/*.tar.gz \
+cp /Users/olorin/Documents/olorin/backend/backups/*.tar.gz \
    ~/Library/Mobile\ Documents/com~apple~CloudDocs/Bayit-Backups/
 
 # Example: Sync to external drive
-rsync -av /Users/olorin/Documents/Bayit-Plus/backend/backups/ \
+rsync -av /Users/olorin/Documents/olorin/backend/backups/ \
    /Volumes/ExternalDrive/Bayit-Backups/
 ```
 

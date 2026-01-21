@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   Animated,
@@ -77,45 +76,44 @@ const PodcastCard: React.FC<{
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={1}
-      style={styles.cardTouchable}
+      className={`flex-1 m-2 ${isTV ? 'max-w-[20%]' : 'max-w-[33.33%]'}`}
       // @ts-ignore
       hasTVPreferredFocus={index === 0}
     >
       <Animated.View
-        style={[
-          styles.card,
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.cardFocused,
-        ]}
+        className={`bg-[#1a1a2e] rounded-lg overflow-hidden border-[3px] ${
+          isFocused ? 'border-[#10b981]' : 'border-transparent'
+        }`}
+        style={{ transform: [{ scale: scaleAnim }] }}
       >
         {/* Cover Image */}
         {show.thumbnail ? (
           <Image
             source={{ uri: show.thumbnail }}
-            style={styles.cardImage}
+            className="w-full aspect-square"
             resizeMode="cover"
           />
         ) : (
-          <View style={styles.cardImagePlaceholder}>
-            <Text style={styles.placeholderIcon}>🎙️</Text>
+          <View className="w-full aspect-square bg-[#2a2a3e] justify-center items-center">
+            <Text className="text-5xl">🎙️</Text>
           </View>
         )}
 
         {/* Content */}
-        <View style={styles.cardContent}>
-          <Text style={[styles.cardTitle, { textAlign }]} numberOfLines={2}>
+        <View className="p-2">
+          <Text className="text-sm font-semibold text-white mb-0.5" style={{ textAlign }} numberOfLines={2}>
             {getLocalizedText(show, 'title')}
           </Text>
           {show.host && (
-            <Text style={[styles.cardAuthor, { textAlign }]} numberOfLines={1}>
+            <Text className="text-xs text-gray-400 mb-1" style={{ textAlign }} numberOfLines={1}>
               {getLocalizedText(show, 'host')}
             </Text>
           )}
-          <View style={[styles.cardMeta, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
+          <View className={`flex-wrap gap-2 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
             {show.episodes && show.episodes.length > 0 && (
-              <View style={[styles.metaItem, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-                <Text style={styles.metaIcon}>🎧</Text>
-                <Text style={styles.metaText}>{show.episodes.length} {t('content.episodes')}</Text>
+              <View className={`flex-row items-center ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
+                <Text className="text-[10px] ml-1">🎧</Text>
+                <Text className="text-[10px] text-gray-500">{show.episodes.length} {t('content.episodes')}</Text>
               </View>
             )}
           </View>
@@ -123,9 +121,9 @@ const PodcastCard: React.FC<{
 
         {/* Play Overlay */}
         {isFocused && (
-          <View style={styles.playOverlay}>
-            <View style={styles.playButton}>
-              <Text style={styles.playIcon}>▶</Text>
+          <View className="absolute inset-0 bg-black/40 justify-center items-center">
+            <View className="w-14 h-14 rounded-full bg-[#10b981] justify-center items-center">
+              <Text className="text-2xl text-black ml-1">▶</Text>
             </View>
           </View>
         )}
@@ -196,28 +194,28 @@ export const PodcastsScreen: React.FC = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 bg-black justify-center items-center">
         <ActivityIndicator size="large" color={colors.success} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-white text-lg mt-4">{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-black">
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }]}>
-          <Text style={styles.headerIconText}>🎙️</Text>
+      <View className={`flex-row items-center px-12 pt-10 pb-4 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
+        <View className={`w-[60px] h-[60px] rounded-[30px] bg-[rgba(16,185,129,0.2)] justify-center items-center ${isRTL ? 'ml-4' : 'mr-4'}`}>
+          <Text className="text-[28px]">🎙️</Text>
         </View>
         <View>
-          <Text style={[styles.title, { textAlign }]}>{t('podcasts.title')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>{shows.length} {t('podcasts.shows')}</Text>
+          <Text className="text-[42px] font-bold text-white text-right" style={{ textAlign }}>{t('podcasts.title')}</Text>
+          <Text className="text-lg text-gray-400 mt-0.5 text-right" style={{ textAlign }}>{shows.length} {t('podcasts.shows')}</Text>
         </View>
       </View>
 
       {/* Category Filter */}
-      <View style={[styles.categories, { flexDirection: isRTL ? 'row' : 'row-reverse', justifyContent: isRTL ? 'flex-start' : 'flex-start' }]}>
+      <View className={`flex-row px-12 mb-6 gap-3 z-10 ${isRTL ? 'flex-row justify-start' : 'flex-row-reverse justify-start'}`}>
         <GlassCategoryPill
           label={t('podcasts.categories.all')}
           isActive={selectedCategory === 'all'}
@@ -240,7 +238,7 @@ export const PodcastsScreen: React.FC = () => {
         keyExtractor={(item) => item.id}
         numColumns={isTV ? 5 : 3}
         key={isTV ? 'tv' : 'mobile'}
-        contentContainerStyle={styles.grid}
+        contentContainerStyle={{ paddingHorizontal: 32, paddingBottom: 64, paddingTop: 16 }}
         renderItem={({ item, index }) => (
           <PodcastCard
             show={item}
@@ -250,11 +248,11 @@ export const PodcastsScreen: React.FC = () => {
           />
         )}
         ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <GlassView style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>🎙️</Text>
-              <Text style={styles.emptyTitle}>{t('empty.noPodcasts')}</Text>
-              <Text style={styles.emptySubtitle}>{t('empty.tryLater')}</Text>
+          <View className="flex-1 justify-center items-center py-[60px]">
+            <GlassView className="p-12 items-center">
+              <Text className="text-[64px] mb-4">🎙️</Text>
+              <Text className="text-xl font-semibold text-white mb-2">{t('empty.noPodcasts')}</Text>
+              <Text className="text-base text-gray-400">{t('empty.tryLater')}</Text>
             </GlassView>
           </View>
         }
@@ -262,174 +260,5 @@ export const PodcastsScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: 18,
-    marginTop: spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xxl,
-    paddingTop: 40,
-    paddingBottom: spacing.lg,
-  },
-  headerIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(16, 185, 129, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: spacing.lg,
-  },
-  headerIconText: {
-    fontSize: 28,
-  },
-  title: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'right',
-  },
-  subtitle: {
-    fontSize: 18,
-    color: colors.textSecondary,
-    marginTop: 2,
-    textAlign: 'right',
-  },
-  categories: {
-    flexDirection: 'row',
-    paddingHorizontal: 48,
-    marginBottom: 24,
-    gap: 12,
-    zIndex: 10,
-  },
-  grid: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
-    paddingTop: spacing.md,
-    direction: 'ltr',
-  },
-  cardTouchable: {
-    flex: 1,
-    margin: spacing.sm,
-    maxWidth: isTV ? '20%' : '33.33%',
-  },
-  card: {
-    backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-  cardFocused: {
-    borderColor: colors.success,
-    // @ts-ignore - Web CSS property for glow effect
-    boxShadow: `0 0 20px ${colors.success}`,
-  },
-  cardImage: {
-    width: '100%',
-    aspectRatio: 1,
-  },
-  cardImagePlaceholder: {
-    width: '100%',
-    aspectRatio: 1,
-    backgroundColor: colors.backgroundLighter,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 48,
-  },
-  cardContent: {
-    padding: spacing.sm,
-  },
-  cardTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-    textAlign: 'right',
-    marginBottom: 2,
-  },
-  cardAuthor: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    textAlign: 'right',
-    marginBottom: spacing.xs,
-  },
-  cardMeta: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  metaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  metaIcon: {
-    fontSize: 10,
-    marginLeft: 4,
-  },
-  metaText: {
-    fontSize: 10,
-    color: colors.textMuted,
-  },
-  playOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.success,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playIcon: {
-    fontSize: 24,
-    color: colors.background,
-    marginLeft: 4,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyCard: {
-    padding: spacing.xxl,
-    alignItems: 'center',
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: spacing.md,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-});
 
 export default PodcastsScreen;

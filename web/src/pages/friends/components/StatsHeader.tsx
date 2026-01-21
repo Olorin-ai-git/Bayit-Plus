@@ -1,8 +1,7 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Users, UserCheck, Clock } from 'lucide-react';
 import { GlassView, GlassStatCard } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 
 interface StatsHeaderProps {
   friendsCount: number;
@@ -15,89 +14,40 @@ export function StatsHeader({ friendsCount, pendingCount, isRTL }: StatsHeaderPr
 
   return (
     <>
-      <GlassView style={styles.headerGlass} intensity="low">
-        <View style={[styles.header, isRTL && styles.headerRTL]}>
-          <View style={styles.headerIcon}>
-            <Users size={32} color={colors.primary} />
+      <GlassView className="mb-6 p-4" intensity="low">
+        <View className={`items-center gap-4 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+          <View className="w-[60px] h-[60px] rounded-lg bg-[#6B21A8]/20 justify-center items-center border border-white/10">
+            <Users size={32} color="#6B21A8" />
           </View>
-          <View style={styles.headerText}>
-            <Text style={[styles.title, isRTL && styles.textRTL]}>
+          <View className="flex-1">
+            <Text className={`text-[28px] font-bold text-white mb-1 ${isRTL ? 'text-right' : ''}`}>
               {t('friends.title', 'Friends & Opponents')}
             </Text>
-            <Text style={[styles.subtitle, isRTL && styles.textRTL]}>
+            <Text className={`text-sm text-white/60 ${isRTL ? 'text-right' : ''}`}>
               {t('friends.subtitle', 'Connect with players and challenge friends')}
             </Text>
           </View>
         </View>
       </GlassView>
 
-      <View style={styles.statsRow}>
+      <View className="flex-row gap-4 mb-6">
         <GlassStatCard
-          icon={<UserCheck size={24} color={colors.success} />}
-          iconColor={colors.success}
+          icon={<UserCheck size={24} color="#22C55E" />}
+          iconColor="#22C55E"
           label={t('friends.friendsLabel', 'Friends')}
           value={friendsCount}
           compact
-          style={styles.statCard}
+          className="flex-1"
         />
         <GlassStatCard
-          icon={<Clock size={24} color={colors.warning} />}
-          iconColor={colors.warning}
+          icon={<Clock size={24} color="#F59E0B" />}
+          iconColor="#F59E0B"
           label={t('friends.pendingLabel', 'Pending')}
           value={pendingCount}
           compact
-          style={styles.statCard}
+          className="flex-1"
         />
       </View>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  headerGlass: {
-    marginBottom: spacing.lg,
-    padding: spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  headerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  headerIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.glassPurpleLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  headerText: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  statCard: {
-    flex: 1,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-});

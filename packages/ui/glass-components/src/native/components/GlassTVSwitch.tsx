@@ -10,7 +10,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Pressable,
-  StyleSheet,
   Animated,
   Platform,
   StyleProp,
@@ -87,85 +86,26 @@ export const GlassTVSwitch: React.FC<GlassTVSwitchProps> = ({
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
       disabled={disabled}
-      style={[
-        styles.container,
-        isFocused && styles.containerFocused,
-        disabled && styles.containerDisabled,
-        style,
-      ]}
+      className={`p-1 rounded-[20px] border-2 ${isFocused ? 'border-primary bg-primary/10' : 'border-transparent'} ${disabled ? 'opacity-50' : ''}`}
+      style={style}
       accessibilityRole="switch"
       accessibilityState={{ checked: value, disabled }}
       testID={testID}
     >
       <Animated.View
-        style={[
-          styles.track,
-          Platform.isTV && styles.trackTV,
-          { backgroundColor: trackBackgroundColor },
-          isFocused && styles.trackFocused,
-        ]}
+        className={`justify-center ${Platform.isTV ? 'w-[52px] h-[28px] rounded-[14px]' : 'w-[44px] h-[24px] rounded-[12px]'} ${isFocused ? 'shadow-primary shadow-opacity-50 shadow-radius-8' : ''}`}
+        style={{ backgroundColor: trackBackgroundColor }}
       >
         <Animated.View
-          style={[
-            styles.thumb,
-            Platform.isTV && styles.thumbTV,
-            {
-              backgroundColor: thumbColor,
-              transform: [{ translateX: thumbTranslateX }],
-            },
-          ]}
+          className={`shadow-md elevation-2 ${Platform.isTV ? 'w-[24px] h-[24px] rounded-[12px]' : 'w-[20px] h-[20px] rounded-[10px]'}`}
+          style={{
+            backgroundColor: thumbColor,
+            transform: [{ translateX: thumbTranslateX }],
+          }}
         />
       </Animated.View>
     </Pressable>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 4,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  containerFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-  },
-  containerDisabled: {
-    opacity: 0.5,
-  },
-  track: {
-    width: 44,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: 'center',
-  },
-  trackTV: {
-    width: 52,
-    height: 28,
-    borderRadius: 14,
-  },
-  trackFocused: {
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-  },
-  thumb: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  thumbTV: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-  },
-});
 
 export default GlassTVSwitch;

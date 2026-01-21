@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator } from 'react-native';
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, Mail, Lock, ChevronDown, Globe } from 'lucide-react';
 import { useAuthStore } from '@bayit/shared-stores';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 import { AnimatedLogo } from '@bayit/shared';
 import { GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
@@ -79,41 +79,33 @@ export default function LoginPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 min-h-screen bg-black relative overflow-hidden">
       {/* Background gradient effects */}
-      <View style={styles.backgroundGradient1} />
-      <View style={styles.backgroundGradient2} />
-      <View style={styles.backgroundGradient3} />
+      <View className="absolute w-[600px] h-[600px] rounded-full bg-purple-600 opacity-8 -top-[200px] -right-[200px] blur-[120px]" />
+      <View className="absolute w-[400px] h-[400px] rounded-full bg-purple-400 opacity-6 -bottom-[100px] -left-[100px] blur-[100px]" />
+      <View className="absolute w-[300px] h-[300px] rounded-full bg-purple-600 opacity-4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 blur-[80px]" />
 
       {/* Language Selector - Top Right */}
-      <View style={[styles.languageSelector, isRTL && styles.languageSelectorRTL]}>
+      <View className={`absolute ${isRTL ? 'left-6' : 'right-6'} top-6 z-[100]`}>
         <Pressable
-          style={styles.languageButton}
+          className="flex flex-row items-center gap-2 bg-white/5 py-2 px-4 rounded-lg border border-white/10"
           onPress={() => setShowLanguageMenu(!showLanguageMenu)}
         >
           <Globe size={18} color={colors.textSecondary} />
-          <Text style={styles.languageButtonText}>{currentLanguage.flag} {currentLanguageLabel}</Text>
+          <Text className="text-gray-400 text-sm">{currentLanguage.flag} {currentLanguageLabel}</Text>
           <ChevronDown size={16} color={colors.textSecondary} />
         </Pressable>
 
         {showLanguageMenu && (
-          <View style={styles.languageMenu}>
+          <View className="absolute top-full right-0 mt-2 bg-gray-900/95 rounded-lg border border-white/10 overflow-hidden min-w-[160px] backdrop-blur-xl shadow-2xl">
             {LANGUAGE_CODES.map((lang) => (
               <Pressable
                 key={lang.code}
-                style={[
-                  styles.languageOption,
-                  lang.code === i18n.language && styles.languageOptionActive,
-                ]}
+                className={`flex flex-row items-center gap-2 py-2 px-4 ${lang.code === i18n.language ? 'bg-purple-600/30' : ''}`}
                 onPress={() => handleLanguageChange(lang.code)}
               >
-                <Text style={styles.languageOptionFlag}>{lang.flag}</Text>
-                <Text
-                  style={[
-                    styles.languageOptionText,
-                    lang.code === i18n.language && styles.languageOptionTextActive,
-                  ]}
-                >
+                <Text className="text-lg">{lang.flag}</Text>
+                <Text className={`text-sm ${lang.code === i18n.language ? 'text-purple-600 font-semibold' : 'text-gray-400'}`}>
                   {t(`settings.languages.${lang.code}`)}
                 </Text>
               </Pressable>
@@ -123,30 +115,30 @@ export default function LoginPage() {
       </View>
 
       {/* Main Content */}
-      <View style={styles.content}>
+      <View className="flex-1 justify-center items-center p-6">
         {/* Logo */}
         <Link to="/" style={{ textDecoration: 'none' }}>
-          <View style={styles.logoContainer}>
+          <View className="items-center mb-8">
             <AnimatedLogo size="large" />
           </View>
         </Link>
 
         {/* Login Card */}
-        <View style={styles.card}>
-          <Text style={styles.title}>{t('login.title')}</Text>
-          <Text style={styles.subtitle}>
+        <View className="w-full max-w-[420px] bg-white/[0.03] rounded-2xl border border-white/8 p-8 backdrop-blur-xl shadow-2xl">
+          <Text className="text-3xl font-bold text-white text-center mb-2">{t('login.title')}</Text>
+          <Text className="text-[15px] text-gray-400 text-center mb-8">
             {t('login.subtitle')}
           </Text>
 
           {/* Error Message */}
           {error && (
-            <View style={styles.errorBox}>
-              <Text style={styles.errorText}>{error}</Text>
+            <View className="bg-red-500/15 border border-red-500/30 rounded-lg p-4 mb-6">
+              <Text className="text-red-400 text-sm text-center">{error}</Text>
             </View>
           )}
 
           {/* Email Input */}
-          <View style={styles.inputGroup}>
+          <View className={IS_TV_BUILD ? "mb-6" : "mb-6"}>
             <GlassInput
               label={t('login.email')}
               value={email}
@@ -160,11 +152,15 @@ export default function LoginPage() {
           </View>
 
           {/* Password Input */}
-          <View style={styles.inputGroup}>
-            <View style={[styles.labelRow, isRTL && styles.labelRowRTL]}>
-              <Text style={styles.label}>{t('login.password')}</Text>
+          <View className={IS_TV_BUILD ? "mb-6" : "mb-6"}>
+            <View className={`flex-row justify-between items-center mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <Text className={IS_TV_BUILD ? "text-xl font-medium text-gray-300" : "text-sm font-medium text-gray-300"}>
+                {t('login.password')}
+              </Text>
               <Link to="/forgot-password" style={{ textDecoration: 'none' }}>
-                <Text style={styles.forgotLink}>{t('login.forgotPassword')}</Text>
+                <Text className="text-[13px] font-medium" style={{ color: colors.primary }}>
+                  {t('login.forgotPassword')}
+                </Text>
               </Link>
             </View>
             <GlassInput
@@ -188,40 +184,44 @@ export default function LoginPage() {
 
           {/* Login Button */}
           <Pressable
-            style={({ pressed }) => [
-              styles.loginButton,
-              pressed && styles.loginButtonPressed,
-              isLoading && styles.loginButtonDisabled,
-            ]}
+            className={`bg-purple-600 py-4 rounded-lg items-center justify-center mt-3 min-h-[52px] ${isLoading ? 'opacity-70' : ''}`}
             onPress={handleSubmit}
             disabled={isLoading}
+            style={({ pressed }) => ({
+              opacity: pressed ? 0.9 : isLoading ? 0.7 : 1,
+              // @ts-ignore
+              transform: pressed ? 'scale(0.98)' : 'scale(1)',
+              transition: 'all 0.2s ease',
+            })}
           >
             {isLoading ? (
               <ActivityIndicator color="#000" size="small" />
             ) : (
-              <Text style={styles.loginButtonText}>{t('login.submit')}</Text>
+              <Text className="text-black text-base font-semibold">{t('login.submit')}</Text>
             )}
           </Pressable>
 
           {/* Divider - hide on TV since Google OAuth doesn't work */}
           {!IS_TV_BUILD && (
-            <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>{t('login.or')}</Text>
-              <View style={styles.dividerLine} />
+            <View className="flex-row items-center my-6">
+              <View className="flex-1 h-px bg-white/10" />
+              <Text className="text-gray-400 px-4 text-sm">{t('login.or')}</Text>
+              <View className="flex-1 h-px bg-white/10" />
             </View>
           )}
 
           {/* Google Sign In Button - hide on TV since OAuth redirects don't work */}
           {!IS_TV_BUILD && (
             <Pressable
-              style={({ pressed }) => [
-                styles.googleButton,
-                pressed && styles.googleButtonPressed,
-                isLoading && styles.googleButtonDisabled,
-              ]}
+              className={`flex-row items-center justify-center gap-3 bg-white/5 border border-white/15 py-4 rounded-lg min-h-[52px] ${isLoading ? 'opacity-70' : ''}`}
               onPress={handleGoogleLogin}
               disabled={isLoading}
+              style={({ pressed }) => ({
+                backgroundColor: pressed ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                // @ts-ignore
+                transform: pressed ? 'scale(0.98)' : 'scale(1)',
+                transition: 'all 0.2s ease',
+              })}
             >
               <svg width={20} height={20} viewBox="0 0 24 24">
                 <path
@@ -241,306 +241,37 @@ export default function LoginPage() {
                   fill="#EA4335"
                 />
               </svg>
-              <Text style={styles.googleButtonText}>
+              <Text className="text-white text-base font-medium">
                 {t('login.continueWithGoogle')}
               </Text>
             </Pressable>
           )}
 
           {/* Sign Up Link */}
-          <View style={[styles.signUpContainer, isRTL && styles.signUpContainerRTL]}>
-            <Text style={styles.signUpText}>
+          <View
+            className={`flex-row justify-center items-center ${IS_TV_BUILD ? 'gap-3 mt-10 pt-6' : 'gap-2 mt-6 pt-6'} border-t border-white/8 flex-nowrap ${isRTL ? 'flex-row-reverse' : ''}`}
+          >
+            <Text
+              className={IS_TV_BUILD ? "text-xl text-gray-300 leading-7" : "text-sm text-gray-300 leading-5"}
+            >
               {t('login.noAccount')}
             </Text>
             <Link to="/register" style={{ textDecoration: 'none' }}>
-              <Text style={styles.signUpLink}>{t('login.signUp')}</Text>
+              <Text
+                className={IS_TV_BUILD ? "text-xl font-semibold leading-7" : "text-sm font-semibold leading-5"}
+                style={{ color: colors.primary }}
+              >
+                {t('login.signUp')}
+              </Text>
             </Link>
           </View>
         </View>
 
         {/* Footer */}
-        <Text style={styles.footer}>
+        <Text className="text-xs text-gray-400 text-center mt-6 max-w-[320px] leading-[18px]">
           {t('login.termsNotice')}
         </Text>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    minHeight: '100vh' as any,
-    backgroundColor: colors.background,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  backgroundGradient1: {
-    position: 'absolute',
-    width: 600,
-    height: 600,
-    borderRadius: 300,
-    backgroundColor: colors.primary,
-    opacity: 0.08,
-    top: -200,
-    right: -200,
-    // @ts-ignore - web only
-    filter: 'blur(120px)',
-  },
-  backgroundGradient2: {
-    position: 'absolute',
-    width: 400,
-    height: 400,
-    borderRadius: 200,
-    backgroundColor: '#8b5cf6',
-    opacity: 0.06,
-    bottom: -100,
-    left: -100,
-    // @ts-ignore - web only
-    filter: 'blur(100px)',
-  },
-  backgroundGradient3: {
-    position: 'absolute',
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: colors.primary,
-    opacity: 0.04,
-    top: '50%',
-    left: '50%',
-    // @ts-ignore - web only
-    transform: 'translate(-50%, -50%)',
-    filter: 'blur(80px)',
-  },
-  languageSelector: {
-    position: 'absolute',
-    top: spacing.lg,
-    right: spacing.lg,
-    zIndex: 100,
-  },
-  languageSelectorRTL: {
-    right: 'auto',
-    left: spacing.lg,
-  },
-  languageButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  languageButtonText: {
-    color: colors.textSecondary,
-    fontSize: 14,
-  },
-  languageMenu: {
-    position: 'absolute',
-    top: '100%',
-    right: 0,
-    marginTop: spacing.xs,
-    backgroundColor: 'rgba(20, 20, 30, 0.95)',
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    overflow: 'hidden',
-    minWidth: 160,
-    // @ts-ignore - web only
-    backdropFilter: 'blur(20px)',
-    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
-  },
-  languageOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  languageOptionActive: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  languageOptionFlag: {
-    fontSize: 18,
-  },
-  languageOptionText: {
-    color: colors.textSecondary,
-    fontSize: 14,
-  },
-  languageOptionTextActive: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  card: {
-    width: '100%',
-    maxWidth: 420,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: borderRadius.xl,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    padding: spacing.xl,
-    // @ts-ignore - web only
-    backdropFilter: 'blur(20px)',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.xl,
-  },
-  errorBox: {
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  errorText: {
-    color: '#ef4444',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  inputGroup: {
-    marginBottom: IS_TV_BUILD ? spacing.xl : spacing.lg,
-  },
-  label: {
-    fontSize: IS_TV_BUILD ? 20 : 14,
-    fontWeight: '500',
-    color: colors.textSecondary,
-    marginBottom: IS_TV_BUILD ? spacing.sm : spacing.xs,
-  },
-  labelRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  labelRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  forgotLink: {
-    fontSize: 13,
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  loginButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: spacing.sm,
-    minHeight: 52,
-    // @ts-ignore - web only
-    transition: 'all 0.2s ease',
-  },
-  loginButtonPressed: {
-    opacity: 0.9,
-    // @ts-ignore - web only
-    transform: 'scale(0.98)',
-  },
-  loginButtonDisabled: {
-    opacity: 0.7,
-  },
-  loginButtonText: {
-    color: '#000',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: spacing.lg,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  dividerText: {
-    color: colors.textMuted,
-    paddingHorizontal: spacing.md,
-    fontSize: 14,
-  },
-  googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-    minHeight: 52,
-    // @ts-ignore - web only
-    transition: 'all 0.2s ease',
-  },
-  googleButtonPressed: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    // @ts-ignore - web only
-    transform: 'scale(0.98)',
-  },
-  googleButtonDisabled: {
-    opacity: 0.7,
-  },
-  googleButtonText: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  signUpContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: IS_TV_BUILD ? spacing.sm : spacing.xs,
-    marginTop: IS_TV_BUILD ? spacing.xl + 8 : spacing.xl,
-    paddingTop: IS_TV_BUILD ? spacing.xl : spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.08)',
-    flexWrap: 'nowrap',
-  },
-  signUpContainerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  signUpText: {
-    fontSize: IS_TV_BUILD ? 20 : 14,
-    color: colors.textSecondary,
-    lineHeight: IS_TV_BUILD ? 28 : 20,
-  },
-  signUpLink: {
-    fontSize: IS_TV_BUILD ? 20 : 14,
-    color: colors.primary,
-    fontWeight: '600',
-    lineHeight: IS_TV_BUILD ? 28 : 20,
-  },
-  footer: {
-    fontSize: 12,
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginTop: spacing.xl,
-    maxWidth: 320,
-    lineHeight: 18,
-  },
-});

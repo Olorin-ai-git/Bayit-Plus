@@ -45,7 +45,7 @@ brew install trufflesecurity/trufflehog/trufflehog
 ### 3. Initialize Pre-commit Hooks
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 
 # Install pre-commit hooks
 pre-commit install
@@ -70,7 +70,7 @@ detect-secrets audit .secrets.baseline
 ### 5. Configure Git Secrets
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 
 # Initialize git-secrets
 git secrets --install

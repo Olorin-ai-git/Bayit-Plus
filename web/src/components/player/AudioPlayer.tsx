@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
-import { View, Text, StyleSheet, Pressable, Image, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, Image, ActivityIndicator } from 'react-native'
 import { Play, Pause, Volume2, VolumeX, SkipBack, SkipForward } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors } from '@bayit/shared/theme'
 import { GlassView, GlassBadge } from '@bayit/shared/ui'
 
 interface AudioPlayerProps {
@@ -117,40 +117,40 @@ export default function AudioPlayer({
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
 
   return (
-    <GlassView style={styles.container}>
-      <View style={styles.content}>
+    <GlassView className="flex-1 p-4 justify-center">
+      <View className="flex-row items-center gap-4">
         {/* Cover Art */}
-        <View style={styles.coverContainer}>
+        <View className="relative w-32 h-32 rounded-lg overflow-hidden" style={{ shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 12 }}>
           <Image
             source={{ uri: cover || '/placeholder-audio.png' }}
-            style={styles.coverImage}
+            className="w-full h-full"
             resizeMode="cover"
           />
           {isLive && (
-            <View style={styles.liveOverlay}>
-              <View style={styles.liveDot} />
+            <View className="absolute inset-0 bg-[rgba(26,26,46,0.5)] items-center justify-center">
+              <View className="w-4 h-4 rounded-full" style={{ backgroundColor: colors.error, shadowColor: colors.error, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 8 }} />
             </View>
           )}
         </View>
 
         {/* Info & Controls */}
-        <View style={styles.infoContainer}>
+        <View className="flex-1 min-w-0">
           {/* Title & Artist */}
-          <View style={styles.titleContainer}>
+          <View className="mb-4">
             {isLive && (
-              <GlassBadge variant="danger" size="sm" style={styles.liveBadge}>
+              <GlassBadge variant="danger" size="sm" className="mb-2">
                 LIVE
               </GlassBadge>
             )}
-            <Text style={styles.title} numberOfLines={1}>{title}</Text>
-            {artist && <Text style={styles.artist} numberOfLines={1}>{artist}</Text>}
+            <Text className="text-xl font-bold text-white" numberOfLines={1}>{title}</Text>
+            {artist && <Text className="text-sm text-gray-400 mt-1" numberOfLines={1}>{artist}</Text>}
           </View>
 
           {/* Progress Bar (not for live) */}
           {!isLive && duration > 0 && (
-            <View style={styles.progressContainer}>
-              <View style={styles.progressTrack}>
-                <View style={[styles.progressFill, { width: `${progress}%` }]} />
+            <View className="mb-4 relative">
+              <View className="h-1 bg-white/10 rounded-sm overflow-hidden">
+                <View className="h-full rounded-sm" style={{ width: `${progress}%`, backgroundColor: colors.primary }} />
               </View>
               <input
                 type="range"
@@ -158,24 +158,22 @@ export default function AudioPlayer({
                 max={duration}
                 value={currentTime}
                 onChange={handleSeek}
-                style={styles.progressInput as any}
+                style={webStyles.progressInput}
               />
-              <View style={styles.timeContainer}>
-                <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
-                <Text style={styles.timeText}>{formatTime(duration)}</Text>
+              <View className="flex-row justify-between mt-1">
+                <Text className="text-xs text-gray-500">{formatTime(currentTime)}</Text>
+                <Text className="text-xs text-gray-500">{formatTime(duration)}</Text>
               </View>
             </View>
           )}
 
           {/* Controls */}
-          <View style={styles.controlsContainer}>
+          <View className="flex-row items-center gap-2">
             {!isLive && (
               <Pressable
                 onPress={() => skip(-15)}
-                style={({ hovered }) => [
-                  styles.controlButton,
-                  hovered && styles.controlButtonHovered,
-                ]}
+                className="w-11 h-11 rounded-full items-center justify-center hover:bg-white/10"
+                style={{ backgroundColor: colors.glassLight }}
               >
                 <SkipBack size={22} color={colors.text} />
               </Pressable>
@@ -184,10 +182,8 @@ export default function AudioPlayer({
             <Pressable
               onPress={togglePlay}
               disabled={loading}
-              style={({ hovered }) => [
-                styles.playButton,
-                hovered && styles.playButtonHovered,
-              ]}
+              className="w-14 h-14 rounded-full items-center justify-center hover:shadow-lg hover:shadow-purple-500/50"
+              style={{ backgroundColor: colors.primary }}
             >
               {loading ? (
                 <ActivityIndicator size="small" color={colors.background} />
@@ -201,22 +197,17 @@ export default function AudioPlayer({
             {!isLive && (
               <Pressable
                 onPress={() => skip(15)}
-                style={({ hovered }) => [
-                  styles.controlButton,
-                  hovered && styles.controlButtonHovered,
-                ]}
+                className="w-11 h-11 rounded-full items-center justify-center hover:bg-white/10"
+                style={{ backgroundColor: colors.glassLight }}
               >
                 <SkipForward size={22} color={colors.text} />
               </Pressable>
             )}
 
-            <View style={styles.volumeContainer}>
+            <View className="flex-row items-center gap-2 ml-auto">
               <Pressable
                 onPress={toggleMute}
-                style={({ hovered }) => [
-                  styles.volumeButton,
-                  hovered && styles.volumeButtonHovered,
-                ]}
+                className="w-9 h-9 rounded-full items-center justify-center hover:bg-white/5"
               >
                 {isMuted ? (
                   <VolumeX size={18} color={colors.textSecondary} />
@@ -231,7 +222,7 @@ export default function AudioPlayer({
                 step="0.1"
                 value={isMuted ? 0 : volume}
                 onChange={handleVolumeChange}
-                style={styles.volumeSlider as any}
+                style={webStyles.volumeSlider}
               />
             </View>
           </View>
@@ -241,82 +232,7 @@ export default function AudioPlayer({
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: spacing.lg,
-    justifyContent: 'center',
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.lg,
-  },
-  coverContainer: {
-    position: 'relative',
-    width: 128,
-    height: 128,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-  },
-  coverImage: {
-    width: '100%',
-    height: '100%',
-  },
-  liveOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(26, 26, 46, 0.5)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  liveDot: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: colors.error,
-    shadowColor: colors.error,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 8,
-  },
-  infoContainer: {
-    flex: 1,
-    minWidth: 0,
-  },
-  titleContainer: {
-    marginBottom: spacing.md,
-  },
-  liveBadge: {
-    marginBottom: spacing.sm,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  artist: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginTop: spacing.xs,
-  },
-  progressContainer: {
-    marginBottom: spacing.md,
-    position: 'relative',
-  },
-  progressTrack: {
-    height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: colors.primary,
-  },
+const webStyles: Record<string, React.CSSProperties> = {
   progressInput: {
     position: 'absolute',
     top: -6,
@@ -327,63 +243,8 @@ const styles = StyleSheet.create({
     opacity: 0,
     cursor: 'pointer',
   },
-  timeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: spacing.xs,
-  },
-  timeText: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  controlsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  controlButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.glassLight,  // Purple-tinted glass
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  controlButtonHovered: {
-    backgroundColor: colors.glassMedium,  // Slightly darker glass on hover
-  },
-  playButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  playButtonHovered: {
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-  },
-  volumeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginLeft: 'auto' as any,
-  },
-  volumeButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  volumeButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
   volumeSlider: {
     width: 96,
     accentColor: colors.primary,
   },
-})
+}

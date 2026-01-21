@@ -10,7 +10,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -61,37 +60,37 @@ export const UnlockButton: React.FC<UnlockButtonProps> = ({
 
   const renderCompactButton = () => (
     <TouchableOpacity
-      style={[styles.compactButton, { flexDirection }]}
+      className={`flex-row items-center bg-purple-600/20 rounded-lg py-2 px-4 ${isRTL ? 'flex-row-reverse' : ''}`}
       onPress={handlePress}
       activeOpacity={0.7}
     >
-      <Text style={[styles.compactIcon, rtlSpacing(isRTL, spacing.sm)]}>🔐</Text>
-      <Text style={styles.compactText}>{t('passkey.unlock')}</Text>
+      <Text className={`text-base ${isRTL ? 'ml-2' : 'mr-2'}`}>🔐</Text>
+      <Text className="text-sm font-medium text-purple-600">{t('passkey.unlock')}</Text>
     </TouchableOpacity>
   );
 
   const renderInlineButton = () => (
     <TouchableOpacity
-      style={styles.inlineButton}
+      className="w-8 h-8 rounded-full bg-purple-600/20 items-center justify-center"
       onPress={handlePress}
       activeOpacity={0.7}
     >
-      <Text style={styles.inlineIcon}>🔐</Text>
+      <Text className="text-base">🔐</Text>
     </TouchableOpacity>
   );
 
   const renderDefaultButton = () => (
     <TouchableOpacity
-      style={[styles.defaultButton, { flexDirection }]}
+      className={`flex-row items-center bg-purple-600/20 border border-purple-600 rounded-xl p-4 my-4 ${isRTL ? 'flex-row-reverse' : ''}`}
       onPress={handlePress}
       activeOpacity={0.7}
     >
-      <View style={[styles.iconContainer, rtlSpacing(isRTL, spacing.md)]}>
-        <Text style={styles.icon}>🔐</Text>
+      <View className={`w-12 h-12 rounded-full bg-purple-600/30 items-center justify-center ${isRTL ? 'ml-4' : 'mr-4'}`}>
+        <Text className="text-2xl">🔐</Text>
       </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.title}>{t('passkey.unlockContent')}</Text>
-        <Text style={styles.subtitle}>{t('passkey.unlockDescription')}</Text>
+      <View className="flex-1">
+        <Text className="text-base font-semibold text-white mb-1">{t('passkey.unlockContent')}</Text>
+        <Text className="text-sm text-white/60">{t('passkey.unlockDescription')}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -111,76 +110,5 @@ export const UnlockButton: React.FC<UnlockButtonProps> = ({
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  // Default button styles
-  defaultButton: {
-    // flexDirection set dynamically for RTL support
-    alignItems: 'center',
-    backgroundColor: colors.primary + '20',
-    borderColor: colors.primary,
-    borderWidth: 1,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    marginVertical: spacing.md,
-  },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.primary + '30',
-    alignItems: 'center',
-    justifyContent: 'center',
-    // margin set dynamically via rtlSpacing for RTL support
-  },
-  icon: {
-    fontSize: 24,
-  },
-  textContainer: {
-    flex: 1,
-  },
-  title: {
-    fontSize: fontSize.md,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-
-  // Compact button styles
-  compactButton: {
-    // flexDirection set dynamically for RTL support
-    alignItems: 'center',
-    backgroundColor: colors.primary + '20',
-    borderRadius: borderRadius.md,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  compactIcon: {
-    fontSize: 16,
-    // margin set dynamically via rtlSpacing for RTL support
-  },
-  compactText: {
-    fontSize: fontSize.sm,
-    fontWeight: '500',
-    color: colors.primary,
-  },
-
-  // Inline button styles
-  inlineButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.primary + '20',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  inlineIcon: {
-    fontSize: 16,
-  },
-});
 
 export default UnlockButton;

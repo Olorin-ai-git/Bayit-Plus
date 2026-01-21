@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Save, RefreshCw, Trash2, AlertTriangle } from 'lucide-react';
 import { settingsService } from '@/services/adminApi';
@@ -121,58 +121,58 @@ export default function SettingsPage() {
 
   if (loading || !settings) {
     return (
-      <GlassView style={styles.loadingContainer} intensity="medium">
+      <GlassView className="flex-1 justify-center items-center gap-2" intensity="medium">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-sm text-gray-400">{t('common.loading')}</Text>
       </GlassView>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={[styles.header, { flexDirection }]}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
+      <View className={`flex ${flexDirection} items-center justify-between mb-6`}>
         <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.settings')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.settings.subtitle')}</Text>
+          <Text className={`text-2xl font-bold text-white ${textAlign}`}>{t('admin.titles.settings')}</Text>
+          <Text className={`text-sm text-gray-400 mt-1 ${textAlign}`}>{t('admin.settings.subtitle')}</Text>
         </View>
         <GlassButton title={t('admin.settings.saveChanges')} variant="success" icon={<Save size={16} color="white" />} onPress={handleSave} disabled={!hasChanges || saving} />
       </View>
 
-      <View style={styles.sectionsContainer}>
-        <GlassCard style={styles.section}>
-          <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.settings.generalSettings')}</Text>
+      <View className="gap-4">
+        <GlassCard className="p-6">
+          <Text className={`text-lg font-semibold text-white mb-6 ${textAlign}`}>{t('admin.settings.generalSettings')}</Text>
 
-          <View style={styles.formGroup}>
+          <View className="mb-4">
             <GlassInput label={t('admin.settings.supportEmail')} value={settings.support_email || ''} onChangeText={(v) => handleSettingChange('support_email', v)} keyboardType="email-address" />
           </View>
 
-          <View style={styles.formGroup}>
+          <View className="mb-4">
             <GlassInput label={t('admin.settings.defaultPlan')} value={settings.default_plan || ''} onChangeText={(v) => handleSettingChange('default_plan', v)} />
           </View>
 
-          <View style={styles.formGroup}>
+          <View className="mb-4">
             <GlassInput label={t('admin.settings.termsUrl')} value={settings.terms_url || ''} onChangeText={(v) => handleSettingChange('terms_url', v)} />
           </View>
 
-          <View style={styles.formGroup}>
+          <View className="mb-4">
             <GlassInput label={t('admin.settings.privacyUrl')} value={settings.privacy_url || ''} onChangeText={(v) => handleSettingChange('privacy_url', v)} />
           </View>
         </GlassCard>
 
-        <GlassCard style={styles.section}>
-          <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.settings.userSettings')}</Text>
+        <GlassCard className="p-6">
+          <Text className={`text-lg font-semibold text-white mb-6 ${textAlign}`}>{t('admin.settings.userSettings')}</Text>
 
-          <View style={styles.formGroup}>
+          <View className="mb-4">
             <GlassInput label={t('admin.settings.maxDevices')} value={(settings.max_devices || 1).toString()} onChangeText={(v) => handleSettingChange('max_devices', parseInt(v) || 1)} keyboardType="number-pad" />
           </View>
 
-          <View style={styles.formGroup}>
+          <View className="mb-4">
             <GlassInput label={t('admin.settings.trialDays')} value={(settings.trial_days || 0).toString()} onChangeText={(v) => handleSettingChange('trial_days', parseInt(v) || 0)} keyboardType="number-pad" />
           </View>
         </GlassCard>
 
-        <GlassCard style={styles.section}>
-          <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.settings.maintenanceMode')}</Text>
+        <GlassCard className="p-6">
+          <Text className={`text-lg font-semibold text-white mb-6 ${textAlign}`}>{t('admin.settings.maintenanceMode')}</Text>
 
           <GlassToggle
             value={settings.maintenance_mode}
@@ -183,17 +183,17 @@ export default function SettingsPage() {
           />
         </GlassCard>
 
-        <GlassCard style={[styles.section, styles.dangerSection]}>
-          <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.settings.systemActions')}</Text>
+        <GlassCard className="p-6 border border-white/10">
+          <Text className={`text-lg font-semibold text-white mb-6 ${textAlign}`}>{t('admin.settings.systemActions')}</Text>
 
-          <View style={[styles.dangerActions, { flexDirection }]}>
+          <View className={`flex ${flexDirection} gap-4 mb-4`}>
             <GlassButton title={t('admin.settings.clearCache')} variant="warning" icon={<RefreshCw size={16} color="white" />} onPress={handleClearCache} style={{ flex: 1 }} />
             <GlassButton title={t('admin.settings.resetAnalytics')} variant="danger" icon={<Trash2 size={16} color="white" />} onPress={handleResetAnalytics} style={{ flex: 1 }} />
           </View>
 
-          <GlassView style={[styles.warningBox, { flexDirection }]} intensity="light">
+          <GlassView className={`flex ${flexDirection} items-center gap-2 p-4 rounded-lg border border-yellow-500/20`} intensity="light">
             <AlertTriangle size={16} color={colors.warning} />
-            <Text style={[styles.warningText, { textAlign }]}>{t('admin.settings.actionsWarning')}</Text>
+            <Text className={`flex-1 text-xs text-yellow-500 ${textAlign}`}>{t('admin.settings.actionsWarning')}</Text>
           </GlassView>
         </GlassCard>
       </View>
@@ -205,8 +205,8 @@ export default function SettingsPage() {
         onClose={() => setSuccessModalOpen(false)}
         dismissable={true}
       >
-        <Text style={styles.modalText}>{successMessage}</Text>
-        <View style={styles.modalActions}>
+        <Text className="text-sm text-white mb-6 leading-5">{successMessage}</Text>
+        <View className="flex flex-row justify-end gap-2">
           <GlassButton
             title={t('common.ok')}
             onPress={() => setSuccessModalOpen(false)}
@@ -222,8 +222,8 @@ export default function SettingsPage() {
         onClose={() => setErrorModalOpen(false)}
         dismissable={true}
       >
-        <Text style={styles.modalText}>{errorMessage}</Text>
-        <View style={styles.modalActions}>
+        <Text className="text-sm text-white mb-6 leading-5">{errorMessage}</Text>
+        <View className="flex flex-row justify-end gap-2">
           <GlassButton
             title={t('common.ok')}
             onPress={() => setErrorModalOpen(false)}
@@ -235,32 +235,3 @@ export default function SettingsPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: spacing.sm },
-  loadingText: { fontSize: 14, color: colors.textMuted },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.lg },
-  pageTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
-  subtitle: { fontSize: 14, color: colors.textMuted, marginTop: spacing.xs },
-  sectionsContainer: { gap: spacing.md },
-  section: { padding: spacing.lg },
-  sectionTitle: { fontSize: 18, fontWeight: '600', color: colors.text, marginBottom: spacing.lg },
-  formGroup: { marginBottom: spacing.md },
-  formLabel: { fontSize: 14, fontWeight: '600', color: colors.text, marginBottom: spacing.xs },
-  dangerSection: { borderWidth: 1, borderColor: colors.glassBorderStrong },
-  dangerActions: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.md },
-  warningBox: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: borderRadius.md, borderWidth: 1, borderColor: `${colors.warning}30` },
-  warningText: { flex: 1, fontSize: 12, color: colors.warning },
-  modalText: {
-    fontSize: 14,
-    color: colors.text,
-    marginBottom: spacing.lg,
-    lineHeight: 20,
-  },
-  modalActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: spacing.sm,
-  },
-});

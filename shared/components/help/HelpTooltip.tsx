@@ -8,14 +8,12 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Animated,
   Modal,
   Pressable,
   LayoutChangeEvent,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '../../theme';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 
@@ -136,15 +134,16 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
     <>
       <View ref={triggerRef} onLayout={measureTrigger}>
         <TouchableOpacity
-          style={[styles.triggerContainer, { flexDirection }]}
+          className="items-center gap-1"
+          style={{ flexDirection }}
           onPress={handleOpen}
           accessibilityRole="button"
           accessibilityLabel={t('help.openTooltip', 'Open help tooltip')}
         >
           {children}
           {showIndicator && (
-            <View style={styles.helpIndicator}>
-              <Text style={styles.helpIndicatorText}>?</Text>
+            <View className={`items-center justify-center bg-purple-500 ${isTV ? 'w-5 h-5 rounded-[10px]' : 'w-4 h-4 rounded-lg'}`}>
+              <Text className={`text-white font-bold ${isTV ? 'text-xs' : 'text-[10px]'}`}>?</Text>
             </View>
           )}
         </TouchableOpacity>
@@ -156,32 +155,37 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
         animationType="none"
         onRequestClose={handleClose}
       >
-        <Pressable style={styles.overlay} onPress={handleClose}>
+        <Pressable className="flex-1 bg-black/50" onPress={handleClose}>
           <Animated.View
+            className="bg-[rgba(30,30,40,0.95)] rounded-lg border border-white/10 shadow-lg"
             style={[
-              styles.tooltipContainer,
               getTooltipStyle(),
               {
                 opacity: fadeAnim,
                 transform: [{ scale: scaleAnim }],
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 8,
               },
             ]}
           >
-            <View style={styles.tooltipContent}>
-              <Text style={[styles.tooltipTitle, { textAlign }]}>
+            <View className="p-3">
+              <Text className={`text-white font-bold mb-1 ${isTV ? 'text-lg' : 'text-base'}`} style={{ textAlign }}>
                 {t(titleKey)}
               </Text>
-              <Text style={[styles.tooltipText, { textAlign }]}>
+              <Text className={`text-white/70 ${isTV ? 'text-sm leading-[22px]' : 'text-[13px] leading-5'}`} style={{ textAlign }}>
                 {t(contentKey)}
               </Text>
             </View>
             <TouchableOpacity
-              style={styles.closeButton}
+              className="absolute top-1 right-1 w-6 h-6 items-center justify-center"
               onPress={handleClose}
               accessibilityRole="button"
               accessibilityLabel={t('common.close', 'Close')}
             >
-              <Text style={styles.closeButtonText}>✕</Text>
+              <Text className="text-white/70 text-sm">✕</Text>
             </TouchableOpacity>
           </Animated.View>
         </Pressable>
@@ -189,67 +193,5 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  triggerContainer: {
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  helpIndicator: {
-    width: isTV ? 20 : 16,
-    height: isTV ? 20 : 16,
-    borderRadius: isTV ? 10 : 8,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  helpIndicatorText: {
-    fontSize: isTV ? 12 : 10,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  tooltipContainer: {
-    backgroundColor: 'rgba(30, 30, 40, 0.95)',
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  tooltipContent: {
-    padding: spacing.md,
-  },
-  tooltipTitle: {
-    fontSize: isTV ? 18 : 16,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  tooltipText: {
-    fontSize: isTV ? 14 : 13,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 22 : 20,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: spacing.xs,
-    right: spacing.xs,
-    width: 24,
-    height: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  closeButtonText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-});
 
 export default HelpTooltip;

@@ -7,7 +7,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   Animated,
@@ -89,55 +88,52 @@ const KidsCard: React.FC<{
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={1}
-      style={styles.cardTouchable}
+      className="flex-1 m-2 max-w-[20%]"
       // @ts-ignore
       hasTVPreferredFocus={index === 0}
     >
       <Animated.View
-        style={[
-          styles.card,
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.cardFocused,
-        ]}
+        className={`bg-[#2d2540] rounded-lg overflow-hidden border-3 ${isFocused ? 'border-[#ffd93d]' : 'border-transparent'}`}
+        style={{ transform: [{ scale: scaleAnim }] }}
       >
         {item.thumbnail ? (
           <Image
             source={{ uri: item.thumbnail }}
-            style={styles.cardImage}
+            className="w-full aspect-video"
             resizeMode="cover"
           />
         ) : (
-          <View style={styles.cardImagePlaceholder}>
-            <Text style={styles.placeholderIcon}>{categoryIcon}</Text>
+          <View className="w-full aspect-video bg-yellow-300/10 justify-center items-center">
+            <Text className="text-5xl">{categoryIcon}</Text>
           </View>
         )}
-        <View style={[styles.categoryBadge, isRTL ? { left: 8 } : { right: 8 }]}>
-          <Text style={styles.categoryBadgeText}>{categoryIcon}</Text>
+        <View className="absolute top-2 bg-black/70 rounded-xl px-2 py-1" style={isRTL ? { left: 8 } : { right: 8 }}>
+          <Text className="text-sm">{categoryIcon}</Text>
         </View>
         {item.age_rating !== undefined && (
-          <View style={[styles.ageBadge, isRTL ? { right: 8 } : { left: 8 }]}>
-            <Text style={styles.ageText}>{item.age_rating}+</Text>
+          <View className="absolute top-2 bg-yellow-300/90 rounded-lg px-1.5 py-0.5" style={isRTL ? { right: 8 } : { left: 8 }}>
+            <Text className="text-[10px] text-[#1a1525] font-bold">{item.age_rating}+</Text>
           </View>
         )}
-        <View style={styles.cardContent}>
-          <Text style={[styles.cardTitle, { textAlign }]} numberOfLines={2}>
+        <View className="p-2">
+          <Text className="text-sm font-semibold text-white" style={{ textAlign }} numberOfLines={2}>
             {getLocalizedText(item, 'title')}
           </Text>
           {item.description && (
-            <Text style={[styles.cardDescription, { textAlign }]} numberOfLines={1}>
+            <Text className="text-[11px] text-white/60 mt-0.5" style={{ textAlign }} numberOfLines={1}>
               {item.description}
             </Text>
           )}
           {item.duration && (
-            <Text style={[styles.cardDuration, { textAlign }]}>
+            <Text className="text-[10px] text-yellow-300 mt-1" style={{ textAlign }}>
               ⏱️ {item.duration}
             </Text>
           )}
         </View>
         {isFocused && (
-          <View style={styles.overlay}>
-            <View style={styles.playButton}>
-              <Text style={styles.playIcon}>▶</Text>
+          <View className="absolute inset-0 bg-black/40 justify-center items-center">
+            <View className="w-14 h-14 rounded-full bg-yellow-300 justify-center items-center">
+              <Text className="text-2xl text-[#1a1525] ml-1">▶</Text>
             </View>
           </View>
         )}
@@ -208,22 +204,22 @@ export const ChildrenScreen: React.FC = () => {
 
   if (isLoading && content.length === 0) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 bg-[#1a1525] justify-center items-center">
         <ActivityIndicator size="large" color="#ffd93d" />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-yellow-300 text-lg mt-4">{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }]}>
-          <Text style={styles.headerIconText}>👶</Text>
+    <View className="flex-1 bg-[#1a1525]">
+      <View className="flex-row items-center px-12 pt-10 pb-5" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
+        <View className="w-15 h-15 rounded-full bg-yellow-300/20 justify-center items-center" style={{ marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }}>
+          <Text className="text-3xl">👶</Text>
         </View>
         <View>
-          <Text style={[styles.title, { textAlign }]}>{t('children.title', 'ילדים')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
+          <Text className="text-[42px] font-bold text-yellow-300" style={{ textAlign }}>{t('children.title', 'ילדים')}</Text>
+          <Text className="text-lg text-yellow-300/70 mt-0.5" style={{ textAlign }}>
             {content.length} {t('children.items', 'פריטים')}
           </Text>
         </View>
@@ -233,7 +229,7 @@ export const ChildrenScreen: React.FC = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[styles.categories, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
+          contentContainerStyle={{ paddingHorizontal: 48, marginBottom: 24, gap: 12, flexDirection: isRTL ? 'row' : 'row-reverse' }}
         >
           {(isRTL ? categories : [...categories].reverse()).map((category, index) => (
             <GlassCategoryPill
@@ -253,7 +249,7 @@ export const ChildrenScreen: React.FC = () => {
         keyExtractor={(item) => item.id}
         numColumns={isTV ? 5 : 3}
         key={isTV ? 'tv' : 'mobile'}
-        contentContainerStyle={styles.grid}
+        contentContainerStyle={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.xxl, paddingTop: spacing.md }}
         renderItem={({ item, index }) => (
           <KidsCard
             item={item}
@@ -263,11 +259,11 @@ export const ChildrenScreen: React.FC = () => {
           />
         )}
         ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <GlassView style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>🌈</Text>
-              <Text style={[styles.emptyTitle, { textAlign }]}>{t('children.empty', 'אין תוכן זמין')}</Text>
-              <Text style={[styles.emptySubtitle, { textAlign }]}>{t('children.emptyHint', 'נסה קטגוריה אחרת')}</Text>
+          <View className="flex-1 justify-center items-center py-15">
+            <GlassView className="p-12 items-center bg-yellow-300/10">
+              <Text className="text-6xl mb-4">🌈</Text>
+              <Text className="text-xl font-semibold text-yellow-300 mb-2" style={{ textAlign }}>{t('children.empty', 'אין תוכן זמין')}</Text>
+              <Text className="text-base text-yellow-300/70" style={{ textAlign }}>{t('children.emptyHint', 'נסה קטגוריה אחרת')}</Text>
             </GlassView>
           </View>
         }
@@ -275,177 +271,5 @@ export const ChildrenScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#1a1525',
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: '#1a1525',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: '#ffd93d',
-    fontSize: 18,
-    marginTop: spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xxl,
-    paddingTop: 40,
-    paddingBottom: spacing.lg,
-  },
-  headerIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(255, 217, 61, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: spacing.lg,
-  },
-  headerIconText: {
-    fontSize: 28,
-  },
-  title: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: '#ffd93d',
-  },
-  subtitle: {
-    fontSize: 18,
-    color: 'rgba(255, 217, 61, 0.7)',
-    marginTop: 2,
-  },
-  categories: {
-    paddingHorizontal: 48,
-    marginBottom: 24,
-    gap: 12,
-  },
-  grid: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
-    paddingTop: spacing.md,
-  },
-  cardTouchable: {
-    flex: 1,
-    margin: spacing.sm,
-    maxWidth: isTV ? '20%' : '33.33%',
-  },
-  card: {
-    backgroundColor: '#2d2540',
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-  cardFocused: {
-    borderColor: '#ffd93d',
-  },
-  cardImage: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-  },
-  cardImagePlaceholder: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    backgroundColor: 'rgba(255, 217, 61, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 48,
-  },
-  categoryBadge: {
-    position: 'absolute',
-    top: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  categoryBadgeText: {
-    fontSize: 14,
-  },
-  ageBadge: {
-    position: 'absolute',
-    top: 8,
-    backgroundColor: 'rgba(255, 217, 61, 0.9)',
-    borderRadius: 8,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  ageText: {
-    fontSize: 10,
-    color: '#1a1525',
-    fontWeight: 'bold',
-  },
-  cardContent: {
-    padding: spacing.sm,
-  },
-  cardTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#ffffff',
-  },
-  cardDescription: {
-    fontSize: 11,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginTop: 2,
-  },
-  cardDuration: {
-    fontSize: 10,
-    color: '#ffd93d',
-    marginTop: 4,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#ffd93d',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playIcon: {
-    fontSize: 24,
-    color: '#1a1525',
-    marginLeft: 4,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyCard: {
-    padding: spacing.xxl,
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 217, 61, 0.1)',
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: spacing.md,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#ffd93d',
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    fontSize: 16,
-    color: 'rgba(255, 217, 61, 0.7)',
-  },
-});
 
 export default ChildrenScreen;

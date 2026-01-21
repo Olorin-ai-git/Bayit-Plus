@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   Animated,
@@ -86,65 +85,60 @@ const StationCard: React.FC<{
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={1}
-      style={styles.cardTouchable}
+      className="flex-1 m-2 max-w-[25%]"
       hasTVPreferredFocus={index === 0}
     >
       <Animated.View
-        style={[
-          styles.stationCard,
-          { transform: [{ scale: scaleAnim }] },
-          isFocused && styles.stationCardFocused,
-        ]}
+        className={`bg-white/10 rounded-2xl p-5 border ${isFocused ? 'border-purple-500 bg-white/20' : 'border-white/20'} min-h-[200px] relative`}
+        style={{ transform: [{ scale: scaleAnim }] }}
       >
         {/* Station Logo */}
-        <View style={styles.logoContainer}>
+        <View className="h-[70px] justify-center items-center mb-4">
           {station.logo ? (
             <Image
               source={{ uri: station.logo }}
-              style={styles.stationLogo}
+              className="w-[70px] h-[70px] rounded-full"
               resizeMode="contain"
             />
           ) : (
-            <View style={styles.logoPlaceholder}>
+            <View className="w-[70px] h-[70px] rounded-full bg-purple-500/20 justify-center items-center">
               <Animated.View
-                style={[
-                  styles.audioWave,
-                  isFocused && { transform: [{ scale: pulseAnim }] },
-                ]}
+                className="flex-row items-center h-[30px] gap-1"
+                style={isFocused ? { transform: [{ scale: pulseAnim }] } : undefined}
               >
-                <View style={[styles.waveBar, styles.waveBar1]} />
-                <View style={[styles.waveBar, styles.waveBar2]} />
-                <View style={[styles.waveBar, styles.waveBar3]} />
-                <View style={[styles.waveBar, styles.waveBar2]} />
-                <View style={[styles.waveBar, styles.waveBar1]} />
+                <View className="w-1 h-3 bg-purple-500 rounded-sm" />
+                <View className="w-1 h-5 bg-purple-500 rounded-sm" />
+                <View className="w-1 h-7 bg-purple-500 rounded-sm" />
+                <View className="w-1 h-5 bg-purple-500 rounded-sm" />
+                <View className="w-1 h-3 bg-purple-500 rounded-sm" />
               </Animated.View>
             </View>
           )}
         </View>
 
         {/* Station Info */}
-        <View style={styles.stationInfo}>
-          <Text style={styles.stationName} numberOfLines={1}>
+        <View className="flex-1 items-center">
+          <Text className="text-lg font-bold text-white text-center mb-1" numberOfLines={1}>
             {localizedName}
           </Text>
           {station.frequency && (
-            <Text style={styles.frequency}>{station.frequency}</Text>
+            <Text className="text-sm text-purple-500 font-semibold mb-1">{station.frequency}</Text>
           )}
           {station.currentShow && (
-            <Text style={styles.currentShow} numberOfLines={1}>
+            <Text className="text-xs text-white/60 text-center" numberOfLines={1}>
               {station.currentShow}
             </Text>
           )}
           {station.genre && (
-            <View style={styles.genreBadge}>
-              <Text style={styles.genreText}>{station.genre}</Text>
+            <View className="mt-2 px-3 py-1 rounded-xl bg-purple-500/20">
+              <Text className="text-xs text-purple-500">{station.genre}</Text>
             </View>
           )}
         </View>
 
         {/* Play Icon */}
-        <View style={[styles.playIcon, isFocused && styles.playIconFocused]}>
-          <Text style={styles.playIconText}>▶</Text>
+        <View className={`absolute top-3 right-3 w-8 h-8 rounded-2xl ${isFocused ? 'bg-purple-500' : 'bg-white/20'} justify-center items-center`}>
+          <Text className="text-sm text-white">▶</Text>
         </View>
       </Animated.View>
     </TouchableOpacity>
@@ -202,42 +196,53 @@ export const RadioScreen: React.FC = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 bg-black justify-center items-center">
         <ActivityIndicator size="large" color="#a855f7" />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-white text-lg mt-4">{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-black">
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <View style={[styles.headerIcon, { marginLeft: isRTL ? 20 : 0, marginRight: isRTL ? 0 : 20 }]}>
-          <Text style={styles.headerIconText}>📻</Text>
+      <View
+        className="px-12 pt-10 pb-5 items-center gap-3"
+        style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}
+      >
+        <View
+          className="w-[60px] h-[60px] rounded-full bg-purple-600/20 justify-center items-center"
+          style={isRTL ? { marginLeft: 20 } : { marginRight: 20 }}
+        >
+          <Text className="text-3xl">📻</Text>
         </View>
         <View>
-          <Text style={[styles.title, { textAlign }]}>{t('radio.title')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>{filteredStations.length} {t('radio.stations')}</Text>
+          <Text className="text-5xl font-bold text-white" style={{ textAlign }}>{t('radio.title')}</Text>
+          <Text className="text-lg text-white/60 mt-0.5" style={{ textAlign }}>{filteredStations.length} {t('radio.stations')}</Text>
         </View>
       </View>
 
       {/* Genre Filter */}
-      <View style={[styles.genres, { flexDirection: isRTL ? 'row' : 'row-reverse', justifyContent: 'flex-start' }]}>
+      <View
+        className="px-12 mb-6 gap-3 z-10"
+        style={{ flexDirection: isRTL ? 'row' : 'row-reverse', justifyContent: 'flex-start' }}
+      >
         {genres.map((genre, index) => (
           <TouchableOpacity
             key={genre.id}
             onPress={() => setSelectedGenre(genre.id)}
-            style={[
-              styles.genreButton,
-              selectedGenre === genre.id && styles.genreButtonActive,
-            ]}
+            className={`px-6 py-3 rounded-3xl border ${
+              selectedGenre === genre.id
+                ? 'bg-purple-600/20 border-purple-500'
+                : 'bg-white/10 border-white/20'
+            } justify-center items-center`}
           >
             <Text
-              style={[
-                styles.genreButtonText,
-                selectedGenre === genre.id && styles.genreButtonTextActive,
-              ]}
+              className={`text-base ${
+                selectedGenre === genre.id
+                  ? 'text-purple-500 font-bold'
+                  : 'text-white/60'
+              }`}
             >
               {t(genre.labelKey)}
             </Text>
@@ -250,7 +255,7 @@ export const RadioScreen: React.FC = () => {
         data={filteredStations}
         keyExtractor={(item) => item.id}
         numColumns={4}
-        contentContainerStyle={styles.grid}
+        contentContainerClassName="px-10 pb-10 pt-4"
         renderItem={({ item, index }) => (
           <StationCard
             station={item}
@@ -263,199 +268,5 @@ export const RadioScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: 18,
-    marginTop: 16,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 48,
-    paddingTop: 40,
-    paddingBottom: 20,
-  },
-  headerIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(138, 43, 226, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 20,
-  },
-  headerIconText: {
-    fontSize: 28,
-  },
-  title: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'right',
-  },
-  subtitle: {
-    fontSize: 18,
-    color: colors.textSecondary,
-    marginTop: 2,
-    textAlign: 'right',
-  },
-  genres: {
-    flexDirection: 'row',
-    paddingHorizontal: 48,
-    marginBottom: 24,
-    gap: 12,
-    zIndex: 10,
-  },
-  genreButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 24,
-    backgroundColor: colors.glass,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  genreButtonActive: {
-    backgroundColor: 'rgba(138, 43, 226, 0.2)',
-    borderColor: colors.secondary,
-  },
-  genreButtonText: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-  genreButtonTextActive: {
-    color: colors.secondary,
-    fontWeight: 'bold',
-  },
-  grid: {
-    paddingHorizontal: 40,
-    paddingBottom: 40,
-    paddingTop: 16,
-    direction: 'ltr',
-  },
-  cardTouchable: {
-    flex: 1,
-    margin: 8,
-    maxWidth: '25%',
-  },
-  stationCard: {
-    backgroundColor: colors.glass,
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    minHeight: 200,
-    position: 'relative',
-  },
-  stationCardFocused: {
-    borderColor: colors.secondary,
-    backgroundColor: colors.backgroundLighter,
-    // @ts-ignore - Web CSS property for glow effect
-    boxShadow: `0 0 20px ${colors.secondary}`,
-  },
-  logoContainer: {
-    height: 70,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  stationLogo: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-  },
-  logoPlaceholder: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: 'rgba(138, 43, 226, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  audioWave: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 30,
-    gap: 3,
-  },
-  waveBar: {
-    width: 4,
-    backgroundColor: colors.secondary,
-    borderRadius: 2,
-  },
-  waveBar1: {
-    height: 12,
-  },
-  waveBar2: {
-    height: 20,
-  },
-  waveBar3: {
-    height: 28,
-  },
-  stationInfo: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  stationName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: 4,
-  },
-  frequency: {
-    fontSize: 14,
-    color: colors.secondary,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  currentShow: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  genreBadge: {
-    marginTop: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-    backgroundColor: 'rgba(138, 43, 226, 0.2)',
-  },
-  genreText: {
-    fontSize: 11,
-    color: colors.secondary,
-  },
-  playIcon: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.glassBorder,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playIconFocused: {
-    backgroundColor: colors.secondary,
-  },
-  playIconText: {
-    fontSize: 14,
-    color: colors.text,
-  },
-});
 
 export default RadioScreen;

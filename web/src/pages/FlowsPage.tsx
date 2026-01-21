@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator, useWindowDimensions } from 'react-native';
+import { View, Text, Pressable, ScrollView, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Plus, Sparkles, Sun, Moon, Coffee, Sunset, Star } from 'lucide-react';
@@ -317,9 +317,9 @@ export default function FlowsPage() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center min-h-[400px]">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className={`mt-4 text-white/70 ${IS_TV_BUILD ? 'text-2xl' : 'text-base'}`}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -328,37 +328,43 @@ export default function FlowsPage() {
   const customFlows = flows.filter(f => f.flow_type === 'custom');
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 relative overflow-visible">
       {/* Main Content */}
       <ScrollView
-        style={styles.main}
-        contentContainerStyle={styles.mainInner}
+        className="flex-1 overflow-visible"
+        contentContainerStyle={{
+          padding: IS_TV_BUILD ? spacing.xl * 2 : spacing.xl,
+          paddingBottom: spacing.xl * 3,
+          maxWidth: IS_TV_BUILD ? '100%' : 1400,
+          marginHorizontal: 'auto',
+          width: '100%',
+        }}
       >
         {/* Background Effects */}
-        <View style={styles.bgGradient1} />
-        <View style={styles.bgGradient2} />
+        <View className="absolute w-[700px] h-[700px] rounded-full bg-purple-600 opacity-[0.06] -top-[250px] -right-[250px] blur-[140px]" />
+        <View className="absolute w-[600px] h-[600px] rounded-full bg-violet-600 opacity-[0.05] -bottom-[100px] -left-[200px] blur-[120px]" />
 
         {/* Hero Header */}
-        <View style={[styles.header, { alignItems, width: '100%' }]}>
-          <Text style={[styles.title, { textAlign }]}>{t('flows.title')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>{t('flows.subtitle')}</Text>
+        <View className="mb-12 pt-4 w-full" style={{ alignItems }}>
+          <Text className={`${IS_TV_BUILD ? 'text-6xl' : 'text-5xl'} font-extrabold text-white mb-2 tracking-tight`} style={{ textAlign }}>{t('flows.title')}</Text>
+          <Text className={`${IS_TV_BUILD ? 'text-2xl leading-10' : 'text-xl leading-7'} text-white/60`} style={{ textAlign }}>{t('flows.subtitle')}</Text>
         </View>
 
         {/* Create Flow Action - Prominent */}
         <Pressable
-          style={[styles.createFlowCard, isRTL && styles.createFlowCardRTL]}
+          className={`mb-12 ${isRTL ? '' : ''}`}
           onPress={openCreateModal}
         >
-          <GlassCard style={styles.createFlowCardInner}>
-            <View style={[styles.createFlowContent, isRTL && styles.createFlowContentRTL]}>
-              <View style={styles.createFlowIcon}>
+          <GlassCard className="p-8 bg-purple-700/10 border-2 border-purple-700/30 cursor-pointer">
+            <View className={`flex-row items-center ${isRTL ? 'flex-row-reverse' : ''} gap-8`}>
+              <View className="w-18 h-18 rounded-2xl bg-purple-700/30 justify-center items-center">
                 <Plus size={28} color={colors.primary} />
               </View>
-              <View style={styles.createFlowText}>
-                <Text style={[styles.createFlowTitle, isRTL && styles.textRTL]}>
+              <View className="flex-1">
+                <Text className={`text-2xl font-extrabold text-white mb-1 tracking-tight ${isRTL ? 'text-right' : ''}`}>
                   {t('flows.createFlow')}
                 </Text>
-                <Text style={[styles.createFlowDesc, isRTL && styles.textRTL]}>
+                <Text className={`text-base text-white/70 leading-6 ${isRTL ? 'text-right' : ''}`}>
                   {t('flows.createFlowDesc')}
                 </Text>
               </View>
@@ -367,40 +373,38 @@ export default function FlowsPage() {
         </Pressable>
 
         {/* Example Flows Section */}
-        <View style={styles.examplesSection}>
-          <View style={[styles.examplesSectionHeader, isRTL && styles.examplesSectionHeaderRTL]}>
-            <View style={[styles.examplesHeaderContent, isRTL && styles.examplesHeaderContentRTL]}>
+        <View className="mb-12">
+          <View className={`mb-6 ${isRTL ? '' : ''}`}>
+            <View className={`flex-row items-center gap-2 mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <Sparkles size={20} color={colors.primary} />
-              <Text style={[styles.examplesSectionTitle, isRTL && styles.textRTL]}>
+              <Text className={`text-xl font-bold text-white ${isRTL ? 'text-right' : ''}`}>
                 {t('flows.examples.title')}
               </Text>
             </View>
-            <Text style={[styles.examplesSectionSubtitle, isRTL && styles.textRTL]}>
+            <Text className={`text-sm text-white/60 leading-5 ${isRTL ? 'text-right' : ''}`}>
               {t('flows.examples.subtitle')}
             </Text>
           </View>
 
-          <View style={styles.examplesGrid}>
+          <View className="flex-row flex-wrap gap-6 justify-start">
             {EXAMPLE_FLOWS.map((example) => (
               <Pressable
                 key={example.id}
-                style={[
-                  styles.exampleCard,
-                  hoveredExample === example.id && styles.exampleCardHovered,
-                ]}
+                className={`w-[calc(33.33%-16px)] ${hoveredExample === example.id ? 'scale-105 cursor-pointer' : ''}`}
+                style={{ width: IS_TV_BUILD ? 'calc(33.33% - 16px)' : 'calc(33.33% - 16px)' }}
                 onPress={() => handleUseTemplate(example.template)}
                 // @ts-ignore - Web hover events
                 onMouseEnter={() => setHoveredExample(example.id)}
                 onMouseLeave={() => setHoveredExample(null)}
               >
-                <GlassCard style={styles.exampleCardInner}>
-                  <View style={styles.exampleIconWrapper}>
+                <GlassCard className="p-6 h-full justify-start items-center">
+                  <View className="w-16 h-16 rounded-xl bg-white/5 justify-center items-center mb-4">
                     {example.icon}
                   </View>
-                  <Text style={[styles.exampleName, isRTL && styles.textRTL]} numberOfLines={1}>
+                  <Text className={`text-base font-bold text-white mb-1 text-center ${isRTL ? 'text-right' : ''}`} numberOfLines={1}>
                     {t(example.nameKey)}
                   </Text>
-                  <Text style={[styles.exampleDesc, isRTL && styles.textRTL]} numberOfLines={2}>
+                  <Text className={`text-sm text-white/60 leading-5 text-center ${isRTL ? 'text-right' : ''}`} numberOfLines={2}>
                     {t(example.descKey)}
                   </Text>
                 </GlassCard>
@@ -410,7 +414,7 @@ export default function FlowsPage() {
         </View>
 
         {/* Category Filter */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categories}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-12 overflow-visible">
           {['all', 'system', 'custom', 'morning', 'evening', 'shabbat'].map(cat => (
             <GlassCategoryPill
               key={cat}
@@ -434,7 +438,7 @@ export default function FlowsPage() {
         )}
 
         {/* Flows Grid */}
-        <View style={[styles.grid, isTablet && styles.gridTablet]}>
+        <View className={`flex-row flex-wrap justify-start mb-8 overflow-visible ${isTablet ? 'gap-4' : `gap-${IS_TV_BUILD ? '8' : '6'}`}`}>
           {filteredFlows.map(flow => (
             <FlowCard
               key={flow.id}
@@ -463,231 +467,3 @@ export default function FlowsPage() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    position: 'relative',
-    overflow: 'visible' as any
-  },
-  main: {
-    flex: 1,
-    overflow: 'visible' as any
-  },
-  mainInner: {
-    padding: IS_TV_BUILD ? spacing.xl * 2 : spacing.xl,
-    paddingBottom: spacing.xl * 3,
-    maxWidth: IS_TV_BUILD ? '100%' : 1400,
-    marginHorizontal: 'auto',
-    width: '100%',
-    position: 'relative',
-    overflow: 'visible' as any
-  },
-  bgGradient1: {
-    position: 'absolute',
-    width: 700,
-    height: 700,
-    borderRadius: 350,
-    backgroundColor: colors.primary,
-    opacity: 0.06,
-    top: -250,
-    right: -250,
-    filter: 'blur(140px)' as any
-  },
-  bgGradient2: {
-    position: 'absolute',
-    width: 600,
-    height: 600,
-    borderRadius: 300,
-    backgroundColor: '#8b5cf6',
-    opacity: 0.05,
-    bottom: -100,
-    left: -200,
-    filter: 'blur(120px)' as any
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: 400
-  },
-  loadingText: {
-    marginTop: spacing.md,
-    fontSize: IS_TV_BUILD ? 24 : 16,
-    color: colors.textSecondary
-  },
-  header: {
-    marginBottom: spacing.xl * 1.5,
-    paddingTop: spacing.md
-  },
-  title: {
-    fontSize: IS_TV_BUILD ? 64 : 48,
-    fontWeight: '800',
-    color: colors.text,
-    marginBottom: spacing.sm,
-    letterSpacing: -1.5
-  },
-  subtitle: {
-    fontSize: IS_TV_BUILD ? 26 : 20,
-    color: colors.textMuted,
-    lineHeight: IS_TV_BUILD ? 38 : 28
-  },
-  categories: {
-    marginBottom: spacing.xl * 1.5,
-    overflow: 'visible' as any
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: IS_TV_BUILD ? spacing.xl : spacing.lg,
-    marginBottom: spacing.xl,
-    overflow: 'visible' as any,
-    justifyContent: 'flex-start',
-  },
-  gridTablet: {
-    gap: spacing.md
-  },
-  emptyState: {
-    padding: spacing.xl * 1.5,
-    alignItems: 'center',
-    marginTop: spacing.lg
-  },
-  emptyText: {
-    fontSize: 16,
-    color: colors.textMuted,
-    marginBottom: spacing.md,
-    textAlign: 'center'
-  },
-  emptyBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm
-  },
-  emptyBtnText: {
-    fontSize: 15,
-    color: colors.primary,
-    fontWeight: '600'
-  },
-  // Create Flow Card - Prominent
-  createFlowCard: {
-    marginBottom: spacing.xl * 1.5,
-    // @ts-ignore
-    transition: 'all 0.3s ease',
-  },
-  createFlowCardRTL: {},
-  createFlowCardInner: {
-    padding: spacing.xl,
-    backgroundColor: 'rgba(107, 33, 168, 0.1)',
-    borderWidth: 2,
-    borderColor: 'rgba(107, 33, 168, 0.3)',
-    // @ts-ignore
-    cursor: 'pointer',
-  },
-  createFlowContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xl,
-  },
-  createFlowContentRTL: {
-    flexDirection: 'row-reverse',
-  },
-  createFlowIcon: {
-    width: 72,
-    height: 72,
-    borderRadius: borderRadius.xl,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  createFlowText: {
-    flex: 1,
-  },
-  createFlowTitle: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: colors.text,
-    marginBottom: spacing.xs,
-    letterSpacing: -0.5,
-  },
-  createFlowDesc: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    lineHeight: 22,
-  },
-  // Examples Section
-  examplesSection: {
-    marginBottom: spacing.xl * 1.5,
-  },
-  examplesSectionHeader: {
-    marginBottom: spacing.lg,
-  },
-  examplesSectionHeaderRTL: {},
-  examplesHeaderContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.xs,
-  },
-  examplesHeaderContentRTL: {
-    flexDirection: 'row-reverse',
-  },
-  examplesSectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  examplesSectionSubtitle: {
-    fontSize: 14,
-    color: colors.textMuted,
-    lineHeight: 20,
-  },
-  examplesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.lg,
-    justifyContent: 'flex-start',
-  },
-  exampleCard: {
-    width: IS_TV_BUILD ? 'calc(33.33% - 16px)' : 'calc(33.33% - 16px)',
-    // @ts-ignore
-    transition: 'all 0.3s ease',
-  },
-  exampleCardHovered: {
-    // @ts-ignore
-    transform: [{ scale: 1.05 }],
-    // @ts-ignore
-    cursor: 'pointer',
-  },
-  exampleCardInner: {
-    padding: spacing.lg,
-    height: '100%',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    textAlign: 'center',
-  },
-  exampleIconWrapper: {
-    width: 64,
-    height: 64,
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  exampleName: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xs,
-    textAlign: 'center',
-  },
-  exampleDesc: {
-    fontSize: 13,
-    color: colors.textMuted,
-    lineHeight: 18,
-    textAlign: 'center',
-  },
-  textRTL: {
-    textAlign: 'right'
-  },
-});

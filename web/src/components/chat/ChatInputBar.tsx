@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Mic, Square, Send } from 'lucide-react'
 import { GlassInput, GlassBadge } from '@bayit/shared/ui'
@@ -39,8 +39,8 @@ export function ChatInputBar({
 
   if (isTVMode) {
     return (
-      <View style={styles.tvListeningContainer}>
-        <View style={styles.tvListeningIndicator}>
+      <View className={\`\${IS_TV ? 'p-6' : 'p-4'} border-t border-white/10 items-center justify-center\`}>
+        <View className="flex-col items-center justify-center gap-4 py-6 px-8">
           <SoundwaveVisualizer
             audioLevel={audioLevel}
             isListening={true}
@@ -48,7 +48,7 @@ export function ChatInputBar({
             isSendingToServer={isLoading}
             compact={false}
           />
-          <Text style={styles.tvListeningText}>
+          <Text className="text-[22px] text-[#8a2be2] font-semibold mt-2">
             {isLoading ? t('chatbot.processing', 'Processing...') : t('chatbot.listening', 'Listening...')}
           </Text>
         </View>
@@ -57,9 +57,9 @@ export function ChatInputBar({
   }
 
   return (
-    <View style={styles.inputContainer}>
+    <View className={\`\${IS_TV ? 'p-6' : 'p-4'} border-t border-white/10\`}>
       {(isRecording || isTranscribing) && (
-        <View style={styles.statusContainer}>
+        <View className="flex-row justify-center mb-2">
           {isRecording && (
             <GlassBadge variant="danger" dot dotColor="danger" size="sm">
               {t('chatbot.recording')}
@@ -77,15 +77,15 @@ export function ChatInputBar({
         </View>
       )}
 
-      <View style={[styles.inputRow, isRTL && styles.inputRowRTL]}>
+      <View className={\`flex-row items-center gap-2 \${isRTL ? 'flex-row-reverse' : ''}\`}>
         <Pressable
           onPress={onToggleRecording}
           disabled={isLoading || isTranscribing}
-          style={({ hovered }) => [
-            styles.micButton,
-            isRecording && styles.micButtonRecording,
-            hovered && !isRecording && styles.micButtonHovered,
-          ]}
+          className={\`\${IS_TV ? 'w-16 h-14 rounded-[28px]' : 'w-12 h-10 rounded-[20px]'} bg-[#8a2be2] items-center justify-center \${
+            isRecording
+              ? 'bg-[#ef4444] shadow-[0_0_8px_rgba(239,68,68,0.5)]'
+              : 'hover:shadow-[0_0_8px_rgba(138,43,226,0.5)]'
+          }\`}
           accessibilityLabel={isRecording ? t('chatbot.stopRecording') : t('chatbot.startRecording')}
         >
           {isRecording ? (
@@ -102,18 +102,30 @@ export function ChatInputBar({
           placeholder={t('chatbot.placeholder')}
           editable={!isLoading && !isRecording && !isTranscribing}
           onSubmitEditing={onSubmit}
-          containerStyle={styles.textInputContainer}
-          inputStyle={[styles.textInput, isRTL && styles.textInputRTL]}
+          containerStyle={{
+            flex: 1,
+            height: IS_TV ? 56 : 40,
+            borderRadius: IS_TV ? 28 : 20,
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            borderWidth: IS_TV ? 2 : 1,
+            borderColor: colors.glassBorder,
+            paddingHorizontal: IS_TV ? spacing.lg : spacing.md,
+            justifyContent: 'center',
+          }}
+          inputStyle={[
+            { fontSize: IS_TV ? 20 : 14, color: colors.text },
+            isRTL && { textAlign: 'right' }
+          ]}
         />
 
         <Pressable
           onPress={onSubmit}
           disabled={!input.trim() || isLoading || isRecording || isTranscribing}
-          style={({ hovered }) => [
-            styles.sendButton,
-            (!input.trim() || isLoading) && styles.sendButtonDisabled,
-            hovered && input.trim() && !isLoading && styles.sendButtonHovered,
-          ]}
+          className={\`\${IS_TV ? 'w-14 h-14 rounded-[28px]' : 'w-10 h-10 rounded-[20px]'} bg-[#8a2be2] items-center justify-center \${
+            (!input.trim() || isLoading)
+              ? 'opacity-50'
+              : 'hover:shadow-[0_0_8px_rgba(138,43,226,0.5)]'
+          }\`}
         >
           <Send size={16} color={colors.text} />
         </Pressable>
@@ -121,100 +133,3 @@ export function ChatInputBar({
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  inputContainer: {
-    padding: IS_TV ? spacing.lg : spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  statusContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: spacing.sm,
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  inputRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  micButton: {
-    width: IS_TV ? 64 : 48,
-    height: IS_TV ? 56 : 40,
-    borderRadius: IS_TV ? 28 : 20,
-    backgroundColor: colors.secondary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  micButtonRecording: {
-    backgroundColor: colors.error,
-    shadowColor: colors.error,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-  },
-  micButtonHovered: {
-    shadowColor: colors.secondary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-  },
-  textInputContainer: {
-    flex: 1,
-    height: IS_TV ? 56 : 40,
-    borderRadius: IS_TV ? 28 : 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: IS_TV ? 2 : 1,
-    borderColor: colors.glassBorder,
-    paddingHorizontal: IS_TV ? spacing.lg : spacing.md,
-    justifyContent: 'center',
-  },
-  textInput: {
-    fontSize: IS_TV ? 20 : 14,
-    color: colors.text,
-  },
-  textInputRTL: {
-    textAlign: 'right',
-  },
-  sendButton: {
-    width: IS_TV ? 56 : 40,
-    height: IS_TV ? 56 : 40,
-    borderRadius: IS_TV ? 28 : 20,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sendButtonDisabled: {
-    opacity: 0.5,
-  },
-  sendButtonHovered: {
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-  },
-  tvListeningContainer: {
-    padding: spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tvListeningIndicator: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.md,
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.xl,
-  },
-  tvListeningText: {
-    fontSize: 22,
-    color: colors.primary,
-    fontWeight: '600',
-    marginTop: spacing.sm,
-  },
-})

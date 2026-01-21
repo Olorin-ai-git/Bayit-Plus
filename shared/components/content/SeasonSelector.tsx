@@ -2,7 +2,6 @@ import React, { useRef, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   Animated,
@@ -64,8 +63,8 @@ export const SeasonSelector: React.FC<SeasonSelectorProps> = ({
   // Don't show selector if there's only one season
   if (seasons.length === 1) {
     return (
-      <View style={styles.singleSeasonContainer}>
-        <Text style={styles.singleSeasonText}>
+      <View className="py-2 px-2">
+        <Text className="text-base text-textSecondary">
           {t('content.season')} 1 • {seasons[0].episodeCount} {t('content.episodes')}
         </Text>
       </View>
@@ -73,14 +72,14 @@ export const SeasonSelector: React.FC<SeasonSelectorProps> = ({
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>{t('content.selectSeason')}</Text>
+    <View className="my-4">
+      <Text className="text-sm text-textSecondary mb-2 px-2">{t('content.selectSeason')}</Text>
       <ScrollView
         ref={scrollViewRef}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-        style={styles.scrollView}
+        contentContainerClassName="px-2 gap-4 flex-row"
+        className="flex-grow-0"
       >
         {seasons.map((season, index) => {
           const isSelected = season.seasonNumber === selectedSeason;
@@ -138,11 +137,15 @@ const SeasonPill: React.FC<SeasonPillProps> = ({
   return (
     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
       <TouchableOpacity
-        style={[
-          styles.pill,
-          isSelected && styles.pillSelected,
-          isFocused && styles.pillFocused,
-        ]}
+        className={`flex-row items-center gap-2 ${
+          isTV ? 'px-6 py-4' : 'px-4 py-2'
+        } rounded-full border ${
+          isSelected
+            ? 'bg-primary border-primary'
+            : 'bg-white/10 border-white/15'
+        } ${isFocused ? 'border-2 border-white bg-white/20' : ''} ${
+          isTV ? 'min-w-[140px]' : 'min-w-[100px]'
+        } justify-center`}
         onPress={onPress}
         onFocus={handleFocus}
         onBlur={handleBlur}
@@ -150,80 +153,19 @@ const SeasonPill: React.FC<SeasonPillProps> = ({
         // @ts-ignore - TV prop
         hasTVPreferredFocus={hasTVPreferredFocus}
       >
-        <Text style={[styles.pillText, isSelected && styles.pillTextSelected]}>
+        <Text className={`${isTV ? 'text-base' : 'text-sm'} font-semibold ${
+          isSelected ? 'text-white' : 'text-white'
+        }`}>
           {t('content.season')} {season.seasonNumber}
         </Text>
-        <Text style={[styles.episodeCount, isSelected && styles.episodeCountSelected]}>
+        <Text className={`${isTV ? 'text-sm' : 'text-xs'} ${
+          isSelected ? 'text-white/80' : 'text-textSecondary'
+        }`}>
           {season.episodeCount} {t('content.ep')}
         </Text>
       </TouchableOpacity>
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: spacing.md,
-  },
-  label: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-    paddingHorizontal: spacing.sm,
-  },
-  scrollView: {
-    flexGrow: 0,
-  },
-  scrollContent: {
-    paddingHorizontal: spacing.sm,
-    gap: spacing.md,
-    flexDirection: 'row',
-  },
-  pill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    paddingHorizontal: isTV ? spacing.lg : spacing.md,
-    paddingVertical: isTV ? spacing.md : spacing.sm,
-    borderRadius: borderRadius.full,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.15)',
-    minWidth: isTV ? 140 : 100,
-    justifyContent: 'center',
-  },
-  pillSelected: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  pillFocused: {
-    borderWidth: 2,
-    borderColor: '#fff',
-    backgroundColor: 'rgba(255,255,255,0.2)',
-  },
-  pillText: {
-    fontSize: isTV ? fontSize.md : fontSize.sm,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  pillTextSelected: {
-    color: '#fff',
-  },
-  episodeCount: {
-    fontSize: isTV ? fontSize.sm : fontSize.xs,
-    color: colors.textSecondary,
-  },
-  episodeCountSelected: {
-    color: 'rgba(255,255,255,0.8)',
-  },
-  singleSeasonContainer: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.sm,
-  },
-  singleSeasonText: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-  },
-});
 
 export default SeasonSelector;

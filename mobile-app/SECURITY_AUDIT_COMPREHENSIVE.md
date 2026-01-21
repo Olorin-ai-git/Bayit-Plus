@@ -40,7 +40,7 @@ The Bayit+ iOS mobile application contains **critical security vulnerabilities**
 **Severity:** 🔴 CRITICAL
 **CVSS Score:** 9.8 (CRITICAL)
 **Status:** ❌ UNFIXED - Currently Active Threat
-**Location:** `/Users/olorin/Documents/Bayit-Plus/mobile-app/.env` (Lines 6-18)
+**Location:** `/Users/olorin/Documents/olorin/mobile-app/.env` (Lines 6-18)
 
 #### Current State
 

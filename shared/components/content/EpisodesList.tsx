@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   Image,
   TouchableOpacity,
@@ -64,26 +63,24 @@ const EpisodeCard: React.FC<{
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={1}
-      style={styles.episodeCardTouchable}
+      className={`${isTV ? 'flex-1/3 p-2' : 'flex-1 mb-4'}`}
     >
       <Animated.View
-        style={[
-          styles.episodeCard,
-          { transform: [{ scale: scaleAnim }] },
-          isSelected && styles.episodeCardSelected,
-          isFocused && styles.episodeCardFocused,
-        ]}
+        style={{ transform: [{ scale: scaleAnim }] }}
+        className={`bg-white/5 rounded-lg overflow-hidden border-2 ${
+          isSelected ? 'border-secondary bg-secondary/15' : 'border-transparent'
+        } ${isFocused ? 'border-primary bg-primary/15' : ''}`}
       >
-        <View style={styles.episodeThumbnail}>
+        <View className="aspect-video relative bg-white/5 overflow-hidden">
           {episode.thumbnail ? (
             <Image
               source={{ uri: episode.thumbnail }}
-              style={styles.episodeImage}
+              className="w-full h-full"
               resizeMode="cover"
             />
           ) : (
-            <View style={styles.episodeImagePlaceholder}>
-              <Text style={styles.placeholderText}>
+            <View className="flex-1 justify-center items-center bg-primary/20">
+              <Text className={`${isTV ? 'text-[42px]' : 'text-[28px]'} font-bold text-white`}>
                 E{episode.episode_number}
               </Text>
             </View>
@@ -91,42 +88,40 @@ const EpisodeCard: React.FC<{
 
           {/* Play Overlay */}
           {(isFocused || isSelected) && (
-            <View style={styles.episodePlayOverlay}>
-              <View style={styles.episodePlayButton}>
-                <Text style={styles.playIcon}>▶</Text>
+            <View className="absolute inset-0 bg-black/40 justify-center items-center">
+              <View className={`${isTV ? 'w-[60px] h-[60px]' : 'w-10 h-10'} rounded-full bg-primary justify-center items-center`}>
+                <Text className={`${isTV ? 'text-2xl' : 'text-base'} text-background ml-1`}>▶</Text>
               </View>
             </View>
           )}
 
           {/* Progress Bar */}
           {episode.progress !== undefined && episode.progress > 0 && (
-            <View style={styles.episodeProgress}>
+            <View className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
               <View
-                style={[
-                  styles.episodeProgressBar,
-                  { width: `${episode.progress}%` },
-                ]}
+                style={{ width: `${episode.progress}%` }}
+                className="h-full bg-primary"
               />
             </View>
           )}
 
           {/* Duration Badge */}
           {episode.duration && (
-            <View style={styles.durationBadge}>
-              <Text style={styles.durationText}>{episode.duration}</Text>
+            <View className="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 rounded">
+              <Text className={`${isTV ? 'text-sm' : 'text-xs'} text-white font-medium`}>{episode.duration}</Text>
             </View>
           )}
         </View>
 
-        <View style={styles.episodeInfo}>
-          <Text style={[styles.episodeNumber, { textAlign }]}>
+        <View className={`${isTV ? 'p-4' : 'p-2'}`}>
+          <Text style={{ textAlign }} className={`${isTV ? 'text-sm' : 'text-xs'} text-textMuted mb-0.5 uppercase font-semibold`}>
             Episode {episode.episode_number}
           </Text>
-          <Text style={[styles.episodeTitle, { textAlign }]} numberOfLines={2}>
+          <Text style={{ textAlign }} className={`${isTV ? 'text-lg' : 'text-sm'} font-semibold text-white mb-1 ${isTV ? 'leading-6' : 'leading-[18px]'}`} numberOfLines={2}>
             {episode.title}
           </Text>
           {episode.description && (
-            <Text style={[styles.episodeDescription, { textAlign }]} numberOfLines={2}>
+            <Text style={{ textAlign }} className={`${isTV ? 'text-sm' : 'text-xs'} text-textSecondary ${isTV ? 'leading-5' : 'leading-4'}`} numberOfLines={2}>
               {episode.description}
             </Text>
           )}
@@ -145,8 +140,8 @@ export const EpisodesList: React.FC<EpisodesListProps> = ({
 
   if (!episodes || episodes.length === 0) {
     return (
-      <View style={styles.emptyState}>
-        <Text style={styles.emptyText}>{t('content.noEpisodes', 'No episodes available')}</Text>
+      <View className={`${isTV ? 'p-12' : 'p-8'} items-center`}>
+        <Text className={`${isTV ? 'text-xl' : 'text-base'} text-textMuted`}>{t('content.noEpisodes', 'No episodes available')}</Text>
       </View>
     );
   }
@@ -157,7 +152,7 @@ export const EpisodesList: React.FC<EpisodesListProps> = ({
       keyExtractor={(item) => item.id}
       numColumns={isTV ? 3 : 1}
       key={isTV ? 'tv' : 'mobile'}
-      contentContainerStyle={styles.listContent}
+      contentContainerClassName={`${isTV ? 'px-8' : 'px-6'} py-4`}
       renderItem={({ item, index }) => (
         <EpisodeCard
           episode={item}
@@ -169,134 +164,5 @@ export const EpisodesList: React.FC<EpisodesListProps> = ({
     />
   );
 };
-
-const styles = StyleSheet.create({
-  listContent: {
-    paddingHorizontal: isTV ? spacing.xl : spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  episodeCardTouchable: {
-    flex: isTV ? 1 / 3 : 1,
-    padding: isTV ? spacing.sm : 0,
-    marginBottom: isTV ? 0 : spacing.md,
-  },
-  episodeCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  episodeCardSelected: {
-    borderColor: colors.secondary,
-    backgroundColor: 'rgba(192, 38, 211, 0.15)',
-  },
-  episodeCardFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.15)',
-    // @ts-ignore - Web CSS property
-    boxShadow: '0 0 20px rgba(168, 85, 247, 0.6)',
-  },
-  episodeThumbnail: {
-    aspectRatio: 16 / 9,
-    position: 'relative',
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-    overflow: 'hidden',
-  },
-  episodeImage: {
-    width: '100%',
-    height: '100%',
-  },
-  episodeImagePlaceholder: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-  },
-  placeholderText: {
-    fontSize: isTV ? 42 : 28,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  episodePlayOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  episodePlayButton: {
-    width: isTV ? 60 : 40,
-    height: isTV ? 60 : 40,
-    borderRadius: isTV ? 30 : 20,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playIcon: {
-    fontSize: isTV ? 24 : 16,
-    color: colors.background,
-    marginLeft: 4,
-  },
-  episodeProgress: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  episodeProgressBar: {
-    height: '100%',
-    backgroundColor: colors.primary,
-  },
-  durationBadge: {
-    position: 'absolute',
-    bottom: spacing.sm,
-    right: spacing.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  durationText: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  episodeInfo: {
-    padding: isTV ? spacing.md : spacing.sm,
-  },
-  episodeNumber: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textMuted,
-    marginBottom: 2,
-    textTransform: 'uppercase',
-    fontWeight: '600',
-  },
-  episodeTitle: {
-    fontSize: isTV ? 18 : 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-    lineHeight: isTV ? 24 : 18,
-  },
-  episodeDescription: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 20 : 16,
-  },
-  emptyState: {
-    padding: isTV ? spacing.xxl : spacing.xl,
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: isTV ? 20 : 16,
-    color: colors.textMuted,
-  },
-});
 
 export default EpisodesList;

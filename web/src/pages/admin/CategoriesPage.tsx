@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react'
 import { adminContentService } from '@/services/adminApi'
@@ -164,7 +164,7 @@ export default function CategoriesPage() {
   ]
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.categories', { defaultValue: 'Categories' })}</Text>
@@ -187,7 +187,7 @@ export default function CategoriesPage() {
       {error && (
         <View style={[styles.errorContainer, { marginBottom: spacing.lg }]}>
           <AlertCircle size={18} color="#ef4444" />
-          <Text style={styles.errorText}>{error}</Text>
+          <Text className="flex-1 text-red-500 text-sm">{error}</Text>
           <Pressable onPress={() => setError(null)}>
             <X size={18} color="#ef4444" />
           </Pressable>
@@ -244,23 +244,3 @@ export default function CategoriesPage() {
   )
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.lg },
-  pageTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
-  subtitle: { fontSize: 14, color: colors.textMuted, marginTop: spacing.xs },
-  addButton: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, backgroundColor: colors.primary, borderRadius: borderRadius.md },
-  addButtonText: { color: colors.text, fontWeight: '500', fontSize: 14 },
-  errorContainer: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, backgroundColor: '#ef444420', borderColor: '#ef444440', borderWidth: 1, borderRadius: borderRadius.md },
-  errorText: { flex: 1, color: '#ef4444', fontSize: 14 },
-  cellText: { fontSize: 14, color: colors.text },
-  editForm: { backgroundColor: colors.backgroundLighter, padding: spacing.lg, borderRadius: borderRadius.lg, marginBottom: spacing.lg },
-  formTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: spacing.md },
-  input: { paddingHorizontal: spacing.md, paddingVertical: spacing.md, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.background, color: colors.text, fontSize: 14, marginBottom: spacing.md },
-  formActions: { flexDirection: 'row', gap: spacing.md },
-  cancelBtn: { flex: 1, paddingVertical: spacing.md, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, justifyContent: 'center', alignItems: 'center' },
-  cancelBtnText: { color: colors.text, fontWeight: '600' },
-  saveBtn: { flex: 1, paddingVertical: spacing.md, borderRadius: borderRadius.md, backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center' },
-  saveBtnText: { color: colors.text, fontWeight: '600' },
-})

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';;
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit, Power, Trash2, Copy } from 'lucide-react';
@@ -141,7 +141,7 @@ export default function CampaignsListPage() {
       key: 'usage_count',
       label: t('admin.campaigns.columns.usage', { defaultValue: 'Uses' }),
       render: (count: number, campaign: Campaign) => (
-        <Text style={styles.cellText}>
+        <Text className="text-sm text-white">
           {count}
           {campaign.max_uses && <Text style={styles.maxUsesText}> / {campaign.max_uses}</Text>}
         </Text>
@@ -194,7 +194,7 @@ export default function CampaignsListPage() {
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
       {/* Header */}
       <View style={[styles.header, { flexDirection }]}>
         <View>
@@ -232,7 +232,7 @@ export default function CampaignsListPage() {
         <Text style={styles.modalText}>
           {t('admin.campaigns.confirmDeleteMessage', 'Are you sure you want to delete "{{name}}"? This action cannot be undone.', { name: deleteModal.campaign?.name })}
         </Text>
-        <View style={styles.modalActions}>
+        <View className="flex flex-row gap-4 mt-6">
           <GlassButton
             title={t('common.cancel', 'Cancel')}
             variant="cancel"
@@ -250,98 +250,3 @@ export default function CampaignsListPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: spacing.lg,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.lg,
-  },
-  pageTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-  },
-  campaignName: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  codeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginTop: spacing.xs,
-  },
-  codeContainer: {
-    backgroundColor: colors.backgroundLighter,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-  },
-  codeText: {
-    fontSize: 12,
-    color: colors.primary,
-    fontFamily: 'monospace',
-  },
-  copyButton: {
-    padding: spacing.xs,
-  },
-  discountText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#22C55E',
-  },
-  cellText: {
-    fontSize: 14,
-    color: colors.text,
-  },
-  maxUsesText: {
-    color: colors.textMuted,
-  },
-  dateText: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  badge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-    alignSelf: 'flex-start',
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  actionsCell: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  actionButton: {
-    padding: spacing.xs,
-    borderRadius: borderRadius.sm,
-  },
-  modalText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginBottom: spacing.lg,
-    lineHeight: 20,
-  },
-  modalActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: spacing.sm,
-  },
-});

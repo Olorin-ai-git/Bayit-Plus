@@ -17,7 +17,6 @@ import {
   View,
   SectionList,
   RefreshControl,
-  StyleSheet,
   Text,
   Image,
   SafeAreaView,
@@ -259,10 +258,10 @@ export const HomeScreenMobile: React.FC = () => {
       data: ['header'],
       renderItem: () => (
         <View>
-          <View style={styles.header}>
+          <View className="flex-row justify-center items-center py-2 pt-4" style={{ paddingHorizontal: spacing.md }}>
             <Image
               source={require('../../../shared/assets/images/logos/logo.png')}
-              style={styles.logo}
+              className="w-[100px] h-[36px]"
               resizeMode="contain"
             />
           </View>
@@ -273,7 +272,7 @@ export const HomeScreenMobile: React.FC = () => {
             }
           />
           {carouselItems.length > 0 && (
-            <View style={styles.section}>
+            <View className="mb-4 px-1">
               <GlassCarousel
                 items={carouselItems}
                 onItemPress={(item: CarouselItem) =>
@@ -295,7 +294,7 @@ export const HomeScreenMobile: React.FC = () => {
         title: t('home.continueWatching'),
         data: [continueWatching],
         renderItem: (items: ContentItem[]) => (
-          <View style={styles.section}>
+          <View className="mb-4 px-1">
             <ContentRow
               items={items}
               onItemPress={handleContentPress}
@@ -312,7 +311,7 @@ export const HomeScreenMobile: React.FC = () => {
       title: t('trending.title'),
       data: ['trending'],
       renderItem: () => (
-        <View style={styles.section}>
+        <View className="mb-4 px-1">
           <TrendingRow
             onItemPress={handleContentPress}
             columns={contentColumns}
@@ -327,7 +326,7 @@ export const HomeScreenMobile: React.FC = () => {
       title: '',
       data: ['jerusalem'],
       renderItem: () => (
-        <View style={styles.section}>
+        <View className="mb-4 px-1">
           <JerusalemRow />
         </View>
       ),
@@ -339,7 +338,7 @@ export const HomeScreenMobile: React.FC = () => {
       title: '',
       data: ['telAviv'],
       renderItem: () => (
-        <View style={styles.section}>
+        <View className="mb-4 px-1">
           <TelAvivRow />
         </View>
       ),
@@ -351,7 +350,7 @@ export const HomeScreenMobile: React.FC = () => {
       title: '',
       data: ['filters'],
       renderItem: () => (
-        <View style={styles.filterSection}>
+        <View className="mb-2" style={{ paddingHorizontal: spacing.md }}>
           <GlassCheckbox
             label={t(
               'home.showOnlyWithSubtitles',
@@ -371,7 +370,7 @@ export const HomeScreenMobile: React.FC = () => {
         title: t('home.liveNow'),
         data: [liveChannels],
         renderItem: (items: ContentItem[]) => (
-          <View style={styles.section}>
+          <View className="mb-4 px-1">
             <ContentRow
               items={items}
               onItemPress={handleContentPress}
@@ -389,7 +388,7 @@ export const HomeScreenMobile: React.FC = () => {
         title: t('home.featured'),
         data: [featured],
         renderItem: (items: ContentItem[]) => (
-          <View style={styles.section}>
+          <View className="mb-4 px-1">
             <ContentRow
               items={items}
               onItemPress={handleContentPress}
@@ -410,10 +409,8 @@ export const HomeScreenMobile: React.FC = () => {
           data: [category.items],
           renderItem: (items: ContentItem[]) => (
             <View
-              style={[
-                styles.section,
-                { paddingHorizontal: isRTL ? spacing.md : spacing.xs },
-              ]}
+              className="mb-4 px-1"
+              style={{ paddingHorizontal: isRTL ? spacing.md : spacing.xs }}
             >
               <ContentRow
                 items={items}
@@ -430,7 +427,7 @@ export const HomeScreenMobile: React.FC = () => {
       id: 'spacer',
       title: '',
       data: ['spacer'],
-      renderItem: () => <View style={styles.bottomSpacer} />,
+      renderItem: () => <View style={{ height: spacing.xl }} />,
     });
 
     return sectionArray;
@@ -448,7 +445,7 @@ export const HomeScreenMobile: React.FC = () => {
   ]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
       <SectionList
         sections={sections.map((section) => ({
           title: section.title,
@@ -467,9 +464,10 @@ export const HomeScreenMobile: React.FC = () => {
         renderSectionHeader={({ section: { title } }) =>
           title ? (
             <Text
+              className="font-semibold px-2 mb-1"
               style={[
-                styles.sectionTitle,
-                { textAlign: isRTL ? 'right' : 'left' },
+                typography.body,
+                { color: colors.text, backgroundColor: colors.background, textAlign: isRTL ? 'right' : 'left' },
               ]}
             >
               {title}
@@ -485,41 +483,3 @@ export const HomeScreenMobile: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    paddingTop: spacing.md,
-  },
-  logo: {
-    width: 100,
-    height: 36,
-  },
-  section: {
-    marginBottom: spacing.md,
-    paddingHorizontal: spacing.xs,
-  },
-  filterSection: {
-    paddingHorizontal: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  sectionTitle: {
-    ...typography.body,
-    fontWeight: '600',
-    color: colors.text,
-    paddingHorizontal: spacing.sm,
-    marginBottom: spacing.xs,
-    backgroundColor: colors.background,
-  },
-  bottomSpacer: {
-    height: spacing.xl,
-  },
-});

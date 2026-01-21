@@ -2,14 +2,12 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { EPGProgram, Channel, Timezone } from '../../services/epgApi';
 import { EPGChannelRow } from './EPGChannelRow';
 import { GlassView } from '../ui';
-import { colors, spacing, borderRadius } from '../../theme';
 import { isTV } from '../../utils/platform';
 
 // Simple time formatting for timeline
@@ -45,14 +43,17 @@ const EPGTimeline: React.FC<EPGTimelineProps> = ({
   }
 
   return (
-    <View style={styles.timeline}>
+    <View className="flex-row bg-black/30 border-b border-white/10">
       {/* Spacer for channel column */}
-      <View style={styles.timelineChannelSpacer} />
-      
+      <View
+        className="bg-black/40 border-r border-white/10"
+        style={{ width: isTV ? 200 : 140 }}
+      />
+
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.timelineContent}
+        contentContainerStyle={{ flexDirection: 'row', paddingHorizontal: 8 }}
       >
         {slots.map((slot, index) => {
           const now = new Date();
@@ -63,16 +64,16 @@ const EPGTimeline: React.FC<EPGTimelineProps> = ({
           return (
             <View
               key={index}
-              style={[
-                styles.timeSlot,
-                isCurrentSlot && styles.timeSlotCurrent,
-              ]}
+              className={`items-center py-4 border-r border-white/5 ${
+                isCurrentSlot ? 'bg-purple-500/20' : ''
+              }`}
+              style={{ width: isTV ? 120 : 80 }}
             >
               <Text
-                style={[
-                  styles.timeSlotText,
-                  isCurrentSlot && styles.timeSlotTextCurrent,
-                ]}
+                className={`font-medium ${
+                  isCurrentSlot ? 'text-purple-500 font-bold' : 'text-gray-400'
+                }`}
+                style={{ fontSize: isTV ? 14 : 12 }}
               >
                 {formatTimeSlot(slot, timezone)}
               </Text>
@@ -108,14 +109,14 @@ export const EPGGrid: React.FC<EPGGridProps> = ({
   // Show empty state if no channels
   if (channels.length === 0) {
     return (
-      <GlassView style={styles.emptyContainer}>
-        <View style={styles.emptyIcon}>
-          <Text style={styles.emptyIconText}>📺</Text>
+      <GlassView className="p-8 items-center justify-center rounded-3xl">
+        <View className="w-20 h-20 rounded-full bg-purple-500/10 justify-center items-center mb-4">
+          <Text style={{ fontSize: 40 }}>📺</Text>
         </View>
-        <Text style={styles.emptyTitle}>
+        <Text className="text-white font-semibold mb-2 text-center" style={{ fontSize: isTV ? 24 : 20 }}>
           {t('epg.noChannels', 'No TV Guide Data Available')}
         </Text>
-        <Text style={styles.emptySubtitle}>
+        <Text className="text-gray-400 text-center max-w-[400px]" style={{ fontSize: isTV ? 16 : 14 }}>
           {t('epg.noChannelsDescription', 'The TV programming schedule is currently unavailable.')}
         </Text>
       </GlassView>
@@ -123,7 +124,7 @@ export const EPGGrid: React.FC<EPGGridProps> = ({
   }
 
   return (
-    <GlassView style={styles.container}>
+    <GlassView className="flex-1 rounded-3xl overflow-hidden">
       {/* Timeline Header */}
       <EPGTimeline
         startTime={startTime}
@@ -134,7 +135,8 @@ export const EPGGrid: React.FC<EPGGridProps> = ({
 
       {/* Channel Rows */}
       <ScrollView
-        style={styles.channelRows}
+        className="flex-1"
+        style={{ maxHeight: isTV ? 600 : 400 }}
         showsVerticalScrollIndicator={false}
       >
         {channels.map((channel) => (
@@ -153,83 +155,5 @@ export const EPGGrid: React.FC<EPGGridProps> = ({
     </GlassView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    borderRadius: borderRadius.xl,
-    overflow: 'hidden',
-  },
-  timeline: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  timelineChannelSpacer: {
-    width: isTV ? 200 : 140,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    borderRightWidth: 1,
-    borderRightColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  timelineContent: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing.sm,
-  },
-  timeSlot: {
-    width: isTV ? 120 : 80,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    borderRightWidth: 1,
-    borderRightColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  timeSlotCurrent: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-  },
-  timeSlotText: {
-    fontSize: isTV ? 14 : 12,
-    fontWeight: '500',
-    color: colors.textSecondary,
-  },
-  timeSlotTextCurrent: {
-    color: colors.primary,
-    fontWeight: '700',
-  },
-  channelRows: {
-    flex: 1,
-    maxHeight: isTV ? 600 : 400,
-  },
-  emptyContainer: {
-    padding: spacing.xxl,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: borderRadius.xl,
-  },
-  emptyIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-  emptyIconText: {
-    fontSize: 40,
-  },
-  emptyTitle: {
-    fontSize: isTV ? 24 : 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-    textAlign: 'center',
-  },
-  emptySubtitle: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    maxWidth: 400,
-  },
-});
 
 export default EPGGrid;

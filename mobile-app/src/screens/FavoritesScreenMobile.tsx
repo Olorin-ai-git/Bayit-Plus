@@ -14,7 +14,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   RefreshControl,
   Image,
@@ -134,49 +133,51 @@ export const FavoritesScreenMobile: React.FC = () => {
       : undefined;
 
     return (
-      <View style={styles.cardWrapper}>
+      <View className="flex-1 px-1 py-2">
         <Pressable onPress={() => handleItemPress(item)}>
-          <GlassView style={styles.card}>
+          <GlassView className="rounded-xl overflow-hidden">
             {/* Thumbnail */}
             {item.thumbnail ? (
               <Image
                 source={{ uri: item.thumbnail }}
-                style={styles.thumbnail}
+                className="w-full aspect-video"
                 resizeMode="cover"
               />
             ) : (
-              <View style={[styles.thumbnail, styles.thumbnailPlaceholder]}>
-                <Text style={styles.placeholderIcon}>
+              <View className="w-full aspect-video bg-white/5 justify-center items-center">
+                <Text className="text-5xl">
                   {TYPE_ICONS[item.type] || '⭐'}
                 </Text>
               </View>
             )}
 
             {/* Type badge */}
-            <View style={[styles.typeBadge, isRTL ? { left: 8 } : { right: 8 }]}>
-              <Text style={styles.typeBadgeText}>{TYPE_ICONS[item.type]}</Text>
+            <View className={`absolute top-2 ${isRTL ? 'left-2' : 'right-2'} bg-black/70 rounded-xl px-2 py-1`}>
+              <Text className="text-sm">{TYPE_ICONS[item.type]}</Text>
             </View>
 
             {/* Remove button */}
             <Pressable
-              style={[styles.removeButton, isRTL ? { right: 8 } : { left: 8 }]}
+              className={`absolute top-2 ${isRTL ? 'right-2' : 'left-2'} w-7 h-7 rounded-full bg-red-500/90 justify-center items-center`}
               onPress={() => handleRemoveFavorite(item)}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Text style={styles.removeIcon}>✕</Text>
+              <Text className="text-sm text-white font-bold">✕</Text>
             </Pressable>
 
             {/* Card info */}
-            <View style={styles.cardInfo}>
+            <View className="p-4">
               <Text
-                style={[styles.cardTitle, { textAlign: isRTL ? 'right' : 'left' }]}
+                className={`text-base font-semibold text-white mb-1 ${isRTL ? 'text-right' : 'text-left'}`}
+                style={{ textAlign: isRTL ? 'right' : 'left' }}
                 numberOfLines={2}
               >
                 {localizedTitle}
               </Text>
               {localizedSubtitle && (
                 <Text
-                  style={[styles.cardSubtitle, { textAlign: isRTL ? 'right' : 'left' }]}
+                  className={`text-xs text-text-secondary ${isRTL ? 'text-right' : 'text-left'}`}
+                  style={{ textAlign: isRTL ? 'right' : 'left' }}
                   numberOfLines={1}
                 >
                   {localizedSubtitle}
@@ -191,30 +192,28 @@ export const FavoritesScreenMobile: React.FC = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 bg-background justify-center items-center">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-base text-white mt-4">{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-background">
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
+      <View className={`flex-row items-center px-6 pt-6 pb-4 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
         <View
-          style={[
-            styles.headerIcon,
-            { marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md },
-          ]}
+          className="w-12 h-12 rounded-full bg-yellow-500/20 justify-center items-center"
+          style={{ marginLeft: isRTL ? 16 : 0, marginRight: isRTL ? 0 : 16 }}
         >
-          <Text style={styles.headerIconText}>⭐</Text>
+          <Text className="text-2xl">⭐</Text>
         </View>
-        <View style={styles.headerContent}>
-          <Text style={[styles.title, { textAlign: isRTL ? 'right' : 'left' }]}>
+        <View className="flex-1">
+          <Text className={`text-3xl font-bold text-white ${isRTL ? 'text-right' : 'text-left'}`} style={{ textAlign: isRTL ? 'right' : 'left' }}>
             {t('favorites.title')}
           </Text>
-          <Text style={[styles.subtitle, { textAlign: isRTL ? 'right' : 'left' }]}>
+          <Text className={`text-xs text-text-secondary mt-0.5 ${isRTL ? 'text-right' : 'text-left'}`} style={{ textAlign: isRTL ? 'right' : 'left' }}>
             {favorites.length} {t('favorites.items')}
           </Text>
         </View>
@@ -227,8 +226,8 @@ export const FavoritesScreenMobile: React.FC = () => {
         renderItem={renderFavorite}
         keyExtractor={(item) => item.id}
         numColumns={numColumns}
-        columnWrapperStyle={styles.row}
-        contentContainerStyle={styles.gridContent}
+        columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 16 }}
+        contentContainerStyle={{ paddingTop: 8, paddingBottom: 96 }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -238,13 +237,13 @@ export const FavoritesScreenMobile: React.FC = () => {
           />
         }
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <GlassView style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>⭐</Text>
-              <Text style={[styles.emptyTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
+          <View className="flex-1 justify-center items-center py-24 px-6">
+            <GlassView className="p-8 items-center w-full">
+              <Text className="text-6xl mb-4">⭐</Text>
+              <Text className={`text-xl font-semibold text-white mb-2 ${isRTL ? 'text-right' : 'text-left'}`} style={{ textAlign: isRTL ? 'right' : 'left' }}>
                 {t('favorites.empty')}
               </Text>
-              <Text style={[styles.emptySubtitle, { textAlign: isRTL ? 'right' : 'left' }]}>
+              <Text className={`text-base text-text-secondary text-center ${isRTL ? 'text-right' : 'text-left'}`} style={{ textAlign: isRTL ? 'right' : 'left' }}>
                 {t('favorites.emptyHint')}
               </Text>
             </GlassView>
@@ -254,145 +253,5 @@ export const FavoritesScreenMobile: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    ...typography.body,
-    color: colors.text,
-    marginTop: spacing.md,
-  },
-  header: {
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-  },
-  headerIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 215, 0, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerIconText: {
-    fontSize: 24,
-  },
-  headerContent: {
-    flex: 1,
-  },
-  title: {
-    ...typography.h2,
-    color: colors.text,
-  },
-  subtitle: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  row: {
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-  },
-  gridContent: {
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xxl,
-  },
-  cardWrapper: {
-    flex: 1,
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.sm,
-  },
-  card: {
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  thumbnail: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  thumbnailPlaceholder: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 48,
-  },
-  typeBadge: {
-    position: 'absolute',
-    top: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  typeBadgeText: {
-    fontSize: 14,
-  },
-  removeButton: {
-    position: 'absolute',
-    top: 8,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: 'rgba(239, 68, 68, 0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  removeIcon: {
-    fontSize: 14,
-    color: colors.text,
-    fontWeight: '700',
-  },
-  cardInfo: {
-    padding: spacing.md,
-  },
-  cardTitle: {
-    ...typography.h4,
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  cardSubtitle: {
-    ...typography.caption,
-    color: colors.textSecondary,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: spacing.xxxl,
-    paddingHorizontal: spacing.lg,
-  },
-  emptyCard: {
-    padding: spacing.xxl,
-    alignItems: 'center',
-    width: '100%',
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: spacing.md,
-  },
-  emptyTitle: {
-    ...typography.h3,
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-});
 
 export default FavoritesScreenMobile;

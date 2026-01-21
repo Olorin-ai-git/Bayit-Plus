@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
@@ -13,8 +13,7 @@ import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import { historyService } from '@/services/api';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassView } from '@bayit/shared/ui';
+import { colors } from '@bayit/shared/theme';
 import {
   BackButton,
   ContentActions,
@@ -137,7 +136,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
   const title = content.title || content.name || '';
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 96 }}>
       <BackButton label={t('common.back')} onPress={() => window.history.back()} />
 
       {isInFlow && (
@@ -155,7 +154,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
         />
       )}
 
-      <View style={styles.playerContainer}>
+      <View className="px-4 max-w-[1400px] mx-auto w-full aspect-video min-h-[300px] rounded-2xl overflow-hidden">
         {isAudio ? (
           <AudioPlayer
             src={streamUrl}
@@ -193,15 +192,15 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
         />
       )}
 
-      <View style={styles.infoContainer}>
-        <View style={styles.mainInfo}>
+      <View className="flex-row px-4 pt-6 gap-6 max-w-[1400px] mx-auto w-full">
+        <View className="flex-1">
           {effectiveType === 'live' && (
-            <View style={styles.liveBadge}>
-              <Text style={styles.liveBadgeText}>{t('common.live')}</Text>
+            <View className="bg-red-500 px-3 py-1 rounded self-start mb-4">
+              <Text className="text-xs font-bold text-white tracking-widest">{t('common.live')}</Text>
             </View>
           )}
 
-          <Text style={styles.title}>{title}</Text>
+          <Text className="text-[28px] font-bold text-white mb-4">{title}</Text>
 
           <ContentMetadata
             year={content.year}
@@ -213,7 +212,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
           />
 
           {content.description && (
-            <Text style={styles.description}>{content.description}</Text>
+            <Text className="text-base text-gray-300 leading-6 mb-6">{content.description}</Text>
           )}
 
           <ContentActions
@@ -223,9 +222,9 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
           />
 
           {content.cast && content.cast.length > 0 && (
-            <View style={styles.castSection}>
-              <Text style={styles.sectionTitle}>{t('watch.cast')}</Text>
-              <Text style={styles.castText}>{content.cast.join(', ')}</Text>
+            <View className="mt-6">
+              <Text className="text-lg font-semibold text-white mb-3">{t('watch.cast')}</Text>
+              <Text className="text-sm text-gray-400">{content.cast.join(', ')}</Text>
             </View>
           )}
 
@@ -255,73 +254,3 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    paddingBottom: spacing.xl * 2,
-  },
-  playerContainer: {
-    paddingHorizontal: spacing.md,
-    maxWidth: 1400,
-    marginHorizontal: 'auto',
-    width: '100%',
-    aspectRatio: 16 / 9,
-    minHeight: 300,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-  },
-  infoContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.lg,
-    gap: spacing.lg,
-    maxWidth: 1400,
-    marginHorizontal: 'auto',
-    width: '100%',
-  },
-  mainInfo: {
-    flex: 1,
-  },
-  liveBadge: {
-    backgroundColor: colors.error,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-    alignSelf: 'flex-start',
-    marginBottom: spacing.md,
-  },
-  liveBadgeText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: colors.text,
-    letterSpacing: 1,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  description: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    lineHeight: 24,
-    marginBottom: spacing.lg,
-  },
-  castSection: {
-    marginTop: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  castText: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-});

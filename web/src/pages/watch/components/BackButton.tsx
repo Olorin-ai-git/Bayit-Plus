@@ -3,9 +3,9 @@
  * Navigation button to go back to previous page
  */
 
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { ArrowRight } from 'lucide-react';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 
 interface BackButtonProps {
   label: string;
@@ -14,34 +14,11 @@ interface BackButtonProps {
 
 export function BackButton({ label, onPress }: BackButtonProps) {
   return (
-    <View style={styles.container}>
-      <Pressable onPress={onPress} style={styles.button}>
+    <View className="px-4 py-4 max-w-[1400px] mx-auto w-full">
+      <Pressable onPress={onPress} className="flex-row items-center gap-2 p-3 bg-white/10 backdrop-blur-xl rounded-lg self-start">
         <ArrowRight size={20} color={colors.text} />
-        <Text style={styles.text}>{label}</Text>
+        <Text className="text-sm text-white">{label}</Text>
       </Pressable>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    maxWidth: 1400,
-    marginHorizontal: 'auto',
-    width: '100%',
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    padding: spacing.sm,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.md,
-    alignSelf: 'flex-start',
-  },
-  text: {
-    fontSize: 14,
-    color: colors.text,
-  },
-});

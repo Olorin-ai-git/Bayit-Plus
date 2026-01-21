@@ -15,7 +15,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   RefreshControl,
@@ -216,14 +215,14 @@ export const SecurityScreenMobile: React.FC = () => {
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <GlassView style={styles.optionCard}>
-        <View style={[styles.optionContent, isRTL && styles.contentRTL]}>
-          {icon && <Text style={styles.optionIcon}>{icon}</Text>}
-          <View style={styles.optionInfo}>
-            <Text style={[styles.optionTitle, { textAlign }]}>{title}</Text>
-            <Text style={[styles.optionDescription, { textAlign }]}>{description}</Text>
+      <GlassView className="rounded-lg mb-2 p-4">
+        <View className={`flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+          {icon && <Text className="text-2xl mr-4">{icon}</Text>}
+          <View className="flex-1">
+            <Text className="text-base font-medium text-white" style={{ textAlign }}>{title}</Text>
+            <Text className="text-sm text-white/60" style={{ textAlign }}>{description}</Text>
           </View>
-          <Text style={styles.chevron}>{isRTL ? '‹' : '›'}</Text>
+          <Text className="text-2xl text-white/60">{isRTL ? '‹' : '›'}</Text>
         </View>
       </GlassView>
     </TouchableOpacity>
@@ -237,12 +236,12 @@ export const SecurityScreenMobile: React.FC = () => {
     disabled?: boolean,
     icon?: string
   ) => (
-    <GlassView style={styles.optionCard}>
-      <View style={[styles.optionContent, isRTL && styles.contentRTL]}>
-        {icon && <Text style={styles.optionIcon}>{icon}</Text>}
-        <View style={styles.optionInfo}>
-          <Text style={[styles.optionTitle, { textAlign }]}>{title}</Text>
-          <Text style={[styles.optionDescription, { textAlign }]}>{description}</Text>
+    <GlassView className="rounded-lg mb-2 p-4">
+      <View className={`flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+        {icon && <Text className="text-2xl mr-4">{icon}</Text>}
+        <View className="flex-1">
+          <Text className="text-base font-medium text-white" style={{ textAlign }}>{title}</Text>
+          <Text className="text-sm text-white/60" style={{ textAlign }}>{description}</Text>
         </View>
         <Switch
           value={value}
@@ -257,17 +256,17 @@ export const SecurityScreenMobile: React.FC = () => {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.loadingContainer}>
+      <SafeAreaView className="flex-1 bg-black justify-center items-center">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-white text-base mt-4">{t('common.loading')}</Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1 bg-black">
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={{ paddingHorizontal: spacing.md, paddingBottom: spacing.xl }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -279,21 +278,21 @@ export const SecurityScreenMobile: React.FC = () => {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={[styles.header, isRTL && styles.headerRTL]}>
+        <View className={`flex-row items-center py-4 gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={styles.backButton}
+            className="w-11 h-11 justify-center items-center"
           >
-            <Text style={styles.backText}>{isRTL ? '‹' : '›'}</Text>
+            <Text className="text-4xl text-white font-light">{isRTL ? '‹' : '›'}</Text>
           </TouchableOpacity>
-          <Text style={[styles.title, { textAlign }]}>
+          <Text className="flex-1 text-3xl font-bold text-white" style={{ textAlign }}>
             {t('security.title')}
           </Text>
         </View>
 
         {/* Password Section */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { textAlign }]}>
+        <View className="mb-4">
+          <Text className="text-lg font-semibold text-white mb-2" style={{ textAlign }}>
             {t('security.password')}
           </Text>
           {renderSecurityOption(
@@ -305,8 +304,8 @@ export const SecurityScreenMobile: React.FC = () => {
         </View>
 
         {/* Authentication Section */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { textAlign }]}>
+        <View className="mb-4">
+          <Text className="text-lg font-semibold text-white mb-2" style={{ textAlign }}>
             {t('security.authentication')}
           </Text>
 
@@ -330,48 +329,48 @@ export const SecurityScreenMobile: React.FC = () => {
         </View>
 
         {/* Connected Devices Section */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { textAlign }]}>
+        <View className="mb-4">
+          <Text className="text-lg font-semibold text-white mb-2" style={{ textAlign }}>
             {t('security.connectedDevices')}
           </Text>
 
           {devices.length === 0 ? (
-            <GlassView style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>📱</Text>
-              <Text style={[styles.emptyText, { textAlign }]}>
+            <GlassView className="rounded-lg p-6 items-center">
+              <Text className="text-5xl mb-4">📱</Text>
+              <Text className="text-base text-white/60" style={{ textAlign }}>
                 {t('security.noDevices')}
               </Text>
             </GlassView>
           ) : (
             devices.map((device) => (
-              <GlassView key={device.id} style={styles.deviceCard}>
-                <View style={[styles.deviceContent, isRTL && styles.contentRTL]}>
-                  <Text style={styles.deviceIcon}>
+              <GlassView key={device.id} className="rounded-lg mb-2 p-4">
+                <View className={`flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <Text className="text-3xl mr-4">
                     {getDeviceIcon(device.type)}
                   </Text>
-                  <View style={styles.deviceInfo}>
-                    <View style={[styles.deviceNameRow, isRTL && styles.contentRTL]}>
-                      <Text style={[styles.deviceName, { textAlign }]}>
+                  <View className="flex-1">
+                    <View className={`flex-row items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                      <Text className="text-base font-medium text-white" style={{ textAlign }}>
                         {device.name}
                       </Text>
                       {device.isCurrent && (
-                        <View style={styles.currentBadge}>
-                          <Text style={styles.currentBadgeText}>
+                        <View className="bg-green-500/20 px-2 py-0.5 rounded">
+                          <Text className="text-xs text-green-400 font-semibold">
                             {t('security.thisDevice')}
                           </Text>
                         </View>
                       )}
                     </View>
-                    <Text style={[styles.deviceMeta, { textAlign }]}>
+                    <Text className="text-sm text-white/60 mt-0.5" style={{ textAlign }}>
                       {t('security.lastActive')}: {device.lastActive}
                     </Text>
                   </View>
                   {!device.isCurrent && (
                     <TouchableOpacity
                       onPress={() => handleRemoveDevice(device.id)}
-                      style={styles.removeButton}
+                      className="px-2 py-1"
                     >
-                      <Text style={styles.removeText}>{t('security.remove')}</Text>
+                      <Text className="text-sm text-red-500">{t('security.remove')}</Text>
                     </TouchableOpacity>
                   )}
                 </View>
@@ -381,35 +380,32 @@ export const SecurityScreenMobile: React.FC = () => {
         </View>
 
         {/* Login History Section */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { textAlign }]}>
+        <View className="mb-4">
+          <Text className="text-lg font-semibold text-white mb-2" style={{ textAlign }}>
             {t('security.loginHistory')}
           </Text>
 
           {loginHistory.length === 0 ? (
-            <GlassView style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>📋</Text>
-              <Text style={[styles.emptyText, { textAlign }]}>
+            <GlassView className="rounded-lg p-6 items-center">
+              <Text className="text-5xl mb-4">📋</Text>
+              <Text className="text-base text-white/60" style={{ textAlign }}>
                 {t('security.noLoginHistory')}
               </Text>
             </GlassView>
           ) : (
             loginHistory.slice(0, 5).map((entry) => (
-              <GlassView key={entry.id} style={styles.historyCard}>
-                <View style={[styles.historyContent, isRTL && styles.contentRTL]}>
-                  <View style={[
-                    styles.historyStatus,
-                    entry.success ? styles.historySuccess : styles.historyFailed
-                  ]}>
-                    <Text style={styles.historyStatusIcon}>
+              <GlassView key={entry.id} className="rounded-lg mb-2 p-4">
+                <View className={`flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <View className={`w-8 h-8 rounded-full justify-center items-center mr-4 ${entry.success ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
+                    <Text className="text-base font-bold text-white">
                       {entry.success ? '✓' : '✕'}
                     </Text>
                   </View>
-                  <View style={styles.historyInfo}>
-                    <Text style={[styles.historyDevice, { textAlign }]}>
+                  <View className="flex-1">
+                    <Text className="text-base font-medium text-white" style={{ textAlign }}>
                       {entry.device}
                     </Text>
-                    <Text style={[styles.historyMeta, { textAlign }]}>
+                    <Text className="text-sm text-white/60 mt-0.5" style={{ textAlign }}>
                       {entry.location} • {entry.timestamp}
                     </Text>
                   </View>
@@ -421,9 +417,9 @@ export const SecurityScreenMobile: React.FC = () => {
           {loginHistory.length > 5 && (
             <TouchableOpacity
               onPress={() => navigation.navigate('LoginHistory')}
-              style={styles.viewAllButton}
+              className="items-center py-4"
             >
-              <Text style={styles.viewAllText}>
+              <Text className="text-sm text-purple-400 font-medium">
                 {t('security.viewAllHistory')}
               </Text>
             </TouchableOpacity>
@@ -431,7 +427,7 @@ export const SecurityScreenMobile: React.FC = () => {
         </View>
 
         {/* Sign Out All Devices */}
-        <View style={styles.section}>
+        <View className="mb-4">
           <GlassButton
             title={t('security.signOutAllDevices')}
             onPress={() => {
@@ -463,208 +459,5 @@ export const SecurityScreenMobile: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: 16,
-    marginTop: spacing.md,
-  },
-  content: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.xl,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.lg,
-    gap: spacing.md,
-  },
-  headerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  backButton: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backText: {
-    fontSize: 32,
-    color: colors.text,
-    fontWeight: '300',
-  },
-  title: {
-    flex: 1,
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  section: {
-    marginBottom: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  optionCard: {
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.sm,
-    padding: spacing.md,
-  },
-  optionContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  contentRTL: {
-    flexDirection: 'row-reverse',
-  },
-  optionIcon: {
-    fontSize: 24,
-    marginRight: spacing.md,
-  },
-  optionInfo: {
-    flex: 1,
-  },
-  optionTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  optionDescription: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  chevron: {
-    fontSize: 24,
-    color: colors.textSecondary,
-  },
-  deviceCard: {
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.sm,
-    padding: spacing.md,
-  },
-  deviceContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  deviceIcon: {
-    fontSize: 28,
-    marginRight: spacing.md,
-  },
-  deviceInfo: {
-    flex: 1,
-  },
-  deviceNameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  deviceName: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  currentBadge: {
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  currentBadgeText: {
-    fontSize: 11,
-    color: '#22c55e',
-    fontWeight: '600',
-  },
-  deviceMeta: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  removeButton: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-  },
-  removeText: {
-    color: colors.error,
-    fontSize: 14,
-  },
-  historyCard: {
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.sm,
-    padding: spacing.md,
-  },
-  historyContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  historyStatus: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.md,
-  },
-  historySuccess: {
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-  },
-  historyFailed: {
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-  },
-  historyStatusIcon: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  historyInfo: {
-    flex: 1,
-  },
-  historyDevice: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  historyMeta: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  viewAllButton: {
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-  },
-  viewAllText: {
-    color: colors.primary,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  emptyCard: {
-    borderRadius: borderRadius.lg,
-    padding: spacing.xl,
-    alignItems: 'center',
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-});
 
 export default SecurityScreenMobile;

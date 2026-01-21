@@ -14,7 +14,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   RefreshControl,
@@ -85,34 +84,34 @@ const JudaismCard: React.FC<JudaismCardProps> = ({ item, onPress, getLocalizedTe
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.7}
-      style={styles.cardTouchable}
+      className="flex-1 m-1 min-h-[48px]"
     >
-      <View style={styles.card}>
+      <View className="bg-[#2d2540] rounded-xl overflow-hidden">
         {item.thumbnail ? (
           <Image
             source={{ uri: item.thumbnail }}
-            style={styles.cardImage}
+            className="w-full aspect-video"
             resizeMode="cover"
           />
         ) : (
-          <View style={styles.cardImagePlaceholder}>
-            <Text style={styles.placeholderIcon}>{TYPE_ICONS[item.type] || '✡️'}</Text>
+          <View className="w-full aspect-video bg-purple-500/10 justify-center items-center">
+            <Text className="text-4xl">{TYPE_ICONS[item.type] || '✡️'}</Text>
           </View>
         )}
-        <View style={[styles.typeBadge, isRTL ? { left: 8 } : { right: 8 }]}>
-          <Text style={styles.typeBadgeText}>{TYPE_ICONS[item.type]}</Text>
+        <View className={`absolute top-2 ${isRTL ? 'left-2' : 'right-2'} bg-black/70 rounded-xl px-2 py-1`}>
+          <Text className="text-xs">{TYPE_ICONS[item.type]}</Text>
         </View>
         {item.duration && (
-          <View style={[styles.durationBadge, isRTL ? { right: 8 } : { left: 8 }]}>
-            <Text style={styles.durationText}>{item.duration}</Text>
+          <View className={`absolute top-2 ${isRTL ? 'right-2' : 'left-2'} bg-purple-600/90 rounded-lg px-1.5 py-0.5`}>
+            <Text className="text-[10px] text-white font-bold">{item.duration}</Text>
           </View>
         )}
-        <View style={styles.cardContent}>
-          <Text style={[styles.cardTitle, { textAlign }]} numberOfLines={2}>
+        <View className="p-3">
+          <Text className="text-[13px] font-semibold text-white leading-[18px]" numberOfLines={2} style={{ textAlign }}>
             {getLocalizedText(item, 'title')}
           </Text>
           {item.rabbi && (
-            <Text style={[styles.cardRabbi, { textAlign }]} numberOfLines={1}>
+            <Text className="text-xs text-purple-300 mt-0.5" numberOfLines={1} style={{ textAlign }}>
               {getLocalizedText(item, 'rabbi')}
             </Text>
           )}
@@ -143,11 +142,11 @@ const CategoryPill: React.FC<CategoryPillProps> = ({
   return (
     <TouchableOpacity
       onPress={handlePress}
-      style={[styles.categoryPill, isActive && styles.categoryPillActive]}
+      className={`flex-row items-center px-4 py-2 bg-white/10 rounded-lg gap-1 min-h-[48px] ${isActive ? 'bg-purple-500/30 border border-purple-500' : ''}`}
       activeOpacity={0.7}
     >
-      <Text style={styles.categoryEmoji}>{category.icon}</Text>
-      <Text style={[styles.categoryLabel, isActive && styles.categoryLabelActive]}>
+      <Text className="text-base">{category.icon}</Text>
+      <Text className={`text-sm font-medium ${isActive ? 'text-purple-500' : 'text-white/60'}`}>
         {getLocalizedText(category, 'name')}
       </Text>
     </TouchableOpacity>
@@ -237,13 +236,13 @@ export const JudaismScreenMobile: React.FC = () => {
   const renderHeader = () => (
     <View>
       {/* Header */}
-      <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
-        <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md }]}>
-          <Text style={styles.headerIconText}>✡️</Text>
+      <View className="flex-row items-center px-4 pt-6 pb-4" style={{ flexDirection: isRTL ? 'row' : 'row-reverse', marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md }}>
+        <View className="w-12 h-12 rounded-full bg-purple-500/20 justify-center items-center">
+          <Text className="text-2xl">✡️</Text>
         </View>
-        <View style={styles.headerTextContainer}>
-          <Text style={[styles.title, { textAlign }]}>{t('judaism.title', 'יהדות')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
+        <View className="flex-1">
+          <Text className="text-3xl font-bold text-purple-500" style={{ textAlign }}>{t('judaism.title', 'יהדות')}</Text>
+          <Text className="text-sm text-purple-500/70 mt-0.5" style={{ textAlign }}>
             {content.length} {t('judaism.items', 'פריטים')}
           </Text>
         </View>
@@ -254,10 +253,8 @@ export const JudaismScreenMobile: React.FC = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[
-            styles.categoriesContainer,
-            { flexDirection: isRTL ? 'row' : 'row-reverse' },
-          ]}
+          contentContainerStyle={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}
+          className="px-4 pb-4 gap-2"
         >
           {(isRTL ? categories : [...categories].reverse()).map((category) => (
             <CategoryPill
@@ -272,30 +269,30 @@ export const JudaismScreenMobile: React.FC = () => {
       )}
 
       {/* Jerusalem Row */}
-      <View style={styles.specialSection}>
+      <View className="mb-4">
         <JerusalemRow showTitle={true} />
       </View>
 
       {/* Tel Aviv Row */}
-      <View style={styles.specialSection}>
+      <View className="mb-4">
         <TelAvivRow showTitle={true} />
       </View>
 
       {/* Section Title */}
-      <Text style={[styles.sectionTitle, { textAlign }]}>
+      <Text className="text-lg font-semibold text-white mb-2 px-4" style={{ textAlign }}>
         {t('judaism.allContent', 'כל התוכן')}
       </Text>
     </View>
   );
 
   const renderEmptyState = () => (
-    <View style={styles.emptyState}>
-      <View style={styles.emptyCard}>
-        <Text style={styles.emptyIcon}>✡️</Text>
-        <Text style={[styles.emptyTitle, { textAlign }]}>
+    <View className="flex-1 justify-center items-center py-[60px] px-6">
+      <View className="p-6 items-center bg-purple-500/10 rounded-lg">
+        <Text className="text-5xl mb-4">✡️</Text>
+        <Text className="text-lg font-semibold text-purple-500 mb-2" style={{ textAlign }}>
           {t('judaism.empty', 'אין תוכן זמין')}
         </Text>
-        <Text style={[styles.emptySubtitle, { textAlign }]}>
+        <Text className="text-sm text-purple-500/70" style={{ textAlign }}>
           {t('judaism.emptyHint', 'נסה קטגוריה אחרת')}
         </Text>
       </View>
@@ -304,21 +301,21 @@ export const JudaismScreenMobile: React.FC = () => {
 
   if (isLoading && content.length === 0) {
     return (
-      <SafeAreaView style={styles.loadingContainer}>
+      <SafeAreaView className="flex-1 bg-[#1a1525] justify-center items-center">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text className="text-white text-base mt-4">{t('common.loading')}</Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1 bg-[#1a1525]">
       <FlatList
         data={content}
         keyExtractor={(item) => item.id}
         numColumns={numColumns}
         key={`judaism-grid-${numColumns}`}
-        contentContainerStyle={styles.grid}
+        contentContainerStyle={{ paddingHorizontal: spacing.sm, paddingBottom: spacing.xl }}
         ListHeaderComponent={renderHeader}
         renderItem={({ item }) => (
           <JudaismCard
@@ -342,189 +339,5 @@ export const JudaismScreenMobile: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: 16,
-    marginTop: spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-  },
-  headerIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(126, 34, 206, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerIconText: {
-    fontSize: 24,
-  },
-  headerTextContainer: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  categoriesContainer: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.md,
-    gap: spacing.sm,
-  },
-  categoryPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.lg,
-    gap: spacing.xs,
-    minHeight: 48,
-  },
-  categoryPillActive: {
-    backgroundColor: 'rgba(126, 34, 206, 0.3)',
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  categoryEmoji: {
-    fontSize: 16,
-  },
-  categoryLabel: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    fontWeight: '500',
-  },
-  categoryLabelActive: {
-    color: colors.primary,
-  },
-  specialSection: {
-    marginBottom: spacing.md,
-    marginHorizontal: -spacing.xs,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    paddingHorizontal: spacing.md,
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  grid: {
-    paddingHorizontal: spacing.sm,
-    paddingBottom: spacing.xl,
-  },
-  cardTouchable: {
-    flex: 1,
-    margin: spacing.xs,
-    minHeight: 48,
-  },
-  card: {
-    backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.md,
-    overflow: 'hidden',
-  },
-  cardImage: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-  },
-  cardImagePlaceholder: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    backgroundColor: colors.backgroundElevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 36,
-  },
-  typeBadge: {
-    position: 'absolute',
-    top: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  typeBadgeText: {
-    fontSize: 12,
-  },
-  durationBadge: {
-    position: 'absolute',
-    top: 8,
-    backgroundColor: colors.primary,
-    borderRadius: 8,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  durationText: {
-    fontSize: 10,
-    color: colors.text,
-    fontWeight: 'bold',
-  },
-  cardContent: {
-    padding: spacing.sm,
-  },
-  cardTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.text,
-    lineHeight: 18,
-  },
-  cardRabbi: {
-    fontSize: 12,
-    color: colors.primaryLight,
-    marginTop: 2,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-    paddingHorizontal: spacing.lg,
-  },
-  emptyCard: {
-    padding: spacing.xl,
-    alignItems: 'center',
-    backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.lg,
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-});
 
 export default JudaismScreenMobile;

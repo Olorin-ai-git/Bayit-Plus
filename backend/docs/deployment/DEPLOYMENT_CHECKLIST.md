@@ -14,7 +14,7 @@
 
 - [ ] **2. Test Locally (Optional but Recommended)**
   ```bash
-  cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
+  cd /Users/olorin/Documents/olorin/backend/scripts
   ./test_scheduler_strategy.sh
   ```
   - [ ] Test weekly comprehensive scan
@@ -42,7 +42,7 @@
 ### **Step 1: Deploy New Scheduler Jobs**
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend/scripts
+cd /Users/olorin/Documents/olorin/backend/scripts
 ./update_cloud_schedulers.sh
 ```
 
@@ -91,7 +91,7 @@ gcloud scheduler jobs executions list librarian-daily-maintenance --location=us-
 ### **Step 5: View Audit Results**
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend
+cd /Users/olorin/Documents/olorin/backend
 
 # View latest audit
 poetry run python scripts/view_audit_results.py

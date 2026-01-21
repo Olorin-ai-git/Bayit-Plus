@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
@@ -24,12 +24,12 @@ export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue, isRTL, 
   const [showQueue, setShowQueue] = useState(true);
 
   return (
-    <View style={styles.section}>
+    <View className="mb-6 pt-4 border-t" style={{ borderTopColor: colors.glassBorder }}>
       <Pressable
-        style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+        className={`flex-row justify-between items-center mb-4 gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
         onPress={() => setShowQueue(!showQueue)}
       >
-        <Text style={[styles.sectionTitle, { textAlign, flex: 1 }]}>
+        <Text className="flex-1 text-lg font-semibold" style={{ textAlign, color: colors.text }}>
           {t('admin.uploads.queuedItems', 'Queued')} ({queue.length})
         </Text>
         {showQueue ? (
@@ -41,25 +41,25 @@ export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue, isRTL, 
 
       {showQueue && (
         <ScrollView
-          style={styles.jobList}
+          className="max-h-[600px]"
           nestedScrollEnabled
           showsVerticalScrollIndicator={false}
         >
           {queue.length === 0 ? (
-            <Text style={[styles.emptyText, { textAlign }]}>
+            <Text className="text-sm text-center py-6" style={{ textAlign, color: colors.textMuted }}>
               {t('admin.uploads.noQueuedItems', 'No items in queue')}
             </Text>
           ) : (
             queue.map((job) => (
-              <View key={job.job_id} style={styles.queuedJobCard}>
-                <View style={[styles.jobHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <View key={job.job_id} className="rounded-sm p-4 mb-2 border" style={{ backgroundColor: colors.backgroundLight, borderColor: colors.glassBorder }}>
+                <View className={`flex-row items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <StatusIcon status={job.status} job={job} />
-                  <Text style={[styles.jobFilename, { flex: 1, textAlign }]} numberOfLines={1}>
+                  <Text className="flex-1 text-base font-semibold" style={{ textAlign, color: colors.text }} numberOfLines={1}>
                     {job.filename}
                   </Text>
-                  <Text style={styles.jobSize}>{formatFileSize(job.file_size)}</Text>
+                  <Text className="text-sm" style={{ color: colors.textMuted }}>{formatFileSize(job.file_size)}</Text>
                 </View>
-                <Text style={[styles.jobTime, { textAlign }]}>
+                <Text className="text-xs mt-1" style={{ textAlign, color: colors.textMuted }}>
                   {t('admin.uploads.addedAt', 'Added')}: {format(new Date(job.created_at), 'MMM d, HH:mm')}
                 </Text>
               </View>
@@ -70,61 +70,3 @@ export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue, isRTL, 
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  section: {
-    marginBottom: spacing.lg,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.glassBorder,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-    gap: spacing.sm,
-  },
-  sectionTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  queuedJobCard: {
-    backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.sm,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  jobHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  jobFilename: {
-    fontSize: fontSize.md,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  jobSize: {
-    fontSize: fontSize.sm,
-    color: colors.textMuted,
-  },
-  jobTime: {
-    fontSize: fontSize.xs,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-  },
-  jobList: {
-    maxHeight: 600,
-  },
-  emptyText: {
-    fontSize: fontSize.sm,
-    color: colors.textMuted,
-    textAlign: 'center',
-    paddingVertical: spacing.lg,
-  },
-});

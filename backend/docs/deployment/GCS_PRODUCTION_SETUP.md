@@ -77,7 +77,7 @@ roles/run.invoker
 Run the provided setup script:
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 ./deployment/scripts/setup_gcs_production.sh
 ```
 

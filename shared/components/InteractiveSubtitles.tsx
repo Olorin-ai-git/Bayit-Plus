@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Animated,
   Modal,
@@ -204,7 +203,7 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
+      <View className="w-full items-center py-4">
         <ActivityIndicator color={colors.primary} size="small" />
       </View>
     );
@@ -212,14 +211,14 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
 
   if (!currentCue) {
     return (
-      <View style={styles.container}>
-        <View style={styles.controls}>
+      <View className="w-full items-center py-4">
+        <View className="absolute top-2 right-4 flex-row gap-2 z-10">
           <TouchableOpacity
-            style={[styles.controlButton, showNikud && styles.controlButtonActive]}
+            className={`flex-row items-center gap-1 px-4 py-2 bg-white/15 rounded-full border border-white/25 ${showNikud ? 'bg-purple-500/50 border-blue-500/70' : ''}`}
             onPress={toggleNikud}
           >
-            <Text style={styles.nikudIcon}>אָ</Text>
-            <Text style={styles.controlLabel}>{t('subtitles.nikud')}</Text>
+            <Text className="text-[18px] font-semibold text-white">אָ</Text>
+            <Text className="text-sm text-white">{t('subtitles.nikud')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -227,24 +226,24 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View className="w-full items-center py-4">
       {/* Controls */}
-      <View style={styles.controls}>
+      <View className="absolute top-2 right-4 flex-row gap-2 z-10">
         <TouchableOpacity
-          style={[styles.controlButton, showNikud && styles.controlButtonActive]}
+          className={`flex-row items-center gap-1 px-4 py-2 bg-white/15 rounded-full border border-white/25 ${showNikud ? 'bg-purple-500/50 border-blue-500/70' : ''}`}
           onPress={toggleNikud}
         >
-          <Text style={styles.nikudIcon}>אָ</Text>
-          <Text style={styles.controlLabel}>{t('subtitles.nikud')}</Text>
+          <Text className="text-[18px] font-semibold text-white">אָ</Text>
+          <Text className="text-sm text-white">{t('subtitles.nikud')}</Text>
         </TouchableOpacity>
 
         {isTV && (
           <TouchableOpacity
-            style={[styles.controlButton, subtitlesMode === 'select' && styles.controlButtonActive]}
+            className={`flex-row items-center gap-1 px-4 py-2 bg-white/15 rounded-full border border-white/25 ${subtitlesMode === 'select' ? 'bg-purple-500/50 border-blue-500/70' : ''}`}
             onPress={toggleSelectMode}
           >
-            <Text style={styles.controlIcon}>👆</Text>
-            <Text style={styles.controlLabel}>
+            <Text className="text-base">👆</Text>
+            <Text className="text-sm text-white">
               {subtitlesMode === 'select' ? t('subtitles.selection') : t('subtitles.translation')}
             </Text>
           </TouchableOpacity>
@@ -252,25 +251,18 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
       </View>
 
       {/* Subtitle Text */}
-      <Animated.View style={[styles.subtitleContainer, { opacity: fadeAnim }]}>
-        <GlassView style={styles.subtitleGlass} intensity="medium">
-          <View style={styles.subtitleText}>
+      <Animated.View className="w-full items-center px-6" style={{ opacity: fadeAnim }}>
+        <GlassView className={`px-6 py-4 rounded-2xl max-w-[85%]`} intensity="medium">
+          <View className="flex-row-reverse flex-wrap justify-center gap-1">
             {currentCue.words.map((word, index) => (
               <TouchableOpacity
                 key={`${currentCue.index}-${index}`}
                 onPress={() => word.is_hebrew && handleWordSelect(word, index)}
                 disabled={!word.is_hebrew}
-                style={[
-                  styles.wordContainer,
-                  focusedWordIndex === index && styles.wordFocused,
-                ]}
+                className={`px-1 py-0.5 rounded ${focusedWordIndex === index ? 'bg-blue-500/40' : ''}`}
               >
                 <Text
-                  style={[
-                    styles.word,
-                    word.is_hebrew && styles.hebrewWord,
-                    focusedWordIndex === index && styles.wordFocusedText,
-                  ]}
+                  className={`${isTV ? 'text-[28px]' : 'text-xl'} font-medium text-white ${focusedWordIndex === index ? 'text-[#60a5fa]' : ''}`}
                 >
                   {word.word}
                 </Text>
@@ -281,7 +273,7 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
       </Animated.View>
 
       {/* Timestamp */}
-      <Text style={styles.timestamp}>
+      <Text className="text-xs text-gray-500 mt-2">
         {currentCue.formatted_start} - {currentCue.formatted_end}
       </Text>
 
@@ -293,32 +285,32 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
         onRequestClose={() => setShowTranslation(false)}
       >
         <TouchableOpacity
-          style={styles.modalOverlay}
+          className="flex-1 bg-black/70 justify-center items-center"
           activeOpacity={1}
           onPress={() => setShowTranslation(false)}
         >
-          <GlassView style={styles.translationModal} intensity="heavy">
+          <GlassView className={`${isTV ? 'w-[400px]' : 'w-[300px]'} max-h-[60%] p-6 rounded-3xl`} intensity="heavy">
             {isTranslating ? (
-              <View style={styles.translationLoading}>
+              <View className="items-center py-8">
                 <ActivityIndicator color={colors.primary} />
-                <Text style={styles.loadingText}>{t('subtitles.translating')}</Text>
+                <Text className="text-sm text-gray-400 mt-2">{t('subtitles.translating')}</Text>
               </View>
             ) : translation ? (
               <ScrollView>
-                <View style={styles.translationHeader}>
-                  <Text style={styles.originalWord}>{translation.word}</Text>
+                <View className="mb-4 pb-4 border-b border-white/10">
+                  <Text className={`${isTV ? 'text-[32px]' : 'text-[26px]'} font-semibold text-white text-right`}>{translation.word}</Text>
                   {translation.transliteration && (
-                    <Text style={styles.transliteration}>
+                    <Text className="text-sm text-gray-400 italic mt-1">
                       {translation.transliteration}
                     </Text>
                   )}
                 </View>
 
-                <View style={styles.translationContent}>
-                  <Text style={styles.translationText}>{translation.translation}</Text>
+                <View className="flex-row items-baseline gap-2 mb-4">
+                  <Text className={`${isTV ? 'text-[22px]' : 'text-lg'} font-medium text-purple-400 flex-1`}>{translation.translation}</Text>
                   {translation.part_of_speech && (
-                    <View style={styles.partOfSpeechBadge}>
-                      <Text style={styles.partOfSpeechText}>
+                    <View className="bg-white/10 px-2 py-0.5 rounded-full">
+                      <Text className="text-xs text-gray-400">
                         {translation.part_of_speech}
                       </Text>
                     </View>
@@ -326,10 +318,12 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
                 </View>
 
                 {translation.example && (
-                  <View style={styles.exampleContainer}>
-                    <Text style={styles.exampleHebrew}>{translation.example}</Text>
+                  <View className="mt-4 pt-4 border-t border-white/10">
+                    <Text className="text-sm text-gray-400 text-right mb-1">
+                      {translation.example}
+                    </Text>
                     {translation.example_translation && (
-                      <Text style={styles.exampleEnglish}>
+                      <Text className="text-sm text-gray-500 italic">
                         {translation.example_translation}
                       </Text>
                     )}
@@ -339,10 +333,10 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
             ) : null}
 
             <TouchableOpacity
-              style={styles.closeButton}
+              className="mt-6 py-2 bg-white/10 rounded-lg items-center"
               onPress={() => setShowTranslation(false)}
             >
-              <Text style={styles.closeButtonText}>{t('subtitles.close')}</Text>
+              <Text className="text-base text-white font-medium">{t('subtitles.close')}</Text>
             </TouchableOpacity>
           </GlassView>
         </TouchableOpacity>
@@ -350,179 +344,5 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-  },
-  controls: {
-    position: 'absolute',
-    top: spacing.sm,
-    right: spacing.md,
-    flexDirection: 'row',
-    gap: spacing.sm,
-    zIndex: 10,
-  },
-  controlButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderRadius: borderRadius.full,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
-  },
-  controlButtonActive: {
-    backgroundColor: 'rgba(168, 85, 247, 0.5)',
-    borderColor: 'rgba(59, 130, 246, 0.7)',
-  },
-  nikudIcon: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  controlIcon: {
-    fontSize: 16,
-  },
-  controlLabel: {
-    fontSize: fontSize.sm,
-    color: colors.text,
-  },
-  subtitleContainer: {
-    width: '100%',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-  },
-  subtitleGlass: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-    maxWidth: '85%',
-  },
-  subtitleText: {
-    flexDirection: 'row-reverse',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: spacing.xs,
-  },
-  wordContainer: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  wordFocused: {
-    backgroundColor: 'rgba(59, 130, 246, 0.4)',
-  },
-  word: {
-    fontSize: isTV ? 28 : 20,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  hebrewWord: {
-    // Hebrew words are clickable
-  },
-  wordFocusedText: {
-    color: '#60a5fa',
-  },
-  timestamp: {
-    fontSize: fontSize.xs,
-    color: colors.textMuted,
-    marginTop: spacing.sm,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  translationModal: {
-    width: isTV ? 400 : 300,
-    maxHeight: '60%',
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-  },
-  translationLoading: {
-    alignItems: 'center',
-    paddingVertical: spacing.xl,
-  },
-  loadingText: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    marginTop: spacing.sm,
-  },
-  translationHeader: {
-    marginBottom: spacing.md,
-    paddingBottom: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  originalWord: {
-    fontSize: isTV ? 32 : 26,
-    fontWeight: '600',
-    color: colors.text,
-    textAlign: 'right',
-  },
-  transliteration: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    fontStyle: 'italic',
-    marginTop: spacing.xs,
-  },
-  translationContent: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: spacing.sm,
-    marginBottom: spacing.md,
-  },
-  translationText: {
-    fontSize: isTV ? 22 : 18,
-    fontWeight: '500',
-    color: colors.primary,
-    flex: 1,
-  },
-  partOfSpeechBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-  },
-  partOfSpeechText: {
-    fontSize: fontSize.xs,
-    color: colors.textSecondary,
-  },
-  exampleContainer: {
-    marginTop: spacing.md,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  exampleHebrew: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    textAlign: 'right',
-    marginBottom: spacing.xs,
-  },
-  exampleEnglish: {
-    fontSize: fontSize.sm,
-    color: colors.textMuted,
-    fontStyle: 'italic',
-  },
-  closeButton: {
-    marginTop: spacing.lg,
-    paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.md,
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    fontSize: fontSize.md,
-    color: colors.text,
-    fontWeight: '500',
-  },
-});
 
 export default InteractiveSubtitles;

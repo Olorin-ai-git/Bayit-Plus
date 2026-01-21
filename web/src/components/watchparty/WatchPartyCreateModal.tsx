@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Users, MessageSquare, RefreshCw, Check } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors } from '@bayit/shared/theme'
 import { GlassModal } from '@bayit/shared/ui'
 import logger from '@/utils/logger'
 
@@ -52,180 +52,68 @@ export default function WatchPartyCreateModal({
       dismissable={true}
     >
       {contentTitle && (
-        <View style={styles.contentInfo}>
+        <View className="flex-row items-center gap-4 p-4 rounded-lg bg-white/5 border border-white/10">
           <Users size={20} color={colors.primary} />
-          <View style={styles.contentInfoText}>
-            <Text style={styles.contentLabel}>{t('watchParty.title')}</Text>
-            <Text style={styles.contentTitle} numberOfLines={1}>{contentTitle}</Text>
+          <View className="flex-1 min-w-0">
+            <Text className="text-xs text-gray-400">{t('watchParty.title')}</Text>
+            <Text className="text-sm font-medium text-white" numberOfLines={1}>{contentTitle}</Text>
           </View>
         </View>
       )}
 
-      <View style={styles.options}>
+      <View className="gap-3">
         <Pressable
           onPress={() => toggleOption('chatEnabled')}
-          style={({ hovered }) => [
-            styles.optionRow,
-            hovered && styles.optionRowHovered,
-          ]}
+          className="flex-row items-center gap-4 p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10"
         >
           <MessageSquare size={20} color="#3B82F6" />
-          <Text style={styles.optionLabel}>
+          <Text className="flex-1 text-sm font-medium text-white text-right">
             {t('watchParty.options.chatEnabled')}
           </Text>
-          <View style={[styles.checkbox, options.chatEnabled && styles.checkboxActive]}>
+          <View className={`w-[22px] h-[22px] rounded items-center justify-center border-2 ${
+            options.chatEnabled ? 'bg-purple-600 border-purple-600' : 'border-white/20'
+          }`}>
             {options.chatEnabled && <Check size={14} color={colors.background} />}
           </View>
         </Pressable>
 
         <Pressable
           onPress={() => toggleOption('syncPlayback')}
-          style={({ hovered }) => [
-            styles.optionRow,
-            hovered && styles.optionRowHovered,
-          ]}
+          className="flex-row items-center gap-4 p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10"
         >
           <RefreshCw size={20} color="#34D399" />
-          <Text style={styles.optionLabel}>
+          <Text className="flex-1 text-sm font-medium text-white text-right">
             {t('watchParty.options.syncPlayback')}
           </Text>
-          <View style={[styles.checkbox, options.syncPlayback && styles.checkboxActive]}>
+          <View className={`w-[22px] h-[22px] rounded items-center justify-center border-2 ${
+            options.syncPlayback ? 'bg-purple-600 border-purple-600' : 'border-white/20'
+          }`}>
             {options.syncPlayback && <Check size={14} color={colors.background} />}
           </View>
         </Pressable>
       </View>
 
-      <View style={styles.actions}>
+      <View className="flex-row gap-4">
         <Pressable
           onPress={onClose}
-          style={({ hovered }) => [
-            styles.button,
-            styles.ghostButton,
-            hovered && styles.ghostButtonHovered,
-          ]}
+          className="flex-1 py-3 rounded-md bg-white/5 border border-white/10 items-center justify-center hover:bg-white/10"
         >
-          <Text style={styles.ghostButtonText}>{t('common.cancel')}</Text>
+          <Text className="text-sm font-medium text-gray-300">{t('common.cancel')}</Text>
         </Pressable>
         <Pressable
           onPress={handleCreate}
           disabled={loading}
-          style={({ hovered }) => [
-            styles.button,
-            styles.primaryButton,
-            hovered && !loading && styles.primaryButtonHovered,
-            loading && styles.buttonDisabled,
-          ]}
+          className={`flex-1 py-3 rounded-md bg-purple-600 items-center justify-center ${
+            loading ? 'opacity-50' : 'hover:shadow-[0_0_12px_rgba(168,85,247,0.5)]'
+          }`}
         >
           {loading ? (
             <ActivityIndicator size="small" color={colors.background} />
           ) : (
-            <Text style={styles.primaryButtonText}>{t('watchParty.create')}</Text>
+            <Text className="text-sm font-semibold text-black">{t('watchParty.create')}</Text>
           )}
         </Pressable>
       </View>
     </GlassModal>
   )
 }
-
-const styles = StyleSheet.create({
-  contentInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  contentInfoText: {
-    flex: 1,
-    minWidth: 0,
-  },
-  contentLabel: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  contentTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  options: {
-    gap: spacing.sm,
-  },
-  optionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  optionRowHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  optionLabel: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-    textAlign: 'right',
-  },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: borderRadius.sm,
-    borderWidth: 2,
-    borderColor: colors.glassBorder,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
-  button: {
-    flex: 1,
-    paddingVertical: spacing.sm + 2,
-    borderRadius: borderRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  ghostButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  ghostButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  ghostButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.textSecondary,
-  },
-  primaryButton: {
-    backgroundColor: colors.primary,
-  },
-  primaryButtonHovered: {
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-  },
-  primaryButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.background,
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-})

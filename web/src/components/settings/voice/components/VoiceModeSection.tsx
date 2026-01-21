@@ -3,10 +3,9 @@
  * Voice operation mode selection and information
  */
 
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { Radio as RadioIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
 import { VoiceMode } from '@bayit/shared-types/voiceModes';
 import { VoiceModeCard } from './VoiceModeCard';
@@ -43,19 +42,19 @@ export function VoiceModeSection({ selectedMode, isRTL, onModeChange }: VoiceMod
   const { t } = useTranslation();
 
   return (
-    <GlassView style={styles.section}>
-      <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
-        <RadioIcon size={16} color={colors.primary} />
-        <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>
+    <GlassView className="p-6 gap-4">
+      <View className={`flex-row items-center gap-2 mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <RadioIcon size={16} color="#A855F7" />
+        <Text className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-0">
           {t('profile.voice.operationMode', 'Voice Operation Mode')}
         </Text>
       </View>
 
-      <Text style={[styles.modeDescription, isRTL && styles.textRTL]}>
+      <Text className={`text-[13px] text-gray-400 mb-4 ${isRTL ? 'text-right' : ''}`}>
         {t('profile.voice.operationModeDesc', 'Choose how you interact with the app')}
       </Text>
 
-      <View style={styles.modesContainer}>
+      <View className="gap-4">
         {VOICE_MODES.map((modeOption) => (
           <VoiceModeCard
             key={modeOption.value}
@@ -68,33 +67,33 @@ export function VoiceModeSection({ selectedMode, isRTL, onModeChange }: VoiceMod
         ))}
       </View>
 
-      <View style={[styles.modeInfo, isRTL && styles.modeInfoRTL]}>
+      <View className={`pt-4 border-t border-white/5 mt-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
         {selectedMode === VoiceMode.VOICE_ONLY && (
           <>
-            <Text style={[styles.modeInfoLabel, isRTL && styles.textRTL]}>
+            <Text className={`text-[13px] font-semibold text-purple-500 mb-1 ${isRTL ? 'text-right' : ''}`}>
               {t('profile.voice.voiceOnlyInfo', 'Voice Only Mode')}
             </Text>
-            <Text style={[styles.modeInfoText, isRTL && styles.textRTL]}>
+            <Text className={`text-xs text-gray-400 leading-4 ${isRTL ? 'text-right' : ''}`}>
               {t('profile.voice.voiceOnlyDetails', 'Say "Hey Bayit" to activate. Remote control disabled. Navigate entirely with voice commands.')}
             </Text>
           </>
         )}
         {selectedMode === VoiceMode.HYBRID && (
           <>
-            <Text style={[styles.modeInfoLabel, isRTL && styles.textRTL]}>
+            <Text className={`text-[13px] font-semibold text-purple-500 mb-1 ${isRTL ? 'text-right' : ''}`}>
               {t('profile.voice.hybridInfo', 'Hybrid Mode')}
             </Text>
-            <Text style={[styles.modeInfoText, isRTL && styles.textRTL]}>
+            <Text className={`text-xs text-gray-400 leading-4 ${isRTL ? 'text-right' : ''}`}>
               {t('profile.voice.hybridDetails', 'Use both voice and remote control. Get voice feedback on your button presses and interactions.')}
             </Text>
           </>
         )}
         {selectedMode === VoiceMode.CLASSIC && (
           <>
-            <Text style={[styles.modeInfoLabel, isRTL && styles.textRTL]}>
+            <Text className={`text-[13px] font-semibold text-purple-500 mb-1 ${isRTL ? 'text-right' : ''}`}>
               {t('profile.voice.classicInfo', 'Classic Mode')}
             </Text>
-            <Text style={[styles.modeInfoText, isRTL && styles.textRTL]}>
+            <Text className={`text-xs text-gray-400 leading-4 ${isRTL ? 'text-right' : ''}`}>
               {t('profile.voice.classicDetails', 'Traditional remote-only experience. Voice features disabled.')}
             </Text>
           </>
@@ -103,58 +102,3 @@ export function VoiceModeSection({ selectedMode, isRTL, onModeChange }: VoiceMod
     </GlassView>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.xs,
-  },
-  sectionHeaderRTL: {
-    flexDirection: 'row-reverse',
-  },
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: spacing.xs,
-  },
-  modeDescription: {
-    fontSize: 13,
-    color: colors.textMuted,
-    marginBottom: spacing.md,
-  },
-  modesContainer: {
-    gap: spacing.md,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-  modeInfo: {
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.05)',
-    marginTop: spacing.md,
-  },
-  modeInfoRTL: {
-    flexDirection: 'row-reverse',
-  },
-  modeInfoLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.primary,
-    marginBottom: spacing.xs,
-  },
-  modeInfoText: {
-    fontSize: 12,
-    color: colors.textMuted,
-    lineHeight: 16,
-  },
-});

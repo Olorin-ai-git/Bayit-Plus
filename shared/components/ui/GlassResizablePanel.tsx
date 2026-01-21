@@ -5,8 +5,7 @@
  */
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { View, StyleSheet, Platform, Pressable, I18nManager } from 'react-native';
-import { colors, spacing, borderRadius } from '../theme';
+import { View, Platform, Pressable, I18nManager } from 'react-native';
 import { GlassSplitterHandle } from './GlassSplitterHandle';
 
 interface GlassResizablePanelProps {
@@ -114,17 +113,17 @@ export const GlassResizablePanel: React.FC<GlassResizablePanelProps> = ({
   if (Platform.OS !== 'web') {
     // On native, just render without resizing capability
     return (
-      <View style={[styles.panel, { width: effectiveWidth }, style]}>
+      <View className="relative flex-shrink-0" style={[{ width: effectiveWidth }, style]}>
         {!isCollapsed && children}
       </View>
     );
   }
 
   return (
-    <View 
+    <View
       ref={panelRef}
+      className="relative flex-shrink-0"
       style={[
-        styles.panel, 
         { width: effectiveWidth, flexDirection: splitterPosition === 'left' ? 'row' : 'row-reverse' },
         style,
       ]}
@@ -140,7 +139,7 @@ export const GlassResizablePanel: React.FC<GlassResizablePanelProps> = ({
           onDragStart={handleMouseDown}
         />
       )}
-      
+
       {/* Drag area along the edge (when not using the handle) */}
       {!isCollapsed && !collapsible && (
         <div
@@ -163,33 +162,22 @@ export const GlassResizablePanel: React.FC<GlassResizablePanelProps> = ({
               width: 4,
               height: 48,
               borderRadius: 2,
-              backgroundColor: isDragging ? colors.primary : colors.glassBorder,
+              backgroundColor: isDragging ? '#a855f7' : 'rgba(255, 255, 255, 0.1)',
               transition: isDragging ? 'none' : 'background-color 0.2s ease',
               opacity: isDragging ? 1 : 0.5,
             }}
           />
         </div>
       )}
-      
+
       {/* Content */}
       {!isCollapsed && (
-        <View style={styles.content}>
+        <View className="flex-1 overflow-hidden">
           {children}
         </View>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  panel: {
-    position: 'relative',
-    flexShrink: 0,
-  },
-  content: {
-    flex: 1,
-    overflow: 'hidden',
-  },
-});
 
 export default GlassResizablePanel;

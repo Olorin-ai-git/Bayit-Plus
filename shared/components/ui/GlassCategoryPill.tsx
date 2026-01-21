@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import {
   Pressable,
   Text,
-  StyleSheet,
   Platform,
   ViewStyle,
   StyleProp,
   View,
 } from 'react-native';
-import { colors, spacing, borderRadius } from '../theme';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
@@ -51,49 +49,13 @@ export const GlassCategoryPill: React.FC<GlassCategoryPillProps> = ({
 
   // TV builds get larger sizes for 10-foot UI
   const sizeStyles = IS_TV_BUILD ? {
-    small: {
-      paddingHorizontal: spacing.lg,
-      paddingVertical: 10,
-      fontSize: 18,
-      iconSize: 18,
-      gap: spacing.sm,
-    },
-    medium: {
-      paddingHorizontal: spacing.xl,
-      paddingVertical: 14,
-      fontSize: 22,
-      iconSize: 22,
-      gap: spacing.md,
-    },
-    large: {
-      paddingHorizontal: spacing.xl + 8,
-      paddingVertical: 18,
-      fontSize: 26,
-      iconSize: 26,
-      gap: spacing.md,
-    },
+    small: { px: 4, py: 2.5, fontSize: 18, iconSize: 18, gap: 2 },
+    medium: { px: 6, py: 3.5, fontSize: 22, iconSize: 22, gap: 3 },
+    large: { px: 8, py: 4.5, fontSize: 26, iconSize: 26, gap: 3 },
   } : {
-    small: {
-      paddingHorizontal: spacing.md,
-      paddingVertical: 6,
-      fontSize: 12,
-      iconSize: 12,
-      gap: spacing.xs,
-    },
-    medium: {
-      paddingHorizontal: spacing.lg,
-      paddingVertical: 8,
-      fontSize: 14,
-      iconSize: 14,
-      gap: 6,
-    },
-    large: {
-      paddingHorizontal: spacing.xl,
-      paddingVertical: 10,
-      fontSize: 16,
-      iconSize: 16,
-      gap: spacing.sm,
-    },
+    small: { px: 3, py: 1.5, fontSize: 12, iconSize: 12, gap: 1 },
+    medium: { px: 4, py: 2, fontSize: 14, iconSize: 14, gap: 1.5 },
+    large: { px: 6, py: 2.5, fontSize: 16, iconSize: 16, gap: 2 },
   };
 
   const currentSize = sizeStyles[size];
@@ -108,23 +70,23 @@ export const GlassCategoryPill: React.FC<GlassCategoryPillProps> = ({
       onBlur={() => setIsFocused(false)}
       // @ts-ignore - TV-specific prop
       hasTVPreferredFocus={hasTVPreferredFocus}
+      className={`flex-row items-center justify-center rounded-2xl border border-white/10 bg-black/20 backdrop-blur-lg
+        ${isActive ? 'bg-purple-600 border-purple-600' : ''}
+        ${isHovered && !isActive ? 'bg-purple-600/30 border-purple-500/50' : ''}
+        ${isFocused ? 'border-purple-600 border-[3px]' : ''}
+        ${disabled ? 'opacity-50' : ''}
+        ${Platform.OS === 'web' ? 'transition-all duration-200' : ''}`}
       style={[
-        styles.pill,
         {
-          paddingHorizontal: currentSize.paddingHorizontal,
-          paddingVertical: currentSize.paddingVertical,
+          paddingHorizontal: currentSize.px * 4,
+          paddingVertical: currentSize.py * 4,
         },
-        isActive && styles.pillActive,
-        isHovered && !isActive && styles.pillHovered,
-        isFocused && styles.pillFocused,
-        disabled && styles.pillDisabled,
-        Platform.OS === 'web' && styles.webTransition,
         style,
       ]}
     >
       {/* Icon or Emoji */}
       {(icon || emoji) && (
-        <View style={{ marginRight: currentSize.gap }}>
+        <View style={{ marginRight: currentSize.gap * 4 }}>
           {icon || (
             <Text style={{ fontSize: currentSize.iconSize }}>{emoji}</Text>
           )}
@@ -133,13 +95,11 @@ export const GlassCategoryPill: React.FC<GlassCategoryPillProps> = ({
 
       {/* Label */}
       <Text
-        style={[
-          styles.label,
-          { fontSize: currentSize.fontSize },
-          isActive && styles.labelActive,
-          (isHovered || isFocused) && !isActive && styles.labelHighlight,
-          disabled && styles.labelDisabled,
-        ]}
+        className={`font-medium text-center
+          ${isActive ? 'text-black font-semibold' : 'text-gray-400'}
+          ${(isHovered || isFocused) && !isActive ? 'text-purple-500' : ''}
+          ${disabled ? 'text-gray-600' : ''}`}
+        style={{ fontSize: currentSize.fontSize }}
         numberOfLines={1}
       >
         {label}
@@ -147,71 +107,5 @@ export const GlassCategoryPill: React.FC<GlassCategoryPillProps> = ({
     </Pressable>
   );
 };
-
-const styles = StyleSheet.create({
-  pill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: borderRadius.xl,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    backgroundColor: colors.glass,
-    // @ts-ignore - Web-specific CSS properties
-    ...(Platform.OS === 'web' && {
-      height: 'fit-content',
-      backdropFilter: 'blur(8px)',
-      WebkitBackdropFilter: 'blur(8px)',
-      cursor: 'pointer',
-      userSelect: 'none',
-    }),
-  },
-  pillActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-    // @ts-ignore - Web-specific CSS
-    ...(Platform.OS === 'web' && {
-      boxShadow: `0 0 12px ${colors.primary}40`,
-    }),
-  },
-  pillHovered: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderColor: 'rgba(168, 85, 247, 0.5)',
-  },
-  pillFocused: {
-    borderColor: colors.primary,
-    borderWidth: 3,
-    // @ts-ignore - Web-specific CSS
-    ...(Platform.OS === 'web' && {
-      boxShadow: `0 0 20px ${colors.primary}80`,
-    }),
-  },
-  pillDisabled: {
-    opacity: 0.5,
-    // @ts-ignore - Web-specific CSS
-    ...(Platform.OS === 'web' && {
-      cursor: 'not-allowed',
-    }),
-  },
-  webTransition: {
-    // @ts-ignore - Web-specific CSS
-    transition: 'all 0.2s ease',
-  },
-  label: {
-    fontWeight: '500',
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  labelActive: {
-    color: colors.background,
-    fontWeight: '600',
-  },
-  labelHighlight: {
-    color: colors.primary,
-  },
-  labelDisabled: {
-    color: colors.textMuted,
-  },
-});
 
 export default GlassCategoryPill;

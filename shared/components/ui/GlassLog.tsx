@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Animated } from 'react-native';
+import { View, Text, ScrollView, Pressable, TextInput, Animated } from 'react-native';
 import { Search, X, ChevronDown, ChevronUp, Download, Trash2, Copy, CheckCircle, XCircle, Film, Layers } from 'lucide-react';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors } from '../../theme';
 import { GlassView } from './GlassView';
 import { GlassButton } from './GlassButton';
 import { GlassBadge } from './GlassBadge';
@@ -391,14 +391,12 @@ export const GlassLog: React.FC<GlassLogProps> = ({
   };
 
   return (
-    <GlassView style={styles.container} intensity="medium">
+    <GlassView className="flex-1 rounded-lg overflow-hidden relative" intensity="medium">
       {/* Toast Notification */}
       {toastVisible && (
         <Animated.View
-          style={[
-            styles.toast,
-            { opacity: toastOpacity },
-          ]}
+          className="absolute top-4 left-1/2 z-[1000] shadow-lg"
+          style={{ opacity: toastOpacity, transform: [{ translateX: -100 }] }}
         >
           <GlassBadge
             variant={toastType}
@@ -417,11 +415,11 @@ export const GlassLog: React.FC<GlassLogProps> = ({
       )}
 
       {/* Header */}
-      <View style={[styles.header, isRTL && styles.headerRTL]}>
-        <View style={[styles.titleRow, isRTL && styles.titleRowRTL]}>
+      <View className={`flex-row justify-between items-center p-4 border-b border-white/10 ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <View className={`flex-row items-center gap-2 flex-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
           <Pressable
             onPress={() => setIsExpanded(!isExpanded)}
-            style={[styles.expandButton, isRTL && styles.expandButtonRTL]}
+            className="p-1"
           >
             {isExpanded ? (
               <ChevronUp size={20} color={colors.text} />
@@ -429,24 +427,24 @@ export const GlassLog: React.FC<GlassLogProps> = ({
               <ChevronDown size={20} color={colors.text} />
             )}
           </Pressable>
-          <Text style={[styles.title, isRTL && styles.titleRTL]}>{title}</Text>
-          <View style={[styles.badge, isRTL && styles.badgeRTL]}>
-            <Text style={styles.badgeText}>{filteredLogs.length}</Text>
+          <Text className={`text-base font-semibold text-white flex-1 ${isRTL ? 'text-right' : ''}`}>{title}</Text>
+          <View className="bg-purple-500/20 px-2 py-0.5 rounded-full">
+            <Text className="text-xs text-purple-500 font-semibold">{filteredLogs.length}</Text>
           </View>
         </View>
 
         {isExpanded && (
-          <View style={[styles.actions, isRTL && styles.actionsRTL]}>
-            <Pressable onPress={handleCopy} style={styles.actionButton}>
+          <View className={`flex-row gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Pressable onPress={handleCopy} className="p-2 rounded bg-white/5">
               <Copy size={16} color={colors.textSecondary} />
             </Pressable>
             {showDownload && (
-              <Pressable onPress={handleDownload} style={styles.actionButton}>
+              <Pressable onPress={handleDownload} className="p-2 rounded bg-white/5">
                 <Download size={16} color={colors.textSecondary} />
               </Pressable>
             )}
             {showClear && onClear && (
-              <Pressable onPress={onClear} style={styles.actionButton}>
+              <Pressable onPress={onClear} className="p-2 rounded bg-white/5">
                 <Trash2 size={16} color={colors.error} />
               </Pressable>
             )}
@@ -457,17 +455,18 @@ export const GlassLog: React.FC<GlassLogProps> = ({
       {isExpanded && (
         <>
           {/* Controls */}
-          <View style={[styles.controls, isRTL && styles.controlsRTL]}>
+          <View className={`p-4 gap-4 border-b border-white/10 ${isRTL ? 'flex-row-reverse' : ''}`}>
             {/* Search */}
             {showSearch && (
-              <View style={[styles.searchContainer, isRTL && styles.searchContainerRTL]}>
+              <View className={`flex-row items-center gap-2 bg-white/5 rounded-lg px-4 py-2 border border-white/10 ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <Search size={16} color={colors.textMuted} />
                 <TextInput
-                  style={[styles.searchInput, isRTL && styles.searchInputRTL]}
+                  className={`flex-1 text-sm text-white p-0 ${isRTL ? 'text-right' : ''}`}
                   placeholder={searchPlaceholder}
                   placeholderTextColor={colors.textMuted}
                   value={searchQuery}
                   onChangeText={setSearchQuery}
+                  style={{ outlineStyle: 'none' } as any}
                 />
                 {searchQuery.length > 0 && (
                   <Pressable onPress={() => setSearchQuery('')}>
@@ -479,26 +478,21 @@ export const GlassLog: React.FC<GlassLogProps> = ({
 
             {/* Level Filters */}
             {showLevelFilter && (
-              <View style={[styles.levelFilters, isRTL && styles.levelFiltersRTL]}>
+              <View className={`flex-row flex-wrap gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                 {(['debug', 'info', 'warn', 'error', 'success', 'trace'] as LogLevel[]).map(
                   (level) => (
                     <Pressable
                       key={level}
                       onPress={() => toggleLevel(level)}
-                      style={[
-                        styles.levelButton,
-                        selectedLevels.has(level) && {
-                          backgroundColor: LOG_COLORS[level] + '33',
-                          borderColor: LOG_COLORS[level],
-                        },
-                      ]}
+                      className="px-4 py-1 rounded border border-white/10 bg-white/5"
+                      style={selectedLevels.has(level) && {
+                        backgroundColor: LOG_COLORS[level] + '33',
+                        borderColor: LOG_COLORS[level],
+                      }}
                     >
                       <Text
-                        style={[
-                          styles.levelButtonText,
-                          { color: LOG_COLORS[level] },
-                          selectedLevels.has(level) && styles.levelButtonTextActive,
-                        ]}
+                        className={`text-[11px] ${selectedLevels.has(level) ? 'font-bold' : 'font-semibold'}`}
+                        style={{ color: LOG_COLORS[level] }}
                       >
                         {levelLabels[level]}
                       </Text>
@@ -510,18 +504,12 @@ export const GlassLog: React.FC<GlassLogProps> = ({
                 {showGroupByContent && (
                   <Pressable
                     onPress={() => setGroupByContent(!groupByContent)}
-                    style={[
-                      styles.levelButton,
-                      styles.groupToggleButton,
-                      groupByContent && styles.groupToggleButtonActive,
-                    ]}
+                    className={`flex-row items-center ml-4 px-4 py-1 rounded border ${groupByContent ? 'border-purple-500 bg-purple-500/20' : 'border-white/10 bg-white/5'}`}
                   >
                     <Layers size={12} color={groupByContent ? colors.primary : colors.textMuted} />
                     <Text
-                      style={[
-                        styles.levelButtonText,
-                        { color: groupByContent ? colors.primary : colors.textMuted, marginLeft: 4 },
-                      ]}
+                      className="text-[11px] font-semibold ml-1"
+                      style={{ color: groupByContent ? colors.primary : colors.textMuted }}
                     >
                       {groupByContentLabel}
                     </Text>
@@ -535,15 +523,16 @@ export const GlassLog: React.FC<GlassLogProps> = ({
           <View style={{ position: 'relative', flex: 1 }}>
             <ScrollView
               ref={scrollViewRef}
-              style={[styles.logContainer, { maxHeight }]}
-              contentContainerStyle={styles.logContentContainer}
+              className="flex-1"
+              contentContainerStyle={{ flexGrow: 1 }}
+              style={{ maxHeight }}
               showsVerticalScrollIndicator={true}
               onScroll={handleScroll}
               scrollEventThrottle={100}
             >
             {filteredLogs.length === 0 ? (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyText}>{emptyMessage}</Text>
+              <View className="p-8 items-center justify-center">
+                <Text className="text-sm text-gray-500">{emptyMessage}</Text>
               </View>
             ) : groupByContent ? (
               // Grouped View
@@ -584,10 +573,11 @@ export const GlassLog: React.FC<GlassLogProps> = ({
             {!autoScrollEnabled && (
               <Pressable
                 onPress={handleScrollToTop}
-                style={styles.scrollToTopButton}
+                className="absolute top-4 left-1/2 flex-row items-center gap-1 bg-purple-500 px-4 py-2 rounded-full shadow-lg z-[100]"
+                style={{ transform: [{ translateX: -60 }] }}
               >
                 <ChevronUp size={20} color={colors.text} />
-                <Text style={styles.scrollToTopText}>New logs</Text>
+                <Text className="text-[13px] font-semibold text-gray-900">New logs</Text>
               </Pressable>
             )}
           </View>
@@ -656,52 +646,52 @@ const LogEntryItem: React.FC<LogEntryItemProps> = ({
     >
       <Pressable
         onPress={() => log.metadata && setIsExpanded(!isExpanded)}
-        style={[styles.logEntry, isRTL && styles.logEntryRTL]}
+        className={`flex-row p-2 border-b border-white/5 min-w-0 ${isRTL ? 'flex-row-reverse' : ''}`}
       >
       {/* Level Indicator */}
-      <View style={[styles.levelIndicator, { backgroundColor: levelColor }]} />
+      <View className="w-[3px] mr-2 rounded" style={{ backgroundColor: levelColor }} />
 
-      <View style={styles.logContent}>
+      <View className="flex-1 min-w-0">
         {/* Header Line */}
-        <View style={[styles.logHeader, isRTL && styles.logHeaderRTL]}>
+        <View className={`flex-row items-center gap-2 mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
           {showTimestamp && (
-            <Text style={[styles.timestamp, isRTL && styles.timestampRTL]}>
+            <Text className={`text-[11px] text-gray-500 font-mono ${isRTL ? 'text-right' : ''}`}>
               {formatTimestamp(log.timestamp)}
             </Text>
           )}
 
-          <View style={[styles.levelBadge, { backgroundColor: levelColor + '33' }]}>
-            <Text style={[styles.levelText, { color: levelColor }]}>
+          <View className="px-1 py-0.5 rounded-sm" style={{ backgroundColor: levelColor + '33' }}>
+            <Text className="text-[10px] font-bold font-mono" style={{ color: levelColor }}>
               {levelLabels[log.level]}
             </Text>
           </View>
 
           {showSource && log.source && (
-            <Text style={[styles.source, isRTL && styles.sourceRTL]}>[{log.source}]</Text>
+            <Text className={`text-[11px] text-gray-400 font-mono ${isRTL ? 'text-right' : ''}`}>[{log.source}]</Text>
           )}
 
           {itemName && (
-            <View style={styles.itemBadge}>
+            <View className="flex-row items-center gap-1 bg-purple-500/20 px-2 py-0.5 rounded border border-purple-500/40" style={{ maxWidth: 200 }}>
               <Film size={12} color={colors.primary} />
-              <Text style={styles.itemName}>{itemName}</Text>
+              <Text className="text-[11px] font-semibold text-purple-500 font-mono">{itemName}</Text>
             </View>
           )}
         </View>
 
         {/* Message */}
-        <Text style={[styles.message, isRTL && styles.messageRTL]}>
+        <Text className={`text-[13px] text-white leading-5 font-mono ${isRTL ? 'text-right' : ''}`} style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'break-word' } as any}>
           {formatLogMessage(displayedText || log.message)}
         </Text>
 
         {/* Metadata (if expanded) */}
         {isExpanded && log.metadata && Object.keys(log.metadata).length > 0 && (
-          <View style={styles.metadata}>
-            <Text style={styles.metadataLabel}>
-              {log.metadata.tool_result ? 'Tool Result:' : 
-               log.metadata.tool_input ? 'Tool Input:' : 
+          <View className="mt-2 p-4 bg-black/40 rounded-lg border-l-[3px] border-purple-500">
+            <Text className="text-xs font-semibold text-purple-500 mb-1 font-mono">
+              {log.metadata.tool_result ? 'Tool Result:' :
+               log.metadata.tool_input ? 'Tool Input:' :
                'Metadata:'}
             </Text>
-            <Text style={styles.metadataText}>
+            <Text className="text-xs text-gray-400 font-mono leading-[18px]" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'break-word' } as any}>
               {JSON.stringify(log.metadata.tool_result || log.metadata.tool_input || log.metadata, null, 2)}
             </Text>
           </View>
@@ -759,13 +749,14 @@ const LogGroupItem: React.FC<LogGroupItemProps> = ({
   const statusColor = group.hasErrors ? colors.error : group.hasSuccess ? colors.success : colors.primary;
 
   return (
-    <View style={styles.groupContainer}>
+    <View className="mb-2 rounded-lg bg-white/2 overflow-hidden">
       {/* Group Header */}
       <Pressable
         onPress={() => setIsExpanded(!isExpanded)}
-        style={[styles.groupHeader, { borderLeftColor: statusColor }]}
+        className="flex-row items-center p-4 bg-white/5 border-l-4 border-b border-white/10"
+        style={{ borderLeftColor: statusColor }}
       >
-        <View style={[styles.groupHeaderContent, isRTL && { flexDirection: 'row-reverse' }]}>
+        <View className={`flex-row items-center flex-1 gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
           {isExpanded ? (
             <ChevronUp size={16} color={colors.textMuted} />
           ) : (
@@ -773,28 +764,28 @@ const LogGroupItem: React.FC<LogGroupItemProps> = ({
           )}
 
           {group.itemName ? (
-            <View style={[styles.groupItemBadge, { borderColor: statusColor }]}>
+            <View className="flex-row items-center gap-1 bg-black/30 px-4 py-1 rounded-lg border" style={{ borderColor: statusColor, maxWidth: 300 }}>
               <Film size={14} color={statusColor} />
-              <Text style={[styles.groupItemName, { color: statusColor }]}>
+              <Text className="text-[13px] font-bold font-mono" style={{ color: statusColor }}>
                 {group.itemName}
               </Text>
             </View>
           ) : (
-            <Text style={styles.groupNoContent}>General Logs</Text>
+            <Text className="text-[13px] font-semibold text-gray-500 italic">General Logs</Text>
           )}
 
-          <View style={styles.groupMeta}>
-            <Text style={styles.groupCount}>{group.logs.length} logs</Text>
-            <Text style={styles.groupTimestamp}>{formatTimestamp(group.latestTimestamp)}</Text>
+          <View className="flex-row items-center gap-4 ml-auto">
+            <Text className="text-[11px] text-gray-500 font-mono">{group.logs.length} logs</Text>
+            <Text className="text-[11px] text-gray-500 font-mono">{formatTimestamp(group.latestTimestamp)}</Text>
           </View>
 
           {/* Status indicators */}
-          <View style={styles.groupStatusIndicators}>
+          <View className="flex-row items-center gap-1">
             {group.hasErrors && (
-              <View style={[styles.groupStatusDot, { backgroundColor: colors.error }]} />
+              <View className="w-2 h-2 rounded-full" style={{ backgroundColor: colors.error }} />
             )}
             {group.hasSuccess && (
-              <View style={[styles.groupStatusDot, { backgroundColor: colors.success }]} />
+              <View className="w-2 h-2 rounded-full" style={{ backgroundColor: colors.success }} />
             )}
           </View>
         </View>
@@ -802,7 +793,7 @@ const LogGroupItem: React.FC<LogGroupItemProps> = ({
 
       {/* Group Logs */}
       {isExpanded && (
-        <View style={styles.groupLogs}>
+        <View className="pl-4 border-l border-white/10 ml-2">
           {group.logs.map((log) => (
             <LogEntryItem
               key={log.id}
@@ -822,370 +813,3 @@ const LogGroupItem: React.FC<LogGroupItemProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  toast: {
-    position: 'absolute',
-    top: spacing.md,
-    left: '50%',
-    transform: [{ translateX: -100 }],
-    zIndex: 1000,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 10,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  headerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    flex: 1,
-  },
-  titleRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  expandButton: {
-    padding: spacing.xs,
-  },
-  expandButtonRTL: {},
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    flex: 1,
-    flexShrink: 1,
-  },
-  titleRTL: {
-    textAlign: 'right',
-  },
-  badge: {
-    backgroundColor: colors.primary + '33',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-  },
-  badgeRTL: {},
-  badgeText: {
-    fontSize: 12,
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  actionsRTL: {
-    flexDirection: 'row-reverse',
-  },
-  actionButton: {
-    padding: spacing.sm,
-    borderRadius: borderRadius.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  controls: {
-    padding: spacing.md,
-    gap: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  controlsRTL: {},
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  searchContainerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 14,
-    color: colors.text,
-    padding: 0,
-    outlineStyle: 'none',
-  } as any,
-  searchInputRTL: {
-    textAlign: 'right',
-  },
-  levelFilters: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  levelFiltersRTL: {
-    flexDirection: 'row-reverse',
-  },
-  levelButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  levelButtonText: {
-    fontSize: 11,
-    fontWeight: '600',
-  },
-  levelButtonTextActive: {
-    fontWeight: '700',
-  },
-  logContainer: {
-    flex: 1,
-  },
-  logContentContainer: {
-    flexGrow: 1,
-  },
-  emptyState: {
-    padding: spacing.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  logEntry: {
-    flexDirection: 'row',
-    padding: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
-    minWidth: 0,
-  },
-  logEntryRTL: {
-    flexDirection: 'row-reverse',
-  },
-  levelIndicator: {
-    width: 3,
-    marginRight: spacing.sm,
-    borderRadius: borderRadius.sm,
-  },
-  logContent: {
-    flex: 1,
-    minWidth: 0,
-  },
-  logHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.xs,
-  },
-  logHeaderRTL: {
-    flexDirection: 'row-reverse',
-  },
-  timestamp: {
-    fontSize: 11,
-    color: colors.textMuted,
-    fontFamily: 'monospace',
-  },
-  timestampRTL: {
-    textAlign: 'right',
-  },
-  levelBadge: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-    borderRadius: borderRadius.xs,
-  },
-  levelText: {
-    fontSize: 10,
-    fontWeight: '700',
-    fontFamily: 'monospace',
-  },
-  source: {
-    fontSize: 11,
-    color: colors.textSecondary,
-    fontFamily: 'monospace',
-  },
-  sourceRTL: {
-    textAlign: 'right',
-  },
-  itemBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    backgroundColor: colors.primary + '20',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
-    borderRadius: borderRadius.sm,
-    borderWidth: 1,
-    borderColor: colors.primary + '40',
-  } as any,
-  itemName: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: colors.primary,
-    fontFamily: 'monospace',
-    maxWidth: 200,
-  } as any,
-  message: {
-    fontSize: 13,
-    color: colors.text,
-    lineHeight: 20,
-    fontFamily: 'monospace',
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-word',
-    overflowWrap: 'break-word',
-  } as any,
-  messageRTL: {
-    textAlign: 'right',
-  },
-  metadata: {
-    marginTop: spacing.sm,
-    padding: spacing.md,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    borderRadius: borderRadius.md,
-    borderLeftWidth: 3,
-    borderLeftColor: colors.primary,
-  },
-  metadataLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.primary,
-    marginBottom: spacing.xs,
-    fontFamily: 'monospace',
-  },
-  metadataText: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    fontFamily: 'monospace',
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-word',
-    overflowWrap: 'break-word',
-    lineHeight: 18,
-  } as any,
-  scrollToTopButton: {
-    position: 'absolute',
-    top: spacing.md,
-    left: '50%',
-    transform: [{ translateX: -60 }],
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 10,
-    zIndex: 100,
-  } as any,
-  scrollToTopText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.background,
-  },
-  // Group toggle button
-  groupToggleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: spacing.md,
-    paddingHorizontal: spacing.md,
-  } as any,
-  groupToggleButtonActive: {
-    backgroundColor: colors.primary + '20',
-    borderColor: colors.primary,
-  },
-  // Group container styles
-  groupContainer: {
-    marginBottom: spacing.sm,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-    overflow: 'hidden',
-  },
-  groupHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderLeftWidth: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  } as any,
-  groupHeaderContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: spacing.sm,
-  } as any,
-  groupItemBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-  } as any,
-  groupItemName: {
-    fontSize: 13,
-    fontWeight: '700',
-    fontFamily: 'monospace',
-    maxWidth: 300,
-  } as any,
-  groupNoContent: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.textMuted,
-    fontStyle: 'italic',
-  },
-  groupMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginLeft: 'auto',
-  } as any,
-  groupCount: {
-    fontSize: 11,
-    color: colors.textMuted,
-    fontFamily: 'monospace',
-  },
-  groupTimestamp: {
-    fontSize: 11,
-    color: colors.textMuted,
-    fontFamily: 'monospace',
-  },
-  groupStatusIndicators: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  } as any,
-  groupStatusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  groupLogs: {
-    paddingLeft: spacing.md,
-    borderLeftWidth: 1,
-    borderLeftColor: 'rgba(255, 255, 255, 0.1)',
-    marginLeft: spacing.sm,
-  },
-});

@@ -12,24 +12,11 @@ const nodeModulesPath = path.resolve(projectRoot, 'node_modules');
 function getExtraNodeModules() {
   const modules = {};
 
-  // Check if shared directory exists, otherwise use stubs
-  const stubsRoot = path.resolve(projectRoot, 'src/stubs');
-  const useStubs = !fs.existsSync(sharedRoot);
+  // Platform shims directory for web-to-native compatibility
+  const shimsRoot = path.resolve(projectRoot, 'src/platform-shims');
+  const sharedExists = fs.existsSync(sharedRoot);
 
-  if (useStubs) {
-    // Use stubs when shared directory doesn't exist
-    modules['@bayit/shared'] = path.resolve(stubsRoot, 'shared-components');
-    modules['@bayit/shared-screens'] = path.resolve(stubsRoot, 'shared-screens');
-    modules['@bayit/shared-services'] = path.resolve(stubsRoot, 'shared-services');
-    modules['@bayit/shared-stores'] = path.resolve(stubsRoot, 'shared-stores');
-    modules['@bayit/shared-hooks'] = path.resolve(stubsRoot, 'shared-hooks');
-    modules['@bayit/shared-contexts'] = path.resolve(stubsRoot, 'shared-contexts');
-    modules['@bayit/shared-i18n'] = path.resolve(stubsRoot, 'shared-i18n');
-    modules['@bayit/shared-config'] = path.resolve(stubsRoot, 'shared-config');
-    modules['@bayit/shared-types'] = path.resolve(stubsRoot, 'shared-types');
-    modules['@bayit/shared-utils'] = path.resolve(stubsRoot, 'shared-utils');
-    modules['@bayit/shared-components'] = path.resolve(stubsRoot, 'shared-components');
-  } else {
+  if (sharedExists) {
     // Use real shared directory
     modules['@bayit/shared'] = path.resolve(sharedRoot, 'components');
     modules['@bayit/shared-components'] = path.resolve(sharedRoot, 'components');
@@ -56,9 +43,9 @@ function getExtraNodeModules() {
     modules['@bayit/shared/utils'] = path.resolve(sharedRoot, 'utils');
     modules['@bayit/shared/design-tokens'] = path.resolve(sharedRoot, 'design-tokens');
 
-    // Add Picovoice stubs to extraNodeModules for shared utils
-    modules['@picovoice/porcupine-web'] = path.resolve(projectRoot, 'src/stubs/porcupine-web.ts');
-    modules['@picovoice/web-voice-processor'] = path.resolve(projectRoot, 'src/stubs/porcupine-web.ts');
+    // Add Picovoice platform shims for web-to-native compatibility
+    modules['@picovoice/porcupine-web'] = path.resolve(projectRoot, 'src/platform-shims/porcupine-web.ts');
+    modules['@picovoice/web-voice-processor'] = path.resolve(projectRoot, 'src/platform-shims/porcupine-web.ts');
   }
 
   // Add @olorin packages from packages/ui directory
@@ -110,7 +97,7 @@ const config = {
     extraNodeModules: getExtraNodeModules(),
     // Add .cjs extension for design-tokens
     sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'cjs'],
-    // Stub out web-only and Expo packages for React Native
+    // Redirect web-only and Expo packages to platform shims for React Native
     resolveRequest: (context, moduleName, platform) => {
       if (moduleName === 'react-dom') {
         return { type: 'empty' };
@@ -118,45 +105,45 @@ const config = {
       if (moduleName === 'react-router-dom') {
         return {
           type: 'sourceFile',
-          filePath: path.resolve(projectRoot, 'src/stubs/react-router-dom.ts'),
+          filePath: path.resolve(projectRoot, 'src/platform-shims/react-router-dom.ts'),
         };
       }
       if (moduleName === 'expo-linear-gradient') {
         return {
           type: 'sourceFile',
-          filePath: path.resolve(projectRoot, 'src/stubs/expo-linear-gradient.ts'),
+          filePath: path.resolve(projectRoot, 'src/platform-shims/expo-linear-gradient.ts'),
         };
       }
       if (moduleName === '@expo/vector-icons') {
         return {
           type: 'sourceFile',
-          filePath: path.resolve(projectRoot, 'src/stubs/@expo/vector-icons.tsx'),
+          filePath: path.resolve(projectRoot, 'src/platform-shims/@expo/vector-icons.tsx'),
         };
       }
       if (moduleName === 'react-native-web-linear-gradient') {
         return {
           type: 'sourceFile',
-          filePath: path.resolve(projectRoot, 'src/stubs/react-native-web-linear-gradient.ts'),
+          filePath: path.resolve(projectRoot, 'src/platform-shims/react-native-web-linear-gradient.ts'),
         };
       }
       if (moduleName === 'lucide-react') {
         return {
           type: 'sourceFile',
-          filePath: path.resolve(projectRoot, 'src/stubs/lucide-react.ts'),
+          filePath: path.resolve(projectRoot, 'src/platform-shims/lucide-react.ts'),
         };
       }
-      // Stub out web-only Picovoice packages
+      // Redirect web-only Picovoice packages to platform shims
       if (moduleName === '@picovoice/porcupine-web' || moduleName === '@picovoice/web-voice-processor') {
         return {
           type: 'sourceFile',
-          filePath: path.resolve(projectRoot, 'src/stubs/porcupine-web.ts'),
+          filePath: path.resolve(projectRoot, 'src/platform-shims/porcupine-web.ts'),
         };
       }
-      // Stub out web-specific voice services that use import.meta or browser APIs
+      // Redirect web-specific voice services that use import.meta or browser APIs
       if (moduleName.endsWith('/ttsService') || moduleName.endsWith('/ttsService.ts')) {
         return {
           type: 'sourceFile',
-          filePath: path.resolve(projectRoot, 'src/stubs/ttsService.ts'),
+          filePath: path.resolve(projectRoot, 'src/platform-shims/ttsService.ts'),
         };
       }
       if (moduleName.endsWith('/gazeDetectionService') || moduleName.endsWith('/gazeDetectionService.ts')) {

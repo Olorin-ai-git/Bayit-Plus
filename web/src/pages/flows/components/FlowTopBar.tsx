@@ -5,10 +5,10 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
+import { View, Text, Pressable, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, ChevronDown, Sun, Moon, Star, Coffee, Sunset, Sparkles } from 'lucide-react';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 import { GlassFAB, GlassModal } from '@bayit/shared/ui';
 import { isTV } from '@bayit/shared-utils/platform';
 import { useDirection } from '@/hooks/useDirection';
@@ -134,26 +134,26 @@ export function FlowTopBar({
   };
 
   return (
-    <View style={[styles.container, { flexDirection }]}>
+    <View className={`flex ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : 'flex-row'} justify-between items-center px-${isTV ? '16' : '6'} py-${isTV ? '8' : '6'} mb-${isTV ? '6' : '4'}`}>
       {/* Page Title (optional - can be removed if header shows it) */}
-      <View style={[styles.titleContainer, isRTL && styles.titleContainerRTL]}>
-        <Text style={[styles.pageTitle, isRTL && styles.textRTL]}>
+      <View className={`flex-1 ${isRTL ? 'items-end' : ''}`}>
+        <Text className={`${isTV ? 'text-5xl' : 'text-3xl'} font-extrabold text-[color:var(--text)] mb-1 tracking-tight ${isRTL ? 'text-right' : ''}`}>
           {t('flows.title')}
         </Text>
-        <Text style={[styles.pageSubtitle, isRTL && styles.textRTL]}>
+        <Text className={`${isTV ? 'text-xl' : 'text-base'} text-[color:var(--text-muted)] ${isRTL ? 'text-right' : ''}`}>
           {t('flows.subtitle')}
         </Text>
       </View>
 
       {/* Actions */}
-      <View style={[styles.actions, { flexDirection }]}>
+      <View className={`flex ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : 'flex-row'} items-center gap-4`}>
         {/* Templates Dropdown Button */}
         <Pressable
-          style={[styles.templatesBtn, { flexDirection }]}
+          className={`flex ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : 'flex-row'} items-center gap-2 py-${isTV ? '4' : '2'} px-${isTV ? '6' : '4'} bg-white/10 rounded-full border border-white/15 transition-all duration-200`}
           onPress={handleOpenTemplates}
         >
           <Sparkles size={isTV ? 20 : 16} color={colors.primary} />
-          <Text style={styles.templatesBtnText}>
+          <Text className={`${isTV ? 'text-lg' : 'text-sm'} font-semibold text-[color:var(--text)]`}>
             {t('flows.topBar.templates')}
           </Text>
           <ChevronDown size={isTV ? 18 : 14} color={colors.textMuted} />
@@ -177,33 +177,31 @@ export function FlowTopBar({
         onClose={handleCloseTemplates}
         dismissable={true}
       >
-        <Text style={[styles.templatesSubtitle, isRTL && styles.textRTL]}>
+        <Text className={`text-sm text-[color:var(--text-muted)] mb-6 ${isRTL ? 'text-right' : ''}`}>
           {t('flows.templates.subtitle')}
         </Text>
 
         {/* Templates List */}
-        <View style={styles.templatesList}>
+        <View className="gap-2">
           {FLOW_TEMPLATES.map((template) => (
             <Pressable
               key={template.id}
-              style={[
-                styles.templateItem,
-                { flexDirection },
-                hoveredTemplate === template.id && styles.templateItemHovered,
-              ]}
+              className={`flex ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : 'flex-row'} items-center gap-4 p-4 rounded-lg bg-white/5 border border-transparent transition-all duration-200 ${
+                hoveredTemplate === template.id ? 'bg-white/10 border-[rgba(168,85,247,0.6)] cursor-pointer' : ''
+              }`}
               onPress={() => handleSelectTemplate(template)}
               // @ts-ignore - Web hover
               onMouseEnter={() => setHoveredTemplate(template.id)}
               onMouseLeave={() => setHoveredTemplate(null)}
             >
-              <View style={styles.templateIcon}>
+              <View className="w-12 h-12 rounded-lg bg-white/10 justify-center items-center">
                 {template.icon}
               </View>
-              <View style={styles.templateContent}>
-                <Text style={[styles.templateName, isRTL && styles.textRTL]}>
+              <View className="flex-1">
+                <Text className={`text-[15px] font-semibold text-[color:var(--text)] mb-1 ${isRTL ? 'text-right' : ''}`}>
                   {t(template.nameKey)}
                 </Text>
-                <Text style={[styles.templateDesc, isRTL && styles.textRTL]} numberOfLines={2}>
+                <Text className={`text-[13px] text-[color:var(--text-muted)] leading-[18px] ${isRTL ? 'text-right' : ''}`} numberOfLines={2}>
                   {t(template.descKey)}
                 </Text>
               </View>
@@ -213,14 +211,14 @@ export function FlowTopBar({
 
         {/* Create Custom */}
         <Pressable
-          style={[styles.createCustomBtn, { flexDirection }]}
+          className={`flex ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : 'flex-row'} items-center justify-center gap-2 p-4 rounded-lg border border-dashed border-[rgba(168,85,247,0.6)] mt-6 transition-all duration-200`}
           onPress={() => {
             handleCloseTemplates();
             onCreateFlow();
           }}
         >
           <Plus size={18} color={colors.primary} />
-          <Text style={styles.createCustomText}>
+          <Text className="text-[15px] font-semibold text-[color:var(--primary)]">
             {t('flows.topBar.createCustom')}
           </Text>
         </Pressable>
@@ -228,126 +226,5 @@ export function FlowTopBar({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: isTV ? spacing.xl * 2 : spacing.lg,
-    paddingVertical: isTV ? spacing.xl : spacing.lg,
-    marginBottom: isTV ? spacing.lg : spacing.md,
-  },
-  titleContainer: {
-    flex: 1,
-  },
-  titleContainerRTL: {
-    alignItems: 'flex-end',
-  },
-  pageTitle: {
-    fontSize: isTV ? 48 : 32,
-    fontWeight: '800',
-    color: colors.text,
-    marginBottom: spacing.xs,
-    letterSpacing: -1,
-  },
-  pageSubtitle: {
-    fontSize: isTV ? 20 : 16,
-    color: colors.textMuted,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-  actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  templatesBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingVertical: isTV ? spacing.md : spacing.sm,
-    paddingHorizontal: isTV ? spacing.lg : spacing.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.full,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    // @ts-ignore - Web transition
-    transition: 'all 0.2s ease',
-  },
-  templatesBtnText: {
-    fontSize: isTV ? 18 : 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  templatesSubtitle: {
-    fontSize: 14,
-    color: colors.textMuted,
-    marginBottom: spacing.lg,
-  },
-  templatesList: {
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  templateItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderWidth: 1,
-    borderColor: 'transparent',
-    // @ts-ignore - Web transition
-    transition: 'all 0.2s ease',
-  },
-  templateItemHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderColor: 'rgba(168, 85, 247, 0.6)',
-    // @ts-ignore - Web cursor
-    cursor: 'pointer',
-  },
-  templateIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  templateContent: {
-    flex: 1,
-  },
-  templateName: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  templateDesc: {
-    fontSize: 13,
-    color: colors.textMuted,
-    lineHeight: 18,
-  },
-  createCustomBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.6)',
-    borderStyle: 'dashed',
-    // @ts-ignore - Web transition
-    transition: 'all 0.2s ease',
-  },
-  createCustomText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-});
 
 export default FlowTopBar;

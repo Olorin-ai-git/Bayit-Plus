@@ -15,7 +15,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   Switch,
   Alert,
@@ -138,20 +137,20 @@ export const NotificationSettingsScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView className="flex-1 bg-[#1a1525]" contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.xl, paddingBottom: spacing.xxxl * 2 }}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>{t('settings.notifications')}</Text>
-        <Text style={styles.subtitle}>{t('notifications.subtitle')}</Text>
+      <View className="mb-6">
+        <Text className="text-4xl font-bold text-white mb-1">{t('settings.notifications')}</Text>
+        <Text className="text-base text-white/60">{t('notifications.subtitle')}</Text>
       </View>
 
       {/* Master Notifications Toggle */}
-      <GlassView style={styles.masterToggle}>
-        <View style={styles.masterToggleLeft}>
-          <Text style={styles.masterToggleTitle}>
+      <GlassView className="flex-row items-center justify-between py-6 px-6 rounded-xl mb-6">
+        <View className="flex-1 mr-4">
+          <Text className="text-[17px] text-white font-semibold mb-1">
             {t('notifications.masterToggle')}
           </Text>
-          <Text style={styles.masterToggleDescription}>
+          <Text className="text-sm text-white/60">
             {t('notifications.masterToggleDescription')}
           </Text>
         </View>
@@ -164,13 +163,13 @@ export const NotificationSettingsScreen: React.FC = () => {
       </GlassView>
 
       {/* Content Notifications */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('notifications.content')}</Text>
+      <View className="mb-6">
+        <Text className="text-sm text-white/60 uppercase font-semibold mb-2 px-1">{t('notifications.content')}</Text>
         {categorizedSettings.content.map((setting) => (
-          <GlassView key={setting.id} style={styles.item}>
-            <View style={styles.itemLeft}>
-              <Text style={styles.itemTitle}>{setting.title}</Text>
-              <Text style={styles.itemDescription}>{setting.description}</Text>
+          <GlassView key={setting.id} className="flex-row items-center justify-between py-4 px-6 rounded-xl mb-2 min-h-[48px]">
+            <View className="flex-1 mr-4">
+              <Text className="text-[15px] text-white font-medium mb-1">{setting.title}</Text>
+              <Text className="text-xs text-white/60 leading-4">{setting.description}</Text>
             </View>
             <Switch
               value={setting.enabled && masterNotifications}
@@ -184,13 +183,13 @@ export const NotificationSettingsScreen: React.FC = () => {
       </View>
 
       {/* Social Notifications */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('notifications.social')}</Text>
+      <View className="mb-6">
+        <Text className="text-sm text-white/60 uppercase font-semibold mb-2 px-1">{t('notifications.social')}</Text>
         {categorizedSettings.social.map((setting) => (
-          <GlassView key={setting.id} style={styles.item}>
-            <View style={styles.itemLeft}>
-              <Text style={styles.itemTitle}>{setting.title}</Text>
-              <Text style={styles.itemDescription}>{setting.description}</Text>
+          <GlassView key={setting.id} className="flex-row items-center justify-between py-4 px-6 rounded-xl mb-2 min-h-[48px]">
+            <View className="flex-1 mr-4">
+              <Text className="text-[15px] text-white font-medium mb-1">{setting.title}</Text>
+              <Text className="text-xs text-white/60 leading-4">{setting.description}</Text>
             </View>
             <Switch
               value={setting.enabled && masterNotifications}
@@ -204,13 +203,13 @@ export const NotificationSettingsScreen: React.FC = () => {
       </View>
 
       {/* System Notifications */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('notifications.system')}</Text>
+      <View className="mb-6">
+        <Text className="text-sm text-white/60 uppercase font-semibold mb-2 px-1">{t('notifications.system')}</Text>
         {categorizedSettings.system.map((setting) => (
-          <GlassView key={setting.id} style={styles.item}>
-            <View style={styles.itemLeft}>
-              <Text style={styles.itemTitle}>{setting.title}</Text>
-              <Text style={styles.itemDescription}>{setting.description}</Text>
+          <GlassView key={setting.id} className="flex-row items-center justify-between py-4 px-6 rounded-xl mb-2 min-h-[48px]">
+            <View className="flex-1 mr-4">
+              <Text className="text-[15px] text-white font-medium mb-1">{setting.title}</Text>
+              <Text className="text-xs text-white/60 leading-4">{setting.description}</Text>
             </View>
             <Switch
               value={setting.enabled && masterNotifications}
@@ -224,7 +223,7 @@ export const NotificationSettingsScreen: React.FC = () => {
       </View>
 
       {/* System Settings Button */}
-      <View style={styles.footer}>
+      <View className="mt-6">
         <GlassButton
           variant="secondary"
           onPress={() => {
@@ -233,7 +232,7 @@ export const NotificationSettingsScreen: React.FC = () => {
             }
             Linking.openSettings();
           }}
-          style={styles.systemButton}
+          className="w-full"
         >
           {t('settings.openSystemSettings')}
         </GlassButton>
@@ -241,99 +240,5 @@ export const NotificationSettingsScreen: React.FC = () => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xxxl * 2,
-  },
-  header: {
-    marginBottom: spacing.xl,
-  },
-  title: {
-    ...typography.h1,
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-  },
-  masterToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 12,
-    marginBottom: spacing.xl,
-  },
-  masterToggleLeft: {
-    flex: 1,
-    marginRight: spacing.md,
-  },
-  masterToggleTitle: {
-    ...typography.body,
-    fontSize: 17,
-    color: colors.text,
-    fontWeight: '600',
-    marginBottom: spacing.xs,
-  },
-  masterToggleDescription: {
-    ...typography.caption,
-    fontSize: 13,
-    color: colors.textSecondary,
-  },
-  section: {
-    marginBottom: spacing.xl,
-  },
-  sectionTitle: {
-    ...typography.bodySmall,
-    fontSize: 13,
-    color: colors.textSecondary,
-    textTransform: 'uppercase',
-    fontWeight: '600',
-    marginBottom: spacing.sm,
-    paddingHorizontal: spacing.xs,
-  },
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 12,
-    marginBottom: spacing.sm,
-    minHeight: touchTarget.minHeight,
-  },
-  itemLeft: {
-    flex: 1,
-    marginRight: spacing.md,
-  },
-  itemTitle: {
-    ...typography.body,
-    fontSize: 15,
-    color: colors.text,
-    fontWeight: '500',
-    marginBottom: 4,
-  },
-  itemDescription: {
-    ...typography.caption,
-    fontSize: 12,
-    color: colors.textSecondary,
-    lineHeight: 16,
-  },
-  footer: {
-    marginTop: spacing.lg,
-  },
-  systemButton: {
-    width: '100%',
-  },
-});
 
 export default NotificationSettingsScreen;

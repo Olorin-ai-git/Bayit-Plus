@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator } from 'react-native';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
@@ -116,39 +116,39 @@ export default function TVLoginPage() {
   };
 
   const renderVerifying = () => (
-    <View style={styles.stateContainer}>
+    <View className="items-center py-8">
       <ActivityIndicator size="large" color={colors.primary} />
-      <Text style={styles.stateTitle}>{t('tvLogin.verifying')}</Text>
-      <Text style={styles.stateDescription}>
+      <Text className="text-2xl font-bold text-white mt-6 mb-2 text-center">{t('tvLogin.verifying')}</Text>
+      <Text className="text-base text-gray-400 text-center leading-6">
         {t('tvLogin.verifyingDescription')}
       </Text>
     </View>
   );
 
   const renderLogin = () => (
-    <View style={styles.loginContainer}>
-      <View style={styles.iconRow}>
+    <View className="items-stretch">
+      <View className="flex-row items-center justify-center mb-6">
         <Smartphone size={32} color={colors.primary} />
-        <View style={styles.iconConnector} />
+        <View className="w-10 h-0.5 bg-purple-600 mx-4" />
         <Tv size={32} color={colors.primary} />
       </View>
 
-      <Text style={styles.loginTitle}>{t('tvLogin.loginTitle')}</Text>
-      <Text style={styles.loginDescription}>
+      <Text className="text-2xl font-bold text-white text-center mb-2">{t('tvLogin.loginTitle')}</Text>
+      <Text className="text-base text-gray-400 text-center mb-6">
         {t('tvLogin.loginDescription')}
       </Text>
 
       {error && (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error}</Text>
+        <View className="bg-red-500/10 p-4 rounded-lg mb-4">
+          <Text className="text-red-500 text-sm text-center">{error}</Text>
         </View>
       )}
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>{t('login.email')}</Text>
+      <View className="mb-4">
+        <Text className="text-sm text-gray-400 mb-2">{t('login.email')}</Text>
         <GlassInput
           ref={emailRef}
-          inputStyle={styles.input}
+          className="text-base"
           value={email}
           onChangeText={setEmail}
           placeholder={t('placeholder.email')}
@@ -160,11 +160,11 @@ export default function TVLoginPage() {
         />
       </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>{t('login.password')}</Text>
+      <View className="mb-4">
+        <Text className="text-sm text-gray-400 mb-2">{t('login.password')}</Text>
         <GlassInput
           ref={passwordRef}
-          inputStyle={styles.input}
+          className="text-base"
           value={password}
           onChangeText={setPassword}
           placeholder={t('placeholder.password')}
@@ -180,12 +180,12 @@ export default function TVLoginPage() {
         onPress={handleLogin}
         variant="primary"
         disabled={isLoading}
-        style={styles.loginButton}
+        className="mt-4"
       />
 
-      <View style={styles.securityNote}>
+      <View className="flex-row items-start gap-2 mt-6 pt-4 border-t border-white/10">
         <Lock size={16} color={colors.textSecondary} />
-        <Text style={styles.securityText}>
+        <Text className="flex-1 text-xs text-gray-400 leading-[18px]">
           {t('tvLogin.securityNote')}
         </Text>
       </View>
@@ -193,22 +193,22 @@ export default function TVLoginPage() {
   );
 
   const renderAuthenticating = () => (
-    <View style={styles.stateContainer}>
+    <View className="items-center py-8">
       <ActivityIndicator size="large" color={colors.primary} />
-      <Text style={styles.stateTitle}>{t('tvLogin.authorizing')}</Text>
-      <Text style={styles.stateDescription}>
+      <Text className="text-2xl font-bold text-white mt-6 mb-2 text-center">{t('tvLogin.authorizing')}</Text>
+      <Text className="text-base text-gray-400 text-center leading-6">
         {t('tvLogin.authorizingDescription')}
       </Text>
     </View>
   );
 
   const renderSuccess = () => (
-    <View style={styles.stateContainer}>
-      <View style={styles.successIcon}>
+    <View className="items-center py-8">
+      <View className="mb-4">
         <CheckCircle size={64} color="#10b981" />
       </View>
-      <Text style={styles.stateTitle}>{t('tvLogin.success')}</Text>
-      <Text style={styles.stateDescription}>
+      <Text className="text-2xl font-bold text-white mt-6 mb-2 text-center">{t('tvLogin.success')}</Text>
+      <Text className="text-base text-gray-400 text-center leading-6">
         {t('tvLogin.successDescription')}
       </Text>
 
@@ -216,38 +216,38 @@ export default function TVLoginPage() {
         title={t('tvLogin.goToHome')}
         onPress={() => navigate('/')}
         variant="secondary"
-        style={styles.homeButton}
+        className="mt-8 px-8"
       />
     </View>
   );
 
   const renderError = () => (
-    <View style={styles.stateContainer}>
-      <View style={styles.errorIcon}>
+    <View className="items-center py-8">
+      <View className="mb-4">
         <XCircle size={64} color={colors.error} />
       </View>
-      <Text style={styles.stateTitle}>{t('tvLogin.error')}</Text>
-      <Text style={styles.stateDescription}>{error}</Text>
+      <Text className="text-2xl font-bold text-white mt-6 mb-2 text-center">{t('tvLogin.error')}</Text>
+      <Text className="text-base text-gray-400 text-center leading-6">{error}</Text>
 
       <GlassButton
         title={t('tvLogin.tryAgain')}
         onPress={() => navigate('/')}
         variant="secondary"
-        style={styles.homeButton}
+        className="mt-8 px-8"
       />
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.backgroundGradient} />
+    <View className="flex-1 bg-black min-h-screen">
+      <View className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-purple-700/30" />
 
-      <View style={styles.content}>
-        <View style={styles.logoContainer}>
+      <View className="flex-1 items-center justify-center px-8 max-w-[480px] mx-auto w-full">
+        <View className="mb-8">
           <AnimatedLogo size="medium" />
         </View>
 
-        <GlassView intensity="high" style={styles.card}>
+        <GlassView intensity="high" className="w-full p-8 rounded-3xl">
           {pageState === 'verifying' && renderVerifying()}
           {pageState === 'login' && renderLogin()}
           {pageState === 'authenticating' && renderAuthenticating()}
@@ -255,146 +255,10 @@ export default function TVLoginPage() {
           {pageState === 'error' && renderError()}
         </GlassView>
 
-        <Text style={styles.footerText}>
+        <Text className="text-xs text-gray-500 text-center mt-8">
           {t('tvLogin.footer')}
         </Text>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    minHeight: '100vh' as any,
-  },
-  backgroundGradient: {
-    position: 'absolute',
-    top: -100,
-    right: -100,
-    width: 400,
-    height: 400,
-    borderRadius: 200,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xl,
-    maxWidth: 480,
-    marginHorizontal: 'auto' as any,
-    width: '100%',
-  },
-  logoContainer: {
-    marginBottom: spacing.xl,
-  },
-  card: {
-    width: '100%',
-    padding: spacing.xl,
-    borderRadius: borderRadius.xl,
-  },
-  stateContainer: {
-    alignItems: 'center',
-    paddingVertical: spacing.xl,
-  },
-  stateTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text,
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-    textAlign: 'center',
-  },
-  stateDescription: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-  successIcon: {
-    marginBottom: spacing.md,
-  },
-  errorIcon: {
-    marginBottom: spacing.md,
-  },
-  homeButton: {
-    marginTop: spacing.xl,
-    paddingHorizontal: spacing.xl,
-  },
-  loginContainer: {
-    alignItems: 'stretch',
-  },
-  iconRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.lg,
-  },
-  iconConnector: {
-    width: 40,
-    height: 2,
-    backgroundColor: colors.primary,
-    marginHorizontal: spacing.md,
-  },
-  loginTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-  },
-  loginDescription: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  inputContainer: {
-    marginBottom: spacing.md,
-  },
-  label: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginBottom: spacing.xs,
-  },
-  input: {
-    fontSize: 16,
-  },
-  errorContainer: {
-    backgroundColor: 'rgba(255, 68, 68, 0.1)',
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.md,
-  },
-  errorText: {
-    color: colors.error,
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  loginButton: {
-    marginTop: spacing.md,
-  },
-  securityNote: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-    marginTop: spacing.lg,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  securityText: {
-    flex: 1,
-    fontSize: 12,
-    color: colors.textSecondary,
-    lineHeight: 18,
-  },
-  footerText: {
-    fontSize: 12,
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginTop: spacing.xl,
-  },
-});

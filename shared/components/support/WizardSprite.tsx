@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useRef, useCallback, useState } from 'react';
-import { View, Image, Animated, StyleSheet, Platform } from 'react-native';
+import { View, Image, Animated, Platform } from 'react-native';
 import { isTV } from '../../utils/platform';
 
 // Spritesheet configurations
@@ -206,8 +206,8 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
 
   return (
     <View
+      className="overflow-hidden items-start justify-start rounded-full"
       style={[
-        styles.viewport,
         {
           width: scaledWidth,
           height: scaledHeight,
@@ -216,40 +216,19 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
       ]}
     >
       {/* Round dark background only */}
-      <View style={[styles.roundBackground, { width: scaledWidth, height: scaledHeight }]} />
+      <View className="absolute bg-[#0a0a0f] rounded-full" style={{ width: scaledWidth, height: scaledHeight }} />
       <Image
         source={config.source}
-        style={[
-          styles.spritesheet,
-          {
-            width: sheetWidth,
-            height: sheetHeight,
-            transform: [{ translateX }, { translateY }],
-          },
-        ]}
+        className="absolute top-0 left-0"
+        style={{
+          width: sheetWidth,
+          height: sheetHeight,
+          transform: [{ translateX }, { translateY }],
+        }}
         resizeMode="contain"
       />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  viewport: {
-    overflow: 'hidden',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    borderRadius: 999, // Circular clip
-  },
-  roundBackground: {
-    position: 'absolute',
-    backgroundColor: '#0a0a0f',
-    borderRadius: 999,
-  },
-  spritesheet: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  },
-});
 
 export default WizardSprite;

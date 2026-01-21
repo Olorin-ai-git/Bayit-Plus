@@ -2,7 +2,6 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui/GlassView';
@@ -56,16 +55,16 @@ export const IMDBFactsCard: React.FC<IMDBFactsCardProps> = ({
 
   if (showCompact) {
     return (
-      <GlassView style={styles.compactContainer} intensity="light">
-        <View style={styles.compactRatingSection}>
-          <View style={styles.imdbLogo}>
-            <Text style={styles.imdbLogoText}>IMDb</Text>
+      <GlassView className="flex-row items-center gap-2 px-4 py-2 rounded-lg" intensity="light">
+        <View className="flex-row items-baseline gap-1">
+          <View className="bg-[#F5C518] px-2 py-1 rounded">
+            <Text className={`${isTV ? 'text-base' : 'text-sm'} font-black text-black tracking-tight`}>IMDb</Text>
           </View>
-          <Text style={styles.compactRating}>{formatRating(imdbRating)}</Text>
-          <Text style={styles.compactScale}>/10</Text>
+          <Text className={`${isTV ? 'text-2xl' : 'text-lg'} font-bold text-[#F5C518]`}>{formatRating(imdbRating)}</Text>
+          <Text className="text-sm text-textSecondary">/10</Text>
         </View>
         {imdbVotes && (
-          <Text style={styles.compactVotes}>
+          <Text className="text-xs text-textSecondary">
             ({formatVotes(imdbVotes)} {t('content.votes')})
           </Text>
         )}
@@ -74,20 +73,20 @@ export const IMDBFactsCard: React.FC<IMDBFactsCardProps> = ({
   }
 
   return (
-    <GlassView style={styles.container} intensity="medium">
+    <GlassView className={`${isTV ? 'p-6' : 'p-4'} rounded-2xl my-4`} intensity="medium">
       {/* IMDB Rating Section */}
-      <View style={styles.ratingSection}>
-        <View style={styles.imdbLogo}>
-          <Text style={styles.imdbLogoText}>IMDb</Text>
+      <View className="flex-row items-center gap-4">
+        <View className="bg-[#F5C518] px-2 py-1 rounded">
+          <Text className={`${isTV ? 'text-base' : 'text-sm'} font-black text-black tracking-tight`}>IMDb</Text>
         </View>
-        <View style={styles.ratingDetails}>
-          <View style={styles.ratingRow}>
-            <Text style={styles.starIcon}>⭐</Text>
-            <Text style={styles.ratingValue}>{formatRating(imdbRating)}</Text>
-            <Text style={styles.ratingScale}>/10</Text>
+        <View className="flex-1">
+          <View className="flex-row items-baseline">
+            <Text className={`${isTV ? 'text-lg' : 'text-base'} mr-1`}>⭐</Text>
+            <Text className={`${isTV ? 'text-4xl' : 'text-[28px]'} font-bold text-white`}>{formatRating(imdbRating)}</Text>
+            <Text className={`${isTV ? 'text-lg' : 'text-base'} text-textSecondary ml-0.5`}>/10</Text>
           </View>
           {imdbVotes && (
-            <Text style={styles.votesText}>
+            <Text className="text-sm text-textSecondary mt-0.5">
               {formatVotes(imdbVotes)} {t('content.votes')}
             </Text>
           )}
@@ -95,10 +94,10 @@ export const IMDBFactsCard: React.FC<IMDBFactsCardProps> = ({
       </View>
 
       {/* Divider */}
-      <View style={styles.divider} />
+      <View className="h-px bg-white/10 my-4" />
 
       {/* Facts Section */}
-      <View style={styles.factsSection}>
+      <View className="gap-2">
         {runtime && (
           <FactRow label={t('content.runtime')} value={runtime} />
         )}
@@ -128,110 +127,10 @@ interface FactRowProps {
 }
 
 const FactRow: React.FC<FactRowProps> = ({ label, value }) => (
-  <View style={styles.factRow}>
-    <Text style={styles.factLabel}>{label}</Text>
-    <Text style={styles.factValue} numberOfLines={1}>{value}</Text>
+  <View className="flex-row items-center">
+    <Text className={`${isTV ? 'w-[120px]' : 'w-[90px]'} ${isTV ? 'text-base' : 'text-sm'} text-textSecondary`}>{label}</Text>
+    <Text className={`flex-1 ${isTV ? 'text-base' : 'text-sm'} text-white font-medium`} numberOfLines={1}>{value}</Text>
   </View>
 );
-
-const styles = StyleSheet.create({
-  container: {
-    padding: isTV ? spacing.lg : spacing.md,
-    borderRadius: borderRadius.xl,
-    marginVertical: spacing.md,
-  },
-  compactContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.lg,
-  },
-  ratingSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  imdbLogo: {
-    backgroundColor: '#F5C518',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: borderRadius.sm,
-  },
-  imdbLogoText: {
-    fontSize: isTV ? fontSize.md : fontSize.sm,
-    fontWeight: '900',
-    color: '#000',
-    letterSpacing: -0.5,
-  },
-  ratingDetails: {
-    flex: 1,
-  },
-  ratingRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  starIcon: {
-    fontSize: isTV ? fontSize.lg : fontSize.md,
-    marginRight: spacing.xs,
-  },
-  ratingValue: {
-    fontSize: isTV ? 36 : 28,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  ratingScale: {
-    fontSize: isTV ? fontSize.lg : fontSize.md,
-    color: colors.textSecondary,
-    marginLeft: 2,
-  },
-  votesText: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    marginVertical: spacing.md,
-  },
-  factsSection: {
-    gap: spacing.sm,
-  },
-  factRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  factLabel: {
-    width: isTV ? 120 : 90,
-    fontSize: isTV ? fontSize.md : fontSize.sm,
-    color: colors.textSecondary,
-  },
-  factValue: {
-    flex: 1,
-    fontSize: isTV ? fontSize.md : fontSize.sm,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  compactRatingSection: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: spacing.xs,
-  },
-  compactRating: {
-    fontSize: isTV ? fontSize.xl : fontSize.lg,
-    fontWeight: '700',
-    color: '#F5C518',
-  },
-  compactScale: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-  compactVotes: {
-    fontSize: fontSize.xs,
-    color: colors.textSecondary,
-  },
-});
 
 export default IMDBFactsCard;

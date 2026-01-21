@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Animated,
   Platform,
   Modal,
@@ -12,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '../hooks/useDirection';
 import { GlassView } from './ui';
 import { languages, saveLanguage, getCurrentLanguage } from '../i18n';
-import { colors, spacing, borderRadius } from '../theme';
+import { colors } from '../theme';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
@@ -112,7 +111,7 @@ export const LanguageSelector: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="relative justify-center items-center z-[9999]">
       <TouchableOpacity
         ref={buttonRef as any}
         onPress={handleOpenDropdown}
@@ -128,9 +127,11 @@ export const LanguageSelector: React.FC = () => {
             handleOpenDropdown(e);
           }
         }}
-        style={[styles.button, isFocused && styles.buttonFocused]}
+        className={`w-11 h-11 justify-center items-center rounded-lg bg-white/5 border ${
+          isFocused ? 'border-purple-500 bg-purple-500/30' : 'border-transparent'
+        }`}
       >
-        <Text style={styles.flag}>{currentLang.flag}</Text>
+        <Text className="text-xl">{currentLang.flag}</Text>
       </TouchableOpacity>
 
       {/* Web (non-TV): Use portal for dropdown */}
@@ -138,43 +139,42 @@ export const LanguageSelector: React.FC = () => {
         <>
           {/* Backdrop to close on click outside */}
           <TouchableOpacity
-            style={styles.backdrop}
+            className="fixed inset-0 bg-transparent z-[9998]"
             activeOpacity={1}
             onPress={() => setIsOpen(false)}
           />
           {/* Dropdown positioned fixed to viewport */}
           <Animated.View
-            style={[
-              styles.dropdownContainer,
-              {
-                opacity: fadeAnim,
-                top: dropdownPosition.top,
-                left: dropdownPosition.left,
-                right: dropdownPosition.right,
-              },
-            ]}
+            className="fixed w-[200px] z-[10000]"
+            style={{
+              opacity: fadeAnim,
+              top: dropdownPosition.top,
+              left: dropdownPosition.left,
+              right: dropdownPosition.right,
+            }}
           >
-            <GlassView intensity="high" style={styles.dropdown}>
-              <Text style={styles.dropdownTitle}>
+            <GlassView intensity="high" className="p-4 rounded-lg">
+              <Text className="text-sm text-center mb-3" style={{ color: colors.textSecondary }}>
                 {t('settings.selectLanguage')}
               </Text>
               {languages.map((lang) => (
                 <TouchableOpacity
                   key={lang.code}
                   onPress={() => handleSelectLanguage(lang.code)}
-                  style={[
-                    styles.languageOption,
-                    currentLang.code === lang.code && styles.languageOptionActive,
-                  ]}
+                  className={`flex-row items-center py-2 px-3 rounded-md mb-1 ${
+                    currentLang.code === lang.code ? 'bg-purple-500/30' : ''
+                  }`}
                 >
                   {currentLang.code === lang.code && (
-                    <Text style={styles.checkmark}>✓</Text>
+                    <Text className="text-base font-bold w-6 text-center" style={{ color: colors.primary }}>✓</Text>
                   )}
-                  <Text style={styles.languageFlag}>{lang.flag}</Text>
-                  <Text style={[
-                    styles.languageName,
-                    currentLang.code === lang.code && styles.languageNameActive,
-                  ]}>
+                  <Text className="text-2xl mx-2">{lang.flag}</Text>
+                  <Text
+                    className={`text-base flex-1 ${
+                      currentLang.code === lang.code ? 'font-bold' : ''
+                    }`}
+                    style={{ color: currentLang.code === lang.code ? colors.primary : colors.text }}
+                  >
                     {lang.name}
                   </Text>
                 </TouchableOpacity>
@@ -194,17 +194,17 @@ export const LanguageSelector: React.FC = () => {
           onRequestClose={() => setIsOpen(false)}
         >
           <TouchableOpacity
-            style={styles.modalBackdrop}
+            className="flex-1 bg-black/50 justify-center items-center"
             activeOpacity={1}
             onPress={backdropActive ? () => setIsOpen(false) : undefined}
           >
             <View
-              style={styles.modalContent}
+              className="w-[280px] max-w-[80%]"
               onStartShouldSetResponder={() => true}
               onTouchEnd={(e) => e.stopPropagation()}
             >
-              <GlassView intensity="high" style={styles.dropdown}>
-                <Text style={styles.dropdownTitle}>
+              <GlassView intensity="high" className="p-4 rounded-lg">
+                <Text className="text-sm text-center mb-3" style={{ color: colors.textSecondary }}>
                   {t('settings.selectLanguage')}
                 </Text>
                 {languages.map((lang, index) => (
@@ -216,20 +216,22 @@ export const LanguageSelector: React.FC = () => {
                     // @ts-ignore - Web props for TV
                     tabIndex={0}
                     autoFocus={index === 0}
-                    style={[
-                      styles.languageOption,
-                      currentLang.code === lang.code && styles.languageOptionActive,
-                      focusedLang === lang.code && styles.languageOptionFocused,
-                    ]}
+                    className={`flex-row items-center py-2 px-3 rounded-md mb-1 ${
+                      currentLang.code === lang.code ? 'bg-purple-500/30' : ''
+                    } ${
+                      focusedLang === lang.code ? 'bg-purple-500/30 border-2 border-purple-500' : ''
+                    }`}
                   >
                     {currentLang.code === lang.code && (
-                      <Text style={styles.checkmark}>✓</Text>
+                      <Text className="text-base font-bold w-6 text-center" style={{ color: colors.primary }}>✓</Text>
                     )}
-                    <Text style={styles.languageFlag}>{lang.flag}</Text>
-                    <Text style={[
-                      styles.languageName,
-                      currentLang.code === lang.code && styles.languageNameActive,
-                    ]}>
+                    <Text className="text-2xl mx-2">{lang.flag}</Text>
+                    <Text
+                      className={`text-base flex-1 ${
+                        currentLang.code === lang.code ? 'font-bold' : ''
+                      }`}
+                      style={{ color: currentLang.code === lang.code ? colors.primary : colors.text }}
+                    >
                       {lang.name}
                     </Text>
                   </TouchableOpacity>
@@ -242,101 +244,5 @@ export const LanguageSelector: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 9999,
-  },
-  button: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  buttonFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  flag: {
-    fontSize: 20,
-  },
-  backdrop: {
-    position: 'fixed' as any,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'transparent',
-    zIndex: 9998,
-  },
-  dropdownContainer: {
-    position: 'fixed' as any,
-    width: 200,
-    zIndex: 10000,
-  },
-  dropdown: {
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-  },
-  dropdownTitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginBottom: spacing.md,
-    textAlign: 'center',
-  },
-  languageOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.xs,
-  },
-  languageOptionActive: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  languageOptionFocused: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderWidth: 2,
-    borderColor: colors.primary,
-  },
-  languageFlag: {
-    fontSize: 24,
-    marginHorizontal: spacing.sm,
-  },
-  languageName: {
-    fontSize: 16,
-    color: colors.text,
-    flex: 1,
-  },
-  languageNameActive: {
-    color: colors.primary,
-    fontWeight: 'bold',
-  },
-  checkmark: {
-    fontSize: 16,
-    color: colors.primary,
-    fontWeight: 'bold',
-    width: 24,
-    textAlign: 'center',
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    width: 280,
-    maxWidth: '80%',
-  },
-});
 
 export default LanguageSelector;

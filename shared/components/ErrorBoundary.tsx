@@ -5,7 +5,7 @@
  */
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
+import { View, Text, Pressable, Platform } from 'react-native';
 import { colors, spacing, borderRadius } from '../theme';
 import logger, { getCorrelationId } from '../utils/logger';
 
@@ -84,22 +84,71 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <View style={styles.container}>
-          <View style={styles.content}>
-            <Text style={styles.icon}>⚠️</Text>
-            <Text style={styles.title}>משהו השתבש</Text>
-            <Text style={styles.titleEn}>Something went wrong</Text>
-            <Text style={styles.message}>
+        <View className="flex-1 justify-center items-center" style={{ backgroundColor: colors.background, padding: spacing.xl }}>
+          <View
+            className="items-center rounded-lg border"
+            style={{
+              maxWidth: 500,
+              padding: spacing.xl,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              borderRadius: borderRadius.lg,
+              borderColor: colors.glassBorder
+            }}
+          >
+            <Text style={{ fontSize: Platform.isTV ? 80 : 60, marginBottom: spacing.lg }}>⚠️</Text>
+            <Text
+              className="font-bold text-center"
+              style={{
+                fontSize: Platform.isTV ? 32 : 24,
+                color: colors.text,
+                marginBottom: spacing.xs
+              }}
+            >
+              משהו השתבש
+            </Text>
+            <Text
+              className="font-semibold text-center"
+              style={{
+                fontSize: Platform.isTV ? 24 : 18,
+                color: colors.textMuted,
+                marginBottom: spacing.md
+              }}
+            >
+              Something went wrong
+            </Text>
+            <Text
+              className="text-center"
+              style={{
+                fontSize: Platform.isTV ? 18 : 14,
+                color: colors.textMuted,
+                marginBottom: spacing.xl
+              }}
+            >
               {this.state.error?.message || 'An unexpected error occurred'}
             </Text>
             <Pressable
               onPress={this.handleRetry}
+              className="border-2"
               style={({ focused }) => [
-                styles.button,
-                focused && styles.buttonFocused,
+                {
+                  backgroundColor: colors.primary,
+                  paddingHorizontal: spacing.xl,
+                  paddingVertical: spacing.md,
+                  borderRadius: borderRadius.full,
+                  borderColor: focused ? colors.text : 'transparent',
+                  transform: focused ? [{ scale: 1.05 }] : [{ scale: 1 }],
+                }
               ]}
             >
-              <Text style={styles.buttonText}>נסה שוב / Try Again</Text>
+              <Text
+                className="font-semibold"
+                style={{
+                  fontSize: Platform.isTV ? 20 : 16,
+                  color: colors.text
+                }}
+              >
+                נסה שוב / Try Again
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -109,65 +158,5 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  content: {
-    alignItems: 'center',
-    maxWidth: 500,
-    padding: spacing.xl,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  icon: {
-    fontSize: Platform.isTV ? 80 : 60,
-    marginBottom: spacing.lg,
-  },
-  title: {
-    fontSize: Platform.isTV ? 32 : 24,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
-  },
-  titleEn: {
-    fontSize: Platform.isTV ? 24 : 18,
-    fontWeight: '600',
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginBottom: spacing.md,
-  },
-  message: {
-    fontSize: Platform.isTV ? 18 : 14,
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginBottom: spacing.xl,
-  },
-  button: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.full,
-    borderWidth: 3,
-    borderColor: 'transparent',
-  },
-  buttonFocused: {
-    borderColor: colors.text,
-    transform: [{ scale: 1.05 }],
-  },
-  buttonText: {
-    fontSize: Platform.isTV ? 20 : 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-});
 
 export default ErrorBoundary;

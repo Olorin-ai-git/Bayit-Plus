@@ -70,7 +70,7 @@ Updated `cloudbuild.yaml` to configure Cloud Run startup probes with more genero
 Push the changes and Cloud Build will automatically deploy:
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 git add backend/cloudbuild.yaml
 git commit -m "fix: Increase Cloud Run startup probe timeout for podcast sync"
 git push origin main
@@ -81,7 +81,7 @@ git push origin main
 If Cloud Build trigger isn't set up:
 
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus/backend
+cd /Users/olorin/Documents/olorin/backend
 
 # Build and push image
 gcloud builds submit --config cloudbuild.yaml \

@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, useWindowDimensions, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, useWindowDimensions, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Check, Tv, Globe, Podcast, Radio, Film, RefreshCw, Eye, EyeOff, RotateCcw, Trash2 } from 'lucide-react';
 import { GlassCard } from '@bayit/shared/ui';
@@ -114,26 +114,26 @@ function SystemWidgetCard({
     <View
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={styles.cardWrapper}
+      className="flex-1"
     >
-      <GlassCard style={[styles.card, isHovered && styles.cardHovered]}>
-        <View style={styles.iconContainer}>
-          <Text style={styles.icon}>{getIcon()}</Text>
+      <GlassCard className={`px-4 py-4 mb-4 flex-row items-center gap-4 relative border-0 ${isHovered ? 'bg-blue-500/5' : ''}`}>
+        <View className="w-12 h-12 rounded-full bg-white/5 justify-center items-center">
+          <Text className="text-2xl">{getIcon()}</Text>
         </View>
 
-        <View style={styles.content}>
-          <Text style={styles.title} numberOfLines={2}>
+        <View className="flex-1">
+          <Text className="text-[15px] font-semibold text-white" numberOfLines={2}>
             {widget.title}
           </Text>
           {widget.description && (
-            <Text style={styles.description} numberOfLines={2}>
+            <Text className="text-xs text-white/60 mt-0.5" numberOfLines={2}>
               {widget.description}
             </Text>
           )}
-          <View style={styles.metadata}>
-            <View style={styles.contentTypeBadge}>
+          <View className="flex-row gap-2 mt-2">
+            <View className="flex-row items-center gap-1 bg-white/5 px-2 py-0.5 rounded">
               {getContentTypeIcon(widget.content?.content_type)}
-              <Text style={styles.contentTypeText}>
+              <Text className="text-[11px] text-white/60 capitalize">
                 {getContentTypeLabel(widget.content?.content_type)}
               </Text>
             </View>
@@ -144,7 +144,7 @@ function SystemWidgetCard({
         {isHovered && widget.is_added && (
           <Pressable
             onPress={() => onResetPosition(widget.id)}
-            style={styles.resetButton}
+            className="w-8 h-8 rounded-full bg-white/10 justify-center items-center mr-2"
           >
             <RotateCcw size={16} color={colors.text} />
           </Pressable>
@@ -154,27 +154,30 @@ function SystemWidgetCard({
         <Pressable
           onPress={handleAction}
           disabled={actionLoading || isLoading}
-          style={[
-            styles.actionButton,
-            isHidden ? styles.showButton : widget.is_added ? styles.addedButton : styles.addButton,
-          ]}
+          className={`flex-row items-center gap-1.5 px-4 py-2 rounded-lg min-w-[80px] justify-center ${
+            isHidden
+              ? 'bg-yellow-500/20 border border-yellow-500/50'
+              : widget.is_added
+                ? 'bg-green-500/20 border border-green-500/50'
+                : 'bg-blue-600'
+          }`}
         >
           {actionLoading ? (
             <ActivityIndicator size="small" color={colors.text} />
           ) : isHidden ? (
             <>
               <Eye size={16} color={colors.text} />
-              <Text style={styles.actionButtonText}>{t('widgets.show') || 'Show'}</Text>
+              <Text className="text-[13px] font-semibold text-white">{t('widgets.show') || 'Show'}</Text>
             </>
           ) : widget.is_added ? (
             <>
               <Check size={16} color={colors.text} />
-              <Text style={styles.actionButtonText}>{t('widgets.added') || 'Added'}</Text>
+              <Text className="text-[13px] font-semibold text-white">{t('widgets.added') || 'Added'}</Text>
             </>
           ) : (
             <>
               <Plus size={16} color={colors.text} />
-              <Text style={styles.actionButtonText}>{t('widgets.add') || 'Add'}</Text>
+              <Text className="text-[13px] font-semibold text-white">{t('widgets.add') || 'Add'}</Text>
             </>
           )}
         </Pressable>
@@ -265,20 +268,20 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="p-8 items-center justify-center">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading') || 'Loading...'}</Text>
+        <Text className="mt-2 text-white/60 text-sm">{t('common.loading') || 'Loading...'}</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
-        <Pressable onPress={loadWidgets} style={styles.retryButton}>
+      <View className="p-6 items-center bg-red-500/10 rounded-lg mb-6">
+        <Text className="text-red-500 text-sm mb-2">{error}</Text>
+        <Pressable onPress={loadWidgets} className="flex-row items-center gap-2 px-4 py-2 bg-white/5 rounded-lg">
           <RefreshCw size={16} color={colors.text} />
-          <Text style={styles.retryText}>{t('common.retry') || 'Retry'}</Text>
+          <Text className="text-white text-sm">{t('common.retry') || 'Retry'}</Text>
         </Pressable>
       </View>
     );
@@ -286,8 +289,8 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
 
   if (widgets.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>
+      <View className="p-6 items-center bg-white/5 rounded-lg mb-6">
+        <Text className="text-white/60 text-sm">
           {t('widgets.noSystemWidgets') || 'No system widgets available'}
         </Text>
       </View>
@@ -295,17 +298,17 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={[styles.sectionTitle, { textAlign }]}>
+    <View className="mb-8">
+      <View className="mb-4">
+        <Text className="text-xl font-semibold text-white mb-2" style={{ textAlign }}>
           {t('widgets.systemWidgets') || 'System Widgets'}
         </Text>
-        <Text style={[styles.sectionDescription, { textAlign }]}>
+        <Text className="text-sm text-white/60" style={{ textAlign }}>
           {t('widgets.systemWidgetsHint') || 'Browse and add widgets to your collection'}
         </Text>
       </View>
 
-      <View style={[styles.grid, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <View className="flex-row flex-wrap" style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
         {widgets.map((widget) => (
           <View key={widget.id} style={{ width: `${100 / numColumns}%`, paddingHorizontal: spacing.xs }}>
             <SystemWidgetCard
@@ -323,170 +326,5 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: spacing.xl,
-  },
-  header: {
-    marginBottom: spacing.md,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  sectionDescription: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  cardWrapper: {
-    flex: 1,
-  },
-  card: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    marginBottom: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    position: 'relative',
-    borderWidth: 0,
-  },
-  cardHovered: {
-    backgroundColor: 'rgba(59, 130, 246, 0.05)',
-  },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.glass,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  icon: {
-    fontSize: 24,
-  },
-  content: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  description: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
-  metadata: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginTop: spacing.xs,
-  },
-  contentTypeBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: colors.glass,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  contentTypeText: {
-    fontSize: 11,
-    color: colors.textMuted,
-    textTransform: 'capitalize',
-  },
-  resetButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.xs,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.md,
-    minWidth: 80,
-    justifyContent: 'center',
-  },
-  addButton: {
-    backgroundColor: colors.primary,
-  },
-  addedButton: {
-    backgroundColor: 'rgba(16, 185, 129, 0.2)',
-    borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.5)',
-  },
-  showButton: {
-    backgroundColor: 'rgba(251, 191, 36, 0.2)',
-    borderWidth: 1,
-    borderColor: 'rgba(251, 191, 36, 0.5)',
-  },
-  actionButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  loadingContainer: {
-    padding: spacing.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loadingText: {
-    marginTop: spacing.sm,
-    color: colors.textMuted,
-    fontSize: 14,
-  },
-  errorContainer: {
-    padding: spacing.lg,
-    alignItems: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.lg,
-  },
-  errorText: {
-    color: '#ef4444',
-    fontSize: 14,
-    marginBottom: spacing.sm,
-  },
-  retryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.md,
-  },
-  retryText: {
-    color: colors.text,
-    fontSize: 14,
-  },
-  emptyContainer: {
-    padding: spacing.lg,
-    alignItems: 'center',
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.lg,
-  },
-  emptyText: {
-    color: colors.textMuted,
-    fontSize: 14,
-  },
-});
 
 export default SystemWidgetGallery;

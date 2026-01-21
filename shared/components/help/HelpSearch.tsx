@@ -10,12 +10,10 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
-  StyleSheet,
   ActivityIndicator,
   Keyboard,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '../../theme';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 import { supportConfig } from '../../config/supportConfig';
@@ -192,24 +190,25 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
 
   const renderResult = ({ item }: { item: SearchResult }) => (
     <TouchableOpacity
-      style={[styles.resultItem, { flexDirection }]}
+      className="items-start p-3 gap-2 border-b border-white/5"
+      style={{ flexDirection }}
       onPress={() => handleResultPress(item)}
       accessibilityRole="button"
     >
-      <Text style={styles.resultIcon}>
+      <Text className={`mt-0.5 ${isTV ? 'text-xl' : 'text-lg'}`}>
         {item.type === 'article' ? '📄' : '❓'}
       </Text>
-      <View style={styles.resultContent}>
-        <Text style={[styles.resultTitle, { textAlign }]} numberOfLines={1}>
+      <View className="flex-1">
+        <Text className={`text-white font-semibold mb-0.5 ${isTV ? 'text-base' : 'text-sm'}`} style={{ textAlign }} numberOfLines={1}>
           {item.title}
         </Text>
         {item.excerpt && (
-          <Text style={[styles.resultExcerpt, { textAlign }]} numberOfLines={2}>
+          <Text className={`text-white/70 ${isTV ? 'text-[13px] leading-[18px]' : 'text-xs leading-4'}`} style={{ textAlign }} numberOfLines={2}>
             {item.excerpt}
           </Text>
         )}
         {item.category && (
-          <Text style={[styles.resultCategory, { textAlign }]}>
+          <Text className={`text-purple-500 mt-1 ${isTV ? 'text-[11px]' : 'text-[10px]'}`} style={{ textAlign }}>
             {t(`help.categories.${item.category}`, item.category)}
           </Text>
         )}
@@ -223,17 +222,19 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
   );
 
   return (
-    <View style={[styles.container, style]}>
+    <View className="w-full" style={style}>
       {/* Search Input */}
-      <View style={[styles.inputContainer, focused && styles.inputContainerFocused]}>
-        <Text style={styles.searchIcon}>🔍</Text>
+      <View className={`flex-row items-center bg-white/10 rounded-lg px-3 py-2 border-2 gap-2 ${
+        focused ? 'border-purple-500 bg-white/15' : 'border-transparent'
+      }`}>
+        <Text className={isTV ? 'text-xl' : 'text-base'}>🔍</Text>
         <TextInput
           ref={inputRef}
-          style={[styles.input, isRTL && styles.inputRTL]}
+          className={`flex-1 text-white p-0 ${isTV ? 'text-lg' : 'text-base'} ${isRTL ? 'text-right' : 'text-left'}`}
           value={query}
           onChangeText={handleQueryChange}
           placeholder={placeholder || t('help.search.placeholder', 'Search help...')}
-          placeholderTextColor={colors.textSecondary}
+          placeholderTextColor="rgba(255, 255, 255, 0.5)"
           onFocus={() => setFocused(true)}
           onBlur={() => setTimeout(() => setFocused(false), 200)}
           returnKeyType="search"
@@ -241,18 +242,18 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
           autoCapitalize="none"
         />
         {loading && (
-          <ActivityIndicator size="small" color={colors.primary} />
+          <ActivityIndicator size="small" color="#a855f7" />
         )}
         {query.length > 0 && !loading && (
-          <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
-            <Text style={styles.clearButtonText}>✕</Text>
+          <TouchableOpacity onPress={handleClear} className="w-6 h-6 items-center justify-center">
+            <Text className="text-white/70 text-sm">✕</Text>
           </TouchableOpacity>
         )}
       </View>
 
       {/* Results */}
       {results.length > 0 && (
-        <View style={styles.resultsContainer}>
+        <View className="mt-2 bg-[rgba(30,30,40,0.98)] rounded-lg border border-white/10 max-h-[300px] overflow-hidden">
           <FlatList
             data={results}
             keyExtractor={(item) => item.id}
@@ -265,20 +266,20 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
 
       {/* Suggestions */}
       {showSuggestions && (
-        <View style={styles.suggestionsContainer}>
+        <View className="mt-2 bg-[rgba(30,30,40,0.98)] rounded-lg p-3 border border-white/10">
           {showRecent && recentSearches.length > 0 && (
-            <View style={styles.suggestionSection}>
-              <Text style={[styles.suggestionHeader, { textAlign }]}>
+            <View className="mb-3">
+              <Text className={`text-white/70 font-semibold mb-2 uppercase tracking-wide ${isTV ? 'text-xs' : 'text-[11px]'}`} style={{ textAlign }}>
                 {t('help.search.recent', 'Recent')}
               </Text>
-              <View style={styles.suggestionList}>
+              <View className="flex-row flex-wrap gap-1">
                 {recentSearches.map((search, index) => (
                   <TouchableOpacity
                     key={index}
-                    style={styles.suggestionChip}
+                    className="bg-white/10 px-3 py-1 rounded-full"
                     onPress={() => handleSuggestionPress(search)}
                   >
-                    <Text style={styles.suggestionChipText}>{search}</Text>
+                    <Text className={`text-white ${isTV ? 'text-[13px]' : 'text-xs'}`}>{search}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -286,18 +287,18 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
           )}
 
           {showPopular && popularSearches.length > 0 && (
-            <View style={styles.suggestionSection}>
-              <Text style={[styles.suggestionHeader, { textAlign }]}>
+            <View className="mb-3">
+              <Text className={`text-white/70 font-semibold mb-2 uppercase tracking-wide ${isTV ? 'text-xs' : 'text-[11px]'}`} style={{ textAlign }}>
                 {t('help.search.popular', 'Popular')}
               </Text>
-              <View style={styles.suggestionList}>
+              <View className="flex-row flex-wrap gap-1">
                 {popularSearches.map((search, index) => (
                   <TouchableOpacity
                     key={index}
-                    style={styles.suggestionChip}
+                    className="bg-white/10 px-3 py-1 rounded-full"
                     onPress={() => handleSuggestionPress(search)}
                   >
-                    <Text style={styles.suggestionChipText}>{search}</Text>
+                    <Text className={`text-white ${isTV ? 'text-[13px]' : 'text-xs'}`}>{search}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -308,12 +309,12 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
 
       {/* No Results */}
       {query.length >= minQueryLength && !loading && results.length === 0 && (
-        <View style={styles.noResults}>
-          <Text style={styles.noResultsIcon}>🔍</Text>
-          <Text style={[styles.noResultsText, { textAlign }]}>
+        <View className="mt-2 p-6 bg-[rgba(30,30,40,0.98)] rounded-lg items-center border border-white/10">
+          <Text className="text-[32px] mb-2 opacity-50">🔍</Text>
+          <Text className={`text-white mb-1 ${isTV ? 'text-base' : 'text-sm'}`} style={{ textAlign }}>
             {t('help.search.noResults', 'No results found for "{query}"', { query })}
           </Text>
-          <Text style={[styles.noResultsHint, { textAlign }]}>
+          <Text className={`text-white/70 ${isTV ? 'text-[13px]' : 'text-xs'}`} style={{ textAlign }}>
             {t('help.search.noResultsHint', 'Try different keywords or browse categories')}
           </Text>
         </View>
@@ -321,144 +322,5 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.lg,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    gap: spacing.sm,
-  },
-  inputContainerFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-  },
-  searchIcon: {
-    fontSize: isTV ? 20 : 16,
-  },
-  input: {
-    flex: 1,
-    fontSize: isTV ? 18 : 16,
-    color: colors.text,
-    padding: 0,
-  },
-  inputRTL: {
-    textAlign: 'right',
-  },
-  clearButton: {
-    width: 24,
-    height: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  clearButtonText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  resultsContainer: {
-    marginTop: spacing.sm,
-    backgroundColor: 'rgba(30, 30, 40, 0.98)',
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    maxHeight: 300,
-    overflow: 'hidden',
-  },
-  resultItem: {
-    alignItems: 'flex-start',
-    padding: spacing.md,
-    gap: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  resultIcon: {
-    fontSize: isTV ? 20 : 18,
-    marginTop: 2,
-  },
-  resultContent: {
-    flex: 1,
-  },
-  resultTitle: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 2,
-  },
-  resultExcerpt: {
-    fontSize: isTV ? 13 : 12,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 18 : 16,
-  },
-  resultCategory: {
-    fontSize: isTV ? 11 : 10,
-    color: colors.primary,
-    marginTop: spacing.xs,
-  },
-  suggestionsContainer: {
-    marginTop: spacing.sm,
-    backgroundColor: 'rgba(30, 30, 40, 0.98)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  suggestionSection: {
-    marginBottom: spacing.md,
-  },
-  suggestionHeader: {
-    fontSize: isTV ? 12 : 11,
-    fontWeight: '600',
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  suggestionList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.xs,
-  },
-  suggestionChip: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-  },
-  suggestionChipText: {
-    fontSize: isTV ? 13 : 12,
-    color: colors.text,
-  },
-  noResults: {
-    marginTop: spacing.sm,
-    padding: spacing.xl,
-    backgroundColor: 'rgba(30, 30, 40, 0.98)',
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  noResultsIcon: {
-    fontSize: 32,
-    marginBottom: spacing.sm,
-    opacity: 0.5,
-  },
-  noResultsText: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  noResultsHint: {
-    fontSize: isTV ? 13 : 12,
-    color: colors.textSecondary,
-  },
-});
 
 export default HelpSearch;

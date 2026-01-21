@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Home, Tv, Film, Radio, Mic, User } from 'lucide-react-native';
 import { useDirection } from '@bayit/shared-hooks';
@@ -38,7 +38,10 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
   };
 
   return (
-    <View style={[styles.container, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+    <View
+      className="bg-[rgba(10,10,20,0.95)] border-t border-white/10 py-2 px-4 backdrop-blur-xl"
+      style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
+    >
       {state.routes.map((route: any, index: number) => {
         const isFocused = state.index === index;
         const label = tabLabels[route.name] || route.name;
@@ -61,7 +64,7 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
           <TouchableOpacity
             key={route.key}
             onPress={onPress}
-            style={[styles.tab, isFocused && styles.tabFocused]}
+            className={`flex-1 items-center py-2 px-1 rounded-xl ${isFocused ? 'bg-[rgba(107,33,168,0.3)]' : ''}`}
             activeOpacity={0.7}
           >
             <Icon
@@ -69,7 +72,7 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
               color={isFocused ? '#a855f7' : '#888888'}
               strokeWidth={isFocused ? 2.5 : 2}
             />
-            <Text style={[styles.label, isFocused && styles.labelFocused]}>
+            <Text className={`text-[11px] mt-1 ${isFocused ? 'text-[#a855f7] font-semibold' : 'text-[#888888] font-medium'}`}>
               {label}
             </Text>
           </TouchableOpacity>
@@ -78,40 +81,5 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(10, 10, 20, 0.95)',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    // Glass effect
-    // @ts-ignore - Web CSS properties
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
-  },
-  tab: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-    borderRadius: 12,
-  },
-  tabFocused: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  label: {
-    fontSize: 11,
-    color: '#888888',
-    marginTop: 4,
-    fontWeight: '500',
-  },
-  labelFocused: {
-    color: '#a855f7',
-    fontWeight: '600',
-  },
-});
 
 export default TabBar;

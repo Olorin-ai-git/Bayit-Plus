@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 
 interface VoiceVideoIndicatorProps {
   isListening: boolean;
@@ -31,7 +31,7 @@ export function VoiceVideoIndicator({
   }
 
   return (
-    <View style={styles.container as any}>
+    <View className="w-full h-[200px] bg-black overflow-hidden z-40">
       <video
         autoPlay
         muted
@@ -51,15 +51,5 @@ export function VoiceVideoIndicator({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    height: 200,
-    backgroundColor: '#000',
-    overflow: 'hidden',
-    zIndex: 40,
-  },
-});
 
 export default VoiceVideoIndicator;

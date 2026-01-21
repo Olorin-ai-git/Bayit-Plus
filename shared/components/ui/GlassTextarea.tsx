@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   Animated,
   Platform,
   TextInputProps,
@@ -34,16 +33,12 @@ export const GlassTextarea: React.FC<GlassTextareaProps> = ({
   });
 
   return (
-    <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
+    <View className="w-full">
+      {label && <Text className="text-sm font-medium mb-2 text-right" style={{ color: colors.textSecondary }}>{label}</Text>}
 
       <Animated.View style={scaleTransform}>
         <GlassView
-          style={[
-            styles.inputContainer,
-            !error && focusStyle,
-            error && styles.inputError,
-          ]}
+          className="overflow-hidden"
           intensity="medium"
           borderColor={
             error
@@ -54,7 +49,8 @@ export const GlassTextarea: React.FC<GlassTextareaProps> = ({
           }
         >
           <TextInput
-            style={[styles.input, { minHeight }]}
+            className="text-base px-4 py-4 text-right"
+            style={[{ minHeight, color: colors.text }, !error && focusStyle]}
             placeholderTextColor={colors.textMuted}
             onFocus={handleFocus}
             onBlur={handleBlur}
@@ -67,48 +63,10 @@ export const GlassTextarea: React.FC<GlassTextareaProps> = ({
         </GlassView>
       </Animated.View>
 
-      {error && <Text style={styles.error}>{error}</Text>}
-      {hint && !error && <Text style={styles.hint}>{hint}</Text>}
+      {error && <Text className="text-xs mt-1 text-right" style={{ color: colors.error }}>{error}</Text>}
+      {hint && !error && <Text className="text-xs mt-1 text-right" style={{ color: colors.textMuted }}>{hint}</Text>}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-    textAlign: 'right',
-  },
-  inputContainer: {
-    overflow: 'hidden',
-  },
-  inputError: {
-    borderColor: colors.error,
-  },
-  input: {
-    fontSize: 16,
-    color: colors.text,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    textAlign: 'right',
-  },
-  error: {
-    fontSize: 12,
-    color: colors.error,
-    marginTop: spacing.xs,
-    textAlign: 'right',
-  },
-  hint: {
-    fontSize: 12,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-    textAlign: 'right',
-  },
-});
 
 export default GlassTextarea;

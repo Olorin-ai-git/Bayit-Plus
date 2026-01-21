@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -94,16 +93,15 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
   const showVoiceButton = holdButtonModeEnabled || !wakeWordSupported;
 
   return (
-    <GlassView intensity="medium" style={[
-      styles.container,
+    <GlassView intensity="medium" className="h-16 flex-row items-center justify-between px-4 border-b border-white/10" style={[
       { flexDirection: isRTL ? 'row-reverse' : 'row' },
       isRTL ? { paddingRight: sidebarPadding } : { paddingLeft: sidebarPadding },
     ]}>
       {/* Actions side */}
-      <View style={[styles.actionsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <View className="items-center justify-end h-full gap-3" style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
         {/* Soundwave Visualizer - for wake word listening mode */}
         {showSoundwave && (
-          <View style={styles.soundwaveContainer}>
+          <View className="h-11 justify-center items-center px-3 bg-white/10 rounded-lg border border-purple-300/30">
             <SoundwaveVisualizer
               audioLevel={audioLevel}
               isListening={isListening}
@@ -127,9 +125,10 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
           onPress={handleSearchPress}
           onFocus={handleSearchFocus}
           onBlur={handleSearchBlur}
-          style={[styles.actionButton, searchFocusStyle]}
+          className="w-11 h-11 justify-center items-center rounded-lg bg-white/10 border border-transparent"
+          style={searchFocusStyle}
         >
-          <Text style={styles.actionIcon}>🔍</Text>
+          <Text className="text-lg">🔍</Text>
         </TouchableOpacity>
 
         {/* Upgrade Button - for non-admin, non-premium users */}
@@ -146,69 +145,15 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
       {!isWeb && (
         <TouchableOpacity
           onPress={onMenuPress}
-          style={styles.menuButton}
+          className="w-11 h-11 justify-center items-center rounded-md bg-transparent"
           onFocus={() => {}}
           onBlur={() => {}}
         >
-          <Text style={styles.menuIcon}>☰</Text>
+          <Text className="text-2xl text-white">☰</Text>
         </TouchableOpacity>
       )}
     </GlassView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    height: 64,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingLeft: spacing.lg,
-    paddingRight: spacing.lg, // Dynamic padding applied in component
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
-  },
-  menuButton: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: borderRadius.md,
-    backgroundColor: 'transparent',
-  },
-  menuIcon: {
-    fontSize: 24,
-    color: colors.text,
-  },
-  actionsContainer: {
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    gap: spacing.md,
-    height: '100%',
-  },
-  soundwaveContainer: {
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.glassBorderWhite,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.glassPurpleLight,
-  },
-  actionButton: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.glassBorderWhite,
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  actionIcon: {
-    fontSize: 18,
-  },
-});
 
 export default GlassTopBar;

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';;
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit2, Trash2, Check } from 'lucide-react';
 import { subscriptionsService } from '@/services/adminApi';
@@ -132,7 +132,7 @@ export default function PlanManagementPage() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.plans.title')}</Text>
@@ -239,7 +239,7 @@ export default function PlanManagementPage() {
             />
           </View>
 
-          <View style={styles.modalActions}>
+          <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowEditModal(false)} />
             <GlassButton title={t('common.save')} variant="success" onPress={handleSave} />
           </View>
@@ -257,7 +257,7 @@ export default function PlanManagementPage() {
               {t('admin.plans.confirmDelete', { name: planToDelete.name })}
             </Text>
           )}
-          <View style={styles.modalActions}>
+          <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowDeleteConfirm(false)} />
             <GlassButton title={t('common.delete')} variant="danger" onPress={handleDeleteConfirm} />
           </View>
@@ -270,8 +270,8 @@ export default function PlanManagementPage() {
         title={t('common.error')}
       >
         <View style={styles.modalContent}>
-          <Text style={styles.errorText}>{errorMessage}</Text>
-          <View style={styles.modalActions}>
+          <Text className="flex-1 text-red-500 text-sm">{errorMessage}</Text>
+          <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('common.ok')} variant="success" onPress={() => setShowErrorModal(false)} />
           </View>
         </View>
@@ -280,44 +280,3 @@ export default function PlanManagementPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.lg },
-  pageTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
-  subtitle: { fontSize: 14, color: colors.textMuted, marginTop: spacing.xs },
-  plansGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
-  planCard: { width: 280, padding: spacing.lg },
-  planCardInactive: { opacity: 0.6 },
-  planHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.md },
-  planName: { fontSize: 18, fontWeight: 'bold', color: colors.text },
-  planNameEn: { fontSize: 12, color: colors.textMuted },
-  inactiveBadge: { backgroundColor: 'rgba(239, 68, 68, 0.2)', paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.sm },
-  inactiveBadgeText: { fontSize: 10, color: colors.error },
-  priceContainer: { flexDirection: 'row', alignItems: 'baseline', marginBottom: spacing.sm },
-  priceAmount: { fontSize: 28, fontWeight: 'bold', color: colors.primary },
-  priceInterval: { fontSize: 14, color: colors.textMuted, marginStart: spacing.xs },
-  trialText: { fontSize: 12, color: colors.success, marginBottom: spacing.md },
-  featuresContainer: { gap: spacing.xs, marginBottom: spacing.md },
-  featureRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  featureText: { fontSize: 13, color: colors.textSecondary },
-  subscribersRow: { flexDirection: 'row', justifyContent: 'space-between', paddingTop: spacing.md, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.05)', marginBottom: spacing.md },
-  subscribersLabel: { fontSize: 14, color: colors.textMuted },
-  subscribersCount: { fontSize: 14, fontWeight: '600', color: colors.text },
-  planActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm },
-  actionButton: { width: 36, height: 36, borderRadius: borderRadius.sm, backgroundColor: colors.glass, justifyContent: 'center', alignItems: 'center' },
-  modalContent: { gap: spacing.md, width: '100%' },
-  formRow: { flexDirection: 'row', gap: spacing.md, width: '100%' },
-  formGroup: { flex: 1, gap: spacing.xs },
-  formLabel: { fontSize: 14, fontWeight: '600', color: colors.text },
-  inputContainer: { width: '100%' },
-  intervalButtons: { flexDirection: 'row', gap: spacing.sm },
-  intervalButton: { flex: 1, paddingVertical: spacing.sm, borderRadius: borderRadius.md, backgroundColor: colors.backgroundLighter, alignItems: 'center' },
-  intervalButtonActive: { backgroundColor: colors.primary },
-  intervalButtonText: { fontSize: 14, color: colors.textMuted },
-  intervalButtonTextActive: { color: colors.text, fontWeight: '500' },
-  toggleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%', paddingVertical: spacing.sm, marginTop: spacing.md },
-  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.md, width: '100%' },
-  modalMessage: { fontSize: 14, color: colors.text, marginBottom: spacing.md },
-  errorText: { fontSize: 14, color: colors.text, marginBottom: spacing.md },
-});

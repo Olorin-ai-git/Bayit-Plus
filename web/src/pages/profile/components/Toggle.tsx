@@ -1,5 +1,4 @@
-import { View, Pressable, StyleSheet } from 'react-native';
-import { colors } from '@bayit/shared/theme';
+import { View, Pressable } from 'react-native';
 
 interface ToggleProps {
   value: boolean;
@@ -13,43 +12,11 @@ export function Toggle({ value, onToggle, disabled, isRTL }: ToggleProps) {
     <Pressable
       onPress={onToggle}
       disabled={disabled}
-      style={[styles.toggle, value && styles.toggleActive, disabled && styles.toggleDisabled]}
+      className={`w-[52px] h-7 rounded-[14px] p-0.5 justify-center ${value ? 'bg-[#6B21A8]' : 'bg-white/10'} ${disabled ? 'opacity-50' : ''}`}
     >
       <View
-        style={[
-          styles.toggleKnob,
-          value && (isRTL ? styles.toggleKnobActiveRTL : styles.toggleKnobActive),
-        ]}
+        className={`w-6 h-6 rounded-xl bg-white ${value ? (isRTL ? 'self-start' : 'self-end') : ''}`}
       />
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  toggle: {
-    width: 52,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    padding: 2,
-    justifyContent: 'center',
-  },
-  toggleActive: {
-    backgroundColor: colors.primary,
-  },
-  toggleDisabled: {
-    opacity: 0.5,
-  },
-  toggleKnob: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: colors.text,
-  },
-  toggleKnobActive: {
-    alignSelf: 'flex-end',
-  },
-  toggleKnobActiveRTL: {
-    alignSelf: 'flex-start',
-  },
-});

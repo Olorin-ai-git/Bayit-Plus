@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Animated,
   Modal,
@@ -67,22 +66,20 @@ const SpeedOption: React.FC<{
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={0.7}
-      style={styles.optionTouchable}
+      className="mb-2"
     >
       <Animated.View
-        style={[
-          styles.option,
-          { transform: [{ scale: scaleAnim }] },
-          isSelected && styles.optionSelected,
-          isFocused && styles.optionFocused,
-        ]}
+        className={`bg-white/5 rounded-lg p-${isTV ? '4' : '3'} border-2 ${
+          isSelected ? 'bg-purple-500/20 border-purple-500' : 'border-transparent'
+        } ${isFocused ? 'border-purple-500 bg-purple-500/30' : ''}`}
+        style={{ transform: [{ scale: scaleAnim }] }}
       >
-        <View style={styles.optionContent}>
-          <Text style={[styles.optionLabel, { textAlign }]}>
+        <View className="flex-col">
+          <Text className={`text-${isTV ? 'xl' : 'lg'} font-semibold text-white mb-1`} style={{ textAlign }}>
             {option.label}
             {isSelected && ' ✓'}
           </Text>
-          <Text style={[styles.optionDescription, { textAlign }]}>
+          <Text className={`text-${isTV ? 'base' : 'sm'} text-gray-300`} style={{ textAlign }}>
             {option.description}
           </Text>
         </View>
@@ -120,17 +117,20 @@ export const PlaybackSpeedControl: React.FC<PlaybackSpeedControlProps> = ({
       onRequestClose={onClose}
     >
       <TouchableOpacity
-        style={styles.overlay}
+        className="flex-1 bg-black/80 justify-center items-center"
         activeOpacity={1}
         onPress={onClose}
       >
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Text style={[styles.title, { textAlign }]}>
+        <View
+          className={`${isTV ? 'w-1/2' : 'w-11/12'} max-w-[600px] bg-[#141414]/95 rounded-2xl border-2 border-purple-500/30 p-${isTV ? '6' : '5'}`}
+          style={{ backdropFilter: 'blur(20px)' } as any}
+        >
+          <View className={`mb-${isTV ? '5' : '4'}`}>
+            <Text className={`text-${isTV ? '3xl' : '2xl'} font-bold text-white mb-1`} style={{ textAlign }}>
               {t('player.playbackSpeed', 'Playback Speed')}
             </Text>
             {!isWeb && (
-              <Text style={[styles.warning, { textAlign }]}>
+              <Text className={`text-${isTV ? 'sm' : 'xs'} text-orange-500 italic`} style={{ textAlign }}>
                 {t(
                   'player.speedNotSupported',
                   'Note: Playback speed may not be supported on this platform'
@@ -139,7 +139,7 @@ export const PlaybackSpeedControl: React.FC<PlaybackSpeedControlProps> = ({
             )}
           </View>
 
-          <View style={styles.optionsContainer}>
+          <View className={`mb-${isTV ? '5' : '4'}`}>
             {SPEED_OPTIONS.map((option, index) => (
               <SpeedOption
                 key={option.value}
@@ -151,8 +151,8 @@ export const PlaybackSpeedControl: React.FC<PlaybackSpeedControlProps> = ({
             ))}
           </View>
 
-          <View style={styles.infoSection}>
-            <Text style={styles.infoText}>
+          <View className={`bg-purple-500/10 rounded-lg p-${isTV ? '4' : '3'} mb-${isTV ? '5' : '4'}`}>
+            <Text className={`text-${isTV ? 'sm' : 'xs'} text-gray-300 leading-${isTV ? '5' : '4'}`}>
               {t(
                 'player.speedInfo',
                 'Changing playback speed adjusts the video and audio speed while maintaining pitch'
@@ -161,11 +161,11 @@ export const PlaybackSpeedControl: React.FC<PlaybackSpeedControlProps> = ({
           </View>
 
           <TouchableOpacity
-            style={styles.closeButton}
+            className={`bg-white/10 rounded-lg p-${isTV ? '4' : '3'} items-center mt-2`}
             onPress={onClose}
             activeOpacity={0.7}
           >
-            <Text style={styles.closeButtonText}>
+            <Text className={`text-${isTV ? 'lg' : 'base'} font-semibold text-white`}>
               {t('common.close', 'Close')}
             </Text>
           </TouchableOpacity>
@@ -211,98 +211,5 @@ export const isPlaybackSpeedSupported = (): boolean => {
   // For now, we'll assume it's primarily a web feature
   return isWeb;
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  container: {
-    width: isTV ? '50%' : '90%',
-    maxWidth: 600,
-    backgroundColor: 'rgba(20, 20, 20, 0.95)',
-    borderRadius: borderRadius.xl,
-    borderWidth: 2,
-    borderColor: 'rgba(168, 85, 247, 0.3)',
-    padding: isTV ? spacing.xl : spacing.lg,
-    // @ts-ignore - Web CSS property
-    backdropFilter: 'blur(20px)',
-  },
-  header: {
-    marginBottom: isTV ? spacing.lg : spacing.md,
-  },
-  title: {
-    fontSize: isTV ? 32 : 24,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  warning: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.warning || '#FFA500',
-    fontStyle: 'italic',
-  },
-  optionsContainer: {
-    marginBottom: isTV ? spacing.lg : spacing.md,
-  },
-  optionTouchable: {
-    marginBottom: spacing.sm,
-  },
-  option: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    padding: isTV ? spacing.lg : spacing.md,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  optionSelected: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    borderColor: colors.primary,
-  },
-  optionFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.3)',
-    // @ts-ignore - Web CSS property
-    boxShadow: '0 0 20px rgba(168, 85, 247, 0.6)',
-  },
-  optionContent: {
-    flexDirection: 'column',
-  },
-  optionLabel: {
-    fontSize: isTV ? 22 : 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  optionDescription: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-  },
-  infoSection: {
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-    borderRadius: borderRadius.lg,
-    padding: isTV ? spacing.md : spacing.sm,
-    marginBottom: isTV ? spacing.lg : spacing.md,
-  },
-  infoText: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 20 : 18,
-  },
-  closeButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.lg,
-    padding: isTV ? spacing.md : spacing.sm,
-    alignItems: 'center',
-    marginTop: spacing.sm,
-  },
-  closeButtonText: {
-    fontSize: isTV ? 18 : 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-});
 
 export default PlaybackSpeedControl;

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   ScrollView,
-  StyleSheet,
   Text,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -18,7 +17,6 @@ import {
   TelAvivRow,
 } from '../components';
 import { contentService, liveService, historyService, ritualService } from '../services/api';
-import { colors, spacing } from '../theme';
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
 
 interface ContentItem {
@@ -180,9 +178,14 @@ export const HomeScreen: React.FC = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 bg-[#0f0f1e] justify-center items-center">
         <AnimatedLogo size="large" />
-        <Text style={[styles.loadingText, { textAlign }]}>{t('home.loadingContent')}</Text>
+        <Text
+          className="text-white text-lg mt-8"
+          style={{ textAlign }}
+        >
+          {t('home.loadingContent')}
+        </Text>
       </View>
     );
   }
@@ -196,19 +199,19 @@ export const HomeScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView className="flex-1 bg-[#0f0f1e]" contentContainerStyle={{ paddingBottom: 40 }}>
       {/* Header with Logo */}
-      <View style={styles.headerSection}>
+      <View className="items-center justify-center px-5 pt-3 pb-2">
         <AnimatedLogo size="medium" />
       </View>
 
       {/* Dual Analog Clock */}
-      <View style={styles.clockSection}>
+      <View className="px-5 mb-4">
         <DualClock />
       </View>
 
       {/* Hero Carousel */}
-      <View style={styles.carouselSection}>
+      <View className="px-12 mb-8">
         <GlassCarousel
           items={carouselItems}
           onItemPress={handleCarouselPress}
@@ -218,7 +221,7 @@ export const HomeScreen: React.FC = () => {
       </View>
 
       {/* Trending in Israel */}
-      <View style={styles.trendingSection}>
+      <View className="mb-5">
         <TrendingRow
           onTopicPress={(topic) => {
             // Navigate to search with localized topic title
@@ -234,12 +237,12 @@ export const HomeScreen: React.FC = () => {
       </View>
 
       {/* Jerusalem Connection */}
-      <View style={styles.trendingSection}>
+      <View className="mb-5">
         <JerusalemRow />
       </View>
 
       {/* Tel Aviv Connection */}
-      <View style={styles.trendingSection}>
+      <View className="mb-5">
         <TelAvivRow />
       </View>
 
@@ -278,44 +281,5 @@ export const HomeScreen: React.FC = () => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    paddingBottom: 40,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: 18,
-    marginTop: 32,
-  },
-  headerSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
-  },
-  clockSection: {
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.md,
-  },
-  carouselSection: {
-    paddingHorizontal: 48,
-    marginBottom: 32,
-  },
-  trendingSection: {
-    marginBottom: spacing.lg,
-  },
-});
 
 export default HomeScreen;

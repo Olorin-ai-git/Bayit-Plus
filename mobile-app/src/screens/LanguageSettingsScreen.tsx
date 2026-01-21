@@ -13,7 +13,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   Pressable,
   Platform,
@@ -101,16 +100,16 @@ export const LanguageSettingsScreen: React.FC = () => {
     <Pressable
       key={language.code}
       onPress={() => onPress(language.code)}
-      style={({ pressed }) => [pressed && styles.itemPressed]}
+      className="active:opacity-70"
     >
-      <GlassView style={[styles.item, isSelected && styles.itemSelected]}>
-        <View style={styles.itemLeft}>
-          <Text style={styles.itemTitle}>{language.nativeName}</Text>
-          <Text style={styles.itemSubtitle}>{language.name}</Text>
+      <GlassView className={`flex-row items-center justify-between py-3.5 px-4 rounded-xl mb-2 min-h-[48px] ${isSelected ? 'border-2 border-[#7e22ce]' : ''}`}>
+        <View className="flex-1">
+          <Text className="text-lg text-white font-semibold mb-0.5">{language.nativeName}</Text>
+          <Text className="text-[13px] text-white/70">{language.name}</Text>
         </View>
         {isSelected && (
-          <View style={styles.checkmark}>
-            <Text style={styles.checkmarkIcon}>✓</Text>
+          <View className="w-7 h-7 rounded-full bg-[#7e22ce] justify-center items-center">
+            <Text className="text-base text-white font-bold">✓</Text>
           </View>
         )}
       </GlassView>
@@ -118,16 +117,18 @@ export const LanguageSettingsScreen: React.FC = () => {
   );
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView className="flex-1 bg-[#0f0a1a]" contentContainerClassName="px-4 pt-6 pb-24">
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>{t('settings.language')}</Text>
-        <Text style={styles.subtitle}>{t('settings.languageDescription')}</Text>
+      <View className="mb-6">
+        <Text className="text-3xl font-bold text-white mb-1">{t('settings.language')}</Text>
+        <Text className="text-base text-white/70">{t('settings.languageDescription')}</Text>
       </View>
 
       {/* App Language Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('settings.appLanguage')}</Text>
+      <View className="mb-6">
+        <Text className="text-[13px] text-white/70 uppercase font-semibold mb-2 px-1">
+          {t('settings.appLanguage')}
+        </Text>
         {LANGUAGES.map((language) =>
           renderLanguageOption(
             language,
@@ -138,9 +139,11 @@ export const LanguageSettingsScreen: React.FC = () => {
       </View>
 
       {/* Subtitle Language Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('settings.subtitleLanguage')}</Text>
-        <Text style={styles.sectionDescription}>
+      <View className="mb-6">
+        <Text className="text-[13px] text-white/70 uppercase font-semibold mb-2 px-1">
+          {t('settings.subtitleLanguage')}
+        </Text>
+        <Text className="text-[13px] text-white/50 mb-3 px-1">
           {t('settings.subtitleLanguageDescription')}
         </Text>
         {LANGUAGES.map((language) =>
@@ -153,9 +156,11 @@ export const LanguageSettingsScreen: React.FC = () => {
       </View>
 
       {/* Audio Language Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('settings.audioLanguage')}</Text>
-        <Text style={styles.sectionDescription}>
+      <View className="mb-6">
+        <Text className="text-[13px] text-white/70 uppercase font-semibold mb-2 px-1">
+          {t('settings.audioLanguage')}
+        </Text>
+        <Text className="text-[13px] text-white/50 mb-3 px-1">
           {t('settings.audioLanguageDescription')}
         </Text>
         {LANGUAGES.map((language) =>
@@ -169,93 +174,5 @@ export const LanguageSettingsScreen: React.FC = () => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xxxl * 2,
-  },
-  header: {
-    marginBottom: spacing.xl,
-  },
-  title: {
-    ...typography.h1,
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-  },
-  section: {
-    marginBottom: spacing.xl,
-  },
-  sectionTitle: {
-    ...typography.bodySmall,
-    fontSize: 13,
-    color: colors.textSecondary,
-    textTransform: 'uppercase',
-    fontWeight: '600',
-    marginBottom: spacing.sm,
-    paddingHorizontal: spacing.xs,
-  },
-  sectionDescription: {
-    ...typography.caption,
-    fontSize: 13,
-    color: colors.textTertiary,
-    marginBottom: spacing.md,
-    paddingHorizontal: spacing.xs,
-  },
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 12,
-    marginBottom: spacing.sm,
-    minHeight: touchTarget.minHeight,
-  },
-  itemSelected: {
-    borderWidth: 2,
-    borderColor: colors.primary,
-  },
-  itemPressed: {
-    opacity: 0.7,
-  },
-  itemLeft: {
-    flex: 1,
-  },
-  itemTitle: {
-    ...typography.body,
-    fontSize: 18,
-    color: colors.text,
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  itemSubtitle: {
-    ...typography.caption,
-    fontSize: 13,
-    color: colors.textSecondary,
-  },
-  checkmark: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkmarkIcon: {
-    fontSize: 16,
-    color: colors.text,
-    fontWeight: '700',
-  },
-});
 
 export default LanguageSettingsScreen;

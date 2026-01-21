@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
-import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { List, X, Loader2 } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { List, X } from 'lucide-react'
+import { colors } from '@bayit/shared/theme'
 import { GlassView } from '@bayit/shared/ui'
 import ChapterCard from './ChapterCard'
 
@@ -57,25 +57,21 @@ export default function ChaptersPanel({
 
   return (
     <GlassView
-      style={[
-        styles.container,
-        isOpen ? styles.containerOpen : styles.containerClosed,
-      ]}
+      className={`absolute top-0 right-0 h-full w-72 z-40 rounded-tl-lg rounded-bl-lg transition-transform ${
+        isOpen ? 'translate-x-0' : 'translate-x-72'
+      }`}
       intensity="high"
     >
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
+      <View className="flex-row items-center justify-between p-4 border-b border-white/10">
+        <View className="flex-row items-center gap-2">
           <List size={18} color={colors.primary} />
-          <Text style={styles.headerTitle}>{t('chapters.title')}</Text>
-          <Text style={styles.headerCount}>({chapters.length})</Text>
+          <Text className="text-base font-semibold text-white">{t('chapters.title')}</Text>
+          <Text className="text-xs text-gray-500">({chapters.length})</Text>
         </View>
         <Pressable
           onPress={onClose}
-          style={({ hovered }) => [
-            styles.closeButton,
-            hovered && styles.closeButtonHovered,
-          ]}
+          className="w-8 h-8 rounded-lg items-center justify-center hover:bg-white/10"
           accessibilityLabel={t('common.close')}
         >
           <X size={18} color={colors.textSecondary} />
@@ -85,22 +81,22 @@ export default function ChaptersPanel({
       {/* Chapters List */}
       <ScrollView
         ref={panelRef}
-        style={styles.listContainer}
-        contentContainerStyle={styles.listContent}
+        className="flex-1"
+        contentContainerStyle={{ padding: 8, gap: 8 }}
       >
         {isLoading ? (
-          <View style={styles.emptyState}>
+          <View className="flex-1 items-center justify-center py-16">
             <ActivityIndicator size="small" color={colors.primary} />
-            <Text style={styles.emptyText}>{t('chapters.generating')}</Text>
+            <Text className="text-sm text-gray-500 mt-2">{t('chapters.generating')}</Text>
           </View>
         ) : chapters.length === 0 ? (
-          <View style={styles.emptyState}>
-            <List size={32} color={colors.textMuted} style={styles.emptyIcon} />
-            <Text style={styles.emptyText}>{t('chapters.noChapters')}</Text>
+          <View className="flex-1 items-center justify-center py-16">
+            <List size={32} color={colors.textMuted} className="opacity-50 mb-2" />
+            <Text className="text-sm text-gray-500 mt-2">{t('chapters.noChapters')}</Text>
           </View>
         ) : (
           chapters.map((chapter, index) => (
-            <View key={`${chapter.start_time}-${index}`} style={styles.chapterItem}>
+            <View key={`${chapter.start_time}-${index}`} className="mb-2">
               <ChapterCard
                 chapter={chapter}
                 isActive={index === activeChapterIndex}
@@ -114,78 +110,3 @@ export default function ChaptersPanel({
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    right: 0, // RTL - positioned on the right
-    height: '100%',
-    width: 288,
-    zIndex: 40,
-    borderTopLeftRadius: borderRadius.lg,
-    borderBottomLeftRadius: borderRadius.lg,
-  },
-  containerOpen: {
-    transform: [{ translateX: 0 }],
-  },
-  containerClosed: {
-    transform: [{ translateX: 288 }],
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  headerCount: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: borderRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  closeButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  listContainer: {
-    flex: 1,
-  },
-  listContent: {
-    padding: spacing.sm,
-    gap: spacing.sm,
-  },
-  chapterItem: {
-    marginBottom: spacing.sm,
-  },
-  emptyState: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.xl * 2,
-  },
-  emptyIcon: {
-    opacity: 0.5,
-    marginBottom: spacing.sm,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.textMuted,
-    marginTop: spacing.sm,
-  },
-})

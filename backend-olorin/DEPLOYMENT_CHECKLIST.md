@@ -39,7 +39,7 @@ echo -n "mongodb+srv://user:password@cluster.mongodb.net/database?params" | \
 
 ```bash
 # Verify Dockerfile can be built locally (dry run, doesn't push)
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 docker build -f backend-olorin/Dockerfile -t olorin-backend:test --no-cache . 2>&1 | head -30
 ```
 
@@ -58,7 +58,7 @@ gcloud builds submit --config=backend-olorin/cloudbuild.yaml --dry-run --project
 
 ```bash
 # Deploy from project root
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 
 # Submit build
 gcloud builds submit \

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, View, Text, StyleSheet } from 'react-native';
+import { ScrollView, View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassTabs, GlassModal } from '@bayit/shared/ui';
 import { spacing } from '@bayit/shared/theme';
@@ -48,14 +48,14 @@ export default function FriendsPage() {
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg, paddingBottom: spacing.xl * 2, maxWidth: 1200, marginHorizontal: 'auto', width: '100%' }}>
       <StatsHeader
         friendsCount={friends.length}
         pendingCount={incomingRequests.length}
         isRTL={isRTL}
       />
 
-      <View style={styles.tabsContainer}>
+      <View className="mb-4">
         <GlassTabs
           tabs={tabs}
           activeTab={activeTab}
@@ -63,7 +63,7 @@ export default function FriendsPage() {
         />
       </View>
 
-      <View style={styles.tabContent}>
+      <View className="gap-4">
         {activeTab === 'friends' && (
           <FriendsTab
             friends={friends}
@@ -98,7 +98,7 @@ export default function FriendsPage() {
         )}
       </View>
 
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      {error && <Text className="text-sm text-[#ef4444] text-center mt-4">{error}</Text>}
 
       <GlassModal
         visible={modalVisible}
@@ -117,28 +117,3 @@ export default function FriendsPage() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: spacing.lg,
-    paddingBottom: spacing.xl * 2,
-    maxWidth: 1200,
-    marginHorizontal: 'auto',
-    width: '100%',
-  },
-  tabsContainer: {
-    marginBottom: spacing.lg,
-  },
-  tabContent: {
-    gap: spacing.lg,
-  },
-  errorText: {
-    fontSize: 14,
-    color: '#ef4444',
-    textAlign: 'center',
-    marginTop: spacing.md,
-  },
-});

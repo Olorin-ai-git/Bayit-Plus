@@ -7,7 +7,6 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Pressable,
   ScrollView,
   ActivityIndicator,
@@ -100,22 +99,22 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
   // On web, render as fixed-position overlay (no Modal needed since we're already in a modal context)
   // This ensures proper z-index stacking
   return (
-    <View style={styles.overlay}>
-      <Pressable style={styles.backdrop} onPress={onClose} />
+    <View className={`${Platform.OS === 'web' ? 'fixed' : 'absolute'} inset-0 bg-black/70 justify-center items-center p-${spacing.lg} z-[9999]`}>
+      <Pressable className="absolute inset-0" onPress={onClose} />
 
-        <GlassView style={[styles.modal, isMobile && styles.modalMobile]} intensity="high">
+        <GlassView className={`w-full ${IS_TV_BUILD ? 'max-w-[1200px] max-h-[700px] p-${spacing.xl}' : 'max-w-[900px] max-h-[600px] p-${spacing.lg}'} ${isMobile ? 'max-w-full max-h-[95%]' : ''} rounded-2xl z-[10000] flex flex-col overflow-hidden`} intensity="high">
           {/* Header */}
-          <View style={[styles.header, isRTL && styles.headerRTL]}>
-            <Text style={[styles.title, isRTL && styles.textRTL]}>
+          <View className={`flex-row justify-between items-center mb-${spacing.lg} flex-shrink-0 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Text className={`text-2xl font-bold text-[${colors.text}] ${isRTL ? 'text-right' : ''}`}>
               {t('flows.contentPicker.title')}
             </Text>
-            <Pressable style={styles.closeButton} onPress={onClose}>
+            <Pressable className={`p-${spacing.sm}`} onPress={onClose}>
               <X size={24} color={colors.textMuted} />
             </Pressable>
           </View>
 
           {/* Tabs */}
-          <View style={styles.tabsContainer}>
+          <View className="flex-shrink-0">
             <GlassTabs
               tabs={tabs}
               activeTab={activeTab}
@@ -125,17 +124,18 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
           </View>
 
           {/* Search */}
-          <View style={styles.searchContainer}>
-            <GlassInput
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder={t('flows.contentPicker.search')}
-              icon={<Search size={18} color={colors.textMuted} />}
-              containerStyle={styles.searchInput}
-            />
+          <View className={`flex-row items-center gap-${spacing.md} mt-${spacing.md} mb-${spacing.lg} flex-shrink-0`}>
+            <View className="flex-1">
+              <GlassInput
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder={t('flows.contentPicker.search')}
+                icon={<Search size={18} color={colors.textMuted} />}
+              />
+            </View>
             {selectedIds.size > 0 && (
-              <GlassView style={styles.selectedBadge}>
-                <Text style={styles.selectedText}>
+              <GlassView className={`px-${spacing.md} py-${spacing.sm} rounded-full`}>
+                <Text className="text-sm text-[${colors.primary}] font-semibold">
                   {t('flows.contentPicker.selected', { count: selectedIds.size })}
                 </Text>
               </GlassView>
@@ -143,15 +143,15 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
           </View>
 
           {/* Content Grid */}
-          <ScrollView style={styles.contentScroll} contentContainerStyle={styles.contentGrid}>
+          <ScrollView className={`flex-1 mb-${spacing.md} min-h-0 overflow-auto`} contentContainerStyle={{ paddingBottom: spacing.md }}>
             {loading && content.length === 0 ? (
-              <View style={styles.loadingContainer}>
+              <View className={`py-${spacing.xl * 2} items-center`}>
                 <ActivityIndicator size="large" color={colors.primary} />
-                <Text style={[styles.loadingText, isRTL && styles.textRTL]}>{t('common.loading')}</Text>
+                <Text className={`mt-${spacing.md} text-sm text-[${colors.textMuted}] ${isRTL ? 'text-right' : ''}`}>{t('common.loading')}</Text>
               </View>
             ) : error ? (
-              <View style={styles.errorContainer}>
-                <Text style={[styles.errorText, isRTL && styles.textRTL]}>{error}</Text>
+              <View className={`py-${spacing.xl * 2} items-center gap-${spacing.md}`}>
+                <Text className={`text-sm text-[${colors.error}] ${isRTL ? 'text-right' : ''}`}>{error}</Text>
                 <GlassButton
                   title={t('common.retry')}
                   onPress={() => setActiveTab(activeTab)}
@@ -159,17 +159,18 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
                 />
               </View>
             ) : content.length === 0 ? (
-              <View style={styles.emptyContainer}>
-                <Text style={[styles.emptyText, isRTL && styles.textRTL]}>
+              <View className={`py-${spacing.xl * 2} items-center`}>
+                <Text className={`text-sm text-[${colors.textMuted}] ${isRTL ? 'text-right' : ''}`}>
                   {t('flows.contentPicker.noResults')}
                 </Text>
               </View>
             ) : (
-              <View style={[styles.grid, { gap: spacing.md }]}>
+              <View className={`flex-row flex-wrap gap-${spacing.md}`}>
                 {content.map((item, index) => (
                   <View
                     key={item.id}
-                    style={[styles.gridItem, { width: `${100 / numColumns - 2}%` as any }]}
+                    className={`mb-${spacing.md}`}
+                    style={{ width: `${100 / numColumns - 2}%` }}
                   >
                     <ContentItemCard
                       item={item}
@@ -186,184 +187,43 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
 
             {/* Load More */}
             {hasMore && !loading && (
-              <GlassButton
-                title={t('flows.contentPicker.loadMore')}
-                onPress={loadMore}
-                variant="ghost"
-                style={styles.loadMoreButton}
-              />
+              <View className={`self-center mt-${spacing.md}`}>
+                <GlassButton
+                  title={t('flows.contentPicker.loadMore')}
+                  onPress={loadMore}
+                  variant="ghost"
+                />
+              </View>
             )}
 
             {loading && content.length > 0 && (
-              <ActivityIndicator size="small" color={colors.primary} style={styles.loadingMore} />
+              <View className={`mt-${spacing.md}`}>
+                <ActivityIndicator size="small" color={colors.primary} />
+              </View>
             )}
           </ScrollView>
 
           {/* Footer Actions */}
-          <View style={[styles.footer, isRTL && styles.footerRTL]}>
-            <GlassButton
-              title={t('common.cancel')}
-              onPress={onClose}
-              variant="ghost"
-              style={styles.footerButton}
-            />
-            <GlassButton
-              title={t('flows.contentPicker.addSelected')}
-              onPress={handleAdd}
-              variant="primary"
-              disabled={selectedIds.size === 0}
-              style={styles.footerButton}
-            />
+          <View className={`flex-row justify-end gap-${spacing.md} pt-${spacing.md} border-t border-white/10 flex-shrink-0 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <View className="min-w-[120px]">
+              <GlassButton
+                title={t('common.cancel')}
+                onPress={onClose}
+                variant="ghost"
+              />
+            </View>
+            <View className="min-w-[120px]">
+              <GlassButton
+                title={t('flows.contentPicker.addSelected')}
+                onPress={handleAdd}
+                variant="primary"
+                disabled={selectedIds.size === 0}
+              />
+            </View>
           </View>
         </GlassView>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    // @ts-ignore - Web fixed positioning
-    position: Platform.OS === 'web' ? 'fixed' : 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-    // @ts-ignore - Web z-index (higher than parent modal)
-    zIndex: 9999,
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  modal: {
-    width: '100%',
-    maxWidth: IS_TV_BUILD ? 1200 : 900,
-    maxHeight: IS_TV_BUILD ? 700 : 600,
-    padding: IS_TV_BUILD ? spacing.xl : spacing.lg,
-    borderRadius: borderRadius.xl,
-    // @ts-ignore - Web z-index and flex
-    zIndex: 10000,
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'hidden',
-  },
-  modalMobile: {
-    maxWidth: '100%',
-    maxHeight: '95%',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-    flexShrink: 0,
-  },
-  headerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-  loadingText: {
-    marginTop: spacing.md,
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  errorText: {
-    fontSize: 14,
-    color: colors.error,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  closeButton: {
-    padding: spacing.sm,
-  },
-  tabsContainer: {
-    flexShrink: 0,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginTop: spacing.md,
-    marginBottom: spacing.lg,
-    flexShrink: 0,
-  },
-  searchInput: {
-    flex: 1,
-  },
-  selectedBadge: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-  },
-  selectedText: {
-    fontSize: 13,
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  contentScroll: {
-    flex: 1,
-    marginBottom: spacing.md,
-    minHeight: 0,
-    // @ts-ignore - Web overflow
-    overflow: 'auto',
-  },
-  contentGrid: {
-    paddingBottom: spacing.md,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  gridItem: {
-    marginBottom: spacing.md,
-  },
-  loadingContainer: {
-    paddingVertical: spacing.xl * 2,
-    alignItems: 'center',
-  },
-  errorContainer: {
-    paddingVertical: spacing.xl * 2,
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  emptyContainer: {
-    paddingVertical: spacing.xl * 2,
-    alignItems: 'center',
-  },
-  loadMoreButton: {
-    alignSelf: 'center',
-    marginTop: spacing.md,
-  },
-  loadingMore: {
-    marginTop: spacing.md,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: spacing.md,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-    flexShrink: 0,
-  },
-  footerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  footerButton: {
-    minWidth: 120,
-  },
-});
 
 export default ContentPickerModal;

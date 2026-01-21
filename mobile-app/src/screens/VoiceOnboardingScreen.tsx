@@ -13,7 +13,6 @@ import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   Pressable,
   ActivityIndicator,
@@ -121,53 +120,53 @@ export default function VoiceOnboardingScreen() {
     switch (currentStep) {
       case 'welcome':
         return (
-          <View style={styles.stepContainer}>
-            <View style={styles.iconContainer}>
+          <View className="flex-1 items-center justify-center">
+            <View className="mb-8">
               <Sparkles size={64} color={colors.primary} />
             </View>
 
-            <Text style={styles.title}>{t('voiceOnboarding.welcome.title')}</Text>
+            <Text className="text-3xl font-bold text-white text-center mb-6">{t('voiceOnboarding.welcome.title')}</Text>
 
-            <Text style={styles.description}>
+            <Text className="text-base text-white/60 text-center leading-6 mb-8">
               {t('voiceOnboarding.welcome.description')}
             </Text>
 
-            <View style={styles.featureList}>
+            <View className="w-full mb-12">
               <FeatureItem icon={<Mic size={24} color={colors.primary} />} text={t('voiceOnboarding.features.voiceCommands')} />
               <FeatureItem icon={<Volume2 size={24} color={colors.primary} />} text={t('voiceOnboarding.features.tts')} />
               <FeatureItem icon={<Sparkles size={24} color={colors.primary} />} text={t('voiceOnboarding.features.wakeWord')} />
             </View>
 
-            <Pressable style={styles.primaryButton} onPress={() => setCurrentStep('permissions')}>
-              <Text style={styles.primaryButtonText}>{t('voiceOnboarding.getStarted')}</Text>
+            <Pressable className="w-full bg-[#7e22ce] rounded-xl py-6 items-center" onPress={() => setCurrentStep('permissions')}>
+              <Text className="text-lg font-bold text-white">{t('voiceOnboarding.getStarted')}</Text>
             </Pressable>
           </View>
         );
 
       case 'permissions':
         return (
-          <View style={styles.stepContainer}>
-            <View style={styles.iconContainer}>
+          <View className="flex-1 items-center justify-center">
+            <View className="mb-8">
               <Mic size={64} color={colors.primary} />
             </View>
 
-            <Text style={styles.title}>{t('voiceOnboarding.permissions.title')}</Text>
+            <Text className="text-3xl font-bold text-white text-center mb-6">{t('voiceOnboarding.permissions.title')}</Text>
 
-            <Text style={styles.description}>
+            <Text className="text-base text-white/60 text-center leading-6 mb-8">
               {t('voiceOnboarding.permissions.description')}
             </Text>
 
-            <View style={styles.permissionInfo}>
-              <Text style={styles.permissionText}>
-                <Text style={styles.permissionLabel}>{t('voiceOnboarding.permissions.privacyLabel')}</Text> {t('voiceOnboarding.permissions.privacy')}
+            <View className="bg-[#7e22ce]/20 rounded-xl p-6 mb-8">
+              <Text className="text-sm text-white/60 leading-5">
+                <Text className="font-bold text-[#7e22ce]">{t('voiceOnboarding.permissions.privacyLabel')}</Text> {t('voiceOnboarding.permissions.privacy')}
               </Text>
             </View>
 
             {isLoading ? (
-              <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
+              <ActivityIndicator size="large" color={colors.primary} className="my-8" />
             ) : (
-              <Pressable style={styles.primaryButton} onPress={handleRequestPermissions}>
-                <Text style={styles.primaryButtonText}>{t('voiceOnboarding.grantPermissions')}</Text>
+              <Pressable className="w-full bg-[#7e22ce] rounded-xl py-6 items-center" onPress={handleRequestPermissions}>
+                <Text className="text-lg font-bold text-white">{t('voiceOnboarding.grantPermissions')}</Text>
               </Pressable>
             )}
           </View>
@@ -175,30 +174,30 @@ export default function VoiceOnboardingScreen() {
 
       case 'test-wake-word':
         return (
-          <View style={styles.stepContainer}>
-            <Text style={styles.title}>{t('voiceOnboarding.testWakeWord.title')}</Text>
+          <View className="flex-1 items-center justify-center">
+            <Text className="text-3xl font-bold text-white text-center mb-6">{t('voiceOnboarding.testWakeWord.title')}</Text>
 
-            <Text style={styles.description}>
+            <Text className="text-base text-white/60 text-center leading-6 mb-8">
               {t('voiceOnboarding.testWakeWord.description')}
             </Text>
 
             {isTestingWakeWord && <VoiceWaveform isListening={true} barCount={7} color={colors.primary} />}
 
             {wakeWordDetected && (
-              <View style={styles.successContainer}>
+              <View className="items-center my-8">
                 <Check size={48} color={colors.success} />
-                <Text style={styles.successText}>{t('voiceOnboarding.testWakeWord.success')}</Text>
+                <Text className="text-lg font-semibold text-green-500 mt-4">{t('voiceOnboarding.testWakeWord.success')}</Text>
               </View>
             )}
 
-            <View style={styles.buttonGroup}>
+            <View className="w-full gap-4">
               {!isTestingWakeWord ? (
-                <Pressable style={styles.primaryButton} onPress={handleTestWakeWord}>
-                  <Text style={styles.primaryButtonText}>{t('voiceOnboarding.startTest')}</Text>
+                <Pressable className="w-full bg-[#7e22ce] rounded-xl py-6 items-center" onPress={handleTestWakeWord}>
+                  <Text className="text-lg font-bold text-white">{t('voiceOnboarding.startTest')}</Text>
                 </Pressable>
               ) : (
-                <Pressable style={styles.secondaryButton} onPress={handleSkipWakeWord}>
-                  <Text style={styles.secondaryButtonText}>{t('common.skip')}</Text>
+                <Pressable className="w-full bg-white/10 rounded-xl py-6 items-center" onPress={handleSkipWakeWord}>
+                  <Text className="text-lg font-bold text-white/60">{t('common.skip')}</Text>
                 </Pressable>
               )}
             </View>
@@ -207,27 +206,27 @@ export default function VoiceOnboardingScreen() {
 
       case 'complete':
         return (
-          <View style={styles.stepContainer}>
-            <View style={styles.iconContainer}>
+          <View className="flex-1 items-center justify-center">
+            <View className="mb-8">
               <Check size={64} color={colors.success} />
             </View>
 
-            <Text style={styles.title}>{t('voiceOnboarding.complete.title')}</Text>
+            <Text className="text-3xl font-bold text-white text-center mb-6">{t('voiceOnboarding.complete.title')}</Text>
 
-            <Text style={styles.description}>
+            <Text className="text-base text-white/60 text-center leading-6 mb-8">
               {t('voiceOnboarding.complete.description')}
             </Text>
 
-            <View style={styles.exampleCommands}>
-              <Text style={styles.exampleTitle}>{t('voiceOnboarding.complete.tryCommands')}</Text>
-              <Text style={styles.exampleCommand}>• {t('voiceOnboarding.complete.examples.goHome')}</Text>
-              <Text style={styles.exampleCommand}>• {t('voiceOnboarding.complete.examples.playChannel')}</Text>
-              <Text style={styles.exampleCommand}>• {t('voiceOnboarding.complete.examples.openWidget')}</Text>
-              <Text style={styles.exampleCommand}>• {t('voiceOnboarding.complete.examples.switchLanguage')}</Text>
+            <View className="w-full bg-white/5 rounded-xl p-6 mb-8">
+              <Text className="text-base font-bold text-white mb-4">{t('voiceOnboarding.complete.tryCommands')}</Text>
+              <Text className="text-sm text-white/60 mb-2">• {t('voiceOnboarding.complete.examples.goHome')}</Text>
+              <Text className="text-sm text-white/60 mb-2">• {t('voiceOnboarding.complete.examples.playChannel')}</Text>
+              <Text className="text-sm text-white/60 mb-2">• {t('voiceOnboarding.complete.examples.openWidget')}</Text>
+              <Text className="text-sm text-white/60 mb-2">• {t('voiceOnboarding.complete.examples.switchLanguage')}</Text>
             </View>
 
-            <Pressable style={styles.primaryButton} onPress={handleComplete}>
-              <Text style={styles.primaryButtonText}>{t('voiceOnboarding.complete.startUsing')}</Text>
+            <Pressable className="w-full bg-[#7e22ce] rounded-xl py-6 items-center" onPress={handleComplete}>
+              <Text className="text-lg font-bold text-white">{t('voiceOnboarding.complete.startUsing')}</Text>
             </Pressable>
           </View>
         );
@@ -235,22 +234,23 @@ export default function VoiceOnboardingScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+    <SafeAreaView className="flex-1 bg-[#1a1525]">
+      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: spacing.xl, paddingVertical: spacing.xxxl }} showsVerticalScrollIndicator={false}>
         {renderStep()}
       </ScrollView>
 
       {/* Step indicator */}
-      <View style={styles.stepIndicator}>
+      <View className="flex-row justify-center items-center py-6 gap-2">
         {['welcome', 'permissions', 'test-wake-word', 'complete'].map((step, index) => (
           <View
             key={step}
-            style={[
-              styles.stepDot,
-              currentStep === step && styles.stepDotActive,
-              ['welcome', 'permissions', 'test-wake-word', 'complete'].indexOf(currentStep) > index &&
-                styles.stepDotCompleted,
-            ]}
+            className={`h-2 rounded ${
+              currentStep === step
+                ? 'w-6 bg-[#7e22ce]'
+                : ['welcome', 'permissions', 'test-wake-word', 'complete'].indexOf(currentStep) > index
+                  ? 'w-2 bg-green-500'
+                  : 'w-2 bg-white/20'
+            }`}
           />
         ))}
       </View>
@@ -261,161 +261,9 @@ export default function VoiceOnboardingScreen() {
 // Feature list item component
 function FeatureItem({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
-    <View style={styles.featureItem}>
-      <View style={styles.featureIcon}>{icon}</View>
-      <Text style={styles.featureText}>{text}</Text>
+    <View className="flex-row items-center mb-6">
+      <View className="w-10 h-10 rounded-full bg-[#7e22ce]/20 justify-center items-center mr-6">{icon}</View>
+      <Text className="flex-1 text-base text-white/60 leading-[22px]">{text}</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.xxxl,
-  },
-  stepContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconContainer: {
-    marginBottom: spacing.xxl,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  description: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: spacing.xxl,
-  },
-  featureList: {
-    width: '100%',
-    marginBottom: spacing.xxxl,
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-  featureIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: `${colors.primary}20`,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.lg,
-  },
-  featureText: {
-    flex: 1,
-    fontSize: 16,
-    color: colors.textSecondary,
-    lineHeight: 22,
-  },
-  permissionInfo: {
-    backgroundColor: `${colors.primary}20`,
-    borderRadius: 12,
-    padding: spacing.lg,
-    marginBottom: spacing.xxl,
-  },
-  permissionText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    lineHeight: 20,
-  },
-  permissionLabel: {
-    fontWeight: '700',
-    color: colors.primary,
-  },
-  loader: {
-    marginVertical: spacing.xxl,
-  },
-  successContainer: {
-    alignItems: 'center',
-    marginVertical: spacing.xxl,
-  },
-  successText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.success,
-    marginTop: spacing.md,
-  },
-  exampleCommands: {
-    width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 12,
-    padding: spacing.lg,
-    marginBottom: spacing.xxl,
-  },
-  exampleTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  exampleCommand: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-  },
-  buttonGroup: {
-    width: '100%',
-    gap: spacing.md,
-  },
-  primaryButton: {
-    width: '100%',
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
-  },
-  primaryButtonText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  secondaryButton: {
-    width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
-  },
-  secondaryButtonText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.textSecondary,
-  },
-  stepIndicator: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: spacing.lg,
-    gap: spacing.sm,
-  },
-  stepDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  stepDotActive: {
-    width: 24,
-    backgroundColor: colors.primary,
-  },
-  stepDotCompleted: {
-    backgroundColor: colors.success,
-  },
-});

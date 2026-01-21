@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   ScrollView,
-  StyleSheet,
   Text,
   Pressable,
 } from 'react-native';
@@ -230,9 +229,9 @@ export const HomeScreen: React.FC = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 bg-[#0a0a14] justify-center items-center">
         <AnimatedLogo size="large" />
-        <Text style={styles.loadingText}>{t('home.loadingContent')}</Text>
+        <Text className={`text-white ${isTV ? 'text-lg' : 'text-base'} mt-8`}>{t('home.loadingContent')}</Text>
       </View>
     );
   }
@@ -269,32 +268,30 @@ export const HomeScreen: React.FC = () => {
 
       case 'live_tv':
         return liveChannels.length > 0 ? (
-          <View key="live_tv" style={styles.section}>
-            <View style={[styles.sectionHeader, isRTL && styles.sectionHeaderRTL]}>
-              <View style={[styles.sectionTitleRow, isRTL && styles.sectionTitleRowRTL]}>
-                <View style={styles.liveBadge}>
-                  <View style={styles.liveDot} />
-                  <Text style={styles.liveBadgeText}>{t('common.live')}</Text>
+          <View key="live_tv" className={`${isTV ? 'mt-12' : 'mt-8'} ${isTV ? 'px-8' : 'px-4'}`}>
+            <View className={`flex-row items-center justify-between mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <View className={`flex-row items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <View className="flex-row items-center bg-red-600 px-2 py-1 rounded gap-1">
+                  <View className="w-1.5 h-1.5 rounded-full bg-white" />
+                  <Text className={`${isTV ? 'text-xs' : 'text-[10px]'} font-bold text-white`}>{t('common.live')}</Text>
                 </View>
-                <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>{t('home.liveTV')}</Text>
+                <Text className={`${isTV ? 'text-[28px]' : 'text-xl'} font-bold text-white ${isRTL ? 'text-right' : ''}`}>{t('home.liveTV')}</Text>
               </View>
               <Pressable
                 onPress={() => navigation.navigate('LiveTV')}
-                style={({ focused }) => [
-                  styles.seeAllButton,
-                  focused && styles.seeAllButtonFocused,
-                ]}
+                className={({ focused }: any) => `px-2 py-1 rounded-sm border-2 ${focused ? 'border-purple-600 bg-purple-600/20' : 'border-transparent'}`}
               >
-                <Text style={styles.seeAllText}>{t('home.allChannels')}</Text>
+                <Text className={`${isTV ? 'text-lg' : 'text-sm'} text-purple-500 font-medium`}>{t('home.allChannels')}</Text>
               </Pressable>
             </View>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={[styles.liveRow, isRTL && styles.liveRowRTL]}
+              contentContainerStyle={{ gap: isTV ? 16 : 12, paddingRight: 16 }}
+              className={isRTL ? 'flex-row-reverse' : ''}
             >
               {liveChannels.slice(0, 8).map((channel) => (
-                <View key={channel.id} style={styles.liveCardWrapper}>
+                <View key={channel.id} className={isTV ? 'w-80' : 'w-60'}>
                   <GlassLiveChannelCard
                     channel={channel}
                     liveLabel={t('common.live')}
@@ -308,7 +305,7 @@ export const HomeScreen: React.FC = () => {
 
       case 'trending':
         return (
-          <View key="trending" style={styles.section}>
+          <View key="trending" className={`${isTV ? 'mt-12' : 'mt-8'} ${isTV ? 'px-8' : 'px-4'}`}>
             <TrendingRow
               onTopicPress={(topic) => {
                 const lang = i18n.language;
@@ -325,14 +322,14 @@ export const HomeScreen: React.FC = () => {
 
       case 'jerusalem':
         return (
-          <View key="jerusalem" style={styles.section}>
+          <View key="jerusalem" className={`${isTV ? 'mt-12' : 'mt-8'} ${isTV ? 'px-8' : 'px-4'}`}>
             <JerusalemRow />
           </View>
         );
 
       case 'tel_aviv':
         return (
-          <View key="tel_aviv" style={styles.section}>
+          <View key="tel_aviv" className={`${isTV ? 'mt-12' : 'mt-8'} ${isTV ? 'px-8' : 'px-4'}`}>
             <TelAvivRow />
           </View>
         );
@@ -372,25 +369,25 @@ export const HomeScreen: React.FC = () => {
   const visibleSections = getVisibleSections();
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView className="flex-1 bg-[#0a0a14]" contentContainerStyle={{ paddingBottom: isTV ? 64 : 32 }}>
       {/* Header Bar - Digital Clocks (matching web design) */}
-      <View style={[styles.headerBar, isRTL && styles.headerBarRTL]}>
+      <View className={`flex-row justify-between items-center ${isTV ? 'px-8' : 'px-4'} pt-4 pb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
         {/* Dual Clock Display */}
-        <View style={[styles.clockContainer, isRTL && styles.clockContainerRTL]}>
-          <View style={styles.clockItem}>
-            <Text style={styles.flagIcon}>🇮🇱</Text>
-            <Text style={styles.clockTime}>{israelTime}</Text>
+        <View className={`flex-row items-center bg-[#0a0a14cc] ${isTV ? 'px-6' : 'px-4'} ${isTV ? 'py-2' : 'py-1'} ${isTV ? 'rounded-2xl' : 'rounded-xl'} border border-purple-600/30 ${isTV ? 'gap-4' : 'gap-2'} ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <View className={`flex-row items-center ${isTV ? 'gap-2' : 'gap-1'}`}>
+            <Text className={isTV ? 'text-[32px]' : 'text-2xl'}>🇮🇱</Text>
+            <Text className={`${isTV ? 'text-[28px]' : 'text-xl'} font-bold text-white`}>{israelTime}</Text>
           </View>
-          <View style={styles.clockDivider} />
-          <View style={styles.clockItem}>
-            <Text style={styles.flagIcon}>🇺🇸</Text>
-            <Text style={styles.clockTime}>{localTime}</Text>
+          <View className={`w-px ${isTV ? 'h-10' : 'h-8'} bg-white/20`} />
+          <View className={`flex-row items-center ${isTV ? 'gap-2' : 'gap-1'}`}>
+            <Text className={isTV ? 'text-[32px]' : 'text-2xl'}>🇺🇸</Text>
+            <Text className={`${isTV ? 'text-[28px]' : 'text-xl'} font-bold text-white`}>{localTime}</Text>
           </View>
         </View>
       </View>
 
       {/* Hero Carousel - Always visible, always first */}
-      <View style={styles.carouselSection}>
+      <View className={`${isTV ? 'px-8' : 'px-4'} ${isTV ? 'pt-4' : 'pt-2'} ${isTV ? 'mb-8' : 'mb-6'}`}>
         <GlassCarousel
           items={carouselItems}
           onItemPress={handleCarouselPress}
@@ -404,155 +401,5 @@ export const HomeScreen: React.FC = () => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    paddingBottom: isTV ? spacing.xl * 2 : spacing.xl,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.text,
-    fontSize: isTV ? fontSize.lg : fontSize.md,
-    marginTop: spacing.xl,
-  },
-  // Header Bar with Digital Clocks
-  headerBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: isTV ? spacing.xl : spacing.md,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
-  },
-  headerBarRTL: {
-    flexDirection: 'row-reverse',
-  },
-  clockContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(10, 10, 20, 0.8)',
-    paddingHorizontal: isTV ? spacing.lg : spacing.md,
-    paddingVertical: isTV ? spacing.sm : spacing.xs,
-    borderRadius: isTV ? 16 : 12,
-    borderWidth: 1,
-    borderColor: 'rgba(107, 33, 168, 0.3)',
-    gap: isTV ? spacing.md : spacing.sm,
-  },
-  clockContainerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  clockItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: isTV ? spacing.sm : spacing.xs,
-  },
-  flagIcon: {
-    fontSize: isTV ? 32 : 24,
-  },
-  clockTime: {
-    fontSize: isTV ? 28 : 20,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  clockDivider: {
-    width: 1,
-    height: isTV ? 40 : 32,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  // Carousel Section
-  carouselSection: {
-    paddingHorizontal: isTV ? spacing.xl : spacing.md,
-    paddingTop: isTV ? spacing.md : spacing.sm,
-    marginBottom: isTV ? spacing.xl : spacing.lg,
-  },
-  // Sections
-  section: {
-    marginTop: isTV ? spacing.xl * 1.5 : spacing.xl,
-    paddingHorizontal: isTV ? spacing.xl : spacing.md,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.md,
-  },
-  sectionHeaderRTL: {
-    flexDirection: 'row-reverse',
-  },
-  sectionTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  sectionTitleRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  sectionTitle: {
-    fontSize: isTV ? 28 : 20,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-  // Live Badge
-  liveBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.error,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: 4,
-    gap: 4,
-  },
-  liveDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.text,
-  },
-  liveBadgeText: {
-    fontSize: isTV ? 12 : 10,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  // See All Button
-  seeAllButton: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  seeAllButtonFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(107, 33, 168, 0.2)',
-  },
-  seeAllText: {
-    fontSize: isTV ? 18 : 14,
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  // Live Channels Row
-  liveRow: {
-    gap: isTV ? spacing.md : spacing.sm,
-    paddingRight: spacing.md,
-  },
-  liveRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  liveCardWrapper: {
-    width: isTV ? 320 : 240,
-  },
-});
 
 export default HomeScreen;

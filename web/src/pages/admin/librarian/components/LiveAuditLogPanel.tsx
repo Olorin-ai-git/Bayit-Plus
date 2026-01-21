@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ScrollText } from 'lucide-react';
 import { GlassBadge } from '@bayit/shared/ui';
 import { GlassDraggableExpander, GlassLog } from '@bayit/shared/ui/web';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors } from '@bayit/shared/theme';
 import { AuditReportDetail } from '@/services/librarianService';
 import { BatchProgress } from '../types';
 import { AuditInfoHeader } from './AuditInfoHeader';
@@ -77,17 +77,17 @@ export const LiveAuditLogPanel = ({
       draggable={true}
       minHeight={700}
       maxHeight={1400}
-      style={styles.liveLogPanel}
+      className="mt-4 p-0 overflow-hidden"
     >
       {connectingToLog ? (
-        <View style={styles.connectingState}>
+        <View className="items-center justify-center p-16 min-h-[300px] gap-4">
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.connectingText}>
+          <Text className="text-base text-center mt-2" style={{ color: colors.textMuted }}>
             {t('admin.librarian.logs.connecting', 'Connecting to live audit log...')}
           </Text>
         </View>
       ) : report ? (
-        <View style={{ flex: 1, minHeight: 0 }}>
+        <View className="flex-1 min-h-0">
           <AuditInfoHeader
             report={report}
             isRTL={isRTL}
@@ -112,7 +112,7 @@ export const LiveAuditLogPanel = ({
           )}
 
           {expanded && (
-            <View style={{ flex: 1, minHeight: 0 }}>
+            <View className="flex-1 min-h-0">
               <GlassLog
                 logs={[...report.execution_logs].reverse()}
                 title={t('admin.librarian.logs.executionLog')}
@@ -137,12 +137,12 @@ export const LiveAuditLogPanel = ({
           )}
         </View>
       ) : (
-        <View style={styles.emptyState}>
+        <View className="items-center justify-center p-16 min-h-[250px]">
           <ScrollText size={48} color={colors.textMuted} />
-          <Text style={styles.emptyStateText}>
+          <Text className="text-lg font-semibold mt-4 text-center" style={{ color: colors.textMuted }}>
             {t('admin.librarian.logs.noActiveAudit')}
           </Text>
-          <Text style={styles.emptyStateSubtext}>
+          <Text className="text-sm mt-1 text-center" style={{ color: colors.textMuted }}>
             {t('admin.librarian.logs.triggerAuditToSee')}
           </Text>
         </View>
@@ -150,43 +150,3 @@ export const LiveAuditLogPanel = ({
     </GlassDraggableExpander>
   );
 };
-
-const styles = StyleSheet.create({
-  liveLogPanel: {
-    marginTop: spacing.md,
-    padding: 0,
-    overflow: 'hidden',
-  },
-  connectingState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xl * 2,
-    minHeight: 300,
-    gap: spacing.md,
-  },
-  connectingText: {
-    fontSize: 16,
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginTop: spacing.sm,
-  },
-  emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xl * 2,
-    minHeight: 250,
-  },
-  emptyStateText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.textMuted,
-    marginTop: spacing.md,
-    textAlign: 'center',
-  },
-  emptyStateSubtext: {
-    fontSize: 14,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
-    textAlign: 'center',
-  },
-});

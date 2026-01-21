@@ -2,13 +2,11 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '../../theme';
 import { isTV } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
 
@@ -61,29 +59,31 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={[styles.title, { textAlign }]}>
+    <View className={isTV ? 'px-8 pb-4' : 'px-4 pb-4'}>
+      <View className="flex-row justify-between items-center mb-3">
+        <Text className={`text-white font-semibold ${isTV ? 'text-xl' : 'text-lg'}`} style={{ textAlign }}>
           {t('search.recent', 'Recent Searches')}
         </Text>
-        <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
-          <Text style={styles.clearButtonText}>{t('common.clear', 'Clear')}</Text>
+        <TouchableOpacity onPress={handleClear} className="px-3 py-1">
+          <Text className={`text-purple-500 font-medium ${isTV ? 'text-sm' : 'text-xs'}`}>{t('common.clear', 'Clear')}</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerClassName="gap-2"
       >
         {recentSearches.map((query, index) => (
           <TouchableOpacity
             key={`${query}-${index}`}
             onPress={() => onSearchSelect(query)}
-            style={styles.searchChip}
+            className={`flex-row items-center bg-white/5 rounded-2xl border border-purple-500/20 gap-1 ${
+              isTV ? 'px-3 py-2 max-w-[300px]' : 'px-3 py-1 max-w-[200px]'
+            }`}
           >
-            <Text style={styles.searchChipIcon}>🕒</Text>
-            <Text style={styles.searchChipText} numberOfLines={1}>
+            <Text className={isTV ? 'text-base' : 'text-sm'}>🕒</Text>
+            <Text className={`text-white font-medium ${isTV ? 'text-base' : 'text-sm'}`} numberOfLines={1}>
               {query}
             </Text>
           </TouchableOpacity>
@@ -147,55 +147,5 @@ export const useRecentSearches = () => {
     loadSearches,
   };
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: isTV ? spacing.xxl : spacing.lg,
-    paddingBottom: spacing.lg,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  title: {
-    fontSize: isTV ? 20 : 18,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  clearButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  clearButtonText: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  scrollContent: {
-    gap: spacing.sm,
-  },
-  searchChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.xl,
-    paddingHorizontal: spacing.md,
-    paddingVertical: isTV ? spacing.sm : spacing.xs,
-    borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.2)',
-    gap: spacing.xs,
-    maxWidth: isTV ? 300 : 200,
-  },
-  searchChipIcon: {
-    fontSize: isTV ? 16 : 14,
-  },
-  searchChipText: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.text,
-    fontWeight: '500',
-  },
-});
 
 export default RecentSearches;

@@ -14,7 +14,6 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   RefreshControl,
   ScrollView,
@@ -28,7 +27,7 @@ import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { ContentCardMobile } from '../components';
-import { spacing, colors, typography } from '../theme';
+import { colors } from '../theme';
 
 interface Content {
   id: string;
@@ -195,14 +194,14 @@ export const VODScreenMobile: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-background">
       {/* Category filters - horizontal scroll */}
       {categories.length > 0 && (
-        <View style={styles.categoriesSection}>
+        <View className="py-4">
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoriesContent}
+            contentContainerStyle={{ paddingHorizontal: 24, gap: 8 }}
           >
             <GlassCategoryPill
               category={{ id: 'all', name: t('vod.allContent') }}
@@ -226,13 +225,13 @@ export const VODScreenMobile: React.FC = () => {
 
       {/* Content grid */}
       <FlatList
-        key={`grid-${numColumns}`} // Force re-render when columns change
+        key={`grid-${numColumns}`}
         data={filteredContent}
         renderItem={renderContent}
         keyExtractor={(item) => item.id}
         numColumns={numColumns}
-        columnWrapperStyle={styles.row}
-        contentContainerStyle={styles.gridContent}
+        columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 16 }}
+        contentContainerStyle={{ paddingTop: 8, paddingBottom: 96 }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -243,8 +242,8 @@ export const VODScreenMobile: React.FC = () => {
         }
         ListEmptyComponent={
           !isLoading ? (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
+            <View className="flex-1 justify-center items-center py-24">
+              <Text className="text-base text-text-secondary text-center">
                 {selectedCategory
                   ? t('vod.noContentInCategory')
                   : t('vod.noContent')}
@@ -256,37 +255,3 @@ export const VODScreenMobile: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  categoriesSection: {
-    paddingVertical: spacing.md,
-  },
-  categoriesContent: {
-    paddingHorizontal: spacing.lg,
-    gap: spacing.sm,
-  },
-  row: {
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-  },
-  gridContent: {
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xxl,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: spacing.xxxl,
-  },
-  emptyText: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    writingDirection: 'auto',
-  },
-});

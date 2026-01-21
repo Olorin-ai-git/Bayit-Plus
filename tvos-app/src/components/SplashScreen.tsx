@@ -6,7 +6,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
-  StyleSheet,
   Animated,
   Pressable,
   Text,
@@ -99,10 +98,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   };
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+    <Animated.View className="absolute inset-0 bg-[#0d0d1a] z-[9999]" style={{ opacity: fadeAnim }}>
       <Video
         source={videoSource}
-        style={styles.video}
+        className="absolute inset-0"
         resizeMode="cover"
         onLoad={onVideoLoad}
         onEnd={onVideoEnd}
@@ -118,49 +117,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       {/* Skip button - visible after video loads */}
       {videoLoaded && (
         <Pressable
-          style={({ focused }) => [
-            styles.skipButton,
-            focused && styles.skipButtonFocused,
-          ]}
+          className="absolute bottom-[60px] right-[60px] px-8 py-4 bg-white/20 rounded-xl border-2 border-transparent focus:bg-[rgba(168,85,247,0.4)] focus:border-purple-500 focus:scale-105"
           onPress={handleSkip}
         >
-          <Text style={styles.skipText}>Skip</Text>
+          <Text className="text-white text-xl font-semibold">Skip</Text>
         </Pressable>
       )}
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#0d0d1a',
-    zIndex: 9999,
-  },
-  video: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  skipButton: {
-    position: 'absolute',
-    bottom: 60,
-    right: 60,
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  skipButtonFocused: {
-    backgroundColor: 'rgba(168, 85, 247, 0.4)',
-    borderColor: '#a855f7',
-    transform: [{ scale: 1.05 }],
-  },
-  skipText: {
-    color: '#ffffff',
-    fontSize: 20,
-    fontWeight: '600',
-  },
-});
 
 export default SplashScreen;

@@ -13,7 +13,6 @@ import React, { useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
@@ -22,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
-import { spacing, colors, borderRadius } from '../../theme';
+import { colors } from '../../theme';
 
 export interface Chapter {
   id?: string;
@@ -115,55 +114,53 @@ export const ChapterListMobile: React.FC<ChapterListMobileProps> = ({
         onPress={() => handleChapterPress(item)}
         activeOpacity={0.7}
       >
-        <GlassView style={[styles.chapterItem, isActive && styles.chapterItemActive]}>
-          <View style={[styles.chapterContent, isRTL && styles.chapterContentRTL]}>
+        <GlassView className={`rounded-lg mb-2 p-4 ${isActive ? 'border border-[${colors.primary}]' : ''}`}>
+          <View className={isRTL ? 'flex-row-reverse items-center' : 'flex-row items-center'}>
             {/* Category bar */}
-            <View style={[styles.categoryBar, { backgroundColor: categoryColor }]} />
+            <View className="w-1 h-full min-h-[50px] rounded-sm mr-4" style={{ backgroundColor: categoryColor }} />
 
             {/* Chapter info */}
-            <View style={styles.chapterInfo}>
-              <View style={[styles.titleRow, isRTL && styles.titleRowRTL]}>
+            <View className="flex-1">
+              <View className={isRTL ? 'flex-row-reverse justify-between items-start mb-1' : 'flex-row justify-between items-start mb-1'}>
                 <Text
-                  style={[
-                    styles.chapterTitle,
-                    { textAlign },
-                    isActive && styles.chapterTitleActive,
-                  ]}
+                  className={`text-[15px] font-semibold flex-1 leading-5 ${isActive ? `text-[${colors.primary}]` : `text-[${colors.text}]`}`}
+                  style={{ textAlign }}
                   numberOfLines={2}
                 >
                   {item.title}
                 </Text>
-                <Text style={styles.chapterTime}>
+                <Text className={`text-xs text-[${colors.textSecondary}] ml-2`} style={{ fontVariant: ['tabular-nums'] }}>
                   {formatTime(item.start_time)}
                 </Text>
               </View>
 
               {item.summary && (
                 <Text
-                  style={[styles.chapterSummary, { textAlign }]}
+                  className={`text-[13px] text-[${colors.textSecondary}] leading-[18px] mb-1`}
+                  style={{ textAlign }}
                   numberOfLines={1}
                 >
                   {item.summary}
                 </Text>
               )}
 
-              <View style={[styles.badgeRow, isRTL && styles.badgeRowRTL]}>
-                <View style={[styles.categoryBadge, { backgroundColor: `${categoryColor}33` }]}>
-                  <Text style={[styles.categoryText, { color: categoryColor }]}>
+              <View className={`gap-2 mt-1 ${isRTL ? 'flex-row-reverse items-center' : 'flex-row items-center'}`}>
+                <View className="px-2 py-0.5 rounded-full" style={{ backgroundColor: `${categoryColor}33` }}>
+                  <Text className="text-[11px] font-medium" style={{ color: categoryColor }}>
                     {t(`chapters.categories.${item.category}`, item.category)}
                   </Text>
                 </View>
                 {isActive && (
-                  <View style={styles.playingBadge}>
-                    <Text style={styles.playingText}>{t('chapters.current')}</Text>
+                  <View className="bg-[rgba(168,85,247,0.2)] px-2 py-0.5 rounded-full">
+                    <Text className={`text-[11px] text-[${colors.primary}] font-medium`}>{t('chapters.current')}</Text>
                   </View>
                 )}
               </View>
             </View>
 
             {/* Play indicator */}
-            <View style={[styles.playButton, isActive && styles.playButtonActive]}>
-              <Text style={[styles.playIcon, isActive && styles.playIconActive]}>
+            <View className={`w-10 h-10 rounded-full justify-center items-center ml-4 ${isActive ? `bg-[${colors.primary}]` : 'bg-white/10'}`}>
+              <Text className={`text-sm ${isActive ? `text-[${colors.text}]` : `text-[${colors.textSecondary}]`}`}>
                 {isActive ? '▶' : '▷'}
               </Text>
             </View>
@@ -174,18 +171,18 @@ export const ChapterListMobile: React.FC<ChapterListMobileProps> = ({
   };
 
   const renderEmptyState = () => (
-    <View style={styles.emptyState}>
-      <Text style={styles.emptyIcon}>📑</Text>
-      <Text style={[styles.emptyText, { textAlign }]}>
+    <View className="items-center py-8">
+      <Text className="text-5xl mb-4 opacity-50">📑</Text>
+      <Text className={`text-sm text-[${colors.textSecondary}]`} style={{ textAlign }}>
         {t('chapters.noChapters')}
       </Text>
     </View>
   );
 
   const renderLoadingState = () => (
-    <View style={styles.emptyState}>
+    <View className="items-center py-8">
       <ActivityIndicator size="large" color={colors.primary} />
-      <Text style={[styles.emptyText, { textAlign }]}>
+      <Text className={`text-sm text-[${colors.textSecondary}]`} style={{ textAlign }}>
         {t('chapters.generating')}
       </Text>
     </View>
@@ -211,7 +208,7 @@ export const ChapterListMobile: React.FC<ChapterListMobileProps> = ({
       data={chapters}
       keyExtractor={(item, index) => `${item.start_time}-${index}`}
       renderItem={renderChapterItem}
-      contentContainerStyle={styles.listContent}
+      contentContainerClassName="px-4 pb-6"
       showsVerticalScrollIndicator={false}
       getItemLayout={getItemLayout}
       onScrollToIndexFailed={() => {
@@ -220,130 +217,5 @@ export const ChapterListMobile: React.FC<ChapterListMobileProps> = ({
     />
   );
 };
-
-const styles = StyleSheet.create({
-  listContent: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.lg,
-  },
-  chapterItem: {
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.sm,
-    padding: spacing.md,
-  },
-  chapterItemActive: {
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  chapterContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  chapterContentRTL: {
-    flexDirection: 'row-reverse',
-  },
-  categoryBar: {
-    width: 4,
-    height: '100%',
-    minHeight: 50,
-    borderRadius: 2,
-    marginRight: spacing.md,
-  },
-  chapterInfo: {
-    flex: 1,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.xs,
-  },
-  titleRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  chapterTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.text,
-    flex: 1,
-    lineHeight: 20,
-  },
-  chapterTitleActive: {
-    color: colors.primary,
-  },
-  chapterTime: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginLeft: spacing.sm,
-    fontVariant: ['tabular-nums'],
-  },
-  chapterSummary: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    lineHeight: 18,
-    marginBottom: spacing.xs,
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginTop: spacing.xs,
-  },
-  badgeRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  categoryBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-  },
-  categoryText: {
-    fontSize: 11,
-    fontWeight: '500',
-  },
-  playingBadge: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.full,
-  },
-  playingText: {
-    fontSize: 11,
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  playButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: spacing.md,
-  },
-  playButtonActive: {
-    backgroundColor: colors.primary,
-  },
-  playIcon: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  playIconActive: {
-    color: colors.text,
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: spacing.xl,
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
-    opacity: 0.5,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-});
 
 export default ChapterListMobile;

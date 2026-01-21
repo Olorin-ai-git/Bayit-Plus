@@ -8,11 +8,10 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors } from '../../theme';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 
@@ -105,39 +104,37 @@ export const SupportTicketCard: React.FC<SupportTicketCardProps> = ({
       activeOpacity={0.8}
     >
       <GlassView
-        style={[
-          styles.card,
-          isFocused && styles.cardFocused,
-          ticket.priority === 'urgent' && styles.cardUrgent,
-        ]}
+        className={`p-4 rounded-2xl border-2 relative overflow-hidden ${
+          isFocused ? 'border-purple-500' : 'border-transparent'
+        } ${ticket.priority === 'urgent' ? 'border-red-500/30' : ''}`}
       >
         {/* Header Row */}
-        <View style={[styles.header, { flexDirection }]}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.ticketId}>
+        <View className="justify-between mb-2" style={{ flexDirection }}>
+          <View className="flex-row items-center gap-2">
+            <Text className="font-bold text-gray-400 font-mono" style={{ fontSize: isTV ? 14 : 12 }}>
               #{ticket.id.slice(-6).toUpperCase()}
             </Text>
             <View
-              style={[
-                styles.statusBadge,
-                { backgroundColor: `${status.color}20` },
-              ]}
+              className="flex-row items-center px-2 py-1 rounded-full gap-1"
+              style={{ backgroundColor: `${status.color}20` }}
             >
-              <Text style={styles.statusIcon}>{status.icon}</Text>
-              <Text style={[styles.statusText, { color: status.color }]}>
+              <Text style={{ fontSize: isTV ? 12 : 10 }}>{status.icon}</Text>
+              <Text className="font-semibold" style={{ color: status.color, fontSize: isTV ? 12 : 10 }}>
                 {t(`admin.support.status.${ticket.status}`, ticket.status)}
               </Text>
             </View>
           </View>
 
-          <View style={styles.headerRight}>
+          <View className="flex-row items-center gap-2">
             <View
-              style={[
-                styles.priorityIndicator,
-                { backgroundColor: priority.color },
-              ]}
+              className="rounded-full"
+              style={{
+                width: isTV ? 12 : 10,
+                height: isTV ? 12 : 10,
+                backgroundColor: priority.color
+              }}
             />
-            <Text style={styles.languageFlag}>
+            <Text style={{ fontSize: isTV ? 16 : 14 }}>
               {languageFlags[ticket.language] || '🌐'}
             </Text>
           </View>
@@ -145,7 +142,8 @@ export const SupportTicketCard: React.FC<SupportTicketCardProps> = ({
 
         {/* Subject */}
         <Text
-          style={[styles.subject, { textAlign }]}
+          className="text-white font-semibold mb-1"
+          style={[{ textAlign }, { fontSize: isTV ? 18 : 16 }]}
           numberOfLines={1}
         >
           {ticket.subject}
@@ -153,32 +151,33 @@ export const SupportTicketCard: React.FC<SupportTicketCardProps> = ({
 
         {/* Message Preview */}
         <Text
-          style={[styles.messagePreview, { textAlign }]}
+          className="text-gray-400 mb-2"
+          style={[{ textAlign }, { fontSize: isTV ? 14 : 12, lineHeight: isTV ? 20 : 18 }]}
           numberOfLines={2}
         >
           {ticket.message}
         </Text>
 
         {/* Footer Row */}
-        <View style={[styles.footer, { flexDirection }]}>
-          <View style={styles.footerLeft}>
+        <View className="justify-between items-center" style={{ flexDirection }}>
+          <View className="flex-row items-center gap-2 flex-1">
             {ticket.user_email && (
-              <Text style={styles.userEmail} numberOfLines={1}>
+              <Text className="text-gray-400 max-w-[150px]" style={{ fontSize: isTV ? 12 : 10 }} numberOfLines={1}>
                 {ticket.user_email}
               </Text>
             )}
-            <Text style={styles.category}>
+            <Text className="text-purple-500 capitalize" style={{ fontSize: isTV ? 12 : 10 }}>
               {t(`admin.support.category.${ticket.category}`, ticket.category)}
             </Text>
           </View>
 
-          <View style={styles.footerRight}>
-            <Text style={[styles.time, { color: getTimeUrgency() }]}>
+          <View className="flex-row items-center gap-2">
+            <Text className="font-medium" style={{ color: getTimeUrgency(), fontSize: isTV ? 12 : 10 }}>
               {formatDate(ticket.created_at)}
             </Text>
             {ticket.assigned_to && (
-              <View style={styles.assignedBadge}>
-                <Text style={styles.assignedText}>
+              <View className="bg-purple-500/20 px-2 py-1 rounded-full">
+                <Text className="text-purple-500 font-semibold" style={{ fontSize: isTV ? 10 : 8 }}>
                   {ticket.assigned_to}
                 </Text>
               </View>
@@ -188,134 +187,11 @@ export const SupportTicketCard: React.FC<SupportTicketCardProps> = ({
 
         {/* Urgent Indicator */}
         {ticket.priority === 'urgent' && (
-          <View style={styles.urgentStripe} />
+          <View className="absolute left-0 top-0 bottom-0 w-1 bg-red-600" />
         )}
       </GlassView>
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    padding: spacing.md,
-    borderRadius: borderRadius.xl,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  cardFocused: {
-    borderColor: colors.primary,
-  },
-  cardUrgent: {
-    borderColor: 'rgba(255, 0, 0, 0.3)',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  ticketId: {
-    fontSize: isTV ? 14 : 12,
-    fontWeight: '700',
-    color: colors.textSecondary,
-    fontFamily: 'monospace',
-  },
-  statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-    gap: spacing.xs,
-  },
-  statusIcon: {
-    fontSize: isTV ? 12 : 10,
-  },
-  statusText: {
-    fontSize: isTV ? 12 : 10,
-    fontWeight: '600',
-  },
-  priorityIndicator: {
-    width: isTV ? 12 : 10,
-    height: isTV ? 12 : 10,
-    borderRadius: isTV ? 6 : 5,
-  },
-  languageFlag: {
-    fontSize: isTV ? 16 : 14,
-  },
-  subject: {
-    fontSize: isTV ? 18 : 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  messagePreview: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 20 : 18,
-    marginBottom: spacing.sm,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  footerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    flex: 1,
-  },
-  footerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  userEmail: {
-    fontSize: isTV ? 12 : 10,
-    color: colors.textSecondary,
-    maxWidth: 150,
-  },
-  category: {
-    fontSize: isTV ? 12 : 10,
-    color: colors.primary,
-    textTransform: 'capitalize',
-  },
-  time: {
-    fontSize: isTV ? 12 : 10,
-    fontWeight: '500',
-  },
-  assignedBadge: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-  },
-  assignedText: {
-    fontSize: isTV ? 10 : 8,
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  urgentStripe: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: 4,
-    backgroundColor: '#FF0000',
-  },
-});
 
 export default SupportTicketCard;

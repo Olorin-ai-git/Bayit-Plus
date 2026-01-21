@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 import { useFocusable, FocusContext } from '@noriginmedia/norigin-spatial-navigation';
 
 interface FocusableWrapperProps {
@@ -49,27 +49,13 @@ export const FocusableWrapper: React.FC<FocusableWrapperProps> = ({
     extraProps,
   });
 
-  const combinedStyle = [
-    styles.container,
-    style,
-    focused && styles.focused,
-    focused && focusedStyle,
-  ];
-
   return (
     <FocusContext.Provider value={{ focusKey: assignedFocusKey, focusSelf, hasFocusedChild }}>
-      <View ref={ref} style={combinedStyle}>
+      <View ref={ref} style={[style, focused && focusedStyle]}>
         {typeof children === 'function' ? children({ focused }) : children}
       </View>
     </FocusContext.Provider>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {},
-  focused: {
-    // Default focus styles - can be overridden by focusedStyle prop
-  },
-});
 
 export default FocusableWrapper;

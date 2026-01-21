@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';;
 import { useTranslation } from 'react-i18next';
 import { Plus, Send, Clock, Trash2, Edit } from 'lucide-react';
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web';
@@ -226,7 +226,7 @@ export default function PushNotificationsPage() {
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.pushNotifications')}</Text>
@@ -255,7 +255,7 @@ export default function PushNotificationsPage() {
           <View style={styles.formGroup}>
             <GlassInput label={t('admin.pushNotifications.bodyLabel')} containerStyle={[styles.input, styles.textArea]} value={newNotification.body} onChangeText={(body) => setNewNotification((p) => ({ ...p, body }))} placeholder={t('admin.push.bodyPlaceholder')} multiline numberOfLines={3} />
           </View>
-          <View style={styles.modalActions}>
+          <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('common.cancel', 'Cancel')} variant="cancel" onPress={handleCloseModal} />
             <GlassButton title={editingNotification ? t('common.save', 'Save') : t('admin.pushNotifications.create')} variant="success" onPress={handleCreate} />
           </View>
@@ -267,7 +267,7 @@ export default function PushNotificationsPage() {
           <View style={styles.formGroup}>
             <GlassInput label={t('admin.pushNotifications.dateTimeLabel')} containerStyle={styles.input} value={scheduleDate} onChangeText={setScheduleDate} placeholder={t('placeholder.datetime')} />
           </View>
-          <View style={styles.modalActions}>
+          <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('admin.pushNotifications.cancel')} variant="cancel" onPress={() => setShowScheduleModal(false)} />
             <GlassButton title={t('admin.pushNotifications.schedule')} variant="success" onPress={handleSchedule} />
           </View>
@@ -282,7 +282,7 @@ export default function PushNotificationsPage() {
         dismissable={true}
       >
         <Text style={styles.modalText}>{errorMessage}</Text>
-        <View style={styles.modalActions}>
+        <View className="flex flex-row gap-4 mt-6">
           <GlassButton
             title={t('common.ok')}
             onPress={() => setErrorModalOpen(false)}
@@ -294,35 +294,3 @@ export default function PushNotificationsPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: { padding: spacing.lg },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.lg },
-  pageTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
-  subtitle: { fontSize: 14, color: colors.textMuted, marginTop: spacing.xs },
-  filtersRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.lg },
-  filterButton: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.md },
-  filterButtonActive: { backgroundColor: colors.primary },
-  filterText: { fontSize: 14, color: colors.textMuted },
-  filterTextActive: { color: colors.text, fontWeight: '500' },
-  notificationTitle: { fontSize: 14, fontWeight: '500', color: colors.text },
-  notificationBody: { fontSize: 12, color: colors.textMuted },
-  statText: { fontSize: 14, color: colors.text },
-  dateText: { fontSize: 12, color: colors.textMuted },
-  badge: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.full, alignSelf: 'flex-start' },
-  badgeText: { fontSize: 12, fontWeight: '500' },
-  actionsRow: { flexDirection: 'row', gap: spacing.xs },
-  actionButton: { width: 32, height: 32, borderRadius: borderRadius.sm, backgroundColor: colors.glass, justifyContent: 'center', alignItems: 'center' },
-  modalContent: { gap: spacing.md },
-  formGroup: { gap: spacing.xs },
-  formLabel: { fontSize: 14, fontWeight: '600', color: colors.text },
-  input: { backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.glassBorder, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, color: colors.text, fontSize: 14 },
-  textArea: { minHeight: 80, textAlignVertical: 'top' },
-  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.md },
-  modalText: {
-    fontSize: 14,
-    color: colors.text,
-    marginBottom: spacing.lg,
-    lineHeight: 20,
-  },
-});

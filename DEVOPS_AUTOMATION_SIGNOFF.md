@@ -1351,14 +1351,14 @@ The Bayit Plus CI/CD pipeline is **production-ready** with the following assessm
 
 **Reviewed Files:**
 
-- `/Users/olorin/Documents/Bayit-Plus/.github/workflows/pr-validation.yml`
-- `/Users/olorin/Documents/Bayit-Plus/.github/workflows/deploy-staging.yml`
-- `/Users/olorin/Documents/Bayit-Plus/.github/workflows/deploy-production.yml`
-- `/Users/olorin/Documents/Bayit-Plus/.github/workflows/security-scan.yml`
-- `/Users/olorin/Documents/Bayit-Plus/cloudbuild.yaml`
-- `/Users/olorin/Documents/Bayit-Plus/backend/Dockerfile`
-- `/Users/olorin/Documents/Bayit-Plus/backend/.gcloudignore`
-- `/Users/olorin/Documents/Bayit-Plus/backend/pyproject.toml`
+- `/Users/olorin/Documents/olorin/.github/workflows/pr-validation.yml`
+- `/Users/olorin/Documents/olorin/.github/workflows/deploy-staging.yml`
+- `/Users/olorin/Documents/olorin/.github/workflows/deploy-production.yml`
+- `/Users/olorin/Documents/olorin/.github/workflows/security-scan.yml`
+- `/Users/olorin/Documents/olorin/cloudbuild.yaml`
+- `/Users/olorin/Documents/olorin/backend/Dockerfile`
+- `/Users/olorin/Documents/olorin/backend/.gcloudignore`
+- `/Users/olorin/Documents/olorin/backend/pyproject.toml`
 
 **Documentation:**
 

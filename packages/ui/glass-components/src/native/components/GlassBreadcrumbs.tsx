@@ -9,7 +9,6 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Pressable,
   ScrollView,
   Platform,
@@ -18,7 +17,7 @@ import {
   StyleProp,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { colors, spacing, fontSize } from '../../theme';
 
 export interface BreadcrumbItem {
   /** Path identifier for navigation */
@@ -68,32 +67,36 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={[styles.scrollContent, { flexDirection }]}
+      contentContainerStyle={{ alignItems: 'center', gap: spacing.xs, paddingVertical: spacing.xs, flexDirection }}
     >
       {displayItems.map((item, index) => {
         const isLast = index === displayItems.length - 1;
         const isFirst = index === 0;
 
         return (
-          <View key={`${item.path}-${index}`} style={[styles.itemContainer, { flexDirection }]}>
+          <View key={`${item.path}-${index}`} className="flex-row items-center" style={{ flexDirection }}>
             <Pressable
               onPress={() => !isLast && onNavigate(item.path)}
+              className="flex-row items-center px-2 py-1 rounded-md max-w-[180px]"
               style={({ pressed }) => [
-                styles.breadcrumb,
-                isLast && styles.breadcrumbActive,
-                pressed && !isLast && styles.breadcrumbPressed,
+                isLast && {
+                  backgroundColor: colors.glassPurpleLight,
+                  borderWidth: 1,
+                  borderColor: colors.glassBorderFocus,
+                },
+                pressed && !isLast && { backgroundColor: colors.glassBorderWhite },
               ]}
               disabled={isLast}
             >
               {isFirst && (
-                <Text style={[styles.homeIcon, isRTL && styles.homeIconRTL]}>🏠</Text>
+                <Text className="text-xs" style={isRTL ? { marginLeft: 6 } : { marginRight: 6 }}>🏠</Text>
               )}
               <Text
-                style={[
-                  styles.breadcrumbText,
-                  isLast && styles.breadcrumbTextActive,
-                  !isLast && styles.breadcrumbTextClickable,
-                ]}
+                className={isLast ? 'font-semibold' : 'font-medium'}
+                style={{
+                  fontSize: fontSize.sm,
+                  color: isLast ? colors.text : !isLast ? colors.primary : colors.textSecondary,
+                }}
                 numberOfLines={1}
               >
                 {item.label}
@@ -101,8 +104,8 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
             </Pressable>
 
             {!isLast && (
-              <View style={styles.separatorContainer}>
-                <Text style={styles.separator}>{chevron}</Text>
+              <View className="px-1">
+                <Text className="text-base font-semibold opacity-70" style={{ color: colors.primary }}>{chevron}</Text>
               </View>
             )}
           </View>
@@ -116,8 +119,14 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
     return (
       <View
         // @ts-expect-error - Web-specific className
-        className="glass-light"
-        style={[styles.container, style]}
+        className="glass-light px-4 py-2 border-b"
+        style={[
+          {
+            borderBottomColor: colors.glassBorder,
+            backgroundColor: colors.glassMedium,
+          },
+          style,
+        ]}
         testID={testID}
       >
         {renderContent()}
@@ -131,76 +140,21 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
       colors={[colors.glass, colors.glassStrong]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
-      style={StyleSheet.flatten([styles.container, style])}
+      style={[
+        {
+          paddingHorizontal: spacing.md,
+          paddingVertical: spacing.sm,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.glassBorder,
+          backgroundColor: colors.glassMedium,
+        },
+        style,
+      ]}
       {...({ testID } as object)}
     >
       {renderContent()}
     </LinearGradient>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
-    backgroundColor: colors.glassMedium,
-  },
-  scrollContent: {
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingVertical: spacing.xs,
-  },
-  itemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  breadcrumb: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.md,
-    maxWidth: 180,
-  },
-  breadcrumbActive: {
-    backgroundColor: colors.glassPurpleLight,
-    borderWidth: 1,
-    borderColor: colors.glassBorderFocus,
-  },
-  breadcrumbPressed: {
-    backgroundColor: colors.glassBorderWhite,
-  },
-  homeIcon: {
-    fontSize: 12,
-    marginRight: 6,
-  },
-  homeIconRTL: {
-    marginRight: 0,
-    marginLeft: 6,
-  },
-  breadcrumbText: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-  breadcrumbTextActive: {
-    color: colors.text,
-    fontWeight: '600',
-  },
-  breadcrumbTextClickable: {
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  separatorContainer: {
-    paddingHorizontal: 4,
-  },
-  separator: {
-    fontSize: 16,
-    color: colors.primary,
-    fontWeight: '600',
-    opacity: 0.7,
-  },
-});
 
 export default GlassBreadcrumbs;

@@ -1,10 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@bayit/shared/hooks';
 import { GlassCard, GlassView } from '../components';
-import { colors, spacing, borderRadius } from '../theme';
 
 export function NotFoundScreen() {
   const { t } = useTranslation();
@@ -28,95 +27,109 @@ export function NotFoundScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <GlassCard style={styles.card}>
+    <View className="flex-1 justify-center items-center bg-[#0f0f1e] px-8">
+      <GlassCard className="p-9 items-center max-w-[600px] w-full">
         {/* Error Icon */}
-        <View style={styles.iconContainer}>
-          <Text style={styles.errorIcon}>🔍</Text>
+        <View className="w-[100px] h-[100px] rounded-[50px] bg-primary/30 justify-center items-center mb-5">
+          <Text className="text-5xl">🔍</Text>
         </View>
 
         {/* Error Code */}
-        <Text style={styles.errorCode}>404</Text>
+        <Text className="text-[80px] font-bold text-primary mb-2">404</Text>
 
         {/* Title */}
-        <Text style={styles.title}>{t('notFound.title', 'הדף לא נמצא')}</Text>
+        <Text className="text-[28px] font-semibold text-white mb-4 text-center">
+          {t('notFound.title', 'הדף לא נמצא')}
+        </Text>
 
         {/* Description */}
-        <Text style={styles.description}>
+        <Text className="text-lg text-gray-400 mb-8 text-center leading-[26px]">
           {t('notFound.description', 'הדף שחיפשת לא קיים או הועבר למקום אחר.')}
         </Text>
 
         {/* Navigation Buttons */}
-        <View style={styles.buttons}>
+        <View className="flex-row flex-wrap justify-center gap-4 mb-8">
           <Pressable
             onPress={handleGoHome}
-            style={({ focused }) => [
-              styles.button,
-              styles.buttonPrimary,
-              focused && styles.buttonFocused,
-            ]}
+            className={({ focused }) => `
+              flex-row items-center px-5 py-3 rounded-full gap-2
+              border-[3px] ${focused ? 'border-white scale-105' : 'border-transparent'}
+              bg-primary min-w-[140px] justify-center
+            `}
           >
-            <Text style={styles.buttonIcon}>🏠</Text>
-            <Text style={styles.buttonText}>{t('notFound.goHome', 'לדף הבית')}</Text>
+            <Text className="text-xl">🏠</Text>
+            <Text className="text-base font-semibold text-white">
+              {t('notFound.goHome', 'לדף הבית')}
+            </Text>
           </Pressable>
 
           <Pressable
             onPress={handleGoSearch}
-            style={({ focused }) => [
-              styles.button,
-              styles.buttonSecondary,
-              focused && styles.buttonFocused,
-            ]}
+            className={({ focused }) => `
+              flex-row items-center px-5 py-3 rounded-full gap-2
+              border-[3px] ${focused ? 'border-white scale-105' : 'border-transparent'}
+              bg-secondary min-w-[140px] justify-center
+            `}
           >
-            <Text style={styles.buttonIcon}>🔎</Text>
-            <Text style={styles.buttonText}>{t('notFound.search', 'חיפוש')}</Text>
+            <Text className="text-xl">🔎</Text>
+            <Text className="text-base font-semibold text-white">
+              {t('notFound.search', 'חיפוש')}
+            </Text>
           </Pressable>
 
           <Pressable
             onPress={handleGoBack}
-            style={({ focused }) => [
-              styles.button,
-              styles.buttonGhost,
-              focused && styles.buttonFocused,
-            ]}
+            className={({ focused }) => `
+              flex-row items-center px-5 py-3 rounded-full gap-2
+              border-[3px] ${focused ? 'border-white scale-105' : 'border-transparent'}
+              bg-white/10 min-w-[140px] justify-center
+            `}
           >
-            <Text style={styles.buttonIcon}>◀</Text>
-            <Text style={styles.buttonTextSecondary}>{t('notFound.goBack', 'חזור')}</Text>
+            <Text className="text-xl">◀</Text>
+            <Text className="text-base font-semibold text-gray-400">
+              {t('notFound.goBack', 'חזור')}
+            </Text>
           </Pressable>
         </View>
 
         {/* Suggestions */}
-        <View style={styles.suggestions}>
-          <Text style={styles.suggestionsTitle}>
+        <View className="items-center pt-5 border-t border-white/10 w-full">
+          <Text className="text-sm text-gray-500 mb-4">
             {t('notFound.suggestions', 'אולי תרצה לנסות:')}
           </Text>
-          <View style={styles.suggestionLinks}>
+          <View className="flex-row flex-wrap justify-center gap-4">
             <Pressable
               onPress={() => navigation.navigate('VOD')}
-              style={({ focused }) => [
-                styles.suggestionLink,
-                focused && styles.suggestionLinkFocused,
-              ]}
+              className={({ focused }) => `
+                px-4 py-2 bg-white/5 rounded-full border-2
+                ${focused ? 'border-primary bg-primary/30' : 'border-transparent'}
+              `}
             >
-              <Text style={styles.suggestionText}>{t('nav.vod', 'סרטים וסדרות')}</Text>
+              <Text className="text-sm text-gray-400">
+                {t('nav.vod', 'סרטים וסדרות')}
+              </Text>
             </Pressable>
             <Pressable
               onPress={() => navigation.navigate('LiveTV')}
-              style={({ focused }) => [
-                styles.suggestionLink,
-                focused && styles.suggestionLinkFocused,
-              ]}
+              className={({ focused }) => `
+                px-4 py-2 bg-white/5 rounded-full border-2
+                ${focused ? 'border-primary bg-primary/30' : 'border-transparent'}
+              `}
             >
-              <Text style={styles.suggestionText}>{t('nav.live', 'שידור חי')}</Text>
+              <Text className="text-sm text-gray-400">
+                {t('nav.live', 'שידור חי')}
+              </Text>
             </Pressable>
             <Pressable
               onPress={() => navigation.navigate('Radio')}
-              style={({ focused }) => [
-                styles.suggestionLink,
-                focused && styles.suggestionLinkFocused,
-              ]}
+              className={({ focused }) => `
+                px-4 py-2 bg-white/5 rounded-full border-2
+                ${focused ? 'border-primary bg-primary/30' : 'border-transparent'}
+              `}
             >
-              <Text style={styles.suggestionText}>{t('nav.radio', 'רדיו')}</Text>
+              <Text className="text-sm text-gray-400">
+                {t('nav.radio', 'רדיו')}
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -124,132 +137,5 @@ export function NotFoundScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-    padding: spacing.xl,
-  },
-  card: {
-    padding: spacing.xl * 1.5,
-    alignItems: 'center',
-    maxWidth: 600,
-    width: '100%',
-  },
-  iconContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-  errorIcon: {
-    fontSize: 48,
-  },
-  errorCode: {
-    fontSize: 80,
-    fontWeight: 'bold',
-    color: colors.primary,
-    marginBottom: spacing.sm,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-    textAlign: 'center',
-  },
-  description: {
-    fontSize: 18,
-    color: colors.textSecondary,
-    marginBottom: spacing.xl,
-    textAlign: 'center',
-    lineHeight: 26,
-  },
-  buttons: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: spacing.md,
-    marginBottom: spacing.xl,
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.full,
-    gap: spacing.sm,
-    borderWidth: 3,
-    borderColor: 'transparent',
-    minWidth: 140,
-    justifyContent: 'center',
-  },
-  buttonPrimary: {
-    backgroundColor: colors.primary,
-  },
-  buttonSecondary: {
-    backgroundColor: colors.secondary,
-  },
-  buttonGhost: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  buttonFocused: {
-    borderColor: colors.text,
-    transform: [{ scale: 1.05 }],
-  },
-  buttonIcon: {
-    fontSize: 20,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  buttonTextSecondary: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.textSecondary,
-  },
-  suggestions: {
-    alignItems: 'center',
-    paddingTop: spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-    width: '100%',
-  },
-  suggestionsTitle: {
-    fontSize: 14,
-    color: colors.textMuted,
-    marginBottom: spacing.md,
-  },
-  suggestionLinks: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: spacing.md,
-  },
-  suggestionLink: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.full,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  suggestionLinkFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  suggestionText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-});
 
 export default NotFoundScreen;

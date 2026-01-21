@@ -42,7 +42,7 @@
   - OWASP Mobile Top 10 assessment
   - Next steps for developers and managers
 
-**Location**: `/Users/olorin/Documents/Bayit-Plus/mobile-app/SECURITY_REVIEW_SUMMARY.txt`
+**Location**: `/Users/olorin/Documents/olorin/mobile-app/SECURITY_REVIEW_SUMMARY.txt`
 
 ---
 
@@ -61,7 +61,7 @@
   - Architecture recommendations
   - Developer action items (quick checklist)
 
-**Location**: `/Users/olorin/Documents/Bayit-Plus/mobile-app/SECURITY_SPECIALIST_SIGN_OFF.md`
+**Location**: `/Users/olorin/Documents/olorin/mobile-app/SECURITY_SPECIALIST_SIGN_OFF.md`
 
 ---
 
@@ -87,7 +87,7 @@
   - OAuth/token flow security
   - Final verdict and recommendations
 
-**Location**: `/Users/olorin/Documents/Bayit-Plus/mobile-app/docs/SPECIALIST_REVIEW_SECURITY.md`
+**Location**: `/Users/olorin/Documents/olorin/mobile-app/docs/SPECIALIST_REVIEW_SECURITY.md`
 
 ---
 
@@ -108,7 +108,7 @@
   - Approval recommendation
   - Developer action items
 
-**Location**: `/Users/olorin/Documents/Bayit-Plus/mobile-app/docs/SECURITY_SPECIALIST_COMPLETE_REVIEW.md`
+**Location**: `/Users/olorin/Documents/olorin/mobile-app/docs/SECURITY_SPECIALIST_COMPLETE_REVIEW.md`
 
 ---
 

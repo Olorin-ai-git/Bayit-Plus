@@ -24,8 +24,8 @@ COPY packages /packages
 # Copy Poetry configuration from backend directory
 COPY backend/pyproject.toml backend/poetry.lock* ./
 
-# Convert absolute file paths to relative paths for Docker build
-RUN sed -i 's|file:///Users/olorin/Documents/Bayit-Plus/packages|file:///packages|g' pyproject.toml
+# Convert relative file paths to Docker paths for build
+RUN sed -i 's|file:///../packages|file:///packages|g' pyproject.toml
 
 # Configure Poetry to not create virtual environment in Docker
 RUN poetry config virtualenvs.create false

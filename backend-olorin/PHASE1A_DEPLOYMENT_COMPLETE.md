@@ -135,7 +135,7 @@ gcloud run revisions list \
 
 ### Execute Phase 1B
 ```bash
-cd /Users/olorin/Documents/Bayit-Plus
+cd /Users/olorin/Documents/olorin
 bash backend-olorin/VERIFY.sh
 ```
 
@@ -193,7 +193,7 @@ bash backend-olorin/VERIFY.sh
 
 3. **Redeploy Latest**
    ```bash
-   cd /Users/olorin/Documents/Bayit-Plus
+   cd /Users/olorin/Documents/olorin
    echo "yes" | bash backend-olorin/DEPLOY.sh
    ```
 

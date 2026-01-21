@@ -8,7 +8,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -37,16 +36,13 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, onPress }) => {
       activeOpacity={0.8}
     >
       <GlassView
-        style={[
-          styles.categoryCard,
-          isFocused && styles.categoryCardFocused,
-        ]}
+        className={`${isTV ? 'w-[200px]' : 'w-40'} p-4 md:p-6 rounded-2xl items-center border-2 ${isFocused ? 'border-purple-500 bg-purple-500/15' : 'border-transparent'}`}
       >
-        <Text style={styles.categoryIcon}>{category.icon}</Text>
-        <Text style={[styles.categoryTitle, { textAlign }]}>
+        <Text className={`${isTV ? 'text-4xl' : 'text-3xl'} mb-2`}>{category.icon}</Text>
+        <Text className={`${isTV ? 'text-base' : 'text-sm'} font-semibold text-white mb-1`} style={{ textAlign }}>
           {t(category.titleKey, category.id)}
         </Text>
-        <Text style={[styles.categoryCount, { textAlign }]}>
+        <Text className={`${isTV ? 'text-sm' : 'text-xs'} text-gray-400`} style={{ textAlign }}>
           {t('support.categories.articleCount', {
             count: category.articles.length,
             defaultValue: '{{count}} articles',
@@ -149,9 +145,9 @@ export const SupportCategories: React.FC = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="p-8 md:p-16 items-center justify-center gap-3 md:gap-4">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[styles.loadingText, { textAlign }]}>
+        <Text className={`${isTV ? 'text-base' : 'text-sm'} text-gray-400`} style={{ textAlign }}>
           {t('support.categories.loading', 'Loading documentation...')}
         </Text>
       </View>
@@ -160,11 +156,11 @@ export const SupportCategories: React.FC = () => {
 
   if (error) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorIcon}>⚠️</Text>
-        <Text style={[styles.errorText, { textAlign }]}>{error}</Text>
-        <TouchableOpacity style={styles.retryButton} onPress={loadCategories}>
-          <Text style={styles.retryButtonText}>
+      <View className="p-8 md:p-16 items-center justify-center gap-3 md:gap-4">
+        <Text className={`${isTV ? 'text-5xl' : 'text-4xl'}`}>⚠️</Text>
+        <Text className={`${isTV ? 'text-base' : 'text-sm'} text-red-500`} style={{ textAlign }}>{error}</Text>
+        <TouchableOpacity className="bg-purple-500 px-4 md:px-6 py-2 md:py-3 rounded-lg" onPress={loadCategories}>
+          <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-black`}>
             {t('common.retry', 'Retry')}
           </Text>
         </TouchableOpacity>
@@ -173,11 +169,11 @@ export const SupportCategories: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.sectionTitle, { textAlign }]}>
+    <View className="gap-3 md:gap-4">
+      <Text className={`${isTV ? 'text-xl' : 'text-lg'} font-semibold text-white mb-2`} style={{ textAlign }}>
         {t('support.categories.title', 'Browse Documentation')}
       </Text>
-      <View style={styles.grid}>
+      <View className="flex-row flex-wrap gap-3 md:gap-4">
         {docCategories.map((category) => (
           <CategoryCard
             key={category.id}
@@ -189,82 +185,5 @@ export const SupportCategories: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    gap: spacing.md,
-  },
-  sectionTitle: {
-    fontSize: isTV ? 20 : 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.md,
-  },
-  categoryCard: {
-    width: isTV ? 200 : 160,
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  categoryCardFocused: {
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(168, 85, 247, 0.15)',
-  },
-  categoryIcon: {
-    fontSize: isTV ? 36 : 28,
-    marginBottom: spacing.sm,
-  },
-  categoryTitle: {
-    fontSize: isTV ? 16 : 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  categoryCount: {
-    fontSize: isTV ? 14 : 12,
-    color: colors.textSecondary,
-  },
-  loadingContainer: {
-    padding: spacing.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.md,
-  },
-  loadingText: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-  },
-  errorContainer: {
-    padding: spacing.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.md,
-  },
-  errorIcon: {
-    fontSize: isTV ? 48 : 36,
-  },
-  errorText: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.error,
-  },
-  retryButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.lg,
-  },
-  retryButtonText: {
-    fontSize: isTV ? 14 : 12,
-    fontWeight: '600',
-    color: colors.background,
-  },
-});
 
 export default SupportCategories;

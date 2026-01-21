@@ -7,14 +7,12 @@ import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   TextInput,
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
 
 export interface Column<T> {
   key: keyof T | string;
@@ -110,7 +108,7 @@ export function DataTable<T>({
   const renderSortIndicator = (columnKey: string) => {
     if (sortConfig.key !== columnKey) return null;
     return (
-      <Text style={styles.sortIndicator}>
+      <Text className="text-[10px] text-primary ml-1">
         {sortConfig.direction === 'asc' ? '▲' : '▼'}
       </Text>
     );
@@ -125,48 +123,48 @@ export function DataTable<T>({
     const endItem = Math.min(page * pageSize, total);
 
     return (
-      <View style={styles.paginationContainer}>
-        <Text style={styles.paginationInfo}>
+      <View className="flex flex-row justify-between items-center p-4 border-t border-glassBorder">
+        <Text className="text-sm text-textSecondary">
           {t('admin.table.showing', 'Showing')} {startItem}-{endItem} {t('admin.table.of', 'of')} {total}
         </Text>
 
-        <View style={styles.paginationControls}>
+        <View className="flex flex-row items-center gap-1">
           <TouchableOpacity
-            style={[styles.pageButton, page === 1 && styles.pageButtonDisabled]}
+            className={`w-8 h-8 rounded bg-backgroundLighter justify-center items-center ${page === 1 ? 'opacity-50' : ''}`}
             onPress={() => onPageChange(1)}
             disabled={page === 1}
           >
-            <Text style={styles.pageButtonText}>{'<<'}</Text>
+            <Text className="text-sm text-text font-semibold">{'<<'}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.pageButton, page === 1 && styles.pageButtonDisabled]}
+            className={`w-8 h-8 rounded bg-backgroundLighter justify-center items-center ${page === 1 ? 'opacity-50' : ''}`}
             onPress={() => onPageChange(page - 1)}
             disabled={page === 1}
           >
-            <Text style={styles.pageButtonText}>{'<'}</Text>
+            <Text className="text-sm text-text font-semibold">{'<'}</Text>
           </TouchableOpacity>
 
-          <View style={styles.pageIndicator}>
-            <Text style={styles.pageIndicatorText}>
+          <View className="px-4">
+            <Text className="text-sm text-text">
               {page} / {totalPages}
             </Text>
           </View>
 
           <TouchableOpacity
-            style={[styles.pageButton, page === totalPages && styles.pageButtonDisabled]}
+            className={`w-8 h-8 rounded bg-backgroundLighter justify-center items-center ${page === totalPages ? 'opacity-50' : ''}`}
             onPress={() => onPageChange(page + 1)}
             disabled={page === totalPages}
           >
-            <Text style={styles.pageButtonText}>{'>'}</Text>
+            <Text className="text-sm text-text font-semibold">{'>'}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.pageButton, page === totalPages && styles.pageButtonDisabled]}
+            className={`w-8 h-8 rounded bg-backgroundLighter justify-center items-center ${page === totalPages ? 'opacity-50' : ''}`}
             onPress={() => onPageChange(totalPages)}
             disabled={page === totalPages}
           >
-            <Text style={styles.pageButtonText}>{'>>'}</Text>
+            <Text className="text-sm text-text font-semibold">{'>>'}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -178,33 +176,33 @@ export function DataTable<T>({
   const allSelected = data.length > 0 && selectedRows.length === data.length;
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-glass rounded-2xl border border-glassBorder overflow-hidden">
       {/* Search Bar */}
       {searchable && (
-        <View style={styles.searchContainer}>
+        <View className="flex flex-row items-center p-4 border-b border-glassBorder">
           <TextInput
-            style={styles.searchInput}
+            className="flex-1 h-10 bg-backgroundLighter rounded px-4 pr-10 text-text text-sm"
             placeholder={searchPlaceholder || t('admin.table.search', 'Search...')}
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor="#9CA3AF"
             value={searchQuery}
             onChangeText={handleSearch}
           />
-          <Text style={styles.searchIcon}>🔍</Text>
+          <Text className="absolute right-6 text-base">🔍</Text>
         </View>
       )}
 
       {/* Table */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <View style={styles.table}>
+        <View className="min-w-full">
           {/* Header */}
-          <View style={styles.headerRow}>
+          <View className="flex flex-row bg-backgroundLighter border-b border-glassBorder">
             {hasSelection && (
               <TouchableOpacity
-                style={styles.checkboxCell}
+                className="w-[50px] justify-center items-center p-4"
                 onPress={handleSelectAll}
               >
-                <View style={[styles.checkbox, allSelected && styles.checkboxSelected]}>
-                  {allSelected && <Text style={styles.checkmark}>✓</Text>}
+                <View className={`w-5 h-5 rounded border-2 justify-center items-center ${allSelected ? 'bg-primary border-primary' : 'border-textMuted'}`}>
+                  {allSelected && <Text className="text-text text-xs font-bold">✓</Text>}
                 </View>
               </TouchableOpacity>
             )}
@@ -212,38 +210,34 @@ export function DataTable<T>({
             {columns.map((column) => (
               <TouchableOpacity
                 key={String(column.key)}
-                style={[
-                  styles.headerCell,
-                  column.width ? { width: column.width as number } : { flex: 1 },
-                  column.align === 'center' && styles.alignCenter,
-                  column.align === 'right' && styles.alignRight,
-                ]}
+                className={`flex flex-row items-center p-4 min-w-[100px] ${column.align === 'center' ? 'items-center' : column.align === 'right' ? 'items-end' : ''}`}
+                style={column.width ? { width: column.width as number } : { flex: 1 }}
                 onPress={() => column.sortable && handleSort(String(column.key))}
                 disabled={!column.sortable}
               >
-                <Text style={styles.headerText}>{column.header}</Text>
+                <Text className="text-sm font-semibold text-text">{column.header}</Text>
                 {column.sortable && renderSortIndicator(String(column.key))}
               </TouchableOpacity>
             ))}
 
             {hasActions && (
-              <View style={[styles.headerCell, styles.actionsCell]}>
-                <Text style={styles.headerText}>{t('admin.table.actions', 'Actions')}</Text>
+              <View className="flex flex-row items-center p-4 w-[120px] justify-center">
+                <Text className="text-sm font-semibold text-text">{t('admin.table.actions', 'Actions')}</Text>
               </View>
             )}
           </View>
 
           {/* Loading State */}
           {loading && (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color={colors.primary} />
+            <View className="p-8 items-center justify-center">
+              <ActivityIndicator size="large" color="#3B82F6" />
             </View>
           )}
 
           {/* Empty State */}
           {!loading && data.length === 0 && (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
+            <View className="p-8 items-center justify-center">
+              <Text className="text-base text-textMuted">
                 {emptyMessage || t('admin.table.noData', 'No data available')}
               </Text>
             </View>
@@ -257,21 +251,17 @@ export function DataTable<T>({
             return (
               <TouchableOpacity
                 key={id}
-                style={[
-                  styles.dataRow,
-                  index % 2 === 1 && styles.dataRowAlt,
-                  isSelected && styles.dataRowSelected,
-                ]}
+                className={`flex flex-row border-b border-glassBorder ${index % 2 === 1 ? 'bg-backgroundLight/50' : ''} ${isSelected ? 'bg-primary/20' : ''}`}
                 onPress={() => onRowPress?.(item)}
                 disabled={!onRowPress}
               >
                 {hasSelection && (
                   <TouchableOpacity
-                    style={styles.checkboxCell}
+                    className="w-[50px] justify-center items-center p-4"
                     onPress={() => handleSelectRow(id)}
                   >
-                    <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
-                      {isSelected && <Text style={styles.checkmark}>✓</Text>}
+                    <View className={`w-5 h-5 rounded border-2 justify-center items-center ${isSelected ? 'bg-primary border-primary' : 'border-textMuted'}`}>
+                      {isSelected && <Text className="text-text text-xs font-bold">✓</Text>}
                     </View>
                   </TouchableOpacity>
                 )}
@@ -284,15 +274,11 @@ export function DataTable<T>({
                   return (
                     <View
                       key={String(column.key)}
-                      style={[
-                        styles.dataCell,
-                        column.width ? { width: column.width as number } : { flex: 1 },
-                        column.align === 'center' && styles.alignCenter,
-                        column.align === 'right' && styles.alignRight,
-                      ]}
+                      className={`p-4 justify-center min-w-[100px] ${column.align === 'center' ? 'items-center' : column.align === 'right' ? 'items-end' : ''}`}
+                      style={column.width ? { width: column.width as number } : { flex: 1 }}
                     >
                       {typeof value === 'string' || typeof value === 'number' ? (
-                        <Text style={styles.dataText} numberOfLines={2}>
+                        <Text className="text-sm text-text" numberOfLines={2}>
                           {value}
                         </Text>
                       ) : (
@@ -303,7 +289,7 @@ export function DataTable<T>({
                 })}
 
                 {hasActions && (
-                  <View style={[styles.dataCell, styles.actionsCell]}>
+                  <View className="p-4 w-[120px] flex flex-row items-center justify-center">
                     {actions(item)}
                   </View>
                 )}
@@ -318,173 +304,5 @@ export function DataTable<T>({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.glass,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-    overflow: 'hidden',
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
-  },
-  searchInput: {
-    flex: 1,
-    height: 40,
-    backgroundColor: colors.backgroundLighter,
-    borderRadius: borderRadius.sm,
-    paddingHorizontal: spacing.md,
-    paddingRight: 40,
-    color: colors.text,
-    fontSize: fontSize.sm,
-  },
-  searchIcon: {
-    position: 'absolute',
-    right: spacing.lg + spacing.sm,
-    fontSize: 16,
-  },
-  table: {
-    minWidth: '100%',
-  },
-  headerRow: {
-    flexDirection: 'row',
-    backgroundColor: colors.backgroundLighter,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
-  },
-  headerCell: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.md,
-    minWidth: 100,
-  },
-  headerText: {
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  sortIndicator: {
-    fontSize: 10,
-    color: colors.primary,
-    marginLeft: spacing.xs,
-  },
-  dataRow: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
-  },
-  dataRowAlt: {
-    backgroundColor: colors.backgroundLight + '50',
-  },
-  dataRowSelected: {
-    backgroundColor: colors.primary + '20',
-  },
-  dataCell: {
-    padding: spacing.md,
-    justifyContent: 'center',
-    minWidth: 100,
-  },
-  dataText: {
-    fontSize: fontSize.sm,
-    color: colors.text,
-  },
-  checkboxCell: {
-    width: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.md,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    borderWidth: 2,
-    borderColor: colors.textMuted,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkboxSelected: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  checkmark: {
-    color: colors.text,
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  actionsCell: {
-    width: 120,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  alignCenter: {
-    alignItems: 'center',
-  },
-  alignRight: {
-    alignItems: 'flex-end',
-  },
-  loadingContainer: {
-    padding: spacing.xxl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyContainer: {
-    padding: spacing.xxl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    fontSize: fontSize.md,
-    color: colors.textMuted,
-  },
-  paginationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.glassBorder,
-  },
-  paginationInfo: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-  paginationControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  pageButton: {
-    width: 32,
-    height: 32,
-    borderRadius: borderRadius.sm,
-    backgroundColor: colors.backgroundLighter,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  pageButtonDisabled: {
-    opacity: 0.5,
-  },
-  pageButtonText: {
-    fontSize: fontSize.sm,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  pageIndicator: {
-    paddingHorizontal: spacing.md,
-  },
-  pageIndicatorText: {
-    fontSize: fontSize.sm,
-    color: colors.text,
-  },
-});
 
 export default DataTable;

@@ -1,7 +1,6 @@
-import { View, Text, StyleSheet, Animated } from 'react-native'
+import { View, Text, Animated } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { RefreshCw, Check, Pause } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { useRef, useEffect } from 'react'
 
 interface WatchPartySyncIndicatorProps {
@@ -35,14 +34,16 @@ export default function WatchPartySyncIndicator({ isHost, isSynced, hostPaused }
       return {
         icon: <Pause size={14} color="#FBBF24" />,
         text: t('watchParty.hostPaused'),
-        style: styles.amber,
+        containerClass: 'bg-amber-500/10 border-amber-500/20',
+        textClass: 'text-amber-400',
       }
     }
     if (isSynced) {
       return {
         icon: <Check size={14} color="#34D399" />,
         text: t('watchParty.synced'),
-        style: styles.emerald,
+        containerClass: 'bg-emerald-500/10 border-emerald-500/20',
+        textClass: 'text-emerald-400',
       }
     }
     const spin = spinAnim.interpolate({
@@ -56,47 +57,17 @@ export default function WatchPartySyncIndicator({ isHost, isSynced, hostPaused }
         </Animated.View>
       ),
       text: t('watchParty.syncing'),
-      style: styles.blue,
+      containerClass: 'bg-purple-700/20 border-purple-700/30',
+      textClass: 'text-blue-400',
     }
   }
 
   const state = getState()
 
   return (
-    <View style={[styles.container, state.style]}>
+    <View className={`flex-row items-center gap-2 px-3 py-2 rounded-full border ${state.containerClass}`}>
       {state.icon}
-      <Text style={[styles.text, state.style]}>{state.text}</Text>
+      <Text className={`text-xs font-medium ${state.textClass}`}>{state.text}</Text>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-    borderWidth: 1,
-  },
-  text: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  amber: {
-    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-    borderColor: 'rgba(245, 158, 11, 0.2)',
-    color: '#FBBF24',
-  },
-  emerald: {
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-    borderColor: 'rgba(16, 185, 129, 0.2)',
-    color: '#34D399',
-  },
-  blue: {
-    backgroundColor: 'rgba(107, 33, 168, 0.2)',
-    borderColor: 'rgba(107, 33, 168, 0.3)',
-    color: '#60A5FA',
-  },
-})

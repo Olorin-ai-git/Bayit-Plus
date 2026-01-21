@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { View, Text, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
 
 interface WatchPartySyncIndicatorProps {
   isHost: boolean;
@@ -22,57 +21,28 @@ export const WatchPartySyncIndicator: React.FC<WatchPartySyncIndicatorProps> = (
     if (hostPaused) {
       return {
         text: t('watchParty.hostPaused'),
-        bgColor: 'rgba(245, 158, 11, 0.1)',
-        textColor: colors.warning,
-        borderColor: 'rgba(245, 158, 11, 0.2)',
+        className: 'bg-amber-500/10 border-amber-500/20 text-amber-500',
       };
     }
     if (isSynced) {
       return {
         text: t('watchParty.synced'),
-        bgColor: 'rgba(16, 185, 129, 0.1)',
-        textColor: colors.success,
-        borderColor: 'rgba(16, 185, 129, 0.2)',
+        className: 'bg-green-500/10 border-green-500/20 text-green-500',
       };
     }
     return {
       text: t('watchParty.syncing'),
-      bgColor: 'rgba(107, 33, 168, 0.3)',
-      textColor: colors.primary,
-      borderColor: 'rgba(107, 33, 168, 0.3)',
+      className: 'bg-purple-500/30 border-purple-500/30 text-purple-500',
     };
   };
 
   const state = getState();
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: state.bgColor,
-          borderColor: state.borderColor,
-        },
-      ]}
-    >
-      <Text style={[styles.text, { color: state.textColor }]}>{state.text}</Text>
+    <View className={`py-1 px-3 rounded-full border flex-row items-center ${state.className}`}>
+      <Text className="text-xs font-medium">{state.text}</Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.full,
-    borderWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: fontSize.xs,
-    fontWeight: '500',
-  },
-});
 
 export default WatchPartySyncIndicator;
