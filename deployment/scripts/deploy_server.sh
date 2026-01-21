@@ -420,6 +420,12 @@ EOF
     # CRITICAL: These secrets are required for partner API authentication and semantic search
     create_or_update_secret "olorin-pinecone-api-key" "PINECONE_API_KEY"
     create_or_update_secret "olorin-partner-api-key-salt" "PARTNER_API_KEY_SALT"
+    create_or_update_secret "olorin-secret-key" "SECRET_KEY"
+
+    # Turborepo Remote Cache Configuration
+    # These enable build caching across CI/CD for faster builds
+    create_or_update_secret "turbo-token" "TURBO_TOKEN"
+    create_or_update_secret "turbo-team" "TURBO_TEAM"
 
     # Kids Content Runtime Service Configuration
     # Note: These are set as environment variables in cloudbuild.yaml by default
@@ -461,7 +467,8 @@ EOF
                   bayit-community-scrape-interval bayit-yutorah-rss-url bayit-chabad-multimedia-rss-url \
                   bayit-torahanytime-rss-url \
                   bayit-apple-key-id bayit-apple-team-id bayit-apple-bundle-id-ios bayit-apple-bundle-id-tvos \
-                  olorin-pinecone-api-key olorin-partner-api-key-salt; do
+                  olorin-pinecone-api-key olorin-partner-api-key-salt olorin-secret-key \
+                  turbo-token turbo-team; do
         gcloud secrets add-iam-policy-binding "$secret" \
             --member="serviceAccount:$SERVICE_ACCOUNT" \
             --role="roles/secretmanager.secretAccessor" \
