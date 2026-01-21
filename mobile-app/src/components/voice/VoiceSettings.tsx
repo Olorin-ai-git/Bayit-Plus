@@ -20,6 +20,7 @@ import {
   SafeAreaView,
   Alert,
 } from 'react-native';
+import { useConversationContextMobile } from '../../hooks/useConversationContextMobile';
 
 interface VoiceSettingsProps {
   onClose?: () => void;
@@ -49,6 +50,7 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
   onSettingsChange,
 }) => {
   const [settings, setSettings] = useState<VoiceSettingsState>(DEFAULT_SETTINGS);
+  const conversationContext = useConversationContextMobile();
 
   const handleSettingChange = useCallback(
     (key: keyof VoiceSettingsState, value: any) => {
@@ -69,13 +71,13 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
           text: 'Delete',
           style: 'destructive',
           onPress: () => {
-            // TODO: Call service to clear history
+            conversationContext.clear();
             Alert.alert('Success', 'Command history cleared');
           },
         },
       ]
     );
-  }, []);
+  }, [conversationContext]);
 
   const handleResetSettings = useCallback(() => {
     Alert.alert(
