@@ -1,0 +1,129 @@
+graph TB
+    subgraph "Firebase Functions Index"
+        FI["/functions/src/index.ts<br/>🎯 Maintains deployment compatibility"]
+    end
+
+    subgraph "Core Foundation Modules"
+        CORE["@cvplus/core<br/>📦 Types, utilities, constants"]
+        AUTH["@cvplus/auth<br/>🔐 Authentication & sessions"]
+    end
+
+    subgraph "Business Logic Modules"
+        CV["@cvplus/cv-processing<br/>📄 CV analysis & generation"]
+        MULTIMEDIA["@cvplus/multimedia<br/>🎥 Audio, video, podcasts"]
+        RECOMMENDATIONS["@cvplus/recommendations<br/>🤖 AI-powered suggestions"]
+        ANALYTICS["@cvplus/analytics<br/>📊 Business intelligence"]
+    end
+
+    subgraph "User-Facing Modules"
+        PROFILES["@cvplus/public-profiles<br/>🌐 Public profile management"]
+        PREMIUM["@cvplus/premium<br/>💎 Subscription features"]
+        PAYMENTS["@cvplus/payments<br/>💳 Billing & transactions"]
+    end
+
+    subgraph "Operations Modules"
+        ADMIN["@cvplus/admin<br/>⚙️ Admin dashboard"]
+        WORKFLOW["@cvplus/workflow<br/>📅 Calendar & scheduling"]
+        I18N["@cvplus/i18n<br/>🌍 Internationalization"]
+    end
+
+    %% Core dependencies (everyone depends on these)
+    CORE --> FI
+    AUTH --> FI
+    
+    %% Business logic dependencies
+    CV --> CORE
+    CV --> AUTH
+    CV --> FI
+    
+    MULTIMEDIA --> CORE
+    MULTIMEDIA --> AUTH
+    MULTIMEDIA --> FI
+    
+    RECOMMENDATIONS --> CORE
+    RECOMMENDATIONS --> AUTH
+    RECOMMENDATIONS --> CV
+    RECOMMENDATIONS --> FI
+    
+    ANALYTICS --> CORE
+    ANALYTICS --> AUTH
+    ANALYTICS --> FI
+    
+    %% User-facing dependencies
+    PROFILES --> CORE
+    PROFILES --> AUTH
+    PROFILES --> CV
+    PROFILES --> MULTIMEDIA
+    PROFILES --> FI
+    
+    PREMIUM --> CORE
+    PREMIUM --> AUTH
+    PREMIUM --> PAYMENTS
+    PREMIUM --> FI
+    
+    PAYMENTS --> CORE
+    PAYMENTS --> AUTH
+    PAYMENTS --> FI
+    
+    %% Operations dependencies
+    ADMIN --> CORE
+    ADMIN --> AUTH
+    ADMIN --> ANALYTICS
+    ADMIN --> FI
+    
+    WORKFLOW --> CORE
+    WORKFLOW --> AUTH
+    WORKFLOW --> FI
+    
+    I18N --> CORE
+    I18N --> FI
+
+    subgraph "Migration Impact Analysis"
+        subgraph "HIGH IMPACT - Core Dependencies"
+            HI1["CORE: 8+ modules depend on it"]
+            HI2["AUTH: 9+ modules depend on it"]
+        end
+        
+        subgraph "MEDIUM IMPACT - Business Logic"
+            MI1["CV-PROCESSING: 3 modules depend"]
+            MI2["PAYMENTS: Premium module depends"]
+        end
+        
+        subgraph "LOW IMPACT - Leaf Modules"
+            LI1["MULTIMEDIA: No dependents"]
+            LI2["PROFILES: No dependents"]
+            LI3["ADMIN: No dependents"]
+        end
+    end
+
+    subgraph "Migration Order Strategy"
+        MO1["1. Core & Auth (foundations)"]
+        MO2["2. CV-Processing (widely used)"]
+        MO3["3. Low-impact modules (safe)"]
+        MO4["4. Business logic (dependencies resolved)"]
+        MO5["5. User-facing (final integration)"]
+    end
+
+    %% Critical path indicators
+    CORE -.->|"CRITICAL PATH"| HI1
+    AUTH -.->|"CRITICAL PATH"| HI2
+    CV -.->|"DEPENDENCY BLOCKER"| MI1
+    PAYMENTS -.->|"PREMIUM BLOCKER"| MI2
+
+    classDef coreModule fill:#4caf50,color:#fff
+    classDef businessModule fill:#2196f3,color:#fff  
+    classDef userModule fill:#ff9800,color:#fff
+    classDef opsModule fill:#9c27b0,color:#fff
+    classDef deployment fill:#f44336,color:#fff
+    classDef highImpact fill:#d32f2f,color:#fff
+    classDef mediumImpact fill:#f57c00,color:#fff
+    classDef lowImpact fill:#388e3c,color:#fff
+
+    class CORE,AUTH coreModule
+    class CV,MULTIMEDIA,RECOMMENDATIONS,ANALYTICS businessModule
+    class PROFILES,PREMIUM,PAYMENTS userModule
+    class ADMIN,WORKFLOW,I18N opsModule
+    class FI deployment
+    class HI1,HI2 highImpact
+    class MI1,MI2 mediumImpact
+    class LI1,LI2,LI3 lowImpact

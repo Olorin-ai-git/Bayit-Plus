@@ -1,0 +1,67 @@
+flowchart TD
+    Start([Start Deployment]) --> Init[Initialize System]
+    Init --> Auth{Authentication Valid?}
+    Auth -->|No| AuthFix[Refresh Tokens]
+    AuthFix --> Auth
+    Auth -->|Yes| PreVal[Pre-Deployment Validation]
+    
+    PreVal --> EnvCheck[Environment Check]
+    EnvCheck --> CodeQual[Code Quality Check]
+    CodeQual --> QuotaCheck[Quota Analysis]
+    QuotaCheck --> SecCheck[Security Validation]
+    
+    SecCheck --> ValidationResult{Validation Passed?}
+    ValidationResult -->|No| ValidationError[Report Validation Errors]
+    ValidationError --> FixIssues[Auto-fix Issues]
+    FixIssues --> ValidationResult
+    ValidationResult -->|Yes| BuildPhase[Build Phase]
+    
+    BuildPhase --> FrontendBuild[Frontend Build]
+    FrontendBuild --> FunctionsBuild[Functions Build]
+    FunctionsBuild --> BuildResult{Build Success?}
+    
+    BuildResult -->|No| BuildError[Handle Build Error]
+    BuildError --> RetryBuild{Retry Available?}
+    RetryBuild -->|Yes| BuildPhase
+    RetryBuild -->|No| Rollback[Rollback & Report]
+    
+    BuildResult -->|Yes| DeployPhase[Deployment Phase]
+    
+    DeployPhase --> DeployRules[Deploy Database Rules]
+    DeployRules --> DeployStorage[Deploy Storage Rules]
+    DeployStorage --> DeployFunctions[Deploy Functions Batch]
+    
+    DeployFunctions --> QuotaCheck2{Quota Available?}
+    QuotaCheck2 -->|No| WaitQuota[Wait for Quota]
+    WaitQuota --> QuotaCheck2
+    QuotaCheck2 -->|Yes| BatchDeploy[Process Function Batch]
+    
+    BatchDeploy --> DeployResult{Deploy Success?}
+    DeployResult -->|No| DeployError[Handle Deploy Error]
+    DeployError --> RetryDeploy{Retry Available?}
+    RetryDeploy -->|Yes| BatchDeploy
+    RetryDeploy -->|No| Rollback
+    
+    DeployResult -->|Yes| MoreBatches{More Function Batches?}
+    MoreBatches -->|Yes| DeployFunctions
+    MoreBatches -->|No| DeployFrontend[Deploy Frontend]
+    
+    DeployFrontend --> ValidationPhase[Post-Deploy Validation]
+    ValidationPhase --> HealthCheck[Health Checks]
+    HealthCheck --> EndpointTest[Endpoint Testing]
+    EndpointTest --> PerformanceTest[Performance Testing]
+    
+    PerformanceTest --> ValidationSuccess{All Tests Passed?}
+    ValidationSuccess -->|No| PartialFailure[Handle Partial Failure]
+    PartialFailure --> Rollback
+    ValidationSuccess -->|Yes| GenerateReport[Generate Report]
+    
+    GenerateReport --> Cleanup[Cleanup Resources]
+    Cleanup --> Success([Deployment Success])
+    
+    Rollback --> ReportFailure[Report Failure]
+    ReportFailure --> Failure([Deployment Failed])
+    
+    style Success fill:#90EE90
+    style Failure fill:#FFB6C1
+    style Rollback fill:#FFD700

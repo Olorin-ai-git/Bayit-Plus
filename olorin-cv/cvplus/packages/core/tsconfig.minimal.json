@@ -1,0 +1,33 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "composite": false,
+    "incremental": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/logging/**/*",
+    "src/types/index.ts",
+    "src/types/api.ts",
+    "src/types/error.ts",
+    "src/types/firebase.ts",
+    "src/types/middleware.ts",
+    "src/types/job.ts",
+    "src/types/enhanced-models.ts",
+    "src/types/cv.ts",
+    "src/index.minimal.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "src/**/__tests__/**/*",
+    "src/services/**/*",
+    "src/utils/**/*"
+  ]
+}

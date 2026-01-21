@@ -1,0 +1,92 @@
+graph TB
+    %% CVPlus TypeScript Error Resolution Strategy
+    %% This diagram shows module dependencies and error resolution priority
+    
+    subgraph "P0 - Foundation (Week 1)"
+        core["🔴 core<br/>434 errors<br/>Foundation"]
+    end
+    
+    subgraph "P1 - Primary Dependencies (Week 2-3)"  
+        i18n["🟡 i18n<br/>109 errors<br/>Localization"]
+        cvproc["🔴 cv-processing<br/>762 errors<br/>Core Business"]
+        multimedia["🔴 multimedia<br/>3,765 errors<br/>Media Processing"]
+    end
+    
+    subgraph "P2 - Secondary Services (Week 4)"
+        analytics["🟡 analytics<br/>219 errors<br/>Reporting"]
+        premium["🔴 premium<br/>534 errors<br/>Subscriptions"]
+    end
+    
+    subgraph "P3 - Business Logic (Week 5)"
+        payments["🟡 payments<br/>77 errors<br/>Payment Logic"]
+        workflow["🟡 workflow<br/>272 errors<br/>Business Rules"]
+    end
+    
+    subgraph "P4-P5 - Management (Week 6)"
+        admin["🟡 admin<br/>74 errors<br/>Admin Tools"]
+        profiles["🟢 public-profiles<br/>6 errors<br/>Public Features"]
+    end
+    
+    subgraph "✅ Complete"
+        auth["✅ auth<br/>0 errors<br/>Authentication"]
+        recs["✅ recommendations<br/>0 errors<br/>AI Engine"]
+    end
+    
+    %% Dependencies
+    core --> auth
+    core --> i18n
+    core --> cvproc
+    core --> multimedia
+    core --> analytics
+    core --> premium
+    core --> payments
+    core --> workflow
+    core --> admin
+    core --> profiles
+    core --> recs
+    
+    auth --> cvproc
+    auth --> multimedia
+    auth --> analytics
+    auth --> premium
+    auth --> payments
+    auth --> workflow
+    auth --> admin
+    auth --> profiles
+    auth --> recs
+    
+    i18n --> cvproc
+    
+    analytics --> admin
+    payments --> premium
+    
+    %% Error Category Legend
+    subgraph "Error Categories"
+        cat1["🔴 High Priority<br/>500+ errors"]
+        cat2["🟡 Medium Priority<br/>50-500 errors"] 
+        cat3["🟢 Low Priority<br/>< 50 errors"]
+        cat4["✅ Complete<br/>0 errors"]
+    end
+    
+    %% Resolution Strategy Flow
+    subgraph "Resolution Strategy"
+        step1["1. Fix Core Foundation"]
+        step2["2. Resolve Dependencies"]
+        step3["3. Business Logic"]
+        step4["4. Management Layer"]
+        
+        step1 --> step2
+        step2 --> step3
+        step3 --> step4
+    end
+    
+    classDef critical fill:#ffebee,stroke:#d32f2f,stroke-width:2px,color:#000
+    classDef high fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000
+    classDef medium fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000
+    classDef low fill:#e8f5e8,stroke:#388e3c,stroke-width:2px,color:#000
+    classDef complete fill:#e0f2f1,stroke:#00695c,stroke-width:2px,color:#000
+    
+    class core,cvproc,multimedia,premium critical
+    class i18n,analytics,workflow,payments medium  
+    class admin,profiles low
+    class auth,recs complete

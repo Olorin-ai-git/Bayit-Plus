@@ -1,0 +1,212 @@
+graph TB
+    %% Living CV Concept: Dynamic professional profile that automatically stays current with external data
+    
+    %% User Interaction Layer
+    subgraph "User Interface"
+        A[User Uploads CV] --> B[Select External Sources]
+        B --> C{Authorization Required?}
+        C -->|OAuth| D[GitHub/LinkedIn Auth]
+        C -->|URL Input| E[Website/Portfolio URL]
+        C -->|Consent| F[Web Search Consent]
+    end
+
+    %% External Data Orchestration
+    subgraph "External Data Orchestrator"
+        G[Data Collection Manager]
+        D --> G
+        E --> G
+        F --> G
+        G --> H[Parallel Fetch Controller]
+        
+        H --> I[Rate Limiter]
+        I --> J[Retry Manager]
+        J --> K[Error Handler]
+    end
+
+    %% Data Source Adapters with CV Section Mapping
+    subgraph "Data Source Adapters"
+        H --> L[GitHub Adapter]
+        H --> M[LinkedIn Adapter]
+        H --> N[Website Scraper]
+        H --> O[Web Search Adapter]
+        
+        L --> P[GitHub API v4/GraphQL]
+        M --> Q[LinkedIn API/Scraper]
+        N --> R[Puppeteer/Playwright]
+        O --> S[Google/Bing Search API]
+        
+        %% Data Source to CV Section Mapping Labels
+        L -.->|"Repos→Portfolio<br/>Languages→Skills<br/>Activity→Hobbies"| L1[" "]
+        M -.->|"Certs→Certifications<br/>Skills→Skills<br/>Volunteer→Hobbies"| M1[" "]
+        N -.->|"Projects→Portfolio<br/>Blog→Publications<br/>About→Hobbies"| N1[" "]
+        O -.->|"Awards→Recognition<br/>Talks→Publications<br/>Media→Community"| O1[" "]
+    end
+
+    %% External APIs
+    subgraph "External APIs & Services"
+        P --> T[(GitHub)]
+        Q --> U[(LinkedIn)]
+        R --> V[(Websites)]
+        S --> W[(Search Engines)]
+    end
+
+    %% Data Processing Pipeline
+    subgraph "Data Processing Layer"
+        L --> X[Data Validator]
+        M --> X
+        N --> X
+        O --> X
+        
+        X --> Y[Privacy Filter]
+        Y --> Z[Data Sanitizer]
+        Z --> AA[Deduplication Engine]
+        AA --> AB[Quality Scorer]
+        AB --> AC[Reliability Assessor]
+    end
+
+    %% Caching Layer
+    subgraph "Cache Management"
+        AC --> AD{Cache Check}
+        AD -->|Hit| AE[Return Cached Data]
+        AD -->|Miss| AF[Store in Cache]
+        AF --> AG[(Redis Cache)]
+        AF --> AH[(Firestore Cache)]
+    end
+
+    %% Data Integration & CV Section Mapping
+    subgraph "CV Enhancement Engine"
+        AE --> AI[Data Merger]
+        AC --> AI
+        AI --> AJ[Conflict Resolver]
+        AJ --> AK[CV Section Router]
+        
+        %% Section-Specific Enrichment
+        AK --> PORT[Portfolio Enrichment]
+        AK --> CERT[Certifications Enrichment]
+        AK --> HOB[Hobbies & Interests]
+        AK --> SKILL[Skills Validation]
+        AK --> AWARD[Awards & Recognition]
+        AK --> PUB[Publications]
+        AK --> COMM[Community Involvement]
+        
+        PORT --> AL[Verification Engine]
+        CERT --> AL
+        HOB --> AL
+        SKILL --> AL
+        AWARD --> AL
+        PUB --> AL
+        COMM --> AL
+        
+        AL --> AM[Quality Score Calculator]
+    end
+
+    %% Storage Layer
+    subgraph "Data Storage"
+        AM --> AN[(Enhanced CV Data)]
+        AL --> AO[(Verification Records)]
+        G --> AP[(External Source Config)]
+        AF --> AQ[(Cache Storage)]
+    end
+
+    %% Output Layer with Enriched Sections
+    subgraph "Enhanced CV Output"
+        AN --> AR[Enriched CV Preview]
+        AO --> AS[Verification Badges]
+        AM --> AT[Quality Score Display]
+        AR --> AU[Source Attribution]
+        
+        %% Enriched CV Sections Display
+        AR --> SEC1[Portfolio Section<br/>✓ GitHub Projects<br/>✓ Live Demos<br/>✓ NPM Packages]
+        AR --> SEC2[Certifications<br/>✓ Verified Badges<br/>✓ Expiry Tracking<br/>✓ Skill Links]
+        AR --> SEC3[Hobbies & Interests<br/>✓ Technical Projects<br/>✓ Creative Works<br/>✓ Community Roles]
+        AR --> SEC4[Skills Section<br/>✓ Language Stats<br/>✓ Endorsements<br/>✓ Project Evidence]
+        AR --> SEC5[Awards<br/>✓ Competitions<br/>✓ Speaking<br/>✓ Recognition]
+        AR --> SEC6[Publications<br/>✓ Articles<br/>✓ Documentation<br/>✓ Academic Papers]
+        AR --> SEC7[Community<br/>✓ Open Source<br/>✓ Mentorship<br/>✓ Leadership]
+        
+        SEC1 --> AV[User Review Interface]
+        SEC2 --> AV
+        SEC3 --> AV
+        SEC4 --> AV
+        SEC5 --> AV
+        SEC6 --> AV
+        SEC7 --> AV
+        
+        AV --> AW{User Actions}
+        AW -->|Accept| AX[Save Living CV]
+        AW -->|Edit| AY[Modify Data]
+        AW -->|Reject| AZ[Remove Data]
+    end
+
+    %% Security & Compliance
+    subgraph "Security & Compliance Layer"
+        BA[OAuth Token Manager]
+        BB[Encryption Service]
+        BC[GDPR Compliance]
+        BD[CCPA Compliance]
+        BE[Audit Logger]
+        
+        D --> BA
+        BA --> BB
+        Y --> BC
+        Y --> BD
+        G --> BE
+    end
+
+    %% Monitoring & Analytics
+    subgraph "Monitoring & Analytics"
+        BF[Performance Monitor]
+        BG[API Usage Tracker]
+        BH[Error Tracker]
+        BI[User Analytics]
+        BJ[Quality Metrics]
+        
+        H --> BF
+        I --> BG
+        K --> BH
+        AV --> BI
+        AM --> BJ
+    end
+
+    %% Data Flow Connections
+    AX --> BK[(Final CV Storage)]
+    AY --> AI
+    AZ --> BL[Data Cleanup Service]
+    BL --> AN
+
+    %% Authentication Flow
+    BA --> BM[Token Storage]
+    BM --> BB
+    BB --> BN[(Encrypted Tokens)]
+
+    %% Monitoring Connections
+    BF --> BO[Alert System]
+    BG --> BO
+    BH --> BO
+    BO --> BP[DevOps Team]
+
+    %% Style Definitions
+    classDef userInterface fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef orchestrator fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef adapter fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    classDef external fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef processing fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef cache fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    classDef integration fill:#e0f2f1,stroke:#004d40,stroke-width:2px
+    classDef storage fill:#e8eaf6,stroke:#283593,stroke-width:2px
+    classDef output fill:#fff8e1,stroke:#f57c00,stroke-width:2px
+    classDef security fill:#ffebee,stroke:#b71c1c,stroke-width:2px
+    classDef monitoring fill:#e0e0e0,stroke:#424242,stroke-width:2px
+
+    %% Apply Styles
+    class A,B,C,D,E,F userInterface
+    class G,H,I,J,K orchestrator
+    class L,M,N,O,P,Q,R,S,L1,M1,N1,O1 adapter
+    class T,U,V,W external
+    class X,Y,Z,AA,AB,AC processing
+    class AD,AE,AF,AG,AH cache
+    class AI,AJ,AK,AL,AM,PORT,CERT,HOB,SKILL,AWARD,PUB,COMM integration
+    class AN,AO,AP,AQ,BK,BN storage
+    class AR,AS,AT,AU,AV,AW,AX,AY,AZ,SEC1,SEC2,SEC3,SEC4,SEC5,SEC6,SEC7 output
+    class BA,BB,BC,BD,BE,BL,BM security
+    class BF,BG,BH,BI,BJ,BO,BP monitoring

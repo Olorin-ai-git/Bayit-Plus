@@ -1,0 +1,85 @@
+graph TB
+    subgraph "Contact Form Flow"
+        A[User Submits Contact Form] --> B[Validate Input Data]
+        B --> C[Save Submission to Firestore]
+        C --> D[Get CV Owner Email]
+        D --> E[Generate Professional Email Template]
+        E --> F[Attempt Email Send]
+        F --> G[Return Response with Status]
+    end
+
+    subgraph "Email Service Selection"
+        H[Initialize Email Service] --> I{SendGrid API Key?}
+        I -->|Yes| J[Use SendGrid]
+        I -->|No| K{Resend API Key?}
+        K -->|Yes| L[Use Resend]
+        K -->|No| M{Gmail Credentials?}
+        M -->|Yes| N[Use Gmail]
+        M -->|No| O[No Email Service]
+    end
+
+    subgraph "Email Template"
+        P[Contact Form Data] --> Q[Generate Professional HTML]
+        Q --> R[Include CV Owner Name]
+        R --> S[Add Company/Phone if provided]
+        S --> T[Include Subject Line]
+        T --> U[Format Message with Line Breaks]
+        U --> V[Add CVPlus Branding]
+        V --> W[Include Reply Instructions]
+    end
+
+    subgraph "Error Handling"
+        X[Email Send Attempt] --> Y{Email Service Available?}
+        Y -->|No| Z[Log Warning, Continue]
+        Y -->|Yes| AA{Valid Email Address?}
+        AA -->|No| BB[Return Error Status]
+        AA -->|Yes| CC[Send Email]
+        CC --> DD{Send Successful?}
+        DD -->|Yes| EE[Log Success, Return OK]
+        DD -->|No| FF[Log Error, Return Status]
+    end
+
+    subgraph "Configuration Management"
+        GG[Firebase Secrets] --> HH[SENDGRID_API_KEY]
+        GG --> II[RESEND_API_KEY]
+        GG --> JJ[EMAIL_USER]
+        GG --> KK[EMAIL_PASSWORD]
+        LL[Environment Variables] --> MM[Fallback Values]
+        NN[Setup Script] --> OO[Interactive Configuration]
+        OO --> PP[Set Firebase Secrets]
+    end
+
+    subgraph "Testing & Monitoring"
+        QQ[testEmailConfiguration Function] --> RR[Verify Service Setup]
+        RR --> SS[Test Connection]
+        SS --> TT[Send Test Email]
+        UU[Local Test Script] --> VV[Template Generation Test]
+        VV --> WW[Configuration Test]
+        WW --> XX[Optional Send Test]
+    end
+
+    subgraph "Email Providers"
+        YY[SendGrid] --> ZZ[Production Recommended]
+        ZZ --> AAA[High Deliverability]
+        BBB[Resend] --> CCC[Modern Alternative]
+        CCC --> DDD[Good Developer Experience]
+        EEE[Gmail] --> FFF[Development Only]
+        FFF --> GGG[Requires App Password]
+    end
+
+    %% Flow connections
+    F --> X
+    H --> GG
+    E --> P
+    QQ --> H
+
+    %% Styling
+    classDef emailProvider fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef errorHandling fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef testing fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef configuration fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+
+    class YY,BBB,EEE emailProvider
+    class X,Y,Z,AA,BB,CC,DD,EE,FF errorHandling
+    class QQ,RR,SS,TT,UU,VV,WW,XX testing
+    class GG,LL,NN,OO,PP configuration

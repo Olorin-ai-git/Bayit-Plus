@@ -1,0 +1,79 @@
+sequenceDiagram
+    %% CVPlus Multimedia Module - Integration Flow
+    
+    participant PA as Parent Application
+    participant MP as MultimediaProvider
+    participant CR as ComponentResolver
+    participant FR as FeatureRegistry
+    participant VI as VideoIntroduction
+    participant VGS as VideoGenerationService
+    participant HG as HeyGen Provider
+    participant RM as RunwayML Provider
+    participant FB as Firebase Storage
+    
+    %% Initialization Flow
+    Note over PA,FB: Application Initialization
+    PA->>MP: Initialize with config
+    MP->>CR: Register components
+    CR->>FR: Register features
+    FR->>VGS: Initialize services
+    VGS->>HG: Initialize HeyGen
+    VGS->>RM: Initialize RunwayML
+    VGS->>FB: Initialize Firebase
+    
+    %% Component Usage Flow
+    Note over PA,FB: Component Usage
+    PA->>VI: Render VideoIntroduction
+    VI->>CR: Resolve video component
+    CR->>FR: Check feature availability
+    FR-->>CR: Feature enabled
+    CR-->>VI: Component resolved
+    
+    %% Service Interaction Flow
+    Note over PA,FB: Video Generation
+    VI->>VGS: generateVideo(script, options)
+    VGS->>VGS: Select best provider
+    
+    alt HeyGen Available
+        VGS->>HG: generateVideo(options)
+        HG->>HG: Process request
+        HG-->>VGS: Job ID + status
+    else HeyGen Unavailable
+        VGS->>RM: generateVideo(options)
+        RM->>RM: Process request
+        RM-->>VGS: Job ID + status
+    end
+    
+    VGS-->>VI: Video generation started
+    VI-->>PA: Loading state
+    
+    %% Status Polling Flow
+    Note over PA,FB: Status Monitoring
+    loop Every 5 seconds
+        VI->>VGS: checkStatus(jobId)
+        VGS->>HG: checkStatus(jobId)
+        HG-->>VGS: Status update
+        VGS-->>VI: Current status
+        VI-->>PA: Progress update
+    end
+    
+    %% Completion Flow
+    Note over PA,FB: Video Completion
+    HG->>VGS: Video ready (webhook)
+    VGS->>FB: Store video metadata
+    FB-->>VGS: Storage complete
+    VGS->>VI: Video complete event
+    VI-->>PA: Video URL + metadata
+    
+    %% Error Recovery Flow
+    Note over PA,FB: Error Handling
+    alt Provider Error
+        HG->>VGS: Error response
+        VGS->>VGS: Circuit breaker check
+        VGS->>RM: Fallback to RunwayML
+        RM-->>VGS: Backup generation
+        VGS-->>VI: Continued processing
+    else Complete Failure
+        VGS->>VI: Error with fallback
+        VI-->>PA: Error state + retry option
+    end

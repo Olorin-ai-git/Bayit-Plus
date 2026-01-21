@@ -1,0 +1,106 @@
+```mermaid
+graph TB
+    subgraph "Current State - Root Repository"
+        A1["frontend/src/contexts/AuthContext.tsx<br/>582 lines - Premium integration"]
+        A2["frontend/src/services/authService.ts<br/>318 lines - Token management"]
+        A3["frontend/src/components/AuthGuard.tsx<br/>119 lines - Route protection"]
+        A4["frontend/src/components/SignInDialog.tsx<br/>121 lines - Auth UI"]
+        A5["functions/src/middleware/authGuard.ts<br/>540 lines - Server auth"]
+        A6["functions/src/utils/auth.ts<br/>Auth utilities"]
+    end
+
+    subgraph "Target State - Auth Submodule"
+        B1["packages/auth/src/context/AuthContext.tsx<br/>Enhanced with premium integration"]
+        B2["packages/auth/src/services/auth.service.ts<br/>Merged token management"]
+        B3["packages/auth/src/components/AuthGuard.tsx<br/>Enhanced route protection"]
+        B4["packages/auth/src/components/SignInDialog.tsx<br/>Improved auth UI"]
+        B5["packages/auth/src/middleware/auth.middleware.ts<br/>Server-side authentication"]
+        B6["packages/auth/src/utils/index.ts<br/>Consolidated utilities"]
+        B7["packages/auth/src/index.ts<br/>Unified exports"]
+    end
+
+    subgraph "Migration Process"
+        C1["Phase 1: Analysis<br/>• Map dependencies<br/>• Identify conflicts<br/>• Plan integration"]
+        C2["Phase 2: Backend<br/>• Migrate middleware<br/>• Update Functions<br/>• Test auth flow"]
+        C3["Phase 3: Frontend<br/>• Merge contexts<br/>• Enhance components<br/>• Update hooks"]
+        C4["Phase 4: Updates<br/>• Change imports<br/>• Update paths<br/>• Test integration"]
+        C5["Phase 5: Testing<br/>• Auth flows<br/>• Security audit<br/>• Performance test"]
+        C6["Phase 6: Cleanup<br/>• Remove old code<br/>• Update docs<br/>• Final validation"]
+    end
+
+    subgraph "Security Considerations"
+        D1["Token Security<br/>• Validation<br/>• Caching<br/>• Refresh"]
+        D2["Session Management<br/>• Cross-tab sync<br/>• Premium cache<br/>• Cleanup"]
+        D3["Permissions<br/>• RBAC<br/>• Admin claims<br/>• Email verification"]
+        D4["Rate Limiting<br/>• User throttling<br/>• Security logging<br/>• Monitoring"]
+    end
+
+    subgraph "Integration Points"
+        E1["Firebase Auth<br/>Google OAuth<br/>Calendar permissions"]
+        E2["Premium Features<br/>Subscription cache<br/>Feature gating"]
+        E3["Admin System<br/>Role-based access<br/>Custom claims"]
+        E4["Session Storage<br/>Cross-tab events<br/>LocalStorage cache"]
+    end
+
+    subgraph "Post-Migration Architecture"
+        F1["@cvplus/auth imports<br/>Clean module boundaries"]
+        F2["Unified auth services<br/>Consistent interfaces"]
+        F3["Enhanced security<br/>Better isolation"]
+        F4["Improved maintainability<br/>Modular design"]
+    end
+
+    %% Migration flow
+    A1 --> C1
+    A2 --> C1
+    A3 --> C1
+    A4 --> C1
+    A5 --> C1
+    A6 --> C1
+    
+    C1 --> C2
+    C2 --> C3
+    C3 --> C4
+    C4 --> C5
+    C5 --> C6
+    
+    C6 --> B1
+    C6 --> B2
+    C6 --> B3
+    C6 --> B4
+    C6 --> B5
+    C6 --> B6
+    C6 --> B7
+
+    %% Security integration
+    D1 --> B2
+    D2 --> B1
+    D3 --> B5
+    D4 --> B5
+
+    %% Integration points
+    E1 --> B1
+    E2 --> B1
+    E3 --> B5
+    E4 --> B1
+
+    %% Final architecture
+    B7 --> F1
+    B1 --> F2
+    B5 --> F3
+    B7 --> F4
+
+    %% Styling
+    classDef current fill:#ffebee,stroke:#d32f2f,stroke-width:2px
+    classDef target fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef process fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef security fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef integration fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef final fill:#e0f2f1,stroke:#00695c,stroke-width:3px
+
+    class A1,A2,A3,A4,A5,A6 current
+    class B1,B2,B3,B4,B5,B6,B7 target
+    class C1,C2,C3,C4,C5,C6 process
+    class D1,D2,D3,D4 security
+    class E1,E2,E3,E4 integration
+    class F1,F2,F3,F4 final
+```

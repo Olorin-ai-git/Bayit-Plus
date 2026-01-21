@@ -1,0 +1,165 @@
+graph TB
+    subgraph "PHASE 3D: PUBLIC PROFILES MIGRATION - FINAL STREAM"
+        subgraph "CURRENT STATE - ARCHITECTURAL VIOLATIONS"
+            subgraph "Root Repository Functions"
+                F1[publicProfile.ts]
+                F2[generateWebPortal.ts]
+                F3[cvPortalIntegration.ts]
+                F4[portalChat.ts]
+                F5[socialMedia.ts]
+                F6[qrCodeEnhancement.ts]
+                F7[enhancedQR.ts]
+            end
+            
+            subgraph "Root Repository Services"
+                S1[portal-generation.service.ts]
+                S2[portal-integration.service.ts]
+                S3[portal-asset-management.service.ts]
+                S4[portal-component-library.service.ts]
+                S5[qr-enhancement.service.ts]
+                S6[qrCode.service.ts]
+                S7[social-media.service.ts]
+                S8[socialSharing.service.ts]
+            end
+            
+            subgraph "Root Repository Components"
+                C1[Portal/ Directory]
+                C2[QRCodeEditor.tsx]
+                C3[PublicProfile.tsx]
+                C4[DynamicQRCode.tsx]
+            end
+        end
+        
+        subgraph "TARGET STATE - CONSOLIDATED ARCHITECTURE"
+            subgraph "packages/public-profiles/"
+                subgraph "Backend Functions"
+                    BF1[profiles/publicProfile.ts]
+                    BF2[portals/generateWebPortal.ts]
+                    BF3[portals/cvPortalIntegration.ts]
+                    BF4[portals/portalChat.ts]
+                    BF5[social/socialMedia.ts]
+                    BF6[qr/qrCodeEnhancement.ts]
+                    BF7[qr/enhancedQR.ts]
+                end
+                
+                subgraph "Backend Services"
+                    BS1[portals/portal-generation.service.ts]
+                    BS2[portals/portal-integration.service.ts]
+                    BS3[portals/portal-asset-management.service.ts]
+                    BS4[portals/portal-component-library.service.ts]
+                    BS5[qr/qr-enhancement.service.ts]
+                    BS6[qr/qrCode.service.ts]
+                    BS7[social/social-media.service.ts]
+                    BS8[social/socialSharing.service.ts]
+                end
+                
+                subgraph "Frontend Components"
+                    FC1[portals/PortalComponents]
+                    FC2[qr/QRCodeEditor]
+                    FC3[profiles/PublicProfile]
+                    FC4[social/SocialComponents]
+                end
+                
+                subgraph "Integration Layer"
+                    IL1[Core Integration]
+                    IL2[Auth Integration]
+                    IL3[CV Processing Integration]
+                    IL4[Multimedia Integration]
+                    IL5[Premium Integration]
+                end
+            end
+        end
+        
+        subgraph "DEPENDENCY MODULES"
+            CORE["@cvplus/core<br/>Shared utilities"]
+            AUTH["@cvplus/auth<br/>Authentication"]
+            CV["@cvplus/cv-processing<br/>CV functionality"]
+            MULTI["@cvplus/multimedia<br/>Media content"]
+            PREM["@cvplus/premium<br/>Premium features"]
+        end
+    end
+    
+    subgraph "MIGRATION WORKFLOW"
+        subgraph "Phase 3D.1: Functions Migration"
+            M1[Analyze Function Duplicates]
+            M2[Merge Overlapping Functions]
+            M3[Move Unique Functions]
+            M4[Update Function Exports]
+        end
+        
+        subgraph "Phase 3D.2: Services Migration"
+            M5[Move Portal Services]
+            M6[Move Social Services]
+            M7[Move QR Services]
+            M8[Update Service Integration]
+        end
+        
+        subgraph "Phase 3D.3: Components Migration"
+            M9[Move Portal Components]
+            M10[Move QR Components]
+            M11[Move Profile Components]
+            M12[Update Component Exports]
+        end
+        
+        subgraph "Phase 3D.4: Integration Layer"
+            M13[Setup Core Integration]
+            M14[Setup Auth Integration]
+            M15[Setup CV Integration]
+            M16[Setup Multimedia Integration]
+            M17[Setup Premium Integration]
+        end
+        
+        subgraph "Phase 3D.5: Import Updates"
+            M18[Update Functions Index]
+            M19[Update Frontend Imports]
+            M20[Update Cross-Module References]
+            M21[Validate All Imports]
+        end
+    end
+    
+    %% Migration Flow
+    F1 --> BF1
+    F2 --> BF2
+    F3 --> BF3
+    F4 --> BF4
+    F5 --> BF5
+    F6 --> BF6
+    F7 --> BF7
+    
+    S1 --> BS1
+    S2 --> BS2
+    S3 --> BS3
+    S4 --> BS4
+    S5 --> BS5
+    S6 --> BS6
+    S7 --> BS7
+    S8 --> BS8
+    
+    C1 --> FC1
+    C2 --> FC2
+    C3 --> FC3
+    C4 --> FC4
+    
+    %% Dependencies
+    CORE --> IL1
+    AUTH --> IL2
+    CV --> IL3
+    MULTI --> IL4
+    PREM --> IL5
+    
+    %% Workflow
+    M1 --> M2 --> M3 --> M4
+    M4 --> M5 --> M6 --> M7 --> M8
+    M8 --> M9 --> M10 --> M11 --> M12
+    M12 --> M13 --> M14 --> M15 --> M16 --> M17
+    M17 --> M18 --> M19 --> M20 --> M21
+    
+    classDef violation fill:#ffcccc,stroke:#ff0000,stroke-width:2px
+    classDef target fill:#ccffcc,stroke:#00ff00,stroke-width:2px
+    classDef dependency fill:#ccccff,stroke:#0000ff,stroke-width:2px
+    classDef workflow fill:#ffffcc,stroke:#ffaa00,stroke-width:2px
+    
+    class F1,F2,F3,F4,F5,F6,F7,S1,S2,S3,S4,S5,S6,S7,S8,C1,C2,C3,C4 violation
+    class BF1,BF2,BF3,BF4,BF5,BF6,BF7,BS1,BS2,BS3,BS4,BS5,BS6,BS7,BS8,FC1,FC2,FC3,FC4,IL1,IL2,IL3,IL4,IL5 target
+    class CORE,AUTH,CV,MULTI,PREM dependency
+    class M1,M2,M3,M4,M5,M6,M7,M8,M9,M10,M11,M12,M13,M14,M15,M16,M17,M18,M19,M20,M21 workflow

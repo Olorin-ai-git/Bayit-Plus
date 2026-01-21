@@ -1,0 +1,88 @@
+{
+  "timestamp": "2025-08-12T15:05:26.135Z",
+  "testSubject": "Gil Klainert CV - Direct API Testing",
+  "totalTests": 13,
+  "passed": 12,
+  "failed": 1,
+  "successRate": 92,
+  "executionTimeMs": 21535,
+  "coreFeatures": {
+    "API Connectivity": true,
+    "CV Analysis": true,
+    "Achievements Extraction": true,
+    "Skills Analysis": true,
+    "Function Architecture": true
+  },
+  "allTests": [
+    {
+      "testName": "Anthropic Claude API Connection",
+      "passed": true,
+      "details": "Successfully connected to Claude API",
+      "executionTime": 1248
+    },
+    {
+      "testName": "OpenAI GPT-4 API Connection",
+      "passed": true,
+      "details": "Successfully connected to OpenAI API",
+      "executionTime": 1420
+    },
+    {
+      "testName": "Direct CV Analysis with Claude",
+      "passed": true,
+      "details": "Successfully analyzed CV (text format)",
+      "executionTime": 6913
+    },
+    {
+      "testName": "Achievements Extraction with OpenAI",
+      "passed": true,
+      "details": "Extracted 3 achievements",
+      "executionTime": 7665
+    },
+    {
+      "testName": "Skills Analysis with OpenAI",
+      "passed": true,
+      "details": "Analyzed 10 skills with proficiency levels",
+      "executionTime": 3574
+    },
+    {
+      "testName": "Module: lib/services/achievements-analysis.service.js",
+      "passed": true,
+      "details": "Module exists and loadable"
+    },
+    {
+      "testName": "Module: lib/services/skills-proficiency.service.js",
+      "passed": true,
+      "details": "Module exists and loadable"
+    },
+    {
+      "testName": "Module: lib/services/cvGenerator.js",
+      "passed": true,
+      "details": "Module exists and loadable"
+    },
+    {
+      "testName": "Module: lib/services/podcast-generation.service.js",
+      "passed": true,
+      "details": "Module exists and loadable"
+    },
+    {
+      "testName": "Module: lib/functions/processCV.js",
+      "passed": true,
+      "details": "Module exists and loadable"
+    },
+    {
+      "testName": "Module: lib/index.js",
+      "passed": true,
+      "details": "Module exists and loadable"
+    },
+    {
+      "testName": "processCV Function Load",
+      "passed": true,
+      "details": "Function successfully loaded and callable"
+    },
+    {
+      "testName": "processCV Function Execution",
+      "passed": false,
+      "details": "Execution error: Cannot read properties of undefined (reading 'on')"
+    }
+  ]
+}

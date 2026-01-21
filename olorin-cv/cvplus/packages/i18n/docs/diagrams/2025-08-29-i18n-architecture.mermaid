@@ -1,0 +1,181 @@
+graph TB
+    subgraph "CVPlus I18n Architecture"
+        direction TB
+        
+        subgraph "Frontend Components"
+            LC[Language Selector]
+            TT[Translated Text]
+            RTL[RTL Layout Wrapper]
+            CF[Culture-Aware Forms]
+            DF[Date/Currency Formatters]
+        end
+        
+        subgraph "React Hooks & Context"
+            UT[useTranslation Hook]
+            UL[useLocale Hook]
+            UC[useCulturalContext Hook]
+            UR[useRTLSupport Hook]
+            IP[I18n Provider Context]
+        end
+        
+        subgraph "Core Services"
+            TS[Translation Service]
+            CAS[Cultural Adaptation Service]
+            RS[RTL Service]
+            RFS[Regional Format Service]
+            SEO[I18n SEO Service]
+        end
+        
+        subgraph "Translation Management"
+            TM[Translation Memory]
+            QA[Quality Assurance Pipeline]
+            WM[Workflow Manager]
+            CM[Context Manager]
+            KE[Key Extractor]
+        end
+        
+        subgraph "Backend Functions"
+            TC[translateCV Function]
+            TD[translateDynamic Function]
+            TP[translateProfessional Function]
+            BT[bulkTranslation Function]
+            GTS[getTranslationStatus Function]
+            UUL[updateUserLanguage Function]
+        end
+        
+        subgraph "Translation Assets"
+            direction LR
+            LOC[Locale Files]
+            EN[English Translations]
+            ES[Spanish Translations]
+            FR[French Translations]
+            AR[Arabic Translations]
+            HE[Hebrew Translations]
+            OTH[Other Languages]
+        end
+        
+        subgraph "External Services"
+            DL[DeepL API]
+            GT[Google Translate]
+            HT[Human Translators]
+            CDN[Global CDN]
+        end
+        
+        subgraph "Cultural Data"
+            CP[Cultural Profiles]
+            PN[Professional Norms]
+            RF[Regional Formats]
+            CV[Cultural Validations]
+        end
+        
+        subgraph "RTL Support System"
+            RD[RTL Detection]
+            LM[Layout Manager]
+            TD2[Text Direction Handler]
+            CA[Component Adaptation]
+        end
+        
+        subgraph "Quality & Testing"
+            TV[Translation Validation]
+            CT[Cultural Testing]
+            RT[RTL Testing]
+            PT[Performance Testing]
+            AT[Accessibility Testing]
+        end
+    end
+    
+    %% Frontend to Hooks connections
+    LC --> UT
+    TT --> UT
+    RTL --> UR
+    CF --> UC
+    DF --> UL
+    
+    %% Hooks to Context
+    UT --> IP
+    UL --> IP
+    UC --> IP
+    UR --> IP
+    
+    %% Context to Services
+    IP --> TS
+    IP --> CAS
+    IP --> RS
+    IP --> RFS
+    
+    %% Services to Translation Management
+    TS --> TM
+    TS --> QA
+    TS --> WM
+    TS --> CM
+    
+    %% Translation Management to Backend
+    WM --> TC
+    WM --> TD
+    WM --> TP
+    WM --> BT
+    QA --> GTS
+    
+    %% Backend to External Services
+    TC --> DL
+    TD --> GT
+    TP --> HT
+    BT --> CDN
+    
+    %% Services to Data
+    CAS --> CP
+    CAS --> PN
+    RFS --> RF
+    QA --> CV
+    
+    %% RTL System connections
+    RS --> RD
+    RS --> LM
+    RS --> TD2
+    RS --> CA
+    
+    %% Assets to CDN
+    LOC --> CDN
+    EN --> CDN
+    ES --> CDN
+    FR --> CDN
+    AR --> CDN
+    HE --> CDN
+    OTH --> CDN
+    
+    %% Quality connections
+    TS --> TV
+    CAS --> CT
+    RS --> RT
+    CDN --> PT
+    TT --> AT
+    
+    %% Key Extraction
+    KE --> LOC
+    KE --> QA
+    
+    %% SEO Service connections
+    SEO --> TS
+    SEO --> CAS
+    SEO --> CDN
+    
+    %% Styling
+    classDef frontend fill:#e1f5fe
+    classDef hooks fill:#f3e5f5
+    classDef services fill:#e8f5e8
+    classDef backend fill:#fff3e0
+    classDef assets fill:#fce4ec
+    classDef external fill:#f1f8e9
+    classDef data fill:#e0f2f1
+    classDef rtl fill:#fff8e1
+    classDef quality fill:#f9fbe7
+    
+    class LC,TT,RTL,CF,DF frontend
+    class UT,UL,UC,UR,IP hooks
+    class TS,CAS,RS,RFS,SEO services
+    class TC,TD,TP,BT,GTS,UUL backend
+    class LOC,EN,ES,FR,AR,HE,OTH assets
+    class DL,GT,HT,CDN external
+    class CP,PN,RF,CV data
+    class RD,LM,TD2,CA rtl
+    class TV,CT,RT,PT,AT,TM,QA,WM,CM,KE quality

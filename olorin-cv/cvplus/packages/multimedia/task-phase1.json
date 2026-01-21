@@ -1,0 +1,36 @@
+{ "type": "multimedia-specialist", "description": "Phase 1: Foundation Setup - Create comprehensive frontend component architecture", "prompt": "I need you to orchestrate Phase 1 of the multimedia frontend migration. You need to:
+
+**PHASE 1 REQUIREMENTS:**
+1. Analyze the existing frontend structure in src/frontend/components/
+2. Create proper directory architecture with these categories:
+   - core/ (basic media components)
+   - advanced/ (complex processing features)
+   - interactive/ (QR codes, dynamic elements)
+   - display/ (galleries, players, carousels)
+   - utilities/ (upload, validation, helpers)
+
+3. Review TypeScript configurations (tsconfig.frontend.json exists)
+4. Ensure proper build system updates for frontend components
+5. Verify autonomous operation requirements
+
+**CRITICAL REQUIREMENTS:**
+- Every file MUST be under 200 lines
+- NO mock data allowed
+- Components must support real data sources
+- Proper TypeScript interfaces and types
+- Follow existing multimedia module patterns
+
+**EXISTING COMPONENTS TO INTEGRATE:**
+You have some components already:
+- FileUpload.tsx, ProfilePictureUpload.tsx in src/frontend/components/
+- VideoAnalyticsDashboard.tsx in src/frontend/components/video/
+- PortfolioGallery.tsx, PodcastGeneration.tsx, VideoIntroduction.tsx in src/components/
+
+**SOURCE COMPONENTS TO PREPARE FOR:**
+From parent CVPlus project we'll migrate:
+- PortfolioGallery, VideoIntroduction, TestimonialsCarousel, VideoAnalyticsDashboard
+- PodcastGeneration, AIPodcastPlayer, PodcastPlayer
+- DynamicQRCode, EnhancedQRCode, QR utilities
+- FileUpload, ProfilePictureUpload, media validation
+
+Create the foundation architecture that will properly organize all these components. Work in /Users/gklainert/Documents/cvplus/packages/multimedia directory." }

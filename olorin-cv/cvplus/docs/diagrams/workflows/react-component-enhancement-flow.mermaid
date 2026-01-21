@@ -1,0 +1,93 @@
+graph TB
+    subgraph "Current State (Problem)"
+        A[Server HTML Generation] --> B[HTML with Placeholders]
+        B --> C[componentRendererFix.ts]
+        C --> D[DOM Queries & Hydration]
+        D --> E[React Component Injection]
+        E --> F[Complex Error Handling]
+        F --> G[Debugging Nightmare]
+    end
+
+    subgraph "Target State (Solution)"
+        H[JSON APIs] --> I[React Hook Data Fetching]
+        I --> J[Pure React Components]
+        J --> K[Direct Data Props]
+        K --> L[Error Boundaries]
+        L --> M[Loading States]
+        M --> N[Clean Architecture]
+    end
+
+    subgraph "Phase 2A: Priority 1 Components"
+        P1[DynamicQRCode Enhancement]
+        P2[InteractiveTimeline Enhancement]
+        P3[SkillsVisualization Enhancement]
+        P4[CalendarIntegration Enhancement]
+        P5[ContactForm Enhancement]
+        
+        P1 --> P1A[JSON Data Props]
+        P1 --> P1B[Error Boundaries]
+        P1 --> P1C[Loading States]
+        
+        P2 --> P2A[API Hook Integration]
+        P2 --> P2B[Timeline Data Validation]
+        P2 --> P2C[Real-time Updates]
+        
+        P3 --> P3A[Chart Data API]
+        P3 --> P3B[Dynamic Visualization]
+        P3 --> P3C[Skills Analytics]
+        
+        P4 --> P4A[Calendar API]
+        P4 --> P4B[Availability Data]
+        P4 --> P4C[Integration Support]
+        
+        P5 --> P5A[Form Validation]
+        P5 --> P5B[Submission Tracking]
+        P5 --> P5C[API Integration]
+    end
+
+    subgraph "API Data Flow"
+        API1[getCVData API] --> HOOK1[useCVData Hook]
+        API2[getEnhancedFeatures API] --> HOOK2[useEnhancedFeatures Hook]
+        API3[getCVPreview API] --> HOOK3[useCVPreview Hook]
+        
+        HOOK1 --> COMP[React Components]
+        HOOK2 --> COMP
+        HOOK3 --> COMP
+        
+        COMP --> UI[Enhanced User Interface]
+    end
+
+    subgraph "Component Enhancement Pattern"
+        OLD["Old: HTML Hydration\n❌ DOM Queries\n❌ Placeholder Finding\n❌ Complex Injection"] 
+        NEW["New: JSON Props\n✅ Direct Data\n✅ Type Safety\n✅ Error Boundaries"]
+        
+        OLD -.-> NEW
+    end
+
+    subgraph "Success Metrics"
+        SM1["Performance\n📈 50% Faster Loading\n📦 Smaller Bundle\n⚡ Better UX"]
+        SM2["Developer Experience\n🛠️ Standard React\n🐛 Easy Debugging\n✅ Type Safety"]
+        SM3["Code Quality\n🧹 Clean Architecture\n📝 Better Tests\n🔧 Maintainable"]
+    end
+
+    A -.-> H
+    B -.-> I
+    C -.-> J
+    
+    P1 --> SM1
+    P2 --> SM2
+    P3 --> SM3
+    
+    style A fill:#ffebee,stroke:#f44336
+    style C fill:#ffebee,stroke:#f44336
+    style D fill:#ffebee,stroke:#f44336
+    
+    style H fill:#e8f5e8,stroke:#4caf50
+    style I fill:#e8f5e8,stroke:#4caf50
+    style J fill:#e8f5e8,stroke:#4caf50
+    
+    style P1 fill:#e3f2fd,stroke:#2196f3
+    style P2 fill:#e3f2fd,stroke:#2196f3
+    style P3 fill:#e3f2fd,stroke:#2196f3
+    style P4 fill:#e3f2fd,stroke:#2196f3
+    style P5 fill:#e3f2fd,stroke:#2196f3

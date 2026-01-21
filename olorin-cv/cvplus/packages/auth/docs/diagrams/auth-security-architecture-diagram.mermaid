@@ -1,0 +1,154 @@
+graph TB
+    %% CVPlus Auth Module Security Architecture
+    %% Author: Gil Klainert
+    %% Date: 2025-08-29
+    %% Purpose: Comprehensive security architecture for authentication module
+
+    subgraph "Client Layer"
+        WEB[Web Client<br/>React Components]
+        MOBILE[Mobile Client<br/>React Native]
+        API_CLIENT[API Clients<br/>Third-party Integration]
+    end
+
+    subgraph "Authentication Gateway"
+        AUTH_GUARD[AuthGuard<br/>Route Protection]
+        PERM_GATE[PermissionGate<br/>Feature Access Control]
+        PREMIUM_GATE[PremiumGate<br/>Subscription Validation]
+    end
+
+    subgraph "Authentication Services"
+        subgraph "Core Auth"
+            AUTH_SERVICE[AuthService<br/>• Registration/Login<br/>• Password Management<br/>• Email Verification]
+            SESSION_SERVICE[SessionService<br/>• Session Management<br/>• Device Tracking<br/>• Concurrent Control]
+            MFA_SERVICE[MFAService<br/>• TOTP/SMS/Backup<br/>• Device Trust<br/>• Recovery Codes]
+        end
+        
+        subgraph "Authorization"
+            PERM_SERVICE[PermissionService<br/>• RBAC Implementation<br/>• Permission Validation<br/>• Role Hierarchy]
+            PREMIUM_SERVICE[PremiumService<br/>• Subscription Validation<br/>• Feature Gating<br/>• Tier Management]
+            AUDIT_SERVICE[AuditService<br/>• Event Logging<br/>• Compliance Tracking<br/>• Security Monitoring]
+        end
+    end
+
+    subgraph "Security Layer"
+        subgraph "Threat Detection"
+            RATE_LIMITER[Rate Limiter<br/>• Brute Force Protection<br/>• API Throttling<br/>• Request Analysis]
+            ANOMALY_DETECTOR[Anomaly Detector<br/>• Behavioral Analysis<br/>• Risk Scoring<br/>• Alert Generation]
+            THREAT_INTEL[Threat Intelligence<br/>• IP Reputation<br/>• Attack Patterns<br/>• Vulnerability Feeds]
+        end
+        
+        subgraph "Security Enforcement"
+            INPUT_VALIDATOR[Input Validator<br/>• XSS Prevention<br/>• Injection Protection<br/>• Data Sanitization]
+            CRYPTO_SERVICE[Crypto Service<br/>• Encryption/Decryption<br/>• Key Management<br/>• Secure Hashing]
+            SECURITY_HEADERS[Security Headers<br/>• CSRF Protection<br/>• Content Security<br/>• Transport Security]
+        end
+    end
+
+    subgraph "Data Layer"
+        subgraph "Firebase Integration"
+            FIREBASE_AUTH[Firebase Auth<br/>• User Management<br/>• Custom Claims<br/>• Security Rules]
+            FIRESTORE[Firestore<br/>• User Profiles<br/>• Session Data<br/>• Audit Logs]
+            FIREBASE_SECURITY[Firebase Security<br/>• Rules Engine<br/>• Access Control<br/>• Data Validation]
+        end
+        
+        subgraph "External Integration"
+            STRIPE[Stripe<br/>• Subscription Data<br/>• Billing Validation<br/>• Payment Security]
+            BREACH_DB[Breach Database<br/>• HaveIBeenPwned<br/>• Password Validation<br/>• Compromised Accounts]
+            GEO_SERVICE[Geolocation<br/>• IP Analysis<br/>• Location Validation<br/>• VPN Detection]
+        end
+    end
+
+    subgraph "Monitoring & Compliance"
+        subgraph "Security Monitoring"
+            SIEM[SIEM System<br/>• Log Aggregation<br/>• Event Correlation<br/>• Incident Detection]
+            DASHBOARD[Security Dashboard<br/>• Real-time Monitoring<br/>• Risk Visualization<br/>• Alert Management]
+            METRICS[Security Metrics<br/>• KPI Tracking<br/>• Performance Monitoring<br/>• Compliance Reporting]
+        end
+        
+        subgraph "Compliance Framework"
+            GDPR[GDPR Compliance<br/>• Data Protection<br/>• User Rights<br/>• Privacy Controls]
+            SOC2[SOC 2 Type II<br/>• Security Controls<br/>• Audit Requirements<br/>• Compliance Validation]
+            AUDIT_TRAIL[Audit Trail<br/>• Tamper-proof Logs<br/>• Event Tracking<br/>• Forensic Evidence]
+        end
+    end
+
+    subgraph "Incident Response"
+        IR_DETECTION[Detection<br/>• Automated Alerts<br/>• Threat Identification<br/>• Risk Assessment]
+        IR_RESPONSE[Response<br/>• Account Isolation<br/>• Session Termination<br/>• Access Restriction]
+        IR_RECOVERY[Recovery<br/>• Service Restoration<br/>• Security Validation<br/>• Post-incident Monitoring]
+    end
+
+    %% Client Flow
+    WEB --> AUTH_GUARD
+    MOBILE --> AUTH_GUARD
+    API_CLIENT --> AUTH_GUARD
+    
+    %% Gateway Flow
+    AUTH_GUARD --> AUTH_SERVICE
+    AUTH_GUARD --> SESSION_SERVICE
+    PERM_GATE --> PERM_SERVICE
+    PREMIUM_GATE --> PREMIUM_SERVICE
+
+    %% Authentication Flow
+    AUTH_SERVICE --> MFA_SERVICE
+    AUTH_SERVICE --> FIREBASE_AUTH
+    SESSION_SERVICE --> FIRESTORE
+    MFA_SERVICE --> CRYPTO_SERVICE
+
+    %% Authorization Flow
+    PERM_SERVICE --> FIREBASE_SECURITY
+    PREMIUM_SERVICE --> STRIPE
+    AUDIT_SERVICE --> FIRESTORE
+
+    %% Security Layer Integration
+    AUTH_SERVICE --> RATE_LIMITER
+    AUTH_SERVICE --> INPUT_VALIDATOR
+    SESSION_SERVICE --> ANOMALY_DETECTOR
+    PERM_SERVICE --> THREAT_INTEL
+
+    %% Data Integration
+    FIREBASE_AUTH --> FIRESTORE
+    FIREBASE_SECURITY --> FIRESTORE
+    AUTH_SERVICE --> BREACH_DB
+    SESSION_SERVICE --> GEO_SERVICE
+
+    %% Monitoring Integration
+    AUDIT_SERVICE --> SIEM
+    SIEM --> DASHBOARD
+    DASHBOARD --> METRICS
+    
+    %% Compliance Integration
+    AUDIT_SERVICE --> GDPR
+    AUDIT_SERVICE --> SOC2
+    AUDIT_SERVICE --> AUDIT_TRAIL
+
+    %% Incident Response Flow
+    ANOMALY_DETECTOR --> IR_DETECTION
+    THREAT_INTEL --> IR_DETECTION
+    IR_DETECTION --> IR_RESPONSE
+    IR_RESPONSE --> IR_RECOVERY
+
+    %% Security Event Flow
+    RATE_LIMITER -.->|Security Events| SIEM
+    ANOMALY_DETECTOR -.->|Threat Alerts| SIEM
+    INPUT_VALIDATOR -.->|Attack Attempts| SIEM
+    FIREBASE_AUTH -.->|Auth Events| AUDIT_SERVICE
+    PERM_SERVICE -.->|Access Events| AUDIT_SERVICE
+    SESSION_SERVICE -.->|Session Events| AUDIT_SERVICE
+
+    %% Styling
+    classDef client fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef gateway fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef auth fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef security fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef data fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef monitoring fill:#f1f8e9,stroke:#689f38,stroke-width:2px
+    classDef incident fill:#ffebee,stroke:#d32f2f,stroke-width:2px
+
+    class WEB,MOBILE,API_CLIENT client
+    class AUTH_GUARD,PERM_GATE,PREMIUM_GATE gateway
+    class AUTH_SERVICE,SESSION_SERVICE,MFA_SERVICE,PERM_SERVICE,PREMIUM_SERVICE,AUDIT_SERVICE auth
+    class RATE_LIMITER,ANOMALY_DETECTOR,THREAT_INTEL,INPUT_VALIDATOR,CRYPTO_SERVICE,SECURITY_HEADERS security
+    class FIREBASE_AUTH,FIRESTORE,FIREBASE_SECURITY,STRIPE,BREACH_DB,GEO_SERVICE data
+    class SIEM,DASHBOARD,METRICS,GDPR,SOC2,AUDIT_TRAIL monitoring
+    class IR_DETECTION,IR_RESPONSE,IR_RECOVERY incident

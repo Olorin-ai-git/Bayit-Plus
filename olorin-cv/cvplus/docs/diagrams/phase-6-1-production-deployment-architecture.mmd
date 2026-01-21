@@ -1,0 +1,204 @@
+```mermaid
+graph TB
+    %% Production Deployment Architecture - Phase 6.1
+    
+    subgraph "User Interface"
+        CLI[Smart Deploy CLI<br/>--production --blue-green]
+        MODES{Deployment Mode}
+    end
+    
+    subgraph "Production Orchestrator"
+        ORCH[Intelligent Deploy<br/>Production Mode]
+        PROD_MGR[Production Manager<br/>New Module]
+        
+        ORCH --> PROD_MGR
+    end
+    
+    subgraph "Enhanced Validation Layer"
+        PRE_VAL[Pre-Deployment Validator<br/>Enhanced Production Checks]
+        SEC_SCAN[Security Scanner<br/>Production Vulnerability Scan]
+        COMP_CHECK[Compliance Checker<br/>Production Requirements]
+        PERF_BASE[Performance Baseline<br/>Validation]
+        
+        PRE_VAL --> SEC_SCAN
+        PRE_VAL --> COMP_CHECK
+        PRE_VAL --> PERF_BASE
+    end
+    
+    subgraph "Blue-Green Deployment System"
+        BLUE_ENV[Blue Environment<br/>Current Production]
+        GREEN_ENV[Green Environment<br/>New Deployment]
+        TRAFFIC[Traffic Switch<br/>Manager]
+        CANARY[Canary Testing<br/>Progressive Rollout]
+        
+        GREEN_ENV --> CANARY
+        CANARY --> TRAFFIC
+        TRAFFIC --> BLUE_ENV
+    end
+    
+    subgraph "Enhanced Error Recovery"
+        ERR_HAND[Error Handler<br/>24 + Production Strategies]
+        AUTO_ROLLBACK[Automated Rollback<br/>Production Triggers]
+        CIRCUIT[Circuit Breaker<br/>External Services]
+        FALLBACK[Fallback Manager<br/>Critical Functions]
+        
+        ERR_HAND --> AUTO_ROLLBACK
+        ERR_HAND --> CIRCUIT
+        ERR_HAND --> FALLBACK
+    end
+    
+    subgraph "Production Monitoring"
+        HEALTH_MON[Health Monitor<br/>Continuous Production]
+        METRICS[Production Metrics<br/>Real-time Collection]
+        ALERTS[Alerting System<br/>SLA Monitoring]
+        DASH[Production Dashboard<br/>Real-time Status]
+        
+        HEALTH_MON --> METRICS
+        METRICS --> ALERTS
+        ALERTS --> DASH
+    end
+    
+    subgraph "Git Integration"
+        GIT_EXPERT[Git Expert Subagent<br/>Version Control]
+        REL_TAG[Release Tagging<br/>Semantic Versioning]
+        REL_NOTES[Release Notes<br/>Auto Generation]
+        AUDIT[Audit Trail<br/>Deployment History]
+        
+        GIT_EXPERT --> REL_TAG
+        GIT_EXPERT --> REL_NOTES
+        GIT_EXPERT --> AUDIT
+    end
+    
+    subgraph "Firebase Production Environment"
+        FUNC_BLUE[Functions Blue<br/>Current Production]
+        FUNC_GREEN[Functions Green<br/>New Version]
+        HOST_BLUE[Hosting Blue<br/>Current Frontend]
+        HOST_GREEN[Hosting Green<br/>New Frontend]
+        FIRESTORE[Firestore<br/>Production Database]
+        STORAGE[Storage<br/>Production Files]
+        
+        FUNC_BLUE -.-> FIRESTORE
+        FUNC_GREEN -.-> FIRESTORE
+        HOST_BLUE -.-> STORAGE
+        HOST_GREEN -.-> STORAGE
+    end
+    
+    subgraph "External Integrations"
+        ANTHROPIC[Anthropic API<br/>Production Keys]
+        STRIPE[Stripe API<br/>Production Payments]
+        ELEVENLABS[ElevenLabs API<br/>Production Audio]
+        MONITORING[External Monitoring<br/>DataDog/NewRelic]
+        
+        ANTHROPIC --> CIRCUIT
+        STRIPE --> CIRCUIT
+        ELEVENLABS --> CIRCUIT
+    end
+    
+    subgraph "Stakeholder Communication"
+        EXEC_REPORT[Executive Reports<br/>Deployment Summary]
+        NOTIFICATIONS[Automated Notifications<br/>Slack/Email]
+        STATUS_PAGE[Status Page Updates<br/>Public Communication]
+    end
+    
+    %% Flow Connections
+    CLI --> MODES
+    MODES --> ORCH
+    ORCH --> PRE_VAL
+    
+    PRE_VAL --> PROD_MGR
+    PROD_MGR --> BLUE_ENV
+    PROD_MGR --> GREEN_ENV
+    
+    GREEN_ENV --> FUNC_GREEN
+    GREEN_ENV --> HOST_GREEN
+    BLUE_ENV --> FUNC_BLUE
+    BLUE_ENV --> HOST_BLUE
+    
+    TRAFFIC --> HEALTH_MON
+    HEALTH_MON --> ERR_HAND
+    
+    ERR_HAND --> AUTO_ROLLBACK
+    AUTO_ROLLBACK --> BLUE_ENV
+    
+    PROD_MGR --> GIT_EXPERT
+    METRICS --> EXEC_REPORT
+    ALERTS --> NOTIFICATIONS
+    
+    %% External API Health Checks
+    HEALTH_MON --> ANTHROPIC
+    HEALTH_MON --> STRIPE
+    HEALTH_MON --> ELEVENLABS
+    
+    %% Monitoring Integration
+    METRICS --> MONITORING
+    MONITORING --> ALERTS
+    
+    %% Styling
+    classDef prodSystem fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef newComponent fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef firebase fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef external fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    
+    class PROD_MGR,SEC_SCAN,COMP_CHECK,PERF_BASE,BLUE_ENV,GREEN_ENV,TRAFFIC,CANARY,AUTO_ROLLBACK,CIRCUIT,FALLBACK,HEALTH_MON,METRICS,ALERTS,DASH,REL_TAG,REL_NOTES,AUDIT newComponent
+    
+    class FUNC_BLUE,FUNC_GREEN,HOST_BLUE,HOST_GREEN,FIRESTORE,STORAGE firebase
+    
+    class ANTHROPIC,STRIPE,ELEVENLABS,MONITORING external
+    
+    class ORCH,PRE_VAL,ERR_HAND,GIT_EXPERT prodSystem
+```
+
+## Production Deployment Flow
+
+```mermaid
+sequenceDiagram
+    participant Dev as Developer
+    participant CLI as Smart Deploy CLI
+    participant Orch as Production Orchestrator
+    participant Val as Enhanced Validator
+    participant BG as Blue-Green Manager
+    participant Mon as Production Monitor
+    participant Git as Git Expert
+    participant FB as Firebase Production
+    participant Stake as Stakeholders
+    
+    Dev->>CLI: ./smart-deploy.sh --production
+    CLI->>Orch: Initialize Production Deployment
+    
+    Orch->>Val: Enhanced Production Validation
+    Val->>Val: Security Scan
+    Val->>Val: Compliance Check
+    Val->>Val: Performance Baseline
+    Val->>Orch: Validation Complete ✓
+    
+    Orch->>Git: Create Release Tag
+    Git->>Git: Semantic Versioning
+    Git->>Git: Generate Release Notes
+    Git->>Orch: Version Tagged ✓
+    
+    Orch->>BG: Initialize Blue-Green Deploy
+    BG->>FB: Deploy to Green Environment
+    FB->>BG: Green Deployment Complete
+    
+    BG->>Mon: Start Canary Testing
+    Mon->>Mon: Health Checks (5 min)
+    Mon->>Mon: Performance Validation
+    Mon->>BG: Canary Success ✓
+    
+    BG->>FB: Switch Traffic to Green
+    FB->>BG: Traffic Switch Complete
+    BG->>FB: Mark Blue as Standby
+    
+    Mon->>Mon: Continuous Monitoring
+    Mon->>Stake: Success Notification
+    
+    Note over Dev,Stake: Zero-downtime deployment complete!
+    
+    %% Rollback Scenario
+    alt Production Issue Detected
+        Mon->>BG: Trigger Automatic Rollback
+        BG->>FB: Switch Traffic to Blue
+        FB->>BG: Rollback Complete
+        BG->>Stake: Rollback Notification
+    end
+```

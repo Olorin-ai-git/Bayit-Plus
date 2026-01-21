@@ -1,0 +1,150 @@
+graph TB
+    subgraph "CVPlus Admin System Architecture"
+        subgraph "Frontend Layer"
+            AD[Admin Dashboard]
+            UMC[User Management Console]
+            AMD[Analytics & Metrics Dashboard]
+            SMD[System Monitoring Dashboard]
+            AMD --> AD
+            UMC --> AD
+            SMD --> AD
+        end
+        
+        subgraph "Admin Services Layer"
+            ADS[Admin Dashboard Service]
+            UMS[User Management Service]
+            CMS[Content Moderation Service]
+            SMS[System Monitoring Service]
+            AAS[Admin Analytics Service]
+            SAS[Security Audit Service]
+        end
+        
+        subgraph "Backend Functions Layer"
+            IA[initializeAdmin]
+            GSH[getSystemHealth]
+            MU[manageUsers]
+            GBM[getBusinessMetrics]
+            GUS[getUserStats]
+            GUUS[getUserUsageStats]
+            GUPV[getUserPolicyViolations]
+            MJ[monitorJobs]
+            VAD[videoAnalyticsDashboard]
+        end
+        
+        subgraph "Monitoring & Security Layer"
+            PM[Performance Monitor]
+            CM[Cache Monitor]
+            SM[Security Monitor]
+            AM[Alert Manager]
+            JM[Job Monitor]
+            LM[LLM Monitor]
+        end
+        
+        subgraph "Data Layer"
+            FB[(Firebase Firestore)]
+            FA[Firebase Auth]
+            FS[Firebase Storage]
+            FC[Firebase Functions]
+        end
+        
+        subgraph "External Integrations"
+            API[External APIs]
+            LLM[LLM Services]
+            EMAIL[Email Services]
+            NOTIF[Notification Services]
+        end
+        
+        subgraph "CVPlus Module Dependencies"
+            CORE[@cvplus/core]
+            AUTH[@cvplus/auth]
+            CVP[@cvplus/cv-processing]
+            MM[@cvplus/multimedia]
+            PREM[@cvplus/premium]
+            REC[@cvplus/recommendations]
+            PP[@cvplus/public-profiles]
+            ANAL[@cvplus/analytics]
+        end
+    end
+    
+    %% Frontend to Services
+    AD --> ADS
+    AD --> UMS
+    AD --> SMS
+    AD --> AAS
+    
+    %% Services to Functions
+    ADS --> IA
+    ADS --> GSH
+    ADS --> GBM
+    UMS --> MU
+    UMS --> GUS
+    UMS --> GUUS
+    UMS --> GUPV
+    SMS --> GSH
+    SMS --> MJ
+    AAS --> GBM
+    AAS --> VAD
+    
+    %% Services to Monitoring
+    SMS --> PM
+    SMS --> CM
+    SMS --> SM
+    SMS --> AM
+    SMS --> JM
+    SMS --> LM
+    
+    %% Functions to Data
+    IA --> FB
+    IA --> FA
+    GSH --> FB
+    MU --> FA
+    MU --> FB
+    GBM --> FB
+    GUS --> FB
+    GUUS --> FB
+    GUPV --> FB
+    MJ --> FB
+    VAD --> FB
+    VAD --> FS
+    
+    %% External Integrations
+    LM --> LLM
+    AM --> EMAIL
+    AM --> NOTIF
+    CMS --> API
+    
+    %% Module Dependencies
+    ADS --> CORE
+    ADS --> AUTH
+    UMS --> AUTH
+    UMS --> CORE
+    SMS --> CORE
+    AAS --> ANAL
+    AAS --> CORE
+    CMS --> CVP
+    CMS --> MM
+    
+    %% Cross-module Monitoring
+    SMS -.-> CVP
+    SMS -.-> MM
+    SMS -.-> PREM
+    SMS -.-> REC
+    SMS -.-> PP
+    SMS -.-> ANAL
+    
+    %% Styling
+    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef services fill:#f3e5f5,stroke:#4a148c,stroke-width:2px  
+    classDef functions fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef monitoring fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef data fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef external fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    classDef modules fill:#e3f2fd,stroke:#0d47a1,stroke-width:2px
+    
+    class AD,UMC,AMD,SMD frontend
+    class ADS,UMS,CMS,SMS,AAS,SAS services
+    class IA,GSH,MU,GBM,GUS,GUUS,GUPV,MJ,VAD functions
+    class PM,CM,SM,AM,JM,LM monitoring
+    class FB,FA,FS,FC data
+    class API,LLM,EMAIL,NOTIF external
+    class CORE,AUTH,CVP,MM,PREM,REC,PP,ANAL modules

@@ -1,0 +1,80 @@
+graph TB
+    subgraph "Phase 1.3: Firestore Pre-write Validation Layer"
+        subgraph "Application Layer"
+            TLG[Timeline Generation Function]
+            TLS[Timeline Storage Service]
+            UTE[Update Timeline Event]
+        end
+        
+        subgraph "New Validation Layer"
+            FVS[FirestoreValidationService]
+            SFS[SafeFirestoreService]
+            VR[Validation Reports]
+        end
+        
+        subgraph "Data Processing Pipeline"
+            RD[Raw Timeline Data]
+            VD[Validation Check]
+            SD[Data Sanitization]
+            CD[Clean Data]
+            FB[Fallback Mechanisms]
+        end
+        
+        subgraph "Firestore Operations"
+            DOC[Document Reference]
+            UPD[Update Operation]
+            SET[Set Operation]
+            BAT[Batch Operation]
+        end
+        
+        subgraph "Recovery & Monitoring"
+            ER[Error Recovery]
+            RT[Retry Logic]
+            PM[Performance Monitoring]
+            LG[Comprehensive Logging]
+        end
+    end
+    
+    %% Main Flow
+    TLG --> FVS
+    TLS --> FVS
+    UTE --> FVS
+    
+    FVS --> VD
+    VD --> SD
+    SD --> CD
+    
+    CD --> SFS
+    SFS --> DOC
+    
+    %% Safe Operations
+    SFS --> UPD
+    SFS --> SET
+    SFS --> BAT
+    
+    %% Validation Flow
+    RD --> VD
+    VD -->|Invalid| FB
+    VD -->|Valid| CD
+    FB --> CD
+    
+    %% Error Handling
+    SFS --> ER
+    ER --> RT
+    RT --> PM
+    PM --> LG
+    
+    %% Reporting
+    FVS --> VR
+    VR --> LG
+    
+    %% Styles
+    classDef newComponent fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+    classDef validationLayer fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef safetyNet fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef monitoring fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    
+    class FVS,SFS newComponent
+    class VD,SD,CD validationLayer
+    class ER,RT,FB safetyNet
+    class PM,LG,VR monitoring

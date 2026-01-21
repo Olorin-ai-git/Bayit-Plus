@@ -1,0 +1,5 @@
+# CV Processing Re-exports Update
+
+# Replace the commented section in core index.ts with working re-exports
+sed -i '' '248,256s|// export {|export {|' /Users/gklainert/Documents/cvplus/packages/core/src/index.ts
+sed -i '' '256s|// } from.*|} from "@cvplus/cv-processing";|' /Users/gklainert/Documents/cvplus/packages/core/src/index.ts

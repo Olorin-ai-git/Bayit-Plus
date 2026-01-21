@@ -1,0 +1,386 @@
+name: Auth Module CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths: 
+      - 'packages/auth/**'
+      - 'packages/core/**'
+      - 'package.json'
+      - '.github/workflows/ci-auth.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'packages/auth/**'
+      - 'packages/core/**'
+      - 'package.json'
+      - '.github/workflows/ci-auth.yml'
+
+env:
+  NODE_VERSION: '20'
+  CACHE_DEPENDENCY_PATH: '**/package-lock.json'
+
+jobs:
+  test:
+    name: Test Auth Module
+    runs-on: ubuntu-latest
+    
+    services:
+      firebase-emulator:
+        image: andreysenov/firebase-tools:latest
+        ports:
+          - 9099:9099
+        options: >-
+          --name firebase-auth-emulator
+          
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+        
+    - name: Install Firebase Tools
+      run: npm install -g firebase-tools
+      
+    - name: Install Dependencies
+      run: |
+        npm ci
+        npm ci --workspace=@cvplus/core
+        npm ci --workspace=@cvplus/auth
+        
+    - name: Build Dependencies
+      run: npm run build --workspace=@cvplus/core
+      
+    - name: Start Firebase Emulators
+      run: |
+        firebase emulators:start --only auth --project demo-cvplus &
+        echo "Waiting for Firebase Auth emulator to start..."
+        timeout 30 sh -c 'until curl -f http://localhost:9099/; do sleep 1; done'
+      env:
+        FIREBASE_EMULATOR_AUTH_PORT: 9099
+        
+    - name: Type Check
+      run: npm run type-check --workspace=@cvplus/auth
+      
+    - name: Lint
+      run: npm run lint --workspace=@cvplus/auth
+      
+    - name: Run Tests
+      run: npm run test:coverage --workspace=@cvplus/auth
+      env:
+        FIREBASE_AUTH_EMULATOR_HOST: localhost:9099
+        
+    - name: Upload Coverage Reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: packages/auth/coverage/lcov.info
+        flags: auth
+        name: auth-coverage
+        fail_ci_if_error: true
+        
+    - name: Check Coverage Threshold
+      run: |
+        COVERAGE=$(npm run test:coverage --workspace=@cvplus/auth --silent | grep -o 'Lines.*[0-9][0-9]*%' | grep -o '[0-9][0-9]*' | head -1)
+        echo "Coverage: $COVERAGE%"
+        if [ "$COVERAGE" -lt "80" ]; then
+          echo "Coverage $COVERAGE% is below 80% threshold"
+          exit 1
+        fi
+
+  build:
+    name: Build Auth Module
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+        
+    - name: Install Dependencies
+      run: |
+        npm ci
+        npm ci --workspace=@cvplus/core
+        npm ci --workspace=@cvplus/auth
+        
+    - name: Build Dependencies
+      run: npm run build --workspace=@cvplus/core
+      
+    - name: Build Package
+      run: npm run build --workspace=@cvplus/auth
+      
+    - name: Check Build Output
+      run: |
+        ls -la packages/auth/dist/
+        if [ ! -f "packages/auth/dist/index.js" ]; then
+          echo "Build failed: index.js not found"
+          exit 1
+        fi
+        if [ ! -f "packages/auth/dist/index.d.ts" ]; then
+          echo "Build failed: type declarations not found"
+          exit 1
+        fi
+        
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: auth-build
+        path: packages/auth/dist/
+        retention-days: 7
+
+  integration-test:
+    name: Integration Tests with Firebase
+    runs-on: ubuntu-latest
+    needs: build
+    
+    services:
+      firebase-emulator:
+        image: andreysenov/firebase-tools:latest
+        ports:
+          - 9099:9099
+        options: >-
+          --name firebase-auth-emulator
+          
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+        
+    - name: Download Build Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: auth-build
+        path: packages/auth/dist/
+        
+    - name: Install Firebase Tools
+      run: npm install -g firebase-tools
+      
+    - name: Install Dependencies
+      run: npm ci
+      
+    - name: Start Firebase Emulators
+      run: |
+        firebase emulators:start --only auth --project demo-cvplus &
+        echo "Waiting for Firebase Auth emulator to start..."
+        timeout 30 sh -c 'until curl -f http://localhost:9099/; do sleep 1; done'
+      env:
+        FIREBASE_EMULATOR_AUTH_PORT: 9099
+        
+    - name: Test Firebase Integration
+      run: |
+        cd packages/auth
+        node -e "
+          const auth = require('./dist/index.js');
+          console.log('✅ Auth module loaded successfully');
+          console.log('Available exports:', Object.keys(auth));
+          
+          // Test Firebase Auth integration
+          if (auth.initializeAuth && auth.signInWithEmail && auth.signOut) {
+            console.log('✅ Required auth methods are available');
+          } else {
+            console.error('❌ Missing required auth methods');
+            process.exit(1);
+          }
+        "
+      env:
+        FIREBASE_AUTH_EMULATOR_HOST: localhost:9099
+
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+        
+    - name: Install Dependencies
+      run: |
+        npm ci
+        npm ci --workspace=@cvplus/auth
+        
+    - name: Run NPM Audit
+      run: |
+        cd packages/auth
+        npm audit --audit-level high
+        
+    - name: Check for Hardcoded Secrets
+      run: |
+        cd packages/auth
+        # Check for potential hardcoded secrets
+        if grep -r "apiKey\|secret\|password\|token" src/ --exclude-dir=node_modules --include="*.ts" --include="*.js" | grep -v "// @ignore-secret" | grep -v "placeholder"; then
+          echo "⚠️  Potential hardcoded secrets found. Please review."
+          echo "If these are intentional, add // @ignore-secret comment"
+        else
+          echo "✅ No hardcoded secrets detected"
+        fi
+        
+    - name: Validate Firebase Config
+      run: |
+        cd packages/auth
+        # Check that Firebase config uses environment variables
+        if grep -r "firebase.*config" src/ --include="*.ts" --include="*.js" | grep -v "process.env" | grep -v "getFirebaseConfig"; then
+          echo "⚠️  Firebase config should use environment variables"
+        else
+          echo "✅ Firebase config properly uses environment variables"
+        fi
+
+  bundle-analysis:
+    name: Bundle Analysis
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Download Build Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: auth-build
+        path: packages/auth/dist/
+        
+    - name: Analyze Bundle Size
+      run: |
+        cd packages/auth
+        BUNDLE_SIZE=$(du -b dist/index.js | cut -f1)
+        echo "Bundle size: $BUNDLE_SIZE bytes"
+        echo "BUNDLE_SIZE=$BUNDLE_SIZE" >> $GITHUB_ENV
+        
+        # Check if bundle size exceeds threshold (100KB for auth module)
+        THRESHOLD=102400
+        if [ "$BUNDLE_SIZE" -gt "$THRESHOLD" ]; then
+          echo "Warning: Bundle size $BUNDLE_SIZE bytes exceeds threshold $THRESHOLD bytes"
+          echo "::warning::Auth module bundle size ($BUNDLE_SIZE bytes) exceeds threshold ($THRESHOLD bytes)"
+        fi
+        
+    - name: Check Firebase Dependencies
+      run: |
+        cd packages/auth
+        echo "# Auth Module Dependencies Analysis" > deps-report.md
+        echo "" >> deps-report.md
+        echo "## Bundle Analysis" >> deps-report.md
+        echo "- **Bundle Size**: ${{ env.BUNDLE_SIZE }} bytes" >> deps-report.md
+        echo "- **Threshold**: 100KB (102,400 bytes)" >> deps-report.md
+        echo "" >> deps-report.md
+        echo "## Firebase Dependencies" >> deps-report.md
+        npm list firebase 2>/dev/null | grep firebase || echo "Firebase packages:"
+        npm list firebase >> deps-report.md 2>/dev/null || echo "No Firebase dependencies found"
+        
+    - name: Upload Analysis Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: auth-analysis-report
+        path: packages/auth/deps-report.md
+
+  integration-readiness:
+    name: Integration Readiness Check
+    runs-on: ubuntu-latest
+    needs: [test, build, integration-test, security-scan, bundle-analysis]
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Download Build Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: auth-build
+        path: packages/auth/dist/
+        
+    - name: Test Package Compatibility
+      run: |
+        cd packages/auth
+        node -e "
+          const auth = require('./dist/index.js');
+          console.log('✅ Auth module import successful');
+          
+          // Verify core module integration
+          try {
+            const requiredExports = ['initializeAuth', 'signInWithEmail', 'signOut', 'getCurrentUser'];
+            const available = Object.keys(auth);
+            const missing = requiredExports.filter(exp => !available.includes(exp));
+            
+            if (missing.length > 0) {
+              console.error('❌ Missing required exports:', missing);
+              process.exit(1);
+            }
+            
+            console.log('✅ All required exports are available');
+            console.log('Available exports:', available);
+          } catch (error) {
+            console.error('❌ Integration check failed:', error.message);
+            process.exit(1);
+          }
+        "
+
+  publish-check:
+    name: Publish Readiness Check
+    runs-on: ubuntu-latest
+    needs: integration-readiness
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Download Build Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: auth-build
+        path: packages/auth/dist/
+        
+    - name: Validate Package
+      run: |
+        cd packages/auth
+        npm pack --dry-run
+        echo "✅ Auth package is ready for publishing"
+
+  status-summary:
+    name: Status Summary
+    runs-on: ubuntu-latest
+    needs: [test, build, integration-test, security-scan, bundle-analysis, integration-readiness]
+    if: always()
+    
+    steps:
+    - name: Generate Status Summary
+      run: |
+        echo "# 🔐 Auth Module CI/CD Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+        echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Tests | ${{ needs.test.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Build | ${{ needs.build.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Integration Tests | ${{ needs.integration-test.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Security Scan | ${{ needs.security-scan.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Bundle Analysis | ${{ needs.bundle-analysis.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Integration Check | ${{ needs.integration-readiness.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Workflow**: ${{ github.workflow }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,41 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["DOM", "DOM.Iterable", "ES2020"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    "declaration": true,
+    "outDir": "./dist/frontend-simple",
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "src/frontend/integration/SimpleIntegration.tsx",
+    "src/frontend/simple-index.ts",
+    "src/index.frontend.ts",
+    "src/types/**/*",
+    "src/constants/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/backend/**/*",
+    "src/frontend/integration/MultimediaIntegration.tsx",
+    "src/frontend/integration/ComponentResolver.ts",
+    "src/frontend/integration/FeatureRegistry.ts",
+    "src/frontend/integration/IntegrationUtils.ts",
+    "src/frontend/providers/**/*",
+    "src/frontend/hooks/**/*",
+    "src/frontend/components/**/*",
+    "**/*.test.*",
+    "**/__tests__/**"
+  ]
+}

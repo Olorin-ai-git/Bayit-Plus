@@ -1,0 +1,74 @@
+graph TD
+    A[User Reviews CV Recommendations] --> B{Current System Issues}
+    
+    B --> B1[❌ Before/After Shows Unrelated Content]
+    B --> B2[❌ Placeholders with No Guidance]  
+    B --> B3[❌ Keywords Replace Content]
+    
+    B1 --> C1[🔧 Phase 1: Backend Critical Fixes]
+    B2 --> C2[🔧 Phase 2: Placeholder Management]
+    B3 --> C1
+    
+    C1 --> D1[Fix applyKeywordOptimization Method]
+    C1 --> D2[Fix Before/After Comparison Logic]
+    C1 --> D3[Separate Content vs Keyword Handling]
+    
+    D1 --> E1[integrateKeywordsNaturally Method]
+    D2 --> E2[Track Original Content State]
+    D3 --> E3[Content: Replace Text<br/>Keywords: Enhance Text]
+    
+    C2 --> F1[Create PlaceholderManager Class]  
+    C2 --> F2[Build Frontend Placeholder UI]
+    C2 --> F3[Add Real-time Preview]
+    
+    F1 --> G1[detectPlaceholders Method]
+    F1 --> G2[replacePlaceholders Method]
+    F2 --> G3[PlaceholderForm Component]
+    F2 --> G4[PlaceholderField Component]
+    
+    E1 --> H[✅ Fixed Backend Logic]
+    E2 --> H
+    E3 --> H
+    G1 --> I[✅ Placeholder System]
+    G2 --> I  
+    G3 --> I
+    G4 --> I
+    
+    H --> J[Phase 3: UX Improvements]
+    I --> J
+    
+    J --> K1[Multi-Step Flow]
+    J --> K2[Better Guidance]
+    J --> K3[Progress Indicators]
+    
+    K1 --> L[Step 1: Review Recommendations]
+    K1 --> M[Step 2: Customize Placeholders]  
+    K1 --> N[Step 3: Preview Final Content]
+    K1 --> O[Step 4: Apply Improvements]
+    
+    L --> P[✅ User sees AI recommendations<br/>with clear explanations]
+    M --> Q[✅ User fills placeholders<br/>with real data via forms]
+    N --> R[✅ User previews enhanced<br/>CV content in real-time]
+    O --> S[✅ User applies selected<br/>improvements with confidence]
+    
+    P --> T{Success Criteria Met?}
+    Q --> T
+    R --> T
+    S --> T
+    
+    T -->|Yes| U[🎉 Feature Working Correctly]
+    T -->|No| V[🔄 Iterate and Improve]
+    
+    U --> U1[Before/After Shows Related Content]
+    U --> U2[Placeholders Are User-Friendly]  
+    U --> U3[Keywords Enhance Content Naturally]
+    
+    V --> C1
+    
+    style B fill:#ffcccc
+    style C1 fill:#fff2cc
+    style C2 fill:#fff2cc  
+    style U fill:#ccffcc
+    style B1 fill:#ffeeee
+    style B2 fill:#ffeeee
+    style B3 fill:#ffeeee

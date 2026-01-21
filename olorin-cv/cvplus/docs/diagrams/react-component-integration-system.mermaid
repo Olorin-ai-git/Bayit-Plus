@@ -1,0 +1,62 @@
+```mermaid
+graph LR
+    subgraph "Component System"
+        A[React Components] --> B[Component Registry]
+        B --> C[Component Placeholders]
+        C --> D[Props Interface]
+    end
+    
+    subgraph "Template Engine"
+        E[CV Templates] --> F[Template Parser]
+        F --> G[Component Resolver]
+        G --> H[React Renderer]
+    end
+    
+    subgraph "Generation Pipeline"
+        I[Feature Selection] --> J[Template Processing]
+        J --> K[Component Integration]
+        K --> L[Final Output]
+    end
+    
+    subgraph "Output Formats"
+        M[Interactive Web CV]
+        N[Static HTML Export]
+        O[PDF Generation]
+        P[Mobile Optimized]
+    end
+    
+    %% Flow connections
+    A --> E
+    C --> F
+    H --> K
+    L --> M
+    L --> N
+    L --> O
+    L --> P
+    
+    %% Component examples
+    subgraph "Available Components"
+        Q[ContactForm]
+        R[SkillsVisualization]
+        S[InteractiveTimeline]
+        T[PortfolioGallery]
+        U[TestimonialsCarousel]
+    end
+    
+    Q --> A
+    R --> A
+    S --> A
+    T --> A
+    U --> A
+    
+    %% Styling
+    classDef component fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef template fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    classDef pipeline fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+    classDef output fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    
+    class A,B,C,D,Q,R,S,T,U component
+    class E,F,G,H template
+    class I,J,K,L pipeline
+    class M,N,O,P output
+```

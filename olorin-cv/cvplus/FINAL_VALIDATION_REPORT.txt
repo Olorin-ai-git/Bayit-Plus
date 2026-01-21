@@ -1,0 +1,301 @@
+🔍 CVPlus Module Requirements Validation
+========================================
+
+[0;34m📦 Analyzing module: admin[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ✅ Has compiled distribution (      98 files)
+  🎭 Mock/Stub Detection...
+    ⚠️  WARNING: Found TODO/FIXME in        6 files
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module admin: NON-COMPLIANT (2 violations, 1 critical)[0m
+
+----------------------------------------
+
+[0;34m📦 Analyzing module: analytics[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ✅ Has compiled distribution (       1 files)
+  🎭 Mock/Stub Detection...
+    ⚠️  WARNING: Found TODO/FIXME in        5 files
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module analytics: NON-COMPLIANT (2 violations, 1 critical)[0m
+
+----------------------------------------
+
+[0;34m📦 Analyzing module: auth[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ✅ Has compiled distribution (       2 files)
+  🎭 Mock/Stub Detection...
+    ⚠️  WARNING: Found TODO/FIXME in        2 files
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module auth: NON-COMPLIANT (2 violations, 1 critical)[0m
+
+----------------------------------------
+
+[0;34m📦 Analyzing module: core[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ❌ CRITICAL: Missing dist/ folder (required for production)
+  🎭 Mock/Stub Detection...
+    ⚠️  WARNING: Found TODO/FIXME in       13 files
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module core: NON-COMPLIANT (3 violations, 2 critical)[0m
+
+----------------------------------------
+
+[0;34m📦 Analyzing module: e2e-flows[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ✅ Has compiled distribution (      76 files)
+  🎭 Mock/Stub Detection...
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module e2e-flows: NON-COMPLIANT (1 violations, 1 critical)[0m
+
+----------------------------------------
+
+[0;34m📦 Analyzing module: enhancements[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ✅ Has compiled distribution (       1 files)
+  🎭 Mock/Stub Detection...
+    ⚠️  WARNING: Found TODO/FIXME in        2 files
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module enhancements: NON-COMPLIANT (2 violations, 1 critical)[0m
+
+----------------------------------------
+
+[0;34m📦 Analyzing module: i18n[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ✅ Has compiled distribution (       6 files)
+  🎭 Mock/Stub Detection...
+    ⚠️  WARNING: Found TODO/FIXME in        1 files
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module i18n: NON-COMPLIANT (2 violations, 1 critical)[0m
+
+----------------------------------------
+
+[0;34m📦 Analyzing module: logging[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ✅ Has compiled distribution (      86 files)
+  🎭 Mock/Stub Detection...
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module logging: NON-COMPLIANT (1 violations, 1 critical)[0m
+
+----------------------------------------
+
+[0;34m📦 Analyzing module: multimedia[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ✅ Has compiled distribution (      65 files)
+  🎭 Mock/Stub Detection...
+    ⚠️  WARNING: Found TODO/FIXME in        7 files
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module multimedia: NON-COMPLIANT (2 violations, 1 critical)[0m
+
+----------------------------------------
+
+[0;34m📦 Analyzing module: payments[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ✅ Has compiled distribution (      59 files)
+  🎭 Mock/Stub Detection...
+    ⚠️  WARNING: Found TODO/FIXME in        1 files
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module payments: NON-COMPLIANT (2 violations, 1 critical)[0m
+
+----------------------------------------
+
+[0;34m📦 Analyzing module: premium[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ✅ Has compiled distribution (       2 files)
+  🎭 Mock/Stub Detection...
+    ⚠️  WARNING: Found TODO/FIXME in        5 files
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module premium: NON-COMPLIANT (2 violations, 1 critical)[0m
+
+----------------------------------------
+
+[0;34m📦 Analyzing module: processing[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ✅ Has compiled distribution (       2 files)
+  🎭 Mock/Stub Detection...
+    ⚠️  WARNING: Found TODO/FIXME in       11 files
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module processing: NON-COMPLIANT (2 violations, 1 critical)[0m
+
+----------------------------------------
+
+[0;34m📦 Analyzing module: public-profiles[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ✅ Has compiled distribution (       2 files)
+  🎭 Mock/Stub Detection...
+    ⚠️  WARNING: Found TODO/FIXME in        6 files
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module public-profiles: NON-COMPLIANT (2 violations, 1 critical)[0m
+
+----------------------------------------
+
+[0;34m📦 Analyzing module: recommendations[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ✅ Has compiled distribution (       1 files)
+  🎭 Mock/Stub Detection...
+    ⚠️  WARNING: Found TODO/FIXME in        7 files
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module recommendations: NON-COMPLIANT (2 violations, 1 critical)[0m
+
+----------------------------------------
+
+[0;34m📦 Analyzing module: shell[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ✅ Has compiled distribution (       4 files)
+  🎭 Mock/Stub Detection...
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module shell: NON-COMPLIANT (1 violations, 1 critical)[0m
+
+----------------------------------------
+
+[0;34m📦 Analyzing module: workflow[0m
+  🔍 Code Segregation...
+    ❌ CRITICAL: Contains node_modules (should use workspace dependencies)
+  🏗️  Distribution Architecture...
+    ✅ Has compiled distribution (       2 files)
+  🎭 Mock/Stub Detection...
+    ⚠️  WARNING: Found TODO/FIXME in       14 files
+  🔨 Build & Test Standards...
+    ✅ Has build script
+    ✅ Has test script
+    ✅ Has TypeScript configuration
+  🔗 Dependency Integrity...
+
+  [0;31m❌ Module workflow: NON-COMPLIANT (2 violations, 1 critical)[0m
+
+----------------------------------------
+
+
+📊 VALIDATION SUMMARY
+====================
+
+Total Modules Analyzed: 16
+Valid Modules: [0;32m0 ✅[0m
+Invalid Modules: [0;31m16 ❌[0m
+
+Total Violations: 30
+Critical Violations: [0;31m17 🔴[0m
+
+Overall Compliance: 0%
+[0;31m🚨 LOW COMPLIANCE. Significant architectural improvements needed.[0m
+
+💡 RECOMMENDATIONS:
+===================
+🔴 HIGH PRIORITY: Address 17 critical violations
+   - Missing dist/ folders need immediate attention
+   - Remove any mock/stub code from production modules
+   - Ensure all modules have proper package.json and build scripts
+🟡 MEDIUM PRIORITY: Address 13 warning violations
+   - Add missing test scripts and TypeScript configurations
+   - Move test files to proper test directories
+   - Clean up TODO/FIXME comments
+
+🔗 For detailed analysis, use the CVPlus Unified Module Requirements System:
+   cd src/unified-module-requirements
+   npm run cli validate
+

@@ -1,0 +1,129 @@
+graph TB
+    %% CVPlus Multimedia Module - Deployment Pipeline
+    
+    subgraph "Development"
+        DEV[Developer]
+        GIT[Git Repository]
+        LOCAL[Local Development]
+    end
+    
+    subgraph "CI/CD Pipeline"
+        GHA[GitHub Actions]
+        BUILD[Build Process]
+        TEST[Test Suite]
+        LINT[Linting & Type Check]
+    end
+    
+    subgraph "Build Artifacts"
+        MIN[Minimal Build]
+        FULL[Full Build]
+        FE[Frontend Build]
+        SA[Standalone Build]
+    end
+    
+    subgraph "Testing Stages"
+        UT[Unit Tests]
+        IT[Integration Tests]
+        E2E[E2E Tests]
+        PT[Performance Tests]
+    end
+    
+    subgraph "Quality Gates"
+        COV[Coverage Check]
+        SEC[Security Scan]
+        PERF[Performance Audit]
+        ACC[Accessibility Check]
+    end
+    
+    subgraph "Package Registry"
+        NPM[NPM Registry]
+        GHP[GitHub Packages]
+        CDN[CDN Distribution]
+    end
+    
+    subgraph "Deployment Targets"
+        STG[Staging Environment]
+        PROD[Production Environment]
+        DOC[Documentation Site]
+    end
+    
+    subgraph "Firebase Deployment"
+        FB_FUNC[Firebase Functions]
+        FB_HOST[Firebase Hosting]
+        FB_STORE[Firebase Storage]
+        FB_DB[Firestore Database]
+    end
+    
+    subgraph "Monitoring"
+        MON[Application Monitoring]
+        LOG[Centralized Logging]
+        ALERT[Alerting System]
+        DASH[Performance Dashboard]
+    end
+    
+    %% Development Flow
+    DEV --> GIT
+    GIT --> LOCAL
+    LOCAL --> GHA
+    
+    %% CI/CD Flow
+    GHA --> BUILD
+    BUILD --> TEST
+    BUILD --> LINT
+    
+    %% Build Process
+    BUILD --> MIN
+    BUILD --> FULL
+    BUILD --> FE
+    BUILD --> SA
+    
+    %% Testing Flow
+    TEST --> UT
+    TEST --> IT
+    TEST --> E2E
+    TEST --> PT
+    
+    %% Quality Gates
+    UT --> COV
+    IT --> SEC
+    E2E --> PERF
+    PT --> ACC
+    
+    %% Publishing Flow
+    COV --> NPM
+    SEC --> GHP
+    PERF --> CDN
+    ACC --> DOC
+    
+    %% Deployment Flow
+    NPM --> STG
+    STG --> PROD
+    
+    %% Firebase Deployment
+    PROD --> FB_FUNC
+    PROD --> FB_HOST
+    PROD --> FB_STORE
+    PROD --> FB_DB
+    
+    %% Monitoring Setup
+    FB_FUNC --> MON
+    FB_HOST --> LOG
+    FB_STORE --> ALERT
+    FB_DB --> DASH
+    
+    %% Styling
+    classDef devStage fill:#e3f2fd
+    classDef ciStage fill:#f3e5f5
+    classDef buildStage fill:#e8f5e8
+    classDef testStage fill:#fff3e0
+    classDef qualityStage fill:#fce4ec
+    classDef deployStage fill:#e0f2f1
+    classDef monitorStage fill:#f1f8e9
+    
+    class DEV,GIT,LOCAL devStage
+    class GHA,BUILD,TEST,LINT ciStage
+    class MIN,FULL,FE,SA buildStage
+    class UT,IT,E2E,PT testStage
+    class COV,SEC,PERF,ACC qualityStage
+    class STG,PROD,NPM,GHP,CDN,DOC,FB_FUNC,FB_HOST,FB_STORE,FB_DB deployStage
+    class MON,LOG,ALERT,DASH monitorStage

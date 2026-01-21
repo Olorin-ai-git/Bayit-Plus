@@ -1,0 +1,141 @@
+```mermaid
+flowchart TB
+    %% CVPlus Authentication Migration Architecture
+    %% Author: Gil Klainert
+    %% Date: 2025-08-28
+    
+    subgraph "Root Repository (Before Migration)"
+        direction TB
+        RootAuth["frontend/src/contexts/AuthContext.tsx<br/>582 lines - Premium integration"]
+        RootService["frontend/src/services/authService.ts<br/>318 lines - Token caching"]
+        RootGuard["frontend/src/components/AuthGuard.tsx<br/>119 lines - Route protection"]
+        RootDialog["frontend/src/components/SignInDialog.tsx<br/>121 lines - Auth UI"]
+        RootMiddleware["functions/src/middleware/authGuard.ts<br/>540 lines - Firebase middleware"]
+    end
+    
+    subgraph "packages/auth/ Submodule (After Migration)"
+        direction TB
+        
+        subgraph "React Hooks Layer"
+            useAuth["useAuth<br/>Primary authentication hook"]
+            usePermissions["usePermissions<br/>Role & permission checking"]
+            usePremium["usePremium<br/>Premium feature access"]
+            useGoogleAuth["useGoogleAuth<br/>Google OAuth integration"]
+        end
+        
+        subgraph "Context Layer"
+            AuthProvider["AuthProvider<br/>Enhanced context with premium"]
+            AuthContext["AuthContext<br/>State management"]
+        end
+        
+        subgraph "Service Layer"
+            AuthService["AuthService<br/>Core authentication"]
+            TokenService["TokenService<br/>Token management"]
+            PremiumService["PremiumService<br/>Premium features"]
+            CalendarService["CalendarService<br/>Google Calendar"]
+        end
+        
+        subgraph "Component Layer"
+            AuthGuardComp["AuthGuard<br/>Route protection"]
+            SignInDialogComp["SignInDialog<br/>Enhanced with Google OAuth"]
+        end
+        
+        subgraph "Middleware Layer"
+            FirebaseAuth["firebase-auth.middleware.ts<br/>Firebase Functions auth"]
+            AuthMiddleware["auth.middleware.ts<br/>Consolidated middleware"]
+            RateLimit["Rate limiting middleware"]
+        end
+        
+        subgraph "Migration Layer"
+            Migration["authMigration.ts<br/>Backward compatibility"]
+            ImportMap["Import path mappings"]
+            LegacyWrapper["Legacy auth wrapper"]
+        end
+    end
+    
+    subgraph "Applications Using Auth Module"
+        direction TB
+        Frontend["Frontend Application<br/>import { useAuth } from '@cvplus/auth'"]
+        Functions["Firebase Functions<br/>import { requireAuth } from '@cvplus/auth'"]
+    end
+    
+    %% Migration arrows
+    RootAuth -.->|"Migrated"| AuthProvider
+    RootService -.->|"Migrated"| AuthService
+    RootGuard -.->|"Enhanced"| AuthGuardComp
+    RootDialog -.->|"Enhanced"| SignInDialogComp
+    RootMiddleware -.->|"Migrated"| FirebaseAuth
+    
+    %% Service relationships
+    AuthProvider --> AuthService
+    AuthProvider --> PremiumService
+    AuthProvider --> CalendarService
+    
+    %% Hook relationships
+    useAuth --> AuthProvider
+    usePermissions --> AuthProvider
+    usePremium --> AuthProvider
+    useGoogleAuth --> AuthProvider
+    
+    %% Component relationships
+    AuthGuardComp --> useAuth
+    AuthGuardComp --> usePermissions
+    SignInDialogComp --> useAuth
+    SignInDialogComp --> useGoogleAuth
+    
+    %% Application usage
+    Frontend --> useAuth
+    Frontend --> usePermissions
+    Frontend --> usePremium
+    Frontend --> AuthGuardComp
+    Frontend --> SignInDialogComp
+    
+    Functions --> FirebaseAuth
+    Functions --> AuthMiddleware
+    Functions --> RateLimit
+    
+    %% Migration support
+    Frontend -.->|"During migration"| Migration
+    Functions -.->|"During migration"| Migration
+    
+    classDef migrated fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef enhanced fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef new fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef deprecated fill:#ffebee,stroke:#c62828,stroke-width:2px
+    
+    class RootAuth,RootService,RootMiddleware deprecated
+    class AuthProvider,AuthService,FirebaseAuth migrated
+    class AuthGuardComp,SignInDialogComp enhanced
+    class useAuth,usePermissions,usePremium,useGoogleAuth,Migration new
+```
+
+## Architecture Overview
+
+This diagram illustrates the comprehensive migration of authentication components from the root CVPlus repository to the centralized `packages/auth/` submodule.
+
+### Migration Strategy
+
+1. **Direct Migration**: Core components like AuthContext, authService, and authGuard middleware were directly migrated while preserving all functionality.
+
+2. **Enhancement**: Components like AuthGuard and SignInDialog were enhanced with additional features during migration.
+
+3. **New Architecture**: Modern React hooks (useAuth, usePermissions, usePremium, useGoogleAuth) provide a clean API for authentication functionality.
+
+4. **Backward Compatibility**: Migration utilities ensure smooth transition for existing code.
+
+### Key Benefits
+
+- **Centralization**: All authentication logic in one submodule
+- **Clean Imports**: Single `@cvplus/auth` import path
+- **Enhanced Features**: Google OAuth, premium integration, rate limiting
+- **Type Safety**: Comprehensive TypeScript interfaces
+- **Modular Design**: Layered architecture for better maintainability
+
+### Security Features Preserved
+
+- Email verification enforcement in production
+- Token validation and expiry checking
+- Rate limiting and request throttling
+- Admin authentication with custom claims
+- Cross-tab session synchronization
+- Premium status caching with proper invalidation

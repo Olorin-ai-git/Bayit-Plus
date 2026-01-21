@@ -1,0 +1,222 @@
+```mermaid
+graph TB
+    subgraph "CVPlus Enhanced Video Generation System"
+        subgraph "Client Layer"
+            UI[React Video Generation UI]
+            API[API Gateway]
+        end
+
+        subgraph "Orchestration Layer"
+            EVS[Enhanced Video Service]
+            PSE[Provider Selection Engine]
+            ERE[Error Recovery Engine]
+            CB[Circuit Breaker Service]
+        end
+
+        subgraph "Intelligence Layer"
+            AI[AI Provider Scorer]
+            PPT[Performance Prediction]
+            CO[Cost Optimizer]
+            QA[Quality Analyzer]
+        end
+
+        subgraph "Monitoring Layer"
+            PT[Performance Tracker]
+            AM[Alert Manager]
+            MC[Metrics Collector]
+            PD[Performance Dashboard]
+        end
+
+        subgraph "Provider Layer"
+            HP[HeyGen Provider]
+            RP[RunwayML Provider]
+            DP[D-ID Provider]
+            TP[Template Provider]
+        end
+
+        subgraph "Storage Layer"
+            FS[Firebase Storage]
+            FD[Firestore Database]
+            AC[Analytics Cache]
+        end
+    end
+
+    %% Client Flow
+    UI --> API
+    API --> EVS
+
+    %% Core Orchestration Flow
+    EVS --> PSE
+    PSE --> AI
+    PSE --> PPT
+    PSE --> CO
+    
+    EVS --> ERE
+    ERE --> CB
+    CB --> PSE
+
+    %% Provider Selection Flow
+    AI --> HP
+    AI --> RP
+    AI --> DP
+    AI --> TP
+
+    %% Monitoring Flow
+    HP --> PT
+    RP --> PT
+    DP --> PT
+    TP --> PT
+    
+    PT --> MC
+    MC --> AM
+    MC --> PD
+    MC --> AC
+
+    %% Error Recovery Flow
+    HP -.->|Error| ERE
+    RP -.->|Error| ERE
+    DP -.->|Error| ERE
+    
+    ERE --> CB
+    CB -.->|Block| HP
+    CB -.->|Block| RP
+    CB -.->|Fallback| TP
+
+    %% Data Storage
+    EVS --> FD
+    PT --> AC
+    MC --> FD
+    
+    %% Video Storage
+    HP --> FS
+    RP --> FS
+    DP --> FS
+    TP --> FS
+
+    %% Performance Feedback Loop
+    QA --> AI
+    PT --> PSE
+    AM --> ERE
+
+    %% Styling
+    classDef clientLayer fill:#e1f5fe
+    classDef orchestrationLayer fill:#f3e5f5
+    classDef intelligenceLayer fill:#e8f5e8
+    classDef monitoringLayer fill:#fff3e0
+    classDef providerLayer fill:#fce4ec
+    classDef storageLayer fill:#f1f8e9
+
+    class UI,API clientLayer
+    class EVS,PSE,ERE,CB orchestrationLayer
+    class AI,PPT,CO,QA intelligenceLayer
+    class PT,AM,MC,PD monitoringLayer
+    class HP,RP,DP,TP providerLayer
+    class FS,FD,AC storageLayer
+```
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant EVS as Enhanced Video Service
+    participant PSE as Provider Selection Engine
+    participant AI as AI Scorer
+    participant HP as HeyGen Provider
+    participant RP as RunwayML Provider
+    participant ERE as Error Recovery Engine
+    participant CB as Circuit Breaker
+    participant PT as Performance Tracker
+
+    Client->>EVS: Generate Video Request
+    EVS->>PSE: Select Optimal Provider
+    
+    PSE->>AI: Score Available Providers
+    AI->>PT: Get Performance Metrics
+    PT-->>AI: Historical Data
+    AI-->>PSE: Provider Scores
+    
+    PSE->>CB: Check Provider Health
+    CB-->>PSE: Health Status
+    PSE-->>EVS: Selected Provider (HeyGen)
+    
+    EVS->>HP: Generate Video
+    HP-->>EVS: Processing Started
+    
+    Note over HP: Video Generation Fails
+    HP->>ERE: Provider Error
+    ERE->>CB: Record Failure
+    CB->>CB: Update Circuit State
+    
+    ERE->>PSE: Request Fallback Provider
+    PSE->>AI: Re-score Without HeyGen
+    AI-->>PSE: RunwayML Selected
+    PSE-->>ERE: Fallback Provider
+    
+    ERE->>RP: Generate Video (Fallback)
+    RP-->>ERE: Processing Started
+    RP-->>ERE: Video Completed
+    ERE-->>EVS: Recovery Successful
+    
+    EVS->>PT: Record Success Metrics
+    PT->>AI: Update ML Models
+    
+    EVS-->>Client: Video Generated Successfully
+    
+    Note over CB: Auto-recovery monitoring
+    CB->>HP: Health Check
+    HP-->>CB: Provider Recovered
+    CB->>CB: Reset Circuit State
+```
+
+```mermaid
+flowchart TB
+    subgraph "Error Recovery Decision Tree"
+        E[Error Detected] --> EC[Classify Error]
+        
+        EC --> T{Error Type}
+        T -->|Transient| R1[Exponential Backoff Retry]
+        T -->|Rate Limit| R2[Delay + Retry]
+        T -->|API Failure| R3[Switch Provider]
+        T -->|Quality Failure| R4[Retry with Different Settings]
+        T -->|Timeout| R5[Switch to Faster Provider]
+        T -->|System Error| R6[Graceful Degradation]
+        
+        R1 --> RC1{Retry Count < Max}
+        RC1 -->|Yes| R1
+        RC1 -->|No| R3
+        
+        R2 --> RD[Respect Rate Limit]
+        RD --> R1
+        
+        R3 --> CB{Circuit Breaker Open}
+        CB -->|Yes| R6
+        CB -->|No| SP[Select Next Provider]
+        SP --> R7[Attempt Generation]
+        
+        R4 --> QS[Adjust Quality Settings]
+        QS --> R7
+        
+        R5 --> FP[Select Fastest Provider]
+        FP --> R7
+        
+        R6 --> TP[Use Template Provider]
+        TP --> SUCCESS[Guaranteed Success]
+        
+        R7 --> S{Success?}
+        S -->|Yes| SUCCESS
+        S -->|No| T
+        
+        SUCCESS --> UM[Update Metrics]
+        UM --> END[Return Result]
+    end
+
+    %% Styling
+    classDef errorNode fill:#ffebee
+    classDef decisionNode fill:#e3f2fd
+    classDef actionNode fill:#e8f5e8
+    classDef successNode fill:#f1f8e9
+
+    class E,EC errorNode
+    class T,RC1,CB,S decisionNode
+    class R1,R2,R3,R4,R5,R6,R7,RD,SP,QS,FP,TP actionNode
+    class SUCCESS,UM,END successNode
+```

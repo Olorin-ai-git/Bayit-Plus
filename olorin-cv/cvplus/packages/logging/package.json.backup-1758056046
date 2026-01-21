@@ -1,0 +1,62 @@
+{
+  "name": "@cvplus/logging",
+  "version": "1.0.0",
+  "description": "CVPlus comprehensive logging system with Firebase integration, PII redaction, and performance monitoring",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./backend": {
+      "import": "./dist/backend/index.js",
+      "require": "./dist/backend/index.js",
+      "types": "./dist/backend/index.d.ts"
+    },
+    "./frontend": {
+      "import": "./dist/frontend/index.js",
+      "require": "./dist/frontend/index.js",
+      "types": "./dist/frontend/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.{ts,tsx}",
+    "lint:fix": "eslint src/**/*.{ts,tsx} --fix",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "logging",
+    "firebase",
+    "cvplus",
+    "monitoring",
+    "audit",
+    "pii-redaction"
+  ],
+  "author": "CVPlus Team",
+  "license": "MIT",
+  "dependencies": {
+    "firebase-admin": "^11.0.0",
+    "firebase-functions": "^4.0.0",
+    "winston": "^3.11.0",
+    "winston-transport": "^4.6.0",
+    "cls-hooked": "^4.2.2",
+    "nanoid": "^5.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/cls-hooked": "^4.3.8",
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0"
+  }
+}

@@ -1,0 +1,24 @@
+[
+  {
+    "origin": [
+      "https://cvplus.web.app",
+      "https://cvplus.firebaseapp.com", 
+      "https://cvplus.ai",
+      "https://getmycv-ai.web.app",
+      "https://getmycv-ai.firebaseapp.com",
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "http://localhost:5173",
+      "http://localhost:5000"
+    ],
+    "method": ["GET", "HEAD", "PUT", "POST", "DELETE"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": [
+      "Content-Type",
+      "Authorization",
+      "Content-Length",
+      "User-Agent",
+      "x-goog-resumable"
+    ]
+  }
+]

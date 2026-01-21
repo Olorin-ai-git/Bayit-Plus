@@ -1,0 +1,131 @@
+graph TB
+    subgraph "Current Performance Issues"
+        CP1[Bundle Size: 2.5MB compressed<br/>8-12MB uncompressed]
+        CP2[127+ Firebase Functions<br/>3-8 second cold starts]
+        CP3[Heavy Dependencies<br/>Puppeteer 200MB+, Sharp 50MB+]
+        CP4[Unoptimized Database<br/>Complex Firestore queries]
+    end
+
+    subgraph "Phase 1: Bundle Optimization"
+        P1A[Bundle Analysis<br/>webpack-bundle-analyzer<br/>rollup-plugin-analyzer]
+        P1B[Dependency Optimization<br/>Remove heavy libraries<br/>Replace with lightweight]
+        P1C[Code Splitting<br/>Dynamic imports<br/>Route-based splitting]
+        P1D[Tree Shaking<br/>Dead code elimination<br/>Aggressive pruning]
+        
+        P1A --> P1B
+        P1B --> P1C
+        P1C --> P1D
+    end
+
+    subgraph "Phase 2: Functions Consolidation"
+        P2A[Function Analysis<br/>127+ → <50 functions<br/>Category grouping]
+        P2B[Orchestrator Creation<br/>cv-processor<br/>media-generator<br/>user-services]
+        P2C[Smart Routing<br/>Single entry points<br/>Operation switching]
+        P2D[Cold Start Optimization<br/>Memory allocation<br/>Connection pooling]
+        
+        P2A --> P2B
+        P2B --> P2C
+        P2C --> P2D
+    end
+
+    subgraph "Phase 3: Frontend Performance"
+        P3A[React Optimization<br/>React.memo, useMemo<br/>useCallback patterns]
+        P3B[Virtual Scrolling<br/>react-window<br/>Large dataset handling]
+        P3C[Lazy Loading<br/>Component-level<br/>Image optimization]
+        P3D[Critical Path<br/>Render-blocking elimination<br/>Resource hints]
+        
+        P3A --> P3B
+        P3B --> P3C
+        P3C --> P3D
+    end
+
+    subgraph "Phase 4: Database Optimization"
+        P4A[Query Analysis<br/>Firestore patterns<br/>Performance bottlenecks]
+        P4B[Index Optimization<br/>Composite indexes<br/>Query-specific tuning]
+        P4C[Caching Layer<br/>Multi-level strategy<br/>L1 Memory + L2 Redis]
+        P4D[Batch Operations<br/>Query batching<br/>Pagination implementation]
+        
+        P4A --> P4B
+        P4B --> P4C
+        P4C --> P4D
+    end
+
+    subgraph "Phase 5: Monitoring & Validation"
+        P5A[Performance Metrics<br/>Core Web Vitals<br/>Real-time monitoring]
+        P5B[Load Testing<br/>k6 implementation<br/>Stress testing]
+        P5C[Dashboard Creation<br/>Performance visualization<br/>Alert systems]
+        P5D[Continuous Validation<br/>Automated checks<br/>Performance budgets]
+        
+        P5A --> P5B
+        P5B --> P5C
+        P5C --> P5D
+    end
+
+    subgraph "Success Metrics"
+        SM1[Bundle Size: <1MB<br/>60% reduction achieved]
+        SM2[Functions: <50<br/>60% consolidation]
+        SM3[Load Time: <3s<br/>95th percentile]
+        SM4[Performance Rating<br/>C- → B+ improvement]
+    end
+
+    subgraph "Optimization Tools & Technologies"
+        T1[Bundle Analysis<br/>webpack-bundle-analyzer<br/>rollup-plugin-analyzer]
+        T2[Code Splitting<br/>React.lazy<br/>Dynamic imports]
+        T3[Performance Monitoring<br/>web-vitals<br/>Firebase Analytics]
+        T4[Caching<br/>Redis<br/>Memory caching]
+        T5[Load Testing<br/>k6<br/>Artillery]
+        T6[Database<br/>Firestore optimization<br/>Composite indexes]
+    end
+
+    subgraph "Implementation Flow"
+        IF1[Week 1: Analysis & Foundation]
+        IF2[Week 2: Bundle Optimization]
+        IF3[Week 3: Functions Consolidation]
+        IF4[Week 4: Frontend Performance]
+        IF5[Week 5: Database & Caching]
+        IF6[Week 6: Monitoring & Validation]
+        
+        IF1 --> IF2
+        IF2 --> IF3
+        IF3 --> IF4
+        IF4 --> IF5
+        IF5 --> IF6
+    end
+
+    %% Connections between phases
+    CP1 --> P1A
+    CP2 --> P2A
+    CP3 --> P1B
+    CP4 --> P4A
+
+    P1D --> SM1
+    P2D --> SM2
+    P3D --> SM3
+    P4D --> SM4
+    P5D --> SM4
+
+    %% Tool connections
+    T1 --> P1A
+    T2 --> P1C
+    T3 --> P5A
+    T4 --> P4C
+    T5 --> P5B
+    T6 --> P4B
+
+    %% Timeline connections
+    IF1 --> P1A
+    IF2 --> P1B
+    IF3 --> P2A
+    IF4 --> P3A
+    IF5 --> P4A
+    IF6 --> P5A
+
+    classDef problem fill:#ffcccb
+    classDef phase fill:#e6f3ff
+    classDef success fill:#90EE90
+    classDef tool fill:#FFE4B5
+
+    class CP1,CP2,CP3,CP4 problem
+    class P1A,P1B,P1C,P1D,P2A,P2B,P2C,P2D,P3A,P3B,P3C,P3D,P4A,P4B,P4C,P4D,P5A,P5B,P5C,P5D phase
+    class SM1,SM2,SM3,SM4 success
+    class T1,T2,T3,T4,T5,T6 tool

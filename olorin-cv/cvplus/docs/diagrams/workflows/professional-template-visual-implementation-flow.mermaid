@@ -1,0 +1,93 @@
+graph TB
+    subgraph "Phase 1: Core Template Components"
+        A[Template Data System] --> B[Executive Template Component]
+        A --> C[Tech Template Component] 
+        A --> D[Creative Template Component]
+        A --> E[Healthcare Template Component]
+        
+        B --> B1[Navy + Gold Theme]
+        B --> B2[Executive Layout]
+        B --> B3[Leadership Metrics]
+        
+        C --> C1[Blue + Cyan Theme]
+        C --> C2[Tech Skills Matrix]
+        C --> C3[Project Showcases]
+        
+        D --> D1[Burgundy + Teal Theme]  
+        D --> D2[Portfolio Integration]
+        D --> D3[Creative Journey]
+        
+        E --> E1[Medical Blue + Green]
+        E --> E2[Credentials Focus]
+        E --> E3[Patient Care Metrics]
+    end
+
+    subgraph "Phase 2: Integration Layer"
+        F[Template Registry] --> G[Component Mapping]
+        G --> H[Dynamic Styling]
+        H --> I[Feature Preview Adaptation]
+        I --> J[Performance Optimization]
+    end
+
+    subgraph "Phase 3: Rendering System"  
+        K[CVPreview Component] --> L[Template Selection Logic]
+        L --> M[Template-Specific Rendering]
+        M --> N[Responsive Layout Engine]
+        N --> O[Interactive Features]
+    end
+
+    subgraph "Visual Identity System"
+        P[Color Psychology] --> P1[Executive: Trust & Authority]
+        P --> P2[Tech: Logic & Innovation] 
+        P --> P3[Creative: Expression & Uniqueness]
+        P --> P4[Healthcare: Care & Trust]
+        
+        Q[Typography System] --> Q1[Executive: Playfair + Inter]
+        Q --> Q2[Tech: Inter + JetBrains Mono]
+        Q --> Q3[Creative: Montserrat + Source Sans]
+        Q --> Q4[Healthcare: Source Sans Pro]
+    end
+
+    subgraph "Performance & Quality"
+        R[Bundle Optimization] --> R1[Code Splitting]
+        R --> R2[Lazy Loading]
+        R --> R3[Tree Shaking]
+        
+        S[Rendering Performance] --> S1[<2s Load Time]
+        S --> S2[Memory Efficiency]  
+        S --> S3[Responsive Design]
+        
+        T[Quality Assurance] --> T1[Cross-Browser Testing]
+        T --> T2[Accessibility Compliance]
+        T --> T3[ATS Compatibility]
+    end
+
+    %% Flow connections
+    B --> F
+    C --> F  
+    D --> F
+    E --> F
+    
+    J --> K
+    
+    P --> H
+    Q --> H
+    
+    O --> R
+    O --> S
+    O --> T
+
+    %% Styling
+    classDef executive fill:#1e3a8a,stroke:#d97706,stroke-width:2px,color:#ffffff
+    classDef tech fill:#1e40af,stroke:#0891b2,stroke-width:2px,color:#ffffff  
+    classDef creative fill:#7f1d1d,stroke:#0d9488,stroke-width:2px,color:#ffffff
+    classDef healthcare fill:#1e40af,stroke:#059669,stroke-width:2px,color:#ffffff
+    classDef system fill:#f8fafc,stroke:#475569,stroke-width:2px
+    classDef performance fill:#10b981,stroke:#047857,stroke-width:2px,color:#ffffff
+
+    class B,B1,B2,B3 executive
+    class C,C1,C2,C3 tech
+    class D,D1,D2,D3 creative  
+    class E,E1,E2,E3 healthcare
+    class A,F,G,H,I,J,K,L,M,N,O system
+    class R,S,T,R1,R2,R3,S1,S2,S3,T1,T2,T3 performance

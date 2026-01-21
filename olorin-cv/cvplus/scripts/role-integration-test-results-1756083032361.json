@@ -1,0 +1,113 @@
+{
+  "timestamp": "2025-08-25T00:50:32.357Z",
+  "tests": [
+    {
+      "test": "Frontend Server Connectivity",
+      "passed": false,
+      "timestamp": "2025-08-25T00:50:32.359Z",
+      "details": {
+        "error": "fetch is not a function",
+        "url": "http://localhost:3000"
+      }
+    },
+    {
+      "test": "Backend Functions Connectivity",
+      "passed": false,
+      "timestamp": "2025-08-25T00:50:32.359Z",
+      "details": {
+        "url": "http://localhost:5001/getmycv-ai/us-central1"
+      }
+    },
+    {
+      "test": "Role Detection API Structure",
+      "timestamp": "2025-08-25T00:50:32.360Z",
+      "details": {
+        "responseStructure": [],
+        "errorType": "No error message"
+      }
+    },
+    {
+      "test": "Role Recommendations API Structure",
+      "timestamp": "2025-08-25T00:50:32.360Z",
+      "details": {
+        "responseStructure": [],
+        "errorType": "No error message"
+      }
+    },
+    {
+      "test": "Role Profiles API Structure",
+      "timestamp": "2025-08-25T00:50:32.360Z",
+      "details": {
+        "responseStructure": [],
+        "errorType": "No error message"
+      }
+    },
+    {
+      "test": "Frontend Service Integration",
+      "passed": true,
+      "timestamp": "2025-08-25T00:50:32.360Z",
+      "details": {
+        "serviceConfiguration": {
+          "hasFirebaseConfig": true,
+          "hasServiceInstance": true,
+          "hasMethodDefinitions": true
+        }
+      }
+    },
+    {
+      "test": "API Response Format Consistency",
+      "passed": false,
+      "timestamp": "2025-08-25T00:50:32.360Z",
+      "details": {
+        "detectRoleProfile": {
+          "keys": []
+        },
+        "getRoleProfiles": {
+          "keys": []
+        },
+        "getRoleBasedRecommendations": {
+          "keys": []
+        },
+        "applyRoleProfile": {
+          "keys": []
+        }
+      }
+    },
+    {
+      "test": "Error Handling",
+      "passed": false,
+      "timestamp": "2025-08-25T00:50:32.360Z",
+      "details": {
+        "Missing Job ID": {
+          "errorMessage": "No error message"
+        },
+        "Invalid JSON": {
+          "errorMessage": "No error message"
+        },
+        "Empty Request Body": {
+          "errorMessage": "No error message"
+        }
+      }
+    },
+    {
+      "test": "Performance Metrics",
+      "passed": true,
+      "timestamp": "2025-08-25T00:50:32.360Z",
+      "details": {
+        "Role Detection Response Time": {
+          "responseTime": 0,
+          "acceptable": true
+        },
+        "Role Profiles Response Time": {
+          "responseTime": 0,
+          "acceptable": true
+        }
+      }
+    }
+  ],
+  "summary": {
+    "passed": 2,
+    "failed": 7,
+    "total": 9
+  }
+}

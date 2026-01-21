@@ -1,0 +1,66 @@
+{
+  "timestamp": "2025-08-29T15:41:13.469Z",
+  "summary": {
+    "overallScore": "0.921",
+    "status": "excellent",
+    "keyMetrics": {
+      "recommendationQuality": 0.9133333333333334,
+      "systemPerformance": 1,
+      "userSatisfaction": 0.85
+    }
+  },
+  "details": {
+    "quality": {
+      "overallQuality": 0.9133333333333334,
+      "acceptanceRate": 0.8466666666666667,
+      "performanceScore": 2.7522935779816513,
+      "typeBreakdown": {
+        "career-advancement": {
+          "count": 1,
+          "relevanceSum": 0.92,
+          "acceptanceSum": 0.85,
+          "timeSum": 420
+        },
+        "skill-development": {
+          "count": 1,
+          "relevanceSum": 0.88,
+          "acceptanceSum": 0.78,
+          "timeSum": 380
+        },
+        "profile-improvement": {
+          "count": 1,
+          "relevanceSum": 0.94,
+          "acceptanceSum": 0.91,
+          "timeSum": 290
+        }
+      }
+    },
+    "performance": {
+      "overallScore": 1,
+      "metrics": {
+        "averageResponseTime": 365,
+        "cacheHitRate": 0.82,
+        "memoryUsage": 198,
+        "throughput": 125
+      },
+      "compliance": {
+        "responseTime": true,
+        "cacheHitRate": true,
+        "memoryUsage": true,
+        "throughput": true
+      }
+    },
+    "behavior": {
+      "acceptanceRate": 0.85,
+      "rejectionRate": 0.15,
+      "decisionTime": 45,
+      "engagement": 1500
+    }
+  },
+  "recommendations": [
+    "Continue monitoring recommendation quality metrics",
+    "Optimize cache performance for better response times",
+    "Implement A/B testing for new recommendation algorithms",
+    "Collect more granular user feedback for improvement insights"
+  ]
+}

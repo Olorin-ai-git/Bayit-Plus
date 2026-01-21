@@ -1,0 +1,140 @@
+sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant FB as Firebase Auth
+    participant FF as Firebase Functions
+    participant FS as Firestore
+    participant AI as Claude API
+    participant M as Media Services
+    participant S as Storage
+    
+    Note over U,S: CVPlus Backend API Flow
+    
+    %% Authentication & Job Creation
+    U->>F: Upload CV File
+    F->>FB: Authenticate User
+    FB-->>F: User Token
+    F->>FF: createJob()
+    FF->>FS: Create Job Document
+    FS-->>FF: Job ID
+    FF-->>F: Job Created
+    F-->>U: Redirect to /process/:jobId
+    
+    %% Processing Phase
+    Note over F,S: Phase 1: CV Processing
+    F->>FF: processCV(jobId, file)
+    FF->>FS: Update Status: 'processing'
+    FF->>S: Upload Original File
+    FF->>AI: Parse Document
+    AI-->>FF: Structured Data
+    FF->>AI: Detect PII
+    AI-->>FF: PII Analysis
+    FF->>FS: Save Parsed Data
+    FF->>FS: Update Status: 'parsed'
+    FS-->>F: Real-time Update
+    F-->>U: Show Processing Progress
+    
+    %% Analysis Phase
+    Note over F,S: Phase 2: AI Analysis
+    FF->>FF: enhancedAnalyzeCV(jobId)
+    FF->>FS: Update Status: 'analyzing'
+    FF->>AI: Comprehensive Analysis
+    AI-->>FF: Analysis Results
+    FF->>AI: ATS Optimization
+    AI-->>FF: ATS Scores & Recommendations
+    FF->>FS: Save Analysis Data
+    FF->>FS: Update Status: 'analyzed'
+    FS-->>F: Real-time Update
+    F-->>U: Redirect to Analysis Page
+    
+    %% User Review & Customization
+    U->>F: Review Analysis
+    F->>FS: Fetch Analysis Data
+    FS-->>F: Analysis Results
+    F-->>U: Display Analysis
+    
+    U->>F: Proceed to Preview
+    F->>FS: Fetch Job Data
+    FS-->>F: Current CV Data
+    F-->>U: Show Preview & Options
+    
+    %% Feature Selection & Improvements
+    Note over F,S: Phase 3: Customization
+    U->>F: Select Features
+    F->>FF: applyImprovements(jobId, selections)
+    FF->>FS: Update Status: 'improving'
+    FF->>AI: Generate Improvements
+    AI-->>FF: Enhanced Content
+    FF->>FS: Save Improved Data
+    
+    %% Optional: Media Generation
+    opt User selects multimedia features
+        FF->>FF: generateVideoIntroduction(jobId)
+        FF->>M: D-ID Video Service
+        M-->>FF: Video URL
+        FF->>S: Store Video Asset
+        
+        FF->>FF: generatePodcast(jobId)
+        FF->>M: ElevenLabs Audio Service
+        M-->>FF: Audio URL
+        FF->>S: Store Audio Asset
+        
+        FF->>FS: Update Media Assets
+    end
+    
+    %% Final Generation
+    Note over F,S: Phase 4: Final Generation
+    U->>F: Generate Final CV
+    F->>FF: generateCV(jobId, options)
+    FF->>FS: Update Status: 'generating'
+    FF->>AI: Generate Final Content
+    AI-->>FF: Formatted CV
+    FF->>S: Store Final Files (PDF, DOCX, HTML)
+    FF->>FS: Update Status: 'completed'
+    FS-->>F: Real-time Update
+    F-->>U: Redirect to Results Page
+    
+    %% Results & Download
+    U->>F: Download Files
+    F->>S: Get Signed URLs
+    S-->>F: Download Links
+    F-->>U: Provide Downloads
+    
+    %% Optional: Public Profile
+    opt User creates public profile
+        U->>F: Create Public Profile
+        F->>FF: createPublicProfile(jobId, settings)
+        FF->>FS: Create Public Document
+        FF->>S: Store Public Assets
+        FF-->>F: Public Profile URL
+        F-->>U: Shareable Link
+    end
+    
+    %% Error Handling Flow
+    Note over FF,FS: Error Handling Pattern
+    alt Processing Error
+        FF->>FS: Update Status: 'failed'
+        FF->>FS: Store Error Details
+        FS-->>F: Error Notification
+        F-->>U: Show Error & Recovery Options
+        
+        U->>F: Retry Processing
+        F->>FF: Retry with Same Job ID
+        FF->>FF: Resume from Last Success Point
+    end
+    
+    %% Status Tracking
+    Note over F,FS: Real-time Status Updates
+    loop Continuous Monitoring
+        FS-->>F: Job Status Changes
+        F-->>U: Update Progress UI
+    end
+    
+    %% Authentication Patterns
+    Note over FB,FF: Security Layer
+    rect rgb(255, 240, 240)
+        Note over FB,FF: All Function Calls Include:
+        Note over FB,FF: 1. Firebase Auth Token Verification
+        Note over FB,FF: 2. User Ownership Validation
+        Note over FB,FF: 3. Rate Limiting & Security Checks
+    end

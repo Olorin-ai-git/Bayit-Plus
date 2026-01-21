@@ -1,0 +1,6624 @@
+{
+  "timestamp": "2025-09-14T04:53:40.255Z",
+  "summary": {
+    "totalComponents": 291,
+    "needsMigration": 204,
+    "bySubmodule": {
+      "analytics": 25,
+      "public-profiles": 28,
+      "cv-processing": 86,
+      "multimedia": 17
+    },
+    "byPriority": {
+      "high": 22,
+      "medium": 95,
+      "low": 174
+    }
+  },
+  "components": [
+    {
+      "componentPath": "frontend/src/components/CVAnalysisResults.legacy.tsx",
+      "componentName": "CVAnalysisResults.legacy",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:pattern:CV.*Analysis",
+        "cv-processing:pattern:CV.*Results",
+        "cv-processing:keyword:cv:45",
+        "cv-processing:keyword:analysis:55",
+        "cv-processing:keyword:ats:34",
+        "cv-processing:keyword:preview:18",
+        "cv-processing:type:CVAnalysis"
+      ],
+      "crossBoundaryImports": [
+        "../services/cvService",
+        "../services/features/MagicTransformService",
+        "../services/cv/CVServiceCore",
+        "../utils/robustNavigation",
+        "../types/ats",
+        "../utils/errorHandling"
+      ],
+      "typeImports": [
+        "ChevronDown",
+        "ChevronUp",
+        "CheckCircle",
+        "Circle",
+        "AlertTriangle",
+        "Target",
+        "Sparkles",
+        "TrendingUp",
+        "Wand2",
+        "Loader2",
+        "useNavigate",
+        "applyImprovements",
+        "type Job",
+        "MagicTransformService",
+        "type MagicTransformProgress",
+        "type MagicTransformResult",
+        "CVServiceCore",
+        "robustNavigation",
+        "PrioritizedRecommendation",
+        "getErrorMessage",
+        "logError"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/CVUpload.tsx",
+      "componentName": "CVUpload",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:pattern:CV.*Upload",
+        "cv-processing:keyword:cv:21",
+        "cv-processing:keyword:ats:9",
+        "public-profiles:keyword:profile:7"
+      ],
+      "crossBoundaryImports": [
+        "../../../shared/types/cv-job",
+        "../services/cvService",
+        "../utils/fileUtils"
+      ],
+      "typeImports": [
+        "useDropzone",
+        "Upload",
+        "File",
+        "X",
+        "CheckCircle",
+        "AlertCircle",
+        "Loader2",
+        "toast",
+        "FeatureType",
+        "uploadCV",
+        "CVUploadResponse",
+        "useAuth",
+        "formatFileSize"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/GeneratedCVDisplay.legacy.tsx",
+      "componentName": "GeneratedCVDisplay.legacy",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:pattern:CV.*Display",
+        "cv-processing:keyword:cv:37",
+        "cv-processing:type:CVData"
+      ],
+      "crossBoundaryImports": [
+        "../services/cvService",
+        "../utils/componentRenderer"
+      ],
+      "typeImports": [
+        "Download",
+        "FileText",
+        "Globe",
+        "Job",
+        "initializeReactComponents"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/LivePreview.legacy.tsx",
+      "componentName": "LivePreview.legacy",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:34",
+        "cv-processing:keyword:preview:37",
+        "cv-processing:type:CVData"
+      ],
+      "crossBoundaryImports": [
+        "../types/cvData",
+        "../types/job"
+      ],
+      "typeImports": [
+        "Eye",
+        "Settings",
+        "Sparkles",
+        "Play",
+        "ZoomIn",
+        "ZoomOut",
+        "Monitor",
+        "Tablet",
+        "Smartphone",
+        "User",
+        "MapPin",
+        "Mail",
+        "Phone",
+        "Calendar",
+        "GraduationCap",
+        "Briefcase",
+        "Code",
+        "CVParsedData",
+        "Job"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/RecommendationProgressTracker.tsx",
+      "componentName": "RecommendationProgressTracker",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:8",
+        "cv-processing:keyword:analysis:9",
+        "cv-processing:keyword:processing:16"
+      ],
+      "crossBoundaryImports": [
+        "../services/JobSubscriptionManager",
+        "../services/cvService"
+      ],
+      "typeImports": [
+        "JobSubscriptionManager",
+        "Job"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/cv-comparison.legacy/CVComparisonView.tsx",
+      "componentName": "CVComparisonView",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:24",
+        "cv-processing:keyword:ats:33",
+        "cv-processing:keyword:preview:4",
+        "cv-processing:type:CVData",
+        "analytics:keyword:stats:33"
+      ],
+      "crossBoundaryImports": [
+        "../../utils/cv-comparison/diffUtils",
+        "../../types/cv-preview"
+      ],
+      "typeImports": [
+        "Eye",
+        "GitCompare",
+        "ChevronRight",
+        "Filter",
+        "Plus",
+        "TrendingUp",
+        "useCVComparison",
+        "useFilteredSections",
+        "ComparisonViewMode",
+        "SideBySideDiff",
+        "DiffStats",
+        "CompactDiff",
+        "MobileComparisonView",
+        "MobileComparisonToggle",
+        "getSectionDisplayName",
+        "CVComparison",
+        "SectionComparison",
+        "ComparisonStats"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/cv-preview/CVPreview.tsx",
+      "componentName": "CVPreview",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:pattern:CV.*Preview",
+        "cv-processing:keyword:cv:31",
+        "cv-processing:keyword:analysis:9",
+        "cv-processing:keyword:preview:43",
+        "cv-processing:type:CVData",
+        "multimedia:keyword:qr:11"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cv-preview",
+        "../../types/cvData",
+        "../../utils/cv-preview/keyboardShortcuts",
+        "../../types/error-handling"
+      ],
+      "typeImports": [
+        "CVPreviewProps",
+        "CVParsedData",
+        "useCVPreview",
+        "useAutoSave",
+        "useAchievementAnalysis",
+        "useKeyboardShortcuts",
+        "useHasComparison",
+        "isObject",
+        "CVPreviewToolbar",
+        "CVPreviewContent",
+        "CVComparisonView",
+        "SectionEditor",
+        "QRCodeEditor"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/cv-preview/CVPreviewContent.tsx",
+      "componentName": "CVPreviewContent",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:pattern:CV.*Preview",
+        "cv-processing:keyword:cv:21",
+        "cv-processing:keyword:preview:57",
+        "cv-processing:keyword:generation:9",
+        "cv-processing:type:CVData",
+        "multimedia:keyword:qr:11"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cv-preview",
+        "../../utils/cv-preview/cvTemplateGenerator"
+      ],
+      "typeImports": [
+        "CVPreviewContentProps",
+        "CVTemplateGenerator",
+        "useFeaturePreviews",
+        "PlaceholderBanner",
+        "getTemplateComponent",
+        "CORE_TEMPLATE_IDS",
+        "PROFESSIONAL_TEMPLATES"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/enhancement/ProgressVisualization.tsx",
+      "componentName": "ProgressVisualization",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "cv-processing:keyword:processing:13",
+        "cv-processing:keyword:ats:33",
+        "cv-processing:keyword:enhancement:7",
+        "analytics:keyword:analytics:8",
+        "analytics:keyword:metrics:23",
+        "analytics:keyword:stats:33"
+      ],
+      "crossBoundaryImports": [
+        "../../services/enhancement/performance-monitor.service",
+        "../../services/enhancement/css-optimizer.service",
+        "../../services/enhancement/error-recovery.service"
+      ],
+      "typeImports": [
+        "FeatureProgress",
+        "performanceMonitorService",
+        "PerformanceStats",
+        "cssOptimizerService",
+        "errorRecoveryService"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/features/FeatureDashboard.tsx",
+      "componentName": "FeatureDashboard",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:43",
+        "cv-processing:keyword:analysis:44",
+        "cv-processing:keyword:processing:5",
+        "cv-processing:keyword:ats:108",
+        "cv-processing:keyword:generation:28",
+        "multimedia:keyword:video:51",
+        "multimedia:keyword:audio:7",
+        "multimedia:keyword:podcast:34",
+        "multimedia:keyword:media:31",
+        "multimedia:keyword:gallery:18",
+        "multimedia:type:VideoGeneration",
+        "public-profiles:keyword:public:30",
+        "public-profiles:keyword:profile:19",
+        "public-profiles:keyword:portfolio:43",
+        "public-profiles:type:PublicProfile",
+        "public-profiles:type:PortfolioItem",
+        "analytics:pattern:Dashboard",
+        "analytics:keyword:dashboard:8",
+        "analytics:keyword:insights:14"
+      ],
+      "crossBoundaryImports": [
+        "../../services/cvService",
+        "../../services/cvService"
+      ],
+      "typeImports": [
+        "useState",
+        "Brain",
+        "MessageSquare",
+        "BarChart3",
+        "Video",
+        "Mic",
+        "FileSearch",
+        "Users",
+        "ChevronRight",
+        "Loader2",
+        "CheckCircle",
+        "AlertCircle",
+        "Clock",
+        "Sparkles",
+        "Calendar",
+        "Grid3x3",
+        "Languages",
+        "Quote",
+        "ATSScore",
+        "PersonalityInsights",
+        "SkillsVisualization",
+        "PublicProfile",
+        "ChatInterface",
+        "VideoIntroduction",
+        "PodcastGeneration",
+        "InteractiveTimeline",
+        "CalendarIntegration",
+        "PortfolioGallery",
+        "LanguageProficiency",
+        "TestimonialsCarousel",
+        "Job",
+        "CalendarGenerationResult",
+        "PortfolioGenerationResult",
+        "LanguageVisualizationResult",
+        "TestimonialsResult",
+        "PublicProfileResult",
+        "EnhancedATSResult",
+        "VideoGenerationResult as ServiceVideoResult",
+        "PodcastGenerationResult as ServicePodcastResult",
+        "isPortfolioGenerationResult",
+        "isCalendarGenerationResult",
+        "isTestimonialsResult",
+        "isLanguageVisualizationResult",
+        "isPublicProfileResult",
+        "isVideoGenerationResult",
+        "isPodcastGenerationResult",
+        "safeConsole",
+        "safeGet",
+        "safeArray",
+        "safeString",
+        "safeNumber"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Portal/PortalChatDemo.tsx",
+      "componentName": "PortalChatDemo",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:5",
+        "public-profiles:keyword:public:5",
+        "public-profiles:keyword:profile:13",
+        "public-profiles:type:SocialLink"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/portal-types",
+        "../../../types/portal-component-props"
+      ],
+      "typeImports": [
+        "PortalChatInterface",
+        "PortalConfig",
+        "ChatConfig",
+        "PortalChatInterfaceProps",
+        "PortalChatInterface"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Portal/PortalChatInterface.tsx",
+      "componentName": "PortalChatInterface",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:5",
+        "cv-processing:keyword:processing:5",
+        "cv-processing:keyword:ats:51"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/portal-component-props",
+        "../../../types/portal-types"
+      ],
+      "typeImports": [
+        "Send",
+        "Bot",
+        "User",
+        "Mic",
+        "MicOff",
+        "Download",
+        "ThumbsUp",
+        "ThumbsDown",
+        "Copy",
+        "Share2",
+        "MoreVertical",
+        "Clock",
+        "CheckCircle",
+        "XCircle",
+        "Loader2",
+        "MessageSquare",
+        "Volume2",
+        "VolumeX",
+        "RefreshCw",
+        "Search",
+        "Settings",
+        "Maximize2",
+        "Minimize2",
+        "PortalChatInterfaceProps",
+        "ChatMessage",
+        "ChatError",
+        "RAGSourceDocument",
+        "FeatureWrapper",
+        "ErrorBoundary",
+        "LoadingSpinner",
+        "useFirebaseFunction"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Portal/PortalQRIntegration.example.tsx",
+      "componentName": "PortalQRIntegration.example",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "cv-processing:keyword:ats:4",
+        "multimedia:pattern:QR",
+        "multimedia:keyword:qr:84",
+        "public-profiles:keyword:public:4",
+        "public-profiles:keyword:profile:15",
+        "public-profiles:keyword:social:9",
+        "public-profiles:keyword:sharing:7",
+        "public-profiles:type:SocialLink",
+        "analytics:keyword:analytics:13"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/portal-types",
+        "../../../types/portal-component-props"
+      ],
+      "typeImports": [
+        "PortalQRIntegration",
+        "PortalConfig",
+        "QRCodeConfig",
+        "PortalQRIntegrationProps"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Portal/PortalQRIntegration.tsx",
+      "componentName": "PortalQRIntegration",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "cv-processing:keyword:ats:8",
+        "cv-processing:keyword:generation:18",
+        "multimedia:pattern:QR",
+        "multimedia:keyword:qr:130",
+        "public-profiles:keyword:profile:6",
+        "public-profiles:keyword:sharing:27",
+        "analytics:keyword:analytics:70",
+        "analytics:keyword:dashboard:4",
+        "analytics:keyword:metrics:4"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/portal-component-props",
+        "../../../types/portal-types"
+      ],
+      "typeImports": [
+        "QrCode",
+        "Download",
+        "Copy",
+        "Share2",
+        "BarChart3",
+        "RefreshCw",
+        "Settings",
+        "Globe",
+        "MapPin",
+        "Calendar",
+        "Users",
+        "TrendingUp",
+        "Smartphone",
+        "Monitor",
+        "Tablet",
+        "Eye",
+        "MousePointer",
+        "Link",
+        "Palette",
+        "Maximize2",
+        "Minimize2",
+        "X",
+        "ExternalLink",
+        "Target",
+        "Activity",
+        "Clock",
+        "MoreHorizontal",
+        "httpsCallable",
+        "functions",
+        "PortalQRIntegrationProps",
+        "QRCodeData",
+        "QRScanData",
+        "PortalError",
+        "FeatureWrapper",
+        "LoadingSpinner",
+        "ErrorBoundary",
+        "FunctionalErrorBoundary"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/performance/PerformanceDashboard.tsx",
+      "componentName": "PerformanceDashboard",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "analytics:pattern:Dashboard",
+        "analytics:keyword:dashboard:7",
+        "analytics:keyword:metrics:56"
+      ],
+      "crossBoundaryImports": [
+        "../../services/performance/core-web-vitals.service",
+        "../../services/performance/user-journey-tracker.service"
+      ],
+      "typeImports": [
+        "Chart as ChartJS",
+        "CategoryScale",
+        "LinearScale",
+        "PointElement",
+        "LineElement",
+        "Title",
+        "Tooltip",
+        "Legend",
+        "BarElement",
+        "Line",
+        "Bar",
+        "collection",
+        "onSnapshot",
+        "query",
+        "orderBy",
+        "limit",
+        "where",
+        "db"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/PremiumDashboard.tsx",
+      "componentName": "PremiumDashboard",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:10",
+        "cv-processing:keyword:ats:20",
+        "cv-processing:keyword:generation:7",
+        "analytics:pattern:Dashboard",
+        "analytics:keyword:analytics:11",
+        "analytics:keyword:dashboard:13",
+        "analytics:keyword:metrics:17",
+        "analytics:keyword:stats:20"
+      ],
+      "crossBoundaryImports": [
+        "../../services/premium/subscriptionCache",
+        "../../services/premium/usageTracker",
+        "../../services/premium/featureRegistry"
+      ],
+      "typeImports": [
+        "Crown",
+        "TrendingUp",
+        "Calendar",
+        "Settings",
+        "CreditCard",
+        "BarChart3",
+        "Clock",
+        "Zap",
+        "Star",
+        "AlertTriangle",
+        "CheckCircle",
+        "ArrowUpRight",
+        "Download",
+        "RefreshCw",
+        "HelpCircle",
+        "Sparkles",
+        "useAuth",
+        "subscriptionCache",
+        "CachedSubscription",
+        "usageTracker",
+        "UsageMetrics",
+        "FeatureRegistry",
+        "CV_FEATURES"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/role-profiles/RoleProfileIntegration.tsx",
+      "componentName": "RoleProfileIntegration",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:analysis:16",
+        "cv-processing:keyword:preview:4",
+        "public-profiles:keyword:profile:22"
+      ],
+      "crossBoundaryImports": [
+        "../../services/cvService",
+        "../../types/role-profiles"
+      ],
+      "typeImports": [
+        "Tabs",
+        "TabsContent",
+        "TabsList",
+        "TabsTrigger",
+        "Button",
+        "Card",
+        "CardContent",
+        "CardDescription",
+        "CardHeader",
+        "CardTitle",
+        "Badge",
+        "Target",
+        "Users",
+        "Sparkles",
+        "TrendingUp",
+        "ChevronRight",
+        "RefreshCw",
+        "ArrowLeft",
+        "CheckCircle",
+        "RoleProfileSelector",
+        "RoleBasedRecommendations",
+        "Job",
+        "RoleProfile",
+        "DetectedRole",
+        "RoleProfileAnalysis",
+        "RoleBasedRecommendation",
+        "designSystem"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/session/SessionIntegrationExample.tsx",
+      "componentName": "SessionIntegrationExample",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:7",
+        "cv-processing:keyword:analysis:10",
+        "cv-processing:keyword:processing:8",
+        "cv-processing:type:CVAnalysis"
+      ],
+      "crossBoundaryImports": [
+        "../../types/job",
+        "../../types/session"
+      ],
+      "typeImports": [
+        "useParams",
+        "SessionAwarePageWrapper",
+        "SessionProgress",
+        "useSessionAwarePage",
+        "useSession",
+        "Job",
+        "CVStep",
+        "SessionFormData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/templates/CreativeTemplate.tsx",
+      "componentName": "CreativeTemplate",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:27",
+        "cv-processing:keyword:preview:5",
+        "cv-processing:type:CVData",
+        "public-profiles:keyword:portfolio:25",
+        "public-profiles:keyword:contact:8"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cvData",
+        "../../types/cv-templates"
+      ],
+      "typeImports": [
+        "CVParsedData",
+        "CVTemplate",
+        "SelectedFeatures",
+        "PROFESSIONAL_TEMPLATES"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/templates/ExecutiveTemplate.tsx",
+      "componentName": "ExecutiveTemplate",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:29",
+        "cv-processing:keyword:preview:5",
+        "cv-processing:type:CVData",
+        "public-profiles:keyword:contact:4",
+        "analytics:keyword:metrics:7"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cvData",
+        "../../types/cv-templates"
+      ],
+      "typeImports": [
+        "CVParsedData",
+        "CVTemplate",
+        "SelectedFeatures",
+        "PROFESSIONAL_TEMPLATES"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/templates/HealthcareTemplate.tsx",
+      "componentName": "HealthcareTemplate",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:32",
+        "cv-processing:keyword:preview:4",
+        "cv-processing:type:CVData",
+        "public-profiles:keyword:public:19",
+        "public-profiles:keyword:contact:7",
+        "analytics:keyword:metrics:5"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cvData",
+        "../../types/cv-templates"
+      ],
+      "typeImports": [
+        "CVParsedData",
+        "CVTemplate",
+        "SelectedFeatures",
+        "PROFESSIONAL_TEMPLATES"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/templates/TechTemplate.tsx",
+      "componentName": "TechTemplate",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:33",
+        "cv-processing:keyword:preview:7",
+        "cv-processing:type:CVData"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cvData",
+        "../../types/cv-templates"
+      ],
+      "typeImports": [
+        "CVParsedData",
+        "CVTemplate",
+        "SelectedFeatures",
+        "PROFESSIONAL_TEMPLATES"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "high"
+    },
+    {
+      "componentPath": "frontend/src/components/AnalyticsDashboard.tsx",
+      "componentName": "AnalyticsDashboard",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "analytics:pattern:Analytics",
+        "analytics:pattern:Dashboard",
+        "analytics:keyword:analytics:19",
+        "analytics:keyword:dashboard:10",
+        "analytics:keyword:metrics:78"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "httpsCallable",
+        "functions",
+        "BarChart",
+        "Bar",
+        "PieChart",
+        "Pie",
+        "Cell",
+        "XAxis",
+        "YAxis",
+        "CartesianGrid",
+        "Tooltip",
+        "ResponsiveContainer"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/CVAnalysisResults.tsx",
+      "componentName": "CVAnalysisResults",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:pattern:CV.*Analysis",
+        "cv-processing:pattern:CV.*Results",
+        "cv-processing:keyword:cv:13",
+        "cv-processing:keyword:analysis:10",
+        "cv-processing:type:CVAnalysis"
+      ],
+      "crossBoundaryImports": [
+        "../utils/cvProcessingIntegration"
+      ],
+      "typeImports": [
+        "getCVAnalysisResults",
+        "monitorCVProcessingPerformance"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/CVPreview.tsx",
+      "componentName": "CVPreview",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:pattern:CV.*Preview",
+        "cv-processing:keyword:cv:6",
+        "cv-processing:keyword:preview:6"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/ExternalDataSources.tsx",
+      "componentName": "ExternalDataSources",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:ats:6",
+        "cv-processing:keyword:preview:22",
+        "analytics:keyword:analytics:5",
+        "analytics:keyword:stats:6"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Search",
+        "Eye",
+        "EyeOff",
+        "designSystem",
+        "useExternalData",
+        "type ExternalDataSource as _ExternalDataSource",
+        "ExternalDataPreview",
+        "SourceSelector",
+        "PrivacyNotice",
+        "DataSummary",
+        "ExternalDataActions",
+        "ExternalDataSourcesGate",
+        "SmartIncentiveManager",
+        "FeatureEngagementTracker",
+        "useProgressiveRevelation"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/GeneratedCVDisplay.tsx",
+      "componentName": "GeneratedCVDisplay",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:pattern:CV.*Display",
+        "cv-processing:keyword:cv:13"
+      ],
+      "crossBoundaryImports": [
+        "../utils/cvProcessingIntegration"
+      ],
+      "typeImports": [
+        "getGeneratedCVDisplay",
+        "monitorCVProcessingPerformance"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/GeneratedCVDisplayLazy.tsx",
+      "componentName": "GeneratedCVDisplayLazy",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:pattern:CV.*Display",
+        "cv-processing:keyword:cv:27"
+      ],
+      "crossBoundaryImports": [
+        "../services/cvService",
+        "../utils/lazyComponentRenderer"
+      ],
+      "typeImports": [
+        "Download",
+        "FileText",
+        "Globe",
+        "Job",
+        "initializeLazyReactComponents",
+        "preloadCriticalComponents"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/HeroSection.tsx",
+      "componentName": "HeroSection",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:4",
+        "cv-processing:keyword:ats:6",
+        "multimedia:keyword:video:104"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Play",
+        "Pause",
+        "Volume2",
+        "VolumeX",
+        "Maximize",
+        "Sparkles",
+        "useTranslation"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/KeywordManager.tsx",
+      "componentName": "KeywordManager",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:24",
+        "cv-processing:keyword:ats:8",
+        "analytics:keyword:stats:8"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Tag",
+        "Plus",
+        "X",
+        "Search",
+        "Filter",
+        "Target",
+        "TrendingUp",
+        "AlertTriangle"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/MobilePageLayout.tsx",
+      "componentName": "MobilePageLayout",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:4",
+        "cv-processing:keyword:analysis:5",
+        "cv-processing:keyword:processing:5",
+        "cv-processing:keyword:preview:5",
+        "cv-processing:type:CVAnalysis"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Header",
+        "MobilePageWrapper",
+        "ResponsiveStepIndicator"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/OutcomeTracker.tsx",
+      "componentName": "OutcomeTracker",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:5",
+        "cv-processing:keyword:ats:31",
+        "cv-processing:type:CVData",
+        "analytics:keyword:stats:26"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "httpsCallable",
+        "functions"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/PodcastPlayer.tsx",
+      "componentName": "PodcastPlayer",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "cv-processing:keyword:generation:6",
+        "multimedia:pattern:Podcast",
+        "multimedia:keyword:audio:10",
+        "multimedia:keyword:podcast:68"
+      ],
+      "crossBoundaryImports": [
+        "../services/cvService"
+      ],
+      "typeImports": [
+        "Play",
+        "Download",
+        "FileText",
+        "RefreshCw",
+        "Clock",
+        "RotateCcw",
+        "Crown",
+        "getPodcastStatus",
+        "generateEnhancedPodcast",
+        "regeneratePodcast",
+        "usePremiumStatus"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/ProfilePictureUpload.tsx",
+      "componentName": "ProfilePictureUpload",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:preview:19",
+        "public-profiles:keyword:profile:9"
+      ],
+      "crossBoundaryImports": [
+        "../services/imageUploadService"
+      ],
+      "typeImports": [
+        "Camera",
+        "Upload",
+        "X",
+        "Check",
+        "AlertCircle",
+        "Loader2",
+        "RotateCcw",
+        "Crop",
+        "Download",
+        "ImageUploadService"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/QRCodeEditor.tsx",
+      "componentName": "QRCodeEditor",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:5",
+        "multimedia:pattern:QR",
+        "multimedia:keyword:qr:17",
+        "public-profiles:keyword:profile:7",
+        "public-profiles:keyword:portfolio:6",
+        "public-profiles:keyword:contact:4"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Save",
+        "Globe",
+        "User",
+        "Briefcase",
+        "Phone",
+        "ExternalLink"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/SessionStatusIndicator.tsx",
+      "componentName": "SessionStatusIndicator",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:processing:6",
+        "analytics:keyword:metrics:5"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "EnhancedSessionState",
+        "SyncStatus"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/admin-integration/AdminAnalyticsDashboardWrapper.tsx",
+      "componentName": "AdminAnalyticsDashboardWrapper",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:4",
+        "analytics:pattern:Analytics",
+        "analytics:pattern:Dashboard",
+        "analytics:keyword:analytics:21",
+        "analytics:keyword:dashboard:24"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useFeatureFlags",
+        "Loader2",
+        "AlertTriangle",
+        "AnalyticsDashboard as LegacyAnalyticsDashboard"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/analysis/role-detection/RoleDetectionSection.tsx",
+      "componentName": "RoleDetectionSection",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:analysis:8",
+        "public-profiles:keyword:profile:6"
+      ],
+      "crossBoundaryImports": [
+        "../context/types"
+      ],
+      "typeImports": [
+        "Target",
+        "Sparkles",
+        "RefreshCw",
+        "Settings",
+        "Clock",
+        "AlertCircle",
+        "RoleDetectionProgress",
+        "DetectedRoleCard",
+        "RoleSelectionModal",
+        "useRoleDetection",
+        "useUnifiedAnalysis",
+        "RoleDetectionSectionProps"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/analysis/unified/UnifiedAnalysisContainer.tsx",
+      "componentName": "UnifiedAnalysisContainer",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:7",
+        "cv-processing:keyword:analysis:35"
+      ],
+      "crossBoundaryImports": [
+        "../../../services/cvService",
+        "../../../types/role-profiles"
+      ],
+      "typeImports": [
+        "useNavigate",
+        "RoleDetectionSection",
+        "RoleDetectionPremiumGate",
+        "RecommendationsContainer",
+        "UnifiedAnalysisProvider",
+        "useUnifiedAnalysis",
+        "Job",
+        "DetectedRole"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/common/CVPreviewLayout.tsx",
+      "componentName": "CVPreviewLayout",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:pattern:CV.*Preview",
+        "cv-processing:keyword:cv:8",
+        "cv-processing:keyword:preview:8"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/common/CVPreviewSkeleton.tsx",
+      "componentName": "CVPreviewSkeleton",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:pattern:CV.*Preview",
+        "cv-processing:keyword:cv:9",
+        "cv-processing:keyword:preview:8"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/cv-comparison.legacy/DiffRenderer.tsx",
+      "componentName": "DiffRenderer",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:ats:12",
+        "analytics:keyword:stats:12"
+      ],
+      "crossBoundaryImports": [
+        "../../utils/cv-comparison/diffUtils"
+      ],
+      "typeImports": [
+        "DiffResult"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/cv-comparison.legacy/examples/ComparisonDemo.tsx",
+      "componentName": "ComparisonDemo",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:25",
+        "cv-processing:type:CVData"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CVComparisonView"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/cv-preview/CVPreviewToolbar.tsx",
+      "componentName": "CVPreviewToolbar",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:pattern:CV.*Preview",
+        "cv-processing:keyword:cv:10",
+        "cv-processing:keyword:preview:19"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cv-preview"
+      ],
+      "typeImports": [
+        "Edit3",
+        "Save",
+        "X",
+        "Eye",
+        "EyeOff",
+        "CVPreviewToolbarProps"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/cv-preview/PlaceholderBanner.tsx",
+      "componentName": "PlaceholderBanner",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:10",
+        "cv-processing:type:CVData"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "AlertTriangle",
+        "X",
+        "Edit3",
+        "Eye",
+        "EyeOff",
+        "Info",
+        "detectPlaceholdersInCV",
+        "getPlaceholderSummary",
+        "groupPlaceholdersBySection",
+        "type PlaceholderMatch"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/dev/NavigationDebugger.tsx",
+      "componentName": "NavigationDebugger",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:analysis:5",
+        "cv-processing:keyword:preview:9"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useLocation",
+        "useNavigate",
+        "CheckCircle",
+        "XCircle",
+        "Info"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/display/CVContentDisplay.tsx",
+      "componentName": "CVContentDisplay",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:pattern:CV.*Display",
+        "cv-processing:keyword:cv:46",
+        "cv-processing:keyword:preview:7",
+        "multimedia:keyword:media:6",
+        "multimedia:keyword:qr:6",
+        "public-profiles:keyword:portfolio:6"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Loader2",
+        "Eye",
+        "Download",
+        "Sparkles",
+        "EnhancedFeatureProgress"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/enhancement/CVPreviewPanel.tsx",
+      "componentName": "CVPreviewPanel",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:pattern:CV.*Preview",
+        "cv-processing:keyword:cv:11",
+        "cv-processing:keyword:processing:9",
+        "cv-processing:keyword:enhancement:4",
+        "cv-processing:keyword:preview:74"
+      ],
+      "crossBoundaryImports": [
+        "../../services/enhancement/preview.service"
+      ],
+      "typeImports": [
+        "previewService",
+        "PreviewState",
+        "FeaturePreview",
+        "useAuth"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/error-boundaries/AsyncGenerationErrorBoundary.tsx",
+      "componentName": "AsyncGenerationErrorBoundary",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:4",
+        "cv-processing:keyword:generation:12"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Zap",
+        "AlertCircle",
+        "RotateCcw"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/error-boundaries/EnhancedAsyncGenerationErrorBoundary.tsx",
+      "componentName": "EnhancedAsyncGenerationErrorBoundary",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:4",
+        "cv-processing:keyword:generation:23"
+      ],
+      "crossBoundaryImports": [
+        "../../utils/logger"
+      ],
+      "typeImports": [
+        "Zap",
+        "AlertCircle",
+        "RotateCcw",
+        "logger"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/error-recovery/ErrorRecoveryDialog.tsx",
+      "componentName": "ErrorRecoveryDialog",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:processing:5"
+      ],
+      "crossBoundaryImports": [
+        "../../services/error-recovery/ErrorClassification",
+        "../../services/error-recovery/CheckpointManager",
+        "../../services/error-recovery/RetryMechanism"
+      ],
+      "typeImports": [
+        "useState",
+        "useEffect",
+        "AlertTriangle",
+        "RefreshCw",
+        "CheckCircle",
+        "Clock",
+        "ArrowRight",
+        "X",
+        "Save",
+        "Shield",
+        "Zap",
+        "ErrorType",
+        "ErrorSeverity",
+        "type ClassifiedError",
+        "ProcessingCheckpoint",
+        "RetryResult"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/external/CategorySection.tsx",
+      "componentName": "CategorySection",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "public-profiles:keyword:public:4",
+        "public-profiles:keyword:portfolio:6"
+      ],
+      "crossBoundaryImports": [
+        "../../types/externalData"
+      ],
+      "typeImports": [
+        "Eye",
+        "Code",
+        "Award",
+        "Github",
+        "BookOpen",
+        "Trophy",
+        "Star",
+        "ChevronDown",
+        "ChevronUp",
+        "CheckCircle",
+        "Circle",
+        "SelectedItems"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/external/DataSummary.tsx",
+      "componentName": "DataSummary",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:ats:6",
+        "analytics:keyword:stats:6"
+      ],
+      "crossBoundaryImports": [
+        "../../types/externalData"
+      ],
+      "typeImports": [
+        "designSystem",
+        "ExternalDataResult"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/external/ExternalDataActions.tsx",
+      "componentName": "ExternalDataActions",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:ats:6",
+        "analytics:keyword:stats:6"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Loader2",
+        "RefreshCw",
+        "Search",
+        "designSystem"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/AI-Powered/AIChatAssistant.tsx",
+      "componentName": "AIChatAssistant",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:12",
+        "cv-processing:type:CVData",
+        "public-profiles:keyword:profile:10"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "Send",
+        "Download",
+        "Mic",
+        "MicOff",
+        "MoreVertical",
+        "Copy",
+        "Trash2",
+        "format",
+        "CVFeatureProps",
+        "FeatureWrapper",
+        "ErrorBoundary",
+        "useFirebaseFunction"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/AI-Powered/AIPodcastPlayer.tsx",
+      "componentName": "AIPodcastPlayer",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:4",
+        "cv-processing:keyword:generation:12",
+        "multimedia:pattern:Podcast",
+        "multimedia:keyword:audio:97",
+        "multimedia:keyword:podcast:58"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "Play",
+        "Pause",
+        "Volume2",
+        "VolumeX",
+        "Download",
+        "Share2",
+        "RotateCcw",
+        "SkipBack",
+        "SkipForward",
+        "Loader2",
+        "FileAudio",
+        "Clock",
+        "MessageSquare",
+        "CVFeatureProps",
+        "PodcastData",
+        "FeatureWrapper",
+        "ErrorBoundary",
+        "LoadingSpinner",
+        "useFeatureData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/AI-Powered/ATSOptimization.tsx",
+      "componentName": "ATSOptimization",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:analysis:16",
+        "cv-processing:keyword:ats:38"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features",
+        "../../../types/ats"
+      ],
+      "typeImports": [
+        "CircularProgressbar",
+        "buildStyles",
+        "AreaChart",
+        "Area",
+        "XAxis",
+        "YAxis",
+        "CartesianGrid",
+        "Tooltip",
+        "ResponsiveContainer",
+        "RadarChart",
+        "PolarGrid",
+        "PolarAngleAxis",
+        "PolarRadiusAxis",
+        "Radar",
+        "Legend",
+        "BarChart",
+        "Bar",
+        "Award",
+        "TrendingUp",
+        "Target",
+        "Zap",
+        "AlertTriangle",
+        "CheckCircle",
+        "Download",
+        "Gauge",
+        "BarChart3",
+        "ChevronDown",
+        "ChevronRight",
+        "Eye",
+        "Settings",
+        "Lightbulb",
+        "Users",
+        "Clock",
+        "Search",
+        "Filter",
+        "CVFeatureProps",
+        "ATSData",
+        "ATSReport",
+        "AdvancedATSScore",
+        "EnhancedATSResult",
+        "ATSSystemType",
+        "FeatureWrapper",
+        "LoadingSpinner",
+        "ErrorBoundary",
+        "useFeatureData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/AI-Powered/KeywordEnhancement.tsx",
+      "componentName": "KeywordEnhancement",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:4",
+        "cv-processing:keyword:analysis:36",
+        "cv-processing:keyword:ats:8",
+        "cv-processing:keyword:enhancement:10",
+        "cv-processing:keyword:preview:11"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "CVFeatureProps",
+        "useFeatureData",
+        "FeatureWrapper",
+        "LoadingSpinner"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/AI-Powered/PersonalityInsights.tsx",
+      "componentName": "PersonalityInsights",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "cv-processing:keyword:analysis:13",
+        "public-profiles:keyword:profile:26",
+        "analytics:keyword:insights:13"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "RadarChart",
+        "Radar",
+        "PolarGrid",
+        "PolarAngleAxis",
+        "PolarRadiusAxis",
+        "ResponsiveContainer",
+        "BarChart",
+        "Bar",
+        "XAxis",
+        "YAxis",
+        "Tooltip",
+        "CVFeatureProps",
+        "useFeatureData",
+        "FeatureWrapper",
+        "LoadingSpinner"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/AI-Powered/PublicProfile.tsx",
+      "componentName": "PublicProfile",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:4",
+        "multimedia:keyword:qr:11",
+        "public-profiles:pattern:Public.*Profile",
+        "public-profiles:keyword:public:19",
+        "public-profiles:keyword:profile:112",
+        "public-profiles:type:PublicProfile",
+        "analytics:keyword:analytics:22"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "CVFeatureProps",
+        "useFeatureData",
+        "FeatureWrapper",
+        "LoadingSpinner"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/AI-Powered/SkillsAnalytics.tsx",
+      "componentName": "SkillsAnalytics",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "cv-processing:keyword:analysis:19",
+        "analytics:pattern:Analytics",
+        "analytics:keyword:analytics:13"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "RadarChart",
+        "PolarGrid",
+        "PolarAngleAxis",
+        "PolarRadiusAxis",
+        "Radar",
+        "BarChart",
+        "Bar",
+        "XAxis",
+        "YAxis",
+        "CartesianGrid",
+        "Tooltip",
+        "ResponsiveContainer",
+        "Legend",
+        "ScatterChart",
+        "Scatter",
+        "Cell",
+        "PieChart",
+        "Pie",
+        "LineChart",
+        "Line",
+        "AreaChart",
+        "Area",
+        "TrendingUp",
+        "Target",
+        "Award",
+        "BarChart3",
+        "Radar as RadarIcon",
+        "Users",
+        "Star",
+        "ChevronDown",
+        "ChevronRight",
+        "Download",
+        "Filter",
+        "Search",
+        "Eye",
+        "Calendar",
+        "Zap",
+        "BookOpen",
+        "Trophy",
+        "Lightbulb",
+        "AlertCircle",
+        "CheckCircle2",
+        "ArrowUp",
+        "ArrowDown",
+        "Minus",
+        "Settings",
+        "Palette",
+        "RefreshCw",
+        "FileText",
+        "format",
+        "addMonths",
+        "subMonths",
+        "CVFeatureProps",
+        "Skill",
+        "SkillCategory",
+        "ProficiencyLevel",
+        "ComparisonData",
+        "FeatureWrapper",
+        "LoadingSpinner",
+        "ErrorBoundary",
+        "useFeatureData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/ATSScore.tsx",
+      "componentName": "ATSScore",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:analysis:19",
+        "cv-processing:keyword:ats:28"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle",
+        "XCircle",
+        "AlertCircle",
+        "TrendingUp",
+        "BarChart3",
+        "Target",
+        "Users",
+        "Gauge",
+        "ChevronDown",
+        "ChevronRight",
+        "Zap",
+        "Award",
+        "useState",
+        "EnhancedATSResult",
+        "ATSScoreProps",
+        "ATSSystemType"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/ContactForm.tsx",
+      "componentName": "ContactForm",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "public-profiles:keyword:profile:4",
+        "public-profiles:keyword:contact:42"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cv-features"
+      ],
+      "typeImports": [
+        "Send",
+        "CVFeatureProps",
+        "FeatureWrapper",
+        "ErrorBoundary",
+        "useFirebaseFunction",
+        "ContactFormFields",
+        "ContactFormHeader",
+        "ContactFormStatus",
+        "useContactFormValidation",
+        "useTranslation",
+        "ContactFormProps",
+        "ContactFormData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/EnhancedQRCode.tsx",
+      "componentName": "EnhancedQRCode",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "multimedia:pattern:QR",
+        "multimedia:keyword:qr:129",
+        "public-profiles:keyword:profile:8",
+        "public-profiles:keyword:portfolio:6",
+        "public-profiles:keyword:contact:6",
+        "analytics:keyword:analytics:37",
+        "analytics:type:AnalyticsData"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useState",
+        "useEffect",
+        "QrCode",
+        "Plus",
+        "Download",
+        "Eye",
+        "BarChart3",
+        "Settings",
+        "Copy",
+        "ExternalLink",
+        "Smartphone",
+        "User",
+        "Briefcase",
+        "Mail",
+        "Loader2",
+        "TrendingUp",
+        "Users",
+        "MapPin",
+        "Palette"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Interactive/DynamicQRCode.example.tsx",
+      "componentName": "DynamicQRCode.example",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:31",
+        "cv-processing:type:CVData",
+        "multimedia:pattern:QR",
+        "multimedia:keyword:qr:47",
+        "public-profiles:keyword:public:8",
+        "public-profiles:keyword:profile:23",
+        "public-profiles:keyword:portfolio:8",
+        "analytics:keyword:analytics:8"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "DynamicQRCode"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Interactive/DynamicQRCode.tsx",
+      "componentName": "DynamicQRCode",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "cv-processing:keyword:generation:6",
+        "multimedia:pattern:QR",
+        "multimedia:keyword:qr:131",
+        "public-profiles:keyword:profile:16",
+        "public-profiles:keyword:portfolio:4",
+        "analytics:keyword:analytics:31"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "QrCode",
+        "Download",
+        "Copy",
+        "Share2",
+        "Eye",
+        "BarChart3",
+        "RefreshCw",
+        "Settings",
+        "AlertCircle",
+        "httpsCallable",
+        "functions",
+        "CVFeatureProps",
+        "QRCodeData",
+        "FeatureWrapper",
+        "LoadingSpinner",
+        "ErrorBoundary",
+        "FunctionalErrorBoundary",
+        "useFeatureData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Interactive/SocialMediaLinks/AnalyticsDisplay.tsx",
+      "componentName": "AnalyticsDisplay",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "public-profiles:keyword:social:5",
+        "public-profiles:type:SocialLink",
+        "analytics:pattern:Analytics",
+        "analytics:keyword:analytics:9"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "BarChart3",
+        "SocialLinkAnalytics",
+        "SOCIAL_PLATFORMS"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Interactive/SocialMediaLinks/SocialLinkRenderer.tsx",
+      "componentName": "SocialLinkRenderer",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "public-profiles:pattern:Social",
+        "public-profiles:keyword:social:11",
+        "public-profiles:type:SocialLink",
+        "analytics:keyword:analytics:9"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "ExternalLink",
+        "Share2",
+        "AlertTriangle",
+        "CheckCircle",
+        "Clock",
+        "SocialPlatform",
+        "SocialLinkAnalytics",
+        "SocialLinksProps",
+        "SIZE_CLASSES",
+        "useSocialMediaShare"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Interactive/SocialMediaLinks/index.tsx",
+      "componentName": "index",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "multimedia:keyword:media:13",
+        "public-profiles:keyword:profile:6",
+        "public-profiles:keyword:social:20",
+        "public-profiles:type:SocialLink",
+        "analytics:keyword:analytics:16"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Globe",
+        "Settings",
+        "BarChart3",
+        "FeatureWrapper",
+        "LoadingSpinner",
+        "ErrorBoundary",
+        "FunctionalErrorBoundary",
+        "SocialLinksProps",
+        "SOCIAL_PLATFORMS",
+        "useSocialMediaTracking",
+        "useSocialMediaValidation",
+        "useSocialMediaAnalytics",
+        "SocialLinkRenderer",
+        "SettingsPanel",
+        "AnalyticsDisplay",
+        "ValidationResults"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Media/PortfolioGallery.example.tsx",
+      "componentName": "PortfolioGallery.example",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "multimedia:pattern:Gallery",
+        "multimedia:keyword:gallery:13",
+        "public-profiles:pattern:Portfolio",
+        "public-profiles:keyword:profile:4",
+        "public-profiles:keyword:portfolio:20",
+        "analytics:keyword:dashboard:4"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "PortfolioGallery"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Media/PortfolioGallery.tsx",
+      "componentName": "PortfolioGallery",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "multimedia:pattern:Gallery",
+        "multimedia:keyword:gallery:7",
+        "public-profiles:pattern:Portfolio",
+        "public-profiles:keyword:portfolio:23"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "useInView",
+        "ExternalLink",
+        "Github",
+        "Eye",
+        "Calendar",
+        "Users",
+        "Award",
+        "Filter",
+        "Search",
+        "Grid3X3",
+        "LayoutGrid",
+        "ChevronLeft",
+        "ChevronRight",
+        "X",
+        "Download",
+        "Share2",
+        "Maximize2",
+        "ZoomIn",
+        "Play",
+        "CVFeatureProps",
+        "FeatureWrapper",
+        "ErrorBoundary",
+        "useFeatureData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Media/VideoIntroduction.tsx",
+      "componentName": "VideoIntroduction",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:5",
+        "cv-processing:keyword:generation:4",
+        "multimedia:pattern:Video",
+        "multimedia:keyword:video:89"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "CVFeatureProps",
+        "useFeatureData",
+        "FeatureWrapper",
+        "LoadingSpinner"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/PodcastGeneration.tsx",
+      "componentName": "PodcastGeneration",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "multimedia:pattern:Podcast",
+        "multimedia:keyword:audio:26",
+        "multimedia:keyword:podcast:24"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useState",
+        "useRef",
+        "useEffect",
+        "Mic",
+        "Play",
+        "Pause",
+        "SkipBack",
+        "SkipForward",
+        "Download",
+        "Loader2",
+        "Sparkles",
+        "Volume2",
+        "FileText",
+        "Share2",
+        "ChevronDown"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Portal/PortalChatExample.tsx",
+      "componentName": "PortalChatExample",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "public-profiles:keyword:profile:7",
+        "public-profiles:type:SocialLink"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/portal-types"
+      ],
+      "typeImports": [
+        "PortalChatInterface",
+        "PortalConfig",
+        "ChatConfig"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Portal/PortalDeploymentStatus.example.tsx",
+      "componentName": "PortalDeploymentStatus.example",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:7",
+        "public-profiles:keyword:profile:6",
+        "public-profiles:type:SocialLink"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "PortalDeploymentStatus",
+        "DeploymentStatus",
+        "DeploymentPhase",
+        "PortalConfig",
+        "PortalError",
+        "PortalOperationResult"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Portal/PortalLayout.example.tsx",
+      "componentName": "PortalLayout.example",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:4",
+        "public-profiles:keyword:portfolio:11",
+        "public-profiles:type:SocialLink"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/portal-types"
+      ],
+      "typeImports": [
+        "PortalLayout",
+        "PortalConfig",
+        "DeploymentStatus"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Portal/PortalSections.example.tsx",
+      "componentName": "PortalSections.example",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "public-profiles:keyword:contact:4",
+        "public-profiles:type:SocialLink"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/portal-component-props"
+      ],
+      "typeImports": [
+        "PortalSections",
+        "PortalSection",
+        "PortalConfig",
+        "PortalError"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Portal/PortalSections.tsx",
+      "componentName": "PortalSections",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "public-profiles:keyword:profile:5",
+        "public-profiles:keyword:social:4"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/portal-component-props"
+      ],
+      "typeImports": [
+        "GripVertical",
+        "Eye",
+        "EyeOff",
+        "Settings",
+        "ChevronUp",
+        "ChevronDown",
+        "Plus",
+        "Trash2",
+        "Copy",
+        "RotateCcw",
+        "Save",
+        "AlertCircle",
+        "CheckCircle",
+        "Edit3",
+        "Layout",
+        "DndProvider",
+        "useDrag",
+        "useDrop",
+        "HTML5Backend",
+        "TouchBackend",
+        "isMobile",
+        "PortalSectionsProps",
+        "PortalSection",
+        "PortalSectionType",
+        "PortalError",
+        "FeatureWrapper",
+        "LoadingSpinner",
+        "ErrorBoundary",
+        "FunctionalErrorBoundary",
+        "useFirebaseFunction"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/PortfolioGallery.tsx",
+      "componentName": "PortfolioGallery",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "multimedia:pattern:Gallery",
+        "multimedia:keyword:media:19",
+        "multimedia:keyword:gallery:31",
+        "public-profiles:pattern:Portfolio",
+        "public-profiles:keyword:public:4",
+        "public-profiles:keyword:portfolio:17",
+        "public-profiles:type:PortfolioItem",
+        "analytics:keyword:metrics:5"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useState",
+        "Grid3x3",
+        "List",
+        "Clock",
+        "Tag",
+        "Trash2",
+        "Share2",
+        "Loader2",
+        "FileText",
+        "ExternalLink",
+        "X",
+        "Briefcase",
+        "Trophy",
+        "BookOpen",
+        "Mic",
+        "Award"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/PublicProfile.tsx",
+      "componentName": "PublicProfile",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:6",
+        "multimedia:keyword:qr:19",
+        "public-profiles:pattern:Public.*Profile",
+        "public-profiles:keyword:public:14",
+        "public-profiles:keyword:profile:29",
+        "public-profiles:keyword:contact:7",
+        "public-profiles:type:PublicProfile",
+        "analytics:keyword:analytics:14"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useState",
+        "QrCode",
+        "Copy",
+        "Share2",
+        "Eye",
+        "Mail",
+        "Shield",
+        "Check",
+        "ExternalLink"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/SocialMediaLinks.tsx",
+      "componentName": "SocialMediaLinks",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "multimedia:pattern:Media",
+        "multimedia:keyword:media:11",
+        "public-profiles:pattern:Social",
+        "public-profiles:keyword:profile:12",
+        "public-profiles:keyword:social:28",
+        "public-profiles:type:SocialLink"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "ExternalLink",
+        "Share2",
+        "Users"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/VideoIntroduction.tsx",
+      "componentName": "VideoIntroduction",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "cv-processing:keyword:processing:9",
+        "cv-processing:keyword:generation:23",
+        "multimedia:pattern:Video",
+        "multimedia:keyword:video:104",
+        "multimedia:type:VideoGeneration",
+        "analytics:keyword:analytics:12",
+        "analytics:keyword:dashboard:4"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useState",
+        "useEffect",
+        "useRef",
+        "Video",
+        "Upload",
+        "Play",
+        "Pause",
+        "RefreshCw",
+        "Download",
+        "Loader2",
+        "Sparkles",
+        "Settings",
+        "User",
+        "Zap",
+        "Award",
+        "BarChart3",
+        "Clock",
+        "CheckCircle",
+        "AlertCircle",
+        "Monitor",
+        "ProviderSelectionPanel",
+        "IndustryTemplateSelector",
+        "RealTimeStatusMonitor",
+        "ScriptOptimizationPanel",
+        "VideoAnalyticsDashboard"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Visual/AchievementCards.tsx",
+      "componentName": "AchievementCards",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:5",
+        "cv-processing:keyword:ats:10",
+        "analytics:keyword:metrics:14",
+        "analytics:keyword:stats:8"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "Trophy",
+        "Award",
+        "Star",
+        "TrendingUp",
+        "Calendar",
+        "Target",
+        "Zap",
+        "BarChart3",
+        "Download",
+        "Filter",
+        "Grid3X3",
+        "LayoutGrid",
+        "Layers",
+        "ChevronLeft",
+        "ChevronRight",
+        "ArrowUp",
+        "ArrowDown",
+        "Eye",
+        "ExternalLink",
+        "RotateCcw",
+        "CVFeatureProps",
+        "FeatureWrapper",
+        "LoadingSpinner",
+        "ErrorBoundary",
+        "useFeatureData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/examples/AIPodcastPlayerExample.tsx",
+      "componentName": "AIPodcastPlayerExample",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "cv-processing:keyword:generation:10",
+        "multimedia:pattern:Podcast",
+        "multimedia:keyword:audio:4",
+        "multimedia:keyword:podcast:23",
+        "public-profiles:keyword:profile:4"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "AIPodcastPlayer",
+        "PodcastData",
+        "AIPodcastPlayer"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/examples/ATSOptimizationExample.tsx",
+      "componentName": "ATSOptimizationExample",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:analysis:5",
+        "cv-processing:keyword:ats:38",
+        "public-profiles:keyword:profile:4",
+        "public-profiles:keyword:contact:5"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/ats"
+      ],
+      "typeImports": [
+        "EnhancedATSResult",
+        "Settings",
+        "Play",
+        "RotateCcw"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/video/RealTimeStatusMonitor.tsx",
+      "componentName": "RealTimeStatusMonitor",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "cv-processing:keyword:processing:5",
+        "cv-processing:keyword:generation:5",
+        "multimedia:keyword:video:6",
+        "multimedia:type:VideoGeneration"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle",
+        "Clock",
+        "AlertCircle",
+        "Loader2",
+        "Monitor",
+        "Star",
+        "Zap",
+        "Shield"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/video/ScriptOptimizationPanel.tsx",
+      "componentName": "ScriptOptimizationPanel",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "cv-processing:keyword:preview:7",
+        "analytics:keyword:metrics:29"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "X",
+        "Sparkles",
+        "Award",
+        "TrendingUp",
+        "Brain",
+        "Lightbulb",
+        "CheckCircle",
+        "AlertTriangle",
+        "RefreshCw"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/features/video/VideoAnalyticsDashboard.tsx",
+      "componentName": "VideoAnalyticsDashboard",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "cv-processing:keyword:generation:10",
+        "multimedia:pattern:Video",
+        "multimedia:keyword:video:25",
+        "analytics:pattern:Analytics",
+        "analytics:pattern:Dashboard",
+        "analytics:keyword:analytics:5",
+        "analytics:keyword:dashboard:5"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "X",
+        "BarChart3",
+        "TrendingUp",
+        "Clock",
+        "DollarSign",
+        "Star",
+        "Shield",
+        "Zap",
+        "Award",
+        "Users",
+        "Eye",
+        "Share2"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/logging/AlertMonitoringDashboard.tsx",
+      "componentName": "AlertMonitoringDashboard",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "cv-processing:keyword:ats:27",
+        "analytics:pattern:Dashboard",
+        "analytics:keyword:dashboard:22",
+        "analytics:keyword:stats:27",
+        "analytics:type:DashboardConfig"
+      ],
+      "crossBoundaryImports": [
+        "../../utils/logger"
+      ],
+      "typeImports": [
+        "AlertTriangle",
+        "Bell",
+        "BellOff",
+        "Clock",
+        "CheckCircle",
+        "XCircle",
+        "ArrowUp",
+        "ArrowDown",
+        "Filter",
+        "RefreshCw",
+        "Users",
+        "Calendar",
+        "TrendingUp",
+        "Activity",
+        "Settings",
+        "Eye",
+        "MessageSquare",
+        "MoreHorizontal",
+        "Zap",
+        "logger"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/logging/LogsViewerDashboard.tsx",
+      "componentName": "LogsViewerDashboard",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "cv-processing:keyword:ats:27",
+        "analytics:pattern:Dashboard",
+        "analytics:keyword:dashboard:6",
+        "analytics:keyword:stats:27"
+      ],
+      "crossBoundaryImports": [
+        "../../utils/logger"
+      ],
+      "typeImports": [
+        "Search",
+        "Filter",
+        "Download",
+        "Play",
+        "Pause",
+        "RefreshCw",
+        "Calendar",
+        "Database",
+        "AlertCircle",
+        "TrendingUp",
+        "Settings",
+        "Eye",
+        "EyeOff",
+        "logger",
+        "LogLevel",
+        "LogDomain",
+        "type LogEntry"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/multimedia-integration/MultimediaWrappers.tsx",
+      "componentName": "MultimediaWrappers",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "cv-processing:keyword:generation:5",
+        "multimedia:pattern:Media",
+        "multimedia:keyword:video:11",
+        "multimedia:keyword:podcast:14",
+        "multimedia:keyword:media:49",
+        "multimedia:keyword:multimedia:48",
+        "multimedia:keyword:gallery:5",
+        "public-profiles:keyword:profile:4",
+        "public-profiles:keyword:portfolio:5",
+        "analytics:keyword:analytics:5",
+        "analytics:keyword:dashboard:5"
+      ],
+      "crossBoundaryImports": [
+        "../../utils/featureRegistry"
+      ],
+      "typeImports": [
+        "useFeatureRegistry"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/pages/FAQ/FAQPage.tsx",
+      "componentName": "FAQPage",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:cv:5",
+        "public-profiles:keyword:contact:6"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "HelpCircle",
+        "Sparkles",
+        "ArrowRight",
+        "Menu",
+        "X",
+        "FAQPageProps",
+        "FAQItem",
+        "FAQCategory",
+        "SearchFilters",
+        "FAQSearchBar",
+        "FAQCategoryGrid",
+        "FAQAccordion",
+        "FAQSidebar",
+        "FAQQuickActions",
+        "FAQ_DATA",
+        "FAQ_CATEGORIES"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/pages/FAQ/FAQPageEnhanced.tsx",
+      "componentName": "FAQPageEnhanced",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:4",
+        "public-profiles:keyword:contact:7",
+        "analytics:keyword:analytics:24",
+        "analytics:keyword:metrics:12"
+      ],
+      "crossBoundaryImports": [
+        "../../../services/faqAnalytics"
+      ],
+      "typeImports": [
+        "HelpCircle",
+        "Sparkles",
+        "ArrowRight",
+        "Menu",
+        "X",
+        "Zap",
+        "Clock",
+        "FAQPageProps",
+        "FAQItem",
+        "FAQCategory",
+        "FAQSearchBar",
+        "FAQCategoryGrid",
+        "FAQAccordion",
+        "FAQSidebar",
+        "FAQQuickActions",
+        "useFAQSearch",
+        "faqAnalytics"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/policy/PreUploadPolicyCheck.tsx",
+      "componentName": "PreUploadPolicyCheck",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:9",
+        "cv-processing:keyword:ats:14",
+        "analytics:keyword:stats:13"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "AlertTriangle",
+        "CheckCircle",
+        "XCircle",
+        "Upload",
+        "Crown",
+        "useUsageLimits",
+        "usePolicyStatus",
+        "useAuth"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/EnhancedFeatureGate.tsx",
+      "componentName": "EnhancedFeatureGate",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../services/premium/featureGatingService",
+        "../../services/premium/usageTracker",
+        "../../services/premium/featureRegistry"
+      ],
+      "typeImports": [
+        "Crown",
+        "Loader2",
+        "AlertTriangle",
+        "TrendingUp",
+        "Clock",
+        "Zap",
+        "useAuth",
+        "featureGatingService",
+        "FeatureAccessResult",
+        "usageTracker",
+        "FeatureRegistry",
+        "UpgradePrompt"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/ExternalDataBenefitsShowcase.tsx",
+      "componentName": "ExternalDataBenefitsShowcase",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "public-profiles:keyword:profile:4",
+        "analytics:keyword:metrics:19"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Github",
+        "Linkedin",
+        "Globe",
+        "Database",
+        "TrendingUp",
+        "Users",
+        "Award",
+        "Briefcase",
+        "Code",
+        "BookOpen",
+        "Star",
+        "ChevronRight",
+        "CheckCircle",
+        "Zap",
+        "Target",
+        "BarChart3",
+        "designSystem"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/PremiumGateCore.tsx",
+      "componentName": "PremiumGateCore",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:preview:13",
+        "analytics:keyword:analytics:11"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useFeatureAccess",
+        "LoadingState",
+        "PreviewOverlay",
+        "DefaultUpgradePrompt",
+        "PremiumGateErrorBoundary"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/PremiumGateExample.tsx",
+      "componentName": "PremiumGateExample",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:5",
+        "cv-processing:keyword:preview:8",
+        "analytics:keyword:analytics:14"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "ExternalDataSources",
+        "PremiumGate",
+        "ExternalDataSourcesGate",
+        "usePremiumGateAnalytics",
+        "toast"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/PremiumGatePresets.tsx",
+      "componentName": "PremiumGatePresets",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:preview:9",
+        "analytics:keyword:analytics:5",
+        "analytics:keyword:insights:4"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "PremiumGate",
+        "type PremiumGateProps"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/SmartFeatureTease.tsx",
+      "componentName": "SmartFeatureTease",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:analysis:7",
+        "cv-processing:keyword:ats:21",
+        "cv-processing:keyword:preview:22",
+        "analytics:keyword:stats:14",
+        "analytics:keyword:insights:10"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useProgressiveRevelation",
+        "useConversionTracking",
+        "usePremiumStatus",
+        "Eye",
+        "EyeOff",
+        "Lock",
+        "Sparkles",
+        "TrendingUp",
+        "Users",
+        "BarChart3",
+        "GitBranch",
+        "Award",
+        "Zap",
+        "Crown",
+        "ArrowRight"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/SmartIncentiveManager.tsx",
+      "componentName": "SmartIncentiveManager",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:4",
+        "cv-processing:keyword:ats:4",
+        "public-profiles:keyword:social:16",
+        "analytics:keyword:stats:4"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useProgressiveRevelation",
+        "useConversionTracking",
+        "usePremiumStatus",
+        "useAuth",
+        "Gift",
+        "Clock",
+        "Users",
+        "TrendingUp",
+        "Star",
+        "Zap",
+        "AlertTriangle",
+        "Crown",
+        "Target",
+        "Award",
+        "Briefcase",
+        "Code",
+        "Palette",
+        "Calculator",
+        "Globe"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/SuccessStoriesComponent.tsx",
+      "componentName": "SuccessStoriesComponent",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "cv-processing:keyword:ats:5",
+        "public-profiles:keyword:portfolio:4",
+        "analytics:keyword:metrics:22",
+        "analytics:keyword:stats:5"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Star",
+        "Quote",
+        "TrendingUp",
+        "Users",
+        "Award",
+        "Briefcase",
+        "Code",
+        "ChevronLeft",
+        "ChevronRight",
+        "Play",
+        "CheckCircle",
+        "designSystem"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/recommendations/RecommendationWizard.tsx",
+      "componentName": "RecommendationWizard",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:7",
+        "cv-processing:keyword:preview:10"
+      ],
+      "crossBoundaryImports": [
+        "../../types/placeholders"
+      ],
+      "typeImports": [
+        "EnhancedRecommendationCard",
+        "CVRecommendationWithPlaceholders"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/results/FeatureAvailabilityChecker.tsx",
+      "componentName": "FeatureAvailabilityChecker",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:cv:7",
+        "public-profiles:keyword:portfolio:8"
+      ],
+      "crossBoundaryImports": [
+        "../../services/cvService",
+        "../../types/results"
+      ],
+      "typeImports": [
+        "Job",
+        "FeatureAvailability"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/results/FeatureSelectionPanel.tsx",
+      "componentName": "FeatureSelectionPanel",
+      "suggestedSubmodule": "multimedia",
+      "domainIndicators": [
+        "cv-processing:keyword:ats:4",
+        "cv-processing:keyword:enhancement:4",
+        "multimedia:keyword:video:5",
+        "multimedia:keyword:podcast:5",
+        "multimedia:keyword:media:5",
+        "multimedia:keyword:gallery:4",
+        "multimedia:keyword:qr:5",
+        "public-profiles:keyword:social:5",
+        "public-profiles:keyword:portfolio:4",
+        "public-profiles:keyword:contact:5"
+      ],
+      "crossBoundaryImports": [
+        "../../types/results"
+      ],
+      "typeImports": [
+        "useCallback",
+        "FeatureCheckbox",
+        "SelectedFeatures",
+        "FeatureAvailability"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/role-profiles/RoleBasedRecommendations.tsx",
+      "componentName": "RoleBasedRecommendations",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:ats:26",
+        "cv-processing:keyword:preview:7",
+        "public-profiles:keyword:profile:7",
+        "analytics:keyword:stats:24"
+      ],
+      "crossBoundaryImports": [
+        "../../types/role-profiles"
+      ],
+      "typeImports": [
+        "Target",
+        "TrendingUp",
+        "Sparkles",
+        "AlertTriangle",
+        "designSystem",
+        "RoleProfile",
+        "DetectedRole",
+        "RoleBasedRecommendation",
+        "useRoleRecommendations",
+        "RoleRecommendationsList",
+        "RecommendationStats"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/role-profiles/RoleDetectionCard.tsx",
+      "componentName": "RoleDetectionCard",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "cv-processing:keyword:analysis:4",
+        "cv-processing:keyword:enhancement:6",
+        "public-profiles:keyword:profile:17"
+      ],
+      "crossBoundaryImports": [
+        "../../types/role-profiles"
+      ],
+      "typeImports": [
+        "CheckCircle",
+        "Target",
+        "TrendingUp",
+        "Sparkles",
+        "ArrowRight",
+        "Zap",
+        "Users",
+        "ExternalLink",
+        "ArrowLeft",
+        "designSystem",
+        "DetectedRole",
+        "RoleProfile",
+        "RoleProfileAnalysis"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/role-profiles/RoleProfileDemo.tsx",
+      "componentName": "RoleProfileDemo",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:10",
+        "cv-processing:keyword:analysis:19",
+        "cv-processing:keyword:preview:11",
+        "cv-processing:type:CVAnalysis",
+        "public-profiles:keyword:profile:15"
+      ],
+      "crossBoundaryImports": [
+        "../../services/cvService"
+      ],
+      "typeImports": [
+        "Header",
+        "RoleProfileIntegration",
+        "designSystem",
+        "ArrowLeft",
+        "Sparkles",
+        "Job"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/role-profiles/RoleProfileSelector.tsx",
+      "componentName": "RoleProfileSelector",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "cv-processing:keyword:analysis:10",
+        "cv-processing:keyword:enhancement:4",
+        "public-profiles:keyword:profile:27"
+      ],
+      "crossBoundaryImports": [
+        "../../types/role-profiles"
+      ],
+      "typeImports": [
+        "Check",
+        "ChevronDown",
+        "Sparkles",
+        "Target",
+        "TrendingUp",
+        "Loader2",
+        "RefreshCw",
+        "AlertTriangle",
+        "designSystem",
+        "RoleDetectionCard",
+        "RoleProfileDropdown",
+        "useRoleProfileSelector",
+        "RoleProfile",
+        "RoleProfileAnalysis",
+        "DetectedRole"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/role-profiles/components/RecommendationStats.tsx",
+      "componentName": "RecommendationStats",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "cv-processing:keyword:ats:17",
+        "analytics:pattern:Stats",
+        "analytics:keyword:stats:17"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "BarChart3",
+        "Target",
+        "CheckCircle2",
+        "Clock",
+        "TrendingUp",
+        "AlertTriangle",
+        "Zap",
+        "RecommendationItem"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/role-profiles/hooks/useRoleProfileSelector.tsx",
+      "componentName": "useRoleProfileSelector",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "cv-processing:keyword:analysis:19",
+        "public-profiles:keyword:profile:81"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/role-profiles",
+        "../../../utils/errorHandling"
+      ],
+      "typeImports": [
+        "useState",
+        "useEffect",
+        "useCallback",
+        "httpsCallable",
+        "getFunctionsInstance",
+        "RoleProfile",
+        "RoleProfileAnalysis",
+        "DetectedRole",
+        "logError"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/role-profiles/hooks/useRoleRecommendations.tsx",
+      "componentName": "useRoleRecommendations",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "public-profiles:keyword:profile:16"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/role-profiles",
+        "../../../utils/errorHandling",
+        "../../../services/roleProfileService"
+      ],
+      "typeImports": [
+        "useState",
+        "useEffect",
+        "useCallback",
+        "RoleProfile",
+        "DetectedRole",
+        "RoleBasedRecommendation",
+        "logError",
+        "roleProfileService"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/session/ResumeSessionDialog.tsx",
+      "componentName": "ResumeSessionDialog",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:4",
+        "cv-processing:keyword:preview:4"
+      ],
+      "crossBoundaryImports": [
+        "../../types/session"
+      ],
+      "typeImports": [
+        "Dialog",
+        "Transition",
+        "Clock",
+        "Play",
+        "X",
+        "FileText",
+        "ChevronRight",
+        "Calendar",
+        "User",
+        "Trash2",
+        "SessionState",
+        "CVStep"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/templates/AcademicTemplate.tsx",
+      "componentName": "AcademicTemplate",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:7",
+        "cv-processing:type:CVData",
+        "public-profiles:keyword:public:9"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cvData"
+      ],
+      "typeImports": [
+        "TemplateComponentProps",
+        "BookOpen",
+        "GraduationCap",
+        "Award",
+        "Users",
+        "Calendar",
+        "MapPin",
+        "Mail",
+        "Phone",
+        "Linkedin",
+        "FileText",
+        "CVParsedData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/templates/FinancialTemplate.tsx",
+      "componentName": "FinancialTemplate",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:7",
+        "cv-processing:type:CVData"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cvData"
+      ],
+      "typeImports": [
+        "TemplateComponentProps",
+        "Building2",
+        "TrendingUp",
+        "Award",
+        "Calendar",
+        "MapPin",
+        "Mail",
+        "Phone",
+        "Linkedin",
+        "Star",
+        "CVParsedData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/templates/InternationalTemplate.tsx",
+      "componentName": "InternationalTemplate",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:7",
+        "cv-processing:type:CVData"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cvData"
+      ],
+      "typeImports": [
+        "TemplateComponentProps",
+        "Globe",
+        "Languages",
+        "Award",
+        "Users",
+        "Calendar",
+        "MapPin",
+        "Mail",
+        "Phone",
+        "Linkedin",
+        "Briefcase",
+        "Star",
+        "CVParsedData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/templates/SalesTemplate.tsx",
+      "componentName": "SalesTemplate",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:7",
+        "cv-processing:type:CVData"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cvData"
+      ],
+      "typeImports": [
+        "TemplateComponentProps",
+        "TrendingUp",
+        "Target",
+        "Users",
+        "Award",
+        "Calendar",
+        "MapPin",
+        "Mail",
+        "Phone",
+        "Linkedin",
+        "BarChart3",
+        "Trophy",
+        "CVParsedData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "medium"
+    },
+    {
+      "componentPath": "frontend/src/components/AuthGuard.tsx",
+      "componentName": "AuthGuard",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useAuth",
+        "SignInDialog"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/AvailabilityCalendar.tsx",
+      "componentName": "AvailabilityCalendar",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "public-profiles:keyword:contact:9"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Calendar",
+        "Clock",
+        "User",
+        "Mail",
+        "CheckCircle"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/AvailabilityCalendarWrapper.tsx",
+      "componentName": "AvailabilityCalendarWrapper",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "AvailabilityCalendar",
+        "useCalendarData",
+        "Loader2",
+        "AlertCircle"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/Breadcrumb.tsx",
+      "componentName": "Breadcrumb",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../utils/breadcrumbs"
+      ],
+      "typeImports": [
+        "useNavigate",
+        "ChevronRight",
+        "Home",
+        "MoreHorizontal",
+        "FileText",
+        "BarChart3",
+        "Eye",
+        "Palette",
+        "CheckCircle",
+        "BreadcrumbItem"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/CalendarPermissions.tsx",
+      "componentName": "CalendarPermissions",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useAuth",
+        "Calendar",
+        "CheckCircle",
+        "Clock",
+        "Users",
+        "AlertCircle"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/ExternalDataPreview.tsx",
+      "componentName": "ExternalDataPreview",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:preview:7"
+      ],
+      "crossBoundaryImports": [
+        "../types/externalData"
+      ],
+      "typeImports": [
+        "Search",
+        "ChevronDown as _ChevronDown",
+        "ChevronUp as _ChevronUp",
+        "designSystem as _designSystem",
+        "ExternalDataResult",
+        "SelectedItems",
+        "PreviewHeader",
+        "SourceDataSection"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/FeatureCard.tsx",
+      "componentName": "FeatureCard",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle",
+        "Circle",
+        "Crown",
+        "Lock",
+        "HelpCircle",
+        "usePremiumStatus",
+        "isPremiumFeature",
+        "canAccessFeature",
+        "getPremiumTypeForFeature"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/FeatureSelectionPanel.tsx",
+      "componentName": "FeatureSelectionPanel",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:enhancement:13"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle",
+        "Circle"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/FileUpload.tsx",
+      "componentName": "FileUpload",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../lib/utils"
+      ],
+      "typeImports": [
+        "useDropzone",
+        "FileRejection",
+        "Upload",
+        "FileText",
+        "AlertCircle",
+        "cn",
+        "logger"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/Header.tsx",
+      "componentName": "Header",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:preview:4"
+      ],
+      "crossBoundaryImports": [
+        "../utils/breadcrumbs"
+      ],
+      "typeImports": [
+        "Logo",
+        "UserMenu",
+        "Breadcrumb",
+        "generateBreadcrumbs",
+        "ChevronLeft",
+        "designSystem"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/I18nTestPage.tsx",
+      "componentName": "I18nTestPage",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "public-profiles:keyword:contact:12"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useTranslation"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/JobDescriptionParser.tsx",
+      "componentName": "JobDescriptionParser",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../services/cvService"
+      ],
+      "typeImports": [
+        "Upload",
+        "Zap",
+        "Target",
+        "AlertCircle",
+        "CheckCircle",
+        "generateATSKeywords"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/LanguageProficiency/AddLanguageForm.tsx",
+      "componentName": "AddLanguageForm",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../types/language"
+      ],
+      "typeImports": [
+        "X",
+        "Globe",
+        "Award",
+        "Calendar",
+        "FileCheck",
+        "LanguageProficiency"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/LanguageProficiency/BarChart.tsx",
+      "componentName": "BarChart",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "analytics:pattern:Chart"
+      ],
+      "crossBoundaryImports": [
+        "../../types/language"
+      ],
+      "typeImports": [
+        "CheckCircle",
+        "Award",
+        "Clock",
+        "LanguageProficiency"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/LanguageProficiency/CircularProgress.tsx",
+      "componentName": "CircularProgress",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../types/language"
+      ],
+      "typeImports": [
+        "CheckCircle",
+        "Award",
+        "LanguageProficiency"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/LanguageProficiency/FlagGrid.tsx",
+      "componentName": "FlagGrid",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../types/language"
+      ],
+      "typeImports": [
+        "CheckCircle",
+        "Award",
+        "Info",
+        "Calendar",
+        "LanguageProficiency"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/LanguageProficiency/LanguageInsights.tsx",
+      "componentName": "LanguageInsights",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "analytics:keyword:insights:8"
+      ],
+      "crossBoundaryImports": [
+        "../../types/language"
+      ],
+      "typeImports": [
+        "TrendingUp",
+        "Globe",
+        "Award",
+        "Users",
+        "Lightbulb",
+        "Target",
+        "LanguageVisualization"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/LanguageProficiency/LanguageProficiency.tsx",
+      "componentName": "LanguageProficiency",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "analytics:keyword:insights:8"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Globe",
+        "Languages",
+        "Plus",
+        "CheckCircle",
+        "Loader2",
+        "TrendingUp",
+        "Award",
+        "Clock",
+        "LanguageProficiency as LanguageProficiencyType",
+        "LanguageVisualization",
+        "VisualizationType",
+        "VisualizationOption",
+        "CircularProgress",
+        "BarChart",
+        "FlagGrid",
+        "LanguageInsights",
+        "AddLanguageForm"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/LanguageProficiency/LanguageProficiencyDemo.tsx",
+      "componentName": "LanguageProficiencyDemo",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "analytics:keyword:insights:4"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Globe",
+        "Settings",
+        "RefreshCw",
+        "Download",
+        "LanguageProficiency",
+        "useLanguageProficiency"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/LanguageSelector.tsx",
+      "componentName": "LanguageSelector",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Fragment",
+        "Listbox",
+        "Transition",
+        "CheckIcon",
+        "ChevronUpDownIcon",
+        "LanguageIcon",
+        "useTranslation",
+        "supportedLanguages",
+        "type SupportedLanguage"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/LivePreview.tsx",
+      "componentName": "LivePreview",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:preview:10"
+      ],
+      "crossBoundaryImports": [
+        "../utils/cvProcessingIntegration"
+      ],
+      "typeImports": [
+        "getLivePreview",
+        "monitorCVProcessingPerformance"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/Logo.tsx",
+      "componentName": "Logo",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/MobileBottomNav.tsx",
+      "componentName": "MobileBottomNav",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useNavigate",
+        "useLocation",
+        "Home",
+        "ArrowLeft",
+        "ArrowRight",
+        "Save",
+        "Share2"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/MobileFeatureSelection.tsx",
+      "componentName": "MobileFeatureSelection",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:enhancement:18"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle",
+        "Circle",
+        "ChevronDown",
+        "ChevronUp",
+        "Plus",
+        "Minus"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/MobilePageWrapper.tsx",
+      "componentName": "MobilePageWrapper",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useStepNavigation",
+        "usePullToRefresh",
+        "MobileBottomNav",
+        "RefreshCw"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/NavigationBreadcrumbs.tsx",
+      "componentName": "NavigationBreadcrumbs",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:12"
+      ],
+      "crossBoundaryImports": [
+        "../services/navigation/navigationStateManager"
+      ],
+      "typeImports": [
+        "EnhancedSessionState",
+        "NavigationContext",
+        "CVStep",
+        "Breadcrumb"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/PIIWarning.tsx",
+      "componentName": "PIIWarning",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Shield"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/PremiumFeatureSelectionPanel.tsx",
+      "componentName": "PremiumFeatureSelectionPanel",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:enhancement:14"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle",
+        "Circle",
+        "Crown",
+        "Lock",
+        "AlertTriangle",
+        "Sparkles",
+        "Zap",
+        "Star",
+        "usePremiumStatus",
+        "FeatureCard",
+        "FeatureGate",
+        "PremiumBadge",
+        "UpgradePrompt",
+        "isPremiumFeature",
+        "getPremiumTypeForFeature",
+        "canAccessFeature",
+        "validateFeatureSelection",
+        "filterAccessibleFeatures"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/ProgressiveEnhancementRenderer.tsx",
+      "componentName": "ProgressiveEnhancementRenderer",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "createRoot",
+        "Root",
+        "AvailabilityCalendarWrapper"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/ResponsiveStepIndicator.tsx",
+      "componentName": "ResponsiveStepIndicator",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:5"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle",
+        "ArrowRight"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/SectionEditor.tsx",
+      "componentName": "SectionEditor",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:cv:8"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Save",
+        "X",
+        "Plus",
+        "Trash2"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/SessionAwarePage.tsx",
+      "componentName": "SessionAwarePage",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../services/navigation/navigationStateManager"
+      ],
+      "typeImports": [
+        "EnhancedSessionState",
+        "CVStep",
+        "NavigationContext",
+        "useEnhancedSession",
+        "useOfflineSession"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/SessionResumePrompt.tsx",
+      "componentName": "SessionResumePrompt",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:preview:4"
+      ],
+      "crossBoundaryImports": [
+        "../services/navigation/resumeIntelligence"
+      ],
+      "typeImports": [
+        "EnhancedSessionState",
+        "ResumeRecommendation",
+        "ActionRecommendation",
+        "ResumeIntelligence"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/SignInDialog.tsx",
+      "componentName": "SignInDialog",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../utils/errorHandling"
+      ],
+      "typeImports": [
+        "useAuth",
+        "X",
+        "getErrorMessage"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/TemplateCard.tsx",
+      "componentName": "TemplateCard",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:preview:4"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle",
+        "Crown",
+        "Star",
+        "Briefcase",
+        "Palette",
+        "Stethoscope",
+        "DollarSign",
+        "Globe",
+        "Laptop",
+        "ArrowRight",
+        "usePremiumStatus"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/URLInput.tsx",
+      "componentName": "URLInput",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../lib/utils"
+      ],
+      "typeImports": [
+        "Globe",
+        "ArrowRight",
+        "AlertCircle",
+        "cn",
+        "useTranslation"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/UserMenu.tsx",
+      "componentName": "UserMenu",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useAuth",
+        "LogOut",
+        "HelpCircle",
+        "Crown",
+        "Settings",
+        "Sparkles",
+        "useNavigate",
+        "useSubscription"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/analysis/context/UnifiedAnalysisContext.tsx",
+      "componentName": "UnifiedAnalysisContext",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:analysis:86"
+      ],
+      "crossBoundaryImports": [
+        "../../../services/cvService",
+        "../../../types/role-profiles"
+      ],
+      "typeImports": [
+        "UnifiedAnalysisContextInterface",
+        "UnifiedAnalysisContextState",
+        "UnifiedAnalysisAction",
+        "AnalysisStep",
+        "AnalysisResults",
+        "unifiedAnalysisReducer",
+        "initialUnifiedAnalysisState",
+        "unifiedAnalysisActions",
+        "Job",
+        "DetectedRole"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/analysis/recommendations/RecommendationsContainer.tsx",
+      "componentName": "RecommendationsContainer",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../../services/cvService"
+      ],
+      "typeImports": [
+        "Job",
+        "useRecommendationsContainer",
+        "useRecommendationSelection",
+        "RecommendationsHeader",
+        "RecommendationsLoader",
+        "RecommendationsError",
+        "RecommendationsList",
+        "RecommendationsActions"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/analysis/recommendations/modules/RecommendationCard.tsx",
+      "componentName": "RecommendationCard",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/analysis/recommendations/modules/RecommendationsActions.tsx",
+      "componentName": "RecommendationsActions",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:processing:8"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "ArrowLeft",
+        "ArrowRight",
+        "CheckCircle2",
+        "AlertTriangle"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/analysis/recommendations/modules/RecommendationsError.tsx",
+      "componentName": "RecommendationsError",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "AlertCircle",
+        "RefreshCw",
+        "Home"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/analysis/recommendations/modules/RecommendationsHeader.tsx",
+      "componentName": "RecommendationsHeader",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/analysis/recommendations/modules/RecommendationsList.tsx",
+      "componentName": "RecommendationsList",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "RecommendationCard",
+        "CheckSquare",
+        "Square",
+        "Search"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/analysis/recommendations/modules/RecommendationsLoader.tsx",
+      "componentName": "RecommendationsLoader",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Loader2"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/analysis/role-detection/DetectedRoleCard.tsx",
+      "componentName": "DetectedRoleCard",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:enhancement:11"
+      ],
+      "crossBoundaryImports": [
+        "../context/types"
+      ],
+      "typeImports": [
+        "CheckCircle",
+        "Target",
+        "TrendingUp",
+        "Settings",
+        "ChevronRight",
+        "DetectedRoleCardProps"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/analysis/role-detection/RoleDetectionProgress.tsx",
+      "componentName": "RoleDetectionProgress",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../context/types"
+      ],
+      "typeImports": [
+        "Target",
+        "Clock",
+        "CheckCircle",
+        "AlertCircle",
+        "RoleDetectionProgressProps"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/analysis/role-detection/RoleSelectionModal.tsx",
+      "componentName": "RoleSelectionModal",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:enhancement:12"
+      ],
+      "crossBoundaryImports": [
+        "../context/types",
+        "../../../types/role-profiles"
+      ],
+      "typeImports": [
+        "X",
+        "Search",
+        "Plus",
+        "Target",
+        "Filter",
+        "RoleSelectionModalProps",
+        "DetectedRole"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/charts/LightweightCharts.tsx",
+      "componentName": "LightweightCharts",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "analytics:pattern:Chart"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/common/Button.tsx",
+      "componentName": "Button",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "LucideIcon",
+        "designSystem"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/common/Card.tsx",
+      "componentName": "Card",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "designSystem"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/common/ErrorBoundary.tsx",
+      "componentName": "ErrorBoundary",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "AlertCircle",
+        "RefreshCw",
+        "Home"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/common/Input.tsx",
+      "componentName": "Input",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "LucideIcon",
+        "designSystem"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/common/Navigation.tsx",
+      "componentName": "Navigation",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Link",
+        "useLocation",
+        "Menu",
+        "X",
+        "Logo",
+        "UserMenu",
+        "useAuth",
+        "designSystem",
+        "useTranslation",
+        "LanguageSelector",
+        "LanguageSelectorCompact"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/common/PremiumStatusBadge.tsx",
+      "componentName": "PremiumStatusBadge",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Crown",
+        "Sparkles",
+        "Loader2",
+        "usePremiumIndicator"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/common/PremiumUpgradePrompt.tsx",
+      "componentName": "PremiumUpgradePrompt",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Crown",
+        "X",
+        "Sparkles",
+        "useNavigate",
+        "usePremiumPrompt",
+        "getTierConfig",
+        "formatPrice"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/cv-comparison/CVComparisonView.tsx",
+      "componentName": "CVComparisonView",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:13"
+      ],
+      "crossBoundaryImports": [
+        "../../utils/cvProcessingIntegration"
+      ],
+      "typeImports": [
+        "getCVComparisonView",
+        "monitorCVProcessingPerformance"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/cv-comparison.legacy/MobileComparisonView.tsx",
+      "componentName": "MobileComparisonView",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../utils/cv-comparison/diffUtils"
+      ],
+      "typeImports": [
+        "ArrowLeftRight",
+        "ChevronLeft",
+        "ChevronRight",
+        "Eye",
+        "GitCompare",
+        "DiffRenderer",
+        "DiffStats",
+        "getSectionDisplayName",
+        "SectionComparison",
+        "DiffResult"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/cv-preview/EditablePlaceholder.tsx",
+      "componentName": "EditablePlaceholder",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Edit3",
+        "Save",
+        "X",
+        "AlertCircle",
+        "Loader2",
+        "usePlaceholderEditing",
+        "EditablePlaceholderProps",
+        "PlaceholderMatch",
+        "PlaceholderInputProps"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/cv-preview/PlaceholderInput.tsx",
+      "componentName": "PlaceholderInput",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../types/inline-editing"
+      ],
+      "typeImports": [
+        "PlaceholderInputProps",
+        "ValidationResult"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/dev/ModuleIntegrationDemo.tsx",
+      "componentName": "ModuleIntegrationDemo",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:cv:5"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useModules",
+        "useModuleFeature"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/dev/NavigationTester.tsx",
+      "componentName": "NavigationTester",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../utils/robustNavigation",
+        "../../utils/navigationDebugger"
+      ],
+      "typeImports": [
+        "useNavigate",
+        "robustNavigation",
+        "navigationDebugger"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/dev/PremiumModuleDemo.tsx",
+      "componentName": "PremiumModuleDemo",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../types/premium"
+      ],
+      "typeImports": [
+        "PremiumFeature",
+        "usePremium",
+        "useFeatureGate",
+        "useSubscription",
+        "useModules"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/dev/SimpleModuleDemo.tsx",
+      "componentName": "SimpleModuleDemo",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useModules",
+        "useModuleFeature"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/dev/SubscriptionMonitor.tsx",
+      "componentName": "SubscriptionMonitor",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Monitor"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/error-boundaries/EnhancedErrorBoundary.tsx",
+      "componentName": "EnhancedErrorBoundary",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "analytics:keyword:reporting:7"
+      ],
+      "crossBoundaryImports": [
+        "../../utils/logger"
+      ],
+      "typeImports": [
+        "AlertCircle",
+        "RefreshCcw",
+        "Home",
+        "Bug",
+        "Mail",
+        "logger"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/error-boundaries/FinalResultsErrorBoundary.tsx",
+      "componentName": "FinalResultsErrorBoundary",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "AlertTriangle",
+        "RefreshCw",
+        "ArrowLeft",
+        "useNavigate"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/error-boundaries/FirestoreErrorBoundary.tsx",
+      "componentName": "FirestoreErrorBoundary",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:analysis:16"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/error-recovery/CheckpointProgressIndicator.tsx",
+      "componentName": "CheckpointProgressIndicator",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:processing:10"
+      ],
+      "crossBoundaryImports": [
+        "../../services/error-recovery/CheckpointManager"
+      ],
+      "typeImports": [
+        "useState",
+        "useEffect",
+        "CheckCircle",
+        "Circle",
+        "Save",
+        "Clock",
+        "RefreshCw",
+        "AlertCircle",
+        "Zap",
+        "CheckpointType",
+        "type ProcessingCheckpoint"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/external/PreviewHeader.tsx",
+      "componentName": "PreviewHeader",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:preview:4"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "designSystem"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/external/PrivacyNotice.tsx",
+      "componentName": "PrivacyNotice",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Shield",
+        "CheckCircle",
+        "Circle",
+        "designSystem"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/external/SourceDataSection.tsx",
+      "componentName": "SourceDataSection",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../types/externalData"
+      ],
+      "typeImports": [
+        "Github",
+        "Linkedin",
+        "Globe",
+        "Search",
+        "ChevronDown",
+        "ChevronUp",
+        "designSystem",
+        "ExternalDataResult",
+        "SelectedItems",
+        "CategorySection"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/external/SourceSelector.tsx",
+      "componentName": "SourceSelector",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../types/externalData"
+      ],
+      "typeImports": [
+        "Github",
+        "Linkedin",
+        "Globe",
+        "Search",
+        "CheckCircle",
+        "Circle",
+        "AlertTriangle",
+        "Loader2",
+        "designSystem",
+        "ExternalDataSource"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/CalendarIntegration.tsx",
+      "componentName": "CalendarIntegration",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:8"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cv-features"
+      ],
+      "typeImports": [
+        "useState",
+        "useEffect",
+        "Calendar",
+        "Download",
+        "Check",
+        "Loader2",
+        "Clock",
+        "ChevronRight",
+        "RefreshCw",
+        "CVFeatureProps",
+        "FeatureWrapper",
+        "LoadingSpinner",
+        "ErrorBoundary",
+        "useFeatureData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/CertificationBadges.tsx",
+      "componentName": "CertificationBadges",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useState",
+        "Shield",
+        "CheckCircle",
+        "Plus",
+        "ExternalLink",
+        "Calendar",
+        "Clock",
+        "Grid3x3",
+        "List",
+        "Loader2",
+        "Share2",
+        "AlertCircle",
+        "X",
+        "Trash2",
+        "Award"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/ChatInterface.tsx",
+      "componentName": "ChatInterface",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useState",
+        "useRef",
+        "useEffect",
+        "Send",
+        "Bot",
+        "User",
+        "ThumbsUp",
+        "ThumbsDown",
+        "Loader2"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Common/ErrorBoundary.tsx",
+      "componentName": "ErrorBoundary",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Common/FeatureRenderer.tsx",
+      "componentName": "FeatureRenderer",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:cv:8"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features",
+        "../../../utils/featureRegistry"
+      ],
+      "typeImports": [
+        "CVFeatureProps",
+        "getFeatureComponent",
+        "ErrorBoundary",
+        "LoadingSpinner"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Common/FeatureWrapper.tsx",
+      "componentName": "FeatureWrapper",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:preview:4"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "CVFeatureProps"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Common/LoadingSpinner.tsx",
+      "componentName": "LoadingSpinner",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/ContactForm/ContactFormFields.tsx",
+      "componentName": "ContactFormFields",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "public-profiles:keyword:contact:27"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "User",
+        "Mail",
+        "Building",
+        "Phone",
+        "MessageSquare",
+        "ContactFormData",
+        "ContactFormErrors",
+        "SubjectOption",
+        "useTranslation"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/ContactForm/ContactFormHeader.tsx",
+      "componentName": "ContactFormHeader",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "public-profiles:keyword:contact:8"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Mail",
+        "ContactFormHeaderProps"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/ContactForm/ContactFormStatus.tsx",
+      "componentName": "ContactFormStatus",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle",
+        "XCircle",
+        "Loader2",
+        "Send",
+        "RotateCcw"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Interactive/AvailabilityCalendar.tsx",
+      "componentName": "AvailabilityCalendar",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "CVFeatureProps",
+        "useFeatureData",
+        "FeatureWrapper",
+        "LoadingSpinner"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Interactive/CareerTimeline.tsx",
+      "componentName": "CareerTimeline",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "Calendar",
+        "MapPin",
+        "Award",
+        "GraduationCap",
+        "Briefcase",
+        "ChevronDown",
+        "ChevronUp",
+        "ExternalLink",
+        "Star",
+        "useInView",
+        "format",
+        "parseISO",
+        "isValid",
+        "differenceInMonths",
+        "CVFeatureProps",
+        "TimelineData",
+        "Experience",
+        "Education",
+        "Milestone",
+        "FeatureWrapper",
+        "LoadingSpinner",
+        "ErrorBoundary",
+        "FunctionalErrorBoundary",
+        "useFeatureData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Interactive/CareerTimelineDemo.tsx",
+      "componentName": "CareerTimelineDemo",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "public-profiles:keyword:profile:4"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "CareerTimeline",
+        "TimelineData",
+        "CareerTimeline",
+        "TimelineData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Interactive/SocialMediaLinks/SettingsPanel.tsx",
+      "componentName": "SettingsPanel",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "public-profiles:type:SocialLink"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "SocialLinksProps"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Interactive/SocialMediaLinks/ValidationResults.tsx",
+      "componentName": "ValidationResults",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "LinkValidationResult",
+        "SOCIAL_PLATFORMS"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/InteractiveTimeline.tsx",
+      "componentName": "InteractiveTimeline",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:cv:5"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cv-features"
+      ],
+      "typeImports": [
+        "useState",
+        "useRef",
+        "useEffect",
+        "Calendar",
+        "Briefcase",
+        "GraduationCap",
+        "ChevronLeft",
+        "ChevronRight",
+        "Maximize2",
+        "X",
+        "Award",
+        "RefreshCw",
+        "CVFeatureProps",
+        "FeatureWrapper",
+        "LoadingSpinner",
+        "ErrorBoundary",
+        "useFeatureData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/LanguageProficiency.tsx",
+      "componentName": "LanguageProficiency",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "analytics:keyword:insights:6"
+      ],
+      "crossBoundaryImports": [
+        "../../services/language/LanguageAnalysisService",
+        "../../services/language/LanguageVisualizationService"
+      ],
+      "typeImports": [
+        "useState",
+        "Globe",
+        "Languages",
+        "Plus",
+        "CheckCircle",
+        "Loader2",
+        "TrendingUp",
+        "LanguageProficiency as LanguageProficiencyType",
+        "LanguageVisualization",
+        "LanguageProficiencyProps",
+        "VisualizationType",
+        "LanguageAnalysisService",
+        "LanguageVisualizationService",
+        "LanguageVisualizationRenderer",
+        "LanguageAddForm",
+        "LanguageInsights"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Media/TestimonialsCarousel.tsx",
+      "componentName": "TestimonialsCarousel",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "public-profiles:keyword:profile:4"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "CVFeatureProps",
+        "useFeatureData",
+        "FeatureWrapper",
+        "LoadingSpinner"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/PersonalityInsights.tsx",
+      "componentName": "PersonalityInsights",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Radar",
+        "RadarChart",
+        "PolarGrid",
+        "PolarAngleAxis",
+        "PolarRadiusAxis",
+        "ResponsiveContainer",
+        "Brain",
+        "Users",
+        "Briefcase",
+        "TrendingUp",
+        "Award"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Portal/PortalDeploymentStatus.tsx",
+      "componentName": "PortalDeploymentStatus",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "public-profiles:keyword:profile:7"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/portal-component-props"
+      ],
+      "typeImports": [
+        "Play",
+        "Pause",
+        "CheckCircle",
+        "XCircle",
+        "AlertTriangle",
+        "RefreshCw",
+        "ExternalLink",
+        "Eye",
+        "EyeOff",
+        "Clock",
+        "Server",
+        "Activity",
+        "TrendingUp",
+        "Download",
+        "Copy",
+        "Settings",
+        "Zap",
+        "PortalDeploymentStatusProps",
+        "DeploymentStatus",
+        "DeploymentPhase",
+        "DeploymentLogEntry",
+        "PortalError",
+        "FeatureWrapper",
+        "ErrorBoundary",
+        "useFirebaseFunction"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Portal/PortalLayout.tsx",
+      "componentName": "PortalLayout",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:preview:13"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/portal-component-props",
+        "../../../types/portal-types"
+      ],
+      "typeImports": [
+        "FeatureWrapper",
+        "LoadingSpinner",
+        "ErrorBoundary",
+        "PortalLayoutProps",
+        "PortalError",
+        "PortalHeader",
+        "PortalDeploymentDisplay",
+        "PortalSettingsPanel",
+        "PortalFooter",
+        "usePortalTheme",
+        "usePortalDeployment",
+        "usePortalNavigation"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Portal/components/PortalDeploymentDisplay.tsx",
+      "componentName": "PortalDeploymentDisplay",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../../../types/portal-types"
+      ],
+      "typeImports": [
+        "CheckCircle",
+        "AlertCircle",
+        "Loader2",
+        "Settings",
+        "RefreshCw",
+        "ExternalLink",
+        "Copy",
+        "DeploymentStatus"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Portal/components/PortalFooter.tsx",
+      "componentName": "PortalFooter",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../../../types/portal-types"
+      ],
+      "typeImports": [
+        "PortalConfig"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Portal/components/PortalHeader.tsx",
+      "componentName": "PortalHeader",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:preview:13"
+      ],
+      "crossBoundaryImports": [
+        "../../../../types/portal-types"
+      ],
+      "typeImports": [
+        "User",
+        "Menu",
+        "X",
+        "Home",
+        "Briefcase",
+        "MessageCircle",
+        "Monitor",
+        "Smartphone",
+        "Sun",
+        "Moon",
+        "Monitor as SystemIcon",
+        "Settings",
+        "PortalConfig"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Portal/components/PortalSettingsPanel.tsx",
+      "componentName": "PortalSettingsPanel",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:preview:4"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Layout",
+        "Settings",
+        "Copy",
+        "Share2",
+        "RefreshCw",
+        "ArrowUpRight",
+        "CheckCircle"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/SkillsRadarChart.tsx",
+      "componentName": "SkillsRadarChart",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "analytics:pattern:Chart"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Radar",
+        "RadarChart",
+        "PolarGrid",
+        "PolarAngleAxis",
+        "PolarRadiusAxis",
+        "ResponsiveContainer",
+        "Tooltip",
+        "Legend",
+        "Eye",
+        "BarChart3",
+        "List"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/SkillsVisualization.tsx",
+      "componentName": "SkillsVisualization",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "BarChart",
+        "Bar",
+        "XAxis",
+        "YAxis",
+        "CartesianGrid",
+        "Tooltip",
+        "ResponsiveContainer",
+        "Cell",
+        "Code",
+        "Briefcase",
+        "Globe",
+        "TrendingUp",
+        "Users",
+        "Award"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/TestimonialsCarousel.tsx",
+      "componentName": "TestimonialsCarousel",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "analytics:keyword:analytics:7"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useState",
+        "useEffect",
+        "Quote",
+        "Star",
+        "ChevronLeft",
+        "ChevronRight",
+        "Plus",
+        "Edit2",
+        "Trash2",
+        "Filter",
+        "User",
+        "Building2",
+        "Calendar",
+        "Loader2",
+        "Grid3x3",
+        "Play",
+        "Pause",
+        "Award"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Visual/CertificationBadges.tsx",
+      "componentName": "CertificationBadges",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "CVFeatureProps",
+        "useFeatureData",
+        "FeatureWrapper",
+        "LoadingSpinner"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Visual/LanguageProficiency.tsx",
+      "componentName": "LanguageProficiency",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "multimedia:keyword:media:4"
+      ],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "CVFeatureProps",
+        "useFeatureData",
+        "FeatureWrapper",
+        "LoadingSpinner"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Visual/SkillsVisualization.tsx",
+      "componentName": "SkillsVisualization",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../../types/cv-features"
+      ],
+      "typeImports": [
+        "RadarChart",
+        "Radar",
+        "PolarGrid",
+        "PolarAngleAxis",
+        "PolarRadiusAxis",
+        "BarChart",
+        "Bar",
+        "XAxis",
+        "YAxis",
+        "CartesianGrid",
+        "Tooltip",
+        "ResponsiveContainer",
+        "Cell",
+        "ScatterChart",
+        "Scatter",
+        "ZAxis",
+        "BarChart3",
+        "Radar as RadarIcon",
+        "TrendingUp",
+        "Zap",
+        "Cloud",
+        "Download",
+        "Settings",
+        "Eye",
+        "EyeOff",
+        "Palette",
+        "RotateCcw",
+        "CVFeatureProps",
+        "SkillsData",
+        "Skill",
+        "SkillCategory",
+        "FeatureWrapper",
+        "LoadingSpinner",
+        "ErrorBoundary",
+        "useFeatureData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/Visual/examples/AchievementCardsDemo.tsx",
+      "componentName": "AchievementCardsDemo",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "analytics:keyword:metrics:12"
+      ],
+      "crossBoundaryImports": [
+        "../../../../types/cv-features"
+      ],
+      "typeImports": [
+        "AchievementCards",
+        "Achievement"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/video/IndustryTemplateSelector.tsx",
+      "componentName": "IndustryTemplateSelector",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:preview:12"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "X",
+        "CheckCircle",
+        "Star",
+        "Award",
+        "Briefcase",
+        "Code",
+        "DollarSign",
+        "Users",
+        "Palette",
+        "Brain",
+        "Search"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/features/video/ProviderSelectionPanel.tsx",
+      "componentName": "ProviderSelectionPanel",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "multimedia:keyword:video:5"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "X",
+        "CheckCircle",
+        "Clock",
+        "DollarSign",
+        "Star",
+        "Shield",
+        "Zap"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/final-results/CVMetadata.tsx",
+      "componentName": "CVMetadata",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:cv:8"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cv"
+      ],
+      "typeImports": [
+        "Tag",
+        "Sparkles",
+        "Calendar",
+        "Job"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/final-results/DownloadActions.tsx",
+      "componentName": "DownloadActions",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:13"
+      ],
+      "crossBoundaryImports": [
+        "../../types/cv"
+      ],
+      "typeImports": [
+        "Download",
+        "FileText",
+        "Globe",
+        "Job"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/final-results/FeatureProgressCard.tsx",
+      "componentName": "FeatureProgressCard",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:processing:9"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle",
+        "Loader2",
+        "AlertCircle",
+        "Clock",
+        "RotateCcw",
+        "X"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/help/FloatingHelpButton.tsx",
+      "componentName": "FloatingHelpButton",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "HelpCircle",
+        "MessageCircle",
+        "BookOpen",
+        "X",
+        "useHelp",
+        "HelpSearchPanel",
+        "InteractiveTour"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/help/HelpOverlay.tsx",
+      "componentName": "HelpOverlay",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "createPortal",
+        "X",
+        "Info",
+        "Play",
+        "Pause",
+        "useHelp"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/help/HelpSearchPanel.tsx",
+      "componentName": "HelpSearchPanel",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../types/help"
+      ],
+      "typeImports": [
+        "createPortal",
+        "Search",
+        "X",
+        "HelpCircle",
+        "Book",
+        "Play",
+        "ChevronRight",
+        "useHelp",
+        "HelpContent",
+        "HelpTour"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/help/HelpTooltip.tsx",
+      "componentName": "HelpTooltip",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../types/help"
+      ],
+      "typeImports": [
+        "createPortal",
+        "HelpCircle",
+        "X",
+        "useHelp",
+        "HelpPosition",
+        "HelpTrigger"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/help/InteractiveTour.tsx",
+      "componentName": "InteractiveTour",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../types/help"
+      ],
+      "typeImports": [
+        "createPortal",
+        "ChevronLeft",
+        "ChevronRight",
+        "X",
+        "SkipForward",
+        "useHelp",
+        "HelpTour",
+        "TourStep"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/layout/Footer.tsx",
+      "componentName": "Footer",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Link",
+        "Logo",
+        "designSystem"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/layout/GlobalLayout.tsx",
+      "componentName": "GlobalLayout",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Navigation",
+        "Footer",
+        "PageContainer"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/layout/MobileNavigation.tsx",
+      "componentName": "MobileNavigation",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Link",
+        "useLocation",
+        "X",
+        "Button",
+        "UserMenu",
+        "useAuth",
+        "designSystem"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/layout/PageContainer.tsx",
+      "componentName": "PageContainer",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "designSystem"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/layout/Section.tsx",
+      "componentName": "Section",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "designSystem"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/layout/WorkflowLayout.tsx",
+      "componentName": "WorkflowLayout",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Header",
+        "PageContainer"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pages/FAQ/CallSchedulingWidget.tsx",
+      "componentName": "CallSchedulingWidget",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../../services/schedulingService"
+      ],
+      "typeImports": [
+        "createPortal",
+        "Calendar",
+        "Clock",
+        "Phone",
+        "X",
+        "Send",
+        "User",
+        "Mail",
+        "AlertCircle",
+        "SchedulingService"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pages/FAQ/FAQAccordion.tsx",
+      "componentName": "FAQAccordion",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "ChevronDown",
+        "ChevronRight",
+        "Search",
+        "ExternalLink",
+        "Copy",
+        "Check",
+        "FAQAccordionProps",
+        "FAQFeedbackButtons"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pages/FAQ/FAQCategoryGrid.tsx",
+      "componentName": "FAQCategoryGrid",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Brain",
+        "FileText",
+        "CreditCard",
+        "Settings",
+        "Shield",
+        "Zap",
+        "Users",
+        "HelpCircle",
+        "Smartphone",
+        "Globe",
+        "ArrowRight",
+        "CategoryGridProps"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pages/FAQ/FAQFeedbackButtons.tsx",
+      "componentName": "FAQFeedbackButtons",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "ThumbsUp",
+        "ThumbsDown",
+        "MessageCircle",
+        "Check",
+        "FeedbackButtonsProps"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pages/FAQ/FAQQuickActions.tsx",
+      "componentName": "FAQQuickActions",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "public-profiles:keyword:contact:4"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Sparkles",
+        "CreditCard",
+        "MessageCircle",
+        "ArrowRight",
+        "Zap",
+        "Users",
+        "QuickActionsProps"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pages/FAQ/FAQSearchBar.tsx",
+      "componentName": "FAQSearchBar",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:cv:5"
+      ],
+      "crossBoundaryImports": [
+        "../../../services/faqAnalytics"
+      ],
+      "typeImports": [
+        "Search",
+        "X",
+        "TrendingUp",
+        "Clock",
+        "Sparkles",
+        "SearchBarProps",
+        "faqAnalytics"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pages/FAQ/FAQSidebar.tsx",
+      "componentName": "FAQSidebar",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:cv:6"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Phone",
+        "Mail",
+        "ExternalLink",
+        "Clock",
+        "HelpCircle",
+        "ArrowRight",
+        "Tag",
+        "TrendingUp",
+        "FAQSidebarProps",
+        "CallSchedulingWidget"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/policy/FairUsePolicy.tsx",
+      "componentName": "FairUsePolicy",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:16"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Shield",
+        "AlertTriangle",
+        "CheckCircle",
+        "Info",
+        "Users",
+        "FileText",
+        "RefreshCw",
+        "Ban"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/policy/NameVerificationModal.tsx",
+      "componentName": "NameVerificationModal",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:cv:7"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "X",
+        "AlertTriangle",
+        "User",
+        "FileText",
+        "CheckCircle",
+        "useAuth"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/policy/PolicyViolationAlert.tsx",
+      "componentName": "PolicyViolationAlert",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "AlertTriangle",
+        "XCircle",
+        "AlertCircle",
+        "CheckCircle",
+        "X",
+        "ExternalLink",
+        "MessageCircle",
+        "usePolicyStatus"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/policy/UsageLimitsDisplay.tsx",
+      "componentName": "UsageLimitsDisplay",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:23"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle",
+        "AlertCircle",
+        "RefreshCw",
+        "FileText"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/DynamicIncentiveEngine.tsx",
+      "componentName": "DynamicIncentiveEngine",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "public-profiles:keyword:profile:18"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useProgressiveRevelation",
+        "useConversionTracking",
+        "usePremiumStatus",
+        "useAuth",
+        "Gift",
+        "Clock",
+        "Users",
+        "TrendingUp",
+        "Star",
+        "Zap",
+        "AlertTriangle",
+        "Crown"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/ExternalDataSourcesIntegration.tsx",
+      "componentName": "ExternalDataSourcesIntegration",
+      "suggestedSubmodule": "analytics",
+      "domainIndicators": [
+        "analytics:keyword:analytics:18"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "ExternalDataSources",
+        "ExternalDataSourcesGate"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/ExternalDataSourcesUpgradeIntegration.tsx",
+      "componentName": "ExternalDataSourcesUpgradeIntegration",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:type:CVAnalysis"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "ExternalDataSourcesGate",
+        "ExternalDataUpgradeFlow",
+        "ProgressiveRevelationProvider",
+        "useFeatureTracking",
+        "FeatureEngagementTracker",
+        "usePremiumStatus",
+        "ExternalDataSourcesUpgradeIntegration"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/ExternalDataUpgradeFlow.tsx",
+      "componentName": "ExternalDataUpgradeFlow",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "public-profiles:keyword:social:4"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "ExternalDataUpgradePrompt",
+        "ExternalDataBenefitsShowcase",
+        "SuccessStoriesComponent",
+        "UpgradeIncentives",
+        "useProgressiveRevelation",
+        "useFeatureTracking",
+        "FeatureEngagementTracker",
+        "AdaptiveUpgradePrompt",
+        "usePremiumStatus"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/ExternalDataUpgradePrompt.tsx",
+      "componentName": "ExternalDataUpgradePrompt",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Crown",
+        "Github",
+        "Linkedin",
+        "Globe",
+        "Database",
+        "Sparkles",
+        "TrendingUp",
+        "Shield",
+        "Clock",
+        "Users",
+        "X",
+        "ChevronRight",
+        "Star",
+        "useNavigate",
+        "designSystem",
+        "usePremiumStatus"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/PremiumGate.tsx",
+      "componentName": "PremiumGate",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "ExternalDataSourcesGate"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/PremiumGateComponents.tsx",
+      "componentName": "PremiumGateComponents",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "analytics:keyword:analytics:5"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Crown",
+        "Lock",
+        "Sparkles",
+        "Loader2",
+        "PremiumUpgradePrompt",
+        "designSystem",
+        "PremiumGateProps"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/PremiumGateErrorBoundary.tsx",
+      "componentName": "PremiumGateErrorBoundary",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "AlertTriangle",
+        "designSystem"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/PremiumGateHooks.tsx",
+      "componentName": "PremiumGateHooks",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "analytics:keyword:analytics:7"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useCallback",
+        "usePremiumStatus"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/ProgressiveRevelationManager.tsx",
+      "componentName": "ProgressiveRevelationManager",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:preview:5"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useLocalStorage",
+        "usePremiumStatus"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/premium/UpgradeIncentives.tsx",
+      "componentName": "UpgradeIncentives",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "public-profiles:keyword:social:6"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Crown",
+        "Clock",
+        "Gift",
+        "Zap",
+        "Target",
+        "TrendingUp",
+        "Users",
+        "Star",
+        "Shield",
+        "CheckCircle",
+        "Sparkles",
+        "Timer",
+        "Percent",
+        "Award",
+        "ChevronRight",
+        "useNavigate",
+        "designSystem",
+        "useProgressiveRevelation"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pricing/AuthenticationRequired.tsx",
+      "componentName": "AuthenticationRequired",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "XCircle"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pricing/ErrorState.tsx",
+      "componentName": "ErrorState",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "XCircle",
+        "RefreshCw",
+        "Loader2"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pricing/FeatureGate.tsx",
+      "componentName": "FeatureGate",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "ReactNode",
+        "useFeatureAccess",
+        "UpgradePrompt",
+        "Crown",
+        "Loader2"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pricing/LoadingOverlay.tsx",
+      "componentName": "LoadingOverlay",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Loader2"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pricing/PricingCard.tsx",
+      "componentName": "PricingCard",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Crown",
+        "Check",
+        "Loader2"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pricing/ProcessingOverlay.tsx",
+      "componentName": "ProcessingOverlay",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pricing/ProfessionalPlanContact.tsx",
+      "componentName": "ProfessionalPlanContact",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "public-profiles:keyword:contact:10"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Building2",
+        "Users",
+        "Send",
+        "Phone",
+        "Mail",
+        "Calendar",
+        "ArrowRight"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pricing/StripeCheckoutIframe.tsx",
+      "componentName": "StripeCheckoutIframe",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "cv-processing:keyword:processing:6"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useAuth",
+        "Crown",
+        "Shield",
+        "ArrowLeft",
+        "useStripeCheckout",
+        "LoadingOverlay",
+        "ProcessingOverlay",
+        "ErrorState",
+        "AuthenticationRequired"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pricing/StripeCheckoutRedirect.tsx",
+      "componentName": "StripeCheckoutRedirect",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useAuth",
+        "Crown",
+        "Shield",
+        "ArrowLeft",
+        "ExternalLink",
+        "Loader2",
+        "AuthenticationRequired"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pricing/StripeCheckoutSDK.tsx",
+      "componentName": "StripeCheckoutSDK",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:processing:8"
+      ],
+      "crossBoundaryImports": [
+        "../../services/stripeService"
+      ],
+      "typeImports": [
+        "useAuth",
+        "Crown",
+        "Shield",
+        "ArrowLeft",
+        "ExternalLink",
+        "Loader2",
+        "AlertCircle",
+        "AuthenticationRequired",
+        "stripeService",
+        "getTierConfig",
+        "formatPrice"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pricing/StripePaymentForm.tsx",
+      "componentName": "StripePaymentForm",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../services/paymentService"
+      ],
+      "typeImports": [
+        "useState",
+        "useEffect",
+        "loadStripe",
+        "Elements",
+        "CardElement",
+        "useStripe",
+        "useElements",
+        "useAuth",
+        "createPaymentIntent",
+        "confirmPayment",
+        "Crown",
+        "Lock",
+        "CreditCard",
+        "Shield",
+        "Loader2",
+        "Check"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/pricing/UpgradePrompt.tsx",
+      "componentName": "UpgradePrompt",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "multimedia:keyword:podcast:4"
+      ],
+      "crossBoundaryImports": [
+        "../../services/paymentService"
+      ],
+      "typeImports": [
+        "useState",
+        "useNavigate",
+        "Crown",
+        "Sparkles",
+        "ArrowRight",
+        "X",
+        "formatFeatureName",
+        "getTierConfig",
+        "formatPrice"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/progress/EnhancedFeatureProgressCard.tsx",
+      "componentName": "EnhancedFeatureProgressCard",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:processing:9"
+      ],
+      "crossBoundaryImports": [
+        "../../services/ProgressEnhancer"
+      ],
+      "typeImports": [
+        "CheckCircle",
+        "Clock",
+        "AlertCircle",
+        "Loader2",
+        "RefreshCw",
+        "Sparkles",
+        "EnhancedFeatureProgress",
+        "ProgressEnhancer"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/progress/ProgressStageIndicator.tsx",
+      "componentName": "ProgressStageIndicator",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../services/ProgressEnhancer"
+      ],
+      "typeImports": [
+        "Sparkles",
+        "ProgressStage",
+        "ProgressEnhancer"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/progressive/FeatureProgressCard.tsx",
+      "componentName": "FeatureProgressCard",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:processing:7"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle",
+        "XCircle",
+        "Loader2",
+        "Clock",
+        "RefreshCw",
+        "AlertCircle",
+        "FeatureProgress"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/recommendations/EnhancedRecommendationCard.tsx",
+      "componentName": "EnhancedRecommendationCard",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:preview:8"
+      ],
+      "crossBoundaryImports": [
+        "../../services/placeholderService"
+      ],
+      "typeImports": [
+        "PlaceholderForm",
+        "RecommendationPreview",
+        "PlaceholderService",
+        "CVRecommendationWithPlaceholders",
+        "PlaceholderReplacementMap"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/recommendations/PlaceholderField.tsx",
+      "componentName": "PlaceholderField",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../types/placeholders"
+      ],
+      "typeImports": [
+        "PlaceholderInfo"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/recommendations/PlaceholderForm.tsx",
+      "componentName": "PlaceholderForm",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:preview:20"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "PlaceholderField",
+        "CVRecommendationWithPlaceholders",
+        "PlaceholderReplacementMap",
+        "PlaceholderInfo"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/recommendations/RecommendationPreview.tsx",
+      "componentName": "RecommendationPreview",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:preview:12"
+      ],
+      "crossBoundaryImports": [
+        "../../types/placeholders"
+      ],
+      "typeImports": [
+        "CVRecommendationWithPlaceholders",
+        "PlaceholderReplacementMap"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/results/FeatureCheckbox.tsx",
+      "componentName": "FeatureCheckbox",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [
+        "../../types/results"
+      ],
+      "typeImports": [
+        "FeatureCheckboxProps"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/results/FormatSelectionPanel.tsx",
+      "componentName": "FormatSelectionPanel",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:ats:19"
+      ],
+      "crossBoundaryImports": [
+        "../../types/results"
+      ],
+      "typeImports": [
+        "SelectedFormats"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/results/ResultsPageHeader.tsx",
+      "componentName": "ResultsPageHeader",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useNavigate"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/results/TemplateSelection.tsx",
+      "componentName": "TemplateSelection",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/role-profiles/RoleProfileDropdown.tsx",
+      "componentName": "RoleProfileDropdown",
+      "suggestedSubmodule": "public-profiles",
+      "domainIndicators": [
+        "public-profiles:keyword:profile:11"
+      ],
+      "crossBoundaryImports": [
+        "../../types/role-profiles"
+      ],
+      "typeImports": [
+        "Search",
+        "X",
+        "Users",
+        "Target",
+        "TrendingUp",
+        "ChevronRight",
+        "Filter",
+        "designSystem",
+        "RoleProfile"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/role-profiles/components/RecommendationCard.tsx",
+      "componentName": "RecommendationCard",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Check",
+        "ChevronDown",
+        "ChevronRight",
+        "Target",
+        "Lightbulb",
+        "ArrowRight",
+        "Clock",
+        "Star",
+        "RecommendationItem"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/role-profiles/components/RoleRecommendationsList.tsx",
+      "componentName": "RoleRecommendationsList",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "CheckCircle2",
+        "Clock",
+        "Target",
+        "TrendingUp",
+        "AlertCircle",
+        "ChevronDown",
+        "ChevronUp",
+        "RecommendationItem",
+        "RecommendationCard"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/role-profiles/premium/RoleDetectionPremiumGate.tsx",
+      "componentName": "RoleDetectionPremiumGate",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "useNavigate",
+        "useFeatureAccess",
+        "Sparkles",
+        "Target",
+        "TrendingUp",
+        "Users",
+        "Crown",
+        "ArrowRight"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/role-profiles/premium/RoleProfileIntegrationPremiumGate.tsx",
+      "componentName": "RoleProfileIntegrationPremiumGate",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "public-profiles:keyword:profile:9"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "RoleDetectionPremiumGate",
+        "RoleProfileIntegration",
+        "RoleProfileIntegrationProps"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/role-profiles/premium/RoleProfileSelectorPremiumGate.tsx",
+      "componentName": "RoleProfileSelectorPremiumGate",
+      "suggestedSubmodule": null,
+      "domainIndicators": [
+        "public-profiles:keyword:profile:9"
+      ],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "RoleDetectionPremiumGate",
+        "RoleProfileSelector",
+        "RoleProfileSelectorProps"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/session/SaveProgressButton.tsx",
+      "componentName": "SaveProgressButton",
+      "suggestedSubmodule": null,
+      "domainIndicators": [],
+      "crossBoundaryImports": [],
+      "typeImports": [
+        "Save",
+        "Check",
+        "AlertCircle",
+        "Clock"
+      ],
+      "needsMigration": false,
+      "migrationPriority": "low"
+    },
+    {
+      "componentPath": "frontend/src/components/session/SessionAwarePageWrapper.tsx",
+      "componentName": "SessionAwarePageWrapper",
+      "suggestedSubmodule": "cv-processing",
+      "domainIndicators": [
+        "cv-processing:keyword:cv:8"
+      ],
+      "crossBoundaryImports": [
+        "../../types/session"
+      ],
+      "typeImports": [
+        "useSession",
+        "SaveProgressButton",
+        "CompactSaveButton",
+        "CVStep",
+        "SessionFormData"
+      ],
+      "needsMigration": true,
+      "migrationPriority": "low"
+    }
+  ]
+}

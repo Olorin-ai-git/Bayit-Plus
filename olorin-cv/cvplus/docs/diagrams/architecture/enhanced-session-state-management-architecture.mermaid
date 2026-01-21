@@ -1,0 +1,171 @@
+graph TB
+    %% Enhanced Session State Management Architecture
+    subgraph "User Interface Layer"
+        UI[React Components]
+        NAV[Navigation Manager]
+        FORM[Form State Manager]
+        PROG[Progress Indicators]
+        RESUME[Resume Dialog]
+    end
+    
+    subgraph "State Management Layer"
+        SM[Enhanced SessionManager]
+        SS[SessionService]
+        FSM[FormStateManager]
+        PQ[ProcessingQueue]
+        CP[Checkpoint System]
+    end
+    
+    subgraph "Synchronization Layer"
+        SYNC[SyncManager]
+        WS[WebSocket Sync]
+        CROSS[Cross-Tab Sync]
+        CONFLICT[Conflict Resolution]
+    end
+    
+    subgraph "Storage Layer"
+        LS[LocalStorage]
+        FS[Firestore]
+        CACHE[Cache Manager]
+        OFFLINE[Offline Queue]
+    end
+    
+    subgraph "Backend Services"
+        CF[Cloud Functions]
+        WSS[WebSocket Server]
+        QUEUE[Background Jobs]
+        WEBHOOK[Webhooks]
+    end
+    
+    subgraph "Intelligence Layer"
+        RI[Resume Intelligence]
+        NAV_AI[Navigation AI]
+        PRED[Progress Predictor]
+        REC[Recommendations]
+    end
+    
+    %% User Flow Connections
+    UI --> SM
+    UI --> FSM
+    UI --> NAV
+    
+    NAV --> SS
+    FORM --> FSM
+    PROG --> SM
+    RESUME --> RI
+    
+    %% State Management Flow
+    SM --> SS
+    SM --> PQ
+    SM --> CP
+    FSM --> SM
+    
+    PQ --> CF
+    CP --> SYNC
+    
+    %% Synchronization Flow
+    SYNC --> WS
+    SYNC --> CROSS
+    SYNC --> CONFLICT
+    
+    WS --> WSS
+    CROSS --> LS
+    CONFLICT --> FS
+    
+    %% Storage Flow
+    SM --> LS
+    SM --> FS
+    SM --> CACHE
+    
+    SYNC --> OFFLINE
+    OFFLINE --> QUEUE
+    
+    %% Backend Integration
+    CF --> QUEUE
+    CF --> WEBHOOK
+    WSS --> WS
+    
+    %% Intelligence Integration
+    RI --> SM
+    NAV_AI --> NAV
+    PRED --> PROG
+    REC --> UI
+    
+    %% Data Flow Examples
+    subgraph "Key Data Flows"
+        DF1[User Action] --> DF2[State Update]
+        DF2 --> DF3[Local Storage]
+        DF2 --> DF4[Sync to Cloud]
+        DF4 --> DF5[Broadcast Update]
+        DF5 --> DF6[Other Tabs/Devices]
+    end
+    
+    %% Session State Structure
+    subgraph "Enhanced Session State"
+        ESS[Enhanced SessionState] --> BASIC[Basic Properties]
+        ESS --> MICRO[Micro-State Progress]
+        ESS --> FEAT[Feature States]
+        ESS --> PROC[Processing Checkpoints]
+        ESS --> UI_STATE[UI State Snapshot]
+        ESS --> VAL[Validation Results]
+    end
+    
+    %% Processing Checkpoint Flow
+    subgraph "Checkpoint System Details"
+        STEP1[CV Processing Start] --> CHECK1[Create Checkpoint]
+        CHECK1 --> PROC1[Process Chunk]
+        PROC1 --> SAVE1[Save Progress]
+        SAVE1 --> CHECK2[Next Checkpoint]
+        CHECK2 --> PROC2[Continue/Resume]
+        PROC2 --> COMPLETE[Complete]
+    end
+    
+    %% Resume Intelligence Flow
+    subgraph "Resume Intelligence Details"
+        USER_RETURN[User Returns] --> ANALYZE[Analyze Session]
+        ANALYZE --> CALCULATE[Calculate Options]
+        CALCULATE --> RANK[Rank by Relevance]
+        RANK --> SUGGEST[Suggest Best Resume Point]
+        SUGGEST --> USER_CHOICE[User Chooses]
+        USER_CHOICE --> RESTORE[Restore Context]
+        RESTORE --> CONTINUE[Continue Workflow]
+    end
+    
+    %% Cross-Tab Synchronization
+    subgraph "Cross-Tab Sync Details"
+        TAB1[Browser Tab 1] --> LOCAL_CHANGE[Local State Change]
+        LOCAL_CHANGE --> BROADCAST[Broadcast to Other Tabs]
+        BROADCAST --> TAB2[Browser Tab 2]
+        BROADCAST --> TAB3[Browser Tab 3]
+        TAB2 --> MERGE[Merge State]
+        TAB3 --> MERGE
+        MERGE --> CONFLICT_CHECK[Check Conflicts]
+        CONFLICT_CHECK --> RESOLVE[Auto-Resolve]
+        RESOLVE --> SYNC_ALL[Sync All Tabs]
+    end
+    
+    %% Offline Capability
+    subgraph "Offline Management"
+        ONLINE[Online Mode] --> DETECT[Detect Offline]
+        DETECT --> OFFLINE_MODE[Offline Mode]
+        OFFLINE_MODE --> QUEUE_ACTIONS[Queue Actions]
+        QUEUE_ACTIONS --> CACHE_DATA[Cache Essential Data]
+        CACHE_DATA --> RECONNECT[Detect Reconnection]
+        RECONNECT --> SYNC_QUEUE[Sync Queued Actions]
+        SYNC_QUEUE --> ONLINE
+    end
+    
+    %% Styling
+    classDef userLayer fill:#e1f5fe
+    classDef stateLayer fill:#f3e5f5
+    classDef syncLayer fill:#e8f5e8
+    classDef storageLayer fill:#fff3e0
+    classDef backendLayer fill:#fce4ec
+    classDef intelligenceLayer fill:#f1f8e9
+    
+    class UI,NAV,FORM,PROG,RESUME userLayer
+    class SM,SS,FSM,PQ,CP stateLayer
+    class SYNC,WS,CROSS,CONFLICT syncLayer
+    class LS,FS,CACHE,OFFLINE storageLayer
+    class CF,WSS,QUEUE,WEBHOOK backendLayer
+    class RI,NAV_AI,PRED,REC intelligenceLayer

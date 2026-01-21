@@ -1,0 +1,157 @@
+graph TD
+    %% CVPlus Multimedia Module - Data Flow Architecture
+    
+    subgraph "User Interface Layer"
+        UC[User Components]
+        VI[VideoIntroduction]
+        PG[PortfolioGallery]
+        PP[PodcastPlayer]
+        QR[QRCode Generator]
+    end
+    
+    subgraph "State Management"
+        CTX[React Context]
+        RED[Reducers]
+        CACHE[Local Cache]
+        SYNC[Data Sync]
+    end
+    
+    subgraph "Service Layer"
+        VGS[Video Generation Service]
+        PGS[Podcast Generation Service]
+        MPS[Media Processing Service]
+        QGS[QR Generation Service]
+        AS[Analytics Service]
+    end
+    
+    subgraph "API Gateway"
+        FB_FUNC[Firebase Functions]
+        REST[REST Endpoints]
+        WS[WebSocket Events]
+        WEBHOOK[Webhook Handlers]
+    end
+    
+    subgraph "Business Logic"
+        VID_PROC[Video Processing]
+        AUD_PROC[Audio Processing]
+        IMG_PROC[Image Processing]
+        QR_PROC[QR Processing]
+        ANAL_PROC[Analytics Processing]
+    end
+    
+    subgraph "External Services"
+        HEYGEN[HeyGen API]
+        RUNWAY[RunwayML API]
+        CLAUDE[Claude API]
+        STORAGE_API[Storage API]
+    end
+    
+    subgraph "Data Storage"
+        FS[Firestore Database]
+        FB_STORAGE[Firebase Storage]
+        CDN[CDN/Cloudinary]
+        REDIS[Redis Cache]
+    end
+    
+    subgraph "Real-time Updates"
+        REALTIME[Firestore Realtime]
+        EVENTS[Event Emitter]
+        NOTIFY[Push Notifications]
+    end
+    
+    %% User Interaction Flow
+    UC --> VI
+    UC --> PG
+    UC --> PP
+    UC --> QR
+    
+    %% Component to State Flow
+    VI --> CTX
+    PG --> RED
+    PP --> CACHE
+    QR --> SYNC
+    
+    %% State to Service Flow
+    CTX --> VGS
+    RED --> PGS
+    CACHE --> MPS
+    SYNC --> QGS
+    CTX --> AS
+    
+    %% Service to API Flow
+    VGS --> FB_FUNC
+    PGS --> REST
+    MPS --> WS
+    QGS --> WEBHOOK
+    AS --> FB_FUNC
+    
+    %% API to Business Logic Flow
+    FB_FUNC --> VID_PROC
+    REST --> AUD_PROC
+    WS --> IMG_PROC
+    WEBHOOK --> QR_PROC
+    FB_FUNC --> ANAL_PROC
+    
+    %% Business Logic to External Services Flow
+    VID_PROC --> HEYGEN
+    VID_PROC --> RUNWAY
+    AUD_PROC --> CLAUDE
+    IMG_PROC --> STORAGE_API
+    QR_PROC --> STORAGE_API
+    ANAL_PROC --> FS
+    
+    %% External Services to Storage Flow
+    HEYGEN --> FB_STORAGE
+    RUNWAY --> FB_STORAGE
+    CLAUDE --> FS
+    STORAGE_API --> CDN
+    FB_STORAGE --> REDIS
+    
+    %% Storage to Real-time Updates Flow
+    FS --> REALTIME
+    FB_STORAGE --> EVENTS
+    CDN --> NOTIFY
+    REDIS --> REALTIME
+    
+    %% Real-time Updates back to Components Flow
+    REALTIME --> CTX
+    EVENTS --> RED
+    NOTIFY --> CACHE
+    
+    %% Data Flow Annotations
+    VI -.->|"Generate Video Request"| VGS
+    VGS -.->|"Processing Status"| VI
+    HEYGEN -.->|"Video Ready"| FB_STORAGE
+    FB_STORAGE -.->|"Storage Event"| EVENTS
+    EVENTS -.->|"Update UI"| VI
+    
+    PG -.->|"Load Gallery"| MPS
+    MPS -.->|"Image Metadata"| FS
+    FS -.->|"Real-time Updates"| PG
+    
+    PP -.->|"Play Podcast"| PGS
+    PGS -.->|"Audio Stream"| CDN
+    CDN -.->|"Audio Data"| PP
+    
+    QR -.->|"Generate QR"| QGS
+    QGS -.->|"QR Image"| CDN
+    CDN -.->|"QR URL"| QR
+    
+    %% Styling
+    classDef uiLayer fill:#e3f2fd
+    classDef stateLayer fill:#f3e5f5
+    classDef serviceLayer fill:#e8f5e8
+    classDef apiLayer fill:#fff3e0
+    classDef businessLayer fill:#fce4ec
+    classDef externalLayer fill:#e0f2f1
+    classDef storageLayer fill:#f1f8e9
+    classDef realtimeLayer fill:#fef7ff
+    
+    class UC,VI,PG,PP,QR uiLayer
+    class CTX,RED,CACHE,SYNC stateLayer
+    class VGS,PGS,MPS,QGS,AS serviceLayer
+    class FB_FUNC,REST,WS,WEBHOOK apiLayer
+    class VID_PROC,AUD_PROC,IMG_PROC,QR_PROC,ANAL_PROC businessLayer
+    class HEYGEN,RUNWAY,CLAUDE,STORAGE_API externalLayer
+    class FS,FB_STORAGE,CDN,REDIS storageLayer
+    class REALTIME,EVENTS,NOTIFY realtimeLayer

@@ -1,0 +1,548 @@
+import { https } from 'firebase-functions';
+import { ModuleRecoveryService } from './services/ModuleRecoveryService';
+import { PhaseOrchestrationService } from './services/PhaseOrchestrationService';
+import { ValidationService } from './services/ValidationService';
+import { logger } from '@cvplus/logging';
+
+/**
+ * Recovery Status Dashboard
+ * Provides comprehensive recovery system status and metrics
+ *
+ * @returns HTML dashboard with real-time recovery status
+  */
+export const recoveryDashboard = https.onRequest(async (req, res) => {
+  try {
+    // CORS headers
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    if (req.method === 'OPTIONS') {
+      res.status(204).send('');
+      return;
+    }
+
+    if (req.method !== 'GET') {
+      res.status(405).json({ error: 'Method not allowed' });
+      return;
+    }
+
+    logger.info('recoveryDashboard: Generating dashboard');
+
+    const moduleService = new ModuleRecoveryService();
+    const orchestrationService = new PhaseOrchestrationService();
+    const validationService = new ValidationService();
+
+    // Fetch all recovery data
+    const modules = await moduleService.getAllModules();
+    const phases = await orchestrationService.getAllPhases();
+    const overallHealth = await validationService.getOverallSystemHealth();
+
+    // Calculate metrics
+    const metrics = calculateDashboardMetrics(modules, phases);
+
+    // Generate HTML dashboard
+    const html = generateDashboardHTML(modules, phases, overallHealth, metrics);
+
+    res.set('Content-Type', 'text/html');
+    res.status(200).send(html);
+
+  } catch (error) {
+    logger.error('recoveryDashboard: Error generating dashboard', { error });
+
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+/**
+ * Calculate dashboard metrics from recovery data
+  */
+function calculateDashboardMetrics(modules: any[], phases: any[]) {
+  const totalModules = modules.length;
+  const healthyModules = modules.filter(m => m.status === 'healthy').length;
+  const criticalModules = modules.filter(m => m.status === 'critical').length;
+  const failedModules = modules.filter(m => m.status === 'failed').length;
+
+  const buildSuccessRate = Math.round(
+    (modules.filter(m => m.buildStatus === 'success').length / totalModules) * 100
+  );
+
+  const testPassRate = Math.round(
+    (modules.filter(m => m.testStatus === 'passing').length / totalModules) * 100
+  );
+
+  const averageHealthScore = Math.round(
+    modules.reduce((sum, m) => sum + (m.healthScore || 0), 0) / totalModules
+  );
+
+  const completedPhases = phases.filter(p => p.status === 'completed').length;
+  const totalPhases = phases.length;
+
+  return {
+    totalModules,
+    healthyModules,
+    criticalModules,
+    failedModules,
+    buildSuccessRate,
+    testPassRate,
+    averageHealthScore,
+    completedPhases,
+    totalPhases,
+    recoveryProgress: Math.round((completedPhases / totalPhases) * 100)
+  };
+}
+
+/**
+ * Generate HTML dashboard
+  */
+function generateDashboardHTML(modules: any[], phases: any[], overallHealth: any, metrics: any): string {
+  const timestamp = new Date().toISOString();
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVPlus Level 2 Recovery Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .subtitle {
+            color: #718096;
+            font-size: 1.1em;
+        }
+
+        .header .timestamp {
+            color: #a0aec0;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            color: #718096;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-progress {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .metric-progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .healthy { color: #38a169; }
+        .warning { color: #d69e2e; }
+        .critical { color: #e53e3e; }
+        .failed { color: #9b2c2c; }
+
+        .progress-healthy { background: #38a169; }
+        .progress-warning { background: #d69e2e; }
+        .progress-critical { background: #e53e3e; }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .modules-section, .phases-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            color: #2d3748;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .module-item, .phase-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f7fafc;
+        }
+
+        .module-item:last-child, .phase-item:last-child {
+            border-bottom: none;
+        }
+
+        .module-name, .phase-name {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .module-details, .phase-details {
+            text-align: right;
+            font-size: 0.9em;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-healthy {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-warning {
+            background: #faf089;
+            color: #744210;
+        }
+
+        .status-critical {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .status-failed {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .health-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>CVPlus Level 2 Recovery Dashboard</h1>
+            <div class="subtitle">Real-time monitoring of module recovery system</div>
+            <div class="timestamp">Last updated: ${timestamp}</div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value healthy">${metrics.healthyModules}</div>
+                <div class="metric-label">Healthy Modules</div>
+                <div class="metric-progress">
+                    <div class="metric-progress-bar progress-healthy"
+                         style="width: ${(metrics.healthyModules / metrics.totalModules) * 100}%"></div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-value ${metrics.buildSuccessRate >= 80 ? 'healthy' : metrics.buildSuccessRate >= 60 ? 'warning' : 'critical'}">${metrics.buildSuccessRate}%</div>
+                <div class="metric-label">Build Success Rate</div>
+                <div class="metric-progress">
+                    <div class="metric-progress-bar ${metrics.buildSuccessRate >= 80 ? 'progress-healthy' : metrics.buildSuccessRate >= 60 ? 'progress-warning' : 'progress-critical'}"
+                         style="width: ${metrics.buildSuccessRate}%"></div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-value ${metrics.testPassRate >= 80 ? 'healthy' : metrics.testPassRate >= 60 ? 'warning' : 'critical'}">${metrics.testPassRate}%</div>
+                <div class="metric-label">Test Pass Rate</div>
+                <div class="metric-progress">
+                    <div class="metric-progress-bar ${metrics.testPassRate >= 80 ? 'progress-healthy' : metrics.testPassRate >= 60 ? 'progress-warning' : 'progress-critical'}"
+                         style="width: ${metrics.testPassRate}%"></div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-value ${metrics.recoveryProgress >= 80 ? 'healthy' : metrics.recoveryProgress >= 50 ? 'warning' : 'critical'}">${metrics.recoveryProgress}%</div>
+                <div class="metric-label">Recovery Progress</div>
+                <div class="metric-progress">
+                    <div class="metric-progress-bar ${metrics.recoveryProgress >= 80 ? 'progress-healthy' : metrics.recoveryProgress >= 50 ? 'progress-warning' : 'progress-critical'}"
+                         style="width: ${metrics.recoveryProgress}%"></div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-value ${metrics.averageHealthScore >= 80 ? 'healthy' : metrics.averageHealthScore >= 60 ? 'warning' : 'critical'}">${metrics.averageHealthScore}</div>
+                <div class="metric-label">Average Health Score</div>
+                <div class="metric-progress">
+                    <div class="metric-progress-bar ${metrics.averageHealthScore >= 80 ? 'progress-healthy' : metrics.averageHealthScore >= 60 ? 'progress-warning' : 'progress-critical'}"
+                         style="width: ${metrics.averageHealthScore}%"></div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-value critical">${metrics.criticalModules}</div>
+                <div class="metric-label">Critical Modules</div>
+                <div class="metric-progress">
+                    <div class="metric-progress-bar progress-critical"
+                         style="width: ${(metrics.criticalModules / metrics.totalModules) * 100}%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="modules-section">
+                <h2 class="section-title">Module Status (${metrics.totalModules} modules)</h2>
+                ${modules.map(module => `
+                    <div class="module-item">
+                        <div>
+                            <span class="health-indicator ${getHealthColor(module.status)}" style="background-color: ${getHealthColorValue(module.status)}"></span>
+                            <span class="module-name">${module.moduleId}</span>
+                        </div>
+                        <div class="module-details">
+                            <div class="status-badge status-${module.status}">${module.status}</div>
+                            <div style="margin-top: 5px; color: #718096;">
+                                Build: ${module.buildStatus || 'unknown'} |
+                                Tests: ${module.testStatus || 'unknown'} |
+                                Score: ${module.healthScore || 0}
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+
+            <div class="phases-section">
+                <h2 class="section-title">Recovery Phases</h2>
+                ${phases.map((phase, index) => `
+                    <div class="phase-item">
+                        <div>
+                            <span class="health-indicator" style="background-color: ${getPhaseColorValue(phase.status)}"></span>
+                            <span class="phase-name">Phase ${phase.phaseId}: ${phase.name}</span>
+                        </div>
+                        <div class="phase-details">
+                            <div class="status-badge status-${getPhaseStatusClass(phase.status)}">${phase.status}</div>
+                            ${phase.completionTime ? `<div style="margin-top: 5px; color: #718096; font-size: 0.8em;">
+                                Completed: ${new Date(phase.completionTime).toLocaleDateString()}
+                            </div>` : ''}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    </div>
+
+    <button class="refresh-btn" onclick="window.location.reload()">
+        ↻ Refresh
+    </button>
+
+    <script>
+        // Auto-refresh every 5 minutes
+        setTimeout(() => {
+            window.location.reload();
+        }, 300000);
+
+        function ${getHealthColor.toString()}
+
+        function ${getHealthColorValue.toString()}
+
+        function ${getPhaseColorValue.toString()}
+
+        function ${getPhaseStatusClass.toString()}
+    </script>
+</body>
+</html>`;
+}
+
+/**
+ * Helper functions for dashboard
+  */
+function getHealthColor(status: string): string {
+  switch (status) {
+    case 'healthy': return 'healthy';
+    case 'warning': return 'warning';
+    case 'critical': return 'critical';
+    case 'failed': return 'failed';
+    default: return 'failed';
+  }
+}
+
+function getHealthColorValue(status: string): string {
+  switch (status) {
+    case 'healthy': return '#38a169';
+    case 'warning': return '#d69e2e';
+    case 'critical': return '#e53e3e';
+    case 'failed': return '#9b2c2c';
+    default: return '#a0aec0';
+  }
+}
+
+function getPhaseColorValue(status: string): string {
+  switch (status) {
+    case 'completed': return '#38a169';
+    case 'in_progress': return '#d69e2e';
+    case 'not_started': return '#a0aec0';
+    case 'failed': return '#e53e3e';
+    default: return '#a0aec0';
+  }
+}
+
+function getPhaseStatusClass(status: string): string {
+  switch (status) {
+    case 'completed': return 'healthy';
+    case 'in_progress': return 'warning';
+    case 'not_started': return 'failed';
+    case 'failed': return 'critical';
+    default: return 'failed';
+  }
+}
+
+/**
+ * API endpoint for dashboard data only (JSON)
+  */
+export const recoveryDashboardData = https.onRequest(async (req, res) => {
+  try {
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    if (req.method === 'OPTIONS') {
+      res.status(204).send('');
+      return;
+    }
+
+    if (req.method !== 'GET') {
+      res.status(405).json({ error: 'Method not allowed' });
+      return;
+    }
+
+    const moduleService = new ModuleRecoveryService();
+    const orchestrationService = new PhaseOrchestrationService();
+    const validationService = new ValidationService();
+
+    const modules = await moduleService.getAllModules();
+    const phases = await orchestrationService.getAllPhases();
+    const overallHealth = await validationService.getOverallSystemHealth();
+    const metrics = calculateDashboardMetrics(modules, phases);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        modules,
+        phases,
+        overallHealth,
+        metrics,
+        timestamp: new Date().toISOString()
+      }
+    });
+
+  } catch (error) {
+    logger.error('recoveryDashboardData: Error fetching dashboard data', { error });
+
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
+    });
+  }
+});

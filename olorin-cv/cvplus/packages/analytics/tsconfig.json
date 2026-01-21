@@ -1,0 +1,40 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noEmit": false,
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "skipDefaultLibCheck": true,
+    "paths": {
+      "@cvplus/auth": ["../auth/dist/index"],
+      "@cvplus/auth/*": ["../auth/dist/*"],
+      "@cvplus/core": ["../core/dist/index"],
+      "@cvplus/core/*": ["../core/dist/*"],
+      "@cvplus/i18n": ["../i18n/dist/index"],
+      "@cvplus/i18n/*": ["../i18n/dist/*"]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "src/backend/**",
+    "src/functions/**",
+    "src/integration-examples/**",
+    "src/integrations/**",
+    "src/logging/**",
+    "src/models/**",
+    "src/services/**",
+    "src/utils/**"
+  ]
+}

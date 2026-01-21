@@ -1,0 +1,10 @@
+/**
+ * Frontend Constants Index
+ *
+ * Exports all frontend-specific constants and configuration
+ *
+ * @author Gil Klainert
+ * @version 3.0.0 - Enhanced T063 Implementation
+  */
+
+export * from './features';

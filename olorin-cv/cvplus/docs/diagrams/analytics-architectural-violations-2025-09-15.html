@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVPlus Analytics Architectural Violations Audit - Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.0.0/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 1.2em;
+        }
+        h2 {
+            color: #e74c3c;
+            border-left: 5px solid #e74c3c;
+            padding-left: 15px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        h3 {
+            color: #3498db;
+            border-left: 3px solid #3498db;
+            padding-left: 10px;
+            margin-bottom: 15px;
+        }
+        .diagram-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #dee2e6;
+        }
+        .violation-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        .priority-high { border-left-color: #e74c3c; }
+        .priority-medium { border-left-color: #f39c12; }
+        .priority-low { border-left-color: #27ae60; }
+        .description {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-style: italic;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 20px; }
+            h1 { font-size: 2em; }
+            .violation-stats { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CVPlus Analytics Architectural Violations</h1>
+        <div class="subtitle">Comprehensive Audit & Migration Visualization - September 15, 2025</div>
+
+        <div class="violation-stats">
+            <div class="stat-card">
+                <div class="stat-number">468</div>
+                <div class="stat-label">Lines of CV Processing Code</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">336</div>
+                <div class="stat-label">Lines of CV Types</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">7</div>
+                <div class="stat-label">Premium Functions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">25+</div>
+                <div class="stat-label">Files to Migrate</div>
+            </div>
+        </div>
+
+        <h2>🚨 Current Architectural Violations</h2>
+        <div class="description">
+            The analytics submodule currently contains extensive business logic that belongs in specialized domain modules, creating architectural violations and dependency conflicts.
+        </div>
+        <div class="diagram-container">
+            <div class="mermaid">
+graph TB
+    subgraph "🚨 ANALYTICS MODULE (CURRENT VIOLATIONS)"
+        A[Analytics Module]
+
+        subgraph "CV Processing Logic (468 lines)"
+            CV1[CVFeatureService.ts]
+            CV2[MLPipelineOrchestrator.ts]
+            CV3[RecommendationEngine.ts]
+            CV4[DerivedFeatureService.ts]
+            CV5[MatchingFeatureService.ts]
+            CV6[phase2-models.ts - 336 lines]
+        end
+
+        subgraph "Premium Logic"
+            P1[enhancedPremiumGuard.ts]
+            P2[featureRegistry.ts]
+            P3[pricingAnalytics.ts]
+            P4[reportBuilder.ts]
+            P5[advancedAnalytics.ts]
+            P6[batchTrackingEvents.ts]
+            P7[getRealtimeUsageStats.ts]
+        end
+
+        subgraph "Multimedia Logic"
+            M1[base-provider.interface.ts]
+            M2[video-analytics-dashboard.ts]
+        end
+
+        subgraph "Potential Admin Logic"
+            AD1[alert-manager.service.ts]
+            AD2[Dashboard Functions]
+        end
+    end
+
+    subgraph "BROKEN DEPENDENCIES"
+        BD1["❌ import { ParsedCV } from '../types/job'"]
+        BD2["❌ Missing CV Processing Types"]
+        BD3["❌ Circular Dependencies"]
+    end
+
+    A --> CV1
+    A --> P1
+    A --> M1
+    A --> AD1
+    CV1 -.-> BD1
+    CV2 -.-> BD2
+    P1 -.-> BD3
+
+    classDef violation fill:#ff6b6b,stroke:#e74c3c,color:#fff
+    classDef broken fill:#f39c12,stroke:#d35400,color:#fff
+
+    class CV1,CV2,CV3,CV4,CV5,CV6,P1,P2,P3,P4,P5,P6,P7,M1,M2,AD1,AD2 violation
+    class BD1,BD2,BD3 broken
+            </div>
+        </div>
+
+        <h2>🎯 Target Architecture (Post-Migration)</h2>
+        <div class="description">
+            The corrected architecture with proper domain boundaries and clean separation of concerns across specialized submodules.
+        </div>
+        <div class="diagram-container">
+            <div class="mermaid">
+graph TB
+    subgraph "CORRECTED ARCHITECTURE"
+        subgraph "📊 Analytics Module (BI & Metrics Only)"
+            A1[Business Intelligence]
+            A2[User Behavior Analytics]
+            A3[Revenue Analytics]
+            A4[A/B Testing Framework]
+            A5[Privacy-Compliant Tracking]
+            A6[Analytics SDK]
+            A7[Cohort Analysis]
+            A8[Performance Monitoring]
+        end
+
+        subgraph "🔄 CV Processing Module"
+            CV1[CVFeatureService.ts ✅]
+            CV2[MLPipelineOrchestrator.ts ✅]
+            CV3[RecommendationEngine.ts ✅]
+            CV4[CV Types & Models ✅]
+            CV5[ParsedCV Interface ✅]
+        end
+
+        subgraph "💰 Premium Module"
+            P1[Premium Access Guard ✅]
+            P2[Feature Registry ✅]
+            P3[Pricing Analytics ✅]
+            P4[Subscription Logic ✅]
+            P5[Premium Reports ✅]
+        end
+
+        subgraph "🎬 Multimedia Module"
+            M1[Video Provider Interfaces ✅]
+            M2[Video Analytics ✅]
+            M3[Media Processing ✅]
+        end
+
+        subgraph "⚙️ Admin Module"
+            AD1[Alert Management ✅]
+            AD2[Admin Dashboards ✅]
+            AD3[System Monitoring ✅]
+        end
+    end
+
+    subgraph "CLEAN DEPENDENCIES"
+        D1["✅ @cvplus/cv-processing/backend"]
+        D2["✅ @cvplus/premium/backend"]
+        D3["✅ @cvplus/multimedia/backend"]
+        D4["✅ @cvplus/admin/backend"]
+    end
+
+    A1 --> D1
+    A2 --> D2
+    A3 --> D3
+    A4 --> D4
+
+    classDef corrected fill:#27ae60,stroke:#229954,color:#fff
+    classDef analytics fill:#3498db,stroke:#2980b9,color:#fff
+    classDef clean fill:#f1c40f,stroke:#f39c12,color:#333
+
+    class CV1,CV2,CV3,CV4,CV5,P1,P2,P3,P4,P5,M1,M2,M3,AD1,AD2,AD3 corrected
+    class A1,A2,A3,A4,A5,A6,A7,A8 analytics
+    class D1,D2,D3,D4 clean
+            </div>
+        </div>
+
+        <h2>📋 Migration Priority Matrix</h2>
+        <div class="description">
+            Migration phases prioritized by business impact, architectural compliance, and technical complexity.
+        </div>
+        <div class="diagram-container">
+            <div class="mermaid">
+quadrantChart
+    title Migration Priority Assessment
+    x-axis Low Complexity --> High Complexity
+    y-axis Low Impact --> High Impact
+
+    quadrant-1 Quick Wins
+    quadrant-2 Major Projects
+    quadrant-3 Fill-ins
+    quadrant-4 Questionable
+
+    CV Processing: [0.8, 0.9]
+    Premium Logic: [0.6, 0.8]
+    Multimedia: [0.4, 0.5]
+    Admin Review: [0.3, 0.3]
+    Type Definitions: [0.7, 0.9]
+    Broken Imports: [0.5, 0.95]
+    Access Control: [0.5, 0.85]
+            </div>
+        </div>
+
+        <h2>🔄 Migration Workflow</h2>
+        <div class="description">
+            Step-by-step migration process ensuring zero downtime and full functionality preservation.
+        </div>
+        <div class="diagram-container">
+            <div class="mermaid">
+gitgraph
+    commit id: "Current State"
+    commit id: "Audit Complete"
+
+    branch cv-processing-migration
+    checkout cv-processing-migration
+    commit id: "Create CV Processing Branch"
+    commit id: "Move CVFeatureService (468 lines)"
+    commit id: "Move CV Types (336 lines)"
+    commit id: "Fix Broken Imports"
+    commit id: "Update Import Paths"
+    commit id: "Validate TypeScript"
+    commit id: "Test CV Processing"
+
+    checkout main
+    merge cv-processing-migration
+    commit id: "CV Processing Complete ✅"
+
+    branch premium-migration
+    checkout premium-migration
+    commit id: "Create Premium Branch"
+    commit id: "Move Premium Guard"
+    commit id: "Move Feature Registry"
+    commit id: "Move Premium Services"
+    commit id: "Update Premium Imports"
+    commit id: "Test Premium Features"
+
+    checkout main
+    merge premium-migration
+    commit id: "Premium Migration Complete ✅"
+
+    branch multimedia-migration
+    checkout multimedia-migration
+    commit id: "Move Video Interfaces"
+    commit id: "Move Video Analytics"
+    commit id: "Update Multimedia Imports"
+
+    checkout main
+    merge multimedia-migration
+    commit id: "Multimedia Complete ✅"
+
+    commit id: "Migration Complete 🎉"
+            </div>
+        </div>
+
+        <h2>⚡ Implementation Timeline</h2>
+        <div class="description">
+            Realistic timeline for executing the complete migration with proper testing and validation phases.
+        </div>
+        <div class="diagram-container">
+            <div class="mermaid">
+gantt
+    title Analytics Module Migration Timeline
+    dateFormat  YYYY-MM-DD
+    section Critical Priority
+    CV Processing Analysis    :active, cv-analysis, 2025-09-15, 1d
+    Fix Broken Imports       :crit, fix-imports, after cv-analysis, 1d
+    CV Processing Migration  :crit, cv-migration, after fix-imports, 2d
+    CV Testing & Validation  :crit, cv-testing, after cv-migration, 1d
+
+    section High Priority
+    Premium Analysis         :premium-analysis, after cv-testing, 1d
+    Premium Migration        :premium-migration, after premium-analysis, 2d
+    Premium Testing         :premium-testing, after premium-migration, 1d
+
+    section Medium Priority
+    Multimedia Analysis     :multimedia-analysis, after premium-testing, 0.5d
+    Multimedia Migration    :multimedia-migration, after multimedia-analysis, 1d
+    Multimedia Testing      :multimedia-testing, after multimedia-migration, 0.5d
+
+    section Low Priority
+    Admin Analysis          :admin-analysis, after multimedia-testing, 1d
+    Admin Migration         :admin-migration, after admin-analysis, 1d
+    Final Validation        :final-validation, after admin-migration, 1d
+            </div>
+        </div>
+
+        <h2>🛡️ Risk Mitigation Strategy</h2>
+        <div class="description">
+            Comprehensive risk management approach ensuring safe migration with rollback capabilities.
+        </div>
+        <div class="diagram-container">
+            <div class="mermaid">
+graph LR
+    subgraph "MIGRATION RISKS"
+        R1[Broken Dependencies]
+        R2[Functionality Loss]
+        R3[Type Conflicts]
+        R4[Performance Impact]
+        R5[Deployment Issues]
+    end
+
+    subgraph "MITIGATION STRATEGIES"
+        M1[Atomic Git Commits]
+        M2[Comprehensive Testing]
+        M3[Type Validation]
+        M4[Performance Benchmarks]
+        M5[Blue-Green Deployment]
+    end
+
+    subgraph "ROLLBACK MECHANISMS"
+        RB1[Feature Branch Rollback]
+        RB2[Module-Level Revert]
+        RB3[Function Export Backup]
+        RB4[Database State Backup]
+    end
+
+    R1 --> M1 --> RB1
+    R2 --> M2 --> RB2
+    R3 --> M3 --> RB1
+    R4 --> M4 --> RB3
+    R5 --> M5 --> RB4
+
+    classDef risk fill:#e74c3c,stroke:#c0392b,color:#fff
+    classDef mitigation fill:#f39c12,stroke:#d35400,color:#fff
+    classDef rollback fill:#27ae60,stroke:#229954,color:#fff
+
+    class R1,R2,R3,R4,R5 risk
+    class M1,M2,M3,M4,M5 mitigation
+    class RB1,RB2,RB3,RB4 rollback
+            </div>
+        </div>
+
+        <h2>✅ Success Metrics Dashboard</h2>
+        <div class="description">
+            Key performance indicators and success criteria for measuring migration effectiveness.
+        </div>
+        <div class="diagram-container">
+            <div class="mermaid">
+pie title Migration Success Metrics
+    "Broken Imports Fixed" : 25
+    "Functions Migrated" : 20
+    "Type Conflicts Resolved" : 15
+    "Tests Passing" : 20
+    "Performance Maintained" : 10
+    "Documentation Updated" : 10
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>Analytics Architectural Violations Audit</strong> - September 15, 2025</p>
+            <p>Generated by CVPlus System Architecture Team | Migration tracking via project management tools</p>
+            <p><em>This visualization provides comprehensive guidance for restoring architectural integrity to the CVPlus analytics submodule</em></p>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            },
+            gitGraph: {
+                theme: 'base',
+                themeVariables: {
+                    primaryColor: '#3498db',
+                    primaryTextColor: '#fff',
+                    primaryBorderColor: '#2980b9',
+                    lineColor: '#34495e'
+                }
+            }
+        });
+    </script>
+</body>
+</html>

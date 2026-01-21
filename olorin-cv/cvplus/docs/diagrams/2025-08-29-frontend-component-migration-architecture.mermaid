@@ -1,0 +1,244 @@
+```mermaid
+graph TD
+    subgraph "CURRENT STATE - ARCHITECTURAL VIOLATION"
+        A[Root Repository /frontend/src/] --> A1[665+ Frontend Components]
+        A1 --> A2[components/common/]
+        A1 --> A3[components/analysis/]
+        A1 --> A4[components/features/]
+        A1 --> A5[components/premium/]
+        A1 --> A6[components/layout/]
+        A1 --> A7[hooks/]
+        A1 --> A8[services/]
+        A1 --> A9[contexts/]
+    end
+
+    subgraph "TARGET STATE - COMPLIANT ARCHITECTURE"
+        B[Git Submodules /packages/] --> B1[packages/core/src/frontend/]
+        B --> B2[packages/auth/src/frontend/]
+        B --> B3[packages/cv-processing/src/frontend/]
+        B --> B4[packages/recommendations/src/frontend/]
+        B --> B5[packages/premium/src/frontend/]
+        B --> B6[packages/multimedia/src/frontend/]
+        B --> B7[packages/public-profiles/src/frontend/]
+        B --> B8[packages/analytics/src/frontend/]
+        B --> B9[packages/i18n/src/frontend/]
+        B --> B10[packages/admin/src/frontend/]
+    end
+
+    subgraph "MIGRATION PHASE 1 - CORE INFRASTRUCTURE"
+        C1[Core Components Migration]
+        C2[Authentication Migration]
+        C3[Build System Validation]
+        C1 --> C2 --> C3
+    end
+
+    subgraph "MIGRATION PHASE 2 - FEATURE MODULES"
+        D1[CV Processing Migration]
+        D2[Recommendations Migration]
+        D3[Premium Features Migration]
+        D1 --> D2 --> D3
+    end
+
+    subgraph "MIGRATION PHASE 3 - SPECIALIZED MODULES"
+        E1[Multimedia Migration]
+        E2[Public Profiles Migration]
+        E3[Analytics Migration]
+        E1 --> E2 --> E3
+    end
+
+    subgraph "MIGRATION PHASE 4 - INTEGRATION & VALIDATION"
+        F1[Cross-Module Integration Testing]
+        F2[End-to-End Feature Testing]
+        F3[Performance & Compliance Validation]
+        F1 --> F2 --> F3
+    end
+
+    A --> C1
+    C3 --> D1
+    D3 --> E1
+    E3 --> F1
+    F3 --> B
+
+    style A fill:#ff9999,stroke:#ff0000,stroke-width:3px
+    style B fill:#99ff99,stroke:#00ff00,stroke-width:3px
+    style A1 fill:#ffcccc,stroke:#ff6666
+    style B1 fill:#ccffcc,stroke:#66ff66
+    style B2 fill:#ccffcc,stroke:#66ff66
+    style B3 fill:#ccffcc,stroke:#66ff66
+    style B4 fill:#ccffcc,stroke:#66ff66
+    style B5 fill:#ccffcc,stroke:#66ff66
+    style B6 fill:#ccffcc,stroke:#66ff66
+    style B7 fill:#ccffcc,stroke:#66ff66
+    style B8 fill:#ccffcc,stroke:#66ff66
+    style B9 fill:#ccffcc,stroke:#66ff66
+    style B10 fill:#ccffcc,stroke:#66ff66
+```
+
+```mermaid
+graph LR
+    subgraph "COMPONENT DISTRIBUTION MATRIX"
+        subgraph "CORE MODULE"
+            CA[common/Button.tsx]
+            CB[common/Card.tsx]
+            CC[common/Input.tsx]
+            CD[layout/Footer.tsx]
+            CE[layout/GlobalLayout.tsx]
+        end
+
+        subgraph "AUTH MODULE"
+            AA[AuthGuard.tsx]
+            AB[SignInDialog.tsx]
+            AC[UserMenu.tsx]
+            AD[contexts/AuthContext.tsx]
+        end
+
+        subgraph "CV-PROCESSING MODULE"
+            CVA[analysis/]
+            CVB[CVAnalysisResults.tsx]
+            CVC[CVPreview.tsx]
+            CVD[FileUpload.tsx]
+            CVE[cv-preview/]
+        end
+
+        subgraph "RECOMMENDATIONS MODULE"
+            RA[recommendations/]
+            RB[RecommendationProgressTracker.tsx]
+            RC[analysis/recommendations/]
+            RD[role-profiles/]
+            RE[KeywordManager.tsx]
+        end
+
+        subgraph "PREMIUM MODULE"
+            PA[premium/]
+            PB[pricing/]
+            PC[common/PremiumStatusBadge.tsx]
+            PD[ExternalDataSources.tsx]
+        end
+
+        subgraph "MULTIMEDIA MODULE"
+            MA[features/Media/]
+            MB[features/video/]
+            MC[PodcastPlayer.tsx]
+            MD[PortfolioGallery.tsx]
+        end
+
+        subgraph "PUBLIC-PROFILES MODULE"
+            PPA[features/Portal/]
+            PPB[QRCodeEditor.tsx]
+            PPC[features/EnhancedQRCode.tsx]
+            PPD[features/PublicProfile.tsx]
+        end
+
+        subgraph "ANALYTICS MODULE"
+            ANA[AnalyticsDashboard.tsx]
+            ANB[performance/PerformanceDashboard.tsx]
+            ANC[OutcomeTracker.tsx]
+            AND[charts/]
+        end
+
+        subgraph "I18N MODULE"
+            IA[LanguageSelector.tsx]
+            IB[LanguageProficiency/]
+            IC[I18nTestPage.tsx]
+        end
+
+        subgraph "ADMIN MODULE"
+            ADA[dev/]
+            ADB[Admin Dashboard Components]
+        end
+    end
+
+    style CORE fill:#e1f5fe
+    style AUTH fill:#fff3e0
+    style CV-PROCESSING fill:#f3e5f5
+    style RECOMMENDATIONS fill:#e8f5e8
+    style PREMIUM fill:#fff8e1
+    style MULTIMEDIA fill:#fce4ec
+    style PUBLIC-PROFILES fill:#e0f2f1
+    style ANALYTICS fill:#f1f8e9
+    style I18N fill:#fdf2e9
+    style ADMIN fill:#efebe9
+```
+
+```mermaid
+flowchart TD
+    A[Start Migration] --> B{Analyze Dependencies}
+    B --> C[Phase 1: Core Infrastructure]
+    C --> D[Migrate Core Components]
+    D --> E[Migrate Auth Components]
+    E --> F[Validate Build System]
+    F --> G{Phase 1 Complete?}
+    G -->|No| H[Fix Issues]
+    H --> D
+    G -->|Yes| I[Phase 2: Feature Modules]
+    
+    I --> J[Migrate CV Processing]
+    J --> K[Migrate Recommendations]
+    K --> L[Migrate Premium Features]
+    L --> M{Phase 2 Complete?}
+    M -->|No| N[Fix Integration Issues]
+    N --> J
+    M -->|Yes| O[Phase 3: Specialized Modules]
+    
+    O --> P[Migrate Multimedia]
+    P --> Q[Migrate Public Profiles]
+    Q --> R[Migrate Analytics & Others]
+    R --> S{Phase 3 Complete?}
+    S -->|No| T[Fix Module Issues]
+    T --> P
+    S -->|Yes| U[Phase 4: Integration & Validation]
+    
+    U --> V[Cross-Module Integration Testing]
+    V --> W[End-to-End Feature Testing]
+    W --> X[Performance & Compliance Validation]
+    X --> Y{All Tests Pass?}
+    Y -->|No| Z[Fix Integration Issues]
+    Z --> V
+    Y -->|Yes| AA[Migration Complete ✅]
+    
+    style A fill:#4caf50,color:#fff
+    style AA fill:#4caf50,color:#fff
+    style G fill:#2196f3,color:#fff
+    style M fill:#2196f3,color:#fff
+    style S fill:#2196f3,color:#fff
+    style Y fill:#2196f3,color:#fff
+    style H fill:#ff5722,color:#fff
+    style N fill:#ff5722,color:#fff
+    style T fill:#ff5722,color:#fff
+    style Z fill:#ff5722,color:#fff
+```
+
+```mermaid
+gantt
+    title Frontend Component Migration Timeline
+    dateFormat  X
+    axisFormat %d
+
+    section Phase 1: Core Infrastructure
+    Core Components Migration     :crit, phase1a, 0, 4
+    Authentication Migration      :crit, phase1b, after phase1a, 2
+    Build System Validation      :crit, phase1c, after phase1b, 2
+
+    section Phase 2: Feature Modules  
+    CV Processing Migration      :active, phase2a, after phase1c, 6
+    Recommendations Migration    :phase2b, after phase2a, 5
+    Premium Features Migration   :phase2c, after phase2b, 5
+
+    section Phase 3: Specialized Modules
+    Multimedia Migration         :phase3a, after phase2c, 6
+    Public Profiles Migration    :phase3b, after phase3a, 5
+    Analytics Migration         :phase3c, after phase3b, 3
+    Final Modules               :phase3d, after phase3c, 2
+
+    section Phase 4: Integration & Validation
+    Cross-Module Integration    :crit, phase4a, after phase3d, 8
+    End-to-End Testing         :crit, phase4b, after phase4a, 4
+    Performance Validation     :crit, phase4c, after phase4b, 2
+    Compliance Certification   :crit, phase4d, after phase4c, 2
+
+    section Milestones
+    Phase 1 Complete           :milestone, m1, after phase1c, 0
+    Phase 2 Complete           :milestone, m2, after phase2c, 0
+    Phase 3 Complete           :milestone, m3, after phase3d, 0
+    Migration Complete         :milestone, m4, after phase4d, 0
+```

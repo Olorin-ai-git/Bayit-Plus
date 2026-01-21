@@ -1,0 +1,785 @@
+components:
+  schemas:
+    # Core Portal Entities
+    PortalConfig:
+      type: object
+      description: Complete portal configuration
+      required:
+        - id
+        - userId
+        - cvJobId
+        - name
+        - status
+        - visibility
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          description: Unique portal identifier
+          example: "portal_abc123def456"
+        userId:
+          type: string
+          description: Portal owner user ID
+          example: "user_123"
+        cvJobId:
+          type: string
+          description: Associated CV processing job ID
+          example: "job_abc123def456"
+        processedCvId:
+          type: string
+          description: Associated processed CV ID
+          example: "cv_processed_abc123"
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Portal display name
+          example: "John Smith - Senior Developer"
+        slug:
+          type: string
+          pattern: '^[a-z0-9\-]+$'
+          minLength: 3
+          maxLength: 50
+          description: URL-safe portal identifier
+          example: "john-smith-dev"
+        description:
+          type: string
+          maxLength: 500
+          description: Portal description
+          example: "Experienced full-stack developer specializing in React and Node.js"
+        status:
+          $ref: '#/components/schemas/PortalStatus'
+        portalUrl:
+          type: string
+          format: uri
+          description: Live portal URL
+          example: "https://portfolio.johnsmith.com"
+        customDomain:
+          type: string
+          pattern: '^[a-z0-9\-\.]+\.[a-z]{2,}$'
+          description: Custom domain for portal
+          example: "portfolio.johnsmith.com"
+        visibility:
+          $ref: '#/components/schemas/VisibilityLevel'
+        passwordProtected:
+          type: boolean
+          description: Whether portal requires password access
+          default: false
+        customization:
+          $ref: '#/components/schemas/PortalCustomization'
+        features:
+          $ref: '#/components/schemas/PortalFeatures'
+        seoSettings:
+          $ref: '#/components/schemas/SEOSettings'
+        analytics:
+          type: object
+          description: Portal analytics summary
+          properties:
+            totalViews:
+              type: integer
+              minimum: 0
+              example: 1247
+            uniqueVisitors:
+              type: integer
+              minimum: 0
+              example: 892
+            chatSessions:
+              type: integer
+              minimum: 0
+              example: 156
+            lastUpdated:
+              type: string
+              format: date-time
+              example: "2025-09-13T20:30:00Z"
+        generationMetadata:
+          type: object
+          description: Portal generation metadata
+          properties:
+            generationTime:
+              type: number
+              description: Generation time in seconds
+              example: 92.5
+            deploymentId:
+              type: string
+              example: "deploy_xyz789"
+            version:
+              type: string
+              example: "1.2.3"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-09-10T14:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-09-13T20:30:00Z"
+        deployedAt:
+          type: string
+          format: date-time
+          description: When portal was last deployed
+          example: "2025-09-13T20:32:00Z"
+        lastAccessedAt:
+          type: string
+          format: date-time
+          description: Last visitor access time
+          example: "2025-09-13T20:25:00Z"
+        expiresAt:
+          type: string
+          format: date-time
+          description: Portal expiration time (subscription-based)
+          example: "2025-12-13T20:30:00Z"
+
+    PortalSummary:
+      type: object
+      description: Condensed portal information for listings
+      required:
+        - id
+        - name
+        - status
+        - visibility
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          example: "portal_abc123def456"
+        name:
+          type: string
+          example: "John Smith - Senior Developer"
+        status:
+          $ref: '#/components/schemas/PortalStatus'
+        portalUrl:
+          type: string
+          format: uri
+          example: "https://portfolio.johnsmith.com"
+        visibility:
+          $ref: '#/components/schemas/VisibilityLevel'
+        analytics:
+          type: object
+          properties:
+            totalViews:
+              type: integer
+              example: 1247
+            uniqueVisitors:
+              type: integer
+              example: 892
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-09-10T14:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-09-13T20:30:00Z"
+
+    PortalStatus:
+      type: string
+      enum: ["draft", "generating", "deploying", "active", "suspended", "expired", "failed"]
+      description: |
+        Portal status values:
+        - `draft`: Initial creation, not deployed
+        - `generating`: AI processing and content preparation
+        - `deploying`: Deployment to hosting platform
+        - `active`: Live and accessible
+        - `suspended`: Temporarily disabled
+        - `expired`: Subscription expired
+        - `failed`: Generation/deployment failed
+      example: "active"
+
+    VisibilityLevel:
+      type: string
+      enum: ["public", "unlisted", "private"]
+      description: |
+        Portal visibility levels:
+        - `public`: Discoverable and indexable by search engines
+        - `unlisted`: Accessible via direct link only
+        - `private`: Access restricted to owner only
+      example: "public"
+
+    PortalCustomization:
+      type: object
+      description: Visual and branding customization options
+      properties:
+        theme:
+          type: object
+          properties:
+            templateId:
+              type: string
+              description: Base template identifier
+              example: "modern-pro"
+            primaryColor:
+              type: string
+              pattern: '^#[0-9A-Fa-f]{6}$'
+              description: Primary brand color (hex)
+              example: "#2563eb"
+            secondaryColor:
+              type: string
+              pattern: '^#[0-9A-Fa-f]{6}$'
+              description: Secondary accent color (hex)
+              example: "#059669"
+            backgroundColor:
+              type: string
+              pattern: '^#[0-9A-Fa-f]{6}$'
+              description: Background color (hex)
+              example: "#ffffff"
+            textColor:
+              type: string
+              pattern: '^#[0-9A-Fa-f]{6}$'
+              description: Primary text color (hex)
+              example: "#1f2937"
+            fontFamily:
+              type: string
+              enum: ["Inter", "Roboto", "Open Sans", "Lato", "Poppins", "Montserrat"]
+              description: Web font family
+              example: "Inter"
+            layout:
+              type: string
+              enum: ["modern", "classic", "minimal", "creative", "corporate"]
+              description: Overall layout style
+              example: "modern"
+            animations:
+              type: boolean
+              description: Enable CSS animations and transitions
+              default: true
+            darkMode:
+              type: boolean
+              description: Dark mode variant
+              default: false
+        branding:
+          type: object
+          properties:
+            logoUrl:
+              type: string
+              format: uri
+              description: Custom logo image URL
+              example: "https://example.com/logo.png"
+            faviconUrl:
+              type: string
+              format: uri
+              description: Custom favicon URL
+              example: "https://example.com/favicon.ico"
+            customCss:
+              type: string
+              maxLength: 10000
+              description: Custom CSS overrides (premium feature)
+              example: ".header { background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); }"
+            hidePortalBranding:
+              type: boolean
+              description: Hide CVPlus branding (premium feature)
+              default: false
+
+    PortalFeatures:
+      type: object
+      description: Interactive features available on the portal
+      properties:
+        aiChat:
+          type: boolean
+          description: RAG-powered chat interface
+          default: true
+        qrCode:
+          type: boolean
+          description: QR code for easy sharing
+          default: true
+        contactForm:
+          type: boolean
+          description: Direct contact functionality
+          default: true
+        calendarBooking:
+          type: boolean
+          description: Calendar integration for booking meetings
+          default: false
+        portfolioGallery:
+          type: boolean
+          description: Interactive portfolio showcase
+          default: true
+        socialLinks:
+          type: boolean
+          description: Social media integration
+          default: true
+        testimonials:
+          type: boolean
+          description: Testimonials and reviews section
+          default: false
+        downloadResume:
+          type: boolean
+          description: PDF resume download option
+          default: true
+        analytics:
+          type: boolean
+          description: Visitor analytics tracking
+          default: false
+        seoOptimization:
+          type: boolean
+          description: SEO optimization features
+          default: true
+
+    SEOSettings:
+      type: object
+      description: Search engine optimization settings
+      properties:
+        metaTitle:
+          type: string
+          maxLength: 60
+          description: Page title for search engines
+          example: "John Smith - Senior Full-Stack Developer"
+        metaDescription:
+          type: string
+          maxLength: 160
+          description: Meta description for search results
+          example: "Experienced developer with 8+ years in React, Node.js, and cloud technologies. Available for senior roles and consulting."
+        metaKeywords:
+          type: array
+          items:
+            type: string
+          maxItems: 10
+          description: SEO keywords
+          example: ["React developer", "Node.js", "full-stack", "JavaScript", "senior developer"]
+        ogImageUrl:
+          type: string
+          format: uri
+          description: Open Graph image for social media sharing
+          example: "https://example.com/og-image.jpg"
+        canonicalUrl:
+          type: string
+          format: uri
+          description: Canonical URL for SEO
+          example: "https://portfolio.johnsmith.com"
+        robotsDirective:
+          type: string
+          enum: ["index,follow", "noindex,nofollow", "index,nofollow", "noindex,follow"]
+          description: Search engine robots directive
+          default: "index,follow"
+        structuredData:
+          type: boolean
+          description: Include structured data markup
+          default: true
+
+    # Portal Generation
+    PortalGenerationStatus:
+      type: object
+      description: Real-time portal generation status
+      required:
+        - deploymentId
+        - portalId
+        - status
+        - progress
+      properties:
+        deploymentId:
+          type: string
+          description: Deployment tracking ID
+          example: "deploy_xyz789"
+        portalId:
+          type: string
+          description: Portal being generated
+          example: "portal_abc123def456"
+        status:
+          type: string
+          enum: ["initializing", "processing_cv", "generating_embeddings", "preparing_content", "uploading_assets", "building", "deploying", "testing", "completed", "failed"]
+          description: Current generation phase
+          example: "preparing_content"
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Completion percentage
+          example: 45
+        currentStep:
+          type: string
+          description: Current operation description
+          example: "Preparing portal content and templates"
+        estimatedCompletion:
+          type: string
+          format: date-time
+          description: Estimated completion time
+          example: "2025-09-13T21:01:00Z"
+        startedAt:
+          type: string
+          format: date-time
+          example: "2025-09-13T20:30:00Z"
+        completedAt:
+          type: string
+          format: date-time
+          description: Actual completion time (when completed)
+          example: "2025-09-13T20:32:00Z"
+        portalUrl:
+          type: string
+          format: uri
+          description: Portal URL (when completed)
+          example: "https://portfolio.johnsmith.com"
+        generationTime:
+          type: number
+          description: Total generation time in seconds (when completed)
+          example: 92.5
+        steps:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Step identifier
+                example: "validate_cv"
+              displayName:
+                type: string
+                description: Human-readable step name
+                example: "Validate CV Data"
+              status:
+                type: string
+                enum: ["pending", "in_progress", "completed", "failed", "skipped"]
+                example: "completed"
+              startedAt:
+                type: string
+                format: date-time
+                example: "2025-09-13T20:30:15Z"
+              completedAt:
+                type: string
+                format: date-time
+                example: "2025-09-13T20:30:25Z"
+              duration:
+                type: number
+                description: Step duration in seconds
+                example: 10.5
+              message:
+                type: string
+                description: Status message or error details
+                example: "CV data validated successfully"
+        error:
+          type: object
+          description: Error details (when failed)
+          properties:
+            code:
+              type: string
+              description: Error code for categorization
+              example: "CV_PROCESSING_FAILED"
+            message:
+              type: string
+              description: Human-readable error message
+              example: "Failed to process CV content for RAG embeddings"
+            details:
+              type: object
+              description: Additional error context
+              properties:
+                step:
+                  type: string
+                  example: "generating_embeddings"
+                retryable:
+                  type: boolean
+                  example: true
+                supportReference:
+                  type: string
+                  example: "ref_abc123"
+
+    # Chat System
+    ChatSession:
+      type: object
+      description: Chat session details
+      required:
+        - id
+        - portalId
+        - startedAt
+        - lastActivityAt
+        - isActive
+      properties:
+        id:
+          type: string
+          description: Session identifier
+          example: "session_abc123"
+        portalId:
+          type: string
+          description: Associated portal ID
+          example: "portal_abc123def456"
+        sessionToken:
+          type: string
+          description: Anonymous session token for public access
+          example: "token_xyz789"
+        userId:
+          type: string
+          description: User ID if authenticated session
+          example: "user_123"
+        startedAt:
+          type: string
+          format: date-time
+          example: "2025-09-13T20:25:00Z"
+        lastActivityAt:
+          type: string
+          format: date-time
+          example: "2025-09-13T20:30:00Z"
+        endedAt:
+          type: string
+          format: date-time
+          description: Session end time
+          example: "2025-09-13T20:35:00Z"
+        isActive:
+          type: boolean
+          description: Whether session accepts new messages
+          example: true
+        messageCount:
+          type: integer
+          description: Total messages in session
+          example: 6
+        duration:
+          type: integer
+          description: Session duration in seconds
+          example: 420
+        language:
+          type: string
+          description: Session language
+          example: "en-US"
+        visitorContext:
+          type: object
+          description: Anonymous visitor metadata
+          properties:
+            referrer:
+              type: string
+              example: "https://linkedin.com/in/johnsmith"
+            userAgent:
+              type: string
+              example: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+            country:
+              type: string
+              example: "United States"
+            deviceType:
+              type: string
+              enum: ["desktop", "mobile", "tablet"]
+              example: "desktop"
+
+    ChatMessage:
+      type: object
+      description: Individual chat message
+      required:
+        - id
+        - content
+        - sender
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: Message identifier
+          example: "msg_def456ghi789"
+        sessionId:
+          type: string
+          description: Associated session ID
+          example: "session_abc123"
+        content:
+          type: string
+          description: Message text content
+          example: "What programming languages does this candidate know?"
+        sender:
+          type: string
+          enum: ["user", "assistant", "system"]
+          description: Message sender type
+          example: "user"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-09-13T20:30:00Z"
+        type:
+          type: string
+          enum: ["text", "system", "error"]
+          description: Message type classification
+          example: "text"
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: AI confidence in response (assistant messages only)
+          example: 0.92
+        processingTime:
+          type: number
+          description: RAG processing time in milliseconds (assistant messages only)
+          example: 2341.5
+        sources:
+          type: array
+          items:
+            type: object
+            properties:
+              section:
+                type: string
+                description: CV section referenced
+                example: "Technical Skills"
+              content:
+                type: string
+                description: Specific content from CV
+                example: "JavaScript (5+ years), React.js, Node.js, Python, Java"
+              relevance:
+                type: number
+                minimum: 0
+                maximum: 1
+                description: Relevance score for this source
+                example: 0.95
+              chunkId:
+                type: string
+                description: Internal embedding chunk ID
+                example: "chunk_abc123"
+          description: Source citations for AI responses
+
+    # Error Handling
+    Error:
+      type: object
+      description: Standardized error response format
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+              example: "VALIDATION_FAILED"
+            message:
+              type: string
+              description: Human-readable error message
+              example: "Invalid request parameters"
+            details:
+              type: object
+              description: Additional error context and debugging information
+              properties:
+                field:
+                  type: string
+                  description: Field that caused validation error
+                  example: "portalName"
+                expected:
+                  type: string
+                  description: Expected value or format
+                  example: "string between 1-100 characters"
+                received:
+                  type: string
+                  description: Actual value received
+                  example: ""
+                timestamp:
+                  type: string
+                  format: date-time
+                  description: Error timestamp
+                  example: "2025-09-13T20:30:00Z"
+                requestId:
+                  type: string
+                  description: Request ID for support
+                  example: "req_abc123def456"
+                path:
+                  type: string
+                  description: API endpoint path
+                  example: "/api/portal/generate"
+                retryable:
+                  type: boolean
+                  description: Whether the request can be retried
+                  example: false
+                supportContact:
+                  type: string
+                  description: Support contact for assistance
+                  example: "support@cvplus.com"
+
+    # Premium Integration
+    SubscriptionInfo:
+      type: object
+      description: User subscription information for premium feature validation
+      properties:
+        tier:
+          type: string
+          enum: ["free", "premium", "enterprise"]
+          description: Subscription tier
+          example: "premium"
+        status:
+          type: string
+          enum: ["active", "expired", "cancelled", "suspended"]
+          description: Subscription status
+          example: "active"
+        expiresAt:
+          type: string
+          format: date-time
+          description: Subscription expiration date
+          example: "2025-12-13T20:30:00Z"
+        features:
+          type: array
+          items:
+            type: string
+          description: Enabled premium features
+          example: ["portal_generation", "custom_domain", "analytics", "ai_chat"]
+        limits:
+          type: object
+          description: Usage limits based on subscription
+          properties:
+            portalsPerMonth:
+              type: integer
+              example: 10
+            chatMessagesPerDay:
+              type: integer
+              example: 1000
+            customDomains:
+              type: integer
+              example: 3
+
+    # Rate Limiting
+    RateLimitInfo:
+      type: object
+      description: Rate limiting information
+      properties:
+        limit:
+          type: integer
+          description: Rate limit maximum
+          example: 10
+        remaining:
+          type: integer
+          description: Requests remaining in current window
+          example: 8
+        resetTime:
+          type: string
+          format: date-time
+          description: When rate limit resets
+          example: "2025-09-13T20:35:00Z"
+        retryAfter:
+          type: integer
+          description: Seconds to wait before retrying (when rate limited)
+          example: 300
+
+    # Health Check
+    HealthStatus:
+      type: object
+      description: API health status
+      properties:
+        status:
+          type: string
+          enum: ["healthy", "degraded", "unhealthy"]
+          example: "healthy"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-09-13T20:30:00Z"
+        services:
+          type: object
+          properties:
+            database:
+              type: string
+              enum: ["healthy", "degraded", "unhealthy"]
+              example: "healthy"
+            vectorDatabase:
+              type: string
+              enum: ["healthy", "degraded", "unhealthy"]
+              example: "healthy"
+            aiService:
+              type: string
+              enum: ["healthy", "degraded", "unhealthy"]
+              example: "healthy"
+            deployment:
+              type: string
+              enum: ["healthy", "degraded", "unhealthy"]
+              example: "healthy"
+        performance:
+          type: object
+          properties:
+            averageResponseTime:
+              type: number
+              description: Average response time in milliseconds
+              example: 245.7
+            errorRate:
+              type: number
+              description: Error rate percentage
+              example: 0.02
+            uptime:
+              type: number
+              description: Uptime percentage (24h)
+              example: 99.97

@@ -1,0 +1,74 @@
+graph TB
+    subgraph "CURRENT STATE - Firebase Functions"
+        FF["/functions/src/functions/"]
+        FF --> Analytics["analytics/getRevenueMetrics.ts"]
+        FF --> Payments["payments/* (6 functions)"]
+        FF --> Premium["premium/* (5 functions)"]
+        FF --> Recommendations["recommendations/* (4 functions)"]
+        FF --> CVProcessing["CV Processing (8+ functions)"]
+        FF --> Multimedia["Multimedia (6+ functions)"]
+        FF --> PublicProfile["Public Profile (4 functions)"]
+        FF --> Admin["Admin functions"]
+        FF --> Workflow["Calendar/Workflow (4 functions)"]
+        FF --> Core["Core/Utility (10+ functions)"]
+    end
+
+    subgraph "TARGET STATE - Git Submodules"
+        subgraph "Existing Submodules"
+            SM1["packages/analytics (git)"]
+            SM2["packages/premium (git)"]
+            SM3["packages/recommendations (git)"]
+            SM4["packages/multimedia (git)"]
+            SM5["packages/public-profiles (git)"]
+            SM6["packages/admin (git)"]
+            SM7["packages/auth (git)"]
+            SM8["packages/core (git)"]
+            SM9["packages/i18n (git)"]
+        end
+        
+        subgraph "New Submodules Needed"
+            NEW1["packages/payments (NEW)"]
+            NEW2["packages/workflow (NEW)"]
+        end
+        
+        subgraph "Convert to Submodule"
+            CONVERT["packages/cv-processing (convert)"]
+        end
+    end
+
+    subgraph "DUPLICATES TO RESOLVE"
+        DUP1["getRevenueMetrics.ts - EXISTS IN BOTH"]
+        DUP2["checkFeatureAccess.ts - EXISTS IN BOTH"]
+        DUP3["Recommendations functions - VARIATIONS"]
+        DUP4["CV Processing - MIXED LOCATIONS"]
+    end
+
+    %% Migration Flow
+    Analytics -.->|CONSOLIDATE| SM1
+    Payments -.->|CREATE & MIGRATE| NEW1
+    Premium -.->|SPLIT FUNCTIONS| SM2
+    Premium -.->|MOVE PAYMENTS| NEW1
+    Recommendations -.->|CONSOLIDATE| SM3
+    CVProcessing -.->|CONVERT & MIGRATE| CONVERT
+    Multimedia -.->|MIGRATE| SM4
+    PublicProfile -.->|MIGRATE| SM5
+    Admin -.->|CLEANUP REMAINING| SM6
+    Workflow -.->|CREATE & MIGRATE| NEW2
+    Core -.->|ANALYZE & MIGRATE| SM8
+
+    %% Duplicate Resolution
+    DUP1 -.->|RESOLVE| SM1
+    DUP2 -.->|RESOLVE| NEW1
+    DUP3 -.->|MERGE| SM3
+    DUP4 -.->|CONSOLIDATE| CONVERT
+
+    classDef existing fill:#e1f5fe
+    classDef newSubmodule fill:#fff3e0
+    classDef convert fill:#f3e5f5
+    classDef duplicate fill:#ffebee
+    classDef migration stroke:#4caf50,stroke-width:3px
+
+    class SM1,SM2,SM3,SM4,SM5,SM6,SM7,SM8,SM9 existing
+    class NEW1,NEW2 newSubmodule
+    class CONVERT convert
+    class DUP1,DUP2,DUP3,DUP4 duplicate

@@ -1,0 +1,113 @@
+```mermaid
+graph TB
+    subgraph "Phase 5: Production Deployment Architecture"
+        direction TB
+        
+        subgraph "Pre-Deployment Validation"
+            A1[Environment Readiness Check]
+            A2[System Health Baseline]
+            A3[Backup Verification]
+            A4[Rollback Testing]
+        end
+        
+        subgraph "Staged Deployment Pipeline"
+            B1[Stage 1: Dev Environment<br/>50% Traffic]
+            B2[Stage 2: Staging Environment<br/>100% Traffic]  
+            B3[Stage 3A: Production 10%]
+            B4[Stage 3B: Production 25%]
+            B5[Stage 3C: Production 50%]
+            B6[Stage 3D: Production 100%]
+        end
+        
+        subgraph "Monitoring & Observability Stack"
+            C1[Performance Metrics<br/>Response Time, Throughput]
+            C2[Business Metrics<br/>Quality, Satisfaction]
+            C3[System Health<br/>CPU, Memory, Disk]
+            C4[Error Tracking<br/>Logging, Alerting]
+            C5[Real-time Dashboard]
+        end
+        
+        subgraph "Rollback & Safety Systems"
+            D1[Circuit Breakers]
+            D2[Health Check Gates]
+            D3[Automated Rollback<br/><30s Response]
+            D4[Manual Override]
+            D5[State Preservation]
+        end
+        
+        subgraph "Performance Validation Gates"
+            E1[Timeout Reduction<br/>15% → 2% (87%)]
+            E2[Response Time<br/>3min → 30s (83%)]
+            E3[Cache Hit Rate<br/>>60%]
+            E4[Error Rate<br/><2%]
+        end
+        
+        subgraph "Firebase Integration Layer"
+            F1[Firebase Functions<br/>Adapter Layer]
+            F2[Firestore Integration]
+            F3[Firebase Secrets<br/>Management]
+            F4[Cloud Functions<br/>Deployment]
+        end
+        
+        subgraph "Refactored Package Services"
+            G1[packages/recommendations/<br/>Service Layer]
+            G2[Cache Operations<br/>Manager]
+            G3[Performance Metrics<br/>Manager]
+            G4[Recommendations<br/>Orchestrator]
+        end
+    end
+    
+    %% Workflow Connections
+    A1 --> A2 --> A3 --> A4
+    A4 --> B1
+    
+    B1 --> B2 --> B3 --> B4 --> B5 --> B6
+    
+    %% Monitoring Integration
+    B1 --> C1 & C2 & C3 & C4
+    C1 & C2 & C3 & C4 --> C5
+    
+    %% Safety Systems
+    C5 --> D1 & D2
+    D1 & D2 --> D3 & D4
+    D3 --> D5
+    
+    %% Performance Gates
+    B3 --> E1 & E2 & E3 & E4
+    B4 --> E1 & E2 & E3 & E4
+    B5 --> E1 & E2 & E3 & E4
+    B6 --> E1 & E2 & E3 & E4
+    
+    %% Firebase Integration
+    G1 --> F1
+    F1 --> F2 & F3 & F4
+    F4 --> B1
+    
+    %% Package Services
+    G1 --> G2 & G3 & G4
+    G2 & G3 & G4 --> F1
+    
+    %% Emergency Flows
+    D3 -.->|Emergency Rollback| G1
+    D4 -.->|Manual Override| B6
+    
+    %% Quality Gates
+    E1 & E2 & E3 & E4 -.->|All Pass| B6
+    E1 & E2 & E3 & E4 -.->|Any Fail| D3
+    
+    classDef validationClass fill:#e1f5fe
+    classDef deploymentClass fill:#f3e5f5
+    classDef monitoringClass fill:#e8f5e8
+    classDef safetyClass fill:#fff3e0
+    classDef performanceClass fill:#fce4ec
+    classDef firebaseClass fill:#e0f2f1
+    classDef packageClass fill:#f1f8e9
+    
+    class A1,A2,A3,A4 validationClass
+    class B1,B2,B3,B4,B5,B6 deploymentClass
+    class C1,C2,C3,C4,C5 monitoringClass
+    class D1,D2,D3,D4,D5 safetyClass
+    class E1,E2,E3,E4 performanceClass
+    class F1,F2,F3,F4 firebaseClass
+    class G1,G2,G3,G4 packageClass
+```

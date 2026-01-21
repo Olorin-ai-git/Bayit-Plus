@@ -1,0 +1,234 @@
+{
+  "migration": {
+    "batchSize": 5,
+    "maxConcurrentMigrations": 3,
+    "verificationRetries": 3,
+    "rollbackTimeout": 300000,
+    "backupEnabled": true,
+    "testingRequired": true,
+    "approvalRequired": true
+  },
+  "riskThresholds": {
+    "low": {
+      "maxScore": 5,
+      "autoApprovalAllowed": true,
+      "requiredTests": ["unit", "integration"],
+      "reviewers": 1
+    },
+    "medium": {
+      "maxScore": 15,
+      "autoApprovalAllowed": false,
+      "requiredTests": ["unit", "integration", "e2e"],
+      "reviewers": 2
+    },
+    "high": {
+      "maxScore": 30,
+      "autoApprovalAllowed": false,
+      "requiredTests": ["unit", "integration", "e2e", "performance"],
+      "reviewers": 3,
+      "stagingTestRequired": true
+    },
+    "critical": {
+      "maxScore": 100,
+      "autoApprovalAllowed": false,
+      "requiredTests": ["unit", "integration", "e2e", "performance", "security"],
+      "reviewers": 3,
+      "stagingTestRequired": true,
+      "productionRolloutStrategy": "canary",
+      "rollbackPlanRequired": true
+    }
+  },
+  "submodules": {
+    "core": {
+      "repository": "git@github.com:gilco1973/cvplus-core.git",
+      "branch": "main",
+      "path": "packages/core",
+      "maintainer": "gil@cvplus.com",
+      "ciEnabled": true,
+      "deploymentStrategy": "automatic"
+    },
+    "auth": {
+      "repository": "git@github.com:gilco1973/cvplus-auth.git",
+      "branch": "main", 
+      "path": "packages/auth",
+      "maintainer": "gil@cvplus.com",
+      "ciEnabled": true,
+      "deploymentStrategy": "manual"
+    },
+    "cv-processing": {
+      "repository": "git@github.com:gilco1973/cvplus-cv-processing.git",
+      "branch": "main",
+      "path": "packages/cv-processing", 
+      "maintainer": "gil@cvplus.com",
+      "ciEnabled": true,
+      "deploymentStrategy": "automatic"
+    },
+    "multimedia": {
+      "repository": "git@github.com:gilco1973/cvplus-multimedia.git",
+      "branch": "main",
+      "path": "packages/multimedia",
+      "maintainer": "gil@cvplus.com", 
+      "ciEnabled": true,
+      "deploymentStrategy": "manual"
+    },
+    "admin": {
+      "repository": "git@github.com:gilco1973/cvplus-admin.git",
+      "branch": "main",
+      "path": "packages/admin",
+      "maintainer": "gil@cvplus.com",
+      "ciEnabled": true,
+      "deploymentStrategy": "manual"
+    },
+    "analytics": {
+      "repository": "git@github.com:gilco1973/cvplus-analytics.git",
+      "branch": "main",
+      "path": "packages/analytics",
+      "maintainer": "gil@cvplus.com",
+      "ciEnabled": true,
+      "deploymentStrategy": "automatic"
+    },
+    "premium": {
+      "repository": "git@github.com:gilco1973/cvplus-premium.git", 
+      "branch": "main",
+      "path": "packages/premium",
+      "maintainer": "gil@cvplus.com",
+      "ciEnabled": true,
+      "deploymentStrategy": "manual"
+    },
+    "public-profiles": {
+      "repository": "git@github.com:gilco1973/cvplus-public-profiles.git",
+      "branch": "main",
+      "path": "packages/public-profiles",
+      "maintainer": "gil@cvplus.com",
+      "ciEnabled": true,
+      "deploymentStrategy": "automatic"
+    },
+    "recommendations": {
+      "repository": "git@github.com:gilco1973/cvplus-recommendations.git",
+      "branch": "main", 
+      "path": "packages/recommendations",
+      "maintainer": "gil@cvplus.com",
+      "ciEnabled": true,
+      "deploymentStrategy": "automatic"
+    },
+    "i18n": {
+      "repository": "git@github.com:gilco1973/cvplus-i18n.git",
+      "branch": "main",
+      "path": "packages/i18n",
+      "maintainer": "gil@cvplus.com",
+      "ciEnabled": true,
+      "deploymentStrategy": "automatic"
+    },
+    "payments": {
+      "repository": "git@github.com:gilco1973/cvplus-payments.git",
+      "branch": "main",
+      "path": "packages/payments",
+      "maintainer": "gil@cvplus.com",
+      "ciEnabled": true,
+      "deploymentStrategy": "manual"
+    }
+  },
+  "testing": {
+    "unitTestTimeout": 30000,
+    "integrationTestTimeout": 120000,
+    "e2eTestTimeout": 300000,
+    "performanceTestTimeout": 600000,
+    "securityTestTimeout": 180000,
+    "testDataSources": {
+      "mockData": false,
+      "sampleData": "scripts/testing/sample-data",
+      "productionSnapshots": "scripts/testing/prod-snapshots"
+    }
+  },
+  "deployment": {
+    "staging": {
+      "firebaseProject": "cvplus-staging",
+      "verificationRequired": true,
+      "smokeTestsRequired": true,
+      "rollbackOnFailure": true
+    },
+    "production": {
+      "firebaseProject": "cvplus-prod",
+      "verificationRequired": true,
+      "smokeTestsRequired": true,
+      "rollbackOnFailure": true,
+      "blueGreenDeployment": true,
+      "canaryRollout": {
+        "enabled": true,
+        "percentage": 10,
+        "duration": 3600000,
+        "errorThreshold": 0.01
+      }
+    }
+  },
+  "monitoring": {
+    "healthCheckInterval": 30000,
+    "errorAlertThreshold": 10,
+    "performanceAlertThreshold": 2000,
+    "notifications": {
+      "email": ["gil@cvplus.com"],
+      "slack": {
+        "webhook": "https://hooks.slack.com/services/...",
+        "channel": "#cvplus-migrations"
+      }
+    }
+  },
+  "backup": {
+    "enabled": true,
+    "retention": {
+      "daily": 7,
+      "weekly": 4,
+      "monthly": 12
+    },
+    "storage": {
+      "type": "gcs",
+      "bucket": "cvplus-migration-backups",
+      "path": "firebase-functions"
+    }
+  },
+  "rollback": {
+    "strategies": [
+      "git-revert",
+      "previous-deployment", 
+      "blue-green-switch",
+      "function-disable"
+    ],
+    "autoRollbackTriggers": [
+      "error-rate-spike",
+      "performance-degradation",
+      "availability-drop"
+    ],
+    "manualApprovalRequired": true,
+    "verificationAfterRollback": true
+  },
+  "dependencies": {
+    "analysisEnabled": true,
+    "crossModuleDependencyWarnings": true,
+    "circularDependencyDetection": true,
+    "sharedModuleTracking": true,
+    "externalServiceMapping": true
+  },
+  "security": {
+    "codeScanning": true,
+    "dependencyVulnerabilityScanning": true,
+    "secretsValidation": true,
+    "accessControlReview": true,
+    "encryptionValidation": true
+  },
+  "reporting": {
+    "dailyStatusReport": true,
+    "weeklyProgressReport": true,
+    "realTimeUpdates": true,
+    "dashboardEnabled": true,
+    "exportFormats": ["json", "csv", "pdf"],
+    "recipients": ["gil@cvplus.com"]
+  },
+  "automation": {
+    "autoDiscovery": true,
+    "dependencyAnalysis": true,
+    "riskAssessment": true,
+    "testGeneration": false,
+    "documentationGeneration": true,
+    "statusUpdates": true
+  }
+}

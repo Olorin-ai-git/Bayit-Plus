@@ -1,0 +1,119 @@
+{
+  "name": "@cvplus/i18n",
+  "version": "1.0.0",
+  "description": "CVPlus Internationalization Module - Comprehensive i18n solution for multi-language support",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.esm.js",
+      "require": "./dist/react.js"
+    },
+    "./functions": {
+      "types": "./src/backend/functions/index.ts",
+      "import": "./src/backend/functions/index.ts",
+      "require": "./src/backend/functions/index.ts"
+    },
+    "./locales/*": "./dist/locales/*"
+  },
+  "files": [
+    "dist/",
+    "src/backend/",
+    "locales/",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup --format cjs,esm --dts --clean",
+    "build:locales": "node scripts/build/build-locales.js",
+    "dev": "tsup --format cjs,esm --dts --watch",
+    "lint": "eslint src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "test:rtl": "vitest --run --grep='RTL'",
+    "clean": "rm -rf dist node_modules",
+    "extract:keys": "node scripts/extract-translation-keys.js",
+    "validate:translations": "node scripts/validate-translations.js",
+    "validate:rtl": "node scripts/test/validate-rtl.js",
+    "generate:types": "node scripts/generate-types.js",
+    "deploy:translations": "node scripts/deployment/deploy-translations.js",
+    "deploy:dev": "node scripts/deployment/deploy-translations.js development",
+    "deploy:staging": "node scripts/deployment/deploy-translations.js staging",
+    "deploy:prod": "node scripts/deployment/deploy-translations.js production",
+    "validate-dependencies": "./scripts/validate-dependencies.sh"
+  },
+  "dependencies": {
+    "@cvplus/core": "file:../core",
+    "@cvplus/logging": "file:../logging",
+    "@formatjs/intl-datetimeformat": "^6.12.5",
+    "@formatjs/intl-numberformat": "^8.10.3",
+    "@formatjs/intl-pluralrules": "^5.2.14",
+    "@formatjs/intl-relativetimeformat": "^11.2.14",
+    "i18next": "^25.4.2",
+    "i18next-browser-languagedetector": "^8.0.0",
+    "i18next-http-backend": "^2.6.1",
+    "i18next-icu": "^2.3.0",
+    "intl-messageformat": "^10.7.0",
+    "js-cookie": "^3.0.5",
+    "libphonenumber-js": "^1.11.9",
+    "react-i18next": "^15.0.2"
+  },
+  "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
+    "@types/node": "^22.9.1",
+    "@types/react": "^18.3.12",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0",
+    "@vitest/coverage-v8": "^2.1.4",
+    "eslint": "^9.15.0",
+    "happy-dom": "^18.0.1",
+    "jsdom": "^26.1.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": false
+    },
+    "react-dom": {
+      "optional": false
+    }
+  },
+  "keywords": [
+    "i18n",
+    "internationalization",
+    "localization",
+    "cvplus",
+    "react",
+    "typescript",
+    "translations",
+    "rtl",
+    "multilingual"
+  ],
+  "author": "Gil Klainert",
+  "license": "PROPRIETARY",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cvplus/cvplus.git",
+    "directory": "packages/i18n"
+  },
+  "bugs": {
+    "url": "https://github.com/cvplus/cvplus/issues"
+  },
+  "homepage": "https://github.com/cvplus/cvplus/tree/main/packages/i18n",
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/cvplus-icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CVPlus - Transform your CV from paper to powerful with AI-enhanced multimedia profiles" />
+    <meta name="keywords" content="CV, resume, AI enhancement, multimedia, professional profiles, career" />
+    <title>CVPlus - From Paper to Powerful</title>
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/fonts/Inter-VariableFont.woff2" as="font" type="font/woff2" crossorigin>
+
+    <!-- Progressive Web App meta tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="CVPlus">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://cvplus.app">
+    <meta property="og:title" content="CVPlus - From Paper to Powerful">
+    <meta property="og:description" content="Transform your CV with AI-enhanced multimedia profiles, analytics, and intelligent recommendations.">
+    <meta property="og:image" content="/og-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://cvplus.app">
+    <meta property="twitter:title" content="CVPlus - From Paper to Powerful">
+    <meta property="twitter:description" content="Transform your CV with AI-enhanced multimedia profiles, analytics, and intelligent recommendations.">
+    <meta property="twitter:image" content="/twitter-image.png">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Loading indicator while JavaScript loads -->
+    <noscript>
+      <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: system-ui, sans-serif;
+        color: #64748b;
+      ">
+        <div style="text-align: center;">
+          <h1 style="color: #2563eb; margin-bottom: 1rem;">CVPlus</h1>
+          <p>JavaScript is required to use CVPlus. Please enable JavaScript and reload the page.</p>
+        </div>
+      </div>
+    </noscript>
+  </body>
+</html>

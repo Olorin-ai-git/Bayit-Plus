@@ -1,0 +1,61 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx tsup:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npx rollup:*)",
+      "Bash(tsc --noEmit)",
+      "Bash(npm run dev:*)",
+      "Bash(/usr/bin/git status)",
+      "Bash(/usr/bin/git branch -vv)",
+      "Bash(/usr/bin/git add .)",
+      "Bash(/usr/bin/git commit:*)",
+      "Bash(/usr/bin/git push:*)",
+      "Bash(/usr/bin/git pull:*)",
+      "Bash(/usr/bin/git diff:*)",
+      "Bash(/usr/bin/git log:*)",
+      "Bash(echo:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(awk:*)",
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "Bash(firebase functions:*)",
+      "Bash(stripe:*)",
+      "Read(/Users/gklainert/.local/share/claude-007-agents/.claude/agents/cvplus/premium-specialist.md)",
+      "Read(/Users/gklainert/.local/share/claude-007-agents/.claude/agents/cvplus/analytics-specialist.md)",
+      "Read(/Users/gklainert/.local/share/claude-007-agents/.claude/agents/business/**)",
+      "Read(/Users/gklainert/.local/share/claude-007-agents/.claude/agents/universal/**)",
+      "Read(/Users/gklainert/.local/share/claude-007-agents/.claude/agents/engineering/**)",
+      "Read(/Users/gklainert/.local/share/claude-007-agents/.claude/agents/backend/**)",
+      "Read(/Users/gklainert/.local/share/claude-007-agents/.claude/agents/testing/**)",
+      "Read(/Users/gklainert/.local/share/claude-007-agents/.claude/agents/security/**)"
+    ],
+    "deny": [],
+    "ask": [
+      "Bash(rm:*)",
+      "Bash(rmdir:*)",
+      "Write(**/.env)",
+      "Write(**/firebase.json)",
+      "Write(**/.firebase*)",
+      "Bash(firebase deploy:*)",
+      "Write(**/stripe.json)",
+      "Write(**/payment-config.*)"
+    ],
+    "additionalDirectories": [
+      "/Users/gklainert/Documents/cvplus/",
+      "/Users/gklainert/Documents/cvplus/packages/premium/",
+      "/Users/gklainert/Documents/cvplus/packages/payments/",
+      "/Users/gklainert/Documents/cvplus/packages/analytics/",
+      "/Users/gklainert/.local/share/claude-007-agents/.claude/agents/"
+    ]
+  }
+}

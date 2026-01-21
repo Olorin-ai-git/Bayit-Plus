@@ -1,0 +1,156 @@
+graph TD
+    A[Phase 6.4: Deployment Documentation & Runbooks] --> B[Master Deployment Guide]
+    A --> C[Operational Runbooks]
+    A --> D[Technical Operations Manual]
+    A --> E[Developer Onboarding]
+    A --> F[Business Operations Guide]
+    A --> G[Compliance & Security]
+
+    %% Master Deployment Guide
+    B --> B1[Pre-Deployment Requirements]
+    B --> B2[Environment-Specific Procedures]
+    B --> B3[Post-Deployment Verification]
+    B --> B4[Emergency Procedures]
+    B --> B5[Integration with Intelligent Deploy]
+
+    B1 --> B1a[System Prerequisites]
+    B1 --> B1b[Access Requirements]
+    B1 --> B1c[Pre-Deployment Checklist]
+
+    B2 --> B2a[Development Deployment]
+    B2 --> B2b[Staging Deployment]
+    B2 --> B2c[Production Blue-Green]
+    B2 --> B2d[Emergency Deployment]
+
+    %% Operational Runbooks
+    C --> C1[System Health Monitoring]
+    C --> C2[Troubleshooting Guide]
+    C --> C3[Performance Optimization]
+    C --> C4[Security Incident Response]
+    C --> C5[Business Continuity]
+
+    C1 --> C1a[Health Check Procedures]
+    C1 --> C1b[Alert Response Procedures]
+    C1 --> C1c[Proactive Maintenance]
+
+    C2 --> C2a[Deployment Issues]
+    C2 --> C2b[Runtime Errors]
+    C2 --> C2c[Performance Problems]
+    C2 --> C2d[Integration Failures]
+
+    %% Technical Operations Manual
+    D --> D1[Firebase Functions Management]
+    D --> D2[Database Operations]
+    D --> D3[External Service Integration]
+    D --> D4[Monitoring Dashboard Ops]
+    D --> D5[Automated System Management]
+
+    D1 --> D1a[Function Scaling]
+    D1 --> D1b[Resource Management]
+    D1 --> D1c[Performance Monitoring]
+
+    D2 --> D2a[Firestore Management]
+    D2 --> D2b[Index Optimization]
+    D2 --> D2c[Security Rules]
+
+    D3 --> D3a[Anthropic API Management]
+    D3 --> D3b[Stripe Integration]
+    D3 --> D3c[Media Generation Services]
+
+    %% Developer Onboarding
+    E --> E1[Development Environment Setup]
+    E --> E2[Architecture Overview]
+    E --> E3[Code Contribution Guidelines]
+    E --> E4[Testing Procedures]
+    E --> E5[Deployment Processes]
+
+    E1 --> E1a[Repository Setup]
+    E1 --> E1b[Firebase Configuration]
+    E1 --> E1c[Local Development]
+
+    E3 --> E3a[Git Workflow]
+    E3 --> E3b[Coding Standards]
+    E3 --> E3c[Code Review Guidelines]
+
+    %% Business Operations Guide
+    F --> F1[User Support Operations]
+    F --> F2[Performance Metrics]
+    F --> F3[Capacity Planning]
+    F --> F4[Cost Optimization]
+    F --> F5[Feature Release Management]
+
+    F2 --> F2a[KPI Dashboard]
+    F2 --> F2b[Business Intelligence]
+    F2 --> F2c[Revenue Operations]
+
+    F3 --> F3a[Growth Projections]
+    F3 --> F3b[Scaling Triggers]
+    F3 --> F3c[Resource Planning]
+
+    %% Compliance & Security
+    G --> G1[Security Audit Procedures]
+    G --> G2[Compliance Checklists]
+    G --> G3[Data Privacy Protection]
+    G --> G4[Access Control Management]
+    G --> G5[Incident Response]
+
+    G2 --> G2a[GDPR Compliance]
+    G2 --> G2b[SOC 2 Compliance]
+    G2 --> G2c[ISO 27001 Elements]
+
+    G5 --> G5a[Incident Classification]
+    G5 --> G5b[Response Process]
+    G5 --> G5c[Communication Procedures]
+
+    %% Integration with Existing Systems
+    H[Existing CVPlus Infrastructure] --> I[Intelligent Firebase Deployment]
+    H --> J[Monitoring & Alerting]
+    H --> K[Performance Tracking]
+    H --> L[Security Systems]
+
+    I --> B
+    J --> C
+    K --> D
+    L --> G
+
+    %% Documentation Standards
+    M[Documentation Standards] --> M1[Consistent Structure]
+    M --> M2[Mermaid Diagrams]
+    M --> M3[Cross-References]
+    M --> M4[Regular Updates]
+
+    M1 --> A
+    M2 --> N[/docs/diagrams/]
+    M3 --> O[Interconnected Docs]
+    M4 --> P[Maintenance Procedures]
+
+    %% Success Criteria
+    Q[Success Criteria] --> Q1[Technical Completeness]
+    Q --> Q2[Operational Readiness]
+    Q --> Q3[Quality Assurance]
+
+    Q1 --> Q1a[All Scenarios Documented]
+    Q1 --> Q1b[Integration Validated]
+
+    Q2 --> Q2a[Business Stakeholder Readiness]
+    Q2 --> Q2b[Developer Efficiency]
+    Q2 --> Q2c[Incident Response Ready]
+
+    Q3 --> Q3a[Documentation Tested]
+    Q3 --> Q3b[Cross-References Maintained]
+    Q3 --> Q3c[Update Procedures]
+
+    %% Styling
+    classDef primaryDoc fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef runbook fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef technical fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef business fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef security fill:#ffebee,stroke:#b71c1c,stroke-width:2px
+    classDef infrastructure fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+
+    class B primaryDoc
+    class C,C1,C2,C3,C4,C5 runbook
+    class D,D1,D2,D3,D4,D5 technical
+    class E,F,F1,F2,F3,F4,F5 business
+    class G,G1,G2,G3,G4,G5 security
+    class I,J,K,L infrastructure

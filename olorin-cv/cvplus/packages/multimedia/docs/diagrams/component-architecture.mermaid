@@ -1,0 +1,143 @@
+graph TB
+    %% CVPlus Multimedia Module - Component Architecture
+    
+    subgraph "Application Layer"
+        APP[Parent Application]
+        MP[MultimediaProvider]
+        EB[ErrorBoundary]
+    end
+    
+    subgraph "Core Components"
+        FW[FeatureWrapper]
+        VP[VideoIntroduction]
+        PP[PodcastPlayer]
+        MP2[MediaProcessor]
+    end
+    
+    subgraph "Display Components"
+        PG[PortfolioGallery]
+        direction TB
+        PG --> PF[PortfolioFilters]
+        PG --> PC[ProjectCard]
+        PG --> LM[LightboxModal]
+        
+        TC[TestimonialsCarousel]
+        direction TB
+        TC --> CC[CarouselControls]
+        TC --> TCR[TestimonialCard]
+    end
+    
+    subgraph "Interactive Components"
+        QR[EnhancedQRCode]
+        direction TB
+        QR --> QC[QRCustomizer]
+        QR --> DQ[DynamicQRCode]
+        
+        QE[QRCodeEditor]
+        SM[SocialMediaLinks]
+    end
+    
+    subgraph "Utilities Components"
+        FU[FileUpload]
+        direction TB
+        FU --> FV[FileValidator]
+        FU --> UP[UploadProgress]
+        
+        IC[ImageCropper]
+        MU[MediaUploadManager]
+        PPU[ProfilePictureUpload]
+    end
+    
+    subgraph "Advanced Components"
+        AD[AnalyticsDashboard]
+        direction TB
+        AD --> ET[EngagementTracker]
+        AD --> VAD[VideoAnalyticsDashboard]
+        
+        CO[ContentOptimizer]
+        FM[FeatureDetection]
+    end
+    
+    subgraph "Integration Layer"
+        CR[ComponentResolver]
+        FR[FeatureRegistry]
+        SI[StandaloneIntegration]
+        MI[MultimediaIntegration]
+    end
+    
+    subgraph "Service Layer"
+        VGS[VideoGenerationService]
+        PGS[PodcastGenerationService]
+        MPS[MediaProcessingService]
+        QGS[QRGenerationService]
+        AS[AnalyticsService]
+    end
+    
+    subgraph "Provider Layer"
+        HG[HeyGen Provider]
+        RM[RunwayML Provider]
+        FB[Firebase Provider]
+        CL[Claude Provider]
+    end
+    
+    %% Connections
+    APP --> MP
+    MP --> EB
+    EB --> FW
+    
+    FW --> VP
+    FW --> PP
+    FW --> MP2
+    FW --> PG
+    FW --> TC
+    FW --> QR
+    FW --> QE
+    FW --> SM
+    FW --> FU
+    FW --> IC
+    FW --> MU
+    FW --> PPU
+    FW --> AD
+    FW --> CO
+    FW --> FM
+    
+    VP --> CR
+    PP --> CR
+    PG --> CR
+    QR --> CR
+    FU --> CR
+    AD --> CR
+    
+    CR --> FR
+    FR --> SI
+    FR --> MI
+    
+    SI --> VGS
+    SI --> PGS
+    SI --> MPS
+    SI --> QGS
+    SI --> AS
+    
+    VGS --> HG
+    VGS --> RM
+    PGS --> CL
+    MPS --> FB
+    QGS --> FB
+    AS --> FB
+    
+    %% Styling
+    classDef coreComp fill:#e1f5fe
+    classDef displayComp fill:#f3e5f5
+    classDef interactiveComp fill:#e8f5e8
+    classDef utilComp fill:#fff3e0
+    classDef advancedComp fill:#fce4ec
+    classDef serviceLayer fill:#e0f2f1
+    classDef providerLayer fill:#f1f8e9
+    
+    class VP,PP,MP2,FW coreComp
+    class PG,TC,PF,PC,LM,CC,TCR displayComp
+    class QR,QE,SM,QC,DQ interactiveComp
+    class FU,IC,MU,PPU,FV,UP utilComp
+    class AD,CO,FM,ET,VAD advancedComp
+    class VGS,PGS,MPS,QGS,AS serviceLayer
+    class HG,RM,FB,CL providerLayer

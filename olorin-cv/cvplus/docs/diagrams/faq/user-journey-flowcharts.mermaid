@@ -1,0 +1,350 @@
+---
+title: CVPlus FAQ Page - User Journey Flowcharts
+author: Gil Klainert
+date: 2025-08-20
+description: Complete user journey flows for different personas visiting the CVPlus FAQ page
+---
+
+```mermaid
+%% User Journey - Job Seeker Persona
+flowchart TD
+    %% Entry Points
+    A1[Landing on FAQ from Google Search] --> B1{First Time Visitor?}
+    A2[FAQ Link from CVPlus Homepage] --> B1
+    A3[Direct FAQ URL from Social Media] --> B1
+    A4[Email Campaign CTA] --> B1
+    
+    B1 -->|Yes| C1[Shows Hero Section with Search]
+    B1 -->|No| C2[Shows Personalized Quick Actions]
+    
+    %% Search Flow
+    C1 --> D1[User Starts Typing in Search]
+    C2 --> D1
+    D1 --> E1{Search Suggestions Available?}
+    E1 -->|Yes| F1[Shows Predictive Dropdown]
+    E1 -->|No| F2[Shows Popular Queries]
+    
+    F1 --> G1[User Clicks Suggestion]
+    F2 --> G2[User Continues Typing]
+    G1 --> H1[Filtered FAQ Results]
+    G2 --> H1
+    
+    %% Category Navigation
+    C1 --> D2[User Browses Categories]
+    C2 --> D2
+    D2 --> E2[Clicks Category Card]
+    E2 --> F3[Category-Filtered View]
+    F3 --> G3[Finds Relevant FAQ]
+    
+    %% FAQ Interaction
+    H1 --> I1[Clicks FAQ Item]
+    G3 --> I1
+    I1 --> J1[FAQ Expands with Answer]
+    J1 --> K1{Was Answer Helpful?}
+    
+    %% Feedback Flow
+    K1 -->|Yes| L1[Clicks Thumbs Up]
+    K1 -->|No| L2[Clicks Thumbs Down]
+    K1 -->|Partial| L3[Searches for More Info]
+    
+    L1 --> M1[Shows Thank You Message]
+    L2 --> M2[Shows Detailed Feedback Form]
+    L3 --> D1
+    
+    M2 --> N1[User Fills Feedback Form]
+    N1 --> O1[Submits Feedback]
+    O1 --> P1[Success Message + Suggests Contact]
+    
+    %% Conversion Points
+    M1 --> Q1{Ready to Try CVPlus?}
+    P1 --> Q1
+    H1 --> Q1
+    
+    Q1 -->|Yes| R1[Clicks 'Try CVPlus Free' CTA]
+    Q1 -->|Not Yet| R2[Continues Browsing FAQs]
+    Q1 -->|Need Help| R3[Clicks Contact Support]
+    
+    R1 --> S1[Redirects to CVPlus Signup]
+    R2 --> D1
+    R3 --> S2[Shows Contact Options]
+    
+    %% Exit Points
+    S1 --> T1[CONVERSION SUCCESS]
+    S2 --> T2[Support Engagement]
+    
+    %% Styling
+    classDef entryPoint fill:#e1f5fe,stroke:#0277bd,color:#000
+    classDef decision fill:#fff3e0,stroke:#ef6c00,color:#000
+    classDef action fill:#f3e5f5,stroke:#7b1fa2,color:#000
+    classDef conversion fill:#e8f5e8,stroke:#2e7d32,color:#000
+    classDef feedback fill:#fce4ec,stroke:#c2185b,color:#000
+    
+    class A1,A2,A3,A4 entryPoint
+    class B1,E1,K1,Q1 decision
+    class C1,C2,D1,D2,I1,J1 action
+    class R1,S1,T1 conversion
+    class L2,M2,N1,O1,P1 feedback
+```
+
+```mermaid
+%% User Journey - Professional Persona
+flowchart TD
+    %% Entry Points
+    A1[LinkedIn Article Reference] --> B1{Seeking Specific Info?}
+    A2[CVPlus Blog Link] --> B1
+    A3[Professional Network Referral] --> B1
+    
+    B1 -->|Yes| C1[Uses Search with Professional Keywords]
+    B1 -->|No| C2[Browses Categories Strategically]
+    
+    %% Professional Search Behavior
+    C1 --> D1[Types: "ATS optimization"]
+    C1 --> D2[Types: "Professional templates"]
+    C1 --> D3[Types: "Industry-specific CVs"]
+    
+    D1 --> E1[Finds ATS-related FAQs]
+    D2 --> E2[Finds Template FAQs]
+    D3 --> E3[Finds Industry FAQs]
+    
+    %% Category-First Approach
+    C2 --> F1[Clicks "AI Features" Category]
+    C2 --> F2[Clicks "Professional Formats"]
+    C2 --> F3[Clicks "Account Management"]
+    
+    F1 --> E1
+    F2 --> E2
+    F3 --> G1[Account-related FAQs]
+    
+    %% Deep Reading Pattern
+    E1 --> H1[Reads Multiple Related FAQs]
+    E2 --> H1
+    E3 --> H1
+    G1 --> H1
+    
+    H1 --> I1[Uses "Related Topics" Links]
+    I1 --> J1[Cross-references Information]
+    J1 --> K1{Satisfied with Depth?}
+    
+    K1 -->|Yes| L1[Evaluates CVPlus Value]
+    K1 -->|No| L2[Seeks More Detailed Info]
+    
+    L2 --> M1[Clicks "Contact Sales" for Demo]
+    L2 --> M2[Downloads Resources/Guides]
+    
+    %% Professional Decision Process
+    L1 --> N1{Ready to Upgrade Workflow?}
+    N1 -->|Yes| O1[Clicks "View Pricing"]
+    N1 -->|Maybe| O2[Signs up for Free Trial]
+    N1 -->|Not Yet| O3[Bookmarks for Later]
+    
+    O1 --> P1[Reviews Professional Plans]
+    O2 --> P2[Starts with Basic Features]
+    O3 --> P3[Sets Reminder/Follow-up]
+    
+    %% Conversion Outcomes
+    P1 --> Q1[SUBSCRIPTION CONVERSION]
+    P2 --> Q2[TRIAL CONVERSION]
+    P3 --> Q3[FUTURE NURTURE]
+    M1 --> Q4[SALES QUALIFIED LEAD]
+    M2 --> Q5[MARKETING QUALIFIED LEAD]
+    
+    %% Styling
+    classDef professional fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef research fill:#f1f8e9,stroke:#689f38,color:#000
+    classDef evaluation fill:#fff8e1,stroke:#f57c00,color:#000
+    classDef conversion fill:#e8f5e8,stroke:#2e7d32,color:#000
+    classDef leadGen fill:#fce4ec,stroke:#c2185b,color:#000
+    
+    class A1,A2,A3,C1,C2 professional
+    class D1,D2,D3,H1,I1,J1 research
+    class L1,N1,O1,O2,O3 evaluation
+    class P1,P2,Q1,Q2 conversion
+    class M1,M2,Q4,Q5 leadGen
+```
+
+```mermaid
+%% User Journey - Recruiter Persona
+flowchart TD
+    %% Entry Points
+    A1[Industry Forum Discussion] --> B1{Evaluating CVPlus for Team?}
+    A2[HR Software Comparison] --> B1
+    A3[Colleague Recommendation] --> B1
+    
+    B1 -->|Yes| C1[Looks for Enterprise Features]
+    B1 -->|No| C2[Checks Candidate Experience]
+    
+    %% Enterprise Feature Research
+    C1 --> D1[Searches: "bulk CV processing"]
+    C1 --> D2[Searches: "team collaboration"]
+    C1 --> D3[Searches: "API integration"]
+    
+    D1 --> E1[Finds Bulk Processing FAQs]
+    D2 --> E2[Finds Collaboration FAQs]
+    D3 --> E3[Finds Integration FAQs]
+    
+    %% Candidate Experience Check
+    C2 --> F1[Reviews User-Friendly Features]
+    F1 --> G1[Checks Output Quality Examples]
+    G1 --> H1[Evaluates Candidate Journey]
+    
+    %% Technical Evaluation
+    E1 --> I1[Checks Technical Specifications]
+    E2 --> I1
+    E3 --> I1
+    H1 --> I1
+    
+    I1 --> J1[Reviews Security/Privacy FAQs]
+    J1 --> K1[Checks Compliance Information]
+    K1 --> L1{Meets Requirements?}
+    
+    L1 -->|Yes| M1[Requests Enterprise Demo]
+    L1 -->|Partially| M2[Lists Missing Features]
+    L1 -->|No| M3[Seeks Alternative Solutions]
+    
+    %% Business Process
+    M1 --> N1[Contacts Sales Team]
+    M2 --> N2[Submits Feature Requests]
+    M3 --> N3[Continues Vendor Research]
+    
+    N1 --> O1[Schedules Product Demo]
+    N2 --> O2[Gets Product Roadmap Info]
+    
+    O1 --> P1[ENTERPRISE SALES OPPORTUNITY]
+    O2 --> P2[FUTURE ENTERPRISE PROSPECT]
+    N3 --> P3[NOT QUALIFIED]
+    
+    %% Styling
+    classDef recruiter fill:#f3e5f5,stroke:#7b1fa2,color:#000
+    classDef enterprise fill:#e8f5e8,stroke:#2e7d32,color:#000
+    classDef technical fill:#fff3e0,stroke:#ef6c00,color:#000
+    classDef business fill:#e1f5fe,stroke:#0277bd,color:#000
+    
+    class A1,A2,A3,C1,C2 recruiter
+    class D1,D2,D3,E1,E2,E3 enterprise
+    class I1,J1,K1,L1 technical
+    class M1,N1,O1,P1 business
+```
+
+```mermaid
+%% Pain Points and Resolution Paths
+flowchart TD
+    %% Common Pain Points
+    A1[Cannot Find Specific Answer] --> B1{Search Strategy}
+    A2[Technical Jargon Too Complex] --> B2{Simplification Needed}
+    A3[Answer Incomplete/Outdated] --> B3{Content Quality Issue}
+    A4[Mobile Experience Poor] --> B4{UX Problem}
+    A5[Loading Too Slow] --> B5{Performance Issue}
+    
+    %% Resolution Strategies
+    B1 -->|Try Different Keywords| C1[Show Search Suggestions]
+    B1 -->|Browse Categories| C2[Guide to Category Navigation]
+    B1 -->|Contact Support| C3[Escalate to Human Help]
+    
+    B2 -->|Add Glossary Links| D1[Implement Tooltips]
+    B2 -->|Simplify Language| D2[Content Review Process]
+    B2 -->|Visual Examples| D3[Add Screenshots/Videos]
+    
+    B3 -->|User Reports Issue| E1[Feedback Collection System]
+    B3 -->|Content Audit| E2[Regular Review Process]
+    B3 -->|Community Updates| E3[Crowdsourced Improvements]
+    
+    B4 -->|Responsive Design| F1[Mobile-First Optimization]
+    B4 -->|Touch Interactions| F2[Gesture-Friendly UI]
+    B4 -->|Progressive Enhancement| F3[Core Features First]
+    
+    B5 -->|Optimize Images| G1[Lazy Loading Implementation]
+    B5 -->|Code Splitting| G2[Progressive Loading]
+    B5 -->|CDN Usage| G3[Global Content Delivery]
+    
+    %% Success Outcomes
+    C1 --> H1[User Finds Answer]
+    C2 --> H1
+    C3 --> H2[Human Support Success]
+    D1 --> H3[Improved Understanding]
+    D2 --> H3
+    D3 --> H3
+    E1 --> H4[Content Improvement]
+    E2 --> H4
+    E3 --> H4
+    F1 --> H5[Better Mobile Experience]
+    F2 --> H5
+    F3 --> H5
+    G1 --> H6[Faster Loading]
+    G2 --> H6
+    G3 --> H6
+    
+    %% Styling
+    classDef painPoint fill:#ffebee,stroke:#d32f2f,color:#000
+    classDef solution fill:#e8f5e8,stroke:#2e7d32,color:#000
+    classDef success fill:#e3f2fd,stroke:#1976d2,color:#000
+    
+    class A1,A2,A3,A4,A5 painPoint
+    class C1,C2,C3,D1,D2,D3,E1,E2,E3,F1,F2,F3,G1,G2,G3 solution
+    class H1,H2,H3,H4,H5,H6 success
+```
+
+```mermaid
+%% Conversion Opportunity Decision Tree
+flowchart TD
+    %% Entry Assessment
+    A[User Lands on FAQ] --> B{What's User Intent?}
+    
+    B -->|Problem Solving| C[Focused on Finding Answers]
+    B -->|Product Research| D[Evaluating CVPlus Features]
+    B -->|Comparison Shopping| E[Comparing with Competitors]
+    
+    %% Problem Solving Path
+    C --> F{Found Satisfactory Answer?}
+    F -->|Yes| G[High Conversion Potential]
+    F -->|Partial| H[Medium Conversion Potential]
+    F -->|No| I[Low Conversion Potential]
+    
+    %% Research Path
+    D --> J{Depth of Research?}
+    J -->|Surface Level| K[Show Basic CTAs]
+    J -->|Deep Dive| L[Show Advanced Features]
+    J -->|Technical Focus| M[Highlight Technical Benefits]
+    
+    %% Comparison Path
+    E --> N{Competitive Position?}
+    N -->|CVPlus Leading| O[Aggressive CTA Strategy]
+    N -->|CVPlus Comparable| P[Feature Differentiation]
+    N -->|CVPlus Behind| Q[Address Weaknesses First]
+    
+    %% Conversion Actions
+    G --> R[Immediate CTA: "Try CVPlus Free"]
+    H --> S[Soft CTA: "Learn More" + Follow-up]
+    I --> T[Support CTA: "Get Help"]
+    
+    K --> U[General CTA: "Start Your CV"]
+    L --> V[Feature CTA: "See Advanced Tools"]
+    M --> W[Demo CTA: "Request Technical Demo"]
+    
+    O --> X[Urgent CTA: "Start Free Trial Now"]
+    P --> Y[Comparison CTA: "See How We Compare"]
+    Q --> Z[Education CTA: "Learn Our Advantages"]
+    
+    %% Conversion Outcomes
+    R --> AA[HIGH CONVERSION LIKELIHOOD]
+    X --> AA
+    
+    S --> BB[MEDIUM CONVERSION LIKELIHOOD]
+    V --> BB
+    Y --> BB
+    
+    T --> CC[SUPPORT CONVERSION]
+    U --> DD[GENERAL TRIAL CONVERSION]
+    W --> EE[DEMO CONVERSION]
+    Z --> FF[EDUCATIONAL CONVERSION]
+    
+    %% Styling
+    classDef intent fill:#e8f5e8,stroke:#2e7d32,color:#000
+    classDef assessment fill:#fff3e0,stroke:#ef6c00,color:#000
+    classDef action fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef outcome fill:#f3e5f5,stroke:#7b1fa2,color:#000
+    
+    class B,F,J,N intent
+    class C,D,E,G,H,I,K,L,M,O,P,Q assessment
+    class R,S,T,U,V,W,X,Y,Z action
+    class AA,BB,CC,DD,EE,FF outcome
+```

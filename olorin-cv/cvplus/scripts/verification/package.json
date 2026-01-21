@@ -1,0 +1,38 @@
+{
+  "name": "@cvplus/integrity-verification",
+  "version": "1.0.0",
+  "description": "Fast automated integrity verification system for CVPlus specifications",
+  "main": "dist/fast-verify-integrity.js",
+  "bin": {
+    "verify-integrity": "./dist/fast-verify-integrity.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/fast-verify-integrity.js",
+    "dev": "ts-node fast-verify-integrity.ts",
+    "verify": "npm run build && npm start",
+    "verify-dev": "ts-node fast-verify-integrity.ts",
+    "clean": "rm -rf dist .cache",
+    "install-global": "npm run build && npm install -g ."
+  },
+  "keywords": ["verification", "integrity", "cvplus", "specifications", "automation"],
+  "author": "CVPlus Team",
+  "license": "MIT",
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/js-yaml": "^4.0.5",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "package.json"
+  ]
+}

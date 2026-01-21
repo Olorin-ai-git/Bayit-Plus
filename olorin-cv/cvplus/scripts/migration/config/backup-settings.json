@@ -1,0 +1,145 @@
+{
+  "backup": {
+    "storage": {
+      "localPath": "/Users/gklainert/Documents/cvplus/backups/migration",
+      "remoteEnabled": false,
+      "remotePath": "gs://cvplus-migration-backups/firebase-functions",
+      "compression": {
+        "enabled": true,
+        "level": 6,
+        "algorithm": "gzip"
+      },
+      "encryption": {
+        "enabled": true,
+        "algorithm": "aes-256-cbc",
+        "keyPath": "/Users/gklainert/Documents/cvplus/scripts/migration/config/.backup-key"
+      }
+    },
+    "retention": {
+      "daily": 7,
+      "weekly": 4,
+      "monthly": 12,
+      "emergency": 30
+    },
+    "verification": {
+      "enabled": true,
+      "checksumAlgorithm": "sha256",
+      "integrityCheck": true,
+      "restoreTest": false
+    },
+    "incremental": {
+      "enabled": true,
+      "baselineFrequency": "daily",
+      "trackingFile": ".backup-tracking.json",
+      "excludePatterns": [
+        "node_modules",
+        ".git",
+        "dist",
+        "build",
+        "*.log",
+        "*.tmp"
+      ]
+    },
+    "monitoring": {
+      "healthChecks": true,
+      "performanceMetrics": true,
+      "notificationThreshold": 300000,
+      "failureAlerts": true
+    }
+  },
+  "restore": {
+    "validation": {
+      "preRestoreChecks": true,
+      "postRestoreValidation": true,
+      "integrityVerification": true,
+      "functionalTesting": false
+    },
+    "safety": {
+      "createRestorePoint": true,
+      "requireConfirmation": true,
+      "dryRunDefault": false,
+      "stopServicesBeforeRestore": true
+    },
+    "recovery": {
+      "automaticRollbackOnFailure": true,
+      "rollbackTimeout": 300000,
+      "preserveRestorePoints": true,
+      "maxRestorePoints": 10
+    }
+  },
+  "automation": {
+    "schedules": {
+      "fullBackup": {
+        "enabled": false,
+        "frequency": "daily",
+        "time": "02:00",
+        "timezone": "America/New_York"
+      },
+      "incrementalBackup": {
+        "enabled": false,
+        "frequency": "hourly",
+        "interval": 4,
+        "businessHoursOnly": true
+      }
+    },
+    "triggers": {
+      "preDeployment": true,
+      "preGitPush": false,
+      "onSystemError": true,
+      "onMigrationStart": true
+    }
+  },
+  "notifications": {
+    "email": {
+      "enabled": true,
+      "recipients": ["gil@cvplus.com"],
+      "events": ["backup-failure", "restore-failure", "verification-failure"]
+    },
+    "slack": {
+      "enabled": false,
+      "webhook": "https://hooks.slack.com/services/...",
+      "channel": "#cvplus-backups",
+      "events": ["backup-success", "backup-failure", "restore-success", "restore-failure"]
+    }
+  },
+  "security": {
+    "accessControl": {
+      "restrictedOperations": ["emergency-restore", "database-restore"],
+      "approvalRequired": true,
+      "auditLogging": true
+    },
+    "dataProtection": {
+      "encryptSensitiveFiles": true,
+      "maskSecretsInLogs": true,
+      "secureKeyStorage": true,
+      "rotateEncryptionKeys": false
+    }
+  },
+  "performance": {
+    "parallelProcessing": {
+      "enabled": true,
+      "maxConcurrentOperations": 4,
+      "prioritizeRecent": true
+    },
+    "optimization": {
+      "deduplication": true,
+      "deltaBackups": true,
+      "compressionLevel": 6,
+      "checksumOptimization": true
+    }
+  },
+  "testing": {
+    "restoreTesting": {
+      "enabled": false,
+      "frequency": "weekly",
+      "testEnvironment": "/tmp/backup-restore-test",
+      "cleanupAfterTest": true
+    },
+    "integrityTesting": {
+      "enabled": true,
+      "frequency": "daily",
+      "checksumVerification": true,
+      "structureValidation": true
+    }
+  }
+}

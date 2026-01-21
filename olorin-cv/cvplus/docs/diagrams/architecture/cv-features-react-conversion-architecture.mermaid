@@ -1,0 +1,69 @@
+```mermaid
+graph TD
+    subgraph "Current Architecture"
+        A[CVFeaturesPage.tsx] --> B[22 Features Listed]
+        B --> C[HTML/JS Templates]
+        C --> D[ModernTemplate]
+        C --> E[ClassicTemplate]
+        C --> F[CreativeTemplate]
+        D --> G[Static HTML Generation]
+        E --> G
+        F --> G
+    end
+
+    subgraph "Target React Architecture"
+        H[CVFeaturesPage.tsx] --> I[Component Registry]
+        I --> J[AI-Powered Components]
+        I --> K[Interactive Components]
+        I --> L[Visual Components]
+        I --> M[Media Components]
+        I --> N[Common Components]
+        
+        J --> J1[AIPodcastPlayer.tsx]
+        J --> J2[ATSOptimization.tsx]
+        J --> J3[SkillsAnalytics.tsx]
+        J --> J4[VideoIntroduction.tsx]
+        
+        K --> K1[ContactForm.tsx ✅]
+        K --> K2[CareerTimeline.tsx]
+        K --> K3[DynamicQRCode.tsx]
+        K --> K4[SocialMediaLinks.tsx]
+        
+        L --> L1[SkillsVisualization.tsx]
+        L --> L2[AchievementCards.tsx]
+        L --> L3[LanguageProficiency.tsx]
+        L --> L4[CertificationBadges.tsx]
+        
+        M --> M1[VideoIntroduction.tsx]
+        M --> M2[PortfolioGallery.tsx]
+        M --> M3[TestimonialsCarousel.tsx]
+        
+        N --> N1[FeatureWrapper.tsx]
+        N --> N2[LoadingSpinner.tsx]
+        N --> N3[ErrorBoundary.tsx]
+    end
+
+    subgraph "Backend Integration"
+        O[Firebase Functions] --> P[Feature Services]
+        P --> P1[ContactFormService]
+        P --> P2[PodcastService]
+        P --> P3[TimelineService]
+        P --> P4[QRCodeService]
+    end
+
+    subgraph "Data Flow"
+        Q[User CV Upload] --> R[Feature Processing]
+        R --> S[Component Data Generation]
+        S --> T[React Component Rendering]
+        T --> U[Interactive CV Display]
+    end
+
+    A --> H
+    G --> T
+    P --> S
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style H fill:#9f9,stroke:#333,stroke-width:2px
+    style K1 fill:#bbf,stroke:#333,stroke-width:2px
+    style U fill:#9f9,stroke:#333,stroke-width:2px
+```

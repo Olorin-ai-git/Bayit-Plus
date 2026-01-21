@@ -1,0 +1,121 @@
+graph TB
+    subgraph "Current State - BROKEN"
+        MainFunctions["`**Main Functions**
+        /functions/src/index.ts`"]
+        
+        OldFiles["`**Legacy Functions**
+        /functions/src/functions/
+        • generatePodcast.ts
+        • podcastStatus.ts
+        • mediaGeneration.ts
+        • portfolioGallery.ts
+        • enhancedQR.ts
+        • heygen-webhook.ts
+        • runwayml-status-check.ts`"]
+        
+        MultimediaModule["`**@cvplus/multimedia**
+        /packages/multimedia/`"]
+        
+        MultimediaBackend["`**Multimedia Backend**
+        /packages/multimedia/src/backend/
+        ✅ All functions migrated
+        ✅ Builds successfully`"]
+        
+        MultimediaIndex["`**Multimedia Index**
+        /packages/multimedia/src/index.ts
+        ❌ Only exports types/utils
+        ❌ Missing function exports`"]
+        
+        MainFunctions -.->|"❌ Still imports from"| OldFiles
+        MainFunctions -.->|"❌ Should import from"| MultimediaModule
+        MultimediaModule --> MultimediaIndex
+        MultimediaModule --> MultimediaBackend
+        MultimediaIndex -.->|"❌ Missing exports"| MultimediaBackend
+    end
+
+    subgraph "Integration Issues"
+        Issue1["`🚨 **Import/Export Mismatch**
+        Main functions still import
+        from legacy files`"]
+        
+        Issue2["`🚨 **Missing Exports**
+        Multimedia index doesn't
+        export backend functions`"]
+        
+        Issue3["`🚨 **TypeScript Errors**
+        200+ compilation errors
+        prevent build`"]
+        
+        Issue4["`⚠️ **Function Name Changes**
+        heygen-webhook → heygenWebhook
+        runwayml-status-check → runwaymlStatusCheck`"]
+        
+        Issue5["`⚠️ **Legacy Files Present**
+        Duplicate implementations
+        cause confusion`"]
+    end
+
+    subgraph "Target State - FIXED"
+        FixedMainFunctions["`**Fixed Main Functions**
+        /functions/src/index.ts`"]
+        
+        FixedMultimediaIndex["`**Fixed Multimedia Index**
+        /packages/multimedia/src/index.ts
+        ✅ Exports backend functions
+        ✅ Proper re-exports`"]
+        
+        CleanedFiles["`**Cleaned Legacy Files**
+        ❌ Old functions removed
+        ✅ Single source of truth`"]
+        
+        FixedMainFunctions -->|"✅ Imports from"| FixedMultimediaIndex
+        FixedMultimediaIndex -->|"✅ Re-exports from"| MultimediaBackend
+    end
+
+    subgraph "Required Actions"
+        Action1["`**1. Fix Main Index Imports**
+        Replace ./functions/* imports
+        with @cvplus/multimedia imports`"]
+        
+        Action2["`**2. Fix Multimedia Root Exports**
+        Add: export * from './backend/functions'`"]
+        
+        Action3["`**3. Resolve TypeScript Errors**
+        Fix 200+ compilation issues`"]
+        
+        Action4["`**4. Standardize Function Names**
+        Align naming conventions`"]
+        
+        Action5["`**5. Remove Legacy Files**
+        Clean up duplicate implementations`"]
+        
+        Action6["`**6. Integration Testing**
+        Verify all functions work`"]
+    end
+
+    subgraph "Verification Status"
+        CompletedItems["`✅ **COMPLETED**
+        • Submodule structure exists
+        • Functions migrated to submodule  
+        • Submodule builds successfully
+        • Package dependency configured`"]
+        
+        BlockingIssues["`🚨 **BLOCKING ISSUES**
+        • Import/Export mismatch
+        • Missing function exports
+        • TypeScript compilation failures`"]
+        
+        HighPriority["`⚠️ **HIGH PRIORITY**
+        • Function name inconsistencies
+        • Legacy file cleanup needed`"]
+    end
+
+    classDef errorNode fill:#ffcccc,stroke:#ff6b6b,stroke-width:3px
+    classDef warningNode fill:#fff3cd,stroke:#ffc107,stroke-width:2px
+    classDef successNode fill:#d4edda,stroke:#28a745,stroke-width:2px
+    classDef actionNode fill:#e1ecf4,stroke:#0c5460,stroke-width:2px
+
+    class Issue1,Issue2,Issue3,BlockingIssues errorNode
+    class Issue4,Issue5,HighPriority warningNode
+    class MultimediaBackend,CompletedItems successNode
+    class Action1,Action2,Action3,Action4,Action5,Action6 actionNode

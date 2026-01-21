@@ -1,0 +1,120 @@
+```mermaid
+flowchart TD
+    %% CVPlus Workflow Job Processing Flow
+    %% Author: Gil Klainert
+    %% Date: 2025-08-29
+    
+    %% Job Initiation
+    START([Job Request Received])
+    VALIDATE{Validate Job Request}
+    CREATE[Create Job Record]
+    QUEUE[Add to Job Queue]
+    
+    %% Job Processing Pipeline
+    DEQUEUE[Dequeue Job]
+    ANALYZE[Analyze Job Requirements]
+    TEMPLATE{Select Template}
+    FEATURES{Orchestrate Features}
+    
+    %% Template Processing
+    LOAD_TEMPLATE[Load Template]
+    CUSTOMIZE[Customize Template]
+    VALIDATE_TEMPLATE{Validate Template}
+    
+    %% Feature Processing
+    FEATURE_LIST[Get Feature List]
+    FEATURE_DEPS[Resolve Dependencies]
+    FEATURE_EXEC[Execute Features]
+    FEATURE_CHECK{All Features Complete?}
+    FEATURE_SKIP[Skip Feature]
+    FEATURE_RETRY[Retry Feature]
+    
+    %% Job Execution
+    PROCESS[Process Job]
+    MONITOR[Monitor Progress]
+    STATUS{Check Status}
+    
+    %% Quality & Certification
+    QA[Quality Assurance]
+    CERT{Issue Certification?}
+    BADGE[Generate Badge]
+    
+    %% Completion
+    FINALIZE[Finalize Job]
+    NOTIFY[Send Notifications]
+    COMPLETE([Job Complete])
+    
+    %% Error Handling
+    ERROR[Handle Error]
+    RETRY{Retry Job?}
+    FAIL[Mark as Failed]
+    
+    %% Flow Connections
+    START --> VALIDATE
+    VALIDATE -->|Valid| CREATE
+    VALIDATE -->|Invalid| ERROR
+    CREATE --> QUEUE
+    QUEUE --> DEQUEUE
+    
+    DEQUEUE --> ANALYZE
+    ANALYZE --> TEMPLATE
+    TEMPLATE --> FEATURES
+    
+    %% Template Flow
+    TEMPLATE --> LOAD_TEMPLATE
+    LOAD_TEMPLATE --> CUSTOMIZE
+    CUSTOMIZE --> VALIDATE_TEMPLATE
+    VALIDATE_TEMPLATE -->|Valid| FEATURES
+    VALIDATE_TEMPLATE -->|Invalid| ERROR
+    
+    %% Feature Flow
+    FEATURES --> FEATURE_LIST
+    FEATURE_LIST --> FEATURE_DEPS
+    FEATURE_DEPS --> FEATURE_EXEC
+    FEATURE_EXEC --> FEATURE_CHECK
+    FEATURE_CHECK -->|Complete| PROCESS
+    FEATURE_CHECK -->|Incomplete| FEATURE_SKIP
+    FEATURE_CHECK -->|Error| FEATURE_RETRY
+    FEATURE_SKIP --> FEATURE_CHECK
+    FEATURE_RETRY --> FEATURE_EXEC
+    
+    %% Processing Flow
+    PROCESS --> MONITOR
+    MONITOR --> STATUS
+    STATUS -->|Processing| MONITOR
+    STATUS -->|Complete| QA
+    STATUS -->|Error| ERROR
+    
+    %% Quality & Certification Flow
+    QA --> CERT
+    CERT -->|Yes| BADGE
+    CERT -->|No| FINALIZE
+    BADGE --> FINALIZE
+    
+    %% Completion Flow
+    FINALIZE --> NOTIFY
+    NOTIFY --> COMPLETE
+    
+    %% Error Flow
+    ERROR --> RETRY
+    RETRY -->|Yes| DEQUEUE
+    RETRY -->|No| FAIL
+    FAIL --> NOTIFY
+    
+    %% Parallel Processes
+    MONITOR -.->|Status Updates| NOTIFY
+    FEATURE_EXEC -.->|Feature Events| MONITOR
+    QA -.->|Quality Metrics| MONITOR
+    
+    classDef startEnd fill:#4caf50,color:#fff
+    classDef process fill:#2196f3,color:#fff
+    classDef decision fill:#ff9800,color:#fff
+    classDef error fill:#f44336,color:#fff
+    classDef quality fill:#9c27b0,color:#fff
+    
+    class START,COMPLETE startEnd
+    class CREATE,QUEUE,DEQUEUE,ANALYZE,LOAD_TEMPLATE,CUSTOMIZE,FEATURE_LIST,FEATURE_DEPS,FEATURE_EXEC,PROCESS,MONITOR,FINALIZE,NOTIFY,BADGE process
+    class VALIDATE,TEMPLATE,FEATURES,VALIDATE_TEMPLATE,FEATURE_CHECK,STATUS,CERT,RETRY decision
+    class ERROR,FAIL,FEATURE_SKIP,FEATURE_RETRY error
+    class QA quality
+```

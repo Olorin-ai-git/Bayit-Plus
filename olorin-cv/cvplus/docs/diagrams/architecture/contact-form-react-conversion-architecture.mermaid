@@ -1,0 +1,55 @@
+```mermaid
+graph TB
+    subgraph "Current Architecture"
+        A[ContactFormFeature.ts] --> B[HTML String Generation]
+        B --> C[Embedded JavaScript]
+        C --> D[DOM Manipulation]
+        D --> E[Firebase SDK Loading Issues]
+    end
+    
+    subgraph "Target Architecture"
+        F[Enhanced ContactForm.tsx] --> G[React Hooks & State]
+        G --> H[Firebase Callable Functions]
+        H --> I[Proper Error Handling]
+        I --> J[Seamless User Experience]
+    end
+    
+    subgraph "Integration Layer"
+        K[Component Placeholder System] --> L[Template Engine]
+        L --> M[React Component Registry]
+        M --> N[Server-Side Rendering]
+    end
+    
+    subgraph "CV Generation Pipeline"
+        O[CV Generator] --> P[Feature Registry]
+        P --> Q[Template Selection]
+        Q --> R[Component Integration]
+        R --> S[Final CV Output]
+    end
+    
+    subgraph "Firebase Backend"
+        T[submitContactForm Function] --> U[Input Validation]
+        U --> V[Rate Limiting]
+        V --> W[Email Notifications]
+        W --> X[Analytics Tracking]
+    end
+    
+    %% Connections
+    F --> K
+    K --> O
+    H --> T
+    R --> F
+    
+    %% Styling
+    classDef current fill:#ffebee,stroke:#f44336,stroke-width:2px
+    classDef target fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef integration fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    classDef pipeline fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+    classDef backend fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    
+    class A,B,C,D,E current
+    class F,G,H,I,J target
+    class K,L,M,N integration
+    class O,P,Q,R,S pipeline
+    class T,U,V,W,X backend
+```

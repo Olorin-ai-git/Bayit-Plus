@@ -1,0 +1,159 @@
+graph TB
+    subgraph "Interactive Timeline Firestore Validation Fix Architecture"
+        direction TB
+        
+        subgraph "Problem Analysis"
+            ERROR["🚨 Firestore Error<br/>Cannot use 'undefined' as Firestore value<br/>Field: enhancedFeatures.timeline.data.events.0.location"]
+            ROOT_CAUSE["🔍 Root Cause<br/>1. Data sanitization gaps<br/>2. Undefined values in pipeline<br/>3. No pre-write validation"]
+            IMPACT["📊 Impact<br/>- Timeline feature fails<br/>- User experience degraded<br/>- Data integrity issues"]
+        end
+        
+        subgraph "Current Data Flow (Problematic)"
+            CV_PARSER["📄 CV Parser<br/>Raw CV Data"]
+            TIMELINE_FEATURE["⚙️ InteractiveTimelineFeature.ts<br/>❌ May generate undefined values"]
+            TIMELINE_SERVICE["🔧 timeline-generation.service.ts<br/>❌ Sanitization gaps"]
+            FIRESTORE_UPDATE["💾 Firestore Update<br/>❌ Fails on undefined values"]
+            REACT_COMPONENT["⚛️ React Component<br/>❌ No defensive programming"]
+            
+            CV_PARSER --> TIMELINE_FEATURE
+            TIMELINE_FEATURE --> TIMELINE_SERVICE
+            TIMELINE_SERVICE --> FIRESTORE_UPDATE
+            FIRESTORE_UPDATE --> REACT_COMPONENT
+        end
+        
+        subgraph "Phase 1: Backend Data Sanitization Enhancement"
+            direction TB
+            
+            subgraph "Enhanced Timeline Feature"
+                ENHANCED_FEATURE["✅ InteractiveTimelineFeature.ts<br/>+ Comprehensive sanitization<br/>+ Undefined value prevention<br/>+ Validation logging"]
+                SANITIZE_FUNC["🧹 sanitizeTimelineData()<br/>+ Remove undefined recursively<br/>+ Preserve semantic nulls<br/>+ Validate field types"]
+            end
+            
+            subgraph "Hardened Generation Service"
+                ENHANCED_SERVICE["✅ timeline-generation.service.ts<br/>+ Enhanced cleanTimelineData()<br/>+ Explicit undefined checks<br/>+ Defensive programming"]
+                VALIDATION_RULES["📋 Validation Rules<br/>Required: id, type, title, organization, startDate<br/>Optional: location, endDate, description<br/>Sanitized: Remove undefined, validate strings"]
+            end
+            
+            subgraph "Firestore Integration"
+                PRE_WRITE_VALIDATION["🛡️ Pre-write Validation<br/>+ Data integrity checks<br/>+ Error context logging<br/>+ Recovery mechanisms"]
+                FALLBACK_VALUES["🔄 Fallback Handling<br/>+ Default values for required fields<br/>+ Graceful degradation<br/>+ Data recovery"]
+            end
+        end
+        
+        subgraph "Phase 2: Frontend Validation & Error Handling"
+            direction TB
+            
+            subgraph "React Component Resilience"
+                ENHANCED_REACT["✅ InteractiveTimeline.tsx<br/>+ Null/undefined guards<br/>+ Graceful degradation<br/>+ Client-side validation"]
+                DEFENSIVE_RENDERING["🛡️ Defensive Rendering<br/>{location && (<p>{location}</p>)}<br/>Runtime type validation<br/>Error boundaries"]
+            end
+            
+            subgraph "Type Safety Improvements"
+                TYPE_INTERFACES["📝 Enhanced TypeScript<br/>+ Strict optional field markers<br/>+ Runtime type guards<br/>+ Comprehensive interfaces"]
+                TYPE_VALIDATION["✅ Type Validation<br/>+ Client-side data checks<br/>+ Firestore compatibility<br/>+ Error prevention"]
+            end
+        end
+        
+        subgraph "Phase 3: Integration Testing & Validation"
+            direction TB
+            
+            subgraph "Comprehensive Testing"
+                UNIT_TESTS["🧪 Unit Tests<br/>+ Sanitization functions<br/>+ Undefined value handling<br/>+ Data transformation"]
+                INTEGRATION_TESTS["🔗 Integration Tests<br/>+ Complete data flow<br/>+ Error scenarios<br/>+ Edge cases"]
+                ERROR_HANDLING_TESTS["⚠️ Error Handling Tests<br/>+ Malformed data<br/>+ Recovery mechanisms<br/>+ Fallback scenarios"]
+            end
+            
+            subgraph "Production Monitoring"
+                MONITORING["📊 Enhanced Monitoring<br/>+ Data quality metrics<br/>+ Error tracking<br/>+ Performance monitoring"]
+                ALERTING["🚨 Alerting System<br/>+ Real-time error detection<br/>+ Data integrity alerts<br/>+ Performance degradation"]
+            end
+        end
+        
+        subgraph "Fixed Data Flow (Solution)"
+            CV_PARSER_FIXED["📄 CV Parser<br/>Raw CV Data"]
+            SANITIZED_FEATURE["✅ Enhanced Feature<br/>Sanitized event generation"]
+            VALIDATED_SERVICE["✅ Enhanced Service<br/>Comprehensive validation"]
+            SAFE_FIRESTORE["✅ Safe Firestore Update<br/>Pre-validated data"]
+            RESILIENT_REACT["✅ Resilient React<br/>Defensive rendering"]
+            
+            CV_PARSER_FIXED --> SANITIZED_FEATURE
+            SANITIZED_FEATURE --> VALIDATED_SERVICE
+            VALIDATED_SERVICE --> SAFE_FIRESTORE
+            SAFE_FIRESTORE --> RESILIENT_REACT
+        end
+        
+        subgraph "Validation Strategy"
+            FIELD_VALIDATION["📋 Field Validation<br/>Required: id, type, title, organization, startDate<br/>Optional: location, endDate, current, description<br/>Arrays: achievements, skills"]
+            DATA_TYPES["🔢 Data Types<br/>Strings: non-empty after trim<br/>Dates: ISO format<br/>Booleans: explicit true/false<br/>Arrays: valid elements only"]
+            SANITIZATION["🧹 Sanitization Process<br/>1. Remove undefined values<br/>2. Validate string fields<br/>3. Filter array elements<br/>4. Preserve semantic nulls"]
+        end
+        
+        subgraph "Success Criteria"
+            ZERO_ERRORS["🎯 Zero Firestore Errors<br/>No undefined value failures"]
+            DATA_INTEGRITY["🎯 Data Integrity<br/>All events properly stored"]
+            USER_EXPERIENCE["🎯 User Experience<br/>Seamless timeline functionality"]
+            ERROR_RESILIENCE["🎯 Error Resilience<br/>Graceful handling of edge cases"]
+        end
+        
+        %% Error flow connections
+        ERROR --> ROOT_CAUSE
+        ROOT_CAUSE --> IMPACT
+        
+        %% Problem flow connections
+        CV_PARSER --> TIMELINE_FEATURE
+        TIMELINE_FEATURE --> TIMELINE_SERVICE  
+        TIMELINE_SERVICE --> FIRESTORE_UPDATE
+        FIRESTORE_UPDATE --> REACT_COMPONENT
+        
+        %% Enhancement connections
+        ENHANCED_FEATURE --> SANITIZE_FUNC
+        ENHANCED_SERVICE --> VALIDATION_RULES
+        PRE_WRITE_VALIDATION --> FALLBACK_VALUES
+        ENHANCED_REACT --> DEFENSIVE_RENDERING
+        TYPE_INTERFACES --> TYPE_VALIDATION
+        
+        %% Testing connections
+        UNIT_TESTS --> INTEGRATION_TESTS
+        INTEGRATION_TESTS --> ERROR_HANDLING_TESTS
+        MONITORING --> ALERTING
+        
+        %% Solution flow connections
+        CV_PARSER_FIXED --> SANITIZED_FEATURE
+        SANITIZED_FEATURE --> VALIDATED_SERVICE
+        VALIDATED_SERVICE --> SAFE_FIRESTORE
+        SAFE_FIRESTORE --> RESILIENT_REACT
+        
+        %% Validation connections
+        FIELD_VALIDATION --> DATA_TYPES
+        DATA_TYPES --> SANITIZATION
+    end
+    
+    style ERROR fill:#ffebee
+    style ROOT_CAUSE fill:#fff3e0
+    style IMPACT fill:#fce4ec
+    style TIMELINE_FEATURE fill:#ffebee
+    style TIMELINE_SERVICE fill:#ffebee
+    style FIRESTORE_UPDATE fill:#ffebee
+    style REACT_COMPONENT fill:#ffebee
+    style ENHANCED_FEATURE fill:#e8f5e8
+    style ENHANCED_SERVICE fill:#e8f5e8
+    style PRE_WRITE_VALIDATION fill:#e8f5e8
+    style ENHANCED_REACT fill:#e8f5e8
+    style SANITIZED_FEATURE fill:#e8f5e8
+    style VALIDATED_SERVICE fill:#e8f5e8
+    style SAFE_FIRESTORE fill:#e8f5e8
+    style RESILIENT_REACT fill:#e8f5e8
+    style ZERO_ERRORS fill:#e3f2fd
+    style DATA_INTEGRITY fill:#e3f2fd
+    style USER_EXPERIENCE fill:#e3f2fd
+    style ERROR_RESILIENCE fill:#e3f2fd
+    
+    classDef problem fill:#ffebee,stroke:#d32f2f,stroke-width:2px
+    classDef solution fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef enhancement fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    classDef success fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    
+    class ERROR,ROOT_CAUSE,IMPACT,TIMELINE_FEATURE,TIMELINE_SERVICE,FIRESTORE_UPDATE,REACT_COMPONENT problem
+    class ENHANCED_FEATURE,ENHANCED_SERVICE,PRE_WRITE_VALIDATION,ENHANCED_REACT,SANITIZED_FEATURE,VALIDATED_SERVICE,SAFE_FIRESTORE,RESILIENT_REACT solution
+    class SANITIZE_FUNC,VALIDATION_RULES,FALLBACK_VALUES,DEFENSIVE_RENDERING,TYPE_INTERFACES,TYPE_VALIDATION enhancement
+    class ZERO_ERRORS,DATA_INTEGRITY,USER_EXPERIENCE,ERROR_RESILIENCE success

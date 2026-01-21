@@ -1,0 +1,8 @@
+# Reports Directory
+This directory contains generated load test reports.
+
+Files generated here:
+- load-test-report-*.md (Markdown reports)
+- load-test-report-*.json (JSON data)
+- test-session-summary.json (Session summaries)
+- load-test-report.html (HTML reports from Jest)

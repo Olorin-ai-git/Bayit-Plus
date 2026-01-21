@@ -1,0 +1,134 @@
+```mermaid
+graph TB
+    subgraph "Critical Security Issues"
+        SI1[🚨 CRITICAL: Firebase Rules Premium Bypass<br/>isPremiumUser() returns true for ANY user]
+        SI2[🚨 CRITICAL: Premium Feature Type Inconsistency<br/>3 different type definitions]
+        SI3[⚠️ HIGH: Incomplete Rules Validation<br/>Subscription integrity checks missing]
+        SI4[⚠️ HIGH: Error State Security Gap<br/>Premium access during errors]
+    end
+
+    subgraph "Phase 1: Unified Type System"
+        UTS1[Create Master Premium Feature Type]
+        UTS2[Update Frontend Types]
+        UTS3[Update Backend Types]
+        UTS4[Validate Type Consistency]
+        
+        UTS1 --> UTS2
+        UTS2 --> UTS3
+        UTS3 --> UTS4
+    end
+
+    subgraph "Phase 2: Firebase Rules Hardening"
+        FRH1[Fix isPremiumUser Function]
+        FRH2[Add Subscription Validation]
+        FRH3[Implement Integrity Checks]
+        FRH4[Add Security Monitoring]
+        
+        FRH1 --> FRH2
+        FRH2 --> FRH3
+        FRH3 --> FRH4
+    end
+
+    subgraph "Phase 3: Error State Security"
+        ESS1[Secure Error Handling]
+        ESS2[Default-Deny Behavior]
+        ESS3[Access Control Validation]
+        ESS4[Security Monitoring]
+        
+        ESS1 --> ESS2
+        ESS2 --> ESS3
+        ESS3 --> ESS4
+    end
+
+    subgraph "Security Architecture Components"
+        SC1[Master Types Package<br/>@cvplus/premium/types]
+        SC2[Secure Firebase Rules<br/>Premium Validation]
+        SC3[Protected Premium Provider<br/>Error-Safe Access Control]
+        SC4[Security Monitoring<br/>Access Logging & Alerts]
+    end
+
+    subgraph "Fixed Security Flow"
+        direction TB
+        SF1[User Request] --> SF2{Authenticated?}
+        SF2 -->|No| SF3[Deny Access]
+        SF2 -->|Yes| SF4{Valid Subscription?}
+        SF4 -->|No| SF5[Log Attempt & Deny]
+        SF4 -->|Yes| SF6{Feature Enabled?}
+        SF6 -->|No| SF7[Log & Deny with Reason]
+        SF6 -->|Yes| SF8{Usage Within Limits?}
+        SF8 -->|No| SF9[Log Limit Exceeded & Deny]
+        SF8 -->|Yes| SF10[Grant Access & Log]
+        
+        SF3 --> SF11[Security Audit Log]
+        SF5 --> SF11
+        SF7 --> SF11
+        SF9 --> SF11
+        SF10 --> SF11
+    end
+
+    subgraph "Type Safety Validation"
+        TSV1[Frontend Types Check<br/>premium.ts]
+        TSV2[Package Types Check<br/>@cvplus/premium]
+        TSV3[Backend Types Check<br/>functions/types]
+        TSV4[Runtime Validation<br/>API Contracts]
+        
+        TSV1 --> TSV4
+        TSV2 --> TSV4
+        TSV3 --> TSV4
+    end
+
+    subgraph "Security Testing Matrix"
+        STM1[Access Control Tests<br/>Premium Bypass Prevention]
+        STM2[Type Safety Tests<br/>Compilation & Runtime]
+        STM3[Error State Tests<br/>Security During Failures]
+        STM4[Integration Tests<br/>End-to-End Security]
+    end
+
+    subgraph "Monitoring & Alerting"
+        MA1[Real-time Access Monitoring]
+        MA2[Suspicious Activity Detection]
+        MA3[Automated Security Alerts]
+        MA4[Compliance Audit Trails]
+        
+        MA1 --> MA3
+        MA2 --> MA3
+        MA3 --> MA4
+    end
+
+    %% Issue Resolution Flow
+    SI1 --> FRH1
+    SI2 --> UTS1
+    SI3 --> FRH2
+    SI4 --> ESS1
+
+    %% Component Implementation
+    UTS4 --> SC1
+    FRH4 --> SC2
+    ESS4 --> SC3
+    MA4 --> SC4
+
+    %% Security Validation
+    SC1 --> TSV1
+    SC2 --> SF4
+    SC3 --> ESS1
+    SC4 --> MA1
+
+    %% Testing Integration
+    SC1 --> STM2
+    SC2 --> STM1
+    SC3 --> STM3
+    SC4 --> STM4
+
+    %% Styling
+    classDef critical fill:#ff6b6b,stroke:#d63031,color:#fff
+    classDef high fill:#ffa726,stroke:#f57c00,color:#fff
+    classDef secure fill:#26c6da,stroke:#0097a7,color:#fff
+    classDef monitor fill:#ab47bc,stroke:#7b1fa2,color:#fff
+    classDef test fill:#66bb6a,stroke:#388e3c,color:#fff
+
+    class SI1,SI2 critical
+    class SI3,SI4 high
+    class SC1,SC2,SC3,SC4,SF4,SF6,SF8,SF10 secure
+    class MA1,MA2,MA3,MA4 monitor
+    class STM1,STM2,STM3,STM4,TSV1,TSV2,TSV3,TSV4 test
+```

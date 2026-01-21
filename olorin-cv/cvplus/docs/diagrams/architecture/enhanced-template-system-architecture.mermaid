@@ -1,0 +1,128 @@
+graph TB
+    %% Enhanced CV Template System Architecture
+    %% Author: Gil Klainert, Date: 2025-08-21
+    
+    subgraph "Frontend UI Layer"
+        CVPreview["CVPreviewContent Component"]
+        TemplatesPage["Templates Page"]
+        TemplateSelector["Template Selector"]
+    end
+    
+    subgraph "Enhanced Template Generation Layer"
+        EnhancedGen["Enhanced Template Generator"]
+        LegacyGen["Legacy Template Generator (Fallback)"]
+        CompatLayer["Template Compatibility Layer"]
+        
+        EnhancedGen --> LegacyGen
+        EnhancedGen --> CompatLayer
+    end
+    
+    subgraph "Template System Core"
+        TemplateRegistry["Template Registry Service"]
+        TemplateStyles["Enhanced Template Styles"]
+        SectionGen["Template-Specific Generators"]
+        TemplateIntegration["Template Integration Service"]
+    end
+    
+    subgraph "Template Data Layer"
+        ProfessionalTemplates["Professional Templates (8)"]
+        TemplateTypes["CV Template Types"]
+        ColorSchemes["Industry Color Schemes"]
+        Typography["Professional Typography"]
+        
+        ProfessionalTemplates --> TemplateTypes
+        ProfessionalTemplates --> ColorSchemes
+        ProfessionalTemplates --> Typography
+    end
+    
+    subgraph "Template Categories"
+        Executive["Executive Authority"]
+        Technical["Tech Innovation"]
+        Creative["Creative Showcase"]
+        Healthcare["Healthcare Professional"]
+        Financial["Financial Expert"]
+        Academic["Academic Scholar"]
+        Sales["Sales Performance"]
+        International["International Professional"]
+    end
+    
+    subgraph "Generation Pipeline"
+        HeaderGen["Header Generation"]
+        SummaryGen["Summary Generation"]
+        ExperienceGen["Experience Generation"]
+        SkillsGen["Skills Generation"]
+        SectionCustom["Custom Sections"]
+        
+        HeaderGen --> SummaryGen
+        SummaryGen --> ExperienceGen
+        ExperienceGen --> SkillsGen
+        SkillsGen --> SectionCustom
+    end
+    
+    subgraph "Output Formats"
+        VisualHTML["Visual HTML"]
+        ATSOptimized["ATS-Optimized HTML"]
+        ResponsiveCSS["Responsive CSS"]
+        PrintCSS["Print-Optimized CSS"]
+    end
+    
+    subgraph "Support Services"
+        Analytics["Template Analytics"]
+        Performance["Performance Tracking"]
+        Migration["Migration Service"]
+        Recommendations["AI Recommendations"]
+    end
+    
+    %% Main flow connections
+    CVPreview --> EnhancedGen
+    TemplatesPage --> TemplateSelector
+    TemplateSelector --> TemplateRegistry
+    
+    EnhancedGen --> TemplateRegistry
+    EnhancedGen --> TemplateStyles
+    EnhancedGen --> SectionGen
+    
+    TemplateRegistry --> ProfessionalTemplates
+    TemplateRegistry --> TemplateIntegration
+    
+    SectionGen --> HeaderGen
+    SectionGen --> Generation Pipeline
+    
+    TemplateStyles --> ResponsiveCSS
+    TemplateStyles --> PrintCSS
+    
+    EnhancedGen --> VisualHTML
+    EnhancedGen --> ATSOptimized
+    
+    %% Template category connections
+    ProfessionalTemplates --> Executive
+    ProfessionalTemplates --> Technical
+    ProfessionalTemplates --> Creative
+    ProfessionalTemplates --> Healthcare
+    ProfessionalTemplates --> Financial
+    ProfessionalTemplates --> Academic
+    ProfessionalTemplates --> Sales
+    ProfessionalTemplates --> International
+    
+    %% Service connections
+    TemplateRegistry --> Analytics
+    EnhancedGen --> Performance
+    CompatLayer --> Migration
+    TemplateIntegration --> Recommendations
+    
+    %% Styling
+    classDef uiLayer fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef coreLayer fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef dataLayer fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef templateCategory fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef pipeline fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef output fill:#f1f8e9,stroke:#558b2f,stroke-width:2px
+    classDef services fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    
+    class CVPreview,TemplatesPage,TemplateSelector uiLayer
+    class EnhancedGen,LegacyGen,CompatLayer,TemplateRegistry,TemplateStyles,SectionGen,TemplateIntegration coreLayer
+    class ProfessionalTemplates,TemplateTypes,ColorSchemes,Typography dataLayer
+    class Executive,Technical,Creative,Healthcare,Financial,Academic,Sales,International templateCategory
+    class HeaderGen,SummaryGen,ExperienceGen,SkillsGen,SectionCustom pipeline
+    class VisualHTML,ATSOptimized,ResponsiveCSS,PrintCSS output
+    class Analytics,Performance,Migration,Recommendations services

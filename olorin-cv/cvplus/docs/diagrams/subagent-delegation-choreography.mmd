@@ -1,0 +1,66 @@
+graph TB
+    subgraph "Planning Phase"
+        OpusPlan[OpusPlan Agent<br/>Strategic Planning]
+    end
+    
+    subgraph "Design Phase"
+        UX[UX Specialist<br/>User Experience Design]
+        Mobile[Mobile Specialist<br/>Mobile-First Design]
+        A11y[Accessibility Expert<br/>WCAG Compliance]
+    end
+    
+    subgraph "Implementation Phase - Core"
+        React[React Expert<br/>Component Architecture]
+        State[State Management Specialist<br/>Session & Navigation]
+        Error[Error Handling Expert<br/>Recovery Systems]
+        TS[TypeScript Expert<br/>Type Definitions]
+    end
+    
+    subgraph "Implementation Phase - Specialized"
+        Perf[Performance Optimizer<br/>Speed & Efficiency]
+        Test[Test Automation Expert<br/>Comprehensive Testing]
+        Deploy[Deployment Specialist<br/>Feature Flag Strategy]
+    end
+    
+    subgraph "Validation Phase"
+        QA[QA Engineer<br/>User Acceptance Testing]
+        DevOps[DevOps Engineer<br/>Monitoring & Rollback]
+    end
+    
+    OpusPlan --> UX
+    OpusPlan --> Mobile
+    OpusPlan --> A11y
+    
+    UX --> React
+    UX --> State
+    Mobile --> React
+    A11y --> React
+    
+    React --> Error
+    State --> Error
+    React --> TS
+    State --> TS
+    
+    Error --> Perf
+    TS --> Test
+    React --> Test
+    
+    Test --> Deploy
+    Perf --> Deploy
+    
+    Deploy --> QA
+    Deploy --> DevOps
+    
+    QA --> DevOps
+    
+    classDef planning fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef design fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef implementation fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef specialized fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef validation fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    
+    class OpusPlan planning
+    class UX,Mobile,A11y design
+    class React,State,Error,TS implementation
+    class Perf,Test,Deploy specialized
+    class QA,DevOps validation

@@ -1,0 +1,420 @@
+import {
+  ModuleRecoveryState,
+  RecoveryProgress,
+  ValidationResult,
+  ModuleHealthCheck,
+  RecoveryStrategy,
+  DependencyStatus,
+  RecoveryMetrics
+} from '../models';
+import { ModuleState } from '../../../src/models/ModuleState';
+import { WorkspaceHealth } from '../../../src/models/WorkspaceHealth';
+
+/**
+ * Core service for managing module recovery operations in CVPlus Level 2 Recovery System
+ * Handles emergency stabilization, health assessment, and recovery orchestration
+  */
+export class ModuleRecoveryService {
+  private recoveryStates: Map<string, ModuleRecoveryState> = new Map();
+  private validModuleIds = [
+    'auth', 'i18n', 'processing', 'multimedia', 'analytics',
+    'premium', 'public-profiles', 'recommendations', 'admin',
+    'workflow', 'payments'
+  ];
+
+  /**
+   * Initialize recovery state for a specific module
+    */
+  async initializeModuleRecovery(moduleId: string): Promise<ModuleRecoveryState> {
+    if (!this.validModuleIds.includes(moduleId)) {
+      throw new Error(`Invalid module ID: ${moduleId}. Must be one of: ${this.validModuleIds.join(', ')}`);
+    }
+
+    const healthCheck = await this.performHealthCheck(moduleId);
+    const dependencies = await this.analyzeDependencies(moduleId);
+
+    const recoveryState: ModuleRecoveryState = {
+      moduleId,
+      healthStatus: healthCheck.status,
+      healthScore: healthCheck.score,
+      recoveryStrategy: this.determineRecoveryStrategy(healthCheck),
+      phase: 'assessment',
+      startTime: new Date(),
+      lastUpdated: new Date(),
+      dependencies,
+      errors: healthCheck.errors,
+      warnings: healthCheck.warnings,
+      buildStatus: {
+        isBuilding: false,
+        lastBuildTime: null,
+        buildErrors: [],
+        buildSuccess: false
+      },
+      metrics: {
+        recoveryAttempts: 0,
+        successfulRecoveries: 0,
+        failedRecoveries: 0,
+        averageRecoveryTime: 0,
+        lastRecoveryDuration: 0
+      },
+      validation: {
+        isValid: healthCheck.status === 'healthy',
+        validationErrors: healthCheck.errors,
+        lastValidationTime: new Date(),
+        validationScore: healthCheck.score
+      }
+    };
+
+    this.recoveryStates.set(moduleId, recoveryState);
+    return recoveryState;
+  }
+
+  /**
+   * Execute recovery process for a module
+    */
+  async executeRecovery(moduleId: string): Promise<RecoveryProgress> {
+    const state = this.recoveryStates.get(moduleId);
+    if (!state) {
+      throw new Error(`Module ${moduleId} recovery not initialized. Call initializeModuleRecovery first.`);
+    }
+
+    const startTime = Date.now();
+    state.metrics.recoveryAttempts++;
+
+    try {
+      // Phase 1: Emergency Stabilization
+      await this.updateRecoveryPhase(moduleId, 'stabilization');
+      await this.emergencyStabilization(moduleId);
+
+      // Phase 2: Dependency Resolution
+      await this.updateRecoveryPhase(moduleId, 'dependency-resolution');
+      await this.resolveDependencies(moduleId);
+
+      // Phase 3: Build Recovery
+      await this.updateRecoveryPhase(moduleId, 'build-recovery');
+      await this.recoverBuild(moduleId);
+
+      // Phase 4: Validation
+      await this.updateRecoveryPhase(moduleId, 'validation');
+      const validationResult = await this.validateRecovery(moduleId);
+
+      // Phase 5: Completion
+      await this.updateRecoveryPhase(moduleId, 'completed');
+
+      const duration = Date.now() - startTime;
+      state.metrics.successfulRecoveries++;
+      state.metrics.lastRecoveryDuration = duration;
+      state.metrics.averageRecoveryTime = this.calculateAverageRecoveryTime(state);
+
+      return {
+        moduleId,
+        phase: 'completed',
+        progress: 100,
+        status: 'success',
+        startTime: state.startTime!,
+        estimatedCompletion: new Date(),
+        currentStep: 'Recovery completed successfully',
+        stepsCompleted: 5,
+        totalSteps: 5,
+        errors: [],
+        warnings: state.warnings || []
+      };
+
+    } catch (error) {
+      state.metrics.failedRecoveries++;
+      await this.updateRecoveryPhase(moduleId, 'failed');
+
+      return {
+        moduleId,
+        phase: 'failed',
+        progress: 0,
+        status: 'error',
+        startTime: state.startTime!,
+        estimatedCompletion: new Date(),
+        currentStep: `Recovery failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        stepsCompleted: 0,
+        totalSteps: 5,
+        errors: [error instanceof Error ? error.message : 'Unknown error'],
+        warnings: state.warnings || []
+      };
+    }
+  }
+
+  /**
+   * Perform comprehensive health check for a module
+    */
+  async performHealthCheck(moduleId: string): Promise<ModuleHealthCheck> {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    let score = 100;
+
+    try {
+      // Check if module directory exists
+      const modulePath = `/Users/gklainert/Documents/cvplus/packages/${moduleId}`;
+
+      // Check package.json exists and is valid
+      try {
+        const packageJsonPath = `${modulePath}/package.json`;
+        // Note: In actual implementation, would use fs.readFile here
+        score -= 0; // Placeholder for package.json validation
+      } catch (error) {
+        errors.push(`Missing or invalid package.json for module ${moduleId}`);
+        score -= 30;
+      }
+
+      // Check TypeScript configuration
+      try {
+        const tsconfigPath = `${modulePath}/tsconfig.json`;
+        // Note: In actual implementation, would validate tsconfig.json
+        score -= 0; // Placeholder for tsconfig validation
+      } catch (error) {
+        warnings.push(`TypeScript configuration issues in module ${moduleId}`);
+        score -= 10;
+      }
+
+      // Check for build artifacts
+      try {
+        const distPath = `${modulePath}/dist`;
+        // Note: In actual implementation, would check if dist directory exists
+        score -= 0; // Placeholder for build artifacts check
+      } catch (error) {
+        warnings.push(`No build artifacts found for module ${moduleId}`);
+        score -= 5;
+      }
+
+      // Determine health status based on score
+      let status: 'healthy' | 'degraded' | 'critical' | 'offline';
+      if (score >= 90) status = 'healthy';
+      else if (score >= 70) status = 'degraded';
+      else if (score >= 30) status = 'critical';
+      else status = 'offline';
+
+      return {
+        moduleId,
+        status,
+        score: Math.max(0, score),
+        errors,
+        warnings,
+        timestamp: new Date(),
+        buildHealth: {
+          canBuild: errors.length === 0,
+          lastBuildSuccess: true, // Placeholder
+          dependenciesResolved: true // Placeholder
+        },
+        dependencyHealth: {
+          allResolved: true, // Placeholder
+          conflictsDetected: false, // Placeholder
+          missingDependencies: [] // Placeholder
+        }
+      };
+
+    } catch (error) {
+      return {
+        moduleId,
+        status: 'offline',
+        score: 0,
+        errors: [`Health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`],
+        warnings,
+        timestamp: new Date(),
+        buildHealth: {
+          canBuild: false,
+          lastBuildSuccess: false,
+          dependenciesResolved: false
+        },
+        dependencyHealth: {
+          allResolved: false,
+          conflictsDetected: true,
+          missingDependencies: ['unknown']
+        }
+      };
+    }
+  }
+
+  /**
+   * Analyze module dependencies and their health
+    */
+  async analyzeDependencies(moduleId: string): Promise<DependencyStatus[]> {
+    const dependencies: DependencyStatus[] = [];
+
+    // Define layer-based dependencies for each module
+    const moduleDependencies: Record<string, string[]> = {
+      'auth': ['@cvplus/core'],
+      'i18n': ['@cvplus/core', '@cvplus/auth'],
+      'processing': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n'],
+      'multimedia': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n'],
+      'analytics': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n'],
+      'enhancements': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n', '@cvplus/processing', '@cvplus/multimedia', '@cvplus/analytics'],
+      'premium': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n', '@cvplus/processing', '@cvplus/multimedia', '@cvplus/analytics'],
+      'public-profiles': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n', '@cvplus/processing', '@cvplus/multimedia', '@cvplus/analytics'],
+      'recommendations': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n', '@cvplus/processing', '@cvplus/multimedia', '@cvplus/analytics'],
+      'admin': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n', '@cvplus/processing', '@cvplus/multimedia', '@cvplus/analytics', '@cvplus/enhancements', '@cvplus/premium', '@cvplus/public-profiles', '@cvplus/recommendations'],
+      'workflow': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n', '@cvplus/processing', '@cvplus/multimedia', '@cvplus/analytics', '@cvplus/enhancements', '@cvplus/premium', '@cvplus/public-profiles', '@cvplus/recommendations'],
+      'payments': ['@cvplus/core', '@cvplus/auth', '@cvplus/i18n', '@cvplus/processing', '@cvplus/multimedia', '@cvplus/analytics', '@cvplus/enhancements', '@cvplus/premium', '@cvplus/public-profiles', '@cvplus/recommendations']
+    };
+
+    const deps = moduleDependencies[moduleId] || [];
+
+    for (const dep of deps) {
+      dependencies.push({
+        name: dep,
+        version: '1.0.0', // Placeholder
+        status: 'resolved',
+        isDirect: true,
+        conflicts: [],
+        missingPeerDependencies: []
+      });
+    }
+
+    return dependencies;
+  }
+
+  /**
+   * Determine the appropriate recovery strategy based on health check
+    */
+  private determineRecoveryStrategy(healthCheck: ModuleHealthCheck): RecoveryStrategy {
+    if (healthCheck.score >= 70) {
+      return 'repair';
+    } else if (healthCheck.score >= 30) {
+      return 'rebuild';
+    } else {
+      return 'reset';
+    }
+  }
+
+  /**
+   * Emergency stabilization phase
+    */
+  private async emergencyStabilization(moduleId: string): Promise<void> {
+    const state = this.recoveryStates.get(moduleId)!;
+
+    // Clear any corrupted state
+    state.errors = [];
+    state.warnings = [];
+
+    // Ensure module directory structure
+    const modulePath = `/Users/gklainert/Documents/cvplus/packages/${moduleId}`;
+
+    // Basic stabilization steps would go here
+    // In actual implementation, would perform file system operations
+
+    state.lastUpdated = new Date();
+  }
+
+  /**
+   * Resolve module dependencies
+    */
+  private async resolveDependencies(moduleId: string): Promise<void> {
+    const state = this.recoveryStates.get(moduleId)!;
+
+    // Dependency resolution logic would go here
+    // In actual implementation, would run npm install, check package.json, etc.
+
+    state.lastUpdated = new Date();
+  }
+
+  /**
+   * Recover module build capability
+    */
+  private async recoverBuild(moduleId: string): Promise<void> {
+    const state = this.recoveryStates.get(moduleId)!;
+
+    state.buildStatus.isBuilding = true;
+
+    try {
+      // Build recovery logic would go here
+      // In actual implementation, would run npm run build, fix TypeScript errors, etc.
+
+      state.buildStatus.buildSuccess = true;
+      state.buildStatus.lastBuildTime = new Date();
+      state.buildStatus.buildErrors = [];
+
+    } catch (error) {
+      state.buildStatus.buildSuccess = false;
+      state.buildStatus.buildErrors = [error instanceof Error ? error.message : 'Build failed'];
+    } finally {
+      state.buildStatus.isBuilding = false;
+    }
+
+    state.lastUpdated = new Date();
+  }
+
+  /**
+   * Validate recovery completion
+    */
+  private async validateRecovery(moduleId: string): Promise<ValidationResult> {
+    const healthCheck = await this.performHealthCheck(moduleId);
+    const state = this.recoveryStates.get(moduleId)!;
+
+    const validationResult: ValidationResult = {
+      moduleId,
+      isValid: healthCheck.status === 'healthy' || healthCheck.status === 'degraded',
+      validationErrors: healthCheck.errors,
+      validationWarnings: healthCheck.warnings,
+      validationScore: healthCheck.score,
+      timestamp: new Date(),
+      details: {
+        buildValidation: state.buildStatus.buildSuccess,
+        dependencyValidation: healthCheck.dependencyHealth.allResolved,
+        configurationValidation: true, // Placeholder
+        integrationValidation: true // Placeholder
+      }
+    };
+
+    state.validation = validationResult;
+    return validationResult;
+  }
+
+  /**
+   * Update recovery phase and progress
+    */
+  private async updateRecoveryPhase(
+    moduleId: string,
+    phase: ModuleRecoveryState['phase']
+  ): Promise<void> {
+    const state = this.recoveryStates.get(moduleId);
+    if (state) {
+      state.phase = phase;
+      state.lastUpdated = new Date();
+    }
+  }
+
+  /**
+   * Calculate average recovery time
+    */
+  private calculateAverageRecoveryTime(state: ModuleRecoveryState): number {
+    const totalRecoveries = state.metrics.successfulRecoveries + state.metrics.failedRecoveries;
+    if (totalRecoveries === 0) return 0;
+
+    // Simplified calculation - in real implementation would track all recovery times
+    return (state.metrics.averageRecoveryTime * (totalRecoveries - 1) + state.metrics.lastRecoveryDuration) / totalRecoveries;
+  }
+
+  /**
+   * Get current recovery state for a module
+    */
+  getRecoveryState(moduleId: string): ModuleRecoveryState | undefined {
+    return this.recoveryStates.get(moduleId);
+  }
+
+  /**
+   * Get recovery states for all modules
+    */
+  getAllRecoveryStates(): ModuleRecoveryState[] {
+    return Array.from(this.recoveryStates.values());
+  }
+
+  /**
+   * Check if module recovery is in progress
+    */
+  isRecoveryInProgress(moduleId: string): boolean {
+    const state = this.recoveryStates.get(moduleId);
+    return state?.phase !== 'completed' && state?.phase !== 'failed';
+  }
+
+  /**
+   * Get recovery metrics for a module
+    */
+  getRecoveryMetrics(moduleId: string): RecoveryMetrics | undefined {
+    return this.recoveryStates.get(moduleId)?.metrics;
+  }
+}

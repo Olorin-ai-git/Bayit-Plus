@@ -1,0 +1,631 @@
+paths:
+  /api/portal/generate:
+    post:
+      tags:
+        - Portal Generation
+      summary: Generate one-click portal
+      description: |
+        Creates a fully functional web portal from a processed CV with one-click generation.
+
+        **Premium Feature**: Requires active premium subscription.
+
+        **Process Overview**:
+        1. Validates CV processing status
+        2. Generates RAG embeddings for AI chat
+        3. Creates portal configuration
+        4. Deploys portal to hosting platform
+        5. Configures custom domain (if provided)
+
+        **Performance SLA**: Portal generation completes within 60 seconds.
+      operationId: generatePortal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - cvJobId
+              properties:
+                cvJobId:
+                  type: string
+                  description: ID of the completed CV processing job
+                  example: "job_abc123def456"
+                portalName:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                  description: Human-readable name for the portal
+                  example: "John Smith - Senior Developer"
+                customization:
+                  $ref: '../schemas.yaml#/components/schemas/PortalCustomization'
+                features:
+                  $ref: '../schemas.yaml#/components/schemas/PortalFeatures'
+                visibility:
+                  $ref: '../schemas.yaml#/components/schemas/VisibilityLevel'
+                customDomain:
+                  type: string
+                  pattern: '^[a-z0-9\-\.]+\.[a-z]{2,}$'
+                  description: Custom domain for the portal (premium feature)
+                  example: "portfolio.johnsmith.com"
+            examples:
+              basic:
+                summary: Basic portal generation
+                value:
+                  cvJobId: "job_abc123def456"
+                  portalName: "John Smith - Senior Developer"
+                  visibility: "public"
+              customized:
+                summary: Customized portal with features
+                value:
+                  cvJobId: "job_abc123def456"
+                  portalName: "Jane Doe - Product Manager"
+                  customization:
+                    theme:
+                      primaryColor: "#2563eb"
+                      layout: "modern"
+                    branding:
+                      logoUrl: "https://example.com/logo.png"
+                  features:
+                    aiChat: true
+                    analytics: true
+                    contactForm: true
+                  visibility: "public"
+                  customDomain: "portfolio.janedoe.com"
+      responses:
+        '202':
+          description: Portal generation initiated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  portalId:
+                    type: string
+                    description: Unique identifier for the generated portal
+                    example: "portal_abc123def456"
+                  deploymentId:
+                    type: string
+                    description: Deployment tracking ID
+                    example: "deploy_xyz789"
+                  estimatedCompletion:
+                    type: string
+                    format: date-time
+                    description: Estimated completion time
+                    example: "2025-09-13T21:01:00Z"
+                  statusUrl:
+                    type: string
+                    description: URL to track generation progress
+                    example: "/api/portal/status/deploy_xyz789"
+        '400':
+          $ref: '../openapi.yaml#/components/responses/ValidationError'
+        '401':
+          $ref: '../openapi.yaml#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '../openapi.yaml#/components/responses/ForbiddenError'
+        '429':
+          $ref: '../openapi.yaml#/components/responses/RateLimitError'
+        '500':
+          $ref: '../openapi.yaml#/components/responses/InternalError'
+
+  /api/portal/status/{deploymentId}:
+    get:
+      tags:
+        - Portal Generation
+      summary: Get portal generation status
+      description: |
+        Retrieves real-time status of portal generation process.
+
+        **Polling Recommendations**:
+        - Poll every 5 seconds during generation
+        - Stop polling when status is 'completed' or 'failed'
+        - Implement exponential backoff for failed requests
+      operationId: getPortalStatus
+      parameters:
+        - name: deploymentId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Deployment tracking ID from generation request
+          example: "deploy_xyz789"
+      responses:
+        '200':
+          description: Portal generation status
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/PortalGenerationStatus'
+              examples:
+                generating:
+                  summary: Portal generation in progress
+                  value:
+                    deploymentId: "deploy_xyz789"
+                    portalId: "portal_abc123def456"
+                    status: "generating"
+                    progress: 45
+                    currentStep: "preparing_content"
+                    estimatedCompletion: "2025-09-13T21:01:00Z"
+                    steps:
+                      - name: "validate_cv"
+                        status: "completed"
+                        completedAt: "2025-09-13T20:30:15Z"
+                      - name: "generate_embeddings"
+                        status: "completed"
+                        completedAt: "2025-09-13T20:30:35Z"
+                      - name: "prepare_content"
+                        status: "in_progress"
+                        startedAt: "2025-09-13T20:30:35Z"
+                completed:
+                  summary: Portal generation completed
+                  value:
+                    deploymentId: "deploy_xyz789"
+                    portalId: "portal_abc123def456"
+                    status: "completed"
+                    progress: 100
+                    portalUrl: "https://portfolio.johnsmith.com"
+                    completedAt: "2025-09-13T20:32:00Z"
+                    generationTime: 92.5
+        '404':
+          $ref: '../openapi.yaml#/components/responses/NotFoundError'
+        '500':
+          $ref: '../openapi.yaml#/components/responses/InternalError'
+
+  /api/portal/regenerate/{portalId}:
+    post:
+      tags:
+        - Portal Generation
+      summary: Regenerate existing portal
+      description: |
+        Regenerates an existing portal with updated settings or content.
+
+        **Use Cases**:
+        - CV content has been updated
+        - Portal customization changes
+        - Portal deployment failed and needs retry
+        - Theme or layout updates
+
+        **Note**: This will create a new deployment while preserving the portal ID and URL.
+      operationId: regeneratePortal
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the portal to regenerate
+          example: "portal_abc123def456"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  enum: ["cv_updated", "settings_changed", "deployment_failed", "user_requested"]
+                  description: Reason for regeneration
+                  example: "cv_updated"
+                customization:
+                  $ref: '../schemas.yaml#/components/schemas/PortalCustomization'
+                features:
+                  $ref: '../schemas.yaml#/components/schemas/PortalFeatures'
+                forceRegeneration:
+                  type: boolean
+                  description: Force regeneration even if no changes detected
+                  default: false
+            examples:
+              cv_updated:
+                summary: Regenerate after CV update
+                value:
+                  reason: "cv_updated"
+              theme_change:
+                summary: Regenerate with new theme
+                value:
+                  reason: "settings_changed"
+                  customization:
+                    theme:
+                      primaryColor: "#059669"
+                      layout: "minimal"
+      responses:
+        '202':
+          description: Portal regeneration initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  portalId:
+                    type: string
+                    example: "portal_abc123def456"
+                  deploymentId:
+                    type: string
+                    example: "deploy_regenerate_xyz789"
+                  estimatedCompletion:
+                    type: string
+                    format: date-time
+                    example: "2025-09-13T21:01:00Z"
+                  statusUrl:
+                    type: string
+                    example: "/api/portal/status/deploy_regenerate_xyz789"
+        '400':
+          $ref: '../openapi.yaml#/components/responses/ValidationError'
+        '404':
+          $ref: '../openapi.yaml#/components/responses/NotFoundError'
+        '429':
+          $ref: '../openapi.yaml#/components/responses/RateLimitError'
+
+  /api/portal/{portalId}:
+    get:
+      tags:
+        - Portal Generation
+      summary: Get portal configuration
+      description: |
+        Retrieves complete portal configuration including settings, analytics summary, and deployment status.
+
+        **Access Control**:
+        - Portal owners get full configuration
+        - Public portals return limited metadata
+        - Private portals require ownership
+      operationId: getPortal
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Portal identifier
+          example: "portal_abc123def456"
+      responses:
+        '200':
+          description: Portal configuration
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/PortalConfig'
+              examples:
+                owner_view:
+                  summary: Portal configuration for owner
+                  value:
+                    id: "portal_abc123def456"
+                    userId: "user_123"
+                    cvJobId: "job_abc123def456"
+                    name: "John Smith - Senior Developer"
+                    slug: "john-smith-dev"
+                    status: "active"
+                    portalUrl: "https://portfolio.johnsmith.com"
+                    visibility: "public"
+                    customization:
+                      theme:
+                        primaryColor: "#2563eb"
+                        layout: "modern"
+                    features:
+                      aiChat: true
+                      analytics: true
+                    analytics:
+                      totalViews: 1247
+                      uniqueVisitors: 892
+                      chatSessions: 156
+                    createdAt: "2025-09-10T14:30:00Z"
+                    updatedAt: "2025-09-13T20:30:00Z"
+                public_view:
+                  summary: Portal metadata for public access
+                  value:
+                    id: "portal_abc123def456"
+                    name: "John Smith - Senior Developer"
+                    status: "active"
+                    portalUrl: "https://portfolio.johnsmith.com"
+                    features:
+                      aiChat: true
+                      contactForm: true
+        '404':
+          $ref: '../openapi.yaml#/components/responses/NotFoundError'
+        '403':
+          $ref: '../openapi.yaml#/components/responses/ForbiddenError'
+
+    delete:
+      tags:
+        - Portal Generation
+      summary: Deactivate portal
+      description: |
+        Deactivates a portal and removes it from public access.
+
+        **Actions Performed**:
+        - Portal status set to 'deactivated'
+        - Public URL becomes inaccessible
+        - Chat sessions are closed
+        - Analytics data is preserved
+        - Custom domain is released
+
+        **Note**: This is a soft delete. Portal can be reactivated later.
+      operationId: deactivatePortal
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Portal identifier
+          example: "portal_abc123def456"
+      responses:
+        '200':
+          description: Portal deactivated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  portalId:
+                    type: string
+                    example: "portal_abc123def456"
+                  deactivatedAt:
+                    type: string
+                    format: date-time
+                    example: "2025-09-13T20:30:00Z"
+                  message:
+                    type: string
+                    example: "Portal has been deactivated and is no longer publicly accessible"
+        '404':
+          $ref: '../openapi.yaml#/components/responses/NotFoundError'
+        '403':
+          $ref: '../openapi.yaml#/components/responses/ForbiddenError'
+
+  /api/portal/{portalId}/settings:
+    put:
+      tags:
+        - Portal Generation
+      summary: Update portal settings
+      description: |
+        Updates portal configuration without full regeneration.
+
+        **Instant Updates** (no regeneration required):
+        - Portal name and description
+        - Visibility settings
+        - Feature toggles
+        - Analytics settings
+
+        **Regeneration Required**:
+        - Theme changes
+        - Layout modifications
+        - Custom domain updates
+        - Content structure changes
+      operationId: updatePortalSettings
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Portal identifier
+          example: "portal_abc123def456"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                  description: Portal display name
+                description:
+                  type: string
+                  maxLength: 500
+                  description: Portal description
+                visibility:
+                  $ref: '../schemas.yaml#/components/schemas/VisibilityLevel'
+                features:
+                  $ref: '../schemas.yaml#/components/schemas/PortalFeatures'
+                customization:
+                  $ref: '../schemas.yaml#/components/schemas/PortalCustomization'
+                customDomain:
+                  type: string
+                  pattern: '^[a-z0-9\-\.]+\.[a-z]{2,}$'
+                  description: Custom domain (requires regeneration)
+                seoSettings:
+                  $ref: '../schemas.yaml#/components/schemas/SEOSettings'
+            examples:
+              instant_update:
+                summary: Settings that update instantly
+                value:
+                  name: "John Smith - Lead Developer"
+                  visibility: "unlisted"
+                  features:
+                    aiChat: true
+                    analytics: true
+                    contactForm: false
+              regeneration_required:
+                summary: Settings requiring regeneration
+                value:
+                  customization:
+                    theme:
+                      primaryColor: "#059669"
+                      layout: "creative"
+                  customDomain: "new-portfolio.johnsmith.com"
+      responses:
+        '200':
+          description: Settings updated instantly
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  portalId:
+                    type: string
+                    example: "portal_abc123def456"
+                  updatedFields:
+                    type: array
+                    items:
+                      type: string
+                    example: ["name", "visibility", "features"]
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    example: "2025-09-13T20:30:00Z"
+        '202':
+          description: Settings updated, regeneration required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  portalId:
+                    type: string
+                    example: "portal_abc123def456"
+                  deploymentId:
+                    type: string
+                    example: "deploy_settings_xyz789"
+                  regenerationRequired:
+                    type: boolean
+                    example: true
+                  regenerationReason:
+                    type: string
+                    example: "Theme and custom domain changes require portal regeneration"
+                  statusUrl:
+                    type: string
+                    example: "/api/portal/status/deploy_settings_xyz789"
+        '400':
+          $ref: '../openapi.yaml#/components/responses/ValidationError'
+        '404':
+          $ref: '../openapi.yaml#/components/responses/NotFoundError'
+        '403':
+          $ref: '../openapi.yaml#/components/responses/ForbiddenError'
+
+  /api/portals/user/{userId}:
+    get:
+      tags:
+        - Portal Generation
+      summary: List user portals
+      description: |
+        Retrieves all portals owned by a specific user.
+
+        **Access Control**:
+        - Users can only access their own portals
+        - Admin users can access any user's portals
+
+        **Filtering & Pagination**:
+        - Results are paginated (20 per page by default)
+        - Can filter by status, visibility, or creation date
+        - Sorted by most recently updated first
+      operationId: listUserPortals
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User identifier
+          example: "user_123"
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["active", "generating", "failed", "deactivated"]
+          description: Filter by portal status
+          example: "active"
+        - name: visibility
+          in: query
+          required: false
+          schema:
+            $ref: '../schemas.yaml#/components/schemas/VisibilityLevel'
+          description: Filter by visibility level
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Number of portals per page
+          example: 20
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Pagination cursor for next page
+          example: "eyJjcmVhdGVkQXQiOiIyMDI1LTA5LTEzVDIwOjMwOjAwWiJ9"
+      responses:
+        '200':
+          description: User portals list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  portals:
+                    type: array
+                    items:
+                      $ref: '../schemas.yaml#/components/schemas/PortalSummary'
+                  pagination:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        example: 15
+                      limit:
+                        type: integer
+                        example: 20
+                      hasMore:
+                        type: boolean
+                        example: false
+                      nextCursor:
+                        type: string
+                        nullable: true
+                        example: null
+              examples:
+                user_portals:
+                  summary: User with multiple portals
+                  value:
+                    success: true
+                    portals:
+                      - id: "portal_abc123def456"
+                        name: "John Smith - Senior Developer"
+                        status: "active"
+                        portalUrl: "https://portfolio.johnsmith.com"
+                        visibility: "public"
+                        analytics:
+                          totalViews: 1247
+                          uniqueVisitors: 892
+                        createdAt: "2025-09-10T14:30:00Z"
+                        updatedAt: "2025-09-13T20:30:00Z"
+                      - id: "portal_def456ghi789"
+                        name: "John Smith - Consultant"
+                        status: "active"
+                        portalUrl: "https://consulting.johnsmith.com"
+                        visibility: "unlisted"
+                        analytics:
+                          totalViews: 423
+                          uniqueVisitors: 287
+                        createdAt: "2025-09-05T10:15:00Z"
+                        updatedAt: "2025-09-12T16:45:00Z"
+                    pagination:
+                      total: 2
+                      limit: 20
+                      hasMore: false
+                      nextCursor: null
+        '403':
+          $ref: '../openapi.yaml#/components/responses/ForbiddenError'

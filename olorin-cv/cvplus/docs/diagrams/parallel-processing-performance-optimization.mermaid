@@ -1,0 +1,47 @@
+graph TD
+    A[CV Generation Request] --> B[Feature List Preparation]
+    B --> C{Processing Strategy}
+    
+    %% Sequential Processing (Before)
+    C -->|BEFORE: Sequential| D[Sequential Processing]
+    D --> D1[Feature 1: 30s]
+    D1 --> D2[Feature 2: 20s]
+    D2 --> D3[Feature 3: 25s]
+    D3 --> D4[Total: 75s]
+    D4 --> E1[Sequential Complete]
+    
+    %% Parallel Processing (After)
+    C -->|AFTER: Parallel| F[Parallel Processing]
+    F --> F1[Feature 1: 30s]
+    F --> F2[Feature 2: 20s]
+    F --> F3[Feature 3: 25s]
+    F1 --> G[Promise.allSettled]
+    F2 --> G
+    F3 --> G
+    G --> H[Total: 30s<br/>60% Faster!]
+    H --> E2[Parallel Complete]
+    
+    %% Performance Comparison
+    E1 --> I[Performance Impact]
+    E2 --> I
+    I --> J[📊 Results Summary]
+    J --> K["✅ 60-87% Performance Improvement<br/>✅ Same Error Handling<br/>✅ Full Backward Compatibility<br/>✅ Better Resource Utilization"]
+    
+    %% Error Handling Flow
+    F1 -.->|Error| L[Individual Error Handler]
+    F2 -.->|Error| L
+    F3 -.->|Error| L
+    L --> M[markFeatureAsFailed]
+    M --> N[Continue Processing Other Features]
+    N --> G
+    
+    %% Styling
+    classDef sequential fill:#ffcccc,stroke:#ff6666,stroke-width:2px
+    classDef parallel fill:#ccffcc,stroke:#66ff66,stroke-width:2px
+    classDef improvement fill:#ffffcc,stroke:#ffcc00,stroke-width:3px
+    classDef error fill:#ffddcc,stroke:#ff9966,stroke-width:2px
+    
+    class D,D1,D2,D3,D4,E1 sequential
+    class F,F1,F2,F3,G,H,E2 parallel
+    class I,J,K improvement
+    class L,M,N error

@@ -1,0 +1,125 @@
+```mermaid
+graph TB
+    subgraph "Frontend Policy Enforcement"
+        A[User Upload Intent] --> B[PreUploadPolicyCheck Component]
+        B --> C{Check Upload Limits}
+        C -->|Within Limits| D[Allow Upload]
+        C -->|Limit Exceeded| E[Block Upload + Show Upgrade]
+        
+        D --> F[CV Upload Process]
+        F --> G[Real-time Validation]
+        G --> H{Policy Compliance}
+        H -->|Compliant| I[Continue Processing]
+        H -->|Violation Detected| J[PolicyViolationAlert]
+        
+        J --> K{Violation Type}
+        K -->|Name Mismatch| L[NameVerificationModal]
+        K -->|Duplicate CV| M[Duplicate Warning]
+        K -->|Usage Violation| N[Account Restriction Notice]
+        
+        L --> O[Update Account Name]
+        L --> P[Confirm CV Ownership]
+        L --> Q[Cancel Upload]
+    end
+    
+    subgraph "Backend Policy Validation Pipeline"
+        F --> R[processCV Function]
+        R --> S[Authentication Check]
+        S --> T[PolicyEnforcementService]
+        
+        T --> U[CV Hash Generation]
+        U --> V[CVHashService]
+        V --> W[Generate SHA-256 Hash]
+        W --> X[Check cvHashRecords Collection]
+        X --> Y{Duplicate Found?}
+        Y -->|Yes| Z[Flag Duplicate Upload]
+        Y -->|No| AA[Record New Hash]
+        
+        T --> BB[Name Verification]
+        BB --> CC[NameVerificationService]
+        CC --> DD[Extract Name from CV]
+        DD --> EE[Compare with Account Name]
+        EE --> FF{Names Match?}
+        FF -->|No| GG[Flag Name Mismatch]
+        FF -->|Yes| HH[Mark Verified]
+        
+        T --> II[Usage Limits Check]
+        II --> JJ[UsageLimitsService]
+        JJ --> KK[Check Monthly Usage]
+        KK --> LL{Within Limits?}
+        LL -->|No| MM[Block with Limit Error]
+        LL -->|Yes| NN[Allow Processing]
+        
+        Z --> OO[PolicyViolationService]
+        GG --> OO
+        MM --> OO
+        OO --> PP[Record Violation]
+        PP --> QQ[Apply Account Restrictions]
+        QQ --> RR[Send User Notification]
+    end
+    
+    subgraph "Database Schema"
+        SS[(userSubscriptions)]
+        TT[(cvHashRecords)]
+        UU[(userPolicyRecords)]
+        VV[(policyViolations)]
+        WW[(userVerifiedNames)]
+        
+        X --> TT
+        AA --> TT
+        PP --> VV
+        QQ --> UU
+        EE --> WW
+    end
+    
+    subgraph "Monitoring & Analytics"
+        XX[Policy Analytics Dashboard]
+        YY[Real-time Monitoring]
+        ZZ[Violation Alerts]
+        AAA[Compliance Reports]
+        
+        OO --> YY
+        YY --> ZZ
+        VV --> XX
+        XX --> AAA
+    end
+    
+    subgraph "Admin Management"
+        BBB[Admin Dashboard]
+        CCC[Manual Review Queue]
+        DDD[Appeal Processing]
+        EEE[Policy Configuration]
+        
+        ZZ --> CCC
+        CCC --> DDD
+        BBB --> EEE
+        DDD --> QQ
+    end
+    
+    subgraph "User Communication"
+        FFF[Email Notifications]
+        GGG[In-App Alerts]
+        HHH[Policy Education]
+        III[Appeal System]
+        
+        RR --> FFF
+        J --> GGG
+        B --> HHH
+        N --> III
+    end
+    
+    %% Styling
+    classDef frontend fill:#e1f5fe
+    classDef backend fill:#f3e5f5
+    classDef database fill:#e8f5e8
+    classDef monitoring fill:#fff3e0
+    classDef admin fill:#ffebee
+    classDef communication fill:#f1f8e9
+    
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q frontend
+    class R,S,T,U,V,W,X,Y,Z,AA,BB,CC,DD,EE,FF,GG,HH,II,JJ,KK,LL,MM,NN,OO,PP,QQ,RR backend
+    class SS,TT,UU,VV,WW database
+    class XX,YY,ZZ,AAA monitoring
+    class BBB,CCC,DDD,EEE admin
+    class FFF,GGG,HHH,III communication
+```

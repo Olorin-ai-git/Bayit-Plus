@@ -1,0 +1,197 @@
+{
+  "summary": {
+    "total": 18,
+    "passed": 17,
+    "failed": 1,
+    "warnings": 0
+  },
+  "timestamp": "2025-08-25T00:55:28.326Z",
+  "environment": "live_emulator",
+  "tests": [
+    {
+      "test": "Frontend Connectivity",
+      "status": "pass",
+      "details": {
+        "url": "http://localhost:3000",
+        "status": 200
+      },
+      "timestamp": "2025-08-25T00:55:28.358Z"
+    },
+    {
+      "test": "Emulator UI Connectivity",
+      "status": "fail",
+      "details": {
+        "url": "http://localhost:4000",
+        "error": "request to http://localhost:4000/ failed, reason: "
+      },
+      "timestamp": "2025-08-25T00:55:28.359Z"
+    },
+    {
+      "test": "Auth Emulator Connectivity",
+      "status": "pass",
+      "details": {
+        "url": "http://localhost:9099",
+        "status": 200
+      },
+      "timestamp": "2025-08-25T00:55:28.362Z"
+    },
+    {
+      "test": "Functions Emulator Connectivity",
+      "status": "pass",
+      "details": {
+        "url": "http://localhost:5001",
+        "status": 404
+      },
+      "timestamp": "2025-08-25T00:55:28.363Z"
+    },
+    {
+      "test": "Firestore Emulator Connectivity",
+      "status": "pass",
+      "details": {
+        "url": "http://localhost:8090",
+        "status": 200
+      },
+      "timestamp": "2025-08-25T00:55:28.366Z"
+    },
+    {
+      "test": "Function detectRoleProfile",
+      "status": "pass",
+      "details": {
+        "url": "http://localhost:5001/getmycv-ai/us-central1/detectRoleProfile",
+        "status": 500,
+        "hasErrorStructure": true,
+        "responseKeys": [
+          "error"
+        ]
+      },
+      "timestamp": "2025-08-25T00:55:28.370Z"
+    },
+    {
+      "test": "Function getRoleProfiles",
+      "status": "pass",
+      "details": {
+        "url": "http://localhost:5001/getmycv-ai/us-central1/getRoleProfiles",
+        "status": 500,
+        "hasErrorStructure": true,
+        "responseKeys": [
+          "error"
+        ]
+      },
+      "timestamp": "2025-08-25T00:55:30.958Z"
+    },
+    {
+      "test": "Function getRoleBasedRecommendations",
+      "status": "pass",
+      "details": {
+        "url": "http://localhost:5001/getmycv-ai/us-central1/getRoleBasedRecommendations",
+        "status": 500,
+        "hasErrorStructure": true,
+        "responseKeys": [
+          "error"
+        ]
+      },
+      "timestamp": "2025-08-25T00:55:32.833Z"
+    },
+    {
+      "test": "Function applyRoleProfile",
+      "status": "pass",
+      "details": {
+        "url": "http://localhost:5001/getmycv-ai/us-central1/applyRoleProfile",
+        "status": 500,
+        "hasErrorStructure": true,
+        "responseKeys": [
+          "error"
+        ]
+      },
+      "timestamp": "2025-08-25T00:55:34.310Z"
+    },
+    {
+      "test": "Frontend Asset /",
+      "status": "pass",
+      "details": {
+        "url": "http://localhost:3000/",
+        "status": 200
+      },
+      "timestamp": "2025-08-25T00:55:34.313Z"
+    },
+    {
+      "test": "Frontend Asset /src/main.tsx",
+      "status": "pass",
+      "details": {
+        "url": "http://localhost:3000/src/main.tsx",
+        "status": 200
+      },
+      "timestamp": "2025-08-25T00:55:34.314Z"
+    },
+    {
+      "test": "Frontend Asset /@vite/client",
+      "status": "pass",
+      "details": {
+        "url": "http://localhost:3000/@vite/client",
+        "status": 200
+      },
+      "timestamp": "2025-08-25T00:55:34.326Z"
+    },
+    {
+      "test": "Role Service File",
+      "status": "pass",
+      "details": {
+        "path": "/Users/gklainert/Documents/cvplus/frontend/src/services/roleProfileService.ts",
+        "exists": true,
+        "configValid": true,
+        "size": 12251
+      },
+      "timestamp": "2025-08-25T00:55:34.327Z"
+    },
+    {
+      "test": "Enhanced Role Detection Service",
+      "status": "pass",
+      "details": {
+        "path": "/Users/gklainert/Documents/cvplus/functions/src/services/enhanced-role-detection.service.ts",
+        "exists": true,
+        "configValid": true,
+        "size": 17792
+      },
+      "timestamp": "2025-08-25T00:55:34.327Z"
+    },
+    {
+      "test": "Role Profile Functions",
+      "status": "pass",
+      "details": {
+        "path": "/Users/gklainert/Documents/cvplus/functions/src/functions/role-profile.functions.ts",
+        "exists": true,
+        "configValid": true,
+        "size": 27309
+      },
+      "timestamp": "2025-08-25T00:55:34.328Z"
+    },
+    {
+      "test": "Firebase Index File",
+      "status": "pass",
+      "details": {
+        "path": "/Users/gklainert/Documents/cvplus/functions/src/index.ts",
+        "exists": true,
+        "configValid": true,
+        "size": 8453
+      },
+      "timestamp": "2025-08-25T00:55:34.328Z"
+    },
+    {
+      "test": "Development Processes Running",
+      "status": "pass",
+      "details": {
+        "processCount": 61,
+        "expected": ">=5"
+      },
+      "timestamp": "2025-08-25T00:55:34.506Z"
+    },
+    {
+      "test": "Critical Files Present",
+      "status": "pass",
+      "details": {
+        "checkedFiles": 4
+      },
+      "timestamp": "2025-08-25T00:55:34.506Z"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+```mermaid
+flowchart TD
+    A[Start TypeScript Error Fix] --> B[Phase 1: Error Analysis]
+    
+    B --> B1[Read Problem Files]
+    B1 --> B2[Document Error Patterns]
+    B2 --> B3[Validate Current Build State]
+    B3 --> C[Phase 2: Systematic Repair]
+    
+    C --> C1[Fix useSession.ts Hook]
+    C1 --> C1a{Compilation Check}
+    C1a -->|Pass| C2[Fix AnalyticsDashboard.tsx]
+    C1a -->|Fail| C1b[Debug useSession Issues]
+    C1b --> C1
+    
+    C2 --> C2a{Compilation Check}
+    C2a -->|Pass| C3[Fix ErrorRecoveryDialog.tsx]
+    C2a -->|Fail| C2b[Debug Analytics Issues]
+    C2b --> C2
+    
+    C3 --> C3a{Compilation Check}
+    C3a -->|Pass| C4[Fix CalendarIntegration.tsx]
+    C3a -->|Fail| C3b[Debug Error Recovery Issues]
+    C3b --> C3
+    
+    C4 --> C4a{Compilation Check}
+    C4a -->|Pass| C5[Fix FeatureDashboard.tsx]
+    C4a -->|Fail| C4b[Debug Calendar Issues]
+    C4b --> C4
+    
+    C5 --> C5a{Compilation Check}
+    C5a -->|Pass| C6[Fix HelpTooltip.tsx]
+    C5a -->|Fail| C5b[Debug Feature Dashboard Issues]
+    C5b --> C5
+    
+    C6 --> C6a{Compilation Check}
+    C6a -->|Pass| C7[Fix InteractiveTour.tsx]
+    C6a -->|Fail| C6b[Debug Help Tooltip Issues]
+    C6b --> C6
+    
+    C7 --> C7a{Compilation Check}
+    C7a -->|Pass| D[Phase 3: Validation]
+    C7a -->|Fail| C7b[Debug Interactive Tour Issues]
+    C7b --> C7
+    
+    D --> D1[Run TypeScript Compiler]
+    D1 --> D2[Execute Build Process]
+    D2 --> D3[Validate React Components]
+    D3 --> D4{All Tests Pass?}
+    D4 -->|Yes| E[Phase 4: Quality Assurance]
+    D4 -->|No| D5[Fix Remaining Issues]
+    D5 --> D1
+    
+    E --> E1[Code Review by Subagent]
+    E1 --> E2[TypeScript Best Practices Check]
+    E2 --> E3[Functional Regression Test]
+    E3 --> F[Completion]
+    
+    style A fill:#e1f5fe
+    style F fill:#c8e6c9
+    style C1a fill:#fff3e0
+    style C2a fill:#fff3e0
+    style C3a fill:#fff3e0
+    style C4a fill:#fff3e0
+    style C5a fill:#fff3e0
+    style C6a fill:#fff3e0
+    style C7a fill:#fff3e0
+    style D4 fill:#fff3e0
+```

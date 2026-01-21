@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["DOM", "DOM.Iterable", "ES2020"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./dist/standalone",
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {}
+  },
+  "include": [
+    "src/frontend/integration/StandaloneIntegration.tsx",
+    "src/frontend/standalone-index.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/backend/**/*",
+    "src/components/**/*",
+    "src/frontend/components/**/*",
+    "src/frontend/integration/MultimediaIntegration.tsx",
+    "src/frontend/integration/ComponentResolver.ts",
+    "src/frontend/integration/FeatureRegistry.ts",
+    "src/frontend/integration/IntegrationUtils.ts",
+    "src/frontend/integration/SimpleIntegration.tsx",
+    "src/frontend/providers/**/*",
+    "src/frontend/hooks/**/*",
+    "src/frontend/services/**/*",
+    "src/services/**/*",
+    "src/utils/**/*",
+    "src/constants/**/*",
+    "src/types/**/*",
+    "**/*.test.*",
+    "**/__tests__/**"
+  ]
+}

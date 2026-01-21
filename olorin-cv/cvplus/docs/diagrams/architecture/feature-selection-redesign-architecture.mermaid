@@ -1,0 +1,85 @@
+graph TB
+    subgraph "Feature Selection Page Architecture"
+        A[Page Entry] --> B{User State Check}
+        B -->|Authenticated| C[Load Job Data]
+        B -->|Not Authenticated| D[Redirect to Login]
+        
+        C --> E[Initialize Page State]
+        
+        E --> F[Progress Indicator]
+        F --> F1[Step 1: Upload ✓]
+        F --> F2[Step 2: Analysis ✓]
+        F --> F3[Step 3: Role Selection ✓]
+        F --> F4[Step 4: Feature Selection •]
+        F --> F5[Step 5: Generate CV]
+        
+        E --> G[Template Selection Section]
+        G --> G1[Role-Based Recommendations]
+        G --> G2[Template Grid]
+        G --> G3[Template Comparison]
+        G2 --> G4[Template Card Components]
+        G4 --> G5[Preview Image]
+        G4 --> G6[Template Info]
+        G4 --> G7[Selection Actions]
+        
+        E --> H[Feature Customization Section]
+        H --> H1[Core Features]
+        H --> H2[Enhancement Features]
+        H --> H3[Premium Features]
+        H1 --> H4[Always Included]
+        H2 --> H5[User Selectable]
+        H3 --> H6[Requires Upgrade]
+        
+        E --> I[Live Preview Section]
+        I --> I1[Preview Canvas]
+        I --> I2[View Controls]
+        I --> I3[Edit Actions]
+        I1 --> I4[Template Preview]
+        I1 --> I5[Feature Preview]
+        I1 --> I6[Final Preview]
+        
+        E --> J[Action Bar]
+        J --> J1[Back Navigation]
+        J --> J2[Selection Summary]
+        J --> J3[Continue Action]
+        
+        G7 --> K{Template Selected?}
+        K -->|Yes| L[Update Preview]
+        K -->|No| M[Show Default]
+        
+        H5 --> N{Feature Toggle}
+        N -->|Enable| O[Add to Selection]
+        N -->|Disable| P[Remove from Selection]
+        
+        H6 --> Q{Premium Check}
+        Q -->|Has Premium| R[Enable Feature]
+        Q -->|No Premium| S[Show Upgrade Modal]
+        
+        J3 --> T{Validation}
+        T -->|Valid| U[Save Selections]
+        T -->|Invalid| V[Show Errors]
+        
+        U --> W[Navigate to Processing]
+        V --> X[Highlight Issues]
+    end
+    
+    subgraph "Component Communication"
+        Y[Template Selection] -.->|Updates| Z[Live Preview]
+        AA[Feature Selection] -.->|Updates| Z
+        Z -.->|Feedback| AB[Action Bar]
+        AC[Role Context] -.->|Influences| Y
+        AC -.->|Influences| AA
+    end
+    
+    subgraph "State Management"
+        AD[React Context] --> AE[Selected Template]
+        AD --> AF[Selected Features]
+        AD --> AG[Preview Mode]
+        AD --> AH[User Tier]
+        AD --> AI[Validation State]
+    end
+    
+    style A fill:#06b6d4,color:#fff
+    style W fill:#10b981,color:#fff
+    style S fill:#eab308,color:#fff
+    style V fill:#ef4444,color:#fff

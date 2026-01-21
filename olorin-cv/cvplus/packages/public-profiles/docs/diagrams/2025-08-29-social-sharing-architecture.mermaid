@@ -1,0 +1,138 @@
+graph TB
+    subgraph "Public-Profiles Social Architecture"
+        PP[Public Profile Generator] --> SSS[Social Sharing Service]
+        PP --> SAT[Social Analytics Tracker]
+        PP --> SPS[Social Proof System]
+        
+        subgraph "Social Platform Integrations"
+            TW[Twitter/X API]
+            LI[LinkedIn API] 
+            FB[Facebook API]
+            IG[Instagram API]
+            TT[TikTok API]
+            PIN[Pinterest API]
+            YT[YouTube API]
+        end
+        
+        subgraph "Social Sharing Components"
+            SB[Share Buttons]
+            SMW[Social Media Widgets]
+            OGT[Open Graph Tags]
+            TC[Twitter Cards]
+            LIC[LinkedIn Cards]
+        end
+        
+        subgraph "Analytics & Tracking"
+            ET[Engagement Tracking]
+            CT[Conversion Tracking]
+            PT[Performance Tracking]
+            RT[Real-time Analytics]
+        end
+        
+        subgraph "Social Proof Features"
+            EN[Endorsements System]
+            TE[Testimonials]
+            AB[Achievement Badges]
+            NV[Network Visualization]
+        end
+        
+        subgraph "Privacy & Security"
+            PC[Privacy Controls]
+            DS[Data Sanitization]
+            CM[Content Moderation]
+            GC[GDPR Compliance]
+        end
+        
+        subgraph "Performance Optimization"
+            LL[Lazy Loading]
+            CDN[CDN Integration]
+            CS[Caching Strategy]
+            MO[Mobile Optimization]
+        end
+    end
+    
+    %% Social Platform Connections
+    SSS --> TW
+    SSS --> LI
+    SSS --> FB
+    SSS --> IG
+    SSS --> TT
+    SSS --> PIN
+    SSS --> YT
+    
+    %% Component Connections
+    SSS --> SB
+    SSS --> SMW
+    SSS --> OGT
+    SSS --> TC
+    SSS --> LIC
+    
+    %% Analytics Connections
+    SAT --> ET
+    SAT --> CT
+    SAT --> PT
+    SAT --> RT
+    
+    %% Social Proof Connections
+    SPS --> EN
+    SPS --> TE
+    SPS --> AB
+    SPS --> NV
+    
+    %% Privacy Connections
+    PP --> PC
+    PP --> DS
+    PP --> CM
+    PP --> GC
+    
+    %% Performance Connections
+    PP --> LL
+    PP --> CDN
+    PP --> CS
+    PP --> MO
+    
+    %% External Integrations
+    subgraph "External Services"
+        GA[Google Analytics]
+        FB_P[Facebook Pixel]
+        LI_I[LinkedIn Insight]
+        TW_A[Twitter Analytics]
+    end
+    
+    SAT --> GA
+    SAT --> FB_P
+    SAT --> LI_I
+    SAT --> TW_A
+    
+    %% Data Flow
+    subgraph "Data Flow"
+        UD[User Data] --> PP
+        PP --> SP[Social Profile]
+        SP --> SM[Social Media]
+        SM --> EN_M[Engagement Metrics]
+        EN_M --> SAT
+    end
+    
+    %% User Interface
+    subgraph "User Interface"
+        PD[Profile Dashboard]
+        SS[Sharing Settings]
+        AS[Analytics Dashboard]
+        PS[Privacy Settings]
+    end
+    
+    PP --> PD
+    SSS --> SS
+    SAT --> AS
+    PC --> PS
+    
+    style PP fill:#e1f5fe
+    style SSS fill:#f3e5f5
+    style SAT fill:#e8f5e8
+    style SPS fill:#fff3e0
+    style PC fill:#ffebee
+    style PP color:#01579b
+    style SSS color:#4a148c
+    style SAT color:#1b5e20
+    style SPS color:#e65100
+    style PC color:#b71c1c

@@ -1,0 +1,10 @@
+/**
+ * Carousel Components Index
+ * Export all carousel components
+  */
+
+export { TestimonialsCarousel } from './TestimonialsCarousel';
+export { TestimonialCard } from './TestimonialCard';
+export { CarouselControls } from './CarouselControls';
+export * from './types';
+export * from './utils';

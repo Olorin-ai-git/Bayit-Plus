@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-09-15T20:45:32-07:00",
+  "status": "PARTIAL",
+  "summary": {
+    "total_modules": 5,
+    "successful_count": 5,
+    "failed_count": 0
+  },
+  "successful_modules": ["logging","shell","auth","i18n","analytics"],
+  "failed_modules": [],
+  "logs": {
+    "main_log": "./build-logs/build_session_20250915_203342.log",
+    "log_directory": "./build-logs"
+  }
+}

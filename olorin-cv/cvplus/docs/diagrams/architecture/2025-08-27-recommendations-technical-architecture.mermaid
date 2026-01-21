@@ -1,0 +1,151 @@
+```mermaid
+graph TB
+    subgraph "Client Layer"
+        WEB[Web Frontend]
+        MOBILE[Mobile App]
+        API_CLIENT[API Clients]
+    end
+
+    subgraph "Load Balancer & CDN"
+        LB[Load Balancer]
+        CDN[CDN - Static Assets Cache]
+    end
+
+    subgraph "API Gateway"
+        GATEWAY[Firebase Functions Gateway]
+        AUTH[Authentication Middleware]
+        RATE[Rate Limiting Middleware]
+        LOG[Logging Middleware]
+    end
+
+    subgraph "Recommendations Module - New Architecture"
+        ORCHESTRATOR[ImprovementOrchestrator - 163L]
+        
+        subgraph "Modularized Services (200L each)"
+            CV_ANALYZER[CVAnalyzer - 180L]
+            REC_GEN[RecommendationGenerator - 195L]
+            CONTENT_PROC[ContentProcessor - 175L]
+            VALIDATION[ValidationEngine - 160L]
+            TRANSFORM[TransformationApplier - 190L]
+        end
+
+        subgraph "Engine Layer"
+            AI_ENGINE[AIEngine - Claude Integration]
+            RULE_ENGINE[RuleEngine - Business Rules]
+            TEMPLATE_ENGINE[TemplateEngine - Templates]
+            TREND_ENGINE[TrendEngine - Industry Data]
+            PERSONAL_ENGINE[PersonalizationEngine - User Data]
+        end
+
+        subgraph "Cross-Cutting Concerns"
+            CIRCUIT_BREAKER[Circuit Breaker]
+            RETRY_HANDLER[Retry Handler]
+            METRICS[Metrics Collection]
+        end
+    end
+
+    subgraph "Caching Layer - Multi-Tier"
+        L1_CACHE[L1: Memory Cache<br/>5 minutes TTL<br/>100MB per instance]
+        L2_CACHE[L2: Redis Cluster<br/>30 minutes TTL<br/>Read Replicas]
+        L3_CACHE[L3: Firestore Cache<br/>24 hours TTL<br/>Document-based]
+    end
+
+    subgraph "External Services"
+        CLAUDE_API[Anthropic Claude API]
+        INDUSTRY_API[Industry Data APIs]
+        TEMPLATE_SERVICE[Template Service]
+    end
+
+    subgraph "Data Layer"
+        FIRESTORE[Firestore Database]
+        STORAGE[Firebase Storage]
+        ANALYTICS[Analytics DB]
+    end
+
+    subgraph "Monitoring & Observability"
+        DASHBOARD[Performance Dashboard]
+        ALERTS[Alert Manager]
+        LOGS[Centralized Logging]
+        APM[Application Performance Monitoring]
+    end
+
+    %% Client Flow
+    WEB --> LB
+    MOBILE --> LB
+    API_CLIENT --> LB
+
+    LB --> GATEWAY
+    CDN --> WEB
+    
+    GATEWAY --> AUTH
+    AUTH --> RATE
+    RATE --> LOG
+    LOG --> ORCHESTRATOR
+
+    %% Orchestrator Flow
+    ORCHESTRATOR --> CV_ANALYZER
+    ORCHESTRATOR --> REC_GEN
+    ORCHESTRATOR --> CONTENT_PROC
+    ORCHESTRATOR --> VALIDATION
+    ORCHESTRATOR --> TRANSFORM
+
+    %% Engine Integration
+    REC_GEN --> AI_ENGINE
+    REC_GEN --> RULE_ENGINE
+    REC_GEN --> TEMPLATE_ENGINE
+    REC_GEN --> TREND_ENGINE
+    REC_GEN --> PERSONAL_ENGINE
+
+    %% Cross-Cutting Integration
+    ORCHESTRATOR --> CIRCUIT_BREAKER
+    ORCHESTRATOR --> RETRY_HANDLER
+    ORCHESTRATOR --> METRICS
+
+    %% Cache Flow
+    ORCHESTRATOR --> L1_CACHE
+    L1_CACHE --> L2_CACHE
+    L2_CACHE --> L3_CACHE
+
+    %% External Service Integration
+    AI_ENGINE --> CLAUDE_API
+    TREND_ENGINE --> INDUSTRY_API
+    TEMPLATE_ENGINE --> TEMPLATE_SERVICE
+
+    %% Data Access
+    CV_ANALYZER --> FIRESTORE
+    CONTENT_PROC --> STORAGE
+    VALIDATION --> FIRESTORE
+    PERSONAL_ENGINE --> ANALYTICS
+
+    %% Monitoring Integration
+    ORCHESTRATOR --> DASHBOARD
+    CIRCUIT_BREAKER --> ALERTS
+    LOG --> LOGS
+    METRICS --> APM
+
+    %% Cache Miss Flow
+    L3_CACHE -.->|Cache Miss| FIRESTORE
+    L2_CACHE -.->|Cache Miss| L3_CACHE
+    L1_CACHE -.->|Cache Miss| L2_CACHE
+
+    %% Performance Targets Annotations
+    ORCHESTRATOR -.->|Target: <3s response| DASHBOARD
+    L1_CACHE -.->|Target: 60% hit rate| DASHBOARD
+    CIRCUIT_BREAKER -.->|Target: <2% timeout| ALERTS
+
+    classDef client fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef gateway fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef module fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef cache fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef external fill:#fce4ec,stroke:#e91e63,stroke-width:2px
+    classDef data fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    classDef monitoring fill:#f1f8e9,stroke:#558b2f,stroke-width:2px
+
+    class WEB,MOBILE,API_CLIENT client
+    class LB,CDN,GATEWAY,AUTH,RATE,LOG gateway
+    class ORCHESTRATOR,CV_ANALYZER,REC_GEN,CONTENT_PROC,VALIDATION,TRANSFORM,AI_ENGINE,RULE_ENGINE,TEMPLATE_ENGINE,TREND_ENGINE,PERSONAL_ENGINE,CIRCUIT_BREAKER,RETRY_HANDLER,METRICS module
+    class L1_CACHE,L2_CACHE,L3_CACHE cache
+    class CLAUDE_API,INDUSTRY_API,TEMPLATE_SERVICE external
+    class FIRESTORE,STORAGE,ANALYTICS data
+    class DASHBOARD,ALERTS,LOGS,APM monitoring
+```

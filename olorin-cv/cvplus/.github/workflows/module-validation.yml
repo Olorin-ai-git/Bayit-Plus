@@ -1,0 +1,24 @@
+name: CVPlus Module Validation
+on: [push, pull_request]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - name: Install Dependencies
+        run: npm install
+      - name: Validate Modules
+        run: |
+          chmod +x validate-all-modules.sh
+          ./validate-all-modules.sh
+          violations=$(grep "Total Violations:" | grep -o '[0-9]*' || echo "0")
+          if [ "$violations" -gt 40 ]; then
+            echo "❌ Compliance failure: $violations violations"
+            exit 1
+          fi
+          echo "✅ Validation passed: $violations violations"

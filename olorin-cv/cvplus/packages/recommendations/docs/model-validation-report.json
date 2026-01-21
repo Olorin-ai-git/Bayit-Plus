@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-08-29T15:40:34.146Z",
+  "overallStatus": "FAIL",
+  "testResults": {
+    "skillEmbedding": "FAIL",
+    "careerRecommendations": "PASS",
+    "improvementSuggestions": "PASS"
+  },
+  "recommendations": [
+    "Review failed test cases",
+    "Retrain models if necessary",
+    "Run additional validation"
+  ]
+}

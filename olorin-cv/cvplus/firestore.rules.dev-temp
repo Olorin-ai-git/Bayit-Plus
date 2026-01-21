@@ -1,0 +1,11 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // TEMPORARY DEVELOPMENT RULES - ALLOWS ALL ACCESS
+    // This is for emulator development only and should NEVER be used in production
+    
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

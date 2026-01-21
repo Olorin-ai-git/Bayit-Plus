@@ -1,0 +1,93 @@
+{
+  "name": "@cvplus/admin",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Comprehensive admin dashboard module for CVPlus platform management",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./react": {
+      "import": "./dist/react.esm.js",
+      "require": "./dist/react.js",
+      "types": "./dist/react.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "build:watch": "rollup -c -w",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "tsc --noEmit --watch",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "validate-dependencies": "./scripts/validate-dependencies.sh",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@cvplus/analytics": "file:../analytics",
+    "@cvplus/auth": "file:../auth",
+    "@cvplus/core": "file:../core",
+    "@cvplus/logging": "^1.0.0",
+    "@cvplus/public-profiles": "file:../public-profiles",
+    "@types/chart.js": "^2.9.41",
+    "chart.js": "^4.5.0",
+    "firebase": "^10.7.1",
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^5.1.1",
+    "react-chartjs-2": "^5.3.0",
+    "react-router-dom": "^7.8.2"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@types/react-router-dom": "^5.3.3",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "rollup": "^4.0.0",
+    "rollup-plugin-dts": "^6.0.0",
+    "tslib": "^2.6.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cvplus/cvplus.git",
+    "directory": "packages/admin"
+  },
+  "keywords": [
+    "admin",
+    "dashboard",
+    "cvplus",
+    "user-management",
+    "content-moderation",
+    "system-monitoring",
+    "analytics",
+    "security-audit"
+  ],
+  "author": "Gil Klainert <gil@cvplus.com>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

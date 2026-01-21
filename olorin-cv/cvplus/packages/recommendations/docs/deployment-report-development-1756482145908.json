@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-08-29T15:42:25.907Z",
+  "environment": "development",
+  "deploymentStatus": "failed",
+  "healthStatus": "unhealthy",
+  "services": [
+    "recommendation-engine",
+    "ai-integration",
+    "career-development",
+    "embedding-service"
+  ],
+  "duration": "145s",
+  "metrics": {
+    "servicesDeployed": 4,
+    "healthChecksRun": 4,
+    "overallSuccess": false
+  }
+}

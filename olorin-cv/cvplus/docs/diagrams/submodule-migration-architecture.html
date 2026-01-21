@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVPlus Submodule Migration Architecture</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.0.0/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .header {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+        .diagram-section {
+            background: white;
+            margin: 30px 0;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .diagram-section h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .diagram-section h3 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        .mermaid {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .phase-info {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .phase-info h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .risk-assessment {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .risk-card {
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid;
+        }
+        .risk-high {
+            background: #ffeaa7;
+            border-left-color: #e17055;
+        }
+        .risk-medium {
+            background: #a8e6cf;
+            border-left-color: #00b894;
+        }
+        .risk-low {
+            background: #dce775;
+            border-left-color: #6c5ce7;
+        }
+        .migration-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 2em;
+        }
+        .stat-card p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .header h1 {
+                font-size: 2em;
+            }
+            .diagram-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏗️ CVPlus Submodule Migration Architecture</h1>
+        <p>Comprehensive architectural migration plan to eliminate violations and establish proper domain boundaries</p>
+        <p><strong>Date:</strong> 2025-09-16 | <strong>Author:</strong> Gil Klainert</p>
+    </div>
+
+    <div class="migration-stats">
+        <div class="stat-card">
+            <h4>7</h4>
+            <p>Service Files to Migrate</p>
+        </div>
+        <div class="stat-card">
+            <h4>6</h4>
+            <p>Portal Functions</p>
+        </div>
+        <div class="stat-card">
+            <h4>15</h4>
+            <p>Submodules Available</p>
+        </div>
+        <div class="stat-card">
+            <h4>4</h4>
+            <p>Migration Phases</p>
+        </div>
+    </div>
+
+    <div class="diagram-section">
+        <h2>🎯 Current Architecture Problems</h2>
+        <p>The following diagram shows the current architectural violations where business logic resides in the root repository instead of appropriate submodules:</p>
+
+        <div class="mermaid">
+        graph TB
+            subgraph "❌ ROOT REPOSITORY (VIOLATIONS)"
+                RF[functions/src/]
+                RFS[functions/src/services/]
+                RFP[functions/src/portal/]
+                RFT[functions/src/types/]
+                RFM[functions/src/middleware/]
+                FF[frontend/src/]
+                FFC[frontend/src/components/]
+                FFS[frontend/src/services/]
+                FFT[frontend/src/types/]
+            end
+
+            subgraph "🎯 TARGET SUBMODULES"
+                P[packages/processing/]
+                M[packages/multimedia/]
+                A[packages/auth/]
+                C[packages/core/]
+                PP[packages/public-profiles/]
+                PR[packages/premium/]
+            end
+
+            RFS -->|ai-analysis.service.ts| P
+            RFS -->|role-detection.service.ts| P
+            RFS -->|cv-transformation.service.ts| P
+            RFS -->|enhanced-video-generation.service.ts| M
+            RFS -->|video-monitoring-hooks.service.ts| M
+            RFS -->|role-profile.service.ts| A
+            RFS -->|calendar-integration.service.ts| C
+            RFP -->|Portal Functions| PP
+            RFT -->|Types| A
+            RFM -->|Middleware| A
+            FFC -->|Premium Components| PR
+            FFC -->|Multimedia Components| M
+            FFS -->|Premium Services| PR
+            FFT -->|Domain Types| P
+
+            style RF fill:#ffcccb
+            style RFS fill:#ffcccb
+            style RFP fill:#ffcccb
+            style RFT fill:#ffcccb
+            style RFM fill:#ffcccb
+            style FF fill:#ffcccb
+            style FFC fill:#ffcccb
+            style FFS fill:#ffcccb
+            style FFT fill:#ffcccb
+            style P fill:#90EE90
+            style M fill:#90EE90
+            style A fill:#90EE90
+            style C fill:#90EE90
+            style PP fill:#90EE90
+            style PR fill:#90EE90
+        </div>
+    </div>
+
+    <div class="diagram-section">
+        <h2>🏗️ Target Architecture After Migration</h2>
+        <p>Clean separation of concerns with all business logic properly isolated in submodules:</p>
+
+        <div class="mermaid">
+        graph TB
+            subgraph "🎯 ROOT REPOSITORY (ORCHESTRATION ONLY)"
+                RO[Root Orchestration]
+                RS[src/recovery/]
+                RA[src/api/]
+                RM[src/models/]
+                RSV[src/services/]
+            end
+
+            subgraph "📦 PACKAGES (DOMAIN LOGIC)"
+                subgraph "packages/processing/"
+                    PS[services/]
+                    PSA[ai-analysis.service.ts]
+                    PSR[role-detection.service.ts]
+                    PSC[cv-transformation.service.ts]
+                    PS --> PSA
+                    PS --> PSR
+                    PS --> PSC
+                end
+
+                subgraph "packages/multimedia/"
+                    MS[services/]
+                    MSV[enhanced-video-generation.service.ts]
+                    MSM[video-monitoring-hooks.service.ts]
+                    MS --> MSV
+                    MS --> MSM
+                end
+
+                subgraph "packages/auth/"
+                    AS[services/]
+                    ASR[role-profile.service.ts]
+                    AM[middleware/]
+                    AMA[auth.middleware.ts]
+                    AS --> ASR
+                    AM --> AMA
+                end
+
+                subgraph "packages/core/"
+                    CS[services/]
+                    CSC[calendar-integration.service.ts]
+                    CC[config/]
+                    CU[utils/]
+                    CS --> CSC
+                end
+
+                subgraph "packages/public-profiles/"
+                    PF[functions/]
+                    PFG[generatePortal.ts]
+                    PFA[getPortalAnalytics.ts]
+                    PF --> PFG
+                    PF --> PFA
+                end
+
+                subgraph "packages/premium/"
+                    PRC[frontend/components/]
+                    PRS[frontend/services/]
+                    PRC --> PRS
+                end
+            end
+
+            RO -->|@cvplus/processing| PS
+            RO -->|@cvplus/multimedia| MS
+            RO -->|@cvplus/auth| AS
+            RO -->|@cvplus/core| CS
+            RO -->|@cvplus/public-profiles| PF
+            RO -->|@cvplus/premium| PRC
+
+            style RO fill:#87CEEB
+            style RS fill:#87CEEB
+            style RA fill:#87CEEB
+            style RM fill:#87CEEB
+            style RSV fill:#87CEEB
+            style PS fill:#90EE90
+            style MS fill:#90EE90
+            style AS fill:#90EE90
+            style CS fill:#90EE90
+            style PF fill:#90EE90
+            style PRC fill:#90EE90
+        </div>
+    </div>
+
+    <div class="diagram-section">
+        <h2>📅 Migration Phase Timeline</h2>
+        <p>Four-week phased approach to minimize risk and ensure systematic validation:</p>
+
+        <div class="mermaid">
+        gantt
+            title CVPlus Submodule Migration Timeline
+            dateFormat  YYYY-MM-DD
+            section Phase 1: Critical Services
+            Processing Services     :p1a, 2025-09-16, 2d
+            Multimedia Services     :p1b, after p1a, 2d
+            Auth Services          :p1c, after p1b, 1d
+            Core Services          :p1d, after p1c, 2d
+
+            section Phase 2: Portal Functions
+            Portal Migration       :p2a, after p1d, 3d
+            Portal Integration     :p2b, after p2a, 2d
+            Portal Testing         :p2c, after p2b, 2d
+
+            section Phase 3: Frontend Components
+            Premium Components     :p3a, after p2c, 3d
+            Multimedia Components  :p3b, after p3a, 2d
+            Frontend Integration   :p3c, after p3b, 2d
+
+            section Phase 4: Cleanup & Validation
+            Type Distribution      :p4a, after p3c, 3d
+            Import Updates         :p4b, after p4a, 2d
+            Final Validation       :p4c, after p4b, 2d
+        </div>
+    </div>
+
+    <div class="diagram-section">
+        <h2>🔄 Migration Flow Process</h2>
+        <p>Systematic approach for each service migration with validation checkpoints:</p>
+
+        <div class="mermaid">
+        flowchart TD
+            A[Identify Service] --> B[Analyze Dependencies]
+            B --> C[Create Target Package Structure]
+            C --> D[Move Service Files]
+            D --> E[Update Imports]
+            E --> F[Update Package Exports]
+            F --> G[Run TypeScript Compilation]
+            G --> H{Compilation Success?}
+            H -->|Yes| I[Run Tests]
+            H -->|No| J[Fix Import Issues]
+            J --> G
+            I --> K{Tests Pass?}
+            K -->|Yes| L[Deploy to Staging]
+            K -->|No| M[Fix Test Issues]
+            M --> I
+            L --> N{Deployment Success?}
+            N -->|Yes| O[Validate Functionality]
+            N -->|No| P[Fix Deployment Issues]
+            P --> L
+            O --> Q{Functionality OK?}
+            Q -->|Yes| R[✅ Migration Complete]
+            Q -->|No| S[Fix Functional Issues]
+            S --> O
+
+            style A fill:#e1f5fe
+            style R fill:#c8e6c9
+            style H fill:#fff3e0
+            style K fill:#fff3e0
+            style N fill:#fff3e0
+            style Q fill:#fff3e0
+        </div>
+    </div>
+
+    <div class="diagram-section">
+        <h2>⚠️ Risk Assessment Matrix</h2>
+
+        <div class="risk-assessment">
+            <div class="risk-card risk-high">
+                <h4>🔴 HIGH RISK</h4>
+                <p><strong>Import Dependency Chains</strong></p>
+                <p>Circular dependencies and broken imports during migration</p>
+                <p><strong>Mitigation:</strong> Temporary bridge exports, dependency order migration</p>
+            </div>
+
+            <div class="risk-card risk-medium">
+                <h4>🟡 MEDIUM RISK</h4>
+                <p><strong>Function Deployment</strong></p>
+                <p>Firebase Functions may fail with moved files</p>
+                <p><strong>Mitigation:</strong> Update index.ts, use firebase-deployment-specialist</p>
+            </div>
+
+            <div class="risk-card risk-medium">
+                <h4>🟡 MEDIUM RISK</h4>
+                <p><strong>Frontend Build Failures</strong></p>
+                <p>Webpack/Vite build failures from moved components</p>
+                <p><strong>Mitigation:</strong> Update alias configs, incremental migration</p>
+            </div>
+
+            <div class="risk-card risk-low">
+                <h4>🟢 LOW RISK</h4>
+                <p><strong>Type Definition Conflicts</strong></p>
+                <p>TypeScript compilation errors from moved types</p>
+                <p><strong>Mitigation:</strong> Package-level exports, project references</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="diagram-section">
+        <h2>📦 Package Dependency Graph</h2>
+        <p>Dependencies between packages after migration (ensuring no circular dependencies):</p>
+
+        <div class="mermaid">
+        graph TD
+            subgraph "Layer 1: Foundation"
+                CORE[packages/core]
+                LOGGING[packages/logging]
+                I18N[packages/i18n]
+            end
+
+            subgraph "Layer 2: Authentication & Data"
+                AUTH[packages/auth]
+                PROCESSING[packages/processing]
+                ANALYTICS[packages/analytics]
+            end
+
+            subgraph "Layer 3: Business Logic"
+                MULTIMEDIA[packages/multimedia]
+                PREMIUM[packages/premium]
+                PAYMENTS[packages/payments]
+                WORKFLOW[packages/workflow]
+            end
+
+            subgraph "Layer 4: User Interface"
+                PROFILES[packages/public-profiles]
+                ADMIN[packages/admin]
+                SHELL[packages/shell]
+                ENHANCEMENTS[packages/enhancements]
+                RECOMMENDATIONS[packages/recommendations]
+            end
+
+            AUTH --> CORE
+            AUTH --> LOGGING
+            PROCESSING --> CORE
+            PROCESSING --> LOGGING
+            ANALYTICS --> CORE
+            ANALYTICS --> LOGGING
+
+            MULTIMEDIA --> AUTH
+            MULTIMEDIA --> PROCESSING
+            MULTIMEDIA --> CORE
+            PREMIUM --> AUTH
+            PREMIUM --> CORE
+            PAYMENTS --> AUTH
+            PAYMENTS --> CORE
+            WORKFLOW --> AUTH
+            WORKFLOW --> PROCESSING
+            WORKFLOW --> CORE
+
+            PROFILES --> AUTH
+            PROFILES --> PROCESSING
+            PROFILES --> MULTIMEDIA
+            ADMIN --> AUTH
+            ADMIN --> ANALYTICS
+            SHELL --> CORE
+            SHELL --> AUTH
+            ENHANCEMENTS --> PROCESSING
+            ENHANCEMENTS --> PREMIUM
+            RECOMMENDATIONS --> PROCESSING
+            RECOMMENDATIONS --> AUTH
+
+            style CORE fill:#3498db,color:#fff
+            style LOGGING fill:#3498db,color:#fff
+            style I18N fill:#3498db,color:#fff
+            style AUTH fill:#e74c3c,color:#fff
+            style PROCESSING fill:#e74c3c,color:#fff
+            style ANALYTICS fill:#e74c3c,color:#fff
+            style MULTIMEDIA fill:#f39c12,color:#fff
+            style PREMIUM fill:#f39c12,color:#fff
+            style PAYMENTS fill:#f39c12,color:#fff
+            style WORKFLOW fill:#f39c12,color:#fff
+            style PROFILES fill:#27ae60,color:#fff
+            style ADMIN fill:#27ae60,color:#fff
+            style SHELL fill:#27ae60,color:#fff
+            style ENHANCEMENTS fill:#27ae60,color:#fff
+            style RECOMMENDATIONS fill:#27ae60,color:#fff
+        </div>
+    </div>
+
+    <div class="diagram-section">
+        <h2>✅ Validation Checkpoints</h2>
+
+        <div class="phase-info">
+            <h4>🔍 Technical Validation</h4>
+            <ul>
+                <li>All TypeScript compilation passes without errors</li>
+                <li>All tests pass (unit, integration, e2e)</li>
+                <li>Firebase Functions deploy successfully</li>
+                <li>Frontend builds without errors</li>
+                <li>No circular dependencies detected</li>
+            </ul>
+        </div>
+
+        <div class="phase-info">
+            <h4>🏗️ Architectural Validation</h4>
+            <ul>
+                <li>No business logic remains in root repository</li>
+                <li>All imports use @cvplus/* package references</li>
+                <li>Clear separation of concerns maintained</li>
+                <li>Submodule boundaries respected</li>
+            </ul>
+        </div>
+
+        <div class="phase-info">
+            <h4>⚙️ Functional Validation</h4>
+            <ul>
+                <li>All CV processing functionality works</li>
+                <li>Video generation and multimedia features functional</li>
+                <li>Authentication and role profiling operational</li>
+                <li>Portal and public profile features working</li>
+                <li>Premium features accessible and functional</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#3498db',
+                primaryTextColor: '#2c3e50',
+                primaryBorderColor: '#2980b9',
+                lineColor: '#34495e',
+                sectionBkgColor: '#ecf0f1',
+                altSectionBkgColor: '#bdc3c7',
+                gridColor: '#95a5a6',
+                secondaryColor: '#e74c3c',
+                tertiaryColor: '#f39c12'
+            }
+        });
+    </script>
+</body>
+</html>

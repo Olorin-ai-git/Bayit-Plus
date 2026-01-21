@@ -1,0 +1,704 @@
+openapi: 3.0.3
+info:
+  title: CVPlus E2E Testing API
+  description: API for managing and executing end-to-end test flows for CVPlus application
+  version: 1.0.0
+  contact:
+    name: CVPlus Development Team
+    email: dev@cvplus.io
+
+servers:
+  - url: https://api.cvplus.io/v1/testing
+    description: Production testing environment
+  - url: https://staging-api.cvplus.io/v1/testing
+    description: Staging testing environment
+  - url: http://localhost:3000/v1/testing
+    description: Local development environment
+
+paths:
+  /scenarios:
+    get:
+      summary: List all test scenarios
+      description: Retrieve all available test scenarios with optional filtering
+      tags: [Test Scenarios]
+      parameters:
+        - name: type
+          in: query
+          description: Filter by test scenario type
+          schema:
+            type: string
+            enum: [e2e, integration, api, load, regression]
+        - name: environment
+          in: query
+          description: Filter by target environment
+          schema:
+            type: string
+            enum: [dev, staging, prod]
+        - name: tags
+          in: query
+          description: Filter by tags (comma-separated)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of test scenarios
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  scenarios:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TestScenario'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+
+    post:
+      summary: Create a new test scenario
+      description: Create a new test scenario configuration
+      tags: [Test Scenarios]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestScenarioInput'
+      responses:
+        '201':
+          description: Test scenario created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestScenario'
+        '400':
+          description: Invalid scenario configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /scenarios/{scenarioId}:
+    get:
+      summary: Get specific test scenario
+      description: Retrieve details for a specific test scenario
+      tags: [Test Scenarios]
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          description: Test scenario identifier
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Test scenario details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestScenario'
+        '404':
+          description: Scenario not found
+
+    put:
+      summary: Update test scenario
+      description: Update an existing test scenario configuration
+      tags: [Test Scenarios]
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestScenarioInput'
+      responses:
+        '200':
+          description: Scenario updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestScenario'
+
+    delete:
+      summary: Delete test scenario
+      description: Remove a test scenario and its associated results
+      tags: [Test Scenarios]
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Scenario deleted successfully
+        '404':
+          description: Scenario not found
+
+  /scenarios/{scenarioId}/execute:
+    post:
+      summary: Execute test scenario
+      description: Start execution of a specific test scenario
+      tags: [Test Execution]
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                environment:
+                  type: string
+                  enum: [dev, staging, prod]
+                variables:
+                  type: object
+                  additionalProperties: true
+                timeout:
+                  type: integer
+                  minimum: 1000
+                  maximum: 1200000
+      responses:
+        '202':
+          description: Test execution started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  executionId:
+                    type: string
+                  status:
+                    type: string
+                    enum: [pending, running]
+                  estimatedDuration:
+                    type: integer
+
+  /executions/{executionId}:
+    get:
+      summary: Get execution status
+      description: Check the current status of a test execution
+      tags: [Test Execution]
+      parameters:
+        - name: executionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Execution status and results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowResult'
+
+  /executions/{executionId}/stop:
+    post:
+      summary: Stop test execution
+      description: Cancel a running test execution
+      tags: [Test Execution]
+      parameters:
+        - name: executionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Execution stopped
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [stopped, stopping]
+
+  /mock-data:
+    get:
+      summary: List mock datasets
+      description: Retrieve available mock data sets for testing
+      tags: [Mock Data]
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [cv, user-profile, job-description, ai-response, multimedia]
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of mock datasets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  datasets:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MockDataSet'
+
+    post:
+      summary: Generate mock data
+      description: Create new mock data set for testing
+      tags: [Mock Data]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MockDataInput'
+      responses:
+        '201':
+          description: Mock data generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MockDataSet'
+
+  /mock-data/{datasetId}:
+    get:
+      summary: Get mock dataset
+      description: Retrieve specific mock dataset
+      tags: [Mock Data]
+      parameters:
+        - name: datasetId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Mock dataset details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MockDataSet'
+
+  /environments:
+    get:
+      summary: List test environments
+      description: Get all available test environments
+      tags: [Test Environments]
+      responses:
+        '200':
+          description: List of test environments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  environments:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TestEnvironment'
+
+  /submodules/{moduleName}/flows:
+    get:
+      summary: Get submodule test flows
+      description: Retrieve isolated test flows for a specific submodule
+      tags: [Submodule Testing]
+      parameters:
+        - name: moduleName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Submodule test flows
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmoduleFlow'
+
+    post:
+      summary: Execute submodule tests
+      description: Run isolated tests for a specific submodule
+      tags: [Submodule Testing]
+      parameters:
+        - name: moduleName
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isolationLevel:
+                  type: string
+                  enum: [full, partial, none]
+                mockServices:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '202':
+          description: Submodule test execution started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  executionId:
+                    type: string
+                  moduleName:
+                    type: string
+                  status:
+                    type: string
+
+components:
+  schemas:
+    TestScenario:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [e2e, integration, api, load, regression]
+        environment:
+          type: string
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestStep'
+        expectedOutcomes:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestOutcome'
+        tags:
+          type: array
+          items:
+            type: string
+        timeout:
+          type: integer
+          minimum: 1000
+          maximum: 1200000
+        dependencies:
+          type: array
+          items:
+            type: string
+        retryConfig:
+          $ref: '#/components/schemas/RetryConfig'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TestScenarioInput:
+      type: object
+      required: [name, type, steps, expectedOutcomes]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [e2e, integration, api, load, regression]
+        environment:
+          type: string
+          default: dev
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestStep'
+        expectedOutcomes:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestOutcome'
+        tags:
+          type: array
+          items:
+            type: string
+        timeout:
+          type: integer
+          minimum: 1000
+          maximum: 1200000
+          default: 300000
+        dependencies:
+          type: array
+          items:
+            type: string
+        retryConfig:
+          $ref: '#/components/schemas/RetryConfig'
+
+    TestStep:
+      type: object
+      required: [order, name, action]
+      properties:
+        order:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+        action:
+          type: string
+        parameters:
+          type: object
+          additionalProperties: true
+        expectedResult:
+          type: object
+        timeout:
+          type: integer
+          minimum: 1000
+
+    TestOutcome:
+      type: object
+      required: [metric, condition, value]
+      properties:
+        metric:
+          type: string
+        condition:
+          type: string
+          enum: [equals, greater_than, less_than, contains, matches]
+        value:
+          oneOf:
+            - type: string
+            - type: number
+            - type: boolean
+        description:
+          type: string
+
+    FlowResult:
+      type: object
+      properties:
+        id:
+          type: string
+        scenarioId:
+          type: string
+        runId:
+          type: string
+        status:
+          type: string
+          enum: [passed, failed, timeout, error, running, pending]
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/StepResult'
+        metrics:
+          $ref: '#/components/schemas/PerformanceMetrics'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestError'
+        artifacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResultArtifact'
+        environment:
+          type: string
+
+    StepResult:
+      type: object
+      properties:
+        stepName:
+          type: string
+        status:
+          type: string
+          enum: [passed, failed, skipped]
+        duration:
+          type: integer
+        output:
+          type: object
+        error:
+          type: string
+
+    PerformanceMetrics:
+      type: object
+      properties:
+        responseTime:
+          type: number
+        throughput:
+          type: number
+        errorRate:
+          type: number
+        memoryUsage:
+          type: integer
+        cpuUsage:
+          type: number
+
+    TestError:
+      type: object
+      properties:
+        step:
+          type: string
+        message:
+          type: string
+        stack:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    ResultArtifact:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [log, screenshot, recording, report]
+        path:
+          type: string
+        size:
+          type: integer
+        checksum:
+          type: string
+
+    MockDataSet:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [cv, user-profile, job-description, ai-response, multimedia]
+        category:
+          type: string
+        size:
+          type: integer
+        checksum:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    MockDataInput:
+      type: object
+      required: [name, type, category]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [cv, user-profile, job-description, ai-response, multimedia]
+        category:
+          type: string
+        count:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 10
+        options:
+          type: object
+          additionalProperties: true
+
+    TestEnvironment:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [local, dev, staging, prod, ci]
+        baseUrl:
+          type: string
+          format: uri
+        isActive:
+          type: boolean
+
+    SubmoduleFlow:
+      type: object
+      properties:
+        id:
+          type: string
+        moduleName:
+          type: string
+        moduleVersion:
+          type: string
+        isolationLevel:
+          type: string
+          enum: [full, partial, none]
+        testScenarios:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestScenario'
+
+    RetryConfig:
+      type: object
+      properties:
+        maxAttempts:
+          type: integer
+          minimum: 1
+          maximum: 5
+          default: 3
+        backoffMultiplier:
+          type: number
+          minimum: 1.0
+          default: 2.0
+        maxDelay:
+          type: integer
+          default: 30000
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []

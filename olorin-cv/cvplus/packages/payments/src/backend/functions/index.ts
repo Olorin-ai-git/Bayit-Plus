@@ -1,0 +1,16 @@
+/**
+ * Firebase Cloud Functions for payment processing
+ * CVPlus Payments Module - Core payment processing functions only
+  */
+
+// Payment processing functions
+export { createCheckoutSession } from './createCheckoutSession';
+export { confirmPayment } from './confirmPayment';
+export { createPaymentIntent } from './createPaymentIntent';
+export { handleStripeWebhook } from './handleStripeWebhook';
+
+// Future exports (to be migrated from premium):
+// Stripe functions
+// export * from './stripe';
+// PayPal functions  
+// export * from './paypal';

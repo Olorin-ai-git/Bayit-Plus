@@ -1,0 +1,108 @@
+graph TB
+    subgraph "Vector Database Service Architecture"
+        VDB[VectorDatabase]
+        Cache[LRU Cache]
+        Index[HNSW Index]
+        
+        subgraph "Storage Backends"
+            Memory[In-Memory Store]
+            File[File Store]
+            Firestore[Firestore Store]
+        end
+        
+        subgraph "Search Algorithms"
+            Cosine[Cosine Similarity]
+            DotProd[Dot Product]
+            Euclidean[Euclidean Distance]
+        end
+        
+        subgraph "Operations"
+            Add[addVectors]
+            Search[search]
+            Update[updateVector]
+            Delete[deleteVector]
+            CreateIdx[createIndex]
+        end
+    end
+    
+    subgraph "Integration Points"
+        EmbedSvc[EmbeddingService]
+        PortalChat[Portal Chat]
+        PortalGen[Portal Generation]
+    end
+    
+    subgraph "External Systems"
+        OpenAI[OpenAI API]
+        Firebase[Firebase/Firestore]
+        HuggingFace[HuggingFace Spaces]
+    end
+    
+    subgraph "Data Flow"
+        CV[CV Content] --> EmbedSvc
+        EmbedSvc --> OpenAI
+        OpenAI --> EmbedSvc
+        EmbedSvc --> VDB
+        
+        VDB --> Memory
+        VDB --> File
+        VDB --> Firestore
+        
+        VDB --> Cache
+        VDB --> Index
+        
+        Cache --> Search
+        Index --> Search
+        
+        Search --> Cosine
+        Search --> DotProd
+        Search --> Euclidean
+        
+        PortalChat --> VDB
+        PortalGen --> VDB
+        
+        VDB --> HuggingFace
+        VDB --> Firebase
+    end
+    
+    subgraph "Search Process"
+        Query[Search Query] --> PreProcess[Preprocess Query]
+        PreProcess --> CheckCache[Check Cache]
+        CheckCache --> CacheHit{Cache Hit?}
+        CacheHit -->|Yes| ReturnCached[Return Cached]
+        CacheHit -->|No| ApplyFilters[Apply Metadata Filters]
+        ApplyFilters --> SelectAlgo[Select Algorithm]
+        SelectAlgo --> ComputeSim[Compute Similarity]
+        ComputeSim --> RankResults[Rank Results]
+        RankResults --> UpdateCache[Update Cache]
+        UpdateCache --> ReturnResults[Return Results]
+    end
+    
+    subgraph "Storage Strategy"
+        HotData[Hot Data - Memory]
+        WarmData[Warm Data - Cache]
+        ColdData[Cold Data - Persistent]
+        
+        HotData --> WarmData
+        WarmData --> ColdData
+        ColdData --> Firestore
+    end
+    
+    subgraph "Performance Optimization"
+        Compression[Vector Compression]
+        Quantization[Vector Quantization]
+        BatchOps[Batch Operations]
+        LazyLoad[Lazy Loading]
+        
+        VDB --> Compression
+        VDB --> Quantization
+        VDB --> BatchOps
+        VDB --> LazyLoad
+    end
+
+    style VDB fill:#e1f5fe
+    style Cache fill:#f3e5f5
+    style Index fill:#e8f5e8
+    style Memory fill:#fff3e0
+    style Firestore fill:#ffebee
+    style PortalChat fill:#e0f2f1
+    style Search fill:#fce4ec

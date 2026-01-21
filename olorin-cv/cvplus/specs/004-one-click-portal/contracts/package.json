@@ -1,0 +1,35 @@
+{
+  "name": "cvplus-one-click-portal-contracts",
+  "version": "1.0.0",
+  "description": "API contracts for CVPlus One Click Portal feature",
+  "private": true,
+  "scripts": {
+    "validate": "node validate-contracts.js",
+    "lint": "swagger-codegen validate -i openapi.yaml",
+    "docs": "redoc-cli serve openapi.yaml --watch",
+    "mock": "prism mock openapi.yaml --port 4010",
+    "test-examples": "newman run examples/postman-collection.json"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^1.5.0",
+    "@stoplight/prism-cli": "^5.5.0",
+    "js-yaml": "^4.1.0",
+    "newman": "^6.0.0"
+  },
+  "keywords": [
+    "openapi",
+    "api",
+    "contracts",
+    "cvplus",
+    "portal",
+    "rag",
+    "chat"
+  ],
+  "author": "CVPlus Team",
+  "license": "Proprietary",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:gilco1973/cvplus.git",
+    "directory": "specs/004-one-click-portal/contracts"
+  }
+}

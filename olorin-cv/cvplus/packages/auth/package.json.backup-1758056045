@@ -1,0 +1,73 @@
+{
+  "name": "@cvplus/auth",
+  "version": "1.0.0",
+  "description": "Authentication and authorization module for CVPlus platform",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "src/**/*"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist",
+    "validate-deps": "./scripts/validate-dependencies.sh",
+    "test-integration": "./scripts/test-core-integration.sh",
+    "precommit": "npm run validate-deps && npm run type-check && npm run lint",
+    "validate-dependencies": "./scripts/validate-dependencies.sh"
+  },
+  "dependencies": {
+    "@cvplus/core": "file:../core",
+    "@cvplus/logging": "file:../logging",
+    "firebase": "^12.2.1",
+    "firebase-admin": "^12.1.0",
+    "lucide-react": "^0.542.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.0",
+    "@testing-library/react": "^14.3.0",
+    "@types/jest": "^29.5.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "rimraf": "^5.0.0",
+    "ts-jest": "^29.1.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
+  },
+  "keywords": [
+    "authentication",
+    "authorization",
+    "firebase",
+    "google-oauth",
+    "react",
+    "typescript",
+    "cvplus"
+  ],
+  "author": "Gil Klainert",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gklainert/cvplus.git",
+    "directory": "packages/auth"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

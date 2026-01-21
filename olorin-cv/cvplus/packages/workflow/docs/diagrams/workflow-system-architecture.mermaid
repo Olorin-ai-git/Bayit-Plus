@@ -1,0 +1,169 @@
+```mermaid
+graph TB
+    %% CVPlus Workflow System Architecture
+    %% Author: Gil Klainert
+    %% Date: 2025-08-29
+    
+    subgraph "CVPlus Workflow System"
+        direction TB
+        
+        %% Job Management Layer
+        subgraph "Job Management Layer"
+            JO[Job Orchestrator]
+            JM[Job Manager]
+            JP[Job Processor]
+            JQ[Job Queue]
+            JS[Job Scheduler]
+        end
+        
+        %% Feature Orchestration Layer  
+        subgraph "Feature Orchestration Layer"
+            FO[Feature Orchestrator]
+            FC[Feature Coordinator]
+            FS[Feature Skip Manager]
+            FI[Feature Injector]
+            FT[Feature Tracker]
+        end
+        
+        %% Template Management Layer
+        subgraph "Template Management Layer"
+            TM[Template Manager]
+            TC[Template Customizer]
+            TP[Template Processor]
+            PH[Placeholder Manager]
+            TV[Template Validator]
+        end
+        
+        %% Certification System Layer
+        subgraph "Certification System Layer"
+            CB[Certification Badge Manager]
+            BV[Badge Verifier]
+            BI[Badge Issuer]
+            BR[Badge Reporter]
+            BS[Badge Security]
+        end
+        
+        %% Monitoring & Analytics Layer
+        subgraph "Monitoring & Analytics Layer"
+            WM[Workflow Monitor]
+            JA[Job Analytics]
+            PM[Performance Monitor]
+            AM[Alert Manager]
+            RM[Report Manager]
+        end
+    end
+    
+    %% External Dependencies
+    subgraph "CVPlus Core Services"
+        CORE[Core Module]
+        AUTH[Auth Service]
+        I18N[I18n Service]
+        CVP[CV Processing]
+        MULTI[Multimedia Service]
+        PREM[Premium Service]
+        REC[Recommendations]
+        PROF[Public Profiles]
+        ANA[Analytics Service]
+    end
+    
+    subgraph "Firebase Infrastructure"
+        FB[Firebase Functions]
+        FS_DB[Firestore Database]
+        FG[Firebase Storage]
+        FA[Firebase Auth]
+    end
+    
+    subgraph "External Services"
+        API[External APIs]
+        QUEUE[Message Queues]
+        NOTIF[Notification Services]
+        CACHE[Caching Layer]
+    end
+    
+    %% Job Management Connections
+    JO --> JM
+    JM --> JP
+    JP --> JQ
+    JS --> JQ
+    JM --> JS
+    
+    %% Feature Orchestration Connections
+    FO --> FC
+    FC --> FS
+    FC --> FI
+    FT --> FC
+    FO --> FT
+    
+    %% Template Management Connections
+    TM --> TC
+    TC --> TP
+    TP --> PH
+    TV --> TM
+    TM --> TV
+    
+    %% Certification Connections
+    CB --> BV
+    BV --> BI
+    BI --> BR
+    BS --> CB
+    CB --> BS
+    
+    %% Monitoring Connections
+    WM --> JA
+    JA --> PM
+    PM --> AM
+    RM --> WM
+    WM --> RM
+    
+    %% Cross-Layer Connections
+    JO --> FO
+    FO --> TM
+    TM --> CB
+    CB --> WM
+    
+    %% External Dependencies
+    JO --> CORE
+    JO --> AUTH
+    FO --> CVP
+    FO --> MULTI
+    TM --> PREM
+    CB --> AUTH
+    WM --> ANA
+    
+    %% Firebase Connections
+    JM --> FB
+    JP --> FS_DB
+    TC --> FG
+    CB --> FA
+    WM --> FS_DB
+    
+    %% External Service Connections
+    JS --> QUEUE
+    AM --> NOTIF
+    PM --> CACHE
+    BR --> API
+    
+    %% Data Flow Indicators
+    JQ -.->|Job Processing| JP
+    FI -.->|Feature Injection| JP
+    TP -.->|Template Processing| JP
+    BI -.->|Badge Issuance| CB
+    
+    classDef jobLayer fill:#e1f5fe
+    classDef featureLayer fill:#f3e5f5
+    classDef templateLayer fill:#e8f5e8
+    classDef certLayer fill:#fff3e0
+    classDef monitorLayer fill:#fce4ec
+    classDef coreService fill:#f0f4c3
+    classDef firebase fill:#ffebee
+    classDef external fill:#e3f2fd
+    
+    class JO,JM,JP,JQ,JS jobLayer
+    class FO,FC,FS,FI,FT featureLayer
+    class TM,TC,TP,PH,TV templateLayer
+    class CB,BV,BI,BR,BS certLayer
+    class WM,JA,PM,AM,RM monitorLayer
+    class CORE,AUTH,I18N,CVP,MULTI,PREM,REC,PROF,ANA coreService
+    class FB,FS_DB,FG,FA firebase
+    class API,QUEUE,NOTIF,CACHE external
+```
