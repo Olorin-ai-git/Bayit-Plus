@@ -19,10 +19,11 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
     "clean": "rm -rf dist"
   },
   "peerDependencies": {
-    "axios": ">=1.0.0"
+    "axios": "^1.7.0"
   },
   "devDependencies": {
     "axios": "^1.7.0",

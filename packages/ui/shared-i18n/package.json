@@ -1,0 +1,58 @@
+{
+  "name": "@olorin/shared-i18n",
+  "version": "1.0.0",
+  "description": "Olorin.ai Unified Internationalization - Multilingual support across all platforms",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./web": {
+      "types": "./dist/web.d.ts",
+      "import": "./dist/web.mjs",
+      "require": "./dist/web.js"
+    },
+    "./native": {
+      "types": "./dist/native.d.ts",
+      "import": "./dist/native.mjs",
+      "require": "./dist/native.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.mjs",
+      "require": "./dist/types.js"
+    },
+    "./protocols": {
+      "types": "./dist/protocols.d.ts",
+      "import": "./dist/protocols.mjs",
+      "require": "./dist/protocols.js"
+    }
+  },
+  "files": [
+    "dist",
+    "locales"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint *.ts --ext .ts,.tsx",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "i18next": "^25.8.0",
+    "react-i18next": "^16.5.3"
+  },
+  "devDependencies": {
+    "i18next": "^25.8.0",
+    "react-i18next": "^16.5.3",
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.0"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
