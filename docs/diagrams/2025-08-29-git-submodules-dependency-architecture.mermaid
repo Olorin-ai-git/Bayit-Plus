@@ -1,0 +1,98 @@
+graph TB
+    subgraph "Parent Repository (CVPlus)"
+        PM[Package Manager<br/>npm workspaces]
+        BO[Build Orchestrator]
+        VS[Version Sync]
+        CI[CI/CD Pipeline]
+    end
+
+    subgraph "Tier 1 - Foundation"
+        Core[core<br/>No dependencies]
+    end
+
+    subgraph "Tier 2 - Base Services"
+        Auth[auth<br/>Depends: core]
+        I18n[i18n<br/>Depends: core]
+    end
+
+    subgraph "Tier 3 - Domain Services"
+        CV[cv-processing<br/>Depends: core, auth]
+        Multi[multimedia<br/>Depends: core]
+        Premium[premium<br/>Depends: core, auth]
+        Rec[recommendations<br/>Depends: core]
+    end
+
+    subgraph "Tier 4 - Composite Services"
+        Pub[public-profiles<br/>Depends: core, auth, multimedia]
+        Analytics[analytics<br/>Depends: core, auth]
+        Admin[admin<br/>Depends: core, auth]
+    end
+
+    subgraph "Development Flow"
+        Local[Local Development<br/>file: protocol]
+        Prod[Production<br/>npm registry]
+    end
+
+    subgraph "Deployment Strategy"
+        ID[Independent Deploy<br/>Per submodule]
+        CD[Coordinated Deploy<br/>All packages]
+    end
+
+    %% Build Dependencies
+    PM --> BO
+    BO --> Core
+    Core --> Auth
+    Core --> I18n
+    Auth --> CV
+    Core --> CV
+    Core --> Multi
+    Core --> Premium
+    Auth --> Premium
+    Core --> Rec
+    Core --> Pub
+    Auth --> Pub
+    Multi --> Pub
+    Core --> Analytics
+    Auth --> Analytics
+    Core --> Admin
+    Auth --> Admin
+
+    %% Version Management
+    VS --> Core
+    VS --> Auth
+    VS --> I18n
+    VS --> CV
+    VS --> Multi
+    VS --> Premium
+    VS --> Rec
+    VS --> Pub
+    VS --> Analytics
+    VS --> Admin
+
+    %% CI/CD Flow
+    CI --> BO
+    BO --> ID
+    BO --> CD
+
+    %% Development Modes
+    Local --> PM
+    Prod --> CI
+
+    style Core fill:#e1f5fe
+    style Auth fill:#fff3e0
+    style CV fill:#f3e5f5
+    style PM fill:#c8e6c9
+    style BO fill:#ffccbc
+    style CI fill:#d7ccc8
+
+    classDef tier1 fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef tier2 fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef tier3 fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef tier4 fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef orchestrator fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+
+    class Core tier1
+    class Auth,I18n tier2
+    class CV,Multi,Premium,Rec tier3
+    class Pub,Analytics,Admin tier4
+    class PM,BO,VS,CI orchestrator

@@ -1,0 +1,80 @@
+flowchart TD
+    %% New User Flow
+    subgraph "New User Journey"
+        A[Landing Page] --> B[Sign in with Google]
+        B --> C[Google OAuth Consent Screen]
+        C --> D{Calendar Permissions?}
+        D -->|Accept All| E[Full Profile Created]
+        D -->|Basic Only| F[Limited Profile Created]
+        E --> G[Onboarding: Calendar Benefits]
+        F --> H[Optional: Enable Calendar Later]
+        G --> I[Upload CV]
+        H --> I
+        I --> J[CV Processing & Analysis]
+        J --> K[Results with Calendar Integration]
+        K --> L[Automatic Calendar Events]
+    end
+
+    %% Existing User Migration Flow
+    subgraph "Existing User Migration"
+        M[Returning Anonymous User] --> N[Migration Detection]
+        N --> O[Data Backup Creation]
+        O --> P[Migration Notice Display]
+        P --> Q[Benefits Explanation]
+        Q --> R[Sign in with Google Required]
+        R --> S[Google OAuth with Migration Context]
+        S --> T[Data Migration Process]
+        T --> U[Verification & Confirmation]
+        U --> V[Access Restored with Calendar]
+    end
+
+    %% Permission Management Flow
+    subgraph "Permission Management"
+        W[User Profile] --> X[Calendar Settings]
+        X --> Y{Current Status?}
+        Y -->|Enabled| Z[Manage Permissions]
+        Y -->|Disabled| AA[Enable Calendar Features]
+        Z --> BB[Revoke/Update Permissions]
+        AA --> CC[Request Calendar Access]
+        CC --> DD[Google OAuth Consent]
+        DD --> EE[Permission Granted]
+        BB --> FF[Re-authentication Required]
+        FF --> GG[Google OAuth Consent]
+    end
+
+    %% Error Handling Flow
+    subgraph "Error Handling"
+        HH[Authentication Error] --> II{Error Type?}
+        II -->|Network| JJ[Retry with Backoff]
+        II -->|Permission Denied| KK[Graceful Degradation]
+        II -->|Invalid Token| LL[Re-authentication]
+        JJ --> MM[Success/Failure]
+        KK --> NN[Limited Features Available]
+        LL --> OO[Fresh OAuth Flow]
+    end
+
+    %% Calendar Integration Flow
+    subgraph "Calendar Integration"
+        PP[CV Generated] --> QQ{Calendar Enabled?}
+        QQ -->|Yes| RR[Create Career Events]
+        QQ -->|No| SS[Offer Calendar Setup]
+        RR --> TT[Google Calendar API]
+        TT --> UU[Events Created Successfully]
+        SS --> VV[Show Calendar Benefits]
+        VV --> WW[Optional: Enable Now]
+        WW --> XX[OAuth Permission Request]
+    end
+
+    %% Styling
+    style A fill:#e3f2fd
+    style M fill:#fff3e0
+    style W fill:#f3e5f5
+    style HH fill:#ffebee
+    style PP fill:#e8f5e8
+
+    %% Flow connections
+    E -.-> G
+    F -.-> H
+    V -.-> I
+    UU -.-> L
+    XX -.-> RR

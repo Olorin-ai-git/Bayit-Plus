@@ -1,0 +1,201 @@
+openapi: 3.0.3
+info:
+  title: CVPlus External API Preservation Contract
+  description: Contract ensuring all existing Firebase Functions exports remain functional after migration
+  version: 4.1.0
+
+paths:
+  /api/cv/upload:
+    post:
+      summary: Upload CV for processing
+      description: Upload CV file and select features for processing (T041)
+      operationId: uploadCV
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                features:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: CV uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobId:
+                    type: string
+                  status:
+                    type: string
+
+  /api/cv/status/{jobId}:
+    get:
+      summary: Get CV processing status
+      description: Monitor CV processing progress (T043)
+      operationId: getCVStatus
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Status retrieved successfully
+
+  /api/multimedia/podcast:
+    post:
+      summary: Generate AI podcast
+      description: Create AI-powered podcast from CV content (T045)
+      operationId: generatePodcast
+      responses:
+        '200':
+          description: Podcast generation started
+
+  /api/profile/create:
+    post:
+      summary: Create public profile
+      description: Generate shareable public profile (T047)
+      operationId: createPublicProfile
+      responses:
+        '200':
+          description: Profile created successfully
+
+components:
+  schemas:
+    PreservationContract:
+      type: object
+      description: Contract ensuring no breaking changes to existing API
+      properties:
+        totalFunctions:
+          type: integer
+          example: 166
+          description: Total number of Firebase Functions that must remain exported
+        submoduleFunctions:
+          type: integer
+          example: 162
+          description: Functions imported from submodules
+        rootFunctions:
+          type: integer
+          example: 4
+          description: Legitimate orchestration functions remaining in root
+        migrationValidation:
+          type: object
+          properties:
+            allExportsPresent:
+              type: boolean
+              description: All existing function exports must be present
+            importsResolved:
+              type: boolean
+              description: All @cvplus/* imports must resolve correctly
+            typeScriptCompiles:
+              type: boolean
+              description: TypeScript compilation must succeed
+            testsPass:
+              type: boolean
+              description: All existing tests must continue to pass
+            deploymentSucceeds:
+              type: boolean
+              description: Firebase deployment must complete successfully
+            apiResponsesUnchanged:
+              type: boolean
+              description: API response formats must remain identical
+
+    SubmoduleMapping:
+      type: object
+      description: Mapping of functions to their submodule sources
+      properties:
+        cvProcessing:
+          type: array
+          items:
+            type: string
+          example: ["processCV", "analyzeCV", "generateCV"]
+        multimedia:
+          type: array
+          items:
+            type: string
+          example: ["generateVideo", "generatePodcast", "portfolioGallery"]
+        analytics:
+          type: array
+          items:
+            type: string
+          example: ["getAnalytics", "trackConversionEvent", "getBusinessIntelligenceReport"]
+        publicProfiles:
+          type: array
+          items:
+            type: string
+          example: ["createPublicProfile", "generateWebPortal", "submitContactForm"]
+        auth:
+          type: array
+          items:
+            type: string
+          example: ["authenticateUser", "validateSession", "updateUserProfile"]
+        premium:
+          type: array
+          items:
+            type: string
+          example: ["getOptimizedPricing", "createEnterpriseAccount", "processSSOLogin"]
+        workflow:
+          type: array
+          items:
+            type: string
+          example: ["monitorJobs", "injectCompletedFeatures", "certificationBadges"]
+        admin:
+          type: array
+          items:
+            type: string
+          example: ["getUserStats", "getSystemHealth", "manageUsers"]
+        recommendations:
+          type: array
+          items:
+            type: string
+          example: ["getRecommendations", "applyImprovements", "previewImprovement"]
+        payments:
+          type: array
+          items:
+            type: string
+          example: ["createCheckoutSession", "handleStripeWebhook", "getUserSubscription"]
+        i18n:
+          type: array
+          items:
+            type: string
+          example: ["translateCV", "translateDynamic", "updateUserLanguage"]
+
+    MigrationContract:
+      type: object
+      description: Contract defining migration requirements and constraints
+      properties:
+        zeroBreakingChanges:
+          type: boolean
+          description: No external API changes allowed
+        preserveGitHistory:
+          type: boolean
+          description: Git history must be preserved in submodules
+        maintainPerformance:
+          type: boolean
+          description: API response times must not degrade
+        atomicMigration:
+          type: boolean
+          description: Each migration batch must be atomic (all-or-nothing)
+        rollbackCapability:
+          type: boolean
+          description: Must be able to rollback any migration step
+        validationRequired:
+          type: boolean
+          description: Full validation required before each migration step
+      required:
+        - zeroBreakingChanges
+        - preserveGitHistory
+        - maintainPerformance
+        - atomicMigration
+        - rollbackCapability
+        - validationRequired

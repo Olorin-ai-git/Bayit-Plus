@@ -1,0 +1,142 @@
+graph TB
+    %% CVPlus Video Generation Monitoring & Analytics System Architecture
+    %% Author: Gil Klainert
+    %% Created: 2025-08-21
+
+    subgraph "Video Generation Pipeline"
+        VGS[Enhanced Video Generation Service]
+        HeyGen[HeyGen Provider]
+        RunwayML[RunwayML Provider]
+        DID[D-ID Provider]
+        PSE[Provider Selection Engine]
+        ERE[Error Recovery Engine]
+        
+        VGS --> PSE
+        PSE --> HeyGen
+        PSE --> RunwayML
+        PSE --> DID
+        VGS --> ERE
+    end
+
+    subgraph "Monitoring & Analytics Core"
+        PM[Performance Monitor Service]
+        AE[Analytics Engine Service]
+        AM[Alert Manager Service]
+        MD[Metrics Dashboard Function]
+        
+        PM --> AE
+        AE --> AM
+        AE --> MD
+    end
+
+    subgraph "Data Collection Layer"
+        RTM[Real-time Metrics Collector]
+        QA[Quality Analyzer]
+        BIT[Business Impact Tracker]
+        UBA[User Behavior Analyzer]
+        
+        RTM --> PM
+        QA --> PM
+        BIT --> AE
+        UBA --> AE
+    end
+
+    subgraph "Storage & Processing"
+        FS[(Firestore)]
+        BQ[(BigQuery)]
+        FR[(Firebase Realtime)]
+        CM[Cloud Monitoring]
+        
+        PM --> FS
+        AE --> BQ
+        AM --> FR
+        PM --> CM
+    end
+
+    subgraph "Alert & Notification System"
+        TA[Threshold Analyzer]
+        NP[Notification Pipeline]
+        ES[Escalation System]
+        AR[Automated Response]
+        
+        AM --> TA
+        TA --> NP
+        TA --> ES
+        ES --> AR
+    end
+
+    subgraph "Dashboard & Reporting"
+        RD[Real-time Dashboard]
+        PD[Performance Dashboard]
+        QD[Quality Dashboard]
+        BD[Business Dashboard]
+        
+        MD --> RD
+        MD --> PD
+        MD --> QD
+        MD --> BD
+    end
+
+    subgraph "External Integrations"
+        Email[Email Notifications]
+        Slack[Slack Alerts]
+        SMS[SMS Alerts]
+        GA[Google Analytics]
+        
+        NP --> Email
+        NP --> Slack
+        NP --> SMS
+        UBA --> GA
+    end
+
+    %% Data Flow Connections
+    VGS -.->|Performance Data| RTM
+    HeyGen -.->|Provider Metrics| RTM
+    RunwayML -.->|Provider Metrics| RTM
+    DID -.->|Provider Metrics| RTM
+    
+    VGS -.->|Quality Data| QA
+    VGS -.->|Business Data| BIT
+    VGS -.->|User Data| UBA
+
+    %% Real-time Monitoring Flow
+    RTM -->|Live Metrics| PM
+    PM -->|Aggregated Data| AE
+    AE -->|Analysis Results| AM
+    AM -->|Alert Triggers| TA
+
+    %% Quality Monitoring Flow
+    QA -->|Quality Scores| PM
+    PM -->|Quality Trends| AE
+    AE -->|Quality Insights| QD
+
+    %% Business Intelligence Flow
+    BIT -->|Business Metrics| AE
+    UBA -->|User Analytics| AE
+    AE -->|BI Data| BD
+    AE -->|Trends| BQ
+
+    %% Alert Response Flow
+    TA -->|Critical Alerts| ES
+    ES -->|Escalation| AR
+    AR -->|Auto-fixes| VGS
+
+    %% Feedback Loop
+    AR -.->|Performance Impact| RTM
+    BD -.->|Business Insights| PSE
+    QD -.->|Quality Feedback| VGS
+
+    %% Styling
+    classDef service fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef monitor fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef storage fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef alert fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef dashboard fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    classDef external fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+
+    class VGS,PSE,ERE service
+    class PM,AE,AM,RTM,QA,BIT,UBA monitor
+    class FS,BQ,FR,CM storage
+    class TA,NP,ES,AR alert
+    class MD,RD,PD,QD,BD dashboard
+    class Email,Slack,SMS,GA external

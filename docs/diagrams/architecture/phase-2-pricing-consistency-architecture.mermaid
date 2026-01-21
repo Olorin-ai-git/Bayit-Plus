@@ -1,0 +1,105 @@
+graph TB
+    subgraph "Centralized Pricing System Architecture"
+        direction TB
+        
+        subgraph "Phase 1: Completed Configuration Layer"
+            PC["🏗️ pricing.ts<br/>Centralized Config"]
+            PC --> TC["📊 TierConfig<br/>FREE & PREMIUM"]
+            PC --> FC["🎯 FeatureConfig<br/>Feature Registry"]
+            PC --> SC["💳 StripeConfig<br/>Environment Price IDs"]
+            PC --> UC["🛠️ Utility Functions<br/>formatPrice(), getTierConfig()"]
+        end
+        
+        subgraph "Phase 2: Component Integration Layer"
+            direction TB
+            
+            subgraph "Updated Components"
+                PP["📄 PricingPage.tsx<br/>❌ price={5}<br/>✅ getTierConfig()"]
+                SC_COMP["💰 StripeCheckoutSDK.tsx<br/>❌ '$49.00'<br/>✅ formatPrice()"]
+                PC_COMP["🎴 PricingCard.tsx<br/>✅ Dynamic Props<br/>(Verify Only)"]
+                SS["🔧 stripeService.ts<br/>❌ Hardcoded Price ID<br/>✅ getStripePriceId()"]
+            end
+            
+            subgraph "Data Flow"
+                PP --> PC_COMP
+                PC_COMP --> SC_COMP
+                SC_COMP --> SS
+            end
+        end
+        
+        subgraph "Integration Points"
+            direction LR
+            ENV["🌍 Environment<br/>dev/staging/prod"]
+            STRIPE["💳 Stripe API<br/>Price IDs"]
+            USER["👤 User Interface<br/>Consistent Display"]
+        end
+        
+        %% Connections from Config to Components
+        TC --> PP
+        UC --> PP
+        UC --> SC_COMP
+        SC --> SS
+        
+        %% Environment Integration
+        ENV --> SC
+        SS --> STRIPE
+        PC_COMP --> USER
+        
+        %% Error Handling
+        UC --> EH["⚠️ Error Handling<br/>Validation & Fallbacks"]
+        EH --> PP
+        EH --> SC_COMP
+        EH --> SS
+    end
+    
+    subgraph "Implementation Steps"
+        direction TB
+        STEP1["1️⃣ Update PricingPage.tsx<br/>Import config, replace hardcoded values"]
+        STEP2["2️⃣ Update StripeCheckoutSDK.tsx<br/>Dynamic price display"]
+        STEP3["3️⃣ Update stripeService.ts<br/>Environment-specific price IDs"]
+        STEP4["4️⃣ Verify PricingCard.tsx<br/>Ensure compatibility"]
+        
+        STEP1 --> STEP2
+        STEP2 --> STEP3
+        STEP3 --> STEP4
+    end
+    
+    subgraph "Testing & Validation"
+        direction TB
+        TEST1["🧪 Price Consistency<br/>All components show $49"]
+        TEST2["🧪 Environment Config<br/>Correct price IDs per env"]
+        TEST3["🧪 Feature Lists<br/>Match centralized config"]
+        TEST4["🧪 Payment Flow<br/>End-to-end testing"]
+        
+        TEST1 --> TEST2
+        TEST2 --> TEST3
+        TEST3 --> TEST4
+    end
+    
+    %% Success Criteria
+    subgraph "Success Metrics"
+        ZERO["🎯 Zero Hardcoded Prices"]
+        SINGLE["🎯 Single Source of Truth"]
+        TYPE["🎯 Type Safety Maintained"]
+        PERF["🎯 Performance Optimized"]
+    end
+    
+    style PC fill:#e1f5fe
+    style PP fill:#fff3e0
+    style SC_COMP fill:#fff3e0
+    style SS fill:#fff3e0
+    style PC_COMP fill:#f3e5f5
+    style ZERO fill:#e8f5e8
+    style SINGLE fill:#e8f5e8
+    style TYPE fill:#e8f5e8
+    style PERF fill:#e8f5e8
+    
+    classDef updated fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    classDef verified fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    classDef config fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px
+    classDef success fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    
+    class PP,SC_COMP,SS updated
+    class PC_COMP verified
+    class PC config
+    class ZERO,SINGLE,TYPE,PERF success

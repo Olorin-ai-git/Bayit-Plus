@@ -1,0 +1,188 @@
+graph TB
+    %% CVPlus Git Submodules & Individual Firebase Deployments Architecture
+    %% Date: 2025-08-27
+    %% Author: Gil Klainert
+
+    subgraph "GitHub Organization"
+        MAIN[cvplus-main<br/>Main Repository]
+        
+        subgraph "Module Repositories"
+            CORE_REPO[cvplus-core<br/>Independent Repo]
+            AUTH_REPO[cvplus-auth<br/>Independent Repo]  
+            MULTI_REPO[cvplus-multimedia<br/>Independent Repo]
+            PREM_REPO[cvplus-premium<br/>Independent Repo]
+            PROF_REPO[cvplus-public-profiles<br/>Independent Repo]
+            REC_REPO[cvplus-recommendations<br/>Independent Repo]
+        end
+    end
+
+    subgraph "Git Submodule Structure"
+        MAIN --> |git submodule| CORE_REPO
+        MAIN --> |git submodule| AUTH_REPO
+        MAIN --> |git submodule| MULTI_REPO
+        MAIN --> |git submodule| PREM_REPO
+        MAIN --> |git submodule| PROF_REPO
+        MAIN --> |git submodule| REC_REPO
+    end
+
+    subgraph "Firebase Projects Architecture"
+        subgraph "Core Infrastructure"
+            CORE_FB[cvplus-core-prod<br/>Core Module Firebase]
+            CORE_STAGE[cvplus-core-staging<br/>Core Staging]
+        end
+        
+        subgraph "Authentication Services"
+            AUTH_FB[cvplus-auth-prod<br/>Auth Module Firebase]
+            AUTH_STAGE[cvplus-auth-staging<br/>Auth Staging]
+        end
+        
+        subgraph "Media Processing"
+            MULTI_FB[cvplus-multimedia-prod<br/>Multimedia Firebase]
+            MULTI_STAGE[cvplus-multimedia-staging<br/>Multimedia Staging]
+        end
+        
+        subgraph "Business Logic"
+            PREM_FB[cvplus-premium-prod<br/>Premium Firebase]
+            PREM_STAGE[cvplus-premium-staging<br/>Premium Staging]
+            
+            REC_FB[cvplus-recommendations-prod<br/>Recommendations Firebase]
+            REC_STAGE[cvplus-recommendations-staging<br/>Recommendations Staging]
+        end
+        
+        subgraph "Public Services"
+            PROF_FB[cvplus-profiles-prod<br/>Profiles Firebase]
+            PROF_STAGE[cvplus-profiles-staging<br/>Profiles Staging]
+        end
+        
+        subgraph "Integration Testing"
+            INT_FB[cvplus-integration-staging<br/>Integration Tests]
+        end
+    end
+
+    subgraph "Module to Firebase Mapping"
+        CORE_REPO -.->|deploys to| CORE_FB
+        CORE_REPO -.->|staging| CORE_STAGE
+        
+        AUTH_REPO -.->|deploys to| AUTH_FB
+        AUTH_REPO -.->|staging| AUTH_STAGE
+        
+        MULTI_REPO -.->|deploys to| MULTI_FB
+        MULTI_REPO -.->|staging| MULTI_STAGE
+        
+        PREM_REPO -.->|deploys to| PREM_FB
+        PREM_REPO -.->|staging| PREM_STAGE
+        
+        PROF_REPO -.->|deploys to| PROF_FB
+        PROF_REPO -.->|staging| PROF_STAGE
+        
+        REC_REPO -.->|deploys to| REC_FB
+        REC_REPO -.->|staging| REC_STAGE
+    end
+
+    subgraph "CI/CD Pipeline Architecture"
+        subgraph "Module-Specific Pipelines"
+            CORE_CI[Core CI/CD<br/>TypeScript, Tests, Deploy]
+            AUTH_CI[Auth CI/CD<br/>Security, Tests, Deploy]
+            MULTI_CI[Multimedia CI/CD<br/>Media Processing, Deploy]
+            PREM_CI[Premium CI/CD<br/>Stripe, Tests, Deploy]
+            PROF_CI[Profiles CI/CD<br/>Portal Generation, Deploy]
+            REC_CI[Recommendations CI/CD<br/>AI Integration, Deploy]
+        end
+        
+        subgraph "Integration Pipeline"
+            INT_CI[Integration CI/CD<br/>Cross-Module Testing]
+            MAIN_CI[Main App CI/CD<br/>Orchestration Deploy]
+        end
+    end
+
+    subgraph "Inter-Module Communication"
+        subgraph "Service Mesh"
+            API_GW[API Gateway<br/>Module Routing]
+            SERVICE_AUTH[Service Account<br/>Authentication]
+            HEALTH_MON[Health Monitoring<br/>Module Status]
+        end
+        
+        subgraph "Data Flow"
+            EVENT_BUS[Event Bus<br/>Module Events]
+            CACHE_LAYER[Cache Layer<br/>Performance]
+            LOG_AGG[Log Aggregation<br/>Monitoring]
+        end
+    end
+
+    subgraph "Deployment Strategy"
+        subgraph "Environment Promotion"
+            DEV[Development<br/>Feature Branches]
+            STAGING[Staging<br/>Main Branch]
+            PROD[Production<br/>Release Tags]
+        end
+        
+        subgraph "Deployment Modes"
+            BLUE_GREEN[Blue-Green<br/>Deployment]
+            CANARY[Canary<br/>Deployment]
+            ROLLBACK[Automated<br/>Rollback]
+        end
+    end
+
+    %% Module Dependencies
+    AUTH_FB --> CORE_FB
+    MULTI_FB --> CORE_FB
+    MULTI_FB --> AUTH_FB
+    PREM_FB --> CORE_FB
+    PREM_FB --> AUTH_FB
+    REC_FB --> CORE_FB
+    REC_FB --> AUTH_FB
+    REC_FB --> MULTI_FB
+    PROF_FB --> CORE_FB
+    PROF_FB --> AUTH_FB
+    PROF_FB --> MULTI_FB
+    PROF_FB --> REC_FB
+
+    %% CI/CD Flows
+    CORE_REPO --> CORE_CI
+    AUTH_REPO --> AUTH_CI
+    MULTI_REPO --> MULTI_CI
+    PREM_REPO --> PREM_CI
+    PROF_REPO --> PROF_CI
+    REC_REPO --> REC_CI
+
+    CORE_CI --> CORE_FB
+    AUTH_CI --> AUTH_FB
+    MULTI_CI --> MULTI_FB
+    PREM_CI --> PREM_FB
+    PROF_CI --> PROF_FB
+    REC_CI --> REC_FB
+
+    %% Integration Testing
+    MAIN --> INT_CI
+    INT_CI --> INT_FB
+
+    %% Service Communication
+    CORE_FB --> API_GW
+    AUTH_FB --> API_GW
+    MULTI_FB --> API_GW
+    PREM_FB --> API_GW
+    REC_FB --> API_GW
+    PROF_FB --> API_GW
+
+    API_GW --> SERVICE_AUTH
+    API_GW --> HEALTH_MON
+    API_GW --> EVENT_BUS
+
+    %% Deployment Flow
+    DEV --> STAGING --> PROD
+    STAGING --> BLUE_GREEN
+    STAGING --> CANARY
+    PROD --> ROLLBACK
+
+    %% Style Classes
+    classDef repo fill:#e1f5fe
+    classDef firebase fill:#ff8a65
+    classDef cicd fill:#81c784
+    classDef communication fill:#ffb74d
+    classDef deployment fill:#ba68c8
+
+    class MAIN,CORE_REPO,AUTH_REPO,MULTI_REPO,PREM_REPO,PROF_REPO,REC_REPO repo
+    class CORE_FB,AUTH_FB,MULTI_FB,PREM_FB,PROF_FB,REC_FB,CORE_STAGE,AUTH_STAGE,MULTI_STAGE,PREM_STAGE,PROF_STAGE,REC_STAGE,INT_FB firebase
+    class CORE_CI,AUTH_CI,MULTI_CI,PREM_CI,PROF_CI,REC_CI,INT_CI,MAIN_CI cicd
+    class API_GW,SERVICE_AUTH,HEALTH_MON,EVENT_BUS,CACHE_LAYER,LOG_AGG communication
+    class DEV,STAGING,PROD,BLUE_GREEN,CANARY,ROLLBACK deployment

@@ -1,0 +1,148 @@
+graph TB
+    subgraph "Backup Systems Architecture"
+        subgraph "Service State Backup System"
+            SSB[(Service State Backups)]
+            MC[(Migration Checkpoints)]
+            RT[(Rollback Triggers)]
+            PB[(Performance Baselines)]
+            
+            subgraph "Backup Schema"
+                BS[ServiceStateBackup:<br/>- serviceId<br/>- timestamp<br/>- version<br/>- state (circuit breakers, cache, orchestration)<br/>- metadata (backup reason, migration phase)]
+            end
+        end
+        
+        subgraph "Data Protection System"
+            subgraph "CRITICAL Collections (Real-time)"
+                C1[(user_cvs)]
+                C2[(recommendations)]
+                C3[(user_subscriptions)]
+                C4[(processing_jobs)]
+            end
+            
+            subgraph "HIGH Collections (Hourly)"
+                H1[(user_profiles)]
+                H2[(cache_entries)]
+                H3[(analytics_events)]
+            end
+            
+            subgraph "MEDIUM Collections (Daily)"
+                M1[(system_config)]
+                M2[(template_data)]
+                M3[(user_preferences)]
+            end
+        end
+        
+        subgraph "Zero-Downtime Migration"
+            subgraph "Traffic Shifting"
+                TS[Progressive Traffic Shifting:<br/>- Phase-based percentages<br/>- Service-specific routing<br/>- Automated rollback triggers<br/>- Validation criteria]
+            end
+            
+            subgraph "Feature Flags"
+                FF1[recommendations-package-enabled:<br/>- Rollout percentage<br/>- User segments<br/>- Rollback conditions]
+                FF2[circuit-breaker-package-enabled:<br/>- Fallback to legacy<br/>- Performance thresholds]
+                FF3[cache-package-enabled:<br/>- Dual write mode<br/>- Read preferences]
+            end
+        end
+    end
+    
+    subgraph "Migration Automation"
+        subgraph "Health Checks"
+            HC1[Performance Checks:<br/>- Response times<br/>- Error rates<br/>- Throughput]
+            HC2[Functionality Checks:<br/>- Recommendation generation<br/>- CV processing<br/>- User experience]
+            HC3[Integration Checks:<br/>- Firebase Functions<br/>- Firestore connectivity<br/>- External APIs]
+            HC4[Data Integrity Checks:<br/>- Data consistency<br/>- Cache coherence<br/>- State validation]
+        end
+        
+        subgraph "Rollback Automation"
+            RA1[Immediate Rollback:<br/>- Error rate > 5%<br/>- Data corruption<br/>- Critical failures]
+            RA2[Graceful Rollback:<br/>- Latency degradation<br/>- Performance issues<br/>- User impact]
+            RA3[Manual Rollback:<br/>- Business decisions<br/>- Planned maintenance<br/>- Testing scenarios]
+        end
+    end
+    
+    subgraph "Emergency Recovery"
+        subgraph "Recovery Levels"
+            L1[Level 1: Service Circuit Breaker<br/>< 30 seconds]
+            L2[Level 2: Phase Rollback<br/>< 2 minutes]
+            L3[Level 3: Complete Migration Rollback<br/>< 5 minutes]
+            L4[Level 4: Disaster Recovery<br/>< 15 minutes]
+        end
+        
+        subgraph "Recovery Actions"
+            A1[Traffic Rerouting]
+            A2[State Restoration]
+            A3[Data Recovery]
+            A4[Service Isolation]
+        end
+    end
+    
+    subgraph "Monitoring & Alerting"
+        subgraph "Performance Guardrails"
+            PG1[Response Time Monitoring:<br/>- Baseline comparison<br/>- Warning/Critical thresholds<br/>- Automated actions]
+            PG2[Error Rate Monitoring:<br/>- Real-time tracking<br/>- Threshold-based alerts<br/>- Rollback triggers]
+            PG3[Throughput Monitoring:<br/>- Capacity validation<br/>- Scaling triggers<br/>- Performance optimization]
+        end
+        
+        subgraph "Data Integrity Monitoring"
+            DI1[Cross-system Consistency]
+            DI2[Cache Coherence]
+            DI3[User Session Integrity]
+            DI4[Recommendation State Consistency]
+        end
+    end
+    
+    %% Backup Flow
+    SSB --> BS
+    MC --> BS
+    RT --> BS
+    PB --> BS
+    
+    %% Data Protection Flow
+    C1 --> SSB
+    C2 --> MC
+    C3 --> RT
+    C4 --> PB
+    
+    %% Migration Flow
+    TS --> FF1
+    TS --> FF2
+    TS --> FF3
+    
+    %% Health Check Flow
+    HC1 --> RA1
+    HC2 --> RA2
+    HC3 --> RA3
+    HC4 --> RA1
+    
+    %% Recovery Flow
+    RA1 --> L1
+    RA2 --> L2
+    RA3 --> L3
+    L4 --> A1
+    L4 --> A2
+    L4 --> A3
+    L4 --> A4
+    
+    %% Monitoring Flow
+    PG1 --> RA2
+    PG2 --> RA1
+    PG3 --> RA2
+    DI1 --> RA1
+    DI2 --> RA1
+    DI3 --> RA2
+    DI4 --> RA1
+    
+    style C1 fill:#ff6b6b
+    style C2 fill:#ff6b6b
+    style C3 fill:#ff6b6b
+    style C4 fill:#ff6b6b
+    style H1 fill:#ffa726
+    style H2 fill:#ffa726
+    style H3 fill:#ffa726
+    style M1 fill:#66bb6a
+    style M2 fill:#66bb6a
+    style M3 fill:#66bb6a
+    style L1 fill:#4fc3f7
+    style L2 fill:#29b6f6
+    style L3 fill:#0288d1
+    style L4 fill:#01579b

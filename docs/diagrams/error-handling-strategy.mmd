@@ -1,0 +1,82 @@
+graph TD
+    Error[Error Detected] --> Categorize[Categorize Error]
+    
+    Categorize --> Quota{Quota Exceeded?}
+    Categorize --> Build{Build Failure?}
+    Categorize --> Network{Network Issue?}
+    Categorize --> Auth{Auth Problem?}
+    Categorize --> Function{Function Error?}
+    Categorize --> Unknown{Unknown Error?}
+    
+    Quota --> QuotaStrategy[Quota Recovery Strategy]
+    QuotaStrategy --> QS1[Batch Deployment]
+    QuotaStrategy --> QS2[Add Delays]
+    QuotaStrategy --> QS3[Schedule Off-Peak]
+    QS1 --> QuotaRetry[Retry Deployment]
+    QS2 --> QuotaRetry
+    QS3 --> QuotaRetry
+    
+    Build --> BuildStrategy[Build Recovery Strategy]
+    BuildStrategy --> BS1[Clear npm Cache]
+    BuildStrategy --> BS2[Reinstall Dependencies]
+    BuildStrategy --> BS3[Fix TypeScript Errors]
+    BuildStrategy --> BS4[Bundle Optimization]
+    BS1 --> BuildRetry[Retry Build]
+    BS2 --> BuildRetry
+    BS3 --> BuildRetry
+    BS4 --> BuildRetry
+    
+    Network --> NetworkStrategy[Network Recovery Strategy]
+    NetworkStrategy --> NS1[Exponential Backoff]
+    NetworkStrategy --> NS2[Connection Validation]
+    NetworkStrategy --> NS3[Alternative Route]
+    NS1 --> NetworkRetry[Retry Connection]
+    NS2 --> NetworkRetry
+    NS3 --> NetworkRetry
+    
+    Auth --> AuthStrategy[Auth Recovery Strategy]
+    AuthStrategy --> AS1[Refresh Tokens]
+    AuthStrategy --> AS2[Service Account Fallback]
+    AuthStrategy --> AS3[Re-authenticate]
+    AS1 --> AuthRetry[Retry with New Auth]
+    AS2 --> AuthRetry
+    AS3 --> AuthRetry
+    
+    Function --> FunctionStrategy[Function Recovery Strategy]
+    FunctionStrategy --> FS1[Memory Optimization]
+    FunctionStrategy --> FS2[Timeout Adjustment]
+    FunctionStrategy --> FS3[Dependency Check]
+    FunctionStrategy --> FS4[Function Warming]
+    FS1 --> FunctionRetry[Retry Function Deploy]
+    FS2 --> FunctionRetry
+    FS3 --> FunctionRetry
+    FS4 --> FunctionRetry
+    
+    Unknown --> UnknownStrategy[Generic Recovery Strategy]
+    UnknownStrategy --> US1[Log Analysis]
+    UnknownStrategy --> US2[Manual Review]
+    UnknownStrategy --> US3[Escalation]
+    
+    QuotaRetry --> RetryCheck{Retry Successful?}
+    BuildRetry --> RetryCheck
+    NetworkRetry --> RetryCheck
+    AuthRetry --> RetryCheck
+    FunctionRetry --> RetryCheck
+    
+    RetryCheck -->|Yes| Success[Continue Deployment]
+    RetryCheck -->|No| RetryCount{Retries Remaining?}
+    
+    RetryCount -->|Yes| Categorize
+    RetryCount -->|No| Escalate[Escalate to Manual]
+    
+    US1 --> Escalate
+    US2 --> Escalate
+    US3 --> Escalate
+    
+    Escalate --> RollbackDecision{Rollback Required?}
+    RollbackDecision -->|Yes| Rollback[Execute Rollback]
+    RollbackDecision -->|No| ManualIntervention[Manual Intervention Required]
+    
+    style Success fill:#90EE90
+    style Rollback fill:#FFD700
+    style ManualIntervention fill:#FFB6C1

@@ -1,0 +1,47 @@
+{
+  "retryAttempts": 3,
+  "batchSize": 5,
+  "timeouts": {
+    "build": 600,
+    "deployment": 1800,
+    "validation": 300,
+    "healthCheck": 180
+  },
+  "quotaThresholds": {
+    "functions": 0.8,
+    "storage": 0.7,
+    "firestore": 0.6,
+    "hosting": 0.8
+  },
+  "delays": {
+    "betweenBatches": 30000,
+    "afterError": 15000,
+    "beforeRetry": [5000, 15000, 30000]
+  },
+  "validation": {
+    "skipNonCritical": true,
+    "requireAllHealthChecks": false,
+    "allowWarnings": true,
+    "skipTypeCheck": true
+  },
+  "reporting": {
+    "generateDetailedReport": true,
+    "generateSummaryReport": true,
+    "generateTextReport": true,
+    "includeMetrics": true,
+    "includeRecommendations": true
+  },
+  "deployment": {
+    "enableBatching": true,
+    "enableProgressReporting": true,
+    "enableErrorRecovery": true,
+    "enableQuotaManagement": true,
+    "forceDeploy": false,
+    "deploymentOrder": [
+      "firestore_rules",
+      "storage_rules", 
+      "functions",
+      "hosting"
+    ]
+  }
+}

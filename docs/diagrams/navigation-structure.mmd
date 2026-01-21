@@ -1,0 +1,83 @@
+graph TD
+    %% Current Navigation Structure
+    subgraph "Current Navigation System"
+        A1[Header Component<br/>📍 Logo + Title<br/>👤 User Menu<br/>📊 Step Indicator]
+        B1[Breadcrumb Component<br/>🏠 Home Icon<br/>➡️ Page Hierarchy<br/>🎯 Current Page]
+        C1[Step Counter<br/>Step X of 4<br/>❗ Inconsistent]
+    end
+    
+    %% Current Pages & Steps
+    subgraph "Current Step Mapping"
+        D1[HomePage<br/>Step: Not shown] --> E1[ProcessingPage<br/>Step 1 of 4<br/>📊 Processing CV]
+        E1 --> F1[CVAnalysisPage<br/>Step 2 of 4<br/>📋 Analysis Results]
+        F1 --> G1[CVPreviewPage<br/>Step 3 of 4<br/>🎨 Preview & Customize]
+        G1 --> H1[TemplatesPage<br/>Step 3 of 4<br/>❗ Same as Preview]
+        G1 --> I1[KeywordOptimization<br/>❗ No step shown]
+        G1 --> J1[ResultsPage<br/>Step 4 of 4<br/>✅ Final Results]
+    end
+    
+    %% Problems Identified
+    subgraph "Current Issues"
+        K1[❌ Step Inconsistency<br/>Shows 4 steps<br/>But has 5+ pages]
+        L1[❌ Templates Confusion<br/>Same step # as Preview]
+        M1[❌ Keywords Missing<br/>No step indication]
+        N1[❌ Mobile Navigation<br/>Limited optimization]
+    end
+    
+    %% Improved Navigation Structure
+    subgraph "Improved Navigation System"
+        A2[Enhanced Header<br/>📍 Smart Logo<br/>👤 Enhanced User Menu<br/>📊 Accurate Step Counter<br/>📱 Mobile Responsive]
+        B2[Smart Breadcrumbs<br/>🏠 Always-accessible Home<br/>➡️ Contextual Hierarchy<br/>🔄 Back Navigation<br/>💾 Save States]
+        C2[Progress Indicator<br/>Step X of 5<br/>✅ Accurate Counting<br/>📊 Visual Progress Bar]
+    end
+    
+    %% Improved Step Mapping
+    subgraph "Improved Step System"
+        D2[HomePage<br/>🎯 Getting Started<br/>📝 Enhanced Onboarding] --> E2[ProcessingPage<br/>Step 1 of 5<br/>📊 Processing CV<br/>⏱️ Real-time Updates]
+        E2 --> F2[CVAnalysisPage<br/>Step 2 of 5<br/>📋 Review Analysis<br/>❓ Contextual Help]
+        F2 --> G2[CVPreviewPage<br/>Step 3 of 5<br/>🎨 Customize CV<br/>📱 Mobile Optimized]
+        G2 --> H2[TemplatesPage<br/>Step 3a of 5<br/>🎨 Select Template<br/>👁️ Visual Previews]
+        G2 --> I2[KeywordOptimization<br/>Step 3b of 5<br/>🎯 ATS Optimization<br/>📊 Score Tracking]
+        G2 --> J2[FinalPreviewPage<br/>Step 4 of 5<br/>👁️ Final Review<br/>⚡ Quick Edits]
+        J2 --> K2[ResultsPage<br/>Step 5 of 5<br/>✅ Download & Share<br/>📊 Analytics Dashboard]
+    end
+    
+    %% Navigation Features
+    subgraph "Enhanced Features"
+        L2[💾 Save & Resume<br/>Session persistence<br/>Email recovery links]
+        M2[🔄 Smart Back Navigation<br/>Preserve user changes<br/>Contextual warnings]
+        N2[📱 Mobile-First Design<br/>Touch-optimized controls<br/>Swipe navigation]
+        O2[❓ Contextual Help<br/>Step-by-step guidance<br/>Progressive disclosure]
+        P2[🎯 Skip Options<br/>Smart defaults<br/>Quick paths]
+    end
+    
+    %% User Flow Options
+    subgraph "Flow Flexibility"
+        Q2[🚀 Quick Path<br/>Upload → Process → Results<br/>Skip customization]
+        R2[🎨 Full Customization<br/>All steps with previews<br/>Maximum control]
+        S2[💾 Resume Later<br/>Save at any point<br/>Email recovery]
+        T2[🔄 Iterate & Improve<br/>Go back and modify<br/>Preserve changes]
+    end
+    
+    %% Connections
+    A1 --> A2
+    B1 --> B2
+    C1 --> C2
+    
+    K1 --> D2
+    L1 --> H2
+    M1 --> I2
+    N1 --> N2
+    
+    %% Styling
+    classDef current fill:#ef4444,stroke:#dc2626,stroke-width:2px,color:#ffffff
+    classDef improved fill:#10b981,stroke:#059669,stroke-width:2px,color:#ffffff
+    classDef problem fill:#f97316,stroke:#ea580c,stroke-width:2px,color:#ffffff
+    classDef feature fill:#8b5cf6,stroke:#7c3aed,stroke-width:2px,color:#ffffff
+    classDef page fill:#3b82f6,stroke:#2563eb,stroke-width:2px,color:#ffffff
+    
+    class A1,B1,C1,D1,E1,F1,G1,H1,I1,J1 current
+    class A2,B2,C2,D2,E2,F2,G2,H2,I2,J2,K2 improved
+    class K1,L1,M1,N1 problem
+    class L2,M2,N2,O2,P2,Q2,R2,S2,T2 feature
+  

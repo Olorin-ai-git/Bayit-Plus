@@ -1,0 +1,133 @@
+graph TB
+    subgraph "Client Layer"
+        A[React Frontend] --> B[Video Generation UI]
+        B --> C[Style Selection]
+        B --> D[Real-time Collaboration]
+        B --> E[Quality Preview]
+    end
+
+    subgraph "API Gateway Layer"
+        F[Firebase Functions] --> G[Video Generation Orchestrator]
+        G --> H[Authentication & Premium Guard]
+        G --> I[Request Validation]
+        G --> J[Provider Selection Engine]
+    end
+
+    subgraph "Enhanced Prompt Engineering Layer"
+        K[Advanced Prompt Engine] --> L[Context Layer - CV Analysis]
+        K --> M[Optimization Layer - Business Impact]
+        K --> N[Production Layer - Technical Optimization]
+        
+        L --> O[Industry-Specific Templates]
+        L --> P[Personality Analysis]
+        L --> Q[Experience Level Detection]
+        
+        M --> R[Marketing Objectives]
+        M --> S[Competitive Positioning]
+        M --> T[Call-to-Action Optimization]
+        
+        N --> U[Platform Optimization]
+        N --> V[Avatar Direction]
+        N --> W[Voice Modulation]
+    end
+
+    subgraph "Multi-Provider Video Generation"
+        X[Provider Load Balancer] --> Y[HeyGen API - Primary]
+        X --> Z[RunwayML API - Secondary]
+        X --> AA[D-ID API - Tertiary]
+        
+        Y --> AB[HeyGen Service]
+        Z --> AC[RunwayML Service]
+        AA --> AD[D-ID Service]
+        
+        AB --> AE[Webhook Handler]
+        AC --> AF[Polling Manager]
+        AD --> AG[Legacy Integration]
+    end
+
+    subgraph "Quality Assurance Layer"
+        AH[Video Quality Checker] --> AI[Technical Quality Metrics]
+        AH --> AJ[Content Quality Analysis]
+        AH --> AK[User Satisfaction Scoring]
+        
+        AI --> AL[Resolution Validation]
+        AI --> AM[Audio Quality Check]
+        AI --> AN[Subtitle Accuracy]
+        
+        AJ --> AO[Script Engagement Score]
+        AJ --> AP[Brand Compliance Check]
+        AJ --> AQ[Professional Standards]
+    end
+
+    subgraph "Storage & CDN Layer"
+        AR[Firebase Storage] --> AS[Video Files]
+        AR --> AT[Thumbnail Generation]
+        AR --> AU[Subtitle Files]
+        AR --> AV[Metadata Storage]
+        
+        AS --> AW[Global CDN Distribution]
+        AT --> AX[Optimized Thumbnails]
+        AU --> AY[WebVTT Subtitles]
+    end
+
+    subgraph "Monitoring & Analytics"
+        AZ[Performance Monitor] --> BA[Real-time Metrics]
+        AZ --> BB[Provider Performance Tracking]
+        AZ --> BC[Cost Optimization Analytics]
+        
+        BA --> BD[Generation Time Monitoring]
+        BA --> BE[Success Rate Tracking]
+        BA --> BF[Error Rate Analysis]
+        
+        BB --> BG[Provider Reliability Scores]
+        BB --> BH[Quality Comparison Analytics]
+        BB --> BI[Cost Per Video Analysis]
+    end
+
+    subgraph "Error Recovery & Fallback"
+        BJ[Error Recovery Engine] --> BK[Primary Provider Failure]
+        BJ --> BL[Quality Failure Recovery]
+        BJ --> BM[System Failure Handling]
+        
+        BK --> BN[Automatic Provider Switching]
+        BK --> BO[Exponential Backoff Retry]
+        
+        BL --> BP[Quality Threshold Monitoring]
+        BL --> BQ[Alternative Provider Selection]
+        
+        BM --> BR[Circuit Breaker Pattern]
+        BM --> BS[Graceful Degradation]
+        BM --> BT[User Notification System]
+    end
+
+    subgraph "Data Flow"
+        BU[CV Data Input] --> K
+        K --> G
+        G --> J
+        J --> X
+        X --> AH
+        AH --> AR
+        AR --> A
+        
+        AZ --> G
+        BJ --> X
+    end
+
+    %% Enhanced Styling
+    classDef frontend fill:#3b82f6,stroke:#1e40af,stroke-width:2px,color:#ffffff
+    classDef api fill:#10b981,stroke:#047857,stroke-width:2px,color:#ffffff
+    classDef ai fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#ffffff
+    classDef providers fill:#ef4444,stroke:#dc2626,stroke-width:2px,color:#ffffff
+    classDef quality fill:#8b5cf6,stroke:#7c3aed,stroke-width:2px,color:#ffffff
+    classDef storage fill:#06b6d4,stroke:#0891b2,stroke-width:2px,color:#ffffff
+    classDef monitoring fill:#84cc16,stroke:#65a30d,stroke-width:2px,color:#ffffff
+    classDef recovery fill:#f97316,stroke:#ea580c,stroke-width:2px,color:#ffffff
+
+    class A,B,C,D,E frontend
+    class F,G,H,I,J api
+    class K,L,M,N,O,P,Q,R,S,T,U,V,W ai
+    class X,Y,Z,AA,AB,AC,AD,AE,AF,AG providers
+    class AH,AI,AJ,AK,AL,AM,AN,AO,AP,AQ quality
+    class AR,AS,AT,AU,AV,AW,AX,AY storage
+    class AZ,BA,BB,BC,BD,BE,BF,BG,BH,BI monitoring
+    class BJ,BK,BL,BM,BN,BO,BP,BQ,BR,BS,BT recovery

@@ -1,0 +1,86 @@
+graph TB
+    %% Portal Chat Architecture Diagram
+    %% Shows the complete flow of chat interactions in CVPlus portals
+
+    subgraph "External Platforms"
+        HF[HuggingFace Spaces<br/>Portal Deployment]
+        WEB[Web Browser<br/>Portal Visitor]
+        MOBILE[Mobile App<br/>Authenticated User]
+    end
+
+    subgraph "Firebase Functions"
+        CHAT_PUB[portalChatPublic<br/>HTTP Function]
+        CHAT_AUTH[portalChat<br/>Callable Function]
+        ANALYTICS[getPortalChatAnalytics<br/>Callable Function]
+    end
+
+    subgraph "Core Services"
+        CLAUDE[Verified Claude Service<br/>AI Response Generation]
+        EMBED[Embedding Service<br/>Vector Search & RAG]
+        DB[Enhanced DB Service<br/>Data Management]
+    end
+
+    subgraph "Firebase Collections"
+        PORTALS[(portalConfigs<br/>Portal Settings)]
+        JOBS[(jobs<br/>CV Data)]
+        RAG[(ragProfiles<br/>Embeddings)]
+        SESSIONS[(portalChatSessions<br/>Active Sessions)]
+        MESSAGES[(portalChatMessages<br/>Chat History)]
+    end
+
+    subgraph "External APIs"
+        ANTHROPIC[Anthropic Claude API<br/>Language Model]
+        OPENAI[OpenAI API<br/>Embeddings]
+    end
+
+    %% User Interactions
+    HF -->|POST /portalChatPublic| CHAT_PUB
+    WEB -->|POST /portalChatPublic| CHAT_PUB
+    MOBILE -->|Call portalChat| CHAT_AUTH
+
+    %% Function Processing
+    CHAT_PUB -->|Validate & Process| CLAUDE
+    CHAT_AUTH -->|Validate & Process| CLAUDE
+    CHAT_PUB -->|Rate Limiting| SESSIONS
+    CHAT_AUTH -->|Rate Limiting| SESSIONS
+
+    %% Service Integration
+    CLAUDE -->|Query Context| EMBED
+    EMBED -->|Vector Search| RAG
+    CLAUDE -->|Generate Response| ANTHROPIC
+    EMBED -->|Create Embeddings| OPENAI
+
+    %% Data Flow
+    CHAT_PUB -->|Retrieve Config| PORTALS
+    CHAT_AUTH -->|Retrieve Config| PORTALS
+    PORTALS -->|Get CV Data| JOBS
+    JOBS -->|Access RAG Data| RAG
+
+    %% Response & Storage
+    CLAUDE -->|Store Messages| MESSAGES
+    CLAUDE -->|Update Session| SESSIONS
+    CLAUDE -->|Return Response| CHAT_PUB
+    CLAUDE -->|Return Response| CHAT_AUTH
+
+    %% Analytics
+    MOBILE -->|Get Analytics| ANALYTICS
+    ANALYTICS -->|Query Data| SESSIONS
+    ANALYTICS -->|Query Data| MESSAGES
+
+    %% Response Path
+    CHAT_PUB -->|JSON Response| HF
+    CHAT_PUB -->|JSON Response| WEB
+    CHAT_AUTH -->|Function Response| MOBILE
+
+    %% Styling
+    classDef external fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef functions fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef services fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef database fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef api fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+
+    class HF,WEB,MOBILE external
+    class CHAT_PUB,CHAT_AUTH,ANALYTICS functions
+    class CLAUDE,EMBED,DB services
+    class PORTALS,JOBS,RAG,SESSIONS,MESSAGES database
+    class ANTHROPIC,OPENAI api

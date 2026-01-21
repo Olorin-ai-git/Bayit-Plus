@@ -1,0 +1,92 @@
+```mermaid
+graph TB
+    subgraph "CVPlus Application"
+        App[App.tsx]
+        App --> Router[React Router]
+        Router --> CVPage[CVFeaturesPage.tsx]
+        Router --> PreviewPage[CVPreviewPage.tsx]
+    end
+
+    subgraph "Component Registry System"
+        CVPage --> Registry[FeatureRegistry.tsx]
+        Registry --> Renderer[FeatureRenderer.tsx]
+        
+        Renderer --> AIGroup[AI-Powered Features]
+        Renderer --> InteractiveGroup[Interactive Elements]
+        Renderer --> VisualGroup[Visual Enhancements]
+        Renderer --> MediaGroup[Media & Portfolio]
+    end
+
+    subgraph "AI-Powered Components"
+        AIGroup --> AI1[AIPodcastPlayer.tsx]
+        AIGroup --> AI2[ATSOptimization.tsx]
+        AIGroup --> AI3[KeywordEnhancement.tsx]
+        AIGroup --> AI4[AchievementHighlighting.tsx]
+        AIGroup --> AI5[PrivacyMode.tsx]
+        AIGroup --> AI6[AIChatAssistant.tsx]
+        AIGroup --> AI7[PublicProfile.tsx]
+        AIGroup --> AI8[SkillsAnalytics.tsx]
+        AIGroup --> AI9[VideoIntroduction.tsx]
+        AIGroup --> AI10[PersonalityInsights.tsx]
+    end
+
+    subgraph "Interactive Components"
+        InteractiveGroup --> INT1[DynamicQRCode.tsx]
+        InteractiveGroup --> INT2[CareerTimeline.tsx]
+        InteractiveGroup --> INT3[ContactForm.tsx ✅]
+        InteractiveGroup --> INT4[AvailabilityCalendar.tsx ✅]
+        InteractiveGroup --> INT5[SocialMediaLinks.tsx]
+    end
+
+    subgraph "Visual Components"
+        VisualGroup --> VIS1[SkillsVisualization.tsx]
+        VisualGroup --> VIS2[AchievementCards.tsx]
+        VisualGroup --> VIS3[LanguageProficiency.tsx]
+        VisualGroup --> VIS4[CertificationBadges.tsx]
+    end
+
+    subgraph "Media Components"
+        MediaGroup --> MED1[VideoIntroduction.tsx]
+        MediaGroup --> MED2[PortfolioGallery.tsx]
+        MediaGroup --> MED3[TestimonialsCarousel.tsx]
+    end
+
+    subgraph "Common Infrastructure"
+        Renderer --> Common[Common Components]
+        Common --> Wrapper[FeatureWrapper.tsx]
+        Common --> Loading[LoadingSpinner.tsx]
+        Common --> Error[ErrorBoundary.tsx]
+        Common --> Analytics[AnalyticsTracker.tsx]
+    end
+
+    subgraph "Hooks & Utils"
+        AI1 --> Hook1[useFeatureData]
+        INT1 --> Hook1
+        VIS1 --> Hook1
+        MED1 --> Hook1
+        
+        Hook1 --> Firebase[Firebase Functions]
+        Hook1 --> Cache[Local Cache]
+        Hook1 --> Analytics2[Analytics Service]
+    end
+
+    subgraph "Props Interface"
+        Hook1 --> Props[CVFeatureProps]
+        Props --> JobId[jobId: string]
+        Props --> ProfileId[profileId: string]
+        Props --> Enabled[isEnabled: boolean]
+        Props --> Data[data: any]
+        Props --> Custom[customization: object]
+        Props --> Callbacks[onUpdate, onError]
+    end
+
+    style CVPage fill:#e1f5fe
+    style Registry fill:#f3e5f5
+    style AIGroup fill:#e8f5e8
+    style InteractiveGroup fill:#fff3e0
+    style VisualGroup fill:#fce4ec
+    style MediaGroup fill:#f1f8e9
+    style Common fill:#f5f5f5
+    style INT3 fill:#bbdefb
+    style INT4 fill:#bbdefb
+```

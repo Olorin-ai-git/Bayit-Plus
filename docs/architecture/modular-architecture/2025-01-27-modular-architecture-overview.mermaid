@@ -1,0 +1,87 @@
+# CVPlus Modular Architecture Overview
+
+```mermaid
+graph TB
+    subgraph "Current Monolithic Architecture"
+        M[Monolithic CVPlus]
+        M --> MF[63+ Function Files]
+        M --> MC[200+ Components]
+        M --> MS[107+ Services]
+        M --> MT[Duplicate Types]
+    end
+    
+    subgraph "Target Modular Architecture"
+        subgraph "Application Layer"
+            WEB[Web App]
+            FUNC[Functions App]
+        end
+        
+        subgraph "Module Layer"
+            CORE[Core Module]
+            AUTH[Auth Module]
+            CV[CV Processing]
+            REC[Recommendations]
+            PREM[Premium]
+            MEDIA[Multimedia]
+            PROF[Public Profiles]
+            I18N[i18n Module]
+            ANAL[Analytics]
+            ADMIN[Admin]
+        end
+        
+        subgraph "Infrastructure"
+            FB[Firebase]
+            CI[CI/CD]
+            MON[Monitoring]
+        end
+        
+        WEB --> CORE
+        WEB --> AUTH
+        WEB --> CV
+        WEB --> REC
+        WEB --> PREM
+        WEB --> MEDIA
+        WEB --> PROF
+        WEB --> I18N
+        
+        FUNC --> CORE
+        FUNC --> AUTH
+        FUNC --> CV
+        FUNC --> REC
+        FUNC --> PREM
+        FUNC --> MEDIA
+        FUNC --> PROF
+        FUNC --> ANAL
+        
+        AUTH --> CORE
+        CV --> CORE
+        REC --> CORE
+        PREM --> CORE
+        MEDIA --> CORE
+        PROF --> CORE
+        I18N --> CORE
+        ANAL --> CORE
+        ADMIN --> CORE
+        
+        CORE --> FB
+        AUTH --> FB
+        CV --> FB
+        
+        CI --> WEB
+        CI --> FUNC
+        MON --> WEB
+        MON --> FUNC
+    end
+    
+    style M fill:#ff6b6b
+    style CORE fill:#4ecdc4
+    style AUTH fill:#45b7d1
+    style CV fill:#96ceb4
+    style REC fill:#ffeaa7
+    style PREM fill:#dfe6e9
+    style MEDIA fill:#a29bfe
+    style PROF fill:#fd79a8
+    style I18N fill:#fdcb6e
+    style ANAL fill:#6c5ce7
+    style ADMIN fill:#00b894
+```

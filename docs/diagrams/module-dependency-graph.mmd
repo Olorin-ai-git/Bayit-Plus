@@ -1,0 +1,99 @@
+```mermaid
+graph LR
+    subgraph "Foundation Layer"
+        core[Core Module<br/>Types & Utils<br/>P0 Priority]
+    end
+    
+    subgraph "Service Layer"
+        auth[Auth Module<br/>Authentication<br/>P1 Priority]
+        i18n[I18n Module<br/>Localization<br/>P1 Priority]
+        analytics[Analytics Module<br/>Tracking<br/>P2 Priority]
+        payments[Payments Module<br/>Billing<br/>P3 Priority]
+    end
+    
+    subgraph "Business Logic Layer"
+        cvproc[CV-Processing<br/>Document Processing<br/>P2 Priority]
+        workflow[Workflow Module<br/>Process Management<br/>P3 Priority]
+        multimedia[Multimedia Module<br/>Media Handling<br/>P3 Priority]
+    end
+    
+    subgraph "Feature Layer"
+        premium[Premium Module<br/>Subscriptions<br/>P4 Priority]
+        recommend[Recommendations<br/>AI Features<br/>P4 Priority]
+        public[Public-Profiles<br/>Public Features<br/>P5 Priority]
+    end
+    
+    subgraph "Management Layer"
+        admin[Admin Module<br/>Dashboard<br/>P6 Priority]
+    end
+    
+    %% Core dependencies (everyone depends on core)
+    core --> auth
+    core --> i18n
+    core --> analytics
+    core --> payments
+    core --> cvproc
+    core --> workflow
+    core --> multimedia
+    core --> premium
+    core --> recommend
+    core --> public
+    core --> admin
+    
+    %% Auth dependencies
+    auth --> analytics
+    auth --> cvproc
+    auth --> workflow
+    auth --> multimedia
+    auth --> payments
+    auth --> premium
+    auth --> recommend
+    auth --> public
+    auth --> admin
+    
+    %% I18n dependencies
+    i18n --> cvproc
+    i18n --> admin
+    
+    %% CV-Processing dependencies
+    cvproc --> workflow
+    cvproc --> recommend
+    cvproc --> admin
+    
+    %% Multimedia dependencies
+    multimedia --> public
+    multimedia --> admin
+    
+    %% Analytics dependencies
+    analytics --> admin
+    
+    %% Payments dependencies
+    payments --> premium
+    payments --> admin
+    
+    %% Premium dependencies
+    premium --> admin
+    
+    %% Recommendations dependencies
+    recommend --> admin
+    
+    %% Public-Profiles dependencies
+    public --> admin
+    
+    %% Workflow dependencies
+    workflow --> admin
+    
+    %% Color coding by priority
+    style core fill:#ff6b6b,stroke:#ff3838,stroke-width:3px,color:#fff
+    style auth fill:#ff9f43,stroke:#ff7a00,stroke-width:3px,color:#fff
+    style i18n fill:#ff9f43,stroke:#ff7a00,stroke-width:3px,color:#fff
+    style cvproc fill:#feca57,stroke:#ffa502,stroke-width:2px
+    style analytics fill:#feca57,stroke:#ffa502,stroke-width:2px
+    style multimedia fill:#48dbfb,stroke:#0abde3,stroke-width:2px
+    style workflow fill:#48dbfb,stroke:#0abde3,stroke-width:2px
+    style payments fill:#48dbfb,stroke:#0abde3,stroke-width:2px
+    style premium fill:#54a0ff,stroke:#2e86de,stroke-width:2px
+    style recommend fill:#54a0ff,stroke:#2e86de,stroke-width:2px
+    style public fill:#a29bfe,stroke:#6c5ce7,stroke-width:2px
+    style admin fill:#d1d8e0,stroke:#a5b1c2,stroke-width:2px
+```

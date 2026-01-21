@@ -1,0 +1,220 @@
+```mermaid
+graph TB
+    %% Main Container
+    UAC[UnifiedAnalysisContainer<br/>State Orchestration<br/>< 200 lines] --> AOH[AnalysisOverviewHeader<br/>ATS Score & Metrics<br/>< 200 lines]
+    UAC --> ATSD[ATSScoreDisplay<br/>Score Visualization<br/>< 200 lines]
+    UAC --> RDS[RoleDetectionSection<br/>Role Analysis<br/>< 200 lines]
+    UAC --> IS[ImprovementsSection<br/>Recommendations<br/>< 200 lines]
+    UAC --> MTS[MagicTransformSection<br/>Transform Actions<br/>< 200 lines]
+    UAC --> PT[ProgressTracker<br/>Flow Progress<br/>< 200 lines]
+    UAC --> ABF[ActionButtonsFooter<br/>Navigation Controls<br/>< 200 lines]
+
+    %% Role Detection Components
+    RDS --> RDP[RoleDetectionProgress<br/>Detection Progress<br/>< 150 lines]
+    RDS --> DRC[DetectedRoleCard<br/>Role Display<br/>< 180 lines]
+    RDS --> RSM[RoleSelectionModal<br/>Role Selection<br/>< 190 lines]
+
+    %% Improvements Components
+    IS --> ICT[ImprovementCategoriesTab<br/>Category Navigation<br/>< 120 lines]
+    IS --> IRC[ImprovementRecommendationCard<br/>Individual Recommendations<br/>< 160 lines]
+    IS --> ISL[ImprovementSelectionList<br/>Batch Operations<br/>< 180 lines]
+    IS --> IP[ImprovementPreview<br/>Preview Pane<br/>< 170 lines]
+
+    %% Action Components
+    ABF --> NC[NavigationControls<br/>Back/Forward<br/>< 150 lines]
+    ABF --> PAB[PrimaryActionButton<br/>Continue to Features<br/>< 100 lines]
+
+    %% State Management
+    subgraph "State Management Layer"
+        UAC_Context[UnifiedAnalysisContext<br/>Central State Management<br/>< 200 lines]
+        UAC_Types[types.ts<br/>TypeScript Interfaces<br/>< 200 lines]
+        UAC_Actions[actions.ts<br/>State Actions<br/>< 200 lines]
+        
+        UAC_Context --> UAC_Types
+        UAC_Context --> UAC_Actions
+    end
+
+    %% Custom Hooks
+    subgraph "Custom Hooks Layer"
+        UUA[useUnifiedAnalysis<br/>Main Analysis Logic<br/>< 200 lines]
+        URD[useRoleDetection<br/>Role Detection Logic<br/>< 200 lines]
+        UI[useImprovements<br/>Improvements Logic<br/>< 200 lines]
+    end
+
+    %% Data Flow
+    UAC -.-> UAC_Context
+    UAC_Context -.-> UUA
+    UAC_Context -.-> URD
+    UAC_Context -.-> UI
+
+    %% Progressive Disclosure Flow
+    subgraph "User Experience Flow"
+        Step1[1. Analysis Overview<br/>Always Visible]
+        Step2[2. Role Detection<br/>Auto-triggered]
+        Step3[3. Role-Based Improvements<br/>Post Role Selection]
+        Step4[4. Action Planning<br/>Final Stage]
+        
+        Step1 --> Step2
+        Step2 --> Step3
+        Step3 --> Step4
+    end
+
+    %% Component Size Compliance
+    subgraph "200-Line Compliance"
+        direction TB
+        Compliant[✅ All Components < 200 Lines<br/>📊 Automated Size Monitoring<br/>🔄 Continuous Validation]
+    end
+
+    %% API Integration Points
+    subgraph "External APIs"
+        RoleAPI[Role Detection API<br/>Claude Analysis]
+        ImprovementAPI[Improvements API<br/>Recommendation Engine]
+        ATSAPI[ATS Scoring API<br/>Score Calculation]
+    end
+
+    RDS -.-> RoleAPI
+    IS -.-> ImprovementAPI
+    ATSD -.-> ATSAPI
+
+    classDef containerStyle fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+    classDef componentStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef stateStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef hookStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef flowStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef apiStyle fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+
+    class UAC containerStyle
+    class AOH,ATSD,RDS,IS,MTS,PT,ABF,RDP,DRC,RSM,ICT,IRC,ISL,IP,NC,PAB componentStyle
+    class UAC_Context,UAC_Types,UAC_Actions stateStyle
+    class UUA,URD,UI hookStyle
+    class Step1,Step2,Step3,Step4 flowStyle
+    class RoleAPI,ImprovementAPI,ATSAPI apiStyle
+```
+
+## State Management Flow Diagram
+
+```mermaid
+stateDiagram-v2
+    [*] --> LoadingAnalysis: Component Mount
+    
+    LoadingAnalysis --> AnalysisComplete: Analysis Data Loaded
+    
+    AnalysisComplete --> RoleDetecting: Auto-trigger Role Detection
+    
+    RoleDetecting --> RoleDetected: Roles Found
+    RoleDetecting --> RoleDetectionError: Detection Failed
+    
+    RoleDetected --> RoleSelected: User Selects Role
+    RoleDetected --> CustomRole: User Customizes Role
+    
+    CustomRole --> RoleSelected: Role Customization Complete
+    
+    RoleSelected --> LoadingImprovements: Fetch Role-based Improvements
+    
+    LoadingImprovements --> ImprovementsAvailable: Improvements Loaded
+    LoadingImprovements --> ImprovementsError: Loading Failed
+    
+    ImprovementsAvailable --> SelectingImprovements: User Interaction
+    
+    SelectingImprovements --> ImprovementsSelected: Selection Complete
+    SelectingImprovements --> PreviewingImprovement: User Previews
+    
+    PreviewingImprovement --> SelectingImprovements: Preview Closed
+    
+    ImprovementsSelected --> ReadyForAction: All Selections Made
+    
+    ReadyForAction --> NavigatingToFeatures: User Continues
+    ReadyForAction --> MagicTransform: User Selects Magic Transform
+    
+    MagicTransform --> TransformComplete: Transform Successful
+    TransformComplete --> NavigatingToFeatures: Continue to Features
+    
+    NavigatingToFeatures --> [*]: Navigation Complete
+    
+    RoleDetectionError --> AnalysisComplete: Retry
+    ImprovementsError --> RoleSelected: Retry
+```
+
+## Component Interaction Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant UAC as UnifiedAnalysisContainer
+    participant Context as AnalysisContext
+    participant RDS as RoleDetectionSection
+    participant IS as ImprovementsSection
+    participant API as External APIs
+
+    User->>UAC: Loads Analysis Page
+    UAC->>Context: Initialize State
+    UAC->>API: Fetch Analysis Data
+    API-->>UAC: Return Analysis Results
+    UAC->>Context: Update Analysis State
+    
+    Note over UAC, Context: Auto-trigger Role Detection
+    UAC->>RDS: Trigger Role Detection
+    RDS->>API: Detect Roles
+    API-->>RDS: Return Detected Roles
+    RDS->>Context: Update Role State
+    Context-->>UAC: Notify Role Detection Complete
+    
+    User->>RDS: Select Role
+    RDS->>Context: Set Selected Role
+    Context-->>IS: Trigger Improvements Loading
+    IS->>API: Fetch Role-based Improvements
+    API-->>IS: Return Improvements
+    IS->>Context: Update Improvements State
+    
+    User->>IS: Select Improvements
+    IS->>Context: Update Selected Improvements
+    Context-->>UAC: Update Action Button State
+    
+    User->>UAC: Click Continue
+    UAC->>User: Navigate to Feature Selection
+```
+
+## File Organization Structure
+
+```mermaid
+graph TD
+    Root[frontend/src/components/analysis/] --> Unified[unified/]
+    Root --> RoleDetection[role-detection/]
+    Root --> Improvements[improvements/]
+    Root --> MagicTransform[magic-transform/]
+    Root --> Context[context/]
+    Root --> Hooks[hooks/]
+
+    Unified --> UAC_File[UnifiedAnalysisContainer.tsx<br/>< 200 lines]
+    Unified --> AOH_File[AnalysisOverviewHeader.tsx<br/>< 200 lines]
+    Unified --> ATSD_File[ATSScoreDisplay.tsx<br/>< 200 lines]
+    Unified --> PT_File[ProgressTracker.tsx<br/>< 200 lines]
+    Unified --> ABF_File[ActionButtonsFooter.tsx<br/>< 200 lines]
+
+    RoleDetection --> RDS_File[RoleDetectionSection.tsx<br/>< 200 lines]
+    RoleDetection --> RDP_File[RoleDetectionProgress.tsx<br/>< 200 lines]
+    RoleDetection --> DRC_File[DetectedRoleCard.tsx<br/>< 200 lines]
+    RoleDetection --> RSM_File[RoleSelectionModal.tsx<br/>< 200 lines]
+
+    Improvements --> IS_File[ImprovementsSection.tsx<br/>< 200 lines]
+    Improvements --> ICT_File[ImprovementCategoriesTab.tsx<br/>< 200 lines]
+    Improvements --> IRC_File[ImprovementRecommendationCard.tsx<br/>< 200 lines]
+    Improvements --> ISL_File[ImprovementSelectionList.tsx<br/>< 200 lines]
+    Improvements --> IP_File[ImprovementPreview.tsx<br/>< 200 lines]
+
+    MagicTransform --> MTS_File[MagicTransformSection.tsx<br/>< 200 lines]
+
+    Context --> Context_File[UnifiedAnalysisContext.tsx<br/>< 200 lines]
+    Context --> Types_File[types.ts<br/>< 200 lines]
+    Context --> Actions_File[actions.ts<br/>< 200 lines]
+
+    Hooks --> UUA_File[useUnifiedAnalysis.ts<br/>< 200 lines]
+    Hooks --> URD_File[useRoleDetection.ts<br/>< 200 lines]
+    Hooks --> UI_File[useImprovements.ts<br/>< 200 lines]
+
+    classDef folderStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef fileStyle fill:#f1f8e9,stroke:#388e3c,stroke-width:1px
+
+    class Root,Unified,RoleDetection,Improvements,MagicTransform,Context,Hooks folderStyle
+    class UAC_File,AOH_File,ATSD_File,PT_File,ABF_File,RDS_File,RDP_File,DRC_File,RSM_File,IS_File,ICT_File,IRC_File,ISL_File,IP_File,MTS_File,Context_File,Types_File,Actions_File,UUA_File,URD_File,UI_File fileStyle
+```

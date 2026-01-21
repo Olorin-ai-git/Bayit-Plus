@@ -1,0 +1,36 @@
+gantt
+    title CVPlus 200-Line Compliance Refactoring Timeline
+    dateFormat  YYYY-MM-DD
+    axisFormat  %m/%d
+
+    section Phase 1: Foundation
+    Core Utilities Setup         :active, p1w1, 2024-08-19, 7d
+    Base Services Refactoring     :p1w2, after p1w1, 7d
+    
+    section Phase 2: Core Services
+    ML & AI Services             :p2w1, after p1w2, 7d
+    Domain Services              :p2w2, after p2w1, 7d
+    
+    section Phase 3: React Components
+    Major Components             :p3w1, after p2w2, 7d
+    Feature Components           :p3w2, after p3w1, 7d
+    
+    section Phase 4: Functions & Scripts
+    Firebase Functions           :p4w1, after p3w2, 7d
+    Scripts and Tools            :p4w2, after p4w1, 7d
+    
+    section Phase 5: Tests & Validation
+    Test Refactoring             :p5w1, after p4w2, 7d
+    
+    section Critical Files
+    ml-pipeline.service.ts (1160) :crit, ml1, after p1w2, 3d
+    ResultsPage.tsx (1102)        :crit, res1, after p2w2, 3d
+    regional-localization (913)   :high, reg1, after p2w1, 2d
+    deployment-reporter (862)     :high, dep1, after p4w1, 2d
+    
+    section Milestones
+    Foundation Complete          :milestone, m1, after p1w2, 0d
+    Core Services Complete       :milestone, m2, after p2w2, 0d
+    Components Complete          :milestone, m3, after p3w2, 0d
+    Functions Complete           :milestone, m4, after p4w2, 0d
+    100% Compliance Achieved     :milestone, m5, after p5w1, 0d

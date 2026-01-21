@@ -1,0 +1,1096 @@
+CVPlus E2E Flows Package - LLM Documentation
+=====================================================
+
+PACKAGE OVERVIEW
+================
+
+Package Name: @cvplus/e2e-flows
+Version: 1.0.0
+Description: End-to-end testing flows for CVPlus - comprehensive user journey validation, submodule testing, and API validation
+Repository: git@github.com:gilco1973/cvplus-e2e-flows.git
+Main Entry: dist/index.js
+Types Entry: dist/index.d.ts
+
+Purpose: Complete testing framework for CVPlus application providing E2E test orchestration, API validation, mock data generation, performance benchmarking, and regression testing capabilities. Specializes in user journey validation, submodule integration testing, and API contract verification.
+
+CORE ARCHITECTURE
+==================
+
+Module Structure:
+- models/           # Data models and entities (TestScenario, MockDataSet, APITestCase, FlowResult, TestEnvironment, etc.)
+- services/         # Core business logic (E2EFlowsService, MockDataService, APITestingService)
+- orchestrator/     # Test execution orchestration (TestOrchestrator)
+- metrics/          # Performance monitoring (PerformanceCollector)
+- middleware/       # Error handling and request processing
+- integrations/     # External service integrations (Firebase)
+
+Design Patterns:
+- Service Layer Pattern: Core services handle domain-specific testing concerns
+- Model Layer Pattern: Rich domain models with validation and behavior
+- Observer Pattern: Performance metrics collection and event handling
+- Factory Pattern: Mock data generation and test case creation
+- Strategy Pattern: Different test execution strategies (sequential, parallel, concurrent)
+- Command Pattern: Test step execution and result aggregation
+
+Dependencies:
+- Runtime: axios, commander, firebase-admin, firebase-functions, joi, lodash, uuid, winston, zod, @faker-js/faker
+- Development: jest, ts-jest, ts-node, typescript, eslint, prettier, supertest
+- Peer: @cvplus/core (workspace dependency)
+
+Node.js Requirements: >=20.0.0
+TypeScript: ^5.3.3
+
+SERVICES API REFERENCE
+=======================
+
+E2EFlowsService
+---------------
+
+Primary service for test orchestration and execution management.
+
+Class: E2EFlowsService
+Constructor: new E2EFlowsService()
+
+Public Methods:
+
+createScenario(scenarioData: Omit<TestScenario, 'createdAt' | 'updatedAt' | 'status'>): Promise<TestScenarioModel>
+- Creates new test scenario
+- Validates scenario data structure
+- Returns: TestScenarioModel instance
+- Throws: ValidationError on invalid data
+
+getScenario(id: string): Promise<TestScenarioModel | null>
+- Retrieves test scenario by ID
+- Returns: TestScenarioModel or null if not found
+- Parameters: id - unique scenario identifier
+
+listScenarios(filter?: ScenarioFilter): Promise<TestScenarioModel[]>
+- Lists scenarios with optional filtering
+- Filter options: type[], tags[], environment, status[], searchTerm
+- Returns: Array of matching TestScenarioModel instances
+- Sorting: By updatedAt descending
+
+updateScenario(id: string, updates: Partial<TestScenario>): Promise<TestScenarioModel | null>
+- Updates existing scenario
+- Validates updated data
+- Updates timestamp automatically
+- Returns: Updated TestScenarioModel or null if not found
+
+deleteScenario(id: string): Promise<boolean>
+- Removes scenario from storage
+- Returns: true if deleted, false if not found
+
+executeScenario(scenarioId: string, options: ExecutionOptions): Promise<FlowResultModel>
+- Executes single test scenario
+- Options: environment, timeout, parallel, maxConcurrency, retryFailures, collectMetrics, saveArtifacts
+- Prevents concurrent execution of same scenario
+- Returns: FlowResultModel with execution results
+- Throws: Error if scenario not found or already executing
+
+executeMultipleScenarios(scenarioIds: string[], options: ExecutionOptions): Promise<ExecutionSummary>
+- Executes multiple scenarios with parallel/sequential control
+- Supports concurrency limiting
+- Handles individual failures gracefully
+- Returns: ExecutionSummary with aggregated results
+
+getExecutionResult(resultId: string): Promise<FlowResultModel | null>
+- Retrieves stored execution result
+- Returns: FlowResultModel or null if not found
+
+listExecutionResults(limit: number = 100): Promise<FlowResultModel[]>
+- Lists recent execution results
+- Default limit: 100
+- Sorting: By startTime descending
+
+cancelExecution(scenarioId: string): Promise<boolean>
+- Cancels active execution
+- Returns: true if cancelled, false if not active
+
+healthCheck(): Promise<{status: string, scenarios: number, environments: number, activeExecutions: number}>
+- Service health and status information
+- Returns: Current service metrics
+
+createEnvironment(environmentData: Omit<TestEnvironment, 'createdAt' | 'updatedAt'>): Promise<TestEnvironmentModel>
+- Creates new test environment configuration
+- Validates environment settings
+- Returns: TestEnvironmentModel instance
+
+getEnvironment(id: string): Promise<TestEnvironmentModel | null>
+- Retrieves environment configuration
+- Returns: TestEnvironmentModel or null
+
+listEnvironments(): Promise<TestEnvironmentModel[]>
+- Lists all available environments
+- Returns: Array of TestEnvironmentModel instances
+
+Types and Interfaces:
+
+interface ExecutionOptions {
+  environment: string;
+  timeout?: number;
+  parallel?: boolean;
+  maxConcurrency?: number;
+  retryFailures?: boolean;
+  collectMetrics?: boolean;
+  saveArtifacts?: boolean;
+}
+
+interface ExecutionSummary {
+  totalScenarios: number;
+  passed: number;
+  failed: number;
+  skipped: number;
+  duration: number;
+  environment: string;
+  startTime: Date;
+  endTime: Date;
+  averageResponseTime: number;
+  errorRate: number;
+}
+
+interface ScenarioFilter {
+  type?: string[];
+  tags?: string[];
+  environment?: string;
+  status?: string[];
+  searchTerm?: string;
+}
+
+MockDataService
+---------------
+
+Service for realistic test data generation and lifecycle management.
+
+Class: MockDataService
+Constructor: new MockDataService(cacheOptions?: DataCacheOptions)
+
+Public Methods:
+
+createDataSet(name: string, type: MockDataType, data: Record<string, any>, options?: Partial<MockDataSet>): Promise<MockDataSetModel>
+- Creates new mock data set
+- Infers JSON schema automatically
+- Sets expiration (default 24 hours)
+- Tracks usage metadata
+- Returns: MockDataSetModel instance
+
+getDataSet(id: string): Promise<MockDataSetModel | null>
+- Retrieves data set with caching
+- Increments usage counter
+- Checks expiration automatically
+- Cache-first retrieval strategy
+- Returns: MockDataSetModel or null if expired/missing
+
+listDataSets(filter?: {type?: MockDataType, category?: string, tags?: string[], expired?: boolean}): Promise<MockDataSetModel[]>
+- Lists data sets with filtering
+- Filters: type, category, tags array matching, expiration status
+- Sorting: By updatedAt descending
+
+updateDataSet(id: string, updates: Partial<MockDataSet>): Promise<MockDataSetModel | null>
+- Updates existing data set
+- Invalidates cache automatically
+- Updates metadata and timestamp
+- Returns: Updated MockDataSetModel or null
+
+deleteDataSet(id: string): Promise<boolean>
+- Removes data set and cache entry
+- Returns: true if deleted, false if not found
+
+generateData(options: DataGenerationOptions): Promise<MockDataSetModel>
+- Generates realistic mock data using templates
+- Supports localization and seeding
+- Custom field injection support
+- Count-based array generation
+- Returns: Generated MockDataSetModel
+
+generateFromTemplate(templateId: string, options?: Partial<DataGenerationOptions>): Promise<MockDataSetModel>
+- Generates data from registered template
+- Template-specific configuration
+- Returns: MockDataSetModel with template-based data
+
+registerTemplate(template: DataTemplate): void
+- Registers custom data generation template
+- Template includes schema, generator function, examples
+
+getTemplate(id: string): DataTemplate | null
+- Retrieves registered template by ID
+- Returns: DataTemplate or null
+
+listTemplates(type?: MockDataType): DataTemplate[]
+- Lists available templates
+- Optional type filtering
+- Returns: Array of DataTemplate instances
+
+exportDataSet(id: string, options: DataExportOptions): Promise<string>
+- Exports data set to various formats
+- Formats: json, csv, yaml, xml
+- Optional metadata inclusion
+- Compression support (gzip, zip)
+- Returns: Formatted string data
+
+importDataSet(data: string, format: 'json' | 'csv' | 'yaml', metadata: Partial<MockDataSet>): Promise<MockDataSetModel>
+- Imports data from external formats
+- Format parsing with validation
+- Automatic metadata generation
+- Returns: Created MockDataSetModel
+
+clearCache(): void
+- Clears all cached data sets
+- Memory cleanup operation
+
+cleanupExpired(): Promise<number>
+- Removes expired data sets
+- Automatic cleanup operation
+- Returns: Number of cleaned up items
+
+getCacheStats(): {size: number, count: number, hitRate: number}
+- Cache performance metrics
+- Memory usage information
+- Returns: Cache statistics object
+
+Types and Interfaces:
+
+interface DataGenerationOptions {
+  type: MockDataType;
+  category?: string;
+  count?: number;
+  locale?: string;
+  seed?: string;
+  template?: string;
+  customFields?: Record<string, any>;
+}
+
+interface DataCacheOptions {
+  maxSize?: number;      // bytes, default 100MB
+  maxAge?: number;       // milliseconds, default 24 hours
+  compression?: boolean; // default false
+  encryption?: boolean;  // default false
+}
+
+interface DataExportOptions {
+  format: 'json' | 'csv' | 'yaml' | 'xml';
+  includeMetadata?: boolean;
+  compression?: 'gzip' | 'zip';
+  filename?: string;
+}
+
+interface DataTemplate {
+  id: string;
+  name: string;
+  type: MockDataType;
+  category: string;
+  schema: JSONSchema;
+  generator: (options: DataGenerationOptions) => Promise<Record<string, any>>;
+  examples: Record<string, any>[];
+}
+
+APITestingService
+-----------------
+
+Service for backend API validation with curl-based testing.
+
+Class: APITestingService
+Constructor: new APITestingService()
+
+Public Methods:
+
+createTestCase(testCaseData: Omit<APITestCase, 'curlCommand'>): Promise<APITestCaseModel>
+- Creates new API test case
+- Auto-generates curl command
+- Validates test case structure
+- Returns: APITestCaseModel instance
+
+getTestCase(id: string): Promise<APITestCaseModel | null>
+- Retrieves test case by ID
+- Returns: APITestCaseModel or null
+
+listTestCases(filter?: {method?: string, endpoint?: string, tags?: string[]}): Promise<APITestCaseModel[]>
+- Lists test cases with filtering
+- Filter options: HTTP method, endpoint pattern, tags
+- Returns: Array of matching APITestCaseModel instances
+
+updateTestCase(id: string, updates: Partial<APITestCase>): Promise<APITestCaseModel | null>
+- Updates test case
+- Regenerates curl command if needed
+- Returns: Updated APITestCaseModel or null
+
+deleteTestCase(id: string): Promise<boolean>
+- Removes test case
+- Returns: true if deleted, false if not found
+
+executeTestCase(testCase: APITestCaseModel, baseUrl?: string): Promise<APIResult>
+- Executes single API test case
+- Performs HTTP request
+- Evaluates response assertions
+- Collects performance metrics
+- Default baseUrl: http://localhost:3000
+- Returns: APIResult with detailed results
+
+executeMultipleTestCases(testCaseIds: string[], options: TestSuiteOptions): Promise<TestSuiteResult>
+- Executes multiple test cases
+- Sequential or parallel execution
+- Concurrency control support
+- Individual failure handling
+- Returns: TestSuiteResult with aggregated metrics
+
+executeCurlCommand(curlCommand: string, timeout?: number): Promise<APIResult>
+- Direct curl command execution
+- Command parsing and validation
+- Temporary test case creation
+- Default timeout: 30000ms
+- Returns: APIResult with execution details
+
+createTestSuite(name: string, options?: Partial<EndpointGroup>): EndpointGroup
+- Creates named test suite
+- Common configuration inheritance
+- Test case grouping
+- Returns: EndpointGroup definition
+
+addTestToSuite(suiteName: string, testCase: APITestCaseModel): boolean
+- Adds test case to existing suite
+- Returns: true if added, false if suite not found
+
+getTestSuite(name: string): EndpointGroup | null
+- Retrieves test suite configuration
+- Returns: EndpointGroup or null
+
+listTestSuites(): EndpointGroup[]
+- Lists all registered test suites
+- Returns: Array of EndpointGroup instances
+
+executeTestSuite(suiteName: string, options: TestSuiteOptions): Promise<TestSuiteResult>
+- Executes complete test suite
+- Parallel/sequential execution control
+- Retry logic support
+- Result aggregation and reporting
+- Returns: TestSuiteResult with comprehensive metrics
+
+getTestResult(testId: string): Promise<APIResult | null>
+- Retrieves stored test result
+- Returns: APIResult or null
+
+listTestResults(limit?: number): Promise<APIResult[]>
+- Lists recent test results
+- Default limit: 100
+- Sorting: By timestamp descending
+
+generateReport(results: APIResult[], format?: 'json' | 'html' | 'text'): string
+- Generates test execution report
+- Multiple output formats
+- Summary statistics inclusion
+- Default format: json
+- Returns: Formatted report string
+
+Types and Interfaces:
+
+interface TestSuiteOptions {
+  baseUrl: string;
+  timeout?: number;
+  retryFailures?: boolean;
+  maxRetries?: number;
+  parallel?: boolean;
+  maxConcurrency?: number;
+  saveResults?: boolean;
+  validateSchema?: boolean;
+}
+
+interface TestSuiteResult {
+  id: string;
+  name: string;
+  startTime: Date;
+  endTime: Date;
+  duration: number;
+  totalTests: number;
+  passed: number;
+  failed: number;
+  errors: number;
+  results: APIResult[];
+  summary: TestSummary;
+}
+
+interface TestSummary {
+  averageResponseTime: number;
+  maxResponseTime: number;
+  minResponseTime: number;
+  successRate: number;
+  errorRate: number;
+  timeoutCount: number;
+  assertionFailures: number;
+}
+
+interface EndpointGroup {
+  name: string;
+  baseUrl?: string;
+  commonHeaders?: Record<string, string>;
+  commonAuth?: any;
+  tests: APITestCaseModel[];
+}
+
+DATA MODELS REFERENCE
+======================
+
+TestScenarioModel
+-----------------
+
+Rich domain model representing complete test scenarios with validation and state management.
+
+Class: TestScenarioModel
+Constructor: new TestScenarioModel(data: Omit<TestScenario, 'createdAt' | 'updatedAt' | 'status'>)
+
+Properties:
+- id: string (readonly)
+- name: string
+- description: string
+- type: TestScenarioType ('e2e' | 'integration' | 'api' | 'load' | 'regression')
+- environment: string
+- steps: TestStep[]
+- expectedOutcomes: TestOutcome[]
+- tags: string[]
+- timeout: number (1000-1200000ms range)
+- dependencies: string[]
+- retryConfig: RetryConfig
+- createdAt: Date (readonly)
+- updatedAt: Date
+- status: TestScenarioStatus ('CREATED' | 'PENDING' | 'RUNNING' | 'PASSED' | 'FAILED' | 'TIMEOUT' | 'RETRYING')
+
+Methods:
+
+validate(): void
+- Comprehensive scenario validation
+- Checks required fields, ranges, logical consistency
+- Validates step ordering and uniqueness
+- Throws: Error with detailed validation messages
+
+updateStatus(status: TestScenarioStatus): void
+- Updates scenario status with state transition validation
+- Valid transitions enforced
+- Updates timestamp automatically
+- Throws: Error on invalid state transitions
+
+addStep(step: Omit<TestStep, 'order'>): void
+- Adds test step with auto-ordering
+- Updates timestamp
+- Triggers validation
+- Maintains step execution order
+
+removeStep(order: number): void
+- Removes step by order number
+- Updates timestamp
+- Triggers validation
+- Maintains step consistency
+
+addExpectedOutcome(outcome: TestOutcome): void
+- Adds expected test outcome
+- Updates timestamp
+- Triggers validation
+
+toJSON(): TestScenario
+- Serializes to plain object
+- Includes all properties
+- Suitable for persistence/transmission
+
+static fromJSON(data: any): TestScenarioModel
+- Deserializes from plain object
+- Handles date parsing
+- Status preservation
+- Returns: Configured TestScenarioModel instance
+
+Interface Types:
+
+interface TestStep {
+  order: number;
+  name: string;
+  action: string;
+  parameters: Record<string, any>;
+  expectedResult: any;
+  timeout: number;
+}
+
+interface TestOutcome {
+  type: 'assertion' | 'performance' | 'visual' | 'functional';
+  condition: string;
+  expectedValue: any;
+  tolerance?: number;
+}
+
+interface RetryConfig {
+  maxAttempts: number;
+  delayMs: number;
+  exponentialBackoff: boolean;
+  retryableStatuses: string[];
+}
+
+MockDataSetModel
+----------------
+
+Model for managing generated test data with caching and lifecycle management.
+
+Class: MockDataSetModel
+Constructor: new MockDataSetModel(data: MockDataSet)
+
+Properties:
+- id: string (readonly)
+- name: string
+- description: string
+- type: MockDataType ('cv' | 'user-profile' | 'api-response' | 'file-upload' | 'form-data')
+- category: string
+- data: Record<string, any>
+- schema: JSONSchema
+- size: number (calculated)
+- expiresAt: Date
+- metadata: MockDataMetadata
+- createdAt: Date (readonly)
+- updatedAt: Date
+
+Methods:
+
+updateData(newData: Record<string, any>): void
+- Updates stored data
+- Recalculates size
+- Updates timestamp
+- Maintains metadata consistency
+
+incrementUsage(): void
+- Increments usage counter
+- Updates metadata
+- Tracks access patterns
+
+isExpired(): boolean
+- Checks expiration status
+- Compares with current timestamp
+- Returns: true if expired
+
+generateHash(): string
+- Creates content hash for data
+- Uses for duplicate detection
+- Returns: SHA-256 hash string
+
+toJSON(): MockDataSet
+- Serializes complete data set
+- Includes metadata and schema
+- Suitable for export/persistence
+
+static fromJSON(data: any): MockDataSetModel
+- Deserializes from storage format
+- Date parsing and validation
+- Returns: Configured MockDataSetModel instance
+
+Interface Types:
+
+interface MockDataSet {
+  id: string;
+  name: string;
+  description: string;
+  type: MockDataType;
+  category: string;
+  data: Record<string, any>;
+  schema: JSONSchema;
+  expiresAt: Date;
+  metadata: MockDataMetadata;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface MockDataMetadata {
+  generatedBy: string;
+  generatedAt: Date;
+  usageCount: number;
+  source: string;
+  tags: string[];
+}
+
+interface JSONSchema {
+  type: string;
+  properties?: Record<string, any>;
+  required?: string[];
+  items?: any;
+  additionalProperties?: boolean;
+  minItems?: number;
+  maxItems?: number;
+}
+
+APITestCaseModel
+----------------
+
+Model for API test cases with curl command generation and validation.
+
+Class: APITestCaseModel
+Constructor: new APITestCaseModel(data: APITestCase)
+
+Properties:
+- id: string (readonly)
+- name: string
+- endpoint: string
+- method: HTTPMethod ('GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS')
+- headers: Record<string, string>
+- body?: any
+- expectedStatus: number
+- expectedResponse: any
+- timeout: number
+- authentication: AuthConfig
+- assertions: ResponseAssertion[]
+- tags: string[]
+- curlCommand: string (auto-generated)
+- createdAt: Date (readonly)
+- updatedAt: Date
+
+Methods:
+
+generateCurlCommand(): string
+- Creates curl command from test case properties
+- Handles headers, body, authentication
+- Base URL placeholder support
+- Returns: Complete curl command string
+
+validate(): void
+- Validates test case configuration
+- Checks endpoint format, timeouts, assertions
+- Throws: Error with validation details
+
+addAssertion(assertion: ResponseAssertion): void
+- Adds response assertion
+- Updates timestamp
+- Triggers validation
+
+removeAssertion(index: number): void
+- Removes assertion by index
+- Updates timestamp
+- Maintains assertion consistency
+
+toJSON(): APITestCase
+- Serializes to plain object
+- Includes generated curl command
+- Suitable for persistence
+
+static fromJSON(data: any): APITestCaseModel
+- Deserializes from storage
+- Regenerates curl command
+- Returns: Configured APITestCaseModel instance
+
+Interface Types:
+
+interface APITestCase {
+  id: string;
+  name: string;
+  endpoint: string;
+  method: HTTPMethod;
+  headers: Record<string, string>;
+  body?: any;
+  expectedStatus: number;
+  expectedResponse: any;
+  timeout: number;
+  authentication: AuthConfig;
+  assertions: ResponseAssertion[];
+  tags: string[];
+  curlCommand: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface AuthConfig {
+  type: 'none' | 'basic' | 'bearer' | 'api-key' | 'oauth';
+  credentials: Record<string, string>;
+}
+
+interface ResponseAssertion {
+  type: 'status' | 'header' | 'body' | 'performance';
+  field?: string;
+  operator: 'equals' | 'contains' | 'matches' | 'gt' | 'lt' | 'gte' | 'lte' | 'exists' | 'not_exists';
+  expectedValue: any;
+  tolerance?: number;
+  description: string;
+}
+
+interface APIResult {
+  status: 'passed' | 'failed' | 'error' | 'timeout';
+  actualStatus: number;
+  actualResponse: any;
+  actualHeaders: Record<string, string>;
+  responseTime: number;
+  errors: string[];
+  assertionResults: AssertionResult[];
+  curlCommand: string;
+  timestamp: Date;
+}
+
+interface AssertionResult {
+  assertion: ResponseAssertion;
+  passed: boolean;
+  actualValue: any;
+  error?: string;
+}
+
+PERFORMANCE CHARACTERISTICS
+============================
+
+Service Performance Targets:
+- Test Scenario Execution: <5s average for simple scenarios
+- Mock Data Generation: <1s for datasets up to 1000 items
+- API Test Execution: <500ms for local endpoints
+- Cache Operations: <50ms for data retrieval
+
+Memory Usage:
+- Base Service Memory: ~50MB
+- Mock Data Cache: Configurable (default 100MB)
+- Test Result Storage: ~1MB per 100 test executions
+- Concurrent Test Execution: ~10MB per parallel scenario
+
+Concurrency Limits:
+- Default Max Concurrent Tests: 10
+- API Test Concurrency: 5 (configurable)
+- Mock Data Generation: 3 concurrent operations
+- Performance Test Scenarios: 1000+ virtual users supported
+
+Scalability Characteristics:
+- Test Scenarios: Supports 1000+ scenarios in memory
+- Mock Data Sets: 10,000+ cached datasets
+- API Test Cases: 5000+ test cases per suite
+- Execution History: 50,000+ result records
+
+Performance Optimization Features:
+- Intelligent caching with LRU eviction
+- Connection pooling for API tests
+- Batch processing for multiple scenarios
+- Lazy loading of test data
+- Compression for large datasets
+
+CONFIGURATION SCHEMA
+=====================
+
+Default Configuration:
+
+Test Execution:
+- Default Timeout: 30000ms
+- Max Retries: 3
+- Retry Delay: 1000ms (exponential backoff)
+- Max Concurrent Executions: 10
+- Result Retention: 24 hours
+
+Mock Data:
+- Cache Size Limit: 100MB
+- Data Expiration: 24 hours
+- Compression: Disabled
+- Encryption: Disabled
+
+API Testing:
+- Default Base URL: http://localhost:3000
+- Connection Timeout: 10000ms
+- Request Timeout: 30000ms
+- Max Redirects: 5
+
+Environment Variables:
+
+E2E_MOCK_APIS (boolean): Enable/disable API mocking (default: true)
+E2E_CACHE_SIZE (number): Mock data cache size in bytes
+E2E_BASE_URL (string): Default API base URL for testing
+E2E_TIMEOUT (number): Default test timeout in milliseconds
+E2E_CONCURRENCY (number): Max concurrent test executions
+E2E_LOG_LEVEL (string): Logging level (debug, info, warn, error)
+E2E_RESULTS_RETENTION (number): Result retention period in hours
+
+Firebase Configuration:
+- Firebase Admin SDK integration
+- Firestore for test result persistence
+- Cloud Storage for test artifacts
+- Firebase Functions for serverless execution
+
+INTEGRATION POINTS
+==================
+
+Firebase Integration:
+- Firestore: Test scenario and result persistence
+- Authentication: Service account authentication
+- Storage: Test artifacts and mock data storage
+- Functions: Serverless test execution environment
+
+CVPlus Submodule Integration:
+- @cvplus/core: Shared types and utilities
+- Package imports: '@cvplus/[module]/backend' pattern
+- Cross-module test validation
+- Submodule health checking
+
+CI/CD Integration:
+- Jest test runner integration
+- GitHub Actions workflow support
+- Docker containerization
+- Environment variable configuration
+- Automated test reporting
+
+External API Integration:
+- HTTP/HTTPS endpoint testing
+- Authentication mechanism support
+- Rate limiting and retry logic
+- Response validation and assertion
+- Performance metric collection
+
+TESTING FRAMEWORK COMPONENTS
+=============================
+
+Load Testing Framework:
+- Concurrent user simulation
+- Stress testing scenarios
+- Performance baseline comparison
+- Resource utilization monitoring
+- Breakpoint analysis
+
+Test Scenarios:
+- baseline: 100 users, 1 minute duration
+- medium: 500 users, 5 minute duration
+- high: 1000 users, 10 minute duration
+- stress: 2000 users, 15 minute duration
+- 10k: 10000 users, 30 minute duration
+- breakpoint: Progressive load increase
+- recovery: Service recovery validation
+
+Performance Metrics:
+- Response time percentiles (p50, p95, p99)
+- Throughput (requests per second)
+- Error rate percentage
+- Memory and CPU utilization
+- Network I/O statistics
+
+Test Orchestration:
+- Sequential and parallel execution
+- Dependency management
+- Error recovery and retry logic
+- Result aggregation and reporting
+- Artifact collection and storage
+
+ERROR HANDLING PATTERNS
+========================
+
+Service-Level Error Handling:
+- Input validation with detailed error messages
+- Resource not found errors with specific identifiers
+- Timeout handling with graceful degradation
+- Authentication and authorization errors
+- Rate limiting and quota exceeded errors
+
+Test Execution Error Handling:
+- Test step failure isolation
+- Assertion failure collection and reporting
+- Network error retry with exponential backoff
+- Resource exhaustion detection and handling
+- Cascading failure prevention
+
+Mock Data Error Handling:
+- Data generation failure recovery
+- Schema validation errors
+- Cache corruption detection
+- Expiration handling
+- Import/export format errors
+
+API Testing Error Handling:
+- HTTP error code interpretation
+- Response parsing failure handling
+- SSL/TLS certificate validation errors
+- Network connectivity issues
+- Response timeout handling
+
+Error Classification:
+- USER_ERROR: Invalid input or configuration
+- SYSTEM_ERROR: Internal service failures
+- NETWORK_ERROR: Connectivity and timeout issues
+- VALIDATION_ERROR: Data validation failures
+- RESOURCE_ERROR: Resource exhaustion or not found
+- TIMEOUT_ERROR: Operation timeout exceeded
+
+USAGE PATTERNS AND EXAMPLES
+============================
+
+Common Test Scenario Creation:
+
+const e2eService = new E2EFlowsService();
+
+const scenario = await e2eService.createScenario({
+  id: 'user-registration-flow',
+  name: 'Complete User Registration',
+  description: 'End-to-end user registration with email verification',
+  type: 'e2e',
+  environment: 'test',
+  steps: [
+    {
+      order: 1,
+      name: 'Navigate to registration page',
+      action: 'navigate',
+      parameters: { url: '/register' },
+      expectedResult: { pageTitle: 'Register - CVPlus' },
+      timeout: 5000
+    },
+    {
+      order: 2,
+      name: 'Fill registration form',
+      action: 'fillForm',
+      parameters: {
+        email: 'test@example.com',
+        password: 'SecurePass123!',
+        confirmPassword: 'SecurePass123!'
+      },
+      expectedResult: { formValid: true },
+      timeout: 3000
+    },
+    {
+      order: 3,
+      name: 'Submit registration',
+      action: 'submit',
+      parameters: { selector: '#registration-form' },
+      expectedResult: { status: 'success' },
+      timeout: 10000
+    }
+  ],
+  expectedOutcomes: [
+    {
+      type: 'functional',
+      condition: 'user_created',
+      expectedValue: true
+    }
+  ],
+  tags: ['registration', 'critical'],
+  timeout: 60000,
+  dependencies: [],
+  retryConfig: {
+    maxAttempts: 3,
+    delayMs: 1000,
+    exponentialBackoff: true,
+    retryableStatuses: ['FAILED', 'TIMEOUT']
+  }
+});
+
+Mock Data Generation Pattern:
+
+const mockDataService = new MockDataService({
+  maxSize: 50 * 1024 * 1024, // 50MB cache
+  maxAge: 2 * 60 * 60 * 1000, // 2 hours
+  compression: true
+});
+
+const cvData = await mockDataService.generateData({
+  type: 'cv',
+  category: 'technology',
+  count: 10,
+  locale: 'en_US',
+  seed: 'test-seed-123'
+});
+
+const userData = await mockDataService.generateFromTemplate('user-profile-template', {
+  count: 50,
+  customFields: {
+    department: 'engineering',
+    role: 'senior'
+  }
+});
+
+API Test Case Creation:
+
+const apiService = new APITestingService();
+
+const healthCheckTest = await apiService.createTestCase({
+  id: 'api-health-check',
+  name: 'API Health Check',
+  endpoint: '/api/health',
+  method: 'GET',
+  headers: {
+    'Accept': 'application/json',
+    'User-Agent': 'E2E-Test-Suite'
+  },
+  expectedStatus: 200,
+  expectedResponse: { status: 'healthy' },
+  timeout: 5000,
+  authentication: { type: 'none', credentials: {} },
+  assertions: [
+    {
+      type: 'status',
+      operator: 'equals',
+      expectedValue: 200,
+      description: 'Should return 200 status'
+    },
+    {
+      type: 'body',
+      field: 'status',
+      operator: 'equals',
+      expectedValue: 'healthy',
+      description: 'Status should be healthy'
+    },
+    {
+      type: 'performance',
+      operator: 'lt',
+      expectedValue: 1000,
+      description: 'Response time under 1 second'
+    }
+  ],
+  tags: ['health', 'critical']
+});
+
+Test Suite Execution:
+
+const suiteOptions: TestSuiteOptions = {
+  baseUrl: 'https://api.cvplus.com',
+  timeout: 30000,
+  retryFailures: true,
+  maxRetries: 2,
+  parallel: true,
+  maxConcurrency: 5,
+  validateSchema: true
+};
+
+const result = await apiService.executeTestSuite('integration-tests', suiteOptions);
+
+console.log(`Suite completed: ${result.passed}/${result.totalTests} passed`);
+console.log(`Average response time: ${result.summary.averageResponseTime}ms`);
+console.log(`Success rate: ${result.summary.successRate}%`);
+
+Load Testing Execution:
+
+npm run test:load:high  # 1000 users, 10 minutes
+npm run test:load:stress -- --users=5000  # Custom user count
+npm run test:load:breakpoint  # Progressive load testing
+
+Error Recovery Pattern:
+
+const executionOptions: ExecutionOptions = {
+  environment: 'production',
+  retryFailures: true,
+  collectMetrics: true,
+  saveArtifacts: true,
+  parallel: false  // Sequential for critical tests
+};
+
+try {
+  const result = await e2eService.executeScenario('critical-payment-flow', executionOptions);
+
+  if (result.status === 'failed') {
+    console.error('Critical test failed:', result.errors);
+
+    // Attempt manual verification
+    const retryResult = await e2eService.executeScenario('critical-payment-flow', {
+      ...executionOptions,
+      timeout: 120000  // Extended timeout
+    });
+  }
+} catch (error) {
+  console.error('Test execution error:', error);
+  // Implement escalation logic
+}
+
+COMMAND LINE INTERFACE
+=======================
+
+Available Scripts:
+- npm run test:e2e -- Execute contract and integration tests
+- npm run test:load:baseline -- 100 users baseline load test
+- npm run test:load:high -- 1000 users high load test
+- npm run test:load:stress -- 2000 users stress test
+- npm run test:smoke -- Quick smoke tests with 30s timeout
+- npm run mock-data:generate -- Generate mock test data
+- npm run api-test:suite -- Execute API test suite
+- npm run scenario:complete-journey -- Full user journey test
+
+CLI Commands:
+- ts-node src/cli/e2e-commands.ts run [scenario-id]
+- ts-node src/cli/mock-data-commands.ts generate --type=cv --count=100
+- ts-node src/cli/api-test-commands.ts endpoint --url=/api/health
+
+Environment Setup:
+- firebase emulators:start --only firestore,auth,storage
+- npm run dev:start  # Concurrent build and test watching
+
+This documentation provides comprehensive technical specifications for effective utilization of the CVPlus E2E Flows testing framework by AI systems and developers.

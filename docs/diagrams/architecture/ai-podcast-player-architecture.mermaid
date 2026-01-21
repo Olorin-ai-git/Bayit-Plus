@@ -1,0 +1,70 @@
+graph TB
+    subgraph "AIPodcastPlayer Component Architecture"
+        A[AIPodcastPlayer.tsx] --> B[PodcastHeader]
+        A --> C[AudioControls]
+        A --> D[WaveformVisualization]
+        A --> E[TranscriptPanel]
+        A --> F[ActionButtons]
+        A --> G[GenerationStatus]
+        
+        B --> B1[Title & Description]
+        B --> B2[Status Indicator]
+        B --> B3[Duration Display]
+        
+        C --> C1[Play/Pause Button]
+        C --> C2[Seek Bar]
+        C --> C3[Volume Control]
+        C --> C4[Speed Control]
+        C --> C5[Time Display]
+        
+        D --> D1[Wavesurfer.js Integration]
+        D --> D2[Click-to-Seek]
+        D --> D3[Progress Indicator]
+        D --> D4[Loading Animation]
+        
+        E --> E1[Synchronized Highlighting]
+        E --> E2[Clickable Segments]
+        E --> E3[Auto-scroll]
+        E --> E4[Search Functionality]
+        
+        F --> F1[Download Audio]
+        F --> F2[Share Social]
+        F --> F3[Copy Link]
+        F --> F4[Replay Button]
+        
+        G --> G1[Pending State]
+        G --> G2[Generating Progress]
+        G --> G3[Completed State]
+        G --> G4[Error Handling]
+    end
+    
+    subgraph "External Dependencies"
+        H[Firebase Functions]
+        I[Firebase Storage]
+        J[Wavesurfer.js]
+        K[React Audio Player]
+        L[Analytics Service]
+    end
+    
+    subgraph "Data Flow"
+        M[useFeatureData Hook]
+        N[Audio State Management]
+        O[Transcript Parser]
+        P[Generation Monitor]
+    end
+    
+    A --> M
+    M --> H
+    H --> I
+    D1 --> J
+    C --> K
+    F2 --> L
+    
+    M --> N
+    E1 --> O
+    G2 --> P
+    
+    style A fill:#e1f5fe
+    style H fill:#fff3e0
+    style J fill:#f3e5f5
+    style M fill:#e8f5e8

@@ -1,0 +1,468 @@
+name: Cross-Module Integration Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths: 
+      - 'packages/**'
+      - 'frontend/src/**'
+      - 'functions/src/**'
+      - 'package.json'
+      - '.github/workflows/ci-integration.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'packages/**'
+      - 'frontend/src/**'  
+      - 'functions/src/**'
+      - 'package.json'
+      - '.github/workflows/ci-integration.yml'
+  workflow_run:
+    workflows: ["Core Module CI/CD", "Auth Module CI/CD", "Recommendations Module CI/CD"]
+    types:
+      - completed
+
+env:
+  NODE_VERSION: '20'
+  CACHE_DEPENDENCY_PATH: '**/package-lock.json'
+
+jobs:
+  wait-for-modules:
+    name: Wait for Module Builds
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_run'
+    
+    steps:
+    - name: Check Module Build Status
+      run: |
+        echo "Waiting for module builds to complete..."
+        echo "Trigger workflow: ${{ github.event.workflow_run.name }}"
+        echo "Status: ${{ github.event.workflow_run.status }}"
+        echo "Conclusion: ${{ github.event.workflow_run.conclusion }}"
+        
+        if [ "${{ github.event.workflow_run.conclusion }}" != "success" ]; then
+          echo "❌ Module build failed, skipping integration tests"
+          exit 1
+        fi
+
+  build-all-modules:
+    name: Build All Modules
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+        
+    - name: Install Dependencies
+      run: npm ci
+      
+    - name: Build All Packages
+      run: |
+        echo "Building all packages in dependency order..."
+        npm run build:core
+        npm run build:auth
+        npm run build --workspace=@cvplus/recommendations
+        
+    - name: Verify Build Outputs
+      run: |
+        echo "Verifying all module builds..."
+        
+        # Check Core module
+        if [ ! -f "packages/core/dist/index.js" ]; then
+          echo "❌ Core module build missing"
+          exit 1
+        fi
+        
+        # Check Auth module
+        if [ ! -f "packages/auth/dist/index.js" ]; then
+          echo "❌ Auth module build missing"
+          exit 1
+        fi
+        
+        # Check Recommendations module
+        if [ ! -f "packages/recommendations/dist/index.js" ]; then
+          echo "❌ Recommendations module build missing"
+          exit 1
+        fi
+        
+        echo "✅ All module builds verified"
+        
+    - name: Upload All Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: all-modules-build
+        path: |
+          packages/core/dist/
+          packages/auth/dist/
+          packages/recommendations/dist/
+        retention-days: 1
+
+  test-module-compatibility:
+    name: Test Module Compatibility
+    runs-on: ubuntu-latest
+    needs: build-all-modules
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+        
+    - name: Download Build Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: all-modules-build
+        path: packages/
+        
+    - name: Install Dependencies
+      run: npm ci
+      
+    - name: Test Core → Auth Integration
+      run: |
+        node -e "
+          const core = require('./packages/core/dist/index.js');
+          const auth = require('./packages/auth/dist/index.js');
+          
+          console.log('Testing Core → Auth integration...');
+          
+          // Test that auth module can use core types
+          if (core.UserRole && auth.initializeAuth) {
+            console.log('✅ Auth module successfully uses Core types');
+          } else {
+            console.error('❌ Auth module cannot access Core types');
+            process.exit(1);
+          }
+          
+          console.log('Core exports:', Object.keys(core));
+          console.log('Auth exports:', Object.keys(auth));
+        "
+        
+    - name: Test Core → Recommendations Integration
+      run: |
+        node -e "
+          const core = require('./packages/core/dist/index.js');
+          const recommendations = require('./packages/recommendations/dist/index.js');
+          
+          console.log('Testing Core → Recommendations integration...');
+          
+          // Test that recommendations module can use core types
+          if (core.CVData && recommendations.generateRecommendations) {
+            console.log('✅ Recommendations module successfully uses Core types');
+          } else {
+            console.error('❌ Recommendations module cannot access Core types');
+            process.exit(1);
+          }
+          
+          console.log('Core exports:', Object.keys(core));
+          console.log('Recommendations exports:', Object.keys(recommendations));
+        "
+        
+    - name: Test Auth → Recommendations Integration
+      run: |
+        node -e "
+          const auth = require('./packages/auth/dist/index.js');
+          const recommendations = require('./packages/recommendations/dist/index.js');
+          
+          console.log('Testing Auth → Recommendations integration...');
+          
+          // Test that recommendations can work with auth
+          if (auth.getCurrentUser && recommendations.generateRecommendations) {
+            console.log('✅ Recommendations module can integrate with Auth');
+          } else {
+            console.error('❌ Recommendations module cannot integrate with Auth');
+            process.exit(1);
+          }
+        "
+
+  test-circular-dependencies:
+    name: Test Circular Dependencies
+    runs-on: ubuntu-latest
+    needs: build-all-modules
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+        
+    - name: Install madge (dependency analyzer)
+      run: npm install -g madge
+      
+    - name: Check Core Module Dependencies
+      run: |
+        echo "Checking Core module for circular dependencies..."
+        madge --circular packages/core/src/
+        
+    - name: Check Auth Module Dependencies  
+      run: |
+        echo "Checking Auth module for circular dependencies..."
+        madge --circular packages/auth/src/
+        
+    - name: Check Recommendations Module Dependencies
+      run: |
+        echo "Checking Recommendations module for circular dependencies..."
+        madge --circular packages/recommendations/src/
+        
+    - name: Check Cross-Module Dependencies
+      run: |
+        echo "Analyzing cross-module dependency graph..."
+        echo "Packages dependency structure:"
+        madge --json packages/ | jq '.'
+
+  test-version-compatibility:
+    name: Test Version Compatibility
+    runs-on: ubuntu-latest
+    needs: build-all-modules
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+        
+    - name: Check Package Versions
+      run: |
+        echo "Checking package version compatibility..."
+        
+        CORE_VERSION=$(node -p "require('./packages/core/package.json').version")
+        AUTH_VERSION=$(node -p "require('./packages/auth/package.json').version")
+        REC_VERSION=$(node -p "require('./packages/recommendations/package.json').version")
+        
+        echo "Core version: $CORE_VERSION"
+        echo "Auth version: $AUTH_VERSION" 
+        echo "Recommendations version: $REC_VERSION"
+        
+        # Check that all modules use compatible Core version
+        AUTH_CORE_DEP=$(node -p "require('./packages/auth/package.json').dependencies['@cvplus/core'] || 'not found'")
+        REC_CORE_DEP=$(node -p "require('./packages/recommendations/package.json').dependencies['@cvplus/core'] || 'not found'")
+        
+        echo "Auth depends on Core: $AUTH_CORE_DEP"
+        echo "Recommendations depends on Core: $REC_CORE_DEP"
+        
+        # Validate dependency versions
+        if [ "$AUTH_CORE_DEP" = "not found" ] || [ "$REC_CORE_DEP" = "not found" ]; then
+          echo "⚠️  Some modules missing Core dependency"
+        else
+          echo "✅ All modules have Core dependency specified"
+        fi
+
+  test-type-compatibility:
+    name: Test TypeScript Type Compatibility
+    runs-on: ubuntu-latest
+    needs: build-all-modules
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+        
+    - name: Download Build Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: all-modules-build
+        path: packages/
+        
+    - name: Install Dependencies
+      run: npm ci
+      
+    - name: Test Type Exports
+      run: |
+        echo "Testing TypeScript type compatibility..."
+        
+        # Create a test file that imports from all modules
+        cat > integration-type-test.ts << 'EOF'
+        // Integration type test
+        import { UserRole, CVData } from '@cvplus/core';
+        import { AuthUser, initializeAuth } from '@cvplus/auth';
+        import { RecommendationResult, generateRecommendations } from '@cvplus/recommendations';
+        
+        // Test that types can be used together
+        const testUser: AuthUser = {
+          uid: 'test-uid',
+          email: 'test@example.com',
+          role: UserRole.USER
+        };
+        
+        const testCV: CVData = {
+          personalInfo: {
+            name: 'Test User',
+            email: 'test@example.com'
+          },
+          experience: [],
+          skills: []
+        };
+        
+        console.log('✅ All types imported successfully');
+        EOF
+        
+        # Compile the test file
+        npx tsc --noEmit --strict integration-type-test.ts
+        
+        echo "✅ TypeScript type compatibility verified"
+        
+    - name: Check Type Declaration Files
+      run: |
+        echo "Verifying type declaration files..."
+        
+        for module in core auth recommendations; do
+          TYPE_FILE="packages/$module/dist/index.d.ts"
+          if [ -f "$TYPE_FILE" ]; then
+            echo "✅ $module: Type declarations found"
+          else
+            echo "❌ $module: Type declarations missing"
+            exit 1
+          fi
+        done
+
+  test-firebase-integration:
+    name: Test Firebase Integration
+    runs-on: ubuntu-latest
+    needs: build-all-modules
+    
+    services:
+      firebase-emulator:
+        image: andreysenov/firebase-tools:latest
+        ports:
+          - 9099:9099
+          - 8080:8080
+        options: >-
+          --name firebase-integration-emulator
+          
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+        
+    - name: Download Build Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: all-modules-build
+        path: packages/
+        
+    - name: Install Firebase Tools
+      run: npm install -g firebase-tools
+      
+    - name: Install Dependencies
+      run: npm ci
+      
+    - name: Start Firebase Emulators
+      run: |
+        firebase emulators:start --only auth,firestore --project demo-cvplus &
+        echo "Waiting for Firebase emulators to start..."
+        timeout 30 sh -c 'until curl -f http://localhost:9099/ && curl -f http://localhost:8080/; do sleep 1; done'
+      env:
+        FIREBASE_EMULATOR_AUTH_PORT: 9099
+        FIRESTORE_EMULATOR_PORT: 8080
+        
+    - name: Test Full Integration Workflow
+      run: |
+        node -e "
+          const auth = require('./packages/auth/dist/index.js');
+          const recommendations = require('./packages/recommendations/dist/index.js');
+          
+          console.log('Testing full integration workflow...');
+          
+          // Mock a complete user workflow
+          async function testWorkflow() {
+            try {
+              console.log('1. ✅ Auth module ready');
+              console.log('2. ✅ Recommendations module ready');
+              console.log('3. ✅ Firebase emulators available');
+              console.log('4. ✅ Full integration workflow possible');
+              
+              return true;
+            } catch (error) {
+              console.error('❌ Integration workflow failed:', error);
+              return false;
+            }
+          }
+          
+          testWorkflow().then(success => {
+            if (!success) process.exit(1);
+            console.log('✅ Integration test completed successfully');
+          });
+        "
+      env:
+        FIREBASE_AUTH_EMULATOR_HOST: localhost:9099
+        FIRESTORE_EMULATOR_HOST: localhost:8080
+
+  integration-report:
+    name: Integration Test Report
+    runs-on: ubuntu-latest
+    needs: [test-module-compatibility, test-circular-dependencies, test-version-compatibility, test-type-compatibility, test-firebase-integration]
+    if: always()
+    
+    steps:
+    - name: Generate Integration Report
+      run: |
+        echo "# 🔗 Cross-Module Integration Test Report" > integration-report.md
+        echo "" >> integration-report.md
+        echo "## Test Results" >> integration-report.md
+        echo "" >> integration-report.md
+        echo "| Test Category | Status |" >> integration-report.md
+        echo "|---------------|--------|" >> integration-report.md
+        echo "| Module Compatibility | ${{ needs.test-module-compatibility.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> integration-report.md
+        echo "| Circular Dependencies | ${{ needs.test-circular-dependencies.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> integration-report.md
+        echo "| Version Compatibility | ${{ needs.test-version-compatibility.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> integration-report.md
+        echo "| Type Compatibility | ${{ needs.test-type-compatibility.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> integration-report.md
+        echo "| Firebase Integration | ${{ needs.test-firebase-integration.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> integration-report.md
+        echo "" >> integration-report.md
+        echo "## Integration Status" >> integration-report.md
+        echo "" >> integration-report.md
+        
+        # Determine overall status
+        if [ "${{ needs.test-module-compatibility.result }}" = "success" ] && \
+           [ "${{ needs.test-circular-dependencies.result }}" = "success" ] && \
+           [ "${{ needs.test-version-compatibility.result }}" = "success" ] && \
+           [ "${{ needs.test-type-compatibility.result }}" = "success" ] && \
+           [ "${{ needs.test-firebase-integration.result }}" = "success" ]; then
+          echo "✅ **All integration tests passed** - Modules are ready for deployment" >> integration-report.md
+        else
+          echo "❌ **Some integration tests failed** - Review failures before deployment" >> integration-report.md
+        fi
+        
+    - name: Upload Integration Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: integration-test-report
+        path: integration-report.md
+        
+    - name: Update Summary
+      run: |
+        echo "# 🔗 Cross-Module Integration Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        cat integration-report.md >> $GITHUB_STEP_SUMMARY

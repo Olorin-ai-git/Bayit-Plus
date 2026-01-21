@@ -1,0 +1,179 @@
+# Phase 5 Implementation Flow Diagram
+
+```mermaid
+flowchart TD
+    A[Phase 5: CV Integration & Polish] --> B[Objective 1: File Refactoring]
+    A --> C[Objective 2: CSS Animations]
+    A --> D[Objective 3: Environment Config]
+    A --> E[Objective 4: Error Boundaries]
+    A --> F[Objective 5: Integration Testing]
+    A --> G[Objective 6: Final UX Polish]
+    
+    B --> B1[Extract FeatureProgressCard]
+    B --> B2[Create useAsyncMode hook]
+    B --> B3[Create useProgressTracking hook]
+    B --> B4[Create useCVGeneration hook]
+    B --> B5[Move featureConfigs]
+    B --> B6[Refactor FinalResultsPage to 199 lines]
+    
+    C --> C1[Loading Animations]
+    C --> C2[Progress Animations]
+    C --> C3[Lightning Effects]
+    C --> C4[Transition Systems]
+    
+    D --> D1[.env Configuration]
+    D --> D2[Development Environment]
+    D --> D3[Production Environment]
+    D --> D4[Feature Flag Setup]
+    
+    E --> E1[FinalResultsErrorBoundary]
+    E --> E2[AsyncGenerationErrorBoundary]
+    E --> E3[Error Recovery Logic]
+    E --> E4[Fallback UI Components]
+    
+    F --> F1[Unit Testing]
+    F --> F2[Integration Testing]
+    F --> F3[E2E Testing]
+    F --> F4[Performance Testing]
+    F --> F5[Cross-Browser Testing]
+    
+    G --> G1[Loading State Polish]
+    G --> G2[Micro-interactions]
+    G --> G3[Accessibility Improvements]
+    G --> G4[Toast Notifications]
+    
+    B6 --> H[200-Line Compliance Check]
+    H --> I{All Files < 200 Lines?}
+    I -->|Yes| J[Quality Gates Passed]
+    I -->|No| K[Further Refactoring Required]
+    K --> B
+    
+    J --> L[Production Ready]
+    F5 --> L
+    G4 --> L
+    
+    L --> M[Feature Flag Deployment]
+    M --> N[Gradual Rollout]
+    N --> O[Full Production]
+    
+    style A fill:#e1f5fe
+    style L fill:#c8e6c9
+    style O fill:#4caf50
+    style H fill:#fff3e0
+    style I fill:#ffeb3b
+```
+
+## Component Extraction Structure
+
+```mermaid
+flowchart LR
+    A[FinalResultsPage.tsx<br/>1,050 lines] --> B[Refactored Structure]
+    
+    B --> C[FinalResultsPage.tsx<br/>199 lines]
+    B --> D[FeatureProgressCard.tsx<br/>50 lines]
+    B --> E[useAsyncMode.ts<br/>30 lines]
+    B --> F[useProgressTracking.ts<br/>80 lines]
+    B --> G[useCVGeneration.ts<br/>120 lines]
+    B --> H[featureConfigs.ts<br/>40 lines]
+    B --> I[Error Boundaries<br/>140 lines total]
+    B --> J[CSS Animations<br/>100 lines]
+    
+    C --> K[Core Logic Only]
+    C --> L[Hook Integration]
+    C --> M[Component Composition]
+    
+    D --> N[Progress Display]
+    D --> O[Status Indicators]
+    D --> P[Animation Triggers]
+    
+    E --> Q[Async Detection]
+    E --> R[Mode Switching]
+    
+    F --> S[Firestore Subscription]
+    F --> T[Real-time Updates]
+    
+    G --> U[CV Generation]
+    G --> V[Error Handling]
+    
+    style A fill:#ffcdd2
+    style C fill:#c8e6c9
+    style K fill:#e8f5e8
+    style L fill:#e8f5e8
+    style M fill:#e8f5e8
+```
+
+## Async Mode Integration Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant FRP as FinalResultsPage
+    participant UAM as useAsyncMode
+    participant UPT as useProgressTracking
+    participant UCG as useCVGeneration
+    participant FS as Firestore
+    participant UI as UI Components
+    
+    U->>FRP: Navigate to /final-results/:jobId
+    FRP->>UAM: Initialize async mode detection
+    UAM->>UAM: Check VITE_ENABLE_ASYNC_CV_GENERATION
+    UAM->>UAM: Check session storage config
+    UAM-->>FRP: Return async mode state
+    
+    alt Async Mode Enabled
+        FRP->>UPT: Setup progress tracking
+        UPT->>FS: Subscribe to job updates
+        FS-->>UPT: Real-time progress updates
+        UPT-->>UI: Update progress cards
+        UI-->>U: Show Fast Track indicators
+    else Sync Mode
+        FRP->>UCG: Trigger CV generation
+        UCG->>UCG: Generate CV synchronously
+        UCG-->>FRP: Return generated CV
+        FRP-->>UI: Show completed CV
+    end
+    
+    loop Progress Updates
+        FS->>UPT: Feature status change
+        UPT->>UI: Update progress card
+        UI->>UI: Animate progress change
+        UI-->>U: Visual feedback
+    end
+    
+    UPT->>FRP: All features complete
+    FRP->>UI: Show success state
+    UI-->>U: CV ready for download
+```
+
+## Error Boundary Structure
+
+```mermaid
+flowchart TD
+    A[App Level] --> B[FinalResultsErrorBoundary]
+    B --> C[FinalResultsPage]
+    C --> D[AsyncGenerationErrorBoundary]
+    D --> E[CV Generation Components]
+    
+    E --> F[FeatureProgressCard]
+    E --> G[ProgressDashboard]
+    E --> H[CVDisplayContainer]
+    
+    B --> B1[Catch Page-Level Errors]
+    B --> B2[Show Fallback UI]
+    B --> B3[Log Error Details]
+    B --> B4[Provide Recovery Options]
+    
+    D --> D1[Catch Generation Errors]
+    D --> D2[Fallback to Sync Mode]
+    D --> D3[Progress Recovery]
+    D --> D4[User Notification]
+    
+    F --> F1[Individual Card Errors]
+    G --> G1[Dashboard Errors]
+    H --> H1[CV Display Errors]
+    
+    style B fill:#ffebee
+    style D fill:#fff3e0
+    style B2 fill:#ffcdd2
+    style D2 fill:#ffe0b2
+```

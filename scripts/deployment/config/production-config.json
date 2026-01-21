@@ -1,0 +1,168 @@
+{
+  "production": {
+    "validation": {
+      "requireSecurityScan": true,
+      "requirePerformanceBaseline": true,
+      "requireComplianceCheck": true,
+      "strictModeEnabled": true,
+      "allowedWarningTypes": ["deprecation", "info"],
+      "failOnSecurityVulnerabilities": true,
+      "environmentVariableChecks": [
+        "ANTHROPIC_API_KEY",
+        "OPENAI_API_KEY", 
+        "ELEVENLABS_API_KEY",
+        "STRIPE_SECRET_KEY"
+      ],
+      "requiredTests": {
+        "unitTestCoverage": 80,
+        "integrationTestsPassing": true,
+        "e2eTestsPassing": false
+      }
+    },
+    "blueGreen": {
+      "enabled": true,
+      "healthCheckDuration": 300,
+      "trafficSwitchDelay": 60,
+      "rollbackThreshold": 0.95,
+      "canaryPercentage": 10,
+      "canaryDuration": 180,
+      "slots": {
+        "blue": {
+          "firebaseProject": "cvplus-blue",
+          "hostingChannel": "blue"
+        },
+        "green": {
+          "firebaseProject": "cvplus-green", 
+          "hostingChannel": "green"
+        }
+      }
+    },
+    "monitoring": {
+      "alertingEnabled": true,
+      "slaMonitoring": true,
+      "performanceBaselines": {
+        "functionColdStart": 3000,
+        "hostingResponseTime": 1000,
+        "firestoreLatency": 100,
+        "apiResponseTime": 2000
+      },
+      "businessMetrics": {
+        "cvGenerationSuccess": 0.98,
+        "userRegistrationSuccess": 0.99,
+        "paymentProcessingSuccess": 0.995
+      },
+      "healthCheckInterval": 30,
+      "errorThreshold": 0.05,
+      "alertingChannels": {
+        "slack": true,
+        "email": true,
+        "sms": false
+      }
+    },
+    "rollback": {
+      "automaticRollbackEnabled": true,
+      "rollbackTriggers": [
+        "healthCheckFailure",
+        "errorThresholdExceeded", 
+        "performanceDegradation",
+        "securityViolation",
+        "criticalFunctionFailure"
+      ],
+      "maxRollbackTime": 300,
+      "preserveUserData": true,
+      "rollbackValidation": true
+    },
+    "security": {
+      "corsValidation": true,
+      "httpsOnly": true,
+      "apiKeyRotation": false,
+      "vulnerabilityScanning": true,
+      "securityHeaders": {
+        "strictTransportSecurity": true,
+        "contentSecurityPolicy": true,
+        "xFrameOptions": true
+      }
+    },
+    "performance": {
+      "bundleAnalysis": true,
+      "codeMinification": true,
+      "compressionEnabled": true,
+      "cdnEnabled": true,
+      "cacheOptimization": true,
+      "functionConcurrency": {
+        "max": 1000,
+        "perFunction": 100
+      }
+    },
+    "compliance": {
+      "gdprCompliance": true,
+      "dataRetentionPolicies": true,
+      "auditLogging": true,
+      "accessControls": true
+    },
+    "timeouts": {
+      "deployment": 3600,
+      "healthCheck": 600,
+      "rollback": 300,
+      "validation": 900,
+      "functionDeployment": 1800
+    },
+    "retryPolicies": {
+      "maxRetries": 5,
+      "backoffMultiplier": 2,
+      "maxBackoffDelay": 300,
+      "retryableErrors": [
+        "NETWORK_ERROR",
+        "QUOTA_EXCEEDED",
+        "TEMPORARY_FAILURE"
+      ]
+    },
+    "notifications": {
+      "deploymentStart": true,
+      "deploymentSuccess": true,
+      "deploymentFailure": true,
+      "rollbackTriggered": true,
+      "healthCheckFailure": true,
+      "stakeholders": [
+        "devops-team@cvplus.com",
+        "engineering-lead@cvplus.com"
+      ]
+    }
+  },
+  "staging": {
+    "validation": {
+      "requireSecurityScan": false,
+      "requirePerformanceBaseline": false,
+      "strictModeEnabled": false,
+      "allowedWarningTypes": ["deprecation", "info", "warning"]
+    },
+    "blueGreen": {
+      "enabled": false
+    },
+    "monitoring": {
+      "alertingEnabled": false,
+      "slaMonitoring": false
+    },
+    "rollback": {
+      "automaticRollbackEnabled": false
+    }
+  },
+  "development": {
+    "validation": {
+      "requireSecurityScan": false,
+      "requirePerformanceBaseline": false,
+      "strictModeEnabled": false,
+      "allowedWarningTypes": ["deprecation", "info", "warning", "error"]
+    },
+    "blueGreen": {
+      "enabled": false
+    },
+    "monitoring": {
+      "alertingEnabled": false,
+      "slaMonitoring": false
+    },
+    "rollback": {
+      "automaticRollbackEnabled": false
+    }
+  }
+}

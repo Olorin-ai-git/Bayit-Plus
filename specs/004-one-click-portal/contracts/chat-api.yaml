@@ -1,0 +1,585 @@
+paths:
+  /api/portal/{portalId}/chat:
+    post:
+      tags:
+        - RAG Chat
+      summary: Send message to portal AI
+      description: |
+        Sends a message to the portal's RAG-powered AI assistant and receives an intelligent response based on the CV content.
+
+        **RAG Process**:
+        1. Message is analyzed for intent and context
+        2. Relevant CV sections are retrieved using semantic search
+        3. AI generates response with CV context and citations
+        4. Response includes confidence score and source references
+
+        **Rate Limiting**: 10 messages per minute, 100 per hour per session
+
+        **Public Access**: This endpoint is publicly accessible for enabled portals
+      operationId: sendChatMessage
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Portal identifier
+          example: "portal_abc123def456"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                  description: User message to the AI assistant
+                  example: "What programming languages does this candidate know?"
+                sessionId:
+                  type: string
+                  description: Chat session identifier (optional, will be created if not provided)
+                  example: "session_abc123"
+                context:
+                  type: object
+                  description: Additional context for the conversation
+                  properties:
+                    previousMessages:
+                      type: integer
+                      description: Number of previous messages in conversation
+                      example: 3
+                    focusArea:
+                      type: string
+                      enum: ["experience", "skills", "education", "projects", "general"]
+                      description: Hint about what area of CV to focus on
+                      example: "skills"
+                visitorInfo:
+                  type: object
+                  description: Anonymous visitor context for analytics
+                  properties:
+                    userAgent:
+                      type: string
+                      example: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+                    referrer:
+                      type: string
+                      example: "https://linkedin.com/in/johnsmith"
+                    timezone:
+                      type: string
+                      example: "America/New_York"
+            examples:
+              basic_question:
+                summary: Basic question about skills
+                value:
+                  message: "What programming languages does this candidate know?"
+                  sessionId: "session_abc123"
+              follow_up:
+                summary: Follow-up question with context
+                value:
+                  message: "Can you give me specific examples of their React projects?"
+                  sessionId: "session_abc123"
+                  context:
+                    previousMessages: 2
+                    focusArea: "projects"
+              recruiter_inquiry:
+                summary: Detailed recruiter inquiry
+                value:
+                  message: "I'm looking for a senior developer with 5+ years of experience in microservices. Does this candidate fit?"
+                  visitorInfo:
+                    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+                    referrer: "https://indeed.com/jobs"
+      responses:
+        '200':
+          description: AI response generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  response:
+                    type: object
+                    properties:
+                      content:
+                        type: string
+                        description: AI-generated response content
+                        example: "Based on the CV, this candidate has extensive experience with JavaScript, Python, and Java. They have worked with React for over 4 years, building several large-scale applications including an e-commerce platform and a data visualization dashboard."
+                      messageId:
+                        type: string
+                        description: Unique identifier for this message
+                        example: "msg_def456ghi789"
+                      timestamp:
+                        type: string
+                        format: date-time
+                        example: "2025-09-13T20:30:00Z"
+                      confidence:
+                        type: number
+                        minimum: 0
+                        maximum: 1
+                        description: AI confidence in the response accuracy
+                        example: 0.92
+                      sources:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            section:
+                              type: string
+                              description: CV section that informed the response
+                              example: "Technical Skills"
+                            content:
+                              type: string
+                              description: Specific content from the CV
+                              example: "JavaScript (5+ years), React.js, Node.js, Python, Java"
+                            relevance:
+                              type: number
+                              minimum: 0
+                              maximum: 1
+                              description: Relevance score for this source
+                              example: 0.95
+                        description: Source citations from CV content
+                  session:
+                    type: object
+                    properties:
+                      sessionId:
+                        type: string
+                        example: "session_abc123"
+                      messageCount:
+                        type: integer
+                        description: Total messages in this session
+                        example: 4
+                      duration:
+                        type: integer
+                        description: Session duration in seconds
+                        example: 287
+                  suggestions:
+                    type: array
+                    items:
+                      type: string
+                    description: Suggested follow-up questions
+                    example:
+                      - "What is their experience with cloud platforms?"
+                      - "Can you tell me about their leadership experience?"
+                      - "What industries have they worked in?"
+                  rateLimiting:
+                    type: object
+                    properties:
+                      remaining:
+                        type: integer
+                        description: Messages remaining in current rate limit window
+                        example: 8
+                      resetTime:
+                        type: string
+                        format: date-time
+                        description: When rate limit resets
+                        example: "2025-09-13T20:35:00Z"
+              examples:
+                successful_response:
+                  summary: Successful AI response with sources
+                  value:
+                    success: true
+                    response:
+                      content: "Based on the CV, this candidate has extensive experience with JavaScript, Python, and Java. They have worked with React for over 4 years, building several large-scale applications including an e-commerce platform and a data visualization dashboard."
+                      messageId: "msg_def456ghi789"
+                      timestamp: "2025-09-13T20:30:00Z"
+                      confidence: 0.92
+                      sources:
+                        - section: "Technical Skills"
+                          content: "JavaScript (5+ years), React.js, Node.js, Python, Java"
+                          relevance: 0.95
+                        - section: "Work Experience"
+                          content: "Led development of React-based e-commerce platform serving 100k+ users"
+                          relevance: 0.87
+                    session:
+                      sessionId: "session_abc123"
+                      messageCount: 4
+                      duration: 287
+                    suggestions:
+                      - "What is their experience with cloud platforms?"
+                      - "Can you tell me about their leadership experience?"
+                      - "What industries have they worked in?"
+                    rateLimiting:
+                      remaining: 8
+                      resetTime: "2025-09-13T20:35:00Z"
+        '400':
+          $ref: '../openapi.yaml#/components/responses/ValidationError'
+        '404':
+          $ref: '../openapi.yaml#/components/responses/NotFoundError'
+        '429':
+          $ref: '../openapi.yaml#/components/responses/RateLimitError'
+        '500':
+          $ref: '../openapi.yaml#/components/responses/InternalError'
+
+  /api/portal/{portalId}/chat/history:
+    get:
+      tags:
+        - RAG Chat
+      summary: Get chat history
+      description: |
+        Retrieves chat message history for a specific session or portal.
+
+        **Access Control**:
+        - Portal owners can access all chat histories
+        - Session participants can access their session history
+        - Public portals allow session-specific access
+
+        **Privacy**: Personal information is anonymized for non-owners
+      operationId: getChatHistory
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Portal identifier
+          example: "portal_abc123def456"
+        - name: sessionId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Specific session to retrieve (required for non-owners)
+          example: "session_abc123"
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          description: Maximum number of messages to retrieve
+          example: 20
+        - name: before
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Retrieve messages before this timestamp
+          example: "2025-09-13T20:30:00Z"
+        - name: includeSystem
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: Include system messages in response
+      responses:
+        '200':
+          description: Chat history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  messages:
+                    type: array
+                    items:
+                      $ref: '../schemas.yaml#/components/schemas/ChatMessage'
+                  session:
+                    type: object
+                    properties:
+                      sessionId:
+                        type: string
+                        example: "session_abc123"
+                      startedAt:
+                        type: string
+                        format: date-time
+                        example: "2025-09-13T20:25:00Z"
+                      lastActivity:
+                        type: string
+                        format: date-time
+                        example: "2025-09-13T20:30:00Z"
+                      totalMessages:
+                        type: integer
+                        example: 8
+                      isActive:
+                        type: boolean
+                        example: true
+                  pagination:
+                    type: object
+                    properties:
+                      hasMore:
+                        type: boolean
+                        example: false
+                      nextCursor:
+                        type: string
+                        nullable: true
+                        example: null
+        '403':
+          $ref: '../openapi.yaml#/components/responses/ForbiddenError'
+        '404':
+          $ref: '../openapi.yaml#/components/responses/NotFoundError'
+
+  /api/portal/{portalId}/chat/session:
+    post:
+      tags:
+        - RAG Chat
+      summary: Initialize chat session
+      description: |
+        Creates a new chat session for the portal or validates an existing session.
+
+        **Session Management**:
+        - Sessions auto-expire after 4 hours of inactivity
+        - Maximum 5 concurrent sessions per IP address
+        - Session tokens are used for anonymous access
+
+        **Analytics**: Session creation is tracked for portal analytics
+      operationId: initializeChatSession
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Portal identifier
+          example: "portal_abc123def456"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sessionId:
+                  type: string
+                  description: Existing session ID to validate/resume
+                  example: "session_abc123"
+                visitorInfo:
+                  type: object
+                  description: Anonymous visitor metadata for analytics
+                  properties:
+                    referrer:
+                      type: string
+                      example: "https://linkedin.com/in/johnsmith"
+                    timezone:
+                      type: string
+                      example: "America/New_York"
+                    language:
+                      type: string
+                      example: "en-US"
+            examples:
+              new_session:
+                summary: Initialize new chat session
+                value:
+                  visitorInfo:
+                    referrer: "https://linkedin.com/in/johnsmith"
+                    timezone: "America/New_York"
+              resume_session:
+                summary: Resume existing session
+                value:
+                  sessionId: "session_abc123"
+      responses:
+        '200':
+          description: Chat session initialized or resumed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  session:
+                    type: object
+                    properties:
+                      sessionId:
+                        type: string
+                        example: "session_abc123"
+                      isNew:
+                        type: boolean
+                        description: Whether this is a newly created session
+                        example: true
+                      expiresAt:
+                        type: string
+                        format: date-time
+                        description: Session expiration time
+                        example: "2025-09-14T00:30:00Z"
+                      capabilities:
+                        type: object
+                        properties:
+                          aiChat:
+                            type: boolean
+                            example: true
+                          sourceReferences:
+                            type: boolean
+                            example: true
+                          suggestedQuestions:
+                            type: boolean
+                            example: true
+                  rateLimiting:
+                    type: object
+                    properties:
+                      messagesPerMinute:
+                        type: integer
+                        example: 10
+                      messagesPerHour:
+                        type: integer
+                        example: 100
+                  welcomeMessage:
+                    type: string
+                    description: AI-generated welcome message based on CV
+                    example: "Hello! I'm here to help you learn about John Smith's professional background. Feel free to ask about his experience, skills, or any specific projects you're interested in."
+        '404':
+          $ref: '../openapi.yaml#/components/responses/NotFoundError'
+        '429':
+          $ref: '../openapi.yaml#/components/responses/RateLimitError'
+
+  /api/portal/{portalId}/chat/session/{sessionId}:
+    delete:
+      tags:
+        - RAG Chat
+      summary: End chat session
+      description: |
+        Ends an active chat session and cleans up resources.
+
+        **Actions Performed**:
+        - Session marked as inactive
+        - Rate limiting counters reset
+        - Analytics data finalized
+        - Resources deallocated
+
+        **Note**: Session data is preserved for analytics and can be retrieved later
+      operationId: endChatSession
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Portal identifier
+          example: "portal_abc123def456"
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Session identifier to end
+          example: "session_abc123"
+      responses:
+        '200':
+          description: Chat session ended successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  sessionId:
+                    type: string
+                    example: "session_abc123"
+                  endedAt:
+                    type: string
+                    format: date-time
+                    example: "2025-09-13T20:30:00Z"
+                  summary:
+                    type: object
+                    properties:
+                      duration:
+                        type: integer
+                        description: Session duration in seconds
+                        example: 420
+                      totalMessages:
+                        type: integer
+                        example: 6
+                      topicsDiscussed:
+                        type: array
+                        items:
+                          type: string
+                        example: ["technical skills", "work experience", "project portfolio"]
+        '404':
+          $ref: '../openapi.yaml#/components/responses/NotFoundError'
+        '403':
+          $ref: '../openapi.yaml#/components/responses/ForbiddenError'
+
+    get:
+      tags:
+        - RAG Chat
+      summary: Get chat session details
+      description: |
+        Retrieves detailed information about a specific chat session.
+
+        **Information Included**:
+        - Session metadata and status
+        - Participant information (anonymized)
+        - Performance metrics
+        - Recent activity summary
+
+        **Access Control**: Portal owners and session participants only
+      operationId: getChatSession
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Portal identifier
+          example: "portal_abc123def456"
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Session identifier
+          example: "session_abc123"
+      responses:
+        '200':
+          description: Chat session details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  session:
+                    $ref: '../schemas.yaml#/components/schemas/ChatSession'
+                  analytics:
+                    type: object
+                    properties:
+                      averageResponseTime:
+                        type: number
+                        description: Average AI response time in milliseconds
+                        example: 2345.7
+                      averageConfidence:
+                        type: number
+                        description: Average confidence score for responses
+                        example: 0.87
+                      topTopics:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            topic:
+                              type: string
+                              example: "technical skills"
+                            frequency:
+                              type: integer
+                              example: 3
+                      sourcesUsed:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            section:
+                              type: string
+                              example: "Work Experience"
+                            accessCount:
+                              type: integer
+                              example: 5
+        '404':
+          $ref: '../openapi.yaml#/components/responses/NotFoundError'
+        '403':
+          $ref: '../openapi.yaml#/components/responses/ForbiddenError'

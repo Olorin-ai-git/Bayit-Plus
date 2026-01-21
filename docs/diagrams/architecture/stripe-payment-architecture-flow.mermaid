@@ -1,0 +1,81 @@
+```mermaid
+graph TD
+    A[User on CVPlus] --> B{Tries Premium Feature}
+    B -->|Has Premium| C[Access Granted]
+    B -->|No Premium| D[Show Upgrade Prompt]
+    
+    D --> E[Navigate to Pricing Page]
+    E --> F[Compare Free vs Premium]
+    F --> G[Click Upgrade - $5]
+    
+    G --> H[Stripe Payment Form]
+    H --> I[Enter Card Details]
+    I --> J[Submit Payment]
+    
+    J --> K[Create Payment Intent]
+    K --> L[Firebase Function: createPaymentIntent]
+    L --> M[Stripe API: Create Intent]
+    M --> N[Return Client Secret]
+    
+    N --> O[Frontend: Confirm Payment]
+    O --> P[Stripe: Process Payment]
+    P --> Q{Payment Success?}
+    
+    Q -->|Success| R[Stripe Webhook: payment.succeeded]
+    Q -->|Failed| S[Show Error Message]
+    
+    R --> T[Firebase Function: handleStripeWebhook]
+    T --> U[Update Firestore: User Premium Status]
+    U --> V[Unlock Premium Features]
+    
+    V --> W[Redirect to Success Page]
+    W --> X[User Can Access Premium Features]
+    
+    S --> Y[Retry Payment or Support]
+    
+    subgraph "Premium Features"
+        C1[Web Portal Generation]
+        C2[AI Chat Assistant] 
+        C3[AI Career Podcast]
+        C4[Advanced Analytics]
+    end
+    
+    X --> C1
+    X --> C2
+    X --> C3
+    X --> C4
+    
+    subgraph "Payment Security"
+        PS1[Stripe Elements - No Card Storage]
+        PS2[Server-Side Validation]
+        PS3[Webhook Verification]
+        PS4[Audit Logging]
+    end
+    
+    H --> PS1
+    L --> PS2
+    T --> PS3
+    U --> PS4
+    
+    subgraph "Database Updates"
+        DB1[userSubscriptions Collection]
+        DB2[paymentHistory Collection]
+        DB3[users Collection - Premium Status]
+    end
+    
+    U --> DB1
+    U --> DB2
+    U --> DB3
+    
+    subgraph "Feature Gating System"
+        FG1[FeatureGate Component]
+        FG2[useFeatureAccess Hook]
+        FG3[premiumGuard Middleware]
+        FG4[checkFeatureAccess Function]
+    end
+    
+    B --> FG1
+    FG1 --> FG2
+    C --> FG3
+    FG3 --> FG4
+```

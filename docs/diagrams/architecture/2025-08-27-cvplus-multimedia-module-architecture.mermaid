@@ -1,0 +1,122 @@
+graph TB
+    subgraph "CVPlus Multimedia Module Architecture"
+        subgraph "API Layer"
+            API[API Interface]
+            Hooks[React Hooks]
+            Components[UI Components]
+        end
+
+        subgraph "Service Layer"
+            ImageService[Image Processing Service]
+            VideoService[Video Processing Service]  
+            AudioService[Audio Processing Service]
+            StorageService[Storage Management Service]
+            JobService[Job Processing Service]
+        end
+
+        subgraph "Processing Layer"
+            ImageProcessor[Image Processor<br/>- Sharp Integration<br/>- Format Conversion<br/>- Responsive Generation]
+            VideoProcessor[Video Processor<br/>- FFmpeg.js<br/>- Transcoding<br/>- Thumbnail Generation]
+            AudioProcessor[Audio Processor<br/>- Web Audio API<br/>- Format Conversion<br/>- Enhancement]
+        end
+
+        subgraph "Storage Layer"
+            Firebase[Firebase Storage<br/>- File Upload<br/>- Progress Tracking<br/>- Access Control]
+            AWS[AWS S3<br/>- CloudFront CDN<br/>- Storage Tiering<br/>- Cost Optimization]
+            Cache[Caching Layer<br/>- Processed Files<br/>- CDN Edge Cache<br/>- Browser Cache]
+        end
+
+        subgraph "Job Management"
+            Queue[Processing Queue<br/>- Async Jobs<br/>- Priority Handling<br/>- Retry Logic]
+            Monitor[Progress Monitor<br/>- Real-time Updates<br/>- Status Tracking<br/>- Error Handling]
+            Batch[Batch Processor<br/>- Multi-file Processing<br/>- Resource Management<br/>- Progress Aggregation]
+        end
+
+        subgraph "Quality & Security"
+            Validator[Input Validator<br/>- File Type Check<br/>- Size Limits<br/>- Content Scanning]
+            Security[Security Layer<br/>- Access Control<br/>- Encryption<br/>- Audit Logging]
+            Analytics[Analytics<br/>- Performance Metrics<br/>- Quality Scoring<br/>- Usage Tracking]
+        end
+
+        subgraph "External Dependencies"
+            Sharp[Sharp Library]
+            FFmpeg[FFmpeg.js]
+            WebAudio[Web Audio API]
+            FirebaseSDK[Firebase SDK]
+            AWSSDK[AWS SDK]
+        end
+
+        subgraph "CVPlus Integration"
+            Core[@cvplus/core<br/>- Shared Types<br/>- Constants<br/>- Utilities]
+            Auth[@cvplus/auth<br/>- User Authentication<br/>- Permission Checks<br/>- Premium Features]
+        end
+    end
+
+    %% API Layer Connections
+    API --> ImageService
+    API --> VideoService
+    API --> AudioService
+    API --> StorageService
+    Hooks --> API
+    Components --> Hooks
+
+    %% Service to Processor Connections
+    ImageService --> ImageProcessor
+    VideoService --> VideoProcessor
+    AudioService --> AudioProcessor
+    ImageService --> JobService
+    VideoService --> JobService
+    AudioService --> JobService
+
+    %% Processor to Library Connections
+    ImageProcessor --> Sharp
+    VideoProcessor --> FFmpeg
+    AudioProcessor --> WebAudio
+
+    %% Storage Connections
+    StorageService --> Firebase
+    StorageService --> AWS
+    StorageService --> Cache
+    Firebase --> FirebaseSDK
+    AWS --> AWSSDK
+
+    %% Job Management Connections
+    JobService --> Queue
+    JobService --> Monitor
+    JobService --> Batch
+    Queue --> Monitor
+
+    %% Security & Quality Connections
+    ImageService --> Validator
+    VideoService --> Validator
+    AudioService --> Validator
+    StorageService --> Security
+    JobService --> Analytics
+
+    %% CVPlus Integration Connections
+    ImageService --> Core
+    VideoService --> Core
+    AudioService --> Core
+    StorageService --> Core
+    JobService --> Core
+    API --> Auth
+    StorageService --> Auth
+
+    %% Data Flow Indicators
+    classDef apiLayer fill:#e1f5fe
+    classDef serviceLayer fill:#f3e5f5
+    classDef processingLayer fill:#e8f5e8
+    classDef storageLayer fill:#fff3e0
+    classDef jobLayer fill:#fce4ec
+    classDef securityLayer fill:#ffebee
+    classDef externalLayer fill:#f5f5f5
+    classDef integrationLayer fill:#e0f2f1
+
+    class API,Hooks,Components apiLayer
+    class ImageService,VideoService,AudioService,StorageService,JobService serviceLayer
+    class ImageProcessor,VideoProcessor,AudioProcessor processingLayer
+    class Firebase,AWS,Cache storageLayer
+    class Queue,Monitor,Batch jobLayer
+    class Validator,Security,Analytics securityLayer
+    class Sharp,FFmpeg,WebAudio,FirebaseSDK,AWSSDK externalLayer
+    class Core,Auth integrationLayer

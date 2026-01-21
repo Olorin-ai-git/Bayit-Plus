@@ -1,0 +1,198 @@
+```mermaid
+graph TB
+    subgraph "Firebase Functions Layer"
+        I[index.ts<br/>Export Hub<br/>348 lines]
+        
+        subgraph "Function Wrappers (<200 lines each)"
+            F1[generateCV.ts<br/>Function Wrapper]
+            F2[applyImprovements.ts<br/>Function Wrapper]
+            F3[portalChat.ts<br/>Function Wrapper]
+            F4[publicProfile.ts<br/>Function Wrapper]
+            F5[mediaGeneration.ts<br/>Function Wrapper]
+            F6[payments/*.ts<br/>Function Wrappers]
+        end
+    end
+
+    subgraph "Service Layer Architecture"
+        subgraph "Core CV Services"
+            CVG[cv-generation.service.ts<br/>Core CV Generation Logic]
+            CVA[cv-analysis.service.ts<br/>CV Parsing & Analysis]
+            CVT[cv-templates.service.ts<br/>Template Management]
+            CVV[cv-validation.service.ts<br/>Data Validation]
+        end
+        
+        subgraph "Enhancement Services"
+            REC[recommendations.service.ts<br/>CV Improvements]
+            ATS[ats-optimization.service.ts<br/>ATS Compatibility]
+            ACH[achievements.service.ts<br/>Achievement Analysis]
+            SKV[skills-visualization.service.ts<br/>Skills Visualization]
+        end
+        
+        subgraph "Media Services"
+            VGS[video-generation.service.ts<br/>Video Generation]
+            AGS[audio-generation.service.ts<br/>Audio & Podcast]
+            MPS[media-processing.service.ts<br/>Media Processing]
+            MSS[media-storage.service.ts<br/>Storage Management]
+        end
+        
+        subgraph "Profile & Portal Services"
+            PPS[public-profile.service.ts<br/>Profile Management]
+            PGS[portal-generation.service.ts<br/>Portal Creation]
+            QRS[qr-code.service.ts<br/>QR Generation & Tracking]
+            SIS[social-integration.service.ts<br/>Social Media]
+        end
+        
+        subgraph "Chat & RAG Services"
+            RCS[rag-chat.service.ts<br/>RAG Chat Logic]
+            PCS[portal-chat.service.ts<br/>Portal Chat]
+            CAS[chat-analytics.service.ts<br/>Chat Analytics]
+            EMS[embeddings.service.ts<br/>Vector Embeddings]
+        end
+        
+        subgraph "Analytics Services"
+            CTS[conversion-tracking.service.ts<br/>Conversion Metrics]
+            UAS[user-analytics.service.ts<br/>User Behavior]
+            PMS[performance-monitoring.service.ts<br/>Performance Metrics]
+            BIS[business-intelligence.service.ts<br/>BI Reports]
+        end
+        
+        subgraph "Payment Services"
+            SUS[subscription.service.ts<br/>Subscription Management]
+            PPS[payment-processing.service.ts<br/>Stripe Integration]
+            FAS[feature-access.service.ts<br/>Premium Features]
+            BAS[billing-analytics.service.ts<br/>Billing Analytics]
+        end
+        
+        subgraph "Shared Infrastructure"
+            SR[service-registry.ts<br/>Service Registry]
+            BS[base-service.ts<br/>Base Service Class]
+            ST[service-types.ts<br/>Service Interfaces]
+        end
+    end
+    
+    subgraph "@cvplus/core Package"
+        CORE_T[Types<br/>Shared Interfaces]
+        CORE_C[Constants<br/>System Constants]
+        CORE_U[Utils<br/>Helper Functions]
+        CORE_E[Errors<br/>Error Classes]
+    end
+    
+    subgraph "External Dependencies"
+        FB[Firebase Admin SDK]
+        CLAUDE[Anthropic Claude API]
+        STRIPE[Stripe API]
+        STORAGE[Firebase Storage]
+        FIRESTORE[Firestore Database]
+    end
+
+    %% Function Layer Connections
+    I --> F1
+    I --> F2
+    I --> F3
+    I --> F4
+    I --> F5
+    I --> F6
+    
+    %% Function to Service Connections
+    F1 --> CVG
+    F1 --> CVT
+    F1 --> CVV
+    
+    F2 --> REC
+    F2 --> ATS
+    F2 --> ACH
+    
+    F3 --> RCS
+    F3 --> PCS
+    F3 --> CAS
+    
+    F4 --> PPS
+    F4 --> QRS
+    F4 --> SIS
+    
+    F5 --> VGS
+    F5 --> AGS
+    F5 --> MPS
+    
+    F6 --> SUS
+    F6 --> PPS
+    F6 --> FAS
+    
+    %% Service Dependencies
+    CVG --> CVA
+    CVG --> CVV
+    REC --> CVA
+    PGS --> CVG
+    PCS --> RCS
+    
+    %% Core Package Integration
+    CVG --> CORE_T
+    CVG --> CORE_U
+    CVG --> CORE_E
+    REC --> CORE_T
+    RCS --> CORE_T
+    PPS --> CORE_T
+    
+    %% Service Registry
+    SR --> BS
+    SR --> ST
+    CVG --> BS
+    REC --> BS
+    VGS --> BS
+    PPS --> BS
+    
+    %% External Dependencies
+    CVG --> FB
+    CVG --> CLAUDE
+    VGS --> CLAUDE
+    SUS --> STRIPE
+    MSS --> STORAGE
+    CVA --> FIRESTORE
+    
+    %% Styling
+    classDef functionLayer fill:#e1f5fe
+    classDef serviceLayer fill:#f3e5f5
+    classDef corePackage fill:#e8f5e8
+    classDef external fill:#fff3e0
+    
+    class I,F1,F2,F3,F4,F5,F6 functionLayer
+    class CVG,CVA,CVT,CVV,REC,ATS,ACH,SKV,VGS,AGS,MPS,MSS,PPS,PGS,QRS,SIS,RCS,PCS,CAS,EMS,CTS,UAS,PMS,BIS,SUS,FAS,BAS,SR,BS,ST serviceLayer
+    class CORE_T,CORE_C,CORE_U,CORE_E corePackage
+    class FB,CLAUDE,STRIPE,STORAGE,FIRESTORE external
+```
+
+## Phase 2 Decomposition Priority Matrix
+
+```mermaid
+graph LR
+    subgraph "Priority 1: Critical (Week 1)"
+        P1A[generateCV.ts<br/>1,507 lines<br/>→ 8 services]
+        P1B[applyImprovements.ts<br/>1,063 lines<br/>→ 6 services]
+    end
+    
+    subgraph "Priority 2: High (Week 2)"
+        P2A[portalChat.ts<br/>938 lines<br/>→ 5 services]
+        P2B[role-profile.functions.ts<br/>779 lines<br/>→ 4 services]
+        P2C[publicProfile.ts<br/>751 lines<br/>→ 4 services]
+    end
+    
+    subgraph "Priority 3: Medium (Week 3)"
+        P3A[cvPortalIntegration.ts<br/>738 lines<br/>→ 4 services]
+        P3B[regionalOptimization.ts<br/>693 lines<br/>→ 3 services]
+        P3C[qrCodeEnhancement.ts<br/>610 lines<br/>→ 3 services]
+    end
+    
+    P1A --> P2A
+    P1B --> P2B
+    P2A --> P3A
+    P2B --> P3B
+    P2C --> P3C
+    
+    classDef priority1 fill:#ffcdd2
+    classDef priority2 fill:#fff3e0  
+    classDef priority3 fill:#e8f5e8
+    
+    class P1A,P1B priority1
+    class P2A,P2B,P2C priority2
+    class P3A,P3B,P3C priority3
+```

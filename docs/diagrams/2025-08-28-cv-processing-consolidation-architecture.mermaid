@@ -1,0 +1,154 @@
+graph TB
+    subgraph "CURRENT STATE - Duplicated Architecture"
+        subgraph MainFunctions["Main Functions Directory (/functions/src/functions/)"]
+            MA[analyzeCV.ts - 70 lines]
+            MG[generateCV.ts - 149 lines]
+            MP[processCV.ts - 454 lines]
+            ME[enhancedAnalyzeCV.ts - 142 lines]
+            MGP[generateCVPreview.ts - 123 lines]
+            MI[initiateCVGeneration.ts - 269 lines]
+            MU[updateCVData.ts - 264 lines]
+            MAT[atsOptimization.ts - 338 lines]
+            MS[skillsVisualization.ts - 377 lines]
+            
+            MPE[processCV.enhanced.ts - 362 lines]
+            MEX[enrichCVWithExternalData.ts - 326 lines]
+            MT[generateTimeline.ts - 521 lines]
+            MIN[industryOptimization.ts]
+            MR[regionalOptimization.ts]
+            ML[languageProficiency.ts]
+            MPI[personalityInsights.ts]
+            MPS[predictSuccess.ts]
+            MAH[achievementHighlighting.ts]
+            MLL[llmVerificationStatus.ts]
+            MCP[cvPortalIntegration.ts]
+        end
+        
+        subgraph CVProcessing["CV-Processing Submodule (/packages/cv-processing/)"]
+            CA[analyzeCV.ts - 76 lines]
+            CG[generateCV.ts - 153 lines]
+            CP[processCV.ts - 460 lines]
+            CE[enhancedAnalyzeCV.ts - 148 lines]
+            CGP[generateCVPreview.ts - 126 lines]
+            CI[initiateCVGeneration.ts - 275 lines]
+            CU[updateCVData.ts - 247 lines]
+            CAT[atsOptimization.ts - 344 lines]
+            CS[skillsVisualization.ts - 378 lines]
+            
+            subgraph CVServices["Available Services"]
+                CVS1[cv-generation.service.ts]
+                CVS2[cv-parser.service.ts]
+                CVS3[enhancement-processing.service.ts]
+                CVS4[pii-detector.service.ts]
+            end
+        end
+    end
+    
+    subgraph "TARGET STATE - Consolidated Architecture"
+        subgraph NewCVProcessing["Consolidated CV-Processing Submodule"]
+            subgraph CoreFunctions["Core CV Functions (Best versions kept)"]
+                NCA[analyzeCV.ts ✓]
+                NCG[generateCV.ts ✓]
+                NCP[processCV.ts ✓]
+                NCE[enhancedAnalyzeCV.ts ✓]
+                NCGP[generateCVPreview.ts ✓]
+                NCI[initiateCVGeneration.ts ✓]
+                NCU[updateCVData.ts ✓]
+                NCAT[atsOptimization.ts ✓]
+                NCS[skillsVisualization.ts ✓]
+            end
+            
+            subgraph MigratedFunctions["Migrated Advanced Functions"]
+                NCPE[processCV.enhanced.ts 🔄]
+                NCEX[enrichCVWithExternalData.ts 🔄]
+                NCT[generateTimeline.ts 🔄]
+                NCIN[industryOptimization.ts 🔄]
+                NCR[regionalOptimization.ts 🔄]
+                NCL[languageProficiency.ts 🔄]
+                NCPI[personalityInsights.ts 🔄]
+                NCPS[predictSuccess.ts 🔄]
+                NCAH[achievementHighlighting.ts 🔄]
+                NCLL[llmVerificationStatus.ts 🔄]
+            end
+            
+            subgraph NewServices["Extended Services"]
+                NS1[cv-generation.service.ts]
+                NS2[cv-parser.service.ts]
+                NS3[enhancement-processing.service.ts]
+                NS4[pii-detector.service.ts]
+                NS5[timeline-generation.service.ts 🆕]
+                NS6[external-data.service.ts 🆕]
+                NS7[industry-optimization.service.ts 🆕]
+                NS8[regional-optimization.service.ts 🆕]
+                NS9[personality-insights.service.ts 🆕]
+                NS10[success-prediction.service.ts 🆕]
+                NS11[achievement-analysis.service.ts 🆕]
+                NS12[policy-enforcement.service.ts 🆕]
+            end
+        end
+        
+        subgraph NewMainFunctions["Main Functions (Import Only)"]
+            IMPORT[Re-exports from CV-Processing Submodule]
+        end
+        
+        subgraph OtherModules["Other Modules"]
+            AUTH[Auth Module - @cvplus/auth]
+            CORE[Core Module - @cvplus/core]
+            MULTIMEDIA[Multimedia Module]
+            PREMIUM[Premium Module]
+        end
+    end
+    
+    %% Current State Connections
+    MA -.->|Duplicate| CA
+    MG -.->|Duplicate| CG
+    MP -.->|Duplicate| CP
+    ME -.->|Duplicate| CE
+    MGP -.->|Duplicate| CGP
+    MI -.->|Duplicate| CI
+    MU -.->|Duplicate| CU
+    MAT -.->|Duplicate| CAT
+    MS -.->|Duplicate| CS
+    
+    %% Migration arrows
+    CA -->|Keep| NCA
+    CG -->|Keep| NCG
+    CP -->|Keep| NCP
+    CE -->|Keep| NCE
+    CGP -->|Keep| NCGP
+    CI -->|Keep| NCI
+    CU -->|Merge| NCU
+    CAT -->|Keep| NCAT
+    CS -->|Keep| NCS
+    
+    MPE -->|Migrate| NCPE
+    MEX -->|Migrate| NCEX
+    MT -->|Migrate| NCT
+    MIN -->|Migrate| NCIN
+    MR -->|Migrate| NCR
+    ML -->|Migrate| NCL
+    MPI -->|Migrate| NCPI
+    MPS -->|Migrate| NCPS
+    MAH -->|Migrate| NCAH
+    MLL -->|Migrate| NCLL
+    
+    %% Service dependencies
+    NewServices --> MigratedFunctions
+    NewServices --> CoreFunctions
+    
+    %% Module imports
+    AUTH --> NewCVProcessing
+    CORE --> NewCVProcessing
+    
+    NewMainFunctions --> NewCVProcessing
+    
+    %% Styling
+    classDef duplicate fill:#ffcccc,stroke:#ff6666,stroke-width:2px
+    classDef keep fill:#ccffcc,stroke:#66cc66,stroke-width:2px
+    classDef migrate fill:#ffffcc,stroke:#ffcc66,stroke-width:2px
+    classDef new fill:#ccccff,stroke:#6666ff,stroke-width:2px
+    
+    class MA,MG,MP,ME,MGP,MI,MU,MAT,MS,CA,CG,CP,CE,CGP,CI,CU,CAT,CS duplicate
+    class NCA,NCG,NCP,NCE,NCGP,NCI,NCAT,NCS keep
+    class NCPE,NCEX,NCT,NCIN,NCR,NCL,NCPI,NCPS,NCAH,NCLL,NCU migrate
+    class NS5,NS6,NS7,NS8,NS9,NS10,NS11,NS12 new

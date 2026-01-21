@@ -1,0 +1,65 @@
+graph TB
+    subgraph "Current State"
+        A[82 Files > 200 Lines]
+        A1[Critical: 2 files >1000 lines]
+        A2[High: 18 files 700-999 lines]
+        A3[Medium: 25 files 500-699 lines]
+        A4[Low: 37 files 200-499 lines]
+        A --> A1
+        A --> A2
+        A --> A3
+        A --> A4
+    end
+
+    subgraph "Refactoring Strategy"
+        B[Modular Decomposition]
+        C[Service Extraction]
+        D[Component Composition]
+        E[Separation of Concerns]
+        B --> C
+        C --> D
+        D --> E
+    end
+
+    subgraph "Implementation Phases"
+        P1[Phase 1: Foundation<br/>Weeks 1-2<br/>25 files]
+        P2[Phase 2: Core Services<br/>Weeks 3-4<br/>20 files]
+        P3[Phase 3: React Components<br/>Weeks 5-6<br/>15 files]
+        P4[Phase 4: Functions & Scripts<br/>Weeks 7-8<br/>15 files]
+        P5[Phase 5: Tests & Validation<br/>Week 9<br/>7 files]
+        P1 --> P2
+        P2 --> P3
+        P3 --> P4
+        P4 --> P5
+    end
+
+    subgraph "Target State"
+        F[82 Files ≤ 200 Lines]
+        F1[✅ 100% Compliance]
+        F2[✅ Improved Maintainability]
+        F3[✅ Better Architecture]
+        F4[✅ Enhanced Testability]
+        F --> F1
+        F --> F2
+        F --> F3
+        F --> F4
+    end
+
+    A1 --> B
+    A2 --> B
+    E --> P1
+    P5 --> F
+
+    classDef critical fill:#ff6b6b,stroke:#d63031,color:#fff
+    classDef high fill:#fd79a8,stroke:#e84393,color:#fff
+    classDef medium fill:#fdcb6e,stroke:#e17055,color:#000
+    classDef low fill:#55a3ff,stroke:#2d3436,color:#fff
+    classDef target fill:#00b894,stroke:#00a085,color:#fff
+    classDef phase fill:#a29bfe,stroke:#6c5ce7,color:#fff
+
+    class A1 critical
+    class A2 high
+    class A3 medium
+    class A4 low
+    class F,F1,F2,F3,F4 target
+    class P1,P2,P3,P4,P5 phase

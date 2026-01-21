@@ -1,0 +1,186 @@
+{
+  "rules": {
+    "QUOTA_EXCEEDED": {
+      "strategies": [
+        {
+          "name": "batch_deployment",
+          "priority": 1,
+          "description": "Split deployment into smaller batches",
+          "maxRetries": 5,
+          "enabled": true
+        },
+        {
+          "name": "add_delays",
+          "priority": 2,
+          "description": "Add delays between deployments",
+          "maxRetries": 3,
+          "enabled": true
+        },
+        {
+          "name": "schedule_off_peak",
+          "priority": 3,
+          "description": "Schedule deployment for off-peak hours",
+          "maxRetries": 1,
+          "enabled": true
+        }
+      ],
+      "maxRetries": 5,
+      "escalateAfter": 3
+    },
+    "BUILD_FAILURE": {
+      "strategies": [
+        {
+          "name": "clear_cache",
+          "priority": 1,
+          "description": "Clear build cache and retry",
+          "maxRetries": 2,
+          "enabled": true
+        },
+        {
+          "name": "reinstall_dependencies",
+          "priority": 2,
+          "description": "Reinstall dependencies and retry",
+          "maxRetries": 1,
+          "enabled": true
+        },
+        {
+          "name": "fix_typescript_errors",
+          "priority": 3,
+          "description": "Attempt to fix TypeScript errors",
+          "maxRetries": 1,
+          "enabled": false
+        }
+      ],
+      "maxRetries": 3,
+      "escalateAfter": 2
+    },
+    "NETWORK_ISSUE": {
+      "strategies": [
+        {
+          "name": "exponential_backoff",
+          "priority": 1,
+          "description": "Retry with exponential backoff",
+          "maxRetries": 5,
+          "enabled": true
+        },
+        {
+          "name": "connection_validation",
+          "priority": 2,
+          "description": "Validate connection and retry",
+          "maxRetries": 3,
+          "enabled": true
+        },
+        {
+          "name": "alternative_route",
+          "priority": 3,
+          "description": "Try alternative deployment route",
+          "maxRetries": 1,
+          "enabled": false
+        }
+      ],
+      "maxRetries": 5,
+      "escalateAfter": 3
+    },
+    "AUTH_PROBLEM": {
+      "strategies": [
+        {
+          "name": "refresh_tokens",
+          "priority": 1,
+          "description": "Refresh authentication tokens",
+          "maxRetries": 2,
+          "enabled": true
+        },
+        {
+          "name": "service_account_fallback",
+          "priority": 2,
+          "description": "Use service account authentication",
+          "maxRetries": 1,
+          "enabled": true
+        }
+      ],
+      "maxRetries": 3,
+      "escalateAfter": 2
+    },
+    "FUNCTION_ERROR": {
+      "strategies": [
+        {
+          "name": "memory_optimization",
+          "priority": 1,
+          "description": "Optimize function memory settings",
+          "maxRetries": 1,
+          "enabled": true
+        },
+        {
+          "name": "timeout_adjustment",
+          "priority": 2,
+          "description": "Adjust function timeout settings",
+          "maxRetries": 1,
+          "enabled": true
+        },
+        {
+          "name": "dependency_check",
+          "priority": 3,
+          "description": "Check and fix dependencies",
+          "maxRetries": 1,
+          "enabled": true
+        }
+      ],
+      "maxRetries": 3,
+      "escalateAfter": 2
+    },
+    "UNKNOWN_ERROR": {
+      "strategies": [
+        {
+          "name": "log_analysis",
+          "priority": 1,
+          "description": "Analyze logs for patterns",
+          "maxRetries": 1,
+          "enabled": true
+        }
+      ],
+      "maxRetries": 1,
+      "escalateAfter": 1
+    }
+  },
+  "globalSettings": {
+    "maxTotalRetries": 10,
+    "retryDelayMs": [5000, 15000, 30000, 60000],
+    "escalationTimeout": 300000,
+    "enableManualIntervention": true,
+    "logRecoveryAttempts": true
+  },
+  "errorPatterns": {
+    "quota": [
+      "quota exceeded",
+      "limit exceeded",
+      "too many requests",
+      "rate limit"
+    ],
+    "build": [
+      "typescript",
+      "compilation failed",
+      "build failed",
+      "tsc error"
+    ],
+    "network": [
+      "network error",
+      "timeout",
+      "connection refused",
+      "enotfound",
+      "econnrefused"
+    ],
+    "auth": [
+      "unauthorized",
+      "authentication failed",
+      "permission denied",
+      "access denied",
+      "not logged in"
+    ],
+    "function": [
+      "function deployment failed",
+      "memory limit",
+      "cold start error",
+      "dependency error"
+    ]
+  }
+}

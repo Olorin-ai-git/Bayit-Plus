@@ -1,0 +1,203 @@
+graph TD
+    %% Analytics Dependency Violation Fix Architecture
+    %% Author: Gil Klainert
+    %% Date: August 29, 2025
+
+    subgraph "Layer 1: Core Module"
+        CI[IFeatureRegistry Interface]
+        CF[Feature Interface]
+        CM[Middleware Types]
+        
+        CI --> CF
+        CI --> CM
+    end
+
+    subgraph "Layer 2: Analytics Module"
+        AG[enhancedPremiumGuard]
+        AS[Analytics Services]
+        AM[Analytics Middleware]
+        
+        AG -.->|BEFORE: Direct Import| FR
+        AG -->|AFTER: Interface Dependency| CI
+        AG --> AS
+        AM --> AG
+    end
+
+    subgraph "Layer 3: Premium Module"
+        FR[FeatureRegistry Service]
+        PS[Premium Services]
+        PM[Premium Middleware]
+        
+        FR -.->|Implements| CI
+        FR --> PS
+        PM --> PS
+    end
+
+    subgraph "Function Integration Layer"
+        FF[Firebase Functions]
+        DI[Dependency Injection]
+        
+        FF --> DI
+        DI --> AG
+        DI --> FR
+    end
+
+    subgraph "Implementation Phases"
+        P1[Phase 1: Core Verification]
+        P2[Phase 2: Analytics Refactor]
+        P3[Phase 3: Premium Compliance]
+        P4[Phase 4: Integration Update]
+        P5[Phase 5: Testing]
+        
+        P1 --> P2
+        P2 --> P3
+        P3 --> P4
+        P4 --> P5
+    end
+
+    %% Problem and Solution Flow
+    subgraph "Current Problem"
+        VIOLATION[Analytics → Premium Direct Import]
+        VIOLATION -.->|Violates| LAYERS[Layer Dependency Rules]
+        
+        style VIOLATION fill:#ff9999
+        style LAYERS fill:#ffcccc
+    end
+
+    subgraph "Proposed Solution"
+        INTERFACE[Interface Abstraction]
+        INJECTION[Dependency Injection]
+        COMPLIANCE[Architectural Compliance]
+        
+        INTERFACE --> INJECTION
+        INJECTION --> COMPLIANCE
+        
+        style INTERFACE fill:#99ff99
+        style INJECTION fill:#ccffcc
+        style COMPLIANCE fill:#66ff66
+    end
+
+    %% Technical Implementation Details
+    subgraph "Before Architecture"
+        BA_A[Analytics Module] -.->|Direct Import| BA_P[Premium Module]
+        BA_C[Core Module] --> BA_A
+        BA_C --> BA_P
+        
+        style BA_A fill:#ffcccc
+        style BA_P fill:#ffcccc
+    end
+
+    subgraph "After Architecture"
+        AA_C[Core Module] --> AA_A[Analytics Module]
+        AA_C --> AA_P[Premium Module]
+        AA_F[Functions] --> AA_A
+        AA_F --> AA_P
+        AA_A -.->|Uses Interface| AA_C
+        AA_P -.->|Implements Interface| AA_C
+        
+        style AA_A fill:#ccffcc
+        style AA_P fill:#ccffcc
+        style AA_C fill:#99ff99
+        style AA_F fill:#ccccff
+    end
+
+    %% Dependencies and Data Flow
+    subgraph "Dependency Injection Pattern"
+        Constructor[enhancedPremiumGuard Constructor]
+        Registry[IFeatureRegistry Parameter]
+        Implementation[FeatureRegistry Implementation]
+        
+        Constructor --> Registry
+        Registry -.->|Runtime Injection| Implementation
+        Implementation --> |getFeature| FeatureData[Feature Data]
+        
+        style Constructor fill:#e6f3ff
+        style Registry fill:#cce7ff
+        style Implementation fill:#99d6ff
+    end
+
+    %% Risk Mitigation
+    subgraph "Risk Mitigation Strategy"
+        BC[Backward Compatibility]
+        Testing[Comprehensive Testing]
+        Rollback[Rollback Plan]
+        
+        BC --> Testing
+        Testing --> Rollback
+        
+        style BC fill:#fff2cc
+        style Testing fill:#ffe6cc
+        style Rollback fill:#ffcccc
+    end
+
+    %% Success Criteria
+    subgraph "Success Validation"
+        Functional[Functional Requirements]
+        Architectural[Architectural Compliance]
+        Quality[Quality Metrics]
+        
+        Functional --> Architectural
+        Architectural --> Quality
+        
+        style Functional fill:#d4edda
+        style Architectural fill:#c3e6cb
+        style Quality fill:#a3d5b1
+    end
+
+    %% Integration Points
+    subgraph "Integration Requirements"
+        Functions[Firebase Functions Update]
+        Tests[Unit Test Updates]
+        Docs[Documentation Updates]
+        
+        Functions --> Tests
+        Tests --> Docs
+        
+        style Functions fill:#f8d7da
+        style Tests fill:#f5c6cb
+        style Docs fill:#f1b0b7
+    end
+
+    %% Class Diagram Representation
+    subgraph "Class Structure (After)"
+        class IFeatureRegistry {
+            +getFeature(id: string): Feature
+            +registerFeature(feature: Feature): void
+            +getAllFeatures(): Feature[]
+            +getFeaturesForTier(tier: string): Feature[]
+        }
+        
+        class FeatureRegistry {
+            +implements IFeatureRegistry
+            +getFeature(id: string): Feature
+            +registerFeature(feature: Feature): void
+            +getAllFeatures(): Feature[]
+            +getFeaturesForTier(tier: string): Feature[]
+        }
+        
+        class enhancedPremiumGuard {
+            -featureRegistry: IFeatureRegistry
+            +constructor(options: PremiumGuardOptions, registry?: IFeatureRegistry)
+            +middleware(req, res, next): void
+        }
+        
+        IFeatureRegistry <|.. FeatureRegistry
+        enhancedPremiumGuard --> IFeatureRegistry
+    end
+
+    %% Timeline and Phases
+    subgraph "Implementation Timeline"
+        T1["30min: Analysis & Planning"]
+        T2["45min: Analytics Refactor"]
+        T3["45min: Integration Updates"]
+        T4["30min: Testing & Validation"]
+        
+        T1 --> T2
+        T2 --> T3
+        T3 --> T4
+        
+        style T1 fill:#e3f2fd
+        style T2 fill:#bbdefb
+        style T3 fill:#90caf9
+        style T4 fill:#64b5f6
+    end

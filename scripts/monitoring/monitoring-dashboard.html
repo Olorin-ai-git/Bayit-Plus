@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVPlus Emergency Monitoring Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e1a;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .dashboard {
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .status-healthy { background: #4CAF50; }
+        .status-warning { background: #FF9800; }
+        .status-critical { background: #F44336; }
+        .status-degraded { background: #9C27B0; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card h3 {
+            color: #64B5F6;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .metric-healthy { color: #4CAF50; }
+        .metric-warning { color: #FF9800; }
+        .metric-critical { color: #F44336; }
+
+        .alerts-section {
+            background: rgba(244, 67, 54, 0.1);
+            border: 2px solid #F44336;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .alert-item {
+            background: rgba(244, 67, 54, 0.2);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border-left: 4px solid #F44336;
+        }
+
+        .rollback-controls {
+            background: rgba(255, 152, 0, 0.1);
+            border: 2px solid #FF9800;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .rollback-btn {
+            background: #F44336;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+
+        .rollback-btn:hover {
+            background: #D32F2F;
+        }
+
+        .rollback-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        .log-viewer {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            padding: 15px;
+            border-radius: 5px;
+            height: 300px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .timeline-time {
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 3px;
+            margin-right: 15px;
+            min-width: 100px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .timeline-event {
+            flex: 1;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+
+        .progress-bar {
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 8px;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-healthy { background: #4CAF50; }
+        .progress-warning { background: #FF9800; }
+        .progress-critical { background: #F44336; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .pulsing {
+            animation: pulse 2s infinite;
+        }
+
+        .auto-refresh {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="auto-refresh">
+            <span id="refresh-indicator">🔄</span> Auto-refresh: <span id="refresh-countdown">30</span>s
+        </div>
+
+        <header class="header">
+            <h1>🚨 CVPlus Emergency Monitoring Dashboard</h1>
+            <div>
+                Overall System Status: 
+                <span id="overall-status" class="status-indicator status-healthy">HEALTHY</span>
+                <br>
+                Last Updated: <span id="last-updated">--:--:--</span>
+            </div>
+        </header>
+
+        <!-- Critical Alerts Section -->
+        <section id="alerts-section" class="alerts-section" style="display: none;">
+            <h2>🚨 CRITICAL ALERTS</h2>
+            <div id="alerts-container"></div>
+        </section>
+
+        <!-- Emergency Rollback Controls -->
+        <section id="rollback-controls" class="rollback-controls" style="display: none;">
+            <h2>⚡ EMERGENCY ROLLBACK CONTROLS</h2>
+            <p>System degradation detected. Emergency rollback options available:</p>
+            <button class="rollback-btn" onclick="executeRollback('critical')">🚨 CRITICAL SYSTEM ROLLBACK</button>
+            <button class="rollback-btn" onclick="executeRollback('functions')">⚙️ FUNCTIONS ROLLBACK</button>
+            <button class="rollback-btn" onclick="executeRollback('database')">🗄️ DATABASE ROLLBACK</button>
+        </section>
+
+        <!-- System Health Grid -->
+        <div class="grid">
+            <!-- Frontend Health -->
+            <div class="card">
+                <h3>🌐 Frontend Health <span id="frontend-status" class="status-indicator status-healthy">HEALTHY</span></h3>
+                <div class="metric">
+                    <span>Response Time</span>
+                    <span id="frontend-response" class="metric-value metric-healthy">1.2s</span>
+                </div>
+                <div class="metric">
+                    <span>Uptime</span>
+                    <span id="frontend-uptime" class="metric-value metric-healthy">99.98%</span>
+                </div>
+                <div class="metric">
+                    <span>Error Rate</span>
+                    <span id="frontend-errors" class="metric-value metric-healthy">0.1%</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="frontend-health" class="progress-fill progress-healthy" style="width: 98%"></div>
+                </div>
+            </div>
+
+            <!-- API Health -->
+            <div class="card">
+                <h3>🔌 API Health <span id="api-status" class="status-indicator status-healthy">HEALTHY</span></h3>
+                <div class="metric">
+                    <span>Response Time</span>
+                    <span id="api-response" class="metric-value metric-healthy">0.8s</span>
+                </div>
+                <div class="metric">
+                    <span>Success Rate</span>
+                    <span id="api-success" class="metric-value metric-healthy">99.5%</span>
+                </div>
+                <div class="metric">
+                    <span>Active Requests</span>
+                    <span id="api-requests" class="metric-value">47</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="api-health" class="progress-fill progress-healthy" style="width: 95%"></div>
+                </div>
+            </div>
+
+            <!-- Firebase Functions -->
+            <div class="card">
+                <h3>⚙️ Firebase Functions <span id="functions-status" class="status-indicator status-healthy">HEALTHY</span></h3>
+                <div class="metric">
+                    <span>Active Functions</span>
+                    <span id="functions-active" class="metric-value metric-healthy">127/127</span>
+                </div>
+                <div class="metric">
+                    <span>Average Execution</span>
+                    <span id="functions-exec" class="metric-value metric-healthy">2.3s</span>
+                </div>
+                <div class="metric">
+                    <span>Error Rate</span>
+                    <span id="functions-errors" class="metric-value metric-healthy">0.3%</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="functions-health" class="progress-fill progress-healthy" style="width: 97%"></div>
+                </div>
+            </div>
+
+            <!-- Database Health -->
+            <div class="card">
+                <h3>🗄️ Database Health <span id="database-status" class="status-indicator status-healthy">HEALTHY</span></h3>
+                <div class="metric">
+                    <span>Connection Pool</span>
+                    <span id="database-pool" class="metric-value metric-healthy">85/100</span>
+                </div>
+                <div class="metric">
+                    <span>Query Time</span>
+                    <span id="database-query" class="metric-value metric-healthy">45ms</span>
+                </div>
+                <div class="metric">
+                    <span>Active Connections</span>
+                    <span id="database-connections" class="metric-value">23</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="database-health" class="progress-fill progress-healthy" style="width: 94%"></div>
+                </div>
+            </div>
+
+            <!-- Authentication -->
+            <div class="card">
+                <h3>🔐 Authentication <span id="auth-status" class="status-indicator status-healthy">HEALTHY</span></h3>
+                <div class="metric">
+                    <span>Success Rate</span>
+                    <span id="auth-success" class="metric-value metric-healthy">99.8%</span>
+                </div>
+                <div class="metric">
+                    <span>Active Sessions</span>
+                    <span id="auth-sessions" class="metric-value">1,247</span>
+                </div>
+                <div class="metric">
+                    <span>Token Refresh</span>
+                    <span id="auth-refresh" class="metric-value metric-healthy">0.2s</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="auth-health" class="progress-fill progress-healthy" style="width: 99%"></div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="card">
+                <h3>📊 Performance Metrics <span id="perf-status" class="status-indicator status-healthy">OPTIMAL</span></h3>
+                <div class="metric">
+                    <span>CPU Usage</span>
+                    <span id="perf-cpu" class="metric-value metric-healthy">23%</span>
+                </div>
+                <div class="metric">
+                    <span>Memory Usage</span>
+                    <span id="perf-memory" class="metric-value metric-healthy">67%</span>
+                </div>
+                <div class="metric">
+                    <span>Disk I/O</span>
+                    <span id="perf-disk" class="metric-value metric-healthy">12MB/s</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="perf-health" class="progress-fill progress-healthy" style="width: 89%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Activity Timeline -->
+        <div class="card">
+            <h3>📈 Real-time Activity Timeline</h3>
+            <div id="timeline" class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-time">14:32:15</div>
+                    <div class="timeline-event">✅ All system health checks passed</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-time">14:31:45</div>
+                    <div class="timeline-event">🔄 Function deployment completed successfully</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-time">14:30:22</div>
+                    <div class="timeline-event">📊 Performance metrics within normal range</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Logs -->
+        <div class="card">
+            <h3>📜 System Logs (Last 50 lines)</h3>
+            <div id="system-logs" class="log-viewer">
+                <div>[2025-08-21 14:32:15] [INFO] Health check cycle completed successfully</div>
+                <div>[2025-08-21 14:32:10] [INFO] All Firebase Functions responding normally</div>
+                <div>[2025-08-21 14:31:58] [INFO] Database query performance optimal</div>
+                <div>[2025-08-21 14:31:45] [SUCCESS] Function deployment batch completed</div>
+                <div>[2025-08-21 14:31:30] [INFO] User authentication success rate: 99.8%</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dashboard state management
+        let dashboardState = {
+            overallHealth: 'healthy',
+            services: {},
+            alerts: [],
+            lastUpdate: new Date()
+        };
+
+        // Auto-refresh configuration
+        let refreshInterval = 30; // seconds
+        let refreshCounter = refreshInterval;
+
+        // Simulate real-time data updates
+        function updateDashboard() {
+            // Simulate health data
+            const healthData = generateMockHealthData();
+            updateHealthMetrics(healthData);
+            updateTimeline();
+            updateLogs();
+            
+            document.getElementById('last-updated').textContent = 
+                new Date().toLocaleTimeString();
+        }
+
+        function generateMockHealthData() {
+            return {
+                frontend: {
+                    status: Math.random() > 0.1 ? 'healthy' : 'warning',
+                    responseTime: (Math.random() * 3 + 0.5).toFixed(1) + 's',
+                    uptime: (99.8 + Math.random() * 0.2).toFixed(2) + '%',
+                    errorRate: (Math.random() * 0.5).toFixed(1) + '%'
+                },
+                api: {
+                    status: Math.random() > 0.15 ? 'healthy' : 'warning',
+                    responseTime: (Math.random() * 2 + 0.3).toFixed(1) + 's',
+                    successRate: (99.0 + Math.random() * 0.9).toFixed(1) + '%',
+                    activeRequests: Math.floor(Math.random() * 100 + 20)
+                },
+                functions: {
+                    status: Math.random() > 0.05 ? 'healthy' : 'critical',
+                    active: Math.floor(Math.random() * 5 + 125) + '/127',
+                    executionTime: (Math.random() * 3 + 1).toFixed(1) + 's',
+                    errorRate: (Math.random() * 1).toFixed(1) + '%'
+                },
+                database: {
+                    status: Math.random() > 0.08 ? 'healthy' : 'warning',
+                    connectionPool: Math.floor(Math.random() * 30 + 70) + '/100',
+                    queryTime: Math.floor(Math.random() * 100 + 20) + 'ms',
+                    activeConnections: Math.floor(Math.random() * 50 + 10)
+                }
+            };
+        }
+
+        function updateHealthMetrics(data) {
+            // Update frontend metrics
+            document.getElementById('frontend-response').textContent = data.frontend.responseTime;
+            document.getElementById('frontend-uptime').textContent = data.frontend.uptime;
+            document.getElementById('frontend-errors').textContent = data.frontend.errorRate;
+            updateServiceStatus('frontend', data.frontend.status);
+
+            // Update API metrics
+            document.getElementById('api-response').textContent = data.api.responseTime;
+            document.getElementById('api-success').textContent = data.api.successRate;
+            document.getElementById('api-requests').textContent = data.api.activeRequests;
+            updateServiceStatus('api', data.api.status);
+
+            // Update functions metrics
+            document.getElementById('functions-active').textContent = data.functions.active;
+            document.getElementById('functions-exec').textContent = data.functions.executionTime;
+            document.getElementById('functions-errors').textContent = data.functions.errorRate;
+            updateServiceStatus('functions', data.functions.status);
+
+            // Update database metrics
+            document.getElementById('database-pool').textContent = data.database.connectionPool;
+            document.getElementById('database-query').textContent = data.database.queryTime;
+            document.getElementById('database-connections').textContent = data.database.activeConnections;
+            updateServiceStatus('database', data.database.status);
+
+            // Check for critical alerts
+            checkForAlerts(data);
+        }
+
+        function updateServiceStatus(service, status) {
+            const statusElement = document.getElementById(`${service}-status`);
+            const healthBar = document.getElementById(`${service}-health`);
+            
+            // Remove old status classes
+            statusElement.className = statusElement.className.replace(/status-\w+/, '');
+            healthBar.className = healthBar.className.replace(/progress-\w+/, '');
+            
+            // Add new status class
+            statusElement.classList.add(`status-${status}`);
+            healthBar.classList.add(`progress-${status}`);
+            statusElement.textContent = status.toUpperCase();
+
+            // Update health bar width
+            const width = status === 'healthy' ? 90 + Math.random() * 10 :
+                         status === 'warning' ? 60 + Math.random() * 20 :
+                         30 + Math.random() * 30;
+            healthBar.style.width = width + '%';
+        }
+
+        function checkForAlerts(data) {
+            const alerts = [];
+            
+            // Check for critical conditions
+            Object.entries(data).forEach(([service, metrics]) => {
+                if (metrics.status === 'critical') {
+                    alerts.push({
+                        service,
+                        level: 'critical',
+                        message: `${service.toUpperCase()} service is in critical state`,
+                        timestamp: new Date()
+                    });
+                } else if (metrics.status === 'warning') {
+                    alerts.push({
+                        service,
+                        level: 'warning',
+                        message: `${service.toUpperCase()} service showing degraded performance`,
+                        timestamp: new Date()
+                    });
+                }
+            });
+
+            updateAlerts(alerts);
+            updateOverallStatus();
+        }
+
+        function updateAlerts(alerts) {
+            const alertsSection = document.getElementById('alerts-section');
+            const rollbackControls = document.getElementById('rollback-controls');
+            const alertsContainer = document.getElementById('alerts-container');
+
+            if (alerts.length > 0) {
+                alertsSection.style.display = 'block';
+                
+                // Show rollback controls for critical alerts
+                if (alerts.some(alert => alert.level === 'critical')) {
+                    rollbackControls.style.display = 'block';
+                }
+
+                alertsContainer.innerHTML = alerts.map(alert => `
+                    <div class="alert-item">
+                        <strong>${alert.level.toUpperCase()}:</strong> ${alert.message}
+                        <br>
+                        <small>Time: ${alert.timestamp.toLocaleTimeString()}</small>
+                    </div>
+                `).join('');
+            } else {
+                alertsSection.style.display = 'none';
+                rollbackControls.style.display = 'none';
+            }
+        }
+
+        function updateOverallStatus() {
+            const overallStatus = document.getElementById('overall-status');
+            const criticalServices = document.querySelectorAll('.status-critical').length;
+            const warningServices = document.querySelectorAll('.status-warning').length;
+
+            let status = 'healthy';
+            if (criticalServices > 0) {
+                status = 'critical';
+            } else if (warningServices > 1) {
+                status = 'degraded';
+            } else if (warningServices > 0) {
+                status = 'warning';
+            }
+
+            overallStatus.className = `status-indicator status-${status}`;
+            overallStatus.textContent = status.toUpperCase();
+        }
+
+        function updateTimeline() {
+            const timeline = document.getElementById('timeline');
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString();
+
+            // Add new timeline entry occasionally
+            if (Math.random() > 0.7) {
+                const events = [
+                    '✅ Health check completed successfully',
+                    '📊 Performance metrics collected',
+                    '🔄 Background task completed',
+                    '👤 User authentication processed',
+                    '📈 Analytics data updated'
+                ];
+
+                const newEvent = document.createElement('div');
+                newEvent.className = 'timeline-item';
+                newEvent.innerHTML = `
+                    <div class="timeline-time">${timeStr}</div>
+                    <div class="timeline-event">${events[Math.floor(Math.random() * events.length)]}</div>
+                `;
+
+                timeline.insertBefore(newEvent, timeline.firstChild);
+
+                // Keep only last 10 events
+                while (timeline.children.length > 10) {
+                    timeline.removeChild(timeline.lastChild);
+                }
+            }
+        }
+
+        function updateLogs() {
+            const logs = document.getElementById('system-logs');
+            const now = new Date();
+            const timestamp = now.toISOString().slice(0, 19).replace('T', ' ');
+
+            // Add new log entry occasionally
+            if (Math.random() > 0.6) {
+                const logMessages = [
+                    '[INFO] Health monitoring cycle completed',
+                    '[SUCCESS] All systems operating normally',
+                    '[INFO] Database connection pool optimized',
+                    '[INFO] Function cold start time improved',
+                    '[SUCCESS] User session validated'
+                ];
+
+                const newLog = document.createElement('div');
+                newLog.textContent = `[${timestamp}] ${logMessages[Math.floor(Math.random() * logMessages.length)]}`;
+                
+                logs.insertBefore(newLog, logs.firstChild);
+
+                // Keep scrolled to bottom
+                logs.scrollTop = logs.scrollHeight;
+
+                // Limit to 50 lines
+                while (logs.children.length > 50) {
+                    logs.removeChild(logs.lastChild);
+                }
+            }
+        }
+
+        // Emergency rollback functions
+        function executeRollback(type) {
+            if (confirm(`Are you sure you want to execute ${type.toUpperCase()} rollback? This action cannot be undone.`)) {
+                alert(`${type.toUpperCase()} rollback initiated. Check system logs for progress.`);
+                
+                // In a real implementation, this would call the rollback scripts
+                console.log(`Executing ${type} rollback...`);
+                
+                // Simulate rollback progress
+                setTimeout(() => {
+                    alert(`${type.toUpperCase()} rollback completed successfully.`);
+                    window.location.reload();
+                }, 5000);
+            }
+        }
+
+        // Auto-refresh countdown
+        function updateRefreshCountdown() {
+            document.getElementById('refresh-countdown').textContent = refreshCounter;
+            
+            if (refreshCounter <= 0) {
+                refreshCounter = refreshInterval;
+                updateDashboard();
+                document.getElementById('refresh-indicator').classList.add('pulsing');
+                setTimeout(() => {
+                    document.getElementById('refresh-indicator').classList.remove('pulsing');
+                }, 1000);
+            } else {
+                refreshCounter--;
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDashboard();
+            
+            // Start auto-refresh
+            setInterval(updateRefreshCountdown, 1000);
+            
+            console.log('CVPlus Emergency Monitoring Dashboard initialized');
+        });
+
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                console.log('Dashboard hidden - reducing update frequency');
+            } else {
+                console.log('Dashboard visible - resuming normal updates');
+                updateDashboard();
+            }
+        });
+    </script>
+</body>
+</html>

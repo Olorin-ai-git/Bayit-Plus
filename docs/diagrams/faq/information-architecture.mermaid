@@ -1,0 +1,525 @@
+---
+title: CVPlus FAQ Page - Information Architecture Diagrams
+author: Gil Klainert
+date: 2025-08-20
+description: Content organization, search, and information management diagrams
+---
+
+```mermaid
+%% FAQ Content Organization and Categorization
+graph TB
+    %% Top Level FAQ Structure
+    A[CVPlus FAQ Knowledge Base] --> B1[Core Categories]
+    A --> B2[Meta Information]
+    A --> B3[Support Resources]
+    
+    %% Core FAQ Categories
+    B1 --> C1[Getting Started]
+    B1 --> C2[AI Features]
+    B1 --> C3[Account Management]
+    B1 --> C4[CV Formats & Templates]
+    B1 --> C5[Billing & Pricing]
+    B1 --> C6[Technical Support]
+    
+    %% Getting Started Category
+    C1 --> D1[Account Creation]
+    C1 --> D2[First CV Upload]
+    C1 --> D3[Basic Features Tour]
+    C1 --> D4[Quick Start Guide]
+    
+    D1 --> E1[How to sign up for CVPlus?]
+    D1 --> E2[What information do I need to create an account?]
+    D1 --> E3[Can I use my Google/LinkedIn account?]
+    
+    D2 --> E4[What CV formats are accepted?]
+    D2 --> E5[How do I upload my existing CV?]
+    D2 --> E6[What happens after I upload my CV?]
+    
+    D3 --> E7[What can CVPlus do for my CV?]
+    D3 --> E8[How does the AI analysis work?]
+    D3 --> E9[Where do I find my transformed CV?]
+    
+    D4 --> E10[Complete beginner tutorial]
+    D4 --> E11[Common first-time user mistakes]
+    D4 --> E12[Getting help as a new user]
+    
+    %% AI Features Category
+    C2 --> F1[AI CV Analysis]
+    C2 --> F2[Smart Recommendations]
+    C2 --> F3[Content Enhancement]
+    C2 --> F4[ATS Optimization]
+    
+    F1 --> G1[How accurate is the AI analysis?]
+    F1 --> G2[What does AI look for in my CV?]
+    F1 --> G3[Can I customize AI analysis parameters?]
+    
+    F2 --> G4[How are recommendations generated?]
+    F2 --> G5[Can I dismiss recommendations?]
+    F2 --> G6[Why am I getting specific suggestions?]
+    
+    F3 --> G7[How does content enhancement work?]
+    F3 --> G8[Will AI change my writing style?]
+    F3 --> G9[Can I revert AI enhancements?]
+    
+    F4 --> G10[What is ATS optimization?]
+    F4 --> G11[Which ATS systems does CVPlus support?]
+    F4 --> G12[How to check ATS compatibility?]
+    
+    %% Account Management Category
+    C3 --> H1[Profile Settings]
+    C3 --> H2[Privacy & Data]
+    C3 --> H3[Subscription Management]
+    C3 --> H4[Account Security]
+    
+    H1 --> I1[How to update profile information?]
+    H1 --> I2[Changing email address]
+    H1 --> I3[Notification preferences]
+    
+    H2 --> I4[What data does CVPlus store?]
+    H2 --> I5[How to delete my account?]
+    H2 --> I6[Data export options]
+    
+    H3 --> I7[How to upgrade/downgrade subscription?]
+    H3 --> I8[Managing billing information]
+    H3 --> I9[Subscription renewal and cancellation]
+    
+    H4 --> I10[Two-factor authentication setup]
+    H4 --> I11[Password reset process]
+    H4 --> I12[Suspicious activity alerts]
+    
+    %% CV Formats & Templates Category
+    C4 --> J1[Template Library]
+    C4 --> J2[Format Conversion]
+    C4 --> J3[Custom Styling]
+    C4 --> J4[Industry-Specific Templates]
+    
+    J1 --> K1[How many templates are available?]
+    J1 --> K2[Can I preview templates before applying?]
+    J1 --> K3[Are templates mobile-responsive?]
+    
+    J2 --> K4[Supported input/output formats]
+    J2 --> K5[Quality of format conversion]
+    J2 --> K6[Batch format conversion]
+    
+    J3 --> K7[Customizing colors and fonts]
+    J3 --> K8[Adding personal branding]
+    J3 --> K9[Advanced styling options]
+    
+    J4 --> K10[Templates by industry]
+    J4 --> K11[Academic CV templates]
+    J4 --> K12[Creative industry formats]
+    
+    %% Billing & Pricing Category
+    C5 --> L1[Subscription Plans]
+    C5 --> L2[Payment Methods]
+    C5 --> L3[Billing Issues]
+    C5 --> L4[Enterprise Solutions]
+    
+    L1 --> M1[What's included in each plan?]
+    L1 --> M2[Free vs. premium features]
+    L1 --> M3[Student/educational discounts]
+    
+    L2 --> M4[Accepted payment methods]
+    L2 --> M5[International payment support]
+    L2 --> M6[Invoice and receipt management]
+    
+    L3 --> M7[Failed payment resolution]
+    L3 --> M8[Refund policy and process]
+    L3 --> M9[Billing dispute handling]
+    
+    L4 --> M10[Team and enterprise plans]
+    L4 --> M11[Volume pricing discounts]
+    L4 --> M12[Custom enterprise features]
+    
+    %% Technical Support Category
+    C6 --> N1[Troubleshooting]
+    C6 --> N2[Browser Support]
+    C6 --> N3[Mobile App Issues]
+    C6 --> N4[Integration Problems]
+    
+    N1 --> O1[Common error messages]
+    N1 --> O2[Upload/download issues]
+    N1 --> O3[Performance problems]
+    
+    N2 --> O4[Supported browsers and versions]
+    N2 --> O5[Browser-specific issues]
+    N2 --> O6[Clearing cache and cookies]
+    
+    N3 --> O7[Mobile app installation]
+    N3 --> O8[Sync issues between devices]
+    N3 --> O9[Mobile-specific features]
+    
+    N4 --> O10[Third-party integrations]
+    N4 --> O11[API access and documentation]
+    N4 --> O12[Webhook configuration]
+    
+    %% Meta Information Structure
+    B2 --> P1[FAQ Metadata]
+    B2 --> P2[Content Management]
+    B2 --> P3[Quality Control]
+    
+    P1 --> Q1[Creation/Update Dates]
+    P1 --> Q2[Author Information]
+    P1 --> Q3[FAQ Difficulty Level]
+    P1 --> Q4[View/Engagement Statistics]
+    
+    P2 --> Q5[Content Versioning]
+    P2 --> Q6[Editorial Workflow]
+    P2 --> Q7[Translation Management]
+    
+    P3 --> Q8[Accuracy Reviews]
+    P3 --> Q9[User Feedback Integration]
+    P3 --> Q10[Content Performance Metrics]
+    
+    %% Support Resources
+    B3 --> R1[Contact Information]
+    B3 --> R2[Additional Resources]
+    B3 --> R3[Community Support]
+    
+    R1 --> S1[Live Chat Support]
+    R1 --> S2[Email Support Tickets]
+    R1 --> S3[Phone Support (Premium)]
+    
+    R2 --> S4[Video Tutorials]
+    R2 --> S5[User Guides & Documentation]
+    R2 --> S6[Blog Articles & Tips]
+    
+    R3 --> S7[User Community Forum]
+    R3 --> S8[Social Media Channels]
+    R3 --> S9[User-Generated Content]
+    
+    %% Styling
+    classDef topLevel fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef category fill:#f3e5f5,stroke:#7b1fa2,color:#000
+    classDef subcategory fill:#e8f5e8,stroke:#2e7d32,color:#000
+    classDef faq fill:#fff3e0,stroke:#ef6c00,color:#000
+    classDef meta fill:#ffebee,stroke:#d32f2f,color:#000
+    classDef support fill:#f1f8e9,stroke:#689f38,color:#000
+    
+    class A,B1,B2,B3 topLevel
+    class C1,C2,C3,C4,C5,C6 category
+    class D1,D2,D3,D4,F1,F2,F3,F4,H1,H2,H3,H4,J1,J2,J3,J4,L1,L2,L3,L4,N1,N2,N3,N4 subcategory
+    class E1,E2,E3,E4,E5,E6,E7,E8,E9,E10,E11,E12,G1,G2,G3,G4,G5,G6,G7,G8,G9,G10,G11,G12,I1,I2,I3,I4,I5,I6,I7,I8,I9,I10,I11,I12,K1,K2,K3,K4,K5,K6,K7,K8,K9,K10,K11,K12,M1,M2,M3,M4,M5,M6,M7,M8,M9,M10,M11,M12,O1,O2,O3,O4,O5,O6,O7,O8,O9,O10,O11,O12 faq
+    class P1,P2,P3,Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10 meta
+    class R1,R2,R3,S1,S2,S3,S4,S5,S6,S7,S8,S9 support
+```
+
+```mermaid
+%% Search Algorithm Flow and Suggestion System
+flowchart TD
+    %% User Input Processing
+    A[User Types Search Query] --> B[Input Processing Pipeline]
+    B --> C1[Text Normalization]
+    B --> C2[Spell Check & Correction]
+    B --> C3[Synonym Expansion]
+    B --> C4[Stop Word Removal]
+    
+    %% Query Analysis
+    C1 --> D[Query Analysis Engine]
+    C2 --> D
+    C3 --> D
+    C4 --> D
+    
+    D --> E1{Query Type Detection}
+    E1 -->|Exact Question| F1[Question Matching Algorithm]
+    E1 -->|Keywords| F2[Keyword Matching Algorithm]
+    E1 -->|Partial Text| F3[Fuzzy Matching Algorithm]
+    E1 -->|Error/Typo| F4[Error Correction Algorithm]
+    
+    %% Search Execution
+    F1 --> G1[Direct FAQ Lookup]
+    F2 --> G2[Weighted Keyword Search]
+    F3 --> G3[Similarity Score Calculation]
+    F4 --> G4[Corrected Query Re-execution]
+    
+    %% Result Processing
+    G1 --> H[Search Results Processor]
+    G2 --> H
+    G3 --> H
+    G4 --> H
+    
+    H --> I1[Relevance Scoring]
+    H --> I2[Category Filtering]
+    H --> I3[Result Ranking]
+    H --> I4[Result Deduplication]
+    
+    %% Result Enhancement
+    I1 --> J[Result Enhancement Engine]
+    I2 --> J
+    I3 --> J
+    I4 --> J
+    
+    J --> K1[Add Related FAQs]
+    J --> K2[Highlight Search Terms]
+    J --> K3[Generate Snippets]
+    J --> K4[Add Confidence Scores]
+    
+    %% Suggestion Generation
+    A --> L[Suggestion System]
+    L --> M1[Popular Queries Database]
+    L --> M2[User History Analysis]
+    L --> M3[Trending Topics Detection]
+    L --> M4[Category-Based Suggestions]
+    
+    M1 --> N1[Most Searched FAQs]
+    M2 --> N2[Personal Search History]
+    M3 --> N3[Recent Popular Topics]
+    M4 --> N4[Category-Specific Suggestions]
+    
+    %% Real-time Suggestions
+    A --> O{Character Count > 2?}
+    O -->|Yes| P[Live Suggestion Engine]
+    O -->|No| Q[Show Popular Queries]
+    
+    P --> R1[Prefix Matching]
+    P --> R2[Auto-completion]
+    P --> R3[Search Prediction]
+    
+    %% Final Output
+    K1 --> S[Display Search Results]
+    K2 --> S
+    K3 --> S
+    K4 --> S
+    
+    N1 --> T[Display Suggestions Dropdown]
+    N2 --> T
+    N3 --> T
+    N4 --> T
+    
+    Q --> T
+    R1 --> T
+    R2 --> T
+    R3 --> T
+    
+    %% Feedback Loop
+    S --> U[User Clicks Result]
+    T --> V[User Selects Suggestion]
+    U --> W[Update Result Ranking]
+    V --> X[Update Suggestion Priority]
+    
+    W --> Y[Machine Learning Feedback]
+    X --> Y
+    Y --> Z[Improve Search Algorithm]
+    
+    %% Analytics and Optimization
+    S --> AA[Search Analytics]
+    T --> AA
+    AA --> BB1[Track Search Success Rate]
+    AA --> BB2[Monitor Query Performance]
+    AA --> BB3[Identify Search Gaps]
+    
+    BB1 --> CC[Search Optimization Dashboard]
+    BB2 --> CC
+    BB3 --> CC
+    
+    %% Styling
+    classDef input fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef processing fill:#f3e5f5,stroke:#7b1fa2,color:#000
+    classDef algorithm fill:#e8f5e8,stroke:#2e7d32,color:#000
+    classDef results fill:#fff3e0,stroke:#ef6c00,color:#000
+    classDef suggestions fill:#ffebee,stroke:#d32f2f,color:#000
+    classDef feedback fill:#f1f8e9,stroke:#689f38,color:#000
+    
+    class A,B,C1,C2,C3,C4 input
+    class D,E1,H,I1,I2,I3,I4,J processing
+    class F1,F2,F3,F4,G1,G2,G3,G4 algorithm
+    class K1,K2,K3,K4,S results
+    class L,M1,M2,M3,M4,N1,N2,N3,N4,O,P,Q,R1,R2,R3,T suggestions
+    class U,V,W,X,Y,Z,AA,BB1,BB2,BB3,CC feedback
+```
+
+```mermaid
+%% Content Management and Update Workflows
+sequenceDiagram
+    participant Editor as Content Editor
+    participant CMS as Content Management System
+    participant Review as Review Process
+    participant API as FAQ API
+    participant Cache as Cache System
+    participant User as End User
+    
+    %% Content Creation Workflow
+    Editor->>CMS: Create New FAQ
+    CMS->>CMS: Generate FAQ ID
+    CMS->>Editor: Provide FAQ Form
+    Editor->>CMS: Submit FAQ Content
+    CMS->>CMS: Validate Content Format
+    CMS->>Review: Send for Review
+    
+    %% Review Process
+    Review->>Review: Editorial Review
+    Review->>Review: Technical Accuracy Check
+    Review->>Review: SEO Optimization
+    alt Content Approved
+        Review->>CMS: Approve FAQ
+        CMS->>API: Publish FAQ
+        API->>Cache: Update FAQ Cache
+        Cache->>User: New FAQ Available
+    else Content Needs Changes
+        Review->>Editor: Request Revisions
+        Editor->>CMS: Submit Revised Content
+        CMS->>Review: Re-submit for Review
+    end
+    
+    %% Content Update Workflow
+    Editor->>CMS: Request FAQ Update
+    CMS->>Editor: Load Existing Content
+    Editor->>CMS: Submit Updated Content
+    CMS->>CMS: Track Version History
+    CMS->>Review: Send Updates for Review
+    
+    Review->>Review: Compare Changes
+    Review->>Review: Validate Updates
+    alt Updates Approved
+        Review->>CMS: Approve Updates
+        CMS->>API: Deploy Updated FAQ
+        API->>Cache: Invalidate Old Cache
+        Cache->>User: Updated FAQ Available
+        CMS->>CMS: Archive Old Version
+    else Updates Rejected
+        Review->>Editor: Request Further Changes
+    end
+    
+    %% User Feedback Integration
+    User->>API: Submit FAQ Feedback
+    API->>CMS: Log Feedback
+    CMS->>CMS: Analyze Feedback Trends
+    CMS->>Editor: Flag FAQs Needing Updates
+    Editor->>CMS: Review Flagged Content
+    
+    %% Automated Content Maintenance
+    CMS->>CMS: Run Daily Content Audit
+    CMS->>CMS: Check for Outdated Information
+    CMS->>CMS: Validate External Links
+    CMS->>Editor: Generate Maintenance Report
+    Editor->>CMS: Address Maintenance Issues
+    
+    %% Content Performance Tracking
+    API->>CMS: Send Usage Analytics
+    CMS->>CMS: Analyze FAQ Performance
+    CMS->>Editor: Provide Performance Reports
+    Editor->>CMS: Optimize Low-Performing FAQs
+```
+
+```mermaid
+%% Analytics and Feedback Collection System
+graph TB
+    %% User Interaction Tracking
+    A[User FAQ Interactions] --> B1[View Tracking]
+    A --> B2[Search Tracking]
+    A --> B3[Feedback Tracking]
+    A --> B4[Conversion Tracking]
+    
+    %% View Analytics
+    B1 --> C1[FAQ Page Views]
+    B1 --> C2[FAQ Item Expansions]
+    B1 --> C3[Time Spent Reading]
+    B1 --> C4[Bounce Rate per FAQ]
+    
+    C1 --> D1[Most Viewed FAQs]
+    C2 --> D2[Most Opened FAQs]
+    C3 --> D3[Engagement Quality Score]
+    C4 --> D4[Content Effectiveness Rating]
+    
+    %% Search Analytics
+    B2 --> E1[Search Queries]
+    B2 --> E2[Search Results Clicks]
+    B2 --> E3[Search Success Rate]
+    B2 --> E4[Failed Searches]
+    
+    E1 --> F1[Popular Search Terms]
+    E2 --> F2[Click-Through Rates]
+    E3 --> F3[Search Satisfaction Score]
+    E4 --> F4[Content Gap Identification]
+    
+    %% Feedback Analytics
+    B3 --> G1[Thumbs Up/Down Votes]
+    B3 --> G2[Detailed Feedback Submissions]
+    B3 --> G3[FAQ Helpfulness Ratings]
+    B3 --> G4[Content Improvement Suggestions]
+    
+    G1 --> H1[FAQ Approval Ratings]
+    G2 --> H2[Qualitative Feedback Analysis]
+    G3 --> H3[Overall Satisfaction Metrics]
+    G4 --> H4[User-Driven Content Requests]
+    
+    %% Conversion Analytics
+    B4 --> I1[CTA Click Tracking]
+    B4 --> I2[Sign-up Conversions]
+    B4 --> I3[Support Ticket Creation]
+    B4 --> I4[Feature Usage Post-FAQ]
+    
+    I1 --> J1[CTA Performance by FAQ]
+    I2 --> J2[FAQ-to-Conversion Attribution]
+    I3 --> J3[Self-Service Success Rate]
+    I4 --> J4[Feature Adoption Impact]
+    
+    %% Analytics Processing
+    D1 --> K[Analytics Processing Engine]
+    D2 --> K
+    D3 --> K
+    D4 --> K
+    F1 --> K
+    F2 --> K
+    F3 --> K
+    F4 --> K
+    H1 --> K
+    H2 --> K
+    H3 --> K
+    H4 --> K
+    J1 --> K
+    J2 --> K
+    J3 --> K
+    J4 --> K
+    
+    %% Insights Generation
+    K --> L1[Content Performance Reports]
+    K --> L2[User Behavior Insights]
+    K --> L3[Content Gap Analysis]
+    K --> L4[Optimization Recommendations]
+    
+    %% Dashboard and Reporting
+    L1 --> M1[Editor Dashboard]
+    L2 --> M2[Product Team Dashboard]
+    L3 --> M3[Content Strategy Dashboard]
+    L4 --> M4[Optimization Action Items]
+    
+    %% Automated Actions
+    K --> N1[Auto-Flag Underperforming Content]
+    K --> N2[Auto-Promote High-Performing FAQs]
+    K --> N3[Auto-Generate Content Suggestions]
+    K --> N4[Auto-Update Search Rankings]
+    
+    %% Feedback Loop
+    M1 --> O1[Content Updates]
+    M2 --> O2[Feature Improvements]
+    M3 --> O3[Content Strategy Adjustments]
+    M4 --> O4[Performance Optimizations]
+    
+    O1 --> A
+    O2 --> A
+    O3 --> A
+    O4 --> A
+    
+    %% Machine Learning Integration
+    K --> P[ML Models for FAQ Optimization]
+    P --> Q1[Predictive Content Performance]
+    P --> Q2[Automated Content Categorization]
+    P --> Q3[Intelligent Search Suggestions]
+    P --> Q4[Personalized FAQ Recommendations]
+    
+    %% Styling
+    classDef tracking fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef analytics fill:#f3e5f5,stroke:#7b1fa2,color:#000
+    classDef insights fill:#e8f5e8,stroke:#2e7d32,color:#000
+    classDef reporting fill:#fff3e0,stroke:#ef6c00,color:#000
+    classDef automation fill:#ffebee,stroke:#d32f2f,color:#000
+    classDef ml fill:#f1f8e9,stroke:#689f38,color:#000
+    
+    class A,B1,B2,B3,B4,C1,C2,C3,C4,E1,E2,E3,E4,G1,G2,G3,G4,I1,I2,I3,I4 tracking
+    class D1,D2,D3,D4,F1,F2,F3,F4,H1,H2,H3,H4,J1,J2,J3,J4 analytics
+    class K,L1,L2,L3,L4 insights
+    class M1,M2,M3,M4 reporting
+    class N1,N2,N3,N4,O1,O2,O3,O4 automation
+    class P,Q1,Q2,Q3,Q4 ml
+```

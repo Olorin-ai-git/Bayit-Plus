@@ -1,0 +1,233 @@
+graph TB
+    subgraph "Template System Architecture"
+        direction TB
+        
+        subgraph "1. Template Registry Layer"
+            TR[Template Registry]
+            TD1[Executive Authority Template]
+            TD2[Tech Innovation Template]
+            TD3[Creative Showcase Template]
+            TD4[Healthcare Professional Template]
+            TD5[Financial Expert Template]
+            TD6[Academic Scholar Template]
+            TD7[Sales Performance Template]
+            TD8[International Professional Template]
+            
+            TR --> TD1
+            TR --> TD2
+            TR --> TD3
+            TR --> TD4
+            TR --> TD5
+            TR --> TD6
+            TR --> TD7
+            TR --> TD8
+        end
+        
+        subgraph "2. Template Configuration"
+            direction LR
+            TC[CVTemplate Interface]
+            
+            subgraph "Visual Identity"
+                CS[Color Scheme]
+                TS[Typography System]
+                SS[Spacing System]
+            end
+            
+            subgraph "Layout System"
+                LC[Layout Configuration]
+                RB[Responsive Breakpoints]
+                GS[Grid System]
+            end
+            
+            subgraph "Component Specs"
+                TCS[Template Components]
+                SC[Section Configuration]
+                SPC[Specialization Components]
+            end
+            
+            TC --> CS
+            TC --> TS
+            TC --> SS
+            TC --> LC
+            TC --> RB
+            TC --> GS
+            TC --> TCS
+            TC --> SC
+            TC --> SPC
+        end
+        
+        subgraph "3. Component Architecture"
+            direction TB
+            
+            subgraph "Base Components"
+                BTC[BaseTemplateComponent]
+                CF[Component Factory]
+                TCR[TemplateComponentRenderer]
+            end
+            
+            subgraph "Industry-Specific Components"
+                direction LR
+                
+                subgraph "Executive"
+                    LC1[Leadership Component]
+                    BP[Board Positions]
+                    SM[Strategic Metrics]
+                end
+                
+                subgraph "Tech"
+                    SKM[Skills Matrix]
+                    GI[GitHub Integration]
+                    PS[Project Showcase]
+                end
+                
+                subgraph "Creative"
+                    PG[Portfolio Gallery]
+                    DP[Design Process]
+                    BC[Brand Campaigns]
+                end
+                
+                subgraph "Healthcare"
+                    MC[Medical Credentials]
+                    PO[Patient Outcomes]
+                    RP[Research Publications]
+                end
+            end
+            
+            BTC --> CF
+            CF --> TCR
+            TCR --> LC1
+            TCR --> SKM
+            TCR --> PG
+            TCR --> MC
+        end
+        
+        subgraph "4. Style Generation System"
+            TSG[TemplateStyleGenerator]
+            RSG[ResponsiveStyleGenerator]
+            CVS[CSS Variable System]
+            
+            subgraph "Style Types"
+                BS[Base Styles]
+                CompS[Component Styles]
+                RS[Responsive Styles]
+                CS2[Color Variables]
+                TyS[Typography Styles]
+            end
+            
+            TSG --> BS
+            TSG --> CompS
+            TSG --> CS2
+            TSG --> TyS
+            RSG --> RS
+        end
+        
+        subgraph "5. Integration Layer"
+            direction TB
+            ECTG[Enhanced CVTemplateGenerator]
+            LCG[Legacy CVTemplateGenerator]
+            CVP[CVPreviewContent]
+            
+            ECTG --> LCG
+            ECTG --> CVP
+        end
+        
+        subgraph "6. Data Flow"
+            direction LR
+            CVD[CV Parsed Data]
+            SF[Selected Features]
+            QRS[QR Code Settings]
+            CS3[Collapsed Sections]
+            
+            CVD --> ECTG
+            SF --> ECTG
+            QRS --> ECTG
+            CS3 --> ECTG
+        end
+    end
+    
+    %% Connections between layers
+    TR --> TC
+    TC --> BTC
+    BTC --> TSG
+    TSG --> ECTG
+    CVD --> TCR
+    
+    %% Template selection flow
+    subgraph "Template Selection Flow"
+        direction LR
+        US[User Selects Template]
+        TR2[Registry Lookup]
+        TI[Template Instance]
+        CR[Component Rendering]
+        SG[Style Generation]
+        FO[Final Output]
+        
+        US --> TR2
+        TR2 --> TI
+        TI --> CR
+        CR --> SG
+        SG --> FO
+    end
+    
+    %% Responsive rendering flow
+    subgraph "Responsive Rendering Flow"
+        direction TB
+        DT[Device Detection]
+        BP2[Breakpoint Selection]
+        LA[Layout Adaptation]
+        CS4[Component Scaling]
+        MQ[Media Queries]
+        RO[Responsive Output]
+        
+        DT --> BP2
+        BP2 --> LA
+        LA --> CS4
+        CS4 --> MQ
+        MQ --> RO
+    end
+    
+    %% Component specialization flow
+    subgraph "Component Specialization Flow"
+        direction LR
+        IT[Industry Type]
+        CC[Component Configuration]
+        CF2[Component Factory]
+        SC2[Specialized Component]
+        DR[Data Rendering]
+        CO[Component Output]
+        
+        IT --> CC
+        CC --> CF2
+        CF2 --> SC2
+        SC2 --> DR
+        DR --> CO
+    end
+    
+    %% Styling System Flow
+    subgraph "Dynamic Styling System"
+        direction TB
+        TT[Template Type]
+        CV[Color Variables]
+        TV[Typography Variables]
+        SV[Spacing Variables]
+        CSS[Generated CSS]
+        AS[Applied Styles]
+        
+        TT --> CV
+        TT --> TV
+        TT --> SV
+        CV --> CSS
+        TV --> CSS
+        SV --> CSS
+        CSS --> AS
+    end
+    
+    classDef templateClass fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    classDef componentClass fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
+    classDef systemClass fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000
+    classDef flowClass fill:#fff8e1,stroke:#e65100,stroke-width:2px,color:#000
+    
+    class TR,TD1,TD2,TD3,TD4,TD5,TD6,TD7,TD8 templateClass
+    class BTC,CF,TCR,LC1,SKM,PG,MC componentClass
+    class TSG,RSG,CVS,ECTG systemClass
+    class US,TR2,TI,CR,SG,FO,DT,BP2,LA,CS4,MQ,RO flowClass

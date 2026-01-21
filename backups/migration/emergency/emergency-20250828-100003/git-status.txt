@@ -1,0 +1,67 @@
+ M CLAUDE.md
+ M firestore.rules
+ D functions/package-lock.json
+ M functions/package.json
+ M functions/src/functions/analytics/getRevenueMetrics.ts
+ M functions/src/functions/ml/predictChurn.ts
+ M functions/src/functions/payments/checkFeatureAccess.ts
+ M functions/src/functions/premium/advancedAnalytics.ts
+ M functions/src/functions/premium/dynamicPricing.ts
+ M functions/src/functions/premium/enterpriseManagement.ts
+ M functions/src/index.ts
+ M functions/src/middleware/authGuard.ts
+ M functions/src/middleware/enhancedPremiumGuard.ts
+ M functions/src/services/cache/index.ts
+ M functions/src/services/cache/redis-client.service.ts
+ M functions/src/services/external-data/adapters/website.adapter.ts
+ M functions/src/services/premium/analytics/pricingAnalytics.ts
+ M functions/src/services/premium/analytics/reportBuilder.ts
+ M functions/src/services/premium/enterprise/rbac.ts
+ M functions/src/services/premium/enterprise/ssoManager.ts
+ M functions/src/services/premium/enterprise/tenantManager.ts
+ M functions/src/services/premium/pricing/dynamicEngine.ts
+ M functions/src/services/premium/pricing/marketIntelligence.ts
+ M functions/tsconfig.json
+ M package-lock.json
+ M package.json
+ M packages/admin
+ M packages/auth
+ M packages/core
+ M packages/i18n
+ M packages/multimedia
+ M packages/premium
+ M packages/public-profiles
+?? backups/
+?? cleanup-task.md
+?? create-payments-submodule-task.md
+?? docs/diagrams/2025-08-28-auth-module-migration-architecture.mermaid
+?? docs/diagrams/2025-08-28-migration-tracking-system-architecture.mermaid
+?? docs/diagrams/2025-08-28-payments-submodule-gap-closure-architecture.md
+?? docs/migration/
+?? docs/plans/2025-08-28-cvplus-payments-submodule-comprehensive-gap-closure-plan.md
+?? docs/plans/2025-08/2025-08-28-auth-module-migration-plan.md
+?? docs/plans/2025-08/2025-08-28-firebase-functions-migration-tracking-system-comprehensive-implementation-plan.md
+?? functions/src/functions/payments/checkFeatureAccess.ts.bak
+?? functions/src/functions/premium/advancedAnalytics.ts.bak
+?? functions/src/functions/premium/batchTrackingEvents.ts.bak
+?? functions/src/functions/premium/dynamicPricing.ts.bak
+?? functions/src/functions/premium/enterpriseManagement.ts.bak
+?? functions/src/functions/premium/getRealtimeUsageStats.ts.bak
+?? functions/src/types/premium-features.ts
+?? git-expert-submodule-conversion-task.md
+?? handover-context.md
+?? package.json.bak
+?? package.json.bak2
+?? package.json.bak3
+?? packages/payments/
+?? scripts/migration/backup-system.sh
+?? scripts/migration/config/
+?? scripts/migration/migration-logger.js
+?? scripts/migration/migration-status.js
+?? scripts/migration/migration-tracker.js
+?? scripts/migration/restore-system.sh
+?? scripts/migration/rollback-system.js
+?? scripts/migration/test-backup-system.sh
+?? scripts/migration/verification-system.js
+?? scripts/migration/verify-backups.sh
+?? typescript-compilation-fixes.todo

@@ -1,0 +1,131 @@
+graph TB
+    %% Professional Templates System Architecture
+    %% Author: Gil Klainert
+    %% Date: 2024-08-21
+    
+    subgraph "Template Type System"
+        TS["📝 CV Template Types<br/>cv-templates.ts"]
+        TS --> TID["🏷️ TemplateId<br/>Branded Type"]
+        TS --> TC["📂 TemplateCategory<br/>8 Categories"]
+        TS --> CP["🎨 ColorPalette<br/>Psychology-based"]
+        TS --> TY["📝 TypographySystem<br/>Professional Pairings"]
+        TS --> LC["📐 LayoutConfiguration<br/>Responsive Grid"]
+        TS --> FS["⚙️ FeatureSpecification<br/>Advanced Features"]
+        TS --> ATS["🔍 ATSCompatibility<br/>85-95% Scores"]
+    end
+    
+    subgraph "Professional Templates Data"
+        PTD["📊 Professional Templates<br/>professional-templates.ts"]
+        PTD --> EX["👔 Executive Authority<br/>C-suite & Leadership"]
+        PTD --> TECH["💻 Tech Innovation<br/>Engineering & IT"]
+        PTD --> CR["🎨 Creative Showcase<br/>Design & Creative"]
+        PTD --> HC["🏥 Healthcare Professional<br/>Medical Professionals"]
+        PTD --> FIN["💼 Financial Expert<br/>Finance Sector"]
+        PTD --> AC["🎓 Academic Scholar<br/>Education & Research"]
+        PTD --> SAL["📈 Sales Performance<br/>Sales Professionals"]
+        PTD --> INT["🌍 International Professional<br/>Global Roles"]
+    end
+    
+    subgraph "Template Registry Service"
+        TRS["🗃️ Template Registry<br/>template-registry.ts"]
+        TRS --> TM["📋 Template Management<br/>CRUD Operations"]
+        TRS --> SF["🔍 Search & Filtering<br/>Multi-criteria Search"]
+        TRS --> AN["📊 Analytics & Tracking<br/>Usage Statistics"]
+        TRS --> VA["✅ Validation<br/>Template Verification"]
+        TRS --> CA["💾 Caching System<br/>Performance Optimization"]
+    end
+    
+    subgraph "Integration Layer"
+        TI["🔗 Template Integration<br/>template-integration.ts"]
+        TI --> BC["🔄 Backward Compatibility<br/>Legacy Support"]
+        TI --> TSS["🎯 Template Selection<br/>Smart Recommendations"]
+        TI --> CVG["🚀 Enhanced Generation<br/>Advanced CV Creation"]
+        TI --> MIG["📋 Migration Utilities<br/>Legacy Migration"]
+    end
+    
+    subgraph "React Integration"
+        RH["⚛️ React Hooks<br/>useEnhancedTemplates.ts"]
+        RH --> TD["📊 Template Data<br/>State Management"]
+        RH --> FI["🔽 Filtering Logic<br/>Category & Search"]
+        RH --> RE["🎯 Recommendations<br/>User-based Matching"]
+        RH --> GE["⚙️ Generation Engine<br/>CV Generation"]
+        RH --> AN2["📈 Analytics Hooks<br/>Usage Tracking"]
+    end
+    
+    subgraph "UI Components"
+        ETP["🎨 Enhanced Templates Page<br/>EnhancedTemplatesPage.tsx"]
+        ETP --> TC2["🏷️ Template Cards<br/>Rich Template Display"]
+        ETP --> CF["🔽 Category Filters<br/>8-Category Navigation"]
+        ETP --> SR["🔍 Search & Recommendations<br/>Smart Template Discovery"]
+        ETP --> GB["🚀 Generation Button<br/>Enhanced CV Creation"]
+        ETP --> PM["💎 Premium Features<br/>Premium Template Support"]
+    end
+    
+    subgraph "Legacy Compatibility"
+        LT["📄 Legacy Templates<br/>TemplatesPage.tsx"]
+        LT --> LM["🔄 Legacy Mapping<br/>ID Translation"]
+        LM --> PTD
+        LT -.->|"Gradual Migration"| ETP
+    end
+    
+    subgraph "Template Features"
+        TF["⭐ Template Features"]
+        TF --> CP2["🎨 Color Psychology<br/>Industry-specific Schemes"]
+        TF --> TP["📝 Typography Pairings<br/>Professional Font Combinations"]
+        TF --> RL["📱 Responsive Layouts<br/>Mobile-first Design"]
+        TF --> AF["✨ Advanced Features<br/>Animations & Interactions"]
+        TF --> AC2["♿ Accessibility<br/>WCAG 2.1 AA Compliance"]
+        TF --> AO["🔍 ATS Optimization<br/>High Compatibility Scores"]
+    end
+    
+    subgraph "Performance & Caching"
+        PC["🚀 Performance System"]
+        PC --> SC["💾 Search Caching<br/>5-minute TTL"]
+        PC --> IM["📦 In-memory Storage<br/>Template Registry"]
+        PC --> LL["⚡ Lazy Loading<br/>On-demand Templates"]
+        PC --> CS["✂️ Code Splitting<br/>Bundle Optimization"]
+    end
+    
+    subgraph "Analytics & Insights"
+        AI["📊 Analytics System"]
+        AI --> UT["👥 Usage Tracking<br/>Template Selection"]
+        AI --> RT["⭐ Rating System<br/>User Feedback"]
+        AI --> PT["📈 Performance Metrics<br/>Generation Times"]
+        AI --> REC["🎯 Recommendation Engine<br/>ML-based Matching"]
+    end
+    
+    %% Data Flow Connections
+    TS --> PTD
+    PTD --> TRS
+    TRS --> TI
+    TI --> RH
+    RH --> ETP
+    TRS --> PC
+    TRS --> AI
+    TF --> PTD
+    
+    %% Integration Flows
+    LT --> TI
+    TI --> ETP
+    AI --> REC
+    REC --> RH
+    
+    %% Style Classes
+    classDef typeSystem fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef templateData fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef serviceLayer fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef uiLayer fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef legacyLayer fill:#fafafa,stroke:#616161,stroke-width:2px
+    classDef featureLayer fill:#f8bbd9,stroke:#e91e63,stroke-width:2px
+    classDef performanceLayer fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    classDef analyticsLayer fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    
+    %% Apply Styles
+    class TS,TID,TC,CP,TY,LC,FS,ATS typeSystem
+    class PTD,EX,TECH,CR,HC,FIN,AC,SAL,INT templateData
+    class TRS,TM,SF,AN,VA,CA,TI,BC,TSS,CVG,MIG serviceLayer
+    class RH,TD,FI,RE,GE,AN2,ETP,TC2,CF,SR,GB,PM uiLayer
+    class LT,LM legacyLayer
+    class TF,CP2,TP,RL,AF,AC2,AO featureLayer
+    class PC,SC,IM,LL,CS performanceLayer
+    class AI,UT,RT,PT,REC analyticsLayer

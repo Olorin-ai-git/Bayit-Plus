@@ -1,0 +1,48 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/auth" },
+    { "path": "./packages/i18n" },
+    { "path": "./packages/cv-processing" },
+    { "path": "./packages/multimedia" },
+    { "path": "./packages/analytics" },
+    { "path": "./packages/premium" },
+    { "path": "./packages/recommendations" },
+    { "path": "./packages/public-profiles" },
+    { "path": "./packages/admin" },
+    { "path": "./packages/workflow" },
+    { "path": "./packages/payments" },
+    { "path": "./frontend" },
+    { "path": "./functions" }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@cvplus/core": ["packages/core/src"],
+      "@cvplus/core/*": ["packages/core/src/*"],
+      "@cvplus/auth": ["packages/auth/src"],
+      "@cvplus/auth/*": ["packages/auth/src/*"],
+      "@cvplus/i18n": ["packages/i18n/src"],
+      "@cvplus/i18n/*": ["packages/i18n/src/*"],
+      "@cvplus/cv-processing": ["packages/cv-processing/src"],
+      "@cvplus/cv-processing/*": ["packages/cv-processing/src/*"],
+      "@cvplus/multimedia": ["packages/multimedia/src"],
+      "@cvplus/multimedia/*": ["packages/multimedia/src/*"],
+      "@cvplus/analytics": ["packages/analytics/src"],
+      "@cvplus/analytics/*": ["packages/analytics/src/*"],
+      "@cvplus/premium": ["packages/premium/src"],
+      "@cvplus/premium/*": ["packages/premium/src/*"],
+      "@cvplus/recommendations": ["packages/recommendations/src"],
+      "@cvplus/recommendations/*": ["packages/recommendations/src/*"],
+      "@cvplus/public-profiles": ["packages/public-profiles/src"],
+      "@cvplus/public-profiles/*": ["packages/public-profiles/src/*"],
+      "@cvplus/admin": ["packages/admin/src"],
+      "@cvplus/admin/*": ["packages/admin/src/*"],
+      "@cvplus/workflow": ["packages/workflow/src"],
+      "@cvplus/workflow/*": ["packages/workflow/src/*"],
+      "@cvplus/payments": ["packages/payments/src"],
+      "@cvplus/payments/*": ["packages/payments/src/*"]
+    }
+  }
+}

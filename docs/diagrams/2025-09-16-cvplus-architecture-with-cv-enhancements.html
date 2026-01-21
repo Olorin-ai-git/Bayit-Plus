@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVPlus Architecture with CV Enhancements Module - 2025-09-16</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            margin: 10px 0 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin: 40px 0;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .section h3 {
+            color: #34495e;
+            margin-top: 30px;
+            font-size: 1.5rem;
+        }
+
+        .highlight-box {
+            background: #f8f9fa;
+            border-left: 5px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .new-feature {
+            background: #e8f5e8;
+            border-left: 5px solid #27ae60;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .layer-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .layer-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .layer-0 { border-left: 5px solid #9b59b6; }
+        .layer-1 { border-left: 5px solid #3498db; }
+        .layer-2 { border-left: 5px solid #1abc9c; }
+        .layer-3 { border-left: 5px solid #f39c12; }
+        .layer-4 { border-left: 5px solid #e74c3c; }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .module-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .new-module {
+            background: #e8f5e8;
+            border-left: 4px solid #27ae60;
+        }
+
+        .diagram-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .features-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .feature-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2rem; }
+            .content { padding: 20px; }
+            .module-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏗️ CVPlus Layered Architecture</h1>
+            <p>Updated with CV Enhancements Module | September 16, 2025</p>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>🎯 Architecture Overview</h2>
+                <p>CVPlus follows a strict <strong>4-layer hierarchical architecture</strong> with clear dependency rules and domain boundaries. The new <strong>CV Enhancements module</strong> provides basic enhancement features available to ALL users.</p>
+
+                <div class="new-feature">
+                    <h3>🆕 NEW: CV Enhancements Module (Layer 3)</h3>
+                    <p><strong>Purpose</strong>: Calendar integration, meeting booking, and professional networking tools available to all users.</p>
+                    <p><strong>Why Layer 3?</strong> These are business-level enhancement features that integrate with core CV processing but are not premium-only.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📊 Layer Structure</h2>
+
+                <div class="layer-card layer-4">
+                    <h3>Layer 4: Orchestration Services</h3>
+                    <p><strong>Purpose</strong>: System orchestration, administration, and workflow management</p>
+                    <div class="module-grid">
+                        <div class="module-item">
+                            <strong>@cvplus/admin</strong><br>
+                            Administrative tools, monitoring
+                        </div>
+                        <div class="module-item">
+                            <strong>@cvplus/workflow</strong><br>
+                            Job orchestration, templates
+                        </div>
+                        <div class="module-item">
+                            <strong>@cvplus/payments</strong><br>
+                            Payment processing (refocused)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layer-card layer-3">
+                    <h3>Layer 3: Business Services</h3>
+                    <p><strong>Purpose</strong>: Business logic, user-facing features, and enhancement services</p>
+                    <div class="module-grid">
+                        <div class="module-item new-module">
+                            <strong>@cvplus/cv-enhancements</strong> 🆕<br>
+                            Calendar, booking, networking
+                        </div>
+                        <div class="module-item">
+                            <strong>@cvplus/premium</strong><br>
+                            Premium features, subscriptions
+                        </div>
+                        <div class="module-item">
+                            <strong>@cvplus/recommendations</strong><br>
+                            AI-powered suggestions
+                        </div>
+                        <div class="module-item">
+                            <strong>@cvplus/public-profiles</strong><br>
+                            Public profiles, social features
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layer-card layer-2">
+                    <h3>Layer 2: Domain Services</h3>
+                    <p><strong>Purpose</strong>: Core domain-specific processing and specialized services</p>
+                    <div class="module-grid">
+                        <div class="module-item">
+                            <strong>@cvplus/cv-processing</strong><br>
+                            CV analysis, ATS optimization
+                        </div>
+                        <div class="module-item">
+                            <strong>@cvplus/multimedia</strong><br>
+                            Media generation, processing
+                        </div>
+                        <div class="module-item">
+                            <strong>@cvplus/analytics</strong><br>
+                            Data analytics, ML pipelines
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layer-card layer-1">
+                    <h3>Layer 1: Base Services</h3>
+                    <p><strong>Purpose</strong>: Authentication, internationalization, and foundational services</p>
+                    <div class="module-grid">
+                        <div class="module-item">
+                            <strong>@cvplus/auth</strong><br>
+                            Authentication, authorization
+                        </div>
+                        <div class="module-item">
+                            <strong>@cvplus/i18n</strong><br>
+                            Internationalization, localization
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layer-card layer-0">
+                    <h3>Layer 0: Foundation (Core)</h3>
+                    <p><strong>Purpose</strong>: Shared utilities, types, constants, and foundational services</p>
+                    <div class="module-grid">
+                        <div class="module-item">
+                            <strong>@cvplus/core</strong><br>
+                            Core utilities, types, validation
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔄 Dependency Flow Architecture</h2>
+                <div class="diagram-container">
+                    <div class="mermaid">
+                        graph TB
+                            subgraph "Layer 4: Orchestration"
+                                Admin[🛠️ Admin]
+                                Workflow[⚙️ Workflow]
+                                Payments[💳 Payments]
+                            end
+
+                            subgraph "Layer 3: Business Services"
+                                CVE[🗓️ CV Enhancements<br/>🆕 NEW]
+                                Premium[💎 Premium]
+                                Recommendations[🤖 Recommendations]
+                                PublicProfiles[🌐 Public Profiles]
+                            end
+
+                            subgraph "Layer 2: Domain Services"
+                                CVProcessing[📄 CV Processing]
+                                Multimedia[🎬 Multimedia]
+                                Analytics[📊 Analytics]
+                            end
+
+                            subgraph "Layer 1: Base Services"
+                                Auth[🔐 Auth]
+                                I18n[🌍 I18n]
+                            end
+
+                            subgraph "Layer 0: Foundation"
+                                Core[⚡ Core]
+                            end
+
+                            %% Layer 4 to Layer 3
+                            Admin --> CVE
+                            Admin --> Premium
+                            Admin --> Recommendations
+                            Admin --> PublicProfiles
+                            Workflow --> CVE
+                            Workflow --> Premium
+                            Payments --> CVE
+
+                            %% Layer 3 to Layer 2
+                            CVE --> CVProcessing
+                            CVE --> Multimedia
+                            CVE --> Analytics
+                            Premium --> CVProcessing
+                            Premium --> Multimedia
+                            Premium --> Analytics
+                            Recommendations --> CVProcessing
+                            Recommendations --> Analytics
+                            PublicProfiles --> CVProcessing
+                            PublicProfiles --> Multimedia
+                            PublicProfiles --> Analytics
+
+                            %% Layer 2 to Layer 1
+                            CVProcessing --> Auth
+                            CVProcessing --> I18n
+                            Multimedia --> Auth
+                            Multimedia --> I18n
+                            Analytics --> Auth
+                            Analytics --> I18n
+
+                            %% Layer 1 to Layer 0
+                            Auth --> Core
+                            I18n --> Core
+
+                            %% Styling
+                            classDef layer4 fill:#e74c3c,stroke:#c0392b,color:#fff
+                            classDef layer3 fill:#f39c12,stroke:#d68910,color:#fff
+                            classDef layer2 fill:#1abc9c,stroke:#17a085,color:#fff
+                            classDef layer1 fill:#3498db,stroke:#2980b9,color:#fff
+                            classDef layer0 fill:#9b59b6,stroke:#8e44ad,color:#fff
+                            classDef newModule fill:#27ae60,stroke:#229954,color:#fff
+
+                            class Admin,Workflow,Payments layer4
+                            class Premium,Recommendations,PublicProfiles layer3
+                            class CVE newModule
+                            class CVProcessing,Multimedia,Analytics layer2
+                            class Auth,I18n layer1
+                            class Core layer0
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🆕 CV Enhancements Module Features</h2>
+                <p>The new CV Enhancements module provides essential professional tools available to ALL users:</p>
+
+                <div class="features-list">
+                    <div class="feature-item">
+                        <h4>📅 Calendar Integration</h4>
+                        <p>Google Calendar, Outlook, and iCal synchronization for career milestones</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>🤝 Meeting Booking</h4>
+                        <p>Professional meeting scheduling with automated calendar invites</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>🌐 Professional Networking</h4>
+                        <p>Contact management and professional relationship building</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>✉️ Email Automation</h4>
+                        <p>Professional email templates for scheduling and networking</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>⏰ Smart Scheduling</h4>
+                        <p>AI-powered availability management and conflict detection</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>📊 Career Timeline</h4>
+                        <p>Visual integration of career milestones with calendar systems</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔧 Migration Changes</h2>
+
+                <div class="highlight-box">
+                    <h3>✅ Moved FROM Payments TO CV Enhancements</h3>
+                    <ul>
+                        <li>Calendar integration services</li>
+                        <li>Meeting booking functionality</li>
+                        <li>Scheduling email automation</li>
+                        <li>Professional contact management</li>
+                        <li>Booking scheduler components</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Updated Import Statements</h3>
+                    <p>All calendar and booking imports must be updated:</p>
+                    <div class="code-block">
+// OLD (Architectural Violation):
+import { bookMeeting, sendSchedulingEmail } from '@cvplus/payments';
+
+// NEW (Architecturally Compliant):
+import { bookMeeting, sendSchedulingEmail } from '@cvplus/cv-enhancements';
+import { CalendarIntegrationService } from '@cvplus/cv-enhancements';
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🎯 Payments Module Refocus</h3>
+                    <p>The payments module now focuses exclusively on:</p>
+                    <ul>
+                        <li>Payment processing (Stripe, PayPal)</li>
+                        <li>Transaction management</li>
+                        <li>Subscription billing</li>
+                        <li>Financial reporting</li>
+                        <li>Webhook handling</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🛡️ Architectural Compliance</h2>
+                <div class="code-block">
+// ✅ CORRECT: CV Enhancements importing from lower layers
+import { User, Job, CVData } from '@cvplus/core';
+import { AuthService } from '@cvplus/auth';
+import { CVProcessingService } from '@cvplus/cv-processing';
+import { MultimediaService } from '@cvplus/multimedia';
+import { AnalyticsService } from '@cvplus/analytics';
+
+// ❌ FORBIDDEN: CV Enhancements importing from same/higher layers
+import { PremiumService } from '@cvplus/premium'; // PEER DEPENDENCY
+import { AdminService } from '@cvplus/admin'; // HIGHER LAYER
+import { PaymentService } from '@cvplus/payments'; // HIGHER LAYER
+
+// ✅ CORRECT: Higher layers importing from CV Enhancements
+// In @cvplus/premium:
+import { CalendarIntegrationService } from '@cvplus/cv-enhancements';
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🏗️ Build Order</h2>
+                <div class="highlight-box">
+                    <h3>Updated Build Sequence</h3>
+                    <ol>
+                        <li><strong>Layer 0:</strong> core</li>
+                        <li><strong>Layer 1:</strong> auth, i18n</li>
+                        <li><strong>Layer 2:</strong> cv-processing, multimedia, analytics</li>
+                        <li><strong>Layer 3:</strong> <span style="color: #27ae60; font-weight: bold;">cv-enhancements</span> 🆕, premium, recommendations, public-profiles</li>
+                        <li><strong>Layer 4:</strong> admin, workflow, payments</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>CVPlus Layered Architecture</strong> - Updated September 16, 2025</p>
+            <p>Architectural compliance ensures maintainable, scalable, and robust software design</p>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+    </script>
+</body>
+</html>

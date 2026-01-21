@@ -1,0 +1,684 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions for security validation
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isValidUser(userId) {
+      return isAuthenticated() && request.auth.uid == userId && userId != null && userId != '';
+    }
+    
+    function isPremiumUser() {
+      // SECURITY: Validate actual premium subscription status
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/userSubscriptions/$(request.auth.uid)) &&
+             (get(/databases/$(database)/documents/userSubscriptions/$(request.auth.uid)).data.subscriptionStatus == 'premium_active' ||
+              get(/databases/$(database)/documents/userSubscriptions/$(request.auth.uid)).data.subscriptionStatus == 'premium_lifetime' ||
+              get(/databases/$(database)/documents/userSubscriptions/$(request.auth.uid)).data.lifetimeAccess == true);
+    }
+    
+    function hasValidPremiumSubscription() {
+      // Additional validation for subscription integrity
+      let subscription = get(/databases/$(database)/documents/userSubscriptions/$(request.auth.uid)).data;
+      return subscription != null &&
+             subscription.userId == request.auth.uid &&
+             (subscription.lifetimeAccess == true || 
+              subscription.subscriptionStatus in ['premium_active', 'premium_lifetime']) &&
+             (!exists(subscription.expiresAt) || subscription.expiresAt > request.time);
+    }
+    
+    function hasFeatureAccess(feature) {
+      // Validate specific feature access with integrity checks
+      return isPremiumUser() && 
+             hasValidPremiumSubscription() &&
+             exists(/databases/$(database)/documents/userSubscriptions/$(request.auth.uid)/features/$(feature)) &&
+             get(/databases/$(database)/documents/userSubscriptions/$(request.auth.uid)/features/$(feature)).data.enabled == true &&
+             (!exists(get(/databases/$(database)/documents/userSubscriptions/$(request.auth.uid)/features/$(feature)).data.validUntil) ||
+              get(/databases/$(database)/documents/userSubscriptions/$(request.auth.uid)/features/$(feature)).data.validUntil > request.time);
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+             request.auth.token.admin != null;
+    }
+    
+    function hasAdminLevel(minLevel) {
+      return isAdmin() && 
+             request.auth.token.admin.level >= minLevel;
+    }
+    
+    function hasAdminPermission(permission) {
+      return isAdmin() && 
+             request.auth.token.admin.permissions[permission] == true;
+    }
+    
+    function isFunctionCall() {
+      // Functions have special admin privileges
+      return request.auth != null && 
+             request.auth.uid.matches('.*-firebase-adminsdk-.*');
+    }
+    
+    // Helper function to validate subscription write operations
+    function isValidSubscriptionWrite() {
+      return isFunctionCall() && 
+             request.resource.data.keys().hasAll(['subscriptionStatus', 'lifetimeAccess', 'features']);
+    }
+    
+    // Helper function to validate usage tracking data
+    function isValidUsageTracking() {
+      return request.resource.data.keys().hasAll(['userId', 'timestamp', 'success']) &&
+             request.resource.data.userId == request.auth.uid;
+    }
+
+    // ========================================
+    // USER DATA COLLECTIONS
+    // ========================================
+    
+    // Allow authenticated users to read their own documents
+    match /users/{userId}/{document=**} {
+      allow read, write: if isValidUser(userId);
+    }
+    
+    // User Verified Names - users can read/write their own
+    match /userVerifiedNames/{userId} {
+      allow read, write: if isValidUser(userId);
+    }
+
+    // ========================================
+    // PREMIUM SUBSCRIPTION COLLECTIONS  
+    // ========================================
+    
+    // User subscriptions - CRITICAL SECURITY: Users can only read their own, only functions can write
+    match /userSubscriptions/{userId} {
+      allow read: if isValidUser(userId);
+      allow write: if isFunctionCall() && isValidSubscriptionWrite();
+      
+      // Feature access validation subcollection
+      match /features/{feature} {
+        allow read: if isValidUser(userId);
+        allow write: if isFunctionCall();
+      }
+      
+      // Usage tracking subcollection  
+      match /usage/{feature} {
+        allow read: if isValidUser(userId);
+        allow create, update: if isValidUser(userId) && isValidUsageTracking();
+        allow delete: if false; // Never allow deletion of usage data
+      }
+    }
+    
+    // Payment History - CRITICAL SECURITY: Users can only read their own, only functions can write
+    match /paymentHistory/{paymentId} {
+      allow read: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+      allow write: if isFunctionCall() && 
+                      request.resource.data.userId is string;
+      allow delete: if false; // Never allow deletion of payment records
+    }
+    
+    // Usage Tracking Collections - External Data Premium Features
+    match /external_data_usage/{usageId} {
+      allow read: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+      allow write: if isFunctionCall() || 
+                      (isAuthenticated() && 
+                       request.resource.data.userId == request.auth.uid &&
+                       isValidUsageTracking());
+      allow delete: if false; // Preserve usage data for analytics
+    }
+    
+    match /external_data_analytics/{analyticsId} {
+      allow read: if isAdmin(); // Only admins can read aggregated analytics
+      allow write: if isFunctionCall(); // Only functions can write analytics
+      allow delete: if false; // Preserve analytics data
+    }
+    
+    match /external_data_security_audit/{auditId} {
+      allow read: if isAdmin(); // Only admins can read security audits
+      allow write: if isFunctionCall(); // Only functions can write audit logs
+      allow delete: if false; // Never delete security audit logs
+    }
+
+    // ========================================
+    // CV AND JOB MANAGEMENT
+    // ========================================
+
+    // CV Jobs collection - enhanced for T041-T044 functionality
+    match /cv_jobs/{jobId} {
+      allow read: if isAuthenticated() &&
+        (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isAuthenticated() &&
+        request.auth.uid == request.resource.data.userId &&
+        request.resource.data.keys().hasAll(['userId', 'status', 'createdAt']);
+      allow update: if isAuthenticated() &&
+        request.auth.uid == resource.data.userId &&
+        (!('userId' in request.resource.data.diff(resource.data).changedKeys()) ||
+         request.resource.data.userId == resource.data.userId);
+      allow delete: if isAuthenticated() &&
+        request.auth.uid == resource.data.userId;
+    }
+
+    // Processed CVs collection - users can read their own, functions can write
+    match /processed_cvs/{cvId} {
+      allow read: if isAuthenticated() &&
+        (request.auth.uid == resource.data.userId ||
+         (exists(resource.data.publicProfile) && resource.data.publicProfile.isPublic == true));
+      allow create: if isFunctionCall() &&
+        request.resource.data.keys().hasAll(['userId', 'jobId', 'processedData']);
+      allow update: if isFunctionCall() ||
+        (isAuthenticated() && request.auth.uid == resource.data.userId &&
+         !('processedData' in request.resource.data.diff(resource.data).changedKeys()));
+      allow delete: if isAuthenticated() &&
+        request.auth.uid == resource.data.userId;
+    }
+
+    // Generated Content collection - multimedia assets (T045-T046)
+    match /generated_content/{contentId} {
+      allow read: if isAuthenticated() &&
+        (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isFunctionCall() &&
+        request.resource.data.keys().hasAll(['userId', 'type', 'status']);
+      allow update: if isFunctionCall();
+      allow delete: if isAuthenticated() &&
+        request.auth.uid == resource.data.userId;
+    }
+
+    // Jobs collection with premium feature validation (legacy)
+    match /jobs/{jobId} {
+      allow read: if isAuthenticated() &&
+        (request.auth.uid == resource.data.userId ||
+         resource.data.isPublic == true);
+      allow create: if isAuthenticated() &&
+        request.auth.uid == request.resource.data.userId;
+      allow update: if isAuthenticated() &&
+        request.auth.uid == resource.data.userId;
+      allow delete: if isAuthenticated() &&
+        request.auth.uid == resource.data.userId;
+    }
+
+    // Generated CVs - users can manage their own (legacy)
+    match /generatedCVs/{cvId} {
+      allow read, write: if isAuthenticated() &&
+        request.auth.uid == resource.data.userId;
+    }
+
+    // CV Hash Records - functions only (for duplicate detection)
+    match /cvHashRecords/{hashId} {
+      allow read: if false;
+      allow write: if isFunctionCall();
+    }
+
+    // ========================================
+    // ROLE PROFILES AND ANALYTICS
+    // ========================================
+    
+    // Role profiles - read-only for authenticated users, write from functions only
+    match /roleProfiles/{roleId} {
+      allow read: if isAuthenticated();
+      allow write: if isFunctionCall();
+    }
+    
+    // User role profile assignments - authenticated users can manage their own
+    match /userRoleProfiles/{userId} {
+      allow read, write: if isValidUser(userId);
+    }
+    
+    // Role profile analytics - functions only
+    match /roleProfileAnalytics/{document=**} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+    }
+
+    // ========================================
+    // POLICY AND COMPLIANCE
+    // ========================================
+    
+    // Policy configuration - admin read, functions write
+    match /policy_config/{configId} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+    }
+    
+    // User Policy Records - users can read their own, functions can write
+    match /userPolicyRecords/{userId} {
+      allow read: if isValidUser(userId);
+      allow write: if isFunctionCall();
+      
+      // Policy check history - users can read their own
+      match /checkHistory/{checkId} {
+        allow read: if isValidUser(userId);
+        allow write: if isFunctionCall();
+      }
+      
+      // Upload history - users can read their own
+      match /uploadHistory/{uploadId} {
+        allow read: if isValidUser(userId);
+        allow write: if isFunctionCall();
+      }
+    }
+    
+    // Policy Violations - admin/functions only
+    match /policyViolations/{violationId} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+    }
+
+    // ========================================
+    // ANALYTICS AND REVENUE DATA (Enhanced T051)
+    // ========================================
+
+    // User Analytics - users can read their own data, functions write
+    match /user_analytics/{userId} {
+      allow read: if isAuthenticated() && request.auth.uid == userId || isAdmin();
+      allow write: if isFunctionCall();
+    }
+
+    // Entity Analytics - flexible analytics for different entity types
+    match /entity_analytics/{entityType}/{entityId} {
+      allow read: if isAuthenticated() &&
+        (request.auth.uid == resource.data.userId || isAdmin());
+      allow write: if isFunctionCall();
+    }
+
+    // Analytics Insights - generated insights from analytics data
+    match /analytics_insights/{insightId} {
+      allow read: if isAuthenticated() &&
+        (request.auth.uid == resource.data.userId || isAdmin());
+      allow write: if isFunctionCall();
+    }
+
+    // Analytics - admin read, functions write (legacy)
+    match /analytics/{document=**} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+    }
+
+    // Revenue analytics and conversion tracking - admin/functions only
+    match /conversionMetrics/{metricId} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+    }
+
+    match /revenueAnalytics/{analyticsId} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+    }
+
+    // Feature usage analytics for business intelligence
+    match /featureUsageAnalytics/{usageId} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+    }
+
+    // ========================================
+    // PUBLIC PROFILES AND SHARING (T047-T050)
+    // ========================================
+
+    // Public Profiles - public read access, owner and functions can write
+    match /public_profiles/{profileId} {
+      allow read: if resource.data.isPublic == true ||
+        isAuthenticated() && request.auth.uid == resource.data.userId ||
+        isAdmin();
+      allow create: if isAuthenticated() &&
+        request.auth.uid == request.resource.data.userId &&
+        request.resource.data.keys().hasAll(['userId', 'cvId', 'isPublic', 'createdAt']);
+      allow update: if isAuthenticated() &&
+        request.auth.uid == resource.data.userId &&
+        (!('userId' in request.resource.data.diff(resource.data).changedKeys()) ||
+         request.resource.data.userId == resource.data.userId);
+      allow delete: if isAuthenticated() &&
+        request.auth.uid == resource.data.userId;
+    }
+
+    // Contact Form Submissions - functions can create and read, users can read their own submissions
+    match /contact_submissions/{submissionId} {
+      allow read: if isAuthenticated() &&
+        (request.auth.uid == resource.data.fromUserId ||
+         request.auth.uid == resource.data.toUserId) ||
+        isAdmin();
+      allow create: if isFunctionCall() &&
+        request.resource.data.keys().hasAll(['fromUserId', 'toUserId', 'submittedAt', 'message']);
+      allow update: if isFunctionCall(); // Only functions can update status
+      allow delete: if isAdmin(); // Only admins can delete contact submissions
+    }
+
+    // Profile View Analytics - anonymous read for public profiles, user read for own profiles
+    match /profile_analytics/{profileId} {
+      allow read: if isAuthenticated() &&
+        (request.auth.uid == resource.data.profileOwner || isAdmin());
+      allow create, update: if isFunctionCall(); // Functions track analytics
+      allow delete: if false; // Preserve analytics data
+    }
+
+    // Contact Form Rate Limiting - functions manage, users can read their own
+    match /contact_rate_limits/{userId} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if isFunctionCall();
+    }
+
+    // ========================================
+    // PUBLIC AND READ-ONLY DATA
+    // ========================================
+
+    // Allow reading public templates
+    match /templates/{templateId} {
+      allow read: if true;
+      allow write: if isFunctionCall(); // Only functions can update templates
+    }
+
+    // ========================================
+    // RATE LIMITING AND QUOTAS
+    // ========================================
+    
+    // Rate limiting tracking - users can read their own, functions manage
+    match /rateLimits/{userId} {
+      allow read: if isValidUser(userId);
+      allow write: if isFunctionCall();
+      
+      match /hourly/{timeKey} {
+        allow read: if isValidUser(userId);
+        allow write: if isFunctionCall() || 
+                       (isValidUser(userId) && 
+                        request.resource.data.count <= 100); // Hourly limit
+      }
+      
+      match /daily/{timeKey} {
+        allow read: if isValidUser(userId);
+        allow write: if isFunctionCall() ||
+                       (isValidUser(userId) && 
+                        request.resource.data.count <= 500); // Daily limit
+      }
+    }
+
+    // ========================================
+    // PREMIUM FEATURE QUOTAS
+    // ========================================
+    
+    // Premium feature quotas - functions manage, users can read their own
+    match /premiumQuotas/{userId} {
+      allow read: if isValidUser(userId);
+      allow write: if isFunctionCall();
+      
+      // Individual feature quotas
+      match /features/{featureId} {
+        allow read: if isValidUser(userId);
+        allow write: if isFunctionCall();
+      }
+    }
+    
+    // ========================================
+    // PREMIUM SECURITY AUDIT LOGGING
+    // ========================================
+    
+    // Premium access attempts - log all access attempts for security monitoring
+    match /premiumAccessAudit/{auditId} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+      allow delete: if false; // Never delete security audit logs
+    }
+    
+    // Suspicious premium activity tracking
+    match /suspiciousActivity/{activityId} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+      allow delete: if false; // Preserve security data
+    }
+    
+    // Premium feature usage violations
+    match /premiumViolations/{violationId} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+      allow delete: if false; // Preserve violation data
+    }
+
+    // ========================================
+    // SYSTEM LOGGING AND MONITORING (T057)
+    // ========================================
+
+    // Error Logs - admin read, functions write
+    match /error_logs/{logId} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+      allow delete: if false; // Preserve error logs for debugging
+    }
+
+    // API Logs - admin read, functions write
+    match /api_logs/{logId} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+      allow delete: if false; // Preserve API logs for monitoring
+    }
+
+    // User Action Logs - users can read their own logs, functions write
+    match /user_action_logs/{logId} {
+      allow read: if isAdmin() ||
+        (isAuthenticated() && request.auth.uid == resource.data.context.userId);
+      allow write: if isFunctionCall();
+      allow delete: if false; // Preserve user action logs
+    }
+
+    // System Logs - admin read, functions write
+    match /system_logs/{logId} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+      allow delete: if false; // Preserve system logs
+    }
+
+    // General Logs - admin read, functions write
+    match /logs/{logId} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+      allow delete: if false; // Preserve all logs
+    }
+
+    // System Errors - admin read, functions write
+    match /system_errors/{errorId} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+      allow delete: if false; // Never delete system errors
+    }
+
+    // System Metrics - admin read, functions write
+    match /system_metrics/{metricType} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+
+      // Daily error counts and metrics
+      match /daily/{date} {
+        allow read: if isAdmin();
+        allow write: if isFunctionCall();
+      }
+    }
+
+    // Rate Limit Storage - functions manage rate limit data
+    match /rate_limits/{limitKey} {
+      allow read: if false; // Rate limit data is internal
+      allow write: if isFunctionCall();
+    }
+
+    // Rate Limit Bypasses - admin read, functions manage
+    match /rate_limit_bypasses/{bypassKey} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+    }
+
+    // ========================================
+    // ADMIN AND SUPPORT COLLECTIONS
+    // ========================================
+
+    // Support tickets - users can manage their own, admins can read all
+    match /supportTickets/{ticketId} {
+      allow read: if isAuthenticated() &&
+                     (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isAuthenticated() &&
+                       request.auth.uid == request.resource.data.userId;
+      allow update: if isAuthenticated() &&
+                       (request.auth.uid == resource.data.userId || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // System health monitoring - admin only
+    match /systemHealth/{healthId} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+    }
+
+    // Audit logs - admin read only, functions write
+    match /auditLogs/{logId} {
+      allow read: if isAdmin();
+      allow write: if isFunctionCall();
+    }
+
+    // ========================================
+    // EMERGENCY ACCESS PATTERNS
+    // ========================================
+    
+    // Emergency access for critical system maintenance
+    match /emergency/{document=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // ========================================
+    // COMPREHENSIVE ADMIN COLLECTIONS
+    // ========================================
+    
+    // Admin Profiles - admin users can manage their own, super admins can manage all
+    match /adminProfiles/{adminUserId} {
+      allow read: if hasAdminLevel(1) && 
+                     (request.auth.uid == adminUserId || hasAdminLevel(4));
+      allow write: if hasAdminLevel(4) || isFunctionCall();
+    }
+    
+    // Admin Sessions - admin users can read their own, system admins can read all
+    match /adminSessions/{sessionId} {
+      allow read: if hasAdminLevel(1) && 
+                     (request.auth.uid == resource.data.adminUserId || hasAdminLevel(5));
+      allow create: if hasAdminLevel(1) && 
+                       request.auth.uid == request.resource.data.adminUserId;
+      allow update: if hasAdminLevel(1) && 
+                       request.auth.uid == resource.data.adminUserId;
+      allow delete: if hasAdminLevel(4) || isFunctionCall();
+    }
+    
+    // Admin Activity Audit Logs - admin level 2+ can read, functions write
+    match /adminAuditLogs/{logId} {
+      allow read: if hasAdminLevel(2);
+      allow write: if isFunctionCall();
+      allow delete: if false; // Never delete audit logs
+    }
+    
+    // System Health Metrics - admin level 2+ can read for monitoring
+    match /systemMetrics/{metricId} {
+      allow read: if hasAdminPermission('canMonitorSystem');
+      allow write: if isFunctionCall();
+    }
+    
+    // Admin Alerts and Notifications - admins can read based on level
+    match /adminAlerts/{alertId} {
+      allow read: if hasAdminLevel(1) && 
+                     (resource.data.targetAdminLevel <= request.auth.token.admin.level);
+      allow write: if isFunctionCall();
+      allow delete: if hasAdminLevel(3) || 
+                       (hasAdminLevel(1) && request.auth.uid == resource.data.createdBy);
+    }
+    
+    // User Management Queue - admin level 2+ with user management permission
+    match /userManagementQueue/{queueId} {
+      allow read, write: if hasAdminPermission('canManageUsers') && hasAdminLevel(2);
+    }
+    
+    // Content Moderation Queue - moderators and above
+    match /contentModerationQueue/{queueId} {
+      allow read, write: if hasAdminPermission('canModerateContent') && hasAdminLevel(2);
+    }
+    
+    // Security Events and Incident Logs - security permissions required
+    match /securityEvents/{eventId} {
+      allow read: if hasAdminPermission('canViewSecurityEvents');
+      allow write: if isFunctionCall();
+      allow delete: if false; // Preserve security event logs
+    }
+    
+    // Admin Configuration Settings - system admin level required
+    match /adminConfig/{configId} {
+      allow read: if hasAdminLevel(3);
+      allow write: if hasAdminLevel(5) || isFunctionCall();
+    }
+    
+    // Admin Feature Flags Management - admin level 3+
+    match /adminFeatureFlags/{flagId} {
+      allow read: if hasAdminLevel(2);
+      allow write: if hasAdminPermission('canManageFeatureFlags') && hasAdminLevel(3);
+    }
+    
+    // Admin Analytics and Business Intelligence - analytics permission required
+    match /adminAnalytics/{analyticsId} {
+      allow read: if hasAdminPermission('canViewAnalytics');
+      allow write: if isFunctionCall();
+    }
+    
+    // Admin Support Ticket Management - support permission required
+    match /adminSupportTickets/{ticketId} {
+      allow read, write: if hasAdminPermission('canManageSupport');
+    }
+    
+    // Admin Billing Management - billing permission required
+    match /adminBillingData/{billingId} {
+      allow read: if hasAdminPermission('canViewBilling');
+      allow write: if hasAdminPermission('canManageBilling') || isFunctionCall();
+    }
+    
+    // Admin System Maintenance Logs - system admin only
+    match /adminMaintenanceLogs/{logId} {
+      allow read: if hasAdminLevel(4);
+      allow write: if hasAdminLevel(5) || isFunctionCall();
+    }
+    
+    // Admin Performance Monitoring - monitoring permission required
+    match /adminPerformanceMetrics/{metricId} {
+      allow read: if hasAdminPermission('canMonitorSystem');
+      allow write: if isFunctionCall();
+    }
+    
+    // Admin Error Logs - admin level 2+ for debugging
+    match /adminErrorLogs/{errorId} {
+      allow read: if hasAdminLevel(2);
+      allow write: if isFunctionCall();
+    }
+    
+    // Admin Backup Management - system admin level required
+    match /adminBackups/{backupId} {
+      allow read: if hasAdminLevel(4);
+      allow write: if hasAdminLevel(5) || isFunctionCall();
+    }
+    
+    // Admin Integration Management - system configuration permission
+    match /adminIntegrations/{integrationId} {
+      allow read: if hasAdminLevel(3);
+      allow write: if hasAdminPermission('canConfigureSystem') || isFunctionCall();
+    }
+    
+    // Admin Compliance and Audit Reports - compliance specialization or level 4+
+    match /adminComplianceReports/{reportId} {
+      allow read: if hasAdminLevel(4) || hasAdminPermission('canAuditSecurity');
+      allow write: if isFunctionCall();
+      allow delete: if false; // Preserve compliance records
+    }
+
+    // ========================================
+    // FALLBACK RULE - DENY ALL UNLISTED ACCESS
+    // ========================================
+    
+    // Default deny for any unspecified collections
+    // This ensures security by default for any new collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

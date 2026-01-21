@@ -1,0 +1,76 @@
+graph TB
+    subgraph "BEFORE: Architectural Violation"
+        A1[Core Module] -->|"❌ VIOLATES ARCHITECTURE"| B1[Premium Module]
+        A1 --> A2["middleware/premiumGuard.ts<br/>❌ imports @cvplus/premium/backend"]
+        A1 --> A3["middleware/enhancedPremiumGuard.ts<br/>❌ imports @cvplus/premium/backend"]
+        A1 --> A4["❌ Undefined FeatureRegistry"]
+    end
+
+    subgraph "AFTER: Architectural Compliance"
+        subgraph "Core Module (Zero Dependencies)"
+            C1[Core Module]
+            C2["types/middleware.ts<br/>✅ Abstract interfaces"]
+            C3["middleware/middleware-factory.ts<br/>✅ Factory pattern"]
+            C4["middleware/auth-guard.ts<br/>✅ Core authentication only"]
+        end
+
+        subgraph "Premium Module (Business Logic)"
+            D1[Premium Module]
+            D2["middleware/premium-guard.ts<br/>✅ Moved from Core"]
+            D3["middleware/enhanced-premium-guard.ts<br/>✅ Moved from Core"]
+            D4["services/feature-registry.ts<br/>✅ Business logic registry"]
+            D5["services/subscription-management.service.ts<br/>✅ Premium services"]
+        end
+
+        subgraph "Firebase Functions (Integration Layer)"
+            E1["functions/src/functions/"]
+            E2["✅ Uses factory pattern"]
+            E3["✅ Dependency injection"]
+        end
+
+        C1 -->|"✅ NO DEPENDENCIES"| D1
+        C2 --> C3
+        C3 --> E2
+        D2 --> D4
+        D3 --> D4
+        D3 --> D5
+        E1 --> E2
+        E2 --> E3
+    end
+
+    subgraph "Implementation Flow"
+        F1["1. Create Core Interfaces<br/>types/middleware.ts"] --> F2["2. Move Premium Middleware<br/>to packages/premium/"]
+        F2 --> F3["3. Create Factory Pattern<br/>middleware-factory.ts"]
+        F3 --> F4["4. Update Functions<br/>Use factory pattern"]
+        F4 --> F5["5. Create FeatureRegistry<br/>in Premium module"]
+    end
+
+    subgraph "Dependency Injection Pattern"
+        G1["Core: IMiddleware Interface"] --> G2["Premium: Implementation"]
+        G2 --> G3["Functions: Factory.create()"]
+        G3 -->|"Inject dependencies"| G4["Runtime: Premium Guard"]
+    end
+
+    subgraph "Quality Gates"
+        H1["✅ TypeScript Compilation"]
+        H2["✅ Zero Core Dependencies"]  
+        H3["✅ Functional Preservation"]
+        H4["✅ Integration Testing"]
+        H5["✅ Security Validation"]
+    end
+
+    style A1 fill:#ffcccc
+    style A2 fill:#ffcccc
+    style A3 fill:#ffcccc
+    style A4 fill:#ffcccc
+    
+    style C1 fill:#ccffcc
+    style C2 fill:#ccffcc
+    style C3 fill:#ccffcc
+    style C4 fill:#ccffcc
+    
+    style D1 fill:#cceeff
+    style D2 fill:#cceeff
+    style D3 fill:#cceeff
+    style D4 fill:#cceeff
+    style D5 fill:#cceeff

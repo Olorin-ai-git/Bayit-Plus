@@ -1,0 +1,528 @@
+openapi: 3.0.3
+info:
+  title: CVPlus Module Validation API
+  description: API for validating CVPlus submodule compliance with unified requirements
+  version: 1.0.0
+  contact:
+    name: CVPlus Team
+    email: team@cvplus.dev
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Development server
+  - url: https://validation.cvplus.dev/api/v1
+    description: Production validation service
+
+paths:
+  /modules/validate:
+    post:
+      summary: Validate module compliance
+      description: Validates a single module against unified requirements
+      operationId: validateModule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidateModuleRequest'
+            example:
+              modulePath: "/path/to/module"
+              rules: ["STRUCTURE_BASIC", "DOCUMENTATION_REQUIRED"]
+              severity: "ERROR"
+      responses:
+        '200':
+          description: Validation completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationReport'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Module not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Validation process failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /modules/validate-batch:
+    post:
+      summary: Validate multiple modules
+      description: Validates multiple modules in parallel
+      operationId: validateModulesBatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchValidateRequest'
+      responses:
+        '200':
+          description: Batch validation completed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ValidationReport'
+        '400':
+          description: Invalid batch request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /templates:
+    get:
+      summary: List available module templates
+      description: Returns all available templates for module creation
+      operationId: listTemplates
+      parameters:
+        - in: query
+          name: type
+          schema:
+            $ref: '#/components/schemas/ModuleType'
+          description: Filter templates by module type
+      responses:
+        '200':
+          description: List of available templates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModuleTemplate'
+
+  /templates/{templateId}/generate:
+    post:
+      summary: Generate module from template
+      description: Creates a new module using the specified template
+      operationId: generateModuleFromTemplate
+      parameters:
+        - in: path
+          name: templateId
+          required: true
+          schema:
+            type: string
+          description: Template identifier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateModuleRequest'
+      responses:
+        '201':
+          description: Module generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateModuleResponse'
+        '400':
+          description: Invalid generation parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Template not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /compliance/rules:
+    get:
+      summary: Get compliance rules
+      description: Returns all compliance rules or filtered by category
+      operationId: getComplianceRules
+      parameters:
+        - in: query
+          name: category
+          schema:
+            $ref: '#/components/schemas/RuleCategory'
+          description: Filter rules by category
+        - in: query
+          name: severity
+          schema:
+            $ref: '#/components/schemas/RuleSeverity'
+          description: Filter rules by severity level
+      responses:
+        '200':
+          description: List of compliance rules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ComplianceRule'
+
+  /compliance/reports:
+    get:
+      summary: Get validation reports
+      description: Returns validation reports with optional filtering
+      operationId: getValidationReports
+      parameters:
+        - in: query
+          name: moduleId
+          schema:
+            type: string
+          description: Filter reports by module ID
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/ValidationStatus'
+          description: Filter reports by validation status
+        - in: query
+          name: since
+          schema:
+            type: string
+            format: date-time
+          description: Filter reports since timestamp
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Maximum number of reports to return
+      responses:
+        '200':
+          description: List of validation reports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ValidationReport'
+
+  /compliance/ecosystem:
+    get:
+      summary: Get ecosystem compliance overview
+      description: Returns overall compliance metrics across all modules
+      operationId: getEcosystemCompliance
+      responses:
+        '200':
+          description: Ecosystem compliance overview
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EcosystemCompliance'
+
+components:
+  schemas:
+    ModuleType:
+      type: string
+      enum: [BACKEND, FRONTEND, UTILITY, API, CORE]
+      description: Classification of module purpose
+
+    RuleCategory:
+      type: string
+      enum: [STRUCTURE, DOCUMENTATION, CONFIGURATION, TESTING, SECURITY, PERFORMANCE]
+      description: Grouping of compliance rules
+
+    RuleSeverity:
+      type: string
+      enum: [WARNING, ERROR, CRITICAL, AUTO_FIX]
+      description: Enforcement level for compliance rules
+
+    ValidationStatus:
+      type: string
+      enum: [PASS, FAIL, WARNING, PARTIAL, ERROR]
+      description: Overall validation outcome
+
+    ValidateModuleRequest:
+      type: object
+      required:
+        - modulePath
+      properties:
+        modulePath:
+          type: string
+          description: Path to module to validate
+        rules:
+          type: array
+          items:
+            type: string
+          description: Specific rules to validate (optional, defaults to all applicable)
+        severity:
+          $ref: '#/components/schemas/RuleSeverity'
+          description: Minimum severity level to report
+
+    BatchValidateRequest:
+      type: object
+      required:
+        - modules
+      properties:
+        modules:
+          type: array
+          items:
+            type: object
+            properties:
+              path:
+                type: string
+              id:
+                type: string
+          description: List of modules to validate
+        rules:
+          type: array
+          items:
+            type: string
+          description: Rules to apply to all modules
+
+    ComplianceRule:
+      type: object
+      required:
+        - id
+        - category
+        - severity
+        - description
+      properties:
+        id:
+          type: string
+          description: Unique rule identifier
+        category:
+          $ref: '#/components/schemas/RuleCategory'
+        severity:
+          $ref: '#/components/schemas/RuleSeverity'
+        description:
+          type: string
+          description: Human-readable rule description
+        remediation:
+          type: string
+          description: Guidance for fixing violations
+        applicableTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModuleType'
+        enabled:
+          type: boolean
+          description: Whether rule is currently active
+        version:
+          type: string
+          description: Rule version for compatibility
+
+    ValidationResult:
+      type: object
+      required:
+        - ruleId
+        - status
+        - severity
+      properties:
+        ruleId:
+          type: string
+          description: Rule that was evaluated
+        status:
+          $ref: '#/components/schemas/ValidationStatus'
+        severity:
+          $ref: '#/components/schemas/RuleSeverity'
+        message:
+          type: string
+          description: Detailed result message
+        filePath:
+          type: string
+          description: File where violation was found
+        lineNumber:
+          type: integer
+          description: Line number of violation
+        remediation:
+          type: string
+          description: Specific remediation guidance
+
+    ValidationReport:
+      type: object
+      required:
+        - moduleId
+        - reportId
+        - timestamp
+        - overallScore
+        - status
+        - results
+      properties:
+        moduleId:
+          type: string
+          description: Reference to validated module
+        reportId:
+          type: string
+          description: Unique report identifier
+        timestamp:
+          type: string
+          format: date-time
+          description: When validation was performed
+        overallScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Compliance percentage
+        status:
+          $ref: '#/components/schemas/ValidationStatus'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationResult'
+        recommendations:
+          type: array
+          items:
+            type: string
+          description: Suggested improvements
+        validator:
+          type: string
+          description: Tool or person who ran validation
+
+    ModuleTemplate:
+      type: object
+      required:
+        - templateId
+        - name
+        - moduleType
+      properties:
+        templateId:
+          type: string
+          description: Unique template identifier
+        name:
+          type: string
+          description: Template display name
+        description:
+          type: string
+          description: Template purpose and usage
+        moduleType:
+          $ref: '#/components/schemas/ModuleType'
+        configurableOptions:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+              default:
+                type: string
+              description:
+                type: string
+        version:
+          type: string
+          description: Template version
+        maintainer:
+          type: string
+          description: Template owner
+
+    GenerateModuleRequest:
+      type: object
+      required:
+        - moduleName
+        - outputPath
+      properties:
+        moduleName:
+          type: string
+          description: Name for the new module
+        outputPath:
+          type: string
+          description: Directory where module should be created
+        options:
+          type: object
+          additionalProperties: true
+          description: Template customization options
+        author:
+          type: string
+          description: Module author name
+        description:
+          type: string
+          description: Module description
+
+    GenerateModuleResponse:
+      type: object
+      required:
+        - modulePath
+        - filesCreated
+      properties:
+        modulePath:
+          type: string
+          description: Path to generated module
+        filesCreated:
+          type: array
+          items:
+            type: string
+          description: List of files created
+        validationReport:
+          $ref: '#/components/schemas/ValidationReport'
+          description: Initial compliance validation
+
+    EcosystemCompliance:
+      type: object
+      required:
+        - totalModules
+        - averageScore
+        - statusDistribution
+      properties:
+        totalModules:
+          type: integer
+          description: Total number of modules in ecosystem
+        averageScore:
+          type: number
+          format: float
+          description: Average compliance score across all modules
+        statusDistribution:
+          type: object
+          properties:
+            pass:
+              type: integer
+            fail:
+              type: integer
+            warning:
+              type: integer
+            error:
+              type: integer
+        trends:
+          type: object
+          properties:
+            scoreChange:
+              type: number
+              format: float
+              description: Score change over last period
+            newViolations:
+              type: integer
+              description: New violations since last check
+        topViolations:
+          type: array
+          items:
+            type: object
+            properties:
+              ruleId:
+                type: string
+              count:
+                type: integer
+              percentage:
+                type: number
+                format: float
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error type
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error context
+        timestamp:
+          type: string
+          format: date-time
+          description: When error occurred

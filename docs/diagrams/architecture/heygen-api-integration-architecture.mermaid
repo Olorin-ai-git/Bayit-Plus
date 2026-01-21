@@ -1,0 +1,99 @@
+graph TB
+    subgraph "CVPlus Frontend"
+        UI[React Video Component]
+        STATUS[Real-time Status Display]
+        CONTROLS[Video Customization Controls]
+    end
+    
+    subgraph "Firebase Functions"
+        VGS[Video Generation Service]
+        PEE[Enhanced Prompt Engine]
+        PSE[Provider Selection Engine]
+        WHE[Webhook Handler]
+    end
+    
+    subgraph "Provider Architecture"
+        PI[Provider Interface]
+        HP[HeyGen Provider]
+        DP[D-ID Provider]
+        SP[Synthesia Provider]
+    end
+    
+    subgraph "HeyGen API Services"
+        HAPI[HeyGen REST API]
+        HWH[HeyGen Webhooks]
+        HAVE[HeyGen Avatar Engine]
+        HVE[HeyGen Voice Engine]
+    end
+    
+    subgraph "Database & Storage"
+        FS[Firebase Firestore]
+        FST[Firebase Storage]
+        JT[Job Tracking]
+        VS[Video Storage]
+    end
+    
+    subgraph "Monitoring & Analytics"
+        PM[Performance Monitor]
+        QA[Quality Assurance]
+        AL[Alert Manager]
+        MT[Metrics Tracker]
+    end
+    
+    %% User Flow
+    UI --> VGS
+    VGS --> PEE
+    PEE --> PSE
+    
+    %% Provider Selection
+    PSE --> PI
+    PI --> HP
+    PI --> DP
+    PI --> SP
+    
+    %% HeyGen Integration
+    HP --> HAPI
+    HAPI --> HAVE
+    HAPI --> HVE
+    
+    %% Webhook Flow
+    HWH --> WHE
+    WHE --> JT
+    JT --> STATUS
+    
+    %% Data Storage
+    VGS --> FS
+    HP --> VS
+    DP --> VS
+    
+    %% Monitoring
+    HP --> PM
+    PM --> MT
+    QA --> AL
+    
+    %% Real-time Updates
+    STATUS -.-> WHE
+    CONTROLS --> VGS
+    
+    %% Error Handling & Fallback
+    HP -.-> DP
+    DP -.-> SP
+    
+    %% Configuration
+    HP --> HEYGEN_CONFIG[HeyGen Configuration<br/>- Avatar Mapping<br/>- Voice Settings<br/>- Background Templates]
+    
+    %% Quality Pipeline
+    HP --> QA
+    QA --> QUALITY_METRICS[Quality Metrics<br/>- Video Resolution<br/>- Audio Quality<br/>- Generation Time<br/>- User Satisfaction]
+    
+    classDef primary fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef secondary fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef external fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef storage fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef monitoring fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    
+    class VGS,PEE,PSE,WHE primary
+    class HP,PI,DP,SP secondary
+    class HAPI,HWH,HAVE,HVE external
+    class FS,FST,JT,VS storage
+    class PM,QA,AL,MT monitoring

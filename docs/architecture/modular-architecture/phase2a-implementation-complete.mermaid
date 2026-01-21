@@ -1,0 +1,117 @@
+```mermaid
+graph TB
+    subgraph "Phase 2A: COMPLETED ✅"
+        subgraph "Firebase Function Layer"
+            F1[generateCV.ts<br/>149 lines ✅<br/>Down from 1,507 lines]
+        end
+        
+        subgraph "Service Architecture"
+            subgraph "CV Services"
+                CVG[cv-generation.service.ts<br/>413 lines<br/>Core Generation Logic]
+                CVV[cv-validation.service.ts<br/>388 lines<br/>Data Validation & Access]
+                CVT[cv-template.service.ts<br/>389 lines<br/>Template Management]
+                CVA[cv-analysis.service.ts<br/>662 lines<br/>CV Content Analysis]
+            end
+            
+            subgraph "Enhancement Services"
+                EPS[enhancement-processing.service.ts<br/>471 lines<br/>Feature Processing]
+            end
+            
+            subgraph "Shared Infrastructure"
+                BS[base-service.ts<br/>173 lines<br/>Common Service Logic]
+                SR[service-registry.ts<br/>219 lines<br/>Service Management]
+                ST[service-types.ts<br/>190 lines<br/>Type Definitions]
+                LOG[logger.ts<br/>80 lines<br/>Structured Logging]
+            end
+        end
+        
+        subgraph "Helper Utilities"
+            HELP[cv-generation-helpers.ts<br/>91 lines<br/>Utility Functions]
+        end
+    end
+
+    subgraph "Legacy System (Backed Up)"
+        LEGACY[generateCV.ts.backup<br/>1,507 lines<br/>Original Monolith]
+    end
+
+    %% Service Dependencies
+    F1 --> CVG
+    F1 --> EPS
+    F1 --> HELP
+    
+    CVG --> CVV
+    CVG --> CVT
+    CVG --> CVA
+    CVG --> BS
+    
+    EPS --> BS
+    CVV --> BS
+    CVT --> BS
+    CVA --> BS
+    
+    BS --> LOG
+    CVG --> SR
+    EPS --> SR
+    
+    CVG --> ST
+    EPS --> ST
+    CVV --> ST
+    CVT --> ST
+    CVA --> ST
+
+    %% Status Colors
+    classDef completed fill:#d4edda,stroke:#155724,color:#155724
+    classDef legacy fill:#f8d7da,stroke:#721c24,color:#721c24
+    classDef infrastructure fill:#e2f3ff,stroke:#0066cc,color:#0066cc
+    
+    class F1,CVG,CVV,CVT,CVA,EPS completed
+    class BS,SR,ST,LOG,HELP infrastructure
+    class LEGACY legacy
+```
+
+## Phase 2A Metrics Dashboard
+
+```mermaid
+pie title Line Count Distribution After Phase 2A
+    "CV Services (1,852 lines)" : 1852
+    "Enhancement Services (471 lines)" : 471
+    "Shared Infrastructure (662 lines)" : 662
+    "Function Wrapper (149 lines)" : 149
+    "Helper Utilities (91 lines)" : 91
+```
+
+## Architecture Quality Metrics
+
+```mermaid
+graph LR
+    subgraph "Quality Achievements ✅"
+        A[Line Count Compliance<br/>149 lines < 200 ✅]
+        B[Type Safety<br/>100% TypeScript ✅]
+        C[Service Isolation<br/>Single Responsibility ✅]
+        D[Error Handling<br/>Comprehensive ✅]
+        E[Testability<br/>Unit Testable ✅]
+        F[Backward Compatibility<br/>Zero Breaking Changes ✅]
+    end
+    
+    subgraph "Performance Improvements"
+        G[Service Registry<br/>Dependency Injection]
+        H[Health Monitoring<br/>Service Status Checks]
+        I[Timeout Protection<br/>Operation Limits]
+        J[Structured Logging<br/>Debug & Monitor]
+    end
+    
+    subgraph "Developer Experience"
+        K[Code Reusability<br/>Shared Services]
+        L[Clear Documentation<br/>Inline Comments]
+        M[Easy Extension<br/>Plugin Architecture]
+        N[Hot Reloading<br/>Firebase Emulators]
+    end
+    
+    classDef achievement fill:#d4edda,stroke:#155724,color:#155724
+    classDef performance fill:#fff3cd,stroke:#856404,color:#856404
+    classDef experience fill:#e2f3ff,stroke:#0066cc,color:#0066cc
+    
+    class A,B,C,D,E,F achievement
+    class G,H,I,J performance
+    class K,L,M,N experience
+```

@@ -1,0 +1,126 @@
+graph TD
+    subgraph "TECHNICAL MIGRATION FLOW"
+        subgraph "PHASE 1: ARCHITECTURE ASSESSMENT (Days 1-2)"
+            A1["🔍 Dependency Analysis<br/>• Map all imports/exports<br/>• Identify circular dependencies<br/>• Document external dependencies"]
+            A2["📊 Functionality Mapping<br/>• Compare package vs violation services<br/>• Identify overlapping functionality<br/>• Document unique capabilities"]
+            A3["💥 Breaking Change Analysis<br/>• Firebase function impacts<br/>• API signature changes<br/>• Frontend integration impacts"]
+            A4["🎯 Risk Assessment<br/>• Performance impact analysis<br/>• Data migration risks<br/>• Rollback strategy planning"]
+        end
+        
+        subgraph "PHASE 2: PACKAGE ENHANCEMENT (Days 3-5)"
+            B1["🏗️ Structure Enhancement<br/>• Create engines/ directory<br/>• Create infrastructure/ directory<br/>• Create integration/ directory"]
+            B2["✂️ 200-Line Compliance<br/>• Split ActionOrchestrator (237L)<br/>• Split ValidationEngine (251L)<br/>• Split TransformationApplier (228L)<br/>• Split 4 other violation files"]
+            B3["🔌 Integration Layer<br/>• Build FirebaseFunctionsAdapter<br/>• Create FirestoreIntegration<br/>• Implement AuthIntegration"]
+            B4["📚 Type Definitions<br/>• Enhance existing types<br/>• Create engine.types.ts<br/>• Create integration.types.ts"]
+        end
+        
+        subgraph "PHASE 3: PROGRESSIVE MIGRATION (Days 6-10)"
+            C1["🌙 Shadow Implementation<br/>Day 6-7<br/>• Implement all violation services<br/>• Create feature flags<br/>• Add comprehensive monitoring"]
+            C2["⚖️ Parallel Operation<br/>Day 8-9<br/>• Traffic splitting (50/50)<br/>• Performance comparison<br/>• Error rate monitoring"]
+            C3["🚀 Full Migration<br/>Day 10<br/>• Switch to 100% package<br/>• Update Firebase imports<br/>• Remove violation services"]
+        end
+        
+        subgraph "DETAILED FILE MIGRATION MAP"
+            subgraph "Violation Files → Package Structure"
+                V1["ActionOrchestrator.ts (237L)"] --> T1["engines/orchestration/<br/>action-orchestrator.ts (150L)<br/>action-dispatcher.ts (80L)<br/>action-validator.ts (70L)"]
+                V2["ValidationEngine.ts (251L)"] --> T2["engines/validation/<br/>validation-engine.ts (180L)<br/>schema-validator.ts (90L)<br/>business-rules-validator.ts (110L)"]
+                V3["TransformationApplier.ts (228L)"] --> T3["engines/generation/<br/>transformation-applier.ts (150L)<br/>content-transformer.ts (120L)<br/>format-transformer.ts (90L)"]
+                V4["CacheManager.ts (223L)"] --> T4["infrastructure/caching/<br/>cache-manager.ts (150L)<br/>cache-strategies.ts (100L)"]
+                V5["CircuitBreakerCore.ts (221L)"] --> T5["infrastructure/resilience/<br/>circuit-breaker.ts (180L)<br/>breaker-state.ts (90L)"]
+                V6["RecommendationGenerator.ts (212L)"] --> T6["engines/generation/<br/>recommendation-generator.ts (180L)<br/>content-generation.ts (120L)"]
+                V7["RecommendationOrchestrator.ts (204L)"] --> T7["engines/orchestration/<br/>recommendation-orchestrator.ts (180L)"]
+            end
+        end
+        
+        subgraph "FIREBASE FUNCTIONS INTEGRATION"
+            subgraph "Current Coupling (VIOLATION)"
+                FB_OLD1["getRecommendations.ts<br/>import { ImprovementOrchestrator } from<br/>'../../services/recommendations/...'"]
+                FB_OLD2["applyImprovements.ts<br/>import { ValidationEngine } from<br/>'../../services/recommendations/...'"]
+                FB_OLD3["previewImprovement.ts<br/>import { TransformationApplier } from<br/>'../../services/recommendations/...'"]
+            end
+            
+            subgraph "Target Decoupling (CORRECT)"
+                FB_NEW["🔥 All Firebase Functions<br/>import { FirebaseFunctionsAdapter }<br/>from '@cvplus/recommendations/integration/firebase'<br/><br/>const adapter = new FirebaseFunctionsAdapter();<br/>export const fn = onCall(config, adapter.method)"]
+            end
+        end
+        
+        subgraph "INTEGRATION ADAPTER ARCHITECTURE"
+            ADAPTER["🔌 FirebaseFunctionsAdapter<br/>• Wraps package services<br/>• Handles Firebase-specific logic<br/>• Provides backwards compatibility<br/>• Error handling & logging"]
+            
+            SERVICES["📦 Package Services<br/>• RecommendationsService<br/>• CacheService<br/>• AIIntegrationService"]
+            
+            ENGINES["⚙️ Processing Engines<br/>• Analysis engines<br/>• Generation engines<br/>• Orchestration engines<br/>• Validation engines"]
+        end
+        
+        subgraph "PERFORMANCE VALIDATION"
+            PERF1["📊 Timeout Reduction<br/>Target: 15% → 2%<br/>Validation: Load testing<br/>Monitoring: Response times"]
+            PERF2["💾 Cache Hit Rate<br/>Target: 0% → 60%<br/>Validation: Cache analytics<br/>Monitoring: Hit/miss ratios"]
+            PERF3["⚡ Response Time<br/>Target: 3min → 30s<br/>Validation: Performance tests<br/>Monitoring: P95 response times"]
+        end
+        
+        subgraph "QUALITY GATES"
+            GATE1["📏 200-Line Compliance<br/>✅ All files ≤ 200 lines<br/>🔍 Automated checking<br/>🚫 Build fails if violated"]
+            GATE2["🏷️ TypeScript Strict<br/>✅ No type errors<br/>🔍 tsc --strict --noEmit<br/>🚫 Build fails on errors"]
+            GATE3["🧪 Test Coverage<br/>✅ 90%+ coverage<br/>🔍 Jest/Vitest coverage<br/>🚫 Deploy fails if under 90%"]
+            GATE4["🔒 Security Scan<br/>✅ No vulnerabilities<br/>🔍 npm audit<br/>🚫 Deploy fails on high severity"]
+        end
+    end
+    
+    %% Flow connections
+    A1 --> A2
+    A2 --> A3
+    A3 --> A4
+    A4 --> B1
+    
+    B1 --> B2
+    B2 --> B3
+    B3 --> B4
+    B4 --> C1
+    
+    C1 --> C2
+    C2 --> C3
+    
+    %% Migration mapping
+    V1 -.->|REFACTOR & SPLIT| T1
+    V2 -.->|REFACTOR & SPLIT| T2
+    V3 -.->|REFACTOR & SPLIT| T3
+    V4 -.->|REFACTOR & SPLIT| T4
+    V5 -.->|REFACTOR & SPLIT| T5
+    V6 -.->|REFACTOR & SPLIT| T6
+    V7 -.->|REFACTOR & SPLIT| T7
+    
+    %% Firebase function evolution
+    FB_OLD1 -.->|DECOUPLE| FB_NEW
+    FB_OLD2 -.->|DECOUPLE| FB_NEW
+    FB_OLD3 -.->|DECOUPLE| FB_NEW
+    
+    %% Adapter relationships
+    FB_NEW --> ADAPTER
+    ADAPTER --> SERVICES
+    SERVICES --> ENGINES
+    
+    %% Validation flows
+    C3 --> PERF1
+    C3 --> PERF2
+    C3 --> PERF3
+    
+    B2 --> GATE1
+    B4 --> GATE2
+    C3 --> GATE3
+    C3 --> GATE4
+    
+    classDef phase1 fill:#ffeeee,stroke:#cc0000,stroke-width:2px
+    classDef phase2 fill:#eeffee,stroke:#00cc00,stroke-width:2px
+    classDef phase3 fill:#eeeeff,stroke:#0000cc,stroke-width:2px
+    classDef violation fill:#ffcccc,stroke:#ff0000,stroke-width:2px
+    classDef target fill:#ccffcc,stroke:#00aa00,stroke-width:2px
+    classDef performance fill:#fff0cc,stroke:#cc9900,stroke-width:2px
+    classDef quality fill:#f0ccff,stroke:#9900cc,stroke-width:2px
+    
+    class A1,A2,A3,A4 phase1
+    class B1,B2,B3,B4 phase2
+    class C1,C2,C3 phase3
+    class V1,V2,V3,V4,V5,V6,V7,FB_OLD1,FB_OLD2,FB_OLD3 violation
+    class T1,T2,T3,T4,T5,T6,T7,FB_NEW,ADAPTER,SERVICES,ENGINES target
+    class PERF1,PERF2,PERF3 performance
+    class GATE1,GATE2,GATE3,GATE4 quality

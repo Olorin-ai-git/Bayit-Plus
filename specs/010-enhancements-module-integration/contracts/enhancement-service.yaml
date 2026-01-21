@@ -1,0 +1,375 @@
+openapi: 3.0.3
+info:
+  title: Enhancement Service API
+  description: API contracts for CV enhancement functionality migration to enhancements module
+  version: 1.0.0
+
+servers:
+  - url: https://cvplus-firebase-functions.com
+    description: Firebase Functions endpoint
+
+paths:
+  /enhancements/process:
+    post:
+      summary: Process CV enhancement features
+      description: Execute selected enhancement features on CV data
+      operationId: processEnhancements
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnhancementRequest'
+      responses:
+        '200':
+          description: Enhancement processing completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnhancementResult'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error during processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /enhancements/calendar/sync:
+    post:
+      summary: Sync career events to calendar
+      description: Synchronize CV career milestones with calendar providers
+      operationId: syncCareerEvents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalendarSyncRequest'
+      responses:
+        '200':
+          description: Calendar sync completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarSyncResult'
+        '400':
+          description: Invalid sync parameters
+        '500':
+          description: Calendar sync failed
+
+  /enhancements/booking/create:
+    post:
+      summary: Create professional meeting booking
+      description: Schedule professional meetings with calendar integration
+      operationId: createBooking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+      responses:
+        '201':
+          description: Booking created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '400':
+          description: Invalid booking parameters
+        '409':
+          description: Booking conflict detected
+
+components:
+  schemas:
+    EnhancementRequest:
+      type: object
+      required:
+        - jobId
+        - cvData
+        - features
+      properties:
+        jobId:
+          type: string
+          description: Unique job processing identifier
+          example: "job_12345"
+        cvData:
+          type: object
+          description: CV data to be enhanced
+          additionalProperties: true
+        features:
+          type: array
+          items:
+            type: string
+            enum:
+              - ats-optimization
+              - skills-analysis
+              - industry-keywords
+              - achievement-quantification
+              - language-enhancement
+              - privacy-mode
+              - skills-visualization
+          description: List of enhancement features to apply
+          example: ["ats-optimization", "skills-analysis"]
+        userId:
+          type: string
+          description: User identifier for authentication
+          example: "user_67890"
+        preferences:
+          type: object
+          description: User preferences for enhancement processing
+          additionalProperties: true
+
+    EnhancementResult:
+      type: object
+      required:
+        - features
+        - processedData
+        - metadata
+      properties:
+        features:
+          type: array
+          items:
+            type: string
+          description: Successfully processed features
+          example: ["ats-optimization", "skills-analysis"]
+        processedData:
+          type: object
+          description: Enhanced CV data
+          additionalProperties: true
+        metadata:
+          type: object
+          required:
+            - processingTime
+            - featuresProcessed
+            - version
+          properties:
+            processingTime:
+              type: number
+              description: Processing time in milliseconds
+              example: 2500
+            featuresProcessed:
+              type: integer
+              description: Number of features successfully processed
+              example: 2
+            version:
+              type: string
+              description: Enhancement service version
+              example: "2.0.0"
+
+    CalendarSyncRequest:
+      type: object
+      required:
+        - cvData
+        - userId
+        - provider
+      properties:
+        cvData:
+          type: object
+          description: CV data containing career milestones
+          additionalProperties: true
+        userId:
+          type: string
+          description: User identifier
+          example: "user_67890"
+        provider:
+          type: string
+          enum: [google, outlook, ical]
+          description: Calendar provider
+          example: "google"
+        syncOptions:
+          type: object
+          properties:
+            includeEducation:
+              type: boolean
+              default: true
+            includeExperience:
+              type: boolean
+              default: true
+            includeCertifications:
+              type: boolean
+              default: false
+
+    CalendarSyncResult:
+      type: object
+      required:
+        - syncedEvents
+        - provider
+        - status
+      properties:
+        syncedEvents:
+          type: array
+          items:
+            type: object
+            properties:
+              eventId:
+                type: string
+              title:
+                type: string
+              date:
+                type: string
+                format: date-time
+              type:
+                type: string
+                enum: [education, experience, certification]
+        provider:
+          type: string
+          example: "google"
+        status:
+          type: string
+          enum: [success, partial, failed]
+          example: "success"
+        metadata:
+          type: object
+          properties:
+            totalEvents:
+              type: integer
+            successfulSyncs:
+              type: integer
+            failures:
+              type: integer
+
+    BookingRequest:
+      type: object
+      required:
+        - title
+        - duration
+        - availabilitySlots
+        - attendeeEmail
+      properties:
+        title:
+          type: string
+          description: Meeting title
+          example: "Career Discussion"
+        duration:
+          type: integer
+          description: Meeting duration in minutes
+          example: 30
+        description:
+          type: string
+          description: Meeting description
+          example: "Professional networking meeting"
+        availabilitySlots:
+          type: array
+          items:
+            type: object
+            properties:
+              start:
+                type: string
+                format: date-time
+              end:
+                type: string
+                format: date-time
+        attendeeEmail:
+          type: string
+          format: email
+          description: Attendee email address
+          example: "professional@example.com"
+        meetingType:
+          type: string
+          enum: [video, phone, in-person]
+          default: video
+
+    Booking:
+      type: object
+      required:
+        - bookingId
+        - title
+        - scheduledTime
+        - status
+      properties:
+        bookingId:
+          type: string
+          description: Unique booking identifier
+          example: "booking_abc123"
+        title:
+          type: string
+          example: "Career Discussion"
+        scheduledTime:
+          type: string
+          format: date-time
+          description: Confirmed meeting time
+        duration:
+          type: integer
+          description: Meeting duration in minutes
+          example: 30
+        status:
+          type: string
+          enum: [confirmed, pending, cancelled]
+          example: "confirmed"
+        meetingDetails:
+          type: object
+          properties:
+            meetingUrl:
+              type: string
+              format: uri
+            dialInNumber:
+              type: string
+            location:
+              type: string
+        calendarEventId:
+          type: string
+          description: Calendar event identifier
+        attendees:
+          type: array
+          items:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+              name:
+                type: string
+              status:
+                type: string
+                enum: [accepted, pending, declined]
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error type
+          example: "VALIDATION_ERROR"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Invalid enhancement features specified"
+        details:
+          type: object
+          description: Additional error details
+          additionalProperties: true
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+        requestId:
+          type: string
+          description: Request identifier for debugging
+
+  securitySchemes:
+    FirebaseAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Firebase Authentication JWT token
+
+security:
+  - FirebaseAuth: []
+
+tags:
+  - name: Enhancement Processing
+    description: CV enhancement and processing operations
+  - name: Calendar Integration
+    description: Professional calendar synchronization
+  - name: Professional Networking
+    description: Meeting booking and networking features

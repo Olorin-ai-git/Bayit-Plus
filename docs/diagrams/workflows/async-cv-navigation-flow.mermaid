@@ -1,0 +1,36 @@
+graph TD
+    A[User Clicks Generate CV] --> B{Check Async Mode Enabled?}
+    
+    B -->|No - Sync Mode| C[Call generateCV]
+    C --> D[Wait for Full Completion 5-10 min]
+    D --> E[Navigate to /final-results]
+    E --> F[Show Completed CV]
+    
+    B -->|Yes - Async Mode| G[Call initiateCVGeneration]
+    G --> H{Initialization Success?}
+    
+    H -->|No| I[Show Error Message]
+    H -->|Yes < 60s| J[Store Init Response]
+    J --> K[Navigate Immediately to /final-results]
+    K --> L[FinalResultsPage Detects Async]
+    L --> M[Show Progress Tracking]
+    M --> N[Real-time Feature Updates]
+    N --> O[Poll for CV Completion]
+    O --> P{CV Ready?}
+    P -->|No| N
+    P -->|Yes| Q[Show Completed CV]
+    
+    style A fill:#e1f5fe
+    style B fill:#fff3e0
+    style G fill:#e8f5e8
+    style K fill:#e8f5e8
+    style M fill:#f3e5f5
+    style Q fill:#e8f5e8
+    
+    classDef syncFlow fill:#ffebee
+    classDef asyncFlow fill:#e8f5e8
+    classDef decision fill:#fff3e0
+    
+    class C,D,E,F syncFlow
+    class G,J,K,L,M,N,O,Q asyncFlow
+    class B,H,P decision

@@ -1,0 +1,95 @@
+graph TB
+    %% FAQ Data Management Architecture
+    subgraph "FAQ Data Layer"
+        FAQData[("📊 FAQ Data Store<br/>faqData.ts")]
+        FAQTypes[("🔧 Type Definitions<br/>Comprehensive Types")]
+        Analytics[("📈 Analytics Store<br/>Search & Usage Data")]
+    end
+
+    subgraph "Service Layer"
+        FAQService[("⚙️ FAQ Service<br/>faqService.ts")]
+        SearchService[("🔍 Search Engine<br/>Fuzzy Matching")]
+        AnalyticsService[("📊 Analytics Service<br/>faqAnalytics.ts")]
+        CacheService[("💾 Cache Manager<br/>Performance Layer")]
+    end
+
+    subgraph "React Hooks Layer"
+        SearchHook[("🪝 useFAQSearch<br/>Search Logic")]
+        AnalyticsHook[("📊 useFAQAnalytics<br/>Usage Tracking")]
+        CacheHook[("💾 useFAQCache<br/>Data Caching")]
+        PerformanceHook[("⚡ usePerformance<br/>Optimization")]
+    end
+
+    subgraph "Component Layer"
+        FAQPage[("📄 FAQ Page<br/>Main Container")]
+        SearchBar[("🔍 Search Bar<br/>User Input")]
+        CategoryGrid[("🏷️ Category Grid<br/>Navigation")]
+        Accordion[("📋 FAQ Accordion<br/>Content Display")]
+        Sidebar[("📌 FAQ Sidebar<br/>Filters")]
+        QuickActions[("⚡ Quick Actions<br/>CTAs")]
+    end
+
+    subgraph "Performance Optimizations"
+        VirtualScroll[("♻️ Virtual Scrolling<br/>Large Lists")]
+        LazyLoad[("⏳ Lazy Loading<br/>Content")]
+        Debounce[("⏱️ Debounced Search<br/>Input")]
+        Memoization[("🧠 Memoization<br/>Results")]
+    end
+
+    subgraph "Analytics & Tracking"
+        SearchTracking[("🔍 Search Analytics<br/>Query Tracking")]
+        PopularQuestions[("⭐ Popular Questions<br/>Usage Stats")]
+        UserJourney[("🗺️ User Journey<br/>Flow Tracking")]
+        ABTesting[("🧪 A/B Testing<br/>Optimization")]
+    end
+
+    %% Data Flow
+    FAQData --> FAQService
+    FAQTypes --> FAQService
+    FAQService --> SearchService
+    FAQService --> CacheService
+    SearchService --> SearchHook
+    CacheService --> CacheHook
+    AnalyticsService --> AnalyticsHook
+
+    %% Hook to Component Flow
+    SearchHook --> SearchBar
+    SearchHook --> Accordion
+    CacheHook --> FAQPage
+    AnalyticsHook --> FAQPage
+    PerformanceHook --> VirtualScroll
+
+    %% Component Relationships
+    FAQPage --> SearchBar
+    FAQPage --> CategoryGrid
+    FAQPage --> Accordion
+    FAQPage --> Sidebar
+    FAQPage --> QuickActions
+
+    %% Performance Integration
+    VirtualScroll --> Accordion
+    LazyLoad --> Accordion
+    Debounce --> SearchBar
+    Memoization --> CategoryGrid
+
+    %% Analytics Integration
+    SearchTracking --> AnalyticsService
+    PopularQuestions --> AnalyticsService
+    UserJourney --> AnalyticsService
+    ABTesting --> AnalyticsService
+    AnalyticsService --> Analytics
+
+    %% Styling
+    classDef dataLayer fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef serviceLayer fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef hooksLayer fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef componentLayer fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef performanceLayer fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef analyticsLayer fill:#e0f2f1,stroke:#004d40,stroke-width:2px
+
+    class FAQData,FAQTypes,Analytics dataLayer
+    class FAQService,SearchService,AnalyticsService,CacheService serviceLayer
+    class SearchHook,AnalyticsHook,CacheHook,PerformanceHook hooksLayer
+    class FAQPage,SearchBar,CategoryGrid,Accordion,Sidebar,QuickActions componentLayer
+    class VirtualScroll,LazyLoad,Debounce,Memoization performanceLayer
+    class SearchTracking,PopularQuestions,UserJourney,ABTesting analyticsLayer

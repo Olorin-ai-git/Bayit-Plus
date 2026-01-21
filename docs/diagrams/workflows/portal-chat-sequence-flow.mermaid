@@ -1,0 +1,101 @@
+sequenceDiagram
+    participant User as Portal Visitor
+    participant HF as HuggingFace Space
+    participant Func as portalChatPublic Function
+    participant Auth as Authentication
+    participant Rate as Rate Limiter
+    participant Portal as Portal Config
+    participant RAG as RAG System
+    participant Claude as Verified Claude
+    participant DB as Database
+    participant Analytics as Analytics
+
+    Note over User, Analytics: Portal Chat Interaction Flow
+
+    %% Initial Request
+    User->>HF: Opens portal, starts chat
+    HF->>Func: POST /portalChatPublic<br/>{portalId, message, sessionId?}
+    
+    %% Validation Phase
+    Func->>Func: Validate message content<br/>Check length, patterns
+    
+    alt Invalid Message
+        Func-->>HF: 400 Bad Request<br/>{error: "Invalid message"}
+        HF-->>User: Error message displayed
+    end
+
+    %% Session Management
+    Func->>DB: Get or create chat session
+    DB-->>Func: Session ID & metadata
+    
+    %% Rate Limiting
+    Func->>Rate: Check rate limits for session
+    Rate->>DB: Query recent messages
+    DB-->>Rate: Message history
+    Rate-->>Func: Rate limit status
+    
+    alt Rate Limit Exceeded
+        Func-->>HF: 429 Too Many Requests<br/>{error: "Rate limit exceeded"}
+        HF-->>User: Please wait message
+    end
+
+    %% Portal Configuration
+    Func->>Portal: Get portal configuration
+    Portal->>DB: Query portalConfigs collection
+    DB-->>Portal: Portal settings & job ID
+    Portal->>DB: Query jobs collection for CV data
+    DB-->>Portal: CV parsed data
+    Portal-->>Func: Portal config + CV data
+
+    alt Portal Not Found or Chat Disabled
+        Func-->>HF: 404/403 Error<br/>{error: "Portal not available"}
+        HF-->>User: Service unavailable
+    end
+
+    %% RAG Context Retrieval
+    Func->>RAG: Query similar content<br/>querySimilarChunks(message, namespace, topK=5)
+    RAG->>DB: Query ragProfiles collection
+    DB-->>RAG: Vector embeddings
+    RAG->>RAG: Calculate similarity scores<br/>Cosine similarity search
+    RAG-->>Func: Relevant CV chunks with scores
+
+    %% AI Response Generation
+    Func->>Claude: Generate verified response
+    Note over Claude: Build system prompt with:<br/>- CV context from RAG<br/>- Personality settings<br/>- Professional guidelines
+
+    Claude->>Claude: Validate request criteria<br/>- Professional tone<br/>- CV-based content<br/>- No speculation
+    Claude->>External: Call Anthropic Claude API
+    External-->>Claude: AI response
+    Claude->>Claude: Verify response quality<br/>- Content relevance<br/>- Professional appropriateness
+    Claude-->>Func: Verified response + metadata
+
+    %% Response Processing
+    Func->>Func: Calculate confidence score<br/>Source attribution<br/>Generate suggestions
+
+    %% Data Storage
+    Func->>DB: Store user message
+    Func->>DB: Store AI response
+    Func->>DB: Update session activity
+    Func->>Analytics: Track interaction metrics
+
+    %% Response Delivery
+    Func-->>HF: 200 OK<br/>{success: true, response: {...}, suggestions: [...]}
+    HF->>HF: Display AI response<br/>Show suggested questions
+    HF-->>User: Response with sources & suggestions
+
+    %% Analytics Updates
+    Analytics->>DB: Update portal metrics<br/>- Chat sessions count<br/>- Response times<br/>- Quality scores
+
+    %% Error Handling Path
+    Note over Func, DB: Error Handling (Any Step)
+    alt System Error
+        Func->>Func: Log error details
+        Func-->>HF: 500 Internal Error<br/>{error: "Service temporarily unavailable"}
+        HF->>HF: Show fallback message
+        HF-->>User: "Please try again later"
+    end
+
+    %% Session Continuation
+    Note over User, Analytics: Subsequent Messages
+    User->>HF: Sends follow-up question
+    Note over HF, Analytics: Same flow repeats with<br/>existing session context

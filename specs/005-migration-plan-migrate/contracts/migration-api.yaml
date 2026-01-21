@@ -1,0 +1,351 @@
+openapi: 3.0.3
+info:
+  title: CVPlus Migration API
+  description: Internal API contracts for code migration between root repository and submodules
+  version: 1.0.0
+
+paths:
+  /migration/validate:
+    post:
+      summary: Validate migration plan
+      description: Validates that a migration plan can be executed without breaking existing functionality
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MigrationPlan'
+      responses:
+        '200':
+          description: Validation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+        '400':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /migration/execute:
+    post:
+      summary: Execute migration batch
+      description: Executes a batch of migration units with atomic rollback on failure
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MigrationBatch'
+      responses:
+        '200':
+          description: Migration executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationResult'
+        '500':
+          description: Migration failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationError'
+
+  /migration/status/{batchId}:
+    get:
+      summary: Get migration batch status
+      description: Returns current status of a migration batch
+      parameters:
+        - name: batchId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationStatus'
+
+  /build/validate:
+    post:
+      summary: Validate build after migration
+      description: Runs TypeScript compilation, tests, and deployment validation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuildValidationRequest'
+      responses:
+        '200':
+          description: Build validation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildValidationResult'
+
+components:
+  schemas:
+    MigrationPlan:
+      type: object
+      properties:
+        batches:
+          type: array
+          items:
+            $ref: '#/components/schemas/MigrationBatch'
+        validationCriteria:
+          type: array
+          items:
+            type: string
+      required:
+        - batches
+
+    MigrationBatch:
+      type: object
+      properties:
+        batchId:
+          type: string
+        name:
+          type: string
+        migrationUnits:
+          type: array
+          items:
+            $ref: '#/components/schemas/MigrationUnit'
+        executionOrder:
+          type: integer
+        prerequisites:
+          type: array
+          items:
+            type: string
+      required:
+        - batchId
+        - name
+        - migrationUnits
+
+    MigrationUnit:
+      type: object
+      properties:
+        id:
+          type: string
+        sourceLocation:
+          type: string
+        targetSubmodule:
+          type: string
+        fileType:
+          type: string
+          enum: [service, model, component, test, utility]
+        dependencies:
+          type: array
+          items:
+            type: string
+        dependents:
+          type: array
+          items:
+            type: string
+        domainClassification:
+          type: string
+      required:
+        - id
+        - sourceLocation
+        - targetSubmodule
+        - fileType
+
+    ValidationResult:
+      type: object
+      properties:
+        isValid:
+          type: boolean
+        errors:
+          type: array
+          items:
+            type: string
+        warnings:
+          type: array
+          items:
+            type: string
+        affectedAPIs:
+          type: array
+          items:
+            type: string
+      required:
+        - isValid
+
+    ValidationError:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+      required:
+        - error
+
+    MigrationResult:
+      type: object
+      properties:
+        batchId:
+          type: string
+        status:
+          type: string
+          enum: [completed, failed, partial]
+        migratedFiles:
+          type: array
+          items:
+            type: string
+        failedFiles:
+          type: array
+          items:
+            type: string
+        buildValidation:
+          $ref: '#/components/schemas/BuildValidationResult'
+      required:
+        - batchId
+        - status
+
+    MigrationError:
+      type: object
+      properties:
+        batchId:
+          type: string
+        error:
+          type: string
+        failedUnit:
+          type: string
+        rollbackStatus:
+          type: string
+      required:
+        - batchId
+        - error
+
+    MigrationStatus:
+      type: object
+      properties:
+        batchId:
+          type: string
+        status:
+          type: string
+          enum: [planned, executing, validating, completed, failed]
+        progress:
+          type: object
+          properties:
+            totalUnits:
+              type: integer
+            completedUnits:
+              type: integer
+            failedUnits:
+              type: integer
+        lastUpdated:
+          type: string
+          format: date-time
+      required:
+        - batchId
+        - status
+        - progress
+
+    BuildValidationRequest:
+      type: object
+      properties:
+        validationType:
+          type: array
+          items:
+            type: string
+            enum: [typescript, build, test, deploy]
+        targetSubmodules:
+          type: array
+          items:
+            type: string
+      required:
+        - validationType
+
+    BuildValidationResult:
+      type: object
+      properties:
+        validationId:
+          type: string
+        status:
+          type: string
+          enum: [passed, failed]
+        results:
+          type: object
+          properties:
+            typescript:
+              $ref: '#/components/schemas/TypeScriptValidation'
+            build:
+              $ref: '#/components/schemas/BuildValidation'
+            test:
+              $ref: '#/components/schemas/TestValidation'
+            deploy:
+              $ref: '#/components/schemas/DeployValidation'
+        metrics:
+          type: object
+          properties:
+            duration:
+              type: integer
+            buildTime:
+              type: integer
+            testCount:
+              type: integer
+      required:
+        - validationId
+        - status
+
+    TypeScriptValidation:
+      type: object
+      properties:
+        success:
+          type: boolean
+        errors:
+          type: array
+          items:
+            type: string
+        warnings:
+          type: array
+          items:
+            type: string
+
+    BuildValidation:
+      type: object
+      properties:
+        success:
+          type: boolean
+        buildTime:
+          type: integer
+        artifacts:
+          type: array
+          items:
+            type: string
+
+    TestValidation:
+      type: object
+      properties:
+        success:
+          type: boolean
+        totalTests:
+          type: integer
+        passedTests:
+          type: integer
+        failedTests:
+          type: array
+          items:
+            type: string
+
+    DeployValidation:
+      type: object
+      properties:
+        success:
+          type: boolean
+        deployedFunctions:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string

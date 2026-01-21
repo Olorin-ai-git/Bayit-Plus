@@ -1,0 +1,322 @@
+openapi: 3.0.3
+
+info:
+  title: One Click Portal API
+  description: |
+    CVPlus One Click Portal API enables premium users to generate fully functional web portals from their CVs with integrated RAG-powered chat functionality.
+
+    ## Features
+    - One-click portal generation from processed CVs
+    - RAG-powered AI chat with CV context
+    - Real-time deployment status tracking
+    - Portal analytics and visitor insights
+    - Premium subscription access control
+
+    ## Authentication
+    All endpoints require Firebase Authentication tokens in the Authorization header:
+    ```
+    Authorization: Bearer <firebase_id_token>
+    ```
+
+    ## Rate Limiting
+    - Portal generation: 10/day for premium users
+    - Chat messages: 100/hour per session
+    - Analytics queries: 1000/day per user
+
+    ## Error Handling
+    All errors follow RFC 7807 format with CVPlus-specific error codes.
+
+  version: 1.0.0
+  contact:
+    name: CVPlus API Support
+    email: support@cvplus.com
+    url: https://cvplus.com/support
+  license:
+    name: Proprietary
+    url: https://cvplus.com/license
+
+servers:
+  - url: https://us-central1-cvplus-dev.cloudfunctions.net
+    description: Development server
+  - url: https://us-central1-cvplus-prod.cloudfunctions.net
+    description: Production server
+
+# Combined paths from all specification files
+paths:
+  # Portal Generation Endpoints
+  /api/portal/generate:
+    post:
+      tags:
+        - Portal Generation
+      summary: Generate one-click portal
+      description: |
+        Creates a fully functional web portal from a processed CV with one-click generation.
+        Premium feature requiring active premium subscription.
+      operationId: generatePortal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - cvJobId
+              properties:
+                cvJobId:
+                  type: string
+                  description: ID of the completed CV processing job
+                  example: "job_abc123def456"
+                portalName:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                  description: Human-readable name for the portal
+                  example: "John Smith - Senior Developer"
+                customization:
+                  $ref: '#/components/schemas/PortalCustomization'
+                features:
+                  $ref: '#/components/schemas/PortalFeatures'
+                visibility:
+                  $ref: '#/components/schemas/VisibilityLevel'
+      responses:
+        '202':
+          description: Portal generation initiated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  portalId:
+                    type: string
+                    example: "portal_abc123def456"
+                  deploymentId:
+                    type: string
+                    example: "deploy_xyz789"
+                  estimatedCompletion:
+                    type: string
+                    format: date-time
+                    example: "2025-09-13T21:01:00Z"
+
+  /api/portal/{portalId}/chat:
+    post:
+      tags:
+        - RAG Chat
+      summary: Send message to portal AI
+      description: |
+        Sends a message to the portal's RAG-powered AI assistant and receives an intelligent response based on the CV content.
+      operationId: sendChatMessage
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Portal identifier
+          example: "portal_abc123def456"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                  description: User message to the AI assistant
+                  example: "What programming languages does this candidate know?"
+                sessionId:
+                  type: string
+                  description: Chat session identifier
+                  example: "session_abc123"
+      responses:
+        '200':
+          description: AI response generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  response:
+                    type: object
+                    properties:
+                      content:
+                        type: string
+                        example: "This candidate has extensive experience with JavaScript, Python, and Java..."
+                      confidence:
+                        type: number
+                        minimum: 0
+                        maximum: 1
+                        example: 0.92
+                  session:
+                    type: object
+                    properties:
+                      sessionId:
+                        type: string
+                        example: "session_abc123"
+                      messageCount:
+                        type: integer
+                        example: 4
+
+  /api/portal/{portalId}/analytics:
+    get:
+      tags:
+        - Analytics
+      summary: Get portal engagement metrics
+      description: |
+        Retrieves comprehensive analytics for a portal including visitor statistics and engagement metrics.
+      operationId: getPortalAnalytics
+      parameters:
+        - name: portalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Portal identifier
+          example: "portal_abc123def456"
+        - name: timeRange
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["24h", "7d", "30d", "90d"]
+            default: "30d"
+          description: Time range for analytics data
+      responses:
+        '200':
+          description: Portal analytics data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  traffic:
+                    type: object
+                    properties:
+                      totalViews:
+                        type: integer
+                        example: 1247
+                      uniqueVisitors:
+                        type: integer
+                        example: 892
+
+# Components section with all schemas
+components:
+  schemas:
+    PortalCustomization:
+      type: object
+      description: Visual and branding customization options
+      properties:
+        theme:
+          type: object
+          properties:
+            primaryColor:
+              type: string
+              pattern: '^#[0-9A-Fa-f]{6}$'
+              description: Primary brand color (hex)
+              example: "#2563eb"
+            layout:
+              type: string
+              enum: ["modern", "classic", "minimal", "creative"]
+              description: Overall layout style
+              example: "modern"
+        branding:
+          type: object
+          properties:
+            logoUrl:
+              type: string
+              format: uri
+              description: Custom logo image URL
+              example: "https://example.com/logo.png"
+
+    PortalFeatures:
+      type: object
+      description: Interactive features available on the portal
+      properties:
+        aiChat:
+          type: boolean
+          description: RAG-powered chat interface
+          default: true
+        contactForm:
+          type: boolean
+          description: Direct contact functionality
+          default: true
+        analytics:
+          type: boolean
+          description: Visitor analytics tracking
+          default: false
+
+    VisibilityLevel:
+      type: string
+      enum: ["public", "unlisted", "private"]
+      description: |
+        Portal visibility levels:
+        - `public`: Discoverable and indexable by search engines
+        - `unlisted`: Accessible via direct link only
+        - `private`: Access restricted to owner only
+      example: "public"
+
+  securitySchemes:
+    FirebaseAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Firebase ID token obtained through Firebase Authentication
+
+  responses:
+    UnauthorizedError:
+      description: Authentication token is missing or invalid
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "AUTH_REQUIRED"
+                  message:
+                    type: string
+                    example: "Authentication token is required"
+
+    ValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "VALIDATION_FAILED"
+                  message:
+                    type: string
+                    example: "Invalid request parameters"
+
+security:
+  - FirebaseAuth: []
+
+tags:
+  - name: Portal Generation
+    description: Portal creation and management endpoints
+  - name: RAG Chat
+    description: AI-powered chat with CV context
+  - name: Analytics
+    description: Portal analytics and visitor tracking

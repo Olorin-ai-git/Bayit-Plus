@@ -1,0 +1,78 @@
+{
+  "project": {
+    "name": "CVPlus",
+    "environment": "production",
+    "region": "us-central1"
+  },
+  "quotas": {
+    "functions": {
+      "maxFunctions": 1000,
+      "maxDeploymentsPerMinute": 100,
+      "maxConcurrentDeployments": 10,
+      "maxFunctionSize": 104857600,
+      "maxTotalSize": 1073741824,
+      "maxTimeout": 540,
+      "maxMemory": 8192,
+      "warningThreshold": 0.8
+    },
+    "firestore": {
+      "maxDocumentWrites": 20000,
+      "maxDocumentReads": 50000,
+      "maxDocumentDeletes": 20000,
+      "maxIndexWrites": 20000,
+      "maxCollections": 10000,
+      "maxDocumentSize": 1048576,
+      "maxIndexes": 200,
+      "warningThreshold": 0.7
+    },
+    "storage": {
+      "maxFileSize": 33554432,
+      "maxOperationsPerSecond": 5000,
+      "maxUploadBandwidth": 53687091200,
+      "maxDownloadBandwidth": 53687091200,
+      "maxStorageSize": 5497558138880,
+      "warningThreshold": 0.7
+    },
+    "hosting": {
+      "maxFileSize": 10485760,
+      "maxFilesPerDeployment": 2000,
+      "maxBandwidthPerDay": 53687091200,
+      "maxStorageSize": 10737418240,
+      "warningThreshold": 0.8
+    },
+    "auth": {
+      "maxUsersCreated": 100,
+      "maxSignInAttempts": 1000,
+      "maxPasswordResets": 100,
+      "maxCustomTokens": 10000,
+      "warningThreshold": 0.8
+    }
+  },
+  "billing": {
+    "dailyBudget": 100,
+    "monthlyBudget": 2000,
+    "warningThreshold": 0.8,
+    "currency": "USD",
+    "alertEmails": []
+  },
+  "monitoring": {
+    "checkInterval": 300,
+    "retentionDays": 30,
+    "enableAlerting": true,
+    "alertChannels": [
+      "console",
+      "log"
+    ]
+  },
+  "thresholds": {
+    "critical": 0.95,
+    "warning": 0.8,
+    "info": 0.6
+  },
+  "deployment": {
+    "maxBatchSize": 5,
+    "minBatchDelay": 30000,
+    "maxRetries": 3,
+    "timeoutPerBatch": 300000
+  }
+}

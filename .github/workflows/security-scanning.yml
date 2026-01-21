@@ -1,0 +1,743 @@
+name: Security Scanning
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run security scans daily at 3 AM UTC
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      scan_type:
+        description: 'Type of security scan'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - sast-only
+          - dependencies-only
+          - secrets-only
+
+env:
+  NODE_VERSION: '20'
+  CACHE_DEPENDENCY_PATH: '**/package-lock.json'
+  SCAN_TYPE: ${{ github.event.inputs.scan_type || 'full' }}
+
+jobs:
+  dependency-scanning:
+    name: Dependency Vulnerability Scanning
+    runs-on: ubuntu-latest
+    if: contains(fromJson('["full", "dependencies-only"]'), env.SCAN_TYPE)
+    
+    outputs:
+      vulnerabilities_found: ${{ steps.audit-results.outputs.vulnerabilities_found }}
+      
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+        
+    - name: Install Dependencies
+      run: npm ci
+      
+    - name: NPM Audit - Root Project
+      run: |
+        echo "🔍 Running NPM audit on root project..."
+        npm audit --json > npm-audit-root.json || true
+        npm audit --audit-level moderate || echo "Vulnerabilities found in root project"
+        
+    - name: NPM Audit - Workspaces
+      run: |
+        echo "🔍 Running NPM audit on all workspaces..."
+        
+        # Audit each workspace separately
+        for workspace in packages/* frontend functions; do
+          if [ -d "$workspace" ] && [ -f "$workspace/package.json" ]; then
+            echo "Auditing $workspace..."
+            cd "$workspace"
+            
+            # Create workspace-specific audit report
+            WORKSPACE_NAME=$(basename "$workspace")
+            npm audit --json > "../npm-audit-${WORKSPACE_NAME}.json" 2>/dev/null || true
+            npm audit --audit-level moderate || echo "Vulnerabilities found in $workspace"
+            
+            cd ..
+          fi
+        done
+        
+    - name: Analyze Audit Results
+      id: audit-results
+      run: |
+        echo "📊 Analyzing audit results..."
+        
+        TOTAL_VULNERABILITIES=0
+        HIGH_SEVERITY=0
+        CRITICAL_SEVERITY=0
+        
+        # Process all audit files
+        for audit_file in npm-audit-*.json; do
+          if [ -f "$audit_file" ]; then
+            echo "Processing $audit_file..."
+            
+            # Extract vulnerability counts
+            VULNS=$(jq '.metadata.vulnerabilities.total // 0' "$audit_file" 2>/dev/null || echo 0)
+            HIGH=$(jq '.metadata.vulnerabilities.high // 0' "$audit_file" 2>/dev/null || echo 0)
+            CRITICAL=$(jq '.metadata.vulnerabilities.critical // 0' "$audit_file" 2>/dev/null || echo 0)
+            
+            TOTAL_VULNERABILITIES=$((TOTAL_VULNERABILITIES + VULNS))
+            HIGH_SEVERITY=$((HIGH_SEVERITY + HIGH))
+            CRITICAL_SEVERITY=$((CRITICAL_SEVERITY + CRITICAL))
+            
+            echo "$audit_file: $VULNS vulnerabilities ($CRITICAL critical, $HIGH high)"
+          fi
+        done
+        
+        echo "vulnerabilities_found=$TOTAL_VULNERABILITIES" >> $GITHUB_OUTPUT
+        
+        echo "Total vulnerabilities across all packages: $TOTAL_VULNERABILITIES"
+        echo "- Critical: $CRITICAL_SEVERITY"
+        echo "- High: $HIGH_SEVERITY"
+        
+        # Set severity thresholds
+        if [ "$CRITICAL_SEVERITY" -gt "0" ]; then
+          echo "🚨 CRITICAL vulnerabilities found - immediate action required"
+          echo "SECURITY_LEVEL=critical" >> $GITHUB_ENV
+          exit 1
+        elif [ "$HIGH_SEVERITY" -gt "0" ]; then
+          echo "⚠️ HIGH severity vulnerabilities found - action required soon"
+          echo "SECURITY_LEVEL=high" >> $GITHUB_ENV
+        elif [ "$TOTAL_VULNERABILITIES" -gt "0" ]; then
+          echo "ℹ️ Low/Medium vulnerabilities found - monitor and plan updates"
+          echo "SECURITY_LEVEL=medium" >> $GITHUB_ENV
+        else
+          echo "✅ No vulnerabilities found"
+          echo "SECURITY_LEVEL=clean" >> $GITHUB_ENV
+        fi
+        
+    - name: Generate Dependency Security Report
+      run: |
+        echo "# 🔒 Dependency Security Report" > dependency-report.md
+        echo "" >> dependency-report.md
+        echo "**Scan Date**: $(date -u)" >> dependency-report.md
+        echo "**Total Vulnerabilities**: ${{ steps.audit-results.outputs.vulnerabilities_found }}" >> dependency-report.md
+        echo "**Security Level**: ${{ env.SECURITY_LEVEL }}" >> dependency-report.md
+        echo "" >> dependency-report.md
+        
+        # Add detailed breakdown by workspace
+        echo "## Vulnerability Breakdown by Component" >> dependency-report.md
+        echo "" >> dependency-report.md
+        
+        for audit_file in npm-audit-*.json; do
+          if [ -f "$audit_file" ]; then
+            COMPONENT=$(echo "$audit_file" | sed 's/npm-audit-//' | sed 's/.json//')
+            VULNS=$(jq '.metadata.vulnerabilities.total // 0' "$audit_file" 2>/dev/null || echo 0)
+            
+            if [ "$VULNS" -gt "0" ]; then
+              echo "### $COMPONENT" >> dependency-report.md
+              echo "- **Total**: $VULNS vulnerabilities" >> dependency-report.md
+              
+              # Extract specific vulnerabilities
+              jq -r '.vulnerabilities | to_entries[] | "- **\(.key)**: \(.value.severity) severity"' "$audit_file" 2>/dev/null >> dependency-report.md || true
+              echo "" >> dependency-report.md
+            fi
+          fi
+        done
+        
+        echo "## Recommendations" >> dependency-report.md
+        echo "" >> dependency-report.md
+        echo "1. **Update Dependencies**: Run \`npm update\` to get latest secure versions" >> dependency-report.md
+        echo "2. **Review Advisories**: Check each vulnerability for available fixes" >> dependency-report.md
+        echo "3. **Monitor Continuously**: Set up automated dependency monitoring" >> dependency-report.md
+        echo "4. **Audit Regularly**: Include security audits in CI/CD pipeline" >> dependency-report.md
+        
+    - name: Upload Dependency Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: dependency-security-report
+        path: |
+          dependency-report.md
+          npm-audit-*.json
+        retention-days: 90
+
+  secret-scanning:
+    name: Secret and Sensitive Data Scanning
+    runs-on: ubuntu-latest
+    if: contains(fromJson('["full", "secrets-only"]'), env.SCAN_TYPE)
+    
+    outputs:
+      secrets_found: ${{ steps.secret-scan.outputs.secrets_found }}
+      
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Install Secret Scanning Tools
+      run: |
+        # Install gitleaks for comprehensive secret scanning
+        wget -O gitleaks.tar.gz https://github.com/zricethezav/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
+        tar -xzf gitleaks.tar.gz
+        chmod +x gitleaks
+        sudo mv gitleaks /usr/local/bin/
+        
+    - name: Run Gitleaks Secret Scan
+      id: secret-scan
+      run: |
+        echo "🔍 Scanning for secrets with Gitleaks..."
+        
+        # Run gitleaks to detect secrets
+        gitleaks detect --source . --report-format json --report-path gitleaks-report.json --verbose || true
+        
+        # Count secrets found
+        if [ -f "gitleaks-report.json" ]; then
+          SECRETS_COUNT=$(jq '. | length' gitleaks-report.json 2>/dev/null || echo 0)
+        else
+          SECRETS_COUNT=0
+        fi
+        
+        echo "secrets_found=$SECRETS_COUNT" >> $GITHUB_OUTPUT
+        echo "Gitleaks found $SECRETS_COUNT potential secrets"
+        
+        if [ "$SECRETS_COUNT" -gt "0" ]; then
+          echo "🚨 Potential secrets detected!"
+          echo "Review gitleaks-report.json for details"
+        else
+          echo "✅ No secrets detected by Gitleaks"
+        fi
+        
+    - name: Manual Secret Pattern Scanning
+      run: |
+        echo "🔍 Running manual secret pattern scanning..."
+        
+        # Define comprehensive secret patterns
+        declare -A SECRET_PATTERNS=(
+          ["API Keys"]="(?i)(api[_-]?key|apikey).*[\"'=: ]([a-zA-Z0-9_-]{20,})"
+          ["Firebase Config"]="(?i)(firebase.*config|firebase.*api|firebase.*key)"
+          ["Anthropic Keys"]="sk-ant-[a-zA-Z0-9_-]+"
+          ["Database URLs"]="(?i)(database[_-]?url|db[_-]?url|connection[_-]?string)"
+          ["JWT Secrets"]="(?i)(jwt[_-]?secret|token[_-]?secret)"
+          ["AWS Keys"]="(?i)(aws[_-]?access[_-]?key|aws[_-]?secret)"
+          ["Google Keys"]="(?i)(google[_-]?api[_-]?key|gcp[_-]?key)"
+          ["Private Keys"]="-----BEGIN [A-Z]+ PRIVATE KEY-----"
+        )
+        
+        MANUAL_SECRETS_FOUND=0
+        
+        echo "# Manual Secret Scan Results" > manual-secrets.md
+        echo "" >> manual-secrets.md
+        
+        for pattern_name in "${!SECRET_PATTERNS[@]}"; do
+          pattern="${SECRET_PATTERNS[$pattern_name]}"
+          echo "Scanning for: $pattern_name"
+          
+          # Search for pattern
+          if grep -rE "$pattern" packages/ frontend/src/ functions/src/ \
+            --include="*.ts" --include="*.js" --include="*.tsx" --include="*.jsx" \
+            --include="*.json" --include="*.env*" \
+            | grep -v "node_modules" \
+            | grep -v "// @ignore-secret" \
+            | grep -v "placeholder" \
+            | grep -v "example" \
+            | grep -v "mock" > temp_matches.txt 2>/dev/null; then
+            
+            MATCHES=$(wc -l < temp_matches.txt)
+            MANUAL_SECRETS_FOUND=$((MANUAL_SECRETS_FOUND + MATCHES))
+            
+            echo "## $pattern_name ($MATCHES matches)" >> manual-secrets.md
+            echo "" >> manual-secrets.md
+            echo '```' >> manual-secrets.md
+            cat temp_matches.txt >> manual-secrets.md
+            echo '```' >> manual-secrets.md
+            echo "" >> manual-secrets.md
+          fi
+          
+          rm -f temp_matches.txt
+        done
+        
+        echo "Manual pattern scanning found: $MANUAL_SECRETS_FOUND potential secrets"
+        echo "MANUAL_SECRETS_FOUND=$MANUAL_SECRETS_FOUND" >> $GITHUB_ENV
+        
+    - name: Environment Variable Security Check
+      run: |
+        echo "🔍 Checking environment variable security..."
+        
+        # Check for proper environment variable usage patterns
+        echo "## Environment Variable Security" > env-security.md
+        echo "" >> env-security.md
+        
+        # Check for hardcoded values that should use env vars
+        HARDCODED_CONFIGS=0
+        
+        if grep -r "apiKey.*:" packages/ frontend/src/ functions/src/ \
+          --include="*.ts" --include="*.js" \
+          | grep -v "process.env" \
+          | grep -v "// @ignore-hardcode" > hardcoded-configs.txt 2>/dev/null; then
+          
+          HARDCODED_CONFIGS=$(wc -l < hardcoded-configs.txt)
+          echo "Found $HARDCODED_CONFIGS potentially hardcoded configurations"
+          
+          echo "### Hardcoded Configurations ($HARDCODED_CONFIGS)" >> env-security.md
+          echo '```' >> env-security.md
+          cat hardcoded-configs.txt >> env-security.md
+          echo '```' >> env-security.md
+        fi
+        
+        echo "HARDCODED_CONFIGS=$HARDCODED_CONFIGS" >> $GITHUB_ENV
+        rm -f hardcoded-configs.txt
+        
+    - name: Generate Secret Scanning Report
+      run: |
+        echo "# 🔐 Secret Scanning Report" > secret-report.md
+        echo "" >> secret-report.md
+        echo "**Scan Date**: $(date -u)" >> secret-report.md
+        echo "**Gitleaks Secrets**: ${{ steps.secret-scan.outputs.secrets_found }}" >> secret-report.md
+        echo "**Manual Pattern Matches**: ${{ env.MANUAL_SECRETS_FOUND }}" >> secret-report.md
+        echo "**Hardcoded Configs**: ${{ env.HARDCODED_CONFIGS }}" >> secret-report.md
+        echo "" >> secret-report.md
+        
+        TOTAL_ISSUES=$(($(echo "${{ steps.secret-scan.outputs.secrets_found }}" | bc) + $(echo "${{ env.MANUAL_SECRETS_FOUND }}" | bc) + $(echo "${{ env.HARDCODED_CONFIGS }}" | bc)))
+        
+        if [ "$TOTAL_ISSUES" -gt "0" ]; then
+          echo "## ⚠️ Issues Found" >> secret-report.md
+          echo "" >> secret-report.md
+          echo "**Total Issues**: $TOTAL_ISSUES" >> secret-report.md
+          echo "" >> secret-report.md
+          echo "### Immediate Actions Required" >> secret-report.md
+          echo "1. **Review all flagged items** for actual secrets" >> secret-report.md
+          echo "2. **Rotate any exposed credentials** immediately" >> secret-report.md  
+          echo "3. **Move secrets to environment variables**" >> secret-report.md
+          echo "4. **Add .env files to .gitignore**" >> secret-report.md
+          echo "5. **Use Firebase Secrets for cloud functions**" >> secret-report.md
+        else
+          echo "## ✅ No Issues Found" >> secret-report.md
+          echo "" >> secret-report.md
+          echo "No secrets or hardcoded credentials detected." >> secret-report.md
+        fi
+        
+        echo "" >> secret-report.md
+        echo "## Security Best Practices" >> secret-report.md
+        echo "- Use environment variables for all sensitive data" >> secret-report.md
+        echo "- Implement proper secret rotation policies" >> secret-report.md
+        echo "- Use managed secret services (Firebase Secrets, AWS SSM)" >> secret-report.md
+        echo "- Regular secret scanning in CI/CD pipeline" >> secret-report.md
+        echo "- Audit access to secrets regularly" >> secret-report.md
+        
+        # Append manual scan results if they exist
+        if [ -f "manual-secrets.md" ]; then
+          echo "" >> secret-report.md
+          echo "## Manual Pattern Scan Details" >> secret-report.md
+          cat manual-secrets.md >> secret-report.md
+        fi
+        
+        # Append environment variable security if exists
+        if [ -f "env-security.md" ]; then
+          echo "" >> secret-report.md
+          cat env-security.md >> secret-report.md
+        fi
+        
+        # Fail if secrets found
+        if [ "$TOTAL_ISSUES" -gt "0" ]; then
+          echo "🚨 Secrets or security issues detected!"
+          exit 1
+        fi
+        
+    - name: Upload Secret Scanning Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: secret-scanning-report
+        path: |
+          secret-report.md
+          gitleaks-report.json
+        retention-days: 90
+
+  sast-analysis:
+    name: Static Application Security Testing (SAST)
+    runs-on: ubuntu-latest
+    if: contains(fromJson('["full", "sast-only"]'), env.SCAN_TYPE)
+    
+    outputs:
+      security_issues: ${{ steps.sast-results.outputs.security_issues }}
+      
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+        
+    - name: Install Dependencies
+      run: npm ci
+      
+    - name: ESLint Security Analysis
+      run: |
+        echo "🔍 Running ESLint with security rules..."
+        
+        # Install security-focused ESLint plugins
+        npm install --save-dev eslint-plugin-security eslint-plugin-no-secrets
+        
+        # Run ESLint with security focus
+        npx eslint packages/ frontend/src/ functions/src/ \
+          --ext .ts,.tsx,.js,.jsx \
+          --format json \
+          --output-file eslint-security.json \
+          --plugin security \
+          --plugin no-secrets \
+          --no-eslintrc \
+          --config '{
+            "parserOptions": {
+              "ecmaVersion": 2021,
+              "sourceType": "module",
+              "ecmaFeatures": {
+                "jsx": true
+              }
+            },
+            "extends": [
+              "plugin:security/recommended"
+            ],
+            "rules": {
+              "security/detect-object-injection": "error",
+              "security/detect-non-literal-regexp": "error",
+              "security/detect-non-literal-fs-filename": "error",
+              "security/detect-eval-with-expression": "error",
+              "security/detect-pseudoRandomBytes": "error",
+              "security/detect-possible-timing-attacks": "error",
+              "no-secrets/no-secrets": "error"
+            }
+          }' || true
+          
+    - name: TypeScript Security Analysis
+      run: |
+        echo "🔍 Running TypeScript-specific security checks..."
+        
+        # Check for dangerous TypeScript patterns
+        echo "# TypeScript Security Issues" > ts-security.md
+        echo "" >> ts-security.md
+        
+        SECURITY_ISSUES=0
+        
+        # Check for 'any' type usage (security risk)
+        if grep -r ": any" packages/ frontend/src/ functions/src/ --include="*.ts" --include="*.tsx" | grep -v "node_modules" > any-types.txt; then
+          ANY_COUNT=$(wc -l < any-types.txt)
+          echo "Found $ANY_COUNT uses of 'any' type"
+          echo "## 'any' Type Usage ($ANY_COUNT)" >> ts-security.md
+          echo "'any' types bypass TypeScript's type safety and can lead to security vulnerabilities." >> ts-security.md
+          echo '```' >> ts-security.md
+          cat any-types.txt >> ts-security.md
+          echo '```' >> ts-security.md
+          SECURITY_ISSUES=$((SECURITY_ISSUES + ANY_COUNT))
+        fi
+        
+        # Check for eval-like functions
+        if grep -r "eval\|Function\|setTimeout.*string\|setInterval.*string" packages/ frontend/src/ functions/src/ --include="*.ts" --include="*.tsx" | grep -v "node_modules" > eval-usage.txt; then
+          EVAL_COUNT=$(wc -l < eval-usage.txt)
+          echo "Found $EVAL_COUNT potential eval-like usages"
+          echo "## Eval-like Function Usage ($EVAL_COUNT)" >> ts-security.md
+          echo "Eval-like functions can execute arbitrary code and are security risks." >> ts-security.md
+          echo '```' >> ts-security.md
+          cat eval-usage.txt >> ts-security.md
+          echo '```' >> ts-security.md
+          SECURITY_ISSUES=$((SECURITY_ISSUES + EVAL_COUNT))
+        fi
+        
+        # Check for dangerouslySetInnerHTML (React security issue)
+        if grep -r "dangerouslySetInnerHTML" frontend/src/ --include="*.tsx" --include="*.jsx" > dangerous-html.txt; then
+          HTML_COUNT=$(wc -l < dangerous-html.txt)
+          echo "Found $HTML_COUNT uses of dangerouslySetInnerHTML"
+          echo "## Dangerous HTML Usage ($HTML_COUNT)" >> ts-security.md
+          echo "dangerouslySetInnerHTML can lead to XSS vulnerabilities." >> ts-security.md
+          echo '```' >> ts-security.md
+          cat dangerous-html.txt >> ts-security.md
+          echo '```' >> ts-security.md
+          SECURITY_ISSUES=$((SECURITY_ISSUES + HTML_COUNT))
+        fi
+        
+        echo "TYPESCRIPT_SECURITY_ISSUES=$SECURITY_ISSUES" >> $GITHUB_ENV
+        
+        rm -f any-types.txt eval-usage.txt dangerous-html.txt
+        
+    - name: Firebase Security Analysis
+      run: |
+        echo "🔥 Analyzing Firebase security configuration..."
+        
+        # Check Firestore security rules
+        if [ -f "firestore.rules" ]; then
+          echo "Analyzing Firestore security rules..."
+          
+          # Check for overly permissive rules
+          if grep -q "allow read, write: if true" firestore.rules; then
+            echo "⚠️ Found overly permissive Firestore rules"
+            echo "FIREBASE_RULES_ISSUE=true" >> $GITHUB_ENV
+          else
+            echo "✅ Firestore rules appear properly restricted"
+            echo "FIREBASE_RULES_ISSUE=false" >> $GITHUB_ENV
+          fi
+        else
+          echo "No Firestore rules file found"
+          echo "FIREBASE_RULES_ISSUE=missing" >> $GITHUB_ENV
+        fi
+        
+        # Check Firebase function security
+        echo "Checking Firebase function security..."
+        
+        FUNCTION_SECURITY_ISSUES=0
+        
+        # Check for proper authentication
+        if grep -r "onRequest\|onCall" functions/src/ --include="*.ts" | grep -v "auth" > unauth-functions.txt; then
+          UNAUTH_COUNT=$(wc -l < unauth-functions.txt)
+          echo "Found $UNAUTH_COUNT potentially unauthenticated functions"
+          FUNCTION_SECURITY_ISSUES=$((FUNCTION_SECURITY_ISSUES + UNAUTH_COUNT))
+        fi
+        
+        echo "FUNCTION_SECURITY_ISSUES=$FUNCTION_SECURITY_ISSUES" >> $GITHUB_ENV
+        rm -f unauth-functions.txt
+        
+    - name: Compile SAST Results
+      id: sast-results
+      run: |
+        echo "📊 Compiling SAST analysis results..."
+        
+        # Count ESLint security issues
+        ESLINT_ISSUES=0
+        if [ -f "eslint-security.json" ]; then
+          ESLINT_ISSUES=$(jq '[.[].messages[]] | length' eslint-security.json 2>/dev/null || echo 0)
+        fi
+        
+        TYPESCRIPT_ISSUES="${{ env.TYPESCRIPT_SECURITY_ISSUES }}"
+        FIREBASE_ISSUES="${{ env.FUNCTION_SECURITY_ISSUES }}"
+        
+        TOTAL_SECURITY_ISSUES=$((ESLINT_ISSUES + TYPESCRIPT_ISSUES + FIREBASE_ISSUES))
+        
+        echo "security_issues=$TOTAL_SECURITY_ISSUES" >> $GITHUB_OUTPUT
+        
+        echo "SAST Analysis Summary:"
+        echo "- ESLint Security Issues: $ESLINT_ISSUES"
+        echo "- TypeScript Security Issues: $TYPESCRIPT_ISSUES"
+        echo "- Firebase Security Issues: $FIREBASE_ISSUES"
+        echo "- Total Security Issues: $TOTAL_SECURITY_ISSUES"
+        
+        if [ "$TOTAL_SECURITY_ISSUES" -gt "0" ]; then
+          echo "⚠️ Security issues found - review required"
+        else
+          echo "✅ No security issues detected"
+        fi
+        
+    - name: Generate SAST Report
+      run: |
+        echo "# 🛡️ Static Application Security Testing (SAST) Report" > sast-report.md
+        echo "" >> sast-report.md
+        echo "**Scan Date**: $(date -u)" >> sast-report.md
+        echo "**Total Security Issues**: ${{ steps.sast-results.outputs.security_issues }}" >> sast-report.md
+        echo "" >> sast-report.md
+        echo "## Issue Breakdown" >> sast-report.md
+        echo "" >> sast-report.md
+        echo "| Category | Count | Severity |" >> sast-report.md
+        echo "|----------|-------|----------|" >> sast-report.md
+        
+        # Add ESLint results
+        if [ -f "eslint-security.json" ]; then
+          ESLINT_COUNT=$(jq '[.[].messages[]] | length' eslint-security.json 2>/dev/null || echo 0)
+          echo "| ESLint Security | $ESLINT_COUNT | Medium |" >> sast-report.md
+        fi
+        
+        # Add TypeScript results  
+        echo "| TypeScript Security | ${{ env.TYPESCRIPT_SECURITY_ISSUES }} | Medium |" >> sast-report.md
+        
+        # Add Firebase results
+        echo "| Firebase Security | ${{ env.FUNCTION_SECURITY_ISSUES }} | High |" >> sast-report.md
+        
+        echo "" >> sast-report.md
+        echo "## Firebase Security Status" >> sast-report.md
+        echo "- **Firestore Rules**: ${{ env.FIREBASE_RULES_ISSUE }}" >> sast-report.md
+        echo "- **Function Authentication**: $([ ${{ env.FUNCTION_SECURITY_ISSUES }} -eq 0 ] && echo 'Properly configured' || echo 'Needs review')" >> sast-report.md
+        
+        echo "" >> sast-report.md
+        echo "## Recommendations" >> sast-report.md
+        echo "1. **Address High-Severity Issues**: Fix Firebase security configurations first" >> sast-report.md
+        echo "2. **Review TypeScript Usage**: Minimize 'any' types and dangerous patterns" >> sast-report.md
+        echo "3. **ESLint Security Rules**: Enable and fix security-focused ESLint rules" >> sast-report.md
+        echo "4. **Regular Security Reviews**: Include SAST in CI/CD pipeline" >> sast-report.md
+        echo "5. **Security Training**: Ensure team awareness of secure coding practices" >> sast-report.md
+        
+        # Include detailed TypeScript analysis
+        if [ -f "ts-security.md" ]; then
+          echo "" >> sast-report.md
+          echo "## TypeScript Security Details" >> sast-report.md
+          cat ts-security.md >> sast-report.md
+        fi
+        
+    - name: Upload SAST Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: sast-security-report
+        path: |
+          sast-report.md
+          eslint-security.json
+          ts-security.md
+        retention-days: 90
+
+  security-summary:
+    name: Security Summary and Alerts
+    runs-on: ubuntu-latest
+    needs: [dependency-scanning, secret-scanning, sast-analysis]
+    if: always()
+    
+    steps:
+    - name: Compile Security Results
+      run: |
+        echo "🔒 Compiling comprehensive security results..."
+        
+        # Get results from previous jobs
+        DEPENDENCIES="${{ needs.dependency-scanning.outputs.vulnerabilities_found || '0' }}"
+        SECRETS="${{ needs.secret-scanning.outputs.secrets_found || '0' }}"
+        SAST_ISSUES="${{ needs.sast-analysis.outputs.security_issues || '0' }}"
+        
+        TOTAL_SECURITY_ISSUES=$((DEPENDENCIES + SECRETS + SAST_ISSUES))
+        
+        echo "Security Analysis Summary:"
+        echo "- Dependency Vulnerabilities: $DEPENDENCIES"
+        echo "- Secret Exposures: $SECRETS"
+        echo "- SAST Security Issues: $SAST_ISSUES"
+        echo "- Total Security Issues: $TOTAL_SECURITY_ISSUES"
+        
+        # Determine security posture
+        if [ "$TOTAL_SECURITY_ISSUES" -eq "0" ]; then
+          SECURITY_POSTURE="excellent"
+        elif [ "$TOTAL_SECURITY_ISSUES" -le "5" ]; then
+          SECURITY_POSTURE="good"
+        elif [ "$TOTAL_SECURITY_ISSUES" -le "15" ]; then
+          SECURITY_POSTURE="needs-attention"
+        else
+          SECURITY_POSTURE="critical"
+        fi
+        
+        echo "TOTAL_SECURITY_ISSUES=$TOTAL_SECURITY_ISSUES" >> $GITHUB_ENV
+        echo "SECURITY_POSTURE=$SECURITY_POSTURE" >> $GITHUB_ENV
+        
+    - name: Generate Comprehensive Security Report
+      run: |
+        echo "# 🔒 Comprehensive Security Analysis Report" > security-summary.md
+        echo "" >> security-summary.md
+        echo "**Scan Date**: $(date -u)" >> security-summary.md
+        echo "**Scan Type**: ${{ env.SCAN_TYPE }}" >> security-summary.md
+        echo "**Security Posture**: $(echo '${{ env.SECURITY_POSTURE }}' | tr 'a-z-' 'A-Z ')" >> security-summary.md
+        echo "**Total Issues**: ${{ env.TOTAL_SECURITY_ISSUES }}" >> security-summary.md
+        echo "" >> security-summary.md
+        
+        # Security posture visualization
+        case "${{ env.SECURITY_POSTURE }}" in
+          "excellent")
+            echo "## 🟢 Security Status: EXCELLENT" >> security-summary.md
+            echo "No security issues detected. Maintain current security practices." >> security-summary.md
+            ;;
+          "good")
+            echo "## 🟡 Security Status: GOOD" >> security-summary.md
+            echo "Minor security issues found. Address when convenient." >> security-summary.md
+            ;;
+          "needs-attention")
+            echo "## 🟠 Security Status: NEEDS ATTENTION" >> security-summary.md
+            echo "Multiple security issues found. Plan remediation activities." >> security-summary.md
+            ;;
+          "critical")
+            echo "## 🔴 Security Status: CRITICAL" >> security-summary.md
+            echo "Significant security issues found. Immediate action required!" >> security-summary.md
+            ;;
+        esac
+        
+        echo "" >> security-summary.md
+        echo "## Issue Summary" >> security-summary.md
+        echo "" >> security-summary.md
+        echo "| Category | Count | Status |" >> security-summary.md
+        echo "|----------|-------|--------|" >> security-summary.md
+        echo "| Dependency Vulnerabilities | ${{ needs.dependency-scanning.outputs.vulnerabilities_found || 'N/A' }} | ${{ needs.dependency-scanning.result }} |" >> security-summary.md
+        echo "| Secret Exposures | ${{ needs.secret-scanning.outputs.secrets_found || 'N/A' }} | ${{ needs.secret-scanning.result }} |" >> security-summary.md
+        echo "| SAST Issues | ${{ needs.sast-analysis.outputs.security_issues || 'N/A' }} | ${{ needs.sast-analysis.result }} |" >> security-summary.md
+        
+        echo "" >> security-summary.md
+        echo "## Priority Actions" >> security-summary.md
+        echo "" >> security-summary.md
+        
+        if [ "${{ needs.dependency-scanning.result }}" = "failure" ]; then
+          echo "1. **🚨 HIGH PRIORITY**: Address dependency vulnerabilities" >> security-summary.md
+        fi
+        
+        if [ "${{ needs.secret-scanning.result }}" = "failure" ]; then
+          echo "2. **🚨 CRITICAL**: Review and secure exposed secrets" >> security-summary.md
+        fi
+        
+        if [ "${{ needs.sast-analysis.result }}" = "failure" ]; then
+          echo "3. **⚠️ MEDIUM**: Fix SAST security issues" >> security-summary.md
+        fi
+        
+        if [ "${{ env.TOTAL_SECURITY_ISSUES }}" -eq "0" ]; then
+          echo "✅ No immediate actions required. Continue security monitoring." >> security-summary.md
+        fi
+        
+        echo "" >> security-summary.md
+        echo "## Security Metrics Trend" >> security-summary.md
+        echo "- **Current Issues**: ${{ env.TOTAL_SECURITY_ISSUES }}" >> security-summary.md
+        echo "- **Previous Scan**: Would compare with historical data" >> security-summary.md
+        echo "- **Trend**: Would show improvement/degradation over time" >> security-summary.md
+        
+        echo "" >> security-summary.md
+        echo "## Compliance Status" >> security-summary.md
+        echo "- **Internal Security Standards**: $([ ${{ env.TOTAL_SECURITY_ISSUES }} -le 5 ] && echo 'Compliant' || echo 'Non-compliant')" >> security-summary.md
+        echo "- **Industry Best Practices**: $([ ${{ env.TOTAL_SECURITY_ISSUES }} -eq 0 ] && echo 'Excellent' || echo 'Needs improvement')" >> security-summary.md
+        echo "- **Audit Readiness**: $([ ${{ env.TOTAL_SECURITY_ISSUES }} -le 2 ] && echo 'Ready' || echo 'Needs preparation')" >> security-summary.md
+        
+    - name: Security Alert Management
+      run: |
+        echo "🚨 Managing security alerts..."
+        
+        if [ "${{ env.SECURITY_POSTURE }}" = "critical" ]; then
+          echo "CRITICAL security issues detected - triggering alerts"
+          echo "SEND_CRITICAL_ALERT=true" >> $GITHUB_ENV
+        elif [ "${{ env.SECURITY_POSTURE }}" = "needs-attention" ]; then
+          echo "Security issues need attention - triggering notifications"
+          echo "SEND_WARNING_ALERT=true" >> $GITHUB_ENV
+        else
+          echo "Security posture acceptable - no alerts needed"
+          echo "SEND_CRITICAL_ALERT=false" >> $GITHUB_ENV
+          echo "SEND_WARNING_ALERT=false" >> $GITHUB_ENV
+        fi
+        
+    - name: Post Critical Security Alert
+      if: env.SEND_CRITICAL_ALERT == 'true' && vars.SLACK_WEBHOOK_URL
+      run: |
+        echo "Sending critical security alert to Slack"
+        # curl -X POST -H 'Content-type: application/json' \
+        #   --data '{"text":"🚨 CRITICAL: Security issues detected in CVPlus - Total: ${{ env.TOTAL_SECURITY_ISSUES }} issues"}' \
+        #   ${{ vars.SLACK_WEBHOOK_URL }}
+        
+    - name: Block Deployment on Critical Issues
+      if: env.SECURITY_POSTURE == 'critical'
+      run: |
+        echo "🛑 Blocking deployment due to critical security issues"
+        echo "Total issues: ${{ env.TOTAL_SECURITY_ISSUES }}"
+        echo "Security posture: ${{ env.SECURITY_POSTURE }}"
+        echo "Review and fix security issues before deployment"
+        exit 1
+        
+    - name: Upload Security Summary
+      uses: actions/upload-artifact@v4
+      with:
+        name: comprehensive-security-report
+        path: security-summary.md
+        retention-days: 365  # Keep security reports for compliance
+        
+    - name: Update Summary
+      run: |
+        echo "# 🔒 Security Analysis Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        cat security-summary.md >> $GITHUB_STEP_SUMMARY

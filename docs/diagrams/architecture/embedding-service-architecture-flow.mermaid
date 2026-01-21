@@ -1,0 +1,161 @@
+graph TB
+    subgraph "CVPlus Embedding Service Architecture"
+        
+        subgraph "Input Layer"
+            CV[CV Data]
+            TEXT[Raw Text]
+            BATCH[Text Batch]
+        end
+        
+        subgraph "EmbeddingService Core"
+            ES[EmbeddingService]
+            CONFIG[Service Config]
+            OPENAI[OpenAI Client]
+        end
+        
+        subgraph "Text Processing Pipeline"
+            CHUNK[Text Chunker]
+            PREPROC[Preprocessor]
+            VALID[Content Validator]
+            META[Metadata Extractor]
+        end
+        
+        subgraph "Chunking Strategies"
+            SEMANTIC[Semantic Chunking]
+            FIXED[Fixed-Size Chunking]
+            SLIDING[Sliding Window]
+            CV_AWARE[CV Section-Aware]
+        end
+        
+        subgraph "Embedding Generation"
+            SINGLE[Single Embedding]
+            BATCH_GEN[Batch Generation]
+            RATE_LIMIT[Rate Limiter]
+            RETRY[Retry Logic]
+        end
+        
+        subgraph "Vector Operations"
+            COSINE[Cosine Similarity]
+            SEARCH[Semantic Search]
+            TOPK[Top-K Retrieval]
+            SCORE[Confidence Scoring]
+        end
+        
+        subgraph "CV-Specific Processing"
+            EXP_PROC[Experience Processing]
+            EDU_PROC[Education Processing]
+            SKILL_PROC[Skills Processing]
+            PROJ_PROC[Projects Processing]
+            ACHIEVE_PROC[Achievements Processing]
+        end
+        
+        subgraph "Output Processing"
+            EMBED_OUT[RAG Embeddings]
+            METADATA_OUT[Enhanced Metadata]
+            VECTOR_DB[Vector Database]
+            SIMILARITY[Similarity Results]
+        end
+        
+        subgraph "Deployment Targets"
+            FIREBASE[Firebase Functions]
+            HUGGINGFACE[HuggingFace Spaces]
+            LOCAL[Local Deployment]
+        end
+        
+        subgraph "Integration Layer"
+            PORTAL[Portal Generation]
+            VERIFIED[VerifiedClaudeService]
+            RAG_SYS[RAG System]
+        end
+        
+        subgraph "Monitoring & Analytics"
+            TOKENS[Token Usage]
+            COST[Cost Tracking]
+            PERF[Performance Metrics]
+            ERRORS[Error Monitoring]
+        end
+    end
+    
+    %% Input Flow
+    CV --> ES
+    TEXT --> ES
+    BATCH --> ES
+    
+    %% Service Configuration
+    ES --> CONFIG
+    ES --> OPENAI
+    CONFIG --> OPENAI
+    
+    %% Text Processing Flow
+    ES --> CHUNK
+    CHUNK --> SEMANTIC
+    CHUNK --> FIXED
+    CHUNK --> SLIDING
+    CHUNK --> CV_AWARE
+    
+    CHUNK --> PREPROC
+    PREPROC --> VALID
+    VALID --> META
+    
+    %% CV-Specific Processing
+    CV --> EXP_PROC
+    CV --> EDU_PROC
+    CV --> SKILL_PROC
+    CV --> PROJ_PROC
+    CV --> ACHIEVE_PROC
+    
+    EXP_PROC --> CHUNK
+    EDU_PROC --> CHUNK
+    SKILL_PROC --> CHUNK
+    PROJ_PROC --> CHUNK
+    ACHIEVE_PROC --> CHUNK
+    
+    %% Embedding Generation Flow
+    META --> SINGLE
+    META --> BATCH_GEN
+    
+    SINGLE --> RATE_LIMIT
+    BATCH_GEN --> RATE_LIMIT
+    RATE_LIMIT --> RETRY
+    RETRY --> OPENAI
+    
+    %% Vector Operations
+    OPENAI --> COSINE
+    OPENAI --> SEARCH
+    SEARCH --> TOPK
+    TOPK --> SCORE
+    
+    %% Output Generation
+    OPENAI --> EMBED_OUT
+    META --> METADATA_OUT
+    EMBED_OUT --> VECTOR_DB
+    SCORE --> SIMILARITY
+    
+    %% Deployment Flow
+    ES --> FIREBASE
+    ES --> HUGGINGFACE
+    ES --> LOCAL
+    
+    %% Integration
+    EMBED_OUT --> PORTAL
+    ES --> VERIFIED
+    VECTOR_DB --> RAG_SYS
+    
+    %% Monitoring
+    OPENAI --> TOKENS
+    TOKENS --> COST
+    ES --> PERF
+    RETRY --> ERRORS
+    
+    %% Styling
+    classDef serviceClass fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef processingClass fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef outputClass fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef deploymentClass fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef monitoringClass fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    
+    class ES,CONFIG,OPENAI serviceClass
+    class CHUNK,PREPROC,VALID,META,SEMANTIC,FIXED,SLIDING,CV_AWARE processingClass
+    class EMBED_OUT,METADATA_OUT,VECTOR_DB,SIMILARITY outputClass
+    class FIREBASE,HUGGINGFACE,LOCAL deploymentClass
+    class TOKENS,COST,PERF,ERRORS monitoringClass

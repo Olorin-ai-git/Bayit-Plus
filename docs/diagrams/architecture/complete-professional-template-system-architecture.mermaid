@@ -1,0 +1,113 @@
+graph TB
+    subgraph "CVPlus Professional Template System - Complete Architecture"
+        
+        subgraph "User Interface Layer"
+            TP["TemplatesPage.tsx<br/>🎨 Enhanced Template Selection"] 
+            TF["Template Filters<br/>📊 8 Categories + All"]
+            TC["Template Cards<br/>⭐ Ratings, Badges, Previews"]
+            TD["Template Details<br/>📋 Roles, Industries, Levels"]
+        end
+        
+        subgraph "Template Component Registry"
+            TR["index.ts<br/>🏗️ Complete Registry"]
+            TM["TemplateComponents<br/>📦 8 Template Mapping"]
+            TU["Template Utilities<br/>🔧 Search, Filter, Validate"]
+        end
+        
+        subgraph "Professional Template Components (8)"
+            subgraph "Business Leadership"
+                ET["ExecutiveTemplate<br/>👔 C-Suite Authority<br/>Navy + Gold"]
+                FT["FinancialTemplate<br/>💼 Investment Focus<br/>Blue + Green"]
+            end
+            
+            subgraph "Technical & Innovation"
+                TT["TechTemplate<br/>💻 Engineering Excellence<br/>Grey + Blue"]
+                IT["InternationalTemplate<br/>🌍 Global Reach<br/>Blue + Green"]
+            end
+            
+            subgraph "Creative & Academic"
+                CT["CreativeTemplate<br/>🎨 Design Showcase<br/>Purple + Orange"]
+                AT["AcademicTemplate<br/>🎓 Research Focus<br/>Purple + Gold"]
+            end
+            
+            subgraph "Performance & Care"
+                ST["SalesTemplate<br/>📈 Results Driven<br/>Red + Gold"]
+                HT["HealthcareTemplate<br/>🏥 Care & Trust<br/>Blue + Green"]
+            end
+        end
+        
+        subgraph "Template Data System"
+            PTD["professional-templates.ts<br/>📊 Complete Template Definitions"]
+            ICS["INDUSTRY_COLOR_SCHEMES<br/>🎨 Psychology-Based Colors"]
+            PTS["PROFESSIONAL_TYPOGRAPHY<br/>✍️ Industry Fonts"]
+        end
+        
+        subgraph "Integration Layer"
+            CPC["CVPreviewContent.tsx<br/>🔄 Seamless Integration"]
+            GTC["getTemplateComponent()<br/>🎯 Dynamic Template Loading"]
+            CTI["CORE_TEMPLATE_IDS<br/>🆔 Template Identification"]
+        end
+        
+        subgraph "Generation System"
+            CVG["CV Generation<br/>⚙️ Template + Data"]
+            FP["Feature Previews<br/>👁️ Live Enhancement Display"]
+            ATS["ATS Optimization<br/>📄 85%+ Compatibility"]
+        end
+        
+    end
+    
+    %% User Flow
+    TP --> TF
+    TF --> TC
+    TC --> TD
+    TD --> TR
+    
+    %% Registry to Components
+    TR --> TM
+    TM --> ET
+    TM --> TT
+    TM --> CT
+    TM --> HT
+    TM --> FT
+    TM --> AT
+    TM --> ST
+    TM --> IT
+    
+    %% Data Flow
+    PTD --> ICS
+    PTD --> PTS
+    PTD --> TM
+    
+    %% Integration Flow
+    TR --> CPC
+    CPC --> GTC
+    GTC --> CTI
+    
+    %% Generation Flow
+    CPC --> CVG
+    CVG --> FP
+    CVG --> ATS
+    
+    %% Template Categories
+    classDef executive fill:#1a365d,stroke:#744210,stroke-width:3px,color:#ffffff
+    classDef technical fill:#2d3748,stroke:#3182ce,stroke-width:3px,color:#ffffff
+    classDef creative fill:#805ad5,stroke:#ed8936,stroke-width:3px,color:#ffffff
+    classDef healthcare fill:#2b6cb0,stroke:#38a169,stroke-width:3px,color:#ffffff
+    classDef financial fill:#1a365d,stroke:#22543d,stroke-width:3px,color:#ffffff
+    classDef academic fill:#553c9a,stroke:#744210,stroke-width:3px,color:#ffffff
+    classDef sales fill:#c53030,stroke:#d69e2e,stroke-width:3px,color:#ffffff
+    classDef international fill:#2b6cb0,stroke:#38a169,stroke-width:3px,color:#ffffff
+    classDef system fill:#f7fafc,stroke:#2d3748,stroke-width:2px,color:#2d3748
+    classDef interface fill:#ebf8ff,stroke:#3182ce,stroke-width:2px,color:#2d3748
+    
+    %% Apply Styles
+    class ET executive
+    class TT technical
+    class CT creative
+    class HT healthcare
+    class FT financial
+    class AT academic
+    class ST sales
+    class IT international
+    class TR,TM,TU,PTD,ICS,PTS,CPC,GTC,CTI,CVG,FP,ATS system
+    class TP,TF,TC,TD interface

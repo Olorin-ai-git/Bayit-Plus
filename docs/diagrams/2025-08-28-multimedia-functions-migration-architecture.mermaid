@@ -1,0 +1,123 @@
+graph TB
+    subgraph "Source: Main Functions Directory"
+        F1[generatePodcast.ts]
+        F2[generateVideoIntroduction.ts]
+        F3[mediaGeneration.ts]
+        F4[podcastStatus.ts]
+        F5[podcastStatusPublic.ts]
+        F6[portfolioGallery.ts]
+        F7[heygen-webhook.ts]
+        F8[runwayml-status-check.ts]
+        F9[enhancedQR.ts]
+        F10[qrCodeEnhancement.ts]
+        
+        subgraph "Dependencies"
+            S1[podcast-generation.service.ts]
+            S2[portfolio-gallery.service.ts]
+            S3[enhanced-qr.service.ts]
+            S4[video-generation.service.ts]
+            S5[media-generation.service.ts]
+            
+            C1[cors.ts]
+            C2[premiumGuard.ts]
+            C3[firestore-sanitizer.ts]
+        end
+    end
+    
+    subgraph "Target: Multimedia Submodule"
+        subgraph "Backend Structure"
+            direction TB
+            BF[src/backend/functions/]
+            BS[src/backend/services/]
+            BC[src/backend/config/]
+            BM[src/backend/middleware/]
+            BU[src/backend/utils/]
+        end
+        
+        subgraph "Migrated Functions"
+            MF1[generatePodcast.ts]
+            MF2[generateVideoIntroduction.ts]
+            MF3[mediaGeneration.ts]
+            MF4[podcastStatus.ts]
+            MF5[podcastStatusPublic.ts]
+            MF6[portfolioGallery.ts]
+            MF7[heygen-webhook.ts]
+            MF8[runwayml-status-check.ts]
+            MF9[enhancedQR.ts]
+            MF10[qrCodeEnhancement.ts]
+        end
+        
+        subgraph "Migrated Services"
+            MS1[PodcastGenerationService]
+            MS2[PortfolioGalleryService]
+            MS3[EnhancedQRService]
+            MS4[VideoGenerationService]
+            MS5[MediaGenerationService]
+        end
+        
+        subgraph "Integration"
+            EXP[Export Configuration]
+            TS[TypeScript Config]
+            IDX[Index Files]
+        end
+    end
+    
+    subgraph "Migration Process"
+        P1[Phase 1: Setup Structure]
+        P2[Phase 2: Copy Dependencies]
+        P3[Phase 3: Copy Functions]
+        P4[Phase 4: Update Imports]
+        P5[Phase 5: Configure Exports]
+        P6[Phase 6: Test Compilation]
+    end
+    
+    %% Migration Flow
+    F1 -.->|Copy| MF1
+    F2 -.->|Copy| MF2
+    F3 -.->|Copy| MF3
+    F4 -.->|Copy| MF4
+    F5 -.->|Copy| MF5
+    F6 -.->|Copy| MF6
+    F7 -.->|Copy| MF7
+    F8 -.->|Copy| MF8
+    F9 -.->|Copy| MF9
+    F10 -.->|Copy| MF10
+    
+    %% Service Dependencies
+    S1 -.->|Migrate| MS1
+    S2 -.->|Migrate| MS2
+    S3 -.->|Migrate| MS3
+    S4 -.->|Migrate| MS4
+    S5 -.->|Migrate| MS5
+    
+    %% Process Flow
+    P1 --> P2
+    P2 --> P3
+    P3 --> P4
+    P4 --> P5
+    P5 --> P6
+    
+    %% Integration
+    MF1 --> EXP
+    MF2 --> EXP
+    MF3 --> EXP
+    MF4 --> EXP
+    MF5 --> EXP
+    MF6 --> EXP
+    MF7 --> EXP
+    MF8 --> EXP
+    MF9 --> EXP
+    MF10 --> EXP
+    
+    EXP --> IDX
+    TS --> IDX
+    
+    classDef source fill:#ff9999
+    classDef target fill:#99ff99
+    classDef process fill:#9999ff
+    classDef service fill:#ffff99
+    
+    class F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,S1,S2,S3,S4,S5,C1,C2,C3 source
+    class MF1,MF2,MF3,MF4,MF5,MF6,MF7,MF8,MF9,MF10,MS1,MS2,MS3,MS4,MS5,BF,BS,BC,BM,BU target
+    class P1,P2,P3,P4,P5,P6 process
+    class EXP,TS,IDX service

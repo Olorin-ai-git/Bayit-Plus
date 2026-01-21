@@ -1,0 +1,65 @@
+graph TB
+    subgraph "Unified Analysis Architecture - Role Detection Integration"
+        A[Analysis Complete] -->|Auto-trigger| B[Role Detection Start]
+        B --> C[RoleDetectionProgress]
+        C --> D[AI Role Analysis]
+        D --> E{Roles Detected?}
+        
+        E -->|Yes| F[DetectedRoleCard Display]
+        E -->|No| G[Manual Role Selection]
+        
+        F --> H{User Action}
+        H -->|Accept| I[Role Selected]
+        H -->|Customize| J[RoleSelectionModal]
+        H -->|Manual Select| G
+        
+        G --> J
+        J --> K[Role Confirmation]
+        K --> I
+        
+        I -->|Auto-trigger| L[Load Role-based Improvements]
+        L --> M[ImprovementsSection]
+        M --> N[Actions Available]
+    end
+    
+    subgraph "Component Architecture"
+        O[UnifiedAnalysisContainer]
+        O --> P[RoleDetectionSection]
+        O --> Q[ImprovementsSection]
+        O --> R[ActionButtons]
+        
+        P --> S[RoleDetectionProgress]
+        P --> T[DetectedRoleCard]
+        P --> U[RoleSelectionModal]
+    end
+    
+    subgraph "State Management"
+        V[UnifiedAnalysisContext]
+        V --> W[Role Detection State]
+        V --> X[Progressive Flow State]
+        V --> Y[UI State]
+        
+        W --> Z[detectedRoles]
+        W --> AA[selectedRole]
+        W --> BB[roleDetectionStatus]
+        
+        X --> CC[currentStep]
+        X --> DD[autoTriggerEnabled]
+        
+        Y --> EE[isLoading]
+        Y --> FF[errors]
+    end
+    
+    subgraph "Progressive Disclosure Flow"
+        GG[Analysis] -->|Complete| HH[Role Detection]
+        HH -->|Auto-trigger| II[Show Progress]
+        II -->|Detected| JJ[Show Role Cards]
+        JJ -->|Selected| KK[Load Improvements]
+        KK -->|Ready| LL[Show Actions]
+    end
+    
+    style A fill:#e1f5fe
+    style I fill:#c8e6c9
+    style N fill:#fff3e0
+    style O fill:#f3e5f5
+    style V fill:#fce4ec

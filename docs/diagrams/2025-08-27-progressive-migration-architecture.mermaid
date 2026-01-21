@@ -1,0 +1,227 @@
+graph TB
+    %% Progressive Migration Architecture
+    %% Author: Gil Klainert
+    %% Date: 2025-08-27
+
+    subgraph "Frontend Layer"
+        FE[Frontend Application]
+        FE --> TR[Traffic Router]
+    end
+
+    subgraph "Migration Control Layer"
+        TR --> MAdapter[Migration Adapter]
+        MAdapter --> FF[Feature Flags]
+        FF --> TC[Traffic Controller]
+        
+        subgraph "Health Monitoring"
+            HM[Health Monitor]
+            AM[Alert Manager] 
+            RB[Rollback System]
+        end
+        
+        TC --> HM
+        HM --> AM
+        AM --> RB
+    end
+
+    subgraph "Week 2: LOW Risk Services"
+        subgraph "CVAnalyzer Migration"
+            CVA_Legacy[CVAnalyzer Legacy<br/>167 lines]
+            CVA_Package[CVAnalyzer Package<br/>Minimal deps]
+            
+            MAdapter --> CVA_Legacy
+            MAdapter --> CVA_Package
+            
+            CVA_Traffic[Traffic: 10%→25%→50%→75%→100%]
+            CVA_Monitor[Monitor: 30min intervals]
+        end
+        
+        subgraph "ImprovementOrchestrator Migration"  
+            IO_Legacy[ImprovementOrchestrator Legacy<br/>116 lines]
+            IO_Package[ImprovementOrchestrator Package<br/>Simple workflow]
+            
+            MAdapter --> IO_Legacy
+            MAdapter --> IO_Package
+            
+            IO_Traffic[Traffic: 10%→25%→50%→75%→100%]
+            IO_Monitor[Monitor: 30min intervals]
+        end
+    end
+
+    subgraph "Week 3: MEDIUM Risk Services"
+        subgraph "CacheManager Migration"
+            CM_Legacy[CacheManager Legacy<br/>223 lines]
+            CM_Package[CacheManager Package<br/>Distributed cache]
+            DW[Dual-Write Pattern]
+            
+            MAdapter --> CM_Legacy
+            MAdapter --> CM_Package
+            CM_Legacy <--> DW
+            CM_Package <--> DW
+            
+            CM_Traffic[Traffic: 5%→25%→50%→75%→100%]
+            CM_Monitor[Monitor: 1hr intervals<br/>Cache coherence]
+        end
+        
+        subgraph "RecommendationGenerator Migration"
+            RG_Legacy[RecommendationGenerator Legacy<br/>212 lines]
+            RG_Package[RecommendationGenerator Package<br/>AI integration]
+            
+            MAdapter --> RG_Legacy
+            MAdapter --> RG_Package
+            
+            RG_Traffic[Traffic: 5%→25%→50%→75%→100%]
+            RG_Monitor[Monitor: 1hr intervals<br/>AI service health]
+        end
+    end
+
+    subgraph "Week 4: CRITICAL Risk Services"
+        subgraph "CircuitBreakerCore Migration"
+            CB_Legacy[CircuitBreakerCore Legacy<br/>221 lines]
+            CB_Package[CircuitBreakerCore Package<br/>State management]
+            SB[State Backup<br/>& Preservation]
+            
+            MAdapter --> CB_Legacy
+            MAdapter --> CB_Package
+            CB_Legacy <--> SB
+            CB_Package <--> SB
+            
+            CB_Traffic[Traffic: 1%→5%→25%→50%→100%]
+            CB_Monitor[Monitor: 2hr intervals<br/>Manual approval gates]
+        end
+        
+        subgraph "RecommendationOrchestrator Migration"
+            RO_Legacy[RecommendationOrchestrator Legacy<br/>204 lines]
+            RO_Package[RecommendationOrchestrator Package<br/>Workflow orchestration]
+            WS[Workflow State<br/>Preservation]
+            
+            MAdapter --> RO_Legacy
+            MAdapter --> RO_Package
+            RO_Legacy <--> WS
+            RO_Package <--> WS
+            
+            RO_Traffic[Traffic: 1%→5%→25%→50%→100%]
+            RO_Monitor[Monitor: 2hr intervals<br/>Workflow continuity]
+        end
+        
+        subgraph "ActionOrchestrator Migration"
+            AO_Legacy[ActionOrchestrator Legacy<br/>237 lines]
+            AO_Package[ActionOrchestrator Package<br/>Transaction safety]
+            TS[Transaction State<br/>Management]
+            
+            MAdapter --> AO_Legacy
+            MAdapter --> AO_Package
+            AO_Legacy <--> TS
+            AO_Package <--> TS
+            
+            AO_Traffic[Traffic: 1%→5%→25%→50%→100%]
+            AO_Monitor[Monitor: 2hr intervals<br/>Transaction integrity]
+        end
+    end
+
+    subgraph "Data & State Layer"
+        subgraph "Firestore Collections"
+            FS_Users[(Users)]
+            FS_Recommendations[(Recommendations)]
+            FS_Cache[(Cache Entries)]
+            FS_State[(Service State)]
+            FS_Checkpoints[(Migration Checkpoints)]
+        end
+        
+        subgraph "Backup Systems"
+            BS[Service State Backups]
+            MC[Migration Checkpoints] 
+            RT[Rollback Triggers]
+        end
+    end
+
+    subgraph "Monitoring & Alerting"
+        subgraph "Health Checks"
+            HC_Performance[Performance Metrics<br/>Response time, throughput]
+            HC_Business[Business Metrics<br/>Success rates, quality]
+            HC_Technical[Technical Metrics<br/>Cache hits, circuit states]
+            HC_Data[Data Integrity<br/>Consistency validation]
+        end
+        
+        subgraph "Alert Channels"
+            Slack[Slack Notifications]
+            Email[Email Alerts]
+            PagerDuty[PagerDuty Critical]
+            Dashboard[Migration Dashboard]
+        end
+    end
+
+    subgraph "Rollback System"
+        subgraph "Rollback Types"
+            RB_Service[Service Rollback<br/>&lt; 30 seconds]
+            RB_Phase[Phase Rollback<br/>&lt; 2 minutes]  
+            RB_Complete[Complete Rollback<br/>&lt; 5 minutes]
+        end
+        
+        subgraph "Recovery Actions"
+            RA_Traffic[Traffic Rerouting]
+            RA_State[State Restoration]
+            RA_Validation[Health Validation]
+        end
+    end
+
+    %% Connections to data layer
+    CVA_Package --> FS_Users
+    IO_Package --> FS_Recommendations
+    CM_Package --> FS_Cache
+    CB_Package --> FS_State
+    RG_Package --> FS_Recommendations
+    RO_Package --> FS_State
+    AO_Package --> FS_State
+
+    %% Backup connections
+    CB_Package --> BS
+    RO_Package --> BS
+    AO_Package --> BS
+    TC --> MC
+    HM --> RT
+
+    %% Health monitoring connections
+    HM --> HC_Performance
+    HM --> HC_Business
+    HM --> HC_Technical
+    HM --> HC_Data
+
+    %% Alert connections
+    AM --> Slack
+    AM --> Email
+    AM --> PagerDuty
+    AM --> Dashboard
+
+    %% Rollback connections
+    RB --> RB_Service
+    RB --> RB_Phase
+    RB --> RB_Complete
+    
+    RB_Service --> RA_Traffic
+    RB_Phase --> RA_State
+    RB_Complete --> RA_Validation
+
+    %% Migration flow arrows
+    CVA_Traffic -.-> CVA_Monitor
+    IO_Traffic -.-> IO_Monitor
+    CM_Traffic -.-> CM_Monitor
+    RG_Traffic -.-> RG_Monitor
+    CB_Traffic -.-> CB_Monitor
+    RO_Traffic -.-> RO_Monitor
+    AO_Traffic -.-> AO_Monitor
+
+    %% Styling
+    classDef legacyService fill:#ffcccc,stroke:#ff6666,stroke-width:2px
+    classDef packageService fill:#ccffcc,stroke:#66cc66,stroke-width:2px
+    classDef migrationControl fill:#cceeff,stroke:#4da6ff,stroke-width:2px
+    classDef monitoring fill:#ffffcc,stroke:#ffcc00,stroke-width:2px
+    classDef dataLayer fill:#e6ccff,stroke:#cc66ff,stroke-width:2px
+    classDef rollback fill:#ffccaa,stroke:#ff8800,stroke-width:2px
+
+    class CVA_Legacy,IO_Legacy,CM_Legacy,RG_Legacy,CB_Legacy,RO_Legacy,AO_Legacy legacyService
+    class CVA_Package,IO_Package,CM_Package,RG_Package,CB_Package,RO_Package,AO_Package packageService
+    class MAdapter,FF,TC,TR migrationControl
+    class HM,AM,HC_Performance,HC_Business,HC_Technical,HC_Data,Slack,Email,PagerDuty,Dashboard monitoring
+    class FS_Users,FS_Recommendations,FS_Cache,FS_State,FS_Checkpoints,BS,MC,RT dataLayer
+    class RB,RB_Service,RB_Phase,RB_Complete,RA_Traffic,RA_State,RA_Validation rollback

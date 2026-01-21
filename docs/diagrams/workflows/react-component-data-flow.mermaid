@@ -1,0 +1,44 @@
+```mermaid
+sequenceDiagram
+    participant User
+    participant CVPage as CV Features Page
+    participant Registry as Component Registry
+    participant Component as React Component
+    participant Hook as useFeatureData Hook
+    participant Firebase as Firebase Functions
+    participant Service as Feature Service
+
+    User->>CVPage: Upload CV & Select Features
+    CVPage->>Registry: Request Component Rendering
+    Registry->>Component: Instantiate with Props
+    
+    Component->>Hook: Initialize Feature Data
+    Hook->>Firebase: Call Firebase Function
+    Firebase->>Service: Process Feature Request
+    Service-->>Firebase: Return Feature Data
+    Firebase-->>Hook: Return Processed Data
+    Hook-->>Component: Update Component State
+    
+    Component->>Component: Render Feature UI
+    Component-->>User: Display Interactive Feature
+    
+    User->>Component: Interact with Feature
+    Component->>Hook: Update Feature Data
+    Hook->>Firebase: Save Changes
+    Firebase-->>Hook: Confirm Save
+    Hook-->>Component: Update State
+    Component-->>User: Reflect Changes
+    
+    Note over User,Service: Dual-Mode Support
+    
+    alt Legacy HTML Mode
+        Registry->>Service: Generate HTML String
+        Service-->>Registry: Return HTML
+        Registry-->>CVPage: Inject HTML
+        CVPage-->>User: Display Static Feature
+    else React Mode
+        Registry->>Component: Render React Component
+        Component-->>CVPage: Mount Component
+        CVPage-->>User: Display Interactive Feature
+    end
+```

@@ -1,0 +1,46 @@
+flowchart TD
+    A[HomePage<br/>Upload CV] --> B{Authentication}
+    B -->|Anonymous| C[Create Job]
+    B -->|Google Auth| C[Create Job]
+    
+    C --> D[ProcessingPage<br/>Real-time Status<br/>Step 1 of 4]
+    
+    D --> E{Processing Status}
+    E -->|Success| F[CVAnalysisPage<br/>Analysis Results<br/>Step 2 of 4]
+    E -->|Failed| G[Error State<br/>Retry/Restart]
+    G --> D
+    
+    F --> H[CVPreviewPage<br/>Preview & Customize<br/>Step 3 of 4]
+    
+    H --> I{User Choice}
+    I -->|Select Template| J[TemplatesPage<br/>Template Selection<br/>Step 3 of 4]
+    I -->|Keyword Optimization| K[KeywordOptimization<br/>ATS Optimization]
+    I -->|Continue| L[ResultsPage<br/>Final Results<br/>Step 4 of 4]
+    
+    J --> H
+    K --> H
+    
+    L --> M{User Actions}
+    M -->|Download| N[Download Files<br/>PDF/DOCX/HTML]
+    M -->|Share| O[Public Profile<br/>Social Sharing]
+    M -->|Customize More| H
+    
+    %% Backend Function Integration
+    D -.->|processCV| P[CV Processing<br/>Document Parsing<br/>PII Detection]
+    D -.->|enhancedAnalyzeCV| Q[AI Analysis<br/>ATS Optimization<br/>Recommendations]
+    H -.->|applyImprovements| R[Apply AI<br/>Improvements]
+    H -.->|generateVideoIntroduction| S[Video Generation<br/>D-ID Integration]
+    H -.->|generatePodcast| T[Podcast Creation<br/>ElevenLabs Audio]
+    L -.->|generateCV| U[Final CV<br/>Generation]
+    
+    %% Styling
+    classDef primaryPage fill:#3b82f6,stroke:#1e40af,stroke-width:2px,color:#ffffff
+    classDef processing fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#ffffff
+    classDef decision fill:#8b5cf6,stroke:#7c3aed,stroke-width:2px,color:#ffffff
+    classDef backend fill:#10b981,stroke:#059669,stroke-width:2px,color:#ffffff
+    classDef error fill:#ef4444,stroke:#dc2626,stroke-width:2px,color:#ffffff
+    
+    class A,F,H,L primaryPage
+    class D,P,Q,R,S,T,U processing
+    class B,E,I,M decision
+    class G error

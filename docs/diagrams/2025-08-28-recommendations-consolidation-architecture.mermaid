@@ -1,0 +1,100 @@
+```mermaid
+graph TB
+    subgraph "Current State Analysis"
+        subgraph "MAIN EXPORTS (CORRECT ✅)"
+            ME["/functions/src/index.ts<br/>Lines 235-250"]
+            ME --> MF1["getRecommendations<br/>(modular - 77 lines)"]
+            ME --> MF2["applyImprovements<br/>(modular - 75 lines)"]
+            ME --> MF3["previewImprovement<br/>(modular - <200 lines)"]
+            ME --> MF4["customizePlaceholders<br/>(modular - <200 lines)"]
+        end
+        
+        subgraph "LEGACY CODE (VIOLATION ❌)"
+            LC["/functions/applyImprovements.ts<br/>466 lines - COMMENTED OUT"]
+            LC --> LF1["applyImprovements (legacy)"]
+            LC --> LF2["getRecommendations (legacy)"]
+            LC --> LF3["previewImprovement (legacy)"]
+            LC --> LF4["customizePlaceholders (legacy)"]
+        end
+        
+        subgraph "PACKAGE FUNCTIONS (AVAILABLE 📦)"
+            PF["/packages/recommendations/backend/functions/"]
+            PF --> PF1["getRecommendations<br/>(package - 68 lines)"]
+            PF --> PF2["applyImprovements<br/>(package - 66 lines)"]
+            PF --> PF3["firebaseFunctionsAdapter<br/>(integration layer)"]
+        end
+    end
+    
+    subgraph "Service Dependencies"
+        subgraph "Main Functions Services"
+            MS1["ImprovementOrchestrator<br/>(116 lines - ✅)"]
+            MS2["ValidationEngine<br/>(251 lines - ❌ VIOLATION)"]
+        end
+        
+        subgraph "Package Services"
+            PS1["recommendationsService<br/>(optimized)"]
+            PS2["firebaseFunctionsAdapter<br/>(clean integration)"]
+        end
+    end
+    
+    subgraph "Consolidation Actions"
+        subgraph "Priority 1: Legacy Cleanup"
+            A1["🗑️ DELETE Legacy File<br/>(REQUIRES USER APPROVAL)"]
+            A2["✅ Remove 466-line violation"]
+            A3["📉 Reduce maintenance debt"]
+        end
+        
+        subgraph "Priority 2: Service Review"
+            B1["📊 Review ValidationEngine<br/>(251 lines)"]
+            B2["🔄 Consider package migration"]
+            B3["🏗️ Enhance modularity"]
+        end
+    end
+    
+    subgraph "Post-Consolidation State"
+        subgraph "FINAL ARCHITECTURE ✅"
+            FA["/functions/src/index.ts<br/>Clean exports only"]
+            FA --> FM1["getRecommendations<br/>(modular - compliant)"]
+            FA --> FM2["applyImprovements<br/>(modular - compliant)"]
+            FA --> FM3["previewImprovement<br/>(modular - compliant)"]
+            FA --> FM4["customizePlaceholders<br/>(modular - compliant)"]
+        end
+        
+        subgraph "QUALITY METRICS ✅"
+            QM1["📏 0 files > 200 lines"]
+            QM2["🔄 No duplicate logic"]
+            QM3["🧹 Clean codebase"]
+            QM4["📈 100% compliance"]
+        end
+    end
+    
+    %% Current state relationships
+    ME -.->|"Uses (Active)"| MF1
+    LC -.->|"Commented Out"| LF1
+    MF1 --> MS1
+    MF2 --> MS2
+    PF1 --> PS1
+    
+    %% Consolidation flow
+    LC -->|"DELETE (with approval)"| A1
+    A1 --> A2
+    A2 --> A3
+    MS2 -->|"Review"| B1
+    
+    %% Final state
+    A3 --> FA
+    B3 --> FA
+    
+    %% Styling
+    classDef correct fill:#d4edda,stroke:#155724,color:#155724
+    classDef violation fill:#f8d7da,stroke:#721c24,color:#721c24
+    classDef available fill:#fff3cd,stroke:#856404,color:#856404
+    classDef action fill:#cce5ff,stroke:#004085,color:#004085
+    classDef final fill:#e8f5e8,stroke:#0f5132,color:#0f5132
+    
+    class ME,MF1,MF2,MF3,MF4,MS1 correct
+    class LC,LF1,LF2,LF3,LF4,MS2 violation
+    class PF,PF1,PF2,PF3,PS1,PS2 available
+    class A1,A2,A3,B1,B2,B3 action
+    class FA,FM1,FM2,FM3,FM4,QM1,QM2,QM3,QM4 final
+```

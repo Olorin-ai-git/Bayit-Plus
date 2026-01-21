@@ -1,0 +1,57 @@
+sequenceDiagram
+    participant U as User
+    participant C as Component
+    participant S as SessionManager
+    participant L as LocalStorage
+    participant F as Firebase
+    participant R as Recovery Dialog
+
+    Note over U,R: Session Persistence Flow
+
+    U->>C: Start CV flow
+    C->>S: initializeSession()
+    S->>L: checkExistingSession()
+    
+    alt Existing Session Found
+        L->>S: existingSession
+        S->>R: showRecoveryDialog()
+        R->>U: "Resume from step 3?"
+        
+        alt User chooses Resume
+            U->>R: "Resume"
+            R->>S: resumeSession(sessionId)
+            S->>C: navigateToStep(3)
+        else User chooses Start Over
+            U->>R: "Start Over"
+            R->>S: clearSession()
+            S->>C: navigateToStep(1)
+        end
+    else No Existing Session
+        S->>S: createNewSession()
+        S->>L: saveSession(newSession)
+        alt User is authenticated
+            S->>F: syncSession(sessionData)
+        end
+    end
+
+    loop Each Step Completion
+        U->>C: Complete step
+        C->>S: updateProgress(stepData)
+        S->>L: saveCheckpoint(stepData)
+        alt User is authenticated
+            S->>F: syncProgress(stepData)
+        end
+    end
+
+    alt Step Error Occurs
+        C->>S: handleStepError(error, partialData)
+        S->>L: savePartialResults(partialData)
+        S->>C: showErrorRecovery()
+    end
+
+    U->>C: Complete flow
+    C->>S: completeSession()
+    S->>L: markSessionComplete()
+    alt User is authenticated
+        S->>F: syncCompletion()
+    end

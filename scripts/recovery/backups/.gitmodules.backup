@@ -1,0 +1,42 @@
+[submodule "packages/auth"]
+	path = packages/auth
+	url = git@github.com:gilco1973/cvplus-auth.git
+[submodule "packages/core"]
+	path = packages/core
+	url = git@github.com:gilco1973/cvplus-core.git
+[submodule "packages/i18n"]
+	path = packages/i18n
+	url = git@github.com:gilco1973/cvplus-i18n.git
+[submodule "packages/multimedia"]
+	path = packages/multimedia
+	url = git@github.com:gilco1973/cvplus-multimedia.git
+[submodule "packages/premium"]
+	path = packages/premium
+	url = git@github.com:gilco1973/cvplus-premium.git
+[submodule "packages/public-profiles"]
+	path = packages/public-profiles
+	url = git@github.com:gilco1973/cvplus-public-profiles.git
+[submodule "packages/recommendations"]
+	path = packages/recommendations
+	url = git@github.com:gilco1973/cvplus-recommendations.git
+[submodule "packages/analytics"]
+	path = packages/analytics
+	url = git@github.com:gilco1973/cvplus-analytics.git
+[submodule "packages/admin"]
+	path = packages/admin
+	url = git@github.com:gilco1973/cvplus-admin.git
+[submodule "packages/cv-processing"]
+	path = packages/cv-processing
+	url = git@github.com:gilco1973/cvplus-cv-processing.git
+[submodule "packages/payments"]
+	path = packages/payments
+	url = git@github.com:gilco1973/cvplus-payments.git
+[submodule "packages/workflow"]
+	path = packages/workflow
+	url = git@github.com:gilco1973/cvplus-workflow.git
+[submodule "packages/logging"]
+	path = packages/logging
+	url = git@github.com:gilco1973/cvplus-logging.git
+[submodule "packages/shell"]
+	path = packages/shell
+	url = git@github.com:gilco1973/cvplus-shell.git

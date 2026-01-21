@@ -1,0 +1,90 @@
+graph TB
+    %% CVPlus Portal Integration Architecture
+    %% Shows the overall integration between CV generation and portal systems
+    
+    subgraph "CVPlus Core System"
+        CVGen[CV Generation Pipeline]
+        CVDoc[CV Document]
+        QRGen[QR Code Service]
+        Analytics[CVPlus Analytics]
+        ContactForm[Contact Form Feature]
+        Templates[CV Templates]
+    end
+    
+    subgraph "Portal Integration Layer"
+        PIService[CV-Portal Integration Service]
+        Orchestrator[Portal Generation Orchestrator]
+        StatusTracker[Status Tracking Service]
+        ErrorHandler[Error Handler & Rollback]
+        URLInjector[URL Injection Service]
+        QREnhancer[QR Code Enhancer]
+    end
+    
+    subgraph "Portal Generation System"
+        PortalGen[Portal Generator]
+        RAGSystem[RAG System Builder]
+        VectorDB[Vector Database Service]
+        HuggingFace[HuggingFace Deployment]
+        PortalAnalytics[Portal Analytics]
+    end
+    
+    subgraph "External Services"
+        OpenAI[OpenAI API]
+        Pinecone[Pinecone Vector DB]
+        HF_API[HuggingFace API]
+        Firebase[Firebase Functions]
+        Firestore[(Firestore)]
+    end
+    
+    %% CV Generation to Integration
+    CVGen --> PIService
+    CVDoc --> URLInjector
+    QRGen --> QREnhancer
+    ContactForm --> PIService
+    Templates --> URLInjector
+    
+    %% Integration Layer Coordination
+    PIService --> Orchestrator
+    Orchestrator --> StatusTracker
+    Orchestrator --> ErrorHandler
+    StatusTracker --> CVGen
+    URLInjector --> CVDoc
+    QREnhancer --> QRGen
+    
+    %% Portal Generation Flow
+    Orchestrator --> PortalGen
+    PortalGen --> RAGSystem
+    RAGSystem --> VectorDB
+    PortalGen --> HuggingFace
+    VectorDB --> Pinecone
+    
+    %% Analytics Integration
+    PortalAnalytics --> Analytics
+    StatusTracker --> Analytics
+    
+    %% External Dependencies
+    RAGSystem --> OpenAI
+    HuggingFace --> HF_API
+    VectorDB --> Pinecone
+    PIService --> Firebase
+    StatusTracker --> Firestore
+    
+    %% Error Handling Flows
+    ErrorHandler -.-> CVGen
+    ErrorHandler -.-> CVDoc
+    ErrorHandler -.-> QRGen
+    
+    %% Status Updates
+    StatusTracker -.-> CVDoc
+    StatusTracker -.-> QRGen
+    StatusTracker -.-> ContactForm
+    
+    classDef coreSystem fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef integration fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef portalSystem fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef external fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    
+    class CVGen,CVDoc,QRGen,Analytics,ContactForm,Templates coreSystem
+    class PIService,Orchestrator,StatusTracker,ErrorHandler,URLInjector,QREnhancer integration
+    class PortalGen,RAGSystem,VectorDB,HuggingFace,PortalAnalytics portalSystem
+    class OpenAI,Pinecone,HF_API,Firebase,Firestore external

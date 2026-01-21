@@ -1,0 +1,93 @@
+graph TD
+    subgraph "Dependency Layers"
+        subgraph "Layer 1: Core (No Dependencies)"
+            T[Types & Interfaces]
+            U[Utilities]
+            C[Constants]
+            E[Errors & Exceptions]
+        end
+        
+        subgraph "Layer 2: Services (Core Dependencies Only)"
+            ML[ML Services]
+            CV[CV Services]
+            USER[User Services]
+            AUTH[Auth Services]
+            ML --> T
+            ML --> U
+            CV --> T
+            CV --> U
+            USER --> T
+            AUTH --> T
+        end
+        
+        subgraph "Layer 3: Hooks (Bridge Layer)"
+            HML[ML Hooks]
+            HCV[CV Hooks]
+            HUSER[User Hooks]
+            HAUTH[Auth Hooks]
+            HML --> ML
+            HCV --> CV
+            HUSER --> USER
+            HAUTH --> AUTH
+        end
+        
+        subgraph "Layer 4: Components (Hooks Dependencies)"
+            FEAT[Feature Components]
+            SHARED[Shared Components]
+            LAYOUT[Layout Components]
+            PAGES[Page Components]
+            FEAT --> HML
+            FEAT --> HCV
+            SHARED --> HUSER
+            PAGES --> HAUTH
+            PAGES --> FEAT
+            LAYOUT --> SHARED
+        end
+    end
+
+    subgraph "Module Structure"
+        subgraph "src/core/"
+            CORE_T[types/]
+            CORE_U[utils/]
+            CORE_C[constants/]
+        end
+        
+        subgraph "src/services/"
+            SRV_ML[ml/]
+            SRV_CV[cv/]
+            SRV_USER[user/]
+        end
+        
+        subgraph "src/hooks/"
+            HOOKS_ML[ml/]
+            HOOKS_CV[cv/]
+            HOOKS_USER[user/]
+        end
+        
+        subgraph "src/components/"
+            COMP_FEAT[features/]
+            COMP_SHARED[shared/]
+            COMP_LAYOUT[layouts/]
+        end
+    end
+
+    subgraph "Import Rules"
+        RULE1[✅ Core modules: No internal dependencies]
+        RULE2[✅ Services: Core dependencies only]
+        RULE3[✅ Hooks: Core + Services dependencies]
+        RULE4[✅ Components: Core + Hooks dependencies]
+        RULE5[❌ No circular dependencies allowed]
+        RULE6[❌ No deep imports allowed]
+    end
+
+    classDef core fill:#00b894,stroke:#00a085,color:#fff
+    classDef services fill:#a29bfe,stroke:#6c5ce7,color:#fff
+    classDef hooks fill:#fdcb6e,stroke:#e17055,color:#000
+    classDef components fill:#fd79a8,stroke:#e84393,color:#fff
+    classDef rules fill:#ddd,stroke:#999,color:#000
+
+    class T,U,C,E,CORE_T,CORE_U,CORE_C core
+    class ML,CV,USER,AUTH,SRV_ML,SRV_CV,SRV_USER services
+    class HML,HCV,HUSER,HAUTH,HOOKS_ML,HOOKS_CV,HOOKS_USER hooks
+    class FEAT,SHARED,LAYOUT,PAGES,COMP_FEAT,COMP_SHARED,COMP_LAYOUT components
+    class RULE1,RULE2,RULE3,RULE4,RULE5,RULE6 rules

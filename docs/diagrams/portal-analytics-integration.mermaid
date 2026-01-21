@@ -1,0 +1,163 @@
+graph TB
+    %% Portal Analytics Integration Flow
+    %% Shows how portal analytics integrate with CVPlus analytics system
+    
+    subgraph "Portal Events"
+        PortalView[Portal Page Views]
+        ChatSession[Chat Sessions]
+        ContactSubmit[Contact Submissions]
+        CVDownload[CV Downloads]
+        QRScan[QR Code Scans]
+        FeatureUsage[Feature Usage]
+    end
+    
+    subgraph "Data Collection Layer"
+        EventCollector[Event Collector]
+        SessionTracker[Session Tracker]
+        UserTracker[User Tracker]
+        ConversionTracker[Conversion Tracker]
+        PerformanceMonitor[Performance Monitor]
+    end
+    
+    subgraph "Data Processing"
+        EventProcessor[Event Processor]
+        Aggregator[Data Aggregator]
+        Enricher[Data Enricher]
+        Validator[Data Validator]
+    end
+    
+    subgraph "CVPlus Analytics Integration"
+        AnalyticsAPI[Analytics API]
+        UserMetrics[User Metrics Store]
+        BusinessMetrics[Business Metrics]
+        ReportingEngine[Reporting Engine]
+        Dashboard[Analytics Dashboard]
+    end
+    
+    subgraph "Portal-Specific Analytics"
+        PortalMetrics[Portal Metrics]
+        RAGAnalytics[RAG Chat Analytics]
+        EngagementMetrics[Engagement Metrics]
+        ConversionAnalytics[Conversion Analytics]
+    end
+    
+    subgraph "External Analytics"
+        GoogleAnalytics[Google Analytics]
+        MixPanel[MixPanel Events]
+        PostHog[PostHog Analytics]
+        CustomWebhooks[Custom Webhooks]
+    end
+    
+    subgraph "Real-time Monitoring"
+        LiveDashboard[Live Dashboard]
+        Alerts[Alert System]
+        HealthChecks[Health Checks]
+        ErrorTracking[Error Tracking]
+    end
+    
+    %% Event Collection Flow
+    PortalView --> EventCollector
+    ChatSession --> EventCollector
+    ContactSubmit --> EventCollector
+    CVDownload --> EventCollector
+    QRScan --> EventCollector
+    FeatureUsage --> EventCollector
+    
+    %% Session and User Tracking
+    EventCollector --> SessionTracker
+    EventCollector --> UserTracker
+    EventCollector --> ConversionTracker
+    EventCollector --> PerformanceMonitor
+    
+    %% Data Processing Pipeline
+    SessionTracker --> EventProcessor
+    UserTracker --> EventProcessor
+    ConversionTracker --> EventProcessor
+    PerformanceMonitor --> EventProcessor
+    
+    EventProcessor --> Aggregator
+    EventProcessor --> Enricher
+    EventProcessor --> Validator
+    
+    %% Integration with CVPlus Analytics
+    Aggregator --> AnalyticsAPI
+    Enricher --> AnalyticsAPI
+    Validator --> AnalyticsAPI
+    
+    AnalyticsAPI --> UserMetrics
+    AnalyticsAPI --> BusinessMetrics
+    AnalyticsAPI --> ReportingEngine
+    ReportingEngine --> Dashboard
+    
+    %% Portal-Specific Analytics
+    EventProcessor --> PortalMetrics
+    EventProcessor --> RAGAnalytics
+    EventProcessor --> EngagementMetrics
+    EventProcessor --> ConversionAnalytics
+    
+    %% External Analytics Integration
+    EventProcessor --> GoogleAnalytics
+    EventProcessor --> MixPanel
+    EventProcessor --> PostHog
+    EventProcessor --> CustomWebhooks
+    
+    %% Real-time Monitoring
+    EventProcessor --> LiveDashboard
+    EventProcessor --> Alerts
+    EventProcessor --> HealthChecks
+    EventProcessor --> ErrorTracking
+    
+    %% Analytics Metrics Details
+    subgraph "Key Metrics Tracked"
+        PortalViews[Total Portal Views]
+        UniqueVisitors[Unique Visitors]
+        SessionDuration[Avg Session Duration]
+        BounceRate[Bounce Rate]
+        ChatEngagement[Chat Engagement Rate]
+        ContactConversion[Contact Conversion Rate]
+        QRScanRate[QR Scan Success Rate]
+        FeatureAdoption[Feature Adoption Rate]
+    end
+    
+    %% Metrics Flow
+    PortalMetrics --> PortalViews
+    EngagementMetrics --> UniqueVisitors
+    EngagementMetrics --> SessionDuration
+    EngagementMetrics --> BounceRate
+    RAGAnalytics --> ChatEngagement
+    ConversionAnalytics --> ContactConversion
+    ConversionAnalytics --> QRScanRate
+    ConversionAnalytics --> FeatureAdoption
+    
+    %% Business Intelligence
+    subgraph "Business Intelligence"
+        ROITracking[ROI Tracking]
+        UserJourney[User Journey Analysis]
+        CohortAnalysis[Cohort Analysis]
+        PredictiveAnalytics[Predictive Analytics]
+    end
+    
+    BusinessMetrics --> ROITracking
+    UserMetrics --> UserJourney
+    UserMetrics --> CohortAnalysis
+    EngagementMetrics --> PredictiveAnalytics
+    
+    classDef events fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef collection fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef processing fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef analytics fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef portal fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef external fill:#f1f8e9,stroke:#388e3c,stroke-width:2px
+    classDef monitoring fill:#fff8e1,stroke:#f57c00,stroke-width:2px
+    classDef metrics fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    classDef business fill:#ede7f6,stroke:#512da8,stroke-width:2px
+    
+    class PortalView,ChatSession,ContactSubmit,CVDownload,QRScan,FeatureUsage events
+    class EventCollector,SessionTracker,UserTracker,ConversionTracker,PerformanceMonitor collection
+    class EventProcessor,Aggregator,Enricher,Validator processing
+    class AnalyticsAPI,UserMetrics,BusinessMetrics,ReportingEngine,Dashboard analytics
+    class PortalMetrics,RAGAnalytics,EngagementMetrics,ConversionAnalytics portal
+    class GoogleAnalytics,MixPanel,PostHog,CustomWebhooks external
+    class LiveDashboard,Alerts,HealthChecks,ErrorTracking monitoring
+    class PortalViews,UniqueVisitors,SessionDuration,BounceRate,ChatEngagement,ContactConversion,QRScanRate,FeatureAdoption metrics
+    class ROITracking,UserJourney,CohortAnalysis,PredictiveAnalytics business

@@ -1,0 +1,242 @@
+graph TB
+    subgraph "CVPlus Root Repository - CURRENT STATE"
+        subgraph "Backend Functions [TO MIGRATE]"
+            F1[generatePodcast.ts]
+            F2[generateVideoIntroduction.ts]
+            F3[portfolioGallery.ts]
+            F4[mediaGeneration.ts]
+            F5[heygen-webhook.ts]
+            F6[runwayml-status-check.ts]
+        end
+        
+        subgraph "Backend Services [TO MIGRATE]"
+            S1[media-generation.service.ts]
+            S2[enhanced-video-generation.service.ts]
+            S3[video-generation.service.ts]
+            S4[video-monitoring-hooks.service.ts]
+            S5[video-monitoring-integration.service.ts]
+            S6[podcast-generation.service.ts]
+            S7[portfolio-gallery.service.ts]
+            S8[video-providers/]
+            S9[media/]
+        end
+        
+        subgraph "Frontend Components [TO MIGRATE]"
+            C1[PodcastPlayer.tsx]
+            C2[AIPodcastPlayer.tsx]
+            C3[PodcastGeneration.tsx]
+            C4[VideoIntroduction.tsx]
+            C5[PortfolioGallery.tsx]
+            C6[Media/]
+            C7[MediaService.ts]
+        end
+    end
+
+    subgraph "packages/multimedia/ - TARGET STRUCTURE"
+        subgraph "Backend Functions [DESTINATION]"
+            subgraph "Generation"
+                TF1[generatePodcast.ts]
+                TF2[generateVideoIntroduction.ts]
+                TF3[mediaGeneration.ts]
+            end
+            
+            subgraph "Integrations"
+                TF4[heygen-webhook.ts]
+                TF5[runwayml-status-check.ts]
+            end
+            
+            subgraph "Gallery"
+                TF6[portfolioGallery.ts]
+            end
+        end
+        
+        subgraph "Backend Services [DESTINATION]"
+            subgraph "Generation Services"
+                TS1[media-generation.service.ts]
+            end
+            
+            subgraph "Video Services"
+                TS2[enhanced-video-generation.service.ts]
+                TS3[video-generation.service.ts]
+                TS4[video-monitoring-hooks.service.ts]
+                TS5[video-monitoring-integration.service.ts]
+            end
+            
+            subgraph "Audio Services"
+                TS6[podcast-generation.service.ts]
+            end
+            
+            subgraph "Gallery Services"
+                TS7[portfolio-gallery.service.ts]
+            end
+            
+            subgraph "Provider Services"
+                TS8[video-providers/]
+                TS9[media/]
+            end
+        end
+        
+        subgraph "Frontend Components [DESTINATION]"
+            subgraph "Players"
+                TC1[PodcastPlayer.tsx]
+                TC2[AIPodcastPlayer.tsx]
+            end
+            
+            subgraph "Generation UI"
+                TC3[PodcastGeneration.tsx]
+                TC4[VideoIntroduction.tsx]
+            end
+            
+            subgraph "Gallery UI"
+                TC5[PortfolioGallery.tsx]
+            end
+            
+            subgraph "Media Components"
+                TC6[Media/]
+            end
+            
+            subgraph "Frontend Services"
+                TC7[MediaService.ts]
+            end
+        end
+        
+        subgraph "Existing Multimedia Infrastructure"
+            EX1[src/processors/]
+            EX2[src/storage/]
+            EX3[src/types/]
+            EX4[src/utils/]
+            EX5[src/services/]
+        end
+    end
+
+    subgraph "Migration Process Flow"
+        subgraph "Phase 1: Analysis"
+            P1[Analyze Existing Structure]
+            P2[Identify Duplicates]
+            P3[Map Dependencies]
+            P4[Create Migration Plan]
+        end
+        
+        subgraph "Phase 2: Backend Functions"
+            P5[Migrate Generation Functions]
+            P6[Migrate Integration Functions]
+            P7[Migrate Gallery Functions]
+            P8[Update Function Exports]
+        end
+        
+        subgraph "Phase 3: Backend Services"
+            P9[Migrate Core Services]
+            P10[Consolidate Video Services]
+            P11[Migrate Audio Services]
+            P12[Migrate Gallery Services]
+        end
+        
+        subgraph "Phase 4: Frontend Components"
+            P13[Migrate Player Components]
+            P14[Migrate Generation UI]
+            P15[Migrate Gallery UI]
+            P16[Migrate Frontend Services]
+        end
+        
+        subgraph "Phase 5: Integration"
+            P17[Update Backend Imports]
+            P18[Update Frontend Imports]
+            P19[Update Configurations]
+            P20[Validate Compilation]
+        end
+        
+        subgraph "Phase 6: Validation"
+            P21[Test Functionality]
+            P22[Test Service Integrations]
+            P23[Test Performance]
+            P24[Deploy and Monitor]
+        end
+    end
+
+    subgraph "External Service Integrations"
+        EXT1[HeyGen API]
+        EXT2[RunwayML API]
+        EXT3[Firebase Storage]
+        EXT4[CDN Services]
+    end
+
+    subgraph "Dependent Modules"
+        DEP1[@cvplus/core]
+        DEP2[@cvplus/premium]
+        DEP3[@cvplus/cv-processing]
+        DEP4[@cvplus/auth]
+    end
+
+    subgraph "Risk Mitigation Strategies"
+        RISK1[Parallel Function Deployment]
+        RISK2[Comprehensive Testing]
+        RISK3[Service Health Monitoring]
+        RISK4[Rollback Procedures]
+    end
+
+    %% Migration Flow Arrows
+    F1 --> TF1
+    F2 --> TF2
+    F3 --> TF6
+    F4 --> TF3
+    F5 --> TF4
+    F6 --> TF5
+
+    S1 --> TS1
+    S2 --> TS2
+    S3 --> TS3
+    S4 --> TS4
+    S5 --> TS5
+    S6 --> TS6
+    S7 --> TS7
+    S8 --> TS8
+    S9 --> TS9
+
+    C1 --> TC1
+    C2 --> TC2
+    C3 --> TC3
+    C4 --> TC4
+    C5 --> TC5
+    C6 --> TC6
+    C7 --> TC7
+
+    %% Process Flow
+    P1 --> P2 --> P3 --> P4
+    P4 --> P5 --> P6 --> P7 --> P8
+    P8 --> P9 --> P10 --> P11 --> P12
+    P12 --> P13 --> P14 --> P15 --> P16
+    P16 --> P17 --> P18 --> P19 --> P20
+    P20 --> P21 --> P22 --> P23 --> P24
+
+    %% External Dependencies
+    TF4 -.-> EXT1
+    TF5 -.-> EXT2
+    TS1 -.-> EXT3
+    TS8 -.-> EXT4
+
+    %% Module Dependencies
+    TF1 -.-> DEP1
+    TS1 -.-> DEP2
+    TF2 -.-> DEP3
+    TF4 -.-> DEP4
+
+    %% Risk Mitigation
+    P5 -.-> RISK1
+    P21 -.-> RISK2
+    P24 -.-> RISK3
+    P24 -.-> RISK4
+
+    %% Styling
+    classDef migrationSource fill:#ffcccc,stroke:#ff0000,stroke-width:2px
+    classDef migrationTarget fill:#ccffcc,stroke:#00ff00,stroke-width:2px
+    classDef processPhase fill:#cceeff,stroke:#0066cc,stroke-width:2px
+    classDef externalService fill:#ffffcc,stroke:#ffcc00,stroke-width:2px
+    classDef dependency fill:#f0ccff,stroke:#cc00ff,stroke-width:2px
+    classDef riskMitigation fill:#ffeecc,stroke:#ff6600,stroke-width:2px
+
+    class F1,F2,F3,F4,F5,F6,S1,S2,S3,S4,S5,S6,S7,S8,S9,C1,C2,C3,C4,C5,C6,C7 migrationSource
+    class TF1,TF2,TF3,TF4,TF5,TF6,TS1,TS2,TS3,TS4,TS5,TS6,TS7,TS8,TS9,TC1,TC2,TC3,TC4,TC5,TC6,TC7 migrationTarget
+    class P1,P2,P3,P4,P5,P6,P7,P8,P9,P10,P11,P12,P13,P14,P15,P16,P17,P18,P19,P20,P21,P22,P23,P24 processPhase
+    class EXT1,EXT2,EXT3,EXT4 externalService
+    class DEP1,DEP2,DEP3,DEP4 dependency
+    class RISK1,RISK2,RISK3,RISK4 riskMitigation

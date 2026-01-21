@@ -1,0 +1,68 @@
+{
+  "timestamp": "2025-08-12T15:57:07.588Z",
+  "testSubject": "LLM Verification System - Gil Klainert CV",
+  "environment": "development",
+  "totalTests": 5,
+  "passed": 1,
+  "failed": 4,
+  "successRate": 20,
+  "executionTimeMs": 1672,
+  "featureStatus": {
+    "Basic Verification System": false,
+    "Verified Claude Service": false,
+    "Verified CV Parsing": false,
+    "Health Monitoring": false,
+    "Retry Logic": true,
+    "API Integration": "configured"
+  },
+  "allTests": [
+    {
+      "testName": "Basic LLM Verification",
+      "passed": false,
+      "details": "Low confidence score: 0",
+      "metrics": {
+        "executionTimeMs": 725,
+        "isValid": false,
+        "confidence": 0,
+        "qualityScore": 0,
+        "retryCount": 0
+      }
+    },
+    {
+      "testName": "Verified Claude Service",
+      "passed": false,
+      "details": "Error: Both verification and fallback failed: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"timeout: Extra inputs are not permitted\"}}"
+    },
+    {
+      "testName": "Verified CV Parsing",
+      "passed": false,
+      "details": "Error: Both verification and fallback failed: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"timeout: Extra inputs are not permitted\"}}"
+    },
+    {
+      "testName": "Health Checks",
+      "passed": false,
+      "details": "Some services unhealthy - Parser: unhealthy, Claude: unhealthy",
+      "metrics": {
+        "executionTimeMs": 194,
+        "parserStatus": "unhealthy",
+        "claudeStatus": "unhealthy",
+        "bothHealthy": false
+      }
+    },
+    {
+      "testName": "Verification Retry Logic",
+      "passed": true,
+      "details": "Retry logic working - attempted 0 retries",
+      "metrics": {
+        "executionTimeMs": 84,
+        "retriesAttempted": 0,
+        "finalIsValid": false,
+        "finalConfidence": 0,
+        "finalQualityScore": 0,
+        "issuesFound": 1,
+        "suggestionsProvided": 1
+      }
+    }
+  ],
+  "conclusion": "NEEDS_ATTENTION"
+}

@@ -1,0 +1,45 @@
+graph TD
+    A[Deployment Orchestrator] --> B[Pre-Deployment Validator]
+    A --> C[Deployment Engine]
+    A --> D[Error Handler]
+    A --> E[Health Checker]
+    A --> F[Reporter]
+    
+    B --> B1[Environment Validation]
+    B --> B2[Code Quality Check]
+    B --> B3[Quota Analysis]
+    B --> B4[Security Validation]
+    
+    C --> C1[Build Phase]
+    C --> C2[Deploy Functions]
+    C --> C3[Deploy Frontend]
+    C --> C4[Deploy Rules]
+    
+    C1 --> C11[Frontend Build]
+    C1 --> C12[Functions Build]
+    
+    C2 --> C21[Batch Processing]
+    C2 --> C22[Quota Management]
+    C2 --> C23[Priority Deployment]
+    
+    D --> D1[Error Detection]
+    D --> D2[Recovery Strategy]
+    D --> D3[Retry Logic]
+    D --> D4[Rollback Mechanism]
+    
+    E --> E1[Endpoint Testing]
+    E --> E2[Performance Check]
+    E --> E3[Connectivity Test]
+    E --> E4[Critical Path Validation]
+    
+    F --> F1[Progress Tracking]
+    F --> F2[Metrics Collection]
+    F --> F3[Summary Report]
+    F --> F4[Performance Analysis]
+    
+    G[Quota Manager] --> C2
+    G --> B3
+    H[Configuration Manager] --> A
+    H --> B
+    H --> C
+    H --> D

@@ -1,0 +1,84 @@
+```mermaid
+graph TB
+    subgraph "CVPlus Documentation Ecosystem"
+        subgraph "Core Documentation"
+            UM[User Manual<br/>✅ Comprehensive]
+            README[Project README<br/>✅ Well-structured]
+            ARCH[Architecture Docs<br/>✅ Excellent]
+        end
+
+        subgraph "Technical Documentation"
+            API[API Documentation<br/>🔄 Needs OpenAPI]
+            CODE[Code Comments<br/>✅ 2499+ occurrences]
+            DEPLOY[Deployment Guides<br/>✅ Exceptional]
+            SEC[Security Docs<br/>✅ Outstanding]
+        end
+
+        subgraph "Developer Resources"
+            ONBOARD[Developer Onboarding<br/>✅ Good foundation]
+            CONTRIB[Contribution Guidelines<br/>🔄 Needs enhancement]
+            DEBUG[Debug Guides<br/>✅ Comprehensive]
+            TEST[Testing Docs<br/>✅ Complete]
+        end
+
+        subgraph "Visual Documentation"
+            DIAGRAMS[Mermaid Diagrams<br/>✅ 90+ diagrams]
+            FLOWS[User Flows<br/>✅ Well documented]
+            WIREFRAMES[UI Mockups<br/>✅ Available]
+        end
+
+        subgraph "Process Documentation"
+            PLANS[Project Plans<br/>✅ 45+ files]
+            REPORTS[Status Reports<br/>✅ Comprehensive]
+            FIXES[Bug Fixes<br/>✅ Well tracked]
+            REFACTOR[Refactoring Docs<br/>✅ Detailed]
+        end
+
+        subgraph "Specialized Documentation"
+            AI[AI Integration<br/>✅ Excellent coverage]
+            FIREBASE[Firebase Functions<br/>✅ 340+ files]
+            MEDIA[Multimedia Processing<br/>✅ Well documented]
+            PORTAL[Portal Features<br/>✅ Complete]
+        end
+    end
+
+    subgraph "Documentation Tools & Process"
+        MARKDOWN[Markdown Files<br/>347+ files]
+        MERMAID[Mermaid.js<br/>Visual diagrams]
+        JSDOC[JSDoc Comments<br/>Code documentation]
+        GIT[Git-based<br/>Version control]
+    end
+
+    subgraph "Documentation Quality Metrics"
+        STRUCTURE["Structure & Organization<br/>A+ (95/100)"]
+        TECHNICAL["Technical Quality<br/>A (90/100)"]
+        USER_DOC["User Documentation<br/>B+ (80/100)"]
+        API_DOC["API Documentation<br/>B+ (75/100)"]
+    end
+
+    subgraph "Improvement Areas"
+        OPENAPI[OpenAPI Specification<br/>🔄 High Priority]
+        MOBILE[Mobile Documentation<br/>🔄 Medium Priority]
+        AUTOMATION[Doc Automation<br/>🔄 Long-term]
+        ANALYTICS[Usage Analytics<br/>🔄 Future Enhancement]
+    end
+
+    %% Connections
+    ARCH --> DIAGRAMS
+    CODE --> JSDOC
+    DEPLOY --> FIREBASE
+    SEC --> API
+    ONBOARD --> CONTRIB
+    
+    %% Style definitions
+    classDef excellent fill:#4ade80,stroke:#16a34a,stroke-width:2px,color:#000
+    classDef good fill:#60a5fa,stroke:#2563eb,stroke-width:2px,color:#000
+    classDef needsWork fill:#fbbf24,stroke:#d97706,stroke-width:2px,color:#000
+    classDef priority fill:#f87171,stroke:#dc2626,stroke-width:2px,color:#000
+
+    %% Apply styles
+    class UM,README,ARCH,CODE,DEPLOY,SEC,DIAGRAMS,FLOWS,AI,FIREBASE excellent
+    class ONBOARD,DEBUG,TEST,PLANS,REPORTS,FIXES,REFACTOR,MEDIA,PORTAL good
+    class API,CONTRIB,WIREFRAMES needsWork
+    class OPENAPI,MOBILE,AUTOMATION,ANALYTICS priority
+```
