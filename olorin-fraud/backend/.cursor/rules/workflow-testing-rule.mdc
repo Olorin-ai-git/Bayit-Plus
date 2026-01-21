@@ -1,6 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: true
----
-run @test_investigation_workflow.py as a regular script, not with pytest. when running [test_investigation_workflow.py](mdc:tests/test_investigation_workflow.py), the generated pdf should contain non zero domain risk analysis results. also the overall risk score should be non zero and LLM thoughts should be present for all domains and risk assessment agent. if that is not the case, look into the reasons why. splunk results should be a non empty array, there should be results for all domains. llm response must have thoughts and a non zero score. keep fixing and iterating until that is achieved. do not change production code. change the  [test_investigation_workflow.py](mdc:tests/test_investigation_workflow.py) as needed.

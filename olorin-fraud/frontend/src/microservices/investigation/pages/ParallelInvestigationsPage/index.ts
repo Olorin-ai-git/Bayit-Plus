@@ -1,1 +1,0 @@
-export { ParallelInvestigationsPage } from './ParallelInvestigationsPage';

@@ -1,5 +1,0 @@
-question,user_provided_answer,tool
-"How can you check and update the company address in QuickBooks?","1. Go to 'Settings' ‚öô, then select 'Account and Settings.' 2. Update company address if it's not correct, then 'Save.'","qbo_knowledgebase_retriever"
-"List all my customers", "It seems there was an error retrieving the list of customers from QuickBooks Online.","list_customers"
-"Summarize my business profile", "It seems there was an error retrieving the data from your business profile.","cdc_company_attribute_retriever"
-"How do I get it?", "Can you please specify what you are trying to find?","no_tool"
