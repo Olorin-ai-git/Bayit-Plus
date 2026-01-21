@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
   BackHandler,
@@ -343,19 +342,19 @@ export const PlayerScreen: React.FC = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 bg-black justify-center items-center">
         <ActivityIndicator size="large" color="#a855f7" />
-        <Text style={styles.loadingText}>{t('player.loading')}</Text>
+        <Text className="text-white text-lg mt-4">{t('player.loading')}</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity style={styles.retryButton} onPress={loadStream}>
-          <Text style={styles.retryText}>{t('player.retry')}</Text>
+      <View className="flex-1 bg-black justify-center items-center">
+        <Text className="text-red-500 text-xl mb-5">{error}</Text>
+        <TouchableOpacity className="bg-purple-500 px-8 py-4 rounded-lg" onPress={loadStream}>
+          <Text className="text-black text-lg font-bold">{t('player.retry')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -404,13 +403,13 @@ export const PlayerScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-black">
       {streamUrl && Platform.OS === 'web' && <WebVideoPlayer />}
       {streamUrl && Platform.OS !== 'web' && Video && (
         <Video
           ref={videoRef}
           source={{ uri: streamUrl }}
-          style={styles.video}
+          className="flex-1"
           resizeMode="contain"
           paused={isPaused}
           onProgress={handleProgress}
@@ -422,32 +421,32 @@ export const PlayerScreen: React.FC = () => {
 
       {/* Overlay Controls */}
       {showControls && (
-        <View style={styles.overlay}>
+        <View className="absolute inset-0 bg-black/50 justify-between">
           {/* Top Bar */}
-          <View style={styles.topBar}>
+          <View className="flex-row items-center p-6">
             <TouchableOpacity
-              style={styles.backButton}
+              className="p-3 rounded-lg bg-white/10"
               onPress={() => navigation.goBack()}
             >
-              <Text style={styles.backButtonText}>{t('player.back')}</Text>
+              <Text className="text-white text-lg">{t('player.back')}</Text>
             </TouchableOpacity>
-            <Text style={styles.title}>{title}</Text>
-            <View style={styles.topBarActions}>
+            <Text className="text-white text-2xl font-bold ml-5">{title}</Text>
+            <View className="flex-row items-center ml-auto gap-3">
               {/* Settings Button */}
               <TouchableOpacity
-                style={styles.settingsButton}
+                className="w-11 h-11 rounded-full bg-white/10 justify-center items-center"
                 onPress={() => setShowSettingsMenu(!showSettingsMenu)}
               >
-                <Text style={styles.settingsButtonIcon}>⚙️</Text>
+                <Text className="text-[22px]">&#x2699;&#xFE0F;</Text>
               </TouchableOpacity>
               {/* Chapters Button */}
               {chapters.length > 0 && (
                 <TouchableOpacity
-                  style={styles.chaptersButton}
+                  className="flex-row items-center px-4 py-2.5 rounded-lg bg-white/10 gap-2"
                   onPress={() => setShowChaptersOverlay(!showChaptersOverlay)}
                 >
-                  <Text style={styles.chaptersButtonIcon}>📑</Text>
-                  <Text style={styles.chaptersButtonText}>{t('chapters.title')}</Text>
+                  <Text className="text-base">&#x1F4D1;</Text>
+                  <Text className="text-white text-sm font-medium">{t('chapters.title')}</Text>
                 </TouchableOpacity>
               )}
               {/* Watch Party Button */}
@@ -464,35 +463,36 @@ export const PlayerScreen: React.FC = () => {
 
           {/* Center Play/Pause */}
           <TouchableOpacity
-            style={styles.centerControl}
+            className="self-center w-[100px] h-[100px] rounded-full bg-purple-500/80 justify-center items-center"
             onPress={togglePlayPause}
           >
-            <Text style={styles.playPauseIcon}>
-              {isPaused ? '▶' : '⏸'}
+            <Text className="text-5xl text-black">
+              {isPaused ? '\u25B6' : '\u23F8'}
             </Text>
           </TouchableOpacity>
 
           {/* Bottom Bar with Progress */}
           {type !== 'live' && (
-            <View style={styles.bottomBar}>
-              <Text style={styles.timeText}>
+            <View className="flex-row items-center p-6 pb-10">
+              <Text className="text-white text-base min-w-[60px]">
                 {formatTime(progress.currentTime)}
               </Text>
-              <View style={styles.progressBar}>
+              <View className="flex-1 h-1.5 bg-white/30 rounded-sm mx-4 overflow-hidden">
                 <View
-                  style={[styles.progressFill, { width: `${progressPercentage}%` }]}
+                  className="h-full bg-purple-500 rounded-sm"
+                  style={{ width: `${progressPercentage}%` }}
                 />
               </View>
-              <Text style={styles.timeText}>
+              <Text className="text-white text-base min-w-[60px]">
                 {formatTime(progress.duration)}
               </Text>
             </View>
           )}
 
           {type === 'live' && (
-            <View style={styles.liveIndicator}>
-              <View style={styles.liveDot} />
-              <Text style={styles.liveText}>{t('player.liveBadge')}</Text>
+            <View className="flex-row items-center self-center mb-10 bg-red-500/80 px-4 py-2 rounded-lg">
+              <View className="w-2.5 h-2.5 rounded-full bg-white mr-2" />
+              <Text className="text-white text-base font-bold">{t('player.liveBadge')}</Text>
             </View>
           )}
         </View>
@@ -526,52 +526,52 @@ export const PlayerScreen: React.FC = () => {
 
       {/* Settings Menu */}
       {showSettingsMenu && (
-        <View style={styles.settingsMenu}>
+        <View className="absolute top-20 right-6 bg-[rgba(20,20,20,0.95)] rounded-xl border-2 border-purple-500/30 py-2 min-w-[200px] backdrop-blur-xl">
           <TouchableOpacity
-            style={styles.settingsMenuItem}
+            className="flex-row items-center px-4 py-3 gap-3"
             onPress={() => {
               setShowQualitySelector(true);
               setShowSettingsMenu(false);
             }}
           >
-            <Text style={styles.settingsMenuIcon}>🎬</Text>
-            <Text style={styles.settingsMenuText}>{t('player.quality', 'Video Quality')}</Text>
+            <Text className="text-xl">&#x1F3AC;</Text>
+            <Text className="text-white text-base font-medium">{t('player.quality', 'Video Quality')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.settingsMenuItem}
+            className="flex-row items-center px-4 py-3 gap-3"
             onPress={() => {
               setShowSubtitleSettings(true);
               setShowSettingsMenu(false);
             }}
           >
-            <Text style={styles.settingsMenuIcon}>💬</Text>
-            <Text style={styles.settingsMenuText}>{t('player.subtitles', 'Subtitles')}</Text>
+            <Text className="text-xl">&#x1F4AC;</Text>
+            <Text className="text-white text-base font-medium">{t('player.subtitles', 'Subtitles')}</Text>
           </TouchableOpacity>
 
           {audioTracks.length > 0 && (
             <TouchableOpacity
-              style={styles.settingsMenuItem}
+              className="flex-row items-center px-4 py-3 gap-3"
               onPress={() => {
                 setShowAudioTrackSelector(true);
                 setShowSettingsMenu(false);
               }}
             >
-              <Text style={styles.settingsMenuIcon}>🔊</Text>
-              <Text style={styles.settingsMenuText}>{t('player.audio', 'Audio Track')}</Text>
+              <Text className="text-xl">&#x1F50A;</Text>
+              <Text className="text-white text-base font-medium">{t('player.audio', 'Audio Track')}</Text>
             </TouchableOpacity>
           )}
 
           {isPlaybackSpeedSupported() && (
             <TouchableOpacity
-              style={styles.settingsMenuItem}
+              className="flex-row items-center px-4 py-3 gap-3"
               onPress={() => {
                 setShowPlaybackSpeedControl(true);
                 setShowSettingsMenu(false);
               }}
             >
-              <Text style={styles.settingsMenuIcon}>⏩</Text>
-              <Text style={styles.settingsMenuText}>{t('player.speed', 'Playback Speed')}</Text>
+              <Text className="text-xl">&#x23E9;</Text>
+              <Text className="text-white text-base font-medium">{t('player.speed', 'Playback Speed')}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -623,205 +623,10 @@ export const PlayerScreen: React.FC = () => {
 
       {/* Party Active Indicator */}
       {party && (
-        <View style={styles.partyIndicator} pointerEvents="none" />
+        <View className="absolute inset-0 border-2 border-emerald-500/50 rounded-lg pointer-events-none" />
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000000',
-  },
-  video: {
-    flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: '#000000',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: '#ffffff',
-    fontSize: 18,
-    marginTop: 16,
-  },
-  errorContainer: {
-    flex: 1,
-    backgroundColor: '#000000',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorText: {
-    color: '#ff4444',
-    fontSize: 20,
-    marginBottom: 20,
-  },
-  retryButton: {
-    backgroundColor: '#a855f7',
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    borderRadius: 8,
-  },
-  retryText: {
-    color: '#000000',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'space-between',
-  },
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 24,
-  },
-  backButton: {
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  backButtonText: {
-    color: '#ffffff',
-    fontSize: 18,
-  },
-  title: {
-    color: '#ffffff',
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginLeft: 20,
-  },
-  centerControl: {
-    alignSelf: 'center',
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(168, 85, 247, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playPauseIcon: {
-    fontSize: 48,
-    color: '#000000',
-  },
-  bottomBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 24,
-    paddingBottom: 40,
-  },
-  timeText: {
-    color: '#ffffff',
-    fontSize: 16,
-    minWidth: 60,
-  },
-  progressBar: {
-    flex: 1,
-    height: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: 3,
-    marginHorizontal: 16,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#a855f7',
-    borderRadius: 3,
-  },
-  liveIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'center',
-    marginBottom: 40,
-    backgroundColor: 'rgba(255, 0, 0, 0.8)',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  liveDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#ffffff',
-    marginRight: 8,
-  },
-  liveText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  topBarActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 'auto',
-    gap: 12,
-  },
-  settingsButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  settingsButtonIcon: {
-    fontSize: 22,
-  },
-  settingsMenu: {
-    position: 'absolute',
-    top: 80,
-    right: 24,
-    backgroundColor: 'rgba(20, 20, 20, 0.95)',
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: 'rgba(168, 85, 247, 0.3)',
-    paddingVertical: 8,
-    minWidth: 200,
-    // @ts-ignore - Web CSS property
-    backdropFilter: 'blur(20px)',
-  },
-  settingsMenuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 12,
-  },
-  settingsMenuIcon: {
-    fontSize: 20,
-  },
-  settingsMenuText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  chaptersButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    gap: 8,
-  },
-  chaptersButtonIcon: {
-    fontSize: 16,
-  },
-  chaptersButtonText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  partyIndicator: {
-    ...StyleSheet.absoluteFillObject,
-    borderWidth: 2,
-    borderColor: 'rgba(16, 185, 129, 0.5)',
-    borderRadius: 8,
-  },
-});
 
 export default PlayerScreen;

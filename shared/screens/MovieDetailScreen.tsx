@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
@@ -15,7 +14,7 @@ import {
   RecommendationsCarousel,
 } from '../components/content';
 import { contentService } from '../services/api';
-import { colors, spacing, fontSize } from '../theme';
+import { colors } from '../theme';
 import { isTV } from '../utils/platform';
 
 type MovieDetailRouteParams = {
@@ -125,7 +124,7 @@ export default function MovieDetailScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center bg-[#0d0d1a]">
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
@@ -133,14 +132,16 @@ export default function MovieDetailScreen() {
 
   if (!movie) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{t('content.notFound')}</Text>
+      <View className="flex-1 justify-center items-center bg-[#0d0d1a]">
+        <Text className={`${isTV ? 'text-lg' : 'text-base'} text-gray-400`}>
+          {t('content.notFound')}
+        </Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView className="flex-1 bg-[#0d0d1a]" showsVerticalScrollIndicator={false}>
       <PreviewHero
         title={movie.title}
         description={movie.description}
@@ -159,7 +160,7 @@ export default function MovieDetailScreen() {
         onPlay={handlePlay}
       />
 
-      <View style={styles.content}>
+      <View className={isTV ? 'p-6' : 'p-4'}>
         {/* IMDB Facts Card */}
         {(movie.imdb_rating || movie.director || movie.cast) && (
           <IMDBFactsCard
@@ -176,9 +177,16 @@ export default function MovieDetailScreen() {
 
         {/* Synopsis */}
         {movie.description && (
-          <View style={styles.synopsisSection}>
-            <Text style={styles.sectionTitle}>{t('content.synopsis')}</Text>
-            <Text style={styles.synopsisText}>{movie.description}</Text>
+          <View className="mt-4">
+            <Text className={`${isTV ? 'text-xl' : 'text-lg'} font-semibold text-white mb-3`}>
+              {t('content.synopsis')}
+            </Text>
+            <Text
+              className={`${isTV ? 'text-base' : 'text-sm'} text-gray-400`}
+              style={{ lineHeight: isTV ? 28 : 22 }}
+            >
+              {movie.description}
+            </Text>
           </View>
         )}
 
@@ -189,11 +197,19 @@ export default function MovieDetailScreen() {
 
         {/* Crew Section */}
         {movie.director && (
-          <View style={styles.crewSection}>
-            <Text style={styles.sectionTitle}>{t('content.crew', 'Crew')}</Text>
-            <View style={styles.crewItem}>
-              <Text style={styles.crewRole}>{t('content.director', 'Director')}</Text>
-              <Text style={styles.crewName}>{movie.director}</Text>
+          <View className={`mt-4 ${isTV ? 'px-6' : 'px-4'}`}>
+            <Text className={`${isTV ? 'text-xl' : 'text-lg'} font-semibold text-white mb-3`}>
+              {t('content.crew', 'Crew')}
+            </Text>
+            <View className="mb-2">
+              <Text
+                className={`${isTV ? 'text-sm' : 'text-xs'} text-gray-500 uppercase font-semibold mb-1`}
+              >
+                {t('content.director', 'Director')}
+              </Text>
+              <Text className={`${isTV ? 'text-base' : 'text-sm'} text-white font-medium`}>
+                {movie.director}
+              </Text>
             </View>
           </View>
         )}
@@ -209,62 +225,3 @@ export default function MovieDetailScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-  },
-  errorText: {
-    fontSize: fontSize.lg,
-    color: colors.textSecondary,
-  },
-  content: {
-    padding: isTV ? spacing.xl : spacing.lg,
-  },
-  synopsisSection: {
-    marginTop: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: isTV ? fontSize.xl : fontSize.lg,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  synopsisText: {
-    fontSize: isTV ? fontSize.md : fontSize.sm,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 28 : 22,
-  },
-  crewSection: {
-    marginTop: spacing.lg,
-    paddingHorizontal: isTV ? spacing.xl : spacing.lg,
-  },
-  crewItem: {
-    marginBottom: spacing.sm,
-  },
-  crewRole: {
-    fontSize: isTV ? fontSize.sm : fontSize.xs,
-    color: colors.textMuted,
-    textTransform: 'uppercase',
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  crewName: {
-    fontSize: isTV ? fontSize.md : fontSize.sm,
-    color: colors.text,
-    fontWeight: '500',
-  },
-});

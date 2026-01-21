@@ -165,6 +165,11 @@ async def get_passkey_session(request: Request) -> Optional[PasskeySession]:
     return session
 
 
+# Alias for semantic clarity in proxy endpoints
+# Indicates that this dependency verifies OAuth token credentials
+verify_oauth_token = get_current_user
+
+
 async def has_passkey_access(request: Request) -> bool:
     """
     Check if the request has a valid passkey session.

@@ -66,6 +66,20 @@ export interface AnalyticsResponse {
   message?: string;
 }
 
+export interface VoiceCommandRequest {
+  transcription: string;
+  confidence: number;
+  language: string;
+}
+
+export interface VoiceCommandResponse {
+  success: boolean;
+  commandType: string;
+  action?: string;
+  responseText: string;
+  context?: Record<string, any>;
+}
+
 class BackendProxyService {
   private baseUrl: string;
   private apiBaseUrl: string;
@@ -339,6 +353,94 @@ class BackendProxyService {
       return await response.json();
     } catch (error) {
       console.error('[BackendProxyService] Analytics health check error:', error);
+      throw error;
+    }
+  }
+
+  // ============================================
+  // Voice Command Processing
+  // ============================================
+
+  /**
+   * Process voice command (transcription → action)
+   * Sends user's spoken command to backend for processing
+   * @param request - Voice command with transcription
+   * @returns Voice command response with action and text response
+   */
+  async processVoiceCommand(request: VoiceCommandRequest): Promise<VoiceCommandResponse> {
+    try {
+      const headers = await this.getHeaders();
+      const response = await fetch(`${this.baseUrl}/voice/command`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          transcription: request.transcription,
+          confidence: request.confidence,
+          language: request.language,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Voice command processing failed: ${response.status} - ${errorText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('[BackendProxyService] Voice command processing error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get voice command suggestions for partial transcription
+   * Helps predict what user is trying to say
+   * @param partialTranscription - Incomplete user speech
+   * @param language - Language code
+   * @returns List of suggested commands
+   */
+  async getVoiceCommandSuggestions(
+    partialTranscription: string,
+    language: string = 'en'
+  ): Promise<{ suggestions: string[] }> {
+    try {
+      const headers = await this.getHeaders();
+      const response = await fetch(`${this.baseUrl}/voice/suggestions`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          partial: partialTranscription,
+          language,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to get voice command suggestions: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('[BackendProxyService] Failed to get voice suggestions:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Check voice service health
+   */
+  async checkVoiceHealth(): Promise<{ status: string; service: string; features: string[] }> {
+    try {
+      const response = await fetch(`${this.baseUrl}/voice/health`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Voice health check failed: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('[BackendProxyService] Voice health check error:', error);
       throw error;
     }
   }

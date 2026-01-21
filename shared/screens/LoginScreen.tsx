@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -17,7 +16,7 @@ import { useDirection } from '../hooks/useDirection';
 
 export const LoginScreen: React.FC = () => {
   const { t } = useTranslation();
-  const { isRTL, textAlign, flexDirection } = useDirection();
+  const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const { login, isLoading, error, clearError } = useAuthStore();
 
@@ -42,30 +41,34 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-[#0d0d1a]">
       {/* Background Gradient Effect */}
-      <View style={styles.backgroundGradient} pointerEvents="none" />
+      <View
+        className="absolute -top-[200px] -right-[200px] w-[600px] h-[600px] rounded-full bg-purple-600/30"
+        pointerEvents="none"
+      />
 
-      <View style={[styles.content, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <View className={`flex-1 items-center justify-center px-[100px] ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
         {/* Logo */}
-        <View style={styles.logoContainer}>
+        <View className="flex-1 items-center justify-center">
           <AnimatedLogo size="large" />
-          <Text style={styles.tagline}>{t('login.tagline')}</Text>
+          <Text className="text-[28px] text-gray-400 mt-8">{t('login.tagline')}</Text>
         </View>
 
         {/* Login Form */}
-        <GlassView intensity="high" style={styles.form}>
-          <Text style={[styles.title, { textAlign }]}>{t('login.title')}</Text>
+        <GlassView intensity="high" className="flex-1 max-w-[500px] p-10">
+          <Text className={`text-4xl font-bold text-white mb-8 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
+            {t('login.title')}
+          </Text>
 
           {/* Email Input */}
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, { textAlign }]}>{t('login.email')}</Text>
+          <View className="mb-6">
+            <Text className={`text-base text-gray-400 mb-2 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
+              {t('login.email')}
+            </Text>
             <TextInput
               ref={emailRef}
-              style={[
-                styles.input,
-                focusedField === 'email' && styles.inputFocused,
-              ]}
+              className={`bg-[#0d0d1a] border-2 ${focusedField === 'email' ? 'border-purple-500' : 'border-gray-700'} rounded-xl p-4 text-lg text-white text-left`}
               value={email}
               onChangeText={setEmail}
               placeholder={t('placeholder.email', 'your@email.com')}
@@ -80,14 +83,13 @@ export const LoginScreen: React.FC = () => {
           </View>
 
           {/* Password Input */}
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, { textAlign }]}>{t('login.password')}</Text>
+          <View className="mb-6">
+            <Text className={`text-base text-gray-400 mb-2 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
+              {t('login.password')}
+            </Text>
             <TextInput
               ref={passwordRef}
-              style={[
-                styles.input,
-                focusedField === 'password' && styles.inputFocused,
-              ]}
+              className={`bg-[#0d0d1a] border-2 ${focusedField === 'password' ? 'border-purple-500' : 'border-gray-700'} rounded-xl p-4 text-lg text-white text-left`}
               value={password}
               onChangeText={setPassword}
               placeholder={t('placeholder.password', '••••••••')}
@@ -102,41 +104,41 @@ export const LoginScreen: React.FC = () => {
 
           {/* Error Message */}
           {error && (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>{error}</Text>
+            <View className="bg-red-500/10 p-3 rounded-lg mb-4">
+              <Text className="text-red-500 text-sm text-center">{error}</Text>
             </View>
           )}
 
           {/* Login Button */}
           <TouchableOpacity
-            style={[styles.button, isLoading && styles.buttonDisabled]}
+            className={`bg-purple-500 p-[18px] rounded-xl items-center ${isLoading ? 'opacity-60' : ''}`}
             onPress={handleLogin}
             disabled={isLoading}
           >
             {isLoading ? (
               <ActivityIndicator color="#000000" />
             ) : (
-              <Text style={styles.buttonText}>{t('login.submit')}</Text>
+              <Text className="text-[#0d0d1a] text-xl font-bold">{t('login.submit')}</Text>
             )}
           </TouchableOpacity>
 
           {/* QR Code Login Option */}
-          <View style={styles.qrSection}>
-            <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>{t('login.or')}</Text>
-              <View style={styles.dividerLine} />
+          <View className="mt-8 items-center">
+            <View className="flex-row items-center mb-6">
+              <View className="flex-1 h-px bg-gray-700" />
+              <Text className="text-gray-500 px-4 text-sm">{t('login.or')}</Text>
+              <View className="flex-1 h-px bg-gray-700" />
             </View>
 
-            <Text style={styles.qrInstructions}>
+            <Text className="text-gray-400 text-sm mb-4 text-center">
               {t('login.qrInstructions')}
             </Text>
 
-            <View style={styles.qrPlaceholder}>
-              <Text style={styles.qrPlaceholderText}>QR</Text>
+            <View className="w-[120px] h-[120px] bg-white rounded-xl justify-center items-center mb-3">
+              <Text className="text-2xl font-bold text-[#0d0d1a]">QR</Text>
             </View>
 
-            <Text style={styles.qrUrl}>
+            <Text className="text-purple-500 text-sm">
               bayit.tv/tv-login
             </Text>
           </View>
@@ -145,137 +147,5 @@ export const LoginScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  backgroundGradient: {
-    position: 'absolute',
-    top: -200,
-    right: -200,
-    width: 600,
-    height: 600,
-    borderRadius: 300,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-  },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 100,
-  },
-  logoContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tagline: {
-    fontSize: 28,
-    color: colors.textSecondary,
-    marginTop: 32,
-  },
-  form: {
-    flex: 1,
-    maxWidth: 500,
-    padding: 40,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: 32,
-  },
-  inputContainer: {
-    marginBottom: 24,
-  },
-  label: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: colors.background,
-    borderWidth: 2,
-    borderColor: colors.backgroundLighter,
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 18,
-    color: colors.text,
-    textAlign: 'left',
-  },
-  inputFocused: {
-    borderColor: colors.primary,
-  },
-  errorContainer: {
-    backgroundColor: 'rgba(255, 68, 68, 0.1)',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  errorText: {
-    color: colors.error,
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  button: {
-    backgroundColor: colors.primary,
-    padding: 18,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: colors.background,
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  qrSection: {
-    marginTop: 32,
-    alignItems: 'center',
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.backgroundLighter,
-  },
-  dividerText: {
-    color: colors.textMuted,
-    paddingHorizontal: 16,
-    fontSize: 14,
-  },
-  qrInstructions: {
-    color: colors.textSecondary,
-    fontSize: 14,
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  qrPlaceholder: {
-    width: 120,
-    height: 120,
-    backgroundColor: colors.text,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  qrPlaceholderText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.background,
-  },
-  qrUrl: {
-    color: colors.primary,
-    fontSize: 14,
-  },
-});
 
 export default LoginScreen;

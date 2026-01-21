@@ -31,12 +31,12 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
     alias: {
-      // @olorin packages from packages/ui directory
-      '@olorin/design-tokens': path.resolve(packagesPath, 'design-tokens/src'),
-      '@olorin/shared-hooks': path.resolve(packagesPath, 'shared-hooks/src'),
-      '@olorin/shared-i18n': path.resolve(packagesPath, 'shared-i18n/src'),
-      '@olorin/shared-services': path.resolve(packagesPath, 'shared-services/src'),
-      '@olorin/shared-stores': path.resolve(packagesPath, 'shared-stores/src'),
+      // @olorin packages from packages/ui directory (no /src - files are in root)
+      '@olorin/design-tokens': path.resolve(packagesPath, 'design-tokens'),
+      '@olorin/shared-hooks': path.resolve(packagesPath, 'shared-hooks'),
+      '@olorin/shared-i18n': path.resolve(packagesPath, 'shared-i18n'),
+      '@olorin/shared-services': path.resolve(packagesPath, 'shared-services'),
+      '@olorin/shared-stores': path.resolve(packagesPath, 'shared-stores'),
       // Local aliases
       '@': path.resolve(__dirname, 'src'),
     },

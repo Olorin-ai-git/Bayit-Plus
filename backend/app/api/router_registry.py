@@ -54,7 +54,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 websocket_chess, websocket_dm,
                                 websocket_live_subtitles, widgets, youngsters,
                                 zman)
-    from app.api.endpoints import tts_router, wake_word_router, analytics_router
+    from app.api.endpoints import tts_router, wake_word_router, analytics_router, voice_router
     from app.api.routes.admin.recordings import \
         router as admin_recordings_router
     from app.api.routes.olorin import legacy_router as olorin_legacy_router
@@ -72,6 +72,7 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(tts_router, tags=["tts-proxy"])
     app.include_router(wake_word_router, tags=["wake-word-proxy"])
     app.include_router(analytics_router, tags=["analytics-proxy"])
+    app.include_router(voice_router, tags=["voice-proxy"])
     logger.debug("Registered proxy service endpoints")
 
     # ============================================

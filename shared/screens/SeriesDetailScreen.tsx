@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
@@ -17,7 +16,7 @@ import {
   RecommendationsCarousel,
 } from '../components/content';
 import { contentService } from '../services/api';
-import { colors, spacing, fontSize } from '../theme';
+import { colors } from '../theme';
 import { isTV } from '../utils/platform';
 
 type SeriesDetailRouteParams = {
@@ -175,7 +174,7 @@ export default function SeriesDetailScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center bg-[#0d0d1a]">
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
@@ -183,8 +182,10 @@ export default function SeriesDetailScreen() {
 
   if (!series) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{t('content.notFound')}</Text>
+      <View className="flex-1 justify-center items-center bg-[#0d0d1a]">
+        <Text className={`${isTV ? 'text-lg' : 'text-base'} text-gray-400`}>
+          {t('content.notFound')}
+        </Text>
       </View>
     );
   }
@@ -205,7 +206,7 @@ export default function SeriesDetailScreen() {
   }));
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView className="flex-1 bg-[#0d0d1a]" showsVerticalScrollIndicator={false}>
       <PreviewHero
         title={series.title}
         description={series.description}
@@ -229,12 +230,19 @@ export default function SeriesDetailScreen() {
         />
       </PreviewHero>
 
-      <View style={styles.content}>
+      <View className={isTV ? 'p-6' : 'p-4'}>
         {/* Synopsis */}
         {series.description && (
-          <View style={styles.synopsisSection}>
-            <Text style={styles.sectionTitle}>{t('content.synopsis')}</Text>
-            <Text style={styles.synopsisText}>{series.description}</Text>
+          <View className={isTV ? 'mb-6' : 'mb-4'}>
+            <Text className={`${isTV ? 'text-[28px]' : 'text-xl'} font-semibold text-white ${isTV ? 'mb-3' : 'mb-2'}`}>
+              {t('content.synopsis')}
+            </Text>
+            <Text
+              className={`${isTV ? 'text-base' : 'text-sm'} text-gray-400`}
+              style={{ lineHeight: isTV ? 28 : 22 }}
+            >
+              {series.description}
+            </Text>
           </View>
         )}
 
@@ -268,43 +276,3 @@ export default function SeriesDetailScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-  },
-  errorText: {
-    fontSize: fontSize.lg,
-    color: colors.textSecondary,
-  },
-  content: {
-    padding: isTV ? spacing.xl : spacing.lg,
-  },
-  synopsisSection: {
-    marginBottom: isTV ? spacing.xl : spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: isTV ? 28 : 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: isTV ? spacing.md : spacing.sm,
-  },
-  synopsisText: {
-    fontSize: isTV ? fontSize.md : fontSize.sm,
-    color: colors.textSecondary,
-    lineHeight: isTV ? 28 : 22,
-  },
-});

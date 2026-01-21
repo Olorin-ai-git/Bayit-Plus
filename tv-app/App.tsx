@@ -1,3 +1,4 @@
+import './global.css';
 import React, { useState, useEffect } from 'react';
 import { StatusBar, LogBox, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
