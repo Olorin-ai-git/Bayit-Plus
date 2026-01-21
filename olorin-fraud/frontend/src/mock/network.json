@@ -1,0 +1,35 @@
+{
+  "data": [
+    {
+      "ip": "192.168.1.1",
+      "isp": "Local ISP",
+      "organization": "Local Organization",
+      "country": "US",
+      "city": "San Francisco",
+      "region": "CA",
+      "latitude": 37.7749,
+      "longitude": -122.4194,
+      "timestamp": "2025-05-15T06:24:23.466-07:00"
+    },
+    {
+      "ip": "192.168.1.2",
+      "isp": "Local ISP",
+      "organization": "Local Organization",
+      "country": "US",
+      "city": "San Francisco",
+      "region": "CA",
+      "latitude": 37.7749,
+      "longitude": -122.4194,
+      "timestamp": "2025-05-15T06:31:40.056-07:00"
+    }
+  ],
+  "analysis": {
+    "risk_score": 0.8,
+    "warnings": [
+      "Multiple distinct ISPs in short timeframe (Local ISP in US and Remote ISP in India)"
+    ],
+    "details": [
+      "Logged from IP 192.168.1.1 (Local ISP) at 2025-05-15T06:24:23.466-07:00 and then from IP 192.168.1.2 (Remote ISP) at 2025-05-15T06:31:40.056-07:00, indicating potential impossible travel."
+    ]
+  }
+}

@@ -1,0 +1,327 @@
+#!/bin/bash
+
+# Start Olorin Server with Firebase Secrets
+# This script handles secret retrieval and server startup
+
+set -e  # Exit on error
+
+# Color codes for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Configuration
+PROJECT_ID="${FIREBASE_PROJECT_ID:-olorin-ai}"
+PORT="${SERVER_PORT:-8090}"
+LOG_LEVEL="${LOG_LEVEL:-info}"
+
+# Function to print colored messages
+print_status() {
+    echo -e "${BLUE}[*]${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}[✓]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[!]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[✗]${NC} $1"
+}
+
+# Function to check if Firebase CLI is installed
+check_firebase_cli() {
+    if ! command -v firebase &> /dev/null; then
+        print_error "Firebase CLI is not installed"
+        print_status "Install it with: npm install -g firebase-tools"
+        exit 1
+    fi
+    print_success "Firebase CLI found"
+}
+
+# Function to retrieve a secret (.env first, then Firebase fallback)
+get_secret() {
+    local secret_name=$1
+    local secret_value
+
+    # Determine .env file path - check current directory and olorin-server directory
+    local env_file=".env"
+    if [ ! -f ".env" ] && [ -f "../.env" ]; then
+        env_file="../.env"
+    elif [ ! -f ".env" ] && [ -f "olorin-server/.env" ]; then
+        env_file="olorin-server/.env"
+    fi
+
+    # First check .env file for the secret
+    if [ -f "$env_file" ]; then
+        secret_value=$(grep "^${secret_name}=" "$env_file" 2>/dev/null | cut -d'=' -f2- | sed 's/^[\"'\'']*//;s/[\"'\'']*$//')
+        if [ -n "$secret_value" ]; then
+            echo "$secret_value"
+            return 0
+        fi
+    fi
+
+    # Check environment variables as second priority
+    if [ -n "${!secret_name}" ]; then
+        echo "${!secret_name}"
+        return 0
+    fi
+
+    # Fall back to Firebase if not found in .env or environment
+    if ! firebase projects:list &>/dev/null; then
+        print_warning "Firebase CLI not authenticated and secret '$secret_name' not found in .env. Run: firebase login"
+        return 1
+    fi
+
+    # Attempt to retrieve secret from Firebase with timeout
+    if secret_value=$(timeout 30 firebase functions:secrets:access "$secret_name" --project "$PROJECT_ID" 2>/dev/null); then
+        echo "$secret_value"
+        return 0
+    else
+        print_warning "Failed to retrieve secret: $secret_name from both .env and Firebase"
+        return 1
+    fi
+}
+
+# Function to retrieve all required secrets
+retrieve_secrets() {
+    print_status "Retrieving secrets (.env first, then Firebase project: $PROJECT_ID)"
+
+    # Core secrets
+    export JWT_SECRET_KEY=$(get_secret "JWT_SECRET_KEY")
+    export ANTHROPIC_API_KEY=$(get_secret "ANTHROPIC_API_KEY")
+    export OPENAI_API_KEY=$(get_secret "OPENAI_API_KEY")
+    export OLORIN_API_KEY=$(get_secret "OLORIN_API_KEY")
+
+    # Database secrets
+    export DATABASE_PASSWORD=$(get_secret "DATABASE_PASSWORD")
+    export REDIS_API_KEY=$(get_secret "REDIS_API_KEY")
+    export REDIS_PASSWORD=$(get_secret "REDIS_PASSWORD")
+
+    # Splunk secrets
+    export SPLUNK_USERNAME=$(get_secret "SPLUNK_USERNAME")
+    export SPLUNK_PASSWORD=$(get_secret "SPLUNK_PASSWORD")
+
+    # Snowflake secrets (configurable from .env)
+    export SNOWFLAKE_ACCOUNT=$(get_secret "SNOWFLAKE_ACCOUNT")
+    export SNOWFLAKE_USER=$(get_secret "SNOWFLAKE_USER")
+    export SNOWFLAKE_PASSWORD=$(get_secret "SNOWFLAKE_PASSWORD")
+    export SNOWFLAKE_DATABASE=$(get_secret "SNOWFLAKE_DATABASE")
+    export SNOWFLAKE_SCHEMA=$(get_secret "SNOWFLAKE_SCHEMA")
+    export SNOWFLAKE_WAREHOUSE=$(get_secret "SNOWFLAKE_WAREHOUSE")
+    export SNOWFLAKE_ROLE=$(get_secret "SNOWFLAKE_ROLE")
+    export SNOWFLAKE_AUTHENTICATOR=$(get_secret "SNOWFLAKE_AUTHENTICATOR")
+    export SNOWFLAKE_PRIVATE_KEY_PATH=$(get_secret "SNOWFLAKE_PRIVATE_KEY_PATH")
+    export SNOWFLAKE_PRIVATE_KEY_PASSPHRASE=$(get_secret "SNOWFLAKE_PRIVATE_KEY_PASSPHRASE")
+    export SNOWFLAKE_TRANSACTIONS_TABLE=$(get_secret "SNOWFLAKE_TRANSACTIONS_TABLE")
+
+    # Additional secrets (optional)
+    export LANGFUSE_PUBLIC_KEY=$(get_secret "LANGFUSE_PUBLIC_KEY")
+    export LANGFUSE_SECRET_KEY=$(get_secret "LANGFUSE_SECRET_KEY")
+    export DATABRICKS_TOKEN=$(get_secret "DATABRICKS_TOKEN")
+    
+    # Validate critical secrets
+    local missing_critical=false
+
+    if [ -z "$JWT_SECRET_KEY" ]; then
+        print_warning "JWT_SECRET_KEY not found, generating temporary key"
+        export JWT_SECRET_KEY=$(openssl rand -base64 64)
+    else
+        print_success "JWT_SECRET_KEY retrieved"
+    fi
+
+    if [ -z "$ANTHROPIC_API_KEY" ]; then
+        print_warning "ANTHROPIC_API_KEY not found - some features may not work"
+    else
+        print_success "ANTHROPIC_API_KEY retrieved"
+    fi
+
+    if [ -z "$OPENAI_API_KEY" ]; then
+        print_warning "OPENAI_API_KEY not found - some features may not work"
+    else
+        print_success "OPENAI_API_KEY retrieved"
+    fi
+
+    # Validate Snowflake configuration
+    # Check for either password or private key authentication
+    local has_password_auth=false
+    local has_private_key_auth=false
+    
+    if [ -n "$SNOWFLAKE_PASSWORD" ]; then
+        has_password_auth=true
+    fi
+    
+    if [ -n "$SNOWFLAKE_PRIVATE_KEY_PATH" ] || [ "$SNOWFLAKE_AUTHENTICATOR" == "private_key" ]; then
+        has_private_key_auth=true
+    fi
+    
+    if [ -z "$SNOWFLAKE_ACCOUNT" ] || [ -z "$SNOWFLAKE_USER" ]; then
+        print_warning "Snowflake configuration incomplete - add to .env file:"
+        [ -z "$SNOWFLAKE_ACCOUNT" ] && print_warning "  SNOWFLAKE_ACCOUNT=your-account"
+        [ -z "$SNOWFLAKE_USER" ] && print_warning "  SNOWFLAKE_USER=your-username"
+    elif [ "$has_password_auth" == "false" ] && [ "$has_private_key_auth" == "false" ]; then
+        print_warning "Snowflake authentication not configured - add to .env file:"
+        print_warning "  Either: SNOWFLAKE_PASSWORD=your-password"
+        print_warning "  Or: SNOWFLAKE_PRIVATE_KEY_PATH=/path/to/key.p8"
+    else
+        print_success "Snowflake configuration loaded"
+        echo -e "${BLUE}   📊 Snowflake Connection Details:${NC}"
+        echo -e "${BLUE}   └─ Account: ${YELLOW}${SNOWFLAKE_ACCOUNT}${NC}"
+        echo -e "${BLUE}   └─ User: ${YELLOW}${SNOWFLAKE_USER}${NC}"
+        
+        # Show authentication method
+        if [ "$has_private_key_auth" == "true" ]; then
+            echo -e "${BLUE}   └─ Auth: ${GREEN}Private Key${NC} (${SNOWFLAKE_PRIVATE_KEY_PATH})"
+        else
+            echo -e "${BLUE}   └─ Auth: ${GREEN}Password${NC}"
+        fi
+        
+        echo -e "${BLUE}   └─ Database: ${YELLOW}${SNOWFLAKE_DATABASE:-not-set}${NC}"
+        echo -e "${BLUE}   └─ Schema: ${YELLOW}${SNOWFLAKE_SCHEMA:-PUBLIC}${NC}"
+        echo -e "${BLUE}   └─ Warehouse: ${YELLOW}${SNOWFLAKE_WAREHOUSE:-COMPUTE_WH}${NC}"
+        echo -e "${BLUE}   └─ Role: ${YELLOW}${SNOWFLAKE_ROLE:-not-set}${NC}"
+
+        # Show full table name
+        local table_name="${SNOWFLAKE_TRANSACTIONS_TABLE:-TRANSACTIONS_ENRICHED}"
+        local full_table="${SNOWFLAKE_DATABASE:-not-set}.${SNOWFLAKE_SCHEMA:-PUBLIC}.${table_name}"
+        echo -e "${BLUE}   └─ Full Table: ${GREEN}${full_table}${NC}"
+    fi
+
+    print_success "Secrets loaded successfully"
+}
+
+# Function to check if server is already running
+check_existing_server() {
+    if lsof -i :$PORT > /dev/null 2>&1; then
+        print_warning "Port $PORT is already in use"
+        read -p "Kill existing process? (y/n): " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            local pid=$(lsof -t -i:$PORT)
+            kill -9 $pid
+            print_success "Killed process on port $PORT"
+            sleep 2
+        else
+            print_error "Cannot start server - port is in use"
+            exit 1
+        fi
+    fi
+}
+
+# Function to start the server
+start_server() {
+    print_status "Starting Olorin server on port $PORT with log level: $LOG_LEVEL"
+    
+    # Change to the olorin-server directory
+    SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+    SERVER_DIR="$(dirname "$SCRIPT_DIR")"
+    
+    if [ ! -d "$SERVER_DIR" ] || [ ! -f "$SERVER_DIR/pyproject.toml" ]; then
+        print_error "Cannot find olorin-server directory"
+        print_status "Expected at: $SERVER_DIR"
+        exit 1
+    fi
+    
+    cd "$SERVER_DIR"
+    print_success "Changed to directory: $(pwd)"
+    
+    # Set additional environment variables
+    export BACKEND_PORT=$PORT
+    export LOG_LEVEL=$LOG_LEVEL
+    export ENVIRONMENT="local"
+    
+    # Check Poetry installation and dependencies
+    if ! command -v poetry &> /dev/null; then
+        print_error "Poetry not found. Please install Poetry first."
+        exit 1
+    fi
+    
+    print_status "Checking Poetry dependencies..."
+    if ! poetry check &> /dev/null; then
+        print_warning "Poetry dependencies may need updating. Installing..."
+        poetry install
+    fi
+    
+    # Start the server
+    print_success "Server starting..."
+    echo -e "${BLUE}════════════════════════════════════════════════════════════════${NC}"
+    echo -e "${GREEN}   Olorin Server - Running on http://localhost:$PORT${NC}"
+    echo -e "${GREEN}   API Docs: http://localhost:$PORT/docs${NC}"
+    echo -e "${GREEN}   Health: http://localhost:$PORT/health${NC}"
+    echo -e "${BLUE}════════════════════════════════════════════════════════════════${NC}"
+    
+    # Start server directly in foreground to see all startup logs
+    print_status "Starting server in foreground to display all startup and connection logs..."
+    echo ""
+    echo -e "${GREEN}🚀 Server starting - you will see all startup logs including Snowflake connection attempts!${NC}"
+    echo ""
+
+    # Run server directly in foreground
+    poetry run python -m app.local_server
+}
+
+# Function to display usage
+usage() {
+    echo "Usage: $0 [options]"
+    echo "Options:"
+    echo "  -p, --port PORT          Server port (default: 8090)"
+    echo "  -l, --log-level LEVEL    Log level (debug|info|warning|error) (default: info)"
+    echo "  -s, --skip-secrets       Skip secret retrieval (use existing environment)"
+    echo "  -h, --help              Show this help message"
+    exit 0
+}
+
+# Parse command line arguments
+SKIP_SECRETS=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -p|--port)
+            PORT="$2"
+            shift 2
+            ;;
+        -l|--log-level)
+            LOG_LEVEL="$2"
+            shift 2
+            ;;
+        -s|--skip-secrets)
+            SKIP_SECRETS=true
+            shift
+            ;;
+        -h|--help)
+            usage
+            ;;
+        *)
+            print_error "Unknown option: $1"
+            usage
+            ;;
+    esac
+done
+
+# Main execution
+main() {
+    print_status "Olorin Server Startup Script"
+    echo "════════════════════════════════════════════"
+    
+    # Check Firebase CLI
+    if [ "$SKIP_SECRETS" = false ]; then
+        check_firebase_cli
+        retrieve_secrets
+    else
+        print_warning "Skipping secret retrieval - using existing environment"
+    fi
+    
+    # Check for existing server
+    check_existing_server
+    
+    # Start the server
+    start_server
+}
+
+# Run main function
+main

@@ -1,0 +1,203 @@
+"""
+Report Base - Unified base class for all report generators.
+
+Provides common functionality for HTML report generation including
+headers, footers, navigation, and drill-down links.
+
+Feature: unified-report-hierarchy
+"""
+
+from dataclasses import dataclass
+from datetime import datetime
+from typing import List, Optional
+
+
+@dataclass
+class Breadcrumb:
+    """Navigation breadcrumb item."""
+
+    label: str
+    url: Optional[str] = None
+
+
+@dataclass
+class DrillDownItem:
+    """Item for drill-down grid navigation."""
+
+    label: str
+    url: str
+    value: Optional[str] = None
+    value_class: str = ""
+    subtitle: Optional[str] = None
+
+
+class ReportBase:
+    """
+    Base class for all report generators.
+
+    Provides common HTML generation utilities for headers, navigation,
+    footers, and drill-down links.
+    """
+
+    def __init__(self, report_type: str, title: str):
+        """
+        Initialize report base.
+
+        Args:
+            report_type: Type identifier (yearly, monthly, daily, investigation)
+            title: Report title for header
+        """
+        self.report_type = report_type
+        self.title = title
+
+    def generate_header(
+        self,
+        subtitle: str = "",
+        status_text: Optional[str] = None,
+        status_class: str = "complete",
+    ) -> str:
+        """
+        Generate standard report header with title and optional status badge.
+
+        Args:
+            subtitle: Subtitle text below main title
+            status_text: Optional status badge text
+            status_class: CSS class for status badge (complete, in-progress)
+
+        Returns:
+            HTML string for header section
+        """
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        status_badge = ""
+        if status_text:
+            status_badge = f'<div class="status-badge {status_class}">{status_text}</div>'
+
+        return f"""
+        <div class="header">
+            <h1>{self.title}</h1>
+            <p class="subtitle">{subtitle}</p>
+            {status_badge}
+            <p class="subtitle" style="margin-top: 10px;">Last updated: {timestamp}</p>
+        </div>
+        """
+
+    def generate_navigation(self, breadcrumbs: List[Breadcrumb]) -> str:
+        """
+        Generate breadcrumb navigation bar.
+
+        Args:
+            breadcrumbs: List of breadcrumb items (last item is current page)
+
+        Returns:
+            HTML string for navigation bar
+        """
+        if not breadcrumbs:
+            return ""
+
+        items = []
+        for i, crumb in enumerate(breadcrumbs):
+            is_last = i == len(breadcrumbs) - 1
+            if is_last or not crumb.url:
+                items.append(f'<span class="breadcrumb-current">{crumb.label}</span>')
+            else:
+                items.append(f'<a href="{crumb.url}" class="breadcrumb-link">{crumb.label}</a>')
+
+        separator = '<span class="breadcrumb-separator">›</span>'
+        return f"""
+        <nav class="breadcrumb-nav">
+            {separator.join(items)}
+        </nav>
+        """
+
+    def generate_drill_down_link(self, url: str, label: str, icon: str = "→") -> str:
+        """
+        Generate a drill-down link.
+
+        Args:
+            url: Target URL
+            label: Link text
+            icon: Optional icon (default arrow)
+
+        Returns:
+            HTML string for drill-down link
+        """
+        return f'<a href="{url}" class="drill-down-link">{label} {icon}</a>'
+
+    def generate_drill_down_grid(self, items: List[DrillDownItem], columns: int = 4) -> str:
+        """
+        Generate a grid of drill-down cards.
+
+        Args:
+            items: List of drill-down items
+            columns: Number of grid columns
+
+        Returns:
+            HTML string for drill-down grid
+        """
+        if not items:
+            return ""
+
+        cards = []
+        for item in items:
+            value_html = ""
+            if item.value:
+                value_html = f'<div class="drill-card-value {item.value_class}">{item.value}</div>'
+
+            subtitle_html = ""
+            if item.subtitle:
+                subtitle_html = f'<div class="drill-card-subtitle">{item.subtitle}</div>'
+
+            cards.append(f"""
+                <a href="{item.url}" class="drill-card">
+                    <div class="drill-card-label">{item.label}</div>
+                    {value_html}
+                    {subtitle_html}
+                </a>
+            """)
+
+        return f"""
+        <div class="drill-grid" style="grid-template-columns: repeat({columns}, 1fr);">
+            {''.join(cards)}
+        </div>
+        """
+
+    def generate_footer(self) -> str:
+        """
+        Generate standard report footer.
+
+        Returns:
+            HTML string for footer
+        """
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        return f"""
+        <footer class="report-footer">
+            <p>Generated by Olorin Fraud Detection Platform</p>
+            <p class="footer-timestamp">{timestamp}</p>
+        </footer>
+        """
+
+    def wrap_html(self, content: str, styles: str, scripts: str = "") -> str:
+        """
+        Wrap content in complete HTML document structure.
+
+        Args:
+            content: Main HTML content
+            styles: CSS styles string
+            scripts: Optional JavaScript
+
+        Returns:
+            Complete HTML document
+        """
+        return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{self.title}</title>
+    <style>{styles}</style>
+</head>
+<body>
+    {content}
+    {scripts}
+</body>
+</html>"""

@@ -1,0 +1,211 @@
+{
+  "scenario_name": "device_spoofing",
+  "description": "Fraudster using spoofed device fingerprint to impersonate legitimate user",
+  "investigation_complexity": "high",
+  "expected_fraud_indicators": [
+    "Device fingerprint mismatch with user history",
+    "Suspicious browser/OS combination",
+    "Rapid account access pattern",
+    "Inconsistent timezone/language settings"
+  ],
+  "transaction": {
+    "transaction_id": "TXN_SPOOF_001",
+    "amount": 1249.99,
+    "currency": "USD",
+    "timestamp": "2025-08-29T14:32:17Z",
+    "merchant": {
+      "name": "Electronics Plus Store",
+      "category": "electronics",
+      "location": {
+        "latitude": 40.7128,
+        "longitude": -74.0060,
+        "city": "New York",
+        "state": "NY",
+        "country": "United States",
+        "postal_code": "10001"
+      }
+    }
+  },
+  "user": {
+    "user_id": "USER_12345",
+    "account_age_days": 1247,
+    "historical_patterns": {
+      "avg_transaction_amount": 87.50,
+      "common_locations": [
+        {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "city": "San Francisco",
+          "state": "CA",
+          "country": "United States",
+          "postal_code": "94102"
+        }
+      ],
+      "typical_spending_categories": ["grocery", "gas", "restaurants", "utilities"]
+    }
+  },
+  "device": {
+    "device_id": "DEV_SPOOFED_999",
+    "fingerprint": {
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "screen_resolution": "1920x1080",
+      "timezone": "America/New_York",
+      "language": "en-US",
+      "platform": "Win32",
+      "browser": "Chrome"
+    },
+    "first_seen": "2025-08-29T14:30:00Z",
+    "is_trusted": false,
+    "fraud_indicators": {
+      "fingerprint_inconsistencies": [
+        "User historically uses macOS, but current session shows Windows",
+        "Screen resolution changed from typical 2560x1600 to 1920x1080",
+        "Language changed from en-GB to en-US",
+        "Timezone doesn't match user's established pattern"
+      ],
+      "device_reputation": {
+        "first_time_device": true,
+        "multiple_user_associations": false,
+        "known_fraud_device": false
+      }
+    }
+  },
+  "location": {
+    "latitude": 40.7128,
+    "longitude": -74.0060,
+    "city": "New York",
+    "state": "NY",
+    "country": "United States",
+    "postal_code": "10001",
+    "fraud_indicators": {
+      "distance_from_last_login": 2572.8,
+      "impossible_travel": {
+        "detected": true,
+        "last_location": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "city": "San Francisco",
+          "state": "CA"
+        },
+        "last_activity_time": "2025-08-29T13:45:00Z",
+        "travel_time_required_hours": 5.5,
+        "actual_time_elapsed_hours": 0.78
+      }
+    }
+  },
+  "network": {
+    "ip": "198.51.100.42",
+    "proxy_detected": false,
+    "vpn_detected": true,
+    "tor_detected": false,
+    "country_code": "US",
+    "asn": "AS13335",
+    "isp": "Cloudflare, Inc.",
+    "fraud_indicators": {
+      "vpn_usage": {
+        "detected": true,
+        "provider": "NordVPN",
+        "exit_country": "US",
+        "suspicious_for_user": true,
+        "reason": "User has never used VPN in 3+ years of account history"
+      },
+      "ip_reputation": {
+        "malicious": false,
+        "suspicious": true,
+        "bot_activity": false,
+        "abuse_reports": 2
+      }
+    }
+  },
+  "behavioral_signals": {
+    "velocity_indicators": {
+      "transactions_last_hour": 3,
+      "transactions_last_day": 3,
+      "unique_devices_last_day": 2,
+      "fraud_flags": {
+        "high_velocity": true,
+        "multiple_devices": true,
+        "unusual_pattern": true
+      }
+    },
+    "session_info": {
+      "session_duration": 127,
+      "pages_visited": 3,
+      "time_on_checkout": 15,
+      "fraud_indicators": {
+        "rushed_checkout": true,
+        "minimal_browsing": true,
+        "automated_behavior_suspected": true
+      }
+    },
+    "authentication_anomalies": {
+      "login_attempts": 1,
+      "password_resets_recent": 0,
+      "2fa_bypassed": false,
+      "security_questions_skipped": false
+    }
+  },
+  "investigation_timeline": [
+    {
+      "timestamp": "2025-08-29T14:30:00Z",
+      "event": "Login from new device",
+      "details": "Windows device first seen, VPN IP detected"
+    },
+    {
+      "timestamp": "2025-08-29T14:31:30Z",
+      "event": "Product selection",
+      "details": "High-value electronics added to cart immediately"
+    },
+    {
+      "timestamp": "2025-08-29T14:32:00Z",
+      "event": "Checkout initiated",
+      "details": "Minimal time spent reviewing order"
+    },
+    {
+      "timestamp": "2025-08-29T14:32:17Z",
+      "event": "Transaction submitted",
+      "details": "Purchase completed in under 3 minutes from login"
+    }
+  ],
+  "expected_agent_findings": {
+    "device_analysis_agent": {
+      "risk_level": "HIGH",
+      "key_findings": [
+        "Device fingerprint completely inconsistent with user history",
+        "First-time device with suspicious characteristics",
+        "Operating system mismatch indicates potential spoofing"
+      ]
+    },
+    "location_analysis_agent": {
+      "risk_level": "CRITICAL", 
+      "key_findings": [
+        "Impossible travel detected: 2572 miles in 47 minutes",
+        "Location inconsistent with user's established pattern",
+        "No gradual location changes in user history"
+      ]
+    },
+    "network_analysis_agent": {
+      "risk_level": "HIGH",
+      "key_findings": [
+        "VPN usage detected - unprecedented for this user",
+        "IP reputation shows some suspicious activity",
+        "Network pattern inconsistent with user behavior"
+      ]
+    },
+    "logs_analysis_agent": {
+      "risk_level": "HIGH", 
+      "key_findings": [
+        "Rapid transaction completion indicates automation",
+        "Minimal session engagement before high-value purchase",
+        "Behavioral pattern consistent with account takeover"
+      ]
+    }
+  },
+  "investigation_verdict": {
+    "overall_risk_score": 94,
+    "fraud_classification": "CONFIRMED_FRAUD",
+    "primary_fraud_type": "Account Takeover with Device Spoofing",
+    "recommended_action": "BLOCK_AND_INVESTIGATE",
+    "confidence_level": 0.96
+  }
+}

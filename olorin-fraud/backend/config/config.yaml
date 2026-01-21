@@ -1,0 +1,97 @@
+system:
+  environment: development
+  log_level: INFO
+  debug_mode: false
+  api_port: 8080
+  expose_metrics: true
+  mesh_port: 8091
+  
+thresholds:
+  risk_score: 0.6
+  confidence: 0.8
+  
+agents:
+  location:
+    enabled: true
+    cache_timeout: 300
+    max_history_days: 30
+    distance_threshold_km: 500
+    
+  network:
+    enabled: true
+    vpn_risk_threshold: 0.7
+    proxy_risk_threshold: 0.8
+    ip_change_threshold: 5
+    cache_timeout: 300
+    
+  device:
+    enabled: true
+    device_change_threshold: 3
+    browser_change_threshold: 2
+    timezone_check: true
+    cache_timeout: 300
+    
+  behavior:
+    enabled: true
+    login_frequency_threshold: 10
+    session_duration_threshold: 120
+    unusual_hour_threshold: 0.1
+    cache_timeout: 300
+    
+  anomaly:
+    enabled: true
+    baseline_days: 30
+    min_data_points: 10
+    false_positive_threshold: 0.2
+    
+clients:
+  kk_dash:
+    base_url: "http://localhost:8081"
+    timeout: 30
+    max_retries: 3
+    
+  tmx:
+    base_url: "http://localhost:8082"
+    timeout: 30
+    max_retries: 3
+    
+  splunk:
+    host: "${SPLUNK_HOST:-localhost}"
+    port: ${SPLUNK_PORT:-8089}
+    username: "${SPLUNK_USERNAME}"
+    password: "${SPLUNK_PASSWORD}"
+    
+  databricks:
+    workspace_url: "${DATABRICKS_WORKSPACE_URL:-http://localhost:8083}"
+    token: "${DATABRICKS_TOKEN}"
+    
+  mfa:
+    base_url: "http://localhost:8084"
+    timeout: 30
+    max_retries: 3
+    
+cache:
+  enabled: true
+  type: "redis"
+  host: "localhost"
+  port: 6379
+  ttl: 3600
+  
+database:
+  host: "${DB_HOST:-localhost}"
+  port: ${DB_PORT:-3306}
+  database: "${DB_NAME:-fraud_detection}"
+  user: "${DB_USER}"
+  password: "${DB_PASSWORD}"
+  pool_size: ${DB_POOL_SIZE:-5}
+  
+metrics:
+  enabled: true
+  port: 9090
+  path: "/metrics"
+  
+logging:
+  file: "logs/fraud_detection.log"
+  max_size: 100
+  backup_count: 5
+  format: "%(asctime)s [%(levelname)s] %(name)s: %(message)s" 

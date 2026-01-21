@@ -1,0 +1,600 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./public/index.html",
+    "./tests/playwright/**/*.{js,ts,tsx}"
+  ],
+  theme: {
+    extend: {
+      // Design Tokens for Olorin Microservices
+      colors: {
+        // Olorin Corporate Colors (Feature: 004-new-olorin-frontend)
+        corporate: {
+          // Backgrounds (Dark Theme - Purple)
+          bgPrimary: '#1A0B2E',        // Main background (dark purple/black)
+          bgSecondary: '#2D1B4E',      // Secondary panels (medium purple)
+          bgTertiary: '#3E2C5F',       // Tertiary surfaces (light purple)
+
+          // Accent Colors (Purple Palette)
+          accentPrimary: '#A855F7',        // Purple (primary actions, highlights)
+          accentPrimaryHover: '#9333EA',   // Purple hover state
+          accentSecondary: '#C084FC',      // Light purple (secondary accent)
+          accentSecondaryHover: '#A855F7', // Light purple hover state
+
+          // Status Colors
+          success: '#10B981',   // Green (success states)
+          warning: '#F59E0B',   // Amber (warnings)
+          error: '#EF4444',     // Red (errors, critical)
+          info: '#818CF8',      // Purple-blue (info messages)
+
+          // Text Colors
+          textPrimary: '#F9FAFB',    // Primary text (white)
+          textSecondary: '#D8B4FE',  // Secondary text (purple tinted)
+          textTertiary: '#C084FC',   // Tertiary text (light purple)
+          textDisabled: '#7C3AED',   // Disabled state (purple)
+
+          // Border Colors
+          borderPrimary: '#6B21A8',    // Primary borders (purple)
+          borderSecondary: '#7C3AED',  // Secondary borders (purple)
+          borderAccent: '#A855F7'      // Accent borders (purple)
+        },
+        // Risk Level Colors (for Investigation Wizard)
+        risk: {
+          critical: {   // 80-100 score
+            bg: 'bg-red-900/30',
+            text: 'text-red-400',
+            border: 'border-red-500',
+            color: '#EF4444'
+          },
+          high: {       // 60-79 score
+            bg: 'bg-amber-900/20',
+            text: 'text-amber-400',
+            border: 'border-amber-500',
+            color: '#F59E0B'
+          },
+          medium: {     // 40-59 score
+            bg: 'bg-purple-900/30',
+            text: 'text-purple-400',
+            border: 'border-purple-500',
+            color: '#C084FC'
+          },
+          low: {        // 0-39 score
+            bg: 'bg-gray-800/50',
+            text: 'text-gray-400',
+            border: 'border-gray-600',
+            color: '#6B7280'
+          }
+        },
+        // Primary Brand Colors
+        primary: {
+          50: '#faf5ff',
+          100: '#f3e8ff',
+          200: '#e9d5ff',
+          300: '#d8b4fe',
+          400: '#c084fc',
+          500: '#a855f7',
+          600: '#9333ea',
+          700: '#7c3aed',
+          800: '#6b21a8',
+          900: '#581c87',
+          950: '#3b0764',
+        },
+        // Secondary/Neutral Colors
+        secondary: {
+          50: '#fafafa',
+          100: '#f4f4f5',
+          200: '#e4e4e7',
+          300: '#d4d4d8',
+          400: '#a1a1aa',
+          500: '#71717a',
+          600: '#52525b',
+          700: '#3f3f46',
+          800: '#27272a',
+          900: '#18181b',
+          950: '#09090b',
+        },
+        // Semantic Colors for Investigation Types
+        structured: {
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          200: '#bbf7d0',
+          300: '#86efac',
+          400: '#4ade80',
+          500: '#22c55e',
+          600: '#16a34a',
+          700: '#15803d',
+          800: '#166534',
+          900: '#14532d',
+        },
+        // Hybrid Graph Investigation Colors
+        graph: {
+          node: {
+            primary: '#3b82f6',
+            secondary: '#6b7280',
+            evidence: '#10b981',
+            entity: '#8b5cf6',
+            connection: '#f59e0b',
+            highlight: '#ef4444',
+          },
+          edge: {
+            default: '#9ca3af',
+            strong: '#374151',
+            weak: '#d1d5db',
+            temporal: '#06b6d4',
+            causal: '#dc2626',
+          },
+          grid: {
+            primary: '#1f2937',
+            secondary: '#374151',
+            accent: '#4f46e5',
+            warning: '#f59e0b',
+            success: '#10b981',
+            danger: '#ef4444',
+          },
+        },
+        manual: {
+          50: '#fef2f2',
+          100: '#fee2e2',
+          200: '#fecaca',
+          300: '#fca5a5',
+          400: '#f87171',
+          500: '#ef4444',
+          600: '#dc2626',
+          700: '#b91c1c',
+          800: '#991b1b',
+          900: '#7f1d1d',
+        },
+        // Service-specific Colors
+        analytics: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+        },
+        rag: {
+          50: '#fefce8',
+          100: '#fef9c3',
+          200: '#fef08a',
+          300: '#fde047',
+          400: '#facc15',
+          500: '#eab308',
+          600: '#ca8a04',
+          700: '#a16207',
+          800: '#854d0e',
+          900: '#713f12',
+        },
+        visualization: {
+          50: '#fdf4ff',
+          100: '#fae8ff',
+          200: '#f5d0fe',
+          300: '#f0abfc',
+          400: '#e879f9',
+          500: '#d946ef',
+          600: '#c026d3',
+          700: '#a21caf',
+          800: '#86198f',
+          900: '#701a75',
+        },
+        reporting: {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+        },
+      },
+      fontFamily: {
+        'sans': ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        'mono': ['JetBrains Mono', 'Fira Code', 'ui-monospace', 'SFMono-Regular', 'Monaco', 'Consolas', 'monospace'],
+        'display': ['Inter', 'ui-sans-serif', 'system-ui'],
+      },
+      fontSize: {
+        'xs': ['0.75rem', { lineHeight: '1rem' }],
+        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+        'base': ['1rem', { lineHeight: '1.5rem' }],
+        'lg': ['1.125rem', { lineHeight: '1.75rem' }],
+        'xl': ['1.25rem', { lineHeight: '1.75rem' }],
+        '2xl': ['1.5rem', { lineHeight: '2rem' }],
+        '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+        '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+        '5xl': ['3rem', { lineHeight: '1' }],
+        '6xl': ['3.75rem', { lineHeight: '1' }],
+        '7xl': ['4.5rem', { lineHeight: '1' }],
+        '8xl': ['6rem', { lineHeight: '1' }],
+        '9xl': ['8rem', { lineHeight: '1' }],
+      },
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+        '128': '32rem',
+        '144': '36rem',
+      },
+      borderRadius: {
+        'none': '0',
+        'sm': '0.125rem',
+        'DEFAULT': '0.25rem',
+        'md': '0.375rem',
+        'lg': '0.5rem',
+        'xl': '0.75rem',
+        '2xl': '1rem',
+        '3xl': '1.5rem',
+        'full': '9999px',
+      },
+      boxShadow: {
+        'xs': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+        'sm': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+        'md': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+        'lg': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+        'xl': '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+        '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+        'inner': 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
+        'microservice': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1), 0 0 0 1px rgb(0 0 0 / 0.05)',
+        'elevated': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1), 0 0 0 1px rgb(0 0 0 / 0.05)',
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-in-out',
+        'fade-in-up': 'fadeInUp 0.5s ease-out',
+        'slide-up': 'slideUp 0.5s ease-out',
+        'slide-down': 'slideDown 0.5s ease-out',
+        'slide-right': 'slideRight 0.5s ease-out',
+        'slide-left': 'slideLeft 0.5s ease-out',
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'spin-slow': 'spin 3s linear infinite',
+        'bounce-slow': 'bounce 2s infinite',
+        'float': 'float 3s ease-in-out infinite',
+        'glow': 'glow 2s ease-in-out infinite alternate',
+        'graph-pulse': 'graphPulse 2s ease-in-out infinite',
+        'node-expand': 'nodeExpand 0.3s ease-out',
+        'edge-flow': 'edgeFlow 3s linear infinite',
+        'grid-scan': 'gridScan 4s linear infinite',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideDown: {
+          '0%': { transform: 'translateY(-20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideRight: {
+          '0%': { transform: 'translateX(-20px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        slideLeft: {
+          '0%': { transform: 'translateX(20px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        glow: {
+          '0%': { boxShadow: '0 0 5px rgb(167 85 247 / 0.5)' },
+          '100%': { boxShadow: '0 0 20px rgb(167 85 247 / 0.8)' },
+        },
+        graphPulse: {
+          '0%, 100%': { opacity: '0.8', transform: 'scale(1)' },
+          '50%': { opacity: '1', transform: 'scale(1.05)' },
+        },
+        nodeExpand: {
+          '0%': { transform: 'scale(0.8)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        edgeFlow: {
+          '0%': { strokeDashoffset: '20' },
+          '100%': { strokeDashoffset: '0' },
+        },
+        gridScan: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100vw)' },
+        },
+      },
+      transitionTimingFunction: {
+        'bounce-in': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+        'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+      },
+      screens: {
+        'xs': '475px',
+        '3xl': '1600px',
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+    require('@headlessui/tailwindcss'),
+    // Custom plugin for component variants
+    function({ addComponents, theme }) {
+      addComponents({
+        // Button Components
+        '.btn': {
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: theme('borderRadius.md'),
+          fontSize: theme('fontSize.sm[0]'),
+          fontWeight: theme('fontWeight.medium'),
+          transition: 'all 0.2s ease-in-out',
+          cursor: 'pointer',
+          userSelect: 'none',
+          '&:disabled': {
+            opacity: '0.5',
+            cursor: 'not-allowed',
+          },
+        },
+        '.btn-primary': {
+          backgroundColor: theme('colors.primary.600'),
+          color: theme('colors.white'),
+          '&:hover': {
+            backgroundColor: theme('colors.primary.700'),
+          },
+          '&:focus': {
+            outline: 'none',
+            ringWidth: '2px',
+            ringColor: theme('colors.primary.500'),
+            ringOpacity: '0.5',
+          },
+        },
+        '.btn-secondary': {
+          backgroundColor: theme('colors.secondary.100'),
+          color: theme('colors.secondary.900'),
+          '&:hover': {
+            backgroundColor: theme('colors.secondary.200'),
+          },
+        },
+        '.btn-structured': {
+          backgroundColor: theme('colors.structured.600'),
+          color: theme('colors.white'),
+          '&:hover': {
+            backgroundColor: theme('colors.structured.700'),
+          },
+        },
+        '.btn-manual': {
+          backgroundColor: theme('colors.manual.600'),
+          color: theme('colors.white'),
+          '&:hover': {
+            backgroundColor: theme('colors.manual.700'),
+          },
+        },
+        // Card Components
+        '.card': {
+          backgroundColor: theme('colors.white'),
+          borderRadius: theme('borderRadius.lg'),
+          boxShadow: theme('boxShadow.microservice'),
+          padding: theme('spacing.6'),
+        },
+        '.card-elevated': {
+          backgroundColor: theme('colors.white'),
+          borderRadius: theme('borderRadius.lg'),
+          boxShadow: theme('boxShadow.elevated'),
+          padding: theme('spacing.6'),
+        },
+        // Service-specific Cards
+        '.card-structured': {
+          backgroundColor: theme('colors.structured.50'),
+          borderColor: theme('colors.structured.200'),
+          borderWidth: '1px',
+        },
+        '.card-manual': {
+          backgroundColor: theme('colors.manual.50'),
+          borderColor: theme('colors.manual.200'),
+          borderWidth: '1px',
+        },
+        '.card-analytics': {
+          backgroundColor: theme('colors.analytics.50'),
+          borderColor: theme('colors.analytics.200'),
+          borderWidth: '1px',
+        },
+        '.card-rag': {
+          backgroundColor: theme('colors.rag.50'),
+          borderColor: theme('colors.rag.200'),
+          borderWidth: '1px',
+        },
+        '.card-visualization': {
+          backgroundColor: theme('colors.visualization.50'),
+          borderColor: theme('colors.visualization.200'),
+          borderWidth: '1px',
+        },
+        '.card-reporting': {
+          backgroundColor: theme('colors.reporting.50'),
+          borderColor: theme('colors.reporting.200'),
+          borderWidth: '1px',
+        },
+        // Input Components
+        '.input': {
+          width: '100%',
+          borderRadius: theme('borderRadius.md'),
+          borderWidth: '1px',
+          borderColor: theme('colors.secondary.300'),
+          backgroundColor: theme('colors.white'),
+          padding: `${theme('spacing.2')} ${theme('spacing.3')}`,
+          fontSize: theme('fontSize.sm[0]'),
+          '&:focus': {
+            outline: 'none',
+            ringWidth: '2px',
+            ringColor: theme('colors.primary.500'),
+            ringOpacity: '0.5',
+            borderColor: theme('colors.primary.500'),
+          },
+        },
+        // Loading Components
+        '.loading-spinner': {
+          display: 'inline-block',
+          width: theme('spacing.4'),
+          height: theme('spacing.4'),
+          border: '2px solid transparent',
+          borderTopColor: theme('colors.primary.600'),
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite',
+        },
+        // Modal Components
+        '.modal-overlay': {
+          position: 'fixed',
+          inset: '0',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: '50',
+        },
+        '.modal-content': {
+          backgroundColor: theme('colors.white'),
+          borderRadius: theme('borderRadius.lg'),
+          boxShadow: theme('boxShadow.2xl'),
+          maxWidth: '90vw',
+          maxHeight: '90vh',
+          overflow: 'auto',
+        },
+        // Hybrid Graph Investigation Components
+        '.graph-container': {
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          backgroundColor: theme('colors.secondary.900'),
+          borderRadius: theme('borderRadius.lg'),
+          overflow: 'hidden',
+        },
+        '.graph-node': {
+          borderRadius: theme('borderRadius.full'),
+          border: '2px solid',
+          backgroundColor: theme('colors.white'),
+          cursor: 'pointer',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            transform: 'scale(1.1)',
+            boxShadow: theme('boxShadow.lg'),
+          },
+        },
+        '.graph-node-primary': {
+          borderColor: theme('colors.graph.node.primary'),
+          '&:hover': {
+            backgroundColor: theme('colors.blue.50'),
+          },
+        },
+        '.graph-node-evidence': {
+          borderColor: theme('colors.graph.node.evidence'),
+          '&:hover': {
+            backgroundColor: theme('colors.green.50'),
+          },
+        },
+        '.graph-node-entity': {
+          borderColor: theme('colors.graph.node.entity'),
+          '&:hover': {
+            backgroundColor: theme('colors.purple.50'),
+          },
+        },
+        '.power-grid-panel': {
+          backgroundColor: 'rgba(31, 41, 55, 0.95)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(75, 85, 99, 0.3)',
+          borderRadius: theme('borderRadius.lg'),
+          color: theme('colors.white'),
+        },
+        '.command-center-widget': {
+          backgroundColor: theme('colors.secondary.800'),
+          border: '1px solid',
+          borderColor: theme('colors.secondary.600'),
+          borderRadius: theme('borderRadius.md'),
+          padding: theme('spacing.4'),
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            borderColor: theme('colors.primary.500'),
+            backgroundColor: theme('colors.secondary.700'),
+          },
+        },
+        '.evidence-trail-step': {
+          position: 'relative',
+          padding: theme('spacing.4'),
+          backgroundColor: theme('colors.white'),
+          border: '1px solid',
+          borderColor: theme('colors.secondary.200'),
+          borderRadius: theme('borderRadius.md'),
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            left: '-1px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: '3px',
+            height: '20px',
+            backgroundColor: theme('colors.primary.500'),
+            borderRadius: '2px',
+          },
+        },
+        '.network-explorer-connection': {
+          stroke: theme('colors.graph.edge.default'),
+          strokeWidth: '2',
+          fill: 'none',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            stroke: theme('colors.graph.edge.strong'),
+            strokeWidth: '3',
+          },
+        },
+      });
+    },
+  ],
+  // Safelist for dynamic classes
+  safelist: [
+    'btn-structured',
+    'btn-manual',
+    'btn-analytics',
+    'btn-rag',
+    'btn-visualization',
+    'btn-reporting',
+    'card-structured',
+    'card-manual',
+    'card-analytics',
+    'card-rag',
+    'card-visualization',
+    'card-reporting',
+    'text-structured-600',
+    'text-manual-600',
+    'text-analytics-600',
+    'text-rag-600',
+    'text-visualization-600',
+    'text-reporting-600',
+    'bg-structured-50',
+    'bg-manual-50',
+    'bg-analytics-50',
+    'bg-rag-50',
+    'bg-visualization-50',
+    'bg-reporting-50',
+    // Hybrid Graph Investigation Classes
+    'graph-container',
+    'graph-node',
+    'graph-node-primary',
+    'graph-node-evidence',
+    'graph-node-entity',
+    'power-grid-panel',
+    'command-center-widget',
+    'evidence-trail-step',
+    'network-explorer-connection',
+    'animate-graph-pulse',
+    'animate-node-expand',
+    'animate-edge-flow',
+    'animate-grid-scan',
+  ],
+}

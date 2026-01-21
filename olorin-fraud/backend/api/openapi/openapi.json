@@ -1,0 +1,2850 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "olorin-api",
+    "description": "Olorin Fraud Investigation API - Provides endpoints for fraud investigation workflows and AI-powered analysis.",
+    "contact": {
+      "url": "http://localhost:8090/"
+    },
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8090",
+      "description": "Local development"
+    },
+
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/example/log_level": {
+      "get": {
+        "tags": [
+          "example"
+        ],
+        "summary": "Get Log Level",
+        "description": "An example endpoint that uses the settings.",
+        "operationId": "getLogLevel",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogLevelResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/agent/invoke": {
+      "post": {
+        "summary": "Agenerate Chat Response",
+        "operationId": "agenerate_chat_response_v1_agent_invoke_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/demo/{user_id}": {
+      "get": {
+        "summary": "Preload Demo Data",
+        "operationId": "preload_demo_data_api_demo__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "time_range",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2m",
+              "title": "Time Range"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Preload Demo Data Api Demo  User Id  Get"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/demo/{user_id}/off": {
+      "post": {
+        "summary": "Disable Demo Mode",
+        "operationId": "disable_demo_mode_api_demo__user_id__off_post",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/demo/{user_id}/all": {
+      "get": {
+        "summary": "Get All Demo Agent Responses",
+        "operationId": "get_all_demo_agent_responses_api_demo__user_id__all_get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get All Demo Agent Responses Api Demo  User Id  All Get"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/network/{user_id}": {
+      "get": {
+        "summary": "Analyze Network",
+        "operationId": "analyze_network_api_network__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "time_range",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "1m",
+              "title": "Time Range"
+            }
+          },
+          {
+            "name": "splunk_host",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Splunk Host"
+            }
+          },
+          {
+            "name": "investigation_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Investigation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Raw Splunk Override"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyzeNetworkResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/device/{user_id}": {
+      "get": {
+        "summary": "Analyze Device",
+        "operationId": "analyze_device_api_device__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "time_range",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "1m",
+              "title": "Time Range"
+            }
+          },
+          {
+            "name": "splunk_host",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Splunk Host"
+            }
+          },
+          {
+            "name": "investigation_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Investigation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Raw Splunk Override"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyzeDeviceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/location/{user_id}": {
+      "get": {
+        "summary": "Analyze Location",
+        "operationId": "analyze_location_api_location__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "time_range",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "1m",
+              "title": "Time Range"
+            }
+          },
+          {
+            "name": "splunk_host",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Splunk Host"
+            }
+          },
+          {
+            "name": "investigation_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Investigation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Raw Splunk Override"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Analyze Location Api Location  User Id  Get"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/investigation/{investigation_id}/chat": {
+      "get": {
+        "summary": "Get Chat Messages",
+        "operationId": "get_chat_messages_api_investigation__investigation_id__chat_get",
+        "parameters": [
+          {
+            "name": "investigation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Investigation Id"
+            }
+          },
+          {
+            "name": "sender",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sender"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChatMessageRead"
+                  },
+                  "title": "Response Get Chat Messages Api Investigation  Investigation Id  Chat Get"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Post Chat Message",
+        "operationId": "post_chat_message_api_investigation__investigation_id__chat_post",
+        "parameters": [
+          {
+            "name": "investigation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Investigation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatMessageCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatMessageRead"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/oii/{user_id}": {
+      "get": {
+        "summary": "Get Online Identity Info",
+        "operationId": "get_online_identity_info_api_oii__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Online Identity Info Api Oii  User Id  Get"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/risk-assessment/{user_id}": {
+      "get": {
+        "summary": "Assess Risk",
+        "operationId": "assess_risk_api_risk_assessment__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Assess Risk Api Risk Assessment  User Id  Get"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/logs/{user_id}": {
+      "get": {
+        "summary": "Analyze Logs",
+        "operationId": "analyze_logs_api_logs__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "time_range",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "1m",
+              "title": "Time Range"
+            }
+          },
+          {
+            "name": "investigation_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Investigation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Raw Splunk Override"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Analyze Logs Api Logs  User Id  Get"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/location/source/oii/{user_id}": {
+      "get": {
+        "summary": "Get Oii Source Location",
+        "operationId": "get_oii_source_location_api_location_source_oii__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/LocationInfo"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Get Oii Source Location Api Location Source Oii  User Id  Get"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/location/source/salesforce/{user_id}": {
+      "get": {
+        "summary": "Get Salesforce Source Location",
+        "operationId": "get_salesforce_source_location_api_location_source_salesforce__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/LocationInfo"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Get Salesforce Source Location Api Location Source Salesforce  User Id  Get"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/location/source/ekata/{user_id}": {
+      "get": {
+        "summary": "Get Ekata Source Location",
+        "operationId": "get_ekata_source_location_api_location_source_ekata__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/LocationInfo"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Get Ekata Source Location Api Location Source Ekata  User Id  Get"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/location/source/business/{user_id}": {
+      "get": {
+        "summary": "Get Business Source Location",
+        "operationId": "get_business_source_location_api_location_source_business__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/LocationInfo"
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Get Business Source Location Api Location Source Business  User Id  Get"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/location/source/phone/{user_id}": {
+      "get": {
+        "summary": "Get Phone Source Location",
+        "operationId": "get_phone_source_location_api_location_source_phone__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/LocationInfo"
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Get Phone Source Location Api Location Source Phone  User Id  Get"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/location/risk-analysis/{user_id}": {
+      "get": {
+        "summary": "Get Location Risk Analysis",
+        "operationId": "get_location_risk_analysis_api_location_risk_analysis__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "time_range",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "1m",
+              "title": "Time Range"
+            }
+          },
+          {
+            "name": "splunk_host",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Splunk Host"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationRiskAnalysisResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/splunk/job/cancel/{job_id}": {
+      "post": {
+        "summary": "Cancel Splunk Job",
+        "description": "Cancel a Splunk job by its SID using the same credentials as the SplunkTool.",
+        "operationId": "cancel_splunk_job_api_splunk_job_cancel__job_id__post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Cancel Splunk Job Api Splunk Job Cancel  Job Id  Post"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/investigation": {
+      "post": {
+        "summary": "Create Investigation Endpoint",
+        "operationId": "create_investigation_endpoint_api_investigation_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvestigationCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvestigationOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Investigations Endpoint",
+        "operationId": "delete_investigations_endpoint_api_investigation_delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "title": "Ids"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/investigation/{investigation_id}": {
+      "get": {
+        "summary": "Get Investigation Endpoint",
+        "operationId": "get_investigation_endpoint_api_investigation__investigation_id__get",
+        "parameters": [
+          {
+            "name": "investigation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Investigation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvestigationOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update Investigation Endpoint",
+        "operationId": "update_investigation_endpoint_api_investigation__investigation_id__put",
+        "parameters": [
+          {
+            "name": "investigation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Investigation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvestigationUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvestigationOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Investigation Endpoint",
+        "operationId": "delete_investigation_endpoint_api_investigation__investigation_id__delete",
+        "parameters": [
+          {
+            "name": "investigation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Investigation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/investigations": {
+      "get": {
+        "summary": "Get Investigations Endpoint",
+        "operationId": "get_investigations_endpoint_api_investigations_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Agent": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "Agent"
+      },
+      "AgentInput": {
+        "properties": {
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/ContentItem"
+            },
+            "type": "array",
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "AgentInput"
+      },
+      "AgentMetadata": {
+        "properties": {
+          "agentTraceId": {
+            "type": "string",
+            "title": "Agenttraceid",
+            "description": "Trace ID for the agent invocation. This is used for debugging purposes."
+          }
+        },
+        "type": "object",
+        "required": [
+          "agentTraceId"
+        ],
+        "title": "AgentMetadata"
+      },
+      "AgentOutput": {
+        "properties": {
+          "plainText": {
+            "type": "string",
+            "title": "Plaintext",
+            "description": "Plain text output of the agent. This is a required field."
+          },
+          "outputs": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Output"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outputs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "plainText",
+          "outputs"
+        ],
+        "title": "AgentOutput"
+      },
+      "AgentRequest": {
+        "properties": {
+          "agent": {
+            "$ref": "#/components/schemas/Agent"
+          },
+          "agentInput": {
+            "$ref": "#/components/schemas/AgentInput"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata"
+          },
+          "context": {
+            "$ref": "#/components/schemas/Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "agent",
+          "agentInput",
+          "metadata",
+          "context"
+        ],
+        "title": "AgentRequest"
+      },
+      "AgentResponse": {
+        "properties": {
+          "agentOutput": {
+            "$ref": "#/components/schemas/AgentOutput"
+          },
+          "agentMetadata": {
+            "$ref": "#/components/schemas/AgentMetadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "agentOutput",
+          "agentMetadata"
+        ],
+        "title": "AgentResponse"
+      },
+      "AnalyzeDeviceResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "raw_splunk_results": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Splunk Results",
+            "description": "Raw results from Splunk search."
+          },
+          "extracted_device_signals": {
+            "items": {
+              "$ref": "#/components/schemas/DeviceSignalDetail"
+            },
+            "type": "array",
+            "title": "Extracted Device Signals"
+          },
+          "device_signal_risk_assessment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DeviceSignalRiskLLMAssessment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "title": "AnalyzeDeviceResponse"
+      },
+      "AnalyzeNetworkResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "raw_splunk_results_count": {
+            "type": "integer",
+            "title": "Raw Splunk Results Count",
+            "description": "Count of raw events from Splunk search."
+          },
+          "extracted_network_signals": {
+            "items": {
+              "$ref": "#/components/schemas/DeviceNetworkSignal"
+            },
+            "type": "array",
+            "title": "Extracted Network Signals"
+          },
+          "network_risk_assessment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NetworkRiskLLMAssessment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "raw_splunk_results_count"
+        ],
+        "title": "AnalyzeNetworkResponse"
+      },
+      "ChatMessageCreate": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "sender": {
+            "type": "string",
+            "title": "Sender"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "timestamp": {
+            "type": "integer",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "sender",
+          "text",
+          "timestamp"
+        ],
+        "title": "ChatMessageCreate"
+      },
+      "ChatMessageRead": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "sender": {
+            "type": "string",
+            "title": "Sender"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "timestamp": {
+            "type": "integer",
+            "title": "Timestamp"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "investigation_id": {
+            "type": "string",
+            "title": "Investigation Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "sender",
+          "text",
+          "timestamp",
+          "id",
+          "investigation_id"
+        ],
+        "title": "ChatMessageRead"
+      },
+      "ContentItem": {
+        "properties": {
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          },
+          "image": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ImageContent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "title": "ContentItem",
+        "description": "Supports multi-modal inputs. Currently, accepts text or image"
+      },
+      "Context": {
+        "properties": {
+          "interactionType": {
+            "type": "string",
+            "title": "Interactiontype"
+          },
+          "platform": {
+            "type": "string",
+            "title": "Platform"
+          },
+          "taxYear": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Taxyear"
+          },
+          "additionalContext": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Additionalcontext"
+          }
+        },
+        "type": "object",
+        "required": [
+          "interactionType",
+          "platform",
+          "additionalContext"
+        ],
+        "title": "Context"
+      },
+      "DeviceNetworkSignal": {
+        "properties": {
+          "device_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Id"
+          },
+          "ip": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ip Address"
+          },
+          "isp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isp"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "title": "DeviceNetworkSignal"
+      },
+      "DeviceSignalDetail": {
+        "properties": {
+          "ip": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ip Address"
+          },
+          "isp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isp"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region"
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp"
+          },
+          "fuzzy_device_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fuzzy Device Id"
+          },
+          "challenges": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Challenges"
+          },
+          "raw_event_time": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Event Time"
+          }
+        },
+        "type": "object",
+        "title": "DeviceSignalDetail"
+      },
+      "DeviceSignalRiskLLMAssessment": {
+        "properties": {
+          "risk_level": {
+            "type": "number",
+            "title": "Risk Level",
+            "description": "A score between 0.0 (low risk) and 1.0 (high risk) based on device signals."
+          },
+          "risk_factors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Risk Factors",
+            "description": "Specific device-related factors contributing to the risk (e.g., ISP inconsistency, geo-anomaly, VPN detected from device logs)."
+          },
+          "anomaly_details": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Anomaly Details",
+            "description": "Details of any specific anomalies detected, e.g., 'Device used from US and IN within short period'."
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence",
+            "description": "LLM's confidence in this device signal assessment (0.0 to 1.0)"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary",
+            "description": "LLM's summary of device signal risk."
+          },
+          "thoughts": {
+            "type": "string",
+            "title": "Thoughts",
+            "description": "Detailed analysis and insights about the device risk assessment, including potential implications and patterns observed."
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "risk_level",
+          "risk_factors",
+          "confidence",
+          "summary",
+          "thoughts"
+        ],
+        "title": "DeviceSignalRiskLLMAssessment"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "title": "Code",
+            "description": "Machine-readable code",
+            "examples": [
+              "bad_request"
+            ]
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 256
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Human-readable message",
+            "examples": [
+              "Bad request"
+            ]
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4096
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail",
+            "description": "Detailed human-readable information",
+            "examples": [
+              "The request body was malformed"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "detail"
+        ],
+        "title": "ErrorResponse",
+        "description": "An error response which may be shown to the end user",
+        "examples": [
+          {
+            "code": "bad_request",
+            "detail": "The request body was malformed",
+            "message": "Bad request"
+          }
+        ]
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ImageContent": {
+        "properties": {
+          "imageUrl": {
+            "type": "string",
+            "maxLength": 2083,
+            "minLength": 1,
+            "format": "uri",
+            "title": "Imageurl",
+            "description": "url of image when type is image"
+          }
+        },
+        "type": "object",
+        "required": [
+          "imageUrl"
+        ],
+        "title": "ImageContent"
+      },
+      "InvestigationCreate": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "entity_id": {
+            "type": "string",
+            "title": "Entity Id"
+          },
+          "entity_type": {
+            "type": "string",
+            "title": "Entity Type",
+            "default": "user_id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "entity_id"
+        ],
+        "title": "InvestigationCreate"
+      },
+      "InvestigationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "entity_id": {
+            "type": "string",
+            "title": "Entity Id"
+          },
+          "entity_type": {
+            "type": "string",
+            "title": "Entity Type"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "policy_comments": {
+            "type": "string",
+            "title": "Policy Comments"
+          },
+          "investigator_comments": {
+            "type": "string",
+            "title": "Investigator Comments"
+          },
+          "overall_risk_score": {
+            "type": "number",
+            "title": "Overall Risk Score"
+          },
+          "chat_messages": {
+            "items": {
+              "$ref": "#/components/schemas/ChatMessageRead"
+            },
+            "type": "array",
+            "title": "Chat Messages",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "entity_id",
+          "entity_type",
+          "user_id",
+          "policy_comments",
+          "investigator_comments",
+          "overall_risk_score"
+        ],
+        "title": "InvestigationOut"
+      },
+      "InvestigationUpdate": {
+        "properties": {
+          "policy_comments": {
+            "type": "string",
+            "title": "Policy Comments",
+            "default": ""
+          },
+          "investigator_comments": {
+            "type": "string",
+            "title": "Investigator Comments",
+            "default": ""
+          },
+          "overall_risk_score": {
+            "type": "number",
+            "title": "Overall Risk Score",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "title": "InvestigationUpdate"
+      },
+      "LocationInfo": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence",
+            "default": 0.0
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp"
+          },
+          "additional_info": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Additional Info"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source"
+        ],
+        "title": "LocationInfo"
+      },
+      "LocationRisk": {
+        "properties": {
+          "risk_level": {
+            "type": "number",
+            "title": "Risk Level",
+            "description": "A score between 0.0 (low risk) and 1.0 (high risk)",
+            "example": 0.5
+          },
+          "risk_factors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Risk Factors",
+            "description": "A list of specific factors contributing to the risk.",
+            "example": [
+              "High-risk IP address"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence",
+            "description": "Confidence in this assessment (0.0 to 1.0)",
+            "example": 0.8
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary",
+            "description": "A brief textual summary of the assessment.",
+            "example": "Moderate risk due to IP address history."
+          },
+          "thoughts": {
+            "type": "string",
+            "title": "Thoughts",
+            "description": "Detailed analysis and insights about the location risk assessment, including potential implications and patterns observed.",
+            "example": "The rapid switching between US and India locations within a short timeframe suggests potential account compromise. The high confidence level (0.9) in this assessment indicates strong evidence for these concerns."
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp",
+            "description": "Timestamp of the assessment",
+            "example": "2025-05-25T05:30:10.517806+00:00"
+          }
+        },
+        "type": "object",
+        "required": [
+          "risk_level",
+          "risk_factors",
+          "confidence",
+          "summary",
+          "thoughts"
+        ],
+        "title": "LocationRisk"
+      },
+      "LocationRiskAnalysisResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "oii_location_info": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocationInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "salesforce_location_info": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocationInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ekata_location_info": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocationInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "business_location_info": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocationInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "phone_location_info": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocationInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "device_analysis_results": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Analysis Results"
+          },
+          "overall_location_risk_assessment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocationRiskAssessment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "title": "LocationRiskAnalysisResponse"
+      },
+      "LocationRiskAssessment": {
+        "properties": {
+          "risk_assessment": {
+            "$ref": "#/components/schemas/LocationRisk",
+            "description": "The detailed location risk assessment from the LLM."
+          }
+        },
+        "type": "object",
+        "required": [
+          "risk_assessment"
+        ],
+        "title": "LocationRiskAssessment"
+      },
+      "LogLevelResponse": {
+        "properties": {
+          "log_level": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 1,
+            "pattern": "^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$",
+            "title": "Log Level",
+            "description": "The configured log level",
+            "examples": [
+              "INFO",
+              "WARNING"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "log_level"
+        ],
+        "title": "LogLevelResponse",
+        "examples": [
+          {
+            "log_level": "INFO"
+          }
+        ]
+      },
+      "Metadata": {
+        "properties": {
+          "interactionGroupId": {
+            "type": "string",
+            "title": "Interactiongroupid"
+          },
+          "supportedOutputFormats": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/SupportedOutputFormat"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supportedoutputformats"
+          },
+          "additionalMetadata": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Additionalmetadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "interactionGroupId",
+          "additionalMetadata"
+        ],
+        "title": "Metadata"
+      },
+      "NetworkRiskLLMAssessment": {
+        "properties": {
+          "risk_level": {
+            "type": "number",
+            "title": "Risk Level",
+            "description": "A score between 0.0 (low risk) and 1.0 (high risk) based on network signals, primarily ISP analysis."
+          },
+          "risk_factors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Risk Factors",
+            "description": "Specific network-related factors contributing to the risk (e.g., ISP known for malicious activity, high ISP volatility for a device, suspected VPN/proxy ISP)."
+          },
+          "anomaly_details": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Anomaly Details",
+            "description": "Details of any specific network anomalies detected, e.g., 'Device X used ISP known for botnets'."
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence",
+            "description": "LLM's confidence in this network signal assessment (0.0 to 1.0)"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary",
+            "description": "LLM's summary of network signal risk."
+          },
+          "thoughts": {
+            "type": "string",
+            "title": "Thoughts",
+            "description": "Detailed analysis and insights about the risk assessment, including potential implications and patterns observed."
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "risk_level",
+          "risk_factors",
+          "confidence",
+          "summary",
+          "thoughts"
+        ],
+        "title": "NetworkRiskLLMAssessment"
+      },
+      "Output": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "outputFormat": {
+            "$ref": "#/components/schemas/OutputFormat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content",
+          "outputFormat"
+        ],
+        "title": "Output"
+      },
+      "OutputFormat": {
+        "properties": {
+          "format": {
+            "type": "string",
+            "title": "Format"
+          },
+          "formatterVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formatterversion"
+          },
+          "formatterName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formattername"
+          }
+        },
+        "type": "object",
+        "required": [
+          "format",
+          "formatterVersion",
+          "formatterName"
+        ],
+        "title": "OutputFormat"
+      },
+      "SupportedOutputFormat": {
+        "properties": {
+          "format": {
+            "type": "string",
+            "title": "Format"
+          },
+          "formatterVersion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formatterversion"
+          },
+          "formatterName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formattername"
+          }
+        },
+        "type": "object",
+        "required": [
+          "format",
+          "formatterVersion",
+          "formatterName"
+        ],
+        "title": "SupportedOutputFormat"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "example",
+      "description": "Example API endpoints"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+// The library version is controlled from the Jenkins configuration
+// To force a version add after lib '@' followed by the version.
+
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_REGISTRY = 'localhost:5000'
+        IMAGE_NAME = 'cas-hri/olorin/service'
+        IMAGE_TAG = "${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} .'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'docker run --rm ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} pytest'
+            }
+        }
+        stage('Push') {
+            steps {
+                sh 'docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}'
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            emailext (
+                subject: "Build Successful: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+                body: """
+                    Build was successful!
+                    Job: ${env.JOB_NAME}
+                    Build Number: ${env.BUILD_NUMBER}
+                    Build URL: ${env.BUILD_URL}
+                """,
+                to: 'some_email@olorin.com'
+            )
+        }
+        failure {
+            emailext (
+                subject: "Build Failed: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+                body: """
+                    Build failed!
+                    Job: ${env.JOB_NAME}
+                    Build Number: ${env.BUILD_NUMBER}
+                    Build URL: ${env.BUILD_URL}
+                """,
+                to: 'some_email@olorin.com'
+            )
+        }
+    }
+}

@@ -1,0 +1,218 @@
+# Fraud Detection Prompt Templates v7
+# Feature: 026-llm-training-pipeline
+# ITERATION 4: Further refinement from v6 to reduce false positives
+# v4: 100% recall, 4.17% precision (threshold 0.55) - 23 FP
+# v5: 0% recall, undefined precision (threshold 0.70) - too conservative
+# v6: 100% recall, 7.69% precision (threshold 0.60) - 12 FP
+# v7: Target improved precision with threshold 0.63 and stricter signal requirements
+
+version: v7
+created_at: "2024-12-10"
+description: "Refined fraud detection - threshold 0.63 with stricter multi-signal requirements"
+
+# System prompt - REFINED approach with stricter signal combination requirements
+system_prompt: |
+  You are an expert fraud detection analyst evaluating entities for FUTURE fraud risk.
+
+  IMPORTANT: You are predicting which entities WILL commit fraud. You have NO information
+  about past fraud - only behavioral patterns from their transaction history.
+
+  CONTEXT: Fraud is rare (~2-5% of entities). Your job is to identify STRONG fraud patterns
+  while avoiding false alarms on legitimate users who may have unusual but innocent behavior.
+
+  You must provide:
+  1. A risk score between 0.0 (low risk) and 1.0 (high risk)
+  2. A confidence level between 0.0 (uncertain) and 1.0 (certain)
+  3. A prediction: FRAUD or LEGITIMATE
+  4. Brief reasoning explaining your assessment
+
+  ## Risk Indicators - STRICT INTERPRETATION
+
+  ### Very Strong Fraud Signals (require for high-risk prediction):
+  - device_count >= 5 AND ip_count >= 7 -> risk +0.30 (definite concern)
+  - device_count >= 4 AND ip_count >= 6 AND high variance -> risk +0.25
+  - std_tx_value > avg_tx_value * 2.0 -> risk +0.15 (testing card limits)
+
+  ### Moderate Fraud Signals (supporting evidence):
+  - device_count 3-4 OR ip_count 5-6 -> risk +0.08
+  - total_transactions > 20 with device_count >= 3 -> risk +0.05
+  - avg_tx_value > $400 with std_tx_value > $200 -> risk +0.05
+
+  ### Normal Behavior Signals (subtract from risk):
+  - device_count == 1 AND ip_count <= 2 -> risk -0.20 (strong legitimate signal)
+  - device_count <= 2 AND ip_count <= 3 -> risk -0.10
+  - Consistent transaction values (std < avg * 0.5) -> risk -0.10
+  - Single merchant focus with stable patterns -> risk -0.05
+
+  ## Scoring Guidelines
+
+  Start at baseline: risk_score = 0.30 (slight bias toward legitimate)
+
+  Apply modifiers based on signals above. Final score interpretation:
+  - 0.0-0.25: Very low risk (strong legitimate signals)
+  - 0.25-0.45: Low risk (normal behavior)
+  - 0.45-0.55: Medium risk (minor concerns but insufficient for fraud)
+  - 0.55-0.63: Elevated risk (concerning patterns but not definitive)
+  - 0.63-0.80: High risk (multiple fraud signals present)
+  - 0.80-1.0: Very high risk (clear fraud pattern)
+
+  ## Decision Threshold
+  - risk_score >= 0.63 -> predict FRAUD
+  - risk_score < 0.63 -> predict LEGITIMATE
+
+  ## CRITICAL: Multi-Signal Requirement
+  Do NOT flag as fraud based on a SINGLE unusual metric. Fraud prediction requires:
+  - At least TWO strong fraud signals, OR
+  - One very strong signal combined with supporting evidence
+
+  Example: High device count ALONE is not fraud if IP count is normal.
+  Example: High variance ALONE is not fraud if device/IP patterns are normal.
+
+# Main fraud analysis prompt - v7 (refined)
+fraud_analysis_prompt: |
+  Predict future fraud risk for the following entity using behavioral patterns.
+
+  ## Entity Information
+  - Entity Type: {entity_type}
+  - Entity Value: {entity_value}
+  - Merchant: {merchant_name}
+
+  ## Transaction Summary (Feature Period)
+  - Total Transactions: {total_transactions}
+  - Total GMV: ${total_gmv}
+  - Average Transaction Value: ${avg_tx_value}
+  - Transaction Value Std Dev: ${std_tx_value}
+  - Date Range: {date_range}
+
+  ## Device & Network Patterns
+  - Unique Devices: {unique_devices}
+  - Unique IPs: {unique_ips}
+  - Unique Merchants: {unique_merchants}
+
+  ## Risk Assessment Framework:
+
+  VERY STRONG FRAUD SIGNALS (need these for high confidence):
+  - device_count >= 5 AND ip_count >= 7 = major red flag
+  - device_count >= 4 AND ip_count >= 6 AND std > 2x avg = strong concern
+  - Multiple strong signals present together
+
+  MODERATE SIGNALS (supporting but not sufficient alone):
+  - device_count 3-4 OR ip_count 5-6 without other signals
+  - High variance with normal device/IP
+  - Many transactions alone
+
+  NORMAL/LEGITIMATE PATTERNS:
+  - 1-2 devices and 1-3 IPs = typical legitimate user
+  - Consistent transaction values = predictable spending
+  - Single merchant = loyal customer
+
+  MULTI-SIGNAL REQUIREMENT: Only flag as FRAUD when you see MULTIPLE concerning
+  patterns together. A single unusual metric is NOT sufficient for fraud.
+
+  Provide your fraud prediction in the following JSON format:
+  ```json
+  {{
+    "risk_score": <float 0.0-1.0>,
+    "confidence": <float 0.0-1.0>,
+    "prediction": "<FRAUD|LEGITIMATE>",
+    "reasoning": "<brief explanation>",
+    "key_indicators": [<list of behavioral indicators found>],
+    "risk_factors": {{
+      "device_risk": <float 0.0-1.0>,
+      "velocity_risk": <float 0.0-1.0>,
+      "value_risk": <float 0.0-1.0>,
+      "pattern_risk": <float 0.0-1.0>
+    }}
+  }}
+  ```
+
+# Template for fraud indicators - v7: Same as v4-v6 (behavioral only)
+fraud_indicators_template: |
+  ## Behavioral Risk Indicators (No fraud history available)
+  - Total Transactions: {total_transactions}
+  - Total GMV: ${total_gmv}
+  - Average Transaction Value: ${avg_tx_value}
+  - Transaction Value Std Dev: ${std_tx_value}
+  - Unique Devices: {device_count}
+  - Unique IPs: {ip_count}
+  - Unique Merchants: {merchant_count}
+
+# Template for velocity analysis
+velocity_analysis_template: |
+  ## Transaction Velocity Patterns
+  - Transaction Count: {total_transactions}
+  - Average Transaction Value: ${avg_tx_value}
+  - Value Variance (Std Dev): ${std_tx_value}
+  - Activity Span: {first_tx_date} to {last_tx_date}
+
+# Template for geographic analysis
+geographic_analysis_template: |
+  ## Network Diversity
+  - Unique IP Addresses: {ip_count}
+  - IP per Transaction Ratio: {ip_ratio}
+
+# Template for device/network analysis
+device_analysis_template: |
+  ## Device Fingerprint Analysis
+  - Unique Devices: {device_count}
+  - Unique IPs: {ip_count}
+  - Multi-Device Pattern: {multi_device}
+
+# Template for historical patterns
+historical_patterns_template: |
+  ## Account History
+  - First Transaction: {first_tx_date}
+  - Last Transaction: {last_tx_date}
+  - Transaction Count: {total_transactions}
+  - Merchants Used: {merchant_count}
+
+# Batch analysis prompt
+batch_analysis_prompt: |
+  Predict future fraud risk for the following batch of {entity_count} entities.
+  Use behavioral patterns only - you do NOT have fraud history information.
+
+  REMEMBER: Require MULTIPLE fraud signals for a positive prediction.
+
+  {entities_data}
+
+  Provide your analysis as a JSON array with one object per entity:
+  ```json
+  [
+    {{
+      "entity_id": "<entity identifier>",
+      "risk_score": <float 0.0-1.0>,
+      "confidence": <float 0.0-1.0>,
+      "prediction": "<FRAUD|LEGITIMATE>",
+      "reasoning": "<brief explanation>"
+    }}
+  ]
+  ```
+
+# Feedback analysis prompt
+feedback_analysis_prompt: |
+  The following prediction was incorrect:
+
+  ## Original Prediction
+  - Entity: {entity_value}
+  - Predicted: {predicted_label}
+  - Actual: {actual_label}
+  - Risk Score: {risk_score}
+
+  ## Entity Behavioral Data (Feature Period)
+  {entity_data}
+
+  ## Actual Outcome (Observation Period)
+  - Committed Fraud: {committed_fraud}
+
+  Analyze why this prediction was incorrect:
+  ```json
+  {{
+    "error_type": "<false_positive|false_negative>",
+    "likely_cause": "<explanation>",
+    "missed_patterns": [<list of patterns that should have been weighted differently>],
+    "suggested_adjustments": {{
+      "behavioral_weights": {{<suggested weight adjustments>}},
+      "threshold_adjustment": <suggested threshold change>
+    }}
+  }}
+  ```
