@@ -16,6 +16,9 @@
     "olorin-media/israeli-radio-manager/frontend",
     "olorin-media/israeli-radio-manager/backend",
     "olorin-media/israeli-radio-manager/marketing-portal",
+    "olorin-cv/cvplus/packages/*",
+    "olorin-cv/cvplus/frontend",
+    "olorin-cv/cvplus/functions",
     "olorin-portals/*"
   ],
   "scripts": {
@@ -23,10 +26,12 @@
     "build:core": "turbo run build --filter=@olorin/*",
     "build:fraud": "turbo run build --filter=./olorin-fraud/...",
     "build:media": "turbo run build --filter=./olorin-media/...",
+    "build:cv": "turbo run build --filter=./olorin-cv/...",
     "build:portals": "turbo run build --filter=./olorin-portals/...",
     "dev": "turbo run dev",
     "dev:fraud": "turbo run dev --filter=./olorin-fraud/...",
     "dev:media": "turbo run dev --filter=./olorin-media/...",
+    "dev:cv": "turbo run dev --filter=./olorin-cv/...",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "type-check": "turbo run type-check",
