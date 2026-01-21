@@ -4,11 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Olorin** is an enterprise fraud detection and investigation platform with three main components:
+**Olorin** is an enterprise AI-powered ecosystem with four main platforms:
 
-- **Backend (olorin-server)**: Python FastAPI service with AI/ML agents for fraud detection, LangChain integration, and investigation tools
-- **Frontend (olorin-front)**: React TypeScript SPA undergoing major refactoring to microservices architecture with Tailwind CSS
-- **Web Portal (olorin-web-portal)**: Marketing website with multi-language support
+- **Olorin Fraud Detection (olorin-fraud)**: Python FastAPI backend with AI/ML agents for fraud detection, LangChain integration, and investigation tools + React TypeScript frontend
+- **Olorin Media (olorin-media)**: Media platforms including Bayit+ streaming and Israeli Radio Manager (managed as git subtrees)
+- **Olorin CV (olorin-cv)**: CV Plus - Professional CV/Resume builder platform with AI enhancements (managed as git subtree)
+- **Olorin Portals (olorin-portals)**: Marketing websites with multi-language support for all platforms
 
 ## Critical System Requirements
 
