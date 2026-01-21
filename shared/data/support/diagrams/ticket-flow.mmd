@@ -1,0 +1,98 @@
+%% Support Ticket Lifecycle
+%% State diagram showing ticket status transitions
+
+stateDiagram-v2
+    [*] --> New: User Creates Ticket
+
+    New --> Open: Auto-Assign Priority
+
+    state Open {
+        [*] --> Pending_Assignment
+        Pending_Assignment --> Assigned: Agent Claims
+        Assigned --> In_Progress: Agent Starts Work
+    }
+
+    Open --> Auto_Response: Auto-Reply Sent
+    Auto_Response --> Open
+
+    Open --> Escalated: High Priority<br/>or Complex Issue
+
+    state Escalated {
+        [*] --> Senior_Review
+        Senior_Review --> Specialist_Assigned
+        Specialist_Assigned --> Under_Investigation
+    }
+
+    Escalated --> In_Progress: Assigned to Expert
+
+    state In_Progress {
+        [*] --> Researching
+        Researching --> Testing_Solution
+        Testing_Solution --> Researching: Not Resolved
+        Testing_Solution --> Ready_to_Reply: Solution Found
+    }
+
+    In_Progress --> Waiting_User: Need More Info
+
+    state Waiting_User {
+        [*] --> Reminder_Sent
+        Reminder_Sent --> User_Responded
+        Reminder_Sent --> Auto_Close_Warning: 7 Days No Response
+    }
+
+    Waiting_User --> In_Progress: User Replies
+    Waiting_User --> Closed: User Confirms Resolved
+    Waiting_User --> Closed: Auto-Close After 14 Days
+
+    In_Progress --> Pending_Deployment: Fix Requires Code Change
+
+    state Pending_Deployment {
+        [*] --> Bug_Reported
+        Bug_Reported --> In_Development
+        In_Development --> Testing
+        Testing --> Deployed
+    }
+
+    Pending_Deployment --> Resolved: Fix Deployed
+
+    In_Progress --> Resolved: Solution Provided
+
+    state Resolved {
+        [*] --> Awaiting_Confirmation
+        Awaiting_Confirmation --> Confirmed: User Confirms
+        Awaiting_Confirmation --> Reopened: User Reports Issue Persists
+    }
+
+    Resolved --> Closed: Auto-Close After 48h
+    Resolved --> Reopened: Issue Not Resolved
+
+    Reopened --> Open: Re-Investigate
+
+    Closed --> Archived: After 30 Days
+
+    Archived --> [*]: Permanently Stored
+
+    Closed --> Reopened: User Requests Reopen<br/>Within 30 Days
+
+    note right of New
+        Priority Levels:
+        - Low: General Questions
+        - Medium: Feature Requests
+        - High: Bugs Affecting Use
+        - Critical: Service Down
+    end note
+
+    note right of Escalated
+        Escalation Triggers:
+        - Payment Issues
+        - Account Security
+        - Service Outage
+        - Legal Concerns
+    end note
+
+    note right of Waiting_User
+        Automated Reminders:
+        - 3 Days: First Reminder
+        - 7 Days: Final Warning
+        - 14 Days: Auto-Close
+    end note

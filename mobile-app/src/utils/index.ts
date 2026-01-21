@@ -1,0 +1,50 @@
+/**
+ * Utilities Export
+ */
+
+export { default as logger } from './logger';
+export {
+  initLoggerSentry,
+  setCorrelationId,
+  getCorrelationId,
+  generateCorrelationId,
+} from './logger';
+
+export { initSentry, setSentryUser, clearSentryUser, withSentryErrorBoundary } from './sentry';
+
+export { performanceMonitor, measureAsync, debounce, throttle } from './performance';
+export type { PerformanceMetrics } from './performance';
+
+export {
+  accessibilityService,
+  useAccessibilitySettings,
+  generateContentLabel,
+  generatePlaybackControlLabel,
+  generateVoiceHint,
+  getAnimationDuration,
+  shouldDisableAnimations,
+  getAccessibleTouchableProps,
+  getAccessibleImageProps,
+  getAccessibleTextProps,
+  announceNavigation,
+  announceContentChange,
+  announceError,
+  announceSuccess,
+} from './accessibility';
+export type { AccessibilitySettings } from './accessibility';
+
+export {
+  errorHandler,
+  retryWithBackoff,
+  withErrorHandling,
+  requireNetwork,
+} from './errorHandling';
+export type { ErrorDetails, ErrorSeverity } from './errorHandling';
+
+export {
+  optimizeTMDBImageUrl,
+  buildTMDBImageUrl,
+  getOptimalImageSize,
+  getPlaceholderColor,
+  calculateImageDimensions,
+} from './imageUtils';

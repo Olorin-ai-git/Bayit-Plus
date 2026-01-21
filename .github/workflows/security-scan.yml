@@ -1,0 +1,282 @@
+# =============================================================================
+# Security Scan Workflow
+# =============================================================================
+#
+# Comprehensive security scanning for the Bayit+ platform.
+#
+# Runs on:
+#   - Push to main/develop branches
+#   - Pull requests to main/develop
+#   - Weekly schedule (Mondays 9am UTC)
+#
+# Jobs:
+#   - secret-scan: TruffleHog and GitLeaks secret detection
+#   - dependency-security: npm/pip audit for vulnerable packages
+#
+# Required secrets:
+#   - GITLEAKS_LICENSE: GitLeaks enterprise license (optional)
+#
+# =============================================================================
+
+name: Security Scan
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run weekly on Mondays at 9am UTC
+    - cron: '0 9 * * 1'
+
+# Explicit permissions for security (principle of least privilege)
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  secret-scan:
+    name: Scan for secrets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for comprehensive scanning
+
+      - name: TruffleHog Secret Scan
+        uses: trufflesecurity/trufflehog@116e7171542d2f1dad8810f00dcfacbe0b809183  # v3.92.5
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+
+      - name: GitLeaks Secret Scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+      - name: Report scan results
+        if: failure()
+        run: |
+          echo "⚠️ Secret scan failed! Review the logs above for details."
+          echo "If this is a false positive, update the .gitleaks.toml or .secrets.baseline file."
+          exit 1
+
+  dependency-security:
+    name: Dependency security audit
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        component: [backend, web, mobile-app, partner-portal]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python (for backend)
+        if: matrix.component == 'backend'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry (for backend)
+        if: matrix.component == 'backend'
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Python Security Audit (backend)
+        if: matrix.component == 'backend'
+        working-directory: ${{ matrix.component }}
+        run: |
+          poetry install --no-root
+          poetry run pip-audit
+
+      - name: Set up Node.js (for web/mobile/portal)
+        if: matrix.component != 'backend'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: NPM Security Audit (web/mobile/portal)
+        if: matrix.component != 'backend'
+        working-directory: ${{ matrix.component }}
+        run: |
+          npm audit --audit-level=high
+          # Allow to continue on moderate vulnerabilities
+        continue-on-error: true
+
+  code-quality:
+    name: Code quality and security checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install bandit semgrep
+
+      - name: Run Bandit (Python security linter)
+        working-directory: backend
+        run: |
+          bandit -r app/ -ll -f json -o bandit-report.json
+          bandit -r app/ -ll
+        continue-on-error: true
+
+      - name: Run Semgrep (multi-language security analysis)
+        run: |
+          semgrep --config=auto --json --output=semgrep-report.json .
+          semgrep --config=auto .
+        continue-on-error: true
+
+      - name: Upload security reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            backend/bandit-report.json
+            semgrep-report.json
+          retention-days: 30
+
+  configuration-validation:
+    name: Validate configuration and secrets setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check .env files are gitignored
+        run: |
+          if git ls-files | grep -E '\.env$' | grep -v '\.env\.example$'; then
+            echo "❌ ERROR: .env file found in git!"
+            exit 1
+          else
+            echo "✅ No .env files in git"
+          fi
+
+      - name: Check service account files are gitignored
+        run: |
+          if git ls-files | grep -E 'service-account.*\.json$'; then
+            echo "❌ ERROR: Service account file found in git!"
+            exit 1
+          else
+            echo "✅ No service account files in git"
+          fi
+
+      - name: Verify .env.example files exist
+        run: |
+          for dir in backend web mobile-app tvos-app partner-portal; do
+            if [ -f "$dir/.env.example" ]; then
+              echo "✅ $dir/.env.example exists"
+            else
+              echo "⚠️ $dir/.env.example missing (may be optional)"
+            fi
+          done
+
+      - name: Check for hardcoded secrets patterns
+        run: |
+          # Check for common secret patterns in source files
+          echo "Scanning for potential hardcoded secrets..."
+
+          # MongoDB URLs with credentials
+          if git grep -E 'mongodb(\+srv)?://[^:]+:[^@]+@' -- '*.py' '*.js' '*.ts' '*.tsx'; then
+            echo "❌ Found potential MongoDB credentials in code"
+            exit 1
+          fi
+
+          # API keys
+          if git grep -E '(api[_-]?key|apikey).*[:=].*["\x27][a-zA-Z0-9_-]{20,}["\x27]' -- '*.py' '*.js' '*.ts' '*.tsx'; then
+            echo "❌ Found potential API keys in code"
+            exit 1
+          fi
+
+          echo "✅ No obvious hardcoded secrets found"
+
+      - name: Validate Python configuration
+        working-directory: backend
+        run: |
+          # Check that config.py uses environment variables
+          if ! grep -q "class.*BaseSettings" app/core/config.py; then
+            echo "❌ Configuration should use Pydantic BaseSettings"
+            exit 1
+          fi
+          echo "✅ Configuration uses Pydantic BaseSettings"
+
+  secret-manager-audit:
+    name: Audit GCP Secret Manager setup
+    runs-on: ubuntu-latest
+    # Only run on main branch (requires GCP credentials)
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: List secrets in Secret Manager
+        run: |
+          echo "Secrets in GCP Secret Manager:"
+          gcloud secrets list --format="table(name,created,labels)" || echo "Failed to list secrets (may need permissions)"
+
+      - name: Check Cloud Run secret bindings
+        run: |
+          echo "Checking Cloud Run service secret bindings:"
+          gcloud run services describe bayit-plus-backend \
+            --region=us-central1 \
+            --format="yaml(spec.template.spec.containers[0].env)" \
+            || echo "Failed to describe service (may not exist yet)"
+
+      - name: Audit IAM permissions
+        run: |
+          echo "Secret Manager IAM permissions:"
+          gcloud projects get-iam-policy $(gcloud config get-value project) \
+            --flatten="bindings[].members" \
+            --filter="bindings.role:roles/secretmanager.secretAccessor" \
+            --format="table(bindings.role,bindings.members)" \
+            || echo "Failed to get IAM policy"
+
+  security-summary:
+    name: Security scan summary
+    runs-on: ubuntu-latest
+    needs: [secret-scan, dependency-security, code-quality, configuration-validation]
+    if: always()
+
+    steps:
+      - name: Summary
+        run: |
+          echo "# Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Secret Scan | ${{ needs.secret-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dependency Security | ${{ needs.dependency-security.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Code Quality | ${{ needs.code-quality.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Configuration Validation | ${{ needs.configuration-validation.result }} |" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.secret-scan.result }}" != "success" ] || \
+             [ "${{ needs.configuration-validation.result }}" != "success" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ **Critical security checks failed!**" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi

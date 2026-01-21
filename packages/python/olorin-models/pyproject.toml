@@ -1,0 +1,44 @@
+[project]
+name = "olorin-models"
+version = "1.0.0"
+description = "Olorin.ai database models for MongoDB/Beanie ODM"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+authors = [
+    { name = "Olorin.ai Platform Team" }
+]
+dependencies = [
+    "beanie>=1.29.0",
+    "pydantic[email]>=2.12.0",
+    "pymongo>=4.12.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "mypy>=1.7.0",
+    "ruff>=0.1.0",
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [{include = "olorin_models"}]
+include = ["olorin_models/py.typed"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_ignores = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]

@@ -1,0 +1,104 @@
+================================================================================
+PYTHON 3.13 SET AS SYSTEM DEFAULT
+================================================================================
+
+Configuration has been added to your ~/.zshrc file.
+
+================================================================================
+TO APPLY CHANGES
+================================================================================
+
+Run this command in your terminal:
+
+    source ~/.zshrc
+
+Or simply restart your terminal.
+
+================================================================================
+VERIFICATION COMMANDS
+================================================================================
+
+After running 'source ~/.zshrc', verify Python 3.13 is default:
+
+1. Check Python version:
+    python --version
+    # Should show: Python 3.13.11
+
+2. Check Python 3 version:
+    python3 --version
+    # Should show: Python 3.13.11
+
+3. Check which Python is being used:
+    which python
+    # Should show: /opt/homebrew/opt/python@3.13/bin/python3.13
+
+4. Check pip version:
+    pip --version
+    # Should show: pip 24.x (python 3.13)
+
+================================================================================
+WHAT WAS CONFIGURED
+================================================================================
+
+Added to ~/.zshrc:
+
+✅ Python 3.13 added to PATH (highest priority)
+✅ Aliases: python → python3.13
+✅ Aliases: python3 → python3.13
+✅ Aliases: pip → pip3.13
+✅ Aliases: pip3 → pip3.13
+✅ Poetry default: Python 3.13
+✅ detect-secrets bin path preserved
+
+================================================================================
+BACKUP
+================================================================================
+
+Your original .zshrc has been backed up to:
+    ~/.zshrc.backup.YYYYMMDD_HHMMSS
+
+If you need to revert:
+    cp ~/.zshrc.backup.YYYYMMDD_HHMMSS ~/.zshrc
+    source ~/.zshrc
+
+================================================================================
+ENVIRONMENTS AFFECTED
+================================================================================
+
+✅ System default: Python 3.13
+✅ Pre-commit hooks: Python 3.13
+✅ Poetry (backend): Python 3.13
+✅ New virtual environments: Python 3.13 (default)
+✅ Command line: python/python3 → Python 3.13
+
+================================================================================
+TESTING
+================================================================================
+
+After sourcing ~/.zshrc, test in a new terminal:
+
+1. Create new virtual environment:
+    python -m venv test_env
+    source test_env/bin/activate
+    python --version
+    # Should be Python 3.13.11
+
+2. Check Poetry:
+    cd backend
+    poetry env info
+    # Should show Python 3.13.11
+
+3. Install a package:
+    pip install requests
+    # Should use pip3.13
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+1. Run: source ~/.zshrc
+2. Verify: python --version
+3. Expected: Python 3.13.11
+4. Done! Python 3.13 is now your system default
+
+================================================================================

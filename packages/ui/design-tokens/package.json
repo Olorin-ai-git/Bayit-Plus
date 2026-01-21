@@ -1,0 +1,121 @@
+{
+  "name": "@olorin/design-tokens",
+  "version": "2.0.0",
+  "description": "Olorin.ai unified design tokens - colors, typography, spacing, shadows, and animations for glassmorphic dark theme",
+  "license": "UNLICENSED",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./colors": {
+      "import": {
+        "types": "./dist/colors.d.ts",
+        "default": "./dist/colors.js"
+      },
+      "require": {
+        "types": "./dist/colors.d.cts",
+        "default": "./dist/colors.cjs"
+      }
+    },
+    "./spacing": {
+      "import": {
+        "types": "./dist/spacing.d.ts",
+        "default": "./dist/spacing.js"
+      },
+      "require": {
+        "types": "./dist/spacing.d.cts",
+        "default": "./dist/spacing.cjs"
+      }
+    },
+    "./typography": {
+      "import": {
+        "types": "./dist/typography.d.ts",
+        "default": "./dist/typography.js"
+      },
+      "require": {
+        "types": "./dist/typography.d.cts",
+        "default": "./dist/typography.cjs"
+      }
+    },
+    "./shadows": {
+      "import": {
+        "types": "./dist/shadows.d.ts",
+        "default": "./dist/shadows.js"
+      },
+      "require": {
+        "types": "./dist/shadows.d.cts",
+        "default": "./dist/shadows.cjs"
+      }
+    },
+    "./animations": {
+      "import": {
+        "types": "./dist/animations.d.ts",
+        "default": "./dist/animations.js"
+      },
+      "require": {
+        "types": "./dist/animations.d.cts",
+        "default": "./dist/animations.cjs"
+      }
+    },
+    "./tailwind.preset": {
+      "import": "./dist/tailwind.preset.js",
+      "require": "./dist/tailwind.preset.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "echo \"No tests yet\""
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tailwindcss": "^3.4.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.0"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^3.4.0"
+  },
+  "peerDependenciesMeta": {
+    "tailwindcss": {
+      "optional": true
+    }
+  },
+  "keywords": [
+    "design-tokens",
+    "design-system",
+    "tailwindcss",
+    "glassmorphism",
+    "olorin",
+    "bayit-plus"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olorin-ai/olorin-ecosystem.git",
+    "directory": "packages/ui/design-tokens"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  }
+}

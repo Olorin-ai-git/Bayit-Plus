@@ -1,0 +1,113 @@
+%% DVR Recording Process Flow
+%% Flowchart showing cloud DVR recording lifecycle
+
+flowchart TD
+    Start([User Schedules Recording]) --> CheckSub{Premium<br/>Subscription?}
+
+    CheckSub -->|No| ShowUpgrade[Show Upgrade Prompt<br/>DVR Feature Premium]
+    ShowUpgrade --> UpgradeDecision{User<br/>Upgrades?}
+    UpgradeDecision -->|No| End([Exit])
+    UpgradeDecision -->|Yes| CheckSub
+
+    CheckSub -->|Yes| SelectContent[Select Content<br/>from EPG]
+
+    SelectContent --> RecordingType{Recording<br/>Type?}
+
+    RecordingType -->|Single Episode| SingleSchedule[Schedule Single Recording]
+    RecordingType -->|Series| SeriesSchedule[Schedule Series Recording<br/>All Episodes]
+    RecordingType -->|Season| SeasonSchedule[Schedule Season Recording<br/>Current Season Only]
+
+    SingleSchedule --> SetOptions
+    SeriesSchedule --> SetOptions
+    SeasonSchedule --> SetOptions
+
+    SetOptions[Set Recording Options] --> Quality{Choose<br/>Quality}
+
+    Quality -->|Auto| AutoQuality[Auto Quality<br/>Based on Storage]
+    Quality -->|HD| HDQuality[720p/1080p]
+    Quality -->|SD| SDQuality[480p]
+
+    AutoQuality --> StorageCheck
+    HDQuality --> StorageCheck
+    SDQuality --> StorageCheck
+
+    StorageCheck{Storage<br/>Available?} -->|No| StorageFull[Show Storage Full<br/>Manage Recordings]
+    StorageFull --> DeleteOld{Delete Old<br/>Recordings?}
+    DeleteOld -->|No| End
+    DeleteOld -->|Yes| FreeSpace[Free Storage Space]
+    FreeSpace --> StorageCheck
+
+    StorageCheck -->|Yes| SaveSchedule[Save to Schedule<br/>Write to MongoDB]
+
+    SaveSchedule --> WaitForEvent[Wait for Event Start<br/>Monitor EPG]
+
+    WaitForEvent --> EventTime{Event<br/>Start Time?}
+
+    EventTime -->|Not Yet| WaitForEvent
+
+    EventTime -->|Now| PreBuffer[Start Pre-Buffer<br/>5 Minutes Before]
+
+    PreBuffer --> StartCapture[Start Stream Capture<br/>Connect to Source]
+
+    StartCapture --> CaptureValid{Stream<br/>Accessible?}
+
+    CaptureValid -->|No| RetryCapture[Retry Connection]
+    RetryCapture --> RetryCount{Retry<br/>Count < 3?}
+    RetryCount -->|Yes| StartCapture
+    RetryCount -->|No| FailedRecording[Mark Recording Failed<br/>Notify User]
+    FailedRecording --> End
+
+    CaptureValid -->|Yes| ActiveRecording[Active Recording<br/>Capture Stream]
+
+    ActiveRecording --> Monitor[Monitor Stream<br/>Check Quality]
+
+    Monitor --> StreamIssue{Stream<br/>Issues?}
+
+    StreamIssue -->|Yes| HandleIssue[Handle Issue<br/>Buffer or Skip]
+    HandleIssue --> Monitor
+
+    StreamIssue -->|No| ProcessVideo[Process Video<br/>FFmpeg Encoding]
+
+    ProcessVideo --> Transcode[Transcode to Format<br/>H.264/AAC MP4]
+
+    Transcode --> StoreChunks[Store Chunks<br/>Progressive Upload]
+
+    StoreChunks --> EventEnd{Event<br/>Ended?}
+
+    EventEnd -->|No| Monitor
+
+    EventEnd -->|Yes| PostBuffer[Record Post-Buffer<br/>5 Minutes After]
+
+    PostBuffer --> FinalizeFile[Finalize Video File<br/>Merge Chunks]
+
+    FinalizeFile --> GenerateThumbnail[Generate Thumbnail<br/>Extract Keyframes]
+
+    GenerateThumbnail --> UploadCDN[Upload to Cloud Storage<br/>CDN Distribution]
+
+    UploadCDN --> UpdateDB[Update MongoDB<br/>Recording Status: Complete]
+
+    UpdateDB --> GenerateManifest[Generate HLS Manifest<br/>Create Playlist]
+
+    GenerateManifest --> NotifyUser[Send Notification<br/>Recording Ready]
+
+    NotifyUser --> Available[Recording Available<br/>User Can Watch]
+
+    Available --> RetentionCheck{Auto-Delete<br/>After 30 Days?}
+
+    RetentionCheck -->|Yes| ScheduleDelete[Schedule Deletion]
+    RetentionCheck -->|No| KeepForever[Keep Until Manual Delete]
+
+    ScheduleDelete --> DeleteTimer[Wait 30 Days]
+    DeleteTimer --> DeleteFile[Delete Recording<br/>Free Storage]
+    DeleteFile --> End
+
+    KeepForever --> End
+
+    style Start fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    style End fill:#95A5A6,stroke:#5D6D7E,color:#fff
+    style ActiveRecording fill:#E74C3C,stroke:#A93226,color:#fff
+    style Available fill:#50C878,stroke:#2E7D4E,color:#fff
+    style FailedRecording fill:#E74C3C,stroke:#A93226,color:#fff
+    style ProcessVideo fill:#9B59B6,stroke:#6C3483,color:#fff
+    style UploadCDN fill:#3498DB,stroke:#2471A3,color:#fff
+    style NotifyUser fill:#F39C12,stroke:#B8730A,color:#fff

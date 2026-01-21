@@ -1,0 +1,12 @@
+flowchart LR
+    A[Query] --> B{Auth}
+    B -->|OK| C{Rate Limit}
+    C -->|OK| D[Generate Embedding]
+    D --> E[Pinecone Query]
+    E --> F{Results?}
+    F -->|Yes| G[Load Content]
+    F -->|No| H[MongoDB Fallback]
+    G --> I[Build Response]
+    H --> I
+    I --> J[Record Usage]
+    J --> K[Return Results]

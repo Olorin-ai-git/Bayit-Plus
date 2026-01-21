@@ -1,0 +1,35 @@
+{
+  "extends": "@react-native/typescript-config",
+  "compilerOptions": {
+    "types": ["jest", "nativewind/types"],
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "baseUrl": ".",
+    "paths": {
+      "@olorin/design-tokens": ["../packages/ui/design-tokens/src"],
+      "@olorin/shared-hooks": ["../packages/ui/shared-hooks/src"],
+      "@olorin/shared-i18n": ["../packages/ui/shared-i18n/src"],
+      "@olorin/shared-i18n/*": ["../packages/ui/shared-i18n/src/*"],
+      "@olorin/shared-services": ["../packages/ui/shared-services/src"],
+      "@olorin/shared-stores": ["../packages/ui/shared-stores/src"],
+      "@bayit/shared": ["../shared/components"],
+      "@bayit/shared-screens": ["../shared/screens"],
+      "@bayit/shared-services": ["../shared/services"],
+      "@bayit/shared-stores": ["../shared/stores"],
+      "@bayit/shared-hooks": ["../shared/hooks"],
+      "@bayit/shared-contexts": ["../shared/contexts"],
+      "@bayit/shared-i18n": ["../packages/ui/shared-i18n/src"],
+      "@bayit/shared-shims": ["../shared/shims"],
+      "@bayit/shared-assets": ["../shared/assets"],
+      "@bayit/shared-assets/*": ["../shared/assets/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts", "../shared/**/*.ts", "../shared/**/*.tsx"],
+  "exclude": [
+    "**/node_modules",
+    "**/Pods",
+    "../shared/components/admin/**",
+    "../shared/screens/admin/**",
+    "../shared/components/ui/web/**",
+    "../shared/hooks/voice/**"
+  ]
+}

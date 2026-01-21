@@ -1,0 +1,238 @@
+# Fastlane Configuration for Bayit+ iOS
+# Automates build, test, and submission processes
+#
+# Setup:
+# 1. Install Fastlane: gem install fastlane
+# 2. Run: fastlane init
+# 3. Run lanes: fastlane ios [lane_name]
+
+default_platform(:ios)
+
+platform :ios do
+  # Configuration
+  xcodeproj = "ios/BayitPlus.xcodeproj"
+  workspace = "ios/BayitPlus.xcworkspace"
+  scheme = "BayitPlus"
+  app_identifier = "tv.bayit.plus"
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # LANE: Build
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  desc "Build the app"
+  lane :build do
+    cocoapods(
+      podfile: "ios/Podfile"
+    )
+
+    gym(
+      workspace: workspace,
+      scheme: scheme,
+      clean: true,
+      export_method: "development",
+      output_directory: "./build",
+      output_name: "BayitPlus.ipa"
+    )
+  end
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # LANE: Test
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  desc "Run tests"
+  lane :test do
+    scan(
+      workspace: workspace,
+      scheme: scheme,
+      devices: ["iPhone 14 Pro", "iPad Pro (12.9-inch) (6th generation)"]
+    )
+  end
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # LANE: Beta (TestFlight)
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  desc "Upload to TestFlight"
+  lane :beta do
+    # Ensure clean state
+    cocoapods(
+      podfile: "ios/Podfile"
+    )
+
+    # Increment build number
+    increment_build_number(
+      xcodeproj: xcodeproj,
+      build_number: latest_testflight_build_number + 1
+    )
+
+    # Build & sign
+    gym(
+      workspace: workspace,
+      scheme: scheme,
+      clean: true,
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          app_identifier => "match AppStore " + app_identifier
+        }
+      }
+    )
+
+    # Upload to TestFlight
+    upload_to_testflight(
+      skip_waiting_for_build_processing: false,
+      changelog: "New build for testing. See release notes in TestFlight."
+    )
+
+    # Notify team (optional)
+    slack(
+      message: "New Bayit+ build uploaded to TestFlight! 🚀",
+      success: true
+    ) rescue nil # Don't fail if Slack not configured
+  end
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # LANE: Release (App Store)
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  desc "Build and upload to App Store"
+  lane :release do
+    # Ensure clean state
+    cocoapods(
+      podfile: "ios/Podfile"
+    )
+
+    # Prompt for version number
+    version_number = prompt(
+      text: "Enter version number (e.g., 1.0.0):",
+      ci_input: "1.0.0"
+    )
+
+    # Set version number
+    increment_version_number(
+      xcodeproj: xcodeproj,
+      version_number: version_number
+    )
+
+    # Reset build number to 1 for new version
+    increment_build_number(
+      xcodeproj: xcodeproj,
+      build_number: 1
+    )
+
+    # Build & sign
+    gym(
+      workspace: workspace,
+      scheme: scheme,
+      clean: true,
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          app_identifier => "match AppStore " + app_identifier
+        }
+      }
+    )
+
+    # Upload to App Store
+    deliver(
+      submit_for_review: false, # Manual submission recommended
+      automatic_release: true,
+      force: true, # Skip HTML preview
+      metadata_path: "./fastlane/metadata"
+    )
+
+    # Notify team
+    slack(
+      message: "Bayit+ #{version_number} uploaded to App Store Connect! 🎉",
+      success: true
+    ) rescue nil
+  end
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # LANE: Screenshots
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  desc "Generate screenshots"
+  lane :screenshots do
+    snapshot(
+      devices: [
+        "iPhone 14 Pro Max", # 6.7"
+        "iPad Pro (12.9-inch) (6th generation)"
+      ],
+      languages: ["en-US", "he"]
+    )
+  end
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # LANE: Metadata
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  desc "Upload metadata only (no binary)"
+  lane :metadata do
+    deliver(
+      skip_binary_upload: true,
+      skip_screenshots: false,
+      metadata_path: "./fastlane/metadata"
+    )
+  end
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # LANE: Version Bump
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  desc "Increment version number"
+  lane :bump_version do |options|
+    bump_type = options[:type] || "patch" # major, minor, patch
+
+    increment_version_number(
+      xcodeproj: xcodeproj,
+      bump_type: bump_type
+    )
+
+    version = get_version_number(xcodeproj: xcodeproj)
+    UI.success("Version bumped to #{version}")
+  end
+
+  desc "Increment build number"
+  lane :bump_build do
+    increment_build_number(
+      xcodeproj: xcodeproj,
+      build_number: latest_testflight_build_number + 1
+    )
+
+    build = get_build_number(xcodeproj: xcodeproj)
+    UI.success("Build number bumped to #{build}")
+  end
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # LANE: Clean
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  desc "Clean build artifacts"
+  lane :clean do
+    # Remove build folder
+    sh("rm -rf ../build")
+
+    # Clean Xcode derived data
+    clear_derived_data
+
+    # Clean Xcode build
+    xcclean(
+      workspace: workspace,
+      scheme: scheme
+    )
+
+    UI.success("Cleaned build artifacts")
+  end
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # ERROR HANDLING
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  error do |lane, exception|
+    slack(
+      message: "Fastlane failed in lane '#{lane}': #{exception.message}",
+      success: false
+    ) rescue nil
+  end
+end

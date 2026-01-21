@@ -1,0 +1,182 @@
+# Pre-commit hooks for Bayit-Plus
+# Install: pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  # Detect secrets using custom patterns
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      # Prevent commits to main branch
+      - id: no-commit-to-branch
+        args: ["--branch", "main", "--branch", "master"]
+        stages: [pre-commit]
+
+      # Check for files that would conflict in case-insensitive filesystems
+      - id: check-case-conflict
+
+      # Check for merge conflicts
+      - id: check-merge-conflict
+
+      # Check YAML syntax
+      - id: check-yaml
+        args: ["--unsafe"] # Allow custom tags in Cloud Build YAML
+
+      # Check JSON syntax
+      - id: check-json
+
+      # Check for large files (max 500KB)
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+
+      # Detect private keys
+      - id: detect-private-key
+
+      # Prevent committing AWS credentials
+      - id: detect-aws-credentials
+        args: ["--allow-missing-credentials"]
+
+      # Trim trailing whitespace
+      - id: trailing-whitespace
+        args: ["--markdown-linebreak-ext=md"]
+
+      # Ensure files end with newline
+      - id: end-of-file-fixer
+
+      # Fix mixed line endings
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+
+  # Detect secrets using Yelp's detect-secrets
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args:
+          - "--baseline"
+          - ".secrets.baseline"
+          - "--exclude-files"
+          - "poetry.lock"
+          - "--exclude-files"
+          - "package-lock.json"
+          - "--exclude-files"
+          - ".env.example"
+        exclude: |
+          (?x)(
+            \.env\.example$|
+            \.secrets\.baseline$|
+            poetry\.lock$|
+            package-lock\.json$|
+            \.min\.js$
+          )
+
+  # Python code formatting and linting (backend)
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        language_version: python3.13
+        files: ^backend/
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+        files: ^backend/
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        args:
+          - "--max-line-length=100"
+          - "--extend-ignore=E203,W503"
+        files: ^backend/
+
+  # TypeScript/JavaScript formatting (web, mobile, tvos)
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        types_or: [javascript, jsx, ts, tsx, json, yaml, markdown]
+        exclude: |
+          (?x)(
+            ^backend/|
+            \.min\.js$|
+            package-lock\.json$|
+            poetry\.lock$
+          )
+
+  # Custom secret patterns check
+  - repo: local
+    hooks:
+      - id: check-env-files
+        name: Check .env files are not committed
+        entry: bash -c
+        args:
+          - -c
+          - |
+            if git diff --cached --name-only | grep -E "\.env$" | grep -v "\.env\.example$"; then
+              echo "ERROR: .env file detected in commit. Only .env.example files are allowed."
+              exit 1
+            fi
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: check-secret-patterns
+        name: Check for common secret patterns
+        entry: bash -c
+        args:
+          - -c
+          - |
+            if git diff --cached | grep -f .git-secrets-patterns 2>/dev/null; then
+              echo "ERROR: Potential secret detected in commit. Review changes carefully."
+              exit 1
+            fi
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: check-service-account
+        name: Check service account files are not committed
+        entry: bash -c
+        args:
+          - -c
+          - |
+            if git diff --cached --name-only | grep -E "service-account.*\.json$"; then
+              echo "ERROR: Service account JSON file detected in commit."
+              exit 1
+            fi
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: check-credentials-dir
+        name: Check credentials directory files
+        entry: bash -c
+        args:
+          - -c
+          - |
+            if git diff --cached --name-only | grep -E "^credentials/"; then
+              echo "ERROR: Credentials directory file detected in commit."
+              exit 1
+            fi
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+# Configuration for specific hooks
+default_language_version:
+  python: python3.13
+  node: system
+
+# Stages
+default_stages: [pre-commit]
+
+# Fail fast - stop on first failure
+fail_fast: false
+
+# Minimum pre-commit version
+minimum_pre_commit_version: "3.0.0"

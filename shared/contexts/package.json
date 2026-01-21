@@ -1,0 +1,10 @@
+{
+  "name": "@bayit/shared-contexts",
+  "version": "1.0.0",
+  "description": "Shared React contexts for Bayit+ apps",
+  "main": "index.ts",
+  "types": "index.ts",
+  "peerDependencies": {
+    "react": ">=18"
+  }
+}

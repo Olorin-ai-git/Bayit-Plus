@@ -1,0 +1,19 @@
+{
+  "id": "com.bayitplus.app",
+  "version": "1.0.0",
+  "vendor": "Bayit Plus",
+  "type": "web",
+  "main": "index.html",
+  "title": "Bayit+",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "splashBackground": "splash.png",
+  "resolution": "1920x1080",
+  "disallowScrolling": true,
+  "requiredPermissions": [
+    "audio.operation",
+    "media.operation",
+    "network.query",
+    "settings.read"
+  ]
+}

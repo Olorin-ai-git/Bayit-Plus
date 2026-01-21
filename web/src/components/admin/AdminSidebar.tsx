@@ -1,0 +1,571 @@
+import { useState } from 'react'
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
+import { NavLink, Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import {
+  LayoutDashboard,
+  Users,
+  Tag,
+  CreditCard,
+  Package,
+  Megaphone,
+  Film,
+  Settings,
+  FileText,
+  ChevronRight,
+  LogOut,
+  Home,
+  GripVertical,
+  Bot,
+  Languages,
+  Check,
+  Video,
+  Upload,
+  Star,
+} from 'lucide-react'
+import { useAuthStore } from '@/stores/authStore'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { GlassView } from '@bayit/shared/ui'
+
+const LANGUAGE_OPTIONS = [
+  { code: 'en', flag: '🇺🇸', label: 'English' },
+  { code: 'he', flag: '🇮🇱', label: 'עברית' },
+  { code: 'es', flag: '🇪🇸', label: 'Español' },
+]
+
+interface NavItem {
+  key: string
+  labelKey: string
+  icon?: any
+  route?: string
+  children?: NavItem[]
+}
+
+const NAV_ITEMS: NavItem[] = [
+  {
+    key: 'dashboard',
+    labelKey: 'admin.nav.dashboard',
+    icon: LayoutDashboard,
+    route: '/admin',
+  },
+  {
+    key: 'users',
+    labelKey: 'admin.nav.users',
+    icon: Users,
+    route: '/admin/users',
+  },
+  {
+    key: 'librarian',
+    labelKey: 'admin.nav.librarian',
+    icon: Bot,
+    route: '/admin/librarian',
+  },
+  {
+    key: 'campaigns',
+    labelKey: 'admin.nav.campaigns',
+    icon: Tag,
+    route: '/admin/campaigns',
+  },
+  {
+    key: 'billing',
+    labelKey: 'admin.nav.billing',
+    icon: CreditCard,
+    children: [
+      { key: 'billing-overview', labelKey: 'admin.nav.billingOverview', route: '/admin/billing' },
+      { key: 'transactions', labelKey: 'admin.nav.transactions', route: '/admin/transactions' },
+      { key: 'refunds', labelKey: 'admin.nav.refunds', route: '/admin/refunds' },
+    ],
+  },
+  {
+    key: 'subscriptions',
+    labelKey: 'admin.nav.subscriptions',
+    icon: Package,
+    children: [
+      { key: 'subscriptions-list', labelKey: 'admin.nav.subscriptionsList', route: '/admin/subscriptions' },
+      { key: 'plans', labelKey: 'admin.nav.plans', route: '/admin/plans' },
+    ],
+  },
+  {
+    key: 'marketing',
+    labelKey: 'admin.nav.marketing',
+    icon: Megaphone,
+    children: [
+      { key: 'marketing-dashboard', labelKey: 'admin.nav.marketingDashboard', route: '/admin/marketing' },
+      { key: 'email-campaigns', labelKey: 'admin.nav.emailCampaigns', route: '/admin/emails' },
+      { key: 'push-notifications', labelKey: 'admin.nav.pushNotifications', route: '/admin/push' },
+    ],
+  },
+  {
+    key: 'content',
+    labelKey: 'admin.nav.content',
+    icon: Film,
+    children: [
+      { key: 'content-library', labelKey: 'admin.nav.contentLibrary', route: '/admin/content' },
+      { key: 'featured', labelKey: 'admin.nav.featured', route: '/admin/featured' },
+      { key: 'categories', labelKey: 'admin.nav.categories', route: '/admin/categories' },
+      { key: 'live-channels', labelKey: 'admin.nav.liveChannels', route: '/admin/live-channels' },
+      { key: 'radio-stations', labelKey: 'admin.nav.radioStations', route: '/admin/radio-stations' },
+      { key: 'podcasts', labelKey: 'admin.nav.podcasts', route: '/admin/podcasts' },
+      { key: 'widgets', labelKey: 'admin.nav.widgets', route: '/admin/widgets' },
+    ],
+  },
+  {
+    key: 'recordings',
+    labelKey: 'admin.nav.recordings',
+    icon: Video,
+    route: '/admin/recordings',
+  },
+  {
+    key: 'uploads',
+    labelKey: 'admin.nav.uploads',
+    icon: Upload,
+    route: '/admin/uploads',
+  },
+  {
+    key: 'settings',
+    labelKey: 'admin.nav.settings',
+    icon: Settings,
+    route: '/admin/settings',
+  },
+  {
+    key: 'logs',
+    labelKey: 'admin.nav.auditLogs',
+    icon: FileText,
+    route: '/admin/logs',
+  },
+]
+
+interface AdminSidebarProps {
+  isOpen: boolean
+  width: number
+  isRTL?: boolean
+  isMobile?: boolean
+  isDragging?: boolean
+  onClose?: () => void
+  onDragStart?: (e: any) => void
+}
+
+export default function AdminSidebar({
+  isOpen,
+  width,
+  isRTL = false,
+  isMobile = false,
+  isDragging = false,
+  onClose,
+  onDragStart,
+}: AdminSidebarProps) {
+  const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
+  const { user, logout } = useAuthStore()
+  const [expandedItems, setExpandedItems] = useState<string[]>([]) // Collapsed by default
+  const [showLanguageMenu, setShowLanguageMenu] = useState(false)
+
+  const toggleExpand = (key: string) => {
+    setExpandedItems((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    )
+  }
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
+
+  const handleNavClick = () => {
+    if (isMobile && onClose) {
+      onClose()
+    }
+  }
+
+  const handleLanguageChange = (langCode: string) => {
+    i18n.changeLanguage(langCode)
+    localStorage.setItem('bayit-language', langCode)
+    setShowLanguageMenu(false)
+  }
+
+  const currentLanguage = LANGUAGE_OPTIONS.find(lang => lang.code === i18n.language) || LANGUAGE_OPTIONS[0]
+
+  const renderNavItem = (item: NavItem, isChild = false) => {
+    const hasChildren = item.children && item.children.length > 0
+    const isExpanded = expandedItems.includes(item.key)
+    const Icon = item.icon
+
+    if (hasChildren) {
+      return (
+        <View key={item.key}>
+          <Pressable
+            onPress={() => toggleExpand(item.key)}
+            style={({ hovered }: any) => [
+              styles.navButton,
+              isRTL && styles.navButtonRTL,
+              hovered && styles.navButtonHovered,
+            ]}
+          >
+            {Icon && <Icon size={18} color={colors.textSecondary} />}
+            <Text style={[styles.navText, isRTL && styles.navTextRTL]}>{t(item.labelKey, item.key)}</Text>
+            <View 
+              style={[
+                styles.chevron, 
+                isRTL && styles.chevronRTL,
+                isExpanded && styles.chevronExpanded,
+                // @ts-ignore - Web CSS
+                { transition: 'transform 0.3s ease' }
+              ]}
+            >
+              <ChevronRight size={16} color={colors.textSecondary} />
+            </View>
+          </Pressable>
+          {isExpanded && (
+            <View style={[styles.childrenContainer, isRTL && styles.childrenContainerRTL]}>
+              {item.children!.map((child) => renderNavItem(child, true))}
+            </View>
+          )}
+        </View>
+      )
+    }
+
+    return (
+      <NavLink
+        key={item.key}
+        to={item.route!}
+        end
+        style={{ textDecoration: 'none' }}
+        onClick={handleNavClick}
+      >
+        {({ isActive }) => (
+          <View style={[
+            styles.navButton,
+            isRTL && styles.navButtonRTL,
+            isActive && styles.navButtonActive,
+            isChild && styles.navButtonChild,
+          ]}>
+            {Icon && <Icon size={18} color={isActive ? colors.primary : colors.textSecondary} />}
+            <Text style={[styles.navText, isRTL && styles.navTextRTL, isActive && styles.navTextActive]}>
+              {t(item.labelKey, item.key)}
+            </Text>
+          </View>
+        )}
+      </NavLink>
+    )
+  }
+
+  if (!isOpen) {
+    return null
+  }
+
+  return (
+    <GlassView
+      style={[
+        styles.container,
+        { width },
+        isRTL && styles.containerRTL,
+        isMobile && styles.containerMobile,
+        isDragging && styles.containerDragging,
+      ]}
+      intensity="high"
+      noBorder
+    >
+      {/* Drag Handle */}
+      {!isMobile && onDragStart && (
+        <View
+          style={[styles.dragHandle, isRTL && styles.dragHandleRTL]}
+          // @ts-ignore - Web mouse events
+          onMouseDown={onDragStart}
+        >
+          <GripVertical size={16} color={colors.textMuted} />
+        </View>
+      )}
+
+      {/* Language Selector */}
+      <View style={styles.languageSection}>
+        <Pressable
+          onPress={() => setShowLanguageMenu(!showLanguageMenu)}
+          style={({ hovered }: any) => [
+            styles.languageButton,
+            isRTL && styles.languageButtonRTL,
+            hovered && styles.languageButtonHovered,
+          ]}
+        >
+          <Languages size={18} color={colors.textSecondary} />
+          <Text style={styles.languageFlag}>{currentLanguage.flag}</Text>
+          <Text style={[styles.languageText, isRTL && styles.textRTL]}>
+            {currentLanguage.label}
+          </Text>
+          <View 
+            style={[
+              styles.chevron, 
+              isRTL && styles.chevronRTL,
+              showLanguageMenu && styles.chevronExpanded,
+              // @ts-ignore - Web CSS
+              { transition: 'transform 0.3s ease' }
+            ]}
+          >
+            <ChevronRight size={16} color={colors.textSecondary} />
+          </View>
+        </Pressable>
+
+        {showLanguageMenu && (
+          <View style={[styles.languageMenu, isRTL && styles.languageMenuRTL]}>
+            {LANGUAGE_OPTIONS.map((lang) => (
+              <Pressable
+                key={lang.code}
+                onPress={() => handleLanguageChange(lang.code)}
+                style={({ hovered }: any) => [
+                  styles.languageOption,
+                  isRTL && styles.languageOptionRTL,
+                  lang.code === i18n.language && styles.languageOptionActive,
+                  hovered && styles.languageOptionHovered,
+                ]}
+              >
+                <Text style={styles.languageOptionFlag}>{lang.flag}</Text>
+                <Text style={[styles.languageOptionText, isRTL && styles.textRTL]}>
+                  {lang.label}
+                </Text>
+                {lang.code === i18n.language && (
+                  <Check size={16} color={colors.primary} />
+                )}
+              </Pressable>
+            ))}
+          </View>
+        )}
+      </View>
+
+      {/* Navigation */}
+      <ScrollView style={styles.nav} contentContainerStyle={styles.navContent}>
+        {NAV_ITEMS.map((item) => renderNavItem(item))}
+      </ScrollView>
+
+      {/* Footer */}
+      <View style={styles.footer}>
+        <Link to="/" style={{ textDecoration: 'none' }} onClick={handleNavClick}>
+          <Pressable style={({ hovered }: any) => [
+            styles.footerButton,
+            isRTL && styles.footerButtonRTL,
+            hovered && styles.footerButtonHovered,
+          ]}>
+            <Home size={18} color={colors.textSecondary} />
+            <Text style={[styles.footerText, isRTL && styles.textRTL]}>
+              {t('admin.backToApp', 'Back to App')}
+            </Text>
+          </Pressable>
+        </Link>
+        <Pressable
+          onPress={handleLogout}
+          style={({ hovered }: any) => [
+            styles.footerButton,
+            isRTL && styles.footerButtonRTL,
+            styles.logoutButton,
+            hovered && styles.logoutButtonHovered,
+          ]}
+        >
+          <LogOut size={18} color={colors.error} />
+          <Text style={[styles.logoutText, isRTL && styles.textRTL]}>
+            {t('account.logout', 'Logout')}
+          </Text>
+        </Pressable>
+      </View>
+    </GlassView>
+  )
+}
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'fixed' as any,
+    top: 0,
+    left: 0,
+    bottom: 0,
+    borderRightWidth: 1,
+    borderRightColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 0,
+    zIndex: 100,
+    transition: 'width 0.3s ease' as any,
+  },
+  containerRTL: {
+    left: 'auto' as any,
+    right: 0,
+    borderRightWidth: 0,
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  containerMobile: {
+    width: '85%',
+    maxWidth: 320,
+  },
+  containerDragging: {
+    transition: 'none' as any,
+    userSelect: 'none' as any,
+  },
+  dragHandle: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    width: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    cursor: 'ew-resize' as any,
+    zIndex: 102,
+    backgroundColor: 'transparent',
+  },
+  dragHandleRTL: {
+    right: 'auto' as any,
+    left: 0,
+  },
+  languageSection: {
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  languageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  },
+  languageButtonRTL: {
+    flexDirection: 'row-reverse',
+  },
+  languageButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  languageFlag: {
+    fontSize: 18,
+  },
+  languageText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  languageMenu: {
+    marginTop: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    overflow: 'hidden',
+  },
+  languageMenuRTL: {
+    // RTL specific styles if needed
+  },
+  languageOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  languageOptionRTL: {
+    flexDirection: 'row-reverse',
+  },
+  languageOptionHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  languageOptionActive: {
+    backgroundColor: colors.glassPurpleLight,  // Purple-tinted glass for active state
+  },
+  languageOptionFlag: {
+    fontSize: 18,
+  },
+  languageOptionText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.text,
+  },
+  nav: {
+    flex: 1,
+  },
+  navContent: {
+    padding: spacing.sm,
+    gap: spacing.xs,
+  },
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    borderRadius: borderRadius.md,
+  },
+  navButtonRTL: {
+    flexDirection: 'row-reverse',
+  },
+  navButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  navButtonActive: {
+    backgroundColor: colors.glassPurple,  // Purple-tinted glass for active nav
+  },
+  navButtonChild: {
+    paddingRight: spacing.xl,
+  },
+  navText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  navTextRTL: {
+    textAlign: 'right',
+  },
+  navTextActive: {
+    color: colors.primary,
+  },
+  chevron: {
+    transform: [{ rotate: '0deg' }],
+  },
+  chevronRTL: {
+    transform: [{ rotate: '180deg' }],
+  },
+  chevronExpanded: {
+    transform: [{ rotate: '90deg' }],
+  },
+  childrenContainer: {
+    marginLeft: spacing.lg,
+    marginTop: spacing.xs,
+    gap: spacing.xs,
+  },
+  childrenContainerRTL: {
+    marginLeft: 0,
+    marginRight: spacing.lg,
+  },
+  footer: {
+    padding: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    gap: spacing.xs,
+  },
+  footerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    borderRadius: borderRadius.md,
+  },
+  footerButtonRTL: {
+    flexDirection: 'row-reverse',
+  },
+  footerButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  footerText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  logoutButton: {},
+  logoutButtonHovered: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+  },
+  logoutText: {
+    fontSize: 14,
+    color: colors.error,
+  },
+  textRTL: {
+    textAlign: 'right',
+  },
+})

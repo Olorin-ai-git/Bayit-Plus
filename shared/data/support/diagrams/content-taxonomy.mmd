@@ -1,0 +1,83 @@
+%% Content Taxonomy - 5-Axis Classification System
+%% Diagram showing the hierarchical classification structure
+
+graph TB
+    Content[Content Item] --> Axis1[Axis 1: Section]
+    Content --> Axis2[Axis 2: Subcategory]
+    Content --> Axis3[Axis 3: Genre]
+    Content --> Axis4[Axis 4: Audience]
+    Content --> Axis5[Axis 5: Maturity Rating]
+
+    subgraph "Axis 1: Section"
+        Axis1 --> S1[General]
+        Axis1 --> S2[Kids]
+        Axis1 --> S3[Youngsters]
+        Axis1 --> S4[Judaism]
+        Axis1 --> S5[Sports]
+        Axis1 --> S6[News]
+    end
+
+    subgraph "Axis 2: Subcategory"
+        Axis2 --> SC1[Movies]
+        Axis2 --> SC2[Series]
+        Axis2 --> SC3[Educational]
+        Axis2 --> SC4[Documentary]
+        Axis2 --> SC5[Music]
+        Axis2 --> SC6[Live Events]
+        Axis2 --> SC7[Podcasts]
+    end
+
+    subgraph "Axis 3: Genre"
+        Axis3 --> G1[Action]
+        Axis3 --> G2[Adventure]
+        Axis3 --> G3[Comedy]
+        Axis3 --> G4[Drama]
+        Axis3 --> G5[Fantasy]
+        Axis3 --> G6[Horror]
+        Axis3 --> G7[Mystery]
+        Axis3 --> G8[Romance]
+        Axis3 --> G9[Sci-Fi]
+        Axis3 --> G10[Thriller]
+        Axis3 --> G11[Animation]
+        Axis3 --> G12[Historical]
+    end
+
+    subgraph "Axis 4: Audience"
+        Axis4 --> A1[Toddlers<br/>0-3 years]
+        Axis4 --> A2[Preschool<br/>3-5 years]
+        Axis4 --> A3[Kids<br/>6-12 years]
+        Axis4 --> A4[Teen<br/>13-17 years]
+        Axis4 --> A5[Young Adult<br/>18-25 years]
+        Axis4 --> A6[Adult<br/>25+ years]
+        Axis4 --> A7[Family<br/>All Ages]
+        Axis4 --> A8[Senior<br/>65+ years]
+    end
+
+    subgraph "Axis 5: Maturity Rating"
+        Axis5 --> M1[G<br/>General Audiences]
+        Axis5 --> M2[PG<br/>Parental Guidance]
+        Axis5 --> M3[PG-13<br/>Parents Cautioned]
+        Axis5 --> M4[TV-14<br/>14+ years]
+        Axis5 --> M5[R<br/>Restricted]
+        Axis5 --> M6[TV-MA<br/>Mature Audiences]
+        Axis5 --> M7[NR<br/>Not Rated]
+    end
+
+    style Content fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    style Axis1 fill:#50C878,stroke:#2E7D4E,color:#fff
+    style Axis2 fill:#F39C12,stroke:#B8730A,color:#fff
+    style Axis3 fill:#9B59B6,stroke:#6C3483,color:#fff
+    style Axis4 fill:#E74C3C,stroke:#A93226,color:#fff
+    style Axis5 fill:#3498DB,stroke:#2471A3,color:#fff
+
+    classDef sectionStyle fill:#50C878,stroke:#2E7D4E,color:#fff
+    classDef subcategoryStyle fill:#F39C12,stroke:#B8730A,color:#fff
+    classDef genreStyle fill:#9B59B6,stroke:#6C3483,color:#fff
+    classDef audienceStyle fill:#E74C3C,stroke:#A93226,color:#fff
+    classDef maturityStyle fill:#3498DB,stroke:#2471A3,color:#fff
+
+    class S1,S2,S3,S4,S5,S6 sectionStyle
+    class SC1,SC2,SC3,SC4,SC5,SC6,SC7 subcategoryStyle
+    class G1,G2,G3,G4,G5,G6,G7,G8,G9,G10,G11,G12 genreStyle
+    class A1,A2,A3,A4,A5,A6,A7,A8 audienceStyle
+    class M1,M2,M3,M4,M5,M6,M7 maturityStyle

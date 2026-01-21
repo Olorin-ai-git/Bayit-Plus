@@ -1,0 +1,29 @@
+sequenceDiagram
+    participant P as Partner
+    participant WS as WebSocket
+    participant DS as DubbingService
+    participant STT as ElevenLabs STT
+    participant TR as Translator
+    participant TTS as ElevenLabs TTS
+    participant MS as Metering
+
+    P->>WS: Connect + API Key
+    WS->>DS: Authenticate
+    DS->>MS: create_session()
+    DS->>STT: connect()
+    DS-->>P: session_started
+
+    loop Audio Stream
+        P->>WS: Audio Chunk (PCM)
+        DS->>STT: send_audio()
+        STT-->>DS: Transcript
+        DS->>TR: translate()
+        TR-->>DS: Translation
+        DS->>TTS: synthesize()
+        TTS-->>DS: Audio
+        DS-->>P: dubbed_audio
+    end
+
+    P->>WS: Close
+    DS->>MS: end_session()
+    DS-->>P: session_ended + metrics

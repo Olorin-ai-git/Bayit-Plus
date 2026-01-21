@@ -1,0 +1,59 @@
+[tool.poetry]
+name = "olorin-i18n"
+version = "1.0.0"
+description = "Olorin.ai Platform Internationalization - Unified i18n library for multilingual support across all platforms"
+authors = ["Olorin.ai <dev@olorin.ai>"]
+license = "Proprietary"
+readme = "README.md"
+packages = [{include = "olorin_i18n"}]
+keywords = ["olorin", "i18n", "internationalization", "translations", "multilingual"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+pydantic = ">=2.5.0"
+pydantic-settings = ">=2.1.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.0.0"
+pytest-asyncio = ">=0.23.0"
+pytest-cov = ">=4.1.0"
+mypy = ">=1.8.0"
+black = ">=24.0.0"
+isort = ">=5.13.0"
+ruff = ">=0.1.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = ["E", "F", "I", "N", "W", "B", "UP"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-v --cov=olorin_i18n --cov-report=term-missing"

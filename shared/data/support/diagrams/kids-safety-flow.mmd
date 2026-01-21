@@ -1,0 +1,80 @@
+%% Kids Safety and Content Filtering Flow
+%% Flowchart showing kids mode content filtering and parental controls
+
+flowchart TD
+    Start([User Requests Content]) --> CheckProfile{User Profile<br/>Type?}
+
+    CheckProfile -->|Adult| AdultContent[Load All Content<br/>No Restrictions]
+    AdultContent --> DisplayContent[Display Content]
+    DisplayContent --> End([Show Results])
+
+    CheckProfile -->|Kids| KidsMode[Activate Kids Mode<br/>Apply Safety Filters]
+
+    KidsMode --> CheckAge{Check Profile<br/>Age Settings}
+
+    CheckAge --> AgeFilter[Apply Age-Appropriate Filter<br/>G, PG ratings only]
+
+    AgeFilter --> TaxonomyCheck[Check Content Taxonomy<br/>Audience: Kids/Family]
+
+    TaxonomyCheck --> ContentFilter[Filter by:<br/>- Section: Kids<br/>- Maturity: Safe]
+
+    ContentFilter --> ParentalControls{Parental<br/>Controls Active?}
+
+    ParentalControls -->|No| BasicFilter[Apply Basic Filter]
+    BasicFilter --> DisplayContent
+
+    ParentalControls -->|Yes| LoadControls[Load Parental Settings]
+
+    LoadControls --> CheckRestrictions{Check<br/>Restrictions}
+
+    CheckRestrictions --> TimeLimit{Time Limit<br/>Enabled?}
+
+    TimeLimit -->|Yes| CheckTime{Within<br/>Allowed Hours?}
+    CheckTime -->|No| BlockTime[Block Content<br/>Show Time Restriction]
+    BlockTime --> EndBlock([Access Denied])
+    CheckTime -->|Yes| TimeLimit
+
+    TimeLimit -->|No| CategoryFilter{Category<br/>Restrictions?}
+
+    CategoryFilter -->|Yes| ApplyCategoryFilter[Filter Blocked Categories]
+    ApplyCategoryFilter --> CategoryFilter
+
+    CategoryFilter -->|No| ContentRating{Content Rating<br/>Restrictions?}
+
+    ContentRating -->|Yes| ApplyRating[Filter by Max Rating]
+    ApplyRating --> ContentRating
+
+    ContentRating -->|No| WhitelistCheck{Whitelist<br/>Only Mode?}
+
+    WhitelistCheck -->|Yes| ApplyWhitelist[Show Only<br/>Whitelisted Content]
+    ApplyWhitelist --> WhitelistCheck
+
+    WhitelistCheck -->|No| FinalFilter[Apply All Filters]
+
+    FinalFilter --> AuditLog[Log Access Attempt<br/>for Parental Review]
+
+    AuditLog --> HasContent{Filtered<br/>Results Exist?}
+
+    HasContent -->|No| EmptyState[Show Empty State<br/>No Content Available]
+    EmptyState --> EndBlock
+
+    HasContent -->|Yes| DisplayContent
+
+    DisplayContent --> TrackUsage[Track Watch Time<br/>Update Usage Stats]
+
+    TrackUsage --> UsageLimit{Usage Limit<br/>Reached?}
+
+    UsageLimit -->|Yes| PauseContent[Pause Content<br/>Show Limit Warning]
+    PauseContent --> NotifyParent[Notify Parent<br/>Send Alert]
+    NotifyParent --> EndBlock
+
+    UsageLimit -->|No| End
+
+    style Start fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    style End fill:#50C878,stroke:#2E7D4E,color:#fff
+    style EndBlock fill:#E74C3C,stroke:#A93226,color:#fff
+    style KidsMode fill:#F39C12,stroke:#B8730A,color:#fff
+    style ParentalControls fill:#9B59B6,stroke:#6C3483,color:#fff
+    style BlockTime fill:#E74C3C,stroke:#A93226,color:#fff
+    style EmptyState fill:#95A5A6,stroke:#5D6D7E,color:#fff
+    style AuditLog fill:#3498DB,stroke:#2471A3,color:#fff

@@ -1,0 +1,11 @@
+{
+  "name": "@bayit/shared-hooks",
+  "version": "1.0.0",
+  "description": "Shared React hooks for Bayit+ apps",
+  "main": "index.ts",
+  "types": "index.ts",
+  "peerDependencies": {
+    "react": ">=18",
+    "react-native": ">=0.70"
+  }
+}

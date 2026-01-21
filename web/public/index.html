@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Bayit+ - הבית שלך בארה״ב. שידורי טלוויזיה, VOD, רדיו ופודקאסטים בעברית" />
+    <meta name="theme-color" content="#1e40af" />
+
+    <!-- App Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- Hebrew Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CJK fonts (Chinese, Japanese) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Indic script fonts (Hindi, Tamil, Bengali) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <title>Bayit+ | בית+</title>
+
+    <!-- Samsung TV WebAPIs (only loads on Samsung TVs) -->
+    <script>
+      // Only load Samsung WebAPIs on actual Samsung TVs
+      if (typeof tizen !== 'undefined' || navigator.userAgent.indexOf('Tizen') > -1) {
+        var script = document.createElement('script');
+        script.src = '$WEBAPIS/webapis/webapis.js';
+        script.onerror = function() { console.log('Samsung WebAPIs not available'); };
+        document.head.appendChild(script);
+      }
+    </script>
+
+    <style>
+      /* Base styles for React Native Web */
+      html, body, #root {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #0d0d1a;
+      }
+      /* Hide scrollbar but allow scrolling */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      /* Splash Screen Styles */
+      #splash-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+        opacity: 1;
+        transition: opacity 0.5s ease-out;
+        overflow: hidden;
+      }
+
+      #splash-screen.fade-out {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* Fullscreen background image */
+      #splash-screen .splash-bg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+        object-position: center center;
+        z-index: 1;
+      }
+
+      /* Overlay for better text visibility */
+      #splash-screen .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(13, 13, 26, 0.4);
+        z-index: 2;
+      }
+
+      /* Animated Logo Container - positioned above TV screen with fixed dimensions */
+      #splash-screen .animated-logo-container {
+        position: fixed;
+        top: 2%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 300px;
+        height: 100px;
+      }
+
+      /* Logo image - fades in after text */
+      #splash-screen .logo {
+        width: 140px;
+        height: 70px;
+        margin-bottom: -12px;
+        opacity: 0;
+        animation: logoFadeIn 1s ease-out 0.7s forwards;
+      }
+
+      /* Text container - fixed dimensions to prevent layout shift */
+      #splash-screen .text-container {
+        position: relative;
+        width: 200px;
+        height: 60px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Bayit text - HTML order: first, slides in from RIGHT, stays on LEFT */
+      #splash-screen .bayit-text {
+        position: relative;
+        font-size: 48px;
+        font-weight: bold;
+        color: #ffffff;
+        font-family: 'Heebo', sans-serif;
+        line-height: 1;
+        margin: 0;
+        opacity: 0;
+        transform: translateX(200px);
+        animation: slideInBayit 0.7s ease-in-out forwards;
+      }
+
+      /* Plus sign - HTML order: second, slides in from LEFT, stays on RIGHT */
+      #splash-screen .plus-text {
+        position: relative;
+        font-size: 42px;
+        font-weight: bold;
+        color: #a855f7;
+        line-height: 1;
+        margin: 0 0 0 4px;
+        opacity: 0;
+        transform: translateX(-200px);
+        animation: slideInPlus 0.7s ease-in-out forwards;
+      }
+
+      /* Slogan - positioned below video with glassmorphism */
+      #splash-screen .slogan-container {
+        position: fixed;
+        bottom: 8%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        opacity: 0;
+        transition: opacity 0.8s ease-out;
+        background: rgba(168, 85, 247, 0.15);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 2px solid rgba(147, 51, 234, 0.4);
+        border-radius: 16px;
+        padding: 12px 32px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+      
+      #splash-screen .slogan-container.show {
+        opacity: 1;
+      }
+
+      #splash-screen .slogan-text {
+        font-size: 18px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.95);
+        font-family: 'Heebo', sans-serif;
+        text-align: center;
+        letter-spacing: 1px;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(192, 132, 252, 0.9) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        direction: ltr;
+      }
+
+      /* Dual Clock - positioned below TV screen */
+      #splash-screen .clock-container {
+        position: fixed;
+        bottom: 43%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        background-color: transparent;
+        padding: 0;
+        gap: 4rem;
+        opacity: 0;
+        animation: fadeIn 0.8s ease-out forwards;
+        animation-delay: 1.2s;
+      }
+
+      #splash-screen .clock-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+
+      #splash-screen .flag-icon {
+        font-size: 24px;
+      }
+
+      #splash-screen .clock-time {
+        font-size: 20px;
+        font-weight: 700;
+        color: #ffffff;
+        font-family: 'Heebo', sans-serif;
+        font-variant-numeric: tabular-nums;
+        min-width: 3.5rem;
+      }
+
+      /* Animation Keyframes - elements slide to center, flex-direction handles final order */
+      @keyframes slideInPlus {
+        0% {
+          opacity: 0;
+          transform: translateX(-200px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes slideInBayit {
+        0% {
+          opacity: 0;
+          transform: translateX(200px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes logoFadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      /* Audio Permission Prompt */
+      #splash-screen .audio-prompt {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 999;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 16px;
+        padding: 16px 32px;
+        color: white;
+        font-family: 'Heebo', sans-serif;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 0;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      }
+
+      #splash-screen .audio-prompt.show {
+        opacity: 1;
+        pointer-events: auto;
+        animation: promptFadeIn 0.5s ease-out forwards, promptPulse 2s infinite;
+      }
+
+      #splash-screen .audio-prompt:hover {
+        background: rgba(0, 0, 0, 0.9);
+        transform: translateX(-50%) scale(1.05);
+      }
+
+      #splash-screen .audio-prompt .icon {
+        font-size: 24px;
+      }
+
+      @keyframes promptFadeIn {
+        from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+
+      @keyframes promptPulse {
+        0%, 100% { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
+        50% { box-shadow: 0 8px 48px rgba(102, 126, 234, 0.6); }
+      }
+
+      /* Powered By Section - positioned at bottom */
+      #splash-screen .powered-by-container {
+        position: fixed;
+        bottom: 2%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.25rem;
+        opacity: 0;
+        animation: fadeIn 0.8s ease-out forwards;
+        animation-delay: 1.5s;
+      }
+
+      #splash-screen .powered-by-text {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        font-family: 'Heebo', sans-serif;
+      }
+
+      #splash-screen .powered-by-link {
+        font-size: 12px;
+        color: #A855F7;
+        font-weight: 500;
+        font-family: 'Heebo', sans-serif;
+        text-decoration: none;
+        transition: color 0.2s ease;
+        cursor: pointer;
+      }
+
+      #splash-screen .powered-by-link:hover {
+        color: #C084FC;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 640px) {
+        #splash-screen .animated-logo-container {
+          top: 3%;
+        }
+        #splash-screen .logo {
+          width: 100px;
+          height: 50px;
+        }
+        #splash-screen .bayit-text {
+          font-size: 32px;
+        }
+        #splash-screen .plus-text {
+          font-size: 28px;
+        }
+        #splash-screen .slogan-container {
+          bottom: 12%;
+          padding: 10px 24px;
+          border-radius: 12px;
+        }
+        #splash-screen .slogan-text {
+          font-size: 14px;
+          letter-spacing: 0.5px;
+        }
+        #splash-screen .clock-container {
+          bottom: 10%;
+          gap: 2rem;
+        }
+        #splash-screen .clock-item {
+          padding: 0.5rem 1rem;
+        }
+        #splash-screen .flag-icon {
+          font-size: 20px;
+        }
+        #splash-screen .clock-time {
+          font-size: 16px;
+        }
+        #splash-screen .powered-by-container {
+          bottom: 3%;
+        }
+        #splash-screen .powered-by-text,
+        #splash-screen .powered-by-link {
+          font-size: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+      <!-- Fullscreen background video -->
+      <video 
+        id="splash-video"
+        class="splash-bg" 
+        autoplay 
+        playsinline
+        preload="auto"
+      >
+        <source id="splash-video-source" src="" type="video/mp4" />
+      </video>
+      
+      <!-- Audio Permission Prompt -->
+      <div id="audio-prompt" class="audio-prompt">
+        <span class="icon">🔊</span>
+        <span id="audio-prompt-text">Click to enable audio</span>
+      </div>
+
+      <!-- Slogan -->
+      <div class="slogan-container">
+        <p class="slogan-text" id="slogan-text">Your Home. Anywhere.</p>
+      </div>
+
+      <!-- Powered By Section at bottom -->
+      <div class="powered-by-container">
+        <a href="https://marketing.radio.olorin.ai" target="_blank" class="powered-by-link">Olorin.ai LLC</a>
+        <span class="powered-by-text" id="powered-by-text">Powered by</span>
+
+      </div>
+    </div>
+
+    <div id="root"></div>
+
+    <script>
+      // Set video source based on language and autoplay
+      (function() {
+        var videoSource = document.getElementById('splash-video-source');
+        var video = document.getElementById('splash-video');
+        var audioPrompt = document.getElementById('audio-prompt');
+        var audioPromptText = document.getElementById('audio-prompt-text');
+        if (!videoSource || !video) return;
+
+        // Check if user has previously granted audio permission
+        var audioPermissionGranted = false;
+        try {
+          audioPermissionGranted = localStorage.getItem('bayit_audio_permission') === 'granted';
+          if (audioPermissionGranted) {
+            console.log('Audio permission previously granted, will attempt autoplay');
+          }
+        } catch (e) {}
+
+        // Get saved language from localStorage
+        var currentLang = 'en'; // default
+        try {
+          var saved = localStorage.getItem('i18nextLng');
+          if (saved) {
+            currentLang = saved.split('-')[0]; // Handle locales like 'en-US'
+          }
+        } catch (e) {
+          console.warn('Could not read language from localStorage:', e);
+        }
+
+        // Localized prompt text
+        var promptTexts = {
+          en: 'Click to enable audio',
+          he: 'לחץ להפעלת שמע',
+          es: 'Haz clic para habilitar el audio',
+          zh: '点击启用音频',
+          fr: 'Cliquez pour activer l\'audio',
+          it: 'Clicca per attivare l\'audio',
+          hi: 'ऑडियो सक्षम करने के लिए क्लिक करें',
+          ta: 'ஆடியோவை இயக்க கிளிக் செய்யவும்',
+          bn: 'অডিও সক্ষম করতে ক্লিক করুন',
+          ja: 'クリックして音声を有効にする'
+        };
+
+        // Set localized text
+        if (audioPromptText && promptTexts[currentLang]) {
+          audioPromptText.textContent = promptTexts[currentLang];
+        }
+
+        // Map language to video file
+        var videoFiles = {
+          'he': '/assets/video/intro/Bayit_Intro_Hebrew.mp4',
+          'en': '/assets/video/intro/Bayit_Intro_English.mp4',
+          'es': '/assets/video/intro/Bayit_Intro_English.mp4' // Use English for Spanish
+        };
+
+        var videoPath = videoFiles[currentLang] || videoFiles['en'];
+        console.log('Loading splash video for language:', currentLang, '→', videoPath);
+        
+        // Set volume and unmuted
+        video.volume = 1.0;
+        video.muted = false;
+        
+        // Set source
+        videoSource.src = videoPath;
+        
+        // Wait for video to be ready, then play
+        video.addEventListener('canplay', function onCanPlay() {
+          console.log('Video ready, attempting to play with audio...');
+          
+          var playPromise = video.play();
+          
+          if (playPromise !== undefined) {
+            playPromise.then(function() {
+              console.log('✓ Video playing with audio!');
+              // Save permission for future visits
+              try {
+                localStorage.setItem('bayit_audio_permission', 'granted');
+              } catch (e) {}
+              // Audio worked, hide prompt
+              if (audioPrompt) audioPrompt.classList.remove('show');
+            }).catch(function(error) {
+              console.warn('Audio autoplay blocked, playing muted:', error.message);
+              video.muted = true;
+              video.play().catch(function(err) {
+                console.error('Video playback failed:', err);
+              });
+              
+              // Only show prompt if user hasn't previously granted permission
+              // (On first visit they need to click, but after that we trust they want audio)
+              if (!audioPermissionGranted) {
+                if (audioPrompt) {
+                  audioPrompt.classList.add('show');
+                  
+                  // Handle click to enable audio
+                  function enableAudio() {
+                    console.log('User clicked to enable audio');
+                    video.muted = false;
+                    video.currentTime = 0; // Restart from beginning
+                    video.play().then(function() {
+                      console.log('✓ Audio enabled!');
+                      // Save permission for future visits
+                      try {
+                        localStorage.setItem('bayit_audio_permission', 'granted');
+                      } catch (e) {}
+                      if (audioPrompt) audioPrompt.classList.remove('show');
+                    }).catch(function(err) {
+                      console.warn('Still could not enable audio:', err);
+                    });
+                  }
+                  
+                  audioPrompt.addEventListener('click', enableAudio);
+                }
+              } else {
+                console.log('Audio permission was granted before but still blocked - this is expected browser behavior');
+              }
+            });
+          }
+          
+          video.removeEventListener('canplay', onCanPlay);
+        });
+        
+        // Load the video
+        video.load();
+        
+        // Show slogan when video ends
+        video.addEventListener('ended', function() {
+          console.log('✓ Video ended, showing slogan...');
+          var sloganContainer = document.querySelector('.slogan-container');
+          if (sloganContainer) {
+            sloganContainer.classList.add('show');
+          }
+        });
+      })();
+    </script>
+
+    <script>
+      // Localized translations
+      var translations = {
+        en: {
+          poweredBy: 'Powered by',
+          slogan: 'Your Home. Anywhere.'
+        },
+        he: {
+          poweredBy: 'מופעל על ידי',
+          slogan: 'הבית שלך. בכל מקום.'
+        },
+        es: {
+          poweredBy: 'Desarrollado por',
+          slogan: 'Tu Casa. En Todas Partes.'
+        },
+        zh: {
+          poweredBy: '技术支持',
+          slogan: '您的家，随处可及。'
+        },
+        fr: {
+          poweredBy: 'Propulsé par',
+          slogan: 'Votre Maison. Partout.'
+        },
+        it: {
+          poweredBy: 'Powered by',
+          slogan: 'La Tua Casa. Ovunque.'
+        },
+        hi: {
+          poweredBy: 'द्वारा संचालित',
+          slogan: 'आपका घर। कहीं भी।'
+        },
+        ta: {
+          poweredBy: 'மூலம் இயக்கப்படுகிறது',
+          slogan: 'உங்கள் வீடு. எங்கும்.'
+        },
+        bn: {
+          poweredBy: 'দ্বারা চালিত',
+          slogan: 'আপনার বাড়ি। যেকোনো জায়গায়।'
+        },
+        ja: {
+          poweredBy: '提供元',
+          slogan: 'あなたの家、どこでも。'
+        }
+      };
+      
+      // Get saved language from localStorage
+      function getSavedLanguage() {
+        try {
+          var saved = localStorage.getItem('i18nextLng');
+          if (saved) {
+            var lang = saved.split('-')[0]; // Handle locales like 'en-US'
+            if (translations[lang]) return lang;
+          }
+        } catch (e) {}
+        return 'en'; // Default to English
+      }
+      
+      // Set localized text immediately
+      var currentLang = getSavedLanguage();
+      var poweredByElement = document.getElementById('powered-by-text');
+      var sloganElement = document.getElementById('slogan-text');
+      if (poweredByElement && translations[currentLang]) {
+        poweredByElement.textContent = translations[currentLang].poweredBy;
+      }
+      if (sloganElement && translations[currentLang]) {
+        sloganElement.textContent = translations[currentLang].slogan;
+      }
+      
+      // Check if splash has already been shown this session
+      var splashShown = sessionStorage.getItem('splashShown') === 'true';
+      var isHomePage = window.location.pathname === '/' || window.location.pathname === '';
+      
+      // Track splash screen timing
+      var splashStartTime = Date.now();
+      var MIN_SPLASH_DURATION = 3000; // 3 seconds minimum
+      var appReady = false;
+      var windowLoaded = false;
+      
+      // Hide splash immediately if already shown or not on home page
+      if (splashShown || !isHomePage) {
+        var splash = document.getElementById('splash-screen');
+        if (splash) {
+          splash.style.display = 'none';
+          splash.remove();
+        }
+        window.splashScreenRemoved = true;
+      }
+      
+      // Update clocks
+      function updateClocks() {
+        var now = new Date();
+        
+        // Israel time (Jerusalem timezone)
+        var israelTime = now.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+          timeZone: 'Asia/Jerusalem'
+        });
+        
+        // Local time
+        var localTime = now.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        });
+        
+        var israelElement = document.getElementById('israel-time');
+        var localElement = document.getElementById('local-time');
+        
+        if (israelElement) israelElement.textContent = israelTime;
+        if (localElement) localElement.textContent = localTime;
+      }
+      
+      // Update clocks immediately and every second
+      updateClocks();
+      var clockInterval = setInterval(updateClocks, 1000);
+      
+      // #region agent log
+      // Debug: Track width changes during animation
+      var widthTracking = [];
+      
+      function captureWidths(label, time) {
+        var container = document.querySelector('.animated-logo-container');
+        var textContainer = document.querySelector('.text-container');
+        var bayitEl = document.querySelector('.bayit-text');
+        var plusEl = document.querySelector('.plus-text');
+        
+        if (!container || !textContainer || !bayitEl || !plusEl) return null;
+        
+        var containerRect = container.getBoundingClientRect();
+        var textContainerRect = textContainer.getBoundingClientRect();
+        var bayitRect = bayitEl.getBoundingClientRect();
+        var plusRect = plusEl.getBoundingClientRect();
+        
+        var containerStyle = window.getComputedStyle(container);
+        var textContainerStyle = window.getComputedStyle(textContainer);
+        
+        return {
+          label: label,
+          time: time,
+          container: {
+            width: Math.round(containerRect.width * 100) / 100,
+            height: Math.round(containerRect.height * 100) / 100,
+            computedWidth: containerStyle.width,
+            left: Math.round(containerRect.left * 100) / 100
+          },
+          textContainer: {
+            width: Math.round(textContainerRect.width * 100) / 100,
+            height: Math.round(textContainerRect.height * 100) / 100,
+            computedWidth: textContainerStyle.width,
+            left: Math.round(textContainerRect.left * 100) / 100
+          },
+          bayit: {
+            width: Math.round(bayitRect.width * 100) / 100,
+            left: Math.round(bayitRect.left * 100) / 100
+          },
+          plus: {
+            width: Math.round(plusRect.width * 100) / 100,
+            left: Math.round(plusRect.left * 100) / 100
+          }
+        };
+      }
+      
+      window.addEventListener('load', function() {
+        // Capture widths at multiple points during animation
+        setTimeout(function() { widthTracking.push(captureWidths('T0_start', Date.now())); }, 10);
+        setTimeout(function() { widthTracking.push(captureWidths('T100', Date.now())); }, 100);
+        setTimeout(function() { widthTracking.push(captureWidths('T300', Date.now())); }, 300);
+        setTimeout(function() { widthTracking.push(captureWidths('T700_end', Date.now())); }, 700);
+        setTimeout(function() { widthTracking.push(captureWidths('T1000', Date.now())); }, 1000);
+        setTimeout(function() { widthTracking.push(captureWidths('T1500_stable', Date.now())); }, 1500);
+        
+        setTimeout(function() {
+          // Calculate width changes
+          var widthChanges = [];
+          for (var i = 1; i < widthTracking.length; i++) {
+            if (widthTracking[i] && widthTracking[i-1]) {
+              widthChanges.push({
+                period: widthTracking[i-1].label + ' → ' + widthTracking[i].label,
+                containerWidthDelta: (widthTracking[i].container.width - widthTracking[i-1].container.width).toFixed(2),
+                textContainerWidthDelta: (widthTracking[i].textContainer.width - widthTracking[i-1].textContainer.width).toFixed(2),
+                containerLeftDelta: (widthTracking[i].container.left - widthTracking[i-1].container.left).toFixed(2),
+                textContainerLeftDelta: (widthTracking[i].textContainer.left - widthTracking[i-1].textContainer.left).toFixed(2)
+              });
+            }
+          }
+
+          // Debug telemetry removed - was sending to non-existent endpoint
+          // If needed for debugging, implement proper telemetry service
+        }, 2000);
+      });
+      // #endregion
+      
+      // Function to hide splash screen
+      function hideSplashScreen() {
+        var elapsedTime = Date.now() - splashStartTime;
+        var remainingTime = Math.max(0, MIN_SPLASH_DURATION - elapsedTime);
+        
+        setTimeout(function() {
+          clearInterval(clockInterval); // Stop clock updates
+          var splash = document.getElementById('splash-screen');
+          if (splash) {
+            splash.classList.add('fade-out');
+            // Mark splash as shown for this session
+            sessionStorage.setItem('splashShown', 'true');
+            // Remove from DOM after fade animation
+            setTimeout(function() {
+              splash.remove();
+              // Signal that splash is removed - now safe to change direction
+              window.splashScreenRemoved = true;
+              window.dispatchEvent(new Event('splashRemoved'));
+            }, 500);
+          }
+        }, remainingTime);
+      }
+      
+      // Mark window as loaded
+      window.addEventListener('load', function() {
+        windowLoaded = true;
+        if (appReady && !splashShown && isHomePage) {
+          hideSplashScreen();
+        }
+      });
+      
+      // Function for React to call when ready
+      window.hideSplashWhenReady = function() {
+        appReady = true;
+        // Only show splash on home page and first load
+        if (windowLoaded && !splashShown && isHomePage) {
+          hideSplashScreen();
+        }
+      };
+      
+      // Fallback: Hide after max time even if React doesn't signal ready
+      setTimeout(function() {
+        if (document.getElementById('splash-screen') && !splashShown && isHomePage) {
+          clearInterval(clockInterval);
+          sessionStorage.setItem('splashShown', 'true');
+          var splash = document.getElementById('splash-screen');
+          if (splash) {
+            splash.classList.add('fade-out');
+            setTimeout(function() {
+              splash.remove();
+              // Signal that splash is removed - now safe to change direction
+              window.splashScreenRemoved = true;
+              window.dispatchEvent(new Event('splashRemoved'));
+            }, 500);
+          }
+        }
+      }, 10000); // 10 second failsafe
+    </script>
+  </body>
+</html>

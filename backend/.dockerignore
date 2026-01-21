@@ -1,0 +1,85 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+eggs/
+*.egg
+.eggs/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+
+# CI/CD - not needed in container
+.git/
+.github/
+.gitignore
+.gitlab-ci.yml
+.pre-commit-config.yaml
+
+# Documentation
+README.md
+CHANGELOG.md
+docs/
+*.md
+
+# Development
+tests/
+.env
+.env.*
+!.env.example
+*.log
+*.logs
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+env/
+
+# Poetry
+poetry.lock.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Scripts not needed at runtime
+scripts/
+Makefile
+
+# Local development configs
+docker-compose*.yml
+.editorconfig
+.flake8
+.mypy.ini
+mypy.ini
+pylint.rc
+pyproject.toml.bak
+setup.cfg
+tox.ini
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak

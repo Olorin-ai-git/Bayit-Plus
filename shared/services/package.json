@@ -1,0 +1,11 @@
+{
+  "name": "@bayit/shared-services",
+  "version": "1.0.0",
+  "description": "Shared API services for Bayit+ apps",
+  "main": "index.ts",
+  "types": "index.ts",
+  "peerDependencies": {
+    "axios": ">=1",
+    "react-native": ">=0.70"
+  }
+}

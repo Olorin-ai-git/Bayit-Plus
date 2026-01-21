@@ -1,0 +1,52 @@
+%% Authentication Flow
+%% Sequence diagram showing different authentication methods
+
+sequenceDiagram
+    participant U as User
+    participant App as Client App
+    participant API as Backend API
+    participant DB as MongoDB
+    participant OAuth as OAuth Provider
+
+    Note over U,OAuth: Email/Password Login
+    U->>App: Enter credentials
+    App->>API: POST /auth/login
+    API->>DB: Verify credentials
+    DB-->>API: User data
+    API->>API: Generate JWT token
+    API-->>App: JWT + Refresh token
+    App->>App: Store tokens securely
+    App-->>U: Login successful
+
+    Note over U,OAuth: OAuth Login (Google)
+    U->>App: Click "Sign in with Google"
+    App->>OAuth: Redirect to OAuth
+    OAuth-->>U: Show consent screen
+    U->>OAuth: Grant permission
+    OAuth-->>App: Authorization code
+    App->>API: POST /auth/oauth/callback
+    API->>OAuth: Exchange code for token
+    OAuth-->>API: User info + Access token
+    API->>DB: Create/Update user
+    API->>API: Generate JWT token
+    API-->>App: JWT + Refresh token
+    App-->>U: Login successful
+
+    Note over U,OAuth: TV QR Code Login
+    U->>TV: Start TV app
+    TV->>API: POST /auth/tv/init
+    API-->>TV: QR code + session ID
+    TV-->>U: Display QR code
+    U->>App: Scan QR with mobile
+    App->>API: POST /auth/tv/link
+    API->>DB: Link session to user
+    API-->>App: Confirmation
+    API->>TV: WebSocket: Session approved
+    TV->>API: POST /auth/tv/complete
+    API-->>TV: JWT + Refresh token
+    TV-->>U: Login successful
+
+    Note over U,OAuth: Token Refresh
+    App->>API: POST /auth/refresh
+    API->>API: Verify refresh token
+    API-->>App: New JWT token
