@@ -1,6 +1,6 @@
 {
   "name": "@olorin/shared-i18n",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Olorin.ai Unified Internationalization - Multilingual support across all platforms",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

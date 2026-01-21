@@ -2,14 +2,16 @@
 Twilio SMS Service
 Handles SMS verification code sending via Twilio API
 """
+
 import logging
 import secrets
 from typing import Optional
 
 import phonenumbers
-from app.core.config import settings
 from twilio.base.exceptions import TwilioRestException
 from twilio.rest import Client
+
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 

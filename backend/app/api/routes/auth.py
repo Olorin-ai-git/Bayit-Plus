@@ -6,25 +6,16 @@ from typing import Optional
 from urllib.parse import urlencode
 
 import httpx
-from app.core.config import settings
-from app.core.rate_limiter import RATE_LIMITING_ENABLED, limiter
-from app.core.security import (
-    create_access_token,
-    get_current_active_user,
-    get_password_hash,
-    verify_password,
-)
-from app.models.user import (
-    TokenResponse,
-    User,
-    UserCreate,
-    UserLogin,
-    UserResponse,
-    UserUpdate,
-)
-from app.services.audit_logger import audit_logger
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
+
+from app.core.config import settings
+from app.core.rate_limiter import RATE_LIMITING_ENABLED, limiter
+from app.core.security import (create_access_token, get_current_active_user,
+                               get_password_hash, verify_password)
+from app.models.user import (TokenResponse, User, UserCreate, UserLogin,
+                             UserResponse, UserUpdate)
+from app.services.audit_logger import audit_logger
 
 
 class GoogleAuthCode(BaseModel):

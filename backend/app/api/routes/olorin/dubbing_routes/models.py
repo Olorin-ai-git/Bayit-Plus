@@ -4,7 +4,7 @@ Dubbing API Models
 Request/Response models for dubbing endpoints.
 """
 
-from typing import Optional, List
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 

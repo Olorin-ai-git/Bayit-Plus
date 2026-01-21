@@ -5,10 +5,11 @@ Admin Podcast Management Routes - CRUD operations for podcasts
 from datetime import datetime
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+
 from app.models.admin import AuditAction, Permission
 from app.models.content import Podcast, PodcastEpisode
 from app.models.user import User
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from .admin_content_schemas import PodcastCreateRequest, PodcastUpdateRequest
 from .admin_content_utils import has_permission, log_audit
@@ -36,9 +37,9 @@ def _podcast_dict(p):
         "rss_feed": p.rss_feed,
         "website": p.website,
         "episode_count": p.episode_count,
-        "latest_episode_date": p.latest_episode_date.isoformat()
-        if p.latest_episode_date
-        else None,
+        "latest_episode_date": (
+            p.latest_episode_date.isoformat() if p.latest_episode_date else None
+        ),
         "is_active": p.is_active,
         "order": p.order,
         "created_at": p.created_at.isoformat(),

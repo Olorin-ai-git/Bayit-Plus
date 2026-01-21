@@ -125,9 +125,9 @@ class SupportContextBuilder:
                         {
                             "title": article.get("title_key", slug),
                             "path": f"{article.get('category', '')}/{slug}.md",
-                            "excerpt": content[:500] + "..."
-                            if len(content) > 500
-                            else content,
+                            "excerpt": (
+                                content[:500] + "..." if len(content) > 500 else content
+                            ),
                             "relevance_score": article.get("score", 0),
                             "category": article.get("category"),
                         }
@@ -181,9 +181,9 @@ class SupportContextBuilder:
                     {
                         "title": doc.get("title", ""),
                         "path": doc["path"],
-                        "excerpt": content[:500] + "..."
-                        if len(content) > 500
-                        else content,
+                        "excerpt": (
+                            content[:500] + "..." if len(content) > 500 else content
+                        ),
                         "relevance_score": score,
                     }
                 )
@@ -287,9 +287,9 @@ class SupportContextBuilder:
             "is_premium": getattr(user, "subscription", {}).get("plan")
             in ["premium", "family"],
             "language": getattr(user, "preferred_language", "en"),
-            "member_since": user.created_at.strftime("%Y-%m-%d")
-            if user.created_at
-            else None,
+            "member_since": (
+                user.created_at.strftime("%Y-%m-%d") if user.created_at else None
+            ),
         }
 
     def _build_app_context(self, app_context: dict) -> dict:

@@ -17,25 +17,19 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import httpx
-from app.core.config import settings
-from app.models.jerusalem_content import (
-    JerusalemContentAggregatedResponse,
-    JerusalemContentCategory,
-    JerusalemContentItem,
-    JerusalemContentItemResponse,
-    JerusalemContentSource,
-    JerusalemContentSourceResponse,
-    JerusalemFeaturedResponse,
-)
-from app.services.news_scraper import (
-    HEADERS,
-    HeadlineItem,
-    scrape_jerusalem_news,
-    scrape_mako,
-    scrape_walla,
-    scrape_ynet,
-)
 from bs4 import BeautifulSoup
+
+from app.core.config import settings
+from app.models.jerusalem_content import (JerusalemContentAggregatedResponse,
+                                          JerusalemContentCategory,
+                                          JerusalemContentItem,
+                                          JerusalemContentItemResponse,
+                                          JerusalemContentSource,
+                                          JerusalemContentSourceResponse,
+                                          JerusalemFeaturedResponse)
+from app.services.news_scraper import (HEADERS, HeadlineItem,
+                                       scrape_jerusalem_news, scrape_mako,
+                                       scrape_walla, scrape_ynet)
 
 logger = logging.getLogger(__name__)
 

@@ -11,10 +11,12 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from anthropic import Anthropic
+from pydantic import BaseModel, Field
+
 from app.core.config import settings
 from app.models.content import Content
-from app.services.unified_search_service import SearchFilters, UnifiedSearchService
-from pydantic import BaseModel, Field
+from app.services.unified_search_service import (SearchFilters,
+                                                 UnifiedSearchService)
 
 logger = logging.getLogger(__name__)
 
@@ -101,9 +103,11 @@ class VODLLMSearchService:
                         "genres": interpretation.genres,
                         "cast": interpretation.cast,
                         "director": interpretation.director,
-                        "year_range": [interpretation.year_min, interpretation.year_max]
-                        if interpretation.year_min or interpretation.year_max
-                        else None,
+                        "year_range": (
+                            [interpretation.year_min, interpretation.year_max]
+                            if interpretation.year_min or interpretation.year_max
+                            else None
+                        ),
                         "content_type": interpretation.content_type,
                         "subtitle_languages": interpretation.subtitle_languages,
                         "themes": interpretation.themes,

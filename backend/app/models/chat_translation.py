@@ -1,4 +1,5 @@
 """Chat translation cache and related models."""
+
 from datetime import datetime
 from typing import Dict, Optional
 

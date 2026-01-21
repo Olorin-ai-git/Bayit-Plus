@@ -20,7 +20,7 @@
  */
 
 import { API_BASE_URL } from '../config/apiConfig';
-import { getAuthToken } from '../utils/auth'; // Placeholder - adjust based on your auth setup
+import { useAuthStore } from '@bayit/shared-stores';
 
 // Type definitions
 export interface TTSSynthesizeRequest {
@@ -79,7 +79,7 @@ class BackendProxyService {
    * Get authorization headers with OAuth token
    */
   private async getHeaders(): Promise<HeadersInit> {
-    const token = await getAuthToken();
+    const { token } = useAuthStore.getState();
     return {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,

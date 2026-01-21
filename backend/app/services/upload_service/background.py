@@ -11,6 +11,7 @@ from datetime import datetime
 from typing import Any, Awaitable, Callable, Optional
 
 import httpx
+
 from app.core.config import settings
 from app.models.upload import UploadJob
 from app.services.tmdb_service import TMDBService
@@ -55,8 +56,9 @@ class BackgroundEnricher:
                 await job.save()
                 await self._broadcast_update()
 
-            from app.models.content import Content
             from beanie import PydanticObjectId
+
+            from app.models.content import Content
 
             content = await Content.get(PydanticObjectId(content_id))
             if not content:
@@ -224,11 +226,12 @@ class BackgroundEnricher:
                     await self._broadcast_update()
                 return
 
+            from beanie import PydanticObjectId
+
             from app.models.content import Content
             from app.models.subtitles import SubtitleCueModel, SubtitleTrackDoc
             from app.services.ffmpeg_service import FFmpegService
             from app.services.subtitle_service import parse_srt
-            from beanie import PydanticObjectId
 
             ffmpeg = FFmpegService()
 

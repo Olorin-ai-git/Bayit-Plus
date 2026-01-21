@@ -5,8 +5,9 @@ Content utility functions.
 import logging
 from datetime import timedelta
 
-from app.core.config import settings
 from google.cloud import storage
+
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 

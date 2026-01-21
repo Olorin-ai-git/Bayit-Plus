@@ -15,14 +15,12 @@ from typing import Any, Callable, Optional
 
 import requests.exceptions
 import urllib3.exceptions
+from google.api_core.exceptions import (InternalServerError,
+                                        ServiceUnavailable, TooManyRequests)
+from google.cloud import storage as gcs_storage
+
 from app.core.config import settings
 from app.models.upload import UploadJob
-from google.api_core.exceptions import (
-    InternalServerError,
-    ServiceUnavailable,
-    TooManyRequests,
-)
-from google.cloud import storage as gcs_storage
 
 logger = logging.getLogger(__name__)
 

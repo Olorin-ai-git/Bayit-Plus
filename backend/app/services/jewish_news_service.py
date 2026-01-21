@@ -13,14 +13,11 @@ from email.utils import parsedate_to_datetime
 from typing import Any, Dict, List, Optional
 
 import httpx
+
 from app.core.config import settings
-from app.models.jewish_news import (
-    JewishNewsAggregatedResponse,
-    JewishNewsItem,
-    JewishNewsItemResponse,
-    JewishNewsSource,
-    JewishNewsSourceResponse,
-)
+from app.models.jewish_news import (JewishNewsAggregatedResponse,
+                                    JewishNewsItem, JewishNewsItemResponse,
+                                    JewishNewsSource, JewishNewsSourceResponse)
 from app.services.news_scraper import HeadlineItem, scrape_judaism_news
 
 logger = logging.getLogger(__name__)
@@ -289,24 +286,32 @@ class JewishNewsService:
                     "source_id": str(source.id),
                     "source_name": source.name,
                     "title": title_elem.text.strip(),
-                    "link": link_elem.text.strip()
-                    if link_elem is not None and link_elem.text
-                    else "",
+                    "link": (
+                        link_elem.text.strip()
+                        if link_elem is not None and link_elem.text
+                        else ""
+                    ),
                     "published_at": pub_date,
-                    "summary": desc_elem.text.strip()
-                    if desc_elem is not None and desc_elem.text
-                    else None,
-                    "author": author_elem.text.strip()
-                    if author_elem is not None and author_elem.text
-                    else None,
+                    "summary": (
+                        desc_elem.text.strip()
+                        if desc_elem is not None and desc_elem.text
+                        else None
+                    ),
+                    "author": (
+                        author_elem.text.strip()
+                        if author_elem is not None and author_elem.text
+                        else None
+                    ),
                     "image_url": image_url,
                     "category": source.category,
                     "guid": (
                         guid_elem.text.strip()
                         if guid_elem is not None and guid_elem.text
-                        else link_elem.text.strip()
-                        if link_elem is not None and link_elem.text
-                        else ""
+                        else (
+                            link_elem.text.strip()
+                            if link_elem is not None and link_elem.text
+                            else ""
+                        )
                     ),
                 }
             )
@@ -371,17 +376,23 @@ class JewishNewsService:
                     "title": title_elem.text.strip(),
                     "link": link_url,
                     "published_at": pub_date,
-                    "summary": summary_elem.text.strip()
-                    if summary_elem is not None and summary_elem.text
-                    else None,
-                    "author": author_elem.text.strip()
-                    if author_elem is not None and author_elem.text
-                    else None,
+                    "summary": (
+                        summary_elem.text.strip()
+                        if summary_elem is not None and summary_elem.text
+                        else None
+                    ),
+                    "author": (
+                        author_elem.text.strip()
+                        if author_elem is not None and author_elem.text
+                        else None
+                    ),
                     "image_url": None,
                     "category": source.category,
-                    "guid": id_elem.text.strip()
-                    if id_elem is not None and id_elem.text
-                    else link_url,
+                    "guid": (
+                        id_elem.text.strip()
+                        if id_elem is not None and id_elem.text
+                        else link_url
+                    ),
                 }
             )
 

@@ -1,5 +1,7 @@
 from typing import Optional
+
 from fastapi import APIRouter, HTTPException, Query
+
 from app.models.content import RadioStation
 
 router = APIRouter()

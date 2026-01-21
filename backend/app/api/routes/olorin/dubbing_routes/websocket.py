@@ -7,10 +7,10 @@ Real-time audio streaming via WebSocket.
 import asyncio
 import logging
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
-from app.services.olorin.partner_service import partner_service
 from app.api.routes.olorin.dubbing_routes import state
+from app.services.olorin.partner_service import partner_service
 
 logger = logging.getLogger(__name__)
 

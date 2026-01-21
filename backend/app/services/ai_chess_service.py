@@ -1,5 +1,7 @@
 """AI chess advice service using Claude."""
+
 import anthropic
+
 from app.core.config import settings
 
 

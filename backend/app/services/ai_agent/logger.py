@@ -28,8 +28,9 @@ async def _get_content_title(content_id: str) -> Optional[str]:
 
     try:
         # Import here to avoid circular imports
-        from app.models.content import Content
         from beanie import PydanticObjectId
+
+        from app.models.content import Content
 
         content = await Content.get(PydanticObjectId(content_id))
         if content:

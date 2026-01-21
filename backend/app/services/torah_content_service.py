@@ -16,6 +16,7 @@ from email.utils import parsedate_to_datetime
 from typing import Any, Dict, List, Optional
 
 import httpx
+
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -235,21 +236,27 @@ class TorahContentService:
             item_id = (
                 guid_elem.text.strip()
                 if guid_elem is not None and guid_elem.text
-                else link_elem.text.strip()
-                if link_elem is not None and link_elem.text
-                else f"{source_id}_{hash(title_elem.text)}"
+                else (
+                    link_elem.text.strip()
+                    if link_elem is not None and link_elem.text
+                    else f"{source_id}_{hash(title_elem.text)}"
+                )
             )
 
             shiur = TorahShiur(
                 id=item_id,
                 title=title_elem.text.strip(),
                 title_he=None,  # Could add translation
-                description=desc_elem.text.strip()
-                if desc_elem is not None and desc_elem.text
-                else None,
-                rabbi=author_elem.text.strip()
-                if author_elem is not None and author_elem.text
-                else None,
+                description=(
+                    desc_elem.text.strip()
+                    if desc_elem is not None and desc_elem.text
+                    else None
+                ),
+                rabbi=(
+                    author_elem.text.strip()
+                    if author_elem is not None and author_elem.text
+                    else None
+                ),
                 rabbi_he=None,
                 category=category,
                 source=source_name,
@@ -258,9 +265,11 @@ class TorahContentService:
                 audio_url=audio_url,
                 video_url=video_url,
                 image_url=image_url,
-                link=link_elem.text.strip()
-                if link_elem is not None and link_elem.text
-                else "",
+                link=(
+                    link_elem.text.strip()
+                    if link_elem is not None and link_elem.text
+                    else ""
+                ),
             )
             items.append(shiur)
 

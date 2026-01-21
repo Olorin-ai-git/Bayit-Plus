@@ -2,6 +2,7 @@
 Israel Time Service.
 Handles Israel timezone, Shabbat detection, and Jewish calendar integration.
 """
+
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from functools import lru_cache

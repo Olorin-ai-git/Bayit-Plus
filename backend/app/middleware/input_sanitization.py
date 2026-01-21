@@ -2,6 +2,7 @@
 Input Sanitization Middleware
 Protects against XSS, SQL injection, and other injection attacks.
 """
+
 import html
 import logging
 import re
@@ -121,11 +122,15 @@ class InputSanitizationMiddleware(BaseHTTPMiddleware):
                 sanitized[key] = self._sanitize_dict(value)
             elif isinstance(value, list):
                 sanitized[key] = [
-                    self._sanitize_string(item)
-                    if isinstance(item, str)
-                    else self._sanitize_dict(item)
-                    if isinstance(item, dict)
-                    else item
+                    (
+                        self._sanitize_string(item)
+                        if isinstance(item, str)
+                        else (
+                            self._sanitize_dict(item)
+                            if isinstance(item, dict)
+                            else item
+                        )
+                    )
                     for item in value
                 ]
             else:

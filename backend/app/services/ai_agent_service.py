@@ -14,61 +14,26 @@ The actual implementation is split across the ai_agent package:
 """
 
 # Re-export all public interfaces for backwards compatibility
-from app.services.ai_agent import (
-    # Main entry point
-    run_ai_agent_audit,
-    # Tool dispatcher
-    execute_tool,
-    # Tools
-    TOOLS,
-    get_language_name,
-    # Logging
-    log_to_database,
-    clear_title_cache,
-    log_comprehensive_summary,
-)
-
+from app.services.ai_agent import (  # Main entry point; Tool dispatcher; Tools; Logging
+    TOOLS, clear_title_cache, execute_tool, get_language_name,
+    log_comprehensive_summary, log_to_database, run_ai_agent_audit)
 # Re-export executor functions for backwards compatibility
-from app.services.ai_agent.executors import (
-    # Content
-    execute_list_content_items,
-    execute_get_content_details,
-    execute_get_categories,
-    # Metadata
-    execute_search_tmdb,
-    execute_fix_missing_poster,
-    execute_fix_missing_metadata,
-    execute_recategorize_content,
-    execute_reclassify_as_series,
-    execute_reclassify_as_movie,
-    execute_flag_for_manual_review,
-    execute_clean_title,
-    # Stream
-    execute_check_stream_url,
-    # Storage
-    execute_check_storage_usage,
-    execute_list_large_files,
-    execute_calculate_storage_costs,
-    # Subtitles
-    execute_scan_video_subtitles,
-    execute_extract_video_subtitles,
-    execute_verify_required_subtitles,
-    execute_search_external_subtitles,
-    execute_download_external_subtitle,
-    execute_batch_download_subtitles,
-    execute_check_subtitle_quota,
-    # Notifications
-    execute_send_email_notification,
-    # Podcasts
-    execute_manage_podcast_episodes,
-    # Diagnostics
-    execute_check_api_configuration,
-    execute_find_duplicates,
-    execute_resolve_duplicates,
-    execute_find_quality_variants,
-    execute_link_quality_variants,
-    execute_find_missing_metadata,
-)
+from app.services.ai_agent.executors import (  # Content; Metadata; Stream; Storage; Subtitles; Notifications; Podcasts; Diagnostics
+    execute_batch_download_subtitles, execute_calculate_storage_costs,
+    execute_check_api_configuration, execute_check_storage_usage,
+    execute_check_stream_url, execute_check_subtitle_quota,
+    execute_clean_title, execute_download_external_subtitle,
+    execute_extract_video_subtitles, execute_find_duplicates,
+    execute_find_missing_metadata, execute_find_quality_variants,
+    execute_fix_missing_metadata, execute_fix_missing_poster,
+    execute_flag_for_manual_review, execute_get_categories,
+    execute_get_content_details, execute_link_quality_variants,
+    execute_list_content_items, execute_list_large_files,
+    execute_manage_podcast_episodes, execute_recategorize_content,
+    execute_reclassify_as_movie, execute_reclassify_as_series,
+    execute_resolve_duplicates, execute_scan_video_subtitles,
+    execute_search_external_subtitles, execute_search_tmdb,
+    execute_send_email_notification, execute_verify_required_subtitles)
 
 __all__ = [
     # Main entry point

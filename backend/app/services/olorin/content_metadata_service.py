@@ -8,10 +8,11 @@ with read-only access to Bayit+ Content metadata while maintaining database sepa
 import logging
 from typing import List, Optional
 
-from app.core.config import settings
-from app.models.content import Content
 from beanie import PydanticObjectId
 from beanie.odm.queries.find import FindMany
+
+from app.core.config import settings
+from app.models.content import Content
 
 logger = logging.getLogger(__name__)
 

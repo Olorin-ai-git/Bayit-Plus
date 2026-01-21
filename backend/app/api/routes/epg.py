@@ -1,13 +1,14 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
+from pydantic import BaseModel
+
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.user import User
 from app.services.catchup_service import catchup_service
 from app.services.epg_service import EPGService
 from app.services.llm_search_service import llm_search_service
-from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
-from pydantic import BaseModel
 
 router = APIRouter()
 

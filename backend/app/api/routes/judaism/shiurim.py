@@ -9,8 +9,9 @@ Handles:
 
 from typing import Optional
 
-from app.services.torah_content_service import torah_content_service
 from fastapi import APIRouter, Query
+
+from app.services.torah_content_service import torah_content_service
 
 router = APIRouter()
 

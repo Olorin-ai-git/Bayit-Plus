@@ -9,15 +9,13 @@ import json
 from datetime import datetime
 from typing import Optional
 
-from app.core.config import settings
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request
 
+from app.core.config import settings
+
 from .models import ElevenLabsWebhookEvent, WebhookResponse
-from .services import (
-    pending_transcriptions,
-    process_transcription_completed,
-    verify_elevenlabs_signature,
-)
+from .services import (pending_transcriptions, process_transcription_completed,
+                       verify_elevenlabs_signature)
 
 router = APIRouter()
 

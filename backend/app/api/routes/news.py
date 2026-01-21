@@ -8,8 +8,9 @@ Provides endpoints for:
 from datetime import datetime
 from typing import Optional
 
-from app.services.news_service import fetch_ynet_mivzakim, get_cache_info
 from fastapi import APIRouter, Query
+
+from app.services.news_service import fetch_ynet_mivzakim, get_cache_info
 
 router = APIRouter()
 

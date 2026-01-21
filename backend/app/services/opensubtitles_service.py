@@ -16,7 +16,9 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import httpx
-from app.models.subtitles import SubtitleQuotaTrackerDoc, SubtitleSearchCacheDoc
+
+from app.models.subtitles import (SubtitleQuotaTrackerDoc,
+                                  SubtitleSearchCacheDoc)
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +120,9 @@ class OpenSubtitlesService:
         - Proper header management for authenticated requests
         """
         if not self.api_key:
-            logger.error("❌ OpenSubtitles API key not configured - cannot make request")
+            logger.error(
+                "❌ OpenSubtitles API key not configured - cannot make request"
+            )
             return None
 
         # Check rate limit before making request
@@ -126,9 +130,7 @@ class OpenSubtitlesService:
         if not rate_limit_ok:
             if retry_count < MAX_RETRIES:
                 # Wait and retry
-                wait_time = min(
-                    INITIAL_RETRY_DELAY * (2**retry_count), MAX_RETRY_DELAY
-                )
+                wait_time = min(INITIAL_RETRY_DELAY * (2**retry_count), MAX_RETRY_DELAY)
                 logger.warning(
                     f"⚠️ Rate limit reached - waiting {wait_time:.1f}s before retry {retry_count + 1}"
                 )
@@ -232,9 +234,7 @@ class OpenSubtitlesService:
 
         except httpx.TimeoutException:
             if retry_count < MAX_RETRIES:
-                wait_time = min(
-                    INITIAL_RETRY_DELAY * (2**retry_count), MAX_RETRY_DELAY
-                )
+                wait_time = min(INITIAL_RETRY_DELAY * (2**retry_count), MAX_RETRY_DELAY)
                 logger.warning(
                     f"⏱️ Timeout on {endpoint} - retrying in {wait_time:.1f}s"
                 )
@@ -250,9 +250,7 @@ class OpenSubtitlesService:
 
         except httpx.ConnectError as e:
             if retry_count < MAX_RETRIES:
-                wait_time = min(
-                    INITIAL_RETRY_DELAY * (2**retry_count), MAX_RETRY_DELAY
-                )
+                wait_time = min(INITIAL_RETRY_DELAY * (2**retry_count), MAX_RETRY_DELAY)
                 logger.warning(
                     f"🔌 Connection error - retrying in {wait_time:.1f}s: {e}"
                 )
@@ -456,7 +454,9 @@ class OpenSubtitlesService:
                 external_url=results[0]["download_url"],
             )
 
-        logger.info(f"🔍 Found {len(results)} subtitles for IMDB {imdb_id} ({language})")
+        logger.info(
+            f"🔍 Found {len(results)} subtitles for IMDB {imdb_id} ({language})"
+        )
         return results
 
     async def download_subtitle(

@@ -11,9 +11,10 @@ from pathlib import Path
 from typing import Optional, Tuple
 from uuid import uuid4
 
-from app.core.config import settings
 from fastapi import UploadFile
 from PIL import Image
+
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -375,9 +376,9 @@ class GCSStorageProvider(StorageProvider):
 
             # Set credentials path if provided (for local development)
             if settings.GOOGLE_APPLICATION_CREDENTIALS:
-                os.environ[
-                    "GOOGLE_APPLICATION_CREDENTIALS"
-                ] = settings.GOOGLE_APPLICATION_CREDENTIALS
+                os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = (
+                    settings.GOOGLE_APPLICATION_CREDENTIALS
+                )
 
             # Client auto-authenticates:
             # - In Cloud Run: via metadata server

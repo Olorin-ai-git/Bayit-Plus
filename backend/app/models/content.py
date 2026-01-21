@@ -53,14 +53,14 @@ class Content(Document):
     section_ids: List[str] = Field(
         default_factory=list
     )  # ["movies", "judaism"] - cross-listing
-    primary_section_id: Optional[
-        str
-    ] = None  # Main section for sorting/display priority
+    primary_section_id: Optional[str] = (
+        None  # Main section for sorting/display priority
+    )
 
     # Format: Structural content type
-    content_format: Optional[
-        str
-    ] = None  # "movie", "series", "documentary", "short", "clip"
+    content_format: Optional[str] = (
+        None  # "movie", "series", "documentary", "short", "clip"
+    )
 
     # Audience: Age appropriateness
     audience_id: Optional[str] = None  # "general", "kids", "family", "mature"
@@ -81,17 +81,17 @@ class Content(Document):
     # Metadata
     duration: Optional[str] = None  # e.g., "1:45:00"
     year: Optional[int] = None
-    rating: Optional[
-        Union[str, float]
-    ] = None  # e.g., "PG-13" or 7.839 (accepts both for compatibility)
-    genre: Optional[
-        str
-    ] = None  # Primary genre (legacy field, kept for backward compatibility)
+    rating: Optional[Union[str, float]] = (
+        None  # e.g., "PG-13" or 7.839 (accepts both for compatibility)
+    )
+    genre: Optional[str] = (
+        None  # Primary genre (legacy field, kept for backward compatibility)
+    )
     genre_en: Optional[str] = None  # English genre translation
     genre_es: Optional[str] = None  # Spanish genre translation
-    genres: Optional[
-        List[str]
-    ] = None  # Multiple genres from TMDB (legacy - use genre_ids)
+    genres: Optional[List[str]] = (
+        None  # Multiple genres from TMDB (legacy - use genre_ids)
+    )
     cast: Optional[List[str]] = None
     director: Optional[str] = None
     content_type: Optional[str] = None  # Legacy - use content_format instead
@@ -175,9 +175,9 @@ class Content(Document):
     # Youngsters content fields (ages 12-17)
     is_youngsters_content: bool = False
     youngsters_age_rating: Optional[int] = None  # Age rating (12, 14, 17)
-    youngsters_moderation_status: Optional[
-        str
-    ] = None  # "pending", "approved", "rejected"
+    youngsters_moderation_status: Optional[str] = (
+        None  # "pending", "approved", "rejected"
+    )
     youngsters_moderated_by: Optional[str] = None  # User ID who moderated
     youngsters_moderated_at: Optional[datetime] = None  # When moderation occurred
     youngsters_educational_tags: List[str] = Field(
@@ -188,9 +188,9 @@ class Content(Document):
     needs_review: bool = False
     review_reason: Optional[str] = None
     review_priority: Optional[str] = None  # "low", "medium", "high", "critical"
-    review_issue_type: Optional[
-        str
-    ] = None  # "broken_stream", "missing_metadata", "duplicate", etc.
+    review_issue_type: Optional[str] = (
+        None  # "broken_stream", "missing_metadata", "duplicate", etc.
+    )
     review_flagged_at: Optional[datetime] = None
 
     # Analytics

@@ -3,12 +3,13 @@ Profile Stats API Routes
 Get user profile statistics including watchlist, favorites, and watch time
 """
 
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel
+
 from app.api.routes.favorites import Favorite
 from app.core.security import get_current_active_user
 from app.models.user import User
 from app.models.watchlist import WatchHistory, WatchlistItem
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel
 
 router = APIRouter(prefix="/profile", tags=["profile"])
 

@@ -4,12 +4,20 @@ const fs = require('fs');
 
 const projectRoot = __dirname;
 const sharedRoot = path.resolve(__dirname, '../shared');
+const packagesRoot = path.resolve(__dirname, '../packages/ui');
 const nodeModulesPath = path.resolve(projectRoot, 'node_modules');
 const shimsRoot = path.resolve(__dirname, 'src/shims');
 
 // Build extraNodeModules mapping including scoped packages
 function getExtraNodeModules() {
   const modules = {};
+
+  // Add @olorin packages from packages/ui directory
+  modules['@olorin/design-tokens'] = path.resolve(packagesRoot, 'design-tokens/src');
+  modules['@olorin/shared-hooks'] = path.resolve(packagesRoot, 'shared-hooks/src');
+  modules['@olorin/shared-i18n'] = path.resolve(packagesRoot, 'shared-i18n/src');
+  modules['@olorin/shared-services'] = path.resolve(packagesRoot, 'shared-services/src');
+  modules['@olorin/shared-stores'] = path.resolve(packagesRoot, 'shared-stores/src');
 
   // Add shared package aliases
   modules['@bayit/shared'] = path.resolve(sharedRoot, 'components');
@@ -60,7 +68,7 @@ function getExtraNodeModules() {
  * @type {import('@react-native/metro-config').MetroConfig}
  */
 const config = {
-  watchFolders: [sharedRoot],
+  watchFolders: [sharedRoot, packagesRoot],
   resolver: {
     // Make sure shared packages can find node_modules from tv-app
     nodeModulesPaths: [nodeModulesPath],

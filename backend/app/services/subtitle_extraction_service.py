@@ -2,6 +2,7 @@
 Subtitle Extraction Service
 Background service for analyzing videos and extracting embedded subtitles
 """
+
 import logging
 from datetime import datetime
 from typing import List

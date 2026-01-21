@@ -109,15 +109,21 @@ async def fetch_ynet_mivzakim(limit: int = 10) -> List[NewsItem]:
 
                 news_item = NewsItem(
                     title=title_elem.text.strip(),
-                    link=link_elem.text.strip()
-                    if link_elem is not None and link_elem.text
-                    else "",
-                    published=pub_date_elem.text.strip()
-                    if pub_date_elem is not None and pub_date_elem.text
-                    else "",
-                    summary=desc_elem.text.strip()
-                    if desc_elem is not None and desc_elem.text
-                    else "",
+                    link=(
+                        link_elem.text.strip()
+                        if link_elem is not None and link_elem.text
+                        else ""
+                    ),
+                    published=(
+                        pub_date_elem.text.strip()
+                        if pub_date_elem is not None and pub_date_elem.text
+                        else ""
+                    ),
+                    summary=(
+                        desc_elem.text.strip()
+                        if desc_elem is not None and desc_elem.text
+                        else ""
+                    ),
                     source="ynet",
                 )
                 items.append(news_item)

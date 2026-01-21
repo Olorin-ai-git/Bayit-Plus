@@ -8,11 +8,12 @@ import logging
 from typing import List, Optional
 
 import httpx
+from openai import APIConnectionError, APIStatusError, RateLimitError
+
 from app.core.config import settings
 from app.core.retry import async_retry
 from app.services.olorin.resilience import OPENAI_BREAKER, circuit_breaker
 from app.services.olorin.search.client import client_manager
-from openai import APIConnectionError, APIStatusError, RateLimitError
 
 logger = logging.getLogger(__name__)
 

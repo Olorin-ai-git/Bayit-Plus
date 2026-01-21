@@ -4,6 +4,7 @@ Real-time speech-to-text and translation for live streaming subtitles
 Supports Google Cloud, OpenAI Whisper, and ElevenLabs Scribe v2 for STT
 Supports Google Translate, OpenAI, and Claude for translation
 """
+
 import asyncio
 import html
 import logging
@@ -22,9 +23,9 @@ if (
     not os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
     and settings.GOOGLE_APPLICATION_CREDENTIALS
 ):
-    os.environ[
-        "GOOGLE_APPLICATION_CREDENTIALS"
-    ] = settings.GOOGLE_APPLICATION_CREDENTIALS
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = (
+        settings.GOOGLE_APPLICATION_CREDENTIALS
+    )
     logger.info(f"Set GOOGLE_APPLICATION_CREDENTIALS from settings")
 
 # Conditional imports based on provider
@@ -46,7 +47,8 @@ except ImportError:
     logger.warning("OpenAI library not available")
 
 try:
-    from app.services.elevenlabs_realtime_service import ElevenLabsRealtimeService
+    from app.services.elevenlabs_realtime_service import \
+        ElevenLabsRealtimeService
 
     ELEVENLABS_AVAILABLE = True
 except ImportError:
@@ -207,9 +209,8 @@ class LiveTranslationService:
                 raise ValueError("OPENAI_API_KEY not configured")
 
             logger.info("📡 Initializing OpenAI Whisper service...")
-            from app.services.whisper_transcription_service import (
-                WhisperTranscriptionService,
-            )
+            from app.services.whisper_transcription_service import \
+                WhisperTranscriptionService
 
             self.whisper_service = WhisperTranscriptionService()
             logger.info("✅ OpenAI Whisper initialized")
@@ -456,7 +457,10 @@ class LiveTranslationService:
                     f"🎤 Starting ElevenLabs Scribe v2 realtime stream "
                     f"(Hebrew mode, ~150ms latency)"
                 )
-                async for transcript, detected_lang in self.elevenlabs_service.transcribe_audio_stream(
+                async for (
+                    transcript,
+                    detected_lang,
+                ) in self.elevenlabs_service.transcribe_audio_stream(
                     audio_stream,
                     source_lang="he",  # Use Hebrew hint - more reliable than auto-detect
                 ):
@@ -650,13 +654,13 @@ class LiveTranslationService:
                 self.speech_client.list_models(parent="global")
                 status["speech_to_text"] = True
             elif self.provider == "whisper":
-                status[
-                    "speech_to_text"
-                ] = self.whisper_service.verify_service_availability()
+                status["speech_to_text"] = (
+                    self.whisper_service.verify_service_availability()
+                )
             elif self.provider == "elevenlabs":
-                status[
-                    "speech_to_text"
-                ] = self.elevenlabs_service.verify_service_availability()
+                status["speech_to_text"] = (
+                    self.elevenlabs_service.verify_service_availability()
+                )
         except Exception as e:
             logger.error(f"Speech-to-Text ({self.provider}) unavailable: {str(e)}")
 

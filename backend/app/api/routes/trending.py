@@ -2,25 +2,21 @@
 Trending Topics API routes.
 Provides trending topics from Israeli news and content recommendations.
 """
+
 from datetime import datetime
 from typing import List, Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+
 from app.core.security import get_optional_user
 from app.models.content import Content, LiveChannel, Podcast, RadioStation
-from app.models.trending import (
-    TrendingAnalysisResponse,
-    TrendingContentResponse,
-    TrendingSnapshot,
-    TrendingTopicItem,
-)
+from app.models.trending import (TrendingAnalysisResponse,
+                                 TrendingContentResponse, TrendingSnapshot,
+                                 TrendingTopicItem)
 from app.models.user import User
-from app.services.news_analyzer import (
-    CATEGORY_LABELS,
-    analysis_to_dict,
-    get_trending_analysis,
-)
+from app.services.news_analyzer import (CATEGORY_LABELS, analysis_to_dict,
+                                        get_trending_analysis)
 from app.services.news_scraper import get_cached_headlines, headlines_to_dict
-from fastapi import APIRouter, Depends, HTTPException, Query
 
 router = APIRouter()
 

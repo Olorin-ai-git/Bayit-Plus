@@ -1,4 +1,5 @@
 """Chess game models for multiplayer chess functionality."""
+
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional

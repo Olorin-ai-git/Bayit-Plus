@@ -1,6 +1,6 @@
 {
   "name": "@olorin/design-tokens",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Olorin.ai unified design tokens - colors, typography, spacing, shadows, and animations for glassmorphic dark theme",
   "license": "UNLICENSED",
   "private": true,

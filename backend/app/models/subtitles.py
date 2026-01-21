@@ -2,6 +2,7 @@
 Subtitle Models.
 Stores subtitle tracks and translation cache.
 """
+
 from datetime import datetime
 from typing import List, Optional
 

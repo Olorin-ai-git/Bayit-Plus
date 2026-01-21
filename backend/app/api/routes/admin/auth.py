@@ -5,10 +5,12 @@ Provides authentication and permission checking for admin endpoints.
 
 from typing import Optional
 
-from app.core.security import get_current_active_user
-from app.models.admin import ROLE_PERMISSIONS, AuditAction, AuditLog, Permission, Role
-from app.models.user import User
 from fastapi import Depends, HTTPException, Request, status
+
+from app.core.security import get_current_active_user
+from app.models.admin import (ROLE_PERMISSIONS, AuditAction, AuditLog,
+                              Permission, Role)
+from app.models.user import User
 
 
 def has_permission(required_permission: Permission):

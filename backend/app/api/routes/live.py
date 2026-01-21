@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.content import EPGEntry, LiveChannel
 from app.models.user import User
-from fastapi import APIRouter, Depends, HTTPException, Query
 
 router = APIRouter()
 

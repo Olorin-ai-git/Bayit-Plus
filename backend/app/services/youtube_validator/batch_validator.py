@@ -10,14 +10,13 @@ import logging
 from typing import Any, Dict, List, Optional, Tuple
 
 from app.models.content import Content
-from app.services.youtube_validator.cache import (
-    cache_youtube_result,
-    filter_cached_youtube,
-)
+from app.services.youtube_validator.cache import (cache_youtube_result,
+                                                  filter_cached_youtube)
 from app.services.youtube_validator.constants import get_concurrent_limit
 from app.services.youtube_validator.models import YouTubeValidationResult
 from app.services.youtube_validator.url_parser import is_youtube_url
-from app.services.youtube_validator.video_validator import validate_youtube_video
+from app.services.youtube_validator.video_validator import \
+    validate_youtube_video
 
 logger = logging.getLogger(__name__)
 

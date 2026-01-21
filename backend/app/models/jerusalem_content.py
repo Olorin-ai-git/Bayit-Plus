@@ -13,7 +13,8 @@ Collections:
 """
 
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
@@ -76,7 +77,9 @@ class JerusalemContentItem(Document):
     summary_he: Optional[str] = None
     summary_en: Optional[str] = None
     image_url: Optional[str] = None
-    category: str  # kotel, idf-ceremony, diaspora-connection, holy-sites, jerusalem-events
+    category: (
+        str  # kotel, idf-ceremony, diaspora-connection, holy-sites, jerusalem-events
+    )
     tags: List[str] = Field(default_factory=list)
     relevance_score: float = 0.0
     matched_keywords: List[str] = Field(default_factory=list)

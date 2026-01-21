@@ -10,15 +10,12 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.api.routes.admin_uploads.dependencies import has_permission
 from app.models.admin import Permission
-from app.models.upload import (
-    MonitoredFolderCreate,
-    MonitoredFolderResponse,
-    MonitoredFolderUpdate,
-)
+from app.models.upload import (MonitoredFolderCreate, MonitoredFolderResponse,
+                               MonitoredFolderUpdate)
 from app.models.user import User
 from app.services.folder_monitor_service import folder_monitor_service
-from app.api.routes.admin_uploads.dependencies import has_permission
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

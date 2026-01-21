@@ -8,8 +8,9 @@ Handles:
 
 from typing import Optional
 
-from app.services.jewish_news_service import jewish_news_service
 from fastapi import APIRouter, Query
+
+from app.services.jewish_news_service import jewish_news_service
 
 router = APIRouter()
 

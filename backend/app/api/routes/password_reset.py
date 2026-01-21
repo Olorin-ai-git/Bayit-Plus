@@ -2,19 +2,22 @@
 Password Reset Routes
 Secure password reset flow with token-based verification.
 """
+
 import logging
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel, EmailStr
+
 from app.core.config import settings
 from app.core.rate_limiter import limiter
-from app.core.security import get_current_user, get_password_hash, verify_password
+from app.core.security import (get_current_user, get_password_hash,
+                               verify_password)
 from app.models.user import User
 from app.services.audit_logger import audit_logger
 from app.services.email_service import send_email
-from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel, EmailStr
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

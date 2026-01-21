@@ -13,11 +13,12 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
+from pydantic import BaseModel, Field
+
 from app.core.config import settings
 from app.models.content import Content
 from app.models.subtitles import SubtitleTrackDoc
 from app.services.search_cache import get_cache
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 

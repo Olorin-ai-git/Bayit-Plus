@@ -5,7 +5,7 @@ Functions for getting usage summaries and checking limits.
 """
 
 import logging
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from app.models.integration_partner import IntegrationPartner, UsageRecord

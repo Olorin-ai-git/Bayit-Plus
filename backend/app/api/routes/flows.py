@@ -1,17 +1,12 @@
 from datetime import datetime
 from typing import List, Optional
 
-from app.core.security import get_current_active_user
-from app.models.flow import (
-    SYSTEM_FLOWS,
-    Flow,
-    FlowCreate,
-    FlowItem,
-    FlowResponse,
-    FlowUpdate,
-)
-from app.models.user import User
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+
+from app.core.security import get_current_active_user
+from app.models.flow import (SYSTEM_FLOWS, Flow, FlowCreate, FlowItem,
+                             FlowResponse, FlowUpdate)
+from app.models.user import User
 
 router = APIRouter()
 

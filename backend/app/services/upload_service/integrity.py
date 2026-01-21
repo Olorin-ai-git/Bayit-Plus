@@ -13,11 +13,12 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import List, Optional
 
+from beanie.operators import In
+from motor.motor_asyncio import AsyncIOMotorClient
+
 from app.core.config import settings
 from app.models.content import Content
 from app.models.upload import UploadJob, UploadStatus
-from beanie.operators import In
-from motor.motor_asyncio import AsyncIOMotorClient
 
 from .gcs import gcs_uploader
 

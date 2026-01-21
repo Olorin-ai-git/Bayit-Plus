@@ -13,17 +13,14 @@ import logging
 from datetime import datetime
 from typing import List, Optional
 
-from app.api.routes.admin_content_utils import (
-    AuditAction,
-    Permission,
-    has_permission,
-    log_audit,
-)
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from pydantic import BaseModel, Field
+
+from app.api.routes.admin_content_utils import (AuditAction, Permission,
+                                                has_permission, log_audit)
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
 from app.models.user import User
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -144,7 +141,8 @@ async def import_archive_content(
     Imports curated classic cartoons, educational films, and fairy tales
     that are in the public domain.
     """
-    from app.services.kids_public_domain_importer import kids_public_domain_importer
+    from app.services.kids_public_domain_importer import \
+        kids_public_domain_importer
 
     try:
         result = await kids_public_domain_importer.import_curated_content(

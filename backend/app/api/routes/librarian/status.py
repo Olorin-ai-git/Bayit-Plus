@@ -5,21 +5,19 @@ Librarian status and configuration endpoints.
 import logging
 from datetime import datetime, timedelta
 
+from fastapi import APIRouter, Depends, HTTPException, status
+
 from app.api.routes.admin import require_admin
-from app.api.routes.librarian.models import (
-    ActionTypeConfig,
-    AuditLimits,
-    LibrarianConfigResponse,
-    LibrarianStatusResponse,
-    PaginationConfig,
-    ScheduleConfig,
-    UIConfig,
-)
+from app.api.routes.librarian.models import (ActionTypeConfig, AuditLimits,
+                                             LibrarianConfigResponse,
+                                             LibrarianStatusResponse,
+                                             PaginationConfig, ScheduleConfig,
+                                             UIConfig)
 from app.core.config import settings
 from app.models.librarian import AuditReport
 from app.models.user import User
-from app.services.librarian_service import get_audit_statistics, get_latest_audit_report
-from fastapi import APIRouter, Depends, HTTPException, status
+from app.services.librarian_service import (get_audit_statistics,
+                                            get_latest_audit_report)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -170,7 +168,8 @@ async def get_integrity_status(current_user: User = Depends(require_admin())):
     Get a summary of all data integrity issues.
     """
     try:
-        from app.services.upload_service.integrity import upload_integrity_service
+        from app.services.upload_service.integrity import \
+            upload_integrity_service
 
         integrity_status = await upload_integrity_service.get_integrity_status()
 
@@ -180,9 +179,11 @@ async def get_integrity_status(current_user: User = Depends(require_admin())):
             "stuck_upload_jobs": integrity_status.stuck_upload_jobs,
             "stale_hash_locks": integrity_status.stale_hash_locks,
             "issues_found": integrity_status.issues_found,
-            "last_checked": integrity_status.last_checked.isoformat()
-            if integrity_status.last_checked
-            else None,
+            "last_checked": (
+                integrity_status.last_checked.isoformat()
+                if integrity_status.last_checked
+                else None
+            ),
         }
 
     except Exception as e:

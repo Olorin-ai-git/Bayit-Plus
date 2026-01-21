@@ -5,12 +5,13 @@ Manage all recordings across the platform
 
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel
+
 from app.core.security import get_current_active_user
 from app.models.recording import Recording, RecordingSession
 from app.models.user import User
 from app.services.recording_cleanup_service import RecordingCleanupService
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel
 
 router = APIRouter()
 

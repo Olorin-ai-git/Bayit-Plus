@@ -7,16 +7,14 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from beanie import PydanticObjectId
+
 from app.models.content import Content
-from app.models.subtitles import (
-    SubtitleCueModel,
-    SubtitleSearchCacheDoc,
-    SubtitleTrackDoc,
-)
+from app.models.subtitles import (SubtitleCueModel, SubtitleSearchCacheDoc,
+                                  SubtitleTrackDoc)
 from app.services.opensubtitles_service import get_opensubtitles_service
 from app.services.subtitle_service import parse_subtitles
 from app.services.tmdb_service import TMDBService
-from beanie import PydanticObjectId
 
 logger = logging.getLogger(__name__)
 
@@ -482,9 +480,11 @@ class ExternalSubtitleService:
                     parent_imdb_id=parent_imdb_id,
                     season_number=int(season_number) if season_number else None,
                     episode_number=int(episode_number) if episode_number else None,
-                    query=content.title
-                    if not content.imdb_id and not parent_imdb_id
-                    else None,
+                    query=(
+                        content.title
+                        if not content.imdb_id and not parent_imdb_id
+                        else None
+                    ),
                 )
                 if results:
                     available_sources.append("opensubtitles")

@@ -2,20 +2,17 @@
 Database Maintenance Service
 MongoDB Atlas health checks and referential integrity validation
 """
+
 import logging
 from datetime import datetime
 from typing import Any, Dict, List
 
+from motor.motor_asyncio import AsyncIOMotorClient
+
 from app.core.database import db
 from app.models.content import Content
-from app.models.content_taxonomy import (
-    ContentSection,
-    EPGEntry,
-    LiveChannel,
-    Podcast,
-    PodcastEpisode,
-)
-from motor.motor_asyncio import AsyncIOMotorClient
+from app.models.content_taxonomy import (ContentSection, EPGEntry, LiveChannel,
+                                         Podcast, PodcastEpisode)
 
 logger = logging.getLogger(__name__)
 

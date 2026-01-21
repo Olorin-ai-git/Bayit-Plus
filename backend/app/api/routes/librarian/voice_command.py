@@ -6,12 +6,14 @@ import json
 import logging
 from datetime import datetime
 
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+
 from app.api.routes.admin import require_admin
-from app.api.routes.librarian.models import VoiceCommandRequest, VoiceCommandResponse
+from app.api.routes.librarian.models import (VoiceCommandRequest,
+                                             VoiceCommandResponse)
 from app.core.config import settings
 from app.models.librarian import AuditReport
 from app.models.user import User
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -28,6 +30,7 @@ async def execute_voice_command(
     """
     try:
         import anthropic
+
         from app.services.ai_agent_service import TOOLS, execute_tool
 
         command = request.command.strip()

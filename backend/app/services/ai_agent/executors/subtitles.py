@@ -9,10 +9,11 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from beanie import PydanticObjectId
+
 from app.models.content import Content
 from app.models.librarian import LibrarianAction
 from app.services.ai_agent.tools import get_language_name
-from beanie import PydanticObjectId
 
 logger = logging.getLogger(__name__)
 
@@ -153,13 +154,13 @@ async def execute_scan_video_subtitles(
             )
             result["extraction_started"] = True
             result["extraction_status"] = "background_processing"
-            result[
-                "message"
-            ] = f"Found {len(metadata['subtitle_tracks'])} embedded tracks ({languages_str}). Extraction started."
+            result["message"] = (
+                f"Found {len(metadata['subtitle_tracks'])} embedded tracks ({languages_str}). Extraction started."
+            )
         else:
-            result[
-                "message"
-            ] = f"Scanned video: {len(metadata['subtitle_tracks'])} embedded tracks ({languages_str})"
+            result["message"] = (
+                f"Scanned video: {len(metadata['subtitle_tracks'])} embedded tracks ({languages_str})"
+            )
 
         return result
 

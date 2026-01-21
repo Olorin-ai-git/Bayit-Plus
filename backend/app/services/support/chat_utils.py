@@ -6,16 +6,14 @@ Helper functions for voice chat processing including escalation detection and TT
 import re
 from typing import Optional, Tuple
 
-from app.services.support.constants import (
-    BILLING_KEYWORDS,
-    ESCALATION_KEYWORDS,
-    ESCALATION_REASON_BILLING,
-    ESCALATION_REASON_LOW_CONFIDENCE,
-    ESCALATION_REASON_NO_DOCS,
-    ESCALATION_REASON_SECURITY,
-    SECURITY_KEYWORDS,
-    UNCERTAIN_PHRASES,
-)
+from app.services.support.constants import (BILLING_KEYWORDS,
+                                            ESCALATION_KEYWORDS,
+                                            ESCALATION_REASON_BILLING,
+                                            ESCALATION_REASON_LOW_CONFIDENCE,
+                                            ESCALATION_REASON_NO_DOCS,
+                                            ESCALATION_REASON_SECURITY,
+                                            SECURITY_KEYWORDS,
+                                            UNCERTAIN_PHRASES)
 
 
 def check_escalation(

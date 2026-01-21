@@ -1,10 +1,12 @@
 from datetime import datetime
 from typing import List, Optional, Tuple
 
-from app.core.exceptions import FriendshipError
-from app.models.friendship import FriendRequest, FriendRequestStatus, UserFriendship
-from app.models.user import User
 from beanie.operators import And, In, Or
+
+from app.core.exceptions import FriendshipError
+from app.models.friendship import (FriendRequest, FriendRequestStatus,
+                                   UserFriendship)
+from app.models.user import User
 
 
 class FriendshipService:

@@ -12,11 +12,9 @@ from typing import Any, Dict
 
 from app.services.news_scraper.constants import CACHE_TTL_MINUTES
 from app.services.news_scraper.models import HeadlineItem, ScrapedNews
-from app.services.news_scraper.source_scrapers import (
-    scrape_mako,
-    scrape_walla,
-    scrape_ynet,
-)
+from app.services.news_scraper.source_scrapers import (scrape_mako,
+                                                       scrape_walla,
+                                                       scrape_ynet)
 
 logger = logging.getLogger(__name__)
 

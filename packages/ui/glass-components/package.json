@@ -1,6 +1,6 @@
 {
   "name": "@olorin/glass-ui",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Olorin.ai Glass UI Component Library - Glassmorphic components for React Native and Web",
   "license": "UNLICENSED",
   "private": true,
@@ -75,7 +75,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@olorin/design-tokens": "1.0.0"
+    "@olorin/design-tokens": "2.0.0"
   },
   "peerDependencies": {
     "react": "^18.3.1",

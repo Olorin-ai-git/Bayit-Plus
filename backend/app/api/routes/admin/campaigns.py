@@ -6,18 +6,13 @@ Provides CRUD operations for promotional campaigns.
 from datetime import datetime
 from typing import Optional
 
-from app.models.admin import (
-    AuditAction,
-    Campaign,
-    CampaignStatus,
-    CampaignType,
-    DiscountType,
-    Permission,
-    TargetAudience,
-)
-from app.models.user import User
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
+
+from app.models.admin import (AuditAction, Campaign, CampaignStatus,
+                              CampaignType, DiscountType, Permission,
+                              TargetAudience)
+from app.models.user import User
 
 from .auth import has_permission, log_audit
 
@@ -76,9 +71,9 @@ async def get_campaigns(
                 "usage_count": c.usage_count,
                 "start_date": c.start_date.isoformat(),
                 "end_date": c.end_date.isoformat() if c.end_date else None,
-                "target_audience": c.target_audience.model_dump()
-                if c.target_audience
-                else None,
+                "target_audience": (
+                    c.target_audience.model_dump() if c.target_audience else None
+                ),
                 "created_by": c.created_by,
                 "created_at": c.created_at.isoformat(),
             }
@@ -153,9 +148,9 @@ async def get_campaign(
         "usage_count": campaign.usage_count,
         "start_date": campaign.start_date.isoformat(),
         "end_date": campaign.end_date.isoformat() if campaign.end_date else None,
-        "target_audience": campaign.target_audience.model_dump()
-        if campaign.target_audience
-        else None,
+        "target_audience": (
+            campaign.target_audience.model_dump() if campaign.target_audience else None
+        ),
         "created_by": campaign.created_by,
         "created_at": campaign.created_at.isoformat(),
         "updated_at": campaign.updated_at.isoformat(),

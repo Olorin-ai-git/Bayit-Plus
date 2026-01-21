@@ -2,6 +2,7 @@
 Device Pairing Manager for QR-based TV authentication.
 Manages pairing sessions and WebSocket connections for device pairing.
 """
+
 import asyncio
 import base64
 import io

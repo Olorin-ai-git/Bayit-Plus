@@ -18,18 +18,13 @@ Backward Compatibility:
 
 # Re-export main functions for backward compatibility
 from app.services.content_auditor.ai_insights import generate_ai_insights
-from app.services.content_auditor.classification_verifier import (
-    ClassificationVerification,
-)
+from app.services.content_auditor.classification_verifier import \
+    ClassificationVerification
 from app.services.content_auditor.metadata_auditor import (
-    check_metadata_completeness,
-    is_external_youtube_url,
-)
-from app.services.content_auditor.service import (
-    ContentAuditorService,
-    audit_content_items,
-    verify_classifications,
-)
+    check_metadata_completeness, is_external_youtube_url)
+from app.services.content_auditor.service import (ContentAuditorService,
+                                                  audit_content_items,
+                                                  verify_classifications)
 
 __all__ = [
     # Main service class

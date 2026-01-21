@@ -1,9 +1,10 @@
 import logging
 from typing import Optional
 
+from fastapi import APIRouter, HTTPException, Query
+
 from app.models.content import Podcast, PodcastEpisode
 from app.services.podcast_sync import sync_all_podcasts
-from fastapi import APIRouter, HTTPException, Query
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -126,9 +127,11 @@ async def get_podcasts(
                     "category": show.category,
                     "culture_id": show.culture_id,
                     "episodeCount": show.episode_count,
-                    "latestEpisode": show.latest_episode_date.strftime("%d/%m/%Y")
-                    if show.latest_episode_date
-                    else None,
+                    "latestEpisode": (
+                        show.latest_episode_date.strftime("%d/%m/%Y")
+                        if show.latest_episode_date
+                        else None
+                    ),
                 }
                 for show in shows
             ],
@@ -181,11 +184,13 @@ async def get_podcast(show_id: str):
                 }
                 for ep in episodes
             ],
-            "latestEpisode": {
-                "audioUrl": episodes[0].audio_url if episodes else None,
-            }
-            if episodes
-            else None,
+            "latestEpisode": (
+                {
+                    "audioUrl": episodes[0].audio_url if episodes else None,
+                }
+                if episodes
+                else None
+            ),
         }
     except HTTPException:
         raise

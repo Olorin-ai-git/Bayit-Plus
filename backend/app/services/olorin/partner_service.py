@@ -12,13 +12,11 @@ from datetime import datetime, timezone
 from typing import Optional
 
 import bcrypt
+
 from app.core.config import settings
-from app.models.integration_partner import (
-    CapabilityConfig,
-    IntegrationPartner,
-    RateLimitConfig,
-    WebhookEventType,
-)
+from app.models.integration_partner import (CapabilityConfig,
+                                            IntegrationPartner,
+                                            RateLimitConfig, WebhookEventType)
 
 logger = logging.getLogger(__name__)
 

@@ -13,29 +13,22 @@ import logging
 from datetime import datetime
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+
 from app.api.routes.admin_content_utils import log_audit
 from app.core.security import get_current_active_user
-from app.models.content_taxonomy import (
-    Audience,
-    AudienceCreate,
-    AudienceUpdate,
-    ContentSection,
-    ContentSectionCreate,
-    ContentSectionUpdate,
-    Genre,
-    GenreCreate,
-    GenreUpdate,
-    SectionSubcategory,
-    SectionSubcategoryCreate,
-    SectionSubcategoryUpdate,
-)
+from app.models.content_taxonomy import (Audience, AudienceCreate,
+                                         AudienceUpdate, ContentSection,
+                                         ContentSectionCreate,
+                                         ContentSectionUpdate, Genre,
+                                         GenreCreate, GenreUpdate,
+                                         SectionSubcategory,
+                                         SectionSubcategoryCreate,
+                                         SectionSubcategoryUpdate)
 from app.models.user import User
-from app.services.content_taxonomy_migration import (
-    get_migration_status,
-    run_full_migration,
-    seed_all_taxonomy,
-)
-from fastapi import APIRouter, Depends, HTTPException, Query
+from app.services.content_taxonomy_migration import (get_migration_status,
+                                                     run_full_migration,
+                                                     seed_all_taxonomy)
 
 router = APIRouter(prefix="/taxonomy", tags=["admin-taxonomy"])
 logger = logging.getLogger(__name__)

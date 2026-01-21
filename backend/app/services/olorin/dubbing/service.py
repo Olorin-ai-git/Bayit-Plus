@@ -8,15 +8,16 @@ import asyncio
 import logging
 import time
 import uuid
-from typing import Optional, AsyncIterator
+from typing import AsyncIterator, Optional
 
 from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
-from app.services.olorin.metering_service import metering_service
-from app.services.olorin.dubbing.models import DubbingMessage, DubbingMetrics
-from app.services.olorin.dubbing.translation import TranslationProvider
-from app.services.olorin.dubbing.stt_provider import STTProvider, get_stt_provider
 from app.services.olorin.dubbing import pipeline
+from app.services.olorin.dubbing.models import DubbingMessage, DubbingMetrics
+from app.services.olorin.dubbing.stt_provider import (STTProvider,
+                                                      get_stt_provider)
+from app.services.olorin.dubbing.translation import TranslationProvider
+from app.services.olorin.metering_service import metering_service
 
 logger = logging.getLogger(__name__)
 

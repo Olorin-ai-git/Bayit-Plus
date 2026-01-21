@@ -7,12 +7,13 @@ Replaces the legacy Category system.
 
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from pydantic import BaseModel, Field
+
 from app.models.admin import AuditAction, Permission
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection, SectionSubcategory
 from app.models.user import User
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from pydantic import BaseModel, Field
 
 from .admin_content_utils import has_permission, log_audit
 

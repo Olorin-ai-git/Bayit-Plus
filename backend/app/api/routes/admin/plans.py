@@ -6,10 +6,11 @@ Endpoints for managing subscription plan configuration
 from datetime import datetime
 from typing import List, Optional
 
-from app.models.admin import Permission, SubscriptionPlan
-from app.models.user import User
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+
+from app.models.admin import Permission, SubscriptionPlan
+from app.models.user import User
 
 from .auth import has_permission
 

@@ -8,11 +8,8 @@ This module provides backward-compatible imports from the refactored submodules.
 
 from .batch_fixer import fix_content_issues
 from .classification_fixer import fix_misclassification
-from .metadata_fixer import (
-    clean_title,
-    fix_missing_metadata,
-    is_youtube_thumbnail_url,
-)
+from .metadata_fixer import (clean_title, fix_missing_metadata,
+                             is_youtube_thumbnail_url)
 from .models import FixResult
 from .rollback import rollback_action
 

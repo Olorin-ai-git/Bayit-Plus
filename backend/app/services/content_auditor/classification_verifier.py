@@ -1,6 +1,7 @@
 """
 Classification Verifier - AI-powered classification verification using Claude API.
 """
+
 import json
 import logging
 from dataclasses import dataclass
@@ -8,15 +9,13 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import anthropic
+
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
 from app.models.librarian import ClassificationVerificationCache
 from app.services.content_auditor.constants import (
-    ClassificationAuditConfig,
-    get_anthropic_api_key,
-    get_classification_audit_config,
-    get_claude_model,
-)
+    ClassificationAuditConfig, get_anthropic_api_key,
+    get_classification_audit_config, get_claude_model)
 
 logger = logging.getLogger(__name__)
 

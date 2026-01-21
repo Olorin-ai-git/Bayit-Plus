@@ -1,11 +1,13 @@
 """Admin Subscriptions Management - Endpoints for managing user subscriptions and plans"""
+
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-from app.models.admin import AuditAction, Permission, SubscriptionPlan
-from app.models.user import User
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import BaseModel
+
+from app.models.admin import AuditAction, Permission, SubscriptionPlan
+from app.models.user import User
 
 from .auth import has_permission, log_audit
 
@@ -42,18 +44,20 @@ async def get_subscriptions(
             "user_id": str(u.id),
             "plan": u.subscription_tier,
             "status": u.subscription_status,
-            "amount": plan_prices.get(u.subscription_tier, 0)
-            if u.subscription_tier
-            else 0,
-            "start_date": u.subscription_start_date.isoformat()
-            if u.subscription_start_date
-            else None,
-            "end_date": u.subscription_end_date.isoformat()
-            if u.subscription_end_date
-            else None,
-            "next_billing": u.subscription_end_date.isoformat()
-            if u.subscription_end_date
-            else None,
+            "amount": (
+                plan_prices.get(u.subscription_tier, 0) if u.subscription_tier else 0
+            ),
+            "start_date": (
+                u.subscription_start_date.isoformat()
+                if u.subscription_start_date
+                else None
+            ),
+            "end_date": (
+                u.subscription_end_date.isoformat() if u.subscription_end_date else None
+            ),
+            "next_billing": (
+                u.subscription_end_date.isoformat() if u.subscription_end_date else None
+            ),
             "user": {
                 "id": str(u.id),
                 "name": u.name,

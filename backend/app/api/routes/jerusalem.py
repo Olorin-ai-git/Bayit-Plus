@@ -9,20 +9,17 @@ Provides Jerusalem-focused content from Israeli news sources:
 """
 
 from typing import Optional
-from fastapi import APIRouter, Query, Depends, HTTPException
 
-from app.models.user import User
-from app.models.jerusalem_content import (
-    JerusalemContentAggregatedResponse,
-    JerusalemFeaturedResponse,
-    JerusalemContentCategory,
-)
-from app.core.security import get_optional_user
+from fastapi import APIRouter, Depends, HTTPException, Query
+
 from app.api.routes.admin import require_admin
-from app.services.jerusalem_content_service import (
-    jerusalem_content_service,
-    JERUSALEM_CATEGORY_LABELS,
-)
+from app.core.security import get_optional_user
+from app.models.jerusalem_content import (JerusalemContentAggregatedResponse,
+                                          JerusalemContentCategory,
+                                          JerusalemFeaturedResponse)
+from app.models.user import User
+from app.services.jerusalem_content_service import (JERUSALEM_CATEGORY_LABELS,
+                                                    jerusalem_content_service)
 
 router = APIRouter()
 

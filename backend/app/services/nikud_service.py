@@ -3,6 +3,7 @@ Nikud (Vocalization) Service.
 Uses Claude AI to add nikud marks to Hebrew text for heritage speakers.
 Also provides word translation for tap-to-translate feature.
 """
+
 import hashlib
 import json
 from dataclasses import dataclass
@@ -10,6 +11,7 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import anthropic
+
 from app.core.config import settings
 
 

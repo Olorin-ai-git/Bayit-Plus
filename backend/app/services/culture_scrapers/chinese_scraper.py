@@ -10,13 +10,12 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import httpx
-from app.core.config import settings
-from app.services.culture_scrapers.base_scraper import (
-    DEFAULT_HEADERS,
-    BaseCultureScraper,
-    CultureHeadlineItem,
-)
 from bs4 import BeautifulSoup
+
+from app.core.config import settings
+from app.services.culture_scrapers.base_scraper import (DEFAULT_HEADERS,
+                                                        BaseCultureScraper,
+                                                        CultureHeadlineItem)
 
 logger = logging.getLogger(__name__)
 

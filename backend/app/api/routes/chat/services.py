@@ -12,14 +12,10 @@ from datetime import datetime
 from typing import Any, Optional
 
 import anthropic
+
 from app.core.config import settings
-from app.models.content import (
-    Content,
-    LiveChannel,
-    Podcast,
-    PodcastEpisode,
-    RadioStation,
-)
+from app.models.content import (Content, LiveChannel, Podcast, PodcastEpisode,
+                                RadioStation)
 
 from .helpers import extract_content_name_from_query, fuzzy_match_score
 from .models import ResolvedContentItem

@@ -11,14 +11,9 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from app.models.librarian import StreamValidationCache
 from app.services.youtube_validator.constants import (
-    CONTENT_TYPE_YOUTUBE,
-    HTTP_STATUS_NOT_FOUND,
-    HTTP_STATUS_OK,
-    STREAM_TYPE_YOUTUBE,
-    VIDEO_STATUS_CACHED_INVALID,
-    get_cache_ttl_invalid_hours,
-    get_cache_ttl_valid_hours,
-)
+    CONTENT_TYPE_YOUTUBE, HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK,
+    STREAM_TYPE_YOUTUBE, VIDEO_STATUS_CACHED_INVALID,
+    get_cache_ttl_invalid_hours, get_cache_ttl_valid_hours)
 from app.services.youtube_validator.models import YouTubeValidationResult
 
 logger = logging.getLogger(__name__)

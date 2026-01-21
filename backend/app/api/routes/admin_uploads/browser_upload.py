@@ -11,13 +11,16 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
 
+from fastapi import (APIRouter, Depends, File, HTTPException, Query,
+                     UploadFile, status)
+
 from app.api.routes.admin_uploads.dependencies import has_permission
 from app.core.config import settings
 from app.models.admin import Permission
-from app.models.upload import BrowserUploadSession, ContentType, UploadJobResponse
+from app.models.upload import (BrowserUploadSession, ContentType,
+                               UploadJobResponse)
 from app.models.user import User
 from app.services.upload_service import upload_service
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -344,9 +347,11 @@ async def get_resume_info(
             "missing_chunks": missing_chunks,
             "bytes_received": session.bytes_received,
             "total_size": session.file_size,
-            "progress": (session.bytes_received / session.file_size) * 100
-            if session.file_size > 0
-            else 0,
+            "progress": (
+                (session.bytes_received / session.file_size) * 100
+                if session.file_size > 0
+                else 0
+            ),
             "status": session.status,
             "can_resume": True,
             "started_at": session.started_at.isoformat(),
@@ -407,9 +412,11 @@ async def get_active_browser_sessions(
                     "upload_id": session.upload_id,
                     "filename": session.filename,
                     "file_size": session.file_size,
-                    "content_type": session.content_type.value
-                    if hasattr(session.content_type, "value")
-                    else session.content_type,
+                    "content_type": (
+                        session.content_type.value
+                        if hasattr(session.content_type, "value")
+                        else session.content_type
+                    ),
                     "total_chunks": session.total_chunks,
                     "chunks_received": len(session.chunks_received),
                     "missing_chunks": missing_chunks,

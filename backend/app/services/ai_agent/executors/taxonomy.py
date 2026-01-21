@@ -9,23 +9,15 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from app.models.content import Content
-from app.models.content_taxonomy import (
-    CONTENT_FORMATS,
-    Audience,
-    ContentSection,
-    Genre,
-    SectionSubcategory,
-)
+from app.models.content_taxonomy import (CONTENT_FORMATS, Audience,
+                                         ContentSection, Genre,
+                                         SectionSubcategory)
 from app.models.librarian import LibrarianAction
 from app.services.content_taxonomy_migration import (
-    LEGACY_CATEGORY_TO_GENRE_MAP,
-    LEGACY_CATEGORY_TO_SECTION_MAP,
-    _determine_audience,
-    _determine_content_format,
-    _determine_section_from_category,
-    _determine_topic_tags,
-    _map_genres_to_ids,
-)
+    LEGACY_CATEGORY_TO_GENRE_MAP, LEGACY_CATEGORY_TO_SECTION_MAP,
+    _determine_audience, _determine_content_format,
+    _determine_section_from_category, _determine_topic_tags,
+    _map_genres_to_ids)
 
 logger = logging.getLogger(__name__)
 

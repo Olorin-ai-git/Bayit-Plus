@@ -9,10 +9,8 @@ from typing import List, Optional
 
 from app.services.news_scraper.constants import MAX_SEARCH_RESULTS
 from app.services.news_scraper.models import HeadlineItem
-from app.services.news_scraper.rss_parser import (
-    search_duckduckgo,
-    search_google_news_rss,
-)
+from app.services.news_scraper.rss_parser import (search_duckduckgo,
+                                                  search_google_news_rss)
 
 logger = logging.getLogger(__name__)
 

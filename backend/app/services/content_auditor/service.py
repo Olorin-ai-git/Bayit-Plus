@@ -1,6 +1,7 @@
 """
 Content Auditor Service - Main coordinator for content auditing operations.
 """
+
 import asyncio
 import logging
 from typing import Any, Dict, List
@@ -8,12 +9,11 @@ from typing import Any, Dict, List
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
 from app.services.content_auditor.classification_verifier import (
-    cache_verification,
-    get_cached_verifications,
-    verify_classification_batch,
-)
-from app.services.content_auditor.constants import get_classification_audit_config
-from app.services.content_auditor.metadata_auditor import check_metadata_completeness
+    cache_verification, get_cached_verifications, verify_classification_batch)
+from app.services.content_auditor.constants import \
+    get_classification_audit_config
+from app.services.content_auditor.metadata_auditor import \
+    check_metadata_completeness
 
 logger = logging.getLogger(__name__)
 

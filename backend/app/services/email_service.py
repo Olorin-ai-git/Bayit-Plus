@@ -3,10 +3,12 @@ Email Service
 Simple email service for sending notifications
 Supports SendGrid and SMTP
 """
+
 import logging
 from typing import List, Optional
 
 import httpx
+
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -88,7 +90,9 @@ async def send_via_sendgrid(
             response = await client.post(url, json=payload, headers=headers)
 
             if response.status_code == 202:
-                logger.info(f"✅ Email sent successfully to {len(to_emails)} recipients")
+                logger.info(
+                    f"✅ Email sent successfully to {len(to_emails)} recipients"
+                )
                 return True
             else:
                 logger.error(f"❌ SendGrid API error: {response.status_code}")

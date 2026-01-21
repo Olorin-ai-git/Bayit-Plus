@@ -8,14 +8,13 @@ Handles:
 
 from typing import Optional
 
-from app.api.routes.judaism.constants import (
-    JUDAISM_CATEGORIES,
-    JUDAISM_CONTENT_REGEX,
-    JUDAISM_TITLE_REGEX,
-)
+from fastapi import APIRouter, Query
+
+from app.api.routes.judaism.constants import (JUDAISM_CATEGORIES,
+                                              JUDAISM_CONTENT_REGEX,
+                                              JUDAISM_TITLE_REGEX)
 from app.api.routes.judaism.schemas import JudaismContentResponse
 from app.models.content import Content
-from fastapi import APIRouter, Query
 
 router = APIRouter()
 

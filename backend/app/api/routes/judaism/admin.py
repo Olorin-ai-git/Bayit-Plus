@@ -13,10 +13,11 @@ These endpoints require admin authentication in production.
 
 from fastapi import APIRouter
 
+from app.services.community_directory_service import \
+    community_directory_service
 from app.services.jewish_news_service import jewish_news_service
-from app.services.community_directory_service import community_directory_service
-from app.services.torah_content_service import torah_content_service
 from app.services.judaism_content_seeder import judaism_content_seeder
+from app.services.torah_content_service import torah_content_service
 
 router = APIRouter()
 

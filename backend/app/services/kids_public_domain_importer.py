@@ -16,6 +16,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import httpx
+
 from app.core.config import settings
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection

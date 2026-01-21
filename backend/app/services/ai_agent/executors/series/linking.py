@@ -9,11 +9,9 @@ from typing import Any, Dict
 
 from app.core.config import settings
 from app.models.content import Content
-from app.services.ai_agent.executors._shared import (
-    get_content_or_error,
-    handle_dry_run,
-    log_librarian_action,
-)
+from app.services.ai_agent.executors._shared import (get_content_or_error,
+                                                     handle_dry_run,
+                                                     log_librarian_action)
 
 logger = logging.getLogger(__name__)
 

@@ -9,7 +9,8 @@ from typing import Any, Dict, List
 
 from app.models.content import Content
 from app.services.series_linker.constants import UnlinkedEpisode
-from app.services.series_linker.episode_matcher import extract_series_info_from_title
+from app.services.series_linker.episode_matcher import \
+    extract_series_info_from_title
 
 logger = logging.getLogger(__name__)
 

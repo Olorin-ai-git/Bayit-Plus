@@ -9,9 +9,10 @@ system widgets to display, rather than auto-pushing all system widgets.
 from datetime import datetime
 from typing import Optional
 
-from app.models.widget import WidgetPosition
 from beanie import Document
 from pydantic import BaseModel, Field
+
+from app.models.widget import WidgetPosition
 
 
 class UserSystemWidget(Document):

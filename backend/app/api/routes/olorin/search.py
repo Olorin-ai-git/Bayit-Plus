@@ -5,25 +5,20 @@ Endpoints for semantic content search with timestamp deep-linking.
 """
 
 import logging
-from typing import Optional, List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
+from app.api.routes.olorin.dependencies import (get_current_partner,
+                                                verify_capability)
+from app.api.routes.olorin.errors import OlorinErrors, get_error_message
+from app.models.content_embedding import (DialogueSearchQuery,
+                                          IndexContentRequest, SearchQuery,
+                                          SemanticSearchResult)
 from app.models.integration_partner import IntegrationPartner
-from app.models.content_embedding import (
-    SearchQuery,
-    DialogueSearchQuery,
-    SemanticSearchResult,
-    IndexContentRequest,
-)
-from app.services.olorin.vector_search_service import vector_search_service
 from app.services.olorin.metering_service import metering_service
-from app.api.routes.olorin.dependencies import (
-    get_current_partner,
-    verify_capability,
-)
-from app.api.routes.olorin.errors import get_error_message, OlorinErrors
+from app.services.olorin.vector_search_service import vector_search_service
 
 logger = logging.getLogger(__name__)
 

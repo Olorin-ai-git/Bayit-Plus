@@ -3,14 +3,16 @@ Family Controls API Routes.
 
 Unified parental control endpoints for kids and youngsters content.
 """
+
 from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 
 from app.core.security import get_current_active_user
 from app.models.family_controls import FamilyControls
 from app.models.user import User
 from app.services.family_controls_service import family_controls_service
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
 
 router = APIRouter()
 
@@ -294,12 +296,14 @@ async def get_enabled_sections(
         "max_content_rating": controls.max_content_rating,
         "viewing_hours_enabled": controls.viewing_hours_enabled,
         "viewing_allowed": viewing_allowed,
-        "viewing_hours": {
-            "start": controls.viewing_start_hour,
-            "end": controls.viewing_end_hour,
-        }
-        if controls.viewing_hours_enabled
-        else None,
+        "viewing_hours": (
+            {
+                "start": controls.viewing_start_hour,
+                "end": controls.viewing_end_hour,
+            }
+            if controls.viewing_hours_enabled
+            else None
+        ),
         "block_reason": block_reason,
     }
 

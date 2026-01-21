@@ -2,14 +2,16 @@
 OpenAI Whisper Transcription Service
 Real-time speech-to-text using OpenAI Whisper API
 """
+
 import io
 import logging
 import struct
 import wave
 from typing import AsyncIterator, Optional
 
-from app.core.config import settings
 from openai import AsyncOpenAI
+
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 

@@ -13,20 +13,14 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
 from app.core.config import settings
-from app.models.jewish_community import (
-    CommunityEvent,
-    CommunitySearchResponse,
-    Denomination,
-    EventResponse,
-    GeoLocation,
-    JewishOrganization,
-    KosherCertification,
-    OrganizationResponse,
-    OrganizationType,
-    RegionInfo,
-    RegionsResponse,
-    USRegion,
-)
+from app.models.jewish_community import (CommunityEvent,
+                                         CommunitySearchResponse, Denomination,
+                                         EventResponse, GeoLocation,
+                                         JewishOrganization,
+                                         KosherCertification,
+                                         OrganizationResponse,
+                                         OrganizationType, RegionInfo,
+                                         RegionsResponse, USRegion)
 
 logger = logging.getLogger(__name__)
 

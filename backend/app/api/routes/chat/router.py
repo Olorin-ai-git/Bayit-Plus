@@ -12,13 +12,12 @@ This router aggregates all chat-related endpoints from sub-modules:
 
 from fastapi import APIRouter
 
-from .messaging import router as messaging_router
-from .content_resolution import router as content_resolution_router
 from .audio import router as audio_router
-from .tts import router as tts_router
+from .content_resolution import router as content_resolution_router
+from .messaging import router as messaging_router
 from .sfx import router as sfx_router
+from .tts import router as tts_router
 from .webhooks import router as webhooks_router
-
 
 router = APIRouter()
 

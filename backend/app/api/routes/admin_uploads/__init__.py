@@ -20,11 +20,15 @@ The module is split into logical submodules for maintainability:
 
 from fastapi import APIRouter
 
-from app.api.routes.admin_uploads.upload_endpoints import router as upload_router
-from app.api.routes.admin_uploads.browser_upload import router as browser_router
-from app.api.routes.admin_uploads.queue_management import router as queue_router
-from app.api.routes.admin_uploads.monitored_folders import router as folders_router
+from app.api.routes.admin_uploads.browser_upload import \
+    router as browser_router
 from app.api.routes.admin_uploads.integrity import router as integrity_router
+from app.api.routes.admin_uploads.monitored_folders import \
+    router as folders_router
+from app.api.routes.admin_uploads.queue_management import \
+    router as queue_router
+from app.api.routes.admin_uploads.upload_endpoints import \
+    router as upload_router
 from app.api.routes.admin_uploads.websocket import router as websocket_router
 
 # Create combined router

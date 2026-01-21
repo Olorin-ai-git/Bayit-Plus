@@ -25,15 +25,15 @@ The module is split into logical submodules for maintainability:
 
 from fastapi import APIRouter
 
+from app.api.routes.judaism.admin import router as admin_router
+from app.api.routes.judaism.calendar import router as calendar_router
+from app.api.routes.judaism.community import router as community_router
 from app.api.routes.judaism.content import router as content_router
 from app.api.routes.judaism.featured import router as featured_router
 from app.api.routes.judaism.live import router as live_router
-from app.api.routes.judaism.shabbat import router as shabbat_router
-from app.api.routes.judaism.calendar import router as calendar_router
 from app.api.routes.judaism.news import router as news_router
-from app.api.routes.judaism.community import router as community_router
+from app.api.routes.judaism.shabbat import router as shabbat_router
 from app.api.routes.judaism.shiurim import router as shiurim_router
-from app.api.routes.judaism.admin import router as admin_router
 
 # Create combined router
 router = APIRouter()

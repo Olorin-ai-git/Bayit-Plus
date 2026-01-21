@@ -53,6 +53,7 @@
     "legacy:install:tvos": "cd tvos-app && npm install && cd tvos && pod install"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.2",
     "@changesets/cli": "^2.27.0",
     "@playwright/test": "^1.57.0",
     "@types/react": "^19.2.9",

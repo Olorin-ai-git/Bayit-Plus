@@ -5,12 +5,13 @@ Movie-specific endpoints.
 import logging
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException
+
 from app.core.config import settings
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.content import Content
 from app.models.user import User
 from app.services.tmdb_service import tmdb_service
-from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -77,9 +78,11 @@ async def debug_movie(movie_id: str):
     return {
         "direct_db_url": direct_doc.get("stream_url") if direct_doc else None,
         "beanie_url": movie.stream_url if movie else None,
-        "match": direct_doc.get("stream_url") == movie.stream_url
-        if (direct_doc and movie)
-        else False,
+        "match": (
+            direct_doc.get("stream_url") == movie.stream_url
+            if (direct_doc and movie)
+            else False
+        ),
     }
 
 

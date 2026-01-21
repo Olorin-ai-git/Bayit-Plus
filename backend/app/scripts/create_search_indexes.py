@@ -11,9 +11,10 @@ Run with: poetry run python -m app.scripts.create_search_indexes
 import asyncio
 import logging
 
-from app.core.config import settings
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.errors import OperationFailure
+
+from app.core.config import settings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

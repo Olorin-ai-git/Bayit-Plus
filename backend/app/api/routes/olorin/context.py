@@ -7,18 +7,19 @@ Endpoints for detecting and explaining Israeli/Jewish cultural references.
 import logging
 from typing import List, Optional
 
-from app.api.routes.olorin.dependencies import get_current_partner, verify_capability
-from app.api.routes.olorin.errors import OlorinErrors, get_error_message
-from app.models.cultural_reference import (
-    ContextDetectionRequest,
-    DetectedReference,
-    ReferenceExplanation,
-)
-from app.models.integration_partner import IntegrationPartner
-from app.services.olorin.cultural_context_service import cultural_context_service
-from app.services.olorin.metering_service import metering_service
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
+
+from app.api.routes.olorin.dependencies import (get_current_partner,
+                                                verify_capability)
+from app.api.routes.olorin.errors import OlorinErrors, get_error_message
+from app.models.cultural_reference import (ContextDetectionRequest,
+                                           DetectedReference,
+                                           ReferenceExplanation)
+from app.models.integration_partner import IntegrationPartner
+from app.services.olorin.cultural_context_service import \
+    cultural_context_service
+from app.services.olorin.metering_service import metering_service
 
 logger = logging.getLogger(__name__)
 

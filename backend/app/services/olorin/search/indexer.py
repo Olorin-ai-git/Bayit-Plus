@@ -9,15 +9,18 @@ Includes resilience patterns for external service calls.
 import logging
 from typing import List, Optional
 
+from olorin import IndexableContent
+
 from app.adapters import BayitContentAdapter
 from app.core.config import settings
 from app.models.content_embedding import ContentEmbedding
-from app.services.olorin.content_metadata_service import content_metadata_service
+from app.services.olorin.content_metadata_service import \
+    content_metadata_service
 from app.services.olorin.search.client import client_manager
 from app.services.olorin.search.embedding import generate_embedding
-from app.services.olorin.search.helpers import generate_vector_id, group_subtitles
+from app.services.olorin.search.helpers import (generate_vector_id,
+                                                group_subtitles)
 from app.services.olorin.search.pinecone_ops import safe_pinecone_upsert
-from olorin import IndexableContent
 
 logger = logging.getLogger(__name__)
 

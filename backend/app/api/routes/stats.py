@@ -1,7 +1,8 @@
+from fastapi import APIRouter, Depends
+
 from app.core.security import get_current_user
 from app.models.user import User
 from app.services.stats_service import StatsService
-from fastapi import APIRouter, Depends
 
 router = APIRouter(prefix="/stats", tags=["stats"])
 

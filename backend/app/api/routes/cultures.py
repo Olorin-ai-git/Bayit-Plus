@@ -8,22 +8,19 @@ Provides endpoints for:
 - Time information for culture timezones
 """
 
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Query, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
-from app.core.security import get_optional_user
-from app.models.user import User
-from app.models.culture import (
-    CultureResponse,
-    CultureCityResponse,
-    CultureContentAggregatedResponse,
-    CultureContentItemResponse,
-    CultureFeaturedResponse,
-    CultureTimeResponse,
-)
-from app.services.culture_content_service import culture_content_service
 from app.core.config import settings
+from app.core.security import get_optional_user
+from app.models.culture import (CultureCityResponse,
+                                CultureContentAggregatedResponse,
+                                CultureContentItemResponse,
+                                CultureFeaturedResponse, CultureResponse,
+                                CultureTimeResponse)
+from app.models.user import User
+from app.services.culture_content_service import culture_content_service
 
 router = APIRouter()
 

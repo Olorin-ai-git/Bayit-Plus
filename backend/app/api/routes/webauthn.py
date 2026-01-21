@@ -7,11 +7,12 @@ Handles passkey registration, authentication, and session management.
 import logging
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel, Field
+
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.user import User
 from app.services.webauthn_service import WebAuthnService, get_webauthn_service
-from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel, Field
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

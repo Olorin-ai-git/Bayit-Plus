@@ -2,17 +2,19 @@
 WebSocket endpoint for live subtitle translation (Premium feature)
 Real-time audio → transcription → translation → subtitle streaming
 """
+
 import asyncio
 import logging
 from typing import Optional
+
+from beanie import PydanticObjectId
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
+from jose import JWTError, jwt
 
 from app.core.config import settings
 from app.models.content import LiveChannel
 from app.models.user import User
 from app.services.live_translation_service import LiveTranslationService
-from beanie import PydanticObjectId
-from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
-from jose import JWTError, jwt
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -150,7 +152,9 @@ async def websocket_live_subtitles(
 
         # Step 7: Process audio and stream subtitles
         try:
-            async for subtitle_cue in translation_service.process_live_audio_to_subtitles(
+            async for (
+                subtitle_cue
+            ) in translation_service.process_live_audio_to_subtitles(
                 audio_stream_generator(),
                 source_lang=source_lang,
                 target_lang=target_lang,

@@ -5,12 +5,14 @@ CRUD operations for radio stations
 
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+
 from app.models.admin import AuditAction, Permission
 from app.models.content import RadioStation
 from app.models.user import User
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
-from .admin_content_schemas import RadioStationCreateRequest, RadioStationUpdateRequest
+from .admin_content_schemas import (RadioStationCreateRequest,
+                                    RadioStationUpdateRequest)
 from .admin_content_utils import has_permission, log_audit
 
 router = APIRouter()

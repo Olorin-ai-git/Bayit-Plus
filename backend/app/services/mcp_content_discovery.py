@@ -15,10 +15,11 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from app.core.config import settings
-from app.models.kids_content import SUBCATEGORY_PARENT_MAP, KidsSubcategory
 from beanie import Document
 from pydantic import BaseModel, Field
+
+from app.core.config import settings
+from app.models.kids_content import SUBCATEGORY_PARENT_MAP, KidsSubcategory
 
 logger = logging.getLogger(__name__)
 

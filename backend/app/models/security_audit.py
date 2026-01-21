@@ -2,6 +2,7 @@
 Security Audit Log Model for Authentication Events
 Tracks all security-relevant events in the authentication system.
 """
+
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 

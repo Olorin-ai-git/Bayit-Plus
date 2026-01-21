@@ -9,9 +9,10 @@ import logging
 from datetime import datetime, timedelta
 from typing import Optional
 
+from pymongo.errors import DuplicateKeyError
+
 from app.core.config import settings
 from app.models.upload import UploadHashLock
-from pymongo.errors import DuplicateKeyError
 
 logger = logging.getLogger(__name__)
 

@@ -11,14 +11,13 @@ from email.utils import parsedate_to_datetime
 from typing import List
 
 import httpx
-from app.services.news_scraper.constants import (
-    MAX_SEARCH_RESULTS,
-    MIN_RSS_TITLE_LENGTH,
-    REQUEST_TIMEOUT_SECONDS,
-    RSS_HEADERS,
-)
-from app.services.news_scraper.models import HeadlineItem, clean_cdata
 from bs4 import BeautifulSoup
+
+from app.services.news_scraper.constants import (MAX_SEARCH_RESULTS,
+                                                 MIN_RSS_TITLE_LENGTH,
+                                                 REQUEST_TIMEOUT_SECONDS,
+                                                 RSS_HEADERS)
+from app.services.news_scraper.models import HeadlineItem, clean_cdata
 
 logger = logging.getLogger(__name__)
 

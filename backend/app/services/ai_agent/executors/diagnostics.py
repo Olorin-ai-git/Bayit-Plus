@@ -66,7 +66,8 @@ async def execute_check_api_configuration() -> Dict[str, Any]:
 
 async def execute_find_duplicates(detection_type: str = "all") -> Dict[str, Any]:
     """Find duplicate content items in the library."""
-    from app.services.duplicate_detection_service import get_duplicate_detection_service
+    from app.services.duplicate_detection_service import \
+        get_duplicate_detection_service
 
     try:
         service = get_duplicate_detection_service()
@@ -132,7 +133,8 @@ async def execute_resolve_duplicates(
     audit_id: str = None,
 ) -> Dict[str, Any]:
     """Resolve a group of duplicate content items."""
-    from app.services.duplicate_detection_service import get_duplicate_detection_service
+    from app.services.duplicate_detection_service import \
+        get_duplicate_detection_service
 
     try:
         service = get_duplicate_detection_service()
@@ -149,7 +151,8 @@ async def execute_find_quality_variants(
     limit: int = 50, unlinked_only: bool = True
 ) -> Dict[str, Any]:
     """Find content items that are quality variants of each other."""
-    from app.services.duplicate_detection_service import get_duplicate_detection_service
+    from app.services.duplicate_detection_service import \
+        get_duplicate_detection_service
 
     try:
         service = get_duplicate_detection_service()
@@ -172,7 +175,8 @@ async def execute_link_quality_variants(
     content_ids: List[str], primary_id: Optional[str] = None, audit_id: str = None
 ) -> Dict[str, Any]:
     """Link multiple content items as quality variants."""
-    from app.services.duplicate_detection_service import get_duplicate_detection_service
+    from app.services.duplicate_detection_service import \
+        get_duplicate_detection_service
 
     try:
         service = get_duplicate_detection_service()
@@ -230,9 +234,9 @@ async def execute_find_missing_metadata(
                         "title": item.title,
                         "title_en": item.title_en,
                         "missing_fields": missing,
-                        "created_at": item.created_at.isoformat()
-                        if item.created_at
-                        else None,
+                        "created_at": (
+                            item.created_at.isoformat() if item.created_at else None
+                        ),
                     }
                 )
 

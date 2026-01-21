@@ -7,21 +7,21 @@ REST API endpoints for session management.
 import json
 import logging
 
-from app.api.routes.olorin.dependencies import get_current_partner, verify_capability
+from fastapi import APIRouter, Depends, HTTPException, status
+
+from app.api.routes.olorin.dependencies import (get_current_partner,
+                                                verify_capability)
 from app.api.routes.olorin.dubbing_routes import state
-from app.api.routes.olorin.dubbing_routes.models import (
-    CreateSessionRequest,
-    SessionEndResponse,
-    SessionResponse,
-    VoiceInfo,
-    VoicesResponse,
-)
+from app.api.routes.olorin.dubbing_routes.models import (CreateSessionRequest,
+                                                         SessionEndResponse,
+                                                         SessionResponse,
+                                                         VoiceInfo,
+                                                         VoicesResponse)
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
 from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
 from app.services.olorin.metering_service import metering_service
 from app.services.olorin.realtime_dubbing_service import RealtimeDubbingService
-from fastapi import APIRouter, Depends, HTTPException, status
 
 logger = logging.getLogger(__name__)
 

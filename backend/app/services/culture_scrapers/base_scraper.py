@@ -11,8 +11,9 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import httpx
-from app.core.config import settings
 from bs4 import BeautifulSoup
+
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -39,9 +40,9 @@ class CultureHeadlineItem:
     image_url: Optional[str] = None
 
     # Localized content
-    title_native: Optional[
-        str
-    ] = None  # Title in native script (Chinese, Japanese, etc.)
+    title_native: Optional[str] = (
+        None  # Title in native script (Chinese, Japanese, etc.)
+    )
     summary_native: Optional[str] = None
 
     # Classification

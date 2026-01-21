@@ -14,22 +14,15 @@ from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import httpx
+
 from app.core.config import settings
-from app.models.jewish_calendar import (
-    US_JEWISH_CITIES,
-    CalendarTodayResponse,
-    DafYomi,
-    DafYomiResponse,
-    HebrewDate,
-    Holiday,
-    JewishCalendarCache,
-    JewishCalendarDay,
-    Parasha,
-    ShabbatTimes,
-    ShabbatTimesResponse,
-    UpcomingHolidaysResponse,
-    USCity,
-)
+from app.models.jewish_calendar import (US_JEWISH_CITIES,
+                                        CalendarTodayResponse, DafYomi,
+                                        DafYomiResponse, HebrewDate, Holiday,
+                                        JewishCalendarCache, JewishCalendarDay,
+                                        Parasha, ShabbatTimes,
+                                        ShabbatTimesResponse,
+                                        UpcomingHolidaysResponse, USCity)
 
 logger = logging.getLogger(__name__)
 

@@ -19,7 +19,8 @@ from typing import AsyncIterator, Awaitable, Callable, Optional
 from app.core.config import settings
 from app.models.user import User
 from app.services.elevenlabs_realtime_service import ElevenLabsRealtimeService
-from app.services.elevenlabs_tts_streaming_service import ElevenLabsTTSStreamingService
+from app.services.elevenlabs_tts_streaming_service import \
+    ElevenLabsTTSStreamingService
 from app.services.support_service import support_service
 
 logger = logging.getLogger(__name__)
@@ -227,7 +228,10 @@ class VoicePipelineService:
             return
 
         try:
-            async for transcript, detected_lang in self.stt_service.receive_transcripts():
+            async for (
+                transcript,
+                detected_lang,
+            ) in self.stt_service.receive_transcripts():
                 if not self._running:
                     break
 

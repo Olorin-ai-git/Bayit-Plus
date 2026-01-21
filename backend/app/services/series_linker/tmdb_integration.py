@@ -67,9 +67,8 @@ async def find_series_via_tmdb(
         if create_missing:
             details = await tmdb.get_tv_series_details(tmdb_id)
             if details:
-                from app.services.series_linker.series_creator import (
-                    create_series_from_tmdb,
-                )
+                from app.services.series_linker.series_creator import \
+                    create_series_from_tmdb
 
                 new_series = await create_series_from_tmdb(
                     details,

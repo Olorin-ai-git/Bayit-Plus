@@ -1,18 +1,15 @@
 """Chess game REST API routes."""
+
 from typing import List, Optional
 
-from app.core.security import get_current_active_user
-from app.models.chess import (
-    BotDifficulty,
-    ChessChatMessage,
-    ChessGame,
-    GameMode,
-    PlayerColor,
-)
-from app.models.user import User
-from app.services.chess_service import chess_service
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
+
+from app.core.security import get_current_active_user
+from app.models.chess import (BotDifficulty, ChessChatMessage, ChessGame,
+                              GameMode, PlayerColor)
+from app.models.user import User
+from app.services.chess_service import chess_service
 
 router = APIRouter(prefix="/chess", tags=["chess"])
 
@@ -94,9 +91,11 @@ async def join_game(
         return {"game": game.dict()}
     except ValueError as e:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND
-            if "not found" in str(e).lower()
-            else status.HTTP_400_BAD_REQUEST,
+            status_code=(
+                status.HTTP_404_NOT_FOUND
+                if "not found" in str(e).lower()
+                else status.HTTP_400_BAD_REQUEST
+            ),
             detail=str(e),
         )
     except Exception as e:

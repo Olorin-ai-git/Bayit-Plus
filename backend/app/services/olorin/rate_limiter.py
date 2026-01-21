@@ -67,9 +67,9 @@ class PartnerRateLimiter:
     def __init__(self):
         """Initialize the rate limiter."""
         # Nested dict: partner_id -> capability -> time_window -> counter
-        self._counters: Dict[
-            str, Dict[str, Dict[str, SlidingWindowCounter]]
-        ] = defaultdict(lambda: defaultdict(dict))
+        self._counters: Dict[str, Dict[str, Dict[str, SlidingWindowCounter]]] = (
+            defaultdict(lambda: defaultdict(dict))
+        )
         self._lock = asyncio.Lock()
 
     def _get_counter(

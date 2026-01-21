@@ -6,7 +6,8 @@ WebSocket and REST endpoints for real-time audio dubbing.
 
 from fastapi import APIRouter
 
-from app.api.routes.olorin.dubbing_routes.sessions import router as sessions_router
+from app.api.routes.olorin.dubbing_routes.sessions import \
+    router as sessions_router
 from app.api.routes.olorin.dubbing_routes.websocket import router as ws_router
 
 router = APIRouter()

@@ -2,22 +2,19 @@
 Zman Yisrael API routes.
 Provides Israel time, Shabbat information, and curated Shabbat content.
 """
+
 from datetime import datetime
 from typing import List, Optional
+
+from fastapi import APIRouter, Depends, Query
 
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.content import Content, RadioStation
 from app.models.user import User
-from app.services.israel_time import (
-    HEBREW_DAYS,
-    calculate_shabbat_status,
-    fetch_shabbat_times,
-    format_time,
-    get_israel_time,
-    get_israel_time_info,
-    timedelta_to_str,
-)
-from fastapi import APIRouter, Depends, Query
+from app.services.israel_time import (HEBREW_DAYS, calculate_shabbat_status,
+                                      fetch_shabbat_times, format_time,
+                                      get_israel_time, get_israel_time_info,
+                                      timedelta_to_str)
 
 router = APIRouter()
 

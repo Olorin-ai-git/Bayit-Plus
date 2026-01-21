@@ -8,17 +8,15 @@ import logging
 from typing import List, Optional
 
 from app.core.config import settings
-from app.models.cultural_reference import (
-    ContextDetectionRequest,
-    ContextDetectionResponse,
-    CulturalReference,
-    DetectedReference,
-    EnrichedText,
-    ReferenceExplanation,
-)
+from app.models.cultural_reference import (ContextDetectionRequest,
+                                           ContextDetectionResponse,
+                                           CulturalReference,
+                                           DetectedReference, EnrichedText,
+                                           ReferenceExplanation)
 from app.services.olorin.context import crud
 from app.services.olorin.context.cache import AliasCache
-from app.services.olorin.context.detection import ai_detection, pattern_based_detection
+from app.services.olorin.context.detection import (ai_detection,
+                                                   pattern_based_detection)
 from app.services.olorin.context.explanation import get_explanation
 
 logger = logging.getLogger(__name__)

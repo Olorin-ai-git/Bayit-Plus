@@ -8,20 +8,17 @@ from datetime import datetime, timezone
 from typing import AsyncIterator, Optional
 
 import anthropic
+
 from app.core.config import settings
 from app.models.support import SupportConversation
 from app.models.user import User
 from app.services.support.chat_utils import build_chat_result, check_escalation
-from app.services.support.constants import (
-    CONVERSATION_HISTORY_LIMIT,
-    HIGH_CONFIDENCE_SCORE,
-    LOW_CONFIDENCE_SCORE,
-)
+from app.services.support.constants import (CONVERSATION_HISTORY_LIMIT,
+                                            HIGH_CONFIDENCE_SCORE,
+                                            LOW_CONFIDENCE_SCORE)
 from app.services.support.conversation import (
-    get_or_create_conversation,
-    rate_conversation,
-    update_conversation_after_response,
-)
+    get_or_create_conversation, rate_conversation,
+    update_conversation_after_response)
 from app.services.support_context_builder import support_context_builder
 
 logger = logging.getLogger(__name__)

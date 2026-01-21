@@ -4,12 +4,14 @@ Youth Content Filter Service.
 AI-powered filtering for trending topics and news to ensure age-appropriate content
 for youngsters (ages 12-17). Filters out mature content, violence, and inappropriate themes.
 """
+
 import json
 import logging
 from dataclasses import dataclass
 from typing import List, Optional
 
 import anthropic
+
 from app.core.config import settings
 from app.services.news_analyzer import TrendingTopic
 

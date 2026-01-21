@@ -23,21 +23,19 @@ from typing import Any, Dict, List, Optional
 from app.core.config import settings
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection, SectionSubcategory
-from app.models.youngsters_content import (
-    AGE_GROUP_RANGES,
-    SUBCATEGORY_PARENT_MAP,
-    YoungstersAgeGroup,
-    YoungstersAgeGroupResponse,
-    YoungstersAgeGroupsResponse,
-    YoungstersContentAggregatedResponse,
-    YoungstersContentCategory,
-    YoungstersContentItemResponse,
-    YoungstersContentSource,
-    YoungstersFeaturedResponse,
-    YoungstersSubcategoriesResponse,
-    YoungstersSubcategory,
-    YoungstersSubcategoryResponse,
-)
+from app.models.youngsters_content import (AGE_GROUP_RANGES,
+                                           SUBCATEGORY_PARENT_MAP,
+                                           YoungstersAgeGroup,
+                                           YoungstersAgeGroupResponse,
+                                           YoungstersAgeGroupsResponse,
+                                           YoungstersContentAggregatedResponse,
+                                           YoungstersContentCategory,
+                                           YoungstersContentItemResponse,
+                                           YoungstersContentSource,
+                                           YoungstersFeaturedResponse,
+                                           YoungstersSubcategoriesResponse,
+                                           YoungstersSubcategory,
+                                           YoungstersSubcategoryResponse)
 
 logger = logging.getLogger(__name__)
 
@@ -1087,9 +1085,9 @@ class YoungstersContentService:
             "age_rating": content.youngsters_age_rating or content.age_rating,
             "category": category,
             "subcategory": subcategory,
-            "subcategory_label": SUBCATEGORY_LABELS.get(subcategory)
-            if subcategory
-            else None,
+            "subcategory_label": (
+                SUBCATEGORY_LABELS.get(subcategory) if subcategory else None
+            ),
             "age_group": age_group,
             "educational_tags": content.youngsters_educational_tags
             or content.educational_tags

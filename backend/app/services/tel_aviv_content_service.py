@@ -19,22 +19,16 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
-from app.models.tel_aviv_content import (
-    TelAvivContentAggregatedResponse,
-    TelAvivContentCategory,
-    TelAvivContentItem,
-    TelAvivContentItemResponse,
-    TelAvivContentSource,
-    TelAvivContentSourceResponse,
-    TelAvivFeaturedResponse,
-)
-from app.services.news_scraper import (
-    HeadlineItem,
-    scrape_mako,
-    scrape_tel_aviv_news,
-    scrape_walla,
-    scrape_ynet,
-)
+from app.models.tel_aviv_content import (TelAvivContentAggregatedResponse,
+                                         TelAvivContentCategory,
+                                         TelAvivContentItem,
+                                         TelAvivContentItemResponse,
+                                         TelAvivContentSource,
+                                         TelAvivContentSourceResponse,
+                                         TelAvivFeaturedResponse)
+from app.services.news_scraper import (HeadlineItem, scrape_mako,
+                                       scrape_tel_aviv_news, scrape_walla,
+                                       scrape_ynet)
 
 logger = logging.getLogger(__name__)
 

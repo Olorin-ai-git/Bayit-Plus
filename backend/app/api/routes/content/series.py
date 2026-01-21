@@ -5,10 +5,11 @@ Series-specific endpoints.
 import logging
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException
+
 from app.core.security import get_optional_user
 from app.models.content import Content
 from app.models.user import User
-from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

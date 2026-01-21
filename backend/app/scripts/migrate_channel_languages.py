@@ -18,8 +18,9 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from app.core.config import settings
 from motor.motor_asyncio import AsyncIOMotorClient
+
+from app.core.config import settings
 
 # Full list of 10 supported languages
 ALL_LANGUAGES = ["en", "es", "ar", "ru", "fr", "de", "it", "pt", "yi", "he"]

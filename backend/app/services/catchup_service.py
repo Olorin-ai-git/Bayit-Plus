@@ -7,10 +7,11 @@ import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
+from beanie.operators import And
+
 from app.core.config import settings
 from app.models.content import EPGEntry, LiveChannel
 from app.models.recording import Recording, RecordingSession
-from beanie.operators import And
 
 logger = logging.getLogger(__name__)
 
@@ -76,9 +77,9 @@ class CatchUpService:
                 "duration_seconds": (
                     program.end_time - program.start_time
                 ).total_seconds(),
-                "subtitle_url": recording.subtitle_url
-                if recording.subtitle_enabled
-                else None,
+                "subtitle_url": (
+                    recording.subtitle_url if recording.subtitle_enabled else None
+                ),
                 "thumbnail": program.thumbnail or recording.thumbnail,
                 "channel_name": recording.channel_name,
                 "available_until": (

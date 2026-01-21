@@ -2,6 +2,7 @@
 Librarian AI Agent Service
 Main orchestrator for daily content auditing and maintenance
 """
+
 import asyncio
 import logging
 import random
@@ -9,17 +10,13 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
-from app.models.content import (
-    Content,
-    LiveChannel,
-    Podcast,
-    PodcastEpisode,
-    RadioStation,
-)
+from beanie import PydanticObjectId
+
+from app.models.content import (Content, LiveChannel, Podcast, PodcastEpisode,
+                                RadioStation)
 from app.models.content_taxonomy import ContentSection
 from app.models.librarian import AuditReport, LibrarianAction
 from app.services.audit_task_manager import audit_task_manager
-from beanie import PydanticObjectId
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +128,8 @@ async def run_daily_audit(
 
         # Import services here to avoid circular imports
         from app.services.content_auditor import audit_content_items
-        from app.services.database_maintenance import perform_database_maintenance
+        from app.services.database_maintenance import \
+            perform_database_maintenance
         from app.services.stream_validator import validate_content_streams
 
         # Run audits in parallel
@@ -162,7 +160,8 @@ async def run_daily_audit(
         # Step 2b: Series-Episode Linking
         logger.info("\n🔗 Step 2b: Series-Episode Linking...")
         try:
-            from app.services.series_linker_service import get_series_linker_service
+            from app.services.series_linker_service import \
+                get_series_linker_service
 
             series_linker = get_series_linker_service()
 
@@ -202,7 +201,8 @@ async def run_daily_audit(
         # Step 2d: Integrity Cleanup
         logger.info("\n🧹 Step 2d: Integrity Cleanup...")
         try:
-            from app.services.upload_service.integrity import upload_integrity_service
+            from app.services.upload_service.integrity import \
+                upload_integrity_service
 
             integrity_results = await upload_integrity_service.run_full_cleanup(
                 dry_run=dry_run, limit=100
@@ -502,8 +502,8 @@ async def get_audit_statistics(days: int = 30) -> Dict[str, Any]:
         "avg_execution_time": avg_execution_time,
         "total_issues_found": total_issues,
         "total_issues_fixed": total_actions,  # Use real action count
-        "fix_success_rate": (total_actions / total_issues * 100)
-        if total_issues > 0
-        else 0,
+        "fix_success_rate": (
+            (total_actions / total_issues * 100) if total_issues > 0 else 0
+        ),
         "last_audit_date": reports[0].audit_date if reports else None,
     }

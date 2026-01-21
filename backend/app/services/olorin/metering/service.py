@@ -7,11 +7,8 @@ Main service class that coordinates metering operations.
 from datetime import datetime
 from typing import Optional
 
-from app.models.integration_partner import (
-    DubbingSession,
-    IntegrationPartner,
-    UsageRecord,
-)
+from app.models.integration_partner import (DubbingSession, IntegrationPartner,
+                                            UsageRecord)
 from app.services.olorin.metering import sessions, summary, usage
 
 

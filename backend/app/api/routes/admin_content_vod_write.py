@@ -6,13 +6,15 @@ Create, update, delete, and modify VOD content
 import logging
 from datetime import datetime
 
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
+
 from app.models.admin import AuditAction, Permission
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
 from app.models.user import User
 from app.services.image_storage import download_and_encode_image
-from app.services.subtitle_extraction_service import analyze_and_extract_subtitles
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
+from app.services.subtitle_extraction_service import \
+    analyze_and_extract_subtitles
 
 from .admin_content_schemas import ContentCreateRequest, ContentUpdateRequest
 from .admin_content_utils import has_permission, log_audit

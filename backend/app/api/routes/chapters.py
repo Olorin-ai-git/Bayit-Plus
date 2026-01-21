@@ -2,21 +2,21 @@
 Video Chapters API routes.
 Provides AI-generated chapters for news and long-form content.
 """
+
 from datetime import datetime
 from typing import Optional
+
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
 
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.chapters import ChapterItemModel, VideoChapters
 from app.models.content import Content, LiveChannel
 from app.models.user import User
-from app.services.chapter_generator import (
-    CHAPTER_CATEGORIES,
-    chapters_to_dict,
-    generate_chapters_from_title,
-    generate_chapters_from_transcript,
-    parse_duration_to_seconds,
-)
-from fastapi import APIRouter, Body, Depends, HTTPException, Query
+from app.services.chapter_generator import (CHAPTER_CATEGORIES,
+                                            chapters_to_dict,
+                                            generate_chapters_from_title,
+                                            generate_chapters_from_transcript,
+                                            parse_duration_to_seconds)
 
 router = APIRouter()
 

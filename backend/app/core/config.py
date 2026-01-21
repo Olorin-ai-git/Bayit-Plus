@@ -1,9 +1,10 @@
 import json
 from functools import lru_cache
 
-from app.core.olorin_config import OlorinSettings
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
+
+from app.core.olorin_config import OlorinSettings
 
 
 class Settings(BaseSettings):
@@ -479,7 +480,9 @@ class Settings(BaseSettings):
 
     # ElevenLabs Voice IDs for Dubbing (JSON array of voice configs)
     # Format: '[{"id":"voice_id","name":"Name","lang":"multilingual","desc":"Description"}]'
-    ELEVENLABS_DUBBING_VOICES: str = '[{"id":"21m00Tcm4TlvDq8ikWAM","name":"Adam","lang":"multilingual","desc":"Deep male voice"},{"id":"AZnzlk1XvdvUeBnXmlld","name":"Domi","lang":"multilingual","desc":"Youthful female voice"},{"id":"MF3mGyEYCl7XYWbV9V6O","name":"Elli","lang":"multilingual","desc":"Warm female voice"},{"id":"TxGEqnHWrfWFTfGW9XjX","name":"Josh","lang":"multilingual","desc":"Conversational male voice"}]'
+    ELEVENLABS_DUBBING_VOICES: str = (
+        '[{"id":"21m00Tcm4TlvDq8ikWAM","name":"Adam","lang":"multilingual","desc":"Deep male voice"},{"id":"AZnzlk1XvdvUeBnXmlld","name":"Domi","lang":"multilingual","desc":"Youthful female voice"},{"id":"MF3mGyEYCl7XYWbV9V6O","name":"Elli","lang":"multilingual","desc":"Warm female voice"},{"id":"TxGEqnHWrfWFTfGW9XjX","name":"Josh","lang":"multilingual","desc":"Conversational male voice"}]'
+    )
 
     # ============================================
     # OLORIN.AI BACKWARD COMPATIBILITY PROPERTIES

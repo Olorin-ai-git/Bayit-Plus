@@ -20,10 +20,11 @@ from email.utils import parsedate_to_datetime
 from typing import Any, Dict, List, Optional
 
 import httpx
+from bs4 import BeautifulSoup
+
 from app.core.config import settings
 from app.models.content import Podcast, PodcastEpisode
 from app.models.content_taxonomy import ContentSection
-from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
@@ -245,9 +246,9 @@ class KidsPodcastService:
                 episodes.append(
                     KidsPodcastEpisode(
                         title=ep_title.get_text(strip=True),
-                        description=ep_desc.get_text(strip=True)[:300]
-                        if ep_desc
-                        else None,
+                        description=(
+                            ep_desc.get_text(strip=True)[:300] if ep_desc else None
+                        ),
                         audio_url=audio_url,
                         duration=duration_str,
                         published_date=pub_date,
@@ -356,9 +357,11 @@ class KidsPodcastService:
                         category=f"kids-{podcast_data.category_key}",
                         rss_feed=rss_url,
                         episode_count=len(podcast_data.episodes),
-                        latest_episode_date=podcast_data.episodes[0].published_date
-                        if podcast_data.episodes
-                        else None,
+                        latest_episode_date=(
+                            podcast_data.episodes[0].published_date
+                            if podcast_data.episodes
+                            else None
+                        ),
                         is_active=True,
                         created_at=datetime.utcnow(),
                         updated_at=datetime.utcnow(),
