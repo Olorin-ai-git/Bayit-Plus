@@ -5,21 +5,17 @@ Endpoints for processing mixed-language input, resolving content names,
 and handling voice search queries.
 """
 
+from fastapi import APIRouter, Depends
+
 from app.core.security import get_current_active_user
 from app.models.content import Content, LiveChannel, Podcast
 from app.models.user import User
-from fastapi import APIRouter, Depends
 
 from .helpers import process_hebronics_input
-from .models import (
-    HebronicsRequest,
-    HebronicsResponse,
-    ResolveContentRequest,
-    ResolveContentResponse,
-    ResolvedContentItem,
-    VoiceSearchRequest,
-    VoiceSearchResponse,
-)
+from .models import (HebronicsRequest, HebronicsResponse,
+                     ResolveContentRequest, ResolveContentResponse,
+                     ResolvedContentItem, VoiceSearchRequest,
+                     VoiceSearchResponse)
 from .services import resolve_single_content
 
 router = APIRouter()

@@ -13,12 +13,8 @@ Requires I18nService to be initialized from settings:
 import logging
 from typing import Dict, Optional
 
-from olorin_i18n import (
-    I18nConfig,
-    I18nService,
-    LanguageCode,
-    TranslationKeyError,
-)
+from olorin_i18n import (I18nConfig, I18nService, LanguageCode,
+                         TranslationKeyError)
 
 logger = logging.getLogger(__name__)
 
@@ -55,11 +51,11 @@ def get_translation(
     """
     try:
         service = _get_i18n_service()
-        return service.get_translation(
-            key, language=language as LanguageCode, default=fallback
-        )
+        return service.get_translation(key, language=language, default=fallback)
     except (TranslationKeyError, Exception) as e:
-        logger.warning(f"Translation error for key '{key}' in language '{language}': {e}")
+        logger.warning(
+            f"Translation error for key '{key}' in language '{language}': {e}"
+        )
         if fallback:
             return fallback
         return key  # Return key itself as ultimate fallback
@@ -125,8 +121,10 @@ def get_multilingual_names(
     try:
         multilingual = service.get_multilingual(name_key, default=slug or name_key)
         # Ensure all language codes are present
-        result = {lang.code: multilingual.get(lang.code, slug or name_key)
-                  for lang in service.get_all_languages()}
+        result = {
+            lang.code: multilingual.get(lang.code, slug or name_key)
+            for lang in service.get_all_languages()
+        }
         return result
     except Exception as e:
         logger.warning(f"Error getting multilingual names for key '{name_key}': {e}")
@@ -145,7 +143,7 @@ def get_language_info(language_code: str) -> Dict[str, bool]:
     """
     service = _get_i18n_service()
     try:
-        info = service.get_language_info(language_code=language_code as LanguageCode)
+        info = service.get_language_info(language_code=language_code)
         return dict(info)  # type: ignore
     except Exception as e:
         logger.warning(f"Error getting language info for '{language_code}': {e}")
@@ -164,7 +162,7 @@ def is_rtl(language_code: str) -> bool:
     """
     service = _get_i18n_service()
     try:
-        return service.is_rtl(language_code=language_code as LanguageCode)
+        return service.is_rtl(language_code=language_code)
     except Exception:
         # Default to LTR if error
         return False

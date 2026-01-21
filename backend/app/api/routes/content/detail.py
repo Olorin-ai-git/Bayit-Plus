@@ -5,14 +5,12 @@ Content detail and streaming endpoints.
 import logging
 from typing import Optional
 
-from app.core.security import (
-    get_current_active_user,
-    get_optional_user,
-    get_passkey_session,
-)
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+
+from app.core.security import (get_current_active_user, get_optional_user,
+                               get_passkey_session)
 from app.models.content import Content
 from app.models.user import User
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

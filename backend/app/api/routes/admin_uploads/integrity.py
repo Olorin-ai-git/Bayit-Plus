@@ -7,12 +7,14 @@ Handles detection and cleanup of orphaned files, records, and stuck jobs.
 import logging
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+
 from app.api.routes.admin_uploads.dependencies import has_permission
-from app.api.routes.admin_uploads.models import CleanupResponse, IntegrityStatusResponse
+from app.api.routes.admin_uploads.models import (CleanupResponse,
+                                                 IntegrityStatusResponse)
 from app.models.admin import Permission
 from app.models.user import User
 from app.services.upload_service.integrity import upload_integrity_service
-from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

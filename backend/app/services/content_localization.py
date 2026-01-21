@@ -7,16 +7,12 @@ Each processor handles the specific fields for its content type.
 
 from typing import Any, Dict, List, Optional, Type
 
-from app.models.content import (
-    Content,
-    LiveChannel,
-    Podcast,
-    PodcastEpisode,
-    RadioStation,
-)
+from beanie import Document
+
+from app.models.content import (Content, LiveChannel, Podcast, PodcastEpisode,
+                                RadioStation)
 from app.models.content_taxonomy import ContentSection
 from app.services.translation_service import translation_service
-from beanie import Document
 
 
 class ContentLocalizationProcessor:
@@ -95,12 +91,16 @@ class ContentLocalizationProcessor:
                     translated_fields.append(
                         {
                             "field": target_field_name,
-                            "original": source_value[:50] + "..."
-                            if len(source_value) > 50
-                            else source_value,
-                            "translation": translated_text[:50] + "..."
-                            if len(translated_text) > 50
-                            else translated_text,
+                            "original": (
+                                source_value[:50] + "..."
+                                if len(source_value) > 50
+                                else source_value
+                            ),
+                            "translation": (
+                                translated_text[:50] + "..."
+                                if len(translated_text) > 50
+                                else translated_text
+                            ),
                         }
                     )
                     needs_update = True

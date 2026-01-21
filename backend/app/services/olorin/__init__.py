@@ -9,20 +9,15 @@ This module provides AI capabilities for third-party content providers:
 """
 
 from app.services.olorin.cultural_context_service import (
-    CulturalContextService,
-    cultural_context_service,
-)
-from app.services.olorin.metering_service import MeteringService, metering_service
+    CulturalContextService, cultural_context_service)
+from app.services.olorin.metering_service import (MeteringService,
+                                                  metering_service)
 from app.services.olorin.partner_service import PartnerService, partner_service
 from app.services.olorin.realtime_dubbing_service import RealtimeDubbingService
-from app.services.olorin.recap_agent_service import (
-    RecapAgentService,
-    recap_agent_service,
-)
-from app.services.olorin.vector_search_service import (
-    VectorSearchService,
-    vector_search_service,
-)
+from app.services.olorin.recap_agent_service import (RecapAgentService,
+                                                     recap_agent_service)
+from app.services.olorin.vector_search_service import (VectorSearchService,
+                                                       vector_search_service)
 
 __all__ = [
     # Partner management

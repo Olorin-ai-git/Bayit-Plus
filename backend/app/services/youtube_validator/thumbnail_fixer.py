@@ -10,7 +10,8 @@ from typing import Any, Dict, List, Optional
 
 from app.models.content import Content
 from app.services.youtube_validator.url_parser import extract_video_id
-from app.services.youtube_validator.video_validator import get_best_youtube_thumbnail
+from app.services.youtube_validator.video_validator import \
+    get_best_youtube_thumbnail
 
 logger = logging.getLogger(__name__)
 

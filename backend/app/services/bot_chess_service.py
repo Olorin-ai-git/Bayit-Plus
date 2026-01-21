@@ -1,8 +1,10 @@
 """Bot chess service for generating computer moves at different difficulty levels."""
+
 import random
 from typing import List, Tuple
 
 import chess
+
 from app.models.chess import BotDifficulty
 
 # Piece values for evaluation (centipawns)

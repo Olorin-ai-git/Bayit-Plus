@@ -8,10 +8,11 @@ Non-admin user-facing endpoints for:
 
 from typing import List, Optional
 
-from app.core.security import get_current_active_user
-from app.models.user import User
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
+
+from app.core.security import get_current_active_user
+from app.models.user import User
 
 router = APIRouter()
 
@@ -147,9 +148,9 @@ async def update_my_preferences(
     Allows updating individual preference fields without overwriting others.
     """
     if request.auto_translate_enabled is not None:
-        current_user.preferences[
-            "auto_translate_enabled"
-        ] = request.auto_translate_enabled
+        current_user.preferences["auto_translate_enabled"] = (
+            request.auto_translate_enabled
+        )
 
     await current_user.save()
 

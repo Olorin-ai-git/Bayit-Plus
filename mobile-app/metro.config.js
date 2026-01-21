@@ -4,6 +4,7 @@ const fs = require('fs');
 
 const projectRoot = __dirname;
 const sharedRoot = path.resolve(__dirname, '../shared');
+const packagesRoot = path.resolve(__dirname, '../packages/ui');
 const nodeModulesPath = path.resolve(projectRoot, 'node_modules');
 
 // Build extraNodeModules mapping including scoped packages
@@ -59,6 +60,13 @@ function getExtraNodeModules() {
     modules['@picovoice/web-voice-processor'] = path.resolve(projectRoot, 'src/stubs/porcupine-web.ts');
   }
 
+  // Add @olorin packages from packages/ui directory
+  modules['@olorin/design-tokens'] = path.resolve(packagesRoot, 'design-tokens/src');
+  modules['@olorin/shared-hooks'] = path.resolve(packagesRoot, 'shared-hooks/src');
+  modules['@olorin/shared-i18n'] = path.resolve(packagesRoot, 'shared-i18n/src');
+  modules['@olorin/shared-services'] = path.resolve(packagesRoot, 'shared-services/src');
+  modules['@olorin/shared-stores'] = path.resolve(packagesRoot, 'shared-stores/src');
+
   // Map all node_modules from mobile-app
   const nodeModulesList = fs.readdirSync(nodeModulesPath);
 
@@ -94,7 +102,7 @@ function getExtraNodeModules() {
  * @type {import('@react-native/metro-config').MetroConfig}
  */
 const config = {
-  watchFolders: [sharedRoot],
+  watchFolders: [sharedRoot, packagesRoot],
   resolver: {
     // Make sure shared packages can find node_modules from mobile-app
     nodeModulesPaths: [nodeModulesPath],

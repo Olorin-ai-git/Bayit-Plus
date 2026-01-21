@@ -2,21 +2,16 @@
 Room Manager for Watch Parties.
 Handles watch party creation, joining, leaving, and state management.
 """
+
 import secrets
 import string
 from datetime import datetime
 from typing import List, Optional
 
-from app.models.realtime import (
-    ChatMessage,
-    ChatMessageCreate,
-    ChatMessageResponse,
-    ParticipantState,
-    PlaybackSync,
-    WatchParty,
-    WatchPartyCreate,
-    WatchPartyResponse,
-)
+from app.models.realtime import (ChatMessage, ChatMessageCreate,
+                                 ChatMessageResponse, ParticipantState,
+                                 PlaybackSync, WatchParty, WatchPartyCreate,
+                                 WatchPartyResponse)
 from app.services.connection_manager import connection_manager
 
 
@@ -212,7 +207,8 @@ class RoomManager:
         self, party_id: str, user_id: str, user_name: str, data: ChatMessageCreate
     ) -> Optional[ChatMessage]:
         """Send a chat message in a watch party with translation support"""
-        from app.services.chat_translation_service import chat_translation_service
+        from app.services.chat_translation_service import \
+            chat_translation_service
 
         party = await self.get_party(party_id)
         if not party or not party.chat_enabled:

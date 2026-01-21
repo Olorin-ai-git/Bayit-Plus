@@ -4,18 +4,17 @@ Basic upload endpoints for images, URL validation, and presigned URLs.
 
 import logging
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from fastapi import (APIRouter, Depends, File, HTTPException, Query,
+                     UploadFile, status)
 
+from app.api.routes.admin_uploads.dependencies import has_permission
+from app.api.routes.admin_uploads.models import (PresignedUrlResponse,
+                                                 UploadResponse,
+                                                 ValidateUrlResponse)
 from app.core.security import get_current_active_user
 from app.core.storage import storage
 from app.models.admin import Permission
 from app.models.user import User
-from app.api.routes.admin_uploads.dependencies import has_permission
-from app.api.routes.admin_uploads.models import (
-    PresignedUrlResponse,
-    UploadResponse,
-    ValidateUrlResponse,
-)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -74,9 +73,11 @@ async def validate_stream_url(
 
         return ValidateUrlResponse(
             valid=is_valid,
-            message="URL is accessible and valid"
-            if is_valid
-            else "URL is not accessible or invalid",
+            message=(
+                "URL is accessible and valid"
+                if is_valid
+                else "URL is not accessible or invalid"
+            ),
         )
 
     except Exception as e:

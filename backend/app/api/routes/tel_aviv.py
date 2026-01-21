@@ -12,20 +12,17 @@ Provides Tel Aviv-focused content from Israeli news sources:
 """
 
 from typing import Optional
-from fastapi import APIRouter, Query, Depends, HTTPException
 
-from app.models.user import User
-from app.models.tel_aviv_content import (
-    TelAvivContentAggregatedResponse,
-    TelAvivFeaturedResponse,
-    TelAvivContentCategory,
-)
-from app.core.security import get_optional_user
+from fastapi import APIRouter, Depends, HTTPException, Query
+
 from app.api.routes.admin import require_admin
-from app.services.tel_aviv_content_service import (
-    tel_aviv_content_service,
-    TEL_AVIV_CATEGORY_LABELS,
-)
+from app.core.security import get_optional_user
+from app.models.tel_aviv_content import (TelAvivContentAggregatedResponse,
+                                         TelAvivContentCategory,
+                                         TelAvivFeaturedResponse)
+from app.models.user import User
+from app.services.tel_aviv_content_service import (TEL_AVIV_CATEGORY_LABELS,
+                                                   tel_aviv_content_service)
 
 router = APIRouter()
 

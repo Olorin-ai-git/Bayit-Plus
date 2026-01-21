@@ -12,12 +12,10 @@ Each culture has its own scraper that handles:
 import logging
 from typing import Dict, Optional, Type
 
-from app.services.culture_scrapers.base_scraper import (
-    BaseCultureScraper,
-    CultureHeadlineItem,
-)
-from app.services.culture_scrapers.israeli_scraper import IsraeliScraper
+from app.services.culture_scrapers.base_scraper import (BaseCultureScraper,
+                                                        CultureHeadlineItem)
 from app.services.culture_scrapers.chinese_scraper import ChineseScraper
+from app.services.culture_scrapers.israeli_scraper import IsraeliScraper
 
 logger = logging.getLogger(__name__)
 

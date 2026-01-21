@@ -24,6 +24,11 @@
     "build:tv": "npm run build:webos && npm run build:tizen"
   },
   "dependencies": {
+    "@olorin/design-tokens": "2.0.0",
+    "@olorin/shared-hooks": "2.0.0",
+    "@olorin/shared-i18n": "2.0.0",
+    "@olorin/shared-services": "2.0.0",
+    "@olorin/shared-stores": "2.0.0",
     "@noriginmedia/norigin-spatial-navigation": "^2.3.0",
     "@react-navigation/bottom-tabs": "^7.9.0",
     "@react-navigation/native": "^7.1.26",

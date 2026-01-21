@@ -10,11 +10,8 @@ from typing import List
 import httpx
 from bs4 import BeautifulSoup
 
-from app.services.news_scraper.constants import (
-    HEADERS,
-    MIN_TITLE_LENGTH,
-    REQUEST_TIMEOUT_SECONDS,
-)
+from app.services.news_scraper.constants import (HEADERS, MIN_TITLE_LENGTH,
+                                                 REQUEST_TIMEOUT_SECONDS)
 from app.services.news_scraper.html_scraper import scrape_headlines_from_html
 from app.services.news_scraper.models import HeadlineItem, clean_cdata
 

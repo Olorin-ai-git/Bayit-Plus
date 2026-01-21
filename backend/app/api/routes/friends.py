@@ -1,10 +1,11 @@
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+
 from app.core.security import get_current_user
 from app.models.user import User
 from app.services.friendship_service import FriendshipService
-from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
 
 router = APIRouter(prefix="/friends", tags=["friends"])
 

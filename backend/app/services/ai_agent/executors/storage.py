@@ -86,9 +86,9 @@ async def execute_list_large_files(
                         "name": blob.name,
                         "size_gb": round(blob.size / (1024 * 1024 * 1024), 2),
                         "content_type": blob.content_type,
-                        "created": blob.time_created.isoformat()
-                        if blob.time_created
-                        else None,
+                        "created": (
+                            blob.time_created.isoformat() if blob.time_created else None
+                        ),
                     }
                 )
 

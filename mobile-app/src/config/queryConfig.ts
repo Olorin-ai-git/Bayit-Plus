@@ -32,7 +32,7 @@ const queryConfig: DefaultOptions = {
     refetchOnReconnect: true,
 
     // Don't refetch stale data while user is viewing it
-    refetchOnMount: 'stale',
+    refetchOnMount: false,
 
     // Keep running queries in background even when tab loses focus
     refetchIntervalInBackground: true,

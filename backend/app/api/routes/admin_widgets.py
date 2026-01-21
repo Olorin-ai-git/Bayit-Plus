@@ -5,19 +5,14 @@ Admin Widget Management Routes - CRUD operations for system widgets
 from datetime import datetime
 from typing import List, Optional
 
-from app.models.admin import AuditAction, Permission
-from app.models.user import User
-from app.models.widget import (
-    Widget,
-    WidgetContent,
-    WidgetCreateRequest,
-    WidgetPosition,
-    WidgetResponse,
-    WidgetType,
-    WidgetUpdateRequest,
-)
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
+
+from app.models.admin import AuditAction, Permission
+from app.models.user import User
+from app.models.widget import (Widget, WidgetContent, WidgetCreateRequest,
+                               WidgetPosition, WidgetResponse, WidgetType,
+                               WidgetUpdateRequest)
 
 from .admin_content_utils import has_permission, log_audit
 

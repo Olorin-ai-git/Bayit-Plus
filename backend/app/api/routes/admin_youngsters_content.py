@@ -14,17 +14,14 @@ import logging
 from datetime import datetime
 from typing import List, Optional
 
-from app.api.routes.admin_content_utils import (
-    AuditAction,
-    Permission,
-    has_permission,
-    log_audit,
-)
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from pydantic import BaseModel, Field
+
+from app.api.routes.admin_content_utils import (AuditAction, Permission,
+                                                has_permission, log_audit)
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
 from app.models.user import User
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 

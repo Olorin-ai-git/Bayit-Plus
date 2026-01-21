@@ -3,18 +3,14 @@
 Extends olorin-shared base exceptions with platform-specific error types.
 """
 
-from olorin_shared.errors import OlorinException, InternalError
+from olorin_shared.errors import InternalError, OlorinException
 
 
 class GameError(InternalError):
     """Raised when a game operation fails"""
 
     def __init__(self, message: str = "Game operation failed", details=None):
-        super().__init__(
-            message=message,
-            error_code="GAME_ERROR",
-            details=details
-        )
+        super().__init__(message=message, error_code="GAME_ERROR", details=details)
 
 
 class FriendshipError(InternalError):
@@ -22,9 +18,7 @@ class FriendshipError(InternalError):
 
     def __init__(self, message: str = "Friendship operation failed", details=None):
         super().__init__(
-            message=message,
-            error_code="FRIENDSHIP_ERROR",
-            details=details
+            message=message, error_code="FRIENDSHIP_ERROR", details=details
         )
 
 
@@ -33,9 +27,7 @@ class UploadIntegrityError(InternalError):
 
     def __init__(self, message: str = "Upload integrity check failed", details=None):
         super().__init__(
-            message=message,
-            error_code="UPLOAD_INTEGRITY_ERROR",
-            details=details
+            message=message, error_code="UPLOAD_INTEGRITY_ERROR", details=details
         )
 
 

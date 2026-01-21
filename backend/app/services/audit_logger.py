@@ -2,13 +2,15 @@
 Audit Logger Service
 Provides comprehensive security event logging.
 """
+
 import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
+from fastapi import Request
+
 from app.models.security_audit import SecurityAuditLog
 from app.models.user import User
-from fastapi import Request
 
 logger = logging.getLogger(__name__)
 

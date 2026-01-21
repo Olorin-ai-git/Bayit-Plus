@@ -55,11 +55,11 @@ async def log_comprehensive_summary(
         health_emoji = (
             "GREEN"
             if health_score >= 90
-            else "YELLOW"
-            if health_score >= 70
-            else "ORANGE"
-            if health_score >= 50
-            else "RED"
+            else (
+                "YELLOW"
+                if health_score >= 70
+                else "ORANGE" if health_score >= 50 else "RED"
+            )
         )
         summary_lines.append(
             f"- **Library Health Score:** [{health_emoji}] {health_score}/100"

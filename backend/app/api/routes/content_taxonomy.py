@@ -13,16 +13,14 @@ Uses i18n translation system for multilingual support.
 import logging
 from typing import Optional
 
-from app.models.content import Content
-from app.models.content_taxonomy import (
-    Audience,
-    ContentSection,
-    Genre,
-    SectionSubcategory,
-)
-from app.services.subtitle_enrichment import enrich_content_items_with_subtitles
-from app.utils.i18n import get_multilingual_names, resolve_name_key
 from fastapi import APIRouter, Header, HTTPException, Query
+
+from app.models.content import Content
+from app.models.content_taxonomy import (Audience, ContentSection, Genre,
+                                         SectionSubcategory)
+from app.services.subtitle_enrichment import \
+    enrich_content_items_with_subtitles
+from app.utils.i18n import get_multilingual_names, resolve_name_key
 
 router = APIRouter(prefix="/content", tags=["content-taxonomy"])
 logger = logging.getLogger(__name__)
@@ -65,12 +63,16 @@ def format_section_response(section: ContentSection, language: str = "en") -> di
         "slug": section.slug,
         "name": resolve_name_key(section.name_key, language),
         "translations": get_multilingual_names(section.name_key),
-        "description": resolve_name_key(section.description_key, language)
-        if section.description_key
-        else None,
-        "description_translations": get_multilingual_names(section.description_key)
-        if section.description_key
-        else None,
+        "description": (
+            resolve_name_key(section.description_key, language)
+            if section.description_key
+            else None
+        ),
+        "description_translations": (
+            get_multilingual_names(section.description_key)
+            if section.description_key
+            else None
+        ),
         "icon": section.icon,
         "thumbnail": section.thumbnail,
         "color": section.color,
@@ -99,12 +101,16 @@ def format_subcategory_response(
         "slug": subcategory.slug,
         "name": resolve_name_key(subcategory.name_key, language),
         "translations": get_multilingual_names(subcategory.name_key),
-        "description": resolve_name_key(subcategory.description_key, language)
-        if subcategory.description_key
-        else None,
-        "description_translations": get_multilingual_names(subcategory.description_key)
-        if subcategory.description_key
-        else None,
+        "description": (
+            resolve_name_key(subcategory.description_key, language)
+            if subcategory.description_key
+            else None
+        ),
+        "description_translations": (
+            get_multilingual_names(subcategory.description_key)
+            if subcategory.description_key
+            else None
+        ),
         "icon": subcategory.icon,
         "thumbnail": subcategory.thumbnail,
         "order": subcategory.order,

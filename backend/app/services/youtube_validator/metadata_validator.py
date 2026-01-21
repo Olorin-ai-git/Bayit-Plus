@@ -8,20 +8,19 @@ Handles video availability, privacy status, and embedding permissions.
 import logging
 
 import httpx
+
 from app.core.config import settings
-from app.services.youtube_validator.constants import (
-    HTTP_STATUS_FORBIDDEN,
-    HTTP_STATUS_NOT_FOUND,
-    HTTP_STATUS_OK,
-    HTTP_STATUS_UNAUTHORIZED,
-    OEMBED_URL,
-    VIDEO_STATUS_AVAILABLE,
-    VIDEO_STATUS_ERROR,
-    VIDEO_STATUS_PRIVATE,
-    VIDEO_STATUS_REMOVED,
-    VIDEO_STATUS_UNAVAILABLE,
-    YOUTUBE_API_BASE_URL,
-)
+from app.services.youtube_validator.constants import (HTTP_STATUS_FORBIDDEN,
+                                                      HTTP_STATUS_NOT_FOUND,
+                                                      HTTP_STATUS_OK,
+                                                      HTTP_STATUS_UNAUTHORIZED,
+                                                      OEMBED_URL,
+                                                      VIDEO_STATUS_AVAILABLE,
+                                                      VIDEO_STATUS_ERROR,
+                                                      VIDEO_STATUS_PRIVATE,
+                                                      VIDEO_STATUS_REMOVED,
+                                                      VIDEO_STATUS_UNAVAILABLE,
+                                                      YOUTUBE_API_BASE_URL)
 from app.services.youtube_validator.models import YouTubeValidationResult
 from app.services.youtube_validator.url_parser import build_watch_url
 

@@ -8,18 +8,15 @@ import asyncio
 import logging
 from typing import List
 
-from app.api.routes.admin_uploads.dependencies import has_permission, job_to_response
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+
+from app.api.routes.admin_uploads.dependencies import (has_permission,
+                                                       job_to_response)
 from app.models.admin import Permission
-from app.models.upload import (
-    ContentType,
-    UploadJob,
-    UploadJobResponse,
-    UploadQueueResponse,
-    UploadStatus,
-)
+from app.models.upload import (ContentType, UploadJob, UploadJobResponse,
+                               UploadQueueResponse, UploadStatus)
 from app.models.user import User
 from app.services.upload_service import upload_service
-from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

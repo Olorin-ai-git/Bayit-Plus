@@ -78,7 +78,8 @@ class ElevenLabsSTTProvider(STTProvider):
 
     async def connect(self, source_lang: str) -> None:
         """Connect to ElevenLabs realtime STT."""
-        from app.services.elevenlabs_realtime_service import ElevenLabsRealtimeService
+        from app.services.elevenlabs_realtime_service import \
+            ElevenLabsRealtimeService
 
         self._service = ElevenLabsRealtimeService()
         await self._service.connect(source_lang=source_lang)

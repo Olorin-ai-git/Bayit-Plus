@@ -13,28 +13,21 @@ import secrets
 from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
 
-from app.core.config import get_settings
-from app.models.passkey_credential import (
-    PasskeyChallenge,
-    PasskeyCredential,
-    PasskeySession,
-)
-from webauthn import (
-    generate_authentication_options,
-    generate_registration_options,
-    options_to_json,
-    verify_authentication_response,
-    verify_registration_response,
-)
+from webauthn import (generate_authentication_options,
+                      generate_registration_options, options_to_json,
+                      verify_authentication_response,
+                      verify_registration_response)
 from webauthn.helpers import base64url_to_bytes, bytes_to_base64url
-from webauthn.helpers.structs import (
-    AuthenticatorAttachment,
-    AuthenticatorSelectionCriteria,
-    AuthenticatorTransport,
-    PublicKeyCredentialDescriptor,
-    ResidentKeyRequirement,
-    UserVerificationRequirement,
-)
+from webauthn.helpers.structs import (AuthenticatorAttachment,
+                                      AuthenticatorSelectionCriteria,
+                                      AuthenticatorTransport,
+                                      PublicKeyCredentialDescriptor,
+                                      ResidentKeyRequirement,
+                                      UserVerificationRequirement)
+
+from app.core.config import get_settings
+from app.models.passkey_credential import (PasskeyChallenge, PasskeyCredential,
+                                           PasskeySession)
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -79,9 +72,11 @@ class WebAuthnService:
         exclude_credentials = [
             PublicKeyCredentialDescriptor(
                 id=base64url_to_bytes(cred.credential_id),
-                transports=[AuthenticatorTransport(t) for t in cred.transports if t]
-                if cred.transports
-                else None,
+                transports=(
+                    [AuthenticatorTransport(t) for t in cred.transports if t]
+                    if cred.transports
+                    else None
+                ),
             )
             for cred in existing_credentials
         ]
@@ -194,12 +189,12 @@ class WebAuthnService:
             sign_count=verification.sign_count,
             device_name=device_name,
             transports=transports,
-            aaguid=bytes_to_base64url(verification.aaguid)
-            if verification.aaguid
-            else None,
-            attestation_format=verification.fmt
-            if hasattr(verification, "fmt")
-            else None,
+            aaguid=(
+                bytes_to_base64url(verification.aaguid) if verification.aaguid else None
+            ),
+            attestation_format=(
+                verification.fmt if hasattr(verification, "fmt") else None
+            ),
         )
         await passkey.insert()
 
@@ -239,9 +234,11 @@ class WebAuthnService:
             allow_credentials = [
                 PublicKeyCredentialDescriptor(
                     id=base64url_to_bytes(cred.credential_id),
-                    transports=[AuthenticatorTransport(t) for t in cred.transports if t]
-                    if cred.transports
-                    else None,
+                    transports=(
+                        [AuthenticatorTransport(t) for t in cred.transports if t]
+                        if cred.transports
+                        else None
+                    ),
                 )
                 for cred in credentials
             ]
@@ -453,9 +450,9 @@ class WebAuthnService:
                 "id": str(cred.id),
                 "device_name": cred.device_name,
                 "created_at": cred.created_at.isoformat(),
-                "last_used_at": cred.last_used_at.isoformat()
-                if cred.last_used_at
-                else None,
+                "last_used_at": (
+                    cred.last_used_at.isoformat() if cred.last_used_at else None
+                ),
             }
             for cred in credentials
         ]

@@ -14,13 +14,12 @@ Handles:
 
 from typing import Optional
 
-from app.models.jewish_community import (
-    Denomination,
-    KosherCertification,
-    OrganizationType,
-)
-from app.services.community_directory_service import community_directory_service
 from fastapi import APIRouter, HTTPException, Query
+
+from app.models.jewish_community import (Denomination, KosherCertification,
+                                         OrganizationType)
+from app.services.community_directory_service import \
+    community_directory_service
 
 router = APIRouter()
 

@@ -8,10 +8,11 @@ import logging
 import time
 from typing import Callable
 
-from app.core.config import settings
-from app.middleware.correlation_id import get_correlation_id
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
+
+from app.core.config import settings
+from app.middleware.correlation_id import get_correlation_id
 
 logger = logging.getLogger(__name__)
 

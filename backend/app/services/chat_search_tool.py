@@ -13,7 +13,8 @@ from pathlib import Path
 from typing import Any
 
 from app.services.docs_search_service import docs_search_service
-from app.services.unified_search_service import SearchFilters, UnifiedSearchService
+from app.services.unified_search_service import (SearchFilters,
+                                                 UnifiedSearchService)
 
 logger = logging.getLogger(__name__)
 

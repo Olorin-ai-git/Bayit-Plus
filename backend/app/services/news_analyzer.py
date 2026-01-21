@@ -2,14 +2,17 @@
 News Analyzer Service.
 Uses Claude AI to analyze Israeli news headlines and extract trending topics.
 """
+
 import json
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import anthropic
+
 from app.core.config import settings
-from app.services.news_scraper import HeadlineItem, ScrapedNews, get_cached_headlines
+from app.services.news_scraper import (HeadlineItem, ScrapedNews,
+                                       get_cached_headlines)
 
 
 @dataclass

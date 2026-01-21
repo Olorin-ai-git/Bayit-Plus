@@ -1,15 +1,18 @@
 from datetime import timedelta
 from typing import Callable, List, Optional
 
+import jwt
+from fastapi import Depends, HTTPException, Request, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from olorin_shared.auth import \
+    create_access_token as shared_create_access_token
+from olorin_shared.auth import \
+    verify_access_token as shared_verify_access_token
+from passlib.context import CryptContext
+
 from app.core.config import settings
 from app.models.passkey_credential import PasskeySession
 from app.models.user import User
-from fastapi import Depends, HTTPException, Request, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from olorin_shared.auth import create_access_token as shared_create_access_token
-from olorin_shared.auth import verify_access_token as shared_verify_access_token
-from passlib.context import CryptContext
-import jwt
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
@@ -31,7 +34,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
         data=data,
         expires_delta=expires_delta,
         secret_key=settings.SECRET_KEY,
-        algorithm=settings.ALGORITHM
+        algorithm=settings.ALGORITHM,
     )
 
 
@@ -39,9 +42,7 @@ def decode_token(token: str) -> Optional[dict]:
     """Decode and validate a JWT token."""
     try:
         payload = shared_verify_access_token(
-            token=token,
-            secret_key=settings.SECRET_KEY,
-            algorithm=settings.ALGORITHM
+            token=token, secret_key=settings.SECRET_KEY, algorithm=settings.ALGORITHM
         )
         return payload
     except (jwt.InvalidTokenError, ValueError):

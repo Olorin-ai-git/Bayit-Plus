@@ -7,10 +7,11 @@ Endpoints for audio transcription using ElevenLabs Speech-to-Text API.
 from typing import Optional
 
 import httpx
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+
 from app.core.config import settings
 from app.core.security import get_current_active_user
 from app.models.user import User
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
 from .models import TranscriptionResponse, TranscriptionStatusResponse
 from .services import pending_transcriptions

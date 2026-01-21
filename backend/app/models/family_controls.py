@@ -4,6 +4,7 @@ Family Controls Model.
 Unified parental control system for kids and youngsters content.
 Provides age-based restrictions, content rating limits, and optional time-based controls.
 """
+
 from datetime import datetime
 from typing import Optional
 

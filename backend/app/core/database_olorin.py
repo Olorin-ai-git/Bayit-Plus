@@ -8,19 +8,15 @@ Maintains access to Bayit+ Content model for metadata operations.
 import logging
 from typing import Optional
 
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
+
 from app.core.config import settings
 from app.models.content_embedding import ContentEmbedding, RecapSession
 from app.models.cultural_reference import CulturalReference
-
 # Olorin.ai Platform models
-from app.models.integration_partner import (
-    DubbingSession,
-    IntegrationPartner,
-    UsageRecord,
-    WebhookDelivery,
-)
-from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
+from app.models.integration_partner import (DubbingSession, IntegrationPartner,
+                                            UsageRecord, WebhookDelivery)
 
 logger = logging.getLogger(__name__)
 

@@ -11,50 +11,34 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from app.core.config import settings
-from app.services.ffmpeg.constants import (
-    LANGUAGE_CODE_MAP,
-    is_text_based_subtitle,
-    normalize_language_code,
-)
-from app.services.ffmpeg.conversion import (
-    compress_video,
-    convert_to_hls,
-    convert_video,
-    extract_audio,
-    resize_video,
-    transcode_video,
-)
-from app.services.ffmpeg.stream_recording import (
-    capture_screenshot,
-    download_video_from_url,
-    extract_thumbnail_from_video,
-    start_recording_stream,
-    stop_recording,
-)
-from app.services.ffmpeg.subtitle_operations import (
-    burn_subtitles,
-    convert_subtitles,
-    embed_subtitles,
-    extract_all_subtitles,
-    extract_subtitle_track,
-    generate_srt_from_vtt,
-)
-from app.services.ffmpeg.validation import (
-    check_ffmpeg_installed,
-    check_ffprobe_installed,
-    validate_codec_support,
-    validate_video_file,
-    verify_ffmpeg_installation,
-)
-from app.services.ffmpeg.video_analysis import (
-    analyze_video,
-    analyze_video_quality,
-    detect_codec,
-    get_bitrate,
-    get_resolution,
-    get_video_duration,
-    get_video_info,
-)
+from app.services.ffmpeg.constants import (LANGUAGE_CODE_MAP,
+                                           is_text_based_subtitle,
+                                           normalize_language_code)
+from app.services.ffmpeg.conversion import (compress_video, convert_to_hls,
+                                            convert_video, extract_audio,
+                                            resize_video, transcode_video)
+from app.services.ffmpeg.stream_recording import (capture_screenshot,
+                                                  download_video_from_url,
+                                                  extract_thumbnail_from_video,
+                                                  start_recording_stream,
+                                                  stop_recording)
+from app.services.ffmpeg.subtitle_operations import (burn_subtitles,
+                                                     convert_subtitles,
+                                                     embed_subtitles,
+                                                     extract_all_subtitles,
+                                                     extract_subtitle_track,
+                                                     generate_srt_from_vtt)
+from app.services.ffmpeg.validation import (check_ffmpeg_installed,
+                                            check_ffprobe_installed,
+                                            validate_codec_support,
+                                            validate_video_file,
+                                            verify_ffmpeg_installation)
+from app.services.ffmpeg.video_analysis import (analyze_video,
+                                                analyze_video_quality,
+                                                detect_codec, get_bitrate,
+                                                get_resolution,
+                                                get_video_duration,
+                                                get_video_info)
 
 logger = logging.getLogger(__name__)
 

@@ -4,17 +4,15 @@ Vector Search Service
 Main service class that coordinates search operations.
 """
 
-from typing import Optional, List
+from typing import List, Optional
 
-from app.models.content_embedding import (
-    SemanticSearchResult,
-    SearchQuery,
-    DialogueSearchQuery,
-)
+from app.models.content_embedding import (DialogueSearchQuery, SearchQuery,
+                                          SemanticSearchResult)
 from app.services.olorin.search.client import client_manager
 from app.services.olorin.search.embedding import generate_embedding
 from app.services.olorin.search.indexer import index_content, index_subtitles
-from app.services.olorin.search.searcher import semantic_search, dialogue_search
+from app.services.olorin.search.searcher import (dialogue_search,
+                                                 semantic_search)
 
 
 class VectorSearchService:

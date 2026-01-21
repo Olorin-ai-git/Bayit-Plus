@@ -10,7 +10,8 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from app.core.config import settings
-from app.models.content_embedding import RecapEntry, RecapSession, TranscriptSegment
+from app.models.content_embedding import (RecapEntry, RecapSession,
+                                          TranscriptSegment)
 
 logger = logging.getLogger(__name__)
 

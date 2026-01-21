@@ -15,9 +15,10 @@ from datetime import datetime
 from difflib import SequenceMatcher
 from typing import Any, Dict, List, Optional, Tuple
 
+from beanie import PydanticObjectId
+
 from app.core.config import settings
 from app.models.content import Content
-from beanie import PydanticObjectId
 
 logger = logging.getLogger(__name__)
 

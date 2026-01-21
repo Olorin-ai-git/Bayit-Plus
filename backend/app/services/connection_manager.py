@@ -2,6 +2,7 @@
 WebSocket Connection Manager for real-time features.
 Manages WebSocket connections for watch parties and live features.
 """
+
 import asyncio
 import json
 from dataclasses import dataclass, field

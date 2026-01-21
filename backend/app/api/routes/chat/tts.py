@@ -5,11 +5,12 @@ Endpoints for text-to-speech conversion using ElevenLabs APIs.
 """
 
 import httpx
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
+
 from app.core.config import settings
 from app.core.security import get_current_active_user
 from app.models.user import User
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import StreamingResponse
 
 from .models import TTSRequest
 

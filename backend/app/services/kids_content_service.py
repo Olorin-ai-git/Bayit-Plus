@@ -20,21 +20,15 @@ from typing import Any, Dict, List, Optional
 from app.core.config import settings
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection, SectionSubcategory
-from app.models.kids_content import (
-    AGE_GROUP_RANGES,
-    SUBCATEGORY_PARENT_MAP,
-    KidsAgeGroup,
-    KidsAgeGroupResponse,
-    KidsAgeGroupsResponse,
-    KidsContentAggregatedResponse,
-    KidsContentCategory,
-    KidsContentItemResponse,
-    KidsContentSource,
-    KidsFeaturedResponse,
-    KidsSubcategoriesResponse,
-    KidsSubcategory,
-    KidsSubcategoryResponse,
-)
+from app.models.kids_content import (AGE_GROUP_RANGES, SUBCATEGORY_PARENT_MAP,
+                                     KidsAgeGroup, KidsAgeGroupResponse,
+                                     KidsAgeGroupsResponse,
+                                     KidsContentAggregatedResponse,
+                                     KidsContentCategory,
+                                     KidsContentItemResponse,
+                                     KidsContentSource, KidsFeaturedResponse,
+                                     KidsSubcategoriesResponse,
+                                     KidsSubcategory, KidsSubcategoryResponse)
 
 logger = logging.getLogger(__name__)
 
@@ -844,9 +838,9 @@ class KidsContentService:
             "age_rating": content.age_rating,
             "category": category,
             "subcategory": subcategory,
-            "subcategory_label": SUBCATEGORY_LABELS.get(subcategory)
-            if subcategory
-            else None,
+            "subcategory_label": (
+                SUBCATEGORY_LABELS.get(subcategory) if subcategory else None
+            ),
             "age_group": age_group,
             "educational_tags": content.educational_tags or [],
             "relevance_score": max(score, 5.0),  # Base score for DB content

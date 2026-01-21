@@ -2,6 +2,7 @@
 Audit Task Manager
 Manages running audit tasks, allowing pause, resume, cancellation, and message injection.
 """
+
 import asyncio
 import logging
 from datetime import datetime
@@ -26,15 +27,15 @@ class AuditTaskManager:
             return
 
         self._running_tasks: Dict[str, asyncio.Task] = {}
-        self._task_states: Dict[
-            str, str
-        ] = {}  # audit_id -> state (running, paused, cancelled)
-        self._pause_events: Dict[
-            str, asyncio.Event
-        ] = {}  # audit_id -> event to wait when paused
-        self._pending_messages: Dict[
-            str, List[Dict[str, Any]]
-        ] = {}  # audit_id -> list of messages
+        self._task_states: Dict[str, str] = (
+            {}
+        )  # audit_id -> state (running, paused, cancelled)
+        self._pause_events: Dict[str, asyncio.Event] = (
+            {}
+        )  # audit_id -> event to wait when paused
+        self._pending_messages: Dict[str, List[Dict[str, Any]]] = (
+            {}
+        )  # audit_id -> list of messages
         self._initialized = True
         logger.info("AuditTaskManager initialized")
 

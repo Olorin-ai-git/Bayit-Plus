@@ -6,10 +6,11 @@ Provides CRUD operations and user administration.
 from datetime import datetime
 from typing import Optional
 
-from app.models.admin import AuditAction, AuditLog, Permission
-from app.models.user import User, UserAdminUpdate
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
+
+from app.models.admin import AuditAction, AuditLog, Permission
+from app.models.user import User, UserAdminUpdate
 
 from .auth import has_permission, log_audit
 

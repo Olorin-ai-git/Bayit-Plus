@@ -6,10 +6,12 @@ Handles:
 - GET /daily-shiur - Get the daily Torah class recommendation
 """
 
-from app.api.routes.judaism.constants import JUDAISM_FEATURED_REGEX, SHIUR_GENRE_REGEX
+from fastapi import APIRouter
+
+from app.api.routes.judaism.constants import (JUDAISM_FEATURED_REGEX,
+                                              SHIUR_GENRE_REGEX)
 from app.api.routes.judaism.schemas import JudaismContentResponse
 from app.models.content import Content
-from fastapi import APIRouter
 
 router = APIRouter()
 

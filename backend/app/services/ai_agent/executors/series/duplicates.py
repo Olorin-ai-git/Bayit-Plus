@@ -8,7 +8,8 @@ import logging
 from typing import Any, Dict, List, Optional
 
 from app.models.content import Content
-from app.services.ai_agent.executors._shared import handle_dry_run, log_librarian_action
+from app.services.ai_agent.executors._shared import (handle_dry_run,
+                                                     log_librarian_action)
 
 logger = logging.getLogger(__name__)
 

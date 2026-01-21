@@ -69,9 +69,9 @@ async def execute_list_content_items(
                     "has_description": bool(item.description),
                     "has_stream": bool(item.stream_url),
                     "imdb_rating": item.imdb_rating,
-                    "created_at": item.created_at.isoformat()
-                    if item.created_at
-                    else None,
+                    "created_at": (
+                        item.created_at.isoformat() if item.created_at else None
+                    ),
                 }
                 for item in items
             ],
@@ -95,9 +95,9 @@ async def execute_get_content_details(content_id: str) -> Dict[str, Any]:
                 "title": content.title,
                 "title_en": content.title_en,
                 "description": content.description,
-                "category_id": str(content.category_id)
-                if content.category_id
-                else None,
+                "category_id": (
+                    str(content.category_id) if content.category_id else None
+                ),
                 "content_type": content.content_type,
                 "thumbnail": content.thumbnail,  # Primary poster/cover image
                 "poster_url": content.poster_url,  # TMDB poster URL (secondary)
@@ -116,12 +116,12 @@ async def execute_get_content_details(content_id: str) -> Dict[str, Any]:
                 "director": content.director,
                 "cast": content.cast,
                 "is_published": content.is_published,
-                "created_at": content.created_at.isoformat()
-                if content.created_at
-                else None,
-                "updated_at": content.updated_at.isoformat()
-                if content.updated_at
-                else None,
+                "created_at": (
+                    content.created_at.isoformat() if content.created_at else None
+                ),
+                "updated_at": (
+                    content.updated_at.isoformat() if content.updated_at else None
+                ),
             },
         }
     except Exception as e:

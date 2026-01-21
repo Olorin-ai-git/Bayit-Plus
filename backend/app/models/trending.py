@@ -2,6 +2,7 @@
 Trending Topics Models.
 Stores trending topics and analysis results.
 """
+
 from datetime import datetime
 from typing import List, Optional
 

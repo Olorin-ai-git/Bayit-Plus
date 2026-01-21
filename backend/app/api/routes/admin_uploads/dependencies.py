@@ -4,10 +4,10 @@ Admin uploads dependencies and helper functions.
 
 from fastapi import Depends, HTTPException, status
 
-from app.models.user import User
+from app.core.security import get_current_active_user
 from app.models.admin import Permission
 from app.models.upload import UploadJob, UploadJobResponse
-from app.core.security import get_current_active_user
+from app.models.user import User
 
 
 def job_to_response(job: UploadJob) -> UploadJobResponse:

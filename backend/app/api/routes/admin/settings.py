@@ -6,10 +6,11 @@ Endpoints for managing system configuration and feature flags
 from datetime import datetime
 from typing import Optional
 
-from app.models.admin import AuditAction, Permission, SystemSettings
-from app.models.user import User
 from fastapi import APIRouter, Depends, Query, Request
 from pydantic import BaseModel
+
+from app.models.admin import AuditAction, Permission, SystemSettings
+from app.models.user import User
 
 from .auth import has_permission, log_audit
 

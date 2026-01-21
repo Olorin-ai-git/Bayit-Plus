@@ -6,10 +6,11 @@ Manage user's preferred subtitle language for each content item.
 import logging
 from datetime import datetime, timezone
 
+from fastapi import APIRouter, Depends, HTTPException
+
 from app.core.security import get_current_active_user
 from app.models.subtitle_preferences import SubtitlePreference
 from app.models.user import User
-from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

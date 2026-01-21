@@ -5,8 +5,9 @@ This file wraps the extracted bayit-translation package for backward compatibili
 
 import warnings
 
-from app.core.config import settings
 from bayit_translation import TranslationService as _ExtractedService
+
+from app.core.config import settings
 
 
 class _SettingsTranslationConfigAdapter:

@@ -1,19 +1,18 @@
 """Direct messaging REST API routes for friends."""
+
 from datetime import datetime
 from typing import List, Optional
 
+from beanie.operators import And, Or
+from fastapi import APIRouter, Depends, HTTPException, Query
+
 from app.core.security import get_current_user
-from app.models.direct_message import (
-    ConversationSummary,
-    DirectMessage,
-    DirectMessageCreate,
-    DirectMessageResponse,
-)
+from app.models.direct_message import (ConversationSummary, DirectMessage,
+                                       DirectMessageCreate,
+                                       DirectMessageResponse)
 from app.models.user import User
 from app.services.chat_translation_service import chat_translation_service
 from app.services.friendship_service import FriendshipService
-from beanie.operators import And, Or
-from fastapi import APIRouter, Depends, HTTPException, Query
 
 router = APIRouter(prefix="/dm", tags=["direct-messages"])
 

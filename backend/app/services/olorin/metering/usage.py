@@ -8,11 +8,9 @@ import logging
 from datetime import datetime, timedelta, timezone
 
 from app.models.integration_partner import UsageRecord
-from app.services.olorin.metering.costs import (
-    calculate_dubbing_cost,
-    calculate_llm_cost,
-    calculate_search_cost,
-)
+from app.services.olorin.metering.costs import (calculate_dubbing_cost,
+                                                calculate_llm_cost,
+                                                calculate_search_cost)
 
 logger = logging.getLogger(__name__)
 

@@ -7,9 +7,9 @@ This module provides separation of concerns for Olorin-specific settings.
 
 from typing import Optional
 
+from olorin_i18n import I18nConfig
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
-from olorin_i18n import I18nConfig
 
 
 class PartnerAPIConfig(BaseSettings):

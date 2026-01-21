@@ -122,9 +122,9 @@ class JewishOrganization(Document):
     website: Optional[str] = None
 
     # Hours of operation
-    hours: Optional[
-        dict
-    ] = None  # {"sunday": "9:00-17:00", "monday": "9:00-17:00", ...}
+    hours: Optional[dict] = (
+        None  # {"sunday": "9:00-17:00", "monday": "9:00-17:00", ...}
+    )
 
     # Services offered (for synagogues)
     services: List[str] = Field(

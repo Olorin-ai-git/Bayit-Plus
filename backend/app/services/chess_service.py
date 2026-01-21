@@ -1,19 +1,14 @@
 """Chess game service for game logic and state management."""
+
 import secrets
 import string
 from datetime import datetime
 from typing import Optional, Tuple
 
 import chess
-from app.models.chess import (
-    BotDifficulty,
-    ChessGame,
-    ChessMove,
-    ChessPlayer,
-    GameMode,
-    GameStatus,
-    PlayerColor,
-)
+
+from app.models.chess import (BotDifficulty, ChessGame, ChessMove, ChessPlayer,
+                              GameMode, GameStatus, PlayerColor)
 from app.services.bot_chess_service import get_bot_name
 
 

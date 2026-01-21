@@ -8,12 +8,15 @@ import asyncio
 import logging
 from typing import Optional
 
-from app.api.routes.content.utils import convert_to_proxy_url, is_series_by_category
+from fastapi import APIRouter, Query, Request
+
+from app.api.routes.content.utils import (convert_to_proxy_url,
+                                          is_series_by_category)
 from app.core.security import get_passkey_session
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
-from app.services.subtitle_enrichment import enrich_content_items_with_subtitles
-from fastapi import APIRouter, Query, Request
+from app.services.subtitle_enrichment import \
+    enrich_content_items_with_subtitles
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -116,13 +119,17 @@ async def get_all_content(
             "id": str(item.id),
             "title": item.title,
             "description": item.description,
-            "thumbnail": item.thumbnail_data
-            or convert_to_proxy_url(item.thumbnail or item.poster_url)
-            if (item.thumbnail_data or item.thumbnail or item.poster_url)
-            else None,
-            "backdrop": item.backdrop_data or convert_to_proxy_url(item.backdrop)
-            if (item.backdrop_data or item.backdrop)
-            else None,
+            "thumbnail": (
+                item.thumbnail_data
+                or convert_to_proxy_url(item.thumbnail or item.poster_url)
+                if (item.thumbnail_data or item.thumbnail or item.poster_url)
+                else None
+            ),
+            "backdrop": (
+                item.backdrop_data or convert_to_proxy_url(item.backdrop)
+                if (item.backdrop_data or item.backdrop)
+                else None
+            ),
             "category": item.category_name,
             "category_name_en": cat_info.get("name_en"),
             "category_name_es": cat_info.get("name_es"),

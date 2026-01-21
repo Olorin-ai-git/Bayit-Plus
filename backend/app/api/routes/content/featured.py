@@ -7,12 +7,13 @@ import logging
 import time
 from typing import Optional
 
+from fastapi import APIRouter, Depends, Request
+
 from app.api.routes.content.utils import is_series_by_category
 from app.core.security import get_optional_user, get_passkey_session
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
 from app.models.user import User
-from fastapi import APIRouter, Depends, Request
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -272,19 +273,23 @@ async def get_featured(
     logger.info(f"⏱️ Featured: TOTAL took {time.time() - start_time:.2f}s")
 
     return {
-        "hero": {
-            "id": str(hero_content.get("_id")) if hero_content else None,
-            "title": hero_content.get("title") if hero_content else None,
-            "description": hero_content.get("description") if hero_content else None,
-            "backdrop": hero_content.get("backdrop") if hero_content else None,
-            "thumbnail": hero_content.get("thumbnail") if hero_content else None,
-            "category": hero_content.get("category_name") if hero_content else None,
-            "year": hero_content.get("year") if hero_content else None,
-            "duration": hero_content.get("duration") if hero_content else None,
-            "rating": hero_content.get("rating") if hero_content else None,
-        }
-        if hero_content
-        else None,
+        "hero": (
+            {
+                "id": str(hero_content.get("_id")) if hero_content else None,
+                "title": hero_content.get("title") if hero_content else None,
+                "description": (
+                    hero_content.get("description") if hero_content else None
+                ),
+                "backdrop": hero_content.get("backdrop") if hero_content else None,
+                "thumbnail": hero_content.get("thumbnail") if hero_content else None,
+                "category": hero_content.get("category_name") if hero_content else None,
+                "year": hero_content.get("year") if hero_content else None,
+                "duration": hero_content.get("duration") if hero_content else None,
+                "rating": hero_content.get("rating") if hero_content else None,
+            }
+            if hero_content
+            else None
+        ),
         "spotlight": spotlight_items,
         "categories": category_data,
     }

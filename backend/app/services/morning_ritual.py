@@ -3,11 +3,13 @@ Morning Ritual Service.
 Provides personalized morning content experience for Israeli expats.
 Auto-plays curated content during morning hours (configurable 7-9 AM local time).
 """
+
 from datetime import datetime, time, timedelta
 from typing import Any, Dict, List, Optional
 
 import anthropic
 import pytz
+
 from app.core.config import settings
 from app.models.content import Content, LiveChannel, RadioStation
 from app.models.user import User

@@ -2,13 +2,15 @@
 Verification API Routes
 Handles email and phone verification endpoints
 """
+
 import logging
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 
 from app.core.security import get_current_active_user
 from app.models.user import User
 from app.services.verification_service import verification_service
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

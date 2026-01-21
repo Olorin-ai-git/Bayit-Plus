@@ -1,12 +1,13 @@
 from datetime import datetime
 
 import stripe
+from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel
+
 from app.core.config import settings
 from app.core.security import get_current_active_user
 from app.models.subscription import SUBSCRIPTION_PLANS, Subscription
 from app.models.user import User
-from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -61,9 +62,11 @@ async def get_current_subscription(
             "plan": plan.name if plan else subscription.plan_id,
             "status": subscription.status,
             "billingPeriod": subscription.billing_period,
-            "currentPeriodEnd": subscription.current_period_end.isoformat()
-            if subscription.current_period_end
-            else None,
+            "currentPeriodEnd": (
+                subscription.current_period_end.isoformat()
+                if subscription.current_period_end
+                else None
+            ),
             "cancelAtPeriodEnd": subscription.cancel_at_period_end,
             "price": f"${plan.price}/month" if plan else None,
         }
@@ -218,12 +221,16 @@ async def handle_checkout_completed(session: dict):
         stripe_price_id=stripe_sub["items"]["data"][0]["price"]["id"],
         current_period_start=datetime.fromtimestamp(stripe_sub.current_period_start),
         current_period_end=datetime.fromtimestamp(stripe_sub.current_period_end),
-        trial_start=datetime.fromtimestamp(stripe_sub.trial_start)
-        if stripe_sub.trial_start
-        else None,
-        trial_end=datetime.fromtimestamp(stripe_sub.trial_end)
-        if stripe_sub.trial_end
-        else None,
+        trial_start=(
+            datetime.fromtimestamp(stripe_sub.trial_start)
+            if stripe_sub.trial_start
+            else None
+        ),
+        trial_end=(
+            datetime.fromtimestamp(stripe_sub.trial_end)
+            if stripe_sub.trial_end
+            else None
+        ),
     )
     await subscription.insert()
 

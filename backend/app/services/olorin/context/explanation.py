@@ -8,7 +8,8 @@ import logging
 from datetime import datetime, timezone
 from typing import Optional
 
-from app.models.cultural_reference import CulturalReference, ReferenceExplanation
+from app.models.cultural_reference import (CulturalReference,
+                                           ReferenceExplanation)
 
 logger = logging.getLogger(__name__)
 

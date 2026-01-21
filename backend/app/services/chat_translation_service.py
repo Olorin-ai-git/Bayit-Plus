@@ -1,11 +1,14 @@
 """Chat translation service using Claude API for language detection and translation."""
+
 import asyncio
 import logging
 from typing import Dict, List, Optional, Tuple
 
 import anthropic
+
 from app.core.config import settings
-from app.models.chat_translation import LanguageDetectionResult, TranslationResult
+from app.models.chat_translation import (LanguageDetectionResult,
+                                         TranslationResult)
 from app.models.user import User
 from app.services.translation_cache_service import translation_cache_service
 

@@ -10,24 +10,16 @@ import time
 from typing import Optional
 
 import httpx
+
 from app.services.youtube_validator.constants import (
-    DEFAULT_THUMBNAIL_QUALITY,
-    HTTP_STATUS_OK,
-    THUMBNAIL_QUALITIES,
-    get_thumbnail_min_size_bytes,
-    get_thumbnail_timeout,
-    get_validation_timeout,
-)
+    DEFAULT_THUMBNAIL_QUALITY, HTTP_STATUS_OK, THUMBNAIL_QUALITIES,
+    get_thumbnail_min_size_bytes, get_thumbnail_timeout,
+    get_validation_timeout)
 from app.services.youtube_validator.metadata_validator import (
-    has_api_key,
-    validate_with_api,
-    validate_with_oembed,
-)
+    has_api_key, validate_with_api, validate_with_oembed)
 from app.services.youtube_validator.models import YouTubeValidationResult
-from app.services.youtube_validator.url_parser import (
-    extract_video_id,
-    get_thumbnail_url,
-)
+from app.services.youtube_validator.url_parser import (extract_video_id,
+                                                       get_thumbnail_url)
 
 logger = logging.getLogger(__name__)
 

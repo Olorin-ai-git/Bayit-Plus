@@ -7,13 +7,15 @@ Endpoints for real-time summaries of live broadcasts.
 import logging
 from typing import List, Optional
 
-from app.api.routes.olorin.dependencies import get_current_partner, verify_capability
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
+
+from app.api.routes.olorin.dependencies import (get_current_partner,
+                                                verify_capability)
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
 from app.models.integration_partner import IntegrationPartner
 from app.services.olorin.metering_service import metering_service
 from app.services.olorin.recap_agent_service import recap_agent_service
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 

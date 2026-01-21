@@ -5,8 +5,9 @@ This file wraps the extracted bayit-voice-pipeline package for backward compatib
 
 import warnings
 
-from app.core.config import settings
 from bayit_voice import ElevenLabsRealtimeService as _ExtractedService
+
+from app.core.config import settings
 
 
 class _SettingsVoiceConfigAdapter:

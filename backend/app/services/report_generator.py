@@ -2,6 +2,7 @@
 Report Generator Service
 Generates comprehensive audit reports and sends notifications
 """
+
 import logging
 from datetime import datetime
 from typing import Optional

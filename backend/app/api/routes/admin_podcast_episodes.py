@@ -5,15 +5,14 @@ CRUD operations for podcast episodes
 
 from datetime import datetime
 
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+
 from app.models.admin import AuditAction, Permission
 from app.models.content import Podcast, PodcastEpisode
 from app.models.user import User
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
-from .admin_content_schemas import (
-    PodcastEpisodeCreateRequest,
-    PodcastEpisodeUpdateRequest,
-)
+from .admin_content_schemas import (PodcastEpisodeCreateRequest,
+                                    PodcastEpisodeUpdateRequest)
 from .admin_content_utils import has_permission, log_audit
 
 router = APIRouter()

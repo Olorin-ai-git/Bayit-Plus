@@ -5,7 +5,7 @@ Message types and metrics for dubbing pipeline communication.
 """
 
 from dataclasses import dataclass, field
-from typing import Optional, Literal, List
+from typing import List, Literal, Optional
 
 
 @dataclass

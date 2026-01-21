@@ -13,18 +13,16 @@ Provides comprehensive search endpoints for:
 import logging
 from typing import List, Optional
 
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
+from pydantic import BaseModel, Field
+
 from app.core.config import settings
 from app.core.security import get_current_premium_user, get_optional_user
 from app.models.search_analytics import SearchQuery
 from app.models.user import User
-from app.services.unified_search_service import (
-    SearchFilters,
-    SearchResults,
-    UnifiedSearchService,
-)
+from app.services.unified_search_service import (SearchFilters, SearchResults,
+                                                 UnifiedSearchService)
 from app.services.vod_llm_search_service import VODLLMSearchService
-from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
-from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/search", tags=["search"])
 logger = logging.getLogger(__name__)
@@ -112,17 +110,19 @@ async def unified_search_endpoint(
             filters=filters,
             page=page,
             limit=limit,
-            user_subscription_tier=current_user.subscription_tier
-            if current_user
-            else None,
+            user_subscription_tier=(
+                current_user.subscription_tier if current_user else None
+            ),
         )
 
         # Log search analytics
         await SearchQuery.log_search(
             query=query,
-            search_type="subtitle"
-            if search_in_subtitles
-            else ("text" if query.strip() else "metadata_only"),
+            search_type=(
+                "subtitle"
+                if search_in_subtitles
+                else ("text" if query.strip() else "metadata_only")
+            ),
             result_count=results.total,
             execution_time_ms=results.execution_time_ms,
             filters=filters.dict(),
@@ -239,9 +239,11 @@ async def llm_natural_language_search(
         # Build user context
         user_context = (
             {
-                "preferred_language": current_user.preferred_language
-                if hasattr(current_user, "preferred_language")
-                else None,
+                "preferred_language": (
+                    current_user.preferred_language
+                    if hasattr(current_user, "preferred_language")
+                    else None
+                ),
                 "subscription_tier": current_user.subscription_tier,
             }
             if request.include_user_context

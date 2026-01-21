@@ -14,22 +14,15 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
-from app.core.config import settings
-from app.core.exceptions import (
-    DuplicateContentError,
-    HashLockConflictError,
-    TransactionRollbackError,
-)
-from app.models.upload import (
-    ContentType,
-    QueueStats,
-    UploadJob,
-    UploadJobResponse,
-    UploadStatus,
-)
-from app.services.tmdb_service import TMDBService
 from beanie.operators import In
 from motor.motor_asyncio import AsyncIOMotorClient
+
+from app.core.config import settings
+from app.core.exceptions import (DuplicateContentError, HashLockConflictError,
+                                 TransactionRollbackError)
+from app.models.upload import (ContentType, QueueStats, UploadJob,
+                               UploadJobResponse, UploadStatus)
+from app.services.tmdb_service import TMDBService
 
 from .background import background_enricher
 from .content import content_creator
@@ -294,8 +287,9 @@ class UploadService:
         content_id = job.metadata.get("content_id")
         if content_id:
             try:
-                from app.models.content import Content
                 from bson import ObjectId
+
+                from app.models.content import Content
 
                 logger.info(f"Compensating: Deleting Content record {content_id}")
                 content = await Content.find_one(Content.id == ObjectId(content_id))
@@ -775,11 +769,11 @@ class UploadService:
                 message = {
                     "type": "queue_update",
                     "stats": stats.model_dump(mode="json"),
-                    "active_job": self._job_to_response(active_job).model_dump(
-                        mode="json"
-                    )
-                    if active_job
-                    else None,
+                    "active_job": (
+                        self._job_to_response(active_job).model_dump(mode="json")
+                        if active_job
+                        else None
+                    ),
                     "queue": [
                         self._job_to_response(j).model_dump(mode="json") for j in queue
                     ],

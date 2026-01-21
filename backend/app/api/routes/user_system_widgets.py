@@ -8,16 +8,15 @@ and choose which ones to add to their collection.
 from datetime import datetime
 from typing import Optional
 
-from app.core.security import get_current_active_user, get_optional_user
-from app.models.user import User
-from app.models.user_system_widget import (
-    UserSystemWidget,
-    UserSystemWidgetPositionUpdate,
-    UserSystemWidgetPreferencesUpdate,
-)
-from app.models.widget import Widget, WidgetPosition, WidgetType
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException
+
+from app.core.security import get_current_active_user, get_optional_user
+from app.models.user import User
+from app.models.user_system_widget import (UserSystemWidget,
+                                           UserSystemWidgetPositionUpdate,
+                                           UserSystemWidgetPreferencesUpdate)
+from app.models.widget import Widget, WidgetPosition, WidgetType
 
 router = APIRouter()
 
@@ -35,23 +34,33 @@ def _widget_dict(
         "icon": w.icon,
         "content": {
             "content_type": w.content.content_type.value if w.content else None,
-            "live_channel_id": str(w.content.live_channel_id)
-            if w.content and w.content.live_channel_id
-            else None,
-            "podcast_id": str(w.content.podcast_id)
-            if w.content and w.content.podcast_id
-            else None,
-            "content_id": str(w.content.content_id)
-            if w.content and w.content.content_id
-            else None,
-            "station_id": str(w.content.station_id)
-            if w.content and w.content.station_id
-            else None,
+            "live_channel_id": (
+                str(w.content.live_channel_id)
+                if w.content and w.content.live_channel_id
+                else None
+            ),
+            "podcast_id": (
+                str(w.content.podcast_id)
+                if w.content and w.content.podcast_id
+                else None
+            ),
+            "content_id": (
+                str(w.content.content_id)
+                if w.content and w.content.content_id
+                else None
+            ),
+            "station_id": (
+                str(w.content.station_id)
+                if w.content and w.content.station_id
+                else None
+            ),
             "iframe_url": w.content.iframe_url if w.content else None,
             "iframe_title": w.content.iframe_title if w.content else None,
-            "component_name": w.content.component_name
-            if w.content and hasattr(w.content, "component_name")
-            else None,
+            "component_name": (
+                w.content.component_name
+                if w.content and hasattr(w.content, "component_name")
+                else None
+            ),
         },
         "position": {
             "x": w.position.x,

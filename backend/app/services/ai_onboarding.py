@@ -2,6 +2,7 @@
 AI Onboarding Service for voice-based account creation.
 Uses Claude to power a conversational onboarding experience.
 """
+
 import asyncio
 import json
 import re
@@ -12,6 +13,7 @@ from enum import Enum
 from typing import List, Optional, Tuple
 
 import anthropic
+
 from app.core.config import settings
 
 

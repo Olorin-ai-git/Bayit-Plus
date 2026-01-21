@@ -1,15 +1,14 @@
 from typing import Optional
 
-from app.models.user import User
-from app.models.youngsters_content import (
-    YoungstersAgeGroupsResponse,
-    YoungstersContentAggregatedResponse,
-    YoungstersFeaturedResponse,
-    YoungstersSubcategoriesResponse,
-)
-from app.services.youngsters_content_service import YoungstersContentService
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
+
+from app.models.user import User
+from app.models.youngsters_content import (YoungstersAgeGroupsResponse,
+                                           YoungstersContentAggregatedResponse,
+                                           YoungstersFeaturedResponse,
+                                           YoungstersSubcategoriesResponse)
+from app.services.youngsters_content_service import YoungstersContentService
 
 
 class CategoriesResponse(BaseModel):
@@ -18,12 +17,8 @@ class CategoriesResponse(BaseModel):
     data: list
 
 
-from app.core.security import (
-    get_current_active_user,
-    get_optional_user,
-    get_password_hash,
-    verify_password,
-)
+from app.core.security import (get_current_active_user, get_optional_user,
+                               get_password_hash, verify_password)
 
 
 class ParentalControlsUpdate(BaseModel):

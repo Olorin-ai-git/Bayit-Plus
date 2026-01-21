@@ -2,19 +2,21 @@
 WebSocket handler for real-time chess game communication.
 Handles WebSocket connections, chess moves, and chat messages.
 """
+
 import asyncio
 import json
 import logging
 from datetime import datetime
 from typing import Optional
 
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
+from jose import JWTError, jwt
+
 from app.core.config import settings
 from app.models.chess import ChessChatMessage, ChessGame, GameMode, PlayerColor
 from app.models.user import User
 from app.services.bot_chess_service import get_bot_move
 from app.services.chess_service import chess_service
-from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
-from jose import JWTError, jwt
 
 # Bot move delay in seconds for natural feel
 BOT_MOVE_DELAY_SECONDS = 0.8
@@ -215,12 +217,12 @@ async def chess_websocket(
                 "data": {
                     "id": str(game.id),
                     "game_code": game.game_code,
-                    "white_player": game.white_player.dict()
-                    if game.white_player
-                    else None,
-                    "black_player": game.black_player.dict()
-                    if game.black_player
-                    else None,
+                    "white_player": (
+                        game.white_player.dict() if game.white_player else None
+                    ),
+                    "black_player": (
+                        game.black_player.dict() if game.black_player else None
+                    ),
                     "current_turn": game.current_turn,
                     "status": game.status,
                     "board_fen": game.board_fen,
@@ -318,9 +320,8 @@ async def chess_websocket(
                     is_bot_request = "@bot" in chat_text.lower()
 
                     # Import translation service
-                    from app.services.chat_translation_service import (
-                        chat_translation_service,
-                    )
+                    from app.services.chat_translation_service import \
+                        chat_translation_service
 
                     # Detect language
                     detection = await chat_translation_service.detect_language(
@@ -341,7 +342,8 @@ async def chess_websocket(
                     if is_bot_request:
                         try:
                             # Import here to avoid circular dependency
-                            from app.services.ai_chess_service import get_chess_advice
+                            from app.services.ai_chess_service import \
+                                get_chess_advice
 
                             advice = await get_chess_advice(game.board_fen, chat_text)
                             chat_msg.bot_response = advice
@@ -401,9 +403,9 @@ async def chess_websocket(
                         else:
                             opponent_data["display_message"] = chat_text
                             opponent_data["is_translated"] = False
-                        opponent_data[
-                            "translation_available"
-                        ] = chat_msg.has_translations
+                        opponent_data["translation_available"] = (
+                            chat_msg.has_translations
+                        )
 
                         # Broadcast to opponent only
                         for ws in active_game_connections[game_code]:

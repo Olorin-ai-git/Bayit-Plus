@@ -9,21 +9,20 @@ from datetime import datetime
 from typing import Optional
 
 import anthropic
+from fastapi import APIRouter, Depends, HTTPException
+
 from app.core.config import settings
 from app.core.security import get_current_active_user
 from app.models.user import User
 from app.models.watchlist import Conversation
 from app.services.chat_search_tool import CHAT_TOOLS, execute_chat_tool
-from fastapi import APIRouter, Depends, HTTPException
 
-from .helpers import build_media_context, extract_json_from_response, strip_markdown
+from .helpers import (build_media_context, extract_json_from_response,
+                      strip_markdown)
 from .models import ChatRequest, ChatResponse
 from .prompts import get_system_prompt
-from .services import (
-    align_message_with_action,
-    extract_action_from_response,
-    get_recommendations_from_response,
-)
+from .services import (align_message_with_action, extract_action_from_response,
+                       get_recommendations_from_response)
 
 router = APIRouter()
 _anthropic_client: Optional[anthropic.Anthropic] = None

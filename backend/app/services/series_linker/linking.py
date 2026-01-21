@@ -8,10 +8,11 @@ import logging
 from datetime import datetime
 from typing import Optional
 
+from beanie import PydanticObjectId
+
 from app.models.content import Content
 from app.models.librarian import LibrarianAction
 from app.services.series_linker.constants import LinkingResult
-from beanie import PydanticObjectId
 
 logger = logging.getLogger(__name__)
 

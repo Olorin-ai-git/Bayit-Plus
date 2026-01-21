@@ -14,13 +14,13 @@ from fastapi import APIRouter, status
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
-from app.core.config import settings
-from app.api.routes.olorin.partner import router as partner_router
-from app.api.routes.olorin.dubbing import router as dubbing_router
-from app.api.routes.olorin.search import router as search_router
 from app.api.routes.olorin.context import router as context_router
+from app.api.routes.olorin.dubbing import router as dubbing_router
+from app.api.routes.olorin.partner import router as partner_router
 from app.api.routes.olorin.recap import router as recap_router
+from app.api.routes.olorin.search import router as search_router
 from app.api.routes.olorin.webhooks import router as webhooks_router
+from app.core.config import settings
 
 # Get API version from config
 API_VERSION = settings.olorin.api_version

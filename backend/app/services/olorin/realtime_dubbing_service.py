@@ -8,10 +8,7 @@ Import from app.services.olorin.dubbing instead.
 """
 
 # Re-export from new location for backward compatibility
-from app.services.olorin.dubbing import (
-    RealtimeDubbingService,
-    DubbingMessage,
-    DubbingMetrics,
-)
+from app.services.olorin.dubbing import (DubbingMessage, DubbingMetrics,
+                                         RealtimeDubbingService)
 
 __all__ = ["RealtimeDubbingService", "DubbingMessage", "DubbingMetrics"]

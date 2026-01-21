@@ -11,17 +11,15 @@ from datetime import datetime, timezone
 from typing import Optional
 
 import httpx
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from pydantic import BaseModel, Field
+
 from app.api.routes.olorin.dependencies import get_current_partner
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
 from app.core.config import settings
-from app.models.integration_partner import (
-    IntegrationPartner,
-    WebhookDelivery,
-    WebhookEventType,
-)
+from app.models.integration_partner import (IntegrationPartner,
+                                            WebhookDelivery, WebhookEventType)
 from app.services.olorin.partner_service import partner_service
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -319,9 +317,9 @@ async def _deliver_webhook(
         "Content-Type": "application/json",
         "X-Olorin-Signature": f"sha256={signature}",
         "X-Olorin-Event": event_type,
-        "X-Olorin-Delivery": "test"
-        if is_test
-        else str(datetime.now(timezone.utc).timestamp()),
+        "X-Olorin-Delivery": (
+            "test" if is_test else str(datetime.now(timezone.utc).timestamp())
+        ),
     }
 
     start_time = time.time()

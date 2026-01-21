@@ -5,9 +5,10 @@ Adapter that wraps Bayit+ Content model to implement Olorin IndexableContent pro
 
 from typing import Optional
 
+from olorin import IndexableContent, SearchableContent
+
 from app.core.config import settings
 from app.models.content import Content
-from olorin import IndexableContent, SearchableContent
 
 
 class BayitContentAdapter:
@@ -130,9 +131,11 @@ class BayitContentAdapter:
                 {
                     "season": self._content.season,
                     "episode": self._content.episode,
-                    "series_id": str(self._content.series_id)
-                    if self._content.series_id
-                    else None,
+                    "series_id": (
+                        str(self._content.series_id)
+                        if self._content.series_id
+                        else None
+                    ),
                 }
             )
 

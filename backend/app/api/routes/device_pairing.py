@@ -3,27 +3,19 @@ Device Pairing API for QR-based TV authentication.
 Allows TV apps to generate QR codes that companion devices (phones) can scan
 to authenticate the TV session without typing credentials on the TV.
 """
+
 from datetime import datetime
 from typing import Optional
 
+from fastapi import (APIRouter, Depends, HTTPException, WebSocket,
+                     WebSocketDisconnect, status)
+from pydantic import BaseModel
+
 from app.core.config import settings
-from app.core.security import (
-    create_access_token,
-    get_current_active_user,
-    get_password_hash,
-    verify_password,
-)
+from app.core.security import (create_access_token, get_current_active_user,
+                               get_password_hash, verify_password)
 from app.models.user import TokenResponse, User, UserLogin, UserResponse
 from app.services.pairing_manager import pairing_manager
-from fastapi import (
-    APIRouter,
-    Depends,
-    HTTPException,
-    WebSocket,
-    WebSocketDisconnect,
-    status,
-)
-from pydantic import BaseModel
 
 router = APIRouter()
 

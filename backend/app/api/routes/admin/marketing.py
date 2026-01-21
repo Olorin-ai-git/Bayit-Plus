@@ -1,17 +1,14 @@
 """Admin Marketing Management - Email campaigns, push notifications, and audience segments"""
+
 from datetime import datetime, timedelta
 from typing import Optional
 
-from app.models.admin import (
-    AudienceFilter,
-    EmailCampaign,
-    MarketingStatus,
-    Permission,
-    PushNotification,
-)
-from app.models.user import User
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
+
+from app.models.admin import (AudienceFilter, EmailCampaign, MarketingStatus,
+                              Permission, PushNotification)
+from app.models.user import User
 
 from .auth import has_permission
 

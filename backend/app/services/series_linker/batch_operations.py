@@ -10,9 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from app.core.config import settings
 from app.models.content import Content
 from app.services.series_linker.episode_matcher import (
-    extract_series_info_from_title,
-    find_matching_series_by_similarity,
-)
+    extract_series_info_from_title, find_matching_series_by_similarity)
 from app.services.series_linker.linking import link_episode_to_series
 from app.services.series_linker.tmdb_integration import find_series_via_tmdb
 

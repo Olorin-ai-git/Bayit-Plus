@@ -2,22 +2,21 @@
 Morning Ritual API Routes.
 Handles morning routine experience for Israeli expats.
 """
+
 from datetime import datetime
 from typing import List, Optional
 
-from app.core.security import get_current_active_user
-from app.models.user import User
-from app.services.morning_ritual import (
-    generate_ai_brief,
-    get_default_ritual_preferences,
-    get_israel_morning_context,
-    get_morning_playlist,
-    get_ritual_status,
-    get_user_local_time,
-    is_ritual_time,
-)
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+
+from app.core.security import get_current_active_user
+from app.models.user import User
+from app.services.morning_ritual import (generate_ai_brief,
+                                         get_default_ritual_preferences,
+                                         get_israel_morning_context,
+                                         get_morning_playlist,
+                                         get_ritual_status,
+                                         get_user_local_time, is_ritual_time)
 
 router = APIRouter(prefix="/ritual", tags=["ritual"])
 

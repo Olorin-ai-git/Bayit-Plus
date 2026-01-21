@@ -8,25 +8,17 @@ Actual implementations are in specialized modules:
 - cache.py: Caching functions
 """
 
+# Re-export from batch_validator
+from app.services.youtube_validator.batch_validator import \
+    validate_youtube_content
+# Re-export from cache
+from app.services.youtube_validator.cache import (cache_youtube_result,
+                                                  filter_cached_youtube,
+                                                  get_cached_validation,
+                                                  invalidate_cache)
 # Re-export from video_validator
 from app.services.youtube_validator.video_validator import (
-    validate_youtube_video,
-    get_best_youtube_thumbnail,
-)
-
-# Re-export from batch_validator
-from app.services.youtube_validator.batch_validator import (
-    validate_youtube_content,
-)
-
-# Re-export from cache
-from app.services.youtube_validator.cache import (
-    filter_cached_youtube,
-    cache_youtube_result,
-    get_cached_validation,
-    invalidate_cache,
-)
-
+    get_best_youtube_thumbnail, validate_youtube_video)
 
 __all__ = [
     "validate_youtube_video",

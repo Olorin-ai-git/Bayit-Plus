@@ -14,7 +14,8 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set
 
 from app.core.config import settings
-from app.models.upload import ContentType, MonitoredFolder, UploadJob, UploadStatus
+from app.models.upload import (ContentType, MonitoredFolder, UploadJob,
+                               UploadStatus)
 from app.services.upload_service import upload_service
 
 logger = logging.getLogger(__name__)
@@ -29,9 +30,9 @@ class FolderMonitorService:
     def __init__(self):
         self._scanning = False
         self._known_files: Dict[str, Set[str]] = {}  # folder_id -> set of file paths
-        self._hash_cache: Dict[
-            str, Dict[str, any]
-        ] = {}  # file_path -> {hash, mtime, size}
+        self._hash_cache: Dict[str, Dict[str, any]] = (
+            {}
+        )  # file_path -> {hash, mtime, size}
         # Store hash cache in /tmp or current directory
         cache_base = Path("/tmp") if Path("/tmp").exists() else Path.cwd()
         self._cache_dir = cache_base / ".bayit_hash_cache"

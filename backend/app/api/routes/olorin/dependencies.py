@@ -7,13 +7,14 @@ Authentication, rate limiting, and capability verification.
 import logging
 from typing import Optional, Tuple
 
+from fastapi import Header, HTTPException, Request, status
+
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
 from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
 from app.services.olorin.metering_service import metering_service
 from app.services.olorin.partner_service import partner_service
 from app.services.olorin.rate_limiter import partner_rate_limiter
-from fastapi import Header, HTTPException, Request, status
 
 logger = logging.getLogger(__name__)
 

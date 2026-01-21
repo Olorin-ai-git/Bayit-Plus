@@ -7,14 +7,13 @@ Provides duplicate episode detection and batch resolution.
 import logging
 from typing import Any, Dict, List, Optional
 
+from beanie import PydanticObjectId
+
 from app.core.database import get_database
 from app.models.content import Content
 from app.services.series_linker.constants import DuplicateGroup
 from app.services.series_linker.deduplication import (
-    resolve_duplicate_episode_group,
-    select_episode_to_keep,
-)
-from beanie import PydanticObjectId
+    resolve_duplicate_episode_group, select_episode_to_keep)
 
 logger = logging.getLogger(__name__)
 
@@ -149,9 +148,11 @@ async def auto_resolve_duplicate_episodes(
                     "series_title": group.series_title,
                     "season": group.season,
                     "episode": group.episode,
-                    "kept_id": resolution.kept_episode_ids[0]
-                    if resolution.kept_episode_ids
-                    else None,
+                    "kept_id": (
+                        resolution.kept_episode_ids[0]
+                        if resolution.kept_episode_ids
+                        else None
+                    ),
                     "removed_ids": resolution.removed_episode_ids,
                     "success": resolution.success,
                     "errors": resolution.errors,
@@ -173,7 +174,8 @@ async def auto_resolve_duplicate_episodes(
 
 async def validate_episode_uniqueness() -> Dict[str, Any]:
     """Validate that all episodes have unique (series_id, season, episode) combinations."""
-    from app.services.series_linker.validation import find_episodes_with_incomplete_data
+    from app.services.series_linker.validation import \
+        find_episodes_with_incomplete_data
 
     return {
         "valid": True,

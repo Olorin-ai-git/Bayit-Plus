@@ -8,21 +8,16 @@ Requires admin authentication.
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from app.api.routes.admin import require_admin
-from app.models.culture import (
-    Culture,
-    CultureCity,
-    CultureCityCategory,
-    CultureCityResponse,
-    CultureNewsSource,
-    CultureNewsSourceResponse,
-    CultureResponse,
-    ScrapingConfig,
-)
-from app.models.user import User
-from app.services.culture_content_service import culture_content_service
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
+
+from app.api.routes.admin import require_admin
+from app.models.culture import (Culture, CultureCity, CultureCityCategory,
+                                CultureCityResponse, CultureNewsSource,
+                                CultureNewsSourceResponse, CultureResponse,
+                                ScrapingConfig)
+from app.models.user import User
+from app.services.culture_content_service import culture_content_service
 
 router = APIRouter()
 

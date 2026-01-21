@@ -12,11 +12,9 @@ import subprocess
 import tempfile
 from typing import Any, Dict, List, Optional
 
-from app.services.ffmpeg.constants import (
-    PRIORITY_LANGUAGES,
-    is_text_based_subtitle,
-    normalize_language_code,
-)
+from app.services.ffmpeg.constants import (PRIORITY_LANGUAGES,
+                                           is_text_based_subtitle,
+                                           normalize_language_code)
 from app.services.ffmpeg.video_analysis import analyze_video
 
 logger = logging.getLogger(__name__)

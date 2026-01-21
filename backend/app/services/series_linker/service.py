@@ -10,30 +10,21 @@ from typing import Any, Dict, List, Optional, Tuple
 from app.core.config import settings
 from app.models.content import Content
 from app.services.series_linker.batch_operations import (
-    auto_link_unlinked_episodes,
-    find_matching_series,
-)
-from app.services.series_linker.constants import (
-    DeduplicationResult,
-    DuplicateGroup,
-    LinkingResult,
-    UnlinkedEpisode,
-)
+    auto_link_unlinked_episodes, find_matching_series)
+from app.services.series_linker.constants import (DeduplicationResult,
+                                                  DuplicateGroup,
+                                                  LinkingResult,
+                                                  UnlinkedEpisode)
 from app.services.series_linker.deduplication import (
-    resolve_duplicate_episode_group,
-    select_episode_to_keep,
-)
+    resolve_duplicate_episode_group, select_episode_to_keep)
 from app.services.series_linker.duplicate_resolver import (
-    auto_resolve_duplicate_episodes,
-    find_duplicate_episodes,
-    validate_episode_uniqueness,
-)
-from app.services.series_linker.episode_matcher import extract_series_info_from_title
+    auto_resolve_duplicate_episodes, find_duplicate_episodes,
+    validate_episode_uniqueness)
+from app.services.series_linker.episode_matcher import \
+    extract_series_info_from_title
 from app.services.series_linker.linking import link_episode_to_series
 from app.services.series_linker.validation import (
-    find_episodes_with_incomplete_data,
-    find_unlinked_episodes,
-)
+    find_episodes_with_incomplete_data, find_unlinked_episodes)
 
 logger = logging.getLogger(__name__)
 

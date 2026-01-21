@@ -5,11 +5,12 @@ GET operations for VOD content
 
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+
 from app.models.admin import Permission
 from app.models.content import Content
 from app.models.subtitles import SubtitleTrackDoc
 from app.models.user import User
-from fastapi import APIRouter, Depends, HTTPException, Query
 
 from .admin_content_utils import has_permission
 
@@ -189,9 +190,9 @@ async def get_content_hierarchical(
             "available_subtitles": available_subtitles,
             "created_at": item.created_at.isoformat(),
             "updated_at": item.updated_at.isoformat(),
-            "episode_count": episode_counts.get(str(item.id), 0)
-            if item.is_series
-            else 0,
+            "episode_count": (
+                episode_counts.get(str(item.id), 0) if item.is_series else 0
+            ),
         }
 
         result_items.append(item_data)
@@ -251,9 +252,9 @@ async def get_content_detail(
         "avg_rating": content.avg_rating,
         "created_at": content.created_at.isoformat(),
         "updated_at": content.updated_at.isoformat(),
-        "published_at": content.published_at.isoformat()
-        if content.published_at
-        else None,
+        "published_at": (
+            content.published_at.isoformat() if content.published_at else None
+        ),
     }
 
 

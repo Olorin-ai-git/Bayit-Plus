@@ -12,14 +12,10 @@ import time
 from typing import Optional
 
 import anthropic
+
 from app.core.config import settings
-from app.models.content import (
-    Content,
-    LiveChannel,
-    Podcast,
-    PodcastEpisode,
-    RadioStation,
-)
+from app.models.content import (Content, LiveChannel, Podcast, PodcastEpisode,
+                                RadioStation)
 
 # Initialize Anthropic client
 client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)

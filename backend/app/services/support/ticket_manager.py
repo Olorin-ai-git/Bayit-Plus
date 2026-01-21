@@ -8,12 +8,10 @@ from typing import List, Optional, Tuple
 
 from app.models.support import SupportTicket, TicketMessage, TicketNote
 from app.models.user import User
-from app.services.support.constants import (
-    DEFAULT_PRIORITY,
-    HIGH_PRIORITY_WORDS,
-    LOW_PRIORITY_WORDS,
-    URGENT_PRIORITY_WORDS,
-)
+from app.services.support.constants import (DEFAULT_PRIORITY,
+                                            HIGH_PRIORITY_WORDS,
+                                            LOW_PRIORITY_WORDS,
+                                            URGENT_PRIORITY_WORDS)
 
 logger = logging.getLogger(__name__)
 

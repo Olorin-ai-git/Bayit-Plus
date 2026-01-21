@@ -9,13 +9,11 @@ Import from app.api.routes.olorin.dubbing_routes instead.
 
 # Re-export router from new location for backward compatibility
 from app.api.routes.olorin.dubbing_routes import router
-from app.api.routes.olorin.dubbing_routes.models import (
-    CreateSessionRequest,
-    SessionResponse,
-    SessionEndResponse,
-    VoiceInfo,
-    VoicesResponse,
-)
+from app.api.routes.olorin.dubbing_routes.models import (CreateSessionRequest,
+                                                         SessionEndResponse,
+                                                         SessionResponse,
+                                                         VoiceInfo,
+                                                         VoicesResponse)
 
 __all__ = [
     "router",

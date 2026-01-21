@@ -7,10 +7,12 @@ Handles episode linking to series and duplicate resolution.
 import logging
 from typing import Optional
 
-from app.api.routes.admin import require_admin
-from app.api.routes.librarian.models import LinkEpisodeRequest, ResolveDuplicatesRequest
-from app.models.user import User
 from fastapi import APIRouter, Depends, HTTPException, status
+
+from app.api.routes.admin import require_admin
+from app.api.routes.librarian.models import (LinkEpisodeRequest,
+                                             ResolveDuplicatesRequest)
+from app.models.user import User
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -24,7 +26,8 @@ async def get_unlinked_episodes(
     Get episodes that are not linked to any parent series.
     """
     try:
-        from app.services.series_linker_service import get_series_linker_service
+        from app.services.series_linker_service import \
+            get_series_linker_service
 
         service = get_series_linker_service()
         unlinked = await service.find_unlinked_episodes(limit=limit)
@@ -60,7 +63,8 @@ async def link_episode_to_series(
     Manually link an episode to its parent series.
     """
     try:
-        from app.services.series_linker_service import get_series_linker_service
+        from app.services.series_linker_service import \
+            get_series_linker_service
 
         service = get_series_linker_service()
         result = await service.link_episode_to_series(
@@ -105,7 +109,8 @@ async def get_duplicate_episodes(
     Get groups of duplicate episodes (same series + season + episode).
     """
     try:
-        from app.services.series_linker_service import get_series_linker_service
+        from app.services.series_linker_service import \
+            get_series_linker_service
 
         service = get_series_linker_service()
         duplicates = await service.find_duplicate_episodes(series_id=series_id)
@@ -143,7 +148,8 @@ async def resolve_duplicate_episodes(
     Resolve a group of duplicate episodes by keeping one and unpublishing/deleting the others.
     """
     try:
-        from app.services.series_linker_service import get_series_linker_service
+        from app.services.series_linker_service import \
+            get_series_linker_service
 
         service = get_series_linker_service()
         result = await service.resolve_duplicate_episode_group(

@@ -10,7 +10,8 @@ import logging
 import time
 from typing import Optional
 
-from app.services.elevenlabs_tts_streaming_service import ElevenLabsTTSStreamingService
+from app.services.elevenlabs_tts_streaming_service import \
+    ElevenLabsTTSStreamingService
 from app.services.olorin.dubbing.models import DubbingMessage, DubbingMetrics
 
 logger = logging.getLogger(__name__)

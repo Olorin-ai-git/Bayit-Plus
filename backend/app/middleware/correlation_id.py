@@ -10,9 +10,10 @@ import uuid
 from contextvars import ContextVar
 from typing import Callable
 
-from app.core.config import settings
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
+
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 

@@ -2,9 +2,11 @@
 Verification Dependencies
 Middleware for checking user verification status
 """
+
+from fastapi import Depends, HTTPException, status
+
 from app.core.security import get_current_active_user
 from app.models.user import User
-from fastapi import Depends, HTTPException, status
 
 
 async def require_verified_user(

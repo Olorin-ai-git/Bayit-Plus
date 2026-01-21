@@ -6,12 +6,13 @@ Manage user's favorite content items
 from datetime import datetime
 from typing import List, Optional
 
-from app.core.security import get_current_active_user
-from app.models.content import Content, LiveChannel, Podcast
-from app.models.user import User
 from beanie import Document
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
+
+from app.core.security import get_current_active_user
+from app.models.content import Content, LiveChannel, Podcast
+from app.models.user import User
 
 
 # Favorite model

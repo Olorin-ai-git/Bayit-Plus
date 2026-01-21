@@ -8,12 +8,15 @@ Legacy Category model is deprecated.
 import logging
 from typing import Optional
 
-from app.api.routes.content.utils import convert_to_proxy_url, is_series_by_category
+from fastapi import APIRouter, HTTPException, Query
+
+from app.api.routes.content.utils import (convert_to_proxy_url,
+                                          is_series_by_category)
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection, SectionSubcategory
-from app.services.subtitle_enrichment import enrich_content_items_with_subtitles
+from app.services.subtitle_enrichment import \
+    enrich_content_items_with_subtitles
 from app.utils.i18n import get_multilingual_names
-from fastapi import APIRouter, HTTPException, Query
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

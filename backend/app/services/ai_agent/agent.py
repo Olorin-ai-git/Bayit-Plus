@@ -11,21 +11,20 @@ from typing import Any, Dict, List, Optional
 
 from anthropic import Anthropic
 from anthropic.types import Message, TextBlock, ToolUseBlock
+from beanie import PydanticObjectId
+
 from app.core.config import settings
 from app.models.librarian import AuditReport
 from app.services.ai_agent.dispatcher import execute_tool
 from app.services.ai_agent.logger import clear_title_cache, log_to_database
-from app.services.ai_agent.prompts import (
-    AUDIT_INSTRUCTIONS,
-    LANGUAGE_INSTRUCTIONS,
-    build_comprehensive_initial_prompt,
-    build_task_specific_initial_prompt,
-    get_enabled_capabilities,
-)
+from app.services.ai_agent.prompts import (AUDIT_INSTRUCTIONS,
+                                           LANGUAGE_INSTRUCTIONS,
+                                           build_comprehensive_initial_prompt,
+                                           build_task_specific_initial_prompt,
+                                           get_enabled_capabilities)
 from app.services.ai_agent.summary_logger import log_comprehensive_summary
 from app.services.ai_agent.tools import TOOLS
 from app.services.audit_task_manager import audit_task_manager
-from beanie import PydanticObjectId
 
 logger = logging.getLogger(__name__)
 

@@ -14,6 +14,11 @@
     "deploy:preview": "npm run build:web && firebase hosting:channel:deploy preview --only tv"
   },
   "dependencies": {
+    "@olorin/design-tokens": "2.0.0",
+    "@olorin/shared-hooks": "2.0.0",
+    "@olorin/shared-i18n": "2.0.0",
+    "@olorin/shared-services": "2.0.0",
+    "@olorin/shared-stores": "2.0.0",
     "@expo/vector-icons": "^15.0.3",
     "@livekit/react-native": "^2.4.0",
     "@simplewebauthn/browser": "^11.0.0",

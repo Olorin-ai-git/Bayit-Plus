@@ -25,7 +25,7 @@ from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.core.config import settings
-from app.models.content import Content, 
+from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
 
 logging.basicConfig(

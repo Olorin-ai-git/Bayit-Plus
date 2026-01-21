@@ -7,12 +7,10 @@ from fastapi import APIRouter
 
 from .analytics import router as analytics_router
 from .audit import router as audit_router
-
 # Import auth utilities for external use
 from .auth import has_permission, log_audit, require_admin
 from .billing import router as billing_router
 from .campaigns import router as campaigns_router
-
 # Import all routers
 from .dashboard import router as dashboard_router
 from .marketing import router as marketing_router

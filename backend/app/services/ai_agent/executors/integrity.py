@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 async def execute_get_integrity_status() -> Dict[str, Any]:
     """Get a summary of all integrity issues (orphans and stuck jobs)."""
     try:
-        from app.services.upload_service.integrity import upload_integrity_service
+        from app.services.upload_service.integrity import \
+            upload_integrity_service
 
         status = await upload_integrity_service.get_integrity_status()
 
@@ -28,16 +29,18 @@ async def execute_get_integrity_status() -> Dict[str, Any]:
             "stuck_upload_jobs": status.stuck_upload_jobs,
             "stale_hash_locks": status.stale_hash_locks,
             "issues_found": status.issues_found,
-            "last_checked": status.last_checked.isoformat()
-            if status.last_checked
-            else None,
+            "last_checked": (
+                status.last_checked.isoformat() if status.last_checked else None
+            ),
             "message": (
-                f"Found {status.orphaned_gcs_files} orphaned GCS files, "
-                f"{status.orphaned_content_records} orphaned content records, "
-                f"{status.stuck_upload_jobs} stuck jobs"
-            )
-            if status.issues_found
-            else "No integrity issues found",
+                (
+                    f"Found {status.orphaned_gcs_files} orphaned GCS files, "
+                    f"{status.orphaned_content_records} orphaned content records, "
+                    f"{status.stuck_upload_jobs} stuck jobs"
+                )
+                if status.issues_found
+                else "No integrity issues found"
+            ),
         }
 
     except Exception as e:
@@ -50,7 +53,8 @@ async def execute_find_orphaned_gcs_files(
 ) -> Dict[str, Any]:
     """Find GCS files that have no corresponding Content record."""
     try:
-        from app.services.upload_service.integrity import upload_integrity_service
+        from app.services.upload_service.integrity import \
+            upload_integrity_service
 
         orphans = await upload_integrity_service.find_orphaned_gcs_files(
             prefix=prefix, limit=limit
@@ -64,9 +68,9 @@ async def execute_find_orphaned_gcs_files(
                     "gcs_path": orphan.gcs_path,
                     "public_url": orphan.public_url,
                     "size_bytes": orphan.size_bytes,
-                    "created_at": orphan.created_at.isoformat()
-                    if orphan.created_at
-                    else None,
+                    "created_at": (
+                        orphan.created_at.isoformat() if orphan.created_at else None
+                    ),
                 }
                 for orphan in orphans
             ],
@@ -81,7 +85,8 @@ async def execute_find_orphaned_gcs_files(
 async def execute_find_orphaned_content_records(limit: int = 100) -> Dict[str, Any]:
     """Find Content records whose GCS files no longer exist."""
     try:
-        from app.services.upload_service.integrity import upload_integrity_service
+        from app.services.upload_service.integrity import \
+            upload_integrity_service
 
         orphans = await upload_integrity_service.find_orphaned_content_records(
             limit=limit
@@ -96,9 +101,9 @@ async def execute_find_orphaned_content_records(limit: int = 100) -> Dict[str, A
                     "title": orphan.title,
                     "stream_url": orphan.stream_url,
                     "file_hash": orphan.file_hash,
-                    "created_at": orphan.created_at.isoformat()
-                    if orphan.created_at
-                    else None,
+                    "created_at": (
+                        orphan.created_at.isoformat() if orphan.created_at else None
+                    ),
                 }
                 for orphan in orphans
             ],
@@ -113,7 +118,8 @@ async def execute_find_orphaned_content_records(limit: int = 100) -> Dict[str, A
 async def execute_find_stuck_upload_jobs(threshold_minutes: int = 30) -> Dict[str, Any]:
     """Find upload jobs stuck in processing state."""
     try:
-        from app.services.upload_service.integrity import upload_integrity_service
+        from app.services.upload_service.integrity import \
+            upload_integrity_service
 
         stuck_jobs = await upload_integrity_service.find_stuck_upload_jobs(
             threshold_minutes=threshold_minutes
@@ -127,9 +133,9 @@ async def execute_find_stuck_upload_jobs(threshold_minutes: int = 30) -> Dict[st
                     "job_id": job.job_id,
                     "filename": job.filename,
                     "status": job.status,
-                    "started_at": job.started_at.isoformat()
-                    if job.started_at
-                    else None,
+                    "started_at": (
+                        job.started_at.isoformat() if job.started_at else None
+                    ),
                     "stuck_minutes": job.stuck_minutes,
                     "current_stage": job.current_stage,
                 }
@@ -155,7 +161,8 @@ async def execute_cleanup_orphans(
         cleanup_type: "gcs" for GCS files, "content" for Content records, "all" for both
     """
     try:
-        from app.services.upload_service.integrity import upload_integrity_service
+        from app.services.upload_service.integrity import \
+            upload_integrity_service
 
         results = {
             "success": True,
@@ -221,7 +228,8 @@ async def execute_recover_stuck_jobs(
 ) -> Dict[str, Any]:
     """Recover stuck upload jobs by marking them as failed and optionally requeuing."""
     try:
-        from app.services.upload_service.integrity import upload_integrity_service
+        from app.services.upload_service.integrity import \
+            upload_integrity_service
 
         result = await upload_integrity_service.recover_stuck_jobs(
             dry_run=dry_run, threshold_minutes=threshold_minutes
@@ -250,7 +258,8 @@ async def execute_run_full_cleanup(
 ) -> Dict[str, Any]:
     """Run a full cleanup of all integrity issues."""
     try:
-        from app.services.upload_service.integrity import upload_integrity_service
+        from app.services.upload_service.integrity import \
+            upload_integrity_service
 
         result = await upload_integrity_service.run_full_cleanup(
             dry_run=dry_run, limit=limit
@@ -264,9 +273,11 @@ async def execute_run_full_cleanup(
             "gcs_cleanup": result["gcs_cleanup"],
             "content_cleanup": result["content_cleanup"],
             "job_recovery": result["job_recovery"],
-            "message": "Full cleanup completed"
-            if result["overall_success"]
-            else "Full cleanup completed with errors",
+            "message": (
+                "Full cleanup completed"
+                if result["overall_success"]
+                else "Full cleanup completed with errors"
+            ),
         }
 
     except Exception as e:
@@ -519,7 +530,8 @@ async def execute_find_youtube_missing_posters(
         List of content items needing poster fixes
     """
     try:
-        from app.services.youtube_validator import find_youtube_content_missing_posters
+        from app.services.youtube_validator import \
+            find_youtube_content_missing_posters
 
         result = await find_youtube_content_missing_posters(
             limit=limit, include_kids=include_kids

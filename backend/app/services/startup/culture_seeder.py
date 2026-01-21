@@ -338,7 +338,11 @@ JAPANESE_CITIES_DATA = [
             CultureCityCategory(
                 id="tech",
                 name="Technology",
-                name_localized={"ja": "テクノロジー", "en": "Technology", "he": "טכנולוגיה"},
+                name_localized={
+                    "ja": "テクノロジー",
+                    "en": "Technology",
+                    "he": "טכנולוגיה",
+                },
                 icon_emoji="🤖",
                 keywords_native=["テクノロジー", "技術", "ロボット"],
                 keywords_english=["technology", "tech", "robotics"],
@@ -444,7 +448,11 @@ JAPANESE_CITIES_DATA = [
             CultureCityCategory(
                 id="street-food",
                 name="Street Food",
-                name_localized={"ja": "屋台グルメ", "en": "Street Food", "he": "אוכל רחוב"},
+                name_localized={
+                    "ja": "屋台グルメ",
+                    "en": "Street Food",
+                    "he": "אוכל רחוב",
+                },
                 icon_emoji="🍢",
                 keywords_native=["たこ焼き", "お好み焼き", "屋台"],
                 keywords_english=["takoyaki", "okonomiyaki", "street food"],
@@ -542,7 +550,11 @@ KOREAN_CITIES_DATA = [
             CultureCityCategory(
                 id="food",
                 name="Korean Food",
-                name_localized={"ko": "한식", "en": "Korean Food", "he": "אוכל קוריאני"},
+                name_localized={
+                    "ko": "한식",
+                    "en": "Korean Food",
+                    "he": "אוכל קוריאני",
+                },
                 icon_emoji="🍜",
                 keywords_native=["한식", "김치", "삼겹살"],
                 keywords_english=["korean food", "kimchi", "bbq"],

@@ -2,21 +2,18 @@
 Watch Party REST API endpoints.
 Handles party creation, joining, and management.
 """
+
 from datetime import datetime
 from typing import List, Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+
 from app.core.security import get_current_active_user
-from app.models.realtime import (
-    ChatMessage,
-    ChatMessageCreate,
-    ChatMessageResponse,
-    WatchParty,
-    WatchPartyCreate,
-    WatchPartyResponse,
-)
+from app.models.realtime import (ChatMessage, ChatMessageCreate,
+                                 ChatMessageResponse, WatchParty,
+                                 WatchPartyCreate, WatchPartyResponse)
 from app.models.user import User
 from app.services.room_manager import room_manager
-from fastapi import APIRouter, Depends, HTTPException, Query
 
 router = APIRouter()
 

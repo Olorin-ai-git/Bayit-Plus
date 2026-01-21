@@ -4,6 +4,7 @@ Family Controls Service.
 Manages unified parental controls for kids and youngsters content.
 Handles PIN verification, settings management, and migration from legacy controls.
 """
+
 import logging
 from datetime import datetime
 from typing import Optional

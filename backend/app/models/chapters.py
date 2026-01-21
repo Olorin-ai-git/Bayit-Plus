@@ -2,6 +2,7 @@
 Video Chapters Models.
 Stores AI-generated chapters for content navigation.
 """
+
 from datetime import datetime
 from typing import List, Optional
 

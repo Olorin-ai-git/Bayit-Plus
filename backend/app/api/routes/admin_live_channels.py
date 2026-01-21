@@ -5,12 +5,14 @@ Admin Live Channel Management Routes - CRUD operations for live TV channels
 from datetime import datetime
 from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+
 from app.models.admin import AuditAction, Permission
 from app.models.content import LiveChannel
 from app.models.user import User
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
-from .admin_content_schemas import LiveChannelCreateRequest, LiveChannelUpdateRequest
+from .admin_content_schemas import (LiveChannelCreateRequest,
+                                    LiveChannelUpdateRequest)
 from .admin_content_utils import has_permission, log_audit
 
 router = APIRouter()

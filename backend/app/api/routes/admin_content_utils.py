@@ -5,11 +5,12 @@ Includes RBAC, logging, and common response models.
 
 from typing import List, Optional
 
+from fastapi import Depends, HTTPException, Request, status
+from pydantic import BaseModel
+
 from app.core.security import get_current_active_user
 from app.models.admin import AuditAction, AuditLog, Permission
 from app.models.user import User
-from fastapi import Depends, HTTPException, Request, status
-from pydantic import BaseModel
 
 
 def has_permission(required_permission: Permission):

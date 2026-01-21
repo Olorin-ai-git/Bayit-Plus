@@ -2,6 +2,7 @@
 Verification Token Model
 Manages temporary tokens for email and phone verification
 """
+
 from datetime import datetime
 from typing import Optional
 

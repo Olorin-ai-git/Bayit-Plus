@@ -9,19 +9,10 @@ import logging
 from datetime import datetime
 
 from app.models.content import LiveChannel
-from app.models.widget import (
-    Widget,
-    WidgetContent,
-    WidgetContentType,
-    WidgetPosition,
-    WidgetType,
-)
-from app.services.startup.defaults import (
-    CHANNEL_WIDGETS,
-    FLIGHT_WIDGETS,
-    PODCAST_WIDGETS,
-    YNET_WIDGET_CONFIG,
-)
+from app.models.widget import (Widget, WidgetContent, WidgetContentType,
+                               WidgetPosition, WidgetType)
+from app.services.startup.defaults import (CHANNEL_WIDGETS, FLIGHT_WIDGETS,
+                                           PODCAST_WIDGETS, YNET_WIDGET_CONFIG)
 
 logger = logging.getLogger(__name__)
 

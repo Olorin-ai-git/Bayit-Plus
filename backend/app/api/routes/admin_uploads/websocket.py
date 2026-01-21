@@ -9,9 +9,9 @@ from typing import List
 
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
+from app.api.routes.admin_uploads.dependencies import job_to_response
 from app.core.security import decode_token
 from app.services.upload_service import upload_service
-from app.api.routes.admin_uploads.dependencies import job_to_response
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -110,9 +110,11 @@ async def upload_websocket(websocket: WebSocket, token: str = Query(...)):
             {
                 "type": "queue_update",
                 "stats": stats.model_dump(mode="json"),
-                "active_job": job_to_response(active_job).model_dump(mode="json")
-                if active_job
-                else None,
+                "active_job": (
+                    job_to_response(active_job).model_dump(mode="json")
+                    if active_job
+                    else None
+                ),
                 "queue": [job_to_response(j).model_dump(mode="json") for j in queue],
                 "recent_completed": [
                     job_to_response(j).model_dump(mode="json") for j in recent

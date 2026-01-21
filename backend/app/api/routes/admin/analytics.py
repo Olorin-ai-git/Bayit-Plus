@@ -6,9 +6,10 @@ Endpoints for analytics and reporting
 from datetime import datetime, timedelta
 from typing import Optional
 
+from fastapi import APIRouter, Depends
+
 from app.models.admin import Permission
 from app.models.user import User
-from fastapi import APIRouter, Depends
 
 from .auth import has_permission
 

@@ -2,16 +2,18 @@
 WebSocket handler for real-time watch party communication.
 Handles WebSocket connections, message routing, and real-time events.
 """
+
 import json
 from datetime import datetime
 from typing import Optional
+
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
+from jose import JWTError, jwt
 
 from app.core.config import settings
 from app.models.user import User
 from app.services.connection_manager import connection_manager
 from app.services.room_manager import room_manager
-from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
-from jose import JWTError, jwt
 
 router = APIRouter()
 

@@ -2,6 +2,7 @@
 Podcast Scraper Service.
 Fetches podcast episodes from real RSS feeds.
 """
+
 import asyncio
 import hashlib
 from dataclasses import dataclass, field
@@ -118,9 +119,9 @@ async def fetch_rss_feed(rss_url: str) -> Optional[PodcastData]:
                 episodes.append(
                     PodcastEpisodeData(
                         title=title_str,
-                        description=ep_desc.get_text(strip=True)[:200]
-                        if ep_desc
-                        else None,
+                        description=(
+                            ep_desc.get_text(strip=True)[:200] if ep_desc else None
+                        ),
                         audio_url=audio_url,
                         duration=duration_str,
                         published_date=pub_date,
@@ -131,9 +132,9 @@ async def fetch_rss_feed(rss_url: str) -> Optional[PodcastData]:
             podcast = PodcastData(
                 title=title.get_text(strip=True) if title else "Unknown",
                 author=author.get_text(strip=True) if author else None,
-                description=description.get_text(strip=True)[:500]
-                if description
-                else None,
+                description=(
+                    description.get_text(strip=True)[:500] if description else None
+                ),
                 cover=cover,
                 rss_url=rss_url,
                 episodes=episodes,

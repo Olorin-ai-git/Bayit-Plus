@@ -5,12 +5,11 @@ Handles:
 - GET /live - Get currently live Torah classes and prayers
 """
 
-from app.api.routes.judaism.constants import (
-    LIVE_CHANNEL_CATEGORY_REGEX,
-    LIVE_CHANNEL_NAME_REGEX,
-)
-from app.models.content import LiveChannel
 from fastapi import APIRouter
+
+from app.api.routes.judaism.constants import (LIVE_CHANNEL_CATEGORY_REGEX,
+                                              LIVE_CHANNEL_NAME_REGEX)
+from app.models.content import LiveChannel
 
 router = APIRouter()
 

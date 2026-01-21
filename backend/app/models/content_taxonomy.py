@@ -88,9 +88,9 @@ class SectionSubcategory(Document):
     slug: str  # Unique within section (e.g., "cartoons", "shiurim")
 
     # i18n translation keys (resolved at runtime via shared/i18n)
-    name_key: Optional[
-        str
-    ] = None  # Translation key (e.g., "taxonomy.subcategories.learning-hebrew")
+    name_key: Optional[str] = (
+        None  # Translation key (e.g., "taxonomy.subcategories.learning-hebrew")
+    )
     description_key: Optional[str] = None  # Description translation key
 
     # Display
@@ -242,7 +242,9 @@ class SectionSubcategoryCreate(BaseModel):
 
     section_id: str
     slug: str
-    name_key: str  # i18n translation key (e.g., "taxonomy.subcategories.learning-hebrew")
+    name_key: (
+        str  # i18n translation key (e.g., "taxonomy.subcategories.learning-hebrew")
+    )
     description_key: Optional[str] = None  # Description translation key
     icon: Optional[str] = None
     thumbnail: Optional[str] = None

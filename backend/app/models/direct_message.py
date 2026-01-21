@@ -1,4 +1,5 @@
 """Direct message model for friend-to-friend messaging."""
+
 from datetime import datetime
 from typing import Dict, List, Optional
 

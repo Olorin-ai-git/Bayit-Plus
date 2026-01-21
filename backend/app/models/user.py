@@ -2,9 +2,10 @@ import re
 from datetime import datetime, timezone
 from typing import List, Literal, Optional
 
-from app.models.recording import RecordingQuota
 from beanie import Document
 from pydantic import BaseModel, EmailStr, Field, validator
+
+from app.models.recording import RecordingQuota
 
 
 class UserBase(BaseModel):
@@ -97,7 +98,9 @@ class User(Document):
     name: str
     hashed_password: Optional[str] = None  # Optional for OAuth users
     is_active: bool = True
-    role: str = "user"  # super_admin, admin, content_manager, billing_admin, support, viewer, user
+    role: str = (
+        "user"  # super_admin, admin, content_manager, billing_admin, support, viewer, user
+    )
     custom_permissions: List[str] = Field(
         default_factory=list
     )  # Additional permissions beyond role
@@ -238,12 +241,16 @@ class User(Document):
                 "id": self.subscription_id,
                 "plan": self.subscription_tier,
                 "status": self.subscription_status,
-                "start_date": self.subscription_start_date.isoformat()
-                if self.subscription_start_date
-                else None,
-                "end_date": self.subscription_end_date.isoformat()
-                if self.subscription_end_date
-                else None,
+                "start_date": (
+                    self.subscription_start_date.isoformat()
+                    if self.subscription_start_date
+                    else None
+                ),
+                "end_date": (
+                    self.subscription_end_date.isoformat()
+                    if self.subscription_end_date
+                    else None
+                ),
             }
         return UserResponse(
             id=str(self.id),
@@ -264,12 +271,16 @@ class User(Document):
                 "id": self.subscription_id,
                 "plan": self.subscription_tier,
                 "status": self.subscription_status,
-                "start_date": self.subscription_start_date.isoformat()
-                if self.subscription_start_date
-                else None,
-                "end_date": self.subscription_end_date.isoformat()
-                if self.subscription_end_date
-                else None,
+                "start_date": (
+                    self.subscription_start_date.isoformat()
+                    if self.subscription_start_date
+                    else None
+                ),
+                "end_date": (
+                    self.subscription_end_date.isoformat()
+                    if self.subscription_end_date
+                    else None
+                ),
             }
         return UserAdminResponse(
             id=str(self.id),

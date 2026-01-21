@@ -8,20 +8,15 @@ add system widgets to their collection via /widgets/system/add.
 from datetime import datetime
 from typing import List, Optional
 
+from bson import ObjectId
+from fastapi import APIRouter, Depends, HTTPException, Query
+
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.user import User
 from app.models.user_system_widget import UserSystemWidget
-from app.models.widget import (
-    Widget,
-    WidgetContent,
-    WidgetCreateRequest,
-    WidgetPosition,
-    WidgetPositionUpdate,
-    WidgetType,
-    WidgetUpdateRequest,
-)
-from bson import ObjectId
-from fastapi import APIRouter, Depends, HTTPException, Query
+from app.models.widget import (Widget, WidgetContent, WidgetCreateRequest,
+                               WidgetPosition, WidgetPositionUpdate,
+                               WidgetType, WidgetUpdateRequest)
 
 router = APIRouter()
 

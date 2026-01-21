@@ -2,14 +2,16 @@
 Podcast Sync Service
 Automatically fetches and updates podcast episodes from RSS feeds on server startup.
 """
+
 import asyncio
 import logging
 from datetime import datetime, timedelta
 from typing import List, Optional
 
 import httpx
-from app.models.content import Podcast, PodcastEpisode
 from bs4 import BeautifulSoup
+
+from app.models.content import Podcast, PodcastEpisode
 
 logger = logging.getLogger(__name__)
 
@@ -101,15 +103,15 @@ async def fetch_rss_episodes(
                 episodes.append(
                     {
                         "title": title_elem.get_text(strip=True),
-                        "description": desc_elem.get_text(strip=True)[:500]
-                        if desc_elem
-                        else None,
+                        "description": (
+                            desc_elem.get_text(strip=True)[:500] if desc_elem else None
+                        ),
                         "audio_url": audio_url,
                         "duration": duration,
                         "published_at": pub_date,
-                        "guid": guid_elem.get_text(strip=True)[:50]
-                        if guid_elem
-                        else None,
+                        "guid": (
+                            guid_elem.get_text(strip=True)[:50] if guid_elem else None
+                        ),
                     }
                 )
 

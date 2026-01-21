@@ -2,34 +2,22 @@
 Subtitles API Routes.
 Handles subtitle tracks, nikud generation, and word translation.
 """
+
 from datetime import datetime
 from typing import List, Optional
 
-from app.models.subtitles import (
-    SUBTITLE_LANGUAGES,
-    SubtitleCueModel,
-    SubtitleCueResponse,
-    SubtitleTrackDoc,
-    SubtitleTrackResponse,
-    TranslationCacheDoc,
-    TranslationResponse,
-)
-from app.services.nikud_service import (
-    add_nikud,
-    add_nikud_batch,
-    get_cache_stats,
-    translate_phrase,
-    translate_word,
-    translation_to_dict,
-)
-from app.services.subtitle_service import (
-    cues_to_dict,
-    extract_words,
-    fetch_subtitles,
-    format_time,
-    parse_subtitles,
-)
 from fastapi import APIRouter, HTTPException, Query
+
+from app.models.subtitles import (SUBTITLE_LANGUAGES, SubtitleCueModel,
+                                  SubtitleCueResponse, SubtitleTrackDoc,
+                                  SubtitleTrackResponse, TranslationCacheDoc,
+                                  TranslationResponse)
+from app.services.nikud_service import (add_nikud, add_nikud_batch,
+                                        get_cache_stats, translate_phrase,
+                                        translate_word, translation_to_dict)
+from app.services.subtitle_service import (cues_to_dict, extract_words,
+                                           fetch_subtitles, format_time,
+                                           parse_subtitles)
 
 router = APIRouter(prefix="/subtitles", tags=["subtitles"])
 

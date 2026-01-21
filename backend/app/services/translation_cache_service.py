@@ -1,4 +1,5 @@
 """Translation cache service with two-tier caching (in-memory LRU + MongoDB)."""
+
 import hashlib
 import logging
 from collections import OrderedDict

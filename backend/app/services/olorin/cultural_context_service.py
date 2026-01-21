@@ -8,6 +8,7 @@ Import from app.services.olorin.context instead.
 """
 
 # Re-export from new location for backward compatibility
-from app.services.olorin.context import CulturalContextService, cultural_context_service
+from app.services.olorin.context import (CulturalContextService,
+                                         cultural_context_service)
 
 __all__ = ["CulturalContextService", "cultural_context_service"]

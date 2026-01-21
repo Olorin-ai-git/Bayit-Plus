@@ -8,11 +8,14 @@ from datetime import datetime
 from typing import AsyncIterator, List, Optional, Tuple
 
 import anthropic
+
 from app.core.config import settings
 from app.models.support import SupportTicket
 from app.models.user import User
-from app.services.support import analytics, faq_manager, ticket_manager, voice_chat
-from app.services.support.conversation import rate_conversation as _rate_conversation
+from app.services.support import (analytics, faq_manager, ticket_manager,
+                                  voice_chat)
+from app.services.support.conversation import \
+    rate_conversation as _rate_conversation
 
 
 class SupportService:

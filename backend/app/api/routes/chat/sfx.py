@@ -5,10 +5,11 @@ Endpoints for generating wizard gesture sound effects and custom sound effects
 using ElevenLabs Sound Generation API.
 """
 
-from app.core.security import get_current_active_user
-from app.models.user import User
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
+
+from app.core.security import get_current_active_user
+from app.models.user import User
 
 from .models import SFXRequest
 
@@ -26,10 +27,8 @@ async def get_wizard_sfx(
     current_user: User = Depends(get_current_active_user),
 ) -> StreamingResponse:
     """Get a sound effect for a wizard gesture animation."""
-    from app.services.elevenlabs_sfx_service import (
-        WIZARD_SFX_DESCRIPTIONS,
-        get_sfx_service,
-    )
+    from app.services.elevenlabs_sfx_service import (WIZARD_SFX_DESCRIPTIONS,
+                                                     get_sfx_service)
 
     valid_gestures = list(WIZARD_SFX_DESCRIPTIONS.keys())
     if gesture not in valid_gestures:

@@ -23,44 +23,25 @@ Usage:
 
 # Re-export constants for backward compatibility
 from app.services.news_scraper.constants import HEADERS
-
-# Re-export models
-from app.services.news_scraper.models import (
-    HeadlineItem,
-    ScrapedNews,
-    clean_cdata,
-    headlines_to_dict,
-)
-
 # Re-export location scrapers
 from app.services.news_scraper.location_scrapers import (
-    scrape_jerusalem_news,
-    scrape_judaism_news,
-    scrape_tel_aviv_news,
-    search_news_for_location,
-)
-
+    scrape_jerusalem_news, scrape_judaism_news, scrape_tel_aviv_news,
+    search_news_for_location)
+# Re-export models
+from app.services.news_scraper.models import (HeadlineItem, ScrapedNews,
+                                              clean_cdata, headlines_to_dict)
 # Re-export RSS parser utilities
-from app.services.news_scraper.rss_parser import (
-    parse_rss_feed,
-    search_duckduckgo,
-    search_google_news_rss,
-)
-
+from app.services.news_scraper.rss_parser import (parse_rss_feed,
+                                                  search_duckduckgo,
+                                                  search_google_news_rss)
 # Re-export service functions and class
-from app.services.news_scraper.service import (
-    NewsScraperService,
-    clear_cache,
-    get_cached_headlines,
-    scrape_all_sources,
-)
-
+from app.services.news_scraper.service import (NewsScraperService, clear_cache,
+                                               get_cached_headlines,
+                                               scrape_all_sources)
 # Re-export source scrapers
-from app.services.news_scraper.source_scrapers import (
-    scrape_mako,
-    scrape_walla,
-    scrape_ynet,
-)
+from app.services.news_scraper.source_scrapers import (scrape_mako,
+                                                       scrape_walla,
+                                                       scrape_ynet)
 
 __all__ = [
     # Constants

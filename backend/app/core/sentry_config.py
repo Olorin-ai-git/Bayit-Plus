@@ -9,10 +9,11 @@ import logging
 from typing import Any
 
 import sentry_sdk
-from app.core.config import settings
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 from sentry_sdk.integrations.starlette import StarletteIntegration
+
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 

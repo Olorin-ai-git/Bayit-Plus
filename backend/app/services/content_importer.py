@@ -7,13 +7,9 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import httpx
-from app.models.content import (
-    Content,
-    LiveChannel,
-    Podcast,
-    PodcastEpisode,
-    RadioStation,
-)
+
+from app.models.content import (Content, LiveChannel, Podcast, PodcastEpisode,
+                                RadioStation)
 
 # ============ FREE CONTENT SOURCES ============
 

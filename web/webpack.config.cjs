@@ -5,6 +5,7 @@ const webpack = require('webpack');
 
 // Paths - use absolute paths to avoid resolution issues
 const sharedPath = path.resolve(__dirname, '../shared');
+const packagesPath = path.resolve(__dirname, '../packages/ui');
 const srcPath = path.resolve(__dirname, 'src');
 
 module.exports = (env, argv) => {
@@ -50,6 +51,12 @@ module.exports = (env, argv) => {
         'node_modules',
       ],
       alias: {
+        // @olorin packages from packages/ui directory
+        '@olorin/design-tokens': path.resolve(packagesPath, 'design-tokens/src'),
+        '@olorin/shared-hooks': path.resolve(packagesPath, 'shared-hooks/src'),
+        '@olorin/shared-i18n': path.resolve(packagesPath, 'shared-i18n/src'),
+        '@olorin/shared-services': path.resolve(packagesPath, 'shared-services/src'),
+        '@olorin/shared-stores': path.resolve(packagesPath, 'shared-stores/src'),
         // React Native Web
         'react-native$': 'react-native-web',
         'react-native-linear-gradient': 'react-native-web-linear-gradient',

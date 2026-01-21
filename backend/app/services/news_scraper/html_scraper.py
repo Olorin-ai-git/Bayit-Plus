@@ -10,12 +10,10 @@ from typing import Callable, List
 import httpx
 from bs4 import BeautifulSoup
 
-from app.services.news_scraper.constants import (
-    HEADERS,
-    MAX_HEADLINES_PER_SOURCE,
-    MIN_TITLE_LENGTH,
-    REQUEST_TIMEOUT_SECONDS,
-)
+from app.services.news_scraper.constants import (HEADERS,
+                                                 MAX_HEADLINES_PER_SOURCE,
+                                                 MIN_TITLE_LENGTH,
+                                                 REQUEST_TIMEOUT_SECONDS)
 from app.services.news_scraper.models import HeadlineItem, clean_cdata
 
 logger = logging.getLogger(__name__)

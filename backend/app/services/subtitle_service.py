@@ -2,6 +2,7 @@
 Subtitle Service.
 Handles parsing and processing of VTT/SRT subtitle files.
 """
+
 import re
 from dataclasses import dataclass, field
 from datetime import timedelta

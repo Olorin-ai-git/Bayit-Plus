@@ -3,7 +3,9 @@ Production logging configuration for Cloud Run
 Uses unified structured logging from olorin-shared
 Includes correlation ID for end-to-end request tracing
 """
+
 import logging
+
 from olorin_shared.logging import configure_logging as shared_configure_logging
 from olorin_shared.logging import get_logger
 

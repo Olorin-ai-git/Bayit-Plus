@@ -8,10 +8,8 @@ import logging
 from typing import Any, Dict, List, Optional
 
 from app.models.content import Content
-from app.services.content_auditor.constants import (
-    MetadataAuditConfig,
-    get_metadata_audit_config,
-)
+from app.services.content_auditor.constants import (MetadataAuditConfig,
+                                                    get_metadata_audit_config)
 
 logger = logging.getLogger(__name__)
 

@@ -6,9 +6,10 @@ Endpoints for viewing and exporting audit logs
 from datetime import datetime
 from typing import Optional
 
+from fastapi import APIRouter, Depends, Query
+
 from app.models.admin import AuditAction, AuditLog, Permission
 from app.models.user import User
-from fastapi import APIRouter, Depends, Query
 
 from .auth import has_permission
 

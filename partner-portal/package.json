@@ -17,7 +17,11 @@
     "deploy:preview": "npm run build && firebase hosting:channel:deploy partner-preview --only partner-portal"
   },
   "dependencies": {
-    "@olorin/i18n": "file:../shared/i18n",
+    "@olorin/design-tokens": "2.0.0",
+    "@olorin/shared-hooks": "2.0.0",
+    "@olorin/shared-i18n": "2.0.0",
+    "@olorin/shared-services": "2.0.0",
+    "@olorin/shared-stores": "2.0.0",
     "@tanstack/react-query": "^5.62.0",
     "axios": "^1.6.2",
     "clsx": "^2.1.1",

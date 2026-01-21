@@ -2,6 +2,7 @@
 EPG Ingestion Service
 Fetches real EPG data from external sources and updates the database
 """
+
 import asyncio
 import logging
 import xml.etree.ElementTree as ET
@@ -9,9 +10,10 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import httpx
+from bs4 import BeautifulSoup
+
 from app.core.config import settings
 from app.models.content import EPGEntry, LiveChannel
-from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
@@ -204,9 +206,9 @@ class EPGIngestionService:
                         description=desc_elem.text if desc_elem is not None else "",
                         start_time=start_time,
                         end_time=end_time,
-                        category=category_elem.text
-                        if category_elem is not None
-                        else "",
+                        category=(
+                            category_elem.text if category_elem is not None else ""
+                        ),
                         thumbnail=None,
                         cast=[],
                         genres=[],
@@ -353,9 +355,9 @@ class EPGIngestionService:
                         description=desc_elem.text if desc_elem is not None else "",
                         start_time=start_time,
                         end_time=end_time,
-                        category=category_elem.text
-                        if category_elem is not None
-                        else "",
+                        category=(
+                            category_elem.text if category_elem is not None else ""
+                        ),
                         thumbnail=None,
                         cast=[],
                         genres=[],

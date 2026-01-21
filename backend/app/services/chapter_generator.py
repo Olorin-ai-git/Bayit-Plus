@@ -2,12 +2,14 @@
 AI Chapter Generator Service.
 Uses Claude AI to generate smart chapters for news broadcasts and long-form content.
 """
+
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
 import anthropic
+
 from app.core.config import settings
 
 

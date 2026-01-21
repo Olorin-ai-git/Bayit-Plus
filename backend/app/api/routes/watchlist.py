@@ -1,11 +1,12 @@
 from datetime import datetime
 
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+
 from app.core.security import get_current_active_user
 from app.models.content import Content, LiveChannel, Podcast
 from app.models.user import User
 from app.models.watchlist import WatchlistItem
-from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
 
 router = APIRouter()
 

@@ -1,9 +1,10 @@
 from datetime import datetime
 from typing import List, Optional
 
+from beanie.operators import And, Or
+
 from app.models.chess import ChessGame, GameStatus
 from app.models.friendship import GameResult, PlayerStats
-from beanie.operators import And, Or
 
 
 class StatsService:

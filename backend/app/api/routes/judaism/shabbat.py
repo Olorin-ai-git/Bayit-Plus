@@ -10,18 +10,17 @@ from datetime import datetime, timedelta
 from typing import Any
 
 import pytz
-from app.api.routes.judaism.constants import (
-    EREV_SHABBAT_HOURS_BEFORE,
-    JEWISH_MUSIC_REGEX,
-    SHABBAT_ACTIVITIES_REGEX,
-    SHABBAT_END_ACTIVITIES_REGEX,
-    SHABBAT_KEYWORDS_REGEX,
-)
+from fastapi import APIRouter, Query
+
+from app.api.routes.judaism.constants import (EREV_SHABBAT_HOURS_BEFORE,
+                                              JEWISH_MUSIC_REGEX,
+                                              SHABBAT_ACTIVITIES_REGEX,
+                                              SHABBAT_END_ACTIVITIES_REGEX,
+                                              SHABBAT_KEYWORDS_REGEX)
 from app.api.routes.judaism.schemas import JudaismContentResponse
 from app.models.content import Content
 from app.models.jewish_calendar import US_JEWISH_CITIES
 from app.services.jewish_calendar_service import jewish_calendar_service
-from fastapi import APIRouter, Query
 
 router = APIRouter()
 

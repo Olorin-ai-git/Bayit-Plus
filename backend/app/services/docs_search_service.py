@@ -10,7 +10,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from app.models.documentation import DocumentationArticle, DocumentationSearchLog
+from app.models.documentation import (DocumentationArticle,
+                                      DocumentationSearchLog)
 from app.models.support import FAQEntry
 
 logger = logging.getLogger(__name__)

@@ -1,17 +1,16 @@
 from datetime import datetime
 from typing import List, Optional
 
-from app.core.config import settings
-from app.core.security import (
-    get_current_active_user,
-    get_password_hash,
-    verify_password,
-)
-from app.core.storage import storage
-from app.models.profile import Profile, ProfileCreate, ProfileResponse, ProfileUpdate
-from app.models.user import User
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from pydantic import BaseModel, Field
+
+from app.core.config import settings
+from app.core.security import (get_current_active_user, get_password_hash,
+                               verify_password)
+from app.core.storage import storage
+from app.models.profile import (Profile, ProfileCreate, ProfileResponse,
+                                ProfileUpdate)
+from app.models.user import User
 
 # Profile limits by subscription tier
 PROFILE_LIMITS = {

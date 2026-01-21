@@ -2,18 +2,20 @@
 WebSocket handler for real-time direct messaging between friends.
 Handles WebSocket connections, message sending, and read receipts.
 """
+
 import json
 import logging
 from datetime import datetime
 from typing import Dict, List, Optional
+
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
+from jose import JWTError, jwt
 
 from app.core.config import settings
 from app.models.direct_message import DirectMessage
 from app.models.user import User
 from app.services.chat_translation_service import chat_translation_service
 from app.services.friendship_service import FriendshipService
-from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
-from jose import JWTError, jwt
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

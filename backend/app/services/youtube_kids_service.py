@@ -17,6 +17,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import httpx
+
 from app.core.config import settings
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
@@ -433,9 +434,11 @@ class YouTubeKidsService:
                     # Create content entry
                     content = Content(
                         title=video["title"],
-                        title_en=video["title"]
-                        if channel_info.get("language") == "en"
-                        else None,
+                        title_en=(
+                            video["title"]
+                            if channel_info.get("language") == "en"
+                            else None
+                        ),
                         description=video["description"],
                         category_id=category_id or "",
                         category_name=channel_info.get("category_key", "educational"),

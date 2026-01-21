@@ -10,9 +10,10 @@ from typing import Any, Dict, List, Optional
 
 from anthropic import Anthropic
 from anthropic.types import Message
+from beanie.operators import And, In, Or, RegEx
+
 from app.core.config import settings
 from app.models.content import EPGEntry, LiveChannel
-from beanie.operators import And, In, Or, RegEx
 
 logger = logging.getLogger(__name__)
 

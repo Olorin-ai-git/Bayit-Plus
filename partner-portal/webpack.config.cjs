@@ -7,6 +7,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 require('dotenv').config();
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
+const packagesPath = path.resolve(__dirname, '../packages/ui');
 
 // Collect all VITE_ prefixed environment variables for import.meta.env
 function getViteEnvVars() {
@@ -30,6 +31,13 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
     alias: {
+      // @olorin packages from packages/ui directory
+      '@olorin/design-tokens': path.resolve(packagesPath, 'design-tokens/src'),
+      '@olorin/shared-hooks': path.resolve(packagesPath, 'shared-hooks/src'),
+      '@olorin/shared-i18n': path.resolve(packagesPath, 'shared-i18n/src'),
+      '@olorin/shared-services': path.resolve(packagesPath, 'shared-services/src'),
+      '@olorin/shared-stores': path.resolve(packagesPath, 'shared-stores/src'),
+      // Local aliases
       '@': path.resolve(__dirname, 'src'),
     },
   },

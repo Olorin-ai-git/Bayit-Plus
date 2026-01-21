@@ -9,18 +9,11 @@ import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from app.services.culture_scrapers.base_scraper import (
-    BaseCultureScraper,
-    CultureHeadlineItem,
-)
-from app.services.news_scraper import (
-    HeadlineItem,
-    scrape_jerusalem_news,
-    scrape_mako,
-    scrape_tel_aviv_news,
-    scrape_walla,
-    scrape_ynet,
-)
+from app.services.culture_scrapers.base_scraper import (BaseCultureScraper,
+                                                        CultureHeadlineItem)
+from app.services.news_scraper import (HeadlineItem, scrape_jerusalem_news,
+                                       scrape_mako, scrape_tel_aviv_news,
+                                       scrape_walla, scrape_ynet)
 
 logger = logging.getLogger(__name__)
 

@@ -8,14 +8,15 @@ import logging
 from datetime import datetime, timezone
 from typing import List, Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel, EmailStr, Field
+
 from app.api.routes.olorin.dependencies import get_current_partner
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
 from app.core.rate_limiter import limiter
 from app.models.integration_partner import IntegrationPartner, WebhookEventType
 from app.services.olorin.metering_service import metering_service
 from app.services.olorin.partner_service import partner_service
-from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel, EmailStr, Field
 
 logger = logging.getLogger(__name__)
 

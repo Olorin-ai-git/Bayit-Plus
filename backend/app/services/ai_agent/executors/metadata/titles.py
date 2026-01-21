@@ -8,12 +8,10 @@ import logging
 from datetime import datetime
 from typing import Any, Dict
 
-from app.services.ai_agent.executors._shared import (
-    create_action_description,
-    get_content_or_error,
-    handle_dry_run,
-    log_librarian_action,
-)
+from app.services.ai_agent.executors._shared import (create_action_description,
+                                                     get_content_or_error,
+                                                     handle_dry_run,
+                                                     log_librarian_action)
 
 logger = logging.getLogger(__name__)
 
