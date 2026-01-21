@@ -1,0 +1,693 @@
+"""AI Agent control router."""
+
+from datetime import datetime
+from typing import List, Optional
+
+from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel
+from bson import ObjectId
+
+from app.models.agent import (
+    AgentConfig,
+    AgentMode,
+    PendingAction,
+    ActionStatus,
+    ActionType
+)
+
+router = APIRouter()
+
+
+@router.get("/config", response_model=dict)
+async def get_agent_config(request: Request):
+    """Get current agent configuration."""
+    db = request.app.state.db
+
+    config = await db.agent_config.find_one({"_id": "default"})
+    if not config:
+        # Return default config
+        default = AgentConfig()
+        return default.model_dump()
+
+    return config
+
+
+@router.put("/config", response_model=dict)
+async def update_agent_config(request: Request, config: AgentConfig):
+    """Update agent configuration."""
+    db = request.app.state.db
+
+    doc = config.model_dump(by_alias=True)
+    doc["_id"] = "default"
+    doc["updated_at"] = datetime.utcnow()
+
+    await db.agent_config.replace_one(
+        {"_id": "default"},
+        doc,
+        upsert=True
+    )
+
+    return doc
+
+
+@router.post("/mode/{mode}")
+async def set_agent_mode(request: Request, mode: AgentMode):
+    """Quick switch between agent modes."""
+    db = request.app.state.db
+
+    await db.agent_config.update_one(
+        {"_id": "default"},
+        {
+            "$set": {
+                "mode": mode.value,
+                "updated_at": datetime.utcnow()
+            }
+        },
+        upsert=True
+    )
+
+    return {"message": f"Agent mode set to {mode.value}"}
+
+
+@router.get("/status")
+async def get_agent_status(request: Request):
+    """Get current agent status and statistics."""
+    db = request.app.state.db
+
+    config = await db.agent_config.find_one({"_id": "default"})
+    mode = config.get("mode", "prompt") if config else "prompt"
+
+    # Count pending actions
+    pending_count = await db.pending_actions.count_documents({"status": "pending"})
+
+    # Get recent decisions
+    decisions_today = await db.agent_decisions.count_documents({
+        "created_at": {"$gte": datetime.utcnow().replace(hour=0, minute=0, second=0)}
+    })
+
+    # Check if audio player is active (agent is considered active if playback system is available)
+    audio_player = getattr(request.app.state, 'audio_player', None)
+    is_active = audio_player is not None
+
+    # Get most recent decision
+    last_decision_doc = await db.agent_decisions.find_one(
+        {},
+        sort=[("created_at", -1)]
+    )
+    last_decision = None
+    if last_decision_doc:
+        last_decision = {
+            "action_type": last_decision_doc.get("action_type"),
+            "reasoning": last_decision_doc.get("reasoning"),
+            "created_at": last_decision_doc.get("created_at").isoformat() if last_decision_doc.get("created_at") else None
+        }
+
+    return {
+        "mode": mode,
+        "active": is_active,
+        "pending_actions": pending_count,
+        "decisions_today": decisions_today,
+        "last_decision": last_decision
+    }
+
+
+@router.get("/pending", response_model=List[dict])
+async def list_pending_actions(
+    request: Request,
+    action_type: Optional[ActionType] = None,
+    limit: int = 50
+):
+    """List pending actions awaiting confirmation."""
+    db = request.app.state.db
+
+    query = {"status": ActionStatus.PENDING.value}
+    if action_type:
+        query["action_type"] = action_type.value
+
+    cursor = db.pending_actions.find(query).sort("created_at", -1).limit(limit)
+
+    items = []
+    async for item in cursor:
+        item["_id"] = str(item["_id"])
+        items.append(item)
+
+    return items
+
+
+@router.get("/pending/{action_id}", response_model=dict)
+async def get_pending_action(request: Request, action_id: str):
+    """Get details of a specific pending action."""
+    db = request.app.state.db
+
+    action = await db.pending_actions.find_one({"_id": ObjectId(action_id)})
+    if not action:
+        raise HTTPException(status_code=404, detail="Pending action not found")
+
+    action["_id"] = str(action["_id"])
+    return action
+
+
+@router.post("/pending/{action_id}/approve")
+async def approve_action(
+    request: Request,
+    action_id: str,
+    use_alternative: Optional[int] = None
+):
+    """Approve a pending action."""
+    db = request.app.state.db
+
+    action = await db.pending_actions.find_one({"_id": ObjectId(action_id)})
+    if not action:
+        raise HTTPException(status_code=404, detail="Pending action not found")
+
+    if action["status"] != ActionStatus.PENDING.value:
+        raise HTTPException(status_code=400, detail="Action already processed")
+
+    # Determine which action to execute
+    if use_alternative is not None and action.get("alternatives"):
+        if 0 <= use_alternative < len(action["alternatives"]):
+            final_action = action["alternatives"][use_alternative]
+        else:
+            raise HTTPException(status_code=400, detail="Invalid alternative index")
+    else:
+        final_action = action["suggested_action"]
+
+    # Update the action
+    await db.pending_actions.update_one(
+        {"_id": ObjectId(action_id)},
+        {
+            "$set": {
+                "status": ActionStatus.APPROVED.value,
+                "responded_by": "user",
+                "response_channel": "dashboard",
+                "final_action": final_action,
+                "executed_at": datetime.utcnow()
+            }
+        }
+    )
+
+    # Execute the approved action via the orchestrator agent
+    from app.agent.orchestrator import OrchestratorAgent
+    audio_player = getattr(request.app.state, 'audio_player', None)
+    content_sync = getattr(request.app.state, 'content_sync', None)
+    calendar_service = getattr(request.app.state, 'calendar_service', None)
+
+    agent = OrchestratorAgent(
+        db,
+        audio_player=audio_player,
+        content_sync=content_sync,
+        calendar_service=calendar_service
+    )
+
+    execution_result = await agent.execute_action(final_action)
+
+    # Log the execution
+    await db.action_log.insert_one({
+        "action_id": action_id,
+        "action": final_action,
+        "result": execution_result,
+        "executed_at": datetime.utcnow()
+    })
+
+    return {
+        "message": "Action approved and executed",
+        "final_action": final_action,
+        "execution_result": execution_result
+    }
+
+
+@router.post("/pending/{action_id}/reject")
+async def reject_action(request: Request, action_id: str, reason: Optional[str] = None):
+    """Reject a pending action."""
+    db = request.app.state.db
+
+    action = await db.pending_actions.find_one({"_id": ObjectId(action_id)})
+    if not action:
+        raise HTTPException(status_code=404, detail="Pending action not found")
+
+    if action["status"] != ActionStatus.PENDING.value:
+        raise HTTPException(status_code=400, detail="Action already processed")
+
+    await db.pending_actions.update_one(
+        {"_id": ObjectId(action_id)},
+        {
+            "$set": {
+                "status": ActionStatus.REJECTED.value,
+                "responded_by": "user",
+                "response_channel": "dashboard",
+                "rejection_reason": reason,
+                "executed_at": datetime.utcnow()
+            }
+        }
+    )
+
+    return {"message": "Action rejected"}
+
+
+@router.get("/decisions", response_model=List[dict])
+async def list_decisions(
+    request: Request,
+    limit: int = 100,
+    offset: int = 0
+):
+    """List recent agent decisions."""
+    db = request.app.state.db
+
+    cursor = db.agent_decisions.find().sort("created_at", -1).skip(offset).limit(limit)
+
+    items = []
+    async for item in cursor:
+        item["_id"] = str(item["_id"])
+        items.append(item)
+
+    return items
+
+
+@router.get("/decisions/{decision_id}", response_model=dict)
+async def get_decision(request: Request, decision_id: str):
+    """Get details of a specific decision."""
+    db = request.app.state.db
+
+    decision = await db.agent_decisions.find_one({"_id": ObjectId(decision_id)})
+    if not decision:
+        raise HTTPException(status_code=404, detail="Decision not found")
+
+    decision["_id"] = str(decision["_id"])
+    return decision
+
+
+@router.post("/trigger")
+async def trigger_agent(request: Request, action_type: ActionType):
+    """Manually trigger the agent to perform an action."""
+    db = request.app.state.db
+
+    from app.agent.orchestrator import OrchestratorAgent
+    audio_player = getattr(request.app.state, 'audio_player', None)
+    content_sync = getattr(request.app.state, 'content_sync', None)
+    calendar_service = getattr(request.app.state, 'calendar_service', None)
+
+    agent = OrchestratorAgent(
+        db,
+        audio_player=audio_player,
+        content_sync=content_sync,
+        calendar_service=calendar_service
+    )
+
+    result = None
+    try:
+        if action_type == ActionType.SELECT_NEXT_TRACK:
+            result = await agent.decide_next_track()
+        elif action_type == ActionType.CATEGORIZE_CONTENT:
+            # List pending uploads that need classification
+            pending = await db.pending_uploads.find({"status": "pending"}).to_list(10)
+            results = []
+            for upload in pending:
+                classification = await agent.classify_content(
+                    upload.get("filename", "unknown"),
+                    upload.get("metadata", {})
+                )
+                results.append(classification)
+            result = {"classifications": results}
+        elif action_type == ActionType.INSERT_COMMERCIAL:
+            # Trigger commercial insertion check
+            from app.agent.decisions import DecisionEngine
+            engine = DecisionEngine(db)
+            result = await engine.check_commercial_timing()
+        else:
+            result = {"message": f"No handler for action type: {action_type.value}"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Agent trigger failed: {str(e)}")
+
+    return {
+        "message": f"Agent triggered for {action_type.value}",
+        "queued": False,
+        "executed": True,
+        "result": result
+    }
+
+
+# Chat endpoint for natural language communication
+class ChatMessage(BaseModel):
+    message: str
+
+
+class ChatResponse(BaseModel):
+    response: str
+    timestamp: str
+    play_track: Optional[dict] = None  # Track to play in browser
+
+
+@router.post("/chat", response_model=ChatResponse)
+async def chat_with_agent(request: Request, chat: ChatMessage):
+    """
+    Chat with the AI agent in natural language.
+
+    Allows operators to:
+    - Ask questions about the schedule
+    - Request specific songs/shows
+    - Get status updates
+    - Give instructions to the agent
+
+    Supports both Hebrew and English.
+    """
+    from app.agent.orchestrator import OrchestratorAgent
+    from datetime import datetime
+    import anthropic
+
+    db = request.app.state.db
+
+    # Initialize agent (in production, this would be a singleton)
+    audio_player = request.app.state.audio_player
+    content_sync = request.app.state.content_sync
+    calendar_service = getattr(request.app.state, 'calendar_service', None)
+    agent = OrchestratorAgent(
+        db,
+        audio_player=audio_player,
+        content_sync=content_sync,
+        calendar_service=calendar_service
+    )
+
+    try:
+        # Get response from agent
+        result = await agent.chat(chat.message)
+    except anthropic.AuthenticationError:
+        raise HTTPException(
+            status_code=503,
+            detail="LLM_UNAVAILABLE:AUTH_ERROR"
+        )
+    except anthropic.RateLimitError:
+        raise HTTPException(
+            status_code=503,
+            detail="LLM_UNAVAILABLE:RATE_LIMIT"
+        )
+    except anthropic.APIConnectionError:
+        raise HTTPException(
+            status_code=503,
+            detail="LLM_UNAVAILABLE:CONNECTION_ERROR"
+        )
+    except anthropic.APIStatusError as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"LLM_UNAVAILABLE:API_ERROR:{e.status_code}"
+        )
+    except anthropic.APIError as e:
+        raise HTTPException(
+            status_code=503,
+            detail="LLM_UNAVAILABLE:API_ERROR"
+        )
+    except Exception as e:
+        # Log the actual error for debugging
+        import logging
+        logging.getLogger(__name__).error(f"Chat error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"LLM_UNAVAILABLE:UNKNOWN_ERROR"
+        )
+
+    return ChatResponse(
+        response=result["response"],
+        timestamp=datetime.utcnow().isoformat(),
+        play_track=result.get("play_track")
+    )
+
+
+def convert_mongo_types(obj):
+    """Recursively convert MongoDB types (ObjectId, datetime) to JSON-serializable types."""
+    if isinstance(obj, dict):
+        return {k: convert_mongo_types(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_mongo_types(item) for item in obj]
+    elif isinstance(obj, ObjectId):
+        return str(obj)
+    elif isinstance(obj, datetime):
+        return obj.isoformat()
+    else:
+        return obj
+
+
+@router.get("/chat/history")
+async def get_chat_history(request: Request, limit: int = 50):
+    """Get recent chat history."""
+    db = request.app.state.db
+
+    cursor = db.chat_logs.find().sort("timestamp", -1).limit(limit)
+
+    history = []
+    async for entry in cursor:
+        # Recursively convert all MongoDB types to JSON-serializable types
+        entry = convert_mongo_types(entry)
+        history.append(entry)
+
+    # Reverse to get chronological order
+    return list(reversed(history))
+
+
+@router.delete("/chat/history")
+async def clear_chat_history(request: Request):
+    """Clear chat history."""
+    db = request.app.state.db
+    await db.chat_logs.delete_many({})
+    return {"message": "Chat history cleared"}
+
+
+# ==================== LLM Configuration Endpoints ====================
+
+# Available models for the frontend dropdown
+AVAILABLE_MODELS = [
+    {"id": "claude-sonnet-4-5-20250929", "name": "Claude Sonnet 4.5", "tier": "standard"},
+    {"id": "claude-opus-4-5-20251101", "name": "Claude Opus 4.5", "tier": "premium"},
+    {"id": "claude-haiku-4-5-20251001", "name": "Claude Haiku 4.5", "tier": "fast"},
+    {"id": "claude-3-5-sonnet-20241022", "name": "Claude 3.5 Sonnet", "tier": "standard"},
+    {"id": "claude-3-opus-20240229", "name": "Claude 3 Opus", "tier": "premium"},
+    {"id": "claude-3-haiku-20240307", "name": "Claude 3 Haiku", "tier": "fast"},
+]
+
+
+class LLMConfigUpdate(BaseModel):
+    """Request model for updating LLM configuration."""
+    model: Optional[str] = None
+    api_key: Optional[str] = None
+
+
+@router.get("/llm-config")
+async def get_llm_config(request: Request):
+    """Get current LLM configuration."""
+    from app.config import settings
+    db = request.app.state.db
+
+    # Get stored config from database
+    config = await db.llm_config.find_one({"_id": "default"})
+
+    # Get the currently active model (from DB or fallback to env)
+    current_model = config.get("model") if config else None
+    if not current_model:
+        current_model = settings.anthropic_model
+
+    # Check if custom API key is set
+    has_custom_api_key = bool(config and config.get("api_key"))
+
+    # Check if env API key is set
+    has_env_api_key = bool(settings.anthropic_api_key)
+
+    return {
+        "model": current_model,
+        "has_custom_api_key": has_custom_api_key,
+        "has_env_api_key": has_env_api_key,
+        "api_key_source": "custom" if has_custom_api_key else ("environment" if has_env_api_key else "none"),
+        "available_models": AVAILABLE_MODELS,
+    }
+
+
+@router.put("/llm-config")
+async def update_llm_config(request: Request, config_update: LLMConfigUpdate):
+    """Update LLM configuration (model and/or API key)."""
+    from app.services.firebase_auth import firebase_auth
+    from fastapi import Depends
+
+    db = request.app.state.db
+
+    # Get existing config
+    existing = await db.llm_config.find_one({"_id": "default"})
+    if not existing:
+        existing = {"_id": "default"}
+
+    # Update fields
+    update_doc = {"updated_at": datetime.utcnow()}
+
+    if config_update.model is not None:
+        # Validate model is in allowed list
+        valid_model_ids = [m["id"] for m in AVAILABLE_MODELS]
+        if config_update.model not in valid_model_ids:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid model. Must be one of: {', '.join(valid_model_ids)}"
+            )
+        update_doc["model"] = config_update.model
+
+    if config_update.api_key is not None:
+        if config_update.api_key == "":
+            # Empty string means clear the custom API key
+            update_doc["api_key"] = None
+        else:
+            # Validate API key format
+            if not config_update.api_key.startswith("sk-ant-"):
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid API key format. Anthropic API keys start with 'sk-ant-'"
+                )
+            update_doc["api_key"] = config_update.api_key
+
+    await db.llm_config.update_one(
+        {"_id": "default"},
+        {"$set": update_doc},
+        upsert=True
+    )
+
+    # Return updated config
+    return await get_llm_config(request)
+
+
+@router.delete("/llm-config/api-key")
+async def clear_custom_api_key(request: Request):
+    """Clear the custom API key and revert to environment variable."""
+    db = request.app.state.db
+
+    await db.llm_config.update_one(
+        {"_id": "default"},
+        {"$set": {"api_key": None, "updated_at": datetime.utcnow()}},
+        upsert=True
+    )
+
+    return {"message": "Custom API key cleared. Using environment variable."}
+
+
+# ==================== Email Watcher Endpoints ====================
+
+@router.get("/email-watcher/status")
+async def get_email_watcher_status(request: Request):
+    """Get email watcher status and statistics."""
+    email_watcher = getattr(request.app.state, 'email_watcher', None)
+
+    if not email_watcher:
+        return {
+            "available": False,
+            "running": False,
+            "message": "Email watcher not initialized. Check Gmail credentials."
+        }
+
+    status = email_watcher.get_status()
+    status["available"] = True
+    return status
+
+
+@router.post("/email-watcher/start")
+async def start_email_watcher(request: Request):
+    """Start the email watcher background task."""
+    email_watcher = getattr(request.app.state, 'email_watcher', None)
+
+    if not email_watcher:
+        raise HTTPException(
+            status_code=503,
+            detail="Email watcher not initialized. Check Gmail credentials."
+        )
+
+    await email_watcher.start()
+    return {"message": "Email watcher started", "status": email_watcher.get_status()}
+
+
+@router.post("/email-watcher/stop")
+async def stop_email_watcher(request: Request):
+    """Stop the email watcher background task."""
+    email_watcher = getattr(request.app.state, 'email_watcher', None)
+
+    if not email_watcher:
+        raise HTTPException(
+            status_code=503,
+            detail="Email watcher not initialized."
+        )
+
+    await email_watcher.stop()
+    return {"message": "Email watcher stopped", "status": email_watcher.get_status()}
+
+
+@router.post("/email-watcher/check")
+async def manual_email_check(request: Request):
+    """Manually trigger a check for new email attachments."""
+    email_watcher = getattr(request.app.state, 'email_watcher', None)
+
+    if not email_watcher:
+        raise HTTPException(
+            status_code=503,
+            detail="Email watcher not initialized. Check Gmail credentials."
+        )
+
+    result = await email_watcher.manual_check()
+    return {
+        "message": "Email check completed",
+        "status": result
+    }
+
+
+class EmailActionResponse(BaseModel):
+    approved: bool
+    modified_action: Optional[dict] = None
+
+
+@router.post("/email-watcher/pending/{action_id}/respond")
+async def respond_to_email_action(
+    request: Request,
+    action_id: str,
+    response: EmailActionResponse
+):
+    """
+    Respond to a pending email categorization action.
+
+    This is used when an email attachment requires user review
+    before being imported into the content library.
+    """
+    email_watcher = getattr(request.app.state, 'email_watcher', None)
+
+    if not email_watcher:
+        raise HTTPException(
+            status_code=503,
+            detail="Email watcher not initialized."
+        )
+
+    await email_watcher.process_pending_action(
+        action_id,
+        response.approved,
+        response.modified_action
+    )
+
+    return {
+        "message": "Action processed",
+        "approved": response.approved
+    }
+
+
+@router.put("/email-watcher/config")
+async def update_email_watcher_config(
+    request: Request,
+    check_interval: Optional[int] = None,
+    auto_approve_threshold: Optional[float] = None
+):
+    """Update email watcher configuration."""
+    email_watcher = getattr(request.app.state, 'email_watcher', None)
+
+    if not email_watcher:
+        raise HTTPException(
+            status_code=503,
+            detail="Email watcher not initialized."
+        )
+
+    if check_interval is not None:
+        email_watcher.check_interval = max(30, check_interval)  # Minimum 30 seconds
+
+    if auto_approve_threshold is not None:
+        email_watcher.auto_approve_threshold = max(0.0, min(1.0, auto_approve_threshold))
+
+    return {
+        "message": "Configuration updated",
+        "check_interval": email_watcher.check_interval,
+        "auto_approve_threshold": email_watcher.auto_approve_threshold
+    }

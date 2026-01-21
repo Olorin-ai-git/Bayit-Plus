@@ -1,0 +1,252 @@
+{
+  "app": {
+    "name": "מנהל רדיו ישראלי",
+    "tagline": "תחנת הרדיו העברית של מיאמי"
+  },
+  "nav": {
+    "dashboard": "ראשי",
+    "schedule": "לוח שידורים",
+    "library": "ספריית מוזיקה",
+    "upload": "העלאת קבצים",
+    "agent": "הסוכן החכם",
+    "settings": "הגדרות"
+  },
+  "dashboard": {
+    "title": "לוח בקרה ראשי",
+    "nowPlaying": "🎵 מתנגן עכשיו",
+    "upcoming": "📅 הבא בתור",
+    "recentActivity": "פעילות אחרונה",
+    "quickStats": "סטטיסטיקות היום",
+    "songsPlayed": "שירים שהושמעו",
+    "showsAired": "תוכניות ששודרו",
+    "commercials": "פרסומות",
+    "noTrack": "לא מתנגן כלום כרגע"
+  },
+  "player": {
+    "play": "נגן",
+    "pause": "השהה",
+    "skip": "דלג",
+    "stop": "עצור",
+    "volume": "עוצמה"
+  },
+  "schedule": {
+    "title": "לוח שידורים",
+    "weekView": "תצוגה שבועית",
+    "dayView": "תצוגה יומית",
+    "addSlot": "הוסף משבצת זמן",
+    "editSlot": "ערוך משבצת",
+    "deleteSlot": "מחק משבצת",
+    "startTime": "שעת התחלה",
+    "endTime": "שעת סיום",
+    "contentType": "סוג תוכן",
+    "genre": "ז'אנר",
+    "priority": "עדיפות",
+    "enabled": "פעיל",
+    "days": {
+      "monday": "יום שני",
+      "tuesday": "יום שלישי",
+      "wednesday": "יום רביעי",
+      "thursday": "יום חמישי",
+      "friday": "יום שישי",
+      "saturday": "שבת",
+      "sunday": "יום ראשון"
+    }
+  },
+  "library": {
+    "title": "ספריית תוכן",
+    "songs": "שירים",
+    "shows": "תוכניות",
+    "commercials": "פרסומות",
+    "search": "חיפוש...",
+    "filter": "סינון",
+    "sortBy": "מיון לפי",
+    "noContent": "לא נמצא תוכן",
+    "refresh": "רענן ספרייה",
+    "refreshed": "הספרייה רועננה"
+  },
+  "upload": {
+    "title": "העלאת תוכן",
+    "dragDrop": "גרור ושחרר קבצים כאן",
+    "orClick": "או לחץ לבחירה",
+    "uploading": "מעלה...",
+    "processing": "מעבד...",
+    "success": "העלאה הצליחה",
+    "error": "העלאה נכשלה"
+  },
+  "agent": {
+    "title": "הסוכן החכם",
+    "subtitle": "מנהל את הרדיו בשבילך",
+    "mode": "מצב פעולה",
+    "fullAuto": "🤖 אוטומטי לחלוטין",
+    "fullAutoDesc": "הסוכן מנהל הכל לבד, 24/7",
+    "promptMode": "✋ בקשת אישור",
+    "promptModeDesc": "הסוכן מבקש אישור לפעולות חשובות",
+    "status": "מצב נוכחי",
+    "active": "פעיל ועובד",
+    "inactive": "כבוי",
+    "pendingActions": "ממתין לאישורך",
+    "decisionLog": "מה הסוכן עשה",
+    "approve": "✅ אשר",
+    "reject": "❌ דחה",
+    "noActions": "אין פעולות שממתינות לאישור",
+    "decisionsToday": "פעולות היום"
+  },
+  "chat": {
+    "title": "דבר עם הסוכן",
+    "placeholder": "מה תרצה לעשות? (לדוגמה: תנגן שיר של עידן רייכל)",
+    "send": "שלח",
+    "thinking": "רגע, מטפל בבקשה...",
+    "expand": "פתח צ'אט",
+    "collapse": "סגור צ'אט",
+    "examples": "דוגמאות לפקודות",
+    "examplePlay": "תנגן את השיר 'הללויה'",
+    "exampleSchedule": "תזמן שיר לשעה 16:00",
+    "exampleSearch": "חפש שירים של אייל גולן",
+    "exampleStatus": "מה מתנגן עכשיו?",
+    "exampleGenre": "עבור לז'אנר מזרחי",
+    "exampleSkip": "דלג לשיר הבא"
+  },
+  "settings": {
+    "title": "הגדרות",
+    "language": "שפה",
+    "english": "English",
+    "hebrew": "עברית",
+    "notifications": "התראות",
+    "email": "אימייל",
+    "push": "התראות דחיפה",
+    "sms": "SMS",
+    "connect": "התחבר",
+    "disconnect": "התנתק",
+    "connected": "מחובר",
+    "notConnected": "לא מחובר"
+  },
+  "content": {
+    "song": "שיר",
+    "show": "תוכנית",
+    "commercial": "פרסומת",
+    "title": "כותרת",
+    "artist": "אמן",
+    "duration": "אורך",
+    "genre": "ז'אנר",
+    "lastPlayed": "הושמע לאחרונה",
+    "playCount": "מספר השמעות"
+  },
+  "actions": {
+    "save": "שמור",
+    "cancel": "ביטול",
+    "delete": "מחק",
+    "edit": "ערוך",
+    "add": "הוסף",
+    "confirm": "אישור",
+    "close": "סגור"
+  },
+  "errors": {
+    "generic": "אירעה שגיאה",
+    "network": "שגיאת רשת",
+    "notFound": "לא נמצא"
+  },
+  "demo": {
+    "banner": "אתה צופה במצב הדגמה",
+    "signUpPrompt": "צור קשר לגישה מלאה",
+    "readOnly": "פעולה זו אינה זמינה במצב הדגמה",
+    "viewerRestriction": "כצופה, ניתן לגלוש אך לא לשנות תוכן",
+    "learnMore": "למידע נוסף",
+    "dismiss": "סגור",
+    "simulatedPlayback": "מצב הדגמה - הנגינה מדומה",
+    "addedToQueue": "נוסף לתור ההדגמה",
+    "cannotModifyCalendar": "מצב הדגמה - שינויים ביומן לא נשמרים",
+    "cannotModifyFlows": "מצב הדגמה - שינויים בתהליכים לא נשמרים",
+    "cannotModifyCampaigns": "מצב הדגמה - שינויים בקמפיינים לא נשמרים",
+    "cannotSync": "מצב הדגמה - סנכרון מושבת",
+    "cannotUpload": "מצב הדגמה - העלאות מושבתות",
+    "cannotDelete": "מצב הדגמה - מחיקות מושבתות",
+    "cannotEdit": "מצב הדגמה - עריכות לא נשמרות"
+  },
+  "admin": {
+    "librarian": {
+      "title": "סוכן ספרן AI",
+      "subtitle": "תחזוקה אוטומטית של הספרייה וביקורת תוכן",
+      "loading": "טוען...",
+      "refresh": "רענן",
+      "stats": {
+        "systemHealth": "בריאות המערכת",
+        "totalAudits": "סה״כ ביקורות (30 יום)",
+        "issuesFixed": "בעיות תוקנו",
+        "lastAudit": "ביקורת אחרונה"
+      },
+      "quickActions": {
+        "title": "פעולות מהירות",
+        "triggerDaily": "הרץ ביקורת יומית",
+        "triggerWeekly": "הרץ ביקורת מלאה",
+        "dryRun": "הרצה מדומה",
+        "budgetLabel": "תקציב AI",
+        "success": "הביקורת החלה בהצלחה!"
+      },
+      "reports": {
+        "title": "דוחות ביקורת אחרונים",
+        "emptyMessage": "עדיין לא בוצעו ביקורות",
+        "columns": {
+          "date": "תאריך",
+          "type": "סוג",
+          "status": "סטטוס",
+          "issues": "בעיות",
+          "fixes": "תיקונים",
+          "actions": "פעולות"
+        }
+      },
+      "errors": {
+        "failedToLoad": "נכשל בטעינת נתוני הספרן"
+      }
+    }
+  },
+  "login": {
+    "title": "מנהל רדיו ישראלי",
+    "tagline": "פתרון שידור מקצועי",
+    "welcome": "ברוך הבא",
+    "subtitle": "התחבר כדי להמשיך לתחנת הרדיו שלך",
+    "signInButton": "התחבר עם Google",
+    "security": "השירות מאובטח ומוגן באמצעות Google OAuth 2.0",
+    "features": {
+      "title": "כל מה שאתה צריך לנהל תחנת רדיו",
+      "content": {
+        "title": "ניהול תוכן",
+        "desc": "נהל את הספרייה המוזיקלית שלך בקלות"
+      },
+      "scheduling": {
+        "title": "תזמון חכם",
+        "desc": "תזמן תוכניות ופרסומות אוטומטית"
+      },
+      "announcements": {
+        "title": "הכרזות AI",
+        "desc": "צור הכרזות מקצועיות עם בינה מלאכותית"
+      },
+      "broadcasting": {
+        "title": "שידור חי",
+        "desc": "נטר ושלוט בשידור בזמן אמת"
+      },
+      "workflows": {
+        "title": "זרימות עבודה",
+        "desc": "צור תזמון מותאם אישית"
+      },
+      "analytics": {
+        "title": "אנליטיקה",
+        "desc": "עקוב אחר הביצועים והמגמות"
+      },
+      "aiAgent": {
+        "title": "סוכן AI מתזמר",
+        "desc": "סוכן חכם מנהל את כל התחנה באופן עצמאי"
+      },
+      "librarian": {
+        "title": "סוכן ספרן AI",
+        "desc": "תחזוקה אוטומטית של הספרייה וביקורת תוכן"
+      }
+    },
+    "stats": {
+      "automated": "שידור אוטומטי",
+      "ai": "תכונות מבוססות AI",
+      "unlimited": "אפשרויות בלתי מוגבלות"
+    },
+    "aiPowered": "מופעל על ידי סוכני AI מתקדמים",
+    "aiDescription": "שני סוכני AI מיוחדים עובדים 24/7 לניהול תחנת הרדיו שלך: המתזמר מטפל בתזמון וזרימת התוכן, בעוד הספרן מתחזק את ספריית המדיה ומבטיח איכות תוכן."
+  }
+}

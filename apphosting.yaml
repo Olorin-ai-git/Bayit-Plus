@@ -1,0 +1,20 @@
+rootDirectory: backend
+
+runConfig:
+  cpu: 1
+  memoryMiB: 512
+  concurrency: 80
+
+env:
+  - variable: MONGODB_URI
+    value: mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/israeli_radio?retryWrites=true&w=majority&appName=Cluster0
+  - variable: MONGODB_DB
+    value: israeli_radio
+  - variable: ENVIRONMENT
+    value: production
+  - variable: LOG_LEVEL
+    value: INFO
+  - variable: ELEVENLABS_API_KEY
+    secret: ELEVENLABS_API_KEY
+  - variable: ELEVENLABS_MODEL_ID
+    value: eleven_v3
