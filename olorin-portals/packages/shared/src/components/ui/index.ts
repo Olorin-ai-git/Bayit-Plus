@@ -14,3 +14,4 @@ export { LanguageSelector } from './LanguageSelector';
 export { NotFoundPage } from './NotFoundPage';
 export { PlatformGrid } from './PlatformGrid';
 export { VideoDemo } from './VideoDemo';
+export { VideoControls } from './VideoControls';

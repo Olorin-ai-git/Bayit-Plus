@@ -104,8 +104,8 @@ const DemoPage: React.FC = () => {
                   ))}
                 </ul>
               </div>
-              <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 h-64 flex items-center justify-center">
-                <span className="text-wizard-text-secondary">Video Demo Placeholder</span>
+              <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 h-64 flex items-center justify-center bg-gradient-to-br from-wizard-accent-purple/20 to-transparent">
+                <Play className="w-16 h-16 text-wizard-accent-purple opacity-60" />
               </div>
             </div>
           </div>

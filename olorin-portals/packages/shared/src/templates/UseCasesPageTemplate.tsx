@@ -1,19 +1,10 @@
 import React, { useState } from 'react';
 import { GlassCard, GlowingIcon, GlassButton, HeroSection } from '../components';
-import { CheckCircle, ArrowRight, TrendingUp, Briefcase } from 'lucide-react';
+import { ArrowRight, TrendingUp, Briefcase } from 'lucide-react';
 import { AccentColor } from '../types/branding.types';
+import { UseCaseDetail, UseCase } from './UseCaseDetail';
 
-export interface UseCase {
-  id: string;
-  title: string;
-  industry: string;
-  icon: React.ReactNode;
-  challenge: string;
-  solution: string;
-  results: { metric: string; value: string }[];
-  features: string[];
-  testimonial?: { quote: string; author: string; role: string };
-}
+export type { UseCase };
 
 export interface IndustryStat {
   value: string;
@@ -81,72 +72,7 @@ export const UseCasesPageTemplate: React.FC<UseCasesPageTemplateProps> = ({
             ))}
           </div>
 
-          {selectedCase && (
-            <div className="max-w-5xl mx-auto">
-              <GlassCard variant="hero" className="p-8 md:p-12">
-                <div className="flex items-center space-x-4 mb-8">
-                  <GlowingIcon icon={selectedCase.icon} color={accentColor} size="xl" animate />
-                  <div>
-                    <h2 className="text-2xl md:text-3xl font-bold wizard-text">{selectedCase.title}</h2>
-                    <p className="text-wizard-text-secondary">{selectedCase.industry}</p>
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-8 mb-8">
-                  <div>
-                    <h3 className="text-lg font-semibold text-wizard-accent-purple mb-3 flex items-center">
-                      <span className="w-2 h-2 rounded-full bg-red-400 mr-2" /> Challenge
-                    </h3>
-                    <p className="text-wizard-text-secondary">{selectedCase.challenge}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-wizard-accent-purple mb-3 flex items-center">
-                      <span className="w-2 h-2 rounded-full bg-green-400 mr-2" /> Solution
-                    </h3>
-                    <p className="text-wizard-text-secondary">{selectedCase.solution}</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                  {selectedCase.results.map((result) => (
-                    <div key={result.metric} className="text-center p-4 bg-wizard-bg-deep/50 rounded-lg">
-                      <div className="text-2xl md:text-3xl font-bold wizard-text mb-1">{result.value}</div>
-                      <div className="text-wizard-text-secondary text-sm">{result.metric}</div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold text-wizard-text-primary mb-4">Key Features Used</h3>
-                  <div className="grid md:grid-cols-2 gap-3">
-                    {selectedCase.features.map((feature) => (
-                      <div key={feature} className="flex items-center space-x-3">
-                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
-                        <span className="text-wizard-text-secondary">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {selectedCase.testimonial && (
-                  <div className="border-t border-wizard-border-primary pt-8">
-                    <blockquote className="text-lg text-wizard-text-secondary italic mb-4">
-                      "{selectedCase.testimonial.quote}"
-                    </blockquote>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-full bg-wizard-accent-purple/20 flex items-center justify-center">
-                        <span className="text-wizard-accent-purple font-bold">{selectedCase.testimonial.author.charAt(0)}</span>
-                      </div>
-                      <div>
-                        <div className="text-wizard-text-primary font-semibold">{selectedCase.testimonial.author}</div>
-                        <div className="text-wizard-text-secondary text-sm">{selectedCase.testimonial.role}</div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </GlassCard>
-            </div>
-          )}
+          {selectedCase && <UseCaseDetail useCase={selectedCase} accentColor={accentColor} />}
         </div>
       </section>
 

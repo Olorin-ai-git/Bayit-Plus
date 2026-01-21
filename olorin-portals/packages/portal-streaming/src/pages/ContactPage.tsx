@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ContactPageTemplate, ContactField, ContactInfo } from '@olorin/shared';
+import { ContactPageTemplate, ContactField, ContactInfoItem } from '@olorin/shared';
 import emailjs from '@emailjs/browser';
 
 const ContactPage: React.FC = () => {
@@ -39,7 +39,7 @@ const ContactPage: React.FC = () => {
     { id: 'message', type: 'textarea', label: String(t('contactPage.form.message')), placeholder: String(t('contactPage.form.messagePlaceholder')), required: true },
   ];
 
-  const contactInfo: ContactInfo[] = [
+  const contactInfo: ContactInfoItem[] = [
     { icon: 'email', label: 'Email', value: 'streaming@olorin.ai', href: 'mailto:streaming@olorin.ai' },
     { icon: 'phone', label: 'Phone', value: '+1 (201) 397-9142', href: 'tel:+12013979142' },
     { icon: 'address', label: 'Address', value: '185 Madison Ave\nCresskill, NJ 07626' },
