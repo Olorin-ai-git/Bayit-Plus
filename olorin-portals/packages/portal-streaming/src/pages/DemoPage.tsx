@@ -6,7 +6,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { PlatformGrid } from '@olorin/shared';
+import { PlatformGrid, GlassButton } from '@olorin/shared';
 import { Play } from 'lucide-react';
 
 interface DemoSection {
@@ -69,12 +69,13 @@ const DemoPage: React.FC = () => {
           <p className="text-lg md:text-xl text-wizard-text-secondary max-w-3xl mx-auto mb-10">
             {t('demoPage.subtitle')}
           </p>
-          <button
+          <GlassButton
+            variant="wizard"
+            size="lg"
             onClick={() => navigate('/pricing')}
-            className="wizard-button text-lg px-10 py-4"
           >
             {t('demoPage.scheduleCta')}
-          </button>
+          </GlassButton>
         </div>
       </section>
 

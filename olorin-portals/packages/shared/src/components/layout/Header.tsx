@@ -4,6 +4,7 @@ import { Menu, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { WizardLogo } from '../branding/WizardLogo';
 import { PortalDomain } from '../../types/branding.types';
+import { MobileNavigation } from './MobileNavigation';
 
 export interface NavItem {
   name: string;
@@ -62,7 +63,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const isActive = (path: string) => location.pathname === path;
 
-  const defaultCtaText = ctaText || t('nav.getStarted', { defaultValue: 'Get Started' });
+  const defaultCtaText = ctaText || String(t('nav.getStarted', { defaultValue: 'Get Started' }));
 
   return (
     <header className="glass-header-wizard">
@@ -163,73 +164,15 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-wizard-border-secondary animate-fade-in-up">
-            <div className="flex flex-col space-y-1">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`px-3 py-2.5 rounded-lg text-base font-medium transition-all duration-200 ${
-                    isActive(item.href)
-                      ? 'text-wizard-accent-purple bg-wizard-accent-purple/10'
-                      : 'text-wizard-text-secondary hover:text-wizard-accent-purple hover:bg-white/5'
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              ))}
-
-              {/* Mobile Dropdowns */}
-              {dropdowns.map((dropdown) => (
-                <div key={dropdown.label}>
-                  <div className="pt-3 pb-1 px-3">
-                    <span className="text-xs font-semibold text-wizard-text-muted uppercase tracking-wider">
-                      {dropdown.label}
-                    </span>
-                  </div>
-                  {dropdown.items.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      className={`px-3 py-2.5 rounded-lg text-base font-medium ml-2 transition-all duration-200 ${
-                        isActive(item.href)
-                          ? 'text-wizard-accent-purple bg-wizard-accent-purple/10'
-                          : 'text-wizard-text-secondary hover:text-wizard-accent-purple hover:bg-white/5'
-                      }`}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-              ))}
-
-              {showDemo && (
-                <Link
-                  to="/demo/live"
-                  className="px-3 py-2.5 rounded-lg text-base font-medium text-wizard-accent-purple hover:bg-wizard-accent-purple/10 transition-all duration-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {t('nav.demo', { defaultValue: 'Demo' })}
-                </Link>
-              )}
-
-              {LanguageSelectorComponent && (
-                <div className="pt-3 border-t border-wizard-border-secondary mt-2">
-                  <LanguageSelectorComponent />
-                </div>
-              )}
-
-              <Link
-                to={ctaHref}
-                className="mt-2 wizard-button text-center"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {defaultCtaText}
-              </Link>
-            </div>
-          </div>
+          <MobileNavigation
+            navigation={navigation}
+            dropdowns={dropdowns}
+            showDemo={showDemo}
+            ctaText={defaultCtaText}
+            ctaHref={ctaHref}
+            LanguageSelectorComponent={LanguageSelectorComponent}
+            onClose={() => setIsMenuOpen(false)}
+          />
         )}
       </div>
     </header>
