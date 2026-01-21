@@ -164,6 +164,10 @@ main() {
         npm install
         print_success "npm dependencies installed"
 
+        print_info "Running React Native codegen..."
+        npx react-native codegen
+        print_success "Codegen completed"
+
         print_info "Installing CocoaPods dependencies..."
         cd "$IOS_DIR"
         pod install
@@ -181,15 +185,27 @@ main() {
         mkdir -p build
 
         print_info "Building archive..."
-        xcodebuild archive \
-            -workspace "$IOS_WORKSPACE" \
-            -scheme "$IOS_SCHEME" \
-            -configuration "$BUILD_CONFIGURATION" \
-            -archivePath "$ARCHIVE_PATH" \
-            -destination "generic/platform=iOS" \
+
+        # Build with API key authentication if available (enables cloud-managed signing)
+        ARCHIVE_CMD="xcodebuild archive \
+            -workspace \"$IOS_WORKSPACE\" \
+            -scheme \"$IOS_SCHEME\" \
+            -configuration \"$BUILD_CONFIGURATION\" \
+            -archivePath \"$ARCHIVE_PATH\" \
+            -destination \"generic/platform=iOS\" \
             -allowProvisioningUpdates \
-            CODE_SIGN_STYLE=Automatic \
-            | tee build/archive.log
+            CODE_SIGN_STYLE=Automatic"
+
+        # Add API key authentication for cloud-managed signing
+        if [[ -n "$APP_STORE_CONNECT_API_KEY_PATH" ]] && [[ -f "$APP_STORE_CONNECT_API_KEY_PATH" ]]; then
+            print_info "Using App Store Connect API key for cloud-managed signing..."
+            ARCHIVE_CMD="$ARCHIVE_CMD \
+                -authenticationKeyPath \"$APP_STORE_CONNECT_API_KEY_PATH\" \
+                -authenticationKeyID \"$APP_STORE_CONNECT_API_KEY_ID\" \
+                -authenticationKeyIssuerID \"$APP_STORE_CONNECT_ISSUER_ID\""
+        fi
+
+        eval "$ARCHIVE_CMD" | tee build/archive.log
 
         if [[ ! -d "$ARCHIVE_PATH" ]]; then
             print_error "Archive failed - archive not found at $ARCHIVE_PATH"
