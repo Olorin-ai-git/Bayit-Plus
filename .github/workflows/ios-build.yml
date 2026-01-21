@@ -59,7 +59,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pods-
 
-      - name: Install dependencies
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Build shared packages
+        run: npm run build:packages
+
+      - name: Install mobile-app dependencies
+        working-directory: mobile-app
         run: npm ci
 
       - name: Install CocoaPods dependencies
