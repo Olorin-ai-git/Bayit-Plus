@@ -1,0 +1,15 @@
+// Omen Configuration Template
+// Omen is an independent iOS application
+// Copy this file to Config.xcconfig and fill in your actual API keys
+// DO NOT commit Config.xcconfig to version control
+//
+// Note: The default setup uses shared API keys from Bayit-Plus for convenience
+// You can replace these with your own keys if preferred
+
+// OpenAI Realtime API Key
+// Get your key from: https://platform.openai.com/api-keys
+OPENAI_API_KEY = sk-proj-YOUR_OPENAI_API_KEY_HERE
+
+// ElevenLabs API Key
+// Get your key from: https://elevenlabs.io/app/settings/api-keys
+ELEVENLABS_API_KEY = xi-YOUR_ELEVENLABS_API_KEY_HERE
