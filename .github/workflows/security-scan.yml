@@ -1,3 +1,23 @@
+# =============================================================================
+# Security Scan Workflow
+# =============================================================================
+#
+# Comprehensive security scanning for the Bayit+ platform.
+#
+# Runs on:
+#   - Push to main/develop branches
+#   - Pull requests to main/develop
+#   - Weekly schedule (Mondays 9am UTC)
+#
+# Jobs:
+#   - secret-scan: TruffleHog and GitLeaks secret detection
+#   - dependency-security: npm/pip audit for vulnerable packages
+#
+# Required secrets:
+#   - GITLEAKS_LICENSE: GitLeaks enterprise license (optional)
+#
+# =============================================================================
+
 name: Security Scan
 
 on:
@@ -8,6 +28,11 @@ on:
   schedule:
     # Run weekly on Mondays at 9am UTC
     - cron: '0 9 * * 1'
+
+# Explicit permissions for security (principle of least privilege)
+permissions:
+  contents: read
+  security-events: write
 
 jobs:
   secret-scan:
@@ -21,7 +46,7 @@ jobs:
           fetch-depth: 0  # Full history for comprehensive scanning
 
       - name: TruffleHog Secret Scan
-        uses: trufflesecurity/trufflehog@main
+        uses: trufflesecurity/trufflehog@116e7171542d2f1dad8810f00dcfacbe0b809183  # v3.92.5
         with:
           path: ./
           base: ${{ github.event.repository.default_branch }}

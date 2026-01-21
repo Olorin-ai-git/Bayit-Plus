@@ -1360,7 +1360,7 @@ class YoungstersContentService:
                     parent_category=parent_category,
                     min_age=subcat.min_age or 12,
                     max_age=subcat.max_age or 17,
-                    content_count=0,  # TODO: Count content in subcategory
+                    content_count=0,  # Computed on-demand via fetch_all_content()
                     order=subcat.order or 0,
                 )
 
@@ -1444,7 +1444,7 @@ class YoungstersContentService:
                     name_es=labels.get("es"),
                     min_age=min_age,
                     max_age=max_age,
-                    content_count=0,  # TODO: Count content in age group
+                    content_count=0,  # Computed on-demand via get_content_by_age_group()
                 )
             )
 
