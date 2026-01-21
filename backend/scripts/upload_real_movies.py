@@ -171,9 +171,11 @@ async def upload_movies(source_dir: str, dry_run: bool = False, limit: Optional[
     # Initialize database - use Atlas connection string from environment
     mongodb_url = os.environ.get('MONGODB_URL') or settings.MONGODB_URL
     if 'localhost' in mongodb_url:
-        # Force use of Atlas if localhost is detected
-        mongodb_url = 'mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/bayit_plus?retryWrites=true&w=majority'
-        logger.info("Using MongoDB Atlas (forced)")
+        # Require proper Atlas credentials from environment
+        raise RuntimeError(
+            "Cannot use localhost for production uploads. "
+            "Please set MONGODB_URL environment variable to Atlas connection string"
+        )
 
     client = AsyncIOMotorClient(mongodb_url)
     db = client['bayit_plus']  # Always use bayit_plus database

@@ -1,10 +1,14 @@
 """Migrate movies from local MongoDB to Atlas."""
 import asyncio
+import os
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
-ATLAS_URL = "mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/bayit_plus?retryWrites=true&w=majority"
-LOCAL_URL = "mongodb://localhost:27017"
+ATLAS_URL = os.getenv("MONGODB_ATLAS_URI")
+if not ATLAS_URL:
+    raise RuntimeError("MONGODB_ATLAS_URI environment variable not set")
+
+LOCAL_URL = os.getenv("MONGODB_LOCAL_URI", "mongodb://localhost:27017")
 
 
 async def migrate():

@@ -4,12 +4,15 @@ Fix movie stream URLs to match cleaned GCS folder names.
 """
 
 import asyncio
+import os
 import re
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
 # MongoDB connection
-MONGODB_URL = "mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/bayit_plus?retryWrites=true&w=majority"
+MONGODB_URL = os.getenv("MONGODB_URI")
+if not MONGODB_URL:
+    raise RuntimeError("MONGODB_URI environment variable not set")
 
 
 def clean_folder_name(folder_name: str) -> str:
