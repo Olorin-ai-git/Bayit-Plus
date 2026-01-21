@@ -2,273 +2,458 @@
   "nav": {
     "home": "Home",
     "features": "Features",
-    "useCases": "Use Cases",
-    "pricing": "Pricing",
-    "demo": "Live Demo",
-    "contact": "Contact",
-    "getStarted": "Get Started"
+    "useCases": "Why Bayit Plus",
+    "pricing": "Plans",
+    "demo": "See It Live",
+    "contact": "Support",
+    "getStarted": "Start Free Trial"
   },
   "hero": {
-    "title": "AI-DRIVEN",
-    "titleHighlight": "MEDIA STREAMING",
-    "subtitle": "Optimize content delivery with intelligent streaming",
-    "description": "Deliver exceptional viewing experiences with AI-powered streaming optimization",
-    "ctaExplore": "Learn More",
-    "ctaDemo": "Request Demo"
+    "title": "BAYIT PLUS",
+    "titleHighlight": "בית+",
+    "subtitle": "Israel at Home - Wherever You Are",
+    "description": "Watch Israeli movies, live TV, radio, and podcasts from anywhere in the world",
+    "ctaExplore": "View Plans",
+    "ctaDemo": "Start Free Trial"
   },
   "features": {
-    "sectionTitle": "Intelligent Streaming Features",
-    "optimization": { "title": "Content Optimization AI", "description": "Automatically optimize video quality and bitrate for each viewer's connection" },
-    "engagement": { "title": "Viewer Engagement AI", "description": "Analyze viewer behavior and improve engagement with intelligent insights" },
-    "playlists": { "title": "Personalized Playlists", "description": "Generate personalized content recommendations based on viewing patterns" }
-  },
-  "workflow": {
-    "sectionTitle": "How It Works",
-    "sectionSubtitle": "AI-powered streaming optimization in 4 steps",
-    "step1": { "title": "Data Collection", "description": "Gather viewer data and streaming metrics in real-time" },
-    "step2": { "title": "AI Analysis", "description": "Analyze patterns and predict optimal streaming parameters" },
-    "step3": { "title": "Optimization", "description": "Dynamically adjust quality and delivery for each viewer" },
-    "step4": { "title": "Delivery", "description": "Stream optimized content with minimal buffering" }
-  },
-  "useCases": {
-    "title": "Industry Solutions",
-    "liveStreaming": { "title": "Live Streaming Events", "description": "Concerts, sports, conferences with real-time optimization" },
-    "onDemand": { "title": "On-Demand Content", "description": "Movies, TV shows, educational content delivery" },
-    "education": { "title": "Educational Platforms", "description": "E-learning platforms with adaptive streaming" },
-    "enterprise": { "title": "Enterprise Video", "description": "Corporate training and communications" }
+    "sectionTitle": "Everything You Love About Israel",
+    "vod": {
+      "title": "Israeli Movies & TV",
+      "description": "500+ Israeli films, series, and documentaries in your library"
+    },
+    "liveTV": {
+      "title": "Live Israeli Channels",
+      "description": "15+ Israeli TV channels with full EPG guide"
+    },
+    "radio": {
+      "title": "Israeli Radio 24/7",
+      "description": "20+ radio stations - from Galei Tzahal to Kan"
+    },
+    "ai": {
+      "title": "AI Assistant",
+      "description": "Claude-powered Hebrew search - ask in Hebrew, find instantly"
+    },
+    "kids": {
+      "title": "Kids Mode",
+      "description": "Safe Israeli content with parental controls"
+    },
+    "downloads": {
+      "title": "Offline Downloads",
+      "description": "Download your favorites and watch anywhere"
+    }
   },
   "stats": {
-    "reduction": "50% Buffer Time Reduction",
-    "quality": "4K Quality at Lower Bandwidth",
-    "engagement": "30% Engagement Increase",
-    "cost": "40% CDN Cost Savings"
+    "channels": {
+      "value": "15+",
+      "label": "Live Israeli Channels"
+    },
+    "content": {
+      "value": "500+",
+      "label": "Movies & TV Shows"
+    },
+    "radio": {
+      "value": "20+",
+      "label": "Radio Stations"
+    },
+    "uptime": {
+      "value": "99.9%",
+      "label": "Uptime Guarantee"
+    }
+  },
+  "platforms": {
+    "sectionTitle": "Watch Everywhere",
+    "sectionSubtitle": "Bayit Plus works on all your devices",
+    "ios": {
+      "title": "iOS",
+      "description": "iPhone & iPad"
+    },
+    "android": {
+      "title": "Android",
+      "description": "Phones & Tablets"
+    },
+    "tvos": {
+      "title": "Apple TV",
+      "description": "tvOS"
+    },
+    "web": {
+      "title": "Web",
+      "description": "Any Browser"
+    },
+    "webos": {
+      "title": "LG TV",
+      "description": "WebOS"
+    },
+    "tizen": {
+      "title": "Samsung TV",
+      "description": "Tizen"
+    }
+  },
+  "content": {
+    "sectionTitle": "Discover Israeli Content",
+    "featured": "Featured Content",
+    "newReleases": "New Releases",
+    "popular": "Popular Now",
+    "scenery": {
+      "telAviv": "Tel Aviv",
+      "jerusalem": "Jerusalem"
+    }
   },
   "cta": {
-    "title": "Ready to Optimize Your Streaming?",
-    "subtitle": "Powered by Olorin.ai Media Enrichment - delivering exceptional viewing experiences",
-    "button": "Request a Demo"
-  },
-  "contactPage": {
-    "title": "Partner With Us",
-    "subtitle": "Let's discuss how we can optimize your streaming platform",
-    "formTitle": "Tell Us About Your Platform",
-    "infoTitle": "Contact Information",
-    "form": {
-      "name": "Full Name",
-      "email": "Work Email",
-      "company": "Company Name",
-      "phone": "Phone Number",
-      "platform": "Platform Type",
-      "selectPlatform": "Select your platform type",
-      "viewers": "Monthly Viewers",
-      "selectViewers": "Select viewer range",
-      "message": "How can we help?",
-      "messagePlaceholder": "Tell us about your streaming challenges..."
-    },
-    "submit": "Submit Request",
-    "sending": "Sending...",
-    "success": "Thank you! We'll be in touch within 24 hours.",
-    "error": "Something went wrong. Please try again or email us directly.",
-    "scheduleTitle": "Prefer to Schedule a Call?",
-    "scheduleSubtitle": "Book a personalized demo with our streaming experts",
-    "scheduleCta": "Schedule Demo Call"
-  },
-  "demoPage": {
-    "title": "See Our",
-    "titleHighlight": "Streaming Platform",
-    "subtitle": "Experience AI-powered streaming optimization that delivers exceptional viewing experiences",
-    "scheduleCta": "Schedule Live Demo",
-    "stepsTitle": "How It Works",
-    "steps": {
-      "ingest": { "title": "Content Ingestion", "description": "Upload and process your video content" },
-      "analyze": { "title": "AI Analysis", "description": "Our AI analyzes content and viewer patterns" },
-      "optimize": { "title": "Smart Optimization", "description": "Dynamic quality adaptation for each viewer" },
-      "deliver": { "title": "Global Delivery", "description": "Optimized delivery via our CDN" }
-    },
-    "featuresTitle": "Platform Highlights",
-    "features": {
-      "adaptive": { "title": "Adaptive Bitrate", "description": "Automatic quality adjustment based on bandwidth" },
-      "analytics": { "title": "Real-Time Analytics", "description": "Live viewer metrics and engagement data" },
-      "personalization": { "title": "Personalization", "description": "AI-driven content recommendations" },
-      "cdn": { "title": "Global CDN", "description": "200+ points of presence worldwide" },
-      "quality": { "title": "4K/8K Support", "description": "Ultra-high definition streaming" },
-      "realtime": { "title": "Low Latency", "description": "Sub-3 second live streaming" }
-    },
-    "sections": {
-      "player": { "title": "Video Player Demo", "description": "See our adaptive video player in action with real-time quality adjustments", "f1": "Adaptive bitrate streaming", "f2": "Custom player branding", "f3": "Multi-device support", "f4": "Accessibility features" },
-      "analytics": { "title": "Analytics Dashboard", "description": "Explore our comprehensive analytics and viewer insights", "f1": "Real-time viewer metrics", "f2": "Engagement tracking", "f3": "Quality of experience scores", "f4": "Geographic distribution" },
-      "content": { "title": "Content Management", "description": "Powerful tools for managing your video library", "f1": "Bulk upload and processing", "f2": "Automatic transcoding", "f3": "Metadata management", "f4": "Content scheduling" }
-    },
-    "platformsTitle": "Available On",
-    "ctaTitle": "Ready for Your Custom Demo?",
-    "ctaSubtitle": "Schedule a personalized demonstration tailored to your platform needs",
-    "ctaButton": "Schedule Demo"
+    "title": "Ready to Bring Israel Home?",
+    "subtitle": "Start your free trial today - no credit card required",
+    "button": "Start Free Trial",
+    "trustBadge1": "No Credit Card Required",
+    "trustBadge2": "Cancel Anytime",
+    "trustBadge3": "5,000+ Families Connected"
   },
   "pricingPage": {
-    "title": "Flexible",
-    "titleHighlight": "Pricing Plans",
-    "subtitle": "Choose the plan that fits your streaming needs - from startups to enterprise",
-    "starter": {
-      "name": "Starter",
-      "price": "Contact Us",
-      "priceNote": "For small platforms",
-      "description": "Perfect for startups and small streaming platforms",
-      "cta": "Get Started",
-      "f1": "Up to 1K concurrent viewers",
-      "f2": "100 GB video storage",
-      "f3": "Basic analytics dashboard",
-      "f4": "Adaptive bitrate streaming",
-      "f5": "Custom player branding",
-      "f6": "API access"
+    "title": "Choose Your",
+    "titleHighlight": "Plan",
+    "subtitle": "Stream Israel from anywhere - cancel anytime, no contracts",
+    "basic": {
+      "name": "Basic",
+      "price": "$9.99",
+      "priceNote": "/month",
+      "description": "Perfect for individuals who love Israeli content",
+      "cta": "Start Free Trial",
+      "f1": "Full VOD Library (500+ titles)",
+      "f2": "Israeli Radio Stations (20+)",
+      "f3": "Hebrew Podcasts",
+      "f4": "1 simultaneous stream",
+      "f5": "HD quality (1080p)",
+      "f6": "Watch on any device"
     },
-    "professional": {
-      "name": "Professional",
+    "premium": {
+      "name": "Premium",
       "badge": "Most Popular",
-      "price": "Contact for Quote",
-      "priceNote": "Custom pricing",
-      "description": "For growing platforms with advanced needs",
-      "cta": "Get Quote",
-      "f1": "Up to 100K concurrent viewers",
-      "f2": "1 TB video storage",
-      "f3": "Advanced analytics & insights",
-      "f4": "All streaming features",
-      "f5": "Custom player branding",
-      "f6": "White-label solution"
+      "price": "$14.99",
+      "priceNote": "/month",
+      "description": "Everything in Basic plus live TV and AI features",
+      "cta": "Get Premium",
+      "f1": "Everything in Basic",
+      "f2": "Live Israeli TV (15+ channels)",
+      "f3": "Full EPG Guide",
+      "f4": "AI Content Discovery (Hebrew)",
+      "f5": "2 simultaneous streams",
+      "f6": "Full HD quality (1080p)"
     },
-    "enterprise": {
-      "name": "Enterprise",
-      "price": "Custom",
-      "priceNote": "Volume-based",
-      "description": "Unlimited scale for large streaming operations",
-      "cta": "Contact Sales",
-      "f1": "Unlimited concurrent viewers",
-      "f2": "Unlimited video storage",
-      "f3": "Full analytics suite",
-      "f4": "All professional features",
-      "f5": "Dedicated infrastructure",
-      "f6": "White-label with custom CDN"
+    "family": {
+      "name": "Family",
+      "price": "$19.99",
+      "priceNote": "/month",
+      "description": "Best value for families - share with everyone",
+      "cta": "Get Family Plan",
+      "f1": "Everything in Premium",
+      "f2": "4 simultaneous streams",
+      "f3": "4K Ultra HD quality",
+      "f4": "Offline Downloads",
+      "f5": "5 User Profiles",
+      "f6": "Kids Mode with Parental Controls"
     },
-    "comparisonTitle": "Feature Comparison",
+    "comparisonTitle": "Plan Comparison",
     "faqTitle": "Frequently Asked Questions",
     "faq": {
-      "q1": "How is pricing calculated?",
-      "a1": "Pricing is based on concurrent viewers, storage needs, and features required. Contact us for a custom quote tailored to your platform.",
-      "q2": "Can I upgrade my plan later?",
-      "a2": "Yes, you can upgrade at any time. We'll help migrate your configuration seamlessly to the new plan.",
-      "q3": "What support is included?",
-      "a3": "All plans include email support. Professional and Enterprise plans include priority support with faster response times."
+      "q1": "Can I watch from outside the USA?",
+      "a1": "Yes! Bayit Plus works worldwide. Stream Israeli content from anywhere with an internet connection.",
+      "q2": "Is there a free trial?",
+      "a2": "Yes - get 7 days free on any plan. No credit card required for trial. Cancel anytime.",
+      "q3": "What devices are supported?",
+      "a3": "Bayit Plus works on iPhone, iPad, Android, Apple TV, web browsers, LG Smart TVs, and Samsung Smart TVs.",
+      "q4": "Can I switch plans anytime?",
+      "a4": "Yes - upgrade or downgrade anytime. Changes take effect immediately with prorated billing.",
+      "q5": "Are there contracts or cancellation fees?",
+      "a5": "No contracts, no cancellation fees. Cancel anytime and you'll have access until the end of your billing period."
     },
-    "ctaTitle": "Ready to Get Started?",
-    "ctaSubtitle": "Let's discuss your streaming needs and find the perfect plan",
-    "ctaButton": "Contact Sales"
+    "ctaTitle": "Start Your Free Trial Today",
+    "ctaSubtitle": "7 days free - no credit card required",
+    "ctaButton": "Start Free Trial"
   },
   "featuresPage": {
-    "title": "Powerful",
-    "titleHighlight": "Streaming Features",
-    "subtitle": "Enterprise-grade streaming platform powered by AI",
-    "delivery": {
-      "title": "Content Delivery",
-      "description": "Optimized video delivery with adaptive streaming",
-      "adaptive": { "title": "Adaptive Bitrate", "description": "Automatic quality adjustment based on viewer bandwidth", "h1": "Real-time bandwidth detection", "h2": "Smooth quality transitions", "h3": "Buffer-free viewing" },
-      "cdn": { "title": "Global CDN", "description": "Worldwide content delivery with minimal latency", "h1": "200+ points of presence", "h2": "Smart edge caching", "h3": "Geographic optimization" },
-      "quality": { "title": "Ultra HD Support", "description": "Support for 4K and 8K content delivery", "h1": "HDR support", "h2": "High frame rate streaming", "h3": "Multi-codec support" }
-    },
-    "analytics": {
-      "title": "Analytics & Insights",
-      "description": "Comprehensive viewer analytics and engagement metrics",
-      "realtime": { "title": "Real-Time Metrics", "description": "Live viewer counts and streaming quality data", "h1": "Live viewer dashboard", "h2": "Quality metrics", "h3": "Geographic distribution" },
-      "engagement": { "title": "Engagement Analytics", "description": "Deep insights into viewer behavior and preferences", "h1": "Watch time analysis", "h2": "Engagement patterns", "h3": "Content performance" },
-      "qoe": { "title": "Quality of Experience", "description": "Monitor and optimize viewer experience metrics", "h1": "Buffering rates", "h2": "Start time analysis", "h3": "Quality scores" }
-    },
-    "platform": {
-      "title": "Platform Features",
-      "description": "Complete streaming platform capabilities",
-      "player": { "title": "Custom Player", "description": "Fully customizable video player for your brand", "h1": "Brand customization", "h2": "Multi-device support", "h3": "Accessibility features" },
-      "api": { "title": "Developer API", "description": "Comprehensive APIs for integration", "h1": "RESTful APIs", "h2": "Webhooks support", "h3": "SDK libraries" },
-      "security": { "title": "Content Security", "description": "Enterprise-grade content protection", "h1": "DRM support", "h2": "Geo-blocking", "h3": "Token authentication" }
-    },
-    "techSpecsTitle": "Technical Specifications",
-    "workflowTitle": "Content Workflow",
-    "workflow": {
-      "s1": { "title": "Upload", "description": "Content ingestion" },
-      "s2": { "title": "Process", "description": "Transcoding & optimization" },
-      "s3": { "title": "Distribute", "description": "CDN distribution" },
-      "s4": { "title": "Deliver", "description": "Adaptive playback" }
-    },
-    "ctaTitle": "Ready to Upgrade Your Streaming?",
-    "ctaSubtitle": "See all features in action with a personalized demo",
-    "ctaButton": "Schedule Demo"
-  },
-  "useCasesPage": {
-    "title": "Streaming",
-    "titleHighlight": "Solutions",
-    "subtitle": "Powering streaming platforms across industries",
-    "ott": {
-      "title": "OTT Streaming Platform",
-      "industry": "OTT / SVOD",
-      "challenge": "OTT platforms need to deliver consistent quality across diverse devices and network conditions while managing CDN costs.",
-      "solution": "Our AI-powered platform optimizes bitrate delivery per viewer, reducing buffering by 50% while cutting CDN costs by 40%.",
-      "r1": { "metric": "Buffer Reduction", "value": "50%" },
-      "r2": { "metric": "CDN Cost Savings", "value": "40%" },
-      "r3": { "metric": "Viewer Retention", "value": "+25%" },
-      "r4": { "metric": "QoE Score", "value": "95%" },
-      "f1": "Adaptive bitrate streaming",
-      "f2": "Multi-device optimization",
-      "f3": "Personalized recommendations",
-      "f4": "Real-time analytics",
-      "testimonial": { "quote": "Olorin.ai Media Enrichment's streaming platform transformed our viewer experience. Buffering complaints dropped dramatically.", "author": "Platform Owner", "role": "OTT Service" }
+    "title": "Why",
+    "titleHighlight": "Bayit Plus",
+    "subtitle": "The only streaming service built for Israeli expats",
+    "library": {
+      "title": "Israeli Content Library",
+      "description": "The largest collection of Israeli content outside Israel",
+      "movies": {
+        "title": "Israeli Movies",
+        "description": "From classics to new releases",
+        "h1": "500+ Israeli films",
+        "h2": "Hebrew with English subtitles",
+        "h3": "New releases monthly"
+      },
+      "series": {
+        "title": "TV Shows & Series",
+        "description": "Your favorite Israeli series",
+        "h1": "Full seasons available",
+        "h2": "From Fauda to תאגד",
+        "h3": "Binge-watch ready"
+      },
+      "kids": {
+        "title": "Kids Content",
+        "description": "Safe, educational Israeli content for children",
+        "h1": "Parental controls",
+        "h2": "Age-appropriate filtering",
+        "h3": "Hebrew language learning"
+      }
     },
     "live": {
-      "title": "Live Event Streaming",
-      "industry": "Live Events",
-      "challenge": "Live events require ultra-low latency and the ability to scale instantly for unpredictable viewer spikes.",
-      "solution": "Sub-3 second latency with auto-scaling infrastructure that handles millions of concurrent viewers seamlessly.",
-      "r1": { "metric": "Latency", "value": "<3s" },
-      "r2": { "metric": "Scale", "value": "10M+" },
-      "r3": { "metric": "Uptime", "value": "99.99%" },
-      "r4": { "metric": "Quality", "value": "4K HDR" },
-      "f1": "Ultra-low latency delivery",
-      "f2": "Auto-scaling infrastructure",
-      "f3": "Real-time engagement tools",
-      "f4": "DVR and replay support"
+      "title": "Live Israeli Experience",
+      "description": "Stay connected with Israel in real-time",
+      "channels": {
+        "title": "Live TV Channels",
+        "description": "15+ Israeli channels streaming 24/7",
+        "h1": "News channels (Channel 12, Channel 13)",
+        "h2": "Sports and entertainment",
+        "h3": "Full EPG guide"
+      },
+      "radio": {
+        "title": "Israeli Radio",
+        "description": "20+ Israeli radio stations",
+        "h1": "Galei Tzahal, Kan, Radio Darom",
+        "h2": "Music, talk shows, news",
+        "h3": "24/7 streaming"
+      },
+      "podcasts": {
+        "title": "Hebrew Podcasts",
+        "description": "Curated Hebrew podcast library",
+        "h1": "News and politics",
+        "h2": "Comedy and culture",
+        "h3": "Personal development"
+      }
     },
-    "education": {
-      "title": "Educational Platform",
-      "industry": "E-Learning",
-      "challenge": "Educational platforms need to ensure accessibility across varying network conditions and devices for effective learning.",
-      "solution": "Adaptive streaming ensures smooth playback on any device, with engagement analytics to improve course completion rates.",
-      "r1": { "metric": "Completion Rate", "value": "+35%" },
-      "r2": { "metric": "Accessibility", "value": "100%" },
-      "r3": { "metric": "Student Satisfaction", "value": "92%" },
-      "r4": { "metric": "Mobile Usage", "value": "+60%" },
-      "f1": "Adaptive quality streaming",
-      "f2": "Progress tracking integration",
-      "f3": "Offline download support",
-      "f4": "Accessibility features"
+    "smart": {
+      "title": "Smart Features",
+      "description": "AI-powered features that understand Hebrew",
+      "ai": {
+        "title": "AI Assistant",
+        "description": "Ask in Hebrew, find instantly",
+        "h1": "Claude-powered search",
+        "h2": "Natural Hebrew conversations",
+        "h3": "Smart content recommendations"
+      },
+      "rtl": {
+        "title": "Hebrew-First Interface",
+        "description": "Built for Hebrew speakers",
+        "h1": "Full RTL support",
+        "h2": "Hebrew menus and navigation",
+        "h3": "Hebrew subtitles on all content"
+      },
+      "offline": {
+        "title": "Offline Mode",
+        "description": "Download and watch offline",
+        "h1": "Download to any device",
+        "h2": "Watch without internet",
+        "h3": "Perfect for flights"
+      }
     },
-    "enterprise": {
-      "title": "Enterprise Communications",
-      "industry": "Enterprise",
-      "challenge": "Enterprises need secure, reliable video communications for training, all-hands, and corporate events.",
-      "solution": "Secure, scalable video platform with SSO integration, analytics, and global delivery for distributed teams.",
-      "r1": { "metric": "Security", "value": "SOC 2" },
-      "r2": { "metric": "Global Reach", "value": "200+ PoPs" },
-      "r3": { "metric": "Integration", "value": "SSO Ready" },
-      "r4": { "metric": "Analytics", "value": "Real-time" },
-      "f1": "Enterprise SSO integration",
-      "f2": "Role-based access control",
-      "f3": "Audit logging",
-      "f4": "Custom branding"
+    "ctaTitle": "Experience Bayit Plus Free for 7 Days",
+    "ctaSubtitle": "No credit card required - cancel anytime",
+    "ctaButton": "Start Free Trial"
+  },
+  "useCasesPage": {
+    "title": "Who Uses",
+    "titleHighlight": "Bayit Plus",
+    "subtitle": "Bayit Plus brings Israel home to thousands of families worldwide",
+    "families": {
+      "title": "Israeli Families in America",
+      "persona": "Expat Families",
+      "challenge": "Raising bilingual children while staying connected to Israeli culture and family back home.",
+      "solution": "Bayit Plus gives families access to Israeli content that keeps children fluent in Hebrew and connected to their heritage. Parents stay updated with Israeli news and grandparents can video chat about shared shows.",
+      "r1": {
+        "metric": "Weekly Usage",
+        "value": "15+ hrs"
+      },
+      "r2": {
+        "metric": "Hebrew Fluency",
+        "value": "+40%"
+      },
+      "r3": {
+        "metric": "Cultural Connection",
+        "value": "95%"
+      },
+      "r4": {
+        "metric": "Family Bonding",
+        "value": "Priceless"
+      },
+      "f1": "Israeli kids shows for language learning",
+      "f2": "Live news to stay connected",
+      "f3": "Family-friendly content library",
+      "f4": "Multi-device streaming",
+      "testimonial": {
+        "quote": "My kids watch Israeli shows every day. It's the only way we're keeping their Hebrew fluent while living in New York.",
+        "author": "Rachel M.",
+        "role": "New York, NY"
+      }
     },
-    "statsTitle": "Platform Impact",
+    "professionals": {
+      "title": "Busy Professionals",
+      "persona": "Career-Focused Israelis",
+      "challenge": "Missing Israeli news, culture, and feeling disconnected from home while building careers abroad.",
+      "solution": "Watch Israeli news on your schedule, catch up on shows during commutes, and stay culturally connected without cable subscriptions or VPN hassles.",
+      "r1": {
+        "metric": "News Access",
+        "value": "24/7"
+      },
+      "r2": {
+        "metric": "Commute Time",
+        "value": "Productive"
+      },
+      "r3": {
+        "metric": "Cultural Updates",
+        "value": "Daily"
+      },
+      "r4": {
+        "metric": "Convenience",
+        "value": "100%"
+      },
+      "f1": "Download for offline viewing",
+      "f2": "Live news from Israel",
+      "f3": "Hebrew podcasts for commutes",
+      "f4": "Watch on any device"
+    },
+    "learners": {
+      "title": "Hebrew Language Learners",
+      "persona": "Students & Olim Hadashim",
+      "challenge": "Learning Hebrew requires immersion, but moving to Israel isn't always possible immediately.",
+      "solution": "Immerse yourself in native Hebrew content with subtitles. Learn real conversational Hebrew from TV shows, not just textbooks.",
+      "r1": {
+        "metric": "Vocab Growth",
+        "value": "+200/mo"
+      },
+      "r2": {
+        "metric": "Listening Skills",
+        "value": "+60%"
+      },
+      "r3": {
+        "metric": "Cultural Context",
+        "value": "Native"
+      },
+      "r4": {
+        "metric": "Motivation",
+        "value": "High"
+      },
+      "f1": "Hebrew with English subtitles",
+      "f2": "Repeat and learn mode",
+      "f3": "Varied content levels",
+      "f4": "Cultural context learning"
+    },
+    "seniors": {
+      "title": "Israeli Seniors Abroad",
+      "persona": "Retirees & Grandparents",
+      "challenge": "Missing Israeli radio, classic films, and feeling isolated from Israeli culture in retirement communities.",
+      "solution": "Easy-to-use interface with familiar Israeli radio, classic films, and the ability to stay updated with news from home. Works on Smart TVs with large, clear interfaces.",
+      "r1": {
+        "metric": "Daily Radio",
+        "value": "20+ Stations"
+      },
+      "r2": {
+        "metric": "Classic Films",
+        "value": "Hundreds"
+      },
+      "r3": {
+        "metric": "Ease of Use",
+        "value": "Simple"
+      },
+      "r4": {
+        "metric": "Connection",
+        "value": "Priceless"
+      },
+      "f1": "Israeli radio stations 24/7",
+      "f2": "Classic Israeli cinema",
+      "f3": "Large TV-friendly interface",
+      "f4": "Simple remote control"
+    },
+    "statsTitle": "Community Impact",
     "stats": {
-      "buffer": "Buffer Reduction",
-      "cdn": "CDN Cost Savings",
-      "engagement": "Engagement Increase",
-      "uptime": "Platform Uptime"
+      "families": "Families Connected",
+      "hours": "Hours Watched Monthly",
+      "satisfaction": "Customer Satisfaction",
+      "support": "Response Time"
     },
-    "ctaTitle": "Ready to Transform Your Streaming?",
-    "ctaSubtitle": "Let's discuss how we can optimize your platform",
-    "ctaButton": "Contact Us"
+    "ctaTitle": "Join Thousands of Israeli Families",
+    "ctaSubtitle": "Start streaming Israel today - 7 days free",
+    "ctaButton": "Start Free Trial"
+  },
+  "demoPage": {
+    "title": "See",
+    "titleHighlight": "Bayit Plus in Action",
+    "subtitle": "Experience how Bayit Plus brings Israel to your living room",
+    "scheduleCta": "Start Free Trial",
+    "overviewTitle": "Welcome to Bayit Plus",
+    "overviewSubtitle": "Your home for Israeli content worldwide",
+    "aiDemoTitle": "AI Assistant Demo",
+    "aiDemoSubtitle": "Search in Hebrew, find instantly with Claude AI",
+    "voiceTitle": "Voice Search",
+    "voiceSubtitle": "Talk naturally in Hebrew - our AI understands you",
+    "platformsTitle": "Available On All Your Devices",
+    "sections": {
+      "overview": {
+        "title": "Product Overview",
+        "description": "Watch the full Bayit Plus experience",
+        "f1": "500+ Israeli movies and shows",
+        "f2": "15+ live Israeli TV channels",
+        "f3": "20+ Israeli radio stations",
+        "f4": "Hebrew podcasts library"
+      },
+      "ai": {
+        "title": "AI Assistant",
+        "description": "See how our Hebrew AI helps you find content",
+        "f1": "Natural Hebrew conversations",
+        "f2": "Smart content recommendations",
+        "f3": "Understand context and intent",
+        "f4": "Works with voice or text"
+      },
+      "voice": {
+        "title": "Voice Interaction",
+        "description": "Talk to Bayit Plus in Hebrew",
+        "f1": "Voice search in Hebrew",
+        "f2": "Natural language understanding",
+        "f3": "Quick content discovery",
+        "f4": "Hands-free control"
+      }
+    },
+    "ctaTitle": "Ready to Try Bayit Plus?",
+    "ctaSubtitle": "Start your 7-day free trial - no credit card required",
+    "ctaButton": "Start Free Trial"
+  },
+  "contactPage": {
+    "title": "Get Support",
+    "subtitle": "We're here to help with your Bayit Plus subscription",
+    "formTitle": "How Can We Help?",
+    "infoTitle": "Contact Information",
+    "form": {
+      "name": "Your Name",
+      "email": "Email Address",
+      "helpType": "What do you need help with?",
+      "selectHelpType": "Select a topic",
+      "subscribe": "Start a subscription",
+      "trial": "Free trial questions",
+      "support": "Technical support",
+      "billing": "Billing questions",
+      "feedback": "Feedback or suggestions",
+      "currentProvider": "Currently watching Israeli content via",
+      "selectProvider": "Select your current method",
+      "none": "Not watching Israeli content yet",
+      "satellite": "Satellite (Dish, etc.)",
+      "iptv": "IPTV service",
+      "youtube": "YouTube channels",
+      "other": "Other method",
+      "message": "Your Message",
+      "messagePlaceholder": "Tell us how we can help you..."
+    },
+    "submit": "Send Message",
+    "sending": "Sending...",
+    "success": "Thank you! We'll respond within 24 hours.",
+    "error": "Something went wrong. Please try again or email us at support@bayitplus.com",
+    "rateLimited": "Too many requests. Please try again in {seconds} seconds.",
+    "whatsappTitle": "Prefer WhatsApp?",
+    "whatsappSubtitle": "Get instant support via WhatsApp",
+    "whatsappCta": "Chat on WhatsApp",
+    "emailTitle": "Email Us",
+    "emailSubtitle": "support@bayitplus.com",
+    "hoursTitle": "Support Hours",
+    "hoursSubtitle": "Sunday-Thursday: 9am-6pm EST"
   }
 }

@@ -12,3 +12,5 @@ export { GlassPanel } from './GlassPanel';
 export { HeroSection } from './HeroSection';
 export { LanguageSelector } from './LanguageSelector';
 export { NotFoundPage } from './NotFoundPage';
+export { PlatformGrid } from './PlatformGrid';
+export { VideoDemo } from './VideoDemo';

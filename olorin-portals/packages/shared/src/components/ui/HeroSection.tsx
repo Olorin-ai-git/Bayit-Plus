@@ -48,18 +48,92 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   secondaryCTA,
   icon,
   backgroundPattern = 'gradient',
+  backgroundVideo,
   children,
 }) => {
+  const [isTvOS, setIsTvOS] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    // Detect platform and preferences
+    const userAgent = navigator.userAgent;
+    setIsTvOS(/AppleTV|tvOS/.test(userAgent));
+    setIsMobile(window.innerWidth < 768);
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const backgroundClasses = {
     circuit: 'wizard-gradient-bg tech-circuit-bg',
     particles: 'wizard-gradient-bg wizard-particles',
     gradient: 'wizard-gradient-bg',
+    video: '',
     none: '',
   };
 
+  const shouldShowVideo =
+    backgroundPattern === 'video' &&
+    backgroundVideo &&
+    !isTvOS &&
+    !isMobile &&
+    !prefersReducedMotion;
+
   return (
     <section className={`${backgroundClasses[backgroundPattern]} py-20 md:py-32 relative overflow-hidden`}>
-      <div className="wizard-container">
+      {/* Video Background */}
+      {backgroundPattern === 'video' && backgroundVideo && (
+        <div className="absolute inset-0 z-0">
+          {shouldShowVideo ? (
+            <>
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                poster={backgroundVideo.posterSrc}
+                className="w-full h-full object-cover"
+                aria-hidden="true"
+              >
+                <source src={backgroundVideo.src} type="video/webm" />
+                {backgroundVideo.captionsSrc && (
+                  <track
+                    kind="captions"
+                    src={backgroundVideo.captionsSrc}
+                    srcLang="he"
+                    label="עברית"
+                  />
+                )}
+              </video>
+              <div className={`absolute inset-0 ${glassTokens.layers.hero}`} />
+            </>
+          ) : (
+            <>
+              <img
+                src={backgroundVideo.posterSrc}
+                alt=""
+                className="w-full h-full object-cover"
+                aria-hidden="true"
+              />
+              <div
+                className={`absolute inset-0 ${
+                  isTvOS ? glassTokens.layers.tvos : glassTokens.layers.hero
+                }`}
+              />
+            </>
+          )}
+        </div>
+      )}
+
+      <div className="wizard-container relative z-10">
         <div className="text-center max-w-4xl mx-auto">
           {/* Hero Icon */}
           {icon && (
