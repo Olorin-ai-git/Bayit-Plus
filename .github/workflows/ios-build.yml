@@ -1,0 +1,251 @@
+name: iOS Build & Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'testflight'
+        type: choice
+        options:
+          - testflight
+          - production
+      build_number:
+        description: 'Build number (optional, auto-increments if empty)'
+        required: false
+        type: string
+
+env:
+  NODE_VERSION: '20'
+  XCODE_VERSION: '15.4'
+  BUNDLE_ID: 'olorin.media.bayitplus'
+  SCHEME: 'BayitPlus'
+  TEAM_ID: '963B7732N5'
+
+jobs:
+  build-ios:
+    name: Build iOS App
+    runs-on: macos-14
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Select Xcode Version
+        run: sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: mobile-app/ios
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: mobile-app/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('mobile-app/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Build shared packages
+        run: npm run build:packages
+
+      - name: Install mobile-app dependencies
+        working-directory: mobile-app
+        run: npm ci
+
+      - name: Install CocoaPods dependencies
+        working-directory: mobile-app/ios
+        run: pod install
+
+      - name: Import Distribution Certificate
+        env:
+          IOS_DISTRIBUTION_CERT_P12: ${{ secrets.IOS_DISTRIBUTION_CERT_P12 }}
+          IOS_DISTRIBUTION_CERT_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERT_PASSWORD }}
+        run: |
+          # Create a temporary keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
+
+          # Create keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # Import certificate
+          CERT_PATH=$RUNNER_TEMP/distribution_certificate.p12
+          echo -n "$IOS_DISTRIBUTION_CERT_P12" | base64 --decode -o $CERT_PATH
+          security import $CERT_PATH -P "$IOS_DISTRIBUTION_CERT_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          # Allow codesign to access keychain
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
+          echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> $GITHUB_ENV
+
+      - name: Install Provisioning Profile
+        env:
+          IOS_PROVISIONING_PROFILE: ${{ secrets.IOS_PROVISIONING_PROFILE }}
+        run: |
+          PROFILE_PATH=$RUNNER_TEMP/distribution.mobileprovision
+          echo -n "$IOS_PROVISIONING_PROFILE" | base64 --decode -o $PROFILE_PATH
+
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PROFILE_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
+
+          # Extract profile name for reference
+          PROFILE_UUID=$(security cms -D -i $PROFILE_PATH | grep -A1 UUID | tail -1 | sed 's/.*<string>\(.*\)<\/string>.*/\1/')
+          mv ~/Library/MobileDevice/Provisioning\ Profiles/distribution.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.mobileprovision
+
+          echo "PROVISIONING_PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
+
+      - name: Calculate Build Number
+        id: build_number
+        run: |
+          if [ -n "${{ github.event.inputs.build_number }}" ]; then
+            BUILD_NUMBER="${{ github.event.inputs.build_number }}"
+          else
+            BUILD_NUMBER=$(date +%Y%m%d%H%M)
+          fi
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+          echo "Using build number: $BUILD_NUMBER"
+
+      - name: Update Build Number
+        working-directory: mobile-app/ios
+        run: |
+          agvtool new-version -all ${{ steps.build_number.outputs.BUILD_NUMBER }}
+
+      - name: Create Sentry DSN Config
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            echo "SENTRY_DSN_RELEASE=$SENTRY_DSN" >> $GITHUB_ENV
+          else
+            echo "SENTRY_DSN_DEBUG=$SENTRY_DSN" >> $GITHUB_ENV
+          fi
+
+      - name: Archive iOS App
+        working-directory: mobile-app/ios
+        env:
+          IOS_PROVISIONING_PROFILE: ${{ env.PROVISIONING_PROFILE_UUID }}
+        run: |
+          xcodebuild archive \
+            -workspace BayitPlus.xcworkspace \
+            -scheme ${{ env.SCHEME }} \
+            -configuration Release \
+            -archivePath $RUNNER_TEMP/BayitPlus.xcarchive \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="iPhone Distribution" \
+            DEVELOPMENT_TEAM=${{ env.TEAM_ID }} \
+            PROVISIONING_PROFILE_SPECIFIER="$IOS_PROVISIONING_PROFILE" \
+            OTHER_CODE_SIGN_FLAGS="--keychain ${{ env.KEYCHAIN_PATH }}" \
+            | xcpretty
+
+      - name: Export IPA
+        working-directory: mobile-app/ios
+        run: |
+          # Create export options with actual profile UUID
+          cat > $RUNNER_TEMP/ExportOptions.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>app-store</string>
+              <key>teamID</key>
+              <string>${{ env.TEAM_ID }}</string>
+              <key>uploadBitcode</key>
+              <false/>
+              <key>uploadSymbols</key>
+              <true/>
+              <key>signingStyle</key>
+              <string>manual</string>
+              <key>signingCertificate</key>
+              <string>iPhone Distribution</string>
+              <key>provisioningProfiles</key>
+              <dict>
+                  <key>${{ env.BUNDLE_ID }}</key>
+                  <string>${{ env.PROVISIONING_PROFILE_UUID }}</string>
+              </dict>
+          </dict>
+          </plist>
+          EOF
+
+          xcodebuild -exportArchive \
+            -archivePath $RUNNER_TEMP/BayitPlus.xcarchive \
+            -exportPath $RUNNER_TEMP/build \
+            -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist \
+            | xcpretty
+
+      - name: Verify IPA
+        run: |
+          IPA_PATH="$RUNNER_TEMP/build/BayitPlus.ipa"
+          if [ -f "$IPA_PATH" ]; then
+            echo "IPA file created successfully"
+            ls -la "$IPA_PATH"
+          else
+            echo "IPA file not found!"
+            exit 1
+          fi
+
+      - name: Upload to TestFlight
+        if: success()
+        env:
+          APP_STORE_API_KEY_ID: ${{ secrets.APP_STORE_API_KEY_ID }}
+          APP_STORE_API_ISSUER: ${{ secrets.APP_STORE_API_ISSUER }}
+          APP_STORE_API_KEY: ${{ secrets.APP_STORE_API_KEY }}
+        run: |
+          # Create API key file
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo -n "$APP_STORE_API_KEY" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_$APP_STORE_API_KEY_ID.p8
+
+          xcrun altool --upload-app \
+            --type ios \
+            --file "$RUNNER_TEMP/build/BayitPlus.ipa" \
+            --apiKey $APP_STORE_API_KEY_ID \
+            --apiIssuer $APP_STORE_API_ISSUER
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-build-${{ steps.build_number.outputs.BUILD_NUMBER }}
+          path: |
+            ${{ runner.temp }}/build/*.ipa
+            ${{ runner.temp }}/BayitPlus.xcarchive
+          retention-days: 30
+
+      - name: Cleanup Keychain
+        if: always()
+        run: |
+          if [ -n "${{ env.KEYCHAIN_PATH }}" ]; then
+            security delete-keychain ${{ env.KEYCHAIN_PATH }} || true
+          fi
+
+      - name: Notify Success
+        if: success()
+        run: |
+          echo "::notice::iOS build ${{ steps.build_number.outputs.BUILD_NUMBER }} uploaded to TestFlight successfully!"
+
+      - name: Notify Failure
+        if: failure()
+        run: |
+          echo "::error::iOS build failed. Check the logs for details."

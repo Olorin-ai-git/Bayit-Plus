@@ -1,0 +1,13 @@
+// Debug Configuration for BayitPlus iOS
+// Environment: Development
+
+// Sentry Configuration
+// Uses environment variable SENTRY_DSN_DEBUG if set, otherwise falls back to this value
+SENTRY_DSN = https:/$()/cf75c674a6980b83e7eed8ee5e227a2a@o4510740497367040.ingest.us.sentry.io/4510740503265280
+SENTRY_ENVIRONMENT = development
+
+// API Configuration
+API_BASE_URL = https:/$()/api-staging.bayitplus.com
+
+// Feature Flags
+ENABLE_DEBUG_LOGGING = YES
