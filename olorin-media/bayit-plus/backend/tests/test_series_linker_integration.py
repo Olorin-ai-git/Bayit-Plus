@@ -20,7 +20,7 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.core.config import settings
-from app.models.content import Content, ContentType, TVSeries
+from app.models.content import Content
 from app.services.series_linker_service import (
     DeduplicationResult,
     DuplicateGroup,
@@ -43,7 +43,6 @@ async def series_linker_db_client():
         database=client[test_db_name],
         document_models=[
             Content,
-            TVSeries,
         ],
     )
 
@@ -57,17 +56,18 @@ async def series_linker_db_client():
 @pytest_asyncio.fixture
 async def sample_series(series_linker_db_client):
     """Create a sample TV series for testing."""
-    series = TVSeries(
+    series = Content(
         title="Breaking Bad",
         title_en="Breaking Bad",
         description="Crime drama series",
         description_en="Crime drama series",
-        content_type=ContentType.SERIES,
+        content_type="series",
         genres=["Drama", "Crime"],
         year=2008,
         rating=9.5,
-        season_count=5,
-        published=True,
+        is_series=True,
+        category_id="test_series_category",
+        stream_url="https://test.example.com/series/stream.m3u8",
     )
     await series.insert()
     return series
@@ -80,13 +80,14 @@ async def sample_episode(series_linker_db_client, sample_series):
         title="Pilot",
         title_en="Pilot",
         description="First episode",
-        content_type=ContentType.EPISODE,
+        content_type="episode",
         genres=["Drama"],
         year=2008,
         rating=9.0,
-        published=True,
         season=1,
         episode_number=1,
+        category_id="test_episode_category",
+        stream_url="https://test.example.com/episode/stream.m3u8",
         # Note: no series_id set
     )
     await episode.insert()
@@ -102,15 +103,16 @@ async def sample_duplicate_episodes(series_linker_db_client, sample_series):
             title=f"Season 1 Episode 1 - Variant {i+1}",
             title_en=f"Season 1 Episode 1 - Variant {i+1}",
             description="Duplicate episode",
-            content_type=ContentType.EPISODE,
+            content_type="episode",
             genres=["Drama"],
             year=2008,
             rating=9.0,
-            published=True,
             season=1,
             episode_number=1,
             series_id=str(sample_series.id),
-            duration_minutes=50 + i,  # Different durations
+            duration_minutes=50 + i,
+            category_id="test_episode_category",
+            stream_url=f"https://test.example.com/episode{i}/stream.m3u8",
         )
         await episode.insert()
         episodes.append(episode)
@@ -262,30 +264,34 @@ async def test_find_unlinked_episodes(series_linker_service, series_linker_db_cl
     unlinked = Content(
         title="Unlinked Episode",
         title_en="Unlinked Episode",
-        content_type=ContentType.EPISODE,
+        content_type="episode",
         genres=["Drama"],
         year=2020,
-        published=True,
+        category_id="test_category",
+        stream_url="https://test.example.com/unlinked/stream.m3u8",
     )
     await unlinked.insert()
 
-    series = TVSeries(
+    series = Content(
         title="Test Series",
         title_en="Test Series",
-        content_type=ContentType.SERIES,
+        content_type="series",
         year=2020,
-        published=True,
+        is_series=True,
+        category_id="test_series_cat",
+        stream_url="https://test.example.com/series/stream.m3u8",
     )
     await series.insert()
 
     linked = Content(
         title="Linked Episode",
         title_en="Linked Episode",
-        content_type=ContentType.EPISODE,
+        content_type="episode",
         genres=["Drama"],
         year=2020,
         series_id=str(series.id),
-        published=True,
+        category_id="test_category",
+        stream_url="https://test.example.com/linked/stream.m3u8",
     )
     await linked.insert()
 
@@ -371,11 +377,12 @@ async def test_find_series_with_incomplete_episodes(series_linker_service, sampl
     incomplete = Content(
         title="Episode with missing info",
         title_en="Episode with missing info",
-        content_type=ContentType.EPISODE,
+        content_type="episode",
         genres=["Drama"],
         year=2020,
         series_id=str(sample_series.id),
-        published=True,
+        category_id="test_category",
+        stream_url="https://test.example.com/incomplete/stream.m3u8",
         # season and episode_number are None
     )
     await incomplete.insert()
