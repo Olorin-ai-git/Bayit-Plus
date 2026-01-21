@@ -1,0 +1,23 @@
+{
+  "name": "@olorin/media-subplatform",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Olorin Media & Streaming Subplatform - Bayit+ and Israeli Radio Manager",
+  "workspaces": [
+    "bayit-plus/web",
+    "bayit-plus/mobile-app",
+    "bayit-plus/tv-app",
+    "bayit-plus/tvos-app",
+    "bayit-plus/partner-portal",
+    "bayit-plus/backend",
+    "israeli-radio-manager/frontend",
+    "israeli-radio-manager/backend",
+    "israeli-radio-manager/marketing-portal"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test"
+  }
+}

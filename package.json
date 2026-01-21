@@ -1,19 +1,63 @@
 {
-  "name": "olorin",
-  "version": "1.0.0",
+  "name": "olorin-ecosystem",
+  "version": "2.0.0",
   "private": true,
+  "description": "Olorin.ai Unified Ecosystem - Fraud Detection, Media Streaming, Predictive Intelligence, and Marketing Portals",
+  "workspaces": [
+    "olorin-core/packages/*",
+    "olorin-fraud/frontend",
+    "olorin-fraud/backend",
+    "olorin-media/bayit-plus/web",
+    "olorin-media/bayit-plus/mobile-app",
+    "olorin-media/bayit-plus/tv-app",
+    "olorin-media/bayit-plus/tvos-app",
+    "olorin-media/bayit-plus/partner-portal",
+    "olorin-media/bayit-plus/backend",
+    "olorin-media/israeli-radio-manager/frontend",
+    "olorin-media/israeli-radio-manager/backend",
+    "olorin-media/israeli-radio-manager/marketing-portal",
+    "olorin-portals/*"
+  ],
   "scripts": {
-    "build": "cd olorin-front && npm install && npm run build",
-    "build:portal": "cd olorin-web-portal && npm ci && npm run build",
-    "install:front": "cd olorin-front && npm install",
-    "install:portal": "cd olorin-web-portal && npm install --legacy-peer-deps",
-    "start": "npm run olorin",
+    "build": "turbo run build",
+    "build:core": "turbo run build --filter=@olorin/*",
+    "build:fraud": "turbo run build --filter=./olorin-fraud/...",
+    "build:media": "turbo run build --filter=./olorin-media/...",
+    "build:portals": "turbo run build --filter=./olorin-portals/...",
+    "dev": "turbo run dev",
+    "dev:fraud": "turbo run dev --filter=./olorin-fraud/...",
+    "dev:media": "turbo run dev --filter=./olorin-media/...",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "type-check": "turbo run type-check",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "subtree:pull": "./scripts/sync-subtrees.sh pull",
+    "subtree:push": "./scripts/sync-subtrees.sh push",
     "olorin": "./scripts/development/start_olorin.sh"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
     "@types/node": "^24.10.0",
     "ts-node": "^10.9.2",
+    "turbo": "^2.5.0",
     "typescript": "^5.9.3"
-  }
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Olorin-ai-git/olorin.git"
+  },
+  "keywords": [
+    "olorin",
+    "ecosystem",
+    "fraud-detection",
+    "streaming",
+    "predictive-intelligence",
+    "monorepo"
+  ],
+  "author": "Olorin.ai",
+  "license": "UNLICENSED"
 }

@@ -1,0 +1,57 @@
+{
+  "name": "@olorin/shared-types",
+  "version": "2.0.0",
+  "description": "Olorin.ai Shared TypeScript Types - Interfaces, types, and RBAC definitions",
+  "license": "UNLICENSED",
+  "private": true,
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./rbac": {
+      "types": "./dist/rbac.d.ts",
+      "import": "./dist/rbac.mjs",
+      "require": "./dist/rbac.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.0"
+  },
+  "keywords": [
+    "typescript",
+    "types",
+    "interfaces",
+    "rbac",
+    "olorin",
+    "bayit-plus"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olorin-ai/olorin-ecosystem.git",
+    "directory": "olorin-core/packages/shared-types"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  }
+}

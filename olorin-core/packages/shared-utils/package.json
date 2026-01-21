@@ -1,0 +1,89 @@
+{
+  "name": "@olorin/shared-utils",
+  "version": "2.0.0",
+  "description": "Olorin.ai Shared Utilities - Formatters, RTL helpers, platform detection, and common utilities",
+  "license": "UNLICENSED",
+  "private": true,
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./formatters": {
+      "types": "./dist/formatters.d.ts",
+      "import": "./dist/formatters.mjs",
+      "require": "./dist/formatters.js"
+    },
+    "./rtl": {
+      "types": "./dist/rtlHelpers.d.ts",
+      "import": "./dist/rtlHelpers.mjs",
+      "require": "./dist/rtlHelpers.js"
+    },
+    "./platform": {
+      "types": "./dist/platform.d.ts",
+      "import": "./dist/platform.mjs",
+      "require": "./dist/platform.js"
+    },
+    "./logger": {
+      "types": "./dist/logger.d.ts",
+      "import": "./dist/logger.mjs",
+      "require": "./dist/logger.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-native": "^0.76.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.2.9",
+    "jest": "^29.7.0",
+    "react": "^18.3.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.0"
+  },
+  "keywords": [
+    "utilities",
+    "formatters",
+    "rtl",
+    "platform",
+    "olorin",
+    "bayit-plus"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olorin-ai/olorin-ecosystem.git",
+    "directory": "olorin-core/packages/shared-utils"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  }
+}
