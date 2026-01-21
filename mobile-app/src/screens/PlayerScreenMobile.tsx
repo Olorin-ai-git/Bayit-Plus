@@ -11,7 +11,7 @@
  */
 
 import React, { useState, useRef, useEffect } from "react";
-import { View, StyleSheet, Pressable, Text, Platform } from "react-native";
+import { View, Pressable, Text, Platform } from "react-native";
 import { useRoute, useNavigation, RouteProp } from "@react-navigation/native";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import Animated, {
@@ -62,7 +62,7 @@ import {
   Chapter,
 } from "../components/player";
 import { GlassView, GlassButton } from "@bayit/shared";
-import { spacing, colors, typography, touchTarget } from "../theme";
+import { colors } from "../theme";
 import type { RootStackParamList } from "../navigation/types";
 import {
   Play,
@@ -278,16 +278,18 @@ export const PlayerScreenMobile: React.FC = () => {
 
   return (
     <PanGestureHandler onGestureEvent={gestureHandler}>
-      <Animated.View style={[styles.container, animatedStyle]}>
+      <Animated.View className="flex-1 bg-black" style={animatedStyle}>
         {/* Video player - WebView for YouTube, native Video for other content */}
         {streamLoading ? (
-          <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>{t("player.loading")}</Text>
+          <View className="absolute inset-0 justify-center items-center bg-black">
+            <Text style={{ color: colors.text }} className="text-base">
+              {t("player.loading")}
+            </Text>
           </View>
         ) : isYouTube && youtubeEmbedUrl ? (
           <WebView
             source={{ uri: youtubeEmbedUrl }}
-            style={styles.video}
+            className="absolute inset-0"
             allowsFullscreenVideo={true}
             allowsInlineMediaPlayback
             mediaPlaybackRequiresUserAction={false}
@@ -312,7 +314,7 @@ export const PlayerScreenMobile: React.FC = () => {
                 streamUrl ||
                 `${API_BASE_URL.replace("/api/v1", "")}/stream/${id}`,
             }}
-            style={styles.video}
+            className="absolute inset-0"
             resizeMode="contain"
             paused={!isPlaying}
             playbackRate={playbackSpeed}
@@ -330,17 +332,17 @@ export const PlayerScreenMobile: React.FC = () => {
         {/* Controls layer with integrated tap handling */}
         {/* For YouTube content, only show top bar (title + close) since YouTube has its own controls */}
         {showControls ? (
-          <Pressable style={styles.controlsContainer} onPress={toggleControls}>
+          <Pressable className="absolute inset-0 justify-between" onPress={toggleControls}>
             {/* Prevent button presses from triggering toggle */}
             {/* Top bar - title and close */}
-            <View style={styles.topBar}>
-              <GlassView style={styles.topBarContent}>
-                <Text style={styles.title} numberOfLines={1}>
+            <View className="pt-8 px-6">
+              <GlassView className="flex-row items-center justify-between py-2 px-4">
+                <Text className="text-lg font-semibold flex-1" style={{ color: colors.text }} numberOfLines={1}>
                   {title}
                 </Text>
                 <Pressable
                   onPress={handleClose}
-                  style={styles.closeButton}
+                  className="w-11 h-11 justify-center items-center"
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
                   <X size={24} color={colors.text} strokeWidth={2.5} />
@@ -350,11 +352,11 @@ export const PlayerScreenMobile: React.FC = () => {
 
             {/* Center controls - play/pause (hidden for YouTube - it has its own controls) */}
             {!isYouTube && (
-              <View style={styles.centerControlsWrapper}>
-                <View style={styles.centerControls}>
+              <View className="flex-row justify-center items-center w-full relative">
+                <View className="flex-row justify-center items-center gap-8">
                   <Pressable
                     onPress={() => handleSeek(-10)}
-                    style={[styles.controlButton, styles.seekButton]}
+                    className="w-[60px] h-[60px] rounded-full bg-black/50 justify-center items-center"
                   >
                     <SkipBack
                       size={28}
@@ -365,7 +367,7 @@ export const PlayerScreenMobile: React.FC = () => {
 
                   <Pressable
                     onPress={handlePlayPause}
-                    style={[styles.controlButton, styles.playButton]}
+                    className="w-20 h-20 rounded-full bg-purple-500/90 justify-center items-center"
                   >
                     {isPlaying ? (
                       <Pause size={36} color={colors.text} fill={colors.text} />
@@ -381,7 +383,7 @@ export const PlayerScreenMobile: React.FC = () => {
 
                   <Pressable
                     onPress={() => handleSeek(10)}
-                    style={[styles.controlButton, styles.seekButton]}
+                    className="w-[60px] h-[60px] rounded-full bg-black/50 justify-center items-center"
                   >
                     <SkipForward
                       size={28}
@@ -395,7 +397,7 @@ export const PlayerScreenMobile: React.FC = () => {
                 {type !== "live" && (
                   <Pressable
                     onPress={handleRestart}
-                    style={[styles.controlButton, styles.restartButton]}
+                    className="absolute right-8 w-[60px] h-[60px] rounded-full bg-black/50 justify-center items-center"
                   >
                     <RotateCcw
                       size={24}
@@ -409,25 +411,26 @@ export const PlayerScreenMobile: React.FC = () => {
 
             {/* Bottom bar - progress and settings (hidden for YouTube) */}
             {!isYouTube && type !== "live" && (
-              <View style={styles.bottomBar}>
-                <GlassView style={styles.bottomBarContent}>
+              <View className="pb-8 px-6">
+                <GlassView className="py-4 px-6">
                   {/* Time */}
-                  <Text style={styles.timeText}>
+                  <Text className="text-xs mb-2" style={{ color: colors.text }}>
                     {formatTime(currentTime)} / {formatTime(duration)}
                   </Text>
 
                   {/* Progress bar with chapter markers */}
                   <View
-                    style={styles.progressBarContainer}
+                    className="h-1 bg-white/30 rounded mb-4 relative"
                     onLayout={(e) =>
                       setProgressBarWidth(e.nativeEvent.layout.width)
                     }
                   >
                     <View
-                      style={[
-                        styles.progressBar,
-                        { width: `${(currentTime / duration) * 100}%` },
-                      ]}
+                      className="h-full rounded"
+                      style={{
+                        width: `${(currentTime / duration) * 100}%`,
+                        backgroundColor: colors.primary,
+                      }}
                     />
                     {chapters.length > 0 && progressBarWidth > 0 && (
                       <ChapterMarkers
@@ -441,16 +444,16 @@ export const PlayerScreenMobile: React.FC = () => {
                   </View>
 
                   {/* Bottom buttons row */}
-                  <View style={styles.bottomButtonsRow}>
+                  <View className="flex-row justify-between items-center">
                     {/* Chapters button */}
                     {chapters.length > 0 && (
                       <Pressable
                         onPress={() => setChaptersVisible(true)}
-                        style={styles.bottomButton}
+                        className="flex-row items-center gap-1 py-1 px-2"
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                       >
                         <List size={20} color={colors.text} />
-                        <Text style={styles.bottomButtonText}>
+                        <Text className="text-xs" style={{ color: colors.text }}>
                           {t("player.chapters")} ({chapters.length})
                         </Text>
                       </Pressable>
@@ -459,7 +462,7 @@ export const PlayerScreenMobile: React.FC = () => {
                     {/* Settings button */}
                     <Pressable
                       onPress={() => setSettingsVisible(true)}
-                      style={styles.settingsButton}
+                      className="w-11 h-11 justify-center items-center"
                       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
                       <Settings size={24} color={colors.text} />
@@ -471,7 +474,7 @@ export const PlayerScreenMobile: React.FC = () => {
           </Pressable>
         ) : (
           /* Tap overlay when controls hidden */
-          <Pressable style={styles.overlay} onPress={toggleControls} />
+          <Pressable className="absolute inset-0" onPress={toggleControls} />
         )}
 
         {/* Chapters bottom sheet */}
@@ -480,7 +483,9 @@ export const PlayerScreenMobile: React.FC = () => {
           onClose={() => setChaptersVisible(false)}
           height={450}
         >
-          <Text style={styles.sheetTitle}>{t("player.chapters")}</Text>
+          <Text className="text-xl font-semibold mb-6" style={{ color: colors.text }}>
+            {t("player.chapters")}
+          </Text>
           <ChapterListMobile
             chapters={chapters}
             currentTime={currentTime}
@@ -496,18 +501,22 @@ export const PlayerScreenMobile: React.FC = () => {
           onClose={() => setSettingsVisible(false)}
           height={300}
         >
-          <Text style={styles.sheetTitle}>{t("player.settings")}</Text>
+          <Text className="text-xl font-semibold mb-6" style={{ color: colors.text }}>
+            {t("player.settings")}
+          </Text>
 
           {/* Quality selection */}
-          <View style={styles.settingSection}>
-            <Text style={styles.settingLabel}>{t("player.quality")}</Text>
-            <View style={styles.settingOptions}>
+          <View className="mb-6">
+            <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>
+              {t("player.quality")}
+            </Text>
+            <View className="flex-row gap-2 flex-wrap">
               {["auto", "1080p", "720p", "480p"].map((q) => (
                 <GlassButton
                   key={q}
                   variant={quality === q ? "primary" : "secondary"}
                   onPress={() => setQuality(q)}
-                  style={styles.settingOption}
+                  className="min-w-[70px]"
                 >
                   {q}
                 </GlassButton>
@@ -516,14 +525,16 @@ export const PlayerScreenMobile: React.FC = () => {
           </View>
 
           {/* Subtitles */}
-          <View style={styles.settingSection}>
-            <Text style={styles.settingLabel}>{t("player.subtitles")}</Text>
-            <View style={styles.settingOptions}>
+          <View className="mb-6">
+            <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>
+              {t("player.subtitles")}
+            </Text>
+            <View className="flex-row gap-2 flex-wrap">
               <GlassButton
                 key="off"
                 variant={subtitles === "off" ? "primary" : "secondary"}
                 onPress={() => setSubtitles("off")}
-                style={styles.settingOption}
+                className="min-w-[70px]"
               >
                 {t("player.subtitlesOff")}
               </GlassButton>
@@ -534,7 +545,7 @@ export const PlayerScreenMobile: React.FC = () => {
                     subtitles === track.language ? "primary" : "secondary"
                   }
                   onPress={() => setSubtitles(track.language)}
-                  style={styles.settingOption}
+                  className="min-w-[70px]"
                 >
                   {track.language_name}
                 </GlassButton>
@@ -543,15 +554,17 @@ export const PlayerScreenMobile: React.FC = () => {
           </View>
 
           {/* Playback speed */}
-          <View style={styles.settingSection}>
-            <Text style={styles.settingLabel}>{t("player.speed")}</Text>
-            <View style={styles.settingOptions}>
+          <View className="mb-6">
+            <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>
+              {t("player.speed")}
+            </Text>
+            <View className="flex-row gap-2 flex-wrap">
               {[0.5, 1.0, 1.5, 2.0].map((speed) => (
                 <GlassButton
                   key={speed}
                   variant={playbackSpeed === speed ? "primary" : "secondary"}
                   onPress={() => setPlaybackSpeed(speed)}
-                  style={styles.settingOption}
+                  className="min-w-[70px]"
                 >
                   {speed}x
                 </GlassButton>
@@ -564,155 +577,4 @@ export const PlayerScreenMobile: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#000",
-  },
-  video: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  loadingContainer: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#000",
-  },
-  loadingText: {
-    ...typography.body,
-    color: colors.text,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  controlsContainer: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: "space-between",
-  },
-  topBar: {
-    paddingTop: spacing.xl,
-    paddingHorizontal: spacing.lg,
-  },
-  topBarContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  title: {
-    ...typography.h4,
-    color: colors.text,
-    flex: 1,
-  },
-  closeButton: {
-    width: touchTarget.minWidth,
-    height: touchTarget.minHeight,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  centerControlsWrapper: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    position: "relative",
-  },
-  centerControls: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: spacing.xl,
-  },
-  restartButton: {
-    position: "absolute",
-    right: spacing.xl,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  controlButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  playButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "rgba(168, 85, 247, 0.9)",
-  },
-  seekButton: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  bottomBar: {
-    paddingBottom: spacing.xl,
-    paddingHorizontal: spacing.lg,
-  },
-  bottomBarContent: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-  },
-  timeText: {
-    ...typography.caption,
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  progressBarContainer: {
-    height: 4,
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
-    borderRadius: 2,
-    marginBottom: spacing.md,
-    position: "relative",
-  },
-  progressBar: {
-    height: "100%",
-    backgroundColor: colors.primary,
-    borderRadius: 2,
-  },
-  bottomButtonsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  bottomButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.xs,
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.sm,
-  },
-  bottomButtonText: {
-    ...typography.caption,
-    color: colors.text,
-    fontSize: 12,
-  },
-  settingsButton: {
-    width: touchTarget.minWidth,
-    height: touchTarget.minHeight,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  sheetTitle: {
-    ...typography.h3,
-    color: colors.text,
-    marginBottom: spacing.lg,
-  },
-  settingSection: {
-    marginBottom: spacing.lg,
-  },
-  settingLabel: {
-    ...typography.label,
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-  },
-  settingOptions: {
-    flexDirection: "row",
-    gap: spacing.sm,
-    flexWrap: "wrap",
-  },
-  settingOption: {
-    minWidth: 70,
-  },
-});
+export default PlayerScreenMobile;
