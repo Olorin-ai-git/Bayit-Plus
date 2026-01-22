@@ -283,7 +283,7 @@ class DatabaseConfig(BaseSettings):
 
     mongodb_url: Optional[str] = Field(
         default=None,
-        description="MongoDB connection URL for Olorin database. If not set, uses main MONGODB_URL.",
+        description="MongoDB connection URL for Olorin database. If not set, uses main MONGODB_URI.",
     )
     mongodb_db_name: str = Field(
         default="olorin_platform",

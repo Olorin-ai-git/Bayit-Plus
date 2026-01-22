@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
 
     # MongoDB (REQUIRED - no defaults for connection strings)
-    MONGODB_URL: str  # Required, must be set via environment
+    MONGODB_URI: str  # Required, must be set via environment
     MONGODB_DB_NAME: str = "bayit_plus"
 
     @field_validator("SECRET_KEY")
@@ -48,16 +48,16 @@ class Settings(BaseSettings):
             )
         return v
 
-    @field_validator("MONGODB_URL")
+    @field_validator("MONGODB_URI")
     @classmethod
-    def validate_mongodb_url(cls, v: str) -> str:
-        """Validate MongoDB URL is not a placeholder.
+    def validate_mongodb_uri(cls, v: str) -> str:
+        """Validate MongoDB URI is not a placeholder.
 
         Allows localhost in CI/test environments (when DEBUG=true, CI=true, or ENVIRONMENT=test).
         """
         if not v:
             raise ValueError(
-                "MONGODB_URL must be configured. Set it to your MongoDB Atlas or server URL."
+                "MONGODB_URI must be configured. Set it to your MongoDB Atlas or server URL."
             )
         # Allow localhost in CI/test environments
         is_test_env = (
@@ -67,7 +67,7 @@ class Settings(BaseSettings):
         )
         if v == "mongodb://localhost:27017" and not is_test_env:
             raise ValueError(
-                "MONGODB_URL must be configured. Set it to your MongoDB Atlas or server URL."
+                "MONGODB_URI must be configured. Set it to your MongoDB Atlas or server URL."
             )
         return v
 
@@ -513,6 +513,18 @@ class Settings(BaseSettings):
             for origin in self.WEBAUTHN_ORIGIN.split(",")
             if origin.strip()
         ]
+
+    @property
+    def MONGODB_URL(self) -> str:
+        """DEPRECATED: Use MONGODB_URI instead (centralized olorin-shared naming convention)."""
+        import warnings
+
+        warnings.warn(
+            "MONGODB_URL is deprecated. Use MONGODB_URI instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.MONGODB_URI
 
     # ============================================
     # BACKWARD-COMPATIBLE PROPERTIES FOR OLORIN CONFIG
