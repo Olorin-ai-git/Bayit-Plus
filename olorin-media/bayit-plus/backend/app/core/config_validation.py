@@ -36,7 +36,7 @@ class FieldRequirement(NamedTuple):
 REQUIRED_FIELDS: list[FieldRequirement] = [
     # Security (CRITICAL)
     FieldRequirement("SECRET_KEY", "JWT signing key (min 32 chars)", True, "security"),
-    FieldRequirement("MONGODB_URL", "MongoDB connection string", True, "database"),
+    FieldRequirement("MONGODB_URI", "MongoDB connection string", True, "database"),
     # Google Cloud (Required for production)
     FieldRequirement("GCP_PROJECT_ID", "Google Cloud Project ID", True, "gcp"),
     # Frontend URLs (Required for email/verification)

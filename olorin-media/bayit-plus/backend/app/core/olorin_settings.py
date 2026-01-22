@@ -25,7 +25,7 @@ class OlorinMinimalSettings(BaseSettings):
     LOG_LEVEL: str = Field(default="INFO")
 
     # Database
-    MONGODB_URL: str = Field(...)  # Required
+    MONGODB_URI: str = Field(...)  # Required
     MONGODB_DB_NAME: str = Field(default="bayit_plus")
 
     # API Keys
@@ -62,6 +62,18 @@ class OlorinMinimalSettings(BaseSettings):
 
     # CORS
     BACKEND_CORS_ORIGINS: str = Field(default="*")
+
+    @property
+    def MONGODB_URL(self) -> str:
+        """DEPRECATED: Use MONGODB_URI instead (centralized olorin-shared naming convention)."""
+        import warnings
+
+        warnings.warn(
+            "MONGODB_URL is deprecated. Use MONGODB_URI instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.MONGODB_URI
 
 
 # Singleton instance

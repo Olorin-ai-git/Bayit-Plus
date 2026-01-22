@@ -44,7 +44,7 @@ async def connect_to_olorin_mongo() -> None:
         return
 
     # Determine MongoDB URL
-    mongodb_url = settings.olorin.database.mongodb_url or settings.MONGODB_URL
+    mongodb_url = settings.olorin.database.mongodb_url or settings.MONGODB_URI
 
     # Create Olorin database client with connection pool configuration
     olorin_db.client = AsyncIOMotorClient(
@@ -76,10 +76,10 @@ async def connect_to_olorin_mongo() -> None:
     )
 
     # Maintain reference to Bayit+ database for Content access
-    # Use main MONGODB_URL for Bayit+ database connection
-    if mongodb_url != settings.MONGODB_URL:
+    # Use main MONGODB_URI for Bayit+ database connection
+    if mongodb_url != settings.MONGODB_URI:
         olorin_db.bayit_client = AsyncIOMotorClient(
-            settings.MONGODB_URL,
+            settings.MONGODB_URI,
             maxPoolSize=50,  # Maximum connections in pool
             minPoolSize=10,  # Minimum connections to maintain
             maxIdleTimeMS=30000,  # Close idle connections after 30s

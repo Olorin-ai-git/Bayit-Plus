@@ -10,10 +10,23 @@ SYSTEM MANDATE Compliance:
 
 import logging
 import os
+from pathlib import Path
 from typing import Optional
 
+from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pymongo.errors import ConfigurationError, ConnectionFailure
+
+# Load .env file from common locations
+# This ensures environment variables are available when using os.getenv()
+for env_path in [
+    Path.cwd() / ".env",  # Current working directory
+    Path.cwd() / "backend" / ".env",  # Backend subdirectory
+    Path(__file__).parent.parent.parent.parent.parent / "backend" / ".env",  # Relative to package
+]:
+    if env_path.exists():
+        load_dotenv(env_path)
+        break
 
 logger = logging.getLogger(__name__)
 
