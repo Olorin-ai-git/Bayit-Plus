@@ -30,7 +30,7 @@ export function maskPII(cv: ParsedCV, settings: PrivacySettings): ParsedCV {
 
   // Mask company names if requested
   if (settings.maskingRules.companies && masked.experience) {
-    masked.experience = masked.experience.map(exp => ({
+    masked.experience = masked.experience.map((exp: any) => ({
       ...exp,
       company: maskCompany(exp.company)
     }));
@@ -39,7 +39,7 @@ export function maskPII(cv: ParsedCV, settings: PrivacySettings): ParsedCV {
   // Mask dates if requested
   if (settings.maskingRules.dates) {
     if (masked.experience) {
-      masked.experience = masked.experience.map(exp => ({
+      masked.experience = masked.experience.map((exp: any) => ({
         ...exp,
         startDate: maskDate(exp.startDate),
         endDate: exp.endDate ? maskDate(exp.endDate) : undefined,
@@ -48,7 +48,7 @@ export function maskPII(cv: ParsedCV, settings: PrivacySettings): ParsedCV {
     }
 
     if (masked.education) {
-      masked.education = masked.education.map(edu => ({
+      masked.education = masked.education.map((edu: any) => ({
         ...edu,
         year: maskYear(edu.year)
       }));

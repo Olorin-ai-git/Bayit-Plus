@@ -64,13 +64,12 @@ if (!admin.apps.length) {
 // Calendar and Meeting Functions
 // export { bookMeeting } from './scripts/functions/bookMeeting'; // DISABLED FOR DEPLOYMENT
 // Calendar integration functions - DISABLED FOR DEPLOYMENT
-/* 
-  */
+/* DISABLED - packages deleted
 export {
   generateCalendarEvents,
-  ... calendar functions temporarily disabled for deployment
+  // ... calendar functions temporarily disabled for deployment
 } from './scripts/functions/calendarIntegration';
-/*  */
+*/
 
 // ============================================================================
 // CV PROCESSING FUNCTIONS
@@ -78,22 +77,22 @@ export {
 // All CV processing, analysis, and enhancement functions
 
 // CV Processing Functions - Migrated to submodule (T041-T044)
+/* DISABLED - packages deleted
 export { uploadCV } from '@cvplus/processing/backend/functions/cv/upload';
 export { uploadCVFromUrl } from '@cvplus/processing/backend/functions/cv/url';
 export { getCVStatus } from '@cvplus/processing/backend/functions/cv/status';
 export { downloadProcessedCV } from '@cvplus/processing/backend/functions/cv/download';
+*/
 
 // Existing CV Processing Functions from submodules
-// CV Processing Functions from submodules - TEMPORARILY DISABLED FOR DEPLOYMENT
-// TODO: Re-enable after submodule dependencies are properly set up
-/* 
-  */
+// CV Processing Functions from submodules - DISABLED - packages deleted
+/* DISABLED - packages deleted
 export {
   processCV,
   generateCV,
-  ... other functions temporarily disabled for deployment
+  // ... other functions temporarily disabled for deployment
 } from '@cvplus/processing/backend';
-/*  */
+*/
 
 // ============================================================================
 // MULTIMEDIA FUNCTIONS
@@ -101,18 +100,18 @@ export {
 // Media generation, podcasts, videos, QR codes, and multimedia processing
 
 // Multimedia Functions - Migrated to submodule (T045-T046)
+/* DISABLED - packages deleted
 export { generatePodcast } from '@cvplus/multimedia/backend/functions/multimedia/podcast';
 export { generateVideo } from '@cvplus/multimedia/backend/functions/multimedia/video';
+*/
 
-// Multimedia Functions from submodules - TEMPORARILY DISABLED FOR DEPLOYMENT
-// TODO: Re-enable after submodule dependencies are properly set up
-/* 
-  */
+// Multimedia Functions from submodules - DISABLED - packages deleted
+/* DISABLED - packages deleted
 export {
   podcastStatus,
-  ... other multimedia functions temporarily disabled for deployment
+  // ... other multimedia functions temporarily disabled for deployment
 } from '@cvplus/multimedia/backend';
-/*  */
+*/
 
 // ============================================================================
 // ANALYTICS FUNCTIONS
@@ -120,6 +119,7 @@ export {
 // Analytics, metrics, reporting, and business intelligence
 
 // Analytics Functions - Migrated to submodule (T051)
+/* DISABLED - packages deleted
 export { getAnalytics } from '@cvplus/analytics/backend/functions/analytics/get';
 
 // Existing Analytics Functions from submodules
@@ -147,26 +147,27 @@ export {
   validateReportConfig,
   analyticsHealthCheck
 } from '@cvplus/analytics';
+*/
 
 // ============================================================================
 // WORKFLOW FUNCTIONS
 // ============================================================================
 // Job monitoring, templates, feature management, and workflow orchestration
 
-// Workflow functions - TEMPORARILY DISABLED FOR DEPLOYMENT
-/* 
-  */
+// Workflow functions - DISABLED - packages deleted
+/* DISABLED - packages deleted
 export {
   injectCompletedFeatures,
-  ... workflow functions disabled for deployment
+  // ... workflow functions disabled for deployment
 } from '@cvplus/workflow/backend';
-/*  */
+*/
 
 // ============================================================================
 // ADMIN FUNCTIONS
 // ============================================================================
 // Admin tools, user management, system health, and monitoring
 
+/* DISABLED - packages deleted
 export {
   getUserStats,
   getSystemHealth,
@@ -190,12 +191,14 @@ export {
   // testCorsCallable, // Fixed - using testCorsCall
   // validateCorsConfiguration // Fixed - function may not exist
 } from '@cvplus/admin/backend';
+*/
 
 // ============================================================================
 // PUBLIC PROFILES FUNCTIONS
 // ============================================================================
 // Public profiles, web portals, social integration, QR codes, and testimonials
 
+/* DISABLED - packages deleted
 // Public Profile Functions - Migrated to submodule (T047-T050)
 export { createPublicProfile } from '@cvplus/public-profiles/backend/functions/profile/create';
 export { viewPublicProfile } from '@cvplus/public-profiles/backend/functions/profile/view';
@@ -252,12 +255,14 @@ export {
   getQRAnalytics,
   getQRTemplates
 } from '@cvplus/public-profiles/backend';
+*/
 
 // ============================================================================
 // AUTHENTICATION FUNCTIONS
 // ============================================================================
 // Authentication, authorization, and user session management
 
+/* DISABLED - packages deleted
 export {
   testAuth,
   createSessionCheckpoint,
@@ -271,12 +276,14 @@ export {
   enhanceSessionWithCheckpoints,
   sessionHealthCheck
 } from '@cvplus/auth/backend';
+*/
 
 // ============================================================================
 // RECOMMENDATIONS FUNCTIONS
 // ============================================================================
 // AI-powered recommendations engine and improvement suggestions
 
+/* DISABLED - packages deleted
 export {
   getRecommendations,
   applyImprovements,
@@ -284,12 +291,14 @@ export {
   customizePlaceholders,
   recommendationsHealthCheck
 } from '@cvplus/recommendations/backend';
+*/
 
 // ============================================================================
 // ENHANCEMENTS FUNCTIONS
 // ============================================================================
 // CV enhancement features, calendar integration, and professional networking
 
+/* DISABLED - packages deleted
 export {
   processEnhancements,
   syncCalendar,
@@ -299,12 +308,14 @@ export {
   getCalendarData,
   enhancementsHealthCheck
 } from '@cvplus/enhancements/backend';
+*/
 
 // ============================================================================
 // PAYMENTS FUNCTIONS
 // ============================================================================
 // Payment processing, subscriptions, and billing management
 
+/* DISABLED - packages deleted
 export {
   confirmPayment,
   createCheckoutSession,
@@ -312,12 +323,14 @@ export {
   handleStripeWebhook,
   getUserSubscription
 } from '@cvplus/payments/backend';
+*/
 
 // ============================================================================
 // PREMIUM FUNCTIONS
 // ============================================================================
 // Premium features, enterprise functionality, and advanced analytics
 
+/* DISABLED - packages deleted
 export {
   getOptimizedPricing,
   createPricingTest,
@@ -340,20 +353,19 @@ export {
   getRoleTemplates,
   enterpriseHealthCheck
 } from '@cvplus/premium/backend';
+*/
 
 // ============================================================================
 // INTERNATIONALIZATION FUNCTIONS
 // ============================================================================
 // Translation services and multi-language support
 
-// I18n functions - TEMPORARILY DISABLED FOR DEPLOYMENT
-/* 
-  */
+/* DISABLED - packages deleted
 export {
   translateCV,
-  ... i18n functions disabled for deployment
+  // ... i18n functions disabled for deployment
 } from '@cvplus/i18n/backend';
-/*  */
+*/
 
 // ============================================================================
 // UTILITY FUNCTIONS

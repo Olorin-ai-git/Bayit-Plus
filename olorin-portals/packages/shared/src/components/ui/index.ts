@@ -22,3 +22,4 @@ export { VideoDemo } from './VideoDemo';
 export { VideoControls } from './VideoControls';
 export { AccessibleVideoPlayer } from './AccessibleVideoPlayer';
 export { VideoErrorBoundary } from './VideoErrorBoundary';
+export { ContentCarousel } from './ContentCarousel';

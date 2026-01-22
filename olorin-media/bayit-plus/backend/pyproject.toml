@@ -1,3 +1,6 @@
+[tool.poetry]
+package-mode = false
+
 [project]
 name = "bayit-plus-backend"
 version = "0.1.0"
@@ -52,13 +55,20 @@ dependencies = [
     "sentry-sdk[fastapi] (>=1.40.0,<2.0.0)",
     "webauthn (>=2.2.0,<3.0.0)",
     "pinecone-client (>=3.0.0,<4.0.0)",
-    "bayit-voice-pipeline @ file:///../packages/bayit-voice-pipeline",
-    "bayit-translation @ file:///../packages/bayit-translation",
-    "olorin-core @ file:///../packages/olorin-core",
-    "olorin-shared @ file:///../packages/olorin-shared",
-    "olorin-i18n @ file:///../packages/python/olorin-i18n"
+    "bayit-voice-pipeline",
+    "bayit-translation",
+    "olorin-core",
+    "olorin-shared",
+    "olorin-i18n"
 ]
 
+
+[tool.poetry.dependencies]
+bayit-voice-pipeline = { path = "../packages/bayit-voice-pipeline", develop = true }
+bayit-translation = { path = "../packages/bayit-translation", develop = true }
+olorin-core = { path = "../packages/olorin-core", develop = true }
+olorin-shared = { path = "../packages/olorin-shared", develop = true }
+olorin-i18n = { path = "../packages/python/olorin-i18n", develop = true }
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

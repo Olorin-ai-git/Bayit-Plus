@@ -340,7 +340,7 @@ optional = false
 python-versions = "^3.11"
 groups = ["main"]
 files = []
-develop = false
+develop = true
 
 [package.dependencies]
 anthropic = "^0.75.0"
@@ -360,7 +360,7 @@ optional = false
 python-versions = "^3.11"
 groups = ["main"]
 files = []
-develop = false
+develop = true
 
 [package.dependencies]
 httpx = "^0.28.0"
@@ -2765,7 +2765,7 @@ optional = false
 python-versions = "^3.11"
 groups = ["main"]
 files = []
-develop = false
+develop = true
 
 [package.dependencies]
 pydantic = "^2.12.0"
@@ -2782,7 +2782,7 @@ optional = false
 python-versions = ">=3.11,<3.14"
 groups = ["main"]
 files = []
-develop = false
+develop = true
 
 [package.dependencies]
 pydantic = ">=2.5.0"
@@ -2800,7 +2800,7 @@ optional = false
 python-versions = "^3.11"
 groups = ["main"]
 files = []
-develop = false
+develop = true
 
 [package.dependencies]
 pydantic = "^2.12.0"
@@ -3622,7 +3622,7 @@ astroid = ">=3.3.8,<=3.4.0.dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 dill = [
     {version = ">=0.3.7", markers = "python_version >= \"3.12\""},
-    {version = ">=0.3.6", markers = "python_version >= \"3.11\""},
+    {version = ">=0.3.6", markers = "python_version == \"3.11\""},
 ]
 isort = ">=4.2.5,<5.13 || >5.13,<7"
 mccabe = ">=0.6,<0.8"
@@ -5103,4 +5103,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.14"
-content-hash = "7fe61e359aaf300c5fceb9bb96a057207b594a6df5aefe36643404b82232af00"
+content-hash = "f21445a645d3a305b118dd85a91a256a6db6d5e9156fcf639ffe61f34493d07d"

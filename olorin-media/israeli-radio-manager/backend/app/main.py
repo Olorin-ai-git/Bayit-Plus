@@ -7,8 +7,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 
-
 from app.config import settings
+from olorin_shared.database import (close_mongodb_connection,
+                                     get_mongodb_client, get_mongodb_database,
+                                     init_mongodb)
 from app.routers import content, schedule, playback, upload, agent, websocket, calendar, flows, settings as settings_router, admin, users, voices, campaigns
 from app.services.audio_player import AudioPlayerService
 from app.services.chatterbox import ChatterboxService
@@ -38,10 +40,11 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting Israeli Radio Manager...")
 
-    # Connect to MongoDB
-    app.state.mongo_client = AsyncIOMotorClient(settings.mongodb_uri)
-    app.state.db = app.state.mongo_client[settings.mongodb_db]
-    logger.info(f"Connected to MongoDB: {settings.mongodb_db}")
+    # Connect to MongoDB using centralized olorin-shared connection
+    await init_mongodb()
+    app.state.mongo_client = get_mongodb_client()
+    app.state.db = get_mongodb_database()
+    logger.info(f"Connected to MongoDB via olorin-shared: {app.state.db.name}")
 
     # Initialize collections with indexes
     await init_database(app.state.db)
@@ -257,7 +260,8 @@ async def lifespan(app: FastAPI):
         await app.state.calendar_watcher.stop()
     if hasattr(app.state, 'audio_player'):
         app.state.audio_player.cleanup()
-    app.state.mongo_client.close()
+    # Close MongoDB connection using centralized olorin-shared
+    await close_mongodb_connection()
 
 
 async def init_database(db):

@@ -35,7 +35,8 @@ dependencies = [
     "chatterbox-tts (>=0.1.6,<0.2.0)",
     "torch (>=2.5.0,<3.0.0)",
     "torchaudio (>=2.5.0,<3.0.0)",
-    "soundfile (>=0.13.0,<0.14.0)"
+    "soundfile (>=0.13.0,<0.14.0)",
+    "olorin-shared @ file:///../packages/olorin-shared"
 ]
 
 

@@ -6,6 +6,9 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from app.api.routes.downloads import Download
 from app.api.routes.favorites import Favorite
 from app.core.config import settings
+from olorin_shared.database import (close_mongodb_connection,
+                                     get_mongodb_client, get_mongodb_database,
+                                     init_mongodb)
 from app.models.admin import (AuditLog, Campaign, EmailCampaign,
                               PushNotification, Refund, SubscriptionPlan,
                               SystemSettings, Transaction)
@@ -76,16 +79,12 @@ db = Database()
 
 
 async def connect_to_mongo():
-    """Create database connection with connection pool configuration."""
-    db.client = AsyncIOMotorClient(
-        settings.MONGODB_URL,
-        maxPoolSize=100,  # Maximum connections in pool (higher for main app)
-        minPoolSize=20,  # Minimum connections to maintain
-        maxIdleTimeMS=30000,  # Close idle connections after 30s
-        waitQueueTimeoutMS=5000,  # Fail fast if pool exhausted
-        connectTimeoutMS=10000,  # Connection timeout
-        serverSelectionTimeoutMS=10000,  # Server selection timeout
-    )
+    """Create database connection using centralized olorin-shared MongoDB connection."""
+    # Initialize centralized MongoDB connection from olorin-shared
+    await init_mongodb()
+
+    # Get client for backward compatibility with existing code
+    db.client = get_mongodb_client()
 
     # Build document models list
     document_models: List[Type[Document]] = [
@@ -225,21 +224,23 @@ async def connect_to_mongo():
         # Phase 2: Olorin models in separate database
         print("Olorin models excluded from main database (Phase 2 - separate database)")
 
-    # Initialize Beanie with document models
+    # Initialize Beanie with document models using centralized database
+    database = get_mongodb_database()
     await init_beanie(
-        database=db.client[settings.MONGODB_DB_NAME],
+        database=database,
         document_models=document_models,
         allow_index_dropping=True,
     )
-    print(f"Connected to MongoDB: {settings.MONGODB_DB_NAME}")
+    print(f"Connected to MongoDB via olorin-shared: {database.name}")
 
 
 async def close_mongo_connection():
-    """Close database connection."""
-    if db.client:
-        db.client.close()
-        print("Closed MongoDB connection")
+    """Close database connection using centralized olorin-shared connection."""
+    await close_mongodb_connection()
+    db.client = None
+    print("Closed MongoDB connection via olorin-shared")
 
 
 def get_database():
-    return db.client[settings.MONGODB_DB_NAME]
+    """Get MongoDB database using centralized olorin-shared connection."""
+    return get_mongodb_database()

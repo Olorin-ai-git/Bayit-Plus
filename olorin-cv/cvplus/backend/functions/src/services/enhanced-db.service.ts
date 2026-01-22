@@ -2,13 +2,15 @@
  * Enhanced database service for new CV features
  */
 
+import * as admin from 'firebase-admin';
 import { firestore } from '../config/firebase';
-import { 
-  EnhancedJob, 
-  PublicCVProfile, 
-  FeatureAnalytics, 
-  UserRAGProfile, 
+import {
+  EnhancedJob,
+  PublicCVProfile,
+  FeatureAnalytics,
+  UserRAGProfile,
   ChatSession,
+  ChatMessage,
   ContactFormSubmission,
   QRCodeScan,
   FeatureInteraction
@@ -28,11 +30,13 @@ export class EnhancedDatabaseService {
     const jobRef = this.db.collection('jobs').doc(jobId);
     
     const updates: any = {};
-    for (const [featureId, featureData] of Object.entries(features)) {
-      updates[`enhancedFeatures.${featureId}`] = {
-        ...featureData,
-        processedAt: new Date()
-      };
+    if (features) {
+      for (const [featureId, featureData] of Object.entries(features)) {
+        updates[`enhancedFeatures.${featureId}`] = {
+          ...featureData,
+          processedAt: new Date()
+        };
+      }
     }
     
     await jobRef.update(updates);
@@ -186,7 +190,7 @@ export class EnhancedDatabaseService {
     const sessionRef = this.db.collection('chatSessions').doc(sessionId);
     
     await sessionRef.update({
-      messages: firestore.FieldValue.arrayUnion(message),
+      messages: admin.firestore.FieldValue.arrayUnion(message),
       lastActivity: new Date()
     });
     
@@ -257,7 +261,7 @@ export class EnhancedDatabaseService {
     
     const updates: any = {};
     for (const [field, value] of Object.entries(increments)) {
-      updates[field] = firestore.FieldValue.increment(value);
+      updates[field] = admin.firestore.FieldValue.increment(value);
     }
     
     await jobRef.update(updates);

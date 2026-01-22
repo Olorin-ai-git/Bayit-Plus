@@ -23,6 +23,8 @@ export interface GlassViewProps {
   noBorder?: boolean;
   /** Test ID for testing */
   testID?: string;
+  /** TailwindCSS className (NativeWind) */
+  className?: string;
 }
 
 // Map intensity aliases to base levels
@@ -105,13 +107,21 @@ export const GlassView: React.FC<GlassViewProps> = ({
           : ['rgba(10, 10, 10, 0.7)', 'rgba(15, 10, 20, 0.8)'];
 
   const gradientStyle: ViewStyle[] = [
+    { borderRadius: borderRadius.lg, overflow: 'hidden' },
     ...(noBorder ? [] : [{ borderWidth: 1, borderColor: borderColor || colors.glassBorder }]),
     ...(style ? [style as ViewStyle] : []),
   ];
 
+  const innerViewStyle: ViewStyle = {
+    flex: 1,
+    borderRadius: borderRadius.lg - 1,
+    borderWidth: 1,
+    borderColor: colors.glassBorderLight,
+  };
+
   return (
-    <LinearGradient colors={gradientColors} className="rounded-lg overflow-hidden" style={gradientStyle} testID={testID}>
-      <View className={`flex-1 rounded-[${borderRadius.lg - 1}px] border`} style={{ borderColor: colors.glassBorderLight }}>{children}</View>
+    <LinearGradient colors={gradientColors} style={gradientStyle} testID={testID}>
+      <View style={innerViewStyle}>{children}</View>
     </LinearGradient>
   );
 };

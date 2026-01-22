@@ -2,7 +2,8 @@
  * Cloud Functions for public CV profiles
  */
 
-import * as functions from 'firebase-functions';
+import * as functionsV1 from 'firebase-functions/v1';
+import * as admin from 'firebase-admin';
 import { enhancedDbService } from '../services/enhanced-db.service';
 import { integrationsService } from '../services/integrations.service';
 import { auth, firestore } from '../config/firebase';
@@ -12,27 +13,27 @@ import { maskPII } from '../utils/privacy';
 /**
  * Create public profile for a CV
  */
-export const createPublicProfile = functions.https.onCall(async (data, context) => {
+export const createPublicProfile = functionsV1.https.onCall(async (data, context) => {
   // Check authentication
   if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
+    throw new functionsV1.https.HttpsError('unauthenticated', 'User must be authenticated');
   }
 
   const { jobId } = data;
   if (!jobId) {
-    throw new functions.https.HttpsError('invalid-argument', 'Job ID is required');
+    throw new functionsV1.https.HttpsError('invalid-argument', 'Job ID is required');
   }
 
   try {
     // Get job and verify ownership
     const jobDoc = await firestore.collection('jobs').doc(jobId).get();
     if (!jobDoc.exists) {
-      throw new functions.https.HttpsError('not-found', 'Job not found');
+      throw new functionsV1.https.HttpsError('not-found', 'Job not found');
     }
 
     const job = jobDoc.data() as EnhancedJob;
     if (job.userId !== context.auth.uid) {
-      throw new functions.https.HttpsError('permission-denied', 'Not authorized to access this job');
+      throw new functionsV1.https.HttpsError('permission-denied', 'Not authorized to access this job');
     }
 
     // Check if profile already exists
@@ -86,23 +87,23 @@ export const createPublicProfile = functions.https.onCall(async (data, context) 
     };
   } catch (error: any) {
     console.error('Error creating public profile:', error);
-    throw new functions.https.HttpsError('internal', error.message);
+    throw new functionsV1.https.HttpsError('internal', error.message);
   }
 });
 
 /**
  * Get public profile by slug
  */
-export const getPublicProfile = functions.https.onCall(async (data) => {
+export const getPublicProfile = functionsV1.https.onCall(async (data) => {
   const { slug } = data;
   if (!slug) {
-    throw new functions.https.HttpsError('invalid-argument', 'Slug is required');
+    throw new functionsV1.https.HttpsError('invalid-argument', 'Slug is required');
   }
 
   try {
     const profile = await enhancedDbService.getPublicProfileBySlug(slug);
     if (!profile) {
-      throw new functions.https.HttpsError('not-found', 'Profile not found');
+      throw new functionsV1.https.HttpsError('not-found', 'Profile not found');
     }
 
     // Track profile view
@@ -113,7 +114,7 @@ export const getPublicProfile = functions.https.onCall(async (data) => {
 
     // Increment view count
     await firestore.collection('jobs').doc(profile.jobId).update({
-      'analytics.profileViews': firestore.FieldValue.increment(1),
+      'analytics.profileViews': admin.firestore.FieldValue.increment(1),
       'analytics.lastViewedAt': new Date()
     });
 
@@ -123,33 +124,33 @@ export const getPublicProfile = functions.https.onCall(async (data) => {
     };
   } catch (error: any) {
     console.error('Error getting public profile:', error);
-    throw new functions.https.HttpsError('internal', error.message);
+    throw new functionsV1.https.HttpsError('internal', error.message);
   }
 });
 
 /**
  * Update public profile settings
  */
-export const updatePublicProfileSettings = functions.https.onCall(async (data, context) => {
+export const updatePublicProfileSettings = functionsV1.https.onCall(async (data, context) => {
   if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
+    throw new functionsV1.https.HttpsError('unauthenticated', 'User must be authenticated');
   }
 
   const { jobId, settings } = data;
   if (!jobId || !settings) {
-    throw new functions.https.HttpsError('invalid-argument', 'Job ID and settings are required');
+    throw new functionsV1.https.HttpsError('invalid-argument', 'Job ID and settings are required');
   }
 
   try {
     // Verify ownership
     const jobDoc = await firestore.collection('jobs').doc(jobId).get();
     if (!jobDoc.exists) {
-      throw new functions.https.HttpsError('not-found', 'Job not found');
+      throw new functionsV1.https.HttpsError('not-found', 'Job not found');
     }
 
     const job = jobDoc.data() as EnhancedJob;
     if (job.userId !== context.auth.uid) {
-      throw new functions.https.HttpsError('permission-denied', 'Not authorized to access this job');
+      throw new functionsV1.https.HttpsError('permission-denied', 'Not authorized to access this job');
     }
 
     // Update settings
@@ -161,19 +162,19 @@ export const updatePublicProfileSettings = functions.https.onCall(async (data, c
     return { success: true };
   } catch (error: any) {
     console.error('Error updating profile settings:', error);
-    throw new functions.https.HttpsError('internal', error.message);
+    throw new functionsV1.https.HttpsError('internal', error.message);
   }
 });
 
 /**
  * Submit contact form
  */
-export const submitContactForm = functions.https.onCall(async (data) => {
+export const submitContactForm = functionsV1.https.onCall(async (data) => {
   const { jobId, senderName, senderEmail, senderPhone, company, message } = data;
 
   // Validate required fields
   if (!jobId || !senderName || !senderEmail || !message) {
-    throw new functions.https.HttpsError(
+    throw new functionsV1.https.HttpsError(
       'invalid-argument', 
       'Required fields: jobId, senderName, senderEmail, message'
     );
@@ -182,21 +183,21 @@ export const submitContactForm = functions.https.onCall(async (data) => {
   // Basic email validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(senderEmail)) {
-    throw new functions.https.HttpsError('invalid-argument', 'Invalid email address');
+    throw new functionsV1.https.HttpsError('invalid-argument', 'Invalid email address');
   }
 
   try {
     // Get job to find owner's email
     const jobDoc = await firestore.collection('jobs').doc(jobId).get();
     if (!jobDoc.exists) {
-      throw new functions.https.HttpsError('not-found', 'CV not found');
+      throw new functionsV1.https.HttpsError('not-found', 'CV not found');
     }
 
     const job = jobDoc.data() as EnhancedJob;
     
     // Check if contact form is enabled
     if (!job.interactiveData?.contactFormEnabled) {
-      throw new functions.https.HttpsError('failed-precondition', 'Contact form is not enabled');
+      throw new functionsV1.https.HttpsError('failed-precondition', 'Contact form is not enabled');
     }
 
     // Get user's email
@@ -204,7 +205,7 @@ export const submitContactForm = functions.https.onCall(async (data) => {
     const recipientEmail = job.interactiveData?.contactEmail || userRecord.email;
 
     if (!recipientEmail) {
-      throw new functions.https.HttpsError('failed-precondition', 'Recipient email not configured');
+      throw new functionsV1.https.HttpsError('failed-precondition', 'Recipient email not configured');
     }
 
     // Store submission
@@ -252,7 +253,7 @@ export const submitContactForm = functions.https.onCall(async (data) => {
       await firestore.collection('contactSubmissions').doc(submissionId).update({
         status: 'failed'
       });
-      throw new functions.https.HttpsError('internal', 'Failed to send message');
+      throw new functionsV1.https.HttpsError('internal', 'Failed to send message');
     }
 
     return {
@@ -261,20 +262,20 @@ export const submitContactForm = functions.https.onCall(async (data) => {
     };
   } catch (error: any) {
     console.error('Error submitting contact form:', error);
-    if (error instanceof functions.https.HttpsError) {
+    if (error instanceof functionsV1.https.HttpsError) {
       throw error;
     }
-    throw new functions.https.HttpsError('internal', error.message);
+    throw new functionsV1.https.HttpsError('internal', error.message);
   }
 });
 
 /**
  * Track QR code scan
  */
-export const trackQRScan = functions.https.onCall(async (data) => {
+export const trackQRScan = functionsV1.https.onCall(async (data) => {
   const { jobId, metadata } = data;
   if (!jobId) {
-    throw new functions.https.HttpsError('invalid-argument', 'Job ID is required');
+    throw new functionsV1.https.HttpsError('invalid-argument', 'Job ID is required');
   }
 
   try {
@@ -288,6 +289,6 @@ export const trackQRScan = functions.https.onCall(async (data) => {
     return { success: true };
   } catch (error: any) {
     console.error('Error tracking QR scan:', error);
-    throw new functions.https.HttpsError('internal', error.message);
+    throw new functionsV1.https.HttpsError('internal', error.message);
   }
 });

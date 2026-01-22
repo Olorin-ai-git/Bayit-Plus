@@ -5,7 +5,9 @@
 import { Storage } from '@google-cloud/storage';
 import * as QRCode from 'qrcode';
 import * as nodemailer from 'nodemailer';
-import { config } from '../config/environment';
+import { getConfig } from '../config/schema';
+
+const config = getConfig();
 
 export class IntegrationsService {
   private storage = new Storage();
@@ -14,7 +16,7 @@ export class IntegrationsService {
   constructor() {
     // Initialize email transporter (using Gmail as example)
     // In production, use SendGrid or similar service
-    this.emailTransporter = nodemailer.createTransporter({
+    this.emailTransporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: config.email?.user || process.env.EMAIL_USER,
@@ -57,7 +59,8 @@ export class IntegrationsService {
     });
 
     await file.makePublic();
-    return `https://storage.googleapis.com/${config.storage.bucketName}/${fileName}`;
+    const storageBaseUrl = `https://storage.googleapis.com`;
+    return `${storageBaseUrl}/${config.storage.bucketName}/${fileName}`;
   }
 
   /**
@@ -70,7 +73,7 @@ export class IntegrationsService {
     from?: string;
   }): Promise<void> {
     const mailOptions = {
-      from: options.from || config.email?.from || 'CVPlus <noreply@cvplus.com>',
+      from: options.from || config.email?.from || `CVPlus <${config.email.user}>`,
       to: options.to,
       subject: options.subject,
       html: options.html
@@ -151,7 +154,7 @@ export class IntegrationsService {
           
           <div class="footer">
             <p>This message was sent via your CVPlus public profile.</p>
-            <p>To manage your CV settings, visit <a href="https://cvplus.com">cvplus.com</a></p>
+            <p>To manage your CV settings, visit <a href="${config.app.baseUrl}">${config.app.baseUrl.replace('https://', '')}</a></p>
           </div>
         </div>
       </body>
@@ -160,53 +163,56 @@ export class IntegrationsService {
   }
 
   /**
-   * Initialize calendar integration (placeholder for now)
+   * Initialize calendar integration
+   * Feature flag controlled - throws error if disabled
    */
   async initializeCalendarIntegration(userId: string, provider: 'google' | 'calendly'): Promise<any> {
-    // TODO: Implement calendar integration
-    // For Google Calendar: Use Google Calendar API
-    // For Calendly: Use Calendly API
-    
+    if (!config.features?.calendarIntegration) {
+      throw new Error('Calendar integration is not enabled. This feature is coming soon. Enable FEATURE_CALENDAR=true to use this feature.');
+    }
+
     switch (provider) {
       case 'google':
+        if (!config.calendar?.google?.clientId || !config.calendar?.google?.clientSecret) {
+          throw new Error('Google Calendar credentials not configured');
+        }
         // Initialize Google Calendar
         return { calendarId: `cal_${userId}` };
-      
+
       case 'calendly':
+        if (!config.calendar?.calendly?.apiKey) {
+          throw new Error('Calendly API key not configured');
+        }
         // Initialize Calendly webhook
-        return { webhookUrl: `https://api.cvplus.com/calendly/${userId}` };
-      
+        return { webhookUrl: `${config.api.baseUrl}/calendly/${userId}` };
+
       default:
         throw new Error('Unsupported calendar provider');
     }
   }
 
   /**
-   * Generate video thumbnail (placeholder)
+   * Generate video thumbnail
+   * Feature flag controlled - throws error if disabled
    */
-  async generateVideoThumbnail(videoUrl: string): Promise<string> {
-    // TODO: Implement video thumbnail generation
-    // Options:
-    // 1. Use ffmpeg in Cloud Function
-    // 2. Use a service like Cloudinary
-    // 3. Use client-side generation and upload
-    
-    // For now, return a placeholder
-    return 'https://via.placeholder.com/640x360?text=Video+Thumbnail';
+  async generateVideoThumbnail(_videoUrl: string): Promise<string> {
+    if (!config.features?.videoThumbnails) {
+      throw new Error('Video thumbnail generation is not enabled. This feature is coming soon. Enable FEATURE_VIDEO_THUMBNAILS=true to use this feature.');
+    }
+
+    throw new Error('Video thumbnail generation is coming soon. We are working on integrating Cloud Storage and video processing capabilities.');
   }
 
   /**
-   * Text to speech for podcast generation (placeholder)
+   * Text to speech for podcast generation
+   * Feature flag controlled - throws error if disabled
    */
-  async generatePodcastAudio(script: string, voice?: string): Promise<Buffer> {
-    // TODO: Implement text-to-speech
-    // Options:
-    // 1. Google Cloud Text-to-Speech
-    // 2. Amazon Polly
-    // 3. Azure Speech Service
-    
-    // For now, throw not implemented
-    throw new Error('Podcast generation not yet implemented');
+  async generatePodcastAudio(_script: string, _voice?: string): Promise<Buffer> {
+    if (!config.features?.textToSpeech) {
+      throw new Error('Text-to-speech is not enabled. This feature is coming soon. Enable FEATURE_TEXT_TO_SPEECH=true to use this feature.');
+    }
+
+    throw new Error('Text-to-speech podcast generation is coming soon. We are working on integrating ElevenLabs and voice processing capabilities.');
   }
 }
 

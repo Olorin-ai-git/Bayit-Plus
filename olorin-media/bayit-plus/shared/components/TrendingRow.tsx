@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui/GlassView';
-import { colors, spacing, fontSize, borderRadius } from '../theme';
 import { trendingService } from '../services/api';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
@@ -103,13 +102,20 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
 
   if (loading) {
     return (
-      <GlassView style={styles.container} intensity="light">
-        <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row', direction: 'ltr' }]}>
-          <Text style={styles.headerTitle}>{t('trending.title')}</Text>
-          <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>📈</Text>
+      <GlassView
+        className={isMobilePhone ? "my-2" : "my-4"}
+        intensity="light"
+      >
+        <View className={`flex items-center mb-${isMobilePhone ? '2' : '4'} px-${isMobilePhone ? '4' : '6'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+          <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
+            {t('trending.title')}
+          </Text>
+          <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
+            📈
+          </Text>
         </View>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator color={colors.primary} size="large" />
+        <View className={`justify-center items-center ${isMobilePhone ? 'h-24' : 'h-36'}`}>
+          <ActivityIndicator color="#a855f7" size="large" />
         </View>
       </GlassView>
     );
@@ -117,13 +123,22 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
 
   if (!data?.topics?.length) {
     return (
-      <GlassView style={styles.container} intensity="light">
-        <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row', direction: 'ltr' }]}>
-          <Text style={styles.headerTitle}>{t('trending.title')}</Text>
-          <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>📈</Text>
+      <GlassView
+        className={isMobilePhone ? "my-2" : "my-4"}
+        intensity="light"
+      >
+        <View className={`flex items-center mb-${isMobilePhone ? '2' : '4'} px-${isMobilePhone ? '4' : '6'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+          <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
+            {t('trending.title')}
+          </Text>
+          <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
+            📈
+          </Text>
         </View>
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>{t('trending.noTopics')}</Text>
+        <View className={`justify-center items-center px-6 ${isMobilePhone ? 'h-14' : 'h-24'}`}>
+          <Text className={`text-${isMobilePhone ? 'sm' : 'base'} text-white/60 text-center`}>
+            {t('trending.noTopics')}
+          </Text>
         </View>
       </GlassView>
     );
@@ -148,16 +163,20 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className={isMobilePhone ? "my-2" : "my-4"}>
       {/* Header */}
-      <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row', direction: 'ltr' }]}>
-        <Text style={styles.headerTitle}>{t('trending.title')}</Text>
-        <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>📈</Text>
+      <View className={`flex items-center mb-${isMobilePhone ? '2' : '4'} px-${isMobilePhone ? '4' : '6'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+        <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
+          {t('trending.title')}
+        </Text>
+        <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
+          📈
+        </Text>
       </View>
 
       {/* Overall Mood */}
       {data.overall_mood && (
-        <Text style={[styles.overallMood, { textAlign: isRTL ? 'right' : 'left' }]}>
+        <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/60 px-${isMobilePhone ? '4' : '6'} mb-${isMobilePhone ? '2' : '4'} ${isRTL ? 'text-right' : 'text-left'}`}>
           🇮🇱 {getLocalizedText(data.overall_mood, data.overall_mood_en, data.overall_mood_es)}
         </Text>
       )}
@@ -166,7 +185,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.topicsContainer}
+        contentContainerClassName={`px-6 py-1`}
         style={isRTL ? { transform: [{ scaleX: -1 }] } : undefined}
       >
         {data.topics.slice(0, isMobilePhone ? 4 : data.topics.length).map((topic, index) => (
@@ -187,20 +206,27 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
 
       {/* Top Story */}
       {data.top_story && (
-        <GlassView style={styles.topStoryContainer} intensity="light">
-          <Text style={[styles.topStoryLabel, { textAlign: isRTL ? 'right' : 'left' }]}>
+        <GlassView
+          className={`mx-${isMobilePhone ? '4' : '6'} mt-${isMobilePhone ? '2' : '4'} p-${isMobilePhone ? '4' : '6'} rounded-${isMobilePhone ? 'xl' : '2xl'}`}
+          intensity="light"
+        >
+          <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} font-semibold text-purple-400 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
             {t('trending.topStory')}
           </Text>
-          <Text style={[styles.topStoryText, { textAlign: isRTL ? 'right' : 'left' }]}>
+          <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white ${isRTL ? 'text-right' : 'text-left'}`}>
             {getLocalizedText(data.top_story, data.top_story_en, data.top_story_es)}
           </Text>
         </GlassView>
       )}
 
       {/* Sources */}
-      <View style={[styles.sourcesContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        <Text style={styles.sourcesLabel}>{t('trending.sources')}: </Text>
-        <Text style={styles.sourcesText}>{data.sources.join(', ')}</Text>
+      <View className={`px-${isMobilePhone ? '4' : '6'} mt-${isMobilePhone ? '1' : '2'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+        <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/40`}>
+          {t('trending.sources')}:{' '}
+        </Text>
+        <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/40`}>
+          {data.sources.join(', ')}
+        </Text>
       </View>
     </View>
   );
@@ -249,43 +275,52 @@ const TopicCard: React.FC<TopicCardProps> = ({
     >
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <GlassView
-          style={[
-            styles.topicCard,
-            isFocused && styles.topicCardFocused,
-          ]}
+          className={`
+            ${isMobilePhone ? 'w-40 min-h-[100px] p-4' : 'w-70 min-h-[240px] p-6'}
+            rounded-2xl
+            border-2
+            ${isFocused ? 'border-purple-500 bg-purple-900/30 shadow-purple-500/40 shadow-lg' : 'border-transparent bg-[rgba(30,30,50,0.6)]'}
+            mr-6
+          `}
           intensity="medium"
         >
-          <View style={[styles.topicHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Text style={[styles.categoryEmoji, { marginLeft: isRTL ? spacing.sm : 0, marginRight: isRTL ? 0 : spacing.sm }]}>
+          <View className={`flex items-center mb-${isMobilePhone ? '2' : '4'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+            <Text className={`text-${isMobilePhone ? 'base' : '3xl'} ${isRTL ? 'ml-2' : 'mr-2'}`}>
               {CATEGORY_EMOJIS[topic.category] || '📌'}
             </Text>
-            <View style={styles.categoryBadge}>
-              <Text style={styles.categoryText}>
+            <View className={`bg-purple-900/30 px-${isMobilePhone ? '2' : '4'} py-1 rounded-full border border-purple-400/60`}>
+              <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-purple-400/90 font-semibold`}>
                 {categoryLabel}
               </Text>
             </View>
           </View>
 
-          <Text style={[styles.topicTitle, { textAlign: isRTL ? 'right' : 'left', writingDirection: 'auto' }]} numberOfLines={isMobilePhone ? 2 : 3}>
+          <Text
+            className={`text-${isMobilePhone ? 'sm' : 'base'} font-bold text-white mb-${isMobilePhone ? '2' : '4'} leading-${isMobilePhone ? '5' : '6'} flex-1 ${isRTL ? 'text-right' : 'text-left'}`}
+            numberOfLines={isMobilePhone ? 2 : 3}
+          >
             {title}
           </Text>
 
           {summary && !isMobilePhone && (
-            <Text style={[styles.topicSummary, { textAlign: isRTL ? 'right' : 'left', writingDirection: 'auto' }]} numberOfLines={3}>
+            <Text
+              className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/70 mb-${isMobilePhone ? '2' : '4'} leading-${isMobilePhone ? '4' : '5'} ${isRTL ? 'text-right' : 'text-left'}`}
+              numberOfLines={3}
+            >
               {summary}
             </Text>
           )}
 
           {/* Importance indicator - hide on mobile phones */}
           {!isMobilePhone && (
-            <View style={[styles.importanceContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View className={`flex gap-${isMobilePhone ? '1' : '1.5'} mt-auto ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
               {[...Array(5)].map((_, i) => (
                 <View
                   key={i}
-                  style={[
-                    styles.importanceDot,
-                    i < Math.ceil(topic.importance / 2) && styles.importanceDotActive,
-                  ]}
+                  className={`
+                    ${isMobilePhone ? 'w-1.5 h-1.5 rounded-[3px]' : 'w-2 h-2 rounded-[4px]'}
+                    ${i < Math.ceil(topic.importance / 2) ? 'bg-purple-500' : 'bg-white/20'}
+                  `}
                 />
               ))}
             </View>
@@ -295,149 +330,5 @@ const TopicCard: React.FC<TopicCardProps> = ({
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: isMobilePhone ? spacing.sm : spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: isMobilePhone ? spacing.xs : spacing.sm,
-    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
-  },
-  headerEmoji: {
-    fontSize: isMobilePhone ? 16 : 20,
-    marginRight: isMobilePhone ? spacing.xs : spacing.sm,
-  },
-  headerTitle: {
-    fontSize: isMobilePhone ? fontSize.md : fontSize.lg,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  loadingContainer: {
-    height: isMobilePhone ? 100 : 150,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyContainer: {
-    height: isMobilePhone ? 60 : 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-  },
-  emptyText: {
-    fontSize: isMobilePhone ? fontSize.sm : fontSize.md,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  overallMood: {
-    fontSize: isMobilePhone ? fontSize.xs : fontSize.sm,
-    color: colors.textSecondary,
-    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
-    marginBottom: isMobilePhone ? spacing.sm : spacing.md,
-  },
-  topicsContainer: {
-    paddingHorizontal: isMobilePhone ? spacing.md : spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  topicCard: {
-    width: isMobilePhone ? 160 : 280,
-    minHeight: isMobilePhone ? 100 : 240,
-    padding: isMobilePhone ? spacing.sm : spacing.lg,
-    borderRadius: borderRadius.lg,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    marginRight: spacing.md,
-    backgroundColor: 'rgba(30, 30, 50, 0.6)',
-  },
-  topicCardFocused: {
-    borderColor: '#a855f7',
-    borderWidth: 2,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    shadowColor: '#a855f7',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  topicHeader: {
-    alignItems: 'center',
-    marginBottom: isMobilePhone ? spacing.xs : spacing.md,
-  },
-  categoryEmoji: {
-    fontSize: isMobilePhone ? 16 : 28,
-  },
-  categoryBadge: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
-    paddingVertical: isMobilePhone ? 2 : 4,
-    borderRadius: borderRadius.full,
-    borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.6)',
-  },
-  categoryText: {
-    fontSize: isMobilePhone ? 10 : fontSize.xs,
-    color: 'rgba(168, 85, 247, 0.9)',
-    fontWeight: '600',
-  },
-  topicTitle: {
-    fontSize: isMobilePhone ? 14 : fontSize.md,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: isMobilePhone ? spacing.xs : spacing.sm,
-    lineHeight: isMobilePhone ? 20 : 22,
-    flex: 1,
-  },
-  topicSummary: {
-    fontSize: isMobilePhone ? 11 : fontSize.sm,
-    color: 'rgba(255, 255, 255, 0.7)',
-    marginBottom: isMobilePhone ? spacing.xs : spacing.md,
-    lineHeight: isMobilePhone ? 14 : 18,
-  },
-  importanceContainer: {
-    flexDirection: 'row',
-    gap: isMobilePhone ? 4 : 6,
-    marginTop: 'auto',
-  },
-  importanceDot: {
-    width: isMobilePhone ? 6 : 8,
-    height: isMobilePhone ? 6 : 8,
-    borderRadius: isMobilePhone ? 3 : 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  importanceDotActive: {
-    backgroundColor: '#a855f7',
-  },
-  topStoryContainer: {
-    marginHorizontal: isMobilePhone ? spacing.sm : spacing.md,
-    marginTop: isMobilePhone ? spacing.sm : spacing.md,
-    padding: isMobilePhone ? spacing.sm : spacing.md,
-    borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
-  },
-  topStoryLabel: {
-    fontSize: isMobilePhone ? 10 : fontSize.xs,
-    fontWeight: '600',
-    color: colors.primary,
-    marginBottom: spacing.xs,
-  },
-  topStoryText: {
-    fontSize: isMobilePhone ? fontSize.xs : fontSize.sm,
-    color: colors.text,
-  },
-  sourcesContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
-    marginTop: isMobilePhone ? spacing.xs : spacing.sm,
-  },
-  sourcesLabel: {
-    fontSize: isMobilePhone ? 10 : fontSize.xs,
-    color: colors.textMuted,
-  },
-  sourcesText: {
-    fontSize: isMobilePhone ? 10 : fontSize.xs,
-    color: colors.textMuted,
-  },
-});
 
 export default TrendingRow;

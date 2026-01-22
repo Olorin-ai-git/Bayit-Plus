@@ -7,12 +7,10 @@
  *
  * API Structure:
  * - Recovery API: /recovery/*  - Session management and orchestration
-  */
  * - Modules API: /modules/* - Individual module management
  * - Workspace API: /workspace/*  - Workspace-wide operations
-  */
  * - Phases API: /phases/* - Recovery phase management
-  */
+ */
 
 // Recovery API endpoints
 export {
@@ -62,8 +60,7 @@ export {
 /**
  * API Endpoint Documentation
  *
- * RECOVERY API (/recovery/* )
-  */
+ * RECOVERY API (/recovery/*)
  * ---------------------------
  *
  * getWorkspaceHealth()
@@ -122,8 +119,7 @@ export {
  * - Returns: Array of active RecoverySession objects
  *
  *
- * MODULES API (/modules/* )
-  */
+ * MODULES API (/modules/*)
  * ------------------------
  *
  * getModules()
@@ -158,8 +154,7 @@ export {
  * - Returns: Build status and health information
  *
  *
- * WORKSPACE API (/workspace/* )
-  */
+ * WORKSPACE API (/workspace/*)
  * ----------------------------
  *
  * getWorkspaceStatus()
@@ -194,8 +189,7 @@ export {
  * - Returns: Reset summary and results
  *
  *
- * PHASES API (/phases/* )
-  */
+ * PHASES API (/phases/*)
  * ----------------------
  *
  * getPhases()
@@ -288,7 +282,7 @@ export {
  * - Recovery success rates
  * - Workspace health trends
  * - Resource utilization
-  */
+ */
 
 /**
  * CVPlus Level 2 Modules
@@ -305,7 +299,7 @@ export {
  * - admin: Administration and system management (Layer 4)
  * - workflow: Job management and feature orchestration (Layer 4)
  * - payments: Payment processing and transaction management (Layer 4)
-  */
+ */
 
 /**
  * Recovery Phase Overview
@@ -336,4 +330,4 @@ export {
  * - Generate recovery report
  *
  * Total Estimated Duration: ~8.5 minutes
-  */
+ */
