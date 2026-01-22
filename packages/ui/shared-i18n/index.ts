@@ -91,8 +91,7 @@ export const loadSavedLanguage = async (): Promise<void> => {
     } else {
       // Try AsyncStorage for React Native
       try {
-        // @ts-expect-error - Dynamic import for React Native (types not available in build)
-        const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
+        const AsyncStorage = (await import(/* webpackIgnore: true */ '@react-native-async-storage/async-storage')).default;
         savedLang = await AsyncStorage.getItem('@olorin_language');
       } catch {
         // AsyncStorage not available
@@ -127,8 +126,7 @@ export const saveLanguage = async (lang: LanguageCode): Promise<void> => {
     } else {
       // Try AsyncStorage for React Native
       try {
-        // @ts-expect-error - Dynamic import for React Native (types not available in build)
-        const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
+        const AsyncStorage = (await import(/* webpackIgnore: true */ '@react-native-async-storage/async-storage')).default;
         await AsyncStorage.setItem('@olorin_language', lang);
       } catch {
         // AsyncStorage not available

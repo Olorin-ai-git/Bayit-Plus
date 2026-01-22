@@ -5,7 +5,11 @@
   "description": "Olorin.ai Ecosystem - Unified monorepo for all Olorin platforms",
   "workspaces": [
     "packages/ui/*",
-    "apps/*"
+    "web",
+    "tv-app",
+    "mobile-app",
+    "tvos-app",
+    "partner-portal"
   ],
   "scripts": {
     "build": "turbo run build",

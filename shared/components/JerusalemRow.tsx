@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Animated,
@@ -13,7 +12,6 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui/GlassView';
-import { colors, spacing, fontSize, borderRadius } from '../theme';
 import { jerusalemService } from '../services/api';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
@@ -134,23 +132,29 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View className={`${isMobilePhone ? 'my-2 rounded-2xl mx-2' : 'my-4 rounded-3xl mx-4'} overflow-hidden`}>
         <ImageBackground
           source={JerusalemBackground}
-          style={styles.backgroundImage}
-          imageStyle={styles.backgroundImageStyle}
+          style={{ width: '100%', minHeight: isMobilePhone ? 180 : 320 }}
+          imageStyle={{ opacity: 0.6, borderRadius: isMobilePhone ? 16 : 24 }}
           resizeMode="cover"
         >
-          <View style={styles.backgroundOverlay} />
-          <View style={styles.contentWrapper}>
+          <View
+            className={`absolute inset-0 bg-[rgba(10,10,30,0.5)] ${isMobilePhone ? 'rounded-2xl' : 'rounded-3xl'}`}
+          />
+          <View className={`relative z-10 ${isMobilePhone ? 'py-2' : 'py-4'}`}>
             {showTitle && (
-              <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row', direction: 'ltr' }]}>
-                <Text style={styles.headerTitle}>{t('jerusalem.title')}</Text>
-                <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>🇮🇱</Text>
+              <View className={`flex items-center mb-1 ${isMobilePhone ? 'px-4' : 'px-6'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+                <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
+                  {t('jerusalem.title')}
+                </Text>
+                <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
+                  🇮🇱
+                </Text>
               </View>
             )}
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator color={colors.primary} size="large" />
+            <View className={`justify-center items-center ${isMobilePhone ? 'h-20' : 'h-36'}`}>
+              <ActivityIndicator color="#a855f7" size="large" />
             </View>
           </View>
         </ImageBackground>
@@ -160,23 +164,31 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
 
   if (!data?.items?.length) {
     return (
-      <View style={styles.container}>
+      <View className={`${isMobilePhone ? 'my-2 rounded-2xl mx-2' : 'my-4 rounded-3xl mx-4'} overflow-hidden`}>
         <ImageBackground
           source={JerusalemBackground}
-          style={styles.backgroundImage}
-          imageStyle={styles.backgroundImageStyle}
+          style={{ width: '100%', minHeight: isMobilePhone ? 180 : 320 }}
+          imageStyle={{ opacity: 0.6, borderRadius: isMobilePhone ? 16 : 24 }}
           resizeMode="cover"
         >
-          <View style={styles.backgroundOverlay} />
-          <View style={styles.contentWrapper}>
+          <View
+            className={`absolute inset-0 bg-[rgba(10,10,30,0.5)] ${isMobilePhone ? 'rounded-2xl' : 'rounded-3xl'}`}
+          />
+          <View className={`relative z-10 ${isMobilePhone ? 'py-2' : 'py-4'}`}>
             {showTitle && (
-              <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row', direction: 'ltr' }]}>
-                <Text style={styles.headerTitle}>{t('jerusalem.title')}</Text>
-                <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>🇮🇱</Text>
+              <View className={`flex items-center mb-1 ${isMobilePhone ? 'px-4' : 'px-6'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+                <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
+                  {t('jerusalem.title')}
+                </Text>
+                <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
+                  🇮🇱
+                </Text>
               </View>
             )}
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>{t('jerusalem.noContent')}</Text>
+            <View className={`justify-center items-center px-6 ${isMobilePhone ? 'h-14' : 'h-24'}`}>
+              <Text className={`text-${isMobilePhone ? 'sm' : 'base'} text-white/60 text-center`}>
+                {t('jerusalem.noContent')}
+              </Text>
             </View>
           </View>
         </ImageBackground>
@@ -203,29 +215,35 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View className={`${isMobilePhone ? 'my-2 rounded-2xl mx-2' : 'my-4 rounded-3xl mx-4'} overflow-hidden`}>
       {/* Background Image */}
       <ImageBackground
         source={JerusalemBackground}
-        style={styles.backgroundImage}
-        imageStyle={styles.backgroundImageStyle}
+        style={{ width: '100%', minHeight: isMobilePhone ? 180 : 320 }}
+        imageStyle={{ opacity: 0.6, borderRadius: isMobilePhone ? 16 : 24 }}
         resizeMode="cover"
       >
         {/* Semi-transparent overlay */}
-        <View style={styles.backgroundOverlay} />
+        <View
+          className={`absolute inset-0 bg-[rgba(10,10,30,0.5)] ${isMobilePhone ? 'rounded-2xl' : 'rounded-3xl'}`}
+        />
 
         {/* Content */}
-        <View style={styles.contentWrapper}>
+        <View className={`relative z-10 ${isMobilePhone ? 'py-2' : 'py-4'}`}>
           {/* Header */}
           {showTitle && (
-            <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row', direction: 'ltr' }]}>
-              <Text style={styles.headerTitle}>{t('jerusalem.title')}</Text>
-              <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>🇮🇱</Text>
+            <View className={`flex items-center mb-1 ${isMobilePhone ? 'px-4' : 'px-6'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+              <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
+                {t('jerusalem.title')}
+              </Text>
+              <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
+                🇮🇱
+              </Text>
             </View>
           )}
 
           {/* Subtitle */}
-          <Text style={[styles.subtitle, { textAlign: isRTL ? 'right' : 'left' }]}>
+          <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/60 ${isMobilePhone ? 'px-4 mb-2' : 'px-6 mb-4'} ${isRTL ? 'text-right' : 'text-left'}`}>
             {t('jerusalem.subtitle')}
           </Text>
 
@@ -233,7 +251,7 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={[styles.itemsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+            contentContainerClassName={`${isMobilePhone ? 'px-4 gap-2' : 'px-6 gap-4'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}
           >
             {data.items.map((item, index) => (
               <ContentCard
@@ -251,9 +269,11 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
           </ScrollView>
 
           {/* Sources */}
-          <View style={[styles.sourcesContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Text style={styles.sourcesLabel}>{t('jerusalem.sources')}: </Text>
-            <Text style={styles.sourcesText}>
+          <View className={`${isMobilePhone ? 'px-4 mt-1' : 'px-6 mt-2'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+            <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/40`}>
+              {t('jerusalem.sources')}:{' '}
+            </Text>
+            <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/40`}>
               {Array.from(new Set(data.items.map(item => item.source_name))).join(', ')}
             </Text>
           </View>
@@ -306,55 +326,66 @@ const ContentCard: React.FC<ContentCardProps> = ({
     >
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <GlassView
-          style={[
-            styles.contentCard,
-            isFocused && styles.contentCardFocused,
-          ]}
+          className={`
+            ${isMobilePhone ? 'w-44 h-32 p-4 rounded-xl mr-2' : 'w-64 h-44 p-6 rounded-2xl mr-4'}
+            border-2
+            ${isFocused ? 'border-blue-500 bg-blue-500/20 shadow-blue-500/40 shadow-lg' : 'border-transparent'}
+          `}
           intensity="subtle"
         >
-          <View style={[styles.cardHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Text style={[styles.categoryEmoji, { marginLeft: isRTL ? spacing.sm : 0, marginRight: isRTL ? 0 : spacing.sm }]}>
+          <View className={`flex items-center ${isMobilePhone ? 'mb-1' : 'mb-2'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+            <Text className={`text-${isMobilePhone ? 'lg' : '2xl'} ${isRTL ? 'ml-2' : 'mr-2'}`}>
               {CATEGORY_EMOJIS[item.category] || '📰'}
             </Text>
-            <View style={styles.categoryBadge}>
-              <Text style={styles.categoryText}>
+            <View className={`bg-blue-500/30 ${isMobilePhone ? 'px-2 py-0.5' : 'px-4 py-1'} rounded-full border border-blue-500/60`}>
+              <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-blue-300/90 font-semibold`}>
                 {categoryLabel}
               </Text>
             </View>
           </View>
 
-          <Text style={[styles.cardTitle, { textAlign: isRTL ? 'right' : 'left', writingDirection: 'auto' }]} numberOfLines={3}>
+          <Text
+            className={`text-${isMobilePhone ? 'sm' : 'base'} font-bold text-white mb-1 leading-${isMobilePhone ? '4' : '5'} ${isRTL ? 'text-right' : 'text-left'}`}
+            numberOfLines={3}
+          >
             {title}
           </Text>
 
           {summary && (
-            <Text style={[styles.cardSummary, { textAlign: isRTL ? 'right' : 'left', writingDirection: 'auto' }]} numberOfLines={2}>
+            <Text
+              className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/70 ${isMobilePhone ? 'mb-1 leading-3' : 'mb-2 leading-4'} ${isRTL ? 'text-right' : 'text-left'}`}
+              numberOfLines={2}
+            >
               {summary}
             </Text>
           )}
 
           {/* Tags */}
           {item.tags.length > 0 && (
-            <View style={[styles.tagsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View className={`flex flex-wrap ${isMobilePhone ? 'gap-0.5 mb-1' : 'gap-1 mb-2'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
               {item.tags.slice(0, 3).map((tag, i) => (
-                <View key={i} style={styles.tag}>
-                  <Text style={styles.tagText}>{tag}</Text>
+                <View key={i} className={`bg-white/10 ${isMobilePhone ? 'px-1 py-0.5 rounded-sm' : 'px-2 py-1 rounded'}`}>
+                  <Text className={`text-${isMobilePhone ? '[9px]' : 'xs'} text-white/60`}>
+                    {tag}
+                  </Text>
                 </View>
               ))}
             </View>
           )}
 
           {/* Source and score */}
-          <View style={[styles.cardFooter, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Text style={styles.sourceText}>{item.source_name}</Text>
-            <View style={styles.scoreContainer}>
+          <View className={`flex justify-between items-center mt-auto ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+            <Text className={`text-${isMobilePhone ? '[9px]' : 'xs'} text-white/40 uppercase`}>
+              {item.source_name}
+            </Text>
+            <View className={`flex ${isMobilePhone ? 'gap-0.5' : 'gap-1'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
               {[...Array(5)].map((_, i) => (
                 <View
                   key={i}
-                  style={[
-                    styles.scoreDot,
-                    i < Math.ceil(item.relevance_score / 2) && styles.scoreDotActive,
-                  ]}
+                  className={`
+                    ${isMobilePhone ? 'w-1 h-1 rounded-[2px]' : 'w-1.5 h-1.5 rounded-[3px]'}
+                    ${i < Math.ceil(item.relevance_score / 2) ? 'bg-blue-500' : 'bg-white/20'}
+                  `}
                 />
               ))}
             </View>
@@ -364,177 +395,5 @@ const ContentCard: React.FC<ContentCardProps> = ({
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: isMobilePhone ? spacing.sm : spacing.md,
-    borderRadius: isMobilePhone ? borderRadius.lg : borderRadius.xl,
-    overflow: 'hidden',
-    marginHorizontal: isMobilePhone ? spacing.sm : spacing.md,
-  },
-  backgroundImage: {
-    width: '100%',
-    minHeight: isMobilePhone ? 180 : 320,
-  },
-  backgroundImageStyle: {
-    opacity: 0.6,
-    borderRadius: isMobilePhone ? borderRadius.lg : borderRadius.xl,
-  },
-  backgroundOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10, 10, 30, 0.5)',
-    borderRadius: isMobilePhone ? borderRadius.lg : borderRadius.xl,
-  },
-  contentWrapper: {
-    position: 'relative',
-    zIndex: 1,
-    paddingVertical: isMobilePhone ? spacing.sm : spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
-  },
-  headerEmoji: {
-    fontSize: isMobilePhone ? 16 : 20,
-    marginRight: isMobilePhone ? spacing.xs : spacing.sm,
-  },
-  headerTitle: {
-    fontSize: isMobilePhone ? fontSize.md : fontSize.lg,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: isMobilePhone ? fontSize.xs : fontSize.sm,
-    color: colors.textSecondary,
-    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
-    marginBottom: isMobilePhone ? spacing.sm : spacing.md,
-  },
-  loadingContainer: {
-    height: isMobilePhone ? 80 : 150,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyContainer: {
-    height: isMobilePhone ? 60 : 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-  },
-  emptyText: {
-    fontSize: isMobilePhone ? fontSize.sm : fontSize.md,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  itemsContainer: {
-    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
-    gap: isMobilePhone ? spacing.sm : spacing.md,
-  },
-  contentCard: {
-    width: isMobilePhone ? 180 : 261,
-    height: isMobilePhone ? 130 : 180,
-    padding: isMobilePhone ? spacing.sm : spacing.lg,
-    borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    marginRight: isMobilePhone ? spacing.sm : spacing.md,
-  },
-  contentCardFocused: {
-    borderColor: '#3b82f6',
-    borderWidth: 2,
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
-    shadowColor: '#3b82f6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  cardHeader: {
-    alignItems: 'center',
-    marginBottom: isMobilePhone ? spacing.xs : spacing.sm,
-  },
-  categoryEmoji: {
-    fontSize: isMobilePhone ? 18 : 24,
-  },
-  categoryBadge: {
-    backgroundColor: 'rgba(59, 130, 246, 0.3)',
-    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
-    paddingVertical: isMobilePhone ? 2 : 4,
-    borderRadius: borderRadius.full,
-    borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.6)',
-  },
-  categoryText: {
-    fontSize: isMobilePhone ? 10 : fontSize.xs,
-    color: 'rgba(147, 197, 253, 0.9)',
-    fontWeight: '600',
-  },
-  cardTitle: {
-    fontSize: isMobilePhone ? fontSize.sm : fontSize.md,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xs,
-    lineHeight: isMobilePhone ? 16 : 20,
-  },
-  cardSummary: {
-    fontSize: isMobilePhone ? 11 : fontSize.sm,
-    color: 'rgba(255, 255, 255, 0.7)',
-    marginBottom: isMobilePhone ? spacing.xs : spacing.sm,
-    lineHeight: isMobilePhone ? 14 : 16,
-  },
-  tagsContainer: {
-    flexWrap: 'wrap',
-    gap: isMobilePhone ? 2 : 4,
-    marginBottom: isMobilePhone ? spacing.xs : spacing.sm,
-  },
-  tag: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: isMobilePhone ? spacing.xs : spacing.sm,
-    paddingVertical: isMobilePhone ? 1 : 2,
-    borderRadius: borderRadius.sm,
-  },
-  tagText: {
-    fontSize: isMobilePhone ? 9 : fontSize.xs,
-    color: 'rgba(255, 255, 255, 0.6)',
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 'auto',
-  },
-  sourceText: {
-    fontSize: isMobilePhone ? 9 : fontSize.xs,
-    color: colors.textMuted,
-    textTransform: 'uppercase',
-  },
-  scoreContainer: {
-    flexDirection: 'row',
-    gap: isMobilePhone ? 2 : 4,
-  },
-  scoreDot: {
-    width: isMobilePhone ? 4 : 6,
-    height: isMobilePhone ? 4 : 6,
-    borderRadius: isMobilePhone ? 2 : 3,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  scoreDotActive: {
-    backgroundColor: '#3b82f6',
-  },
-  sourcesContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: isMobilePhone ? spacing.sm : spacing.md,
-    marginTop: isMobilePhone ? spacing.xs : spacing.sm,
-  },
-  sourcesLabel: {
-    fontSize: isMobilePhone ? 10 : fontSize.xs,
-    color: colors.textMuted,
-  },
-  sourcesText: {
-    fontSize: isMobilePhone ? 10 : fontSize.xs,
-    color: colors.textMuted,
-  },
-});
 
 export default JerusalemRow;

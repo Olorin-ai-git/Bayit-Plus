@@ -39,7 +39,7 @@ export function ChatInputBar({
 
   if (isTVMode) {
     return (
-      <View className={\`\${IS_TV ? 'p-6' : 'p-4'} border-t border-white/10 items-center justify-center\`}>
+      <View className={`\${IS_TV ? 'p-6' : 'p-4'} border-t border-white/10 items-center justify-center`}>
         <View className="flex-col items-center justify-center gap-4 py-6 px-8">
           <SoundwaveVisualizer
             audioLevel={audioLevel}
@@ -57,7 +57,7 @@ export function ChatInputBar({
   }
 
   return (
-    <View className={\`\${IS_TV ? 'p-6' : 'p-4'} border-t border-white/10\`}>
+    <View className={`\${IS_TV ? 'p-6' : 'p-4'} border-t border-white/10`}>
       {(isRecording || isTranscribing) && (
         <View className="flex-row justify-center mb-2">
           {isRecording && (
@@ -77,15 +77,15 @@ export function ChatInputBar({
         </View>
       )}
 
-      <View className={\`flex-row items-center gap-2 \${isRTL ? 'flex-row-reverse' : ''}\`}>
+      <View className={`flex-row items-center gap-2 \${isRTL ? 'flex-row-reverse' : ''}`}>
         <Pressable
           onPress={onToggleRecording}
           disabled={isLoading || isTranscribing}
-          className={\`\${IS_TV ? 'w-16 h-14 rounded-[28px]' : 'w-12 h-10 rounded-[20px]'} bg-[#8a2be2] items-center justify-center \${
+          className={`\${IS_TV ? 'w-16 h-14 rounded-[28px]' : 'w-12 h-10 rounded-[20px]'} bg-[#8a2be2] items-center justify-center \${
             isRecording
               ? 'bg-[#ef4444] shadow-[0_0_8px_rgba(239,68,68,0.5)]'
               : 'hover:shadow-[0_0_8px_rgba(138,43,226,0.5)]'
-          }\`}
+          }`}
           accessibilityLabel={isRecording ? t('chatbot.stopRecording') : t('chatbot.startRecording')}
         >
           {isRecording ? (
@@ -121,11 +121,11 @@ export function ChatInputBar({
         <Pressable
           onPress={onSubmit}
           disabled={!input.trim() || isLoading || isRecording || isTranscribing}
-          className={\`\${IS_TV ? 'w-14 h-14 rounded-[28px]' : 'w-10 h-10 rounded-[20px]'} bg-[#8a2be2] items-center justify-center \${
+          className={`\${IS_TV ? 'w-14 h-14 rounded-[28px]' : 'w-10 h-10 rounded-[20px]'} bg-[#8a2be2] items-center justify-center \${
             (!input.trim() || isLoading)
               ? 'opacity-50'
               : 'hover:shadow-[0_0_8px_rgba(138,43,226,0.5)]'
-          }\`}
+          }`}
         >
           <Send size={16} color={colors.text} />
         </Pressable>

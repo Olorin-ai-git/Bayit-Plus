@@ -35,8 +35,7 @@ const LANGUAGE_KEY = '@olorin_language';
  */
 async function getAsyncStorage() {
   try {
-    // @ts-expect-error - Dynamic import for React Native
-    const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
+    const AsyncStorage = (await import(/* webpackIgnore: true */ '@react-native-async-storage/async-storage')).default;
     return AsyncStorage;
   } catch {
     return null;

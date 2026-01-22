@@ -118,7 +118,6 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
   if (Platform.OS === 'web') {
     return (
       <View
-        // @ts-expect-error - Web-specific className
         className="glass-light px-4 py-2 border-b"
         style={[
           {
@@ -135,21 +134,23 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
   }
 
   // Native: Use gradient fallback
+  const gradientStyle = [
+    {
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.glassBorder,
+      backgroundColor: colors.glassMedium,
+    },
+    style,
+  ];
+
   return (
     <LinearGradient
       colors={[colors.glass, colors.glassStrong]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
-      style={[
-        {
-          paddingHorizontal: spacing.md,
-          paddingVertical: spacing.sm,
-          borderBottomWidth: 1,
-          borderBottomColor: colors.glassBorder,
-          backgroundColor: colors.glassMedium,
-        },
-        style,
-      ]}
+      style={gradientStyle as any}
       {...({ testID } as object)}
     >
       {renderContent()}

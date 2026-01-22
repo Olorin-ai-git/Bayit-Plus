@@ -17,6 +17,17 @@ try:
         "oauth_callback": "10/minute",  # 10 OAuth attempts per minute
         "password_reset": "3/hour",  # 3 password reset requests per hour
         "partner_register": "3/hour",  # 3 partner registrations per hour per IP
+
+        # Subtitles - Protection for expensive AI operations and external APIs
+        "subtitle_cues": "50/minute",  # High-frequency mobile requests during video playback
+        "subtitle_tracks": "100/minute",  # Lightweight listing endpoint
+        "subtitle_nikud": "5/hour",  # Expensive AI operations (Claude API batch processing)
+        "subtitle_translate_word": "20/minute",  # AI translation with database caching
+        "subtitle_translate_phrase": "10/minute",  # AI translation for phrases (no caching)
+        "subtitle_fetch_external": "3/hour",  # External API quota protection (OpenSubtitles)
+        "subtitle_import": "10/hour",  # Database writes for subtitle import
+        "subtitle_delete": "20/hour",  # Destructive operations
+        "subtitle_general": "30/minute",  # Other endpoints (languages, cache stats)
     }
 
     RATE_LIMITING_ENABLED = True

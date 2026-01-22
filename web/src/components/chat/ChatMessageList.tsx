@@ -35,7 +35,7 @@ export function ChatMessageList({
       {messages.map((message, index) => (
         <View
           key={index}
-          className={\`mb-2 \${message.role === 'user' ? 'items-start' : 'items-end'}\`}
+          className={`mb-2 \${message.role === 'user' ? 'items-start' : 'items-end'}`}
         >
           {message.type === 'recommendations' ? (
             <ChatRecommendations
@@ -45,18 +45,18 @@ export function ChatMessageList({
             />
           ) : (
             <View
-              className={\`max-w-[80%] \${IS_TV ? 'px-6 py-4' : 'px-4 py-2'} rounded-lg \${
+              className={`max-w-[80%] \${IS_TV ? 'px-6 py-4' : 'px-4 py-2'} rounded-lg \${
                 message.role === 'user'
                   ? 'bg-[#8a2be2] rounded-tr-sm'
                   : message.isError
                   ? 'bg-[rgba(239,68,68,0.2)] rounded-tl-sm'
                   : 'bg-white/10 rounded-tl-sm'
-              }\`}
+              }`}
             >
               <Text
-                className={\`\${IS_TV ? 'text-[22px] leading-8' : 'text-sm leading-5'} \${
+                className={`\${IS_TV ? 'text-[22px] leading-8' : 'text-sm leading-5'} \${
                   message.isError ? 'text-[#ef4444]' : 'text-white'
-                }\`}
+                }`}
               >
                 {typeof message.content === 'string' ? message.content : ''}
               </Text>

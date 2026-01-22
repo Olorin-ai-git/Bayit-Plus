@@ -51,8 +51,8 @@ export default function Chatbot() {
   // Voice response orchestration
   const { handleVoiceResponse } = useVoiceResponseCoordinator({
     onNavigate: (path) => navigate(path),
-    onSearch: (query) => navigate(\`/search?q=\${encodeURIComponent(query)}\`),
-    onPlay: (contentId) => navigate(\`/vod/\${contentId}\`),
+    onSearch: (query) => navigate(`/search?q=${encodeURIComponent(query)}`),
+    onPlay: (contentId) => navigate(`/vod/${contentId}`),
     onProcessingStart: () => {},
     onProcessingEnd: () => {},
   })
@@ -274,7 +274,7 @@ export default function Chatbot() {
   }
 
   const handleRecommendationPress = (id: string) => {
-    navigate(\`/vod/\${id}\`)
+    navigate(`/vod/\${id}`)
   }
 
   if (!isAuthenticated && !IS_TV_BUILD) {
@@ -290,7 +290,7 @@ export default function Chatbot() {
       {!isOpen && (
         <Pressable
           onPress={() => setOpen(true)}
-          className={\`fixed \${IS_TV_BUILD ? 'bottom-8 left-8 w-20 h-20' : 'bottom-6 left-6 w-14 h-14'} z-50 rounded-full bg-[#8a2be2] shadow-[0_4px_12px_rgba(138,43,226,0.3)] hover:scale-110 hover:shadow-[0_4px_12px_rgba(138,43,226,0.5)]\`}
+          className={`fixed \${IS_TV_BUILD ? 'bottom-8 left-8 w-20 h-20' : 'bottom-6 left-6 w-14 h-14'} z-50 rounded-full bg-[#8a2be2] shadow-[0_4px_12px_rgba(138,43,226,0.3)] hover:scale-110 hover:shadow-[0_4px_12px_rgba(138,43,226,0.5)]`}
           accessibilityLabel={t('chatbot.openChat')}
         >
           <View className="flex-1 items-center justify-center">
@@ -301,19 +301,19 @@ export default function Chatbot() {
 
       {isOpen && (
         <Animated.View
-          className={\`fixed \${IS_TV_BUILD ? 'bottom-8 left-8 w-[600px] h-[700px] max-h-[80vh]' : 'bottom-6 left-6 w-96 max-w-[calc(100vw-3rem)] h-[500px] max-h-[70vh]'} z-50\`}
+          className={`fixed \${IS_TV_BUILD ? 'bottom-8 left-8 w-[600px] h-[700px] max-h-[80vh]' : 'bottom-6 left-6 w-96 max-w-[calc(100vw-3rem)] h-[500px] max-h-[70vh]'} z-50`}
           style={{
             transform: [{ translateY: slideAnim }],
             opacity: opacityAnim,
           }}
         >
           <GlassView className="flex-1 overflow-hidden" intensity="high">
-            <View className={\`flex-row items-center justify-between px-4 \${IS_TV_BUILD ? 'py-3' : 'py-2'} border-b border-white/10 bg-gradient-to-l from-[rgba(107,33,168,0.3)] to-[rgba(138,43,226,0.2)] \${isRTL ? 'flex-row-reverse' : ''}\`}>
-              <View className={\`flex-row items-center gap-2 \${isRTL ? 'flex-row-reverse' : ''}\`}>
-                <View className={\`\${IS_TV_BUILD ? 'w-12 h-12 rounded-3xl' : 'w-8 h-8 rounded-2xl'} bg-[#8a2be2] items-center justify-center\`}>
+            <View className={`flex-row items-center justify-between px-4 \${IS_TV_BUILD ? 'py-3' : 'py-2'} border-b border-white/10 bg-gradient-to-l from-[rgba(107,33,168,0.3)] to-[rgba(138,43,226,0.2)] \${isRTL ? 'flex-row-reverse' : ''}`}>
+              <View className={`flex-row items-center gap-2 \${isRTL ? 'flex-row-reverse' : ''}`}>
+                <View className={`\${IS_TV_BUILD ? 'w-12 h-12 rounded-3xl' : 'w-8 h-8 rounded-2xl'} bg-[#8a2be2] items-center justify-center`}>
                   <Sparkles size={16} color={colors.text} />
                 </View>
-                <Text className={\`\${IS_TV_BUILD ? 'text-2xl' : 'text-base'} font-semibold text-white\`}>{t('chatbot.title')}</Text>
+                <Text className={`\${IS_TV_BUILD ? 'text-2xl' : 'text-base'} font-semibold text-white`}>{t('chatbot.title')}</Text>
               </View>
               <Pressable
                 onPress={() => setOpen(false)}

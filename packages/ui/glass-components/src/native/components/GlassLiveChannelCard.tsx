@@ -156,7 +156,6 @@ export function GlassLiveChannelCard({
               {/* Use CSS class for web animation, style for native */}
               <View
                 className="w-[6px] h-[6px] rounded-full bg-white"
-                // @ts-expect-error - web-only className for CSS animation
                 {...(isWeb && { className: 'live-pulse-dot' })}
               />
               <Text className="text-[10px] font-bold text-white tracking-wider uppercase">
