@@ -1,0 +1,102 @@
+[1mnpm[22m [34mverbose[39m [94mcli[39m /Users/gklainert/.nvm/versions/node/v20.19.4/bin/node /Users/gklainert/.nvm/versions/node/v20.19.4/bin/npm
+[1mnpm[22m [36minfo[39m [94musing[39m npm@10.8.2
+[1mnpm[22m [36minfo[39m [94musing[39m node@v20.19.4
+[1mnpm[22m [36minfo[39m [94mconfig[39m found workspace root at /Users/gklainert/Documents/cvplus
+[1mnpm[22m [34mverbose[39m [94mtitle[39m npm run build
+[1mnpm[22m [34mverbose[39m [94margv[39m "run" "build"
+[1mnpm[22m [34mverbose[39m [94mlogfile[39m logs-max:10 dir:/Users/gklainert/.npm/_logs/2025-08-29T18_20_58_944Z-
+[1mnpm[22m [34mverbose[39m [94mlogfile[39m /Users/gklainert/.npm/_logs/2025-08-29T18_20_58_944Z-debug-0.log
+
+> @cvplus/premium@4.0.0 build
+> tsup
+
+[1G[0K[34mCLI[39m Building entry: src/index.ts
+[34mCLI[39m Using tsconfig: tsconfig.json
+[34mCLI[39m tsup v8.5.0
+[34mCLI[39m Using tsup config: /Users/gklainert/Documents/cvplus/packages/premium/tsup.config.ts
+[34mCLI[39m Target: es2020
+[34mCLI[39m Cleaning output folder
+[34mCJS[39m Build start
+[34mESM[39m Build start
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "./security/rate-limit-guard.service"[0m
+
+    src/services/core-integration.ts:25:37:
+[37m      25 │ import { SecureRateLimitGuard } from [32m'./security/rate-limit-guard.service'[37m;
+         ╵                                      [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "./security/rate-limit-guard.service"[0m
+
+    src/services/core-integration.ts:25:37:
+[37m      25 │ import { SecureRateLimitGuard } from [32m'./security/rate-limit-guard.service'[37m;
+         ╵                                      [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "./security/security-monitor.service"[0m
+
+    src/services/core-integration.ts:26:39:
+[37m      26 │ import { SecurityMonitorService } from [32m'./security/security-monitor.service'[37m;
+         ╵                                        [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "./security/security-monitor.service"[0m
+
+    src/services/core-integration.ts:26:39:
+[37m      26 │ import { SecurityMonitorService } from [32m'./security/security-monitor.service'[37m;
+         ╵                                        [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "../services/subscription-management.service"[0m
+
+    src/middleware/premium-guard.ts:18:46:
+[37m      18 │ import { SubscriptionManagementService } from [32m'../services/subscription-management.service'[37m;
+         ╵                                               [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "../services/subscription-management.service"[0m
+
+    src/middleware/premium-guard.ts:18:46:
+[37m      18 │ import { SubscriptionManagementService } from [32m'../services/subscription-management.service'[37m;
+         ╵                                               [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[31mCJS[39m [31mBuild failed[39m
+[31mESM[39m [31mBuild failed[39m
+[31mError: Build failed with 3 errors:
+src/middleware/premium-guard.ts:18:46: ERROR: Could not resolve "../services/subscription-management.service"
+src/services/core-integration.ts:25:37: ERROR: Could not resolve "./security/rate-limit-guard.service"
+src/services/core-integration.ts:26:39: ERROR: Could not resolve "./security/security-monitor.service"
+    at failureErrorWithLog (/Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:1467:15)
+    at /Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:926:25
+    at runOnEndCallbacks (/Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:1307:45)
+    at buildResponseToResult (/Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:924:7)
+    at /Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:951:16
+    at responseCallbacks.<computed> (/Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:603:9)
+    at handleIncomingPacket (/Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:658:12)
+    at Socket.readFromStdout (/Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:581:7)
+    at Socket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)[39m
+[34mDTS[39m Build start
+src/backend/services/analytics/pricingAnalytics.ts(12,16): error TS2554: Expected 1-2 arguments, but got 0.
+src/backend/services/analytics/pricingAnalytics.ts(237,20): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
+
+[31mDTS[39m [31mBuild error[39m
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mstack[39m Error: command failed
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at promiseSpawn (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/promise-spawn/lib/index.js:22:22)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at spawnWithShell (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/promise-spawn/lib/index.js:124:10)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at promiseSpawn (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/promise-spawn/lib/index.js:12:12)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at runScriptPkg (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/run-script-pkg.js:77:13)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at runScript (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/run-script.js:9:12)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at #run (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/commands/run-script.js:130:13)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at RunScript.execWorkspaces (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/commands/run-script.js:62:24)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at async Npm.exec (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/npm.js:207:9)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at async module.exports (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/cli/entry.js:74:5)
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mpkgid[39m @cvplus/premium@4.0.0
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m Lifecycle script `build` failed with error:
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mcode[39m [33m1[39m
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mpath[39m /Users/gklainert/Documents/cvplus/packages/premium
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mworkspace[39m @cvplus/premium@4.0.0
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mlocation[39m /Users/gklainert/Documents/cvplus/packages/premium
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m command failed
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mcommand[39m sh -c tsup
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mcwd[39m /Users/gklainert/Documents/cvplus/packages/premium
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mos[39m Darwin 24.6.0
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mnode[39m v20.19.4
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mnpm [39m v10.8.2
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mexit[39m [33m1[39m
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mcode[39m [33m1[39m
+[1G[0K⠙[1G[0K

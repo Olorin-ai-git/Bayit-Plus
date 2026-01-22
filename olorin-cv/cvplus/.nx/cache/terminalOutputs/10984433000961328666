@@ -1,0 +1,1760 @@
+[1mnpm[22m [34mverbose[39m [94mcli[39m /Users/gklainert/.nvm/versions/node/v20.19.4/bin/node /Users/gklainert/.nvm/versions/node/v20.19.4/bin/npm
+[1mnpm[22m [36minfo[39m [94musing[39m npm@10.8.2
+[1mnpm[22m [36minfo[39m [94musing[39m node@v20.19.4
+[1mnpm[22m [36minfo[39m [94mconfig[39m found workspace root at /Users/gklainert/Documents/cvplus
+[1mnpm[22m [34mverbose[39m [94mtitle[39m npm run build
+[1mnpm[22m [34mverbose[39m [94margv[39m "run" "build"
+[1mnpm[22m [34mverbose[39m [94mlogfile[39m logs-max:10 dir:/Users/gklainert/.npm/_logs/2025-08-29T18_21_04_784Z-
+[1mnpm[22m [34mverbose[39m [94mlogfile[39m /Users/gklainert/.npm/_logs/2025-08-29T18_21_04_784Z-debug-0.log
+
+> @cvplus/workflow@1.0.0 build
+> rollup -c
+
+[1G[0K(node:60669) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/gklainert/Documents/cvplus/packages/workflow/rollup.config.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/gklainert/Documents/cvplus/packages/workflow/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[36m
+[1msrc/index.ts[22m → [1mdist/index.js[22m...[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/certificationBadges.ts (3:1): @rollup/plugin-typescript TS6133: 'CertificationService' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/certificationBadges.ts:3:1[22m
+[90m
+[7m3[0m import { CertificationService } from '../services/CertificationService';
+[7m [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/certificationBadges.ts (16:10): @rollup/plugin-typescript TS6133: 'request' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/certificationBadges.ts:16:10[22m
+[90m
+[7m16[0m   async (request, response) => {
+[7m  [0m [91m         ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/getTemplates.ts (3:29): @rollup/plugin-typescript TS2307: Cannot find module '../../config/cors' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/getTemplates.ts:3:29[22m
+[90m
+[7m3[0m import { corsOptions } from '../../config/cors';
+[7m [0m [91m                            ~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/getTemplates.ts (11:5): @rollup/plugin-typescript TS2322: Type '"modern"' is not assignable to type 'TemplateCategory'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/getTemplates.ts:11:5[22m
+[90m
+[7m11[0m     category: 'modern',
+[7m  [0m [91m    ~~~~~~~~[0m
+
+  [96msrc/types/Template.ts[0m:[93m18[0m:[93m3[0m
+    [7m18[0m   category: TemplateCategory;
+    [7m  [0m [96m  ~~~~~~~~[0m
+    The expected type comes from property 'category' which is declared here on type 'CVTemplate'
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/getTemplates.ts (33:5): @rollup/plugin-typescript TS2322: Type '"classic"' is not assignable to type 'TemplateCategory'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/getTemplates.ts:33:5[22m
+[90m
+[7m33[0m     category: 'classic',
+[7m  [0m [91m    ~~~~~~~~[0m
+
+  [96msrc/types/Template.ts[0m:[93m18[0m:[93m3[0m
+    [7m18[0m   category: TemplateCategory;
+    [7m  [0m [96m  ~~~~~~~~[0m
+    The expected type comes from property 'category' which is declared here on type 'CVTemplate'
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/getTemplates.ts (54:5): @rollup/plugin-typescript TS2561: Object literal may only specify known properties, but 'thumbnail' does not exist in type 'CVTemplate'. Did you mean to write 'thumbnailUrl'?[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/getTemplates.ts:54:5[22m
+[90m
+[7m54[0m     thumbnail: 'https://storage.googleapis.com/cvplus/templates/creative-designer.png',
+[7m  [0m [91m    ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/injectCompletedFeatures.ts (4:29): @rollup/plugin-typescript TS2307: Cannot find module '../../config/cors' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/injectCompletedFeatures.ts:4:29[22m
+[90m
+[7m4[0m import { corsOptions } from '../../config/cors';
+[7m [0m [91m                            ~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/injectCompletedFeatures.ts (5:29): @rollup/plugin-typescript TS2307: Cannot find module '../../services/cvGenerator' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/injectCompletedFeatures.ts:5:29[22m
+[90m
+[7m5[0m import { CVGenerator } from '../../services/cvGenerator';
+[7m [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/monitorJobs.ts (3:1): @rollup/plugin-typescript TS6133: 'JobMonitoringService' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/monitorJobs.ts:3:1[22m
+[90m
+[7m3[0m import { JobMonitoringService } from '../services/JobMonitoringService';
+[7m [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/monitorJobs.ts (4:1): @rollup/plugin-typescript TS6133: 'WorkflowOrchestrator' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/monitorJobs.ts:4:1[22m
+[90m
+[7m4[0m import { WorkflowOrchestrator } from '../services/WorkflowOrchestrator';
+[7m [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/monitorJobs.ts (17:10): @rollup/plugin-typescript TS6133: 'request' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/monitorJobs.ts:17:10[22m
+[90m
+[7m17[0m   async (request, response) => {
+[7m  [0m [91m         ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/roleProfileFunctions.ts (3:1): @rollup/plugin-typescript TS6133: 'RoleProfileService' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/roleProfileFunctions.ts:3:1[22m
+[90m
+[7m3[0m import { RoleProfileService } from '../services/RoleProfileService';
+[7m [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/roleProfileFunctions.ts (17:10): @rollup/plugin-typescript TS6133: 'request' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/roleProfileFunctions.ts:17:10[22m
+[90m
+[7m17[0m   async (request, response) => {
+[7m  [0m [91m         ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/roleProfileFunctions.ts (39:10): @rollup/plugin-typescript TS6133: 'request' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/roleProfileFunctions.ts:39:10[22m
+[90m
+[7m39[0m   async (request, response) => {
+[7m  [0m [91m         ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/roleProfileFunctions.ts (61:10): @rollup/plugin-typescript TS6133: 'request' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/roleProfileFunctions.ts:61:10[22m
+[90m
+[7m61[0m   async (request, response) => {
+[7m  [0m [91m         ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/skipFeature.ts (4:29): @rollup/plugin-typescript TS2307: Cannot find module '../../config/cors' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/skipFeature.ts:4:29[22m
+[90m
+[7m4[0m import { corsOptions } from '../../config/cors';
+[7m [0m [91m                            ~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/updateJobFeatures.ts (3:35): @rollup/plugin-typescript TS2307: Cannot find module '../../utils/auth' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/updateJobFeatures.ts:3:35[22m
+[90m
+[7m3[0m import { requireGoogleAuth } from '../../utils/auth';
+[7m [0m [91m                                  ~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/updateJobFeatures.ts (4:20): @rollup/plugin-typescript TS2307: Cannot find module '../../config/firebase' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/updateJobFeatures.ts:4:20[22m
+[90m
+[7m4[0m import { db } from '../../config/firebase';
+[7m [0m [91m                   ~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/updatePlaceholderValue.ts (10:36): @rollup/plugin-typescript TS2307: Cannot find module '../../services/placeholder-manager.service' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/updatePlaceholderValue.ts:10:36[22m
+[90m
+[7m10[0m import { PlaceholderManager } from '../../services/placeholder-manager.service';
+[7m  [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/functions/updatePlaceholderValue.ts (11:29): @rollup/plugin-typescript TS2307: Cannot find module '../../config/cors' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/functions/updatePlaceholderValue.ts:11:29[22m
+[90m
+[7m11[0m import { corsOptions } from '../../config/cors';
+[7m  [0m [91m                            ~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/certification-badges.service.ts (6:26): @rollup/plugin-typescript TS2307: Cannot find module '../types/enhanced-models' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/certification-badges.service.ts:6:26[22m
+[90m
+[7m6[0m import { ParsedCV } from '../types/enhanced-models';
+[7m [0m [91m                         ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/certification-badges.service.ts (10:24): @rollup/plugin-typescript TS2307: Cannot find module '../config/environment' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/certification-badges.service.ts:10:24[22m
+[90m
+[7m10[0m import { config } from '../config/environment';
+[7m  [0m [91m                       ~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/certification-badges.service.ts (445:5): @rollup/plugin-typescript TS6133: 'certName' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/certification-badges.service.ts:445:5[22m
+[90m
+[7m445[0m     certName: string,
+[7m   [0m [91m    ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (8:41): @rollup/plugin-typescript TS6133: 'BadgeStatus' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:8:41[22m
+[90m
+[7m8[0m import { CertificationBadge, BadgeType, BadgeStatus } from '../../types/Certification';
+[7m [0m [91m                                        ~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (16:5): @rollup/plugin-typescript TS6133: 'userId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:16:5[22m
+[90m
+[7m16[0m     userId: string,
+[7m  [0m [91m    ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (17:5): @rollup/plugin-typescript TS6133: 'badgeType' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:17:5[22m
+[90m
+[7m17[0m     badgeType: BadgeType,
+[7m  [0m [91m    ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (18:5): @rollup/plugin-typescript TS6133: 'criteria' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:18:5[22m
+[90m
+[7m18[0m     criteria: any,
+[7m  [0m [91m    ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (19:5): @rollup/plugin-typescript TS6133: 'metadata' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:19:5[22m
+[90m
+[7m19[0m     metadata?: any
+[7m  [0m [91m    ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (28:23): @rollup/plugin-typescript TS6133: 'userId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:28:23[22m
+[90m
+[7m28[0m   async getUserBadges(userId: string): Promise<CertificationBadge[]> {
+[7m  [0m [91m                      ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (36:18): @rollup/plugin-typescript TS6133: 'badgeId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:36:18[22m
+[90m
+[7m36[0m   async getBadge(badgeId: string): Promise<CertificationBadge | null> {
+[7m  [0m [91m                 ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (44:21): @rollup/plugin-typescript TS6133: 'badgeId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:44:21[22m
+[90m
+[7m44[0m   async verifyBadge(badgeId: string, verificationCode?: string): Promise<{
+[7m  [0m [91m                    ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (44:38): @rollup/plugin-typescript TS6133: 'verificationCode' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:44:38[22m
+[90m
+[7m44[0m   async verifyBadge(badgeId: string, verificationCode?: string): Promise<{
+[7m  [0m [91m                                     ~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (56:21): @rollup/plugin-typescript TS6133: 'badgeId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:56:21[22m
+[90m
+[7m56[0m   async revokeBadge(badgeId: string, reason: string): Promise<void> {
+[7m  [0m [91m                    ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (56:38): @rollup/plugin-typescript TS6133: 'reason' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:56:38[22m
+[90m
+[7m56[0m   async revokeBadge(badgeId: string, reason: string): Promise<void> {
+[7m  [0m [91m                                     ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (79:31): @rollup/plugin-typescript TS6133: 'userId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:79:31[22m
+[90m
+[7m79[0m   async checkBadgeEligibility(userId: string, badgeType: BadgeType): Promise<{
+[7m  [0m [91m                              ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (79:47): @rollup/plugin-typescript TS6133: 'badgeType' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:79:47[22m
+[90m
+[7m79[0m   async checkBadgeEligibility(userId: string, badgeType: BadgeType): Promise<{
+[7m  [0m [91m                                              ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (91:33): @rollup/plugin-typescript TS6133: 'badgeId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:91:33[22m
+[90m
+[7m91[0m   async generateVerificationUrl(badgeId: string): Promise<string> {
+[7m  [0m [91m                                ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (99:32): @rollup/plugin-typescript TS6133: 'userId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:99:32[22m
+[90m
+[7m99[0m   async getUserBadgeStatistics(userId: string): Promise<{
+[7m  [0m [91m                               ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (115:37): @rollup/plugin-typescript TS6133: 'badgeType' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:115:37[22m
+[90m
+[7m115[0m   async getCertificationLeaderboard(badgeType?: BadgeType, limit: number = 10): Promise<Array<{
+[7m   [0m [91m                                    ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (115:60): @rollup/plugin-typescript TS6133: 'limit' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:115:60[22m
+[90m
+[7m115[0m   async getCertificationLeaderboard(badgeType?: BadgeType, limit: number = 10): Promise<Array<{
+[7m   [0m [91m                                                           ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (128:26): @rollup/plugin-typescript TS6133: 'userId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:128:26[22m
+[90m
+[7m128[0m   async exportUserBadges(userId: string, format: 'json' | 'pdf' | 'blockchain'): Promise<string | Buffer> {
+[7m   [0m [91m                         ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/CertificationService.ts (128:42): @rollup/plugin-typescript TS6133: 'format' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/CertificationService.ts:128:42[22m
+[90m
+[7m128[0m   async exportUserBadges(userId: string, format: 'json' | 'pdf' | 'blockchain'): Promise<string | Buffer> {
+[7m   [0m [91m                                         ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (8:10): @rollup/plugin-typescript TS6133: 'Feature' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:8:10[22m
+[90m
+[7m8[0m import { Feature, FeatureStatus, CompletedFeature } from '../../types/Feature';
+[7m [0m [91m         ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (9:1): @rollup/plugin-typescript TS6133: 'Job' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:9:1[22m
+[90m
+[7m9[0m import { Job } from '../../types/Job';
+[7m [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (17:5): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:17:5[22m
+[90m
+[7m17[0m     jobId: string,
+[7m  [0m [91m    ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (18:5): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:18:5[22m
+[90m
+[7m18[0m     featureId: string,
+[7m  [0m [91m    ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (19:5): @rollup/plugin-typescript TS6133: 'completionData' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:19:5[22m
+[90m
+[7m19[0m     completionData: any
+[7m  [0m [91m    ~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (28:30): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:28:30[22m
+[90m
+[7m28[0m   async getCompletedFeatures(jobId: string): Promise<CompletedFeature[]> {
+[7m  [0m [91m                             ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (36:28): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:36:28[22m
+[90m
+[7m36[0m   async isFeatureCompleted(jobId: string, featureId: string): Promise<boolean> {
+[7m  [0m [91m                           ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (36:43): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:36:43[22m
+[90m
+[7m36[0m   async isFeatureCompleted(jobId: string, featureId: string): Promise<boolean> {
+[7m  [0m [91m                                          ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (44:26): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:44:26[22m
+[90m
+[7m44[0m   async getFeatureStatus(jobId: string, featureId: string): Promise<FeatureStatus> {
+[7m  [0m [91m                         ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (44:41): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:44:41[22m
+[90m
+[7m44[0m   async getFeatureStatus(jobId: string, featureId: string): Promise<FeatureStatus> {
+[7m  [0m [91m                                        ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (52:33): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:52:33[22m
+[90m
+[7m52[0m   async injectCompletedFeatures(jobId: string, features: CompletedFeature[]): Promise<void> {
+[7m  [0m [91m                                ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (52:48): @rollup/plugin-typescript TS6133: 'features' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:52:48[22m
+[90m
+[7m52[0m   async injectCompletedFeatures(jobId: string, features: CompletedFeature[]): Promise<void> {
+[7m  [0m [91m                                               ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (61:5): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:61:5[22m
+[90m
+[7m61[0m     jobId: string,
+[7m  [0m [91m    ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (62:5): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:62:5[22m
+[90m
+[7m62[0m     featureId: string,
+[7m  [0m [91m    ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (63:5): @rollup/plugin-typescript TS6133: 'progress' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:63:5[22m
+[90m
+[7m63[0m     progress: number,
+[7m  [0m [91m    ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (64:5): @rollup/plugin-typescript TS6133: 'metadata' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:64:5[22m
+[90m
+[7m64[0m     metadata?: any
+[7m  [0m [91m    ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (73:34): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:73:34[22m
+[90m
+[7m73[0m   async checkFeatureDependencies(jobId: string, featureId: string): Promise<{
+[7m  [0m [91m                                 ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (73:49): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:73:49[22m
+[90m
+[7m73[0m   async checkFeatureDependencies(jobId: string, featureId: string): Promise<{
+[7m  [0m [91m                                                ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (85:28): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:85:28[22m
+[90m
+[7m85[0m   async getCompletionStats(jobId: string): Promise<{
+[7m  [0m [91m                           ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (100:26): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:100:26[22m
+[90m
+[7m100[0m   validateCompletionData(featureId: string, completionData: any): boolean {
+[7m   [0m [91m                         ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureCompletionService.ts (100:45): @rollup/plugin-typescript TS6133: 'completionData' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureCompletionService.ts:100:45[22m
+[90m
+[7m100[0m   validateCompletionData(featureId: string, completionData: any): boolean {
+[7m   [0m [91m                                            ~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (8:10): @rollup/plugin-typescript TS6133: 'Feature' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:8:10[22m
+[90m
+[7m8[0m import { Feature, FeatureStatus, SkippedFeature } from '../../types/Feature';
+[7m [0m [91m         ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (8:19): @rollup/plugin-typescript TS6133: 'FeatureStatus' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:8:19[22m
+[90m
+[7m8[0m import { Feature, FeatureStatus, SkippedFeature } from '../../types/Feature';
+[7m [0m [91m                  ~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (16:5): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:16:5[22m
+[90m
+[7m16[0m     jobId: string,
+[7m  [0m [91m    ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (17:5): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:17:5[22m
+[90m
+[7m17[0m     featureId: string,
+[7m  [0m [91m    ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (18:5): @rollup/plugin-typescript TS6133: 'reason' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:18:5[22m
+[90m
+[7m18[0m     reason?: string,
+[7m  [0m [91m    ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (19:5): @rollup/plugin-typescript TS6133: 'skipMetadata' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:19:5[22m
+[90m
+[7m19[0m     skipMetadata?: any
+[7m  [0m [91m    ~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (28:28): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:28:28[22m
+[90m
+[7m28[0m   async getSkippedFeatures(jobId: string): Promise<SkippedFeature[]> {
+[7m  [0m [91m                           ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (36:26): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:36:26[22m
+[90m
+[7m36[0m   async isFeatureSkipped(jobId: string, featureId: string): Promise<boolean> {
+[7m  [0m [91m                         ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (36:41): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:36:41[22m
+[90m
+[7m36[0m   async isFeatureSkipped(jobId: string, featureId: string): Promise<boolean> {
+[7m  [0m [91m                                        ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (44:23): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:44:23[22m
+[90m
+[7m44[0m   async unskipFeature(jobId: string, featureId: string): Promise<void> {
+[7m  [0m [91m                      ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (44:38): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:44:38[22m
+[90m
+[7m44[0m   async unskipFeature(jobId: string, featureId: string): Promise<void> {
+[7m  [0m [91m                                     ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (52:24): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:52:24[22m
+[90m
+[7m52[0m   async getSkipReasons(jobId?: string): Promise<{
+[7m  [0m [91m                       ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (64:24): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:64:24[22m
+[90m
+[7m64[0m   async canSkipFeature(jobId: string, featureId: string): Promise<{
+[7m  [0m [91m                       ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (64:39): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:64:39[22m
+[90m
+[7m64[0m   async canSkipFeature(jobId: string, featureId: string): Promise<{
+[7m  [0m [91m                                      ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (76:28): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:76:28[22m
+[90m
+[7m76[0m   async getSkipSuggestions(jobId: string): Promise<{
+[7m  [0m [91m                           ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (90:5): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:90:5[22m
+[90m
+[7m90[0m     jobId: string,
+[7m  [0m [91m    ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (91:5): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:91:5[22m
+[90m
+[7m91[0m     featureId: string,
+[7m  [0m [91m    ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (92:5): @rollup/plugin-typescript TS6133: 'newReason' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:92:5[22m
+[90m
+[7m92[0m     newReason: string
+[7m  [0m [91m    ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (101:31): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:101:31[22m
+[90m
+[7m101[0m   async getSkipImpactAnalysis(jobId: string, featureId: string): Promise<{
+[7m   [0m [91m                              ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/FeatureSkipService.ts (101:46): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/FeatureSkipService.ts:101:46[22m
+[90m
+[7m101[0m   async getSkipImpactAnalysis(jobId: string, featureId: string): Promise<{
+[7m   [0m [91m                                             ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/industry-templates.service.ts (11:26): @rollup/plugin-typescript TS2307: Cannot find module '../types/enhanced-models' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/industry-templates.service.ts:11:26[22m
+[90m
+[7m11[0m import { ParsedCV } from '../types/enhanced-models';
+[7m  [0m [91m                         ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/industry-templates.service.ts (68:5): @rollup/plugin-typescript TS2322: Type 'IndustryTemplate | undefined' is not assignable to type 'IndustryTemplate | null'.
+  Type 'undefined' is not assignable to type 'IndustryTemplate | null'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/industry-templates.service.ts:68:5[22m
+[90m
+[7m68[0m     return this.templates.get(industryId) || this.templates.get('general-business');
+[7m  [0m [91m    ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/industry-templates.service.ts (77:17): @rollup/plugin-typescript TS6133: 'templateId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/industry-templates.service.ts:77:17[22m
+[90m
+[7m77[0m     for (const [templateId, template] of this.templates) {
+[7m  [0m [91m                ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/industry-templates.service.ts (532:52): @rollup/plugin-typescript TS7006: Parameter 'exp' implicitly has an 'any' type.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/industry-templates.service.ts:532:52[22m
+[90m
+[7m532[0m     const expAchievements = cv.experience?.flatMap(exp => exp.achievements || []) || [];
+[7m   [0m [91m                                                   ~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/industry-templates.service.ts (555:49): @rollup/plugin-typescript TS6133: 'template' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/industry-templates.service.ts:555:49[22m
+[90m
+[7m555[0m   private assessCareerProgression(cv: ParsedCV, template: IndustryTemplate): number {
+[7m   [0m [91m                                                ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/industry-templates.service.ts (559:53): @rollup/plugin-typescript TS7006: Parameter 'exp' implicitly has an 'any' type.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/industry-templates.service.ts:559:53[22m
+[90m
+[7m559[0m     const hasProgressiveRoles = cv.experience.some((exp, index) =>
+[7m   [0m [91m                                                    ~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/industry-templates.service.ts (559:58): @rollup/plugin-typescript TS7006: Parameter 'index' implicitly has an 'any' type.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/industry-templates.service.ts:559:58[22m
+[90m
+[7m559[0m     const hasProgressiveRoles = cv.experience.some((exp, index) =>
+[7m   [0m [91m                                                         ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/industry-templates.service.ts (571:60): @rollup/plugin-typescript TS6133: 'template' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/industry-templates.service.ts:571:60[22m
+[90m
+[7m571[0m   private calculateConfidence(score: number, cv: ParsedCV, template: IndustryTemplate): number {
+[7m   [0m [91m                                                           ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/industry-templates.service.ts (586:5): @rollup/plugin-typescript TS2322: Type 'unknown[]' is not assignable to type 'string[]'.
+  Type 'unknown' is not assignable to type 'string'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/industry-templates.service.ts:586:5[22m
+[90m
+[7m586[0m     return Object.values(cv.skills).flat();
+[7m   [0m [91m    ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/industry-templates.service.ts (593:30): @rollup/plugin-typescript TS7006: Parameter 'exp' implicitly has an 'any' type.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/industry-templates.service.ts:593:30[22m
+[90m
+[7m593[0m       ...(cv.experience?.map(exp =>
+[7m   [0m [91m                             ~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/job-monitoring.service.ts (3:38): @rollup/plugin-typescript TS2307: Cannot find module '../utils/firestore-sanitizer' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/job-monitoring.service.ts:3:38[22m
+[90m
+[7m3[0m import { sanitizeForFirestore } from '../utils/firestore-sanitizer';
+[7m [0m [91m                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/job-monitoring.service.ts (124:17): @rollup/plugin-typescript TS6133: 'featureName' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/job-monitoring.service.ts:124:17[22m
+[90m
+[7m124[0m     for (const [featureName, featureData] of Object.entries(enhancedFeatures)) {
+[7m   [0m [91m                ~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/job-monitoring.service.ts (153:5): @rollup/plugin-typescript TS6133: 'jobData' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/job-monitoring.service.ts:153:5[22m
+[90m
+[7m153[0m     jobData: any,
+[7m   [0m [91m    ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (9:1): @rollup/plugin-typescript TS6133: 'Job' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:9:1[22m
+[90m
+[7m9[0m import { Job } from '../../types/Job';
+[7m [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (16:27): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:16:27[22m
+[90m
+[7m16[0m   async updateJobFeatures(jobId: string, featureUpdates: Partial<Feature>[]): Promise<void> {
+[7m  [0m [91m                          ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (16:42): @rollup/plugin-typescript TS6133: 'featureUpdates' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:16:42[22m
+[90m
+[7m16[0m   async updateJobFeatures(jobId: string, featureUpdates: Partial<Feature>[]): Promise<void> {
+[7m  [0m [91m                                         ~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (24:24): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:24:24[22m
+[90m
+[7m24[0m   async getJobFeatures(jobId: string): Promise<Feature[]> {
+[7m  [0m [91m                       ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (32:25): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:32:25[22m
+[90m
+[7m32[0m   async addFeatureToJob(jobId: string, feature: Feature): Promise<void> {
+[7m  [0m [91m                        ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (32:40): @rollup/plugin-typescript TS6133: 'feature' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:32:40[22m
+[90m
+[7m32[0m   async addFeatureToJob(jobId: string, feature: Feature): Promise<void> {
+[7m  [0m [91m                                       ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (40:30): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:40:30[22m
+[90m
+[7m40[0m   async removeFeatureFromJob(jobId: string, featureId: string): Promise<void> {
+[7m  [0m [91m                             ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (40:45): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:40:45[22m
+[90m
+[7m40[0m   async removeFeatureFromJob(jobId: string, featureId: string): Promise<void> {
+[7m  [0m [91m                                            ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (49:5): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:49:5[22m
+[90m
+[7m49[0m     jobId: string,
+[7m  [0m [91m    ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (50:5): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:50:5[22m
+[90m
+[7m50[0m     featureId: string,
+[7m  [0m [91m    ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (51:5): @rollup/plugin-typescript TS6133: 'status' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:51:5[22m
+[90m
+[7m51[0m     status: FeatureStatus
+[7m  [0m [91m    ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (60:20): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:60:20[22m
+[90m
+[7m60[0m   async getFeature(jobId: string, featureId: string): Promise<Feature | null> {
+[7m  [0m [91m                   ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (60:35): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:60:35[22m
+[90m
+[7m60[0m   async getFeature(jobId: string, featureId: string): Promise<Feature | null> {
+[7m  [0m [91m                                  ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (69:5): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:69:5[22m
+[90m
+[7m69[0m     jobId: string,
+[7m  [0m [91m    ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (70:5): @rollup/plugin-typescript TS6133: 'updates' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:70:5[22m
+[90m
+[7m70[0m     updates: Array<{
+[7m  [0m [91m    ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (82:29): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:82:29[22m
+[90m
+[7m82[0m   async getFeaturesByStatus(jobId: string, status: FeatureStatus): Promise<Feature[]> {
+[7m  [0m [91m                            ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (82:44): @rollup/plugin-typescript TS6133: 'status' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:82:44[22m
+[90m
+[7m82[0m   async getFeaturesByStatus(jobId: string, status: FeatureStatus): Promise<Feature[]> {
+[7m  [0m [91m                                           ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (90:34): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:90:34[22m
+[90m
+[7m90[0m   async getFeatureExecutionOrder(jobId: string): Promise<Feature[]> {
+[7m  [0m [91m                                 ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (98:26): @rollup/plugin-typescript TS6133: 'updates' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:98:26[22m
+[90m
+[7m98[0m   validateFeatureUpdates(updates: Partial<Feature>[]): {
+[7m  [0m [91m                         ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobFeatureService.ts (109:30): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobFeatureService.ts:109:30[22m
+[90m
+[7m109[0m   async getFeatureStatistics(jobId: string): Promise<{
+[7m   [0m [91m                             ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobMonitoringService.ts (22:25): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobMonitoringService.ts:22:25[22m
+[90m
+[7m22[0m   async startMonitoring(jobId: string): Promise<void> {
+[7m  [0m [91m                        ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobMonitoringService.ts (30:24): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobMonitoringService.ts:30:24[22m
+[90m
+[7m30[0m   async stopMonitoring(jobId: string): Promise<void> {
+[7m  [0m [91m                       ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobMonitoringService.ts (38:22): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobMonitoringService.ts:38:22[22m
+[90m
+[7m38[0m   async getJobStatus(jobId: string): Promise<JobStatus> {
+[7m  [0m [91m                     ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobMonitoringService.ts (46:24): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobMonitoringService.ts:46:24[22m
+[90m
+[7m46[0m   async getJobProgress(jobId: string): Promise<JobProgress> {
+[7m  [0m [91m                       ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobMonitoringService.ts (54:25): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobMonitoringService.ts:54:25[22m
+[90m
+[7m54[0m   async updateJobStatus(jobId: string, status: JobStatus, metadata?: any): Promise<void> {
+[7m  [0m [91m                        ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobMonitoringService.ts (54:40): @rollup/plugin-typescript TS6133: 'status' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobMonitoringService.ts:54:40[22m
+[90m
+[7m54[0m   async updateJobStatus(jobId: string, status: JobStatus, metadata?: any): Promise<void> {
+[7m  [0m [91m                                       ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobMonitoringService.ts (54:59): @rollup/plugin-typescript TS6133: 'metadata' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobMonitoringService.ts:54:59[22m
+[90m
+[7m54[0m   async updateJobStatus(jobId: string, status: JobStatus, metadata?: any): Promise<void> {
+[7m  [0m [91m                                                          ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobMonitoringService.ts (62:27): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobMonitoringService.ts:62:27[22m
+[90m
+[7m62[0m   async getMonitoringData(jobId: string): Promise<{
+[7m  [0m [91m                          ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobMonitoringService.ts (76:26): @rollup/plugin-typescript TS6133: 'userId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobMonitoringService.ts:76:26[22m
+[90m
+[7m76[0m   async getDashboardData(userId: string): Promise<{
+[7m  [0m [91m                         ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobMonitoringService.ts (90:26): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobMonitoringService.ts:90:26[22m
+[90m
+[7m90[0m   setupRealtimeListeners(jobId: string, callback: (data: any) => void): void {
+[7m  [0m [91m                         ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/JobMonitoringService.ts (90:41): @rollup/plugin-typescript TS6133: 'callback' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/JobMonitoringService.ts:90:41[22m
+[90m
+[7m90[0m   setupRealtimeListeners(jobId: string, callback: (data: any) => void): void {
+[7m  [0m [91m                                        ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/jobs/job-processing.ts (11:35): @rollup/plugin-typescript TS2307: Cannot find module '@cvplus/core' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/jobs/job-processing.ts:11:35[22m
+[90m
+[7m11[0m import type { CVParsedData } from '@cvplus/core';
+[7m  [0m [91m                                  ~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (16:5): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:16:5[22m
+[90m
+[7m16[0m     jobId: string,
+[7m  [0m [91m    ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (17:5): @rollup/plugin-typescript TS6133: 'placeholderKey' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:17:5[22m
+[90m
+[7m17[0m     placeholderKey: string,
+[7m  [0m [91m    ~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (18:5): @rollup/plugin-typescript TS6133: 'value' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:18:5[22m
+[90m
+[7m18[0m     value: any,
+[7m  [0m [91m    ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (19:5): @rollup/plugin-typescript TS6133: 'metadata' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:19:5[22m
+[90m
+[7m19[0m     metadata?: any
+[7m  [0m [91m    ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (28:30): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:28:30[22m
+[90m
+[7m28[0m   async getPlaceholderValues(jobId: string): Promise<Record<string, PlaceholderValue>> {
+[7m  [0m [91m                             ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (36:29): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:36:29[22m
+[90m
+[7m36[0m   async getPlaceholderValue(jobId: string, placeholderKey: string): Promise<PlaceholderValue | null> {
+[7m  [0m [91m                            ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (36:44): @rollup/plugin-typescript TS6133: 'placeholderKey' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:36:44[22m
+[90m
+[7m36[0m   async getPlaceholderValue(jobId: string, placeholderKey: string): Promise<PlaceholderValue | null> {
+[7m  [0m [91m                                           ~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (45:5): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:45:5[22m
+[90m
+[7m45[0m     jobId: string,
+[7m  [0m [91m    ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (46:5): @rollup/plugin-typescript TS6133: 'updates' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:46:5[22m
+[90m
+[7m46[0m     updates: Record<string, any>
+[7m  [0m [91m    ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (56:5): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:56:5[22m
+[90m
+[7m56[0m     jobId: string,
+[7m  [0m [91m    ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (57:5): @rollup/plugin-typescript TS6133: 'template' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:57:5[22m
+[90m
+[7m57[0m     template: string | PlaceholderTemplate
+[7m  [0m [91m    ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (66:34): @rollup/plugin-typescript TS6133: 'templateId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:66:34[22m
+[90m
+[7m66[0m   async getAvailablePlaceholders(templateId: string): Promise<Array<{
+[7m  [0m [91m                                 ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (81:5): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:81:5[22m
+[90m
+[7m81[0m     jobId: string,
+[7m  [0m [91m    ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (82:5): @rollup/plugin-typescript TS6133: 'templateId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:82:5[22m
+[90m
+[7m82[0m     templateId: string
+[7m  [0m [91m    ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (99:40): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:99:40[22m
+[90m
+[7m99[0m   async getPlaceholderCompletionStatus(jobId: string, templateId: string): Promise<{
+[7m  [0m [91m                                       ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (99:55): @rollup/plugin-typescript TS6133: 'templateId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:99:55[22m
+[90m
+[7m99[0m   async getPlaceholderCompletionStatus(jobId: string, templateId: string): Promise<{
+[7m  [0m [91m                                                      ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (112:37): @rollup/plugin-typescript TS6133: 'userId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:112:37[22m
+[90m
+[7m112[0m   async generateDefaultPlaceholders(userId: string, templateId: string): Promise<Record<string, any>> {
+[7m   [0m [91m                                    ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/PlaceholderService.ts (112:53): @rollup/plugin-typescript TS6133: 'templateId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/PlaceholderService.ts:112:53[22m
+[90m
+[7m112[0m   async generateDefaultPlaceholders(userId: string, templateId: string): Promise<Record<string, any>> {
+[7m   [0m [91m                                                    ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/role-template-integration.service.ts (18:8): @rollup/plugin-typescript TS2307: Cannot find module '../types/role-profile.types' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/role-template-integration.service.ts:18:8[22m
+[90m
+[7m18[0m } from '../types/role-profile.types';
+[7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/role-template-integration.service.ts (24:8): @rollup/plugin-typescript TS2307: Cannot find module '../types/portal' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/role-template-integration.service.ts:24:8[22m
+[90m
+[7m24[0m } from '../types/portal';
+[7m  [0m [91m       ~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/role-template-integration.service.ts (25:36): @rollup/plugin-typescript TS2307: Cannot find module './role-profile.service' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/role-template-integration.service.ts:25:36[22m
+[90m
+[7m25[0m import { RoleProfileService } from './role-profile.service';
+[7m  [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/role-template-integration.service.ts (161:11): @rollup/plugin-typescript TS6133: 'db' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/role-template-integration.service.ts:161:11[22m
+[90m
+[7m161[0m   private db: FirebaseFirestore.Firestore;
+[7m   [0m [91m          ~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/role-template-integration.service.ts (163:11): @rollup/plugin-typescript TS6133: 'templateCustomizationService' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/role-template-integration.service.ts:163:11[22m
+[90m
+[7m163[0m   private templateCustomizationService: TemplateCustomizationService;
+[7m   [0m [91m          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/role-template-integration.service.ts (666:36): @rollup/plugin-typescript TS7006: Parameter 'word' implicitly has an 'any' type.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/role-template-integration.service.ts:666:36[22m
+[90m
+[7m666[0m     return category.split('_').map(word =>
+[7m   [0m [91m                                   ~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (16:5): @rollup/plugin-typescript TS6133: 'userId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:16:5[22m
+[90m
+[7m16[0m     userId: string,
+[7m  [0m [91m    ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (17:5): @rollup/plugin-typescript TS6133: 'roleType' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:17:5[22m
+[90m
+[7m17[0m     roleType: RoleType,
+[7m  [0m [91m    ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (18:5): @rollup/plugin-typescript TS6133: 'profileData' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:18:5[22m
+[90m
+[7m18[0m     profileData: any
+[7m  [0m [91m    ~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (28:5): @rollup/plugin-typescript TS6133: 'profileId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:28:5[22m
+[90m
+[7m28[0m     profileId: string,
+[7m  [0m [91m    ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (29:5): @rollup/plugin-typescript TS6133: 'updates' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:29:5[22m
+[90m
+[7m29[0m     updates: Partial<RoleProfile>
+[7m  [0m [91m    ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (38:24): @rollup/plugin-typescript TS6133: 'profileId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:38:24[22m
+[90m
+[7m38[0m   async getRoleProfile(profileId: string): Promise<RoleProfile | null> {
+[7m  [0m [91m                       ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (46:29): @rollup/plugin-typescript TS6133: 'userId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:46:29[22m
+[90m
+[7m46[0m   async getUserRoleProfiles(userId: string): Promise<RoleProfile[]> {
+[7m  [0m [91m                            ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (54:27): @rollup/plugin-typescript TS6133: 'profileId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:54:27[22m
+[90m
+[7m54[0m   async deleteRoleProfile(profileId: string): Promise<void> {
+[7m  [0m [91m                          ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (62:40): @rollup/plugin-typescript TS6133: 'roleType' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:62:40[22m
+[90m
+[7m62[0m   async getRoleTemplateRecommendations(roleType: RoleType): Promise<Array<{
+[7m  [0m [91m                                       ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (75:39): @rollup/plugin-typescript TS6133: 'roleType' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:75:39[22m
+[90m
+[7m75[0m   async getRoleFeatureRecommendations(roleType: RoleType): Promise<Array<{
+[7m  [0m [91m                                      ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (89:5): @rollup/plugin-typescript TS6133: 'profileId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:89:5[22m
+[90m
+[7m89[0m     profileId: string,
+[7m  [0m [91m    ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (90:5): @rollup/plugin-typescript TS6133: 'targetRole' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:90:5[22m
+[90m
+[7m90[0m     targetRole: RoleType,
+[7m  [0m [91m    ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (91:5): @rollup/plugin-typescript TS6133: 'customizations' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:91:5[22m
+[90m
+[7m91[0m     customizations: ProfileCustomization[]
+[7m  [0m [91m    ~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (100:33): @rollup/plugin-typescript TS6133: 'profileId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:100:33[22m
+[90m
+[7m100[0m   async getRoleProfileAnalytics(profileId: string): Promise<{
+[7m   [0m [91m                                ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (115:5): @rollup/plugin-typescript TS6133: 'profileId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:115:5[22m
+[90m
+[7m115[0m     profileId: string,
+[7m   [0m [91m    ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (116:5): @rollup/plugin-typescript TS6133: 'roleRequirements' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:116:5[22m
+[90m
+[7m116[0m     roleRequirements: any
+[7m   [0m [91m    ~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (145:5): @rollup/plugin-typescript TS6133: 'userId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:145:5[22m
+[90m
+[7m145[0m     userId: string,
+[7m   [0m [91m    ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/RoleProfileService.ts (146:5): @rollup/plugin-typescript TS6133: 'roleType' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/RoleProfileService.ts:146:5[22m
+[90m
+[7m146[0m     roleType: RoleType
+[7m   [0m [91m    ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (14:39): @rollup/plugin-typescript TS2307: Cannot find module './verified-claude.service' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:14:39[22m
+[90m
+[7m14[0m import { VerifiedClaudeService } from './verified-claude.service';
+[7m  [0m [91m                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (20:8): @rollup/plugin-typescript TS2307: Cannot find module '../types/portal' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:20:8[22m
+[90m
+[7m20[0m } from '../types/portal';
+[7m  [0m [91m       ~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (21:26): @rollup/plugin-typescript TS2307: Cannot find module '../types/job' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:21:26[22m
+[90m
+[7m21[0m import { ParsedCV } from '../types/job';
+[7m  [0m [91m                         ~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (25:8): @rollup/plugin-typescript TS2307: Cannot find module '../types/portal-theme' or its corresponding type declarations.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:25:8[22m
+[90m
+[7m25[0m } from '../types/portal-theme';
+[7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (729:9): @rollup/plugin-typescript TS2353: Object literal may only specify known properties, and 'id' does not exist in type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:729:9[22m
+[90m
+[7m729[0m         id: `${industry}-theme-${Date.now()}`,
+[7m   [0m [91m        ~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (766:24): @rollup/plugin-typescript TS2339: Property 'id' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:766:24[22m
+[90m
+[7m766[0m         themeId: theme.id,
+[7m   [0m [91m                       ~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (830:5): @rollup/plugin-typescript TS6133: 'layout' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:830:5[22m
+[90m
+[7m830[0m     layout: any
+[7m   [0m [91m    ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (986:52): @rollup/plugin-typescript TS7006: Parameter 'exp' implicitly has an 'any' type.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:986:52[22m
+[90m
+[7m986[0m       const experienceText = cvData.experience.map(exp =>
+[7m   [0m [91m                                                   ~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1000:50): @rollup/plugin-typescript TS7006: Parameter 'edu' implicitly has an 'any' type.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1000:50[22m
+[90m
+[7m1000[0m       const educationText = cvData.education.map(edu =>
+[7m    [0m [91m                                                 ~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1187:26): @rollup/plugin-typescript TS7006: Parameter 'skill' implicitly has an 'any' type.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1187:26[22m
+[90m
+[7m1187[0m     return skills.filter(skill =>
+[7m    [0m [91m                         ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1253:11): @rollup/plugin-typescript TS6133: 'ruleBasedLevel' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1253:11[22m
+[90m
+[7m1253[0m     const ruleBasedLevel = this.assessProfessionalLevel(cvData);
+[7m    [0m [91m          ~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1503:5): @rollup/plugin-typescript TS6133: 'preferences' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1503:5[22m
+[90m
+[7m1503[0m     preferences?: TemplatePreferences
+[7m    [0m [91m    ~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1720:11): @rollup/plugin-typescript TS6133: 'optionalSections' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1720:11[22m
+[90m
+[7m1720[0m     const optionalSections = template.optionalSections;
+[7m    [0m [91m          ~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1776:24): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1776:24[22m
+[90m
+[7m1776[0m   font-family: ${theme.typography.fontFamilies.body};
+[7m    [0m [91m                       ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1777:22): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1777:22[22m
+[90m
+[7m1777[0m   font-size: ${theme.typography.fontSizes.base};
+[7m    [0m [91m                     ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1778:24): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1778:24[22m
+[90m
+[7m1778[0m   line-height: ${theme.typography.lineHeights.normal};
+[7m    [0m [91m                       ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1779:18): @rollup/plugin-typescript TS2339: Property 'colors' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1779:18[22m
+[90m
+[7m1779[0m   color: ${theme.colors.text.primary};
+[7m    [0m [91m                 ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1780:29): @rollup/plugin-typescript TS2339: Property 'colors' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1780:29[22m
+[90m
+[7m1780[0m   background-color: ${theme.colors.background};
+[7m    [0m [91m                            ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1787:24): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1787:24[22m
+[90m
+[7m1787[0m   font-family: ${theme.typography.fontFamilies.heading};
+[7m    [0m [91m                       ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1788:24): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1788:24[22m
+[90m
+[7m1788[0m   font-weight: ${theme.typography.fontWeights.semibold};
+[7m    [0m [91m                       ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1789:24): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1789:24[22m
+[90m
+[7m1789[0m   line-height: ${theme.typography.lineHeights.tight};
+[7m    [0m [91m                       ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1793:25): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1793:25[22m
+[90m
+[7m1793[0m h1 { font-size: ${theme.typography.fontSizes['4xl']}; }
+[7m    [0m [91m                        ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1794:25): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1794:25[22m
+[90m
+[7m1794[0m h2 { font-size: ${theme.typography.fontSizes['3xl']}; }
+[7m    [0m [91m                        ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1795:25): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1795:25[22m
+[90m
+[7m1795[0m h3 { font-size: ${theme.typography.fontSizes['2xl']}; }
+[7m    [0m [91m                        ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1796:25): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1796:25[22m
+[90m
+[7m1796[0m h4 { font-size: ${theme.typography.fontSizes.xl}; }
+[7m    [0m [91m                        ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1797:25): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1797:25[22m
+[90m
+[7m1797[0m h5 { font-size: ${theme.typography.fontSizes.lg}; }
+[7m    [0m [91m                        ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1798:25): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1798:25[22m
+[90m
+[7m1798[0m h6 { font-size: ${theme.typography.fontSizes.base}; }
+[7m    [0m [91m                        ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1802:24): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1802:24[22m
+[90m
+[7m1802[0m   line-height: ${theme.typography.lineHeights.relaxed};
+[7m    [0m [91m                       ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1822:24): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1822:24[22m
+[90m
+[7m1822[0m   font-weight: ${theme.typography.fontWeights.medium};
+[7m    [0m [91m                       ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1829:29): @rollup/plugin-typescript TS2339: Property 'colors' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1829:29[22m
+[90m
+[7m1829[0m   background-color: ${theme.colors.primary};
+[7m    [0m [91m                            ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1834:29): @rollup/plugin-typescript TS2339: Property 'colors' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1834:29[22m
+[90m
+[7m1834[0m   background-color: ${theme.colors.primary}dd;
+[7m    [0m [91m                            ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1842:29): @rollup/plugin-typescript TS2339: Property 'colors' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1842:29[22m
+[90m
+[7m1842[0m   border: 1px solid ${theme.colors.border.primary};
+[7m    [0m [91m                            ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1852:32): @rollup/plugin-typescript TS2339: Property 'colors' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1852:32[22m
+[90m
+[7m1852[0m .text-primary { color: ${theme.colors.primary}; }
+[7m    [0m [91m                               ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1853:34): @rollup/plugin-typescript TS2339: Property 'colors' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1853:34[22m
+[90m
+[7m1853[0m .text-secondary { color: ${theme.colors.secondary}; }
+[7m    [0m [91m                                 ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1854:30): @rollup/plugin-typescript TS2339: Property 'colors' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1854:30[22m
+[90m
+[7m1854[0m .text-muted { color: ${theme.colors.text.muted}; }
+[7m    [0m [91m                             ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1855:41): @rollup/plugin-typescript TS2339: Property 'colors' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1855:41[22m
+[90m
+[7m1855[0m .bg-primary { background-color: ${theme.colors.primary}; }
+[7m    [0m [91m                                        ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1856:41): @rollup/plugin-typescript TS2339: Property 'colors' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1856:41[22m
+[90m
+[7m1856[0m .border-primary { border-color: ${theme.colors.border.primary}; }
+[7m    [0m [91m                                        ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1873:30): @rollup/plugin-typescript TS2339: Property 'colors' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1873:30[22m
+[90m
+[7m1873[0m   outline: 2px solid ${theme.colors.primary};
+[7m    [0m [91m                             ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1915:27): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1915:27[22m
+[90m
+[7m1915[0m   h1 { font-size: ${theme.typography.fontSizes['4xl']}; }
+[7m    [0m [91m                          ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1916:27): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1916:27[22m
+[90m
+[7m1916[0m   h2 { font-size: ${theme.typography.fontSizes['3xl']}; }
+[7m    [0m [91m                          ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1977:32): @rollup/plugin-typescript TS2339: Property 'typography' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1977:32[22m
+[90m
+[7m1977[0m   h1 { font-size: calc(${theme.typography.fontSizes['4xl']} * 1.2); }
+[7m    [0m [91m                               ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (1982:31): @rollup/plugin-typescript TS6133: 'theme' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:1982:31[22m
+[90m
+[7m1982[0m   private generateDarkModeCSS(theme: GeneratedTheme): string {
+[7m    [0m [91m                              ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (2013:28): @rollup/plugin-typescript TS6133: 'theme' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:2013:28[22m
+[90m
+[7m2013[0m   private generatePrintCSS(theme: GeneratedTheme): string {
+[7m    [0m [91m                           ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (2073:23): @rollup/plugin-typescript TS2339: Property 'colors' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:2073:23[22m
+[90m
+[7m2073[0m   background: ${theme.colors.primary};
+[7m    [0m [91m                      ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/template-customization.service.ts (2103:30): @rollup/plugin-typescript TS2339: Property 'colors' does not exist on type 'GeneratedTheme'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/template-customization.service.ts:2103:30[22m
+[90m
+[7m2103[0m   outline: 3px solid ${theme.colors.primary};
+[7m    [0m [91m                             ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/TemplateService.ts (15:22): @rollup/plugin-typescript TS6133: 'filters' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/TemplateService.ts:15:22[22m
+[90m
+[7m15[0m   async getTemplates(filters?: {
+[7m  [0m [91m                     ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/TemplateService.ts (27:21): @rollup/plugin-typescript TS6133: 'templateId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/TemplateService.ts:27:21[22m
+[90m
+[7m27[0m   async getTemplate(templateId: string): Promise<CVTemplate | null> {
+[7m  [0m [91m                    ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/TemplateService.ts (35:32): @rollup/plugin-typescript TS6133: 'category' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/TemplateService.ts:35:32[22m
+[90m
+[7m35[0m   async getTemplatesByCategory(category: TemplateCategory): Promise<CVTemplate[]> {
+[7m  [0m [91m                               ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/TemplateService.ts (59:25): @rollup/plugin-typescript TS6133: 'query' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/TemplateService.ts:59:25[22m
+[90m
+[7m59[0m   async searchTemplates(query: string): Promise<CVTemplate[]> {
+[7m  [0m [91m                        ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/TemplateService.ts (67:29): @rollup/plugin-typescript TS6133: 'templateId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/TemplateService.ts:67:29[22m
+[90m
+[7m67[0m   async getTemplateMetadata(templateId: string): Promise<TemplateMetadata | null> {
+[7m  [0m [91m                            ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/TemplateService.ts (75:28): @rollup/plugin-typescript TS6133: 'templateId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/TemplateService.ts:75:28[22m
+[90m
+[7m75[0m   async getTemplatePreview(templateId: string): Promise<string> {
+[7m  [0m [91m                           ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/TemplateService.ts (83:29): @rollup/plugin-typescript TS6133: 'templateId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/TemplateService.ts:83:29[22m
+[90m
+[7m83[0m   async checkTemplateAccess(templateId: string, userId: string): Promise<{
+[7m  [0m [91m                            ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/TemplateService.ts (83:49): @rollup/plugin-typescript TS6133: 'userId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/TemplateService.ts:83:49[22m
+[90m
+[7m83[0m   async checkTemplateAccess(templateId: string, userId: string): Promise<{
+[7m  [0m [91m                                                ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/TemplateService.ts (95:33): @rollup/plugin-typescript TS6133: 'userId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/TemplateService.ts:95:33[22m
+[90m
+[7m95[0m   async getRecommendedTemplates(userId: string): Promise<CVTemplate[]> {
+[7m  [0m [91m                                ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/TemplateService.ts (103:28): @rollup/plugin-typescript TS6133: 'templateId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/TemplateService.ts:103:28[22m
+[90m
+[7m103[0m   async trackTemplateUsage(templateId: string, userId: string, action: 'view' | 'select' | 'download'): Promise<void> {
+[7m   [0m [91m                           ~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/TemplateService.ts (103:48): @rollup/plugin-typescript TS6133: 'userId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/TemplateService.ts:103:48[22m
+[90m
+[7m103[0m   async trackTemplateUsage(templateId: string, userId: string, action: 'view' | 'select' | 'download'): Promise<void> {
+[7m   [0m [91m                                               ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/TemplateService.ts (103:64): @rollup/plugin-typescript TS6133: 'action' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/TemplateService.ts:103:64[22m
+[90m
+[7m103[0m   async trackTemplateUsage(templateId: string, userId: string, action: 'view' | 'select' | 'download'): Promise<void> {
+[7m   [0m [91m                                                               ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/TemplateService.ts (128:20): @rollup/plugin-typescript TS6133: 'template' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/TemplateService.ts:128:20[22m
+[90m
+[7m128[0m   validateTemplate(template: CVTemplate): {
+[7m   [0m [91m                   ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (8:10): @rollup/plugin-typescript TS6133: 'Job' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:8:10[22m
+[90m
+[7m8[0m import { Job, JobStatus, WorkflowState } from '../../types/Job';
+[7m [0m [91m         ~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (8:15): @rollup/plugin-typescript TS6133: 'JobStatus' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:8:15[22m
+[90m
+[7m8[0m import { Job, JobStatus, WorkflowState } from '../../types/Job';
+[7m [0m [91m              ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (9:19): @rollup/plugin-typescript TS6133: 'FeatureStatus' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:9:19[22m
+[90m
+[7m9[0m import { Feature, FeatureStatus } from '../../types/Feature';
+[7m [0m [91m                  ~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (14:11): @rollup/plugin-typescript TS6133: 'jobMonitoring' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:14:11[22m
+[90m
+[7m14[0m   private jobMonitoring: JobMonitoringService;
+[7m  [0m [91m          ~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (15:11): @rollup/plugin-typescript TS6133: 'featureCompletion' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:15:11[22m
+[90m
+[7m15[0m   private featureCompletion: FeatureCompletionService;
+[7m  [0m [91m          ~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (25:28): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:25:28[22m
+[90m
+[7m25[0m   async initializeWorkflow(jobId: string, features: Feature[]): Promise<WorkflowState> {
+[7m  [0m [91m                           ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (25:43): @rollup/plugin-typescript TS6133: 'features' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:25:43[22m
+[90m
+[7m25[0m   async initializeWorkflow(jobId: string, features: Feature[]): Promise<WorkflowState> {
+[7m  [0m [91m                                          ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (34:5): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:34:5[22m
+[90m
+[7m34[0m     jobId: string,
+[7m  [0m [91m    ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (35:5): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:35:5[22m
+[90m
+[7m35[0m     featureId: string,
+[7m  [0m [91m    ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (36:5): @rollup/plugin-typescript TS6133: 'completionData' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:36:5[22m
+[90m
+[7m36[0m     completionData: any
+[7m  [0m [91m    ~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (45:32): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:45:32[22m
+[90m
+[7m45[0m   async orchestrateFeatureSkip(jobId: string, featureId: string, reason?: string): Promise<void> {
+[7m  [0m [91m                               ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (45:47): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:45:47[22m
+[90m
+[7m45[0m   async orchestrateFeatureSkip(jobId: string, featureId: string, reason?: string): Promise<void> {
+[7m  [0m [91m                                              ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (45:66): @rollup/plugin-typescript TS6133: 'reason' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:45:66[22m
+[90m
+[7m45[0m   async orchestrateFeatureSkip(jobId: string, featureId: string, reason?: string): Promise<void> {
+[7m  [0m [91m                                                                 ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (53:26): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:53:26[22m
+[90m
+[7m53[0m   async getWorkflowState(jobId: string): Promise<WorkflowState> {
+[7m  [0m [91m                         ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (61:29): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:61:29[22m
+[90m
+[7m61[0m   async updateWorkflowState(jobId: string, updates: Partial<WorkflowState>): Promise<void> {
+[7m  [0m [91m                            ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (61:44): @rollup/plugin-typescript TS6133: 'updates' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:61:44[22m
+[90m
+[7m61[0m   async updateWorkflowState(jobId: string, updates: Partial<WorkflowState>): Promise<void> {
+[7m  [0m [91m                                           ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (69:28): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:69:28[22m
+[90m
+[7m69[0m   async isWorkflowComplete(jobId: string): Promise<boolean> {
+[7m  [0m [91m                           ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/backend/services/WorkflowOrchestrator.ts (77:29): @rollup/plugin-typescript TS6133: 'jobId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/backend/services/WorkflowOrchestrator.ts:77:29[22m
+[90m
+[7m77[0m   async getWorkflowProgress(jobId: string): Promise<{
+[7m  [0m [91m                            ~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/components/CertificationBadges.tsx (29:5): @rollup/plugin-typescript TS6133: 'availableBadgeTypes' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/components/CertificationBadges.tsx:29:5[22m
+[90m
+[7m29[0m     availableBadgeTypes,
+[7m  [0m [91m    ~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/components/CertificationBadges.tsx (37:25): @rollup/plugin-typescript TS6133: 'badgeType' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/components/CertificationBadges.tsx:37:25[22m
+[90m
+[7m37[0m   const getBadgeIcon = (badgeType: BadgeType) => {
+[7m  [0m [91m                        ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/components/FeatureManager.tsx (30:5): @rollup/plugin-typescript TS6133: 'updateFeatureStatus' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/components/FeatureManager.tsx:30:5[22m
+[90m
+[7m30[0m     updateFeatureStatus,
+[7m  [0m [91m    ~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/components/TemplateSelector.tsx (1:27): @rollup/plugin-typescript TS6133: 'useEffect' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/components/TemplateSelector.tsx:1:27[22m
+[90m
+[7m1[0m import React, { useState, useEffect } from 'react';
+[7m [0m [91m                          ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/components/TemplateSelector.tsx (34:5): @rollup/plugin-typescript TS6133: 'searchTemplates' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/components/TemplateSelector.tsx:34:5[22m
+[90m
+[7m34[0m     searchTemplates
+[7m  [0m [91m    ~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/components/WorkflowMonitor.tsx (1:17): @rollup/plugin-typescript TS6133: 'useState' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/components/WorkflowMonitor.tsx:1:17[22m
+[90m
+[7m1[0m import React, { useState, useEffect } from 'react';
+[7m [0m [91m                ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/components/WorkflowMonitor.tsx (2:10): @rollup/plugin-typescript TS6133: 'JobProgress' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/components/WorkflowMonitor.tsx:2:10[22m
+[90m
+[7m2[0m import { JobProgress, JobStatus } from '../../types/Job';
+[7m [0m [91m         ~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useCertificationBadges.ts (42:9): @rollup/plugin-typescript TS2739: Type '{ id: string; userId: string; badgeType: BadgeType; name: string; description: string; status: BadgeStatus; issuedAt: Date; verificationCode: string; metadata: { ...; }; }' is missing the following properties from type 'CertificationBadge': issuer, criteria, evidence[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useCertificationBadges.ts:42:9[22m
+[90m
+[7m 42[0m         {
+[7m   [0m [91m        ~[0m
+[7m 43[0m           id: 'badge-1',
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m...[0m 
+[7m 54[0m           }
+[7m   [0m [91m~~~~~~~~~~~[0m
+[7m 55[0m         },
+[7m   [0m [91m~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useCertificationBadges.ts (56:9): @rollup/plugin-typescript TS2739: Type '{ id: string; userId: string; badgeType: BadgeType; name: string; description: string; status: BadgeStatus; issuedAt: Date; verificationCode: string; metadata: { ...; }; }' is missing the following properties from type 'CertificationBadge': issuer, criteria, evidence[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useCertificationBadges.ts:56:9[22m
+[90m
+[7m 56[0m         {
+[7m   [0m [91m        ~[0m
+[7m 57[0m           id: 'badge-2',
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m...[0m 
+[7m 67[0m           }
+[7m   [0m [91m~~~~~~~~~~~[0m
+[7m 68[0m         }
+[7m   [0m [91m~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useCertificationBadges.ts (133:9): @rollup/plugin-typescript TS2322: Type 'boolean | undefined' is not assignable to type 'boolean'.
+  Type 'undefined' is not assignable to type 'boolean'.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useCertificationBadges.ts:133:9[22m
+[90m
+[7m133[0m         eligible: hasProgress && !alreadyHasBadge,
+[7m   [0m [91m        ~~~~~~~~[0m
+
+  [96msrc/frontend/hooks/useCertificationBadges.ts[0m:[93m120[0m:[93m5[0m
+    [7m120[0m     eligible: boolean;
+    [7m   [0m [96m    ~~~~~~~~[0m
+    The expected type comes from property 'eligible' which is declared here on type '{ eligible: boolean; progress?: number | undefined; }'
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useFeatureManagement.ts (2:10): @rollup/plugin-typescript TS6133: 'Feature' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useFeatureManagement.ts:2:10[22m
+[90m
+[7m2[0m import { Feature, FeatureStatus, CompletedFeature, SkippedFeature } from '../../types/Feature';
+[7m [0m [91m         ~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useFeatureManagement.ts (90:5): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useFeatureManagement.ts:90:5[22m
+[90m
+[7m90[0m     featureId: string,
+[7m  [0m [91m    ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useFeatureManagement.ts (91:5): @rollup/plugin-typescript TS6133: 'status' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useFeatureManagement.ts:91:5[22m
+[90m
+[7m91[0m     status: FeatureStatus
+[7m  [0m [91m    ~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useFeatureManagement.ts (114:5): @rollup/plugin-typescript TS6133: 'featureId' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useFeatureManagement.ts:114:5[22m
+[90m
+[7m114[0m     featureId: string,
+[7m   [0m [91m    ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useFeatureManagement.ts (115:5): @rollup/plugin-typescript TS6133: 'progress' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useFeatureManagement.ts:115:5[22m
+[90m
+[7m115[0m     progress: number
+[7m   [0m [91m    ~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useTemplates.ts (38:9): @rollup/plugin-typescript TS2739: Type '{ id: string; name: string; description: string; category: TemplateCategory; isPremium: false; isFeatured: true; thumbnailUrl: string; previewUrl: string; createdAt: Date; updatedAt: Date; }' is missing the following properties from type 'CVTemplate': tags, compatibility, styling, version, createdBy[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useTemplates.ts:38:9[22m
+[90m
+[7m 38[0m         {
+[7m   [0m [91m        ~[0m
+[7m 39[0m           id: 'template-1',
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m...[0m 
+[7m 48[0m           updatedAt: new Date('2023-01-01')
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m 49[0m         },
+[7m   [0m [91m~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useTemplates.ts (50:9): @rollup/plugin-typescript TS2739: Type '{ id: string; name: string; description: string; category: TemplateCategory; isPremium: true; isFeatured: true; thumbnailUrl: string; previewUrl: string; createdAt: Date; updatedAt: Date; }' is missing the following properties from type 'CVTemplate': tags, compatibility, styling, version, createdBy[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useTemplates.ts:50:9[22m
+[90m
+[7m 50[0m         {
+[7m   [0m [91m        ~[0m
+[7m 51[0m           id: 'template-2',
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m...[0m 
+[7m 60[0m           updatedAt: new Date('2023-01-15')
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m 61[0m         },
+[7m   [0m [91m~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useTemplates.ts (62:9): @rollup/plugin-typescript TS2739: Type '{ id: string; name: string; description: string; category: TemplateCategory; isPremium: false; isFeatured: false; thumbnailUrl: string; previewUrl: string; createdAt: Date; updatedAt: Date; }' is missing the following properties from type 'CVTemplate': tags, compatibility, styling, version, createdBy[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useTemplates.ts:62:9[22m
+[90m
+[7m 62[0m         {
+[7m   [0m [91m        ~[0m
+[7m 63[0m           id: 'template-3',
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m...[0m 
+[7m 72[0m           updatedAt: new Date('2023-02-01')
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m 73[0m         }
+[7m   [0m [91m~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useWorkflowMonitoring.ts (2:10): @rollup/plugin-typescript TS6133: 'Job' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useWorkflowMonitoring.ts:2:10[22m
+[90m
+[7m2[0m import { Job, JobStatus, JobProgress } from '../../types/Job';
+[7m [0m [91m         ~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useWorkflowMonitoring.ts (48:11): @rollup/plugin-typescript TS2739: Type '{ id: string; name: string; status: "completed"; description: string; }' is missing the following properties from type 'Feature': category, priority, dependencies, createdAt, updatedAt[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useWorkflowMonitoring.ts:48:11[22m
+[90m
+[7m48[0m           { id: '1', name: 'CV Analysis', status: 'completed', description: 'Basic CV analysis complete' },
+[7m  [0m [91m          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useWorkflowMonitoring.ts (49:11): @rollup/plugin-typescript TS2739: Type '{ id: string; name: string; status: "completed"; description: string; }' is missing the following properties from type 'Feature': category, priority, dependencies, createdAt, updatedAt[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useWorkflowMonitoring.ts:49:11[22m
+[90m
+[7m49[0m           { id: '2', name: 'Template Selection', status: 'completed', description: 'Template selected and applied' },
+[7m  [0m [91m          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useWorkflowMonitoring.ts (50:11): @rollup/plugin-typescript TS2739: Type '{ id: string; name: string; status: "completed"; description: string; }' is missing the following properties from type 'Feature': category, priority, dependencies, createdAt, updatedAt[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useWorkflowMonitoring.ts:50:11[22m
+[90m
+[7m50[0m           { id: '3', name: 'Content Enhancement', status: 'completed', description: 'AI-powered content improvements' },
+[7m  [0m [91m          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useWorkflowMonitoring.ts (51:11): @rollup/plugin-typescript TS2739: Type '{ id: string; name: string; status: "processing"; description: string; }' is missing the following properties from type 'Feature': category, priority, dependencies, createdAt, updatedAt[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useWorkflowMonitoring.ts:51:11[22m
+[90m
+[7m51[0m           { id: '4', name: 'Multimedia Integration', status: 'processing', description: 'Adding multimedia elements' },
+[7m  [0m [91m          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/frontend/hooks/useWorkflowMonitoring.ts (52:11): @rollup/plugin-typescript TS2739: Type '{ id: string; name: string; status: "pending"; description: string; }' is missing the following properties from type 'Feature': category, priority, dependencies, createdAt, updatedAt[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/frontend/hooks/useWorkflowMonitoring.ts:52:11[22m
+[90m
+[7m52[0m           { id: '5', name: 'Final Review', status: 'pending', description: 'Final quality review and export' }
+[7m  [0m [91m          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/utils/validationHelpers.ts (5:15): @rollup/plugin-typescript TS6133: 'JobStatus' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/utils/validationHelpers.ts:5:15[22m
+[90m
+[7m5[0m import { Job, JobStatus } from '../types/Job';
+[7m [0m [91m              ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/utils/validationHelpers.ts (6:19): @rollup/plugin-typescript TS6133: 'FeatureStatus' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/utils/validationHelpers.ts:6:19[22m
+[90m
+[7m6[0m import { Feature, FeatureStatus } from '../types/Feature';
+[7m [0m [91m                  ~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/utils/validationHelpers.ts (7:22): @rollup/plugin-typescript TS6133: 'PlaceholderValue' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/utils/validationHelpers.ts:7:22[22m
+[90m
+[7m7[0m import { CVTemplate, PlaceholderValue } from '../types/Template';
+[7m [0m [91m                     ~~~~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/utils/validationHelpers.ts (8:30): @rollup/plugin-typescript TS6133: 'BadgeType' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/utils/validationHelpers.ts:8:30[22m
+[90m
+[7m8[0m import { CertificationBadge, BadgeType } from '../types/Certification';
+[7m [0m [91m                             ~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/utils/workflowHelpers.ts (6:19): @rollup/plugin-typescript TS6133: 'FeatureStatus' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/utils/workflowHelpers.ts:6:19[22m
+[90m
+[7m6[0m import { Feature, FeatureStatus } from '../types/Feature';
+[7m [0m [91m                  ~~~~~~~~~~~~~[0m
+[39m
+[1m[33m(!) [plugin typescript] src/utils/workflowHelpers.ts (238:41): @rollup/plugin-typescript TS6133: 'job' is declared but its value is never read.[39m[22m
+[1m/Users/gklainert/Documents/cvplus/packages/workflow/src/utils/workflowHelpers.ts:238:41[22m
+[90m
+[7m238[0m export const generateWorkflowSummary = (job: Job, features: Feature[]): {
+[7m   [0m [91m                                        ~~~[0m
+[39m
+[1m[31m[!] [1mRollupError: Could not resolve "../../config/cors" from "src/backend/functions/skipFeature.ts"[22m[1m[39m[22m
+src/backend/functions/skipFeature.ts
+[2m    at getRollupError (/Users/gklainert/Documents/cvplus/node_modules/rollup/dist/shared/parseAst.js:285:41)
+    at Object.error (/Users/gklainert/Documents/cvplus/node_modules/rollup/dist/shared/parseAst.js:281:42)
+    at ModuleLoader.handleInvalidResolvedId (/Users/gklainert/Documents/cvplus/node_modules/rollup/dist/shared/rollup.js:22762:36)
+    at /Users/gklainert/Documents/cvplus/node_modules/rollup/dist/shared/rollup.js:22722:26[22m
+
+
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mstack[39m Error: command failed
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at promiseSpawn (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/promise-spawn/lib/index.js:22:22)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at spawnWithShell (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/promise-spawn/lib/index.js:124:10)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at promiseSpawn (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/promise-spawn/lib/index.js:12:12)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at runScriptPkg (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/run-script-pkg.js:77:13)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at runScript (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/run-script.js:9:12)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at #run (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/commands/run-script.js:130:13)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at RunScript.execWorkspaces (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/commands/run-script.js:62:24)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at async Npm.exec (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/npm.js:207:9)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at async module.exports (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/cli/entry.js:74:5)
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mpkgid[39m @cvplus/workflow@1.0.0
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m Lifecycle script `build` failed with error:
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mcode[39m [33m1[39m
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mpath[39m /Users/gklainert/Documents/cvplus/packages/workflow
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mworkspace[39m @cvplus/workflow@1.0.0
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mlocation[39m /Users/gklainert/Documents/cvplus/packages/workflow
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m command failed
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mcommand[39m sh -c rollup -c
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mcwd[39m /Users/gklainert/Documents/cvplus/packages/workflow
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mos[39m Darwin 24.6.0
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mnode[39m v20.19.4
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mnpm [39m v10.8.2
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mexit[39m [33m1[39m
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mcode[39m [33m1[39m
+[1G[0K⠙[1G[0K

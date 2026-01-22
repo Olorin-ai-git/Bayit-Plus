@@ -1,0 +1,2908 @@
+[1mnpm[22m [34mverbose[39m [94mcli[39m /Users/gklainert/.nvm/versions/node/v20.19.4/bin/node /Users/gklainert/.nvm/versions/node/v20.19.4/bin/npm
+[1mnpm[22m [36minfo[39m [94musing[39m npm@10.8.2
+[1mnpm[22m [36minfo[39m [94musing[39m node@v20.19.4
+[1mnpm[22m [36minfo[39m [94mconfig[39m found workspace root at /Users/gklainert/Documents/cvplus
+[1mnpm[22m [34mverbose[39m [94mtitle[39m npm run build
+[1mnpm[22m [34mverbose[39m [94margv[39m "run" "build"
+[1mnpm[22m [34mverbose[39m [94mlogfile[39m logs-max:10 dir:/Users/gklainert/.npm/_logs/2025-08-29T18_20_58_935Z-
+[1mnpm[22m [34mverbose[39m [94mlogfile[39m /Users/gklainert/.npm/_logs/2025-08-29T18_20_58_935Z-debug-0.log
+
+> @cvplus/core@1.0.0 build
+> npm run clean && npm run build:types && npm run build:rollup
+
+[1G[0K[1mnpm[22m [34mverbose[39m [94mcli[39m /Users/gklainert/.nvm/versions/node/v20.19.4/bin/node /Users/gklainert/.nvm/versions/node/v20.19.4/bin/npm
+[1mnpm[22m [36minfo[39m [94musing[39m npm@10.8.2
+[1mnpm[22m [36minfo[39m [94musing[39m node@v20.19.4
+[1mnpm[22m [36minfo[39m [94mconfig[39m found workspace root at /Users/gklainert/Documents/cvplus
+[1mnpm[22m [34mverbose[39m [94mtitle[39m npm run clean
+[1mnpm[22m [34mverbose[39m [94margv[39m "run" "clean"
+[1mnpm[22m [34mverbose[39m [94mlogfile[39m logs-max:10 dir:/Users/gklainert/.npm/_logs/2025-08-29T18_20_59_410Z-
+[1mnpm[22m [34mverbose[39m [94mlogfile[39m /Users/gklainert/.npm/_logs/2025-08-29T18_20_59_410Z-debug-0.log
+
+> @cvplus/core@1.0.0 clean
+> rimraf dist
+
+[1G[0K[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mcwd[39m /Users/gklainert/Documents/cvplus/packages/core
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mos[39m Darwin 24.6.0
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mnode[39m v20.19.4
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mnpm [39m v10.8.2
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mexit[39m [33m0[39m
+[1G[0K⠙[1G[0K[1mnpm[22m [36minfo[39m [94mok[39m
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mcli[39m /Users/gklainert/.nvm/versions/node/v20.19.4/bin/node /Users/gklainert/.nvm/versions/node/v20.19.4/bin/npm
+[1mnpm[22m [36minfo[39m [94musing[39m npm@10.8.2
+[1mnpm[22m [36minfo[39m [94musing[39m node@v20.19.4
+[1mnpm[22m [36minfo[39m [94mconfig[39m found workspace root at /Users/gklainert/Documents/cvplus
+[1mnpm[22m [34mverbose[39m [94mtitle[39m npm run build:types
+[1mnpm[22m [34mverbose[39m [94margv[39m "run" "build:types"
+[1mnpm[22m [34mverbose[39m [94mlogfile[39m logs-max:10 dir:/Users/gklainert/.npm/_logs/2025-08-29T18_20_59_982Z-
+[1mnpm[22m [34mverbose[39m [94mlogfile[39m /Users/gklainert/.npm/_logs/2025-08-29T18_20_59_982Z-debug-0.log
+
+> @cvplus/core@1.0.0 build:types
+> tsc --project tsconfig.build.json
+
+[1G[0K[96msrc/config/environment.ts[0m:[93m113[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'keyPatterns' is declared but its value is never read.
+
+[7m113[0m     const keyPatterns = {
+[7m   [0m [91m          ~~~~~~~~~~~[0m
+
+[96msrc/config/llm-verification-setup.ts[0m:[93m181[0m:[93m76[0m - [91merror[0m[90m TS6198: [0mAll destructured elements are unused.
+
+[7m181[0m     Object.entries(result.performanceProfile.recommendedSettings).forEach(([key, value]) => {
+[7m   [0m [91m                                                                           ~~~~~~~~~~~~[0m
+
+[96msrc/config/llm-verification-setup.ts[0m:[93m193[0m:[93m38[0m - [91merror[0m[90m TS6133: [0m'step' is declared but its value is never read.
+
+[7m193[0m       result.migrationSteps.forEach((step, index) => {
+[7m   [0m [91m                                     ~~~~[0m
+
+[96msrc/config/llm-verification-setup.ts[0m:[93m193[0m:[93m44[0m - [91merror[0m[90m TS6133: [0m'index' is declared but its value is never read.
+
+[7m193[0m       result.migrationSteps.forEach((step, index) => {
+[7m   [0m [91m                                           ~~~~~[0m
+
+[96msrc/config/llm-verification-setup.ts[0m:[93m211[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'functionConfig' is declared but its value is never read.
+
+[7m211[0m     const functionConfig = {
+[7m   [0m [91m          ~~~~~~~~~~~~~~[0m
+
+[96msrc/config/security-monitor.ts[0m:[93m372[0m:[93m9[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m372[0m     if (metrics.eventsBySeverity['CRITICAL'] > 0) {
+[7m   [0m [91m        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/config/security-monitor.ts[0m:[93m376[0m:[93m9[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m376[0m     if (metrics.eventsBySeverity['HIGH'] > 5) {
+[7m   [0m [91m        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/config/security-monitor.ts[0m:[93m405[0m:[93m10[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m405[0m export { SecurityEvent, SecurityAlert, SecurityMetrics };
+[7m   [0m [91m         ~~~~~~~~~~~~~[0m
+
+[96msrc/config/security-monitor.ts[0m:[93m405[0m:[93m25[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m405[0m export { SecurityEvent, SecurityAlert, SecurityMetrics };
+[7m   [0m [91m                        ~~~~~~~~~~~~~[0m
+
+[96msrc/config/security-monitor.ts[0m:[93m405[0m:[93m40[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m405[0m export { SecurityEvent, SecurityAlert, SecurityMetrics };
+[7m   [0m [91m                                       ~~~~~~~~~~~~~~~[0m
+
+[96msrc/constants/errors.ts[0m:[93m10[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"../types"' has no exported member 'ErrorCategory'.
+
+[7m10[0m import type { ErrorCategory, ErrorSeverity } from '../types';
+[7m  [0m [91m              ~~~~~~~~~~~~~[0m
+
+[96msrc/constants/errors.ts[0m:[93m10[0m:[93m30[0m - [91merror[0m[90m TS2305: [0mModule '"../types"' has no exported member 'ErrorSeverity'.
+
+[7m10[0m import type { ErrorCategory, ErrorSeverity } from '../types';
+[7m  [0m [91m                             ~~~~~~~~~~~~~[0m
+
+[96msrc/constants/templates.ts[0m:[93m10[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"../types"' has no exported member 'TemplateCategory'.
+
+[7m10[0m import type { TemplateCategory } from '../types';
+[7m  [0m [91m              ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/index.ts[0m:[93m46[0m:[93m1[0m - [91merror[0m[90m TS2308: [0mModule './interfaces' has already exported a member named 'AuthValidationResult'. Consider explicitly re-exporting to resolve the ambiguity.
+
+[7m46[0m export * from './utils';
+[7m  [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/index.ts[0m:[93m46[0m:[93m1[0m - [91merror[0m[90m TS2308: [0mModule './interfaces' has already exported a member named 'AuthenticatedUser'. Consider explicitly re-exporting to resolve the ambiguity.
+
+[7m46[0m export * from './utils';
+[7m  [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m TS6133: [0m'IAuthGuard' is declared but its value is never read.
+
+[7m14[0m   IAuthGuard,
+[7m  [0m [91m  ~~~~~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS6133: [0m'IPremiumGuard' is declared but its value is never read.
+
+[7m15[0m   IPremiumGuard,
+[7m  [0m [91m  ~~~~~~~~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m16[0m:[93m3[0m - [91merror[0m[90m TS6133: [0m'IRateLimitGuard' is declared but its value is never read.
+
+[7m16[0m   IRateLimitGuard,
+[7m  [0m [91m  ~~~~~~~~~~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m17[0m:[93m3[0m - [91merror[0m[90m TS6133: [0m'IFeatureRegistry' is declared but its value is never read.
+
+[7m17[0m   IFeatureRegistry,
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m18[0m:[93m3[0m - [91merror[0m[90m TS6133: [0m'ISubscriptionService' is declared but its value is never read.
+
+[7m18[0m   ISubscriptionService,
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m19[0m:[93m3[0m - [91merror[0m[90m TS6133: [0m'ISecurityMonitor' is declared but its value is never read.
+
+[7m19[0m   ISecurityMonitor,
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m25[0m:[93m3[0m - [91merror[0m[90m TS6133: [0m'AuthorizationError' is declared but its value is never read.
+
+[7m25[0m   AuthorizationError,
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m166[0m:[93m21[0m - [91merror[0m[90m TS2345: [0mArgument of type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>' is not assignable to parameter of type 'AuthenticatedRequest'.
+  Property 'auth' is missing in type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>' but required in type 'AuthenticatedRequest'.
+
+[7m166[0m           authGuard(req, res, (err) => {
+[7m   [0m [91m                    ~~~[0m
+
+  [96msrc/types/middleware.ts[0m:[93m12[0m:[93m3[0m
+    [7m12[0m   auth: {
+    [7m  [0m [96m  ~~~~[0m
+    'auth' is declared here.
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m178[0m:[93m28[0m - [91merror[0m[90m TS2345: [0mArgument of type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>' is not assignable to parameter of type 'AuthenticatedRequest'.
+  Property 'auth' is missing in type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>' but required in type 'AuthenticatedRequest'.
+
+[7m178[0m             rateLimitGuard(req, res, (err) => {
+[7m   [0m [91m                           ~~~[0m
+
+  [96msrc/types/middleware.ts[0m:[93m12[0m:[93m3[0m
+    [7m12[0m   auth: {
+    [7m  [0m [96m  ~~~~[0m
+    'auth' is declared here.
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m189[0m:[93m26[0m - [91merror[0m[90m TS2345: [0mArgument of type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>' is not assignable to parameter of type 'AuthenticatedRequest'.
+  Property 'auth' is missing in type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>' but required in type 'AuthenticatedRequest'.
+
+[7m189[0m             premiumGuard(req, res, (err) => {
+[7m   [0m [91m                         ~~~[0m
+
+  [96msrc/types/middleware.ts[0m:[93m12[0m:[93m3[0m
+    [7m12[0m   auth: {
+    [7m  [0m [96m  ~~~~[0m
+    'auth' is declared here.
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m212[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+[7m212[0m       return res.status(401).json({
+[7m   [0m [91m      ~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m228[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType '{ uid: string; email: null; token: string; }' is not assignable to type '{ uid: string; email?: string | undefined; token?: any; }'.
+  Types of property 'email' are incompatible.
+    Type 'null' is not assignable to type 'string | undefined'.
+
+[7m228[0m       (req as AuthenticatedRequest).auth = mockAuth;
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m232[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+[7m232[0m       return res.status(401).json({
+[7m   [0m [91m      ~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m266[0m:[93m37[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m266[0m       const retryAfter = Math.ceil((recentRequests[0] + windowMs - now) / 1000);
+[7m   [0m [91m                                    ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m267[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+[7m267[0m       return res.status(429).json({
+[7m   [0m [91m      ~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m292[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+[7m292[0m       return res.status(401).json({
+[7m   [0m [91m      ~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m300[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+[7m300[0m       return res.status(error.httpErrorCode?.status || 500).json({
+[7m   [0m [91m      ~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m306[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+[7m306[0m     return res.status(401).json({
+[7m   [0m [91m    ~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m316[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+[7m316[0m       return res.status(403).json({
+[7m   [0m [91m      ~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m324[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+[7m324[0m       return res.status(error.httpErrorCode?.status || 500).json({
+[7m   [0m [91m      ~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m330[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+[7m330[0m     return res.status(403).json({
+[7m   [0m [91m    ~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m341[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+[7m341[0m       return res.status(429).json({
+[7m   [0m [91m      ~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m348[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+[7m348[0m     return res.status(429).json({
+[7m   [0m [91m    ~~~~~~[0m
+
+[96msrc/middleware/middleware-factory.ts[0m:[93m372[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+[7m372[0m     return res.status(500).json({
+[7m   [0m [91m    ~~~~~~[0m
+
+[96msrc/middleware/security-headers.ts[0m:[93m134[0m:[93m9[0m - [91merror[0m[90m TS6133: [0m'referer' is declared but its value is never read.
+
+[7m134[0m   const referer = (req.headers['referer'] || '').toLowerCase();
+[7m   [0m [91m        ~~~~~~~[0m
+
+[96msrc/services/cache-mixin.ts[0m:[93m11[0m:[93m29[0m - [91merror[0m[90m TS2307: [0mCannot find module '../cache/redis-client.service' or its corresponding type declarations.
+
+[7m11[0m import { redisClient } from '../cache/redis-client.service';
+[7m  [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cache/analytics-cache.service.ts[0m:[93m15[0m:[93m1[0m - [91merror[0m[90m TS6133: [0m'db' is declared but its value is never read.
+
+[7m15[0m import { db } from '../../config/firebase';
+[7m  [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cache/analytics-cache.service.ts[0m:[93m223[0m:[93m44[0m - [91merror[0m[90m TS2538: [0mType 'undefined' cannot be used as an index type.
+
+[7m223[0m         const result = batchResult.results[key];
+[7m   [0m [91m                                           ~~~[0m
+
+[96msrc/services/cache/analytics-cache.service.ts[0m:[93m224[0m:[93m43[0m - [91merror[0m[90m TS2538: [0mType 'undefined' cannot be used as an index type.
+
+[7m224[0m         const cached = batchResult.cached[key];
+[7m   [0m [91m                                          ~~~[0m
+
+[96msrc/services/cache/analytics-cache.service.ts[0m:[93m228[0m:[93m39[0m - [91merror[0m[90m TS18048: [0m'query' is possibly 'undefined'.
+
+[7m228[0m           const ttl = this.TTL_CONFIG[query.type] || this.DEFAULT_TTL;
+[7m   [0m [91m                                      ~~~~~[0m
+
+[96msrc/services/cache/analytics-cache.service.ts[0m:[93m230[0m:[93m19[0m - [91merror[0m[90m TS18048: [0m'query' is possibly 'undefined'.
+
+[7m230[0m           results[query.type] = {
+[7m   [0m [91m                  ~~~~~[0m
+
+[96msrc/services/cache/analytics-cache.service.ts[0m:[93m233[0m:[93m26[0m - [91merror[0m[90m TS18048: [0m'query' is possibly 'undefined'.
+
+[7m233[0m               queryType: query.type,
+[7m   [0m [91m                         ~~~~~[0m
+
+[96msrc/services/cache/analytics-cache.service.ts[0m:[93m482[0m:[93m41[0m - [91merror[0m[90m TS6133: [0m'query' is declared but its value is never read.
+
+[7m482[0m   private async getDashboardSummaryData(query: AnalyticsQuery): Promise<any> {
+[7m   [0m [91m                                        ~~~~~[0m
+
+[96msrc/services/cache/analytics-cache.service.ts[0m:[93m495[0m:[93m39[0m - [91merror[0m[90m TS6133: [0m'query' is declared but its value is never read.
+
+[7m495[0m   private async getRevenueMetricsData(query: AnalyticsQuery): Promise<any> {
+[7m   [0m [91m                                      ~~~~~[0m
+
+[96msrc/services/cache/analytics-cache.service.ts[0m:[93m508[0m:[93m37[0m - [91merror[0m[90m TS6133: [0m'query' is declared but its value is never read.
+
+[7m508[0m   private async getFeatureUsageData(query: AnalyticsQuery): Promise<any> {
+[7m   [0m [91m                                    ~~~~~[0m
+
+[96msrc/services/cache/analytics-cache.service.ts[0m:[93m519[0m:[93m36[0m - [91merror[0m[90m TS6133: [0m'query' is declared but its value is never read.
+
+[7m519[0m   private async getUserCohortsData(query: AnalyticsQuery): Promise<any> {
+[7m   [0m [91m                                   ~~~~~[0m
+
+[96msrc/services/cache/analytics-cache.service.ts[0m:[93m523[0m:[93m42[0m - [91merror[0m[90m TS6133: [0m'query' is declared but its value is never read.
+
+[7m523[0m   private async getConversionMetricsData(query: AnalyticsQuery): Promise<any> {
+[7m   [0m [91m                                         ~~~~~[0m
+
+[96msrc/services/cache/analytics-cache.service.ts[0m:[93m527[0m:[93m46[0m - [91merror[0m[90m TS6133: [0m'query' is declared but its value is never read.
+
+[7m527[0m   private async getSubscriptionAnalyticsData(query: AnalyticsQuery): Promise<any> {
+[7m   [0m [91m                                             ~~~~~[0m
+
+[96msrc/services/cache/analytics-cache.service.ts[0m:[93m531[0m:[93m39[0m - [91merror[0m[90m TS6133: [0m'query' is declared but its value is never read.
+
+[7m531[0m   private async getUserEngagementData(query: AnalyticsQuery): Promise<any> {
+[7m   [0m [91m                                      ~~~~~[0m
+
+[96msrc/services/cache/analytics-cache.service.ts[0m:[93m535[0m:[93m38[0m - [91merror[0m[90m TS6133: [0m'query' is declared but its value is never read.
+
+[7m535[0m   private async getChurnAnalysisData(query: AnalyticsQuery): Promise<any> {
+[7m   [0m [91m                                     ~~~~~[0m
+
+[96msrc/services/cache/cache-performance-monitor.service.ts[0m:[93m15[0m:[93m43[0m - [91merror[0m[90m TS2307: [0mCannot find module './feature-access-cache.service' or its corresponding type declarations.
+
+[7m15[0m import { featureAccessCacheService } from './feature-access-cache.service';
+[7m  [0m [91m                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cache/cache-performance-monitor.service.ts[0m:[93m610[0m:[93m9[0m - [91merror[0m[90m TS2322: [0mType '"critical"' is not assignable to type '"low" | "medium" | "high"'.
+
+[7m610[0m         priority: 'critical',
+[7m   [0m [91m        ~~~~~~~~[0m
+
+  [96msrc/services/cache/cache-performance-monitor.service.ts[0m:[93m89[0m:[93m3[0m
+    [7m89[0m   priority: 'high' | 'medium' | 'low';
+    [7m  [0m [96m  ~~~~~~~~[0m
+    The expected type comes from property 'priority' which is declared here on type 'CacheRecommendation'
+
+[96msrc/services/cache/cache.service.ts[0m:[93m243[0m:[93m19[0m - [91merror[0m[90m TS2538: [0mType 'undefined' cannot be used as an index type.
+
+[7m243[0m           results[originalKey] = opts.serialize ? this.deserialize<T>(cachedValue) : cachedValue as T;
+[7m   [0m [91m                  ~~~~~~~~~~~[0m
+
+[96msrc/services/cache/cache.service.ts[0m:[93m243[0m:[93m71[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m243[0m           results[originalKey] = opts.serialize ? this.deserialize<T>(cachedValue) : cachedValue as T;
+[7m   [0m [91m                                                                      ~~~~~~~~~~~[0m
+
+[96msrc/services/cache/cache.service.ts[0m:[93m244[0m:[93m18[0m - [91merror[0m[90m TS2538: [0mType 'undefined' cannot be used as an index type.
+
+[7m244[0m           cached[originalKey] = true;
+[7m   [0m [91m                 ~~~~~~~~~~~[0m
+
+[96msrc/services/cache/cache.service.ts[0m:[93m247[0m:[93m19[0m - [91merror[0m[90m TS2538: [0mType 'undefined' cannot be used as an index type.
+
+[7m247[0m           results[originalKey] = null;
+[7m   [0m [91m                  ~~~~~~~~~~~[0m
+
+[96msrc/services/cache/cache.service.ts[0m:[93m248[0m:[93m18[0m - [91merror[0m[90m TS2538: [0mType 'undefined' cannot be used as an index type.
+
+[7m248[0m           cached[originalKey] = false;
+[7m   [0m [91m                 ~~~~~~~~~~~[0m
+
+[96msrc/services/cache/cache.service.ts[0m:[93m249[0m:[93m27[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m249[0m           missedKeys.push(originalKey);
+[7m   [0m [91m                          ~~~~~~~~~~~[0m
+
+[96msrc/services/cache/index.ts[0m:[93m19[0m:[93m43[0m - [91merror[0m[90m TS2307: [0mCannot find module './feature-access-cache.service' or its corresponding type declarations.
+
+[7m19[0m export { featureAccessCacheService } from './feature-access-cache.service';
+[7m  [0m [91m                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cache/index.ts[0m:[93m26[0m:[93m3[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m26[0m   CacheHealthStatus,
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cache/index.ts[0m:[93m27[0m:[93m3[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m27[0m   CachePerformanceReport
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cache/index.ts[0m:[93m36[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '../cached-subscription.service' or its corresponding type declarations.
+
+[7m36[0m } from '../cached-subscription.service';
+[7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cache/index.ts[0m:[93m40[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '../subscription-management.service' or its corresponding type declarations.
+
+[7m40[0m } from '../subscription-management.service';
+[7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cache/index.ts[0m:[93m45[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '../cache-monitor.service' or its corresponding type declarations.
+
+[7m45[0m } from '../cache-monitor.service';
+[7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cache/index.ts[0m:[93m69[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module './feature-access-cache.service' or its corresponding type declarations.
+
+[7m69[0m } from './feature-access-cache.service';
+[7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cache/index.ts[0m:[93m96[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module './feature-access-cache.service' or its corresponding type declarations.
+
+[7m96[0m     const { featureAccessCacheService } = await import('./feature-access-cache.service');
+[7m  [0m [91m                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cache/index.ts[0m:[93m120[0m:[93m58[0m - [91merror[0m[90m TS2304: [0mCannot find name 'CacheHealthStatus'.
+
+[7m120[0m export async function performCacheHealthCheck(): Promise<CacheHealthStatus> {
+[7m   [0m [91m                                                         ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cache/index.ts[0m:[93m128[0m:[93m65[0m - [91merror[0m[90m TS2304: [0mCannot find name 'CachePerformanceReport'.
+
+[7m128[0m export async function generateCachePerformanceReport(): Promise<CachePerformanceReport> {
+[7m   [0m [91m                                                                ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cache/pricing-cache.service.ts[0m:[93m123[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'startTime' is declared but its value is never read.
+
+[7m123[0m     const startTime = Date.now();
+[7m   [0m [91m          ~~~~~~~~~[0m
+
+[96msrc/services/cache/pricing-cache.service.ts[0m:[93m180[0m:[93m44[0m - [91merror[0m[90m TS2538: [0mType 'undefined' cannot be used as an index type.
+
+[7m180[0m         const result = batchResult.results[key];
+[7m   [0m [91m                                           ~~~[0m
+
+[96msrc/services/cache/pricing-cache.service.ts[0m:[93m183[0m:[93m30[0m - [91merror[0m[90m TS18048: [0m'request' is possibly 'undefined'.
+
+[7m183[0m           const userKey = `${request.userId}:${request.tier}:${request.region || 'default'}`;
+[7m   [0m [91m                             ~~~~~~~[0m
+
+[96msrc/services/cache/pricing-cache.service.ts[0m:[93m183[0m:[93m48[0m - [91merror[0m[90m TS18048: [0m'request' is possibly 'undefined'.
+
+[7m183[0m           const userKey = `${request.userId}:${request.tier}:${request.region || 'default'}`;
+[7m   [0m [91m                                               ~~~~~~~[0m
+
+[96msrc/services/cache/pricing-cache.service.ts[0m:[93m183[0m:[93m64[0m - [91merror[0m[90m TS18048: [0m'request' is possibly 'undefined'.
+
+[7m183[0m           const userKey = `${request.userId}:${request.tier}:${request.region || 'default'}`;
+[7m   [0m [91m                                                               ~~~~~~~[0m
+
+[96msrc/services/cache/pricing-cache.service.ts[0m:[93m327[0m:[93m9[0m - [91merror[0m[90m TS2554: [0mExpected 1-2 arguments, but got 3.
+
+[7m327[0m         currency
+[7m   [0m [91m        ~~~~~~~~[0m
+
+[96msrc/services/cache/pricing-cache.service.ts[0m:[93m387[0m:[93m9[0m - [91merror[0m[90m TS2322: [0mType 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m387[0m         userId: parts[0],
+[7m   [0m [91m        ~~~~~~[0m
+
+[96msrc/services/cache/pricing-cache.service.ts[0m:[93m414[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType 'number | undefined' is not assignable to type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+
+[7m414[0m     return multipliers[region] || multipliers['default'];
+[7m   [0m [91m    ~~~~~~[0m
+
+[96msrc/services/cache/pricing-cache.service.ts[0m:[93m461[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType 'number | undefined' is not assignable to type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+
+[7m461[0m     return taxRates[region] || taxRates['default'];
+[7m   [0m [91m    ~~~~~~[0m
+
+[96msrc/services/cache/redis-client.service.ts[0m:[93m105[0m:[93m22[0m - [91merror[0m[90m TS2339: [0mProperty 'redis' does not exist on type 'SecureConfig'.
+
+[7m105[0m         host: config.redis?.host || 'redis-production.example.com',
+[7m   [0m [91m                     ~~~~~[0m
+
+[96msrc/services/cache/redis-client.service.ts[0m:[93m106[0m:[93m22[0m - [91merror[0m[90m TS2339: [0mProperty 'redis' does not exist on type 'SecureConfig'.
+
+[7m106[0m         port: config.redis?.port || 6379,
+[7m   [0m [91m                     ~~~~~[0m
+
+[96msrc/services/cache/redis-client.service.ts[0m:[93m107[0m:[93m26[0m - [91merror[0m[90m TS2339: [0mProperty 'redis' does not exist on type 'SecureConfig'.
+
+[7m107[0m         password: config.redis?.password,
+[7m   [0m [91m                         ~~~~~[0m
+
+[96msrc/services/cache/redis-client.service.ts[0m:[93m109[0m:[93m21[0m - [91merror[0m[90m TS2339: [0mProperty 'redis' does not exist on type 'SecureConfig'.
+
+[7m109[0m         tls: config.redis?.tls || undefined
+[7m   [0m [91m                    ~~~~~[0m
+
+[96msrc/services/cache/redis-client.service.ts[0m:[93m115[0m:[93m22[0m - [91merror[0m[90m TS2339: [0mProperty 'redis' does not exist on type 'SecureConfig'.
+
+[7m115[0m         host: config.redis?.host || 'redis-staging.example.com',
+[7m   [0m [91m                     ~~~~~[0m
+
+[96msrc/services/cache/redis-client.service.ts[0m:[93m116[0m:[93m22[0m - [91merror[0m[90m TS2339: [0mProperty 'redis' does not exist on type 'SecureConfig'.
+
+[7m116[0m         port: config.redis?.port || 6379,
+[7m   [0m [91m                     ~~~~~[0m
+
+[96msrc/services/cache/redis-client.service.ts[0m:[93m117[0m:[93m26[0m - [91merror[0m[90m TS2339: [0mProperty 'redis' does not exist on type 'SecureConfig'.
+
+[7m117[0m         password: config.redis?.password,
+[7m   [0m [91m                         ~~~~~[0m
+
+[96msrc/services/cache/redis-client.service.ts[0m:[93m124[0m:[93m22[0m - [91merror[0m[90m TS2339: [0mProperty 'redis' does not exist on type 'SecureConfig'.
+
+[7m124[0m         host: config.redis?.host || '127.0.0.1',
+[7m   [0m [91m                     ~~~~~[0m
+
+[96msrc/services/cache/redis-client.service.ts[0m:[93m125[0m:[93m22[0m - [91merror[0m[90m TS2339: [0mProperty 'redis' does not exist on type 'SecureConfig'.
+
+[7m125[0m         port: config.redis?.port || 6379,
+[7m   [0m [91m                     ~~~~~[0m
+
+[96msrc/services/cache/redis-client.service.ts[0m:[93m159[0m:[93m37[0m - [91merror[0m[90m TS7006: [0mParameter 'delay' implicitly has an 'any' type.
+
+[7m159[0m     this.client.on('reconnecting', (delay) => {
+[7m   [0m [91m                                    ~~~~~[0m
+
+[96msrc/services/cache/subscription-cache.service.ts[0m:[93m14[0m:[93m38[0m - [91merror[0m[90m TS2307: [0mCannot find module '../cached-subscription.service' or its corresponding type declarations.
+
+[7m14[0m import { UserSubscriptionData } from '../cached-subscription.service';
+[7m  [0m [91m                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cache/subscription-cache.service.ts[0m:[93m163[0m:[93m13[0m - [91merror[0m[90m TS2322: [0mType 'boolean | undefined' is not assignable to type 'boolean'.
+  Type 'undefined' is not assignable to type 'boolean'.
+
+[7m163[0m             cached,
+[7m   [0m [91m            ~~~~~~[0m
+
+  [96msrc/services/cache/subscription-cache.service.ts[0m:[93m28[0m:[93m3[0m
+    [7m28[0m   cached: boolean;
+    [7m  [0m [96m  ~~~~~~[0m
+    The expected type comes from property 'cached' which is declared here on type 'SubscriptionCacheResult'
+
+[96msrc/services/cache/subscription-cache.service.ts[0m:[93m294[0m:[93m18[0m - [91merror[0m[90m TS2538: [0mType 'symbol' cannot be used as an index type.
+
+[7m294[0m         features[featureKey] = result.subscription.features[featureKey] === true;
+[7m   [0m [91m                 ~~~~~~~~~~[0m
+
+[96msrc/services/cache/subscription-cache.service.ts[0m:[93m307[0m:[93m18[0m - [91merror[0m[90m TS2538: [0mType 'symbol' cannot be used as an index type.
+
+[7m307[0m         features[featureKey] = false;
+[7m   [0m [91m                 ~~~~~~~~~~[0m
+
+[96msrc/services/cache/usage-batch-cache.service.ts[0m:[93m186[0m:[93m17[0m - [91merror[0m[90m TS18047: [0m'batchData' is possibly 'null'.
+
+[7m186[0m             if (batchData.eventCount >= this.MAX_BATCH_SIZE) {
+[7m   [0m [91m                ~~~~~~~~~[0m
+
+[96msrc/services/cache/usage-batch-cache.service.ts[0m:[93m315[0m:[93m13[0m - [91merror[0m[90m TS6133: [0m'pattern' is declared but its value is never read.
+
+[7m315[0m       const pattern = `${userId}:*`;
+[7m   [0m [91m            ~~~~~~~[0m
+
+[96msrc/services/calendar-integration.service.ts[0m:[93m9[0m:[93m24[0m - [91merror[0m[90m TS2307: [0mCannot find module 'googleapis' or its corresponding type declarations.
+
+[7m9[0m import { google } from 'googleapis';
+[7m [0m [91m                       ~~~~~~~~~~~~[0m
+
+[96msrc/services/calendar-integration.service.ts[0m:[93m10[0m:[93m18[0m - [91merror[0m[90m TS2307: [0mCannot find module 'ical-generator' or its corresponding type declarations.
+
+[7m10[0m import ical from 'ical-generator';
+[7m  [0m [91m                 ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/calendar-integration.service.ts[0m:[93m55[0m:[93m52[0m - [91merror[0m[90m TS6133: [0m'jobId' is declared but its value is never read.
+
+[7m55[0m   async generateCalendarEvents(parsedCV: ParsedCV, jobId: string): Promise<CalendarEvent[]> {
+[7m  [0m [91m                                                   ~~~~~[0m
+
+[96msrc/services/chat.service.ts[0m:[93m7[0m:[93m34[0m - [91merror[0m[90m TS2307: [0mCannot find module './embedding.service' or its corresponding type declarations.
+
+[7m7[0m import { embeddingService } from './embedding.service';
+[7m [0m [91m                                 ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/chat.service.ts[0m:[93m95[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'userId' is declared but its value is never read.
+
+[7m95[0m     userId?: string,
+[7m  [0m [91m    ~~~~~~[0m
+
+[96msrc/services/chat.service.ts[0m:[93m149[0m:[93m24[0m - [91merror[0m[90m TS18048: [0m'profile.settings' is possibly 'undefined'.
+
+[7m149[0m     const basePrompt = profile.settings.systemPrompt || this.getDefaultSystemPrompt();
+[7m   [0m [91m                       ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/chat.service.ts[0m:[93m160[0m:[93m16[0m - [91merror[0m[90m TS18048: [0m'profile.settings' is possibly 'undefined'.
+
+[7m160[0m - Maintain a ${profile.settings.personality || 'professional'} tone
+[7m   [0m [91m               ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/chat.service.ts[0m:[93m182[0m:[93m20[0m - [91merror[0m[90m TS18048: [0m'settings' is possibly 'undefined'.
+
+[7m182[0m       temperature: settings.temperature || 0.7,
+[7m   [0m [91m                   ~~~~~~~~[0m
+
+[96msrc/services/chat.service.ts[0m:[93m183[0m:[93m19[0m - [91merror[0m[90m TS18048: [0m'settings' is possibly 'undefined'.
+
+[7m183[0m       max_tokens: settings.maxTokens || 500,
+[7m   [0m [91m                  ~~~~~~~~[0m
+
+[96msrc/services/chat.service.ts[0m:[93m189[0m:[93m22[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m189[0m     const response = completion.choices[0].message;
+[7m   [0m [91m                     ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/chat.service.ts[0m:[93m201[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'calculateConfidence' is declared but its value is never read.
+
+[7m201[0m   private calculateConfidence(chunks: any[]): number {
+[7m   [0m [91m          ~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/chat.service.ts[0m:[93m233[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m233[0m     return greetings[Math.floor(Math.random() * greetings.length)];
+[7m   [0m [91m    ~~~~~~[0m
+
+[96msrc/services/chat.service.ts[0m:[93m268[0m:[93m56[0m - [91merror[0m[90m TS6133: [0m'jobId' is declared but its value is never read.
+
+[7m268[0m   async getSuggestedQuestions(vectorNamespace: string, jobId: string): Promise<string[]> {
+[7m   [0m [91m                                                       ~~~~~[0m
+
+[96msrc/services/chat.service.ts[0m:[93m279[0m:[93m39[0m - [91merror[0m[90m TS7006: [0mParameter 'c' implicitly has an 'any' type.
+
+[7m279[0m     const hasExperience = chunks.some(c => c.metadata?.section === 'experience');
+[7m   [0m [91m                                      ~[0m
+
+[96msrc/services/chat.service.ts[0m:[93m280[0m:[93m37[0m - [91merror[0m[90m TS7006: [0mParameter 'c' implicitly has an 'any' type.
+
+[7m280[0m     const hasProjects = chunks.some(c => c.metadata?.section === 'projects');
+[7m   [0m [91m                                    ~[0m
+
+[96msrc/services/chat.service.ts[0m:[93m281[0m:[93m35[0m - [91merror[0m[90m TS7006: [0mParameter 'c' implicitly has an 'any' type.
+
+[7m281[0m     const hasSkills = chunks.some(c => c.metadata?.section === 'skills');
+[7m   [0m [91m                                  ~[0m
+
+[96msrc/services/chat.service.ts[0m:[93m282[0m:[93m38[0m - [91merror[0m[90m TS7006: [0mParameter 'c' implicitly has an 'any' type.
+
+[7m282[0m     const hasEducation = chunks.some(c => c.metadata?.section === 'education');
+[7m   [0m [91m                                     ~[0m
+
+[96msrc/services/circuit-breaker.service.ts[0m:[93m189[0m:[93m63[0m - [91merror[0m[90m TS6133: [0m'error' is declared but its value is never read.
+
+[7m189[0m   recordFailure(providerId: string, responseTime: number = 0, error?: string): void {
+[7m   [0m [91m                                                              ~~~~~[0m
+
+[96msrc/services/circuit-breaker.service.ts[0m:[93m233[0m:[93m37[0m - [91merror[0m[90m TS18048: [0m'circuit' is possibly 'undefined'.
+
+[7m233[0m     if (!circuit && responseTime >= circuit.config.timeoutThreshold) {
+[7m   [0m [91m                                    ~~~~~~~[0m
+
+[96msrc/services/circuit-breaker.service.ts[0m:[93m257[0m:[93m35[0m - [91merror[0m[90m TS6133: [0m'reason' is declared but its value is never read.
+
+[7m257[0m   openCircuit(providerId: string, reason: string = 'Manual'): boolean {
+[7m   [0m [91m                                  ~~~~~~[0m
+
+[96msrc/services/circuit-breaker.service.ts[0m:[93m268[0m:[93m36[0m - [91merror[0m[90m TS6133: [0m'reason' is declared but its value is never read.
+
+[7m268[0m   closeCircuit(providerId: string, reason: string = 'Manual'): boolean {
+[7m   [0m [91m                                   ~~~~~~[0m
+
+[96msrc/services/cv/cv-analysis.service.ts[0m:[93m10[0m:[93m29[0m - [91merror[0m[90m TS2307: [0mCannot find module '../shared/base-service' or its corresponding type declarations.
+
+[7m10[0m import { BaseService } from '../shared/base-service';
+[7m  [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-analysis.service.ts[0m:[93m11[0m:[93m31[0m - [91merror[0m[90m TS2307: [0mCannot find module '../shared/service-types' or its corresponding type declarations.
+
+[7m11[0m import { ServiceResult } from '../shared/service-types';
+[7m  [0m [91m                              ~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-analysis.service.ts[0m:[93m68[0m:[93m10[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVAnalysisService'.
+
+[7m68[0m     this.logger.info('CV Analysis Service initialized');
+[7m  [0m [91m         ~~~~~~[0m
+
+[96msrc/services/cv/cv-analysis.service.ts[0m:[93m72[0m:[93m10[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVAnalysisService'.
+
+[7m72[0m     this.logger.info('CV Analysis Service cleaned up');
+[7m  [0m [91m         ~~~~~~[0m
+
+[96msrc/services/cv/cv-analysis.service.ts[0m:[93m94[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVAnalysisService'.
+
+[7m94[0m       this.logger.info('Starting CV analysis', {
+[7m  [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-analysis.service.ts[0m:[93m131[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVAnalysisService'.
+
+[7m131[0m       this.logger.info('CV analysis completed', {
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-analysis.service.ts[0m:[93m140[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVAnalysisService'.
+
+[7m140[0m       this.logger.error('CV analysis failed', { error });
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-analysis.service.ts[0m:[93m158[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVAnalysisService'.
+
+[7m158[0m       this.logger.info('Parsing CV data');
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-analysis.service.ts[0m:[93m223[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVAnalysisService'.
+
+[7m223[0m       this.logger.info('CV parsing completed', {
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-analysis.service.ts[0m:[93m232[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVAnalysisService'.
+
+[7m232[0m       this.logger.error('CV parsing failed', { error });
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-analysis.service.ts[0m:[93m550[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'keywords' is declared but its value is never read.
+
+[7m550[0m     const keywords: string[] = [];
+[7m   [0m [91m          ~~~~~~~~[0m
+
+[96msrc/services/cv/cv-analysis.service.ts[0m:[93m562[0m:[93m27[0m - [91merror[0m[90m TS6133: [0m'cvData' is declared but its value is never read.
+
+[7m562[0m   private suggestKeywords(cvData: any, targetIndustry?: string): string[] {
+[7m   [0m [91m                          ~~~~~~[0m
+
+[96msrc/services/cv/cv-analysis.service.ts[0m:[93m645[0m:[93m43[0m - [91merror[0m[90m TS7006: [0mParameter 'pos' implicitly has an 'any' type.
+
+[7m645[0m     const hasProgression = positions.some(pos =>
+[7m   [0m [91m                                          ~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m11[0m:[93m29[0m - [91merror[0m[90m TS2307: [0mCannot find module '../shared/base-service' or its corresponding type declarations.
+
+[7m11[0m import { BaseService } from '../shared/base-service';
+[7m  [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m12[0m:[93m72[0m - [91merror[0m[90m TS2307: [0mCannot find module '../shared/service-types' or its corresponding type declarations.
+
+[7m12[0m import { ServiceResult, CVProcessingContext, CVGenerationResult } from '../shared/service-types';
+[7m  [0m [91m                                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m16[0m:[93m29[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../services/cvGenerator' or its corresponding type declarations.
+
+[7m16[0m import { CVGenerator } from '../../services/cvGenerator';
+[7m  [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m17[0m:[93m1[0m - [91merror[0m[90m TS6133: [0m'EnhancedFileGenerationResult' is declared but its value is never read.
+
+[7m17[0m import { EnhancedFileGenerationResult } from '../../services/cv-generator/types';
+[7m  [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m17[0m:[93m46[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../services/cv-generator/types' or its corresponding type declarations.
+
+[7m17[0m import { EnhancedFileGenerationResult } from '../../services/cv-generator/types';
+[7m  [0m [91m                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m39[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'cvGenerator' is declared but its value is never read.
+
+[7m39[0m   private cvGenerator!: CVGenerator;
+[7m  [0m [91m          ~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m55[0m:[93m34[0m - [91merror[0m[90m TS2339: [0mProperty 'initialize' does not exist on type 'CVValidationService'.
+
+[7m55[0m     await this.validationService.initialize();
+[7m  [0m [91m                                 ~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m56[0m:[93m32[0m - [91merror[0m[90m TS2339: [0mProperty 'initialize' does not exist on type 'CVTemplateService'.
+
+[7m56[0m     await this.templateService.initialize();
+[7m  [0m [91m                               ~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m57[0m:[93m32[0m - [91merror[0m[90m TS2339: [0mProperty 'initialize' does not exist on type 'CVAnalysisService'.
+
+[7m57[0m     await this.analysisService.initialize();
+[7m  [0m [91m                               ~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m59[0m:[93m10[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVGenerationService'.
+
+[7m59[0m     this.logger.info('CV Generation Service initialized');
+[7m  [0m [91m         ~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m63[0m:[93m35[0m - [91merror[0m[90m TS2339: [0mProperty 'cleanup' does not exist on type 'CVValidationService'.
+
+[7m63[0m     await this.validationService?.cleanup();
+[7m  [0m [91m                                  ~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m64[0m:[93m33[0m - [91merror[0m[90m TS2339: [0mProperty 'cleanup' does not exist on type 'CVTemplateService'.
+
+[7m64[0m     await this.templateService?.cleanup();
+[7m  [0m [91m                                ~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m65[0m:[93m33[0m - [91merror[0m[90m TS2339: [0mProperty 'cleanup' does not exist on type 'CVAnalysisService'.
+
+[7m65[0m     await this.analysisService?.cleanup();
+[7m  [0m [91m                                ~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m66[0m:[93m10[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVGenerationService'.
+
+[7m66[0m     this.logger.info('CV Generation Service cleaned up');
+[7m  [0m [91m         ~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m72[0m:[93m63[0m - [91merror[0m[90m TS2339: [0mProperty 'healthCheck' does not exist on type 'CVValidationService'.
+
+[7m72[0m         validationServiceHealth: await this.validationService.healthCheck(),
+[7m  [0m [91m                                                              ~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m73[0m:[93m59[0m - [91merror[0m[90m TS2339: [0mProperty 'healthCheck' does not exist on type 'CVTemplateService'.
+
+[7m73[0m         templateServiceHealth: await this.templateService.healthCheck(),
+[7m  [0m [91m                                                          ~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m74[0m:[93m59[0m - [91merror[0m[90m TS2339: [0mProperty 'healthCheck' does not exist on type 'CVAnalysisService'.
+
+[7m74[0m         analysisServiceHealth: await this.analysisService.healthCheck()
+[7m  [0m [91m                                                          ~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m84[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVGenerationService'.
+
+[7m84[0m       this.logger.info('Starting CV generation', {
+[7m  [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m107[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVGenerationService'.
+
+[7m107[0m       this.logger.info('CV generation completed successfully', {
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m117[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVGenerationService'.
+
+[7m117[0m       this.logger.error('CV generation failed', {
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m245[0m:[93m10[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVGenerationService'.
+
+[7m245[0m     this.logger.info('Job generation completed', { jobId });
+[7m   [0m [91m         ~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m264[0m:[93m18[0m - [91merror[0m[90m TS18048: [0m'errorStack' is possibly 'undefined'.
+
+[7m264[0m           stack: errorStack.substring(0, 1000)
+[7m   [0m [91m                 ~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m276[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVGenerationService'.
+
+[7m276[0m       this.logger.error('Failed to update job with error details', { jobId, updateError });
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m303[0m:[93m17[0m - [91merror[0m[90m TS6133: [0m'saveFilesWithFallback' is declared but its value is never read.
+
+[7m303[0m   private async saveFilesWithFallback(jobId: string, userId: string, htmlContent: string): Promise<any> {
+[7m   [0m [91m                ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-generation.service.ts[0m:[93m314[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVGenerationService'.
+
+[7m314[0m       this.logger.error('File saving failed', { jobId, error });
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-template.service.ts[0m:[93m10[0m:[93m29[0m - [91merror[0m[90m TS2307: [0mCannot find module '../shared/base-service' or its corresponding type declarations.
+
+[7m10[0m import { BaseService } from '../shared/base-service';
+[7m  [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-template.service.ts[0m:[93m11[0m:[93m31[0m - [91merror[0m[90m TS2307: [0mCannot find module '../shared/service-types' or its corresponding type declarations.
+
+[7m11[0m import { ServiceResult } from '../shared/service-types';
+[7m  [0m [91m                              ~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-template.service.ts[0m:[93m12[0m:[93m29[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../services/cvGenerator' or its corresponding type declarations.
+
+[7m12[0m import { CVGenerator } from '../../services/cvGenerator';
+[7m  [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-template.service.ts[0m:[93m53[0m:[93m10[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVTemplateService'.
+
+[7m53[0m     this.logger.info('CV Template Service initialized');
+[7m  [0m [91m         ~~~~~~[0m
+
+[96msrc/services/cv/cv-template.service.ts[0m:[93m58[0m:[93m10[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVTemplateService'.
+
+[7m58[0m     this.logger.info('CV Template Service cleaned up');
+[7m  [0m [91m         ~~~~~~[0m
+
+[96msrc/services/cv/cv-template.service.ts[0m:[93m82[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVTemplateService'.
+
+[7m82[0m       this.logger.info('Generating HTML with template', {
+[7m  [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-template.service.ts[0m:[93m98[0m:[93m31[0m - [91merror[0m[90m TS2339: [0mProperty 'executeWithTimeout' does not exist on type 'CVTemplateService'.
+
+[7m98[0m       const html = await this.executeWithTimeout(
+[7m  [0m [91m                              ~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-template.service.ts[0m:[93m117[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVTemplateService'.
+
+[7m117[0m       this.logger.info('HTML generation completed', {
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-template.service.ts[0m:[93m126[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVTemplateService'.
+
+[7m126[0m       this.logger.error('HTML generation failed', {
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-template.service.ts[0m:[93m179[0m:[93m16[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVTemplateService'.
+
+[7m179[0m           this.logger.warn('Template not found, using default', {
+[7m   [0m [91m               ~~~~~~[0m
+
+[96msrc/services/cv/cv-template.service.ts[0m:[93m339[0m:[93m10[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVTemplateService'.
+
+[7m339[0m     this.logger.info('Template definitions loaded', {
+[7m   [0m [91m         ~~~~~~[0m
+
+[96msrc/services/cv/cv-validation.service.ts[0m:[93m10[0m:[93m29[0m - [91merror[0m[90m TS2307: [0mCannot find module '../shared/base-service' or its corresponding type declarations.
+
+[7m10[0m import { BaseService } from '../shared/base-service';
+[7m  [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-validation.service.ts[0m:[93m11[0m:[93m31[0m - [91merror[0m[90m TS2307: [0mCannot find module '../shared/service-types' or its corresponding type declarations.
+
+[7m11[0m import { ServiceResult } from '../shared/service-types';
+[7m  [0m [91m                              ~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/cv/cv-validation.service.ts[0m:[93m37[0m:[93m10[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVValidationService'.
+
+[7m37[0m     this.logger.info('CV Validation Service initialized');
+[7m  [0m [91m         ~~~~~~[0m
+
+[96msrc/services/cv/cv-validation.service.ts[0m:[93m41[0m:[93m10[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVValidationService'.
+
+[7m41[0m     this.logger.info('CV Validation Service cleaned up');
+[7m  [0m [91m         ~~~~~~[0m
+
+[96msrc/services/cv/cv-validation.service.ts[0m:[93m115[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVValidationService'.
+
+[7m115[0m       this.logger.error('Job validation failed', { jobId, userId, error });
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-validation.service.ts[0m:[93m210[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'CVValidationService'.
+
+[7m210[0m       this.logger.error('CV data validation failed', { error });
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/cv/cv-validation.service.ts[0m:[93m353[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType '{ field: string; required: boolean; }[] | undefined' is not assignable to type '{ field: string; required: boolean; }[]'.
+  Type 'undefined' is not assignable to type '{ field: string; required: boolean; }[]'.
+
+[7m353[0m     return requirements[templateId] || requirements['modern'];
+[7m   [0m [91m    ~~~~~~[0m
+
+[96msrc/services/database-mixin.ts[0m:[93m11[0m:[93m20[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../config/firebase' or its corresponding type declarations.
+
+[7m11[0m import { db } from '../../config/firebase';
+[7m  [0m [91m                   ~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/database-mixin.ts[0m:[93m120[0m:[93m24[0m - [91merror[0m[90m TS2345: [0mArgument of type 'T' is not assignable to parameter of type 'WithFieldValue<DocumentData>'.
+  Type 'T' is not assignable to type '{ [x: string]: any; }'.
+
+[7m120[0m       await docRef.set(documentData);
+[7m   [0m [91m                       ~~~~~~~~~~~~[0m
+
+  [96msrc/services/database-mixin.ts[0m:[93m99[0m:[93m34[0m
+    [7m99[0m   protected async createDocument<T>(
+    [7m  [0m [96m                                 ~[0m
+    This type parameter might need an `extends { [x: string]: any; }` constraint.
+  [96msrc/services/database-mixin.ts[0m:[93m99[0m:[93m34[0m
+    [7m99[0m   protected async createDocument<T>(
+    [7m  [0m [96m                                 ~[0m
+    This type parameter might need an `extends admin.firestore.WithFieldValue<admin.firestore.DocumentData>` constraint.
+
+[96msrc/services/database-mixin.ts[0m:[93m158[0m:[93m55[0m - [91merror[0m[90m TS7006: [0mParameter 'transaction' implicitly has an 'any' type.
+
+[7m158[0m         const result = await db.runTransaction(async (transaction) => {
+[7m   [0m [91m                                                      ~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-ats-analysis.service.ts[0m:[93m2[0m:[93m34[0m - [91merror[0m[90m TS2307: [0mCannot find module './cv-transformation.service' or its corresponding type declarations.
+
+[7m2[0m import { CVRecommendation } from './cv-transformation.service';
+[7m [0m [91m                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-ats-analysis.service.ts[0m:[93m195[0m:[93m31[0m - [91merror[0m[90m TS18048: [0m'exp' is possibly 'undefined'.
+
+[7m195[0m             title: `Enhance ${exp.position} Description`,
+[7m   [0m [91m                              ~~~[0m
+
+[96msrc/services/enhanced-ats-analysis.service.ts[0m:[93m197[0m:[93m29[0m - [91merror[0m[90m TS18048: [0m'exp' is possibly 'undefined'.
+
+[7m197[0m             currentContent: exp.description || 'Limited description provided',
+[7m   [0m [91m                            ~~~[0m
+
+[96msrc/services/enhanced-ats-analysis.service.ts[0m:[93m203[0m:[93m50[0m - [91merror[0m[90m TS18048: [0m'exp' is possibly 'undefined'.
+
+[7m203[0m             keywords: this.extractRelevantSkills(exp.position, jobDescription),
+[7m   [0m [91m                                                 ~~~[0m
+
+[96msrc/services/enhanced-ats-analysis.service.ts[0m:[93m490[0m:[93m65[0m - [91merror[0m[90m TS6133: [0m'jobDescription' is declared but its value is never read.
+
+[7m490[0m   private async generateProfessionalSummary(parsedCV: ParsedCV, jobDescription?: string): Promise<string> {
+[7m   [0m [91m                                                                ~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-ats-analysis.service.ts[0m:[93m498[0m:[93m56[0m - [91merror[0m[90m TS6133: [0m'jobDescription' is declared but its value is never read.
+
+[7m498[0m   private async enhanceExperienceDescription(exp: any, jobDescription?: string): Promise<string> {
+[7m   [0m [91m                                                       ~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-ats-analysis.service.ts[0m:[93m526[0m:[93m16[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ high: number; medium: number; low: number; }'.
+
+[7m526[0m         return impactOrder[b.impact] - impactOrder[a.impact];
+[7m   [0m [91m               ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-ats-analysis.service.ts[0m:[93m526[0m:[93m40[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ high: number; medium: number; low: number; }'.
+
+[7m526[0m         return impactOrder[b.impact] - impactOrder[a.impact];
+[7m   [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-base-service.ts[0m:[93m15[0m:[93m1[0m - [91merror[0m[90m TS6133: [0m'Logger' is declared but its value is never read.
+
+[7m15[0m import { Logger } from './logger';
+[7m  [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-db.service.ts[0m:[93m303[0m:[93m12[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m303[0m     return profiles.docs[0].data() as PublicCVProfile;
+[7m   [0m [91m           ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m14[0m:[93m60[0m - [91merror[0m[90m TS2307: [0mCannot find module './industry-templates.service' or its corresponding type declarations.
+
+[7m14[0m import { industryTemplatesService, IndustryTemplate } from './industry-templates.service';
+[7m  [0m [91m                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m207[0m:[93m14[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m207[0m       return response.choices[0].message?.content || '';
+[7m   [0m [91m             ~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m220[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'options' is declared but its value is never read.
+
+[7m220[0m     options: PromptEngineOptions
+[7m   [0m [91m    ~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m261[0m:[93m14[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m261[0m       return response.choices[0].message?.content || '';
+[7m   [0m [91m             ~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m315[0m:[93m14[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m315[0m       return response.choices[0].message?.content || '';
+[7m   [0m [91m             ~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m369[0m:[93m14[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m369[0m       return response.choices[0].message?.content || '';
+[7m   [0m [91m             ~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m438[0m:[93m38[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m438[0m     let years = yearMatch ? parseInt(yearMatch[1]) : 0;
+[7m   [0m [91m                                     ~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m439[0m:[93m42[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m439[0m     const months = monthMatch ? parseInt(monthMatch[1]) : 0;
+[7m   [0m [91m                                         ~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m577[0m:[93m33[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m577[0m       const result = JSON.parse(response.choices[0].message?.content || '{}');
+[7m   [0m [91m                                ~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m593[0m:[93m63[0m - [91merror[0m[90m TS7006: [0mParameter 'word' implicitly has an 'any' type.
+
+[7m593[0m     const vocabularyMatches = template.vocabularyFocus.filter(word =>
+[7m   [0m [91m                                                              ~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m599[0m:[93m59[0m - [91merror[0m[90m TS7006: [0mParameter 'keyword' implicitly has an 'any' type.
+
+[7m599[0m     const keywordMatches = template.commonKeywords.filter(keyword =>
+[7m   [0m [91m                                                          ~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m605[0m:[93m56[0m - [91merror[0m[90m TS7006: [0mParameter 'keyword' implicitly has an 'any' type.
+
+[7m605[0m     const avoidMatches = template.avoidKeywords.filter(keyword =>
+[7m   [0m [91m                                                       ~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m853[0m:[93m40[0m - [91merror[0m[90m TS6133: [0m'cv' is declared but its value is never read.
+
+[7m853[0m   private generateFallbackOptimization(cv: ParsedCV, personality: PersonalityProfile, template: any): string {
+[7m   [0m [91m                                       ~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m853[0m:[93m87[0m - [91merror[0m[90m TS6133: [0m'template' is declared but its value is never read.
+
+[7m853[0m   private generateFallbackOptimization(cv: ParsedCV, personality: PersonalityProfile, template: any): string {
+[7m   [0m [91m                                                                                      ~~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m1164[0m:[93m14[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m1164[0m       return response.choices[0].message?.content || this.generateTemplateBasedScript(
+[7m    [0m [91m             ~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m1180[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'industryTemplate' is declared but its value is never read.
+
+[7m1180[0m     industryTemplate?: any
+[7m    [0m [91m    ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m1248[0m:[93m56[0m - [91merror[0m[90m TS6133: [0m'options' is declared but its value is never read.
+
+[7m1248[0m   private generateUltimateFallbackScript(cv: ParsedCV, options: PromptEngineOptions): string {
+[7m    [0m [91m                                                       ~~~~~~~[0m
+
+[96msrc/services/enhanced-prompt-engine.service.ts[0m:[93m1265[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'categorizeError' is declared but its value is never read.
+
+[7m1265[0m   private categorizeError(error: any): PromptEngineErrorType {
+[7m    [0m [91m          ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m11[0m:[93m29[0m - [91merror[0m[90m TS2307: [0mCannot find module '../shared/base-service' or its corresponding type declarations.
+
+[7m11[0m import { BaseService } from '../shared/base-service';
+[7m  [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m12[0m:[93m52[0m - [91merror[0m[90m TS2307: [0mCannot find module '../shared/service-types' or its corresponding type declarations.
+
+[7m12[0m import { ServiceResult, CVProcessingContext } from '../shared/service-types';
+[7m  [0m [91m                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m45[0m:[93m10[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'EnhancementProcessingService'.
+
+[7m45[0m     this.logger.info('Enhancement Processing Service initialized');
+[7m  [0m [91m         ~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m50[0m:[93m10[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'EnhancementProcessingService'.
+
+[7m50[0m     this.logger.info('Enhancement Processing Service cleaned up');
+[7m  [0m [91m         ~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m88[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'EnhancementProcessingService'.
+
+[7m88[0m       this.logger.info('Processing enhancement features', {
+[7m  [0m [91m           ~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m104[0m:[93m44[0m - [91merror[0m[90m TS7006: [0mParameter 'feature' implicitly has an 'any' type.
+
+[7m104[0m       const featurePromises = features.map(feature =>
+[7m   [0m [91m                                           ~~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m112[0m:[93m47[0m - [91merror[0m[90m TS2339: [0mProperty 'config' does not exist on type 'EnhancementProcessingService'.
+
+[7m112[0m                     options.timeoutMs || this.config.timeoutMs!);
+[7m   [0m [91m                                              ~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m154[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'EnhancementProcessingService'.
+
+[7m154[0m       this.logger.info('Feature processing completed', {
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m162[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'EnhancementProcessingService'.
+
+[7m162[0m       this.logger.error('Feature processing failed', {
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m181[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'options' is declared but its value is never read.
+
+[7m181[0m     options: FeatureProcessingOptions
+[7m   [0m [91m    ~~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m187[0m:[93m14[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'EnhancementProcessingService'.
+
+[7m187[0m         this.logger.warn('Unknown feature processor', { feature });
+[7m   [0m [91m             ~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m222[0m:[93m59[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../services/skills-visualization.service' or its corresponding type declarations.
+
+[7m222[0m       const { skillsVisualizationService } = await import('../../services/skills-visualization.service');
+[7m   [0m [91m                                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m240[0m:[93m59[0m - [91merror[0m[90m TS6133: [0m'context' is declared but its value is never read.
+
+[7m240[0m     this.featureProcessors.set('ats-optimization', async (context) => {
+[7m   [0m [91m                                                          ~~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m257[0m:[93m64[0m - [91merror[0m[90m TS6133: [0m'context' is declared but its value is never read.
+
+[7m257[0m     this.featureProcessors.set('achievements-analysis', async (context) => {
+[7m   [0m [91m                                                               ~~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m355[0m:[93m10[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'EnhancementProcessingService'.
+
+[7m355[0m     this.logger.info('Feature processors registered', {
+[7m   [0m [91m         ~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m373[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'EnhancementProcessingService'.
+
+[7m373[0m       this.logger.error('Failed to mark feature as completed', { jobId, feature, error });
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m386[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'EnhancementProcessingService'.
+
+[7m386[0m       this.logger.error('Failed to mark feature as failed', { jobId, feature, error });
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m409[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'EnhancementProcessingService'.
+
+[7m409[0m       this.logger.error('Failed to update job with empty features', { jobId, error });
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/enhancements/enhancement-processing.service.ts[0m:[93m433[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'EnhancementProcessingService'.
+
+[7m433[0m       this.logger.error('Failed to update job with processing summary', { jobId, error });
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/error-recovery-engine.service.ts[0m:[93m18[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module './video-providers/base-provider.interface' or its corresponding type declarations.
+
+[7m18[0m } from './video-providers/base-provider.interface';
+[7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/error-recovery-engine.service.ts[0m:[93m156[0m:[93m11[0m - [91merror[0m[90m TS2564: [0mProperty 'recoveryStrategies' has no initializer and is not definitely assigned in the constructor.
+
+[7m156[0m   private recoveryStrategies: Map<ErrorCategory, RecoveryStrategy>;
+[7m   [0m [91m          ~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/error-recovery-engine.service.ts[0m:[93m160[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'activeRecoveries' is declared but its value is never read.
+
+[7m160[0m   private activeRecoveries: Map<string, RecoveryContext> = new Map();
+[7m   [0m [91m          ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/error-recovery-engine.service.ts[0m:[93m694[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'strategy' is declared but its value is never read.
+
+[7m694[0m     strategy: RecoveryStrategy
+[7m   [0m [91m    ~~~~~~~~[0m
+
+[96msrc/services/error-recovery-engine.service.ts[0m:[93m795[0m:[93m9[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+
+[7m795[0m         stats.recoveryActions[log.recoveryAction] = (stats.recoveryActions[log.recoveryAction] || 0) + 1;
+[7m   [0m [91m        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/error-recovery-engine.service.ts[0m:[93m795[0m:[93m54[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+
+[7m795[0m         stats.recoveryActions[log.recoveryAction] = (stats.recoveryActions[log.recoveryAction] || 0) + 1;
+[7m   [0m [91m                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/error-recovery-engine.service.ts[0m:[93m796[0m:[93m9[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+
+[7m796[0m         stats.errorCategories[log.errorCategory] = (stats.errorCategories[log.errorCategory] || 0) + 1;
+[7m   [0m [91m        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/error-recovery-engine.service.ts[0m:[93m796[0m:[93m53[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+
+[7m796[0m         stats.errorCategories[log.errorCategory] = (stats.errorCategories[log.errorCategory] || 0) + 1;
+[7m   [0m [91m                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/adapters/github.adapter.ts[0m:[93m72[0m:[93m47[0m - [91merror[0m[90m TS18046: [0m'error' is of type 'unknown'.
+
+[7m72[0m       throw new Error(`GitHub fetch failed: ${error.message}`);
+[7m  [0m [91m                                              ~~~~~[0m
+
+[96msrc/services/external-data/adapters/github.adapter.ts[0m:[93m104[0m:[93m11[0m - [91merror[0m[90m TS18046: [0m'error' is of type 'unknown'.
+
+[7m104[0m       if (error.response?.status === 404) {
+[7m   [0m [91m          ~~~~~[0m
+
+[96msrc/services/external-data/adapters/linkedin.adapter.ts[0m:[93m57[0m:[93m49[0m - [91merror[0m[90m TS18046: [0m'error' is of type 'unknown'.
+
+[7m57[0m       throw new Error(`LinkedIn fetch failed: ${error.message}`);
+[7m  [0m [91m                                                ~~~~~[0m
+
+[96msrc/services/external-data/adapters/linkedin.adapter.ts[0m:[93m64[0m:[93m29[0m - [91merror[0m[90m TS6133: [0m'profileId' is declared but its value is never read.
+
+[7m64[0m   private async fetchViaAPI(profileId: string): Promise<any> {
+[7m  [0m [91m                            ~~~~~~~~~[0m
+
+[96msrc/services/external-data/adapters/linkedin.adapter.ts[0m:[93m250[0m:[93m20[0m - [91merror[0m[90m TS2322: [0mType 'string | undefined' is not assignable to type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+
+[7m250[0m     return match ? match[1] : null;
+[7m   [0m [91m                   ~~~~~~~~[0m
+
+[96msrc/services/external-data/adapters/web-search.adapter.ts[0m:[93m72[0m:[93m45[0m - [91merror[0m[90m TS18046: [0m'error' is of type 'unknown'.
+
+[7m72[0m       throw new Error(`Web search failed: ${error.message}`);
+[7m  [0m [91m                                            ~~~~~[0m
+
+[96msrc/services/external-data/adapters/web-search.adapter.ts[0m:[93m335[0m:[93m12[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m335[0m     return title.split('-')[0].trim();
+[7m   [0m [91m           ~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/adapters/web-search.adapter.ts[0m:[93m352[0m:[93m20[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m352[0m     return match ? match[1].trim() : 'Unknown Organization';
+[7m   [0m [91m                   ~~~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m13[0m:[93m31[0m - [91merror[0m[90m TS6133: [0m'EnhancedServiceConfig' is declared but its value is never read.
+
+[7m13[0m import { EnhancedBaseService, EnhancedServiceConfig } from '../../shared/enhanced-base-service';
+[7m  [0m [91m                              ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m13[0m:[93m60[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../shared/enhanced-base-service' or its corresponding type declarations.
+
+[7m13[0m import { EnhancedBaseService, EnhancedServiceConfig } from '../../shared/enhanced-base-service';
+[7m  [0m [91m                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m22[0m:[93m20[0m - [91merror[0m[90m TS6133: [0m'userAgent' is declared but its value is never read.
+
+[7m22[0m   private readonly userAgent = 'CVPlus-Bot/1.0 (CV Enhancement Service)';
+[7m  [0m [91m                   ~~~~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m58[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'WebsiteAdapter'.
+
+[7m58[0m       this.logger.info('Fetching website data', { websiteUrl });
+[7m  [0m [91m           ~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m62[0m:[93m33[0m - [91merror[0m[90m TS2339: [0mProperty 'getCached' does not exist on type 'WebsiteAdapter'.
+
+[7m62[0m       const cached = await this.getCached<PersonalWebsite>(cacheKey);
+[7m  [0m [91m                                ~~~~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m65[0m:[93m14[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'WebsiteAdapter'.
+
+[7m65[0m         this.logger.info('Returning cached website data', { websiteUrl });
+[7m  [0m [91m             ~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m102[0m:[93m18[0m - [91merror[0m[90m TS2339: [0mProperty 'setCached' does not exist on type 'WebsiteAdapter'.
+
+[7m102[0m       await this.setCached(cacheKey, website, 3600);
+[7m   [0m [91m                 ~~~~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m104[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'WebsiteAdapter'.
+
+[7m104[0m       this.logger.info('Website data extracted', {
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m113[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'WebsiteAdapter'.
+
+[7m113[0m       this.logger.error('Failed to fetch website data', { error, websiteUrl });
+[7m   [0m [91m           ~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m114[0m:[93m48[0m - [91merror[0m[90m TS18046: [0m'error' is of type 'unknown'.
+
+[7m114[0m       throw new Error(`Website fetch failed: ${error.message}`);
+[7m   [0m [91m                                               ~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m123[0m:[93m35[0m - [91merror[0m[90m TS2339: [0mProperty 'apiGet' does not exist on type 'WebsiteAdapter'.
+
+[7m123[0m       const response = await this.apiGet<string>(url, {
+[7m   [0m [91m                                  ~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m131[0m:[93m11[0m - [91merror[0m[90m TS18046: [0m'error' is of type 'unknown'.
+
+[7m131[0m       if (error.status === 404) {
+[7m   [0m [91m          ~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m141[0m:[93m44[0m - [91merror[0m[90m TS6133: [0m'url' is declared but its value is never read.
+
+[7m141[0m   private extractMetadata($: cheerio.Root, url: string): any {
+[7m   [0m [91m                                           ~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m219[0m:[93m14[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'WebsiteAdapter'.
+
+[7m219[0m         this.logger.warn('Failed to fetch portfolio page', { portfolioUrl, error });
+[7m   [0m [91m             ~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m271[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'$' is declared but its value is never read.
+
+[7m271[0m     $: cheerio.Root,
+[7m   [0m [91m    ~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m293[0m:[93m14[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'WebsiteAdapter'.
+
+[7m293[0m         this.logger.warn('Failed to fetch blog page', { blogUrl, error });
+[7m   [0m [91m             ~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m312[0m:[93m37[0m - [91merror[0m[90m TS7006: [0mParameter '_' implicitly has an 'any' type.
+
+[7m312[0m     $.find('.tag, .category').each((_, tagElem) => {
+[7m   [0m [91m                                    ~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m312[0m:[93m40[0m - [91merror[0m[90m TS7006: [0mParameter 'tagElem' implicitly has an 'any' type.
+
+[7m312[0m     $.find('.tag, .category').each((_, tagElem) => {
+[7m   [0m [91m                                       ~~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m352[0m:[93m14[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'WebsiteAdapter'.
+
+[7m352[0m         this.logger.warn('Failed to fetch testimonials page', { testimonialsUrl, error });
+[7m   [0m [91m             ~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m435[0m:[93m10[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'WebsiteAdapter'.
+
+[7m435[0m     this.logger.info('WebsiteAdapter initializing');
+[7m   [0m [91m         ~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m440[0m:[93m10[0m - [91merror[0m[90m TS2339: [0mProperty 'logger' does not exist on type 'WebsiteAdapter'.
+
+[7m440[0m     this.logger.info('WebsiteAdapter cleaning up');
+[7m   [0m [91m         ~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m445[0m:[93m31[0m - [91merror[0m[90m TS2339: [0mProperty 'getCacheMetrics' does not exist on type 'WebsiteAdapter'.
+
+[7m445[0m     const cacheMetrics = this.getCacheMetrics();
+[7m   [0m [91m                              ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m446[0m:[93m34[0m - [91merror[0m[90m TS2339: [0mProperty 'apiClientService' does not exist on type 'WebsiteAdapter'.
+
+[7m446[0m     const rateLimitStatus = this.apiClientService?.['getRateLimitStatus']();
+[7m   [0m [91m                                 ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/adapters/website.adapter.ts[0m:[93m453[0m:[93m23[0m - [91merror[0m[90m TS2339: [0mProperty 'getCacheHitRate' does not exist on type 'WebsiteAdapter'.
+
+[7m453[0m         hitRate: this.getCacheHitRate(),
+[7m   [0m [91m                      ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/cache.service.ts[0m:[93m190[0m:[93m33[0m - [91merror[0m[90m TS6133: [0m'value' is declared but its value is never read.
+
+[7m190[0m       this.memoryCache.forEach((value, key) => {
+[7m   [0m [91m                                ~~~~~[0m
+
+[96msrc/services/external-data/cache.service.ts[0m:[93m275[0m:[93m31[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m275[0m       this.memoryCache.delete(firstKey);
+[7m   [0m [91m                              ~~~~~~~~[0m
+
+[96msrc/services/external-data/enrichment/index.ts[0m:[93m9[0m:[93m29[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m9[0m export { EnrichmentService, EnrichmentResult, DataAttribution, ConflictResolution } from './enrichment.service';
+[7m [0m [91m                            ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/enrichment/index.ts[0m:[93m9[0m:[93m47[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m9[0m export { EnrichmentService, EnrichmentResult, DataAttribution, ConflictResolution } from './enrichment.service';
+[7m [0m [91m                                              ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/enrichment/index.ts[0m:[93m9[0m:[93m64[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m9[0m export { EnrichmentService, EnrichmentResult, DataAttribution, ConflictResolution } from './enrichment.service';
+[7m [0m [91m                                                               ~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/enrichment/index.ts[0m:[93m10[0m:[93m38[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m10[0m export { PortfolioEnrichmentService, PortfolioEnrichmentResult } from './portfolio.enrichment';
+[7m  [0m [91m                                     ~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/enrichment/index.ts[0m:[93m11[0m:[93m42[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m11[0m export { CertificationEnrichmentService, CertificationEnrichmentResult } from './certification.enrichment';
+[7m  [0m [91m                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/enrichment/index.ts[0m:[93m12[0m:[93m36[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m12[0m export { HobbiesEnrichmentService, HobbiesEnrichmentResult } from './hobbies.enrichment';
+[7m  [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/enrichment/index.ts[0m:[93m13[0m:[93m35[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m13[0m export { SkillsEnrichmentService, SkillEnrichmentResult, SkillWithMetadata, ProficiencyLevel } from './skills.enrichment';
+[7m  [0m [91m                                  ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/enrichment/index.ts[0m:[93m13[0m:[93m58[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m13[0m export { SkillsEnrichmentService, SkillEnrichmentResult, SkillWithMetadata, ProficiencyLevel } from './skills.enrichment';
+[7m  [0m [91m                                                         ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/enrichment/index.ts[0m:[93m13[0m:[93m77[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m13[0m export { SkillsEnrichmentService, SkillEnrichmentResult, SkillWithMetadata, ProficiencyLevel } from './skills.enrichment';
+[7m  [0m [91m                                                                            ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/enrichment/skills.enrichment.ts[0m:[93m414[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType 'ProficiencyLevel | undefined' is not assignable to type 'ProficiencyLevel'.
+  Type 'undefined' is not assignable to type 'ProficiencyLevel'.
+
+[7m414[0m     return levels[Math.max(i1, i2)];
+[7m   [0m [91m    ~~~~~~[0m
+
+[96msrc/services/external-data/validation.service.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS6133: [0m'ValidationStatus' is declared but its value is never read.
+
+[7m15[0m   ValidationStatus,
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/validation.service.ts[0m:[93m253[0m:[93m17[0m - [91merror[0m[90m TS6133: [0m'type' is declared but its value is never read.
+
+[7m253[0m     for (const [type, pattern] of Object.entries(this.piiPatterns)) {
+[7m   [0m [91m                ~~~~[0m
+
+[96msrc/services/external-data/validation.service.ts[0m:[93m310[0m:[93m9[0m - [91merror[0m[90m TS18048: [0m'data.webPresence.searchResults.length' is possibly 'undefined'.
+
+[7m310[0m     if (data.webPresence?.searchResults?.length > 0) score += 3;
+[7m   [0m [91m        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/external-data/validation.service.ts[0m:[93m311[0m:[93m9[0m - [91merror[0m[90m TS18048: [0m'data.personalWebsite.portfolioProjects.length' is possibly 'undefined'.
+
+[7m311[0m     if (data.personalWebsite?.portfolioProjects?.length > 0) score += 5;
+[7m   [0m [91m        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m13[0m:[93m23[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m13[0m export { BaseService, ServiceConfig, ServiceHealth } from './base-service';
+[7m  [0m [91m                      ~~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m13[0m:[93m38[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m13[0m export { BaseService, ServiceConfig, ServiceHealth } from './base-service';
+[7m  [0m [91m                                     ~~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m14[0m:[93m31[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m14[0m export { EnhancedBaseService, EnhancedServiceConfig } from './enhanced-base-service';
+[7m  [0m [91m                              ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m15[0m:[93m28[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m15[0m export { Logger, LogLevel, LogContext } from './logger';
+[7m  [0m [91m                           ~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m21[0m:[93m3[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m21[0m   CacheOptions,
+[7m  [0m [91m  ~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m22[0m:[93m3[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m22[0m   CacheResult,
+[7m  [0m [91m  ~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m23[0m:[93m3[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m23[0m   CacheMetricsData,
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m29[0m:[93m3[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m29[0m   DatabaseOptions,
+[7m  [0m [91m  ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m30[0m:[93m3[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m30[0m   QueryResult,
+[7m  [0m [91m  ~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m31[0m:[93m3[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m31[0m   QueryFilter,
+[7m  [0m [91m  ~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m32[0m:[93m3[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m32[0m   DatabaseOperation,
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m33[0m:[93m3[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m33[0m   DatabaseError,
+[7m  [0m [91m  ~~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m39[0m:[93m3[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m39[0m   ApiClientOptions,
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m40[0m:[93m3[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m40[0m   ApiRequestOptions,
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m41[0m:[93m3[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m41[0m   ApiResponse,
+[7m  [0m [91m  ~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m42[0m:[93m3[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m42[0m   ApiError,
+[7m  [0m [91m  ~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m43[0m:[93m3[0m - [91merror[0m[90m TS1205: [0mRe-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+
+[7m43[0m   RateLimitState,
+[7m  [0m [91m  ~~~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m48[0m:[93m42[0m - [91merror[0m[90m TS2304: [0mCannot find name 'ServiceRegistry'.
+
+[7m48[0m export function createServiceRegistry(): ServiceRegistry {
+[7m  [0m [91m                                         ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m49[0m:[93m10[0m - [91merror[0m[90m TS2304: [0mCannot find name 'ServiceRegistry'.
+
+[7m49[0m   return ServiceRegistry.getInstance({
+[7m  [0m [91m         ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m71[0m:[93m76[0m - [91merror[0m[90m TS2304: [0mCannot find name 'ServiceHealth'.
+
+[7m71[0m export async function performServicesHealthCheck(): Promise<Record<string, ServiceHealth>> {
+[7m  [0m [91m                                                                           ~~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m72[0m:[93m20[0m - [91merror[0m[90m TS2304: [0mCannot find name 'ServiceRegistry'.
+
+[7m72[0m   const registry = ServiceRegistry.getInstance();
+[7m  [0m [91m                   ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/index.ts[0m:[93m80[0m:[93m20[0m - [91merror[0m[90m TS2304: [0mCannot find name 'ServiceRegistry'.
+
+[7m80[0m   const registry = ServiceRegistry.getInstance();
+[7m  [0m [91m                   ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m211[0m:[93m72[0m - [91merror[0m[90m TS2411: [0mProperty 'technical' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m211[0m   private getSkillsArray(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                       ~~~~~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m211[0m:[93m94[0m - [91merror[0m[90m TS2411: [0mProperty 'soft' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m211[0m   private getSkillsArray(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                             ~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m211[0m:[93m111[0m - [91merror[0m[90m TS2411: [0mProperty 'languages' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m211[0m   private getSkillsArray(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                              ~~~~~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m211[0m:[93m133[0m - [91merror[0m[90m TS2411: [0mProperty 'tools' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m211[0m   private getSkillsArray(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                    ~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m211[0m:[93m151[0m - [91merror[0m[90m TS2411: [0mProperty 'frontend' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m211[0m   private getSkillsArray(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                                      ~~~~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m211[0m:[93m172[0m - [91merror[0m[90m TS2411: [0mProperty 'backend' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m211[0m   private getSkillsArray(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                                                           ~~~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m211[0m:[93m192[0m - [91merror[0m[90m TS2411: [0mProperty 'databases' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m211[0m   private getSkillsArray(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                                                                               ~~~~~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m211[0m:[93m214[0m - [91merror[0m[90m TS2411: [0mProperty 'cloud' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m211[0m   private getSkillsArray(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                                                                                                     ~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m211[0m:[93m232[0m - [91merror[0m[90m TS2411: [0mProperty 'competencies' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m211[0m   private getSkillsArray(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                                                                                                                       ~~~~~~~~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m211[0m:[93m257[0m - [91merror[0m[90m TS2411: [0mProperty 'frameworks' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m211[0m   private getSkillsArray(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                                                                                                                                                ~~~~~~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m211[0m:[93m280[0m - [91merror[0m[90m TS2411: [0mProperty 'expertise' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m211[0m   private getSkillsArray(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                                                                                                                                                                       ~~~~~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m229[0m:[93m44[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string[] | { [key: string]: string[] | undefined; technical?: string[] | undefined; soft?: string[] | undefined; languages?: string[] | undefined; tools?: string[] | undefined; frontend?: string[] | undefined; ... 5 more ...; expertise?: string[] | undefined; } | undefined' is not assignable to parameter of type 'string[] | { [key: string]: string[]; technical?: string[] | undefined; soft?: string[] | undefined; languages?: string[] | undefined; tools?: string[] | undefined; frontend?: string[] | undefined; ... 5 more ...; expertise?: string[] | undefined; } | undefined'.
+  Type '{ [key: string]: string[] | undefined; technical?: string[] | undefined; soft?: string[] | undefined; languages?: string[] | undefined; tools?: string[] | undefined; frontend?: string[] | undefined; ... 5 more ...; expertise?: string[] | undefined; }' is not assignable to type 'string[] | { [key: string]: string[]; technical?: string[] | undefined; soft?: string[] | undefined; languages?: string[] | undefined; tools?: string[] | undefined; frontend?: string[] | undefined; ... 5 more ...; expertise?: string[] | undefined; } | undefined'.
+    Type '{ [key: string]: string[] | undefined; technical?: string[] | undefined; soft?: string[] | undefined; languages?: string[] | undefined; tools?: string[] | undefined; frontend?: string[] | undefined; ... 5 more ...; expertise?: string[] | undefined; }' is missing the following properties from type 'string[]': length, pop, push, concat, and 29 more.
+
+[7m229[0m     const userSkills = this.getSkillsArray(cv.skills);
+[7m   [0m [91m                                           ~~~~~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m320[0m:[93m44[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string[] | { [key: string]: string[] | undefined; technical?: string[] | undefined; soft?: string[] | undefined; languages?: string[] | undefined; tools?: string[] | undefined; frontend?: string[] | undefined; ... 5 more ...; expertise?: string[] | undefined; } | undefined' is not assignable to parameter of type 'string[] | { [key: string]: string[]; technical?: string[] | undefined; soft?: string[] | undefined; languages?: string[] | undefined; tools?: string[] | undefined; frontend?: string[] | undefined; ... 5 more ...; expertise?: string[] | undefined; } | undefined'.
+  Type '{ [key: string]: string[] | undefined; technical?: string[] | undefined; soft?: string[] | undefined; languages?: string[] | undefined; tools?: string[] | undefined; frontend?: string[] | undefined; ... 5 more ...; expertise?: string[] | undefined; }' is not assignable to type 'string[] | { [key: string]: string[]; technical?: string[] | undefined; soft?: string[] | undefined; languages?: string[] | undefined; tools?: string[] | undefined; frontend?: string[] | undefined; ... 5 more ...; expertise?: string[] | undefined; } | undefined'.
+    Type '{ [key: string]: string[] | undefined; technical?: string[] | undefined; soft?: string[] | undefined; languages?: string[] | undefined; tools?: string[] | undefined; frontend?: string[] | undefined; ... 5 more ...; expertise?: string[] | undefined; }' is missing the following properties from type 'string[]': length, pop, push, concat, and 29 more.
+
+[7m320[0m     const userSkills = this.getSkillsArray(cv.skills);
+[7m   [0m [91m                                           ~~~~~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m388[0m:[93m36[0m - [91merror[0m[90m TS6133: [0m'exp' is declared but its value is never read.
+
+[7m388[0m   private calculateExperienceYears(exp: any): number {
+[7m   [0m [91m                                   ~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m651[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'cv' is declared but its value is never read.
+
+[7m651[0m     cv: ParsedCV,
+[7m   [0m [91m    ~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m654[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'experienceLevel' is declared but its value is never read.
+
+[7m654[0m     experienceLevel?: string
+[7m   [0m [91m    ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m676[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'model' is declared but its value is never read.
+
+[7m676[0m     model: IndustryModel,
+[7m   [0m [91m    ~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m678[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'region' is declared but its value is never read.
+
+[7m678[0m     region: string
+[7m   [0m [91m    ~~~~~~[0m
+
+[96msrc/services/industry-specialization.service.ts[0m:[93m696[0m:[93m36[0m - [91merror[0m[90m TS6133: [0m'cv' is declared but its value is never read.
+
+[7m696[0m   private getRecommendedCareerPath(cv: ParsedCV, model: IndustryModel): CareerPath {
+[7m   [0m [91m                                   ~~[0m
+
+[96msrc/services/integrations.service.ts[0m:[93m324[0m:[93m55[0m - [91merror[0m[90m TS2307: [0mCannot find module './video-generation.service' or its corresponding type declarations.
+
+[7m324[0m       const { VideoGenerationService } = await import('./video-generation.service');
+[7m   [0m [91m                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/integrations.service.ts[0m:[93m340[0m:[93m46[0m - [91merror[0m[90m TS6133: [0m'voice' is declared but its value is never read.
+
+[7m340[0m   async generatePodcastAudio(script: string, voice?: string): Promise<Buffer> {
+[7m   [0m [91m                                             ~~~~~[0m
+
+[96msrc/services/integrations.service.ts[0m:[93m343[0m:[93m57[0m - [91merror[0m[90m TS2307: [0mCannot find module './podcast-generation.service' or its corresponding type declarations.
+
+[7m343[0m       const { PodcastGenerationService } = await import('./podcast-generation.service');
+[7m   [0m [91m                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/language-proficiency.service.ts[0m:[93m218[0m:[93m33[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m218[0m       const result = JSON.parse(response.choices[0].message?.content || '{"languages":[]}');
+[7m   [0m [91m                                ~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/language-proficiency.service.ts[0m:[93m293[0m:[93m22[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m293[0m         const name = match[1].trim();
+[7m   [0m [91m                     ~~~~~~~~[0m
+
+[96msrc/services/language-proficiency.service.ts[0m:[93m294[0m:[93m26[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m294[0m         const levelStr = match[2].trim();
+[7m   [0m [91m                         ~~~~~~~~[0m
+
+[96msrc/services/language-proficiency.service.ts[0m:[93m358[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'levelToScore' is declared but its value is never read.
+
+[7m358[0m   private levelToScore(level: LanguageProficiency['proficiency']): number {
+[7m   [0m [91m          ~~~~~~~~~~~~[0m
+
+[96msrc/services/language-proficiency.service.ts[0m:[93m385[0m:[93m37[0m - [91merror[0m[90m TS18048: [0m'b.score' is possibly 'undefined'.
+
+[7m385[0m     return languages.sort((a, b) => b.score - a.score);
+[7m   [0m [91m                                    ~~~~~~~[0m
+
+[96msrc/services/language-proficiency.service.ts[0m:[93m385[0m:[93m47[0m - [91merror[0m[90m TS18048: [0m'a.score' is possibly 'undefined'.
+
+[7m385[0m     return languages.sort((a, b) => b.score - a.score);
+[7m   [0m [91m                                              ~~~~~~~[0m
+
+[96msrc/services/language-proficiency.service.ts[0m:[93m534[0m:[93m27[0m - [91merror[0m[90m TS18048: [0m'base' is possibly 'undefined'.
+
+[7m534[0m               'Speaking': base - 5 + Math.random() * 10,
+[7m   [0m [91m                          ~~~~[0m
+
+[96msrc/services/language-proficiency.service.ts[0m:[93m535[0m:[93m26[0m - [91merror[0m[90m TS18048: [0m'base' is possibly 'undefined'.
+
+[7m535[0m               'Writing': base - 5 + Math.random() * 10,
+[7m   [0m [91m                         ~~~~[0m
+
+[96msrc/services/language-proficiency.service.ts[0m:[93m536[0m:[93m26[0m - [91merror[0m[90m TS18048: [0m'base' is possibly 'undefined'.
+
+[7m536[0m               'Reading': base + Math.random() * 5,
+[7m   [0m [91m                         ~~~~[0m
+
+[96msrc/services/language-proficiency.service.ts[0m:[93m537[0m:[93m28[0m - [91merror[0m[90m TS18048: [0m'base' is possibly 'undefined'.
+
+[7m537[0m               'Listening': base - 2 + Math.random() * 7
+[7m   [0m [91m                           ~~~~[0m
+
+[96msrc/services/language-proficiency.service.ts[0m:[93m566[0m:[93m7[0m - [91merror[0m[90m TS18048: [0m'p.score' is possibly 'undefined'.
+
+[7m566[0m       p.score >= 70 && p.contexts?.some(c =>
+[7m   [0m [91m      ~~~~~~~[0m
+
+[96msrc/services/language-proficiency.service.ts[0m:[93m590[0m:[93m20[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m590[0m         `Improve ${conversationalLanguages[0].name} to professional level for career advancement`
+[7m   [0m [91m                   ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/language-proficiency.service.ts[0m:[93m802[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType '{ name?: string | undefined; proficiency?: "fluent" | "native" | "professional" | "limited" | "elementary" | undefined; score?: number; certifications?: string[]; yearsOfExperience?: number; contexts?: string[]; verified?: boolean; flag?: string; frameworks?: { cefr?: string; actfl?: string; custom?: string; }; }' is not assignable to type 'LanguageProficiency'.
+  Types of property 'name' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+
+[7m802[0m     visualization.proficiencies[langIndex] = {
+[7m   [0m [91m    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/language-proficiency.service.ts[0m:[93m822[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType 'LanguageProficiency | undefined' is not assignable to type 'LanguageProficiency'.
+  Type 'undefined' is not assignable to type 'LanguageProficiency'.
+
+[7m822[0m     return visualization.proficiencies[langIndex];
+[7m   [0m [91m    ~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m110[0m:[93m9[0m - [91merror[0m[90m TS2322: [0mType 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m110[0m         extractedName: extractedResult.extractedNames[0],
+[7m   [0m [91m        ~~~~~~~~~~~~~[0m
+
+  [96msrc/services/name-verification.service.ts[0m:[93m13[0m:[93m3[0m
+    [7m13[0m   extractedName: string;
+    [7m  [0m [96m  ~~~~~~~~~~~~~[0m
+    The expected type comes from property 'extractedName' which is declared here on type 'NameVerificationResult'
+
+[96msrc/services/name-verification.service.ts[0m:[93m213[0m:[93m31[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m213[0m       if (this.isGenericEmail(localPart)) continue;
+[7m   [0m [91m                              ~~~~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m216[0m:[93m60[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m216[0m       const nameFromEmail = this.extractNameFromEmailLocal(localPart);
+[7m   [0m [91m                                                           ~~~~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m265[0m:[93m34[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m265[0m       if (this.isCapitalizedWord(word1) && this.isCapitalizedWord(word2)) {
+[7m   [0m [91m                                 ~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m265[0m:[93m67[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m265[0m       if (this.isCapitalizedWord(word1) && this.isCapitalizedWord(word2)) {
+[7m   [0m [91m                                                                  ~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m371[0m:[93m7[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m371[0m       matrix[0][j] = j;
+[7m   [0m [91m      ~~~~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m377[0m:[93m11[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m377[0m           matrix[i][j] = matrix[i - 1][j - 1];
+[7m   [0m [91m          ~~~~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m377[0m:[93m11[0m - [91merror[0m[90m TS2322: [0mType 'number | undefined' is not assignable to type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+
+[7m377[0m           matrix[i][j] = matrix[i - 1][j - 1];
+[7m   [0m [91m          ~~~~~~~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m377[0m:[93m26[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m377[0m           matrix[i][j] = matrix[i - 1][j - 1];
+[7m   [0m [91m                         ~~~~~~~~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m379[0m:[93m11[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m379[0m           matrix[i][j] = Math.min(
+[7m   [0m [91m          ~~~~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m380[0m:[93m13[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m380[0m             matrix[i - 1][j - 1] + 1,
+[7m   [0m [91m            ~~~~~~~~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m380[0m:[93m13[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m380[0m             matrix[i - 1][j - 1] + 1,
+[7m   [0m [91m            ~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m381[0m:[93m13[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m381[0m             matrix[i][j - 1] + 1,
+[7m   [0m [91m            ~~~~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m381[0m:[93m13[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m381[0m             matrix[i][j - 1] + 1,
+[7m   [0m [91m            ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m382[0m:[93m13[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m382[0m             matrix[i - 1][j] + 1
+[7m   [0m [91m            ~~~~~~~~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m382[0m:[93m13[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m382[0m             matrix[i - 1][j] + 1
+[7m   [0m [91m            ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m388[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType 'number | undefined' is not assignable to type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+
+[7m388[0m     return matrix[str2.length][str1.length];
+[7m   [0m [91m    ~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m388[0m:[93m12[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m388[0m     return matrix[str2.length][str1.length];
+[7m   [0m [91m           ~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m395[0m:[93m5[0m - [91merror[0m[90m TS2322: [0mType '(string | undefined)[]' is not assignable to type 'string[]'.
+  Type 'string | undefined' is not assignable to type 'string'.
+    Type 'undefined' is not assignable to type 'string'.
+
+[7m395[0m     return [
+[7m   [0m [91m    ~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m439[0m:[93m19[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m439[0m       word[0] === word[0].toUpperCase() &&
+[7m   [0m [91m                  ~~~~~~~[0m
+
+[96msrc/services/name-verification.service.ts[0m:[93m449[0m:[93m24[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m449[0m            word[0] === word[0].toUpperCase() &&
+[7m   [0m [91m                       ~~~~~~~[0m
+
+[96msrc/services/piiDetector.ts[0m:[93m307[0m:[93m19[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m307[0m           hasPII: hasPIIMatch[1].toLowerCase() === 'true',
+[7m   [0m [91m                  ~~~~~~~~~~~~~~[0m
+
+[96msrc/services/piiDetector.ts[0m:[93m314[0m:[93m34[0m - [91merror[0m[90m TS18048: [0m'typesStr' is possibly 'undefined'.
+
+[7m314[0m           result.detectedTypes = typesStr
+[7m   [0m [91m                                 ~~~~~~~~[0m
+
+[96msrc/services/piiDetector.ts[0m:[93m322[0m:[93m36[0m - [91merror[0m[90m TS18048: [0m'recsStr' is possibly 'undefined'.
+
+[7m322[0m           result.recommendations = recsStr
+[7m   [0m [91m                                   ~~~~~~~[0m
+
+[96msrc/services/placeholder-manager.service.ts[0m:[93m162[0m:[93m33[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m162[0m         label: this.formatLabel(placeholderKey),
+[7m   [0m [91m                                ~~~~~~~~~~~~~~[0m
+
+[96msrc/services/placeholder-manager.service.ts[0m:[93m163[0m:[93m45[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m163[0m         helpText: `Enter ${this.formatLabel(placeholderKey).toLowerCase()}`,
+[7m   [0m [91m                                            ~~~~~~~~~~~~~~[0m
+
+[96msrc/services/placeholder-manager.service.ts[0m:[93m192[0m:[93m15[0m - [91merror[0m[90m TS6133: [0m'bracketedPlaceholder' is declared but its value is never read.
+
+[7m192[0m         const bracketedPlaceholder = placeholder.startsWith('[') ? placeholder : `[${placeholder}]`;
+[7m   [0m [91m              ~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/policy-enforcement.service.ts[0m:[93m3[0m:[93m25[0m - [91merror[0m[90m TS6133: [0m'DuplicateCheckResult' is declared but its value is never read.
+
+[7m3[0m import { CVHashService, DuplicateCheckResult, CVMetadata } from './cv-hash.service';
+[7m [0m [91m                        ~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/policy-enforcement.service.ts[0m:[93m3[0m:[93m65[0m - [91merror[0m[90m TS2307: [0mCannot find module './cv-hash.service' or its corresponding type declarations.
+
+[7m3[0m import { CVHashService, DuplicateCheckResult, CVMetadata } from './cv-hash.service';
+[7m [0m [91m                                                                ~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/policy-enforcement.service.ts[0m:[93m6[0m:[93m3[0m - [91merror[0m[90m TS6133: [0m'NameExtractionResult' is declared but its value is never read.
+
+[7m6[0m   NameExtractionResult,
+[7m [0m [91m  ~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/policy-enforcement.service.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS6133: [0m'ExternalDataUsageStats' is declared but its value is never read.
+
+[7m15[0m   ExternalDataUsageStats
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/policy-enforcement.service.ts[0m:[93m441[0m:[93m54[0m - [91merror[0m[90m TS18046: [0m'error' is of type 'unknown'.
+
+[7m441[0m       return { suspicious: false, evidence: { error: error.message } };
+[7m   [0m [91m                                                     ~~~~~[0m
+
+[96msrc/services/policy-enforcement.service.ts[0m:[93m632[0m:[93m44[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m632[0m         errorCode: violations.length > 0 ? violations[0].type : undefined,
+[7m   [0m [91m                                           ~~~~~~~~~~~~~[0m
+
+[96msrc/services/policy-enforcement.service.ts[0m:[93m788[0m:[93m14[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m788[0m         .doc(dateKey);
+[7m   [0m [91m             ~~~~~~~[0m
+
+[96msrc/services/provider-selection-engine.service.ts[0m:[93m20[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module './video-providers/base-provider.interface' or its corresponding type declarations.
+
+[7m20[0m } from './video-providers/base-provider.interface';
+[7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/provider-selection-engine.service.ts[0m:[93m379[0m:[93m54[0m - [91merror[0m[90m TS2345: [0mArgument of type 'ProviderScore | undefined' is not assignable to parameter of type 'ProviderScore'.
+  Type 'undefined' is not assignable to type 'ProviderScore'.
+
+[7m379[0m       const reasoning = this.buildSelectionReasoning(selectedProvider, criteria, completeBusinessRules);
+[7m   [0m [91m                                                     ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/provider-selection-engine.service.ts[0m:[93m382[0m:[93m39[0m - [91merror[0m[90m TS2345: [0mArgument of type 'ProviderScore | undefined' is not assignable to parameter of type 'ProviderScore'.
+  Type 'undefined' is not assignable to type 'ProviderScore'.
+
+[7m382[0m       await this.logSelectionDecision(selectedProvider, criteria, filteredProviders);
+[7m   [0m [91m                                      ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/provider-selection-engine.service.ts[0m:[93m385[0m:[93m27[0m - [91merror[0m[90m TS18048: [0m'selectedProvider' is possibly 'undefined'.
+
+[7m385[0m         selectedProvider: selectedProvider.provider,
+[7m   [0m [91m                          ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/provider-selection-engine.service.ts[0m:[93m387[0m:[93m25[0m - [91merror[0m[90m TS18048: [0m'selectedProvider' is possibly 'undefined'.
+
+[7m387[0m         selectionScore: selectedProvider.score,
+[7m   [0m [91m                        ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/provider-selection-engine.service.ts[0m:[93m389[0m:[93m24[0m - [91merror[0m[90m TS18048: [0m'selectedProvider' is possibly 'undefined'.
+
+[7m389[0m         estimatedCost: selectedProvider.cost,
+[7m   [0m [91m                       ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/provider-selection-engine.service.ts[0m:[93m390[0m:[93m24[0m - [91merror[0m[90m TS18048: [0m'selectedProvider' is possibly 'undefined'.
+
+[7m390[0m         estimatedTime: selectedProvider.estimatedTime
+[7m   [0m [91m                       ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/regional-localization.service.ts[0m:[93m173[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'regionScore' is declared but its value is never read.
+
+[7m173[0m     regionScore: number,
+[7m   [0m [91m    ~~~~~~~~~~~[0m
+
+[96msrc/services/regional-localization/CulturalOptimizer.ts[0m:[93m172[0m:[93m27[0m - [91merror[0m[90m TS6133: [0m'cvData' is declared but its value is never read.
+
+[7m172[0m   private assessFormality(cvData: ParsedCV): 'very_formal' | 'formal' | 'casual' {
+[7m   [0m [91m                          ~~~~~~[0m
+
+[96msrc/services/regional-localization/RegionalScoreCalculator.ts[0m:[93m146[0m:[93m27[0m - [91merror[0m[90m TS6133: [0m'cvData' is declared but its value is never read.
+
+[7m146[0m   private checkDateFormat(cvData: ParsedCV, preferredFormat: string): boolean {
+[7m   [0m [91m                          ~~~~~~[0m
+
+[96msrc/services/regional-localization/RegionalScoreCalculator.ts[0m:[93m146[0m:[93m45[0m - [91merror[0m[90m TS6133: [0m'preferredFormat' is declared but its value is never read.
+
+[7m146[0m   private checkDateFormat(cvData: ParsedCV, preferredFormat: string): boolean {
+[7m   [0m [91m                                            ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/regional-localization/RegionalScoreCalculator.ts[0m:[93m166[0m:[93m27[0m - [91merror[0m[90m TS6133: [0m'cvData' is declared but its value is never read.
+
+[7m166[0m   private assessFormality(cvData: ParsedCV): 'very_formal' | 'formal' | 'casual' {
+[7m   [0m [91m                          ~~~~~~[0m
+
+[96msrc/services/regional-localization/RegionalScoreCalculator.ts[0m:[93m180[0m:[93m28[0m - [91merror[0m[90m TS6133: [0m'cvData' is declared but its value is never read.
+
+[7m180[0m   private checkTerminology(cvData: ParsedCV, preferredTerms: string[]): boolean {
+[7m   [0m [91m                           ~~~~~~[0m
+
+[96msrc/services/regional-localization/RegionalScoreCalculator.ts[0m:[93m180[0m:[93m46[0m - [91merror[0m[90m TS6133: [0m'preferredTerms' is declared but its value is never read.
+
+[7m180[0m   private checkTerminology(cvData: ParsedCV, preferredTerms: string[]): boolean {
+[7m   [0m [91m                                             ~~~~~~~~~~~~~~[0m
+
+[96msrc/services/resilience.service.ts[0m:[93m199[0m:[93m54[0m - [91merror[0m[90m TS18048: [0m'oldestRequest' is possibly 'undefined'.
+
+[7m199[0m       const waitTime = this.config.windowMs - (now - oldestRequest);
+[7m   [0m [91m                                                     ~~~~~~~~~~~~~[0m
+
+[96msrc/services/resilience.service.ts[0m:[93m300[0m:[93m11[0m - [91merror[0m[90m TS2454: [0mVariable 'lastError' is used before being assigned.
+
+[7m300[0m     throw lastError;
+[7m   [0m [91m          ~~~~~~~~~[0m
+
+[96msrc/services/role-profile.service.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS6133: [0m'RoleProfileId' is declared but its value is never read.
+
+[7m11[0m   RoleProfileId,
+[7m  [0m [91m  ~~~~~~~~~~~~~[0m
+
+[96msrc/services/role-profile.service.ts[0m:[93m15[0m:[93m3[0m - [91merror[0m[90m TS6133: [0m'ExperienceLevel' is declared but its value is never read.
+
+[7m15[0m   ExperienceLevel,
+[7m  [0m [91m  ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/role-profile.service.ts[0m:[93m16[0m:[93m3[0m - [91merror[0m[90m TS6133: [0m'CVSection' is declared but its value is never read.
+
+[7m16[0m   CVSection
+[7m  [0m [91m  ~~~~~~~~~[0m
+
+[96msrc/services/role-profile.service.ts[0m:[93m20[0m:[93m34[0m - [91merror[0m[90m TS2307: [0mCannot find module '../data/role-profiles.data' or its corresponding type declarations.
+
+[7m20[0m import { roleProfilesData } from '../data/role-profiles.data';
+[7m  [0m [91m                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/role-profile.service.ts[0m:[93m25[0m:[93m11[0m - [91merror[0m[90m TS2564: [0mProperty 'cacheTimeout' has no initializer and is not definitely assigned in the constructor.
+
+[7m25[0m   private cacheTimeout: number;
+[7m  [0m [91m          ~~~~~~~~~~~~[0m
+
+[96msrc/services/role-profile.service.ts[0m:[93m25[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'cacheTimeout' is declared but its value is never read.
+
+[7m25[0m   private cacheTimeout: number;
+[7m  [0m [91m          ~~~~~~~~~~~~[0m
+
+[96msrc/services/role-profile.service.ts[0m:[93m396[0m:[93m31[0m - [91merror[0m[90m TS7006: [0mParameter 'profile' implicitly has an 'any' type.
+
+[7m396[0m       defaultProfiles.forEach(profile => {
+[7m   [0m [91m                              ~~~~~~~[0m
+
+[96msrc/services/role-profile.service.ts[0m:[93m415[0m:[93m34[0m - [91merror[0m[90m TS7006: [0mParameter 'profile' implicitly has an 'any' type.
+
+[7m415[0m     return roleProfilesData.map((profile, index) => ({
+[7m   [0m [91m                                 ~~~~~~~[0m
+
+[96msrc/services/role-profile.service.ts[0m:[93m415[0m:[93m43[0m - [91merror[0m[90m TS7006: [0mParameter 'index' implicitly has an 'any' type.
+
+[7m415[0m     return roleProfilesData.map((profile, index) => ({
+[7m   [0m [91m                                          ~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m20[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'storage' is declared but its value is never read.
+
+[7m20[0m   private storage: admin.storage.Storage;
+[7m  [0m [91m          ~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m129[0m:[93m9[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m129[0m         checkpoint.functionName,
+[7m   [0m [91m        ~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m151[0m:[93m11[0m - [91merror[0m[90m TS18048: [0m'checkpoint.retryCount' is possibly 'undefined'.
+
+[7m151[0m       if (checkpoint.retryCount < checkpoint.maxRetries) {
+[7m   [0m [91m          ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m151[0m:[93m35[0m - [91merror[0m[90m TS18048: [0m'checkpoint.maxRetries' is possibly 'undefined'.
+
+[7m151[0m       if (checkpoint.retryCount < checkpoint.maxRetries) {
+[7m   [0m [91m                                  ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m161[0m:[93m48[0m - [91merror[0m[90m TS18048: [0m'checkpoint.retryCount' is possibly 'undefined'.
+
+[7m161[0m         await this.scheduleRetry(checkpointId, checkpoint.retryCount + 1);
+[7m   [0m [91m                                               ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m229[0m:[93m7[0m - [91merror[0m[90m TS18048: [0m'action.attempts' is possibly 'undefined'.
+
+[7m229[0m       action.attempts < action.maxAttempts && action.requiresNetwork
+[7m   [0m [91m      ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m229[0m:[93m25[0m - [91merror[0m[90m TS18048: [0m'action.maxAttempts' is possibly 'undefined'.
+
+[7m229[0m       action.attempts < action.maxAttempts && action.requiresNetwork
+[7m   [0m [91m                        ~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m240[0m:[93m9[0m - [91merror[0m[90m TS18048: [0m'action.attempts' is possibly 'undefined'.
+
+[7m240[0m         action.attempts++;
+[7m   [0m [91m        ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m276[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'parameters' is declared but its value is never read.
+
+[7m276[0m     parameters: Record<string, unknown>,
+[7m   [0m [91m    ~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m277[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'sessionId' is declared but its value is never read.
+
+[7m277[0m     sessionId: string
+[7m   [0m [91m    ~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m285[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'parameters' is declared but its value is never read.
+
+[7m285[0m     parameters: Record<string, unknown>,
+[7m   [0m [91m    ~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m286[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'sessionId' is declared but its value is never read.
+
+[7m286[0m     sessionId: string
+[7m   [0m [91m    ~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m293[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'parameters' is declared but its value is never read.
+
+[7m293[0m     parameters: Record<string, unknown>,
+[7m   [0m [91m    ~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m294[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'sessionId' is declared but its value is never read.
+
+[7m294[0m     sessionId: string
+[7m   [0m [91m    ~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m319[0m:[93m13[0m - [91merror[0m[90m TS2339: [0mProperty 'sessionId' does not exist on type 'Record<string, any> | undefined'.
+
+[7m319[0m     const { sessionId, updates } = action.payload;
+[7m   [0m [91m            ~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m319[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'updates' does not exist on type 'Record<string, any> | undefined'.
+
+[7m319[0m     const { sessionId, updates } = action.payload;
+[7m   [0m [91m                       ~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m329[0m:[93m11[0m - [91merror[0m[90m TS6198: [0mAll destructured elements are unused.
+
+[7m329[0m     const { sessionId, formId, formData } = action.payload;
+[7m   [0m [91m          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m329[0m:[93m13[0m - [91merror[0m[90m TS2339: [0mProperty 'sessionId' does not exist on type 'Record<string, any> | undefined'.
+
+[7m329[0m     const { sessionId, formId, formData } = action.payload;
+[7m   [0m [91m            ~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m329[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'formId' does not exist on type 'Record<string, any> | undefined'.
+
+[7m329[0m     const { sessionId, formId, formData } = action.payload;
+[7m   [0m [91m                       ~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m329[0m:[93m32[0m - [91merror[0m[90m TS2339: [0mProperty 'formData' does not exist on type 'Record<string, any> | undefined'.
+
+[7m329[0m     const { sessionId, formId, formData } = action.payload;
+[7m   [0m [91m                               ~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m334[0m:[93m13[0m - [91merror[0m[90m TS2339: [0mProperty 'sessionId' does not exist on type 'Record<string, any> | undefined'.
+
+[7m334[0m     const { sessionId, featureId, enabled } = action.payload;
+[7m   [0m [91m            ~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m334[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'featureId' does not exist on type 'Record<string, any> | undefined'.
+
+[7m334[0m     const { sessionId, featureId, enabled } = action.payload;
+[7m   [0m [91m                       ~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m334[0m:[93m35[0m - [91merror[0m[90m TS2339: [0mProperty 'enabled' does not exist on type 'Record<string, any> | undefined'.
+
+[7m334[0m     const { sessionId, featureId, enabled } = action.payload;
+[7m   [0m [91m                                  ~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m337[0m:[93m20[0m - [91merror[0m[90m TS18048: [0m'session.featureStates' is possibly 'undefined'.
+
+[7m337[0m     if (session && session.featureStates[featureId]) {
+[7m   [0m [91m                   ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m338[0m:[93m7[0m - [91merror[0m[90m TS18048: [0m'session.featureStates' is possibly 'undefined'.
+
+[7m338[0m       session.featureStates[featureId].enabled = enabled;
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m366[0m:[93m29[0m - [91merror[0m[90m TS18048: [0m'session.processingCheckpoints' is possibly 'undefined'.
+
+[7m366[0m     const checkpointIndex = session.processingCheckpoints.findIndex(
+[7m   [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m371[0m:[93m7[0m - [91merror[0m[90m TS18048: [0m'session.processingCheckpoints' is possibly 'undefined'.
+
+[7m371[0m       session.processingCheckpoints[checkpointIndex] = updatedCheckpoint;
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m387[0m:[93m30[0m - [91merror[0m[90m TS18048: [0m'session.processingCheckpoints' is possibly 'undefined'.
+
+[7m387[0m     for (const checkpoint of session.processingCheckpoints) {
+[7m   [0m [91m                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m388[0m:[93m28[0m - [91merror[0m[90m TS18048: [0m'session.stepProgress' is possibly 'undefined'.
+
+[7m388[0m       const stepProgress = session.stepProgress[checkpoint.stepId];
+[7m   [0m [91m                           ~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m388[0m:[93m49[0m - [91merror[0m[90m TS2538: [0mType 'undefined' cannot be used as an index type.
+
+[7m388[0m       const stepProgress = session.stepProgress[checkpoint.stepId];
+[7m   [0m [91m                                                ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m392[0m:[93m11[0m - [91merror[0m[90m TS7006: [0mParameter 's' implicitly has an 'any' type.
+
+[7m392[0m           s => s.id === checkpoint.functionName || s.name === checkpoint.functionName
+[7m   [0m [91m          ~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m443[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'getDependencies' is declared but its value is never read.
+
+[7m443[0m   private getDependencies(stepId: CVStep, featureId?: string): string[] {
+[7m   [0m [91m          ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m443[0m:[93m43[0m - [91merror[0m[90m TS6133: [0m'featureId' is declared but its value is never read.
+
+[7m443[0m   private getDependencies(stepId: CVStep, featureId?: string): string[] {
+[7m   [0m [91m                                          ~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m458[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'getEstimatedDuration' is declared but its value is never read.
+
+[7m458[0m   private getEstimatedDuration(functionName: string): number {
+[7m   [0m [91m          ~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/session-checkpoint.service.ts[0m:[93m471[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'getResourceRequirements' is declared but its value is never read.
+
+[7m471[0m   private getResourceRequirements(functionName: string): Record<string, unknown> {
+[7m   [0m [91m          ~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/tier-management/TierManager.ts[0m:[93m10[0m:[93m3[0m - [91merror[0m[90m TS6133: [0m'TierLimits' is declared but its value is never read.
+
+[7m10[0m   TierLimits,
+[7m  [0m [91m  ~~~~~~~~~~[0m
+
+[96msrc/services/tier-management/TierManager.ts[0m:[93m11[0m:[93m3[0m - [91merror[0m[90m TS6133: [0m'TierCheckResult' is declared but its value is never read.
+
+[7m11[0m   TierCheckResult,
+[7m  [0m [91m  ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/tier-management/TierManager.ts[0m:[93m274[0m:[93m37[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m274[0m       if (availableFeature.includes(feature.split('_')[0])) {
+[7m   [0m [91m                                    ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/timeline-generation-v2.service.ts[0m:[93m7[0m:[93m10[0m - [91merror[0m[90m TS6133: [0m'TimelineEvent' is declared but its value is never read.
+
+[7m7[0m import { TimelineEvent, TimelineData } from './types/timeline.types';
+[7m [0m [91m         ~~~~~~~~~~~~~[0m
+
+[96msrc/services/timeline-generation.service.ts[0m:[93m54[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'getTechnicalSkills' is declared but its value is never read.
+
+[7m54[0m   private getTechnicalSkills(skills: string[] | { technical: string[]; soft: string[]; languages?: string[]; tools?: string[]; } | undefined): string[] {
+[7m  [0m [91m          ~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-processor-events.service.ts[0m:[93m42[0m:[93m57[0m - [91merror[0m[90m TS7006: [0mParameter 'a' implicitly has an 'any' type.
+
+[7m42[0m       const validAchievements = exp.achievements.filter(a =>
+[7m  [0m [91m                                                        ~[0m
+
+[96msrc/services/timeline/timeline-processor-events.service.ts[0m:[93m51[0m:[93m57[0m - [91merror[0m[90m TS7006: [0mParameter 't' implicitly has an 'any' type.
+
+[7m51[0m       const validTechnologies = exp.technologies.filter(t =>
+[7m  [0m [91m                                                        ~[0m
+
+[96msrc/services/timeline/timeline-processor-insights.service.ts[0m:[93m86[0m:[93m28[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m86[0m     const earliestSkills = workEvents[0].skills || [];
+[7m  [0m [91m                           ~~~~~~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-processor-insights.service.ts[0m:[93m87[0m:[93m26[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m87[0m     const latestSkills = workEvents[workEvents.length - 1].skills || [];
+[7m  [0m [91m                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-processor-insights.service.ts[0m:[93m137[0m:[93m53[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string[] | { [key: string]: string[] | undefined; technical?: string[] | undefined; soft?: string[] | undefined; languages?: string[] | undefined; tools?: string[] | undefined; frontend?: string[] | undefined; ... 5 more ...; expertise?: string[] | undefined; } | undefined' is not assignable to parameter of type 'string[] | { [key: string]: string[]; technical?: string[] | undefined; soft?: string[] | undefined; languages?: string[] | undefined; tools?: string[] | undefined; frontend?: string[] | undefined; ... 5 more ...; expertise?: string[] | undefined; } | undefined'.
+  Type '{ [key: string]: string[] | undefined; technical?: string[] | undefined; soft?: string[] | undefined; languages?: string[] | undefined; tools?: string[] | undefined; frontend?: string[] | undefined; ... 5 more ...; expertise?: string[] | undefined; }' is not assignable to type 'string[] | { [key: string]: string[]; technical?: string[] | undefined; soft?: string[] | undefined; languages?: string[] | undefined; tools?: string[] | undefined; frontend?: string[] | undefined; ... 5 more ...; expertise?: string[] | undefined; } | undefined'.
+    Type '{ [key: string]: string[] | undefined; technical?: string[] | undefined; soft?: string[] | undefined; languages?: string[] | undefined; tools?: string[] | undefined; frontend?: string[] | undefined; ... 5 more ...; expertise?: string[] | undefined; }' is missing the following properties from type 'string[]': length, pop, push, concat, and 29 more.
+
+[7m137[0m     const technicalSkills = this.getTechnicalSkills(cv?.skills);
+[7m   [0m [91m                                                    ~~~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-processor-insights.service.ts[0m:[93m166[0m:[93m76[0m - [91merror[0m[90m TS2411: [0mProperty 'technical' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m166[0m   private getTechnicalSkills(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                           ~~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-processor-insights.service.ts[0m:[93m166[0m:[93m98[0m - [91merror[0m[90m TS2411: [0mProperty 'soft' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m166[0m   private getTechnicalSkills(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                 ~~~~[0m
+
+[96msrc/services/timeline/timeline-processor-insights.service.ts[0m:[93m166[0m:[93m115[0m - [91merror[0m[90m TS2411: [0mProperty 'languages' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m166[0m   private getTechnicalSkills(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                  ~~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-processor-insights.service.ts[0m:[93m166[0m:[93m137[0m - [91merror[0m[90m TS2411: [0mProperty 'tools' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m166[0m   private getTechnicalSkills(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                        ~~~~~[0m
+
+[96msrc/services/timeline/timeline-processor-insights.service.ts[0m:[93m166[0m:[93m155[0m - [91merror[0m[90m TS2411: [0mProperty 'frontend' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m166[0m   private getTechnicalSkills(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                                          ~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-processor-insights.service.ts[0m:[93m166[0m:[93m176[0m - [91merror[0m[90m TS2411: [0mProperty 'backend' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m166[0m   private getTechnicalSkills(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                                                               ~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-processor-insights.service.ts[0m:[93m166[0m:[93m196[0m - [91merror[0m[90m TS2411: [0mProperty 'databases' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m166[0m   private getTechnicalSkills(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                                                                                   ~~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-processor-insights.service.ts[0m:[93m166[0m:[93m218[0m - [91merror[0m[90m TS2411: [0mProperty 'cloud' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m166[0m   private getTechnicalSkills(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                                                                                                         ~~~~~[0m
+
+[96msrc/services/timeline/timeline-processor-insights.service.ts[0m:[93m166[0m:[93m236[0m - [91merror[0m[90m TS2411: [0mProperty 'competencies' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m166[0m   private getTechnicalSkills(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                                                                                                                           ~~~~~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-processor-insights.service.ts[0m:[93m166[0m:[93m261[0m - [91merror[0m[90m TS2411: [0mProperty 'frameworks' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m166[0m   private getTechnicalSkills(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                                                                                                                                                    ~~~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-processor-insights.service.ts[0m:[93m166[0m:[93m284[0m - [91merror[0m[90m TS2411: [0mProperty 'expertise' of type 'string[] | undefined' is not assignable to 'string' index type 'string[]'.
+
+[7m166[0m   private getTechnicalSkills(skills: string[] | { [key: string]: string[]; technical?: string[]; soft?: string[]; languages?: string[]; tools?: string[]; frontend?: string[]; backend?: string[]; databases?: string[]; cloud?: string[]; competencies?: string[]; frameworks?: string[]; expertise?: string[]; } | undefined): string[] {
+[7m   [0m [91m                                                                                                                                                                                                                                                                                           ~~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-processor.service.ts[0m:[93m17[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'getTechnicalSkills' is declared but its value is never read.
+
+[7m17[0m   private getTechnicalSkills(skills: string[] | { technical: string[]; soft: string[]; languages?: string[]; tools?: string[]; } | undefined): string[] {
+[7m  [0m [91m          ~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-sanitizer-core.service.ts[0m:[93m14[0m:[93m47[0m - [91merror[0m[90m TS6133: [0m'index' is declared but its value is never read.
+
+[7m14[0m   sanitizeTimelineEvent(event: TimelineEvent, index: number, metrics: DataQualityMetrics): any | null {
+[7m  [0m [91m                                              ~~~~~[0m
+
+[96msrc/services/timeline/timeline-sanitizer.service.ts[0m:[93m83[0m:[93m67[0m - [91merror[0m[90m TS2345: [0mArgument of type '(TimelineEvent | undefined)[]' is not assignable to parameter of type 'TimelineEvent[]'.
+  Type 'TimelineEvent | undefined' is not assignable to type 'TimelineEvent'.
+    Type 'undefined' is not assignable to type 'TimelineEvent'.
+
+[7m83[0m       return timelineSanitizerCoreService.getMinimalSafeStructure(timelineData.events.length > 0 ? [timelineData.events[0]] : []);
+[7m  [0m [91m                                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-utils-core.service.ts[0m:[93m39[0m:[93m32[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m39[0m         const month = monthMap[monthYearMatch[1].toLowerCase()];
+[7m  [0m [91m                               ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-utils-core.service.ts[0m:[93m40[0m:[93m31[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m40[0m         const year = parseInt(monthYearMatch[2], 10);
+[7m  [0m [91m                              ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-utils-core.service.ts[0m:[93m171[0m:[93m18[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m171[0m           return (match[2] || match[1]).trim() || 'Achievement';
+[7m   [0m [91m                 ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/timeline/timeline-validator.service.ts[0m:[93m163[0m:[93m55[0m - [91merror[0m[90m TS6133: [0m'field' is declared but its value is never read.
+
+[7m163[0m       Object.entries(metrics.fieldsRemoved).forEach(([field, count]) => {
+[7m   [0m [91m                                                      ~~~~~[0m
+
+[96msrc/services/timeline/timeline-validator.service.ts[0m:[93m170[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'successRate' is declared but its value is never read.
+
+[7m170[0m     const successRate = metrics.totalEvents > 0
+[7m   [0m [91m          ~~~~~~~~~~~[0m
+
+[96msrc/services/validation.service.ts[0m:[93m13[0m:[93m1[0m - [91merror[0m[90m TS6192: [0mAll imports in import declaration are unused.
+
+[7m13[0m import { PortalConfig, PortalErrorCode } from '../types/portal';
+[7m  [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/validation.service.ts[0m:[93m15[0m:[93m23[0m - [91merror[0m[90m TS2307: [0mCannot find module 'isomorphic-dompurify' or its corresponding type declarations.
+
+[7m15[0m import DOMPurify from 'isomorphic-dompurify';
+[7m  [0m [91m                      ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/validation.service.ts[0m:[93m59[0m:[93m20[0m - [91merror[0m[90m TS6133: [0m'allowedUrlProtocols' is declared but its value is never read.
+
+[7m59[0m   private readonly allowedUrlProtocols = ['http:', 'https:'];
+[7m  [0m [91m                   ~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/validation.service.ts[0m:[93m78[0m:[93m28[0m - [91merror[0m[90m TS6133: [0m'options' is declared but its value is never read.
+
+[7m78[0m   validateCV(cv: ParsedCV, options: ValidationOptions = {}): ValidationResult {
+[7m  [0m [91m                           ~~~~~~~[0m
+
+[96msrc/services/vector-database.service.ts[0m:[93m223[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'maxConnections' is declared but its value is never read.
+
+[7m223[0m   private maxConnections: number;
+[7m   [0m [91m          ~~~~~~~~~~~~~~[0m
+
+[96msrc/services/vector-database.service.ts[0m:[93m224[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'levelMultiplier' is declared but its value is never read.
+
+[7m224[0m   private levelMultiplier: number;
+[7m   [0m [91m          ~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/vector-database.service.ts[0m:[93m250[0m:[93m17[0m - [91merror[0m[90m TS6133: [0m'queryVector' is declared but its value is never read.
+
+[7m250[0m   public search(queryVector: number[], k: number): string[] {
+[7m   [0m [91m                ~~~~~~~~~~~[0m
+
+[96msrc/services/vector-database.service.ts[0m:[93m840[0m:[93m21[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m840[0m       dotProduct += a[i] * b[i];
+[7m   [0m [91m                    ~~~~[0m
+
+[96msrc/services/vector-database.service.ts[0m:[93m840[0m:[93m28[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m840[0m       dotProduct += a[i] * b[i];
+[7m   [0m [91m                           ~~~~[0m
+
+[96msrc/services/vector-database.service.ts[0m:[93m841[0m:[93m21[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m841[0m       magnitudeA += a[i] * a[i];
+[7m   [0m [91m                    ~~~~[0m
+
+[96msrc/services/vector-database.service.ts[0m:[93m841[0m:[93m28[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m841[0m       magnitudeA += a[i] * a[i];
+[7m   [0m [91m                           ~~~~[0m
+
+[96msrc/services/vector-database.service.ts[0m:[93m842[0m:[93m21[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m842[0m       magnitudeB += b[i] * b[i];
+[7m   [0m [91m                    ~~~~[0m
+
+[96msrc/services/vector-database.service.ts[0m:[93m842[0m:[93m28[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m842[0m       magnitudeB += b[i] * b[i];
+[7m   [0m [91m                           ~~~~[0m
+
+[96msrc/services/vector-database.service.ts[0m:[93m854[0m:[93m50[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m854[0m     return a.reduce((sum, val, i) => sum + val * b[i], 0);
+[7m   [0m [91m                                                 ~~~~[0m
+
+[96msrc/services/vector-database.service.ts[0m:[93m863[0m:[93m26[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m863[0m       const diff = val - b[i];
+[7m   [0m [91m                         ~~~~[0m
+
+[96msrc/services/verified-claude.service.ts[0m:[93m7[0m:[93m40[0m - [91merror[0m[90m TS2307: [0mCannot find module './llm-verification.service' or its corresponding type declarations.
+
+[7m7[0m import { LLMVerificationService } from './llm-verification.service';
+[7m [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/verified-claude.service.ts[0m:[93m8[0m:[93m1[0m - [91merror[0m[90m TS6133: [0m'admin' is declared but its value is never read.
+
+[7m8[0m import * as admin from 'firebase-admin';
+[7m [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/verified-claude.service.ts[0m:[93m51[0m:[93m11[0m - [91merror[0m[90m TS2564: [0mProperty 'anthropic' has no initializer and is not definitely assigned in the constructor.
+
+[7m51[0m   private anthropic: Anthropic;
+[7m  [0m [91m          ~~~~~~~~~[0m
+
+[96msrc/services/verified-claude.service.ts[0m:[93m86[0m:[93m13[0m - [91merror[0m[90m TS6133: [0m'verificationTest' is declared but its value is never read.
+
+[7m86[0m       const verificationTest = this.config.enableVerification && hasApiKeys;
+[7m  [0m [91m            ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/services/verified-claude.service.ts[0m:[93m184[0m:[93m61[0m - [91merror[0m[90m TS6133: [0m'options' is declared but its value is never read.
+
+[7m184[0m   private async processWithoutVerification(content: string, options: any): Promise<any> {
+[7m   [0m [91m                                                            ~~~~~~~[0m
+
+[96msrc/services/verified-claude.service.ts[0m:[93m254[0m:[93m45[0m - [91merror[0m[90m TS18046: [0m'error' is of type 'unknown'.
+
+[7m254[0m         message: `Connection test failed: ${error.message}`,
+[7m   [0m [91m                                            ~~~~~[0m
+
+[96msrc/services/verified-claude.service.ts[0m:[93m255[0m:[93m27[0m - [91merror[0m[90m TS18046: [0m'error' is of type 'unknown'.
+
+[7m255[0m         details: { error: error.message }
+[7m   [0m [91m                          ~~~~~[0m
+
+[96msrc/services/verified-claude.service.ts[0m:[93m354[0m:[93m48[0m - [91merror[0m[90m TS18046: [0m'error' is of type 'unknown'.
+
+[7m354[0m             text: `Error processing request: ${error.message}`
+[7m   [0m [91m                                               ~~~~~[0m
+
+[96msrc/services/verified-claude.service.ts[0m:[93m361[0m:[93m20[0m - [91merror[0m[90m TS18046: [0m'error' is of type 'unknown'.
+
+[7m361[0m             error: error.message
+[7m   [0m [91m                   ~~~~~[0m
+
+[96msrc/services/verified-claude.service.ts[0m:[93m389[0m:[93m27[0m - [91merror[0m[90m TS18046: [0m'error' is of type 'unknown'.
+
+[7m389[0m         details: { error: error.message }
+[7m   [0m [91m                          ~~~~~[0m
+
+[96msrc/types/enhanced-media.ts[0m:[93m167[0m:[93m5[0m - [91merror[0m[90m TS2411: [0mProperty 'analytical' of type 'number | undefined' is not assignable to 'string' index type 'number'.
+
+[7m167[0m     analytical?: number;
+[7m   [0m [91m    ~~~~~~~~~~[0m
+
+[96msrc/types/enhanced-media.ts[0m:[93m168[0m:[93m5[0m - [91merror[0m[90m TS2411: [0mProperty 'creative' of type 'number | undefined' is not assignable to 'string' index type 'number'.
+
+[7m168[0m     creative?: number;
+[7m   [0m [91m    ~~~~~~~~[0m
+
+[96msrc/types/enhanced-media.ts[0m:[93m169[0m:[93m5[0m - [91merror[0m[90m TS2411: [0mProperty 'decisive' of type 'number | undefined' is not assignable to 'string' index type 'number'.
+
+[7m169[0m     decisive?: number;
+[7m   [0m [91m    ~~~~~~~~[0m
+
+[96msrc/types/enhanced-media.ts[0m:[93m170[0m:[93m5[0m - [91merror[0m[90m TS2411: [0mProperty 'empathetic' of type 'number | undefined' is not assignable to 'string' index type 'number'.
+
+[7m170[0m     empathetic?: number;
+[7m   [0m [91m    ~~~~~~~~~~[0m
+
+[96msrc/types/enhanced-models.ts[0m:[93m12[0m:[93m1[0m - [91merror[0m[90m TS6133: [0m'ParsedCV' is declared but its value is never read.
+
+[7m12[0m import type { ParsedCV } from './job';
+[7m  [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/types/index.ts[0m:[93m69[0m:[93m1[0m - [91merror[0m[90m TS2308: [0mModule './cv' has already exported a member named 'Certification'. Consider explicitly re-exporting to resolve the ambiguity.
+
+[7m69[0m export * from './enhanced-models';
+[7m  [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/types/index.ts[0m:[93m69[0m:[93m1[0m - [91merror[0m[90m TS2308: [0mModule './cv' has already exported a member named 'PrivacySettings'. Consider explicitly re-exporting to resolve the ambiguity.
+
+[7m69[0m export * from './enhanced-models';
+[7m  [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/types/index.ts[0m:[93m69[0m:[93m1[0m - [91merror[0m[90m TS2308: [0mModule './cv' has already exported a member named 'SkillCategory'. Consider explicitly re-exporting to resolve the ambiguity.
+
+[7m69[0m export * from './enhanced-models';
+[7m  [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/types/phase2-models.ts[0m:[93m84[0m:[93m60[0m - [91merror[0m[90m TS2307: [0mCannot find module './success-prediction' or its corresponding type declarations.
+
+[7m84[0m   static isValidSuccessPrediction(obj: any): obj is import('./success-prediction').SuccessPrediction {
+[7m  [0m [91m                                                           ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/types/phase2-models.ts[0m:[93m129[0m:[93m56[0m - [91merror[0m[90m TS2307: [0mCannot find module './ml-pipeline' or its corresponding type declarations.
+
+[7m129[0m   static isValidFeatureVector(obj: any): obj is import('./ml-pipeline').FeatureVector {
+[7m   [0m [91m                                                       ~~~~~~~~~~~~~~~[0m
+
+[96msrc/types/phase2-models.ts[0m:[93m145[0m:[93m86[0m - [91merror[0m[90m TS2307: [0mCannot find module './success-prediction' or its corresponding type declarations.
+
+[7m145[0m   static createEmptySuccessPrediction(userId: string, jobId: string): Partial<import('./success-prediction').SuccessPrediction> {
+[7m   [0m [91m                                                                                     ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/types/phase2/index.ts[0m:[93m15[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '../success-prediction' or its corresponding type declarations.
+
+[7m15[0m } from '../success-prediction';
+[7m  [0m [91m       ~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/types/phase2/index.ts[0m:[93m21[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '../user-outcomes' or its corresponding type declarations.
+
+[7m21[0m } from '../user-outcomes';
+[7m  [0m [91m       ~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/types/phase2/index.ts[0m:[93m56[0m:[93m8[0m - [91merror[0m[90m TS2307: [0mCannot find module '../ml-pipeline' or its corresponding type declarations.
+
+[7m56[0m } from '../ml-pipeline';
+[7m  [0m [91m       ~~~~~~~~~~~~~~~~[0m
+
+[96msrc/types/phase2/index.ts[0m:[93m59[0m:[93m41[0m - [91merror[0m[90m TS2307: [0mCannot find module '../success-prediction' or its corresponding type declarations.
+
+[7m59[0m export type AllPredictionTypes = import('../success-prediction').PredictionTypes;
+[7m  [0m [91m                                        ~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/utils/auth.ts[0m:[93m47[0m:[93m7[0m - [91merror[0m[90m TS2322: [0mType 'null' is not assignable to type 'string | undefined'.
+
+[7m47[0m       picture: null,
+[7m  [0m [91m      ~~~~~~~[0m
+
+  [96msrc/utils/auth.ts[0m:[93m13[0m:[93m3[0m
+    [7m13[0m   picture?: string;
+    [7m  [0m [96m  ~~~~~~~[0m
+    The expected type comes from property 'picture' which is declared here on type 'AuthenticatedUser'
+
+[96msrc/utils/enhanced-error-handler.ts[0m:[93m13[0m:[93m1[0m - [91merror[0m[90m TS6133: [0m'FieldValue' is declared but its value is never read.
+
+[7m13[0m import { FieldValue } from 'firebase-admin/firestore';
+[7m  [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/utils/enhanced-error-handler.ts[0m:[93m258[0m:[93m45[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m258[0m     const lastTime = this.lastErrorTime.get(errorKey) || 0;
+[7m   [0m [91m                                            ~~~~~~~~[0m
+
+[96msrc/utils/enhanced-error-handler.ts[0m:[93m259[0m:[93m40[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m259[0m     const count = this.errorCounts.get(errorKey) || 0;
+[7m   [0m [91m                                       ~~~~~~~~[0m
+
+[96msrc/utils/enhanced-error-handler.ts[0m:[93m262[0m:[93m28[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m262[0m       this.errorCounts.set(errorKey, count + 1);
+[7m   [0m [91m                           ~~~~~~~~[0m
+
+[96msrc/utils/enhanced-error-handler.ts[0m:[93m266[0m:[93m28[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m266[0m       this.errorCounts.set(errorKey, 1);
+[7m   [0m [91m                           ~~~~~~~~[0m
+
+[96msrc/utils/enhanced-error-handler.ts[0m:[93m267[0m:[93m30[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m267[0m       this.lastErrorTime.set(errorKey, now);
+[7m   [0m [91m                             ~~~~~~~~[0m
+
+[96msrc/utils/enhanced-error-handler.ts[0m:[93m277[0m:[93m40[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m277[0m     const count = this.errorCounts.get(errorKey) || 0;
+[7m   [0m [91m                                       ~~~~~~~~[0m
+
+[96msrc/utils/enhanced-error-handler.ts[0m:[93m312[0m:[93m11[0m - [91merror[0m[90m TS6133: [0m'logData' is declared but its value is never read.
+
+[7m312[0m     const logData = {
+[7m   [0m [91m          ~~~~~~~[0m
+
+[96msrc/utils/enhanced-error-handler.ts[0m:[93m352[0m:[93m37[0m - [91merror[0m[90m TS6133: [0m'processedError' is declared but its value is never read.
+
+[7m352[0m   private static updateErrorMetrics(processedError: ProcessedError): void {
+[7m   [0m [91m                                    ~~~~~~~~~~~~~~[0m
+
+[96msrc/utils/enhanced-error-handler.ts[0m:[93m434[0m:[93m30[0m - [91merror[0m[90m TS2366: [0mFunction lacks ending return statement and return type does not include 'undefined'.
+
+[7m434[0m   return async (...args: T): Promise<R> => {
+[7m   [0m [91m                             ~~~~~~~~~~[0m
+
+[96msrc/utils/error-helpers.ts[0m:[93m10[0m:[93m15[0m - [91merror[0m[90m TS2305: [0mModule '"../types"' has no exported member 'ErrorCategory'.
+
+[7m10[0m import type { ErrorCategory, ErrorSeverity } from '../types';
+[7m  [0m [91m              ~~~~~~~~~~~~~[0m
+
+[96msrc/utils/error-helpers.ts[0m:[93m10[0m:[93m30[0m - [91merror[0m[90m TS2305: [0mModule '"../types"' has no exported member 'ErrorSeverity'.
+
+[7m10[0m import type { ErrorCategory, ErrorSeverity } from '../types';
+[7m  [0m [91m                             ~~~~~~~~~~~~~[0m
+
+[96msrc/utils/firestore-validation.service.ts[0m:[93m7[0m:[93m1[0m - [91merror[0m[90m TS6133: [0m'FieldValue' is declared but its value is never read.
+
+[7m7[0m import { FieldValue } from 'firebase-admin/firestore';
+[7m [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/utils/firestore-validation.service.ts[0m:[93m403[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'path' is declared but its value is never read.
+
+[7m403[0m     path: string,
+[7m   [0m [91m    ~~~~[0m
+
+[96msrc/utils/polyfills.ts[0m:[93m17[0m:[93m17[0m - [91merror[0m[90m TS6133: [0m'bits' is declared but its value is never read.
+
+[7m17[0m     constructor(bits: any[], name: string, options?: any) {
+[7m  [0m [91m                ~~~~[0m
+
+[96msrc/utils/polyfills.ts[0m:[93m17[0m:[93m30[0m - [91merror[0m[90m TS6133: [0m'name' is declared but its value is never read.
+
+[7m17[0m     constructor(bits: any[], name: string, options?: any) {
+[7m  [0m [91m                             ~~~~[0m
+
+[96msrc/utils/polyfills.ts[0m:[93m17[0m:[93m44[0m - [91merror[0m[90m TS6133: [0m'options' is declared but its value is never read.
+
+[7m17[0m     constructor(bits: any[], name: string, options?: any) {
+[7m  [0m [91m                                           ~~~~~~~[0m
+
+[96msrc/utils/privacy.ts[0m:[93m72[0m:[93m15[0m - [91merror[0m[90m TS2532: [0mObject is possibly 'undefined'.
+
+[7m72[0m     return `${parts[0][0]}${'*'.repeat(5)}`;
+[7m  [0m [91m              ~~~~~~~~[0m
+
+[96msrc/utils/safe-firestore.service.ts[0m:[93m8[0m:[93m10[0m - [91merror[0m[90m TS6133: [0m'FieldValue' is declared but its value is never read.
+
+[7m8[0m import { FieldValue, DocumentReference, Transaction, WriteBatch } from 'firebase-admin/firestore';
+[7m [0m [91m         ~~~~~~~~~~[0m
+
+[96msrc/utils/safe-firestore.service.ts[0m:[93m8[0m:[93m54[0m - [91merror[0m[90m TS6133: [0m'WriteBatch' is declared but its value is never read.
+
+[7m8[0m import { FieldValue, DocumentReference, Transaction, WriteBatch } from 'firebase-admin/firestore';
+[7m [0m [91m                                                     ~~~~~~~~~~[0m
+
+[96msrc/utils/safe-firestore.service.ts[0m:[93m245[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'operationName' is declared but its value is never read.
+
+[7m245[0m     operationName: string
+[7m   [0m [91m    ~~~~~~~~~~~~~[0m
+
+[96msrc/utils/safe-firestore.service.ts[0m:[93m453[0m:[93m5[0m - [91merror[0m[90m TS6133: [0m'operationName' is declared but its value is never read.
+
+[7m453[0m     operationName: string,
+[7m   [0m [91m    ~~~~~~~~~~~~~[0m
+
+[96msrc/utils/safe-firestore.service.ts[0m:[93m470[0m:[93m13[0m - [91merror[0m[90m TS6133: [0m'duration' is declared but its value is never read.
+
+[7m470[0m       const duration = Date.now() - startTime;
+[7m   [0m [91m            ~~~~~~~~[0m
+
+[96msrc/utils/type-guards.ts[0m:[93m11[0m:[93m50[0m - [91merror[0m[90m TS2724: [0m'"../types"' has no exported member named 'JobStatus'. Did you mean 'Status'?
+
+[7m11[0m import type { Job, CVTemplate, ProcessingStatus, JobStatus } from '../types';
+[7m  [0m [91m                                                 ~~~~~~~~~[0m
+
+
+Found 527 errors in 80 files.
+
+Errors  Files
+     1  src/config/environment.ts[90m:113[0m
+     4  src/config/llm-verification-setup.ts[90m:181[0m
+     5  src/config/security-monitor.ts[90m:372[0m
+     2  src/constants/errors.ts[90m:10[0m
+     1  src/constants/templates.ts[90m:10[0m
+     2  src/index.ts[90m:46[0m
+    24  src/middleware/middleware-factory.ts[90m:14[0m
+     1  src/middleware/security-headers.ts[90m:134[0m
+     1  src/services/cache-mixin.ts[90m:11[0m
+    14  src/services/cache/analytics-cache.service.ts[90m:15[0m
+     2  src/services/cache/cache-performance-monitor.service.ts[90m:15[0m
+     6  src/services/cache/cache.service.ts[90m:243[0m
+    10  src/services/cache/index.ts[90m:19[0m
+     9  src/services/cache/pricing-cache.service.ts[90m:123[0m
+    10  src/services/cache/redis-client.service.ts[90m:105[0m
+     4  src/services/cache/subscription-cache.service.ts[90m:14[0m
+     2  src/services/cache/usage-batch-cache.service.ts[90m:186[0m
+     3  src/services/calendar-integration.service.ts[90m:9[0m
+    14  src/services/chat.service.ts[90m:7[0m
+     4  src/services/circuit-breaker.service.ts[90m:189[0m
+    13  src/services/cv/cv-analysis.service.ts[90m:10[0m
+    25  src/services/cv/cv-generation.service.ts[90m:11[0m
+    11  src/services/cv/cv-template.service.ts[90m:10[0m
+     7  src/services/cv/cv-validation.service.ts[90m:10[0m
+     3  src/services/database-mixin.ts[90m:11[0m
+     8  src/services/enhanced-ats-analysis.service.ts[90m:2[0m
+     1  src/services/enhanced-base-service.ts[90m:15[0m
+     1  src/services/enhanced-db.service.ts[90m:303[0m
+    18  src/services/enhanced-prompt-engine.service.ts[90m:14[0m
+    19  src/services/enhancements/enhancement-processing.service.ts[90m:11[0m
+     8  src/services/error-recovery-engine.service.ts[90m:18[0m
+     2  src/services/external-data/adapters/github.adapter.ts[90m:72[0m
+     3  src/services/external-data/adapters/linkedin.adapter.ts[90m:57[0m
+     3  src/services/external-data/adapters/web-search.adapter.ts[90m:72[0m
+    24  src/services/external-data/adapters/website.adapter.ts[90m:13[0m
+     2  src/services/external-data/cache.service.ts[90m:190[0m
+     9  src/services/external-data/enrichment/index.ts[90m:9[0m
+     1  src/services/external-data/enrichment/skills.enrichment.ts[90m:414[0m
+     4  src/services/external-data/validation.service.ts[90m:15[0m
+    22  src/services/index.ts[90m:13[0m
+    19  src/services/industry-specialization.service.ts[90m:211[0m
+     3  src/services/integrations.service.ts[90m:324[0m
+    14  src/services/language-proficiency.service.ts[90m:218[0m
+    21  src/services/name-verification.service.ts[90m:110[0m
+     3  src/services/piiDetector.ts[90m:307[0m
+     3  src/services/placeholder-manager.service.ts[90m:162[0m
+     7  src/services/policy-enforcement.service.ts[90m:3[0m
+     7  src/services/provider-selection-engine.service.ts[90m:20[0m
+     1  src/services/regional-localization.service.ts[90m:173[0m
+     1  src/services/regional-localization/CulturalOptimizer.ts[90m:172[0m
+     5  src/services/regional-localization/RegionalScoreCalculator.ts[90m:146[0m
+     2  src/services/resilience.service.ts[90m:199[0m
+     9  src/services/role-profile.service.ts[90m:11[0m
+    35  src/services/session-checkpoint.service.ts[90m:20[0m
+     3  src/services/tier-management/TierManager.ts[90m:10[0m
+     1  src/services/timeline-generation-v2.service.ts[90m:7[0m
+     1  src/services/timeline-generation.service.ts[90m:54[0m
+     2  src/services/timeline/timeline-processor-events.service.ts[90m:42[0m
+    14  src/services/timeline/timeline-processor-insights.service.ts[90m:86[0m
+     1  src/services/timeline/timeline-processor.service.ts[90m:17[0m
+     1  src/services/timeline/timeline-sanitizer-core.service.ts[90m:14[0m
+     1  src/services/timeline/timeline-sanitizer.service.ts[90m:83[0m
+     3  src/services/timeline/timeline-utils-core.service.ts[90m:39[0m
+     2  src/services/timeline/timeline-validator.service.ts[90m:163[0m
+     4  src/services/validation.service.ts[90m:13[0m
+    11  src/services/vector-database.service.ts[90m:223[0m
+    10  src/services/verified-claude.service.ts[90m:7[0m
+     4  src/types/enhanced-media.ts[90m:167[0m
+     1  src/types/enhanced-models.ts[90m:12[0m
+     3  src/types/index.ts[90m:69[0m
+     3  src/types/phase2-models.ts[90m:84[0m
+     4  src/types/phase2/index.ts[90m:15[0m
+     1  src/utils/auth.ts[90m:47[0m
+    10  src/utils/enhanced-error-handler.ts[90m:13[0m
+     2  src/utils/error-helpers.ts[90m:10[0m
+     2  src/utils/firestore-validation.service.ts[90m:7[0m
+     3  src/utils/polyfills.ts[90m:17[0m
+     1  src/utils/privacy.ts[90m:72[0m
+     5  src/utils/safe-firestore.service.ts[90m:8[0m
+     1  src/utils/type-guards.ts[90m:11[0m
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mstack[39m Error: command failed
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at promiseSpawn (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/promise-spawn/lib/index.js:22:22)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at spawnWithShell (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/promise-spawn/lib/index.js:124:10)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at promiseSpawn (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/promise-spawn/lib/index.js:12:12)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at runScriptPkg (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/run-script-pkg.js:77:13)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at runScript (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/run-script.js:9:12)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at #run (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/commands/run-script.js:130:13)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at RunScript.execWorkspaces (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/commands/run-script.js:62:24)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at async Npm.exec (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/npm.js:207:9)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at async module.exports (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/cli/entry.js:74:5)
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mpkgid[39m @cvplus/core@1.0.0
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m Lifecycle script `build:types` failed with error:
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mcode[39m [33m1[39m
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mpath[39m /Users/gklainert/Documents/cvplus/packages/core
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mworkspace[39m @cvplus/core@1.0.0
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mlocation[39m /Users/gklainert/Documents/cvplus/packages/core
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m command failed
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mcommand[39m sh -c tsc --project tsconfig.build.json
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mcwd[39m /Users/gklainert/Documents/cvplus/packages/core
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mos[39m Darwin 24.6.0
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mnode[39m v20.19.4
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mnpm [39m v10.8.2
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mexit[39m [33m1[39m
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mcode[39m [33m1[39m
+[1G[0K⠙[1G[0K[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mstack[39m Error: command failed
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at promiseSpawn (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/promise-spawn/lib/index.js:22:22)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at spawnWithShell (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/promise-spawn/lib/index.js:124:10)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at promiseSpawn (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/promise-spawn/lib/index.js:12:12)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at runScriptPkg (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/run-script-pkg.js:77:13)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at runScript (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/run-script.js:9:12)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at #run (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/commands/run-script.js:130:13)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at RunScript.execWorkspaces (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/commands/run-script.js:62:24)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at async Npm.exec (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/npm.js:207:9)
+[1mnpm[22m [34mverbose[39m [94mstack[39m     at async module.exports (/Users/gklainert/.nvm/versions/node/v20.19.4/lib/node_modules/npm/lib/cli/entry.js:74:5)
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mpkgid[39m @cvplus/core@1.0.0
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m Lifecycle script `build` failed with error:
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mcode[39m [33m1[39m
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mpath[39m /Users/gklainert/Documents/cvplus/packages/core
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mworkspace[39m @cvplus/core@1.0.0
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mlocation[39m /Users/gklainert/Documents/cvplus/packages/core
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m command failed
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mcommand[39m sh -c npm run clean && npm run build:types && npm run build:rollup
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mcwd[39m /Users/gklainert/Documents/cvplus/packages/core
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mos[39m Darwin 24.6.0
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mnode[39m v20.19.4
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mnpm [39m v10.8.2
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mexit[39m [33m1[39m
+[1G[0K⠙[1G[0K[1mnpm[22m [34mverbose[39m [94mcode[39m [33m1[39m
+[1G[0K⠙[1G[0K

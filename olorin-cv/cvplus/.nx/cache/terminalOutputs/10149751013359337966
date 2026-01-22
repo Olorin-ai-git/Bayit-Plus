@@ -1,0 +1,114 @@
+
+> @cvplus/premium@4.0.0 build
+> tsup
+
+[34mCLI[39m Building entry: src/index.ts
+[34mCLI[39m Using tsconfig: tsconfig.json
+[34mCLI[39m tsup v8.5.0
+[34mCLI[39m Using tsup config: /Users/gklainert/Documents/cvplus/packages/premium/tsup.config.ts
+[34mCLI[39m Target: es2020
+[34mCLI[39m Cleaning output folder
+[34mCJS[39m Build start
+[34mESM[39m Build start
+✘ [ERROR] Multiple exports with the same name "FeatureRegistry"
+
+    src/index.ts:113:9:
+      113 │ export { FeatureRegistry, featureRegistry } from './services/feat...
+          ╵          ~~~~~~~~~~~~~~~
+
+  The name "FeatureRegistry" was originally exported here:
+
+    src/index.ts:90:9:
+      90 │ export { FeatureRegistry } from './backend/services/featureRegistry';
+         ╵          ~~~~~~~~~~~~~~~
+
+✘ [ERROR] Multiple exports with the same name "FeatureRegistry"
+
+    src/index.ts:113:9:
+      113 │ export { FeatureRegistry, featureRegistry } from './services/feat...
+          ╵          ~~~~~~~~~~~~~~~
+
+  The name "FeatureRegistry" was originally exported here:
+
+    src/index.ts:90:9:
+      90 │ export { FeatureRegistry } from './backend/services/featureRegistry';
+         ╵          ~~~~~~~~~~~~~~~
+
+✘ [ERROR] Could not resolve "./security/rate-limit-guard.service"
+
+    src/services/core-integration.ts:25:37:
+      25 │ ...SecureRateLimitGuard } from './security/rate-limit-guard.service';
+         ╵                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+✘ [ERROR] Could not resolve "./security/security-monitor.service"
+
+    src/services/core-integration.ts:26:39:
+      26 │ ...curityMonitorService } from './security/security-monitor.service';
+         ╵                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+✘ [ERROR] Could not resolve "../services/subscription-management.service"
+
+    src/middleware/premium-guard.ts:18:46:
+      18 │ ...ementService } from '../services/subscription-management.service';
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+✘ [ERROR] Could not resolve "../services/subscription-management.service"
+
+    src/middleware/premium-guard.ts:18:46:
+      18 │ ...ementService } from '../services/subscription-management.service';
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+✘ [ERROR] Could not resolve "../services/security"
+
+    src/middleware/enhanced-premium-guard.ts:22:61:
+      22 │ ...eLimitGuard, SecurityMonitorService } from '../services/security';
+         ╵                                               ~~~~~~~~~~~~~~~~~~~~~~
+
+✘ [ERROR] Could not resolve "./security/rate-limit-guard.service"
+
+    src/services/core-integration.ts:25:37:
+      25 │ ...SecureRateLimitGuard } from './security/rate-limit-guard.service';
+         ╵                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+✘ [ERROR] Could not resolve "./security/security-monitor.service"
+
+    src/services/core-integration.ts:26:39:
+      26 │ ...curityMonitorService } from './security/security-monitor.service';
+         ╵                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+✘ [ERROR] Could not resolve "../services/security"
+
+    src/middleware/enhanced-premium-guard.ts:22:61:
+      22 │ ...eLimitGuard, SecurityMonitorService } from '../services/security';
+         ╵                                               ~~~~~~~~~~~~~~~~~~~~~~
+
+[31mCJS[39m [31mBuild failed[39m
+[31mError: Build failed with 5 errors:
+src/index.ts:113:9: ERROR: Multiple exports with the same name "FeatureRegistry"
+src/middleware/enhanced-premium-guard.ts:22:61: ERROR: Could not resolve "../services/security"
+src/middleware/premium-guard.ts:18:46: ERROR: Could not resolve "../services/subscription-management.service"
+src/services/core-integration.ts:25:37: ERROR: Could not resolve "./security/rate-limit-guard.service"
+src/services/core-integration.ts:26:39: ERROR: Could not resolve "./security/security-monitor.service"
+    at failureErrorWithLog (/Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:1467:15)
+    at /Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:926:25
+    at runOnEndCallbacks (/Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:1307:45)
+    at buildResponseToResult (/Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:924:7)
+    at /Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:951:16
+    at responseCallbacks.<computed> (/Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:603:9)
+    at handleIncomingPacket (/Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:658:12)
+    at Socket.readFromStdout (/Users/gklainert/Documents/cvplus/node_modules/esbuild/lib/main.js:581:7)
+    at Socket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)[39m
+[31mESM[39m [31mBuild failed[39m
+[34mDTS[39m Build start
+src/index.ts(90,10): error TS2300: Duplicate identifier 'FeatureRegistry'.
+src/index.ts(113,10): error TS2300: Duplicate identifier 'FeatureRegistry'.
+
+[31mDTS[39m [31mBuild error[39m
+npm error Lifecycle script `build` failed with error:
+npm error code 1
+npm error path /Users/gklainert/Documents/cvplus/packages/premium
+npm error workspace @cvplus/premium@4.0.0
+npm error location /Users/gklainert/Documents/cvplus/packages/premium
+npm error command failed
+npm error command sh -c tsup
