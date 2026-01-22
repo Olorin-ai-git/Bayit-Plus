@@ -30,7 +30,7 @@ def _get_i18n_service() -> I18nService:
         # Import here to avoid circular imports
         from app.core.config import settings
 
-        _i18n_service = I18nService(config=settings.i18n)
+        _i18n_service = I18nService(config=settings.olorin.i18n)
 
     return _i18n_service
 
@@ -115,20 +115,20 @@ def get_multilingual_names(
 
     if name_key is None:
         # Return Unknown for all languages
-        return {lang.code: "Unknown" for lang in service.get_all_languages()}
+        return {lang["code"]: "Unknown" for lang in service.get_all_languages()}
 
     # Get translations for all supported languages
     try:
         multilingual = service.get_multilingual(name_key, default=slug or name_key)
         # Ensure all language codes are present
         result = {
-            lang.code: multilingual.get(lang.code, slug or name_key)
+            lang["code"]: multilingual.get(lang["code"], slug or name_key)
             for lang in service.get_all_languages()
         }
         return result
     except Exception as e:
         logger.warning(f"Error getting multilingual names for key '{name_key}': {e}")
-        return {lang.code: slug or name_key for lang in service.get_all_languages()}
+        return {lang["code"]: slug or name_key for lang in service.get_all_languages()}
 
 
 def get_language_info(language_code: str) -> Dict[str, bool]:
