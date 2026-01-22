@@ -20,6 +20,7 @@ export interface ContactPageTemplateProps {
   sendingText: string;
   successMessage: string;
   errorMessage: string;
+  warningMessage?: string;
   scheduleTitle?: string;
   scheduleSubtitle?: string;
   scheduleCta?: string;
@@ -38,6 +39,7 @@ export const ContactPageTemplate: React.FC<ContactPageTemplateProps> = ({
   sendingText,
   successMessage,
   errorMessage,
+  warningMessage,
   scheduleTitle,
   scheduleSubtitle,
   scheduleCta,
@@ -117,6 +119,11 @@ export const ContactPageTemplate: React.FC<ContactPageTemplateProps> = ({
 
       <section className="wizard-section bg-wizard-bg-primary">
         <div className="wizard-container">
+          {warningMessage && (
+            <div className="mb-8 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+              <p className="text-yellow-200 text-center">{warningMessage}</p>
+            </div>
+          )}
           <div className="wizard-grid-2 gap-12">
             <GlassCard className="p-8 lg:p-10">
               <h2 className="text-2xl lg:text-3xl font-bold wizard-text mb-8">{formTitle}</h2>

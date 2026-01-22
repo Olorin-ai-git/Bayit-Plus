@@ -57,18 +57,16 @@ export const UseCasesPageTemplate: React.FC<UseCasesPageTemplateProps> = ({
         <div className="wizard-container">
           <div className="flex flex-wrap justify-center gap-4 mb-12">
             {useCases.map((uc) => (
-              <button
+              <GlassButton
                 key={uc.id}
                 onClick={() => setActiveCase(uc.id)}
-                className={`px-6 py-3 rounded-lg font-medium transition-all flex items-center space-x-2 ${
-                  activeCase === uc.id
-                    ? 'bg-wizard-accent-purple text-white'
-                    : 'bg-wizard-bg-deep text-wizard-text-secondary hover:text-wizard-text-primary'
-                }`}
+                variant={activeCase === uc.id ? 'wizard' : 'ghost'}
+                size="md"
+                className="flex items-center space-x-2"
               >
                 <span className="w-5 h-5">{uc.icon}</span>
                 <span>{uc.industry}</span>
-              </button>
+              </GlassButton>
             ))}
           </div>
 

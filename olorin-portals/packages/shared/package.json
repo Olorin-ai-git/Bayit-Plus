@@ -9,9 +9,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "npm run build:tsc && npm run build:copy-css",
+    "build": "npm run build:tsc && npm run build:copy-assets",
     "build:tsc": "tsc --project tsconfig.build.json",
-    "build:copy-css": "mkdir -p dist/styles && cp -r src/styles/* dist/styles/",
+    "build:copy-assets": "mkdir -p dist/i18n/locales && mkdir -p dist/styles && cp -r src/styles/* dist/styles/ 2>/dev/null || true",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "prebuild": "npm run clean"
@@ -20,8 +20,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.0",
-    "i18next": "^25.2.1",
-    "react-i18next": "^15.5.3",
+    "i18next": "^22.4.9",
+    "react-i18next": "^12.1.4",
+    "i18next-browser-languagedetector": "^7.0.1",
     "lucide-react": "^0.263.0"
   },
   "devDependencies": {

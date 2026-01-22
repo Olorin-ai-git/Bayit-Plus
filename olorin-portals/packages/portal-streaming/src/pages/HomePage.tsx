@@ -6,7 +6,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { HeroSection, GlassCard, PlatformGrid } from '@olorin/shared';
+import { HeroSection, GlassCard, PlatformGrid, GlassButton } from '@olorin/shared';
 import { Film, Tv, Radio, Sparkles, Baby, Download } from 'lucide-react';
 
 const HomePage: React.FC = () => {
@@ -137,7 +137,7 @@ const HomePage: React.FC = () => {
           </div>
 
           <PlatformGrid
-            platforms={['ios', 'android', 'tvos', 'web', 'webos', 'tizen']}
+            platforms={['ios', 'android', 'web', 'webos', 'tizen']}
             size="md"
             columns={6}
           />
@@ -168,12 +168,13 @@ const HomePage: React.FC = () => {
               </span>
             </div>
 
-            <button
+            <GlassButton
+              variant="wizard"
+              size="lg"
               onClick={() => navigate('/pricing')}
-              className="wizard-button text-lg px-10 py-4"
             >
               {t('cta.button')}
-            </button>
+            </GlassButton>
           </div>
         </div>
       </section>

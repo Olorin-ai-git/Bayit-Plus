@@ -70,15 +70,66 @@ const PricingPage: React.FC = () => {
   ];
 
   const comparisonFeatures = [
-    { name: 'VOD Library', tiers: ['500+ titles', '500+ titles', '500+ titles'] },
-    { name: 'Israeli Radio', tiers: ['20+ stations', '20+ stations', '20+ stations'] },
-    { name: 'Live TV Channels', tiers: [false, '15+ channels', '15+ channels'] },
-    { name: 'AI Assistant', tiers: [false, true, true] },
-    { name: 'Simultaneous Streams', tiers: ['1 stream', '2 streams', '4 streams'] },
-    { name: 'Video Quality', tiers: ['HD (1080p)', 'Full HD (1080p)', '4K Ultra HD'] },
-    { name: 'Offline Downloads', tiers: [false, false, true] },
-    { name: 'User Profiles', tiers: ['1 profile', '2 profiles', '5 profiles'] },
-    { name: 'Kids Mode', tiers: [false, false, true] },
+    {
+      name: s('pricingPage.comparison.vodLibrary.name'),
+      tiers: [
+        s('pricingPage.comparison.vodLibrary.basic'),
+        s('pricingPage.comparison.vodLibrary.premium'),
+        s('pricingPage.comparison.vodLibrary.family')
+      ]
+    },
+    {
+      name: s('pricingPage.comparison.israeliRadio.name'),
+      tiers: [
+        s('pricingPage.comparison.israeliRadio.basic'),
+        s('pricingPage.comparison.israeliRadio.premium'),
+        s('pricingPage.comparison.israeliRadio.family')
+      ]
+    },
+    {
+      name: s('pricingPage.comparison.liveTvChannels.name'),
+      tiers: [
+        false,
+        s('pricingPage.comparison.liveTvChannels.premium'),
+        s('pricingPage.comparison.liveTvChannels.family')
+      ]
+    },
+    {
+      name: s('pricingPage.comparison.aiAssistant.name'),
+      tiers: [false, true, true]
+    },
+    {
+      name: s('pricingPage.comparison.simultaneousStreams.name'),
+      tiers: [
+        s('pricingPage.comparison.simultaneousStreams.basic'),
+        s('pricingPage.comparison.simultaneousStreams.premium'),
+        s('pricingPage.comparison.simultaneousStreams.family')
+      ]
+    },
+    {
+      name: s('pricingPage.comparison.videoQuality.name'),
+      tiers: [
+        s('pricingPage.comparison.videoQuality.basic'),
+        s('pricingPage.comparison.videoQuality.premium'),
+        s('pricingPage.comparison.videoQuality.family')
+      ]
+    },
+    {
+      name: s('pricingPage.comparison.offlineDownloads.name'),
+      tiers: [false, false, true]
+    },
+    {
+      name: s('pricingPage.comparison.userProfiles.name'),
+      tiers: [
+        s('pricingPage.comparison.userProfiles.basic'),
+        s('pricingPage.comparison.userProfiles.premium'),
+        s('pricingPage.comparison.userProfiles.family')
+      ]
+    },
+    {
+      name: s('pricingPage.comparison.kidsMode.name'),
+      tiers: [false, false, true]
+    },
   ];
 
   const faqs = [

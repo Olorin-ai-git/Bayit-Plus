@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Send } from 'lucide-react';
-import { GlassButton } from '../components';
+import { GlassButton, GlassInput, GlassTextArea, GlassSelect } from '../components';
 
 export interface ContactField {
   id: string;
@@ -44,6 +44,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({
   onChange,
 }) => {
   const renderField = (field: ContactField) => {
+    const hasError = !!validationErrors[field.id];
     const commonProps = {
       id: field.id,
       name: field.id,
@@ -51,25 +52,28 @@ export const ContactForm: React.FC<ContactFormProps> = ({
       onChange,
       required: field.required,
       placeholder: field.placeholder,
-      className: 'wizard-input w-full',
+      error: hasError,
+      'aria-label': field.label,
+      'aria-invalid': hasError,
+      'aria-describedby': hasError ? `${field.id}-error` : undefined,
     };
 
     if (field.type === 'textarea') {
-      return <textarea {...commonProps} rows={5} className="wizard-textarea w-full" />;
+      return <GlassTextArea {...commonProps} rows={5} />;
     }
 
     if (field.type === 'select' && field.options) {
       return (
-        <select {...commonProps} className="wizard-select w-full">
-          <option value="">{field.placeholder}</option>
+        <GlassSelect {...commonProps}>
+          <option value="" disabled>{field.placeholder}</option>
           {field.options.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
-        </select>
+        </GlassSelect>
       );
     }
 
-    return <input {...commonProps} type={field.type} />;
+    return <GlassInput {...commonProps} type={field.type as any} />;
   };
 
   return (
@@ -77,11 +81,19 @@ export const ContactForm: React.FC<ContactFormProps> = ({
       {fields.map((field) => (
         <div key={field.id}>
           <label htmlFor={field.id} className="block text-wizard-text-secondary mb-2 font-medium">
-            {field.label} {field.required && <span className="text-red-400">*</span>}
+            {field.required && <span className="text-red-400 ltr:ml-1 rtl:mr-1">*</span>}
+            {field.label}
           </label>
           {renderField(field)}
           {validationErrors[field.id] && (
-            <p className="text-red-400 text-sm mt-1">{validationErrors[field.id]}</p>
+            <p
+              id={`${field.id}-error`}
+              className="text-red-400 text-sm mt-1"
+              role="alert"
+              aria-live="assertive"
+            >
+              {validationErrors[field.id]}
+            </p>
           )}
         </div>
       ))}

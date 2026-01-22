@@ -9,4 +9,11 @@
 
 @import './styles/wizard-theme.css';
 
-/* Streaming-specific overrides can go here */
+/* iOS Momentum Scrolling Optimization */
+body,
+.wizard-section,
+.glass-modal-content-wizard,
+.mobile-navigation {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y pinch-zoom;
+}

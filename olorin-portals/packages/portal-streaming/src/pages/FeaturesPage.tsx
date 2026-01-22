@@ -40,14 +40,14 @@ const FeaturesPage: React.FC = () => {
   ];
 
   const techSpecs: TechSpec[] = [
-    { label: 'Video Codecs', value: 'H.264, H.265, VP9, AV1' },
-    { label: 'Max Resolution', value: '8K UHD' },
-    { label: 'Latency', value: '< 3s (Live)' },
-    { label: 'CDN Coverage', value: '200+ PoPs' },
-    { label: 'Concurrent Viewers', value: 'Unlimited' },
-    { label: 'DRM Support', value: 'Widevine, FairPlay' },
-    { label: 'Protocol Support', value: 'HLS, DASH, CMAF' },
-    { label: 'Uptime SLA', value: '99.99%' },
+    { label: s('featuresPage.techSpecs.videoCodecs.label'), value: s('featuresPage.techSpecs.videoCodecs.value') },
+    { label: s('featuresPage.techSpecs.maxResolution.label'), value: s('featuresPage.techSpecs.maxResolution.value') },
+    { label: s('featuresPage.techSpecs.latency.label'), value: s('featuresPage.techSpecs.latency.value') },
+    { label: s('featuresPage.techSpecs.cdnCoverage.label'), value: s('featuresPage.techSpecs.cdnCoverage.value') },
+    { label: s('featuresPage.techSpecs.concurrentViewers.label'), value: s('featuresPage.techSpecs.concurrentViewers.value') },
+    { label: s('featuresPage.techSpecs.drmSupport.label'), value: s('featuresPage.techSpecs.drmSupport.value') },
+    { label: s('featuresPage.techSpecs.protocolSupport.label'), value: s('featuresPage.techSpecs.protocolSupport.value') },
+    { label: s('featuresPage.techSpecs.uptimeSla.label'), value: s('featuresPage.techSpecs.uptimeSla.value') },
   ];
 
   const workflowSteps = [

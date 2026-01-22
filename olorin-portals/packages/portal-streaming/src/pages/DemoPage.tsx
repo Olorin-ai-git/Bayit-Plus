@@ -6,8 +6,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { PlatformGrid, GlassButton } from '@olorin/shared';
+import { PlatformGrid, GlassButton, AccessibleVideoPlayer } from '@olorin/shared';
 import { Play } from 'lucide-react';
+import { videoConfig } from '../config/videoConfig';
 
 interface DemoSection {
   title: string;
@@ -52,7 +53,29 @@ const DemoPage: React.FC = () => {
         String(t('demoPage.sections.voice.f4')),
       ],
     },
+    {
+      title: String(t('demoPage.sections.response.title')),
+      description: String(t('demoPage.sections.response.description')),
+      features: [
+        String(t('demoPage.sections.response.f1')),
+        String(t('demoPage.sections.response.f2')),
+        String(t('demoPage.sections.response.f3')),
+        String(t('demoPage.sections.response.f4')),
+      ],
+      reversed: true,
+    },
   ];
+
+  // Map sections to video configs
+  const getVideoForSection = (index: number) => {
+    const videos = [
+      videoConfig.hero,
+      videoConfig.aiAssistant,
+      videoConfig.voiceRequest,
+      videoConfig.voiceResponse,
+    ];
+    return videos[index];
+  };
 
   return (
     <div className="demo-page">
@@ -105,8 +128,16 @@ const DemoPage: React.FC = () => {
                   ))}
                 </ul>
               </div>
-              <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 h-64 flex items-center justify-center bg-gradient-to-br from-wizard-accent-purple/20 to-transparent">
-                <Play className="w-16 h-16 text-wizard-accent-purple opacity-60" />
+              <div className="rounded-2xl overflow-hidden">
+                <AccessibleVideoPlayer
+                  src={getVideoForSection(index).src}
+                  posterSrc={getVideoForSection(index).posterSrc}
+                  captions={getVideoForSection(index).captions}
+                  autoplay={false}
+                  loop={true}
+                  muted={false}
+                  className="w-full h-auto"
+                />
               </div>
             </div>
           </div>
@@ -122,7 +153,7 @@ const DemoPage: React.FC = () => {
             </h2>
           </div>
           <PlatformGrid
-            platforms={['ios', 'android', 'tvos', 'web', 'webos', 'tizen']}
+            platforms={['ios', 'android', 'web', 'webos', 'tizen']}
             size="md"
             columns={6}
           />
@@ -138,12 +169,13 @@ const DemoPage: React.FC = () => {
           <p className="text-lg md:text-xl text-wizard-text-secondary mb-10 max-w-3xl mx-auto">
             {t('demoPage.ctaSubtitle')}
           </p>
-          <button
+          <GlassButton
+            variant="wizard"
+            size="lg"
             onClick={() => navigate('/pricing')}
-            className="wizard-button text-lg px-10 py-4"
           >
             {t('demoPage.ctaButton')}
-          </button>
+          </GlassButton>
         </div>
       </section>
     </div>

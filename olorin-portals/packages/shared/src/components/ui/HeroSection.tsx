@@ -103,6 +103,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 className="w-full h-full object-cover"
                 aria-hidden="true"
               >
+                <source src={backgroundVideo.src.replace('.webm', '.mp4')} type="video/mp4" />
                 <source src={backgroundVideo.src} type="video/webm" />
                 {backgroundVideo.captionsSrc && (
                   <track

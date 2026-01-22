@@ -135,6 +135,7 @@ export const VideoDemo: React.FC<VideoDemoProps> = ({
           tabIndex={0}
           aria-label={`${title} video`}
         >
+          <source src={videoSrc.replace('.webm', '.mp4')} type="video/mp4" />
           <source src={videoSrc} type="video/webm" />
           {captionsSrc && (
             <track

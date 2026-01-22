@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { GlassCard } from '../components';
+import { GlassCard, GlassButton } from '../components';
 import { CheckCircle, Play, Monitor } from 'lucide-react';
 
 export interface DemoSection {
@@ -27,17 +27,14 @@ export const DemoSections: React.FC<DemoSectionsProps> = ({ sections }) => {
     <>
       <div className="flex flex-wrap justify-center gap-4 mb-12">
         {sections.map((section, index) => (
-          <button
+          <GlassButton
             key={section.title}
             onClick={() => setActiveSection(index)}
-            className={`px-6 py-3 rounded-lg font-medium transition-all ${
-              activeSection === index
-                ? 'bg-wizard-accent-purple text-white'
-                : 'bg-wizard-bg-deep text-wizard-text-secondary hover:text-wizard-text-primary'
-            }`}
+            variant={activeSection === index ? 'wizard' : 'ghost'}
+            size="md"
           >
             {section.title}
-          </button>
+          </GlassButton>
         ))}
       </div>
 

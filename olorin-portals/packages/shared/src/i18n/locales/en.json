@@ -6,7 +6,30 @@
     "pricing": "Plans",
     "demo": "See It Live",
     "contact": "Support",
-    "getStarted": "Start Free Trial"
+    "getStarted": "Start Free Trial",
+    "solutions": "Solutions",
+    "pricingDescription": "View pricing plans",
+    "demoDescription": "Try our live demo",
+    "contactDescription": "Get in touch"
+  },
+  "footer": {
+    "companyDescription": "AI-powered media streaming optimization delivering exceptional viewing experiences with intelligent content delivery."
+  },
+  "a11y": {
+    "skipToContent": "Skip to main content",
+    "mainContent": "Main content",
+    "navigation": "Main navigation",
+    "closeMenu": "Close menu",
+    "openMenu": "Open menu",
+    "playVideo": "Play video",
+    "pauseVideo": "Pause video",
+    "muteVideo": "Mute video",
+    "unmuteVideo": "Unmute video",
+    "fullscreenVideo": "Enter fullscreen",
+    "exitFullscreen": "Exit fullscreen",
+    "videoPlayer": "Video player",
+    "videoContent": "Video content",
+    "videoControls": "Video playback controls"
   },
   "hero": {
     "title": "BAYIT PLUS",
@@ -152,18 +175,84 @@
       "f6": "Kids Mode with Parental Controls"
     },
     "comparisonTitle": "Plan Comparison",
+    "comparison": {
+      "vodLibrary": {
+        "name": "VOD Library",
+        "basic": "500+ titles",
+        "premium": "500+ titles",
+        "family": "500+ titles"
+      },
+      "israeliRadio": {
+        "name": "Israeli Radio",
+        "basic": "20+ stations",
+        "premium": "20+ stations",
+        "family": "20+ stations"
+      },
+      "liveTvChannels": {
+        "name": "Live TV Channels",
+        "basic": false,
+        "premium": "15+ channels",
+        "family": "15+ channels"
+      },
+      "aiAssistant": {
+        "name": "AI Assistant",
+        "basic": false,
+        "premium": true,
+        "family": true
+      },
+      "simultaneousStreams": {
+        "name": "Simultaneous Streams",
+        "basic": "1 stream",
+        "premium": "2 streams",
+        "family": "4 streams"
+      },
+      "videoQuality": {
+        "name": "Video Quality",
+        "basic": "HD (1080p)",
+        "premium": "Full HD (1080p)",
+        "family": "4K Ultra HD"
+      },
+      "offlineDownloads": {
+        "name": "Offline Downloads",
+        "basic": false,
+        "premium": false,
+        "family": true
+      },
+      "userProfiles": {
+        "name": "User Profiles",
+        "basic": "1 profile",
+        "premium": "2 profiles",
+        "family": "5 profiles"
+      },
+      "kidsMode": {
+        "name": "Kids Mode",
+        "basic": false,
+        "premium": false,
+        "family": true
+      }
+    },
     "faqTitle": "Frequently Asked Questions",
     "faq": {
-      "q1": "Can I watch from outside the USA?",
-      "a1": "Yes! Bayit Plus works worldwide. Stream Israeli content from anywhere with an internet connection.",
-      "q2": "Is there a free trial?",
-      "a2": "Yes - get 7 days free on any plan. No credit card required for trial. Cancel anytime.",
-      "q3": "What devices are supported?",
-      "a3": "Bayit Plus works on iPhone, iPad, Android, Apple TV, web browsers, LG Smart TVs, and Samsung Smart TVs.",
-      "q4": "Can I switch plans anytime?",
-      "a4": "Yes - upgrade or downgrade anytime. Changes take effect immediately with prorated billing.",
-      "q5": "Are there contracts or cancellation fees?",
-      "a5": "No contracts, no cancellation fees. Cancel anytime and you'll have access until the end of your billing period."
+      "q1": {
+        "question": "Can I watch from outside the USA?",
+        "answer": "Yes! Bayit Plus works worldwide. Stream Israeli content from anywhere with an internet connection."
+      },
+      "q2": {
+        "question": "Is there a free trial?",
+        "answer": "Yes - get 7 days free on any plan. No credit card required for trial. Cancel anytime."
+      },
+      "q3": {
+        "question": "What devices are supported?",
+        "answer": "Bayit Plus works on iPhone, iPad, Android, Apple TV, web browsers, LG Smart TVs, and Samsung Smart TVs."
+      },
+      "q4": {
+        "question": "Can I switch plans anytime?",
+        "answer": "Yes - upgrade or downgrade anytime. Changes take effect immediately with prorated billing."
+      },
+      "q5": {
+        "question": "Are there contracts or cancellation fees?",
+        "answer": "No contracts, no cancellation fees. Cancel anytime and you'll have access until the end of your billing period."
+      }
     },
     "ctaTitle": "Start Your Free Trial Today",
     "ctaSubtitle": "7 days free - no credit card required",
@@ -246,6 +335,40 @@
         "h1": "Download to any device",
         "h2": "Watch without internet",
         "h3": "Perfect for flights"
+      }
+    },
+    "techSpecs": {
+      "videoCodecs": {
+        "label": "Video Codecs",
+        "value": "H.264, H.265, VP9, AV1"
+      },
+      "maxResolution": {
+        "label": "Max Resolution",
+        "value": "8K UHD"
+      },
+      "latency": {
+        "label": "Latency",
+        "value": "< 3s (Live)"
+      },
+      "cdnCoverage": {
+        "label": "CDN Coverage",
+        "value": "200+ PoPs"
+      },
+      "concurrentViewers": {
+        "label": "Concurrent Viewers",
+        "value": "Unlimited"
+      },
+      "drmSupport": {
+        "label": "DRM Support",
+        "value": "Widevine, FairPlay"
+      },
+      "protocolSupport": {
+        "label": "Protocol Support",
+        "value": "HLS, DASH, CMAF"
+      },
+      "uptimeSla": {
+        "label": "Uptime SLA",
+        "value": "99.99%"
       }
     },
     "ctaTitle": "Experience Bayit Plus Free for 7 Days",
@@ -406,12 +529,20 @@
         "f4": "Works with voice or text"
       },
       "voice": {
-        "title": "Voice Interaction",
-        "description": "Talk to Bayit Plus in Hebrew",
+        "title": "Voice Search",
+        "description": "Search for content using your voice in Hebrew",
         "f1": "Voice search in Hebrew",
         "f2": "Natural language understanding",
         "f3": "Quick content discovery",
         "f4": "Hands-free control"
+      },
+      "response": {
+        "title": "AI Voice Assistant",
+        "description": "Get intelligent responses in Hebrew from our AI assistant",
+        "f1": "Natural Hebrew responses",
+        "f2": "Context-aware answers",
+        "f3": "Personalized recommendations",
+        "f4": "Conversational interface"
       }
     },
     "ctaTitle": "Ready to Try Bayit Plus?",
@@ -454,6 +585,9 @@
     "emailTitle": "Email Us",
     "emailSubtitle": "support@bayitplus.com",
     "hoursTitle": "Support Hours",
-    "hoursSubtitle": "Sunday-Thursday: 9am-6pm EST"
+    "hoursSubtitle": "Sunday-Thursday: 9am-6pm EST",
+    "scheduleTitle": "Ready to Get Started?",
+    "scheduleSubtitle": "Start your free trial today - no credit card required",
+    "scheduleCta": "Start Free Trial"
   }
 }

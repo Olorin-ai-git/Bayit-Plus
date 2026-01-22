@@ -3,50 +3,74 @@ import { useTranslation } from 'react-i18next';
 import { ContactPageTemplate, ContactField, ContactInfoItem } from '@olorin/shared';
 import emailjs from '@emailjs/browser';
 
+// Check if EmailJS credentials are configured (not placeholders)
+const isEmailJSConfigured = () => {
+  const serviceId = process.env.REACT_APP_EMAILJS_SERVICE_ID;
+  const templateId = process.env.REACT_APP_EMAILJS_TEMPLATE_ID;
+  const publicKey = process.env.REACT_APP_EMAILJS_PUBLIC_KEY;
+
+  return serviceId && templateId && publicKey &&
+    !serviceId.includes('YOUR_') &&
+    !templateId.includes('YOUR_') &&
+    !publicKey.includes('YOUR_');
+};
+
 const ContactPage: React.FC = () => {
   const { t } = useTranslation();
+  const emailConfigured = isEmailJSConfigured();
 
   const fields: ContactField[] = [
-    { id: 'name', type: 'text', label: String(t('contactPage.form.name')), placeholder: 'John Doe', required: true },
-    { id: 'email', type: 'email', label: String(t('contactPage.form.email')), placeholder: 'john@company.com', required: true },
-    { id: 'company', type: 'text', label: String(t('contactPage.form.company')), placeholder: 'Your Streaming Platform' },
-    { id: 'phone', type: 'tel', label: String(t('contactPage.form.phone')), placeholder: '+1 (555) 000-0000' },
+    { id: 'name', type: 'text', label: String(t('contactPage.form.name')), placeholder: String(t('contactPage.form.name')), required: true },
+    { id: 'email', type: 'email', label: String(t('contactPage.form.email')), placeholder: String(t('contactPage.form.email')), required: true },
     {
-      id: 'platform',
+      id: 'helpType',
       type: 'select',
-      label: String(t('contactPage.form.platform')),
-      placeholder: String(t('contactPage.form.selectPlatform')),
+      label: String(t('contactPage.form.helpType')),
+      placeholder: String(t('contactPage.form.selectHelpType')),
+      required: true,
       options: [
-        { value: 'ott', label: 'OTT / Streaming Service' },
-        { value: 'broadcast', label: 'Broadcast / TV' },
-        { value: 'education', label: 'Educational Platform' },
-        { value: 'enterprise', label: 'Enterprise Video' },
-        { value: 'other', label: 'Other' },
-      ],
-    },
-    {
-      id: 'viewers',
-      type: 'select',
-      label: String(t('contactPage.form.viewers')),
-      placeholder: String(t('contactPage.form.selectViewers')),
-      options: [
-        { value: 'under10k', label: 'Under 10,000/month' },
-        { value: '10k-100k', label: '10,000 - 100,000/month' },
-        { value: '100k-1m', label: '100,000 - 1M/month' },
-        { value: 'over1m', label: 'Over 1M/month' },
+        { value: 'subscribe', label: String(t('contactPage.form.subscribe')) },
+        { value: 'trial', label: String(t('contactPage.form.trial')) },
+        { value: 'support', label: String(t('contactPage.form.support')) },
+        { value: 'billing', label: String(t('contactPage.form.billing')) },
+        { value: 'feedback', label: String(t('contactPage.form.feedback')) },
       ],
     },
     { id: 'message', type: 'textarea', label: String(t('contactPage.form.message')), placeholder: String(t('contactPage.form.messagePlaceholder')), required: true },
   ];
 
   const contactInfo: ContactInfoItem[] = [
-    { icon: 'email', label: 'Email', value: 'streaming@olorin.ai', href: 'mailto:streaming@olorin.ai' },
-    { icon: 'phone', label: 'Phone', value: '+1 (201) 397-9142', href: 'tel:+12013979142' },
-    { icon: 'address', label: 'Address', value: '185 Madison Ave\nCresskill, NJ 07626' },
-    { icon: 'hours', label: 'Business Hours', value: 'Mon - Fri: 9AM - 6PM EST' },
+    {
+      icon: 'email',
+      label: String(t('contactPage.contactInfo.email')),
+      value: process.env.REACT_APP_CONTACT_EMAIL || '',
+      href: `mailto:${process.env.REACT_APP_CONTACT_EMAIL || ''}`
+    },
+    {
+      icon: 'phone',
+      label: String(t('contactPage.contactInfo.phone')),
+      value: process.env.REACT_APP_CONTACT_PHONE || '',
+      href: process.env.REACT_APP_CONTACT_PHONE_HREF || ''
+    },
+    {
+      icon: 'address',
+      label: String(t('contactPage.contactInfo.address')),
+      value: process.env.REACT_APP_CONTACT_ADDRESS || ''
+    },
+    {
+      icon: 'hours',
+      label: String(t('contactPage.contactInfo.hours')),
+      value: process.env.REACT_APP_CONTACT_HOURS || ''
+    },
   ];
 
   const handleSubmit = async (data: Record<string, string>) => {
+    if (!emailConfigured) {
+      throw new Error(
+        'Contact form is not configured. Please use the email address below to contact us directly.'
+      );
+    }
+
     const serviceId = process.env.REACT_APP_EMAILJS_SERVICE_ID;
     const templateId = process.env.REACT_APP_EMAILJS_TEMPLATE_ID;
     const publicKey = process.env.REACT_APP_EMAILJS_PUBLIC_KEY;
@@ -58,12 +82,9 @@ const ContactPage: React.FC = () => {
     await emailjs.send(serviceId, templateId, {
       from_name: data.name,
       from_email: data.email,
-      company: data.company,
-      phone: data.phone,
-      platform: data.platform,
-      viewers: data.viewers,
+      help_type: data.helpType,
       message: data.message,
-      portal: 'Streaming Platform',
+      portal: 'Bayit Plus Streaming',
     }, publicKey);
   };
 
@@ -79,6 +100,11 @@ const ContactPage: React.FC = () => {
       sendingText={String(t('contactPage.sending'))}
       successMessage={String(t('contactPage.success'))}
       errorMessage={String(t('contactPage.error'))}
+      warningMessage={
+        !emailConfigured
+          ? 'Contact form is currently unavailable. Please use the email address below to reach us directly.'
+          : undefined
+      }
       scheduleTitle={String(t('contactPage.scheduleTitle'))}
       scheduleSubtitle={String(t('contactPage.scheduleSubtitle'))}
       scheduleCta={String(t('contactPage.scheduleCta'))}

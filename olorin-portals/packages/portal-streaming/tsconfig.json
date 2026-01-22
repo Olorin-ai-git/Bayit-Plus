@@ -15,10 +15,9 @@
     "noFallthroughCasesInSwitch": true,
     "isolatedModules": true,
     "noEmit": true,
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-      "@olorin/shared": ["../shared/src"]
+      "@/*": ["src/*"]
     }
   },
   "include": ["src"],
